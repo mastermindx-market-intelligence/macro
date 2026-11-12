@@ -1,0 +1,37 @@
+{
+  "schema": "grey_deer.frontier_update.v1",
+  "at": "2026-10-20T08:13:26.032022+00:00",
+  "changes": [
+    {
+      "path": "research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md",
+      "before_sha256": "53c5cdf5b5700e2c846e865a548a136c8da76ad6bb9292ae8539831989146be2",
+      "after_sha256": "3bc559ff3bdd199a8e80cef477a340803fddb5077caf0a26a79714c5dc137ec5"
+    },
+    {
+      "path": "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md",
+      "before_sha256": "46e2c93a7af07a5d429ff342ab473595d54b3209b7f8bf38f77c7933055b4a22",
+      "after_sha256": "16b05f4b7ff8b112d70b1fbc9a356df3c010ab7783fd7230c388874701de6f20"
+    },
+    {
+      "path": "research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md",
+      "before_sha256": "66d54522af74bad2dfbb3b99926f83072626d9f98a0929a301c860f5ff5e3c0a",
+      "after_sha256": "28ec1ec3a96faeb114e92617cd5bffcbdb2627a46ace6eba05b2727dd37aef46"
+    },
+    {
+      "path": "research/grey_deer/risk_radar_source_consumer_audit_20261017.md",
+      "before_sha256": "bc4151e5b51ad35151d7e9ccad347b75c7de45d70ff2d2c4a76f19d9f54f7b34",
+      "after_sha256": "760aceb81a2efdd1820264dcd143deb672821001e3fc110350a71ddc50fa4f93"
+    },
+    {
+      "path": "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+      "before_sha256": "dbaf3774ffd6a204f4956e37ff39020e4ef5dfb3575378cd1cdbed9783570759",
+      "after_sha256": "82af677d534269e0b896df039410b5647454e781ac68646b1d74f25bcc862942"
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/README.md",
+      "before_sha256": "1ddfb84c5e6934f9a16ea88b12929564b5da2afd9258d648a07f1ff47c46c338",
+      "after_sha256": "b8de6fc19e063c16e44635d6f7c65ed97c6dec1614465f89cc6a8e27f7a6efd3"
+    }
+  ],
+  "scope": "Supersede only current release/source next-action claims; preserve historical failed studies, source test receipts, source reviews and production restrictions."
+}

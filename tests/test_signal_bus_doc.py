@@ -73,9 +73,16 @@ def test_all_artifact_ids_present():
     with _SYNAPSE_YML.open(encoding="utf-8") as fh:
         registry = yaml.safe_load(fh)
     artifact_ids = list(registry.get("artifacts", {}).keys())
-    assert len(artifact_ids) == 645, (
-        f"Expected 645 artifacts in synapse.yml, found {len(artifact_ids)}. "
+    assert len(artifact_ids) == 651, (
+        f"Expected 651 artifacts in synapse.yml, found {len(artifact_ids)}. "
         "Update the test if the registry count changed intentionally."
+        " (Capital Structure #10527 registered"
+        " capital-structure-document-term-parse-receipts — infrastructure/context"
+        " parse-completion receipts with weights=none and no scored surfaces"
+        " or consumers = 650->651);"
+        " (Grey Deer O7/W5 #9128 registered grey-deer-pullback-forward-log and"
+        " grey-deer-pullback-forward-graded; Causal M3 #9585 registered"
+        " causal-filing-budget; two earlier unrecorded registrations = 645->650);"
         " (Grey Deer GD-2 registered risk-envelope-settled — the settled"
         " mastermind.risk_envelope/v1 projection composed by engine/risk_envelope.py;"
         " weights=none because the composer selects and carries source-native states"

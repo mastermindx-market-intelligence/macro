@@ -183,7 +183,11 @@ def test_cli_without_a_key_skips_cleanly(
 ):
     monkeypatch.delenv("FRED_API_KEY", raising=False)
     repo_root = Path(__file__).resolve().parents[1]
-    environment = {"PYTHONPATH": str(repo_root), "PATH": "/usr/bin:/bin"}
+    environment = {
+        "PYTHONPATH": str(repo_root),
+        "PATH": "/usr/bin:/bin",
+        "FRED_API_KEY": "",  # prevent a local .env from supplying a provider key
+    }
 
     completed = subprocess.run(
         [sys.executable, "-m", "scripts.collect_cycle_vintages"],
@@ -193,9 +197,8 @@ def test_cli_without_a_key_skips_cleanly(
         capture_output=True,
         check=False,
     )
+    assert completed.returncode == 0, completed.stderr
     manifest = json.loads(completed.stdout)
-
-    assert completed.returncode == 0
     assert manifest["status"] == "skipped"
     assert manifest["reason"] == "missing_fred_api_key"
     assert "[cycle_vintages] The FRED API key is absent" in completed.stderr
@@ -211,4 +214,29 @@ def test_missing_key_skips_cleanly_and_writes_no_files(tmp_path: Path):
 
     assert receipt["status"] == "skipped"
     assert receipt["reason"] == "missing_fred_api_key"
+    assert not (tmp_path / "data").exists()
+
+
+def test_file_cli_without_a_key_skips_from_foreign_cwd(tmp_path: Path):
+    script = Path(__file__).resolve().parents[1] / "scripts/collect_cycle_vintages.py"
+    environment = {
+        "PATH": "/usr/bin:/bin",
+        "FRED_API_KEY": "",  # an omitted value could be loaded from a local .env
+    }
+
+    completed = subprocess.run(
+        [sys.executable, str(script)],
+        cwd=tmp_path,
+        env=environment,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    manifest = json.loads(completed.stdout)
+    assert manifest["status"] == "skipped"
+    assert manifest["reason"] == "missing_fred_api_key"
+    assert manifest["series"] == {}
+    assert "[cycle_vintages] The FRED API key is absent" in completed.stderr
     assert not (tmp_path / "data").exists()

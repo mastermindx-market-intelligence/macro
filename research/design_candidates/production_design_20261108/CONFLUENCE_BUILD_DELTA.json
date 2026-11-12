@@ -1,0 +1,208 @@
+{
+  "schema": "confluence_build_delta.v1",
+  "status": "PROPOSED_BINDING_GUARD_WITH_CHARACTERIZED_CURRENT_HAZARDS",
+  "source": {
+    "repo": "mastermindx-market-intelligence/macro",
+    "sha": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+    "paths": [
+      "scripts/build_tech_confluence.py",
+      "scripts/build_confluence_screener.py",
+      "templates/confluence_screener.html.j2",
+      "engine/tech_confluence.py"
+    ]
+  },
+  "paper": {
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "r2_page": "p-2-0",
+    "r3_r4_builder": "2AG-0",
+    "r4_addendum": "2I3-0",
+    "narrow_en": "2JO-0",
+    "narrow_zh": "2KX-0",
+    "preservation": {
+      "oldLeafCount": 24,
+      "allOriginalTextAndIdsPreserved": true
+    },
+    "variants": [
+      {
+        "nodeId": "UM-0",
+        "observed": "OBSERVED",
+        "forbiddenCopy": false,
+        "appLinks": 3,
+        "has48": true,
+        "has44": true
+      },
+      {
+        "nodeId": "100-0",
+        "observed": "OBSERVED",
+        "forbiddenCopy": false,
+        "appLinks": 3,
+        "has48": true,
+        "has44": true
+      },
+      {
+        "nodeId": "1F2-0",
+        "observed": "OBSERVED",
+        "forbiddenCopy": false,
+        "appLinks": 3,
+        "has48": true,
+        "has44": true
+      },
+      {
+        "nodeId": "1JV-0",
+        "observed": "OBSERVED",
+        "forbiddenCopy": false,
+        "appLinks": 3,
+        "has48": true,
+        "has44": true
+      },
+      {
+        "nodeId": "15E-0",
+        "observed": "OBSERVED",
+        "forbiddenCopy": false,
+        "appLinks": 3,
+        "has48": true,
+        "has44": true
+      },
+      {
+        "nodeId": "1TI-0",
+        "observed": "OBSERVED",
+        "forbiddenCopy": false,
+        "appLinks": 3,
+        "has48": true,
+        "has44": true
+      },
+      {
+        "nodeId": "1OO-0",
+        "observed": "OBSERVED",
+        "forbiddenCopy": false,
+        "appLinks": 3,
+        "has48": true,
+        "has44": true
+      },
+      {
+        "nodeId": "1A8-0",
+        "observed": "OBSERVED",
+        "forbiddenCopy": false,
+        "appLinks": 3,
+        "has48": true,
+        "has44": true
+      }
+    ]
+  },
+  "owners": {
+    "producer": "Existing build_confluence_screener.py",
+    "consumer": "Existing confluence_screener.html.j2 hydrate/attemptHydrate",
+    "auth": "Existing MDXAuth and protected payload endpoint",
+    "request_state": "Existing inFlight, hydrated, auth-settled flow",
+    "new_service": false
+  },
+  "existing_fields": [
+    "combo_id",
+    "rank",
+    "is_free",
+    "active_count",
+    "protected built",
+    "public asof (date only)",
+    "public generated_utc (page render clock)"
+  ],
+  "proposed_fields": {
+    "artifact_sha256": "SHA-256 UTF-8 of one canonical serialization of the original parsed raw artifact shared by both projections",
+    "recipe_key": "SHA-256 of canonical resolved recipe content",
+    "public_binding": "Expected schema, full artifact built, fingerprint and protected combo_id/recipe_key/active_count; no protected ticker names"
+  },
+  "canonical_json": {
+    "recursive_sorted_object_keys": true,
+    "preserve_array_order": true,
+    "compact_separators": true,
+    "encoding": "UTF-8",
+    "ensure_ascii": false,
+    "non_finite_numbers": "reject"
+  },
+  "recipe_identity": {
+    "binding_version": 1,
+    "fields": [
+      "combo.dir",
+      "sorted resolved legs: [signal_id, tf, kind, direction]",
+      "raw.config.event_window_d/w only for timeframes used by event legs"
+    ],
+    "validation": [
+      "legs indexes are integers, nonnegative, unique and in bounds",
+      "k equals resolved count and obeys current 2–4 leg contract",
+      "leg_id agrees with signal_id + @ + tf",
+      "leg direction agrees with combination",
+      "required activity parameters present; do not silently default"
+    ],
+    "exclude": [
+      "rank",
+      "display names",
+      "translated labels",
+      "leg array indexes"
+    ],
+    "limitation": "Artifact binding key, not a recipe registry or proof of engine semantic equivalence across releases"
+  },
+  "hydration_gate": [
+    "Reject unbound legacy schema; compare agreed schema, page, full built and artifact fingerprint",
+    "Require exact expected protected ID set; reject missing, extra or duplicate rows",
+    "Require matching recipe_key per public card",
+    "Require valid integer counts agreeing with public count and unique valid ticker list",
+    "Validate and prepare all replacements before changing DOM",
+    "Only after complete successful application mark hydrated and announce completion",
+    "If no expected protected rows, skip hydration and paid success UI"
+  ],
+  "failure_behavior": {
+    "public_evidence": "preserved",
+    "identity_mismatch": "existing protected-unavailable recovery; not no-entitlement or zero matches",
+    "retry_owner": "existing controller only",
+    "empty_source_overwrite": "preserved and never interpreted as paid success"
+  },
+  "rollout": {
+    "requirement": "Explicit Confluence protected-asset schema transition that cached tier_payload.v1 consumers reject; new consumer rejects legacy unbound payloads.",
+    "proposed_literal": "tier_payload.v2 on this asset, subject to incumbent generic-consumer compatibility tests",
+    "other_assets": "No global schema change implied",
+    "unsafe_fallback": "No unbound payload fallback",
+    "old_shell": "Public content remains readable; protected rows unresolved"
+  },
+  "controls": {
+    "main_action": {
+      "en": "Open Mastermind →",
+      "zh": "打开 Mastermind →",
+      "target": "existing cta_url",
+      "minimum_height_px": 48,
+      "side_effect": "navigation only"
+    },
+    "card_action": {
+      "minimum_height_px": 44,
+      "target": "existing cta_url"
+    },
+    "method": {
+      "en": "How this shortlist works",
+      "zh": "信号组合说明",
+      "owner": "native details/summary",
+      "minimum_height_px": 48,
+      "request": false,
+      "motion_ms_max": 120,
+      "reduced_motion": "instant",
+      "keyboard": "native focus, summary activation and expanded state"
+    }
+  },
+  "acceptance_cases": [
+    "matching bound response",
+    "different generation with reused ordinal",
+    "same built timestamp changed content",
+    "wrong recipe key",
+    "partial, extra and duplicate rows",
+    "invalid and duplicate tickers",
+    "positive-count empty list and count disagreements",
+    "zero expected protected rows",
+    "old shell/new payload and new shell/old payload",
+    "failed response then valid recovery without duplicate request/controller/replacement"
+  ],
+  "verification": {
+    "current_source_cases": 9,
+    "status": "CURRENT_HYDRATOR_HAZARDS_REPRODUCED_NOT_FIX_ACCEPTANCE",
+    "native_paper": true,
+    "production_source_changed": false,
+    "browser_playback": false,
+    "installed_runtime_acceptance": false
+  }
+}

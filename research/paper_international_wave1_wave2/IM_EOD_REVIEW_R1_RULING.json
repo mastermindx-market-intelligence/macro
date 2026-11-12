@@ -1,0 +1,23 @@
+{
+  "edge": "SOL RULING / STOP",
+  "run_id": "intl-r10-eod-review-5370-r1",
+  "terminal_child_wave": true,
+  "stop_source_work": true,
+  "no_next_child_grant": true,
+  "no_watcher_created_or_required": true,
+  "native_terminal": "RC=0; NATIVE_SETTLED; transport cleaned; usage receipt missing",
+  "review_candidate": "5370a6e3a0063fbfc3869ac28efae560c08e53f4",
+  "return_sha256": "0c377491590580251ba0479e91f46daf37718828eb54e13445b0133cfe62c223",
+  "countercases_sha256": "00add682ec3ab3c01fcc6b917a8f43a9449830446e8af66d0f49faa7d5c20e7a",
+  "parent_frozen_reproduction": {
+    "owner_tests": "18 passed with PyArrow 25.0.0",
+    "original_countercases": "9 failed, 2 passed; original file unchanged"
+  },
+  "disposition": {
+    "F1_optional_adapter": "ACCEPTED_SCOPED: normalize snapshot validation errors to withheld None at the new adapter only; fix in derivative awaiting final acceptance",
+    "F1_strict_overview": "REJECTED_CONTRACT_ASSUMPTION: shared strict API intentionally raises ValueError; unchanged. Original review capsule did not include publisher exception boundary, so publisher-crash claim is not established.",
+    "F2_corrupt_parquet": "REJECTED_AS_STATED: ArrowInvalid subclasses ValueError under installed PyArrow; existing catch already covers malformed parquet. Original case passes here. Added a valid-others/corrupt-JP case to verify independent withholding.",
+    "F2_missing_engine": "ENVIRONMENT_LIMIT: reviewer had no PyArrow, so missing-engine ImportError is not evidence that corrupt parquet propagates in the deployed dependency environment."
+  },
+  "next_action": "Parent finishes and verifies the bounded derivative; no approval of the whole candidate or production release follows from this review. Re-review of the final clock and validation-error delta remains required."
+}

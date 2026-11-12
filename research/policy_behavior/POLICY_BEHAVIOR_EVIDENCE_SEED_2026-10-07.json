@@ -1,0 +1,292 @@
+{
+  "schema": "mastermind.policy_behavior_research_seed.v1",
+  "as_of": "2026-10-07",
+  "status": "RESEARCH_ONLY_ZERO_AUTHORITY",
+  "protected_procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "commit": "6a85e0d60ebb5e1003ab2ab86aa8658ccefb6ccf",
+    "skillpack_version": "1.0.1"
+  },
+  "macro_base": "8f90e174f9be972ad9342cc60616e3bb6b16ebb9",
+  "owners": {
+    "policy_context": [
+      "data/policy/intel.json",
+      "scripts/build_policy_watch.py",
+      "engine/policy_intent_desk.py"
+    ],
+    "rates": [
+      "agentos/workstreams/WS-RATES-INFLATION-COMMAND.md",
+      "research/RATES_INFLATION_COMMAND_RECOVERY_AND_COMPLETION_FREEZE_2026-08-27.md"
+    ],
+    "policy_shock": "research/POLICY_SHOCK_REGIME_MASTERPLAN_BY_FABLE.md",
+    "news_business_impact": "PR#8533 research/prophet_v4/news_to_business_impact_20261006",
+    "prophet_t2": "PR#8495 sol/prophet-nvda-conversion-audit-20261006",
+    "circular_credit": "research/CCW_CREDIT_FIELD_GUIDE.md"
+  },
+  "current_internal_findings": [
+    {
+      "id": "I01",
+      "finding": "Policy Watch already explicitly models narrative-vs-revealed divergence and strategic capital rotation.",
+      "source": "scripts/build_policy_watch.py",
+      "consequence": "Extend/freshen the existing owner; do not build a rival policy-intelligence system."
+    },
+    {
+      "id": "I02",
+      "finding": "data/policy/intel.json is conceptually aligned with revealed-preference analysis but is stale at 2026-07-13.",
+      "source": "data/policy/intel.json",
+      "consequence": "Fresh source ingestion and point-in-time casebooks are higher priority than another theory layer."
+    },
+    {
+      "id": "I03",
+      "finding": "Prior audits found LLM-authored policy leans leaking into Intel Hub ranking despite a context-only contract.",
+      "source": "research/QUALITATIVE_SIGNAL_US_AUDIT_FOR_FABLE.md and research/INTEL_HUB_LOBE_AUDIT_AND_UPGRADE_MASTERPLAN_BY_FABLE.md",
+      "consequence": "Behavioral inference must not directly originate rank/gate/size; deterministic facts may be evaluated separately."
+    },
+    {
+      "id": "I04",
+      "finding": "Policy-Shock law forbids an administration-timing oracle and permits conditions/de-escalation plus forward evidence accrual.",
+      "source": "research/POLICY_SHOCK_REGIME_MASTERPLAN_BY_FABLE.md",
+      "consequence": "Research private-intent hypotheses, but productionize observable conditions rather than an unfalsifiable timing predictor."
+    },
+    {
+      "id": "I05",
+      "finding": "RIC already owns policy-path repricing and rates transmission; open PRs #7923/#7940 are active and held.",
+      "source": "PR#7923; PR#7940",
+      "consequence": "No second rates/policy repricing engine."
+    }
+  ],
+  "prophet_discovery": {
+    "source": "Draft PR #8495",
+    "authority": "ZERO_AUTHORITY_POST_HOC_DISCOVERY",
+    "t2_plus_news": {
+      "horizon": "H5",
+      "versus_spy": {
+        "positive": 10,
+        "n": 11,
+        "rate": 0.909
+      },
+      "absolute": {
+        "positive": 8,
+        "n": 11,
+        "rate": 0.7273
+      },
+      "first_observation_per_issuer": {
+        "versus_spy": {
+          "positive": 6,
+          "n": 7,
+          "rate": 0.8571
+        },
+        "absolute": {
+          "positive": 4,
+          "n": 7,
+          "rate": 0.5714
+        }
+      },
+      "caveats": [
+        "tiny sample",
+        "post-selected",
+        "H10 weakens materially",
+        "sensitive to INTC"
+      ]
+    },
+    "nvda_news_burst": {
+      "recent_items": 6,
+      "positive": 0,
+      "negative": 0,
+      "interpretation": "attention/information arrival, not bullish sentiment"
+    },
+    "stronger_candidate": {
+      "definition": "fresh T2 acceptance x >=2 independent evidence legs",
+      "repeated_rows_h5_vs_spy": {
+        "positive": 10,
+        "n": 12,
+        "rate": 0.8333
+      },
+      "first_t2_per_ticker_vs_spy_and_sector": {
+        "positive": 5,
+        "n": 5,
+        "rate": 1
+      },
+      "first_t2_per_ticker_absolute": {
+        "positive": 4,
+        "n": 5,
+        "rate": 0.8
+      },
+      "same_date_controls": "worse on all 7 observed dates",
+      "average_mean_excess_gap_pp": 4.19,
+      "caveat": "post-hoc; prospective preregistration required"
+    }
+  },
+  "hypotheses": [
+    {
+      "id": "H_RATE_INSTRUMENT",
+      "claim": "Restrictive U.S. financing conditions may be strategically useful or deliberately tolerated while selected strategic sectors receive protection.",
+      "alternatives": [
+        "other strategic goals dominate despite unwanted rates",
+        "private investment demand and inflation lift rates",
+        "Treasury seeks lower term premium even while Fed is restrictive"
+      ],
+      "decisive_evidence": [
+        "persistence after costs are visible",
+        "selective relief to favored channels",
+        "rejection of feasible lower-rate alternatives",
+        "cross-country capital-flow response"
+      ]
+    },
+    {
+      "id": "H_JAPAN_CONSTRAINT",
+      "claim": "U.S. Treasury/Fed leverage materially narrows the feasible Japanese monetary/FX policy set.",
+      "alternatives": [
+        "Japanese domestic inflation and wages explain timing",
+        "Japan itself solicited cooperation",
+        "moves were already priced"
+      ],
+      "decisive_evidence": [
+        "unexpected U.S. intervention changes OIS/JGB/FX path",
+        "instrument choice changes after pressure",
+        "documented operational cooperation",
+        "counterfactual domestic-only periods"
+      ]
+    },
+    {
+      "id": "H_ANNOUNCEMENT_ORCHESTRATION",
+      "claim": "Discretionary strategic-company announcements are abnormally likely after market/issuer stress and may be cross-firm sequenced.",
+      "alternatives": [
+        "ordinary product/earnings/conference calendar",
+        "own-stock support with no government coordination",
+        "common industry shock",
+        "selection bias"
+      ],
+      "decisive_evidence": [
+        "predefined stress hazard increase",
+        "cross-firm spacing abnormal under calendar null",
+        "government/contact linkage adds explanatory power",
+        "negative stress cases retained"
+      ]
+    },
+    {
+      "id": "H_CIRCULAR_SUPPORT",
+      "claim": "AI financing networks can reinforce demand/earnings and market support while increasing dependence on continued financing.",
+      "alternatives": [
+        "independent end-demand dominates",
+        "financing is small relative to organic cash flows"
+      ],
+      "decisive_evidence": [
+        "funding-to-purchase loops",
+        "external cash ingress",
+        "utilization",
+        "receivables",
+        "credit conditions",
+        "contract minimums/cancellation rights"
+      ]
+    },
+    {
+      "id": "H_RHETORIC_DIVERGENCE",
+      "claim": "Actions+constraints predict policy outcomes better than literal rhetoric or automatic inversion.",
+      "alternatives": [
+        "rhetoric is already an efficient signal",
+        "automatic contrarian read performs equally well"
+      ],
+      "decisive_evidence": [
+        "chronological M0 literal vs M1 inversion vs M2 actions+constraints evaluation"
+      ]
+    }
+  ],
+  "forward_experiments": [
+    {
+      "id": "W1_CASEBOOK",
+      "purpose": "Freeze 40-60 point-in-time policy behavior episodes.",
+      "required_fields": [
+        "decision_cut",
+        "actor",
+        "statement_type",
+        "action",
+        "constraint",
+        "feasible_alternative",
+        "mechanical_effect",
+        "beneficiaries",
+        "burden_bearers",
+        "selective_relief",
+        "competing_hypotheses",
+        "falsifiers",
+        "source_independence"
+      ]
+    },
+    {
+      "id": "W2_JAPAN",
+      "purpose": "Estimate the incremental effect of U.S. involvement on Japanese policy expectations and instrument choice.",
+      "targets": [
+        "USDJPY",
+        "JGB curve",
+        "BOJ OIS",
+        "UST spillover",
+        "policy decision timing"
+      ]
+    },
+    {
+      "id": "W3_ANNOUNCEMENT_HAZARD",
+      "purpose": "Test whether discretionary positive strategic-company events cluster after predefined stress.",
+      "targets": [
+        "event hazard",
+        "cross-firm sequencing",
+        "issuer residual return",
+        "Nasdaq contribution",
+        "breadth",
+        "revision response",
+        "options repricing"
+      ]
+    },
+    {
+      "id": "W4_T2_EVENT_INTERACTION",
+      "purpose": "Prospectively compare T2 alone with T2 x event-quality cells.",
+      "cells": [
+        "T2",
+        "T2+attention burst",
+        "T2+verified material event",
+        "T2+>=2 independent evidence legs",
+        "T2+government-linked event",
+        "T2+financing-linked event",
+        "T2+expectation revision"
+      ]
+    },
+    {
+      "id": "W5_CIRCULAR_GRAPH",
+      "purpose": "Measure external-cash conversion and financing dependency in AI networks.",
+      "outputs": [
+        "funding edges",
+        "purchase edges",
+        "guarantees/backstops",
+        "warrants",
+        "revenue",
+        "utilization",
+        "external cash",
+        "credit fragility"
+      ]
+    },
+    {
+      "id": "W6_BASELINE_RACE",
+      "purpose": "Compare literal rhetoric, automatic inversion and actions+constraints using point-in-time data.",
+      "models": [
+        "M0_LITERAL",
+        "M1_INVERTED",
+        "M2_ACTIONS_CONSTRAINTS"
+      ],
+      "metrics": [
+        "Brier",
+        "log_score",
+        "calibration",
+        "coverage",
+        "abstention",
+        "decision_accuracy"
+      ]
+    }
+  ],
+  "production_boundaries": [
+    "No administration-timing oracle.",
+    "No LLM-authored intent directly enters rank, gate or size.",
+    "No raw article count is treated as independent economic evidence.",
+    "No duplicate rates, event, graph, lifecycle or learning owner.",
+    "No promotion from post-hoc T2/news discovery without prospective evidence.",
+    "Private intent may remain unresolved while observable transmission is still modeled."
+  ]
+}

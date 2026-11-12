@@ -1,0 +1,6 @@
+{
+  "rc": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/mmx-press-validator-followon-20261014-c1dc27962b7d07c4/research/agentic_media/public_intelligence_20261011/research_intake_phase/installed_research_pool_probe.py\", line 26, in <module>\n    assert {rel: sha(root / rel) for rel in expected} == expected, \"reviewed source manifest drift\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: reviewed source manifest drift\n",
+  "refused_before_import": true
+}

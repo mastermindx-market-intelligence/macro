@@ -1,0 +1,53 @@
+{
+  "schema": "research_codegen.fixed_canary_source.v1",
+  "original_root": "01a1333c-a475-7052-95a8-72a88eb8c17b",
+  "state": "FIXED_V4_SOURCE_PREPARATION_ARCHIVE_ORDER_REVIEW_PENDING_NO_DISPATCH",
+  "source_sha256": {
+    "cli29_anonymous_config.py": "727f76b5c5a50bcaadc09a7358f6be270981c38321ec0e1029e7a8634600a0d8",
+    "fixed_canary.py": "f482cf117cf86635e40d547d4d95dec47f99e7f0828ec878b42d483406539624",
+    "fixed_image_phase.py": "d8dc706ce7341152fb8a0431ca3c4c051b2b740d45b2cea2cd98e53f35a6339d",
+    "fixed_smoke_probe.py": "92fad6f371419f4cbb4bafba83257846429eae2df77feead83678905a9988cf7",
+    "image_preparation_gate.py": "5f03635d02fbf75e30e1b8c5c0912dc26decb208a3dea94f9eb22c44ed48b699",
+    "phase_budget.py": "3b6436f1a7bd102a6cf4f46178b4a2b2fb72e985177cdd8cc61dfb3be89e9010",
+    "pinned_archive_phase.py": "c684c986e54ca8de2c548036a04a5e100b7cc099105ee2fce0c9d35a9b9b755e",
+    "qualification_manifest.py": "634108fd1e4b793311bdb480c16203e26232d136b864c36db701ccd32230a7a4",
+    "qualification_runsc_smoke.py": "33f7227c3f5ee340ac61d2da45ab20c2eebc375c2fa6f64508395c3c09e366f3",
+    "qualification_smoke.py": "9282af4c442432e812db43948fe4e56116d9b92e3982e1fc76504240cdca545f",
+    "runsc_install.py": "4bb6ed6187444d11b26c339da434bb475f0cce7df9e957ee95bbe393d9b6777f",
+    "canary_bootstrap.py": "942d7f05b4b3d1e73801e1c5347d6949f2d1af2279a62a5bb72a8a442aaba0ea",
+    "canary_carrier.py": "8af3384f703074067175179e2e4af61c841cf8f65aa33378e306d78e99796cee",
+    "verify_canary_return.py": "3e75d61f3368b52dac2a246406ef974d038b5ceb6d51a6d797cfb7355e76ee46"
+  },
+  "transport_source": "engine/research_codegen/transport.py",
+  "transport_sha256": "b6d36717ad3630d127b16fe9e117d9401bea1136880e28d19f0d18061933c633",
+  "physical_capsule_sha256": "e4d703a38fe33c923b76ef7f3e50fae275446304c315509225335d3da965a8c1",
+  "original_unknown_preserved": "rf-codegen-contracts-impl-01a1333c-v1",
+  "candidate_admission": false,
+  "containment_qualified": false,
+  "current_operation": "rf-fixed-smoke-runsc-01a1333c-v4",
+  "prior_physical_operations": [
+    {
+      "id": "rf-fixed-smoke-runsc-01a1333c-v1",
+      "capsule_sha256": "e54c53fb0665ea46c2ebcc0e6d624e550b476c18a6727f6f88c927fccc12b809",
+      "state": "TERMINAL_RC65_CLI_STOPPED_TWO_CURRENT_ARTIFACTS_RECOVERED",
+      "replayed": false,
+      "accepted": false
+    },
+    {
+      "id": "rf-fixed-smoke-runsc-01a1333c-v2",
+      "capsule_sha256": "9d53dd48da90a53ecf6750ef024f2a68327fbfddc71a4ff1873f81e9fc2e497a",
+      "state": "TERMINAL_RC65_CURRENT_BYTES_RECOVERED_PRE_CONFIG_OUTPUT_CAP_STOP",
+      "accepted": false,
+      "replayed": false,
+      "recovery_receipt_sha256": "bbfc887d9762bf126d11354b00997de4134957ed0f46d1215a9c638345077711"
+    },
+    {
+      "id": "rf-fixed-smoke-runsc-01a1333c-v3",
+      "capsule_sha256": "99a7c0845e75b854d154c23aabd8c1a3505ccc9f637800168a38565dd784cb6e",
+      "state": "TERMINAL_RC65_CURRENT_BYTES_RECOVERED_PRE_BUNDLE_ARCHIVE_ORDER_STOP",
+      "accepted": false,
+      "replayed": false,
+      "recovery_receipt_sha256": "d2041a1de4782ed5f3455d3b197aae852f45b95aec1387df67861c6b248360ad"
+    }
+  ]
+}

@@ -1,10 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-23T23:51:14.111267+00:00",
-  "posts_seen": 12,
-  "seen_total": 224,
-  "evaluated": 0,
+  "as_of": "2026-11-12T03:00:31.591152+00:00",
+  "posts_seen": 19,
+  "seen_total": 347,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-11-11-we-render-you-the-highest-salute-president-trump-honors-americas-veterans-on-hal",
+      "importance": 20,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }

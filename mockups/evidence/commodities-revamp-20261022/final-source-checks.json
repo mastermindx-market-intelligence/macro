@@ -1,0 +1,52 @@
+[
+  {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_commodity_decision_workspace.py",
+      "tests/test_commodity_publication.py",
+      "tests/test_commodity_presentation_render.py",
+      "--basetemp",
+      "/tmp/commodities-revamp-final-tests-20261022"
+    ],
+    "exit_code": 0,
+    "output": "..................................... [ 55%]\n..............................                                           [100%]\n67 passed, 35 subtests passed in 7.49s\n"
+  },
+  {
+    "command": [
+      "node",
+      "--test",
+      "tests/test_commodity_workspace_contracts.js"
+    ],
+    "exit_code": 0,
+    "output": "\u2714 unknown and inherited asset names are rejected before semantic lookup (2.692958ms)\n\u2714 deep semantic input under the file limit rejects without recursion failure (0.337459ms)\n\u2714 degraded evidence round trip preserves nulls, clocks and inactive monitoring (0.480583ms)\n\u2714 research expiry is checked against its snapshot without enabling monitoring (0.178167ms)\n\u2714 fragment normalization bounds comparisons and rejects unsupported state (0.340958ms)\n\u2714 company continuation keeps owner identity and encodes an exact bounded return (0.875584ms)\n\u2139 tests 6\n\u2139 suites 0\n\u2139 pass 6\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 60.332541\n"
+  },
+  {
+    "command": [
+      "node",
+      "tests/test_commodity_workspace_ui.js"
+    ],
+    "exit_code": 0,
+    "output": "PASS default overview and dated evidence\nPASS commodity selection hides overview hero and keeps URL context\nPASS company continuation preserves owner fields and the current investigation\nPASS relationships carries a selected explanation without treating it as evidence\nPASS changing explanation changes the mechanism and its evidence questions together\nPASS company return transport is bounded, single-encoded and idempotent\nPASS research exposes explanation and requires a session window\nPASS per-commodity draft preserves its explanation and exact numeric condition\nPASS export includes a recoverable evidence appendix and stays inactive\nPASS Gold export retains its regional proxy and excludes petroleum context\nPASS incompatible or incomplete imports do not silently change their semantics\nPASS import restores the same explanation into relationships and research\nPASS a stale import preserves the active investigation\nPASS malformed assets and deeply nested imports reject without changing the investigation\nPASS a delayed earlier import cannot overwrite the most recent file selection\nPASS a rejected outdated file read cannot clear the newer import status\nPASS comparison selection is bounded to four without losing the chosen assets\nPASS comparison uses the selected exact publisher window\nPASS gold physical handoff opens its real owner panel\nPASS return restores the selected commodity and closes advanced analytics\nPASS company return follows Gold and the selected comparison window\nPASS partial coverage has a real selected-commodity fallback\nPASS Chinese native controls show Chinese labels\nPASS keyboard tabs move selection and focus together\nPASS browser history restores the previous view\nPASS direct hash and repeated language renders keep the exact company return\nPASS rendered DOM has no duplicate IDs or event errors\nRESULT 27 rendered-DOM journeys passed; this is not a visual-layout proof.\n"
+  },
+  {
+    "command": [
+      "node",
+      "tests/test_commodity_workspace_presentation.js"
+    ],
+    "exit_code": 0,
+    "output": "PASS signed shared scale, null/zero distinction, empty selection, draft context and language\n"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_commodity_publication.py",
+      "--accepted-ref",
+      "origin/main"
+    ],
+    "exit_code": 0,
+    "output": "{\"accepted_commit\": \"af0ba2d50a32c7a422508b442f35010dcdf154a2\", \"action\": \"kept\", \"candidate_commit\": null, \"fingerprint\": \"619bb06df66962d8f7219f5e5a096d58ef556e58d45d617f6a51ee7f3a12e2ee\", \"freshness_verified\": false, \"page\": \"site/commodities.html\", \"page_sha256\": \"3cdd6196c58cd4d24998598df3934680f2c154f4c71f0775968f6b6ef20e24a2\", \"projection_revision\": 6, \"repair_reason\": null, \"schema\": \"mmx.commodities.publication_guard.v1\"}\n"
+  }
+]
