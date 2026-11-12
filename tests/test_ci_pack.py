@@ -6056,6 +6056,7 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceiling 11 — no pack change. Every selector and every assertion is
     unchanged; main's #11019 two-line comment is kept, and every prior
     provenance paragraph below is kept verbatim.
+
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
     marketing-social-publisher satisfies the closure doctrine —
