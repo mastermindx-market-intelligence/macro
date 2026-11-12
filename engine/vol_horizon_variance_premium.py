@@ -261,6 +261,7 @@ class ImpliedLeg:
         if self.measure_kind not in MEASURE_KINDS:
             raise ValueError(f"measure_kind must be one of {MEASURE_KINDS}")
         _require_coverage(self.coverage, ("tail_strikes", "overnight"))
+        _require_variance(self.value)
 
 
 def strip_leg(result: StripVarianceResult, basis: HorizonBasis, asof: int) -> ImpliedLeg:
@@ -385,6 +386,22 @@ class PhysicalLeg:
         if self.kind not in PHYSICAL_KINDS:
             raise ValueError(f"kind must be one of {PHYSICAL_KINDS}")
         _require_coverage(self.coverage, ("overnight", "sampling"))
+        _require_variance(self.value)
+
+
+def _require_variance(value: float) -> None:
+    """Require a scalar variance measurement before admitting a premium leg."""
+    try:
+        valid = (
+            not isinstance(value, (bool, np.bool_))
+            and np.isscalar(value)
+            and math.isfinite(value)
+            and value >= 0
+        )
+    except (TypeError, ValueError, OverflowError):
+        valid = False
+    if not valid:
+        raise ValueError("variance must be finite, non-negative and non-boolean")
 
 
 def _require_coverage(cov: Mapping[str, Any] | None, keys: Sequence[str]) -> None:
