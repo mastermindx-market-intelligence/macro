@@ -537,9 +537,12 @@
       </div>
 
       {# Recession signal chip #}
-      {% set _rec_on = SIG and SIG.state == 'on' %}
-      <div class="chip {{ 'chip-neg' if _rec_on else 'chip-pos' }}" style="font-size:12.5px">
-        {% if _rec_on %}
+      {% set _rec_available = SIG and SIG.available and SIG.state in ['on', 'off'] %}
+      {% set _rec_on = _rec_available and SIG.state == 'on' %}
+      <div class="chip {{ 'chip-neg' if _rec_on else ('chip-pos' if _rec_available else '') }}" style="font-size:12.5px">
+        {% if not _rec_available %}
+          {{ t('Recession signal unavailable', '衰退信号暂无数据') }}
+        {% elif _rec_on %}
           {{ t('Recession signal ON', '衰退信号已触发') }}
           {% if SIG.months_active %} — {{ SIG.months_active }}{{ t(' months', '个月') }}{% endif %}
         {% else %}
