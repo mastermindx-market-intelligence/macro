@@ -1,0 +1,12 @@
+# Bounded selection of genuine canonical captures; no cell, PNG, digest or applied
+# state was altered. capture-full.json preserves the unabridged capture metadata.
+# Extra reviewed pages / mobile-ZH interaction frames are omitted from the committed
+# image packet to avoid duplicating full-page binary evidence. All required rest
+# cells remain; required desktop EN hover/focus cells remain in the interaction packet.
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/theme.css
+  - templates/theme.js
+  - site/theme.css
+  - site/theme.js
+manifest: mockups/evidence/light-theme-comfort-20260919/manifest.json

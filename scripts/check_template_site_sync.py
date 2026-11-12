@@ -64,13 +64,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 _SKIP_SUFFIXES = (".j2",)
-# Keep in sync with lib/site_assets (asserted when lib is importable). EVERY bake
-# token theme.js carries must be listed: the stdlib fallback below compares the
-# INVARIANT text around them, so a token this list does not know about reads as a
-# real divergence and refuses the publish (pages.yml) on a perfectly healthy tree.
+# Keep every bake token in sync with lib/site_assets. The source-token helpers
+# below retain their invariant-segment checks; production theme verification uses
+# the complete canonical emitter and fails closed when that emitter is unavailable.
 _THEME_TOKEN = "/*__SUPABASE_CFG__*/null"
 _MM_BRAIN_VER_TOKEN = "/*__MM_BRAIN_VER__*/''"
-_THEME_TOKENS = (_THEME_TOKEN, _MM_BRAIN_VER_TOKEN)
+_SOFT_CONTRAST_TOKEN = "/*__SOFT_CONTRAST_CSS__*/''"
+_THEME_TOKENS = (_THEME_TOKEN, _MM_BRAIN_VER_TOKEN, _SOFT_CONTRAST_TOKEN)
 # OUR ?v= stamp shape, as written by lib.pages.optimize_assets_text: an 8-hex
 # sha256 prefix and nothing else. A hand-written query (?v=3, ?foo=bar) is not
 # ours and is deliberately not audited here — same rule the stamper applies.
@@ -83,6 +83,7 @@ def _bake_theme(tpl: Path) -> str | None:
         from lib import site_assets
         assert site_assets.SUPABASE_TOKEN == _THEME_TOKEN, "SUPABASE_TOKEN drifted"
         assert site_assets.MM_BRAIN_VER_TOKEN == _MM_BRAIN_VER_TOKEN, "MM_BRAIN_VER_TOKEN drifted"
+        assert site_assets.SOFT_CONTRAST_TOKEN == _SOFT_CONTRAST_TOKEN, "SOFT_CONTRAST_TOKEN drifted"
         return site_assets.emit_theme_js(tpl)
     except AssertionError:
         raise

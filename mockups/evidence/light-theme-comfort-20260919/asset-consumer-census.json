@@ -1,0 +1,495 @@
+{
+  "method": "Parsed actual script src attributes and resolved same-site relative paths; not a visual audit or live-browser count.",
+  "html_pages": 11814,
+  "resolved_targets": {
+    "theme.js": 11764
+  },
+  "without_theme_script": [
+    "subsector_rotation_china.html",
+    "status.html",
+    "index.html",
+    "about.html",
+    "subsector_rotation.html",
+    "us_track_record.html",
+    "flow_desk.html",
+    "baskets.html",
+    "learn.html",
+    "_mockup_research_vault.html",
+    "options_screener.html",
+    "baskets_china.html",
+    "vector_allocation.html",
+    "us_stocks_v2.html",
+    "coming-soon.html",
+    "calibration.html",
+    "flow_leaders.html",
+    "btc_strategy.html",
+    "gex.html",
+    "products/mastermind-ai.html",
+    "products/market-dashboards.html",
+    "products/market-terminal.html",
+    "stocks/GOSS.html",
+    "stocks/AVNS.html",
+    "stocks/LEU.html",
+    "stocks/NFBK.html",
+    "stocks/BY.html",
+    "stocks/BLD.html",
+    "stocks/CPRX.html",
+    "stocks/BYND.html",
+    "stocks/TMHC.html",
+    "stocks/GCMG.html",
+    "stocks/CMRE.html",
+    "stocks/BTSG.html",
+    "stocks/WSR.html",
+    "stocks/JHG.html",
+    "stocks/SKIN.html",
+    "stocks/OMER.html",
+    "stocks/CDXS.html",
+    "stocks/CLBK.html",
+    "stocks/DMRC.html",
+    "stocks/GBFH.html",
+    "stocks/ORC.html",
+    "stocks/NSA.html",
+    "stocks/KRYS.html",
+    "stocks/VVX.html",
+    "stocks/ATNI.html",
+    "stocks/MOH.html",
+    "stocks/LAB.html",
+    "stocks/TGLS.html"
+  ],
+  "external_theme_scripts": [],
+  "indirect_route_details": [
+    {
+      "page": "subsector_rotation_china.html",
+      "title": "Subsector Rotation moved into China Sector Intelligence \u2014 Mastermind",
+      "meta_refresh": "<meta http-equiv=\"refresh\" content=\"0;url=sector_central_china.html#si-movement\">",
+      "script_redirect": [
+        "'sector_central_china.html'+(location.hash?location.hash:'#si-movement'"
+      ],
+      "theme_css": []
+    },
+    {
+      "page": "status.html",
+      "title": "VPS status \u00b7 mastermind-x",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": []
+    },
+    {
+      "page": "index.html",
+      "title": "MastermindX \u2014 AI Market Intelligence &amp; Stock Signals",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": []
+    },
+    {
+      "page": "about.html",
+      "title": "About MastermindX \u2014 AI Market Intelligence Platform",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": []
+    },
+    {
+      "page": "subsector_rotation.html",
+      "title": "Subsector Rotation moved into Sector Intelligence \u2014 Mastermind",
+      "meta_refresh": "<meta http-equiv=\"refresh\" content=\"0;url=sector_central.html#si-movement\">",
+      "script_redirect": [
+        "\"sector_central.html#si-movement\""
+      ],
+      "theme_css": []
+    },
+    {
+      "page": "us_track_record.html",
+      "title": "US Buy Board \u2014 Track Record",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "theme.css"
+      ]
+    },
+    {
+      "page": "flow_desk.html",
+      "title": "The Flow Desk Moved \u2014 MastermindX",
+      "meta_refresh": "<meta http-equiv=\"refresh\" content=\"0;url=options.html#flow\">",
+      "script_redirect": [
+        "\"options.html#flow\""
+      ],
+      "theme_css": []
+    },
+    {
+      "page": "baskets.html",
+      "title": "Thematic Baskets moved into Sector Intelligence \u2014 Mastermind",
+      "meta_refresh": "<meta http-equiv=\"refresh\" content=\"0;url=sector_central.html#actnow-section\">",
+      "script_redirect": [
+        "'basket/'+id+'.html'",
+        "\"sector_central.html#actnow-section\""
+      ],
+      "theme_css": []
+    },
+    {
+      "page": "learn.html",
+      "title": "Learn \u2014 Gamma Weather \u00b7 a field manual for dealer-positioning boards",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": []
+    },
+    {
+      "page": "_mockup_research_vault.html",
+      "title": "Research Vault \u2014 mockup",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": []
+    },
+    {
+      "page": "options_screener.html",
+      "title": "The Options Screener Moved \u2014 MastermindX",
+      "meta_refresh": "<meta http-equiv=\"refresh\" content=\"0;url=options.html#scanner\">",
+      "script_redirect": [
+        "\"options.html#scanner\""
+      ],
+      "theme_css": []
+    },
+    {
+      "page": "baskets_china.html",
+      "title": "Thematic Baskets moved into China Sector Intelligence \u2014 Mastermind",
+      "meta_refresh": "<meta http-equiv=\"refresh\" content=\"0;url=sector_central_china.html#si-explore\">",
+      "script_redirect": [
+        "'sector_central_china.html'+(location.hash?location.hash:'#si-explore'"
+      ],
+      "theme_css": []
+    },
+    {
+      "page": "vector_allocation.html",
+      "title": "Crypto Allocation Has Moved \u2014 MastermindX",
+      "meta_refresh": "<meta http-equiv=\"refresh\" content=\"0;url=crypto.html#allocation\">",
+      "script_redirect": [
+        "\"crypto.html#allocation\""
+      ],
+      "theme_css": []
+    },
+    {
+      "page": "us_stocks_v2.html",
+      "title": "Buy Board 2.0 \u2014 shadow preview (dual-gated)",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "coming-soon.html",
+      "title": "Mastermind \u2014 Coming Soon",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": []
+    },
+    {
+      "page": "calibration.html",
+      "title": "Calibration Hub",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": []
+    },
+    {
+      "page": "flow_leaders.html",
+      "title": "Flow Leaders Moved \u2014 MastermindX",
+      "meta_refresh": "<meta http-equiv=\"refresh\" content=\"0;url=options.html#leaders\">",
+      "script_redirect": [
+        "\"options.html#leaders\""
+      ],
+      "theme_css": []
+    },
+    {
+      "page": "btc_strategy.html",
+      "title": "Bitcoin Strategy Has Moved \u2014 MastermindX",
+      "meta_refresh": "<meta http-equiv=\"refresh\" content=\"0;url=vector.html#strategy-track-record\">",
+      "script_redirect": [
+        "\"vector.html#strategy-track-record\""
+      ],
+      "theme_css": []
+    },
+    {
+      "page": "gex.html",
+      "title": "The Options Desk Moved \u2014 MastermindX",
+      "meta_refresh": "<meta http-equiv=\"refresh\" content=\"0;url=options.html#ticker\">",
+      "script_redirect": [
+        "dest"
+      ],
+      "theme_css": []
+    },
+    {
+      "page": "products/mastermind-ai.html",
+      "title": "Mastermind AI \u2014 Market Research Assistant \u2014 MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": []
+    },
+    {
+      "page": "products/market-dashboards.html",
+      "title": "Market Intelligence Dashboards \u2014 MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": []
+    },
+    {
+      "page": "products/market-terminal.html",
+      "title": "Market Terminal &amp; Browser Charting \u2014 MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": []
+    },
+    {
+      "page": "stocks/GOSS.html",
+      "title": "GOSS \u2014 Gossamer Bio Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/AVNS.html",
+      "title": "AVNS \u2014 Avanos Medical Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/LEU.html",
+      "title": "LEU \u2014 Centrus Energy Corp: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/NFBK.html",
+      "title": "NFBK \u2014 Northfield Bancorp Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/BY.html",
+      "title": "BY \u2014 Byline Bancorp Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/BLD.html",
+      "title": "BLD \u2014 TopBuild Corp.: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/CPRX.html",
+      "title": "CPRX \u2014 Catalyst Pharmaceuticals Partners, Inc.: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/BYND.html",
+      "title": "BYND \u2014 Beyond Meat Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/TMHC.html",
+      "title": "TMHC \u2014 Taylor Morrison Home Corp: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/GCMG.html",
+      "title": "GCMG \u2014 GCM Grosvenor Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/CMRE.html",
+      "title": "CMRE \u2014 Costamare Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/BTSG.html",
+      "title": "BTSG \u2014 BrightSpring Health Services: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/WSR.html",
+      "title": "WSR \u2014 Whitestone REIT: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/JHG.html",
+      "title": "JHG \u2014 Janus Henderson: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/SKIN.html",
+      "title": "SKIN \u2014 SkinHealth Systems Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/OMER.html",
+      "title": "OMER \u2014 Omeros Corp: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/CDXS.html",
+      "title": "CDXS \u2014 Codexis Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/CLBK.html",
+      "title": "CLBK \u2014 Columbia Financial Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/DMRC.html",
+      "title": "DMRC \u2014 Digimarc Corp: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/GBFH.html",
+      "title": "GBFH \u2014 GBank Financial Holdings Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/ORC.html",
+      "title": "ORC \u2014 Orchid Island Capital Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/NSA.html",
+      "title": "NSA \u2014 National Storage Affiliates Trust: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/KRYS.html",
+      "title": "KRYS \u2014 Krystal Biotech: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/VVX.html",
+      "title": "VVX \u2014 V2X Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/ATNI.html",
+      "title": "ATNI \u2014 ATN International Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/MOH.html",
+      "title": "MOH \u2014 Molina Healthcare: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/LAB.html",
+      "title": "LAB \u2014 Standard BioTools Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    },
+    {
+      "page": "stocks/TGLS.html",
+      "title": "TGLS \u2014 Tecnoglass Inc: signals, options &amp; factor profile | MastermindX",
+      "meta_refresh": null,
+      "script_redirect": [],
+      "theme_css": [
+        "../theme.css?v=d41ce2d4"
+      ]
+    }
+  ],
+  "source_head": "cb9b51e021ab4a857c734ed368c26614d735027b",
+  "interpretation": "11,764 direct canonical theme.js consumers; 30 CSS-only consumers; 10 redirect documents; 10 independent public/utility/preview surfaces. The independent surfaces were not restyled by this dashboard repair."
+}

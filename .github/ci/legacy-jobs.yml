@@ -94,6 +94,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -331,6 +332,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -2502,6 +2504,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -3579,6 +3582,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -4673,6 +4677,7 @@ jobs:
     # the production adapters and the seat evaluator CLI (offline; every adapter is injected in tests).
     timeout-minutes: 10
     paths:
+      - lib/theme_materials.py
       - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -5106,6 +5111,7 @@ jobs:
     # is no longer the active reason — the path stays for parity.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "lib/exchange_holidays.py"
@@ -6241,6 +6247,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -7391,6 +7398,7 @@ jobs:
     # in tests/test_ci_pack.py.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/btc-live.yml"
       - ".github/workflows/ci-main-heartbeat.yml"
@@ -7452,6 +7460,7 @@ jobs:
     # One test runs the page's date scripts under the node the runner ships.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/fred.py"
@@ -8024,6 +8033,7 @@ jobs:
     # the equality suite reads.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/theme_graph_identity_breaks.yml"
@@ -8181,6 +8191,7 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/options_r5_shock.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -10146,6 +10157,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "scripts/build_aibrief.py"
       - "scripts/__init__.py"
       - "tests/__init__.py"
@@ -10709,6 +10721,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
@@ -11066,6 +11079,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
@@ -11438,6 +11452,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
@@ -12463,6 +12478,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -14277,6 +14293,7 @@ jobs:
     # W38-B3 (2026-10-31): the suite reads engine/china_narrative_radar.py by ast to pin its
     # provenance copy, so that module and its closure join the paths.
     paths:
+      - lib/theme_materials.py
       - "templates/china_altdata.html.j2"
       - "engine/china_narrative_radar.py"
       - "engine/china_sector_index.py"
@@ -14381,6 +14398,7 @@ jobs:
     # suites' static import closure (run_ci_pack.inferred_as_if_not_exclusive on main
     # d5d0be27, 26 files, no probe file in it); the probe ceilings stay fixed.
     paths:
+      - lib/theme_materials.py
       - "config/site_access.yml"
       - "engine/__init__.py"
       - "engine/research_vault/__init__.py"
@@ -14451,6 +14469,7 @@ jobs:
     # ledger suites (jinja2 + engine/i18n; data_dir monkeypatched, no data/ or site/ read).
     # scope: exclusive pins the job to its static import closure plus ancestor inits.
     paths:
+      - lib/theme_materials.py
       - "templates/china_radar.html.j2"
       - "tests/test_china_radar_candidate_convergence.py"
       - "tests/test_china_radar_horizon_record.py"
@@ -14617,6 +14636,7 @@ jobs:
     # inferred scope (the templates/index.html packing-probe ceiling).
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/__init__.py"
       - "engine/china_participation.py"
       - "engine/i18n.py"
@@ -14652,6 +14672,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -14989,6 +15010,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -15357,6 +15379,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       # The five suites and their measured import closure (inference's owned tier).
       - "tests/test_company_management_outlook_contract.py"
       - "tests/test_company_management_outlook.py"
@@ -16757,6 +16780,7 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/rotation_observation_notification.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -16921,6 +16945,7 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/entry_radar/__init__.py"
@@ -17133,6 +17158,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
@@ -18515,6 +18541,7 @@ jobs:
     # it does.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "scripts/__init__.py"
       - "engine/__init__.py"
       - "engine/earnings_narrative/__init__.py"
@@ -19025,6 +19052,7 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "lib/exchange_holidays.py"
@@ -19187,6 +19215,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
@@ -19353,6 +19382,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
@@ -19611,6 +19641,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -21108,6 +21139,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "config.yml"
       - "config/sparse_worktree.json"
@@ -21173,6 +21205,7 @@ jobs:
     # sparse tree). Packing ceilings unchanged.
     runs-on: ubuntu-latest
     paths:
+      - lib/theme_materials.py
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -21421,6 +21454,7 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - lib/theme_materials.py
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -22073,6 +22107,7 @@ jobs:
     # builder-shim job added unrelated selection weight to every page builder.
     # The incumbent context-bus suite keeps its existing owner above.
     paths:
+      - lib/theme_materials.py
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -23750,6 +23785,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -24119,6 +24155,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "lib/us_cash_calendar.py"
@@ -24190,6 +24227,7 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
@@ -24526,6 +24564,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -25791,6 +25830,7 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -26695,6 +26735,7 @@ jobs:
     # Accountability tab its matured-row denominator; one guard test reads
     # templates/hk_stocks_lab.html.j2 as text (the HK lab keeps its h21 columns).
     paths:
+      - lib/theme_materials.py
       - "engine/pick_lab/render_cn.py"
       - "templates/china_stocks_lab.html.j2"
       - "templates/hk_stocks_lab.html.j2"
@@ -26963,6 +27004,7 @@ jobs:
     # (T25 AUDIT-N3 finding A1, 2026-11-04): a template-only PR must still run
     # the s10 render guards. No ceiling moves.
     paths:
+      - lib/theme_materials.py
       - "config/global_liquidity_transmission_v1.yml"
       - "engine/global_liquidity.py"
       - "engine/global_liquidity_transmission.py"
@@ -27575,6 +27617,7 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/options_hub_retention.py"
@@ -28981,6 +29024,7 @@ jobs:
     # was doing all the rest of the selecting.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
@@ -31496,6 +31540,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -32574,6 +32619,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
@@ -34092,6 +34138,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/government_revenue/public_agreement.py"
@@ -35503,6 +35550,7 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -36110,6 +36158,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -38887,6 +38936,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -38963,6 +39013,7 @@ jobs:
     scope: exclusive
     timeout-minutes: 20
     paths:
+      - lib/theme_materials.py
       - config/earnings_story_promotion.yml
       - config/fundamental_forensics_disclosure_diff.v1.json
       - config/site_access.yml
@@ -39068,6 +39119,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
@@ -41308,6 +41360,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -43015,6 +43068,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -44714,6 +44768,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -45992,6 +46047,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -47322,6 +47378,7 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
@@ -47425,6 +47482,7 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
@@ -47600,6 +47658,7 @@ jobs:
     # an uncovered import by file.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
@@ -47700,6 +47759,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
@@ -48581,6 +48641,7 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
@@ -48718,6 +48779,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "tests/mining_casebook.py"
@@ -48835,6 +48897,7 @@ jobs:
     # is listed under `paths:` below).
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -49045,6 +49108,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
@@ -50455,6 +50519,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/theme_crosswalk.yml"
@@ -50789,6 +50854,7 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      - lib/theme_materials.py
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
@@ -50965,6 +51031,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -51264,6 +51331,7 @@ jobs:
     # Exclude only opaque whole-root inference from the builder's dormant I/O;
     # packing ceilings, all named dependencies and test assertions stay intact.
     paths:
+      - lib/theme_materials.py
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -51400,6 +51468,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - lib/theme_materials.py
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"

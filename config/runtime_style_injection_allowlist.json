@@ -145,8 +145,7 @@
       "style_text": 1
     },
     "templates/theme.js": {
-      "create_style": 9,
-      "style_markup": 1
+      "create_style": 9
     },
     "templates/time_machine.js": {
       "create_style": 1,

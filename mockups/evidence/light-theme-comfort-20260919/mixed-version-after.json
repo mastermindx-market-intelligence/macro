@@ -1,0 +1,1133 @@
+{
+  "method": "Existing Chromium ink probe with actual boot class and exact generated CSS projection. Current stylesheet versus unchanged pre-repair stylesheet; no production mutation.",
+  "canonical_css_sha256": "2a996cdc64619eeacb81136b7679bc844b348e08a766c713d0ad4ebc1165e58c",
+  "legacy_css_sha256": "d41ce2d4027dbd176c1511f497c968651787da80ff0c35d7a972ece1bbc965e0",
+  "projection_sha256": "eae9c57605a65eb4049b9604082ecefefd386dce40c4dade972466aa75f754d9",
+  "maximum_ratio_delta": 0.0,
+  "results": {
+    "current-css": [
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-chip",
+        "ratio": 5.65441838284058
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-edn",
+        "ratio": 5.161448251286036
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-znl",
+        "ratio": 5.432007603519172
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-trg",
+        "ratio": 4.999534658662547
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-chip",
+        "ratio": 4.880821452008119
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-edn",
+        "ratio": 5.332743837375626
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-znl",
+        "ratio": 5.612282379277331
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-trg",
+        "ratio": 5.165030029872272
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-chip",
+        "ratio": 4.550024698262134
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-edn",
+        "ratio": 4.783300693335971
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-znl",
+        "ratio": 5.034037826427026
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-trg",
+        "ratio": 4.755314844212803
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-chip",
+        "ratio": 5.073329013381811
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-edn",
+        "ratio": 5.544247430280476
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-znl",
+        "ratio": 5.834872836237643
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-trg",
+        "ratio": 5.369332199225645
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-chip",
+        "ratio": 4.806747416640524
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-edn",
+        "ratio": 5.253275859054975
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-znl",
+        "ratio": 5.528648747502273
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-trg",
+        "ratio": 5.085608039381111
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-chip",
+        "ratio": 7.052390072641332
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-edn",
+        "ratio": 6.437540334526015
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-znl",
+        "ratio": 6.774991502897232
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-trg",
+        "ratio": 6.157364046463309
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-chip",
+        "ratio": 5.7365151213005525
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-edn",
+        "ratio": 6.3503375979176
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-znl",
+        "ratio": 6.683217662447207
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-trg",
+        "ratio": 6.096380542445426
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-chip",
+        "ratio": 4.550024698262134
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-edn",
+        "ratio": 4.783300693335971
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-znl",
+        "ratio": 5.034037826427026
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-trg",
+        "ratio": 4.755314844212803
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-chip",
+        "ratio": 5.073329013381811
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-edn",
+        "ratio": 5.544247430280476
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-znl",
+        "ratio": 5.834872836237643
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-trg",
+        "ratio": 5.369332199225645
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-chip",
+        "ratio": 4.884976422844579
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-edn",
+        "ratio": 5.161448251286036
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-znl",
+        "ratio": 5.432007603519172
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-trg",
+        "ratio": 5.113112703969913
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-chip",
+        "ratio": 7.626705934255798
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-edn",
+        "ratio": 7.088558483016682
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-znl",
+        "ratio": 7.884932320399929
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-trg",
+        "ratio": 6.599859149398082
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-chip",
+        "ratio": 5.632671198514147
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-edn",
+        "ratio": 6.451277657457992
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-znl",
+        "ratio": 7.176055305325858
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-trg",
+        "ratio": 6.049774495781785
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-chip",
+        "ratio": 6.274995008610705
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-edn",
+        "ratio": 7.257454709536148
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-znl",
+        "ratio": 8.072803425430326
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-trg",
+        "ratio": 6.769323621167411
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-chip",
+        "ratio": 4.766769121070565
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-edn",
+        "ratio": 5.329661159549015
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-znl",
+        "ratio": 5.928429261660547
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-trg",
+        "ratio": 5.074621025532531
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-chip",
+        "ratio": 4.836050550808798
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-edn",
+        "ratio": 5.249034101882974
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-znl",
+        "ratio": 5.838744046477111
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-trg",
+        "ratio": 5.102527940438016
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-chip",
+        "ratio": 5.89145243497692
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-edn",
+        "ratio": 5.475746081629931
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-znl",
+        "ratio": 6.0909262949288285
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-trg",
+        "ratio": 5.243845768037058
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-chip",
+        "ratio": 4.769490218566236
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-edn",
+        "ratio": 5.29877944176733
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-znl",
+        "ratio": 5.894078094885288
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-trg",
+        "ratio": 5.068705579142246
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-chip",
+        "ratio": 6.274995008610705
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-edn",
+        "ratio": 7.257454709536148
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-znl",
+        "ratio": 8.072803425430326
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-trg",
+        "ratio": 6.769323621167411
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-chip",
+        "ratio": 4.766769121070565
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-edn",
+        "ratio": 5.329661159549015
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-znl",
+        "ratio": 5.928429261660547
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-trg",
+        "ratio": 5.074621025532531
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-chip",
+        "ratio": 6.045617179494689
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-edn",
+        "ratio": 6.904603367338097
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-znl",
+        "ratio": 7.680310514627692
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-trg",
+        "ratio": 6.4905342817613665
+      }
+    ],
+    "legacy-css": [
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-chip",
+        "ratio": 5.65441838284058
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-edn",
+        "ratio": 5.161448251286036
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-znl",
+        "ratio": 5.432007603519172
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-trg",
+        "ratio": 4.999534658662547
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-chip",
+        "ratio": 4.880821452008119
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-edn",
+        "ratio": 5.332743837375626
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-znl",
+        "ratio": 5.612282379277331
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-trg",
+        "ratio": 5.165030029872272
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-chip",
+        "ratio": 4.550024698262134
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-edn",
+        "ratio": 4.783300693335971
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-znl",
+        "ratio": 5.034037826427026
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-trg",
+        "ratio": 4.755314844212803
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-chip",
+        "ratio": 5.073329013381811
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-edn",
+        "ratio": 5.544247430280476
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-znl",
+        "ratio": 5.834872836237643
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-trg",
+        "ratio": 5.369332199225645
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-chip",
+        "ratio": 4.806747416640524
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-edn",
+        "ratio": 5.253275859054975
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-znl",
+        "ratio": 5.528648747502273
+      },
+      {
+        "lang": "en",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-trg",
+        "ratio": 5.085608039381111
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-chip",
+        "ratio": 7.052390072641332
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-edn",
+        "ratio": 6.437540334526015
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-znl",
+        "ratio": 6.774991502897232
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "buy",
+        "sel": "pv-trg",
+        "ratio": 6.157364046463309
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-chip",
+        "ratio": 5.7365151213005525
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-edn",
+        "ratio": 6.3503375979176
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-znl",
+        "ratio": 6.683217662447207
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "near",
+        "sel": "pv-trg",
+        "ratio": 6.096380542445426
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-chip",
+        "ratio": 4.550024698262134
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-edn",
+        "ratio": 4.783300693335971
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-znl",
+        "ratio": 5.034037826427026
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "wait",
+        "sel": "pv-trg",
+        "ratio": 4.755314844212803
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-chip",
+        "ratio": 5.073329013381811
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-edn",
+        "ratio": 5.544247430280476
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-znl",
+        "ratio": 5.834872836237643
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "hold",
+        "sel": "pv-trg",
+        "ratio": 5.369332199225645
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-chip",
+        "ratio": 4.884976422844579
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-edn",
+        "ratio": 5.161448251286036
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-znl",
+        "ratio": 5.432007603519172
+      },
+      {
+        "lang": "zh",
+        "theme": "light",
+        "verb": "avoid",
+        "sel": "pv-trg",
+        "ratio": 5.113112703969913
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-chip",
+        "ratio": 7.626705934255798
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-edn",
+        "ratio": 7.088558483016682
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-znl",
+        "ratio": 7.884932320399929
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-trg",
+        "ratio": 6.599859149398082
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-chip",
+        "ratio": 5.632671198514147
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-edn",
+        "ratio": 6.451277657457992
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-znl",
+        "ratio": 7.176055305325858
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-trg",
+        "ratio": 6.049774495781785
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-chip",
+        "ratio": 6.274995008610705
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-edn",
+        "ratio": 7.257454709536148
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-znl",
+        "ratio": 8.072803425430326
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-trg",
+        "ratio": 6.769323621167411
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-chip",
+        "ratio": 4.766769121070565
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-edn",
+        "ratio": 5.329661159549015
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-znl",
+        "ratio": 5.928429261660547
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-trg",
+        "ratio": 5.074621025532531
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-chip",
+        "ratio": 4.836050550808798
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-edn",
+        "ratio": 5.249034101882974
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-znl",
+        "ratio": 5.838744046477111
+      },
+      {
+        "lang": "en",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-trg",
+        "ratio": 5.102527940438016
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-chip",
+        "ratio": 5.89145243497692
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-edn",
+        "ratio": 5.475746081629931
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-znl",
+        "ratio": 6.0909262949288285
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "buy",
+        "sel": "pv-trg",
+        "ratio": 5.243845768037058
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-chip",
+        "ratio": 4.769490218566236
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-edn",
+        "ratio": 5.29877944176733
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-znl",
+        "ratio": 5.894078094885288
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "near",
+        "sel": "pv-trg",
+        "ratio": 5.068705579142246
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-chip",
+        "ratio": 6.274995008610705
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-edn",
+        "ratio": 7.257454709536148
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-znl",
+        "ratio": 8.072803425430326
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "wait",
+        "sel": "pv-trg",
+        "ratio": 6.769323621167411
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-chip",
+        "ratio": 4.766769121070565
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-edn",
+        "ratio": 5.329661159549015
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-znl",
+        "ratio": 5.928429261660547
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "hold",
+        "sel": "pv-trg",
+        "ratio": 5.074621025532531
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-chip",
+        "ratio": 6.045617179494689
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-edn",
+        "ratio": 6.904603367338097
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-znl",
+        "ratio": 7.680310514627692
+      },
+      {
+        "lang": "zh",
+        "theme": "dark",
+        "verb": "avoid",
+        "sel": "pv-trg",
+        "ratio": 6.4905342817613665
+      }
+    ]
+  }
+}

@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from scripts.check_template_site_sync import (  # noqa: E402
     _MM_BRAIN_VER_TOKEN,
+    _SOFT_CONTRAST_TOKEN,
     _THEME_TOKEN,
     _THEME_TOKENS,
     _matches_around_tokens,
@@ -41,7 +42,10 @@ def test_token_list_matches_the_baker() -> None:
 
     assert _THEME_TOKEN == site_assets.SUPABASE_TOKEN
     assert _MM_BRAIN_VER_TOKEN == site_assets.MM_BRAIN_VER_TOKEN
-    assert set(_THEME_TOKENS) == {site_assets.SUPABASE_TOKEN, site_assets.MM_BRAIN_VER_TOKEN}
+    assert _SOFT_CONTRAST_TOKEN == site_assets.SOFT_CONTRAST_TOKEN
+    assert set(_THEME_TOKENS) == {
+        site_assets.SUPABASE_TOKEN, site_assets.MM_BRAIN_VER_TOKEN, site_assets.SOFT_CONTRAST_TOKEN
+    }
 
 
 def test_every_token_in_the_list_is_actually_in_theme_js() -> None:
@@ -107,3 +111,24 @@ def test_fallback_is_exact_when_there_are_no_tokens() -> None:
     assert _matches_around_tokens("abc", ["abc"])
     assert not _matches_around_tokens("abcd", ["abc"])
     assert not _matches_around_tokens("ab", ["abc"])
+
+
+def test_publish_guard_rejects_stale_material_projection(tmp_path) -> None:
+    """Matching CSS twins must not hide a stale emitted material projection."""
+    from scripts import check_template_site_sync as sync
+    from lib import site_assets
+
+    tpl, site = tmp_path / "templates", tmp_path / "site"
+    tpl.mkdir(); site.mkdir()
+    css = (TEMPLATES / "theme.css").read_text()
+    (tpl / "theme.css").write_text(css); (site / "theme.css").write_text(css)
+    source = "const settings=" + _THEME_TOKEN + ";const css=" + _SOFT_CONTRAST_TOKEN + ";"
+    theme = tpl / "theme.js"
+    theme.write_text(source)
+    (site / "theme.js").write_text(site_assets.emit_theme_js(theme))
+    assert sync.check(tmp_path) == []
+    # Both CSS copies are healthy. Only the standalone projection is stale.
+    changed = css.replace("--panel: #fafbfd", "--panel: #f9fafc", 1)
+    assert changed != css
+    (tpl / "theme.css").write_text(changed); (site / "theme.css").write_text(changed)
+    assert sync.check(tmp_path) == ["theme.js"]

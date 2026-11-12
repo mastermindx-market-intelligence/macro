@@ -318,7 +318,7 @@
     "empty_body": {"en": "Events appear here once Mastermind records one.", "zh": "Mastermind 记录后将自动出现。", "role": "state_body", "source": "templates/sector_central.html.j2:3842"},
     "no_access_title": {"en": "Sign in to view", "zh": "登录后可查看", "role": "state_title", "source": "NEW"},
     "no_access_body": {"en": "Sign in with access to view these observations.", "zh": "请使用有权限的账户登录查看。", "role": "state_body", "source": "templates/sector_central.html.j2:1991 (the ZH at that line is written as JS unicode escapes in the template; the deck test decodes them)"},
-    "no_access_action": {"en": "Sign in", "zh": "登录", "role": "state_action", "source": "templates/theme.js:2206"},
+    "no_access_action": {"en": "Sign in", "zh": "登录", "role": "state_action", "source": "templates/theme.js:2182"},
     "loading_title": {"en": "Loading…", "zh": "加载中…", "role": "state_title", "source": "templates/sector_central.html.j2:2432"},
     "loading_body": {"en": "Loading history…", "zh": "历史加载中…", "role": "state_body", "source": "templates/sector_central.html.j2:3764"},
     "offline_title": {"en": "Offline: changes kept locally", "zh": "离线 · 更改已存在本地", "role": "state_title", "source": "templates/watchlist.js:884"},

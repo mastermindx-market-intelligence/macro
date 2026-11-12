@@ -137,9 +137,45 @@ def test_the_featured_chip_carries_the_same_hue_law():
         assert token not in chip.group(1)
 
 
-def _all_rule_bodies(selector: str) -> str:
-    """Join every declaration block for an exact selector in theme.css."""
-    return "\n".join(re.findall(re.escape(selector) + r"\s*\{([^{}]*)\}", THEME_CSS))
+def _all_rule_bodies(selector: str, css: str | None = None) -> str:
+    """Read exact simple root-selector members from unconditional flat rules."""
+    source = THEME_CSS if css is None else css
+    masked = list(source)
+    depth = cursor = opening = 0
+    flat = True
+    bodies = []
+    member = r'html(?:\.soft-contrast)?(?:\[data-theme="(?:light|dark)"\])?(?:\[data-lang="zh"\])?'
+    group = member + r"(?:\s*,\s*" + member + r")*"
+    tokens = re.compile(
+        r'/\*.*?\*/|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|\\.|[{};]',
+        re.S,
+    )
+    for token in tokens.finditer(source):
+        value = token.group()
+        if value.startswith("/*"):
+            masked[token.start():token.end()] = [
+                c if c in "\r\n" else " " for c in value
+            ]
+            continue
+        if value == "{":
+            if depth == 0:
+                opening, flat = token.start(), True
+            else:
+                flat = False
+            depth += 1
+        elif value == "}":
+            assert depth > 0, "unbalanced canonical CSS rule"
+            depth -= 1
+            if depth == 0:
+                selectors = "".join(masked[cursor:opening]).strip()
+                if (flat and re.fullmatch(group, selectors)
+                        and selector in {part.strip() for part in selectors.split(",")}):
+                    bodies.append("".join(masked[opening + 1:token.start()]))
+                cursor = token.end()
+        elif value == ";" and depth == 0:
+            cursor = token.end()
+    assert depth == 0, "unbalanced canonical CSS rule"
+    return "\n".join(bodies)
 
 
 def test_chinese_mode_rebinds_prophet_bullish_red_and_bearish_green():
@@ -165,7 +201,53 @@ def test_chinese_mode_rebinds_prophet_bullish_red_and_bearish_green():
     # double-mix. --ink-pv-avoid keeps its quadrant rung.
     assert "--ink-pv-buy:" not in light_zh, "retired rung must stay retired (C8-C)"
     assert "--ink-pv-near:" not in light_zh, "retired rung must stay retired (C8-C)"
-    assert "--ink-pv-avoid:" in light_zh and "var(--pv-avoid) 62%" in light_zh
+    avoid_values = re.findall(r"--ink-pv-avoid\s*:\s*([^;{}]+);", light_zh)
+    assert avoid_values and avoid_values[-1].strip() == (
+        "color-mix(in srgb, var(--pv-avoid) 54%, var(--text))"
+    )
+
+
+@pytest.mark.parametrize("plain_first", [True, False])
+def test_rule_reader_accepts_exact_grouped_members_in_source_order(plain_first):
+    selector = 'html[data-theme="light"][data-lang="zh"]'
+    soft = 'html.soft-contrast[data-theme="light"][data-lang="zh"]'
+    members = [selector, soft] if plain_first else [soft, selector]
+    source = ",\n".join(members) + " { --first: yes; }\n"
+    source += selector + " { --second: yes; }"
+    assert _all_rule_bodies(selector, source) == " --first: yes; \n --second: yes; "
+
+
+@pytest.mark.parametrize("lookalike", [
+    'html[data-theme="light"][data-lang="zh"] body',
+    'html.soft-contrast[data-theme="light"][data-lang="zh"]',
+    'html[data-theme="light"][data-lang="zh"].extra',
+    ':not(.unused, html[data-theme="light"][data-lang="zh"], .also-unused)',
+    '.scope\nhtml[data-theme="light"][data-lang="zh"]',
+    "html[data-query='prefix, html[data-theme=\"light\"][data-lang=\"zh\"], suffix']",
+])
+def test_rule_reader_rejects_nonmatching_and_comment_only_members(lookalike):
+    selector = 'html[data-theme="light"][data-lang="zh"]'
+    source = f"/* {selector} {{ --comment: no; }} */\n"
+    source += lookalike + " { --lookalike: no; }"
+    assert _all_rule_bodies(selector, source) == ""
+
+
+def test_rule_reader_rejects_conditional_plain_members():
+    selector = 'html[data-theme="light"][data-lang="zh"]'
+    source = f"@media print {{ {selector} {{ --print-only: no; }} }}"
+    assert _all_rule_bodies(selector, source) == ""
+
+
+@pytest.mark.parametrize("replacement", [
+    "",
+    "--ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 62%, var(--text));",
+])
+def test_chinese_mode_rejects_missing_or_retired_avoid_calibration(monkeypatch, replacement):
+    declaration = "--ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 54%, var(--text));"
+    assert THEME_CSS.count(declaration) == 1
+    monkeypatch.setitem(globals(), "THEME_CSS", THEME_CSS.replace(declaration, replacement))
+    with pytest.raises(AssertionError):
+        test_chinese_mode_rebinds_prophet_bullish_red_and_bearish_green()
 
 
 def test_mobile_company_name_gets_a_noncollapsing_second_line():

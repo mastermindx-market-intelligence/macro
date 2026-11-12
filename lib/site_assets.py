@@ -27,11 +27,12 @@ import json
 from pathlib import Path
 
 from lib import config
+from lib.theme_materials import SOFT_CONTRAST_TOKEN, shared_contrast_css
 
 # The literal tokens emitted by templates/theme.js; kept in sync with that file.
-# Both are comment-prefixed literals, so an UNBAKED theme.js is still valid JS
+# All are comment-prefixed literals, so an UNBAKED theme.js is still valid JS
 # that degrades to a disabled account system / an unversioned bundle request
-# rather than a syntax error taking the whole shared script down.
+# (and material defaults) rather than a syntax error taking the shared script down.
 SUPABASE_TOKEN = "/*__SUPABASE_CFG__*/null"
 MM_BRAIN_VER_TOKEN = "/*__MM_BRAIN_VER__*/''"
 
@@ -121,6 +122,8 @@ def emit_theme_js(src: Path) -> str:
     """Build the exact ``theme.js`` bytes served by production."""
     text = bake_theme_js(src.read_text())
     text = text.replace(MM_BRAIN_VER_TOKEN, json.dumps(mm_brain_version(src)))
+    if SOFT_CONTRAST_TOKEN in text:
+        text = text.replace(SOFT_CONTRAST_TOKEN, json.dumps(shared_contrast_css(src)))
     overlay_src = src.with_name("terminal_overlay.js")
     if overlay_src.exists():
         text = f"{text.rstrip()}\n\n{overlay_src.read_text().lstrip()}"
