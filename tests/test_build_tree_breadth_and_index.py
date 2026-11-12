@@ -50,7 +50,8 @@ def world(tmp_path):
     pd.DataFrame({"both": [100, 100], "flag_dis": [9, 0], "has_only_one": [0, 0], "rate": [0.09, 0.0]},
                  index=pd.Index([1999, 2000], name="era")).to_csv(dis)
     out = tmp_path / "out"
-    meta = bt.build(cp, dm, dis, "1999-06-01", out, root=root, daily=True)
+    tree_fams = [f for f in bt.FAMILIES if not f["family"].startswith("gmi_")]
+    meta = bt.build(cp, dm, dis, "1999-06-01", out, root=root, daily=True, families=tree_fams)
     return closes, out, meta
 
 

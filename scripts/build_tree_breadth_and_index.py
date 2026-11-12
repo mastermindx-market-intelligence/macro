@@ -138,6 +138,14 @@ FAMILIES = [
     {"family": "sector", "registry": "data/breadth/constituents.parquet", "loader": "constituents_sector",
      "outputs": ["index"], "label": "S&P 500 GICS sectors (sector breadth stays in "
                                     "group_breadth_*_current.parquet on archive prices)"},
+    {"family": "gmi_theme", "registry": "data/breadth/history/registry/gmi_theme.csv", "loader": "pairs",
+     "outputs": ["breadth", "index"],
+     "label": "GMI house themes (18): open latest-belief company->basket->theme edges of "
+              "data/theme_graph, US-listed resolved identities; exported by "
+              "scripts/export_gmi_history_registry.py at the commit in group_links_current.meta.json"},
+    {"family": "gmi_macro_category", "registry": "data/breadth/history/registry/gmi_macro_category.csv",
+     "loader": "pairs", "outputs": ["breadth", "index"],
+     "label": "GMI macro categories (10): gmi_theme members rolled up through open PARENT_OF edges"},
 ]
 
 
