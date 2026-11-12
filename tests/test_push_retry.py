@@ -1877,6 +1877,11 @@ def _lane_fixture(tmp_path: Path, rejects: int = 0, collision: bool = False):
         (seed / "site" / "upstream.html").write_text("<html>upstream old</html>")
     (seed / "data").mkdir()
     (seed / "data" / "ledger.json").write_text('{"canonical": true}')
+    # The all/macro render guard compares the committed canonical pointer before
+    # publishing. This is synthetic fixture data, never a real market snapshot.
+    (seed / "data" / "market_state").mkdir()
+    (seed / "data" / "market_state" / "latest.json").write_text(
+        '{"fixture": "market-state-pointer-v1"}')
     git(seed, "add", "."); git(seed, "commit", "-qm", "seed")
     git(seed, "push", "-q", str(bare), "main")
 
@@ -2046,6 +2051,37 @@ def test_render_lane_block_lands_the_render_over_a_racing_commit(tmp_path):
         capture_output=True, text=True,
     )
     assert extraheader.returncode != 0, extraheader.stdout + extraheader.stderr
+
+
+@pytest.mark.parametrize("scope", ["all", "macro"])
+def test_render_lane_refuses_a_changed_market_state_pointer(tmp_path, scope):
+    """A newer canonical pointer must stop both render scopes before publication."""
+    block = _lane_block("render.yml", RENDER_STEP,
+                        {"steps.pick.outputs.scope": scope,
+                         "steps.pick.outputs.rendered_from": "deadbeef"})
+    bare, lane, stub, _ = _lane_fixture(tmp_path)
+    other = tmp_path / "other"
+    pointer = "data/market_state/latest.json"
+    newer = '{"fixture": "market-state-pointer-v2"}'
+    (other / pointer).write_text(newer)
+    _git_output(other, "add", pointer)
+    _git_output(other, "commit", "-m", "fixture advances canonical pointer")
+    _git_output(other, "push", "-q", "origin", "main")
+    before = _git_output(bare, "rev-parse", "main")
+    summary = tmp_path / "summary.md"
+    summary.touch()
+
+    r = _run_lane(block, lane, stub, summary, render_ok=True)
+    output = r.stdout + r.stderr
+    assert r.returncode == 1, output
+    assert "Market State publication race" in output
+    assert "metadata-only replay" not in output
+    assert _git_output(bare, "rev-parse", "main") == before
+    assert _git_output(bare, "show", f"main:{pointer}") == newer
+    assert _git_output(bare, "show", "main:site/index.html") == "<html>old</html>"
+    assert _git_output(bare, "show", "main:data/ledger.json") == '{"canonical": true}'
+    assert "site/premiumdata/special_situations.json" not in _git_output(
+        bare, "ls-tree", "-r", "--name-only", "main").splitlines()
 
 
 def test_render_lane_fails_closed_without_admin_token(tmp_path):
@@ -3392,3 +3428,4 @@ def test_ohlc_delivery_workflow_missing_key_is_visible_before_publish(tmp_path):
     assert result.returncode == 1
     assert "::error::OHLC origin delivery" in result.stdout
     assert not list(tmp_path.iterdir())
+

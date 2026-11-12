@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top); +2 composed from PR #10940 canonical Market State enrollment (composed over the #11051/#11064 playwright-fallback and #11101 runtime-adapter baselines)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top); +2 composed from PR #10940 canonical Market State enrollment (composed over the #11051/#11064 playwright-fallback and #11101 runtime-adapter baselines)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6052,6 +6052,24 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     admission limits. Preserve both entire provenance histories.
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-10 (PR #10940, canonical Market State regression enrollment):
+    Source 7f69f9a9 adds only tests/test_market_state_canonical_live_render.py
+    to the existing dashboard owner command; all other owner blocks, selectors,
+    dependencies and limits are unchanged. The source estimator measures the
+    existing owner from 49 to 51: commands 6 -> 6,
+    literal test paths 21 -> 22, joined characters 929 -> 978,
+    with the same character bucket and no observed-command override. Own hosted
+    contract-delta run 42772262651, job 129682751540, reports all three
+    marginal costs as +2 and no newly selected owner. Fund only those measured
+    costs, composed on current main (the PR #10571 result, the #11019
+    site-live enrollment and the #11051/#11064 playwright-fallback baseline
+    already landed there, plus the #11101 runtime-adapter enrollment):
+    index 5971 -> 5973, free-content 5995 -> 5997, Prophet 5729 -> 5731.
+    Preserve selected-job ceilings 137/138/131, ten packs, every test and selection rule,
+    runtime/admission limits and all prior accounting below. This is source
+    accounting, not a new whole-tree planner or timing claim. The exact repaired
+    successor still requires natural own CI and truthful visual receipt closure.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,

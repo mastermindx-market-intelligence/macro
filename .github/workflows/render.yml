@@ -1232,6 +1232,11 @@ jobs:
           python3 scripts/check_ms_board_coherence.py && exit 0
           python3 scripts/check_ms_board_coherence.py --heal-from HEAD || true
           exit 1
+      - name: guard — US Market State canonical parity
+        # Only macro-containing scopes rebuild its page; compare that render
+        # against the committed canonical snapshot, never the renderer's bars.
+        if: ${{ !cancelled() && (contains(steps.pick.outputs.scope, 'macro') || steps.pick.outputs.scope == 'all' || steps.pick.outputs.scope == '') }}
+        run: python3 scripts/check_ms_board_coherence.py --canonical-parity site/macro.html
       - name: publish rebuilt US stockdata to R2 (browser data plane)
         # build_site creates a complete, fresh site/stockdata tree for every scope
         # containing macro (including all). The browser reads that tree from R2, not
@@ -1406,6 +1411,11 @@ jobs:
           commit_index "$RENDER_MESSAGE"
           RENDER_COMMIT=$(git rev-parse HEAD)
           RENDER_PARENT=$(git rev-parse "$RENDER_COMMIT^")
+          MS_SOURCE_BLOB=""
+          case "+$SCOPE+" in
+            *+all+*|*+macro+*)
+              MS_SOURCE_BLOB=$(git rev-parse "$RENDER_PARENT:data/market_state/latest.json") || exit 1 ;;
+          esac
           PUBLISH_INDEX="${RUNNER_TEMP:?}/render-publish-${GITHUB_RUN_ID:?}-${GITHUB_RUN_ATTEMPT:?}.index"
           PUBLISH_REF="refs/heads/render-publish-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           # This push is now the ONLY way the render reaches the live site (the VPS serves
@@ -1442,6 +1452,14 @@ jobs:
             if ! push_fetch_main_for_rebase; then
               push_backoff
               continue
+            fi
+            # Refuse a stale-score replay if self-heal/nightly changed the
+            # canonical pointer after this page was built. This applies to the
+            # metadata-only fast path as well as the porcelain rebase path.
+            if [ -n "$MS_SOURCE_BLOB" ] && \
+               [ "$(git rev-parse 'origin/main:data/market_state/latest.json')" != "$MS_SOURCE_BLOB" ]; then
+              echo "::error title=Market State publication race::canonical pointer advanced during render; refusing stale site/macro.html push"
+              exit 1
             fi
             GOVREV_PROJECTION_INPUTS=(
               data/government_revenue/
