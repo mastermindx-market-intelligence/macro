@@ -560,3 +560,15 @@ control panel and its CSS/JS, the head URL-param script.
 **Verify before shipping:** all four form states × both themes × both languages ×
 desktop and ≤480px, against the crops in `crops/`. Open
 `email_receipt_sample.html` raw in a browser and match it.
+
+
+### MO-PAID-058 receipt explanation — 2026-11-03 source amendment
+
+The existing success panel includes the server's support promise and, when present,
+its routing explanation immediately before the reference slip. Reuse its existing
+paragraph typography in dark and light and the `l-en` / `l-zh` language spans.
+Assign both strings with textContent; never interpret response HTML. An absent or
+invalid routing response makes no plan claim and hides the paragraph. Starting a
+new request clears the previous explanation. No CSS, palette, dimensions, chrome,
+or other pinned copy changes. Source/DOM tests are distinct from held browser and
+production acceptance.

@@ -221,13 +221,21 @@ def _normalize_diff_header_path(candidate: str) -> str:
     return candidate
 
 
+class _AddedLine(str):
+    """Literal diff content with its candidate-file line, when supplied."""
+
+    def __new__(cls, value: str, candidate_line: int | None):
+        line = super().__new__(cls, value)
+        line.candidate_line = candidate_line
+        return line
+
+
 def parse_added_lines(diff_text: str) -> dict[str, list[str]]:
     """Map each touched file to the literal content of its added lines.
 
     Self-contained unified-diff reader. Skips ``\\ No newline at end of file``
-    (not a real line — counting it desyncs nothing here since we track content,
-    not line numbers, but the marker must still never be treated as a path
-    header or added content). Treats only a ``+++ `` line (with the trailing
+    (not a real line and must not advance candidate line coordinates). Treats
+    only a ``+++ `` line (with the trailing
     space, distinguishing the file header from a content line that happens to
     start with literal ``+++``) as introducing a new current path.
 
@@ -241,10 +249,12 @@ def parse_added_lines(diff_text: str) -> dict[str, list[str]]:
 
     out: dict[str, list[str]] = {}
     path: str | None = None
+    candidate_line: int | None = None
     for raw in diff_text.splitlines():
         if raw.startswith("\\"):
             continue
         if raw.startswith("+++ "):
+            candidate_line = None
             header = _normalize_diff_header_path(raw[len("+++ "):])
             if header == "/dev/null":
                 path = None  # pure deletion
@@ -256,8 +266,15 @@ def parse_added_lines(diff_text: str) -> dict[str, list[str]]:
             continue
         if path is None:
             continue
-        if raw.startswith("+"):
-            out[path].append(raw[1:])
+        hunk = re.match(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@", raw)
+        if hunk:
+            candidate_line = int(hunk.group(1))
+        elif raw.startswith("+"):
+            out[path].append(_AddedLine(raw[1:], candidate_line))
+            if candidate_line is not None:
+                candidate_line += 1
+        elif raw.startswith(" ") and candidate_line is not None:
+            candidate_line += 1
     return out
 
 
@@ -383,12 +400,11 @@ def _candidate_css_text(path: str, repo_root: Path | None) -> str:
 def _template_inline_style_added_lines(
     path: str, lines: list[str], repo_root: Path | None
 ) -> list[str]:
-    """Return added lines that now live inside a template's inline <style>.
+    """Locate added CSS by verified candidate coordinates, not text coincidence.
 
-    Unified diffs do not carry enough context to know whether a changed CSS
-    declaration sits inside a <style> opened hundreds of lines earlier. Reading
-    the candidate file is deterministic and avoids treating arbitrary Jinja/HTML
-    additions as CSS. Exact stripped-line membership is intentionally narrow.
+    A JavaScript brace can equal an unchanged CSS brace. Use hunk coordinates
+    only when the candidate line matches the diff exactly; callers with bare
+    strings or stale/incomplete coordinates retain conservative text matching.
     """
 
     if not path.startswith("templates/") or not path.endswith(TEMPLATE_STYLE_SUFFIXES):
@@ -397,7 +413,30 @@ def _template_inline_style_added_lines(
     if not css:
         return []
     style_lines = {line.strip() for line in css.splitlines() if line.strip()}
-    return [line for line in lines if line.strip() and line.strip() in style_lines]
+    try:
+        source = (repo_root / path).read_text(encoding="utf-8") if repo_root else ""
+    except OSError:
+        source = ""
+    candidate_lines = source.splitlines(keepends=True)
+    spans = [(m.start(1), m.end(1)) for m in STYLE_BLOCK_RE.finditer(source)]
+    offsets = []
+    offset = 0
+    for candidate in candidate_lines:
+        offsets.append(offset)
+        offset += len(candidate)
+    inside = []
+    for line in lines:
+        number = getattr(line, "candidate_line", None)
+        if (number is not None and 1 <= number <= len(candidate_lines)
+                and candidate_lines[number - 1].rstrip("\r\n") == line):
+            start = offsets[number - 1]
+            end = start + len(line)
+            if any(start < style_end and end > style_start
+                   for style_start, style_end in spans):
+                inside.append(line)
+        elif line.strip() and line.strip() in style_lines:
+            inside.append(line)
+    return inside
 
 
 def _is_material_inline_style(

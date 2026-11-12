@@ -576,6 +576,8 @@ html[data-lang="zh"] .mx-footer .f-col p{ font-family:"PingFang SC","Hiragino Sa
             </span>
           </p>
 
+          <p id="slip-routing" hidden><span id="slip-routing-en" class="l-en"></span><span id="slip-routing-zh" class="l-zh"></span></p>
+
           <div class="slip">
             <div class="row">
               <span class="k">{{ t('Ticket', '工单号') }}</span>
@@ -825,6 +827,22 @@ html[data-lang="zh"] .mx-footer .f-col p{ font-family:"PingFang SC","Hiragino Sa
            p(d.getHours()) + ':' + p(d.getMinutes()) + (zone ? ' ' + zone : '');
   }
 
+  function paintRouting(routing) {
+    var box = $('#slip-routing');
+    if (!box) return;
+    var r = routing && typeof routing === 'object' ? routing : {};
+    var text = function (lang) {
+      return [r['promise_' + lang], r['note_' + lang]].filter(function (v) {
+        return typeof v === 'string' && v.trim();
+      }).join(' ');
+    };
+    var en = text('en'), cn = text('zh');
+    $('#slip-routing-en').textContent = en;
+    $('#slip-routing-zh').textContent = cn;
+    if (en || cn) box.removeAttribute('hidden');
+    else box.setAttribute('hidden', '');
+  }
+
   function succeed(res, payload) {
     /* PIN §4.3b: ref short form = 'MX-' + the first 8 hex of the uuid, uppercased.
        Stamped ONCE, in the slip — the header ref hides, so it is never printed
@@ -845,6 +863,7 @@ html[data-lang="zh"] .mx-footer .f-col p{ font-family:"PingFang SC","Hiragino Sa
     });
     /* Strictly `=== true`: an API that does not answer the question has not told us mail
        works, and the honest copy for "we do not know" is the one that promises nothing. */
+    paintRouting(res && res.routing);
     H.setAttribute('data-mail', (res && res.mail === true) ? 'on' : 'off');
     H.removeAttribute('data-err');
     H.setAttribute('data-form', 'success');
@@ -918,6 +937,7 @@ html[data-lang="zh"] .mx-footer .f-col p{ font-family:"PingFang SC","Hiragino Sa
 
   var again = $('#s-again');
   if (again) again.addEventListener('click', function () {
+    paintRouting(null);
     H.removeAttribute('data-err');
     H.setAttribute('data-form', 'idle');
     if (form) form.reset();

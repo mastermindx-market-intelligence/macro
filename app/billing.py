@@ -647,17 +647,21 @@ def _user_for_customer(customer_id: str) -> str | None:
     return user_id
 
 
-def read_entitlement(user_id: str) -> dict:
+def read_entitlement(user_id: str, *, require_read: bool = False) -> dict:
     """Full entitlement row for a user: {tier, features, status, current_period_end, source, interval}.
 
-    Fail-safe to the free default (table/key absent, network error → free). Used by
-    /api/me and /api/account for plan display + client-side Pro gating. `source`
+    Fail-safe to the free default (table/key absent, network error → free).
+    ``require_read=True`` preserves read failures for consumers that must disclose
+    unknown plan state. A successful empty result still means the free default.
+    Used by /api/me and /api/account for plan display + client-side Pro gating. `source`
     ('stripe'|'substack'|'comp') lets the client distinguish a comp/lifetime grant
     (source='comp' with a null current_period_end) from a canceled Stripe row.
     """
     default = {"tier": "free", "features": [], "status": "none", "current_period_end": None,
                "source": "stripe", "interval": None}
     if not user_id or not SUPABASE_SERVICE_ROLE_KEY:
+        if require_read:
+            raise RuntimeError("entitlement read unavailable")
         return default
     try:
         rows = _pg(
@@ -667,7 +671,16 @@ def read_entitlement(user_id: str) -> dict:
         )
     except Exception as exc:  # noqa: BLE001
         log.debug("billing: read_entitlement failed for %s (%s)", user_id, exc)
+        if require_read:
+            raise
         return default
+    if require_read:
+        if not isinstance(rows, list) or len(rows) > 1:
+            raise ValueError("invalid entitlement read response")
+        if rows and (not isinstance(rows[0], dict)
+                     or not isinstance(rows[0].get("tier"), str)
+                     or not rows[0]["tier"].strip()):
+            raise ValueError("invalid entitlement tier")
     if rows:
         r = rows[0]
         # `interval` surfaces the billing cadence ('monthly'|'annual') for plan display; None for

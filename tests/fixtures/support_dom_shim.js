@@ -102,6 +102,7 @@ function replyFor(opts) {
   var body = { ok: true, ticket_id: opts.ticket_id || '7f3a2b91-1111-4000-8000-000000000001' };
   if (opts.mail !== undefined && opts.mail !== null) body.mail = opts.mail;
   if (opts.sent) body.sent = opts.sent;
+  if (opts.routing !== undefined) body.routing = opts.routing;
   return { status: 200, body: body };
 }
 

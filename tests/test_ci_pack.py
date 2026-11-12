@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_726),
+    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_732),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,41 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #10643, preserve landed Start-page coverage):
+    Receiver e752cc8a98a871ce67f4f4a4c98b014f824d0e4a lands #11019's
+    data-base-shim command and measured +2 across all three probes. Preserve
+    that complete owner and its source inputs alongside billing-emails.
+    Receiving ceilings 5968/5991/5726 plus the support +6 measured below
+    compose to 5974/5997/5732. These source-calculated ceilings require the
+    complete paired native contract on the combined tree before publication.
+    Keep 137/138/131 job caps, ten packs, all commands and runtime limits;
+    retain both complete histories and the original settlement hold.
+    Source amendment: #10643 comment6811216619.
+
+    2026-11-12 (PR #10643, actual current-main paired measurement):
+    Frozen receiver aed66e338d0b08ca3ee1d97f8f3fbfae119a4b82 retains the
+    landed #9230 free-content +2. The unchanged native planner on candidate
+    8fcf9beae0a339286d35d5024200e04e29b5ef41 measures billing-emails 25 -> 31
+    as the sole owner-weight change: 5966/5989/5724 -> 5972/5995/5730.
+    All selected owner IDs, 137/137/131 actual jobs and ten packs are unchanged.
+    Fund only this measured +6; keep job caps 137/138/131, all commands,
+    selectors, runtime/admission limits and both complete provenance histories.
+    Paired report 6e9af35277240bb2b08e9bc78dba471b1d99717098361811d57a2550a3eb767f.
+    This source composition does not settle or replay the original CI resource.
+    Full successor contract and hosted CI remain separate qualifications.
+
+    2026-11-11 (PR #10643, preserving current-main integration):
+    Receiver f50935534c8c770d17535c01bdf3313bff43916c keeps all 401
+    owner identities and all 400 unrelated owner blocks, including the
+    retirement-nearzero owner. Reuse the accepted billing-emails postimage:
+    the unchanged native estimator measures 25 -> 31 from nine commands,
+    8 -> 11 test paths and 568 -> 666 command characters. Carry that
+    contribution exactly once onto 5966/5987/5724, yielding 5972/5993/5730.
+    Preserve 137/138/131 job caps, ten packs, all execution limits and both
+    complete provenance histories. These are source-conservation and
+    owner-estimator results, not a new full-tree planner measurement.
+    The natural successor CI must qualify the combined candidate.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
@@ -6022,6 +6057,28 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     admission limits. Preserve both entire provenance histories.
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-10 (PR #10643, current-main preserving composition):
+    Receiver cfd3834d retains its landed F09, ownership-ledger,
+    lifecycle coverage and qualified Playwright dependency. Keep all
+    original feature postimages and the accepted billing-emails coverage.
+    The unchanged owner estimator measures 25 -> 31; apply its
+    original contribution to all three established probes, yielding
+    5964/5985/5722 from current5958/5979/5716. Keep137/138/131jobs,
+    ten packs, assertions, selectors, commands, timeouts and all
+    admission limits. Preserve both entire provenance histories.
+    This is owner-estimator execution and source conservation, not
+    a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-09 (PR #10643, preserving current CI conflict composition):
+    Receiver 315efde9307bf8a3d241a7683432dfff92cd4a9e retains all 400 owners
+    and current registry/admission assertions and accounting. The complete
+    billing-emails preimage and runner47164044 are unchanged from the accepted
+    support contribution. Its nine commands retain 8 -> 11 test paths and
+    568 -> 666 characters, so the established weight25 -> 31 carries +6
+    exactly once: 5943/5964/5701 -> 5949/5970/5707. No job/pack limit,
+    per-owner runtime or new local planner measurement is introduced.
+    Natural CI on this composition remains required.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
@@ -6241,6 +6298,27 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     measured planner weights, not a new full-tree measurement or
     execution-time claim. Natural successor CI must qualify the newly
     composed tree; no padding is added.
+
+    #10643 current-source composition (2026-11-08): preserve the full current
+    packing history and the original T34 receipt below. The current billing
+    owner still equals its original preimage; the same three suite arguments
+    change its source estimate from 25 to 31 (nine commands, 8 to 11 test paths,
+    568 to 666 command characters). Carry only the accepted +6 contribution
+    onto 5923/5944/5681, giving 5929/5950/5687. Keep job caps 137/138/131,
+    ten packs and all execution limits. These are source-composition values,
+    not a fresh whole-tree selection or packing measurement; the new natural
+    contract must qualify the combined candidate. No other allowance is added.
+
+    P17.T34 support receipt regression ownership (2026-11-03, #10643):
+    hosted contract-delta41599767622 on merge aa25ee66/base00438de7 measured
+    index5,915/free-content5,930/plan-book5,671 versus base5,909/5,924/5,665,
+    with no newly selected jobs. Three added suite paths cost two estimator
+    units each. The successor moves the DOM suite from data-base-shim into
+    billing-emails beside the API/tier suites, with Jinja2 for its renderer:
+    billing-emails25->31 and data-base-shim23->23; net still exactly+6.
+    Fund only these six measured units. Keep job-count/pack ceilings, all
+    existing suites, source selection and execution timeouts unchanged.
+    The sparse local packing pass did not qualify the full hosted closure.
 
     2026-11-08 (PR #10180, measured B-17 enrollment integration):
     Fixed current c91d58b2413d plus the five unchanged recovery objects
