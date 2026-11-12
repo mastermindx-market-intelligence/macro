@@ -333,14 +333,16 @@ def high_beta_cohorts(closes_u: pd.DataFrame, spy: pd.Series,
     lvl, n = ew_level_held(daily_returns(closes_u), closes_u.notna(), held, start)
     first_per = min(cohorts) if cohorts else None
     facts = {"rule": HIGH_BETA_RULE, "beta_window": BETA_WINDOW,
-             "selection_set": ("dated members at the selection session"
-                               if member_mask is not None else "all universe members"),
              "fraction": f"top 1/{HIGH_BETA_FRACTION} (ceil)",
              "first_selection": str(month_ends[first_per].date()) if first_per else None,
              "cohort_size_min": min(sizes.values()) if sizes else None,
              "cohort_size_max": max(sizes.values()) if sizes else None,
              "cohort_size_last": sizes.get(str(sess_per[-1] - 1)),
              "months_selected": len(sizes)}
+    if member_mask is not None:
+        # Dated-only note; kept out of the current-basis facts so the frozen
+        # current meta stays byte-reproducible.
+        facts["selection_set"] = "dated members at the selection session"
     return lvl, n, facts
 
 

@@ -784,6 +784,12 @@ _FROZEN_CURRENT = {
 }
 _FIXCHG_SERIES = ({f"fix_chg_pct_above_{w}_{k}" for w in rg.WINDOWS for k in rg.CHANGE_HORIZONS}
                   | {f"n_fixed_{w}_{k}" for w in rg.WINDOWS for k in rg.CHANGE_HORIZONS})
+# The 11 GICS sector names (as-of-now labels) plus the two computed aggregates are
+# the only legal groups on the dated basis; a member ticker can never be a group.
+_GICS = {"Communication Services", "Consumer Discretionary", "Consumer Staples", "Energy",
+         "Financials", "Health Care", "Industrials", "Information Technology", "Materials",
+         "Real Estate", "Utilities"}
+_DATED_GROUPS = _GICS | {"universe", "high_beta_computed"}
 
 
 def _regime_dated_synth(tmp: Path, n=12, periods=700, start="2020-01-01"):
@@ -971,9 +977,9 @@ def test_regime_dated_committed_columns_kinds_floors():
     assert (df.n >= 2).all() and not df.isna().any().any()
     assert df.date.min() >= pd.Timestamp(rg.START_DATED)
     assert not df.duplicated(["series", "group", "date"]).any()
-    # No member ticker leaks: a group is a known aggregate or a multi-word sector
-    # name (tickers are single tokens); a series is a lower-case snake_case name.
-    assert all(g in {"universe", "high_beta_computed"} or " " in g for g in df.group.unique())
+    # No member ticker leaks: a group is one of the 11 GICS sectors or the two
+    # computed aggregates; a series is a lower-case snake_case name.
+    assert set(df.group.unique()) <= _DATED_GROUPS
     assert all(s == s.lower() for s in df.series.unique())
     assert rg.MINIMUM_SERIES <= set(df.series.unique())
     assert not _FORBIDDEN.search(" ".join(df.series.unique()) + " " + " ".join(df.group.unique()))
