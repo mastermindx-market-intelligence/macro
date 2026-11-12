@@ -33,6 +33,10 @@ Packet-id:
 Route:
 Archetype (registry id):
 Reference page:
+RIG-RECEIPT: REQUIRED
+3A EDITABLE SOURCE: REQUIRED — governed tool + exact file/document + frame/node/artboard ids
+3B COMPONENT DELTA: REQUIRED — canonical components/tokens reused; name any DESIGN-SYSTEM GAP
+3C STATE + INTERACTION MATRIX: REQUIRED — intended editable variants + separate browser/fixture proof
 
 ## Acceptance gates — factory §0 (binding; "not done unless")
 
@@ -61,6 +65,14 @@ Reference page:
   visual artifact before the normal ship chain proceeds.
 - [ ] **11. Perf budget respected:** the packet's page-weight/perf line (packet §I.5 pattern) holds,
   and generated-family packets carry a render-budget line — render budget is repo law.
+- [ ] **12. Reference integrity (RIG V1 amendment, 2026-08-12):** the packet's canonical reference
+  carries a valid Reference Integrity approval receipt
+  (`research/REFERENCE_INTEGRITY_GATE_V1.md` §7/§12; `scripts/check_reference_integrity.py`
+  enforces via the packet's `RIG-RECEIPT:` line). A reference without one is **provisional**:
+  it may be iterated against, but no registry row may flip `compliant: true` on it and no
+  migration may claim reference conformance as final acceptance. Gate §0.1's "reviewer
+  compares against the reference" is therefore conditional on the reference having earned
+  canonical status — conformance to an unapproved reference proves nothing.
 
 ## Theme art direction — required
 
@@ -126,6 +138,29 @@ pasted image is not evidence. Capture per `docs/product_experience/PAGE_EVIDENCE
 
 <!-- A forced shot shows the state's STYLING, not data the page returned — the harness labels
      it so, and so should the reviewer. A fixture payload is the stronger evidence where one exists. -->
+
+### Interaction / overlay shots (packet §3C; as applicable)
+
+Native hover and keyboard focus use the existing real-browser interaction mode, e.g.
+`--force-state "card_hover:hover(.card)"` or
+`--force-state "search_focus:focus(.search-trigger)"`. Do not substitute a
+class/attribute toggle for a native pseudo-state. Pressed/active/selected/open/disabled
+may use an existing truthful implementation hook or a real browser interaction/fixture;
+the evidence must say which path was used.
+
+| State / variant | Real browser or truthful hook | Shot (committed path) |
+|---|---|---|
+| hover |  |  |
+| keyboard focus / focus-visible |  |  |
+| pressed / active / selected |  |  |
+| expanded / open popover, dialog, menu or disclosure |  |  |
+| disabled |  |  |
+| component-specific material variant |  |  |
+
+- [ ] Every materially distinct interaction/overlay state supported by the changed surface is
+  either captured above or explicitly marked not applicable with a reason.
+- [ ] Editable frames/component variants define intended treatment; browser/fixture evidence above
+  proves implementation. No editable artifact is cited as runtime/data-emission proof.
 
 ## Dispositions applied (packet §6)
 
