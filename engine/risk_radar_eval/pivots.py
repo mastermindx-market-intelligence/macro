@@ -251,3 +251,93 @@ def score_pivots_multi(turns: list[Turn], alerts: dict[str, pd.Series],
             "by_asset": per,
         }
     return out
+
+
+def placebo(alert: pd.Series, *, px: pd.Series, turns: list[Turn], episodes: list,
+            outcomes_through, near: str | None = None, tol: float = 0.01, n_draws: int = 500,
+            seed: int = 0, pre: int = DEFAULT_PRE, post: int = DEFAULT_POST,
+            min_off: int = DEFAULT_MIN_OFF, sealed_from=L.SEALED_FROM,
+            seen_history_ok: bool = False) -> dict:
+    """Random-run placebo for the flagged shares (research desk falsification, 2026-11-12).
+
+    Draws alert series with the observed alert's run lengths (hence its budget and persistence),
+    placing each run's start at random among eligible sessions without overlap:
+      near=None    any session;
+      near="high"  sessions whose close is within `tol` of the running high (causal: closes <= t);
+      near="low"   sessions whose close is within `tol` of the lowest close since the running high.
+    A top-flagged share means something only above the near="high" placebo; a bottom share only
+    above near="low". Returns the placebo distribution of flagged shares and the share of draws at
+    or above the observed value (a permutation-style p, not a significance claim on 9 turns).
+    """
+    alert = alert.astype(bool).sort_index()
+    idx = alert.index
+    p = px.reindex(idx).ffill().to_numpy(dtype=float)
+    n = len(idx)
+    if near is None:
+        elig = np.ones(n, dtype=bool)
+    else:
+        hi = np.maximum.accumulate(np.where(np.isnan(p), -np.inf, p))
+        if near == "high":
+            elig = p >= hi * (1 - tol)
+        elif near == "low":
+            lo = np.empty(n)
+            for i in range(n):
+                lo[i] = p[i] if (i == 0 or hi[i] != hi[i - 1] or p[i] >= hi[i]) else min(lo[i - 1], p[i])
+            elig = p <= lo * (1 + tol)
+        else:
+            raise ValueError("near must be None, 'high' or 'low'")
+    starts = np.flatnonzero(elig)
+    runs = [e - s + 1 for s, e in _run_bounds(alert.to_numpy(dtype=bool))]
+    obs = score_pivots(alert, turns=turns, episodes=episodes, outcomes_through=outcomes_through,
+                       pre=pre, post=post, min_off=min_off, sealed_from=sealed_from,
+                       seen_history_ok=seen_history_ok)
+    rng = np.random.default_rng(seed)
+    shares = {"top": [], "bottom": []}
+    fro, prem = [], []
+    for _ in range(n_draws):
+        a = np.zeros(n, dtype=bool)
+        for ln in rng.permutation(runs):
+            for _try in range(50):
+                s = int(rng.choice(starts)) if len(starts) else 0
+                e = min(n, s + int(ln))
+                lo_, hi_ = max(0, s - 1), min(n, e + 1)      # keep runs separate
+                if not a[lo_:hi_].any():
+                    a[s:e] = True
+                    break
+        r = score_pivots(pd.Series(a, index=idx), turns=turns, episodes=episodes,
+                         outcomes_through=outcomes_through, pre=pre, post=post, min_off=min_off,
+                         sealed_from=sealed_from, seen_history_ok=seen_history_ok)
+        fro.append(r["false_risk_off_per_year"])
+        prem.append(r["premature_all_clear_per_year"])
+        for k in shares:
+            if r[k]["share_flagged"] is not None:
+                shares[k].append(r[k]["share_flagged"])
+    out = {"near": near, "tol": tol, "n_draws": n_draws, "seed": seed,
+           "eligible_share": _r(float(elig.mean())),
+           "false_risk_off_per_year": {"observed": obs["false_risk_off_per_year"],
+                                       "placebo_mean": _r(float(np.mean(fro)))},
+           "premature_all_clear_per_year": {"observed": obs["premature_all_clear_per_year"],
+                                            "placebo_mean": _r(float(np.mean(prem)))}}
+    for k, v in shares.items():
+        o = obs[k]["share_flagged"]
+        v = np.asarray(v)
+        out[k] = {"observed": o,
+                  "placebo_mean": _r(float(v.mean())) if len(v) else None,
+                  "placebo_p90": _r(float(np.quantile(v, 0.9))) if len(v) else None,
+                  "share_draws_ge_observed": (_r(float((v >= o - 1e-12).mean()))
+                                              if len(v) and o is not None else None)}
+    return out
+
+
+def _run_bounds(a: np.ndarray) -> list[tuple[int, int]]:
+    out, i, n = [], 0, len(a)
+    while i < n:
+        if a[i]:
+            j = i
+            while j + 1 < n and a[j + 1]:
+                j += 1
+            out.append((i, j))
+            i = j + 1
+        else:
+            i += 1
+    return out

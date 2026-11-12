@@ -75,3 +75,29 @@ By era (≥5%, post 10; tops · bottoms): Radar risk-off 2020–21 1/2 · 0/2; 2
   and they are frozen with the prereg.
 - Turns here are SPY episode peaks and troughs only. The desk's multi-asset tops and bottoms will
   enter as `Turn` lists and are not scored here.
+
+## Placebo (added 2026-11-12, research desk falsification proposal)
+
+`pivots.placebo()` draws 300 alert series with the signal's own run lengths (same budget and
+persistence), placing each run start (a) anywhere, (b) within 1% of the running high, or (c) within
+1% of the lowest close since the running high. Raw: `PIVOT_PLACEBO_INSAMPLE_v2.json`. ≥5% turns,
+post 10, in-sample.
+
+| Series | Tops: observed vs placebo (any / near high) | Bottoms: observed vs placebo (any / near low) | False risk-off /yr: observed vs placebo (any / near high) |
+|---|---|---|---|
+| Radar loud | 0.11 vs 0.39 / 0.61 | 0.13 vs 0.37 / 0.43 | 0.0 vs 1.2 / 2.2 |
+| HY OAS top decile | 0.33 vs 0.53 / 0.74 | 0.50 vs 0.50 / 0.58 | 0.15 vs 1.6 / 3.2 |
+| VIX ≥ 20 | 0.67 vs 0.75 / 0.89 | 0.50 vs 0.64 / 0.67 | 2.8 vs 3.0 / 5.7 |
+| SPY < 200d | 0.11 vs 0.29 / 0.50 | 0.13 vs 0.29 / 0.34 | 0.0 vs 0.8 / 1.6 |
+
+**Every series flags fewer turns than random runs of the same lengths, near-high placebo
+included.** Random runs spread their starts across the calendar, so they land in more turn
+windows, and they pay for it in false calls. The real signals buy their low false-call rates by
+concentrating inside declines. That also explains why they record more premature all-clears than
+the placebo: a placebo that is rarely on inside a decline rarely switches off inside one.
+
+Consequence for the shared scorecard: **a flagged share is not readable on its own.** It is read
+against the placebo at the same false-call rate. The proposed primary statement is a pair: flagged
+share and false calls per year, each beside its near-high (tops) or near-low (bottoms) placebo.
+None of the in-sample Radar or baseline series beats its placebo on flagged share; all of them beat
+it on false calls.

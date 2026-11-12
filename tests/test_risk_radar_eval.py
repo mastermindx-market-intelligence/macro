@@ -194,3 +194,15 @@ def test_pivot_clusters_and_per_asset_alerts():
     assert top["n_turns"] == 2 and top["flagged"] == 1          # A flagged, B not
     assert top["n_clusters"] == 1 and top["clusters_flagged"] == 1
     assert r["no_alert"] == ["C"]
+
+
+def test_placebo_near_high_beats_unconditional_on_tops():
+    px, idx, eps, _ = _pivot_setup(0, 0)
+    turns = P.turns_from_episodes(eps)
+    alert = pd.Series(False, index=idx); alert.iloc[26:29] = True
+    kw = dict(px=px, turns=turns, episodes=eps, outcomes_through=idx[-1], n_draws=200,
+              sealed_from=None, pre=5, post=2)
+    u = P.placebo(alert, near=None, **kw)
+    h = P.placebo(alert, near="high", **kw)
+    assert h["top"]["placebo_mean"] > u["top"]["placebo_mean"]
+    assert h["eligible_share"] < 1.0 and u["top"]["observed"] == 1.0
