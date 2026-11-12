@@ -1605,6 +1605,15 @@ lanes:
           durably absent.
           inputs: [FRED_API_KEY]
           outputs: [data/fred_vintage/release_targets/manifest.json]
+      - id: collect_cycle_vintages
+        module: scripts.collect_cycle_vintages
+        note: >
+          non-fatal; Cycle (a) ALFRED output_type=2 full-vintage
+          stores for NEWORDER, ISRATIO, and INDPRO. Independent
+          sibling of the release-target cohort; cycle publication
+          leaves the CPI completion boundary untouched.
+          inputs: [FRED_API_KEY]
+          outputs: [data/fred_vintage/cycle_vintages/manifest.json]
       - id: collect_release_cpi_official_truth
         module: scripts.collect_release_cpi_official_truth
         note: >

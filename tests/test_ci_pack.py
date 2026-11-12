@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_998),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_732),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #7871, enroll the Cycle collector in its CODE owner):
+    The existing collector-registry owner receives pyarrow and a separate
+    synthetic Cycle collector fixture step; every prior command and order,
+    gate, inferred scope and 15-minute timeout are preserved. No new owner,
+    exemption, duplicate executor or provider collection is introduced.
+    Its unchanged news-contract import closure reaches the Codex runner's
+    unqualified subprocess calls. Incumbent ambiguity rules already select
+    this owner for templates, scripts and engine probes. Raw source counts
+    change 5 -> 6 commands, 6 -> 7 test references and 527 -> 592 characters;
+    the same character bucket gives weight 17 -> 20. Thus receiving
+    5971/5995/5729 composes to 5974/5998/5732 with the original job ceilings
+    137/138/131 and ten packs. Preserve every earlier historical record,
+    assertion and selection/runtime control. This is static source accounting,
+    not an executed planner measurement. Natural successor CI must qualify
+    the combined collector, DAG, closure, import-pin and packing changes.
 
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into

@@ -13779,7 +13779,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyyaml requests
+        run: pip install pytest pandas numpy pyyaml requests pyarrow
       - name: china_news collector tests (incl. adapter-registered-without-akshare)
         run: python -m pytest tests/test_china_news.py -q
       - name: optional news provider semantics and actual ordering consumer
@@ -13791,6 +13791,9 @@ jobs:
             tests/test_sec_filing_parser.py \
             tests/test_fundamental_forensics_ixbrl_extraction.py \
             tests/test_fundamental_forensics_attestation.py -q
+      - name: Cycle full-vintage collector fixture contracts
+        # Synthetic fetchers and temporary Parquet stores; no provider collection.
+        run: python -m pytest tests/test_collect_cycle_vintages.py -q
       - name: adapter registry must stay populated
         run: |
           python -c "from scripts.collect import all_adapters; n = len(all_adapters()); assert n > 100, f'adapter registry gutted: only {n} adapters registered'; print(f'{n} adapters registered')"
