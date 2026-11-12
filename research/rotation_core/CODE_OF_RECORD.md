@@ -1,6 +1,6 @@
 # Rotation Core — code of record
 
-The engine, runner and tests that produced every result in `research/rotation_core/` are not on `main`. They live on the archive branch, which is kept permanently.
+The protected archive contains the engine, runner, tests, Run A fixture program and ten power-analysis helpers. This directory carries the protocols, input hashes, stdout, result data and adjudication records.
 
 | | |
 |---|---|
@@ -18,6 +18,14 @@ The branch is protected by repository ruleset 27041175 (`non_fast_forward` and `
 - Macro merges by squash, so the engine, release, START and GATE commits are reachable only from the archive branch.
 
 Every file path and line number cited in this directory (for example `engine/rotation_core_v2.py:1126` or `scripts/run_rotation_core_v2.py:774`) refers to engine commit `b3f7ce4548`.
+
+## Verifying the archived power-analysis packet
+
+The [power-analysis directory](https://github.com/mastermindx-market-intelligence/macro/tree/b1e4b44c529a152887a4e6080cdf8028766e60a0/research/rotation_core/v2_power) contains the ten original Python helpers alongside their recorded outputs. The [Run A fixture program](https://github.com/mastermindx-market-intelligence/macro/blob/b1e4b44c529a152887a4e6080cdf8028766e60a0/research/rotation_core/PRO_RUN_A_fixtures.py) is at the same archive commit. The `v2_power/SHA256SUMS` manifest covers the complete archived packet. To verify all entries in a checkout of the archive head, run the following from the repository root.
+
+```sh
+(cd research/rotation_core/v2_power && shasum -a 256 -c SHA256SUMS)
+```
 
 ## Reproducing a published figure
 
