@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 6_010),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_731),
+    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_012),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_732),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 11
@@ -6010,6 +6010,22 @@ PACKING_PROBE_MAX_PACKS = 11
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #10924, merge of main 9d8a0c8be5bb / #11051):
+    re-measured on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged .github/ci/legacy-jobs.yml).
+    Main's #11051 bounded browser-only Chromium fallback raises its own
+    composition to 5,969/5,993/5,727 (its measured +1/+2/+1 over #11019's
+    5,968/5,991/5,726, recorded in its playwright apt-outage paragraph
+    below); this PR's own jobs still add exactly their previously measured
+    excess over main (+5/+19/+5), so the merged ceilings are index
+    137/5,974, free-content 138/6,012, plan_book 131/5,732 — measured on
+    the merged tree, not smeared. Job ceilings stay 137/138/131; the
+    free-content weight 6,012 packs into 11 packs at
+    PACK_TARGET_SECONDS 600, at the existing parent-approved pack ceiling
+    11 — no pack change. Every selector and every assertion is unchanged;
+    main's #11051 playwright apt-outage paragraph and every prior
+    provenance paragraph below are kept verbatim.
 
     2026-11-12 (PR #10924, merge of main e752cc8a98a8 / #11019):
     re-measured on the merged tree with the same probe measurement
@@ -6026,6 +6042,23 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceiling 11 — no pack change. Every selector and every assertion is
     unchanged; main's #11019 two-line comment is kept, and every prior
     provenance paragraph below is kept verbatim.
+
+    2026-11-11 (playwright apt-outage fallback): the seven shell-executed
+    ``playwright install --with-deps chromium`` steps each gained a bounded
+    240s first attempt plus a 60s browser-only fallback (GitHub-hosted
+    runners intermittently cannot resolve any Ubuntu archive and the apt
+    stage was killing whole packs before a test ran; terminal PR #1469
+    precedent). The three ``acquisition: native_parallel`` contract installs
+    stay byte-identical (run_ci_pack validates their exact run token).
+    Four owners crossed an 800-character estimator bucket, +1 each:
+    catalyst-loop-integrated 27->28, international-dislocation-explorer
+    7->8, international-workspace-browser 58->59, prophet-lab 67->68
+    (engine-render-guards keeps its pinned observed 875). Measured probes:
+    index 137 jobs 5966->5967, free-content 138 jobs 5987->5989, Prophet
+    131 jobs 5724->5725; ten packs, every selected job and every job-count
+    ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
+    is measured planner accounting, not an execution-time estimate; natural
+    successor CI must qualify the repaired source.
 
     2026-11-11 (PR #10924, second main conflict 82930233f83a / #9230):
     re-measured on the merged tree with the same probe measurement
