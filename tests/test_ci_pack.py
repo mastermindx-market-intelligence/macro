@@ -5997,10 +5997,12 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
+# The Start-page regression adds one test file to the existing builder step.
+# All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_726),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6010,51 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #10609, current-main source conflict repair):
+    Receiver e7f8565ca26b74b9ae0d637b336e9985d513ff9d retains all 401
+    owners, the six landed CI owner changes, five DATA dependency fixes,
+    and #11101's independent marketing suite contribution exactly once.
+    Preserve the data-base-shim contribution and its original
+    feature objects; retain every other current-main owner and source path.
+    Carry only this carrier's 2/2/2 marginal weights onto
+    5971/5995/5729, yielding 5973/5997/5731; keep 137/138/131 job
+    ceilings, ten packs, all selectors, assertions, and runtime controls.
+    Retain all 2886 bytes/43 lines of published carrier history
+    at their original anchors and every current-main provenance paragraph.
+    This is source accounting; actual paired native proof and natural
+    successor CI are separate evidence. Original UNKNOWN effects, closed
+    grants, and private/provider/product/release limits remain unchanged.
+
+    2026-11-12 (PR #11101, runtime-adapter closure): wiring
+    tools/xguerrilla/tests/test_runtime_adapter.py into
+    marketing-social-publisher satisfies the closure doctrine —
+    contract-delta had flagged the suite as named by no run: step
+    (run 43143064165, job 130934421614). The join adds its run token
+    to that step with no new job selected ("newly selected: none");
+    the estimator measures +2 on the shared owner for all three
+    probes: index 5969->5971, free-content 5993->5995, Prophet
+    5727->5729. Jobs 137/138/131, ten packs, selectors, commands
+    and admission limits unchanged. The wider selection is intended
+    (closure-required); natural successor CI must qualify the
+    repaired source.
+
+    2026-11-11 (playwright apt-outage fallback): the seven shell-executed
+    ``playwright install --with-deps chromium`` steps each gained a bounded
+    240s first attempt plus a 60s browser-only fallback (GitHub-hosted
+    runners intermittently cannot resolve any Ubuntu archive and the apt
+    stage was killing whole packs before a test ran; terminal PR #1469
+    precedent). The three ``acquisition: native_parallel`` contract installs
+    stay byte-identical (run_ci_pack validates their exact run token).
+    Four owners crossed an 800-character estimator bucket, +1 each:
+    catalyst-loop-integrated 27->28, international-dislocation-explorer
+    7->8, international-workspace-browser 58->59, prophet-lab 67->68
+    (engine-render-guards keeps its pinned observed 875). Measured probes:
+    index 137 jobs 5966->5967, free-content 138 jobs 5987->5989, Prophet
+    131 jobs 5724->5725; ten packs, every selected job and every job-count
+    ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
+    is measured planner accounting, not an execution-time estimate; natural
+    successor CI must qualify the repaired source.
 
     2026-11-11 (PR #10609, current-main source composition):
     Base catalog b68f93a812c85ddaea5dad71c295c51659b7d371 and packing
