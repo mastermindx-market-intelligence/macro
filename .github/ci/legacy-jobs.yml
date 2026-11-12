@@ -6985,7 +6985,7 @@ jobs:
         # tests also exercise the existing archive reader and an injected collector
         # with no network calls; their imports require beautifulsoup4 and requests.
         # Reported-input valuation remains pure and never fetches during computation.
-        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow beautifulsoup4 requests
+        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow beautifulsoup4 requests plotly
       - name: conviction profile honesty invariants + dossier reason codes
         run: python -m pytest tests/test_stock_score.py tests/test_stock_dossier.py -q
       # P1 unrun backfill 2026-08-19: tests/test_analyzer_i18n_percentile.py (#5980) was named
@@ -10236,7 +10236,15 @@ jobs:
       - name: fetch the pre-fold commit for the red-first proof
         run: git fetch --no-tags --depth=1 --filter=blob:none origin c22864f80967e77e6e42cd926ef00f11f7197d06
       - name: Install Chromium for the browser-backed render guards
-        run: python -m playwright install --with-deps chromium
+        # Hosted runners intermittently cannot resolve the Ubuntu archive; a
+        # --with-deps stall then kills the pack before any test runs. The
+        # hosted image already ships Chromium's system libraries, so keep the
+        # cached browser path alive and let a genuinely missing library fail
+        # the launch visibly (no pixel-baseline test depends on apt fonts).
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
       # NEVER put a `#` comment inside the folded `run: >` scalar below. YAML folds it
       # onto ONE shell line, where `#` starts a SHELL comment — everything after it,
       # including every remaining test path and the trailing `-q`, silently vanishes
@@ -11025,7 +11033,11 @@ jobs:
       - name: install browser test dependencies
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
-          npx playwright install --with-deps chromium
+          # Bounded --with-deps first, then the browser-only fallback when the
+          # hosted Ubuntu archive is down (see the render-guards install note).
+          timeout --signal=TERM --kill-after=15s 240s npx playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s npx playwright install chromium; }
       # F10 (intl-GS CI budget, DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031):
       # the unrestricted post-checkout base fetch cost ~4 minutes on hosted runners
       # (PR full-suite runs of 2026-10-31; every subtest green, job cut at the pack
@@ -11854,7 +11866,11 @@ jobs:
       - name: install browser test dependencies
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
-          npx playwright install --with-deps chromium
+          # Bounded --with-deps first, then the browser-only fallback when the
+          # hosted Ubuntu archive is down (see the render-guards install note).
+          timeout --signal=TERM --kill-after=15s 240s npx playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s npx playwright install chromium; }
       - name: canonical base for the frozen-file guard (fail closed)
         run: |
           python - <<'PY'
@@ -12126,7 +12142,12 @@ jobs:
           tests/test_prophet_today_provenance.py
           tests/test_prophet_daily_brief_api.py -q
       - name: install observation browser
-        run: python -m playwright install --with-deps chromium
+        # See the render-guards install note: bounded --with-deps first, then
+        # the browser-only fallback when the hosted Ubuntu archive is down.
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
       - name: Prophet observation discovery — full-population search, access failure and theme geometry
         run: python -m pytest tests/test_prophet_observations_browser.py -q
 
@@ -15874,6 +15895,7 @@ jobs:
       - "tests/test_ci_browser_capture.py"
       - "tests/test_ci_browser_dependency_inputs.py"
       - "tests/test_ci_browser_native_setup.py"
+      - "tests/test_ci_browser_setup.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
       - "config/theme_crosswalk.yml"
@@ -16046,6 +16068,7 @@ jobs:
       - "tests/test_ci_browser_capture.py"
       - "tests/test_ci_browser_dependency_inputs.py"
       - "tests/test_ci_browser_native_setup.py"
+      - "tests/test_ci_browser_setup.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
       - "config/theme_crosswalk.yml"
@@ -16080,7 +16103,7 @@ jobs:
       # untested code otherwise); no importorskip, no data/ or site/ reads, so it
       # cannot skip its way to a green on a pack runner.
       - name: ci-plan/ci-pack/ci-gate workflow structure contract
-        run: python -m pytest tests/test_ci_plan_workflow.py tests/test_ci_semantic_proof.py tests/test_ci_pack_semantic.py tests/test_ci_browser_dependency_inputs.py tests/test_ci_browser_capture.py tests/test_ci_apt_cold_acquisition.py tests/test_ci_apt_native_plan.py tests/test_ci_apt_transaction_contract.py tests/test_ci_apt_native_stage.py tests/test_ci_browser_native_setup.py -q
+        run: python -m pytest tests/test_ci_plan_workflow.py tests/test_ci_semantic_proof.py tests/test_ci_pack_semantic.py tests/test_ci_browser_dependency_inputs.py tests/test_ci_browser_capture.py tests/test_ci_apt_cold_acquisition.py tests/test_ci_apt_native_plan.py tests/test_ci_apt_transaction_contract.py tests/test_ci_apt_native_stage.py tests/test_ci_browser_native_setup.py tests/test_ci_browser_setup.py -q
       # The merge-gate reliability report is the progress metric for
       # research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md, so a silent
       # regression in it would make that program's acceptance gate meaningless.
@@ -16246,6 +16269,7 @@ jobs:
       - "tests/test_ci_browser_capture.py"
       - "tests/test_ci_browser_dependency_inputs.py"
       - "tests/test_ci_browser_native_setup.py"
+      - "tests/test_ci_browser_setup.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
       - "config/theme_crosswalk.yml"
@@ -22136,7 +22160,12 @@ jobs:
       - name: install Forex fixture dependencies
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn playwright
       - name: install isolated Forex browser
-        run: python -m playwright install --with-deps chromium
+        # See the render-guards install note: bounded --with-deps first, then
+        # the browser-only fallback when the hosted Ubuntu archive is down.
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
       - name: R26 decision, consumer and shared-window contracts
         run: python -m pytest tests/test_forex_r26_decision_contract.py tests/test_forex_r4_contract.py tests/test_forex_hero_spark_window.py tests/test_forex_r26_consumer.py tests/test_forex_r26_consumer_freshness.py tests/test_forex_r26_event_display.py tests/test_forex_r26_workspace.py tests/test_forex_watch_client_js.py tests/test_forex_watch_workspace_browser.py -q
 
@@ -47116,7 +47145,12 @@ jobs:
         # browser contract only ever SKIPS on the merge gate.
         run: pip install pytest pandas pyarrow pyyaml requests fastapi httpx jinja2 websockets jsonschema referencing playwright
       - name: Install Chromium for the scan-card browser contract
-        run: python -m playwright install --with-deps chromium
+        # See the render-guards install note: bounded --with-deps first, then
+        # the browser-only fallback when the hosted Ubuntu archive is down.
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
       - name: Anonymous scan, rights, consent and first-value UX
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
@@ -51218,7 +51252,12 @@ jobs:
       - name: install browser test dependencies
         run: pip install pytest playwright
       - name: install Chromium
-        run: python -m playwright install --with-deps chromium
+        # See the render-guards install note: bounded --with-deps first, then
+        # the browser-only fallback when the hosted Ubuntu archive is down.
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
       - name: Bot recovery deadline, replay, cookie and cross-tab contracts
         run: MM_REQUIRE_BROWSER=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_bot_session_recovery_browser.py -q
 
