@@ -118,3 +118,64 @@ def test_interval_is_wide_for_nine_cases():
     from engine.risk_radar_eval.scorecard import _cp
     lo, hi = _cp(3, 9)
     assert hi - lo > 0.45
+
+
+# ---- pivot scorecard -------------------------------------------------------------------------
+from engine.risk_radar_eval import pivots as P
+
+
+def _pivot_setup(on_from, on_to, depth=0.12):
+    px = _dip(depth=depth)                 # peak idx 29, trough idx 39, recovery ~ idx 59
+    idx = px.index
+    eps = L.drawdown_episodes(px, 0.10, outcomes_through=idx[-1])
+    alert = pd.Series(False, index=idx)
+    alert.iloc[on_from:on_to] = True
+    return px, idx, eps, alert
+
+
+def test_pivot_late_call_counts_with_delay():
+    px, idx, eps, alert = _pivot_setup(33, 42)       # on 4 after top, off 3 after trough
+    r = P.score_pivots(alert, turns=P.turns_from_episodes(eps), episodes=eps,
+                       outcomes_through=idx[-1], pre=21, post=10, sealed_from=None)
+    assert r["top"]["flagged"] == 1 and r["top"]["delays"] == [4]
+    assert r["bottom"]["flagged"] == 1 and r["bottom"]["delays"] == [3]
+    assert r["false_risk_off"] == 0 and r["premature_all_clear"] == 0
+
+
+def test_pivot_false_signal_and_premature_all_clear():
+    px, idx, eps, alert = _pivot_setup(31, 34)       # on then off before the trough (idx 39)
+    alert.iloc[75:78] = True                          # after recovery, near no turn
+    r = P.score_pivots(alert, turns=P.turns_from_episodes(eps), episodes=eps,
+                       outcomes_through=idx[-1], pre=3, post=3, sealed_from=None)
+    assert r["top"]["flagged"] == 1
+    assert r["bottom"]["flagged"] == 0
+    assert r["premature_all_clear"] == 1
+    assert r["false_risk_off"] == 1
+
+
+def test_pivot_censoring_and_open_episode():
+    px, idx, eps, alert = _pivot_setup(33, 42)
+    cut = idx[45]                                     # before recovery: episode open
+    eps_open = L.drawdown_episodes(px, 0.10, outcomes_through=cut)
+    turns = P.turns_from_episodes(eps_open)
+    assert [t.kind for t in turns] == ["top"]          # no bottom until recovery
+    a = alert.loc[:cut]
+    r = P.score_pivots(a, turns=turns, episodes=eps_open, outcomes_through=cut,
+                       pre=21, post=20, sealed_from=None)
+    assert r["top"]["n_turns"] == 0 and r["top"]["censored"] == 1   # window passes the cutoff
+
+
+def test_pivot_refuses_missing_sessions():
+    px, idx, eps, alert = _pivot_setup(33, 42)
+    alert = alert.astype(object); alert.iloc[5] = None
+    with pytest.raises(ValueError):
+        P.score_pivots(alert, turns=[], episodes=eps, outcomes_through=idx[-1], sealed_from=None)
+
+
+def test_pivot_off_flicker_is_not_an_all_clear():
+    px, idx, eps, alert = _pivot_setup(32, 45)
+    alert.iloc[36] = False                            # one-session flicker before the trough
+    r = P.score_pivots(alert, turns=P.turns_from_episodes(eps), episodes=eps,
+                       outcomes_through=idx[-1], pre=21, post=10, sealed_from=None)
+    assert r["bottom"]["delays"] == [6]               # off at idx 45, trough idx 39
+    assert r["premature_all_clear"] == 1 and r["n_calls"]["off_flickers"] == 1
