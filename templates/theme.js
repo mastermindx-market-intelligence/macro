@@ -3116,6 +3116,12 @@
     // sign-out (rail)
     var so = ov.querySelector('#sd-signout-rail');
     if (so) so.addEventListener('click', function () { if (window.MDXAuth) window.MDXAuth.signOut(); });
+    // Section headers are rebuilt on auth/locale/section renders. Delegate the
+    // desktop close so newly rendered buttons (and their SVG children) still work.
+    ov.addEventListener('click', function (e) {
+      var x = e.target && e.target.closest ? e.target.closest('.sd-x') : null;
+      if (x && ov.contains(x)) _closeSDash();
+    });
     // mobile close
     var xm = ov.querySelector('#sd-x-m');
     if (xm) xm.addEventListener('click', _closeSDash);
@@ -3702,9 +3708,7 @@
     html += _sdPlanHeroHTML();
     var p = _sdPlan || {};
     var tier = _sdNormTier(p.tier) || 'free';
-    var interval = p.interval || null;
-    var top = (tier === 'unlimited') || (tier === 'pro' && interval === 'annual');
-    if (!top) {
+    if (_sdPlanHasUpgrade(p)) {
       var lblKey = (tier === 'free') ? 'choosePlan' : (tier === 'essential') ? 'upgradePro' : 'switchAnnual';
       html += '<div class="sd-plan-cta" style="margin:0 0 14px">' +
         '<button type="button" class="sd-btn primary" data-sd-cta="upgrade" id="sd-bill-up">' + _sdBl(lblKey) + '</button></div>';
@@ -4006,6 +4010,16 @@
     }
     return '';
   }
+  // A directly granted Pro lifetime plan already includes the annual plan's access.
+  // Keep real monthly subscriptions and finite/canceled grants eligible as before.
+  function _sdPlanHasUpgrade(p) {
+    p = p || {};
+    var tier = _sdNormTier(p.tier) || 'free';
+    var lifetime = (p.tier === 'unlimited' || p.source === 'comp') &&
+        !p.current_period_end && p.status !== 'canceled';
+    return !((tier === 'unlimited') ||
+        (tier === 'pro' && (p.interval === 'annual' || lifetime)));
+  }
   function _sdPlanHTML() {
     // Cold cache → a quiet loading row; _wireSDAccount fills it in from /api/me.
     if (!_sdPlan) {
@@ -4020,16 +4034,10 @@
     var tier = _sdNormTier(p.tier) || 'free';
     var paid = tier !== 'free';
     var chip = _sdPlanChip(p);
-    var interval = p.interval || null;
-    // Every upgrade lane lives in the one onboard sheet (MMOnboard 'upgrade'), which
-    // reads /api/me and shows the tier-correct lanes + the trial/prorate confirm.
-    // Nothing left to buy ONLY at the very top (Pro annual / unlimited). Everyone else
-    // gets a button — including a Pro MONTHLY subscriber who can still switch to annual
-    // for the ~30% discount, and trial-monthly users (their trial continues; billing
-    // switches to annual when it ends). Label mirrors onboard.js savePct (locked pricing).
-    var top = (tier === 'unlimited') || (tier === 'pro' && interval === 'annual');
+    // The shared eligibility rule also gates Billing; lifetime grants have no
+    // recurring interval to switch. The existing sheet owns all real upgrade lanes.
     var cta = '';
-    if (!top) {
+    if (_sdPlanHasUpgrade(p)) {
       // Essential (any interval) → lead with the Pro upgrade (the recommended move);
       // Pro monthly → the annual switch. Free → choose a plan.
       var lblKey = !paid ? 'choosePlan'
