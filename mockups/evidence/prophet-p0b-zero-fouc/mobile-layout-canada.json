@@ -45,7 +45,7 @@
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "9063fd33a84ea466cdcf910a3b5beadd846701e49c8b30a81b0e6f14bb169840"
+    "sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "ca",

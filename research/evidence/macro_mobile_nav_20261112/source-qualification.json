@@ -1,0 +1,1210 @@
+{
+  "actual_browser_owner_projection_totals": {
+    "degraded_control_cases": 32,
+    "markets": 2,
+    "primary_cases": 96,
+    "screenshots": 16,
+    "total_cases": 128
+  },
+  "actual_path_closure": {
+    "changed_paths": [
+      "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+      "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "research/evidence/macro_mobile_nav_20261112/README.md",
+      "research/evidence/macro_mobile_nav_20261112/source-qualification.json",
+      "site/theme.js",
+      "templates/theme.js",
+      "tests/test_navigation_refresh.py"
+    ],
+    "changed_paths_json_sha256": "5d0a67374bd3ddc76fc829a3afe5a2c4b938396877198ec8d89ba3bf466026a6",
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-B",
+      "scripts/check_p0b_receipt_closure.py",
+      "--diff-file",
+      "/tmp/macro-pr9599-p0b-20261112-hgp2egff/changed-paths.json",
+      "--repo-root",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-pr9599-pageshow-p0b-20261112-sol-web-001",
+      "--event",
+      "pull_request"
+    ],
+    "finished": "2026-11-12T02:30:58.977307+00:00",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "returncode": 0,
+    "started": "2026-11-12T02:30:58.823974+00:00",
+    "stdout": ""
+  },
+  "browser_executions": {
+    "ca": {
+      "actual_receipt_sha256": "0a48c1c34c80421c0eed80f5e3e035cb25060e78926082fb5070ce6cf263e3f0",
+      "browser": {
+        "arch": "arm64",
+        "engine": "chromium",
+        "executable": {
+          "name": "chrome-headless-shell",
+          "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+        },
+        "platform": "darwin",
+        "playwright": "1.61.1",
+        "version": "149.0.7827.55"
+      },
+      "command": [
+        "/opt/homebrew/bin/node",
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "--html",
+        "/tmp/macro-pr9599-p0b-20261112-hgp2egff/rendered/canada_stocks.html",
+        "--site-dir",
+        "site",
+        "--fixture-receipt",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "--fixture-assets-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
+        "--browser",
+        "/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+        "--out",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "--screenshot-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc",
+        "--historical-head",
+        "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+        "--historical-tree",
+        "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec"
+      ],
+      "finished": "2026-11-12T02:12:50.707733+00:00",
+      "log_sha256": "04de2cd144ba6ce9ceb52b34ba6410650c2531c53137cac9a8f49bf24dfffaba",
+      "market": "ca",
+      "node_module_path": "/tmp/macro-pr9599-p0b-20261112-hgp2egff/runtime/node_modules",
+      "original_process": 76844,
+      "prior_receipt_sha256": "ef4ed2b98d0cb050f0bc476f2943cd1ebb758d9623d08ee1c8a753402be19d49",
+      "projection_totals": {
+        "contract": {
+          "browser_motion_preference": "reduce",
+          "degraded_control_modes": [
+            "composer-failed",
+            "composer-pending"
+          ],
+          "degraded_control_owner_case": "watch-only",
+          "expected_degraded_control_cases": 16,
+          "expected_loaded_watch_only_screenshots": 8,
+          "expected_primary_cases": 48,
+          "expected_total_cases": 64,
+          "languages": [
+            "en",
+            "zh"
+          ],
+          "markets_in_receipt": 1,
+          "owner_cases": [
+            "normal",
+            "watch-only",
+            "null-buy"
+          ],
+          "primary_modes": [
+            "loaded",
+            "js-disabled"
+          ],
+          "screenshot_animation_policy": "disabled",
+          "screenshot_caret_policy": "hide",
+          "themes": [
+            "dark",
+            "light"
+          ],
+          "viewport_widths": [
+            390,
+            1440
+          ]
+        },
+        "degraded_controls_passed": 16,
+        "membership_overlay": {
+          "bytes": 1088,
+          "canonicalization": "utf-8 JSON; sort_keys=true; separators=(',', ':'); no trailing newline",
+          "payload": {
+            "card_population_mutation": "none",
+            "classification": "browser_contract_fixture_only",
+            "composer_rows": [
+              {
+                "sector": "Fixture finance",
+                "ticker": "PMZ-UN.TO"
+              },
+              {
+                "sector": "Fixture finance",
+                "ticker": "MTL.TO"
+              }
+            ],
+            "control": {
+              "remove_attributes": [
+                "disabled"
+              ],
+              "selector": "[data-action-id=\"FIXTURE-FINANCE\"] .anv2-name.ca-v36-an-row",
+              "set_attributes": {
+                "data-ca-lead-id": "FIXTURE-FINANCE",
+                "data-ca-lead-kind": "sector"
+              }
+            },
+            "delivery": "verifier-scoped JSON.parse overlay only when the call stack names the exact entitled composer and the input bytes equal #stocktable-data; the wrapper is removed after one consumption",
+            "group": {
+              "id": "FIXTURE-FINANCE",
+              "kind": "sector",
+              "name": "Fixture finance",
+              "research_href": "sectors/FIXTURE-FINANCE.html"
+            },
+            "market": "ca",
+            "members": [
+              {
+                "owner_lane": "watch",
+                "ticker": "PMZ-UN.TO"
+              },
+              {
+                "owner_lane": "watch",
+                "ticker": "MTL.TO"
+              }
+            ],
+            "owner_case": "normal",
+            "schema": "mastermind.stock_dashboard_membership_overlay.v1",
+            "source_identity_requirement": "every member must remain in its original server-owned watch/stage anchor and must not be an actionable card",
+            "table_population_mutation": "none"
+          },
+          "sha256": "954b75b0f91a1b8912df9360301694530c9aeff706e211a2001e460bc1af59c2"
+        },
+        "pass": true,
+        "primary_passed": 48,
+        "screenshot_count": 8,
+        "theme_art_direction_pairs": [
+          {
+            "dark": {
+              "background_color": "rgb(21, 24, 32)",
+              "border_color": "rgb(58, 65, 80)",
+              "box_shadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px"
+            },
+            "light": {
+              "background_color": "rgb(255, 255, 255)",
+              "border_color": "rgb(192, 196, 205)",
+              "box_shadow": "rgba(23, 32, 55, 0.05) 0px 1px 2px 0px, rgba(23, 32, 55, 0.1) 0px 8px 24px -12px"
+            },
+            "locale": "en",
+            "pass": true,
+            "viewport_width": 390
+          },
+          {
+            "dark": {
+              "background_color": "rgb(21, 24, 32)",
+              "border_color": "rgb(58, 65, 80)",
+              "box_shadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px"
+            },
+            "light": {
+              "background_color": "rgb(255, 255, 255)",
+              "border_color": "rgb(192, 196, 205)",
+              "box_shadow": "rgba(23, 32, 55, 0.05) 0px 1px 2px 0px, rgba(23, 32, 55, 0.1) 0px 8px 24px -12px"
+            },
+            "locale": "en",
+            "pass": true,
+            "viewport_width": 1440
+          },
+          {
+            "dark": {
+              "background_color": "rgb(21, 24, 32)",
+              "border_color": "rgb(58, 65, 80)",
+              "box_shadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px"
+            },
+            "light": {
+              "background_color": "rgb(255, 255, 255)",
+              "border_color": "rgb(192, 196, 205)",
+              "box_shadow": "rgba(23, 32, 55, 0.05) 0px 1px 2px 0px, rgba(23, 32, 55, 0.1) 0px 8px 24px -12px"
+            },
+            "locale": "zh",
+            "pass": true,
+            "viewport_width": 390
+          },
+          {
+            "dark": {
+              "background_color": "rgb(21, 24, 32)",
+              "border_color": "rgb(58, 65, 80)",
+              "box_shadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px"
+            },
+            "light": {
+              "background_color": "rgb(255, 255, 255)",
+              "border_color": "rgb(192, 196, 205)",
+              "box_shadow": "rgba(23, 32, 55, 0.05) 0px 1px 2px 0px, rgba(23, 32, 55, 0.1) 0px 8px 24px -12px"
+            },
+            "locale": "zh",
+            "pass": true,
+            "viewport_width": 1440
+          }
+        ]
+      },
+      "receipt_bytes": 498957,
+      "receipt_git_blob": "189bbc14f291b38aac7daa9f51a58e2275d25ec7",
+      "receipt_pass": true,
+      "returncode": 0,
+      "source_inputs_unchanged": true,
+      "source_snapshot_tree_before_evidence": "29d385550b1e28a211af07a17213dcb62c7cb1f0",
+      "started": "2026-11-12T02:08:48.790710+00:00",
+      "terminal_exit": 0
+    },
+    "hk": {
+      "actual_receipt_sha256": "1804eaf3274e397485ad8c220d20cb9e827385c5c47195824fec8bc4a679d6fc",
+      "browser": {
+        "arch": "arm64",
+        "engine": "chromium",
+        "executable": {
+          "name": "chrome-headless-shell",
+          "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+        },
+        "platform": "darwin",
+        "playwright": "1.61.1",
+        "version": "149.0.7827.55"
+      },
+      "command": [
+        "/opt/homebrew/bin/node",
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "--html",
+        "/tmp/macro-pr9599-p0b-20261112-hgp2egff/rendered/hk_stocks.html",
+        "--site-dir",
+        "site",
+        "--fixture-receipt",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "--fixture-assets-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
+        "--browser",
+        "/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+        "--out",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+        "--screenshot-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc",
+        "--historical-head",
+        "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+        "--historical-tree",
+        "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec"
+      ],
+      "finished": "2026-11-12T02:12:53.754473+00:00",
+      "log_sha256": "94eb28a308d746e5b3e94f1a6200788695f6e4585cd163eb75998623003b8296",
+      "market": "hk",
+      "node_module_path": "/tmp/macro-pr9599-p0b-20261112-hgp2egff/runtime/node_modules",
+      "original_process": 76489,
+      "prior_receipt_sha256": "27a31b4e9788fbb6c75ab8de535035c908ec9a3cf8c3684fa8490100e87be59e",
+      "projection_totals": {
+        "contract": {
+          "browser_motion_preference": "reduce",
+          "degraded_control_modes": [
+            "composer-failed",
+            "composer-pending"
+          ],
+          "degraded_control_owner_case": "watch-only",
+          "expected_degraded_control_cases": 16,
+          "expected_loaded_watch_only_screenshots": 8,
+          "expected_primary_cases": 48,
+          "expected_total_cases": 64,
+          "languages": [
+            "en",
+            "zh"
+          ],
+          "markets_in_receipt": 1,
+          "owner_cases": [
+            "normal",
+            "watch-only",
+            "null-buy"
+          ],
+          "primary_modes": [
+            "loaded",
+            "js-disabled"
+          ],
+          "screenshot_animation_policy": "disabled",
+          "screenshot_caret_policy": "hide",
+          "themes": [
+            "dark",
+            "light"
+          ],
+          "viewport_widths": [
+            390,
+            1440
+          ]
+        },
+        "degraded_controls_passed": 16,
+        "membership_overlay": {
+          "bytes": 1055,
+          "canonicalization": "utf-8 JSON; sort_keys=true; separators=(',', ':'); no trailing newline",
+          "payload": {
+            "card_population_mutation": "none",
+            "classification": "browser_contract_fixture_only",
+            "composer_rows": [
+              {
+                "sector": "Fixture finance",
+                "ticker": "2318.HK"
+              },
+              {
+                "sector": "Fixture finance",
+                "ticker": "2331.HK"
+              }
+            ],
+            "control": {
+              "remove_attributes": [
+                "disabled"
+              ],
+              "selector": "[data-action-id=\"FIXTURE-FINANCE\"] .anv2-name.hk-v37-an-row",
+              "set_attributes": {
+                "data-hk-lead-id": "FIXTURE-FINANCE"
+              }
+            },
+            "delivery": "verifier-scoped JSON.parse overlay only when the call stack names the exact entitled composer and the input bytes equal #stocktable-data; the wrapper is removed after one consumption",
+            "group": {
+              "id": "FIXTURE-FINANCE",
+              "kind": "sector",
+              "name": "Fixture finance",
+              "research_href": "sectors/FIXTURE-FINANCE.html"
+            },
+            "market": "hk",
+            "members": [
+              {
+                "owner_lane": "ran",
+                "ticker": "2318.HK"
+              },
+              {
+                "owner_lane": "watch",
+                "ticker": "2331.HK"
+              }
+            ],
+            "owner_case": "normal",
+            "schema": "mastermind.stock_dashboard_membership_overlay.v1",
+            "source_identity_requirement": "every member must remain in its original server-owned watch/stage anchor and must not be an actionable card",
+            "table_population_mutation": "none"
+          },
+          "sha256": "02e97d57dbcf5ec628e6969a855f4c518b6cac368fce5c758e3e15a8bfcd769c"
+        },
+        "pass": true,
+        "primary_passed": 48,
+        "screenshot_count": 8,
+        "theme_art_direction_pairs": [
+          {
+            "dark": {
+              "background_color": "rgb(21, 24, 32)",
+              "border_color": "rgb(58, 65, 80)",
+              "box_shadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px"
+            },
+            "light": {
+              "background_color": "rgb(255, 255, 255)",
+              "border_color": "rgb(192, 196, 205)",
+              "box_shadow": "rgba(23, 32, 55, 0.05) 0px 1px 2px 0px, rgba(23, 32, 55, 0.1) 0px 8px 24px -12px"
+            },
+            "locale": "en",
+            "pass": true,
+            "viewport_width": 390
+          },
+          {
+            "dark": {
+              "background_color": "rgb(21, 24, 32)",
+              "border_color": "rgb(58, 65, 80)",
+              "box_shadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px"
+            },
+            "light": {
+              "background_color": "rgb(255, 255, 255)",
+              "border_color": "rgb(192, 196, 205)",
+              "box_shadow": "rgba(23, 32, 55, 0.05) 0px 1px 2px 0px, rgba(23, 32, 55, 0.1) 0px 8px 24px -12px"
+            },
+            "locale": "en",
+            "pass": true,
+            "viewport_width": 1440
+          },
+          {
+            "dark": {
+              "background_color": "rgb(21, 24, 32)",
+              "border_color": "rgb(58, 65, 80)",
+              "box_shadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px"
+            },
+            "light": {
+              "background_color": "rgb(255, 255, 255)",
+              "border_color": "rgb(192, 196, 205)",
+              "box_shadow": "rgba(23, 32, 55, 0.05) 0px 1px 2px 0px, rgba(23, 32, 55, 0.1) 0px 8px 24px -12px"
+            },
+            "locale": "zh",
+            "pass": true,
+            "viewport_width": 390
+          },
+          {
+            "dark": {
+              "background_color": "rgb(21, 24, 32)",
+              "border_color": "rgb(58, 65, 80)",
+              "box_shadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px"
+            },
+            "light": {
+              "background_color": "rgb(255, 255, 255)",
+              "border_color": "rgb(192, 196, 205)",
+              "box_shadow": "rgba(23, 32, 55, 0.05) 0px 1px 2px 0px, rgba(23, 32, 55, 0.1) 0px 8px 24px -12px"
+            },
+            "locale": "zh",
+            "pass": true,
+            "viewport_width": 1440
+          }
+        ]
+      },
+      "receipt_bytes": 491480,
+      "receipt_git_blob": "56e59421502b8b44c905f42fdb1894c8dbd0960a",
+      "receipt_pass": true,
+      "returncode": 0,
+      "source_inputs_unchanged": true,
+      "source_snapshot_tree_before_evidence": "29d385550b1e28a211af07a17213dcb62c7cb1f0",
+      "started": "2026-11-12T02:08:44.272449+00:00",
+      "terminal_exit": 0
+    }
+  },
+  "dependency_runtime": {
+    "browser_download_disabled": true,
+    "browser_sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3",
+    "command": [
+      "/opt/homebrew/bin/npm",
+      "install",
+      "--offline",
+      "--ignore-scripts",
+      "--no-save",
+      "--package-lock=false",
+      "--no-audit",
+      "--no-fund",
+      "--omit=optional",
+      "playwright@1.61.1"
+    ],
+    "cwd": "/tmp/macro-pr9599-p0b-20261112-hgp2egff/runtime",
+    "finished": "2026-11-12T02:02:18.828872+00:00",
+    "install_scripts_disabled": true,
+    "log_sha256": "788861651aff269e978bc8232357f2bf4191322fabd281c1772b6f5c0ff26d64",
+    "log_text": "\nadded 2 packages in 696ms\n",
+    "offline": true,
+    "ordinary_script_resolution": {
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\"node\":\"v26.5.0\",\"platform\":\"darwin\",\"arch\":\"arm64\",\"module\":\"/private/tmp/macro-pr9599-p0b-20261112-hgp2egff/runtime/node_modules/playwright/index.js\",\"playwright\":\"1.61.1\",\"core\":\"1.61.1\"}\n"
+    },
+    "python": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "python_modules": {
+      "Jinja2": "3.1.6",
+      "PyYAML": "6.0.3",
+      "pytest": "9.1.1",
+      "rjsmin": "1.2.5"
+    },
+    "python_version": "3.14.7",
+    "returncode": 0,
+    "started": "2026-11-12T02:02:17.944663+00:00"
+  },
+  "focused_checks": {
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "--tb=short",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp",
+          "/tmp/macro-pr9599-p0b-20261112-hgp2egff/pytest-navigation",
+          "tests/test_navigation_refresh.py",
+          "tests/test_site_assets.py"
+        ],
+        "finished": "2026-11-12T02:23:57.649882+00:00",
+        "log_sha256": "ce3b3eecb55c0a44ef7adf4c9f6bdbebf54fa5b333b364095a1fdee0fa7d8de5",
+        "name": "navigation-assets",
+        "returncode": 0,
+        "started": "2026-11-12T02:23:37.084806+00:00",
+        "stdout": ".......................................                                  [100%]\n39 passed in 16.63s\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "-m",
+          "scripts.check_template_site_sync"
+        ],
+        "finished": "2026-11-12T02:23:58.709334+00:00",
+        "log_sha256": "47e6aa00150a5c8d3220d26c8dca4a3e5cf7c65ce4208d3027db885eaa6f7e78",
+        "name": "paired-assets",
+        "returncode": 0,
+        "started": "2026-11-12T02:23:57.650174+00:00",
+        "stdout": "template\u2194site sync OK (161 pairs checked)\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "scripts/check_p0b_receipt_closure.py",
+          "--selftest"
+        ],
+        "finished": "2026-11-12T02:23:59.116722+00:00",
+        "log_sha256": "4f297b312396f1ee895606104f4297ef7725a0c1d00c00ce04fe83292937e93e",
+        "name": "closure-selftest",
+        "returncode": 0,
+        "started": "2026-11-12T02:23:58.709628+00:00",
+        "stdout": "check_p0b_receipt_closure selftest OK\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "--tb=short",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp",
+          "/tmp/macro-pr9599-p0b-20261112-hgp2egff/pytest-receipts",
+          "tests/test_stock_dashboard_first_frame.py::test_committed_browser_receipts_are_self_binding_fixture_proof",
+          "tests/test_stock_dashboard_first_frame.py::test_visual_manifest_preserves_history_and_appends_bounded_repair"
+        ],
+        "finished": "2026-11-12T02:24:06.997257+00:00",
+        "log_sha256": "3249e873e7c8ad2b7ca50eedbacbbff590f788417f33cf922abf9e950bd85df7",
+        "name": "receipt-contracts",
+        "returncode": 0,
+        "started": "2026-11-12T02:23:59.116900+00:00",
+        "stdout": "...                                                                      [100%]\n3 passed in 5.36s\n"
+      }
+    ],
+    "complete": true,
+    "source_inputs_unchanged": true
+  },
+  "generated_at": "2026-11-12T02:30:57.537038+00:00",
+  "limits": [
+    "Actual proof is reproducible browser fixture proof only; canonical build unavailable and production none.",
+    "The ordinary unchanged full paired-assets owner was executed only on this independently authorized #9599 pageshow composition; it does not replay or discharge #10208's separate denied parity action6536386256.",
+    "Historical39 tests and original128 browser cases remain bound to their inputs; these receipts describe distinct current executions, not restamped prior browser results.",
+    "Original immutable browser baseline and all22 historical extension records are preserved. Sixteen new images are byte-identical to receiving main and to the previously inspected accepted images; no new visual-inspection claim is fabricated.",
+    "Production script-to-origin, same-bytes fresh CDN key, receiving HTML and served WebKit/Chromium proof remain BUILT_NOT_PROVEN. Fresh-key/old-bytes, Sector RIG and #9591/#9550/#9521 boundaries remain closed.",
+    "No provider, private route, stored credential, deployment, scientific/model or trading effect or acceptance."
+  ],
+  "manifest_and_actual_input_qualification": {
+    "H_twentieth_record_exact": true,
+    "M_and_H_displaced_active_extensions_exact": true,
+    "M_prefix19_exact": true,
+    "actual_browser_owner_projection_totals": {
+      "degraded_control_cases": 32,
+      "markets": 2,
+      "owner_cases_per_market": 3,
+      "primary_cases": 96,
+      "screenshots": 16,
+      "total_cases": 128
+    },
+    "actual_screenshots": [
+      {
+        "base_git_blob": "972d46f0e03f07c6f3c1d78f30f8b957cd05b8ba",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "972d46f0e03f07c6f3c1d78f30f8b957cd05b8ba",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
+        "sha256": "ade62307efa7ddafa567441583f03d7ee2dd7b3680db78eb212019268d806ea7"
+      },
+      {
+        "base_git_blob": "95dabf2c973210fff935c99ea4085a6ecc54795b",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "95dabf2c973210fff935c99ea4085a6ecc54795b",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
+        "sha256": "03ba26d36856cdf2c835bb321bb57831973aad1c7ece3d7afd8fe8bb8ed81d38"
+      },
+      {
+        "base_git_blob": "890963ad8271f7c29539c75046219758ed89c9fa",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "890963ad8271f7c29539c75046219758ed89c9fa",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
+        "sha256": "b996abdbf5aae4d7a55276a938ba6a822775838d1c611106771f89cc1458b989"
+      },
+      {
+        "base_git_blob": "0626fbe8332dca501f12b5934241d9ebbd5a9b96",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "0626fbe8332dca501f12b5934241d9ebbd5a9b96",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
+        "sha256": "66dc760f2045cca44acbc1c9edf776db64944ad91315abfcabef8c11245d46dc"
+      },
+      {
+        "base_git_blob": "d03e1c389596c47946b98bea9485d96a99715877",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "d03e1c389596c47946b98bea9485d96a99715877",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
+        "sha256": "a3f57adb6ff11aa48da7000f7c189b3f7992d8b9390bfd58ba73eb64cf12e305"
+      },
+      {
+        "base_git_blob": "73e36a41e90649314956cf627f594ffd020d5e3c",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "73e36a41e90649314956cf627f594ffd020d5e3c",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
+        "sha256": "af87ee7b5f61a5d157f24bd170774e35ca07a1a50a3d44250df9b9cbe608d406"
+      },
+      {
+        "base_git_blob": "2c6218f09e89e04e761b57dc1c04ce7cd0a84fd3",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "2c6218f09e89e04e761b57dc1c04ce7cd0a84fd3",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
+        "sha256": "4b00a7db2396f5e05580f363a4c43b72dc62db1488870e2f5c7564eed2c5aaa8"
+      },
+      {
+        "base_git_blob": "e8f1f0c1104d4bc4cfaf2f7f0e1f8ecc8d001242",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "e8f1f0c1104d4bc4cfaf2f7f0e1f8ecc8d001242",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
+        "sha256": "be0078ac9f3338a520e7499acf74ac951ba2c6f98cb9b6acde0244826235c49e"
+      },
+      {
+        "base_git_blob": "c4959067122d51e2f9999ebf004e218c7d328669",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "c4959067122d51e2f9999ebf004e218c7d328669",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
+        "sha256": "b40a32fa441061df9084ebf3124bfd9a5a68c0f3e2a345ca7e2190a64bba329b"
+      },
+      {
+        "base_git_blob": "b8971a0c0b6531c6e9ff8b10d58d81371a302660",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "b8971a0c0b6531c6e9ff8b10d58d81371a302660",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
+        "sha256": "1c2204158f4c2fac691f48233071261f81847b520573c0dad8bfb62ac80d5ab2"
+      },
+      {
+        "base_git_blob": "e7c155f30e41b59578c278e6bc6534898529207a",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "e7c155f30e41b59578c278e6bc6534898529207a",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
+        "sha256": "c4ee452f3d6d6186ebc455c2d0639ff743ebf0eeb458aae146665af8871b7c08"
+      },
+      {
+        "base_git_blob": "e8559ff9376ba3e80a59ec501e36069c2765081b",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "e8559ff9376ba3e80a59ec501e36069c2765081b",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png",
+        "sha256": "0ace436eee66a23d9a17599576e450bab9d8261372bf79e06d60db1f2c5c3781"
+      },
+      {
+        "base_git_blob": "c62e5d581166a847d6cb47e425a4bd7eab3920a1",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "c62e5d581166a847d6cb47e425a4bd7eab3920a1",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png",
+        "sha256": "90f53a081d9894dd3686a82dd1ed7928bf0bca7a11e0b5ad76fb24c7fd2c05dd"
+      },
+      {
+        "base_git_blob": "cd57b49da9f6f447bfd99dda43b0fec2d61a111f",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "cd57b49da9f6f447bfd99dda43b0fec2d61a111f",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png",
+        "sha256": "23ee47f3ba841b058238651d1b431a1f6ab43a9e8b8d4a9d857c011833b118da"
+      },
+      {
+        "base_git_blob": "a47e42b85bd32f616171cbfbdb8d324994ab11a6",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "a47e42b85bd32f616171cbfbdb8d324994ab11a6",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png",
+        "sha256": "1ed5e63b902c9ca542197345ed451e15f6b329231ae851ee579c0712780894cc"
+      },
+      {
+        "base_git_blob": "1b77bd8847dc0b86dadcb22fd1e8b80a36833a42",
+        "byte_identical_to_base": true,
+        "byte_identical_to_previously_inspected_png": true,
+        "git_blob": "1b77bd8847dc0b86dadcb22fd1e8b80a36833a42",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png",
+        "sha256": "10f6384e6c435b440015a4535f60e3feb69506fef3a2f4012f977251a229154a"
+      }
+    ],
+    "all_historical_top_level_fields_exact": true,
+    "captured_input_files": {
+      "engine/i18n.py": {
+        "bytes": 35238,
+        "git_blob": "d3b240fa5e9b91b3e8070ae372c294c897e37464",
+        "sha256": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/baskets.json": {
+        "bytes": 3,
+        "git_blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+        "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json": {
+        "bytes": 3,
+        "git_blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+        "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json": {
+        "bytes": 3,
+        "git_blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+        "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json": {
+        "bytes": 3,
+        "git_blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+        "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/marketdata/rotation_events_hk.json": {
+        "bytes": 3,
+        "git_blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+        "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/cjk-400.woff2": {
+        "bytes": 155920,
+        "git_blob": "940b30a99fb348f30c11773ffb986e94e0756d0e",
+        "sha256": "ac02a6519f8b4efb8ebce4411d22f731e7cc0831ad4856efde4def4f622e17a0"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/cjk-700.woff2": {
+        "bytes": 159112,
+        "git_blob": "5b17dabf1f39daddd5f64816bbc4988d7983f788",
+        "sha256": "72cc73785af5c648b24f7c1ea72c6d5cf049c3652bda1839105e6bbb10a89a71"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/emoji.woff2": {
+        "bytes": 69888,
+        "git_blob": "cd066b5a1a3e933016c06902fc95d9f3a0ec916f",
+        "sha256": "5c3b63d79b1df63a439061d8b446c2b9a0d39d0ffba9a913284f574831f26b66"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/pin.css": {
+        "bytes": 89735,
+        "git_blob": "40636bb69a402ee1dc1148f6015e58c4d7c81b9c",
+        "sha256": "c45b4a8e41bff5def0b1f55ea2097832bb75dcaa3cee7af2e2628a1e0be2ada1"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/symbol-400.woff2": {
+        "bytes": 6408,
+        "git_blob": "c5d821f8b86e59e168569924a8949b3c1289ff78",
+        "sha256": "4861f855e4d627c72dc9a0d5e5ccea06a5ff75afdeee3b5967be9ed52a294dc4"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/symbol-700.woff2": {
+        "bytes": 6584,
+        "git_blob": "8d3847d25ff13096584bf9fb8735cc244adf82e1",
+        "sha256": "c3eff6b66b01322f570db903f794c0882e7485c51994d2c6e2bce8a58523d2cd"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json": {
+        "bytes": 1338,
+        "git_blob": "c7dc2779d2f5f6d2aea9221fb6dc8512297890bd",
+        "sha256": "6a0d10249045cbffca6e7386458b45c0b3976408b7d57021254987df0c8a11f6"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-owner-fixture.json": {
+        "bytes": 1583,
+        "git_blob": "b52340dd93c610a9f4a732688d4a3c328c596fa6",
+        "sha256": "dc93511b93517c9ecd096bcb5a79144d95f2ee565fc12d98a2410ff9aa1ad72b"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json": {
+        "bytes": 1338,
+        "git_blob": "619f36b5a514ae6b93ef9c71f537d53d9937c71c",
+        "sha256": "b668fa56fbb03786562784e1e66a7cf058732dbe9ff9055294d7cf65fad462c9"
+      },
+      "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json": {
+        "bytes": 4458,
+        "git_blob": "644419cb708e001634d57a6611275bf4c2c18523",
+        "sha256": "f0df976899677d3ff14ac0874b5b82e96ba77d52b9f1c0b7638927329e94ee95"
+      },
+      "scripts/render_stock_dashboard_fixture.py": {
+        "bytes": 27655,
+        "git_blob": "23288e20270f251d3460014d8fb1876a9cfcd0cb",
+        "sha256": "8f46fc24b9582ee85bc8e612b907f7cf23d02ed151cf3d15f0607a766fe10332"
+      },
+      "site/account.js": {
+        "bytes": 75906,
+        "git_blob": "bee3f81cb1db0578633b8cb70e28d70d51c4e47f",
+        "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+      },
+      "site/canada-stock-v36.js": {
+        "bytes": 36588,
+        "git_blob": "14fcffc867c75def247b50219c7f253b1e32ca87",
+        "sha256": "b7ba336ddf9955585eacf0a18d07652249d2d2b9da8393c083bd7a9a416f41c0"
+      },
+      "site/chart_i18n.js": {
+        "bytes": 3473,
+        "git_blob": "ae149d4043c1f765515fd76af69e1648dc32257a",
+        "sha256": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315"
+      },
+      "site/charts.js": {
+        "bytes": 4750,
+        "git_blob": "92296453a6c9b489194243ee646abf39d4bbd9f5",
+        "sha256": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c"
+      },
+      "site/dashboard-icons.css": {
+        "bytes": 11284,
+        "git_blob": "a31665a63e85e841b5fc9e417424827ca632c84c",
+        "sha256": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9"
+      },
+      "site/dashboard-icons.js": {
+        "bytes": 13577,
+        "git_blob": "37e3ca5a3f111351fa18db4cd96953ce698e7433",
+        "sha256": "ee1d516321594b8459adef23e0cd75427563ce72305543aaa2fcc9a7105e2b03"
+      },
+      "site/fonts/Inter-400.woff2": {
+        "bytes": 23664,
+        "git_blob": "f15b025d666269fb07daf0263e54231481e4289c",
+        "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+      },
+      "site/fonts/Inter-500.woff2": {
+        "bytes": 24272,
+        "git_blob": "54f0a595dd3c76344a980109e7517ed42416de93",
+        "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+      },
+      "site/fonts/Inter-600.woff2": {
+        "bytes": 24452,
+        "git_blob": "d1897949fda5c7fc5f04622df43a3fcba5b89d84",
+        "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+      },
+      "site/fonts/Inter-700.woff2": {
+        "bytes": 24356,
+        "git_blob": "a68fb101cd9224aa7bb6ca80356b5132c40c6f3f",
+        "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+      },
+      "site/fonts/Inter-800.woff2": {
+        "bytes": 24400,
+        "git_blob": "74a16d45945264434aa7409e79549c626ebcdfb1",
+        "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+      },
+      "site/fonts/Inter-900.woff2": {
+        "bytes": 23900,
+        "git_blob": "4db8333caca3f0c93ff4683fed2d7eaa7ecdc786",
+        "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+      },
+      "site/hk-stock-v36.js": {
+        "bytes": 35883,
+        "git_blob": "657d1196a4deba15ff1d1a48ff9c46abb6432c4e",
+        "sha256": "ae348f953da7ff49f2e10a42a74b6c81b76dcb8d25dd0d37003b831ac562a4d6"
+      },
+      "site/illus.css": {
+        "bytes": 14335,
+        "git_blob": "cda4f3e53a34c5e996b49bdac5732357ed94b2d5",
+        "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07"
+      },
+      "site/illus.js": {
+        "bytes": 2752,
+        "git_blob": "dfe818277c5068fe665337531f89d4fe7976565b",
+        "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620"
+      },
+      "site/live.js": {
+        "bytes": 50731,
+        "git_blob": "7e91599afb20a69c4010d5dc36c85439381d529f",
+        "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+      },
+      "site/live_config.js": {
+        "bytes": 367,
+        "git_blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d",
+        "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+      },
+      "site/logo_config.js": {
+        "bytes": 202,
+        "git_blob": "523923f9f424a144f4a0cf3e4814e2ea36392474",
+        "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+      },
+      "site/mtf.js": {
+        "bytes": 6549,
+        "git_blob": "3fa3b9de9dd84b9b11da39c2c3c748421faae79e",
+        "sha256": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0"
+      },
+      "site/nav_market.js": {
+        "bytes": 96881,
+        "git_blob": "37c7ac74301661d0bc4fe1997bb37d572a8573bb",
+        "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+      },
+      "site/navigation-refresh.css": {
+        "bytes": 104548,
+        "git_blob": "2c96dbf6f96da1c5c7fab58d9314cc3fb06d15d1",
+        "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+      },
+      "site/product-nav-icons.css": {
+        "bytes": 41645,
+        "git_blob": "58336d2b2521c7c4d126c0ddc11f08a5045d28dc",
+        "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+      },
+      "site/stock-dashboard.css": {
+        "bytes": 72697,
+        "git_blob": "18c5fa8d48fed98a999b2c9fae19ecff7c1f2464",
+        "sha256": "3906781820560cb6b11a3fbc61239babcbf43fa0d6ef61d7ae08b1f9b8eac1a0"
+      },
+      "site/stock-logos.js": {
+        "bytes": 16539,
+        "git_blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c",
+        "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+      },
+      "site/stocktable.js": {
+        "bytes": 71746,
+        "git_blob": "937227f8cbffa76e81e146fa95f6f842f2c9f203",
+        "sha256": "eedfe64934bec3f37aa878ac4b45695f30293cd2ba28a9307c2ebe1fba19b964"
+      },
+      "site/tablesort.js": {
+        "bytes": 15556,
+        "git_blob": "0cb1eea3ca2472945d671b65b0207737be6e8ffb",
+        "sha256": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42"
+      },
+      "site/theme.css": {
+        "bytes": 227583,
+        "git_blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+      },
+      "site/theme.js": {
+        "bytes": 280270,
+        "git_blob": "0b88f6f698f480d4e91385d12fb96dc5b66dacca",
+        "sha256": "602de9ea964a1d1ee1bf2ba7ae54196a3392e14406348b6021bafcdee35ee925"
+      },
+      "templates/_aibrief_body.html.j2": {
+        "bytes": 16080,
+        "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+        "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb"
+      },
+      "templates/_aibrief_css.j2": {
+        "bytes": 14923,
+        "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+        "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a"
+      },
+      "templates/_cmd_hero.css.j2": {
+        "bytes": 6131,
+        "git_blob": "f26ab9cdb5ddc4f77d5659183ba79ede0cb5e093",
+        "sha256": "86d3c260212c477d990b82dd424078dcb2227e252dcc83a2ba92f3e629b5170e"
+      },
+      "templates/_decision_card.html.j2": {
+        "bytes": 14905,
+        "git_blob": "2727299dbaf6356852640bb925713a266bc2738c",
+        "sha256": "2c67a16a868f40bfced08d96be88571f0a235ca948169c8e9a44de827442ca76"
+      },
+      "templates/_icons.html.j2": {
+        "bytes": 6785,
+        "git_blob": "0ada914d14ffca25498ed186d681d1a7b7f82697",
+        "sha256": "91e9ed18b6423b41793062ccde2406222b66f646f6f3928f272e71318c9e0dab"
+      },
+      "templates/_lens.html.j2": {
+        "bytes": 6555,
+        "git_blob": "c2748c591a4fb184c2e8159a38e26f50764f5ad1",
+        "sha256": "1d6bbb2ff780b60a2fcd0397e7c94305e1a7f996ae76c517c4562385ccdc19ea"
+      },
+      "templates/_market_state.css.j2": {
+        "bytes": 14031,
+        "git_blob": "b999effda89b7861205a3980fa9835e5ac6228ed",
+        "sha256": "16f285a8a6857f6627ec756b7fbfc9009c130c8e6e6275b7438855f90d421a6c"
+      },
+      "templates/_navlinks.html.j2": {
+        "bytes": 54533,
+        "git_blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+        "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83"
+      },
+      "templates/_prophet_card.html.j2": {
+        "bytes": 68845,
+        "git_blob": "2f2c2fe8b7e5d63ac271a89e12c699ac0da2a2f7",
+        "sha256": "e8d875372e984f8f6b2da7ce5a19e7378b38697ba039c23e051c4d8447fa6e27"
+      },
+      "templates/_risk_radar_card.css.j2": {
+        "bytes": 17824,
+        "git_blob": "73d27c46f9bf2a4e007babca63d4eba654431202",
+        "sha256": "203f682068ae42ae254a857cc572e962198623ba84123ba3a6527b373feedaa5"
+      },
+      "templates/_risk_radar_card.html.j2": {
+        "bytes": 47415,
+        "git_blob": "05ce286fbb6c1ddb580e9c0ba00caf10ec6d927a",
+        "sha256": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7"
+      },
+      "templates/_risk_radar_dlg.css.j2": {
+        "bytes": 13737,
+        "git_blob": "9c4a78c2c4171de5062403084ad6ebf6569e0b14",
+        "sha256": "186239255efa4f7a938c3b0abb9c33c59c99e0711993269b5909980da2adf1ac"
+      },
+      "templates/_risk_radar_dlg.html.j2": {
+        "bytes": 27188,
+        "git_blob": "b67147ba9737ad1d590c47bcbb4d02b76c119888",
+        "sha256": "86829dfaf27214e34d244a29e24d1999d7905fb9836b653f53216de251bd8749"
+      },
+      "templates/_seo_head.html.j2": {
+        "bytes": 2335,
+        "git_blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+        "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee"
+      },
+      "templates/_site_nav.html.j2": {
+        "bytes": 3684,
+        "git_blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+        "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376"
+      },
+      "templates/canada.html.j2": {
+        "bytes": 244732,
+        "git_blob": "1465046662b4d7258558866984d8a191dbe963df",
+        "sha256": "b98d20bf1994d32b617493ec86ffbcf984cdcafc513afdf4d523535b054b67c9"
+      },
+      "templates/hk.html.j2": {
+        "bytes": 453426,
+        "git_blob": "0efe56c833cbd8c195e47764a821a89a00b4ca90",
+        "sha256": "71153c38db5e79b2a3dd458d21678b02a08951c1d4786d19833d87dee5ed3eac"
+      }
+    },
+    "changed_screenshots": [],
+    "historical_records": 22,
+    "manifest": {
+      "bytes": 146860,
+      "git_blob": "b5fdd837e79b7b1122da2a1a4e367bf60ca3b700",
+      "sha256": "e646ad5826b553b61a276279f4d971a6f0d94f1f716463c1f3ace579142f0adf"
+    },
+    "prior_H_sha256": "65666d509e0471cd2f11e422aaa5040d42f38f5dd6cc14ad385ec1e6f5b14dec",
+    "prior_M_sha256": "3732ee521eb8b341e6db7bb74ea751d95b7646199e68eb53ec8c8a54702ca303",
+    "schema": "macro.pr9599.manifest_composition.v1",
+    "source_tree": "29d385550b1e28a211af07a17213dcb62c7cb1f0",
+    "verdict": "PASS",
+    "visual_inspection_reference": {
+      "commit": "57ccbd8cc33df1a13a4e69d6c2b3f303b8272032",
+      "proof_blob": "c7235e4c512b6673da7043d978e4811c0cefe0d2",
+      "screenshots": [
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
+          "sha256": "ade62307efa7ddafa567441583f03d7ee2dd7b3680db78eb212019268d806ea7"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
+          "sha256": "03ba26d36856cdf2c835bb321bb57831973aad1c7ece3d7afd8fe8bb8ed81d38"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
+          "sha256": "b996abdbf5aae4d7a55276a938ba6a822775838d1c611106771f89cc1458b989"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
+          "sha256": "66dc760f2045cca44acbc1c9edf776db64944ad91315abfcabef8c11245d46dc"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
+          "sha256": "a3f57adb6ff11aa48da7000f7c189b3f7992d8b9390bfd58ba73eb64cf12e305"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
+          "sha256": "af87ee7b5f61a5d157f24bd170774e35ca07a1a50a3d44250df9b9cbe608d406"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
+          "sha256": "4b00a7db2396f5e05580f363a4c43b72dc62db1488870e2f5c7564eed2c5aaa8"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
+          "sha256": "be0078ac9f3338a520e7499acf74ac951ba2c6f98cb9b6acde0244826235c49e"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
+          "sha256": "b40a32fa441061df9084ebf3124bfd9a5a68c0f3e2a345ca7e2190a64bba329b"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
+          "sha256": "1c2204158f4c2fac691f48233071261f81847b520573c0dad8bfb62ac80d5ab2"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
+          "sha256": "c4ee452f3d6d6186ebc455c2d0639ff743ebf0eeb458aae146665af8871b7c08"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png",
+          "sha256": "0ace436eee66a23d9a17599576e450bab9d8261372bf79e06d60db1f2c5c3781"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png",
+          "sha256": "90f53a081d9894dd3686a82dd1ed7928bf0bca7a11e0b5ad76fb24c7fd2c05dd"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png",
+          "sha256": "23ee47f3ba841b058238651d1b431a1f6ab43a9e8b8d4a9d857c011833b118da"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png",
+          "sha256": "1ed5e63b902c9ca542197345ed451e15f6b329231ae851ee579c0712780894cc"
+        },
+        {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png",
+          "sha256": "10f6384e6c435b440015a4535f60e3feb69506fef3a2f4012f977251a229154a"
+        }
+      ]
+    }
+  },
+  "mission": "macro-pr-healing-20261109-sol-web-001",
+  "operation_id": "macro-pr9599-pageshow-p0b-20261112-sol-web-001",
+  "original_branch": "sol/web-macro-mobile-nav-totop-nonblocking-20261018",
+  "original_head": "7946668786093fd452221eaf9b089ff4bdbcac45",
+  "protected_mastermind_pin": "517138ca65c14ad4262f7f937352ae08a0415d76",
+  "publication_head_recorded_separately_to_avoid_receipt_self_reference": true,
+  "qualification_base": "89bf0c038ac7b92afed48cb5889b6a7074fa1fe4",
+  "qualification_base_tree": "dc605a7032948ef580124d6831e84b2691695ef2",
+  "render_execution": {
+    "actual_receipt_sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3",
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-B",
+      "scripts/render_stock_dashboard_fixture.py",
+      "--market",
+      "all",
+      "--out-dir",
+      "/tmp/macro-pr9599-p0b-20261112-hgp2egff/rendered",
+      "--receipt",
+      "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json"
+    ],
+    "finished": "2026-11-12T02:07:43.996678+00:00",
+    "fixtures": [
+      {
+        "bytes": 237086,
+        "path": "/tmp/macro-pr9599-p0b-20261112-hgp2egff/rendered/canada_stocks.html",
+        "sha256": "7d78e3eda59b9a9596ee4144ed9e5c81b474cd6d268c8ef9acbf8c498f5371db"
+      },
+      {
+        "bytes": 204793,
+        "path": "/tmp/macro-pr9599-p0b-20261112-hgp2egff/rendered/canada_stocks.null-buy.html",
+        "sha256": "03141f86c8e4afa72433ed0dec2a5aeaeaee513053999712514ec4eb181a72da"
+      },
+      {
+        "bytes": 204831,
+        "path": "/tmp/macro-pr9599-p0b-20261112-hgp2egff/rendered/canada_stocks.watch-only.html",
+        "sha256": "b58945268e0343a189f7ef938d2443bec5b14076e76585b0193db324f75415d8"
+      },
+      {
+        "bytes": 395004,
+        "path": "/tmp/macro-pr9599-p0b-20261112-hgp2egff/rendered/hk_stocks.html",
+        "sha256": "8a5126f0c7bc2645ed03fa2eb621cc6d343c9567c8d41ce58f87119e203da021"
+      },
+      {
+        "bytes": 384084,
+        "path": "/tmp/macro-pr9599-p0b-20261112-hgp2egff/rendered/hk_stocks.null-buy.html",
+        "sha256": "865728437b19fe887ba3bd7a93c7cc2376c7a7d921050ce5aaa4e7decdb45454"
+      },
+      {
+        "bytes": 384263,
+        "path": "/tmp/macro-pr9599-p0b-20261112-hgp2egff/rendered/hk_stocks.watch-only.html",
+        "sha256": "57b9e86ebfcc3d09ee3d6dd45a38190b5fcc335185acb23bd1822b4a3e99fd7f"
+      }
+    ],
+    "log_sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3",
+    "returncode": 0,
+    "source_inputs_unchanged": true,
+    "source_snapshot_tree_before_evidence": "29d385550b1e28a211af07a17213dcb62c7cb1f0",
+    "started": "2026-11-12T02:07:40.370785+00:00"
+  },
+  "runtime_setup_recovery": {
+    "first_setup_process": 33434,
+    "hydration_exit": 0,
+    "hydration_process": 58373,
+    "no_dependency_install_replay": true,
+    "reconciliation": "Original process absence and exact single-file change were read back. Only the owned template was restored. This isolated worktree's sparse configuration added tracked site and mockups; exact clean base was reverified before source staging.",
+    "result": "Dependency setup succeeded; source staging stopped with FileNotFoundError at sparse-omitted site/theme.js after only the intended templates/theme.js write. Renderer/browser had not started.",
+    "stage_render_exit": 0,
+    "stage_render_process": 69092
+  },
+  "schema": "macro.mobile_nav_source_qualification.v1",
+  "source_claim": "https://github.com/mastermindx-market-intelligence/macro/pull/9599#issuecomment-6811794635",
+  "source_composition": {
+    "accepted_current_source_unchanged_by_later_ci_only_main": "9d8a0c8be5bbac0073b99762e46ae092235acf4f",
+    "current_navigation_status_assertion_preserved": true,
+    "original_pageshow_test_insertion_preserved": true,
+    "original_theme_postimages_exact": true,
+    "source_files": {
+      "site/theme.js": {
+        "bytes": 280270,
+        "git_blob": "0b88f6f698f480d4e91385d12fb96dc5b66dacca",
+        "sha256": "602de9ea964a1d1ee1bf2ba7ae54196a3392e14406348b6021bafcdee35ee925"
+      },
+      "templates/theme.js": {
+        "bytes": 400537,
+        "git_blob": "15f9a1290db45a577faaed976702efc0deba789b",
+        "sha256": "c78d7eb074231eb15501a496c42cc8f90ed95aa80a4d8d73a4255332705e9d3d"
+      },
+      "tests/test_navigation_refresh.py": {
+        "bytes": 28185,
+        "git_blob": "99b31868add18ce02dcb43f3d4cc6064f34b5026",
+        "sha256": "daacf865a76b8439d9e9f8f1fd307fdbada5e3e349db9e4f321e3614f9540de2"
+      }
+    },
+    "whole_original_and_current_navigation_inverses_verified": true
+  },
+  "source_publication": "Original carrier only; new natural CI and incumbent current-main integration/merge qualification remain separately required.",
+  "source_snapshot_tree_before_evidence": "29d385550b1e28a211af07a17213dcb62c7cb1f0",
+  "status": "PASS_SOURCE_AND_REPRODUCIBLE_BROWSER_FIXTURE_ONLY"
+}
