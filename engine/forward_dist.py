@@ -115,9 +115,12 @@ def cond_up_prob(close: pd.Series, cell_key: pd.Series, horizon: int, *, alpha: 
     """P(up over `horizon`) conditioned on the live `cell_key` value, empirical-Bayes
     shrunk to the marginal, capped to the empirically-observed reliable band
     [floor, ceil] (NOT a wide [0.30,0.70] — the repo's measured reliable-cell spread
-    is ~52-57%). Thin cell → marginal. Generalization of build_vector._cond_up_prob."""
-    fwd_up = (close.shift(-horizon) > close).astype(float)
-    valid = fwd_up.notna() & cell_key.notna()
+    is ~52-57%). Thin cell → marginal. Generalization of build_vector._cond_up_prob.
+    Only observed source/end prices are labels; an unavailable forward endpoint is
+    not a loss. The current cell is still selected from the latest known state."""
+    fwd_end = close.shift(-horizon)
+    valid = close.notna() & fwd_end.notna() & cell_key.notna()
+    fwd_up = (fwd_end > close).astype(float)
     if not valid.any():
         return 0.5, 0, "n/a"
     now = cell_key[valid].iloc[-1] if valid.iloc[-1] else cell_key.dropna().iloc[-1]
