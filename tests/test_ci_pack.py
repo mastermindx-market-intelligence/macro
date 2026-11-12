@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_970),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_993),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_728),
+    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_729),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (Congress chronology on current main 24393e2): the actual
+    tracked composition c038a854 was measured with packing_probe_measurements
+    inside _tracked_tree_inventory. The three probes selected 137/5971,
+    137/5995, and 131/5729 jobs/weight-seconds, all ten packs. Fund only
+    those measured weight ceilings: 5970->5971, 5993->5995, 5728->5729.
+    Keep job ceilings 137/138/131, the ten-pack ceiling, selectors,
+    assertions, timeouts, and browser fallback behavior unchanged.
+    Raw measurements and source identity are retained in
+    docs/verification/congress-disclosure-chronology-20261111/
+    current-main-24393e2-composition-20261112/.
 
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
