@@ -117,7 +117,7 @@ In-sample, availability lag applied, post 10. Raw: `INSAMPLE_READS_LAG1_v2.json`
 | Series | ≥5% early catches (n=9) | Also caught by near-high | Beyond reference, strict | ≥7% (n=5) early / strict | ≥10% (n=3) early / strict | False risk-off /yr (≥5%) |
 |---|---:|---:|---:|---|---|---:|
 | Radar loud | 0 | 0 | 0 | 0 / 0 | 0 / 0 | 0.0 |
-| HY OAS 21d top decile (lagged) | 3 | 3 | 0 | 1 / 0 | 1 / 0 | 0.15 |
+| HY OAS 21d top decile (release-rule lag, corrected 2026-11-12) | 2 | 2 | 0 | 1 / 0 | 1 / 0 | 0.15 |
 | VIX ≥ 20 | 4 | 4 | 0 | 2 / 0 | 1 / 0 | 2.78 |
 | VIX ≥ 25 | 1 | 1 | 0 | 0 / 0 | 0 / 0 | 1.61 |
 | SPY < 200d | 0 | 0 | 0 | 0 / 0 | 0 / 0 | 0.0 |

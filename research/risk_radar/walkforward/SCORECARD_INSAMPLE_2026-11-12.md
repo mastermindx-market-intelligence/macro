@@ -142,7 +142,9 @@ Read (in-sample, so an upper bound):
 ## 6. Restatement with availability and execution lags (2026-11-12, PREREG addendum 2)
 
 The in-sample reads above are **superseded by this section**. Changes:
-- The FRED legs (HY OAS, DFII10, DEXJPUS) are lagged one session for publication.
+- The FRED legs (HY OAS, DFII10, DEXJPUS) are lagged one session for publication. (Corrected
+  2026-11-12, #11137: the HY OAS baseline now follows the availability release rule, observation +
+  one federal-holiday business day; the HY rows below are regenerated. Radar rows are unchanged.)
 - The paper sleeve and economics are executed one session after the signal close.
 - Two mechanical references (H20) are added.
 
@@ -157,24 +159,24 @@ Tops and bottoms flagged are each given as k/n.
 |---|---:|---|---|---|---|---|---|---|---:|---:|
 | Radar loud | 15.7% | 1/3 | 0/3 | 1/5 | 1/5 | 1/9 | +6 | 1/8 | 0.0 | 1.32 |
 | Radar risk-off | 14.0% | 1/3 | 0/3 | 1/5 | 1/5 | 1/9 | +6 | 1/8 | 0.0 | 1.75 |
-| HY OAS top decile (lagged) | 11.0% | 1/3 | 1/3 | 1/5 | 3/5 | 3/9 | −15, −12, −5 | 4/8 | 0.15 | 3.07 |
+| HY OAS top decile (release-rule lag) | 11.0% | 1/3 | 1/3 | 1/5 | 3/5 | 3/9 | −15, +5, −5 | 4/8 | 0.15 | 2.78 |
 | SPY < 200d | 19.3% | 1/3 | 0/3 | 1/5 | 1/5 | 1/9 | +6 | 1/8 | 0.0 | 1.17 |
 | VIX ≥ 20 | 41.2% | 3/3 | 0/3 | 4/5 | 2/5 | 6/9 | median −8 | 4/8 | 2.78 | 2.19 |
 | **Mech: within 1% of peak** | 37.3% | 3/3 | 1/3 | 4/5 | 3/5 | 8/9 | median −13 | 6/8 | 6.58 | 1.75 |
 | **Mech: ≥5% below peak** | 34.9% | 2/3 | 0/3 | 2/5 | 2/5 | 2/9 | +4, +9 | 5/8 | 0.0 | 0.88 |
 
-Episode level (h21) for the lagged HY OAS baseline:
-- ≥5% episodes caught before onset: 3/9, unchanged.
-- ≥5% episodes caught by breach: 4/9, was 5/9.
-- Median lead to the ≥10% breach: 16 sessions, was 17.
-- Its top delays each move one session later.
+Episode level (h21) for the HY OAS baseline (release-rule lag, corrected 2026-11-12 #11137):
+- ≥5% episodes caught before onset: 2/9 (one-session-shift version: 3/9).
+- ≥5% episodes caught by breach: 4/9.
+- Median lead to the ≥10% breach: 16 sessions.
+- One ≥5% top (2025-10-29) moves from −12 to +5: the shift path admitted holiday-Monday values early.
 
 ### Placebo (near-start, 300 draws; ≥5% tops)
 
 | Series | Observed | Placebo p90 | False risk-off /yr observed | Placebo median |
 |---|---:|---:|---:|---:|
 | Radar loud | 0.11 | 0.78 | 0.0 | 1.90 |
-| HY OAS | 0.33 | 0.89 | 0.15 | 3.22 |
+| HY OAS | 0.33 | 0.89 | 0.15 | 2.92 |
 | Mech near-high | 0.89 | 1.00 | 6.58 | 7.16 |
 
 ### Insurer profile (execution lag 1)
@@ -187,7 +189,7 @@ Episode level (h21) for the lagged HY OAS baseline:
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | Radar loud | −16.4% | 0.91 | 1.28 | 60% | 52% | 76% | 60% | 15.2% |
 | Radar risk-off | −17.7% | 0.87 | 1.21 | 63% | 55% | 73% | 56% | 14.7% |
-| HY OAS top decile (lagged) | −28.7% | 0.78 | 1.10 | 40% | 36% | 81% | 70% | 14.3% |
+| HY OAS top decile (release-rule lag) | −29.1% | 0.78 | 1.09 | 40% | 36% | 81% | 70% | 14.2% |
 | Mech ≥5% below peak | −13.9% | 0.57 | 0.76 | 75% | 65% | 52% | 20% | 8.7% |
 | Mech within 1% of peak | −30.4% | 0.67 | 0.95 | 11% | 15% | 88% | 94% | 14.6% |
 | SPY | −33.7% | 0.64 | 0.91 | 0% | 0% | 100% | 100% | 14.8% |
@@ -201,7 +203,7 @@ Episode level (h21) for the lagged HY OAS baseline:
 1. **The near-high reference flags 8 of 9 tops and all 9 onsets, and makes 6.6 false calls a
    year.**
    - Being near a high flags tops by construction.
-   - The HY OAS early catches (3/9) sit inside what the near-high reference already catches.
+   - The HY OAS early catches (2/9 under the release-rule lag) sit inside what the near-high reference already catches.
    - The Radar (1/9) flags fewer than either.
 2. **The ≥5%-below-peak reference avoids the most drawdown (75% of the ≥10% declines).** It does
    so by giving up four fifths of every rebound. On the insurer read, the Radar keeps the best

@@ -62,7 +62,8 @@ def profile(ret: pd.Series, *, spy_ret: pd.Series, bill_ret: pd.Series, px: pd.S
     spy_ret = spy_ret.reindex(idx)
     bill_ret = bill_ret.reindex(idx).fillna(0.0)
     eq = (1 + ret).cumprod()
-    dd = eq / eq.cummax() - 1
+    # the running peak starts from opening capital 1.0, so a loss in session 1 counts
+    dd = eq / eq.cummax().clip(lower=1.0) - 1
     uw = (dd < 0).to_numpy()
     longest, cur = 0, 0
     for u in uw:

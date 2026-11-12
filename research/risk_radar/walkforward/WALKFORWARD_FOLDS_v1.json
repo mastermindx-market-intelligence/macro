@@ -2,7 +2,7 @@
  "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
  "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
  "prereg_unmodified": true,
- "code_commit": "e28f5ccde58af98a9daa8d975cb9c6eb960149d6",
+ "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
  "note": "every evaluated candidate is kept; the chosen row is repeated in `default` and `chosen` (default = shipped g=0.40, delta=0)",
  "folds": [
   {
@@ -157,16 +157,16 @@
      "elevated": 78.0,
      "risk_off": 88.0
     },
-    "code_commit": "e28f5ccde58af98a9daa8d975cb9c6eb960149d6",
+    "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
     "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
     "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
     "prereg_unmodified": true,
-    "effective_state_sha256": "fb0d76ff6c8ee5830e973b2b469693ad15d08ed37d2506afaeb74149368824e5"
+    "effective_state_sha256": "588ad8517e1b1365a17160d4aae6b73d662abeffadb43b3160f5a16b3d2167b7"
    },
    "hy_oas_budget": {
-    "threshold": 0.90031,
+    "threshold": 0.899391,
     "fit_budget_target": 0.07326732673267326,
-    "score_window_budget": 0.2789
+    "score_window_budget": 0.2829
    }
   },
   {
@@ -321,14 +321,14 @@
      "elevated": 78.0,
      "risk_off": 88.0
     },
-    "code_commit": "e28f5ccde58af98a9daa8d975cb9c6eb960149d6",
+    "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
     "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
     "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
     "prereg_unmodified": true,
-    "effective_state_sha256": "7b157a2c467f518ce3c6892fd5113e0d5f6e373d8e9f0963cf35ed32f5c73094"
+    "effective_state_sha256": "da5e5ed875ce03ac41154d4443f30d14f596ad46bbe6bae39a5aaa9c27a6c95b"
    },
    "hy_oas_budget": {
-    "threshold": 0.744918,
+    "threshold": 0.743514,
     "fit_budget_target": 0.2923280423280423,
     "score_window_budget": 0.18
    }
@@ -344,7 +344,7 @@
     "2024-01-02",
     "2024-12-31"
    ],
-   "seen_history": false,
+   "seen_history": true,
    "n_fit_sessions": 1006,
    "n_fit_episodes": 3,
    "n_fit_labels": 6,
@@ -485,14 +485,14 @@
      "elevated": 78.0,
      "risk_off": 88.0
     },
-    "code_commit": "e28f5ccde58af98a9daa8d975cb9c6eb960149d6",
+    "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
     "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
     "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
     "prereg_unmodified": true,
-    "effective_state_sha256": "5e8a0c5f9f8fcd0e14d3ce87caf6fb95ecf0a1511bca2af2ce1cf81bbc0d7651"
+    "effective_state_sha256": "733a650a70eecf02474a06530e6e3c7f9d6cba2d1fc5c12e49ecbff83bdb583f"
    },
    "hy_oas_budget": {
-    "threshold": 0.791667,
+    "threshold": 0.790675,
     "fit_budget_target": 0.2286282306163022,
     "score_window_budget": 0.0794
    }
@@ -649,16 +649,16 @@
      "elevated": 78.0,
      "risk_off": 88.0
     },
-    "code_commit": "e28f5ccde58af98a9daa8d975cb9c6eb960149d6",
+    "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
     "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
     "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
     "prereg_unmodified": true,
-    "effective_state_sha256": "9834258440f40039ad2ba0448e9c05289206ef2232b0919721f1260e13232302"
+    "effective_state_sha256": "e03d88bbcb3d7e408bcb6710bf482bf26032e989d60122252b27f5cc15a56017"
    },
    "hy_oas_budget": {
-    "threshold": 0.811871,
+    "threshold": 0.812681,
     "fit_budget_target": 0.18282988871224165,
-    "score_window_budget": 0.3
+    "score_window_budget": 0.296
    }
   },
   {
@@ -813,14 +813,14 @@
      "elevated": 78.0,
      "risk_off": 88.0
     },
-    "code_commit": "e28f5ccde58af98a9daa8d975cb9c6eb960149d6",
+    "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
     "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
     "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
     "prereg_unmodified": true,
-    "effective_state_sha256": "54043503a36eb8e29001db8a74baccd16bd1dc4b3268daf842711e02e37e06a1"
+    "effective_state_sha256": "8081f61dd2d3f354381412f9e4dc5a8b27ce0a255f45c842546a8b3457f867ee"
    },
    "hy_oas_budget": {
-    "threshold": 0.840278,
+    "threshold": 0.83946,
     "fit_budget_target": 0.17572944297082227,
     "score_window_budget": 0.213
    }

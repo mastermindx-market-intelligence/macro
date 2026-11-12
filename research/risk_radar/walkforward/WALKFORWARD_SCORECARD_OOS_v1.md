@@ -1,4 +1,4 @@
-# Risk Radar walk-forward scorecard v1 — out of sample 2022-01-03 → 2026-11-10
+# Risk Radar walk-forward scorecard v1 — out of sample 2022-01-03 → 2023-12-29; 2024-01-02 → 2026-11-10 is seen history
 
 Prereg `PREREG_WALKFORWARD_v1.md` (sha256 01e66c59…ca7e7ca, verified) with addenda 1–3. Scored
 run at code commit `e28f5ccde58` (addendum 3 committed before the run; the earlier one-session-lag
@@ -8,22 +8,26 @@ compute was discarded unread). Raw: `WALKFORWARD_SCORECARD_OOS_v1.json`, fold lo
 
 **Label.** 2022-01-03 → 2023-12-29 is out of sample; 2024+ is the Radar's own seen history, not
 the desk's sealed confirmation. The design (legs, transforms, tiers) was chosen knowing 2020+.
-Exact 90% Clopper-Pearson intervals; counts beside every figure. Out-of-sample and in-sample
-figures are never combined.
+Exact 90% Clopper-Pearson intervals; counts beside every figure. Out-of-sample and seen-history
+figures are combined only in the table headed as pooled, which is not out of sample.
+
+> **Corrected 2026-11-12 (#11137 review), regenerated through the fixed code.** (1) A fold is marked seen history by its *score* window: F24, F25 and F26 score 2024+ and are seen history (F24 was wrongly written `seen_history: false` because the flag tested the fit end). (2) The HY OAS baseline now uses the availability release rule (observation + one federal-holiday business day), not a one-session shift that admitted a Friday value on a holiday Monday. (3) The insurer peak starts from opening capital 1.0. Every moved cell is listed in the PR comment for the correcting commit.
 
 ## 1. Primary endpoint: refitting did not change the Radar — inconclusive (difference 0)
+
+**The decision rests on the out-of-sample folds F22 and F23** (scored 2022 and 2023). F24, F25 and F26 score 2024+, the Radar's own seen history, and are shown for continuity only; they agree.
 
 Every fold retained the shipped default (g = 0.40, Δ = 0). The walk-forward loud state is
 therefore identical to shipped v2 on every session. The prereg's practical-difference rule
 (≥2 more turns, no more false + premature calls) is not met: the difference is 0.
 
-| Fold | Matured fit turns | Decision |
-|---|---:|---|
-| F22 | 4 | retained: best candidate J 0.0 = default 0.0 |
-| F23 | 5 | retained: best −7.0 vs default −2.5 |
-| F24 | 6 | retained: best −7.0 vs default −2.5 |
-| F25 | 10 | retained: best −5.0 vs default −2.5 |
-| F26 | 14 | retained: best −5.5 vs default −3.0 |
+| Fold | Scored | Matured fit turns | Decision |
+|---|---|---:|---|
+| F22 | 2022, out of sample | 4 | retained: best candidate J 0.0 = default 0.0 |
+| F23 | 2023, out of sample | 5 | retained: best −7.0 vs default −2.5 |
+| F24 | 2024, **seen history** | 6 | retained: best −7.0 vs default −2.5 |
+| F25 | 2025, **seen history** | 10 | retained: best −5.0 vs default −2.5 |
+| F26 | 2026, **seen history** | 14 | retained: best −5.5 vs default −3.0 |
 
 Why (a property of the frozen procedure, reported, not repaired): Δ is set per gate cut to hit a
 15% loud share, so Δ = 0 is never itself a candidate. After 2022 the default's fit-window share is
@@ -32,7 +36,22 @@ Why (a property of the frozen procedure, reported, not repaired): Δ is set per 
 and near-identical ones later. "No gate" adds false risk-off calls. Refitting these two quantities
 cannot improve the incumbent; the result condemns nothing and promotes nothing.
 
-## 2. Pivot read, pooled (post window 10; ≥10%, then ≥7%, then the ≥5% primary)
+## 2a. Pivot read, out of sample only: 2022-01-03 → 2023-12-29 (post window 10; ≥5%)
+
+The only out-of-sample line. Outcomes through 2023-12-29. One ≥5% episode (2022-01-03 → 2022-10-12) peaks in the window: its top is left-censored, so no top is scored, and its bottom is the one scored turn. JSON: `pivot_read.oos_2022_2023`.
+
+| Series | Days on | ≥5% tops scored (censored) | ≥5% bottoms | ≥5% false risk-off /yr | ≥5% premature all-clear /yr |
+|---|---:|---|---|---:|---:|
+| Radar loud (walk-forward = shipped v2) | 38.5% | 0/0 (1 censored) | 0/1 | 0.00 | 2.52 |
+| HY OAS 21d top decile (release-rule lag) | 17.0% | 0/0 (1 censored) | 1/1 (+2) | 0.00 | 6.04 |
+| HY OAS, budget-matched per fold | 23.2% | 0/0 (1 censored) | 1/1 (+2) | 0.00 | 6.04 |
+| SPY < 200d | 43.9% | 0/0 (1 censored) | 0/1 | 0.00 | 2.52 |
+| VIX ≥ 20 | 53.9% | 0/0 (1 censored) | 0/1 | 0.00 | 3.02 |
+| VIX ≥ 25 | 26.8% | 0/0 (1 censored) | 0/1 | 0.00 | 4.53 |
+| Mechanical: within 1% of high | 3.0% | 0/0 (1 censored) | 0/1 | 1.01 | 0.50 |
+| Mechanical: ≥5% below peak | 81.6% | 0/0 (1 censored) | 0/1 | 0.00 | 2.01 |
+
+## 2b. Pivot read, POOLED 2022–26 — pools out-of-sample 2022–23 with seen 2024+; not out of sample (post window 10; ≥10%, then ≥7%, then ≥5%)
 
 Turns: 7 ≥5% episodes peak in the window; the 2022-01-03 top is left-censored (its pre-window
 lies before 2022) and the 2026-10 episode is open (no bottom). Of the scored turns, only the
@@ -41,8 +60,8 @@ lies before 2022) and the 2026-10 episode is open (no bottom). Of the scored tur
 | Series | Days on | ≥10% tops (n=1) | ≥10% bottoms (n=2) | ≥7% tops (n=3) | ≥7% bottoms (n=4) | **≥5% tops (n=6)** | **≥5% bottoms (n=6)** | ≥5% false risk-off /yr | ≥5% premature all-clear /yr |
 |---|---:|---|---|---|---|---|---|---:|---:|
 | **Radar loud (walk-forward = shipped v2)** | 19.3% | 0 | 0 | 0 | 1 (+2) | **0/6 [0.00, 0.39]** | **1/6 [0.01, 0.58]** (+2) | 0.0 | 1.45 |
-| HY OAS 21d top decile (lagged) | 12.5% | 0 | 1 | 0 | 3 | 2/6 [0.06, 0.73] (−12, −5) | 4/6 [0.27, 0.94] | 0.0 | 4.13 |
-| HY OAS, budget-matched per fold | 21.0% | 1 | 1 | 1 | 2 | 3/6 [0.15, 0.85] (+3, −12, −6) | 3/6 [0.15, 0.85] | 0.83 | 4.34 |
+| HY OAS 21d top decile (release-rule lag) | 12.6% | 0 | 1 | 0 | 3 | 2/6 [0.06, 0.73] (+5, −5) | 4/6 [0.27, 0.94] | 0.0 | 3.72 |
+| HY OAS, budget-matched per fold | 21.0% | 1 | 1 | 1 | 2 | 3/6 [0.15, 0.85] (+3, −11, −6) | 3/6 [0.15, 0.85] | 0.83 | 4.13 |
 | SPY < 200d | 22.5% | 0 | 0 | 0 | 1 | 0/6 | 1/6 (+6) | 0.0 | 1.24 |
 | VIX ≥ 20 | 32.8% | 1 | 0 | 2 | 2 | 3/6 (+6, −13, −5) | 3/6 | 2.07 | 2.69 |
 | VIX ≥ 25 | 14.3% | 0 | 1 | 0 | 3 | 1/6 (−9) | 4/6 | 0.21 | 2.48 |
@@ -69,14 +88,15 @@ median), the Radar fails on flagged share for both turn kinds and passes on fals
 
 ## 4. What this says
 
-1. **The loud Radar does not identify tops.** Out of sample and in seen history it flags 0 of 6
+1. **The loud Radar does not identify tops.** Pooled over out-of-sample 2022–23 and seen 2024+ it flags 0 of 6
    ≥5% tops within 10 sessions (1 within 21) and no ≥7% or ≥10% top. Random runs of the same
    lengths placed near highs do better on every draw. Its loud state behaves as a mid-decline
    confirmation, not a pivot call.
 2. **Its virtue is silence outside declines:** zero false risk-off calls. Its fault is the
    all-clear: 1.45 premature all-clears a year against a placebo median of 0.2–0.6.
-3. **Credit-spread velocity remains the stronger pivot reader** (2/6 tops early, 4/6 bottoms within
-   3 sessions, 0 false calls) but it re-alarms inside declines (4.1 premature all-clears a year).
+3. **Credit-spread velocity remains the stronger pivot reader** (pooled: 2/6 tops flagged, one early;
+   4/6 bottoms within 3 sessions; 0 false calls) but it re-alarms inside declines (3.7 premature
+   all-clears a year).
    None of its early catches is beyond the near-high reference.
 4. **Refitting the gate and band offset is not the lever.** The failure is in what the loud state
    is built to mean, not in its two tunable quantities.

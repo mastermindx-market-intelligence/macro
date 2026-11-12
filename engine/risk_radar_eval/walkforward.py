@@ -113,6 +113,16 @@ def bands_with_delta(calib: dict, delta: float) -> dict:
     return bands
 
 
+def score_window_seen(fold: dict) -> bool:
+    """A fold is seen history when its SCORE window reaches 2024-01-02 or later (an open
+    score_end counts as reaching it). The fit end is not the test: F24 fits through 2023-12-29
+    but scores 2024, which is the Radar's own seen history (#11137 review, 2026-11-12)."""
+    end = fold.get("score_end")
+    start = pd.Timestamp(fold["score_start"])
+    return bool(end is None or pd.Timestamp(end) >= SEEN_HISTORY_FROM
+                or start >= SEEN_HISTORY_FROM)
+
+
 def effective_state(fold: str, g: float | None, delta: float, calib: dict) -> dict:
     """Effective-state hash record (prereg §5.6): g, delta, bands, code commit, prereg hash."""
     bands = bands_with_delta(calib, delta)
@@ -251,7 +261,7 @@ def fit_fold(fold: dict, subs: pd.DataFrame, sigs: pd.DataFrame, calib: dict,
         "fit_window": [FIT_START.date().isoformat(), fit_end.date().isoformat()],
         "fit_cutoff": fit_end.date().isoformat(),
         "score_window": [fold["score_start"], fold["score_end"]],
-        "seen_history": bool(fit_end >= SEEN_HISTORY_FROM),
+        "seen_history": score_window_seen(fold),
         "n_fit_sessions": int(len(idx)),
         "n_fit_episodes": len(episodes),
         "n_fit_labels": len(turns),
@@ -540,6 +550,18 @@ def run(out_dir: str | Path | None = None, signals=None, *,
                          if start <= e.peak <= win.max()], end)
             for depth in DEPTHS_REPORT}
 
+    # the ONLY out-of-sample line: 2022-01-03..2023-12-29 on its own (no 2024+ outcome)
+    oos_end = min(SEEN_HISTORY_FROM - pd.Timedelta(days=1), last_common)
+    oos_only_idx = oos_idx[oos_idx <= oos_end]
+    oos_only_end = oos_only_idx.max()
+    pivot_oos_only = {
+        f"dd{int(round(depth * 100))}": _series_block(
+            {name: s.reindex(oos_only_idx) for name, s in pooled_alerts.items()},
+            [e for e in L.drawdown_episodes(px.loc[:oos_only_end], depth,
+                                            outcomes_through=oos_only_end)
+             if OOS_START <= e.peak <= oos_only_end], oos_only_end)
+        for depth in DEPTHS_REPORT}
+
     placebo = _placebo_bundle({"walkforward_loud": wf_loud,
                                "shipped_v2_loud": ship_loud.astype(bool)},
                               px=px, episodes=oos_eps, cut=last_common,
@@ -574,6 +596,10 @@ def run(out_dir: str | Path | None = None, signals=None, *,
                                         <= _fold_window(f, last_common)[1]]
                             for f in folds}},
             "pooled": pivot_pooled,
+            "pooled_note": "pools out-of-sample 2022-23 with seen 2024+; NOT out of sample",
+            "oos_2022_2023": pivot_oos_only,
+            "oos_2022_2023_note": "the only out-of-sample line: 2022-01-03..2023-12-29, "
+                                  "outcomes through 2023-12-29",
             "by_fold": pivot_folds,
         },
         "placebo": {"tol": 0.01, "n_draws": placebo_draws, "seed": placebo_seed,

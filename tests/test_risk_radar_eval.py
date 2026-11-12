@@ -426,3 +426,23 @@ def test_release_rules():
     assert A.release_dates("DFII10", pd.DatetimeIndex(["2018-06-29"])).iloc[0] == pd.Timestamp("2018-07-02")
     # observed table wins: the 2021-03-12 DEXJPUS anomaly was released 2021-03-22
     assert A.release_dates("DEXJPUS", pd.DatetimeIndex(["2021-03-12"])).iloc[0] == pd.Timestamp("2021-03-22")
+
+
+def test_walkforward_seen_history_follows_score_window():
+    # #11137 review: F24 fits through 2023-12-29 but scores 2024 -> seen history
+    seen = {f["name"]: W.score_window_seen(f) for f in W.FOLDS}
+    assert seen == {"F22": False, "F23": False, "F24": True, "F25": True, "F26": True}
+
+
+def test_hy_baseline_uses_release_rule_on_holiday_monday():
+    # #11137 review: obs Fri 2019-10-11 is released Tue 2019-10-15 (Mon 10-14 is Columbus Day)
+    from engine.risk_radar_eval import inputs as I
+    raw = pd.Series({pd.Timestamp("2019-10-09"): 4.30, pd.Timestamp("2019-10-10"): 4.26,
+                     pd.Timestamp("2019-10-11"): 4.10, pd.Timestamp("2019-10-14"): 4.08,
+                     pd.Timestamp("2019-10-15"): 4.00})
+    sessions = pd.DatetimeIndex(["2019-10-11", "2019-10-14", "2019-10-15", "2019-10-16"])
+    h = I.hy_oas_known(raw, sessions)
+    assert h.loc["2019-10-11"] == 4.26     # Thursday's value, released Friday
+    assert h.loc["2019-10-14"] == 4.26     # Friday's value is NOT yet known on the holiday
+    assert h.loc["2019-10-15"] == 4.08     # Fri + Mon released Tue; latest obs is Mon
+    assert h.loc["2019-10-16"] == 4.00

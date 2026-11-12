@@ -70,6 +70,16 @@ def gate_series(components: pd.DataFrame, breadth_pct_thr: float) -> pd.Series:
             & (components["breadth_pct"] <= breadth_pct_thr)).fillna(False).astype(bool)
 
 
+def hy_oas_known(raw: pd.Series, sessions: pd.DatetimeIndex) -> pd.Series:
+    """HY OAS as known at each session's close under the availability release rule
+    (observation + one federal-holiday business day), not a one-session shift: a Friday value
+    is released on Tuesday when Monday is a federal holiday (#11137 review, 2026-11-12)."""
+    from engine.risk_radar_eval import availability
+    raw = raw.dropna().sort_index()
+    known = availability.known_at(raw, "BAMLH0A0HYM2", pd.DatetimeIndex(sessions))
+    return pd.Series(raw.reindex(known.values).to_numpy(), index=sessions, dtype=float)
+
+
 def baseline_scores() -> pd.DataFrame:
     """Causal baseline series on the SPY calendar.
 
@@ -91,7 +101,7 @@ def baseline_scores() -> pd.DataFrame:
     if hy is not None:
         h = hy["hy_oas"].astype(float)
         h.index = pd.to_datetime(h.index)
-        h = h.reindex(out.index).ffill(limit=3).shift(AVAILABILITY_LAG["credit_oas_roc"])
+        h = hy_oas_known(h, out.index)
         out["hy_oas_chg21_pct"] = pct_rank_window(h.diff(21), PCT_WIN)
     # mechanical reference (desk H20): distance below the running total-return peak, causal
     out["dd_from_peak"] = spy / spy.cummax() - 1.0

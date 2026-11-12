@@ -42,3 +42,15 @@ def test_hy_lag_shifts_credit_leg_only():
     o = I.lag_for_availability(s)
     assert np.isnan(o["credit_oas_roc"].iloc[0]) and o["credit_oas_roc"].iloc[1] == 0.1
     assert o["bubble_ext"].tolist() == [1, 2, 3, 4.0]
+
+
+def test_peak_starts_from_opening_capital():
+    # #11137 review: a loss in session 1 must count (peak = opening capital 1.0)
+    idx = pd.bdate_range("2021-01-04", periods=6)
+    ret = pd.Series([-0.10, 0, 0, 0, 0, 0], index=idx, dtype=float)
+    px = (1 + ret).cumprod() * 100
+    r = N.profile(ret, spy_ret=ret, bill_ret=pd.Series(0.0, index=idx), px=px,
+                  outcomes_through=idx[-1], depths=(0.10,))
+    assert r["max_drawdown"] == pytest.approx(-0.10, abs=1e-4)
+    assert r["longest_under_water_sessions"] == 6
+    assert r["share_sessions_under_water"] == pytest.approx(1.0)
