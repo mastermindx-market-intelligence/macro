@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T19:45:59.227852+00:00",
-  "count": 3248,
+  "generated_at": "2026-11-12T20:08:39.683013+00:00",
+  "count": 3249,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -120,6 +120,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-jvi6mczmze6-3428ab",
+      "title": "GS Quinn Russell 2k Futures Another Retail Favorite 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T19:36:17Z",
+      "summary_points": [
+        "Funding Spike & Retail Initiation: Russell 2k 3-month funding surged 13bps (vs 6bps median) Nov 11, driven by Retail Favorites/Other/Non-Reportable longs (7% open interest), amid extended rate-hiking cycle threat.",
+        "Spread Volatility vs Fed Policy: Russell 2k funding spread vs Fed Funds shows extreme swings (peaking ~70 in Dec 2025, troughing ~-20 in May 2026), signaling credit market stress diverging from Fed policy during rate transitions.",
+        "Stabilization with Tension: Spread stabilized near 20-30 (Nov 2026) indicating partial normalization, but persistent credit-Fed Funds divergence constrains portfolio flexibility and demands heightened liquidity risk monitoring.",
+        "Positioning Divergence: Non-Reportable Longs spiked then declined (Feb 2026), while GS Retail Favorites sustained upward momentum, revealing conflicting strategies between opaque longs and retail-focused positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-77nfnifsn3h-c81235",
       "title": "GS Blekos Europe Macro Outlook AI Cycle Durable Siemens Energy PGHN & TKO (dg) Luxury Fieldtrip takes Reckitt Ceres Carbonomics 12 Nov 2026",
