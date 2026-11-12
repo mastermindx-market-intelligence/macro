@@ -94,6 +94,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -331,6 +333,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -2502,6 +2506,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -3579,6 +3585,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -6242,6 +6250,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/entry_radar/__init__.py"
@@ -8182,6 +8192,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/options_r5_shock.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/neuralweb/options_selection_context.py"
@@ -9317,6 +9329,7 @@ jobs:
     scope: exclusive
     paths:
       - "engine/options_r5_shock.py"
+      - "engine/provider_workload_policy.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
@@ -10710,6 +10723,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -11067,6 +11082,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11439,6 +11456,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -12463,6 +12482,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -13966,6 +13987,8 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "config/provider_workloads.v1.json"
+      - "engine/provider_workload_policy.py"
       - "engine/capital_structure/covenant_html.py"
       - "config/ai_pricing.yml"
       - "config/capability_manifest.yml"
@@ -17133,6 +17156,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
@@ -18844,6 +18869,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml
+      - name: provider workload guard (no developer subscriptions in product inference)
+        run: python -m pytest tests/test_provider_workload_policy.py -q
       - name: build check (committed outputs match YAML regeneration byte-for-byte)
         run: python scripts/build_ruling_graph.py --check
       - name: conflict checker (hard fail on new FDR family or privacy boundary violations)
@@ -19612,6 +19639,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -21421,6 +21450,8 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -22660,7 +22691,7 @@ jobs:
         # writes to was dark too, which is how _capture_usage could bill free
         # Ollama calls to the Claude subscription lane unnoticed.  It guards the
         # same waterfall as the files beside it — keep it in this step.
-        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py tests/test_provider_capacity_v2_cli.py tests/test_provider_native_enablement.py -q
+        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_provider_workload_policy.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py tests/test_provider_production_modes.py tests/test_provider_native_capabilities.py tests/test_provider_native_capability_source.py tests/test_provider_capacity_v2_cli.py tests/test_provider_native_enablement.py -q
       - name: V10 key economy suite (enabled-set, header capture, usage snapshot)
         run: python -m pytest tests/test_key_pool_economy.py -q
       - name: cortex provider routing + tool loop suite
@@ -23594,6 +23625,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "engine/intl_transmission_evidence.py"
       - "config/intl_transmission_channels_v1.json"
       - "tests/test_intl_transmission_evidence.py"
@@ -23751,6 +23784,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -24191,6 +24226,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -24527,6 +24564,8 @@ jobs:
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
       - "engine/us_board_snapshots.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -27155,6 +27194,8 @@ jobs:
     # RIC E0 frozen-spec retrospective runners (2026-10-14): M0 coherent requalification (H1, family ric_mri_coherent_requal_v1, n=13) and X0 release reaction (H3, family ric_x0_release_reaction_v1, n=8). Both ran ONCE against frozen protocols; these suites pin the runners' rules, receipts and committed results. Hermetic: synthetic fixtures and committed research/ receipts only, no network, no data/ reads or writes, no ledger writes.
     timeout-minutes: 10
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -27575,6 +27616,8 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/options_hub_retention.py"
@@ -28218,6 +28261,7 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - "engine/provider_workload_policy.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -29071,6 +29115,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/provider_workload_policy.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -31496,6 +31541,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -32575,6 +32622,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -34222,6 +34271,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/provider_workload_policy.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -35504,6 +35554,8 @@ jobs:
     # The ancestor inits are declared so this job adds no census rows.
     paths:
       - "engine/us_board_snapshots.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -36111,6 +36163,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
@@ -37620,6 +37674,7 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - "engine/provider_workload_policy.py"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
       - "contracts/theme_graph/theme_state.v1.schema.json"
@@ -40757,6 +40812,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/provider_workload_policy.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -41308,6 +41364,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -43015,6 +43073,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -44714,6 +44774,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -45992,6 +46054,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -49887,6 +49951,8 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - research/single_name_intelligence/common/**
       - research/single_name_intelligence/evaluation/**
       - research/single_name_intelligence/us_stress/**
@@ -50154,6 +50220,8 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "research/single_name_intelligence/**"
       - "contracts/single_name_intelligence/**"
       - "config/single_name_intelligence/**"
@@ -50789,6 +50857,8 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
@@ -50965,6 +51035,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -51264,6 +51336,8 @@ jobs:
     # Exclude only opaque whole-root inference from the builder's dormant I/O;
     # packing ceilings, all named dependencies and test assertions stay intact.
     paths:
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -51401,6 +51475,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/us_board_snapshots.py"
+      - config/provider_workloads.v1.json
+      - engine/provider_workload_policy.py
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "admin/press_audience.py"

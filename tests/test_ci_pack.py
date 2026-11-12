@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_998),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_732),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6052,6 +6052,25 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     admission limits. Preserve both entire provenance histories.
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-09 (PR #7179, compose the actual #6867 lifecycle landing):
+    Preserve all 400 current owners and both complete measurement histories.
+    Accepted main f3a8cf04 measures 5958/5979/5716; this PR's separately
+    qualified contribution remains +3, giving 5961/5982/5719.
+    The changed owner blocks have unchanged preimages; main changes only
+    data-base-shim, so neither contribution overwrites the other.
+    Job ceilings 137/138/131, ten packs and all assertions remain unchanged.
+    This is source conservation and arithmetic; new natural CI is still owed.
+
+    2026-11-09 (PR #7179, compose provider guard with landed ownership ledger):
+    accounting baseline d59a58ac retains F09 and the ledger's independent +3.
+    Preserve both complete histories and all current source. This guard's
+    separately measured +3 yields 5951/5972/5709 from 5948/5969/5706;
+    identical old H and main ceiling values funded different contributions.
+    Keep 137/138/131 jobs, ten packs and every selection/admission bound.
+    The accepted guard and all seven non-CI objects are unchanged. This is
+    source accounting, not a new planner or runtime measurement. The
+    combined successor requires its own natural required CI evidence.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
@@ -6135,6 +6154,26 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     current-tree failure claim. Natural own CI must qualify the result.
     If10192 actually lands before publication, retain that new baseline
     and add only ledger+3; do not enroll or fund the filer twice.
+
+    2026-11-09 (PR #7179, preserve actual F09 landing and provider workload guard):
+    receiving main9a13c64 includes F09's own+2 as landed7bdfb249486d.
+    Keep that contribution, its full history and all other main source.
+    Only this carrier's accepted+3 remains: current5945/5966/5703 becomes
+    5948/5969/5706. The original H's complete historical notes remain
+    below with their original measured/composed revisions and numbers.
+    Current runner and product preimages are unchanged; catalog owners
+    commute with F09's separate data-base-shim change. This is preserving
+    source arithmetic, not a new planner or timing measurement. Keep
+    jobs137/138/131,ten packs and all selectors/assertions/admission limits.
+    The materially combined successor must earn its own natural CI proof.
+
+    Fabric workload guard C3 current-main conflict repair (2026-11-09):
+    preserve the complete original measurement and source-conservation notes
+    below. All 42 changed owner preimages still equal the incorporated base;
+    retain current main's other 358 owners and the accepted +3 contribution.
+    The native runner blob is unchanged across B/H/main. Current ceilings
+    5943/5964/5701 become 5946/5967/5704; retain 137/138/131 jobs and ten packs.
+    This is source composition; fresh hosted contract/gate proof is still owed.
 
     2026-11-09 (PR #6867, preserving current F09 receiver): retain the
     landed beneficial-ownership argument in the existing Shared Shell step
@@ -6233,6 +6272,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     CI must qualify actual selection, closure, weight and packs; no extra
     entrant or unexplained increase is funded. The historical replay UNKNOWN
     remains fenced. Preserve every earlier provenance paragraph below.
+
+    Fabric workload guard (2026-11-04): actual contract-delta on 632dd39cf429
+    against protected 8b78baf69777 measured index137jobs/5912->5915,
+    free137jobs/5927->5930 and Prophet131jobs/5668->5671, ten packs each,
+    no newly selected jobs. The existing guard-test registrations add three
+    estimated weight units. Fund exactly those units; preserve job-count, pack,
+    timeout and admission bounds. These estimates are not runtime measurements.
+
+    Fabric workload guard current-main composition (2026-11-08): preserve the
+    November 4 measurement above as historical evidence. The added CODE step
+    contributes the same three estimated-weight units: the ruling-graph base
+    block and the weight/selection/loader functions are unchanged on current
+    main. Apply only +3 to its 5943/5964/5701 ceilings; retain 137/138/131 jobs,
+    ten packs and every timeout/admission bound. This is source conservation,
+    not a new planner execution or runtime measurement.
 
     2026-11-08 (PR #6867, intraday lifecycle and ledger regression coverage):
     natural contract job 128831388767 measured head
