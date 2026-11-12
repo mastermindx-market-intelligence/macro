@@ -25,6 +25,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import subprocess
 import types
 from pathlib import Path
 from types import SimpleNamespace
@@ -44,17 +45,17 @@ from tests.test_company_pinned_relationship_candidates import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-# The base writer (7387e1f8) is pinned as a fixture so the suite needs no git history.
-BASE_WRITER_FIXTURE = ROOT / "tests/fixtures/gmi_activity_base_membership_evidence_7387e1f8.py.txt"
+# The base writer is read from git at this commit; a shallow/fresh clone without the
+# object skips the byte-identity proof rather than carrying a fixture copy.
+BASE_COMMIT = "7387e1f829b54c51de316a7ea74c066abdfcd24c"
 CODE_VERSION = "0" * 40
 C01_PROPOSAL_ID = "actprop:287edbf7e04b8aba873b7493"
 TARGET = "theme:hbm_packaging"
 SEG_NODE = "co:us:ALPHA"
 SEG_ISSUER = "ISS:US-XNAS-ALPHA"
 SEG_LINE = "Data Center Storage"
-SEG_BODY = ("SYNTHETIC annual report. Aurora operates the Data Center Storage segment. "
-            "Aurora buys Widget wafers from Boreal. Data Center Storage revenue and profit "
-            "are disclosed.").encode("utf-8")
+SEG_BODY_BASE = ("SYNTHETIC annual report. Aurora operates the Data Center Storage segment. "
+                 "Aurora buys Widget wafers from Boreal.")
 SEG_ACCESSION = "0000000001-24-000001"
 KNOWLEDGE_CUTOFF = "2024-03-06T00:00:00Z"
 CREATED = "2024-03-06T01:00:00Z"
@@ -76,16 +77,45 @@ def _committed_bytes(path: str) -> bytes:
 # Synthetic single-party segment owner fixture (mirrors sec_supplier_adoption)
 # ---------------------------------------------------------------------------
 
+def _figure_span_for(body: bytes, name: str, text: str) -> dict:
+    """The pinned byte span of one figure's digits inside its unique labelled slot."""
+    source = body.decode("utf-8")
+    marker = f"[{name}:"
+    pos = source.index(marker) + len(marker)
+    assert source[pos:pos + len(text)] == text
+    start = len(source[:pos].encode("utf-8"))
+    end = len(source[:pos + len(text)].encode("utf-8"))
+    return {"start_byte": start, "end_byte": end,
+            "text_sha256": hashlib.sha256(body[start:end]).hexdigest()}
+
+
 def _segment_case(tmp_path, *, share_scope="segment", revenue=30.0, revenue_denominator=100.0,
                   profit=10.0, profit_denominator=100.0, profit_measure="operating_income",
-                  fiscal_year=2023, form="10-K"):
-    f = pinned_fixture(tmp_path / "native", body=SEG_BODY, form=form)
-    receipt = receipt_for_char_span(source=SEG_BODY.decode("utf-8"),
-                                    source_sha256=o.digest(SEG_BODY),
-                                    char_start=0, char_end=len(SEG_BODY)).to_dict()
+                  fiscal_year=2023, form="10-K", body=None, figure_specs=None,
+                  figure_spans=None, mutate_assertion=None):
+    figures = {"revenue": revenue, "revenue_denominator": revenue_denominator,
+               "profit": profit, "profit_denominator": profit_denominator}
+    if figure_specs is None:
+        figure_specs = {
+            name: (None if value is None else
+                   {"text": str(int(abs(value))), "sign": "+" if value >= 0 else "-", "scale": "units"})
+            for name, value in figures.items()}
+    if body is None:
+        parts = [SEG_BODY_BASE] + [f"[{name}:{figure_specs[name]['text']}]"
+                                   for name in n.SEGMENT_FIGURE_NAMES if figure_specs[name] is not None]
+        body = " ".join(parts).encode("utf-8")
+    if figure_spans is None:
+        figure_spans = {
+            name: (None if figure_specs[name] is None else
+                   _figure_span_for(body, name, figure_specs[name]["text"]))
+            for name in n.SEGMENT_FIGURE_NAMES}
+    f = pinned_fixture(tmp_path / "native", body=body, form=form)
+    receipt = receipt_for_char_span(source=body.decode("utf-8"),
+                                    source_sha256=o.digest(body),
+                                    char_start=0, char_end=len(body.decode("utf-8"))).to_dict()
     # The pinned candidate's built-in span receipt is bound to the helper's default
     # body; rebind it to this segment body so native replay is INSPECTABLE. The
-    # candidate assertion's labels (Aurora/Widget/Boreal) all occur in SEG_BODY.
+    # candidate assertion's labels (Aurora/Widget/Boreal) all occur in the body.
     f.candidate["receipt"] = receipt
     inspection = pinned_inspect(f)
     assert inspection["inspection_status"] == "INSPECTABLE"
@@ -97,7 +127,14 @@ def _segment_case(tmp_path, *, share_scope="segment", revenue=30.0, revenue_deno
     assertion = {"subject_label": "Aurora", "disclosed_line": SEG_LINE, "share_scope": share_scope,
                  "revenue": revenue, "revenue_denominator": revenue_denominator,
                  "profit": profit, "profit_denominator": profit_denominator,
-                 "profit_measure": profit_measure, "fiscal_year": fiscal_year}
+                 "profit_measure": profit_measure, "fiscal_year": fiscal_year,
+                 "figure_spans": figure_spans}
+    for name in n.SEGMENT_FIGURE_NAMES:
+        spec = figure_specs[name]
+        for suffix in ("text", "sign", "scale"):
+            assertion[f"{name}_{suffix}"] = None if spec is None else spec[suffix]
+    if mutate_assertion is not None:
+        mutate_assertion(assertion)
     role_review = {"decision": "supported_segment_activity_in_selected_filing",
                    "source_sha256": receipt["source_sha256"], "span_sha256": receipt["span_sha256"],
                    "snapshot_id": inspection["native_source_binding"]["snapshot_id"],
@@ -136,7 +173,8 @@ def _segment_case(tmp_path, *, share_scope="segment", revenue=30.0, revenue_deno
                                  theme_sources_raw=theme)
     return SimpleNamespace(pinned=f, inspection=inspection, receipt=receipt, identities=identities,
                            prepared=prepared, policy=policy, theme=theme, spec=spec,
-                           snapshot=snapshot, registry=registry)
+                           snapshot=snapshot, registry=registry, assertion=assertion,
+                           role_review=role_review, figure_specs=figure_specs)
 
 
 def _segment_identity_reader(node_id):
@@ -207,8 +245,13 @@ def _segment_fixture_ruling(tmp_path, case, proposed_row):
 # ---------------------------------------------------------------------------
 
 def _base_writer_module():
-    raw = BASE_WRITER_FIXTURE.read_bytes()
-    path = ROOT / "engine/theme_graph/membership_evidence.py"
+    rel = "engine/theme_graph/membership_evidence.py"
+    try:
+        raw = subprocess.run(["git", "show", f"{BASE_COMMIT}:{rel}"], cwd=ROOT,
+                             check=True, capture_output=True).stdout
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pytest.skip("base commit 7387e1f8 not in object store (shallow/fresh clone); byte-identity proof not run")
+    path = ROOT / rel
     mod = types.ModuleType("base_membership_evidence")
     mod.__file__ = str(path)
     exec(compile(raw, str(path), "exec"), mod.__dict__)
@@ -341,7 +384,7 @@ def test_segment_proposal_validates_with_closed_exposure(tmp_path):
     assert exposure["basis"] == "house_rule_v1"
     assert exposure["role"] == "primary" and exposure["profit_driver"] is True
     assert exposure["disclosed_line"] == SEG_LINE and exposure["share_scope"] == "segment"
-    assert exposure["revenue_share"] == pytest.approx(0.30)
+    assert exposure["revenue_share"] == 0.30
     assert exposure["revenue_denominator"] == 100.0
     assert exposure["accession"] == SEG_ACCESSION and exposure["fiscal_year"] == 2023
     assert row["evidence"]["scope"] == {"segment": {"value": SEG_LINE, "state": "KNOWN"}}
@@ -476,7 +519,7 @@ def test_minor_product_line_share_below_house_rule_refused(tmp_path):
 def test_product_line_at_or_above_house_rule_admits(tmp_path):
     case = _segment_case(tmp_path, share_scope="product_line", revenue=10.0, revenue_denominator=100.0)
     evidence = _segment_evidence(case)
-    assert evidence["exposure"]["revenue_share"] == pytest.approx(0.10)
+    assert evidence["exposure"]["revenue_share"] == 0.10
     assert evidence["exposure"]["share_scope"] == "product_line"
 
 
@@ -484,7 +527,7 @@ def test_reportable_segment_admits_regardless_of_share(tmp_path):
     case = _segment_case(tmp_path, share_scope="segment", revenue=1.0, revenue_denominator=100.0)
     evidence = _segment_evidence(case)
     assert evidence["exposure"]["share_scope"] == "segment"
-    assert evidence["exposure"]["revenue_share"] == pytest.approx(0.01)
+    assert evidence["exposure"]["revenue_share"] == 0.01
 
 
 def test_undisclosed_revenue_product_line_below_house_rule_refused(tmp_path):
@@ -510,6 +553,120 @@ def test_zero_revenue_denominator_refused_with_typed_code(tmp_path):
             disclosure_reader=lambda root, cv: snapshot,
             exposure_role="primary", profit_driver=True)
     assert caught.value.code == "EXPOSURE_DENOMINATOR_INVALID"
+
+
+# ---------------------------------------------------------------------------
+# Test 6 — figure spans, literal text/sign/scale, and losses (amendments 2/3/3b)
+# ---------------------------------------------------------------------------
+
+def _segment_builder(snapshot):
+    return me.build_activity_membership_evidence(
+        issuer_node_id=SEG_NODE, target_theme_id=TARGET, role="operator",
+        knowledge_cutoff=KNOWLEDGE_CUTOFF, code_version=CODE_VERSION,
+        identity_reader=_segment_identity_reader,
+        disclosure_reader=lambda root, cv: snapshot,
+        exposure_role="primary", profit_driver=True)
+
+
+def test_revenue_share_is_exact_quotient_of_filed_figures(tmp_path):
+    case = _segment_case(tmp_path)
+    fact = case.spec["fact"]
+    exposure = _segment_evidence(case)["exposure"]
+    assert exposure["revenue_share"] == fact["revenue"] / fact["revenue_denominator"]
+
+
+def test_figure_without_span_refused(tmp_path):
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_REQUIRED"):
+        _segment_case(tmp_path, mutate_assertion=lambda a: a["figure_spans"].__setitem__("profit", None))
+
+
+def test_figure_span_text_lacking_figure_refused(tmp_path):
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
+        _segment_case(tmp_path, mutate_assertion=lambda a: a.__setitem__("profit_text", "999"))
+
+
+def test_figure_numeric_not_equal_to_derived_text_refused(tmp_path):
+    with pytest.raises(n.DisclosureError, match="FIGURE_TEXT_MISMATCH"):
+        _segment_case(tmp_path, mutate_assertion=lambda a: a.__setitem__("profit", 999.0))
+
+
+def test_tampered_figure_span_offset_fails_at_replay(tmp_path):
+    case = _segment_case(tmp_path)
+    spec = copy.deepcopy(case.snapshot.spec)
+    spec["fact"]["figure_spans"]["revenue"]["start_byte"] += 1
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    source = segment.PinnedSegmentSource(snapshot, case.pinned.authority)
+    e = spec["edition"]
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
+        source.read_source(disclosure_id=e["disclosure_id"], edition_reference=n.validate_edition(e),
+                           source_sha256=e["source_sha256"], expected_byte_length=e["source_byte_length"],
+                           max_byte_length=n.MAX_SEC_SOURCE_BYTES)
+
+
+def test_exposure_scale_mismatch_refused(tmp_path):
+    case = _segment_case(tmp_path)
+    spec = copy.deepcopy(case.snapshot.spec)
+    spec["fact"]["revenue_scale"] = "thousands"  # differs from revenue_denominator_scale="units"
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    with pytest.raises(me.ActivityAdmissionRefusal) as caught:
+        _segment_builder(snapshot)
+    assert caught.value.code == "EXPOSURE_SCALE_MISMATCH"
+
+
+def test_negative_revenue_denominator_refused(tmp_path):
+    case = _segment_case(tmp_path)
+    spec = copy.deepcopy(case.snapshot.spec)
+    spec["fact"]["revenue_denominator"] = -100.0
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    with pytest.raises(me.ActivityAdmissionRefusal) as caught:
+        _segment_builder(snapshot)
+    assert caught.value.code == "EXPOSURE_DENOMINATOR_INVALID"
+
+
+def test_negative_revenue_numerator_refused(tmp_path):
+    case = _segment_case(tmp_path)
+    spec = copy.deepcopy(case.snapshot.spec)
+    spec["fact"]["revenue"] = -30.0
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    with pytest.raises(me.ActivityAdmissionRefusal) as caught:
+        _segment_builder(snapshot)
+    assert caught.value.code == "EXPOSURE_NUMERATOR_INVALID"
+
+
+def test_loss_profit_ix_shape_carries_sign_and_omits_profit_share(tmp_path):
+    # The inline-XBRL loss shape keeps its parentheses outside the tag, so "(54,602)"
+    # is never contiguous; the digits are pinned literally and the sign is declared.
+    ix_loss = '(<ix:nonFraction name="us-gaap:OperatingIncomeLoss" sign="-">54,602</ix:nonFraction>)'
+    body = (SEG_BODY_BASE + " [revenue:30] [revenue_denominator:100] "
+            + ix_loss + " [profit_denominator:100]").encode("utf-8")
+    source = body.decode("utf-8")
+    pos = source.index(ix_loss)
+    start = len(source[:pos].encode("utf-8"))
+    end = len(source[:pos + len(ix_loss)].encode("utf-8"))
+    profit_span = {"start_byte": start, "end_byte": end,
+                   "text_sha256": hashlib.sha256(body[start:end]).hexdigest()}
+    figure_specs = {
+        "revenue": {"text": "30", "sign": "+", "scale": "units"},
+        "revenue_denominator": {"text": "100", "sign": "+", "scale": "units"},
+        "profit": {"text": "54,602", "sign": "-", "scale": "units"},
+        "profit_denominator": {"text": "100", "sign": "+", "scale": "units"}}
+    figure_spans = {
+        "revenue": _figure_span_for(body, "revenue", "30"),
+        "revenue_denominator": _figure_span_for(body, "revenue_denominator", "100"),
+        "profit": profit_span,
+        "profit_denominator": _figure_span_for(body, "profit_denominator", "100")}
+    case = _segment_case(tmp_path, profit=-54602.0, body=body,
+                         figure_specs=figure_specs, figure_spans=figure_spans)
+    fact = case.spec["fact"]
+    assert fact["profit"] == -54602.0 and fact["profit_sign"] == "-"
+    exposure = _segment_evidence(case)["exposure"]
+    assert exposure["profit_share"] is None
+    assert exposure["revenue_share"] == fact["revenue"] / fact["revenue_denominator"]
+
+
+def test_figure_sign_declared_negative_without_marker_refused(tmp_path):
+    with pytest.raises(n.DisclosureError, match="FIGURE_SIGN_UNSUPPORTED"):
+        _segment_case(tmp_path, mutate_assertion=lambda a: a.__setitem__("profit_sign", "-"))
 
 
 def _segment_proposed(tmp_path):

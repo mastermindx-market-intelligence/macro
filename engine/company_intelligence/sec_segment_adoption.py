@@ -102,7 +102,8 @@ def prepare_segment_input(inspection, *, assertion, receipt, identities, identit
                and b.get('receipt_sidecar_verified') is True,
                'NATIVE_SOURCE_REPLAY_REQUIRED')
     n._closed(assertion, {'subject_label', 'disclosed_line', 'share_scope', 'revenue', 'revenue_denominator',
-        'profit', 'profit_denominator', 'profit_measure', 'fiscal_year'})
+        'profit', 'profit_denominator', 'profit_measure', 'fiscal_year', 'figure_spans'}
+        | {f'{name}_{suffix}' for name in n.SEGMENT_FIGURE_NAMES for suffix in ('text', 'sign', 'scale')})
     form_type = b['source_local_filing']['form']
     n._require(type(form_type) is str and form_type in n.SEGMENT_FORM_TYPES, 'SEGMENT_FORM_NOT_ADMITTED')
     n._require(b['document_version'] == 'sha256:' + b['raw_sha256']
@@ -115,6 +116,28 @@ def prepare_segment_input(inspection, *, assertion, receipt, identities, identit
     # review; both labels must be present in the replayed span text.
     for label in (assertion['subject_label'], assertion['disclosed_line']):
         n._require(type(label) is str and label in receipt['value_text'], 'SOURCE_LOCAL_LABEL_UNSUPPORTED')
+    # Each non-null figure carries its own span in the same pinned document. The
+    # match is literal, never numeric: the replayed span bytes must contain the
+    # digits as printed, and the value is sign x digits x scale (a loss is negative).
+    main_bytes = receipt['span_text'].encode('utf-8')
+    main_start = receipt['byte_start']
+    figure_spans = n._closed(assertion['figure_spans'], set(n.SEGMENT_FIGURE_NAMES))
+    for name in n.SEGMENT_FIGURE_NAMES:
+        value, span = assertion[name], figure_spans[name]
+        if value is None:
+            n._require(span is None, 'FIGURE_SPAN_MISMATCH')
+            continue
+        n._require(span is not None, 'FIGURE_SPAN_REQUIRED')
+        n._segment_figure_span(span)
+        rel_start, rel_end = span['start_byte'] - main_start, span['end_byte'] - main_start
+        n._require(0 <= rel_start < rel_end <= len(main_bytes), 'FIGURE_SPAN_MISMATCH')
+        text, sign, scale = (assertion[f'{name}_text'], assertion[f'{name}_sign'], assertion[f'{name}_scale'])
+        n._verify_figure_span(name, {'start_byte': rel_start, 'end_byte': rel_end,
+                                     'text_sha256': span['text_sha256']}, text, sign, main_bytes)
+        n._require(type(text) is str and n._FIGURE_TEXT.fullmatch(text) is not None, 'FIGURE_TEXT_MISMATCH')
+        n._require(sign in n.SEGMENT_FIGURE_SIGNS and scale in n.SEGMENT_FIGURE_SCALES, 'FIGURE_TEXT_MISMATCH')
+        derived = (-1 if sign == '-' else 1) * int(text.replace(',', '')) * n.SEGMENT_FIGURE_SCALES[scale]
+        n._require(value == derived, 'FIGURE_TEXT_MISMATCH')
     clocks = b['source_local_clocks']
     source = {'snapshot_id': b['snapshot_id'], 'snapshot_at': b['snapshot_at'], 'manifest_key': b['manifest_key'],
         'document_id': b['document_id'], 'accession': b['source_local_filing']['accession'],
@@ -152,7 +175,9 @@ def prepare_segment_input(inspection, *, assertion, receipt, identities, identit
         'profit_measure': assertion['profit_measure'], 'fiscal_year': assertion['fiscal_year'],
         'span': {'start_byte': receipt['byte_start'], 'end_byte': receipt['byte_end'],
             'text_sha256': receipt['span_sha256']},
-        'revenue_span': None, 'known_at': None}
+        'figure_spans': figure_spans, 'known_at': None,
+        **{f'{name}_{suffix}': assertion[f'{name}_{suffix}']
+           for name in n.SEGMENT_FIGURE_NAMES for suffix in ('text', 'sign', 'scale')}}
     return {'schema': PREPARATION_SCHEMA, 'edition': edition, 'proposed_fact': fact,
         'identities': deepcopy(identities), 'identity_queries': dict(identity_queries), 'semantic_review': review,
         'identity_observed_at': identity_observed_at,
@@ -282,4 +307,11 @@ class PinnedSegmentSource:
             maximum_bytes=n.MAX_SEC_SOURCE_BYTES,
             maximum_stored_bytes=gzip_stored_byte_ceiling(e['source_byte_length']))
         n._require(read.receipt_sidecar_verified is True, 'NATIVE_SOURCE_REPLAY_REQUIRED')
+        # Replay re-verifies every figure span against the pinned bytes, exactly as
+        # the activity span is checked: literal text, hash and declared sign marker.
+        for name in n.SEGMENT_FIGURE_NAMES:
+            span = self.fact['figure_spans'][name]
+            if span is not None:
+                n._verify_figure_span(name, span, self.fact[f'{name}_text'],
+                                      self.fact[f'{name}_sign'], read.content)
         return read.content

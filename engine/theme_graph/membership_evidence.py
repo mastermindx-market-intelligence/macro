@@ -1711,16 +1711,38 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
             raise ActivityAdmissionRefusal("EXPOSURE_PROFIT_DRIVER_INVALID", repr(profit_driver))
         revenue, revenue_denominator = fact.get("revenue"), fact.get("revenue_denominator")
         profit, profit_denominator = fact.get("profit"), fact.get("profit_denominator")
-        # A non-positive denominator is a typed refusal, never a ZeroDivisionError.
-        for label, denominator in (("revenue_denominator", revenue_denominator),
-                                   ("profit_denominator", profit_denominator)):
-            if denominator is not None and denominator <= 0:
+        # A share is the exact quotient of two filed figures, never a caller number.
+        # Both figures must state the same scale; a missing or differing scale is a
+        # typed refusal, and a loss (negative figure) is carried, never rounded away.
+        for numerator_label, denominator_label in (("revenue", "revenue_denominator"),
+                                                   ("profit", "profit_denominator")):
+            numerator, denominator = fact.get(numerator_label), fact.get(denominator_label)
+            if numerator is None or denominator is None:
+                continue
+            numerator_scale = fact.get(f"{numerator_label}_scale")
+            denominator_scale = fact.get(f"{denominator_label}_scale")
+            if (numerator_scale is None or denominator_scale is None
+                    or numerator_scale != denominator_scale):
                 raise ActivityAdmissionRefusal(
-                    "EXPOSURE_DENOMINATOR_INVALID", f"{label}={denominator!r}")
+                    "EXPOSURE_SCALE_MISMATCH",
+                    f"{numerator_label}_scale={numerator_scale!r} "
+                    f"{denominator_label}_scale={denominator_scale!r}")
+        # A non-positive revenue denominator, or a negative revenue numerator, is a
+        # typed refusal, never a ZeroDivisionError or a negative share.
+        if revenue_denominator is not None and revenue_denominator <= 0:
+            raise ActivityAdmissionRefusal(
+                "EXPOSURE_DENOMINATOR_INVALID", f"revenue_denominator={revenue_denominator!r}")
+        if revenue is not None and revenue < 0:
+            raise ActivityAdmissionRefusal("EXPOSURE_NUMERATOR_INVALID", f"revenue={revenue!r}")
         revenue_share = (revenue / revenue_denominator
                          if revenue is not None and revenue_denominator is not None else None)
+        # A loss profit (negative figure or denominator) omits profit_share entirely.
+        if profit is not None and profit_denominator is not None and profit_denominator <= 0:
+            raise ActivityAdmissionRefusal(
+                "EXPOSURE_DENOMINATOR_INVALID", f"profit_denominator={profit_denominator!r}")
         profit_share = (profit / profit_denominator
-                        if profit is not None and profit_denominator is not None else None)
+                        if profit is not None and profit_denominator is not None
+                        and profit >= 0 and profit_denominator > 0 else None)
         share_scope = fact["share_scope"]
         # House rule v1: a reportable segment OR a revenue share >= 0.10. A minor
         # line stays in research lists, never proposed as a member.

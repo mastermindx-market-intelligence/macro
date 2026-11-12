@@ -863,7 +863,7 @@
         "exposure": {
           "type": "object",
           "additionalProperties": false,
-          "description": "Shares belong to the disclosed segment or product line, not to the micro-theme. When several micro-themes sit inside one disclosed line, each member row carries the same line and share; no consumer may add them up.",
+          "description": "Shares belong to the disclosed segment or product line, not to the micro-theme. When several micro-themes sit inside one disclosed line, each member row carries the same line and share; no consumer may add them up. revenue_share and profit_share are the writer's exact quotient of two filed figures, each pinned by its own span in the owner fact; they are never entered by hand, and any rounding is for display only (round half up to 2 dp of a percentage). A figure printed in parentheses or with a minus sign is a loss and is carried negative; profit_share is null whenever the profit figure or its denominator is negative.",
           "required": [
             "basis",
             "role",

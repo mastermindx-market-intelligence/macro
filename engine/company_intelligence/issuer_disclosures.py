@@ -37,6 +37,13 @@ FACT_SCHEMAS = frozenset({FACT_SCHEMA, SUPPLIER_FACT_SCHEMA, SEGMENT_FACT_SCHEMA
 # must additionally equal this value at source replay.
 SEGMENT_FORM_TYPES = frozenset({"10-K", "10-K/A", "20-F", "20-F/A"})
 SEGMENT_SHARE_SCOPES = frozenset({"segment", "product_line"})
+# A disclosed figure is the exact characters the filing prints (digits and
+# separators, no sign), a declared sign and a stated scale. The numeric value is
+# sign x digits x scale; a loss (parentheses or minus) is carried negative.
+SEGMENT_FIGURE_NAMES = ("revenue", "revenue_denominator", "profit", "profit_denominator")
+SEGMENT_FIGURE_SCALES = {"units": 1, "thousands": 1000, "millions": 1000000, "billions": 1000000000}
+SEGMENT_FIGURE_SIGNS = frozenset({"+", "-"})
+_FIGURE_TEXT = re.compile(r"[0-9][0-9,]*\Z")
 MAX_OBJECT_BYTES = 16 * 1024
 MAX_SOURCE_BYTES = 1024 * 1024
 MAX_SEC_SOURCE_BYTES = 4 * 1024 * 1024
@@ -269,6 +276,46 @@ def _segment_span(value: object) -> dict:
     return span
 
 
+def _segment_figure_span(value: object) -> dict:
+    """One figure's own pinned byte span in the same document as the activity span."""
+    span = _closed(value, {"start_byte", "end_byte", "text_sha256"})
+    _integer(span["start_byte"], 0, MAX_SEC_SOURCE_BYTES)
+    _require(type(span["end_byte"]) is int and span["end_byte"] > span["start_byte"], "FIGURE_SPAN_MISMATCH")
+    _integer(span["end_byte"], span["start_byte"] + 1, MAX_SEC_SOURCE_BYTES)
+    _digest(span["text_sha256"])
+    return span
+
+
+def _verify_figure_span(name: str, span: dict, text: str, sign: str, raw: bytes) -> None:
+    """Replay one figure span against pinned bytes: hash, literal text, sign marker.
+
+    The match is literal, never numeric: the span bytes must contain ``text`` (the
+    digits as printed, separators included, no sign) as an exact substring. A
+    declared ``-`` needs a ``(`` before the digit text and a ``)`` after it, or a
+    ``-`` immediately before it, checked by byte position inside the span — the
+    inline-XBRL loss shape ``(<ix:nonFraction sign="-">54,602</ix:nonFraction>)``
+    keeps its parentheses outside the tag, so ``(54,602)`` is never contiguous.
+    """
+    start, end = span["start_byte"], span["end_byte"]
+    _require(0 <= start < end <= len(raw), "FIGURE_SPAN_MISMATCH")
+    fig_bytes = raw[start:end]
+    _require(hashlib.sha256(fig_bytes).hexdigest() == span["text_sha256"], "FIGURE_SPAN_MISMATCH")
+    fig_text = fig_bytes.decode("utf-8")
+    _require(text in fig_text, "FIGURE_SPAN_MISMATCH")
+    if sign == "-":
+        idx = fig_text.index(text)
+        paren = fig_text.rfind("(", 0, idx) >= 0 and fig_text.find(")", idx + len(text)) >= 0
+        minus = idx > 0 and fig_text[idx - 1] == "-"
+        _require(paren or minus, "FIGURE_SIGN_UNSUPPORTED")
+
+
+def _segment_figure_number(value: object, code: str) -> None:
+    """A derived figure magnitude: null when undisclosed; a loss is carried negative."""
+    if value is None:
+        return
+    _require(type(value) in (int, float) and not isinstance(value, bool), code)
+
+
 def _segment_number(value: object, code: str, *, minimum: float | None = None,
                     exclusive: bool = False) -> None:
     """A disclosed magnitude: null when undisclosed, never a fabricated zero."""
@@ -296,7 +343,9 @@ def _validate_segment_fact(value: dict) -> Reference:
                     "subject_identity", "kind", "lifecycle", "form_type", "accession",
                     "disclosed_line", "share_scope", "revenue", "revenue_denominator",
                     "profit", "profit_denominator", "profit_measure", "fiscal_year",
-                    "span", "revenue_span", "known_at"})
+                    "span", "figure_spans", "known_at"}
+                   | {f"{name}_{suffix}" for name in SEGMENT_FIGURE_NAMES
+                      for suffix in ("text", "sign", "scale")})
     _require(value["schema"] == SEGMENT_FACT_SCHEMA, "SCHEMA_INVALID")
     _require(value["fact_id"] == activity_fact_id(value["disclosure_id"], value["claim_key"]), "FACT_ID_MISMATCH")
     _reference(value["edition"], SEC_EDITION_SCHEMA)
@@ -318,17 +367,34 @@ def _validate_segment_fact(value: dict) -> Reference:
              and line.strip() == line, "FACT_SCOPE_INVALID")
     _require(type(value["share_scope"]) is str and value["share_scope"] in SEGMENT_SHARE_SCOPES,
              "SEGMENT_SHARE_SCOPE_INVALID")
-    _segment_number(value["revenue"], "SEGMENT_EXPOSURE_INVALID", minimum=0)
-    _segment_number(value["revenue_denominator"], "SEGMENT_EXPOSURE_INVALID", minimum=0, exclusive=True)
-    _segment_number(value["profit"], "SEGMENT_EXPOSURE_INVALID")
-    _segment_number(value["profit_denominator"], "SEGMENT_EXPOSURE_INVALID", minimum=0, exclusive=True)
+    # A loss is carried negative; the share-level refusals live in the writer.
+    for name in SEGMENT_FIGURE_NAMES:
+        _segment_figure_number(value[name], "SEGMENT_EXPOSURE_INVALID")
     measure = value["profit_measure"]
     _require(measure is None or (type(measure) is str and 0 < len(measure) <= 128 and measure.strip() == measure),
              "SEGMENT_EXPOSURE_INVALID")
     _integer(value["fiscal_year"], 1900, 2200)
     _segment_span(value["span"])
-    if value["revenue_span"] is not None:
-        _segment_span(value["revenue_span"])
+    spans = _closed(value["figure_spans"], set(SEGMENT_FIGURE_NAMES))
+    for name in SEGMENT_FIGURE_NAMES:
+        disclosed = value[name] is not None
+        span = spans[name]
+        if disclosed:
+            _require(span is not None, "FIGURE_SPAN_REQUIRED")
+            _segment_figure_span(span)
+        else:
+            _require(span is None, "FIGURE_SPAN_MISMATCH")
+        for suffix in ("text", "sign", "scale"):
+            field = value[f"{name}_{suffix}"]
+            if disclosed:
+                _require(field is not None, "SEGMENT_EXPOSURE_INVALID")
+            else:
+                _require(field is None, "SEGMENT_EXPOSURE_INVALID")
+        if disclosed:
+            text = value[f"{name}_text"]
+            _require(type(text) is str and _FIGURE_TEXT.fullmatch(text) is not None, "SEGMENT_EXPOSURE_INVALID")
+            _require(value[f"{name}_sign"] in SEGMENT_FIGURE_SIGNS, "SEGMENT_EXPOSURE_INVALID")
+            _require(value[f"{name}_scale"] in SEGMENT_FIGURE_SCALES, "SEGMENT_EXPOSURE_INVALID")
     _instant(value["known_at"])
     return _ref(value)
 
