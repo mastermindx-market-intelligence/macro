@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T20:08:39.683013+00:00",
-  "count": 3249,
+  "generated_at": "2026-11-12T20:19:41.293890+00:00",
+  "count": 3250,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -132,6 +132,26 @@
         "Spread Volatility vs Fed Policy: Russell 2k funding spread vs Fed Funds shows extreme swings (peaking ~70 in Dec 2025, troughing ~-20 in May 2026), signaling credit market stress diverging from Fed policy during rate transitions.",
         "Stabilization with Tension: Spread stabilized near 20-30 (Nov 2026) indicating partial normalization, but persistent credit-Fed Funds divergence constrains portfolio flexibility and demands heightened liquidity risk monitoring.",
         "Positioning Divergence: Non-Reportable Longs spiked then declined (Feb 2026), while GS Retail Favorites sustained upward momentum, revealing conflicting strategies between opaque longs and retail-focused positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xyjt4ov1gma-2cfab0",
+      "title": "GS Stankard Vol Views 11 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T18:49:43Z",
+      "summary_points": [
+        "Concentrated Tech Risk: AI infra names (e.g., GSTMTDAT) show extreme volatility (~80v vs NDX’s ~44v), signaling concentrated risk amid US net leverage at 5-yr lows and record put volume.",
+        "NVDA Trade Catalyst: 30% drop since Oct, $1.75tn market cap loss, 24x P/E (2019 levels); elevated vol/skew supports long delta + short vol strategy with 10% cushion.",
+        "Biopharma Momentum: Post-midterms secular tailwinds, increased M&A, top-line beats + guidance raises driving sector strength.",
+        "VIX Skew Dynamics: Structurally short vol on down moves, long vol on up moves create asymmetric protection bid; SPX 18Dec26 risk reversals cost $29 (-41d) reflecting skew-driven positioning."
       ],
       "tags": [],
       "tickers": [],
