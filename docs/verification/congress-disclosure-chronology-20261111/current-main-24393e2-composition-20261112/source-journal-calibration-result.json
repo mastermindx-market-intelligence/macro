@@ -1,0 +1,24 @@
+{
+  "startedAt": "2026-11-12T03:19:17.102276+00:00",
+  "expectedHead": "c038a8547dfb53619bbd4d99fc973d482bbb1264",
+  "path": "tests/test_ci_pack.py",
+  "beforeSha256": "b8d08e51c2b43175829547705839ab47149db3305f0531dfc53d80b96d277918",
+  "afterSha256": "5c114faf34239316840e2bca612cb41cb9673221ad89ebdc56f8e74468a55480",
+  "measuredWeights": [
+    5971,
+    5995,
+    5729
+  ],
+  "jobCeilings": [
+    137,
+    138,
+    131
+  ],
+  "packCeiling": 10,
+  "exitCode": 0,
+  "head": "0546b65e4377296abcd611ec54d45906254bdda4",
+  "tree": "6ea9c11429b6c830167fb6abc5f133b4cc4b5728",
+  "parents": "c038a8547dfb53619bbd4d99fc973d482bbb1264",
+  "status": "?? docs/verification/congress-disclosure-chronology-20261111/current-main-24393e2-composition-20261112/",
+  "completedAt": "2026-11-12T03:19:23.427287+00:00"
+}

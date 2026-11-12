@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-12T04:45:50.120895+00:00",
+  "parents": [
+    "05ec269cece04cb0282f86cba0ffcb1503833b46",
+    "e7f8565ca26b74b9ae0d637b336e9985d513ff9d"
+  ],
+  "index_tree": "e0bdaf2cf55457b7e748e2f1954596825b3a464d",
+  "congress_inputs": {
+    "engine/congress_members.py": "b1560549cc4795999cc366f83a3233e30f244174",
+    "scripts/build_congress.py": "5615d4faf068cd5d7777d86521a8d41e0fb05334",
+    "templates/congress_trades.html.j2": "ff14f5516dfe2864a9a95557de7d4b1d5cba1979",
+    "tests/test_congress_chronology.py": "268171b1222437249511c0ca3704788b9c8dbf33",
+    "tests/test_congress_score.py": "362459ed448a09468f14140746a3856b17710983",
+    "lib/pages.py": "db175c463a31828263b57a3287afba661439a765",
+    "lib/site_assets.py": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+    "lib/shared_shell.py": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+    "config.yml": "5be75249c98033d7ee0fbe55928713b1f50af627",
+    "scripts/capture_page_evidence.py": "78ba651d2996a64231c738a133ed465d73dd8caf"
+  },
+  "all_ten_product_inputs_unchanged": true
+}

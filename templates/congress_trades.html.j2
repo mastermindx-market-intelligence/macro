@@ -165,7 +165,8 @@
      '美国国会参众两院议员必须披露其股票交易（STOCK 法案）。我们从 Quiver Quantitative 获取这些披露文件，转化为可跟单的观察清单：一旦有议员披露某标的交易，它即进入清单，并从最近一次交易日起保留约 6 个月后移出。被更多议员（尤其两党共同）披露的名字更重要。随后按政界集群、引擎技术面与板块/主题可买区间评分。集群产生想法，引擎负责确认——被大量买入但已过度拉升或走弱的名字关注度高，但并非"现在就买"。仅供展示/研究。') }}</p>
   <div class="cg-meta">
     <span class="chip tag-event">Quiver Quantitative</span>
-    <span class="chip">{{ t('As of', '截至') }} {{ summary.as_of }}</span>
+    <span class="chip">{{ t('As of', '截至') }} {{ summary.as_of or t('No eligible filing date', '无可用披露日期') }}</span>
+    <span class="chip">{{ t('Date cutoff', '日期截止') }} {{ summary.cutoff_date | default('—') }}</span>
     <span class="chip">{{ t('Window', '窗口') }} {{ window_days }}d</span>
     <span class="chip">{{ '{:,}'.format(summary.n_total) }} {{ t('disclosures tracked', '累计披露') }}</span>
     <a class="chip feedlink" href="altdata/feed.json">🧠 {{ t('Brain feed (JSON)', '大脑数据流 (JSON)') }}</a>
@@ -513,9 +514,11 @@
 <div class="cg-card">
   <h2>{{ t('Recent disclosures', '最新披露') }}
       <span class="h-note">— {{ t('newest filings first; ExcessReturn = cumulative excess vs SPY since trade date (horizon-inconsistent — older trades have more time to compound)','最新披露在前；超额收益 = 自交易日起累计超越标普（时间不一致——老交易有更多时间复利）') }}</span></h2>
+  <p class="mut2">{{ t('Only disclosed trades with valid dates contribute to rankings. Rows with missing, invalid or later dates remain below with their status. Report dates alone do not establish point-in-time performance.', '只有日期有效且已披露的交易计入排名。日期缺失、无效或晚于截止日的记录仍在下表保留并注明状态。仅凭披露日期无法确认历史时点绩效。') }}</p>
   {% if feed %}
   <table class="ad" id="cgFeedTable"><thead><tr>
     <th>{{ t('Disclosed','披露日') }}</th>
+    <th>{{ t('Date check','日期校验') }}</th>
     <th>{{ t('Member','议员') }}</th>
     <th>{{ t('Chamber','议院') }}</th>
     <th>{{ t('Side','方向') }}</th>
@@ -527,15 +530,21 @@
     <th class="num">{{ t('Filing lag','披露滞后') }}</th>
   </tr></thead><tbody>
   {% for r in feed %}
-    <tr>
-      <td class="num mut2">{{ r.report_date or '—' }}</td>
+    <tr data-chronology-status="{{ r.chronology_status }}">
+      <td class="num mut2">{{ r.report_date or r.report_date_raw or '—' }}</td>
+      <td class="mut2">
+        {% if r.chronology_status == 'eligible' %}{{ t('Available by cutoff', '截止日前已披露') }}
+        {% elif r.chronology_status == 'unknown' %}{{ t('Unknown date', '日期未知') }}
+        {% elif r.chronology_status == 'invalid' %}{{ t('Invalid chronology', '日期无效') }}
+        {% else %}{{ t('Excluded: after cutoff', '已排除：晚于截止日') }}{% endif %}
+      </td>
       <td>{{ r.representative or '—' }}{% if r.party in ('D','R') %} <span class="cg-mem {{ r.party }}">{{ r.party }}</span>{% endif %}</td>
       <td class="mut2">{{ r.chamber }}</td>
       <td><span class="side-chip {{ r.side }}">{{ r.side|upper }}</span></td>
       <td><span class="tk"><a href="stock.html#{{ r.ticker }}">{{ r.ticker }}</a></span>{% if r.name %} <span class="mut2" style="font-size:10.5px">{{ r.name[:22] }}</span>{% endif %}</td>
       <td class="num">{{ amt(r) }}</td>
       <td class="num {{ 'r-pos' if (r.excess_return or 0) > 0 else ('r-neg' if (r.excess_return or 0) < 0 else '') }}">{% if r.excess_return is not none %}{{ '%+.1f'|format(r.excess_return) }}%{% else %}—{% endif %}</td>
-      <td class="num mut2">{{ r.transaction_date or '—' }}</td>
+      <td class="num mut2">{{ r.transaction_date or r.transaction_date_raw or '—' }}</td>
       <td class="num mut2">{% if r.tx_age_days is not none %}{{ r.tx_age_days }}d{% else %}—{% endif %}</td>
       <td class="num {% if r.late_filing %}r-neg{% else %}mut2{% endif %}">
         {% if r.filing_lag_days is not none %}{{ r.filing_lag_days }}d{% if r.late_filing %} ⚠️{% endif %}{% else %}—{% endif %}

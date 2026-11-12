@@ -1,0 +1,27 @@
+{
+  "schema": "congress_ci_packing_calibration_qualification.v1",
+  "head_before": "a05ff9570c74876da4229dc758f8729e8d78fc57",
+  "test_source_sha256": "e4c0d0d726c7463cefb7bcc9612268d37330a34dc491aaa9ff6eafeb40131b32",
+  "raw_log_sha256": "e772495c8c31ef72c0679c82bff61b8b3ddcf8ca964d5ca8a1b9c1072dc8d2cd",
+  "raw_log_bytes": 110,
+  "files": {
+    "packing-measurement-before.json": {
+      "sha256": "7985976176cbbc17feff65f405c5d79e41f2b5834b628c63b5a4725eea2e0b8d",
+      "bytes": 14960
+    },
+    "packing-calibration-change.json": {
+      "sha256": "9eeb417a637f802cbf0b6707648e6f0d73a1a8c09711236f792c9ad793ea1ec0",
+      "bytes": 858
+    },
+    "packing-absolute-execution.json": {
+      "sha256": "37bd550bd6d05abdb35e21e579fdbf62db7f7290505f1d392d260766296c051e",
+      "bytes": 428
+    },
+    "packing-absolute-check.log.gz": {
+      "sha256": "76011468c4fc811f5d6cdbc47eb8a1b1572b88d5232fb82b93a7a640ae5ab499",
+      "bytes": 61
+    }
+  },
+  "actual_local_absolute_exit_code": 0,
+  "scope": "three measured +2 weight ceilings and dated original-docstring provenance; all job/pack/execution limits and source coverage preserved"
+}

@@ -134,6 +134,44 @@ def _quality(n_eff: int, shrunk: float, prior: float = _POOLED_HIT_RATE) -> floa
     return max(0.0, min(1.0, q))
 
 
+def qualify_chronology(df, asof: date):
+    """Copy raw disclosures and qualify their dates at a UTC calendar cutoff.
+
+    Only valid transaction <= report <= cutoff dates establish eligibility.
+    Missing dates remain unknown; malformed or inverted dates remain invalid;
+    later dates are excluded. This is a necessary availability check, not proof
+    that snapshot returns or historical observations were known at that cutoff.
+    The transaction-age window belongs to the watchlist consumer, not this
+    shared check: member reliability still uses eligible full history.
+    """
+    import pandas as pd
+
+    out = df.copy()
+    unknown = pd.Series(False, index=out.index)
+    invalid = pd.Series(False, index=out.index)
+    for source, target in (("TransactionDate", "_td"), ("ReportDate", "_rd")):
+        values = out.get(source, pd.Series(None, index=out.index, dtype=object))
+        missing = values.isna() | values.map(
+            lambda value: isinstance(value, str) and not value.strip()
+        )
+        # Numeric values must not silently become Unix-epoch nanoseconds.
+        compatible = values.map(lambda value: isinstance(value, (str, date)))
+        parsed = pd.to_datetime(
+            values.where(compatible), errors="coerce", format="mixed", utc=True
+        ).dt.tz_localize(None).dt.normalize()
+        out[target] = parsed
+        unknown |= missing
+        invalid |= ~missing & parsed.isna()
+
+    cutoff = pd.Timestamp(asof).normalize()
+    out["_chronology_status"] = "eligible"
+    out.loc[(out["_td"] > cutoff) | (out["_rd"] > cutoff), "_chronology_status"] = "excluded"
+    out.loc[out["_rd"] < out["_td"], "_chronology_status"] = "invalid"
+    out.loc[unknown, "_chronology_status"] = "unknown"
+    out.loc[invalid, "_chronology_status"] = "invalid"
+    return out
+
+
 def compute(df, asof: date | None = None) -> dict[str, MemberStats]:
     """Compute per-member reliability stats from the congress parquet DataFrame.
 
@@ -142,26 +180,30 @@ def compute(df, asof: date | None = None) -> dict[str, MemberStats]:
     df : pd.DataFrame
         The congress.parquet dataframe (all rows, not just in-window).
     asof : date, optional
-        Reference date for age calculations; defaults to today.
+        UTC calendar cutoff for disclosure availability and age; defaults to today.
 
     Returns
     -------
     dict mapping BioGuideID -> MemberStats
     """
     import pandas as pd
-    from datetime import datetime
+    from datetime import datetime, timezone
 
     if asof is None:
-        asof = datetime.now().date()
+        asof = datetime.now(timezone.utc).date()
 
+    df = qualify_chronology(df, asof)
+    df = df.loc[df["_chronology_status"] == "eligible"].reset_index(drop=True)
+    if df.empty:
+        return {}
     asof_ts = pd.Timestamp(asof)
 
     # Coerce numeric columns (stored as float64, but may have NaN)
     er_col  = pd.to_numeric(df.get("ExcessReturn"), errors="coerce") if "ExcessReturn" in df.columns else None
     pc_col  = pd.to_numeric(df.get("PriceChange"),  errors="coerce") if "PriceChange"  in df.columns else None
 
-    tx_dates = pd.to_datetime(df.get("TransactionDate"), errors="coerce")
-    rd_dates = pd.to_datetime(df.get("ReportDate"),      errors="coerce")
+    tx_dates = df["_td"]
+    rd_dates = df["_rd"]
 
     results: dict[str, MemberStats] = {}
 
@@ -200,7 +242,7 @@ def compute(df, asof: date | None = None) -> dict[str, MemberStats]:
 
         # Horizon filter: only trades ≥ 30 calendar days old are used for skill
         tx_g = tx_dates.loc[idx]
-        age_days = (asof_ts - tx_g).dt.days.fillna(999).astype(float)
+        age_days = (asof_ts - tx_g).dt.days.astype(float)
         horizon_ok = age_days >= _MIN_HORIZON_CALENDAR_DAYS
 
         # ExcessReturn for this group

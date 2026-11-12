@@ -1,0 +1,31 @@
+{
+  "startedAt": "2026-11-12T03:10:06.777154+00:00",
+  "head": "05d4d177294290a270a35d59a0dac90e6d28ea6e",
+  "mergeHead": "24393e2adccc8abc094a635a3b37771b9a57be80",
+  "oldCeilingsRetainedForMeasurement": [
+    5970,
+    5993,
+    5728
+  ],
+  "status": "LOCAL_COMPOSITION_FOR_MEASUREMENT_NOT_QUALIFIED",
+  "sourceHashes": {
+    "engine/congress_members.py": "c6c4260206baf20738b0702ac36cb38e8212ce2277098cb8e64686ddedfb6c92",
+    "scripts/build_congress.py": "53a053c7484cc1e2836ff6fe312d7da76e34419120cf2af96a00de421088d1db",
+    "templates/congress_trades.html.j2": "d1959a6506d042ef8a46ea29dbd06ff023b64e9c435296b920c2fd3e0b37e224",
+    "tests/test_congress_chronology.py": "85f7a8ce6a9c0db17d2d572a8d81a48c81d7de7b0cc2a850fcfabc25736f428c",
+    "tests/test_congress_score.py": "89d9b6c75bf274a8b25bdbed91527b21ea6472e8425b6e87bb624841c48a9447",
+    "lib/pages.py": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+    "lib/site_assets.py": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+    "lib/shared_shell.py": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+    "config.yml": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+    "scripts/capture_page_evidence.py": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+  },
+  "originalProofHashes": {
+    "manifest.json": "57ffd1beaca4463d7df93cd07cfbb6563aa9c9466f69d5de69cd665e3c3ba080",
+    "visual-fixture-provenance.json": "8e31e55cd23d72c3fee0d298312691333982a072cb63ce8ffc553df86a5e8763",
+    "visual-qualification.json": "b7a313290f49f96f481eff2582b621ce26e63cff105d5920476e2229461c0da1"
+  },
+  "testPreimageSha256": "e5171180ae9a92eec45f4981dab2aacd085be341e0480f37bca45e17e4588dca",
+  "testResolvedSha256": "b8d08e51c2b43175829547705839ab47149db3305f0531dfc53d80b96d277918",
+  "controllerBlob": "deb9bfec7e3b8a6e56ecc74b539c787862ab263c"
+}

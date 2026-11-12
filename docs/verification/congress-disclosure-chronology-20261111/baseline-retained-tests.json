@@ -1,0 +1,16 @@
+{
+  "operation_id": "terminal-estate-congress-chronology-20261111-c3",
+  "source_base": "dce366adcf109daa9a2f0bf99ed68120da6b7957",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_congress_score.py"
+  ],
+  "exit_code": 0,
+  "output_sha256": "f580ca48a18edfd76f13ee99ff439aa0507eba82b9edfac672b38c79b2d361ba",
+  "log": "/Volumes/Mastermind 2/agent-workspaces/macro/web/terminal-estate-congress-chronology-20261111-c3/docs/verification/congress-disclosure-chronology-20261111/baseline-retained-tests.log",
+  "source_mutation": false,
+  "timestamp": "2026-11-11T22:20:33.166231+00:00"
+}

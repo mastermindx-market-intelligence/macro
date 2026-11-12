@@ -1,0 +1,9 @@
+{
+  "owner_receipt_count": 1,
+  "owner_validation_errors": [],
+  "png_integrity": "8/8 PASS",
+  "state_application": "8/8 PASS",
+  "source_stable": true,
+  "author_visual_review": "all8images inspected in Studio; header dates/status text/Chinese glyphs/themes legible; mobile overflow contained in existing tables",
+  "manifest_sha256": "161448d28dffcff61764c7f7ae259ef4430ac43b703a3f7e635d9b9e1b24a430"
+}

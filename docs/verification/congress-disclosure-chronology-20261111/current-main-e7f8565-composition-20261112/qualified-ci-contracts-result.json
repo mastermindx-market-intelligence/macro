@@ -1,0 +1,111 @@
+{
+  "startedAt": "2026-11-12T04:50:23.586618+00:00",
+  "completedAt": "2026-11-12T04:54:36.188378+00:00",
+  "seconds": 252.6093324169051,
+  "exitCode": 0,
+  "inventoryCommit": "7ba62f323889c2d829c285bd29b3a701b66f23a5",
+  "sourceTree": "6c224be6af23da0770ccc9dbb857dc4c6cdff9ce",
+  "sourceBefore": {
+    ".github/ci/legacy-jobs.yml": "060814a66c15ea76995862f7ce244e7b0e5cdcacbdf3a62f721b901348f31425",
+    "tests/test_ci_pack.py": "dbbebff3e962a0b8463842780a5fbcdfaa45445e0e4f7df299507b13a6324ab3",
+    "scripts/check_contract_delta.py": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+    "scripts/ci_scope_dependencies.py": "74f9afe96de53fd01c1630fdcef8db6c13680442085acb16c262a5927f090546",
+    "scripts/run_ci_pack.py": "b00540d822d63181d347e8f8801657dde991d923510112fb7bcc3fbf49f869d9"
+  },
+  "sourceAfter": {
+    ".github/ci/legacy-jobs.yml": "060814a66c15ea76995862f7ce244e7b0e5cdcacbdf3a62f721b901348f31425",
+    "tests/test_ci_pack.py": "dbbebff3e962a0b8463842780a5fbcdfaa45445e0e4f7df299507b13a6324ab3",
+    "scripts/check_contract_delta.py": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+    "scripts/ci_scope_dependencies.py": "74f9afe96de53fd01c1630fdcef8db6c13680442085acb16c262a5927f090546",
+    "scripts/run_ci_pack.py": "b00540d822d63181d347e8f8801657dde991d923510112fb7bcc3fbf49f869d9"
+  },
+  "sourceStable": true,
+  "cases": [
+    {
+      "name": "test_exclusive_curation_narrows_ordinary_code_prs",
+      "seconds": "227.708",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "name": "test_install_census_is_exact",
+      "seconds": "4.315",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "name": "test_every_plain_with_deps_install_has_the_bounded_fallback",
+      "seconds": "2.027",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "name": "test_real_install_steps_fall_back_once_and_preserve_failure[0-0]",
+      "seconds": "1.187",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "name": "test_real_install_steps_fall_back_once_and_preserve_failure[0-1]",
+      "seconds": "1.128",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "name": "test_real_install_steps_fall_back_once_and_preserve_failure[1-0]",
+      "seconds": "2.355",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "name": "test_real_install_steps_fall_back_once_and_preserve_failure[1-1]",
+      "seconds": "2.572",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "name": "test_real_install_steps_fall_back_once_and_preserve_failure[124-0]",
+      "seconds": "2.431",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "name": "test_real_install_steps_fall_back_once_and_preserve_failure[124-1]",
+      "seconds": "1.786",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "name": "test_real_install_steps_fall_back_once_and_preserve_failure[137-0]",
+      "seconds": "1.774",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "name": "test_real_install_steps_fall_back_once_and_preserve_failure[137-1]",
+      "seconds": "1.142",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    {
+      "name": "test_every_declared_scope_in_the_real_manifest_is_covered",
+      "seconds": "1.424",
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  ],
+  "stdout_tail": "............                                                             [100%]\n12 passed in 251.57s (0:04:11)\n",
+  "stderr_tail": ""
+}

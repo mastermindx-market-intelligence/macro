@@ -1,0 +1,24 @@
+{
+  "state": "MEASURED",
+  "startedAt": "2026-11-12T03:10:37.485381+00:00",
+  "completedAt": "2026-11-12T03:13:28.048535+00:00",
+  "seconds": 170.406,
+  "inventoryCommit": "c038a8547dfb53619bbd4d99fc973d482bbb1264",
+  "sourceTree": "c613ca5fc700e07116da4c2010864b9cf57eaab8",
+  "sourceBefore": {
+    ".github/ci/legacy-jobs.yml": "5e71cf7ab36296c3c1fdca28365d8f6bccab19a6d584dfd87318460abdb428b4",
+    "scripts/check_contract_delta.py": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+    "scripts/ci_scope_dependencies.py": "74f9afe96de53fd01c1630fdcef8db6c13680442085acb16c262a5927f090546",
+    "scripts/run_ci_pack.py": "b00540d822d63181d347e8f8801657dde991d923510112fb7bcc3fbf49f869d9",
+    "tests/test_ci_pack.py": "b8d08e51c2b43175829547705839ab47149db3305f0531dfc53d80b96d277918"
+  },
+  "sourceAfter": {
+    ".github/ci/legacy-jobs.yml": "5e71cf7ab36296c3c1fdca28365d8f6bccab19a6d584dfd87318460abdb428b4",
+    "scripts/check_contract_delta.py": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+    "scripts/ci_scope_dependencies.py": "74f9afe96de53fd01c1630fdcef8db6c13680442085acb16c262a5927f090546",
+    "scripts/run_ci_pack.py": "b00540d822d63181d347e8f8801657dde991d923510112fb7bcc3fbf49f869d9",
+    "tests/test_ci_pack.py": "b8d08e51c2b43175829547705839ab47149db3305f0531dfc53d80b96d277918"
+  },
+  "sourceStable": true,
+  "measurementSha256": "ffeb50aae3165daeb37888291f7e4978cc8403a2b60197848cabc7a9d9d5caca"
+}

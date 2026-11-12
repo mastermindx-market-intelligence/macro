@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-12T01:22:09.132327+00:00",
+  "headBefore": "d4d3696dc6b38a02461b36a7a2a98d7685a79bd3",
+  "jobCeilingsUnchanged": [
+    137,
+    138,
+    131
+  ],
+  "measurementSha256": "8f11c58959d433ea1d275ca9f98be2aa1219e1f613c482f2dcf62736a745255b",
+  "packCeilingUnchanged": 10,
+  "sourceChange": "three literal weight ceilings plus dated exact-composition provenance; no job registration, selection or execution limit change",
+  "testAfterSha256": "6eb681964cf46b09eb84490d16a894edd530ec38a3bcfd429a77d4f1ced6de00",
+  "testBeforeSha256": "162500395b109b78adffdd2469e9372b46bdc28e6ba9083baffa41ea793c24ff",
+  "weightCeilingsAfter": [
+    5970,
+    5993,
+    5728
+  ],
+  "weightCeilingsBefore": [
+    5968,
+    5991,
+    5726
+  ]
+}

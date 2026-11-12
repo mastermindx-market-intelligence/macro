@@ -1,0 +1,17 @@
+{
+  "command": "pytest.main inside existing _tracked_tree_inventory context",
+  "completed_at": "2026-11-12T01:25:10.190939+00:00",
+  "exit": 0,
+  "inventory_commit_sha": "35b9f6074f332afef58cb4326ee73e6c615df0b1",
+  "logSha256": "01fd5a96c5c7b3c58cb2758d1253985fdb345f50eb1c54ee180e8dff264265ff",
+  "pytest_args": [
+    "-q",
+    "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs"
+  ],
+  "seconds": 158.603,
+  "sourceStable": true,
+  "source_tree_sha": "22ef0d2caf4a2bef4f99ef31164468d79538e1e7",
+  "started_at": "2026-11-12T01:22:31.586482+00:00",
+  "state": "PASSED",
+  "testSourceSha256": "6eb681964cf46b09eb84490d16a894edd530ec38a3bcfd429a77d4f1ced6de00"
+}

@@ -1,0 +1,22 @@
+{
+  "startedAt": "2026-11-12T03:07:00.381373+00:00",
+  "head": "05d4d177294290a270a35d59a0dac90e6d28ea6e",
+  "protectedMain": "24393e2adccc8abc094a635a3b37771b9a57be80",
+  "mergeBase": "89bf0c038ac7b92afed48cb5889b6a7074fa1fe4",
+  "command": [
+    "git",
+    "merge",
+    "--no-commit",
+    "--no-ff",
+    "24393e2adccc8abc094a635a3b37771b9a57be80"
+  ],
+  "finishedAt": "2026-11-12T03:07:01.231662+00:00",
+  "exitCode": 1,
+  "actualHead": "05d4d177294290a270a35d59a0dac90e6d28ea6e",
+  "mergeHead": "24393e2adccc8abc094a635a3b37771b9a57be80",
+  "unmerged": [
+    "tests/test_ci_pack.py"
+  ],
+  "mergeLogSha256": "25af4cf1aaa878a01c8aa3e131c525e08fff8494b0cd11c4bc2dcf9d51ca6672",
+  "output": "Auto-merging .github/ci/legacy-jobs.yml\nAuto-merging tests/test_ci_pack.py\nCONFLICT (content): Merge conflict in tests/test_ci_pack.py\nAutomatic merge failed; fix conflicts and then commit the result.\n"
+}

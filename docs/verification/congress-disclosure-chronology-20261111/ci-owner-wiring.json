@@ -1,0 +1,177 @@
+{
+  "head_before": "fcc911bdef8c59c914f412188bb600be6f796225",
+  "old_manifest_sha256": "859133f3b244b1ed340020f03ddefc9d5058fb14140c8d3f274ba4897aa9c580",
+  "new_manifest_sha256": "18faaebce709a8884bb180474399c4ae71e610fefa327932bd8bccc07ea37e01",
+  "native_manifest_validation": "PASS",
+  "data_gate_jobs": 73,
+  "owner": [
+    {
+      "job_id": "unrun-macro-panels",
+      "definition": {
+        "if": "${{ false }}",
+        "gate": "data",
+        "timeout-minutes": 7,
+        "runs-on": "ubuntu-latest",
+        "steps": [
+          {
+            "uses": "actions/checkout@v4"
+          },
+          {
+            "uses": "actions/setup-python@v5",
+            "with": {
+              "python-version": "3.12"
+            }
+          },
+          {
+            "name": "install minimal deps",
+            "run": "pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn"
+          },
+          {
+            "name": "commodities / forex / rates / news / policy panels and their calibration guards",
+            "run": "python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_congress_chronology.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_credit_momentum_yield_consumer.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q"
+          },
+          {
+            "name": "A-F01-W4-1 bonds hub byte-preservation guard (T10)",
+            "run": "python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q"
+          },
+          {
+            "name": "E1c4 regime-outlook publication beside the rates command board",
+            "run": "python -m pytest tests/test_build_rates_command_outlook.py -q"
+          },
+          {
+            "name": "W23-L10/L12 country cycles - receipt, hazard availability, canonical read, FX move",
+            "run": "python -m pytest tests/test_country_cycles_projection_receipt.py tests/test_country_cycles_hazard_availability.py tests/test_country_cycles_canonical_phase.py tests/test_country_cycles_fx_contribution.py -q"
+          },
+          {
+            "name": "RIC B0 basis-aware comparison contract (rates_command_basis.v1)",
+            "run": "python -m pytest tests/test_rates_command_basis.py -q"
+          },
+          {
+            "name": "W23-L9 SPR page \u2014 JODI world-total vintage + zh assess badges",
+            "run": "python -m pytest tests/test_strategic_reserves.py tests/test_spr_jodi_vintage.py tests/test_spr_assess_badge_zh.py tests/test_spr_jodi_trend.py tests/test_spr_gold_vintage.py -q"
+          }
+        ],
+        "paths": [
+          "tests/test_factor_universe_hold.py",
+          "tests/test_build_dispersion_regime.py",
+          "tests/test_build_factor_panel.py",
+          "tests/test_commodity_mtf_verdict_honesty.py",
+          "tests/test_congress_score.py",
+          "tests/test_congress_chronology.py",
+          "tests/test_context_risk.py",
+          "tests/test_cross_asset_context.py",
+          "tests/test_crossasset_flows.py",
+          "tests/test_financial_news.py",
+          "tests/test_forex.py",
+          "templates/forex.html.j2",
+          "tests/test_news_event_ledger.py",
+          "tests/test_phase_buildout.py",
+          "tests/test_policy_lever.py",
+          "tests/test_rates_command.py",
+          "tests/test_yield_momentum.py",
+          "tests/test_credit_momentum_yield_consumer.py",
+          "engine/credit_momentum.py",
+          "tests/test_inputs_yield_curve.py",
+          "tests/test_reflexivity_overlay.py",
+          "tests/test_scorecard_incremental.py",
+          "tests/test_us_sector_rotation_wiring.py",
+          "tests/test_validation.py",
+          "tests/test_whitehouse_build.py",
+          "tests/test_commodities_ignition_copy.py",
+          "tests/test_commodities_w6_truth.py",
+          "tests/test_macro_rates_curves_bonds_guard.py",
+          "tests/test_build_rates_command_outlook.py",
+          "tests/test_rates_command_basis.py",
+          "engine/rates_command_basis.py",
+          "contracts/rates_command_basis.v1.schema.json",
+          "scripts/build_rates_command.py",
+          "tests/test_build_forex_stance.py",
+          "tests/test_country_cycles_projection_receipt.py",
+          "tests/test_country_cycles_hazard_availability.py",
+          "tests/test_country_cycles_canonical_phase.py",
+          "tests/test_country_cycles_fx_contribution.py",
+          "scripts/build_country_cycles.py",
+          "templates/country_cycles.html.j2",
+          "scripts/build_bonds.py",
+          "scripts/build_commodities.py",
+          "site/bonds.html",
+          "engine/commodity_confluence.py",
+          "engine/commodity_index.py",
+          "templates/commodities.html.j2",
+          "templates/bonds.html.j2",
+          "tests/test_strategic_reserves.py",
+          "tests/test_spr_jodi_vintage.py",
+          "tests/test_spr_assess_badge_zh.py",
+          "tests/test_spr_jodi_trend.py",
+          "tests/test_spr_gold_vintage.py",
+          "engine/strategic_reserves.py",
+          "scripts/build_spr.py",
+          "templates/spr.html.j2"
+        ]
+      },
+      "ordinal": 300,
+      "weight": 84,
+      "paths": [
+        "tests/test_factor_universe_hold.py",
+        "tests/test_build_dispersion_regime.py",
+        "tests/test_build_factor_panel.py",
+        "tests/test_commodity_mtf_verdict_honesty.py",
+        "tests/test_congress_score.py",
+        "tests/test_congress_chronology.py",
+        "tests/test_context_risk.py",
+        "tests/test_cross_asset_context.py",
+        "tests/test_crossasset_flows.py",
+        "tests/test_financial_news.py",
+        "tests/test_forex.py",
+        "templates/forex.html.j2",
+        "tests/test_news_event_ledger.py",
+        "tests/test_phase_buildout.py",
+        "tests/test_policy_lever.py",
+        "tests/test_rates_command.py",
+        "tests/test_yield_momentum.py",
+        "tests/test_credit_momentum_yield_consumer.py",
+        "engine/credit_momentum.py",
+        "tests/test_inputs_yield_curve.py",
+        "tests/test_reflexivity_overlay.py",
+        "tests/test_scorecard_incremental.py",
+        "tests/test_us_sector_rotation_wiring.py",
+        "tests/test_validation.py",
+        "tests/test_whitehouse_build.py",
+        "tests/test_commodities_ignition_copy.py",
+        "tests/test_commodities_w6_truth.py",
+        "tests/test_macro_rates_curves_bonds_guard.py",
+        "tests/test_build_rates_command_outlook.py",
+        "tests/test_rates_command_basis.py",
+        "engine/rates_command_basis.py",
+        "contracts/rates_command_basis.v1.schema.json",
+        "scripts/build_rates_command.py",
+        "tests/test_build_forex_stance.py",
+        "tests/test_country_cycles_projection_receipt.py",
+        "tests/test_country_cycles_hazard_availability.py",
+        "tests/test_country_cycles_canonical_phase.py",
+        "tests/test_country_cycles_fx_contribution.py",
+        "scripts/build_country_cycles.py",
+        "templates/country_cycles.html.j2",
+        "scripts/build_bonds.py",
+        "scripts/build_commodities.py",
+        "site/bonds.html",
+        "engine/commodity_confluence.py",
+        "engine/commodity_index.py",
+        "templates/commodities.html.j2",
+        "templates/bonds.html.j2",
+        "tests/test_strategic_reserves.py",
+        "tests/test_spr_jodi_vintage.py",
+        "tests/test_spr_assess_badge_zh.py",
+        "tests/test_spr_jodi_trend.py",
+        "tests/test_spr_gold_vintage.py",
+        "engine/strategic_reserves.py",
+        "scripts/build_spr.py",
+        "templates/spr.html.j2"
+      ],
+      "fallback_paths": [],
+      "exclusive": false,
+      "gate": "data"
+    }
+  ],
+  "execution_scope": "Native manifest load validates ownership; local103tests already passed. Existing data-health transport executes data gate; PR code-gate green alone is not execution proof."
+}

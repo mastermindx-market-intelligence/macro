@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-12T01:22:09.303431+00:00",
+  "headBefore": "d4d3696dc6b38a02461b36a7a2a98d7685a79bd3",
+  "paths": [
+    "tests/test_ci_pack.py",
+    "docs/verification/congress-disclosure-chronology-20261111/current-main-composition-20261112"
+  ],
+  "testSha256": "6eb681964cf46b09eb84490d16a894edd530ec38a3bcfd429a77d4f1ced6de00"
+}

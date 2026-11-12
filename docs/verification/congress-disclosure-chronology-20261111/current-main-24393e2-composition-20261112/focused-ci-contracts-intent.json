@@ -1,0 +1,16 @@
+{
+  "startedAt": "2026-11-12T03:25:39.097337+00:00",
+  "head": "0546b65e4377296abcd611ec54d45906254bdda4",
+  "tree": "6ea9c11429b6c830167fb6abc5f133b4cc4b5728",
+  "command": [
+    "pytest",
+    "-q",
+    "tests/test_ci_browser_setup.py",
+    "tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered"
+  ],
+  "sourceBefore": {
+    ".github/ci/legacy-jobs.yml": "5e71cf7ab36296c3c1fdca28365d8f6bccab19a6d584dfd87318460abdb428b4",
+    "tests/test_ci_browser_setup.py": "63a8848643c339244ad1cf1c39d0c34a68386635dc29ddc904d5539f2eb8ca68",
+    "tests/test_ci_pack.py": "5c114faf34239316840e2bca612cb41cb9673221ad89ebdc56f8e74468a55480"
+  }
+}

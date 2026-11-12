@@ -1,0 +1,18 @@
+{
+  "startedAt": "2026-11-12T03:19:17.102276+00:00",
+  "expectedHead": "c038a8547dfb53619bbd4d99fc973d482bbb1264",
+  "path": "tests/test_ci_pack.py",
+  "beforeSha256": "b8d08e51c2b43175829547705839ab47149db3305f0531dfc53d80b96d277918",
+  "afterSha256": "5c114faf34239316840e2bca612cb41cb9673221ad89ebdc56f8e74468a55480",
+  "measuredWeights": [
+    5971,
+    5995,
+    5729
+  ],
+  "jobCeilings": [
+    137,
+    138,
+    131
+  ],
+  "packCeiling": 10
+}

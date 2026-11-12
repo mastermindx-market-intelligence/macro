@@ -1,0 +1,25 @@
+{
+  "at": "2026-11-11T23:51:28.067943+00:00",
+  "head": "a05ff9570c74876da4229dc758f8729e8d78fc57",
+  "old_sha256": "1653fdfd5fc98eafe3a9a71058df9accf985c561ce56da3dab0a6eebff72bec0",
+  "new_sha256": "e4c0d0d726c7463cefb7bcc9612268d37330a34dc491aaa9ff6eafeb40131b32",
+  "measurement_sha256": "7985976176cbbc17feff65f405c5d79e41f2b5834b628c63b5a4725eea2e0b8d",
+  "weights_before": [
+    5966,
+    5989,
+    5724
+  ],
+  "weights_after": [
+    5968,
+    5991,
+    5726
+  ],
+  "job_ceilings_unchanged": [
+    137,
+    138,
+    131
+  ],
+  "max_packs_unchanged": 10,
+  "source_change": "only three literal weight ceilings and dated provenance in the existing absolute test docstring",
+  "earlier_preflight": "numeric literal spelling assertion stopped before any source write; original source hash read back unchanged; corrected to existing underscore spelling"
+}
