@@ -2,9 +2,11 @@
 
 Sector Intelligence quant lead, 2026-11-12. Data only: nothing here relates breadth
 to any outcome on any period (no forward returns, hit rates or backtests).
-**Read before the tables:** on the dated basis only 46.5% of members carry a sector
-label at the end of 1996, and all 11 sectors are valid (10 or more counted members)
-only from about 2010. The pre-2010 dated series is a thin, survivor-leaning sample.
+**Read before the tables:** on the dated basis only 50.8% of members carry a sector
+label at the end of 1996 (46.5% before the free SIC fill), and only 221 of 488 have a
+Tiingo close; all 11 sectors are valid (10 or more counted members) only from
+2007-01-10 (about 2010 before the fill). The pre-2007 dated series is a thin,
+survivor-leaning sample.
 
 **Rights.** The Tiingo archive's member rows stay on the SSD and never enter git.
 What is committed is group-level aggregates (shares and counts per sector), the
@@ -90,11 +92,12 @@ window and are absent; for 144 of them the ticker exists in the archive only
 outside the window (a likely ticker reuse — the engine already counts a member
 only inside its window, so a later company's prices never enter). By start year:
 1996 268 (rows open at the membership file's start), 1997–2001 94, 2002–2010 48,
-2011–2026 43. Separately, 484 membership rows carry no sector label and are absent
-from every sector; label coverage is 46.5% of members at the end of 1996, rising
-to 94.3% in 2021 (`LABEL_COVERAGE.md`). The early dated years therefore lean toward
-survivors. Communication Services and Real Estate fall under 10 members before
-about 2010 and are missing, not zero.
+2011–2026 43. Separately, 423 membership rows carry no sector label and are absent
+from every sector (484 before the free SIC fill); label coverage is 50.8% of members
+at the end of 1996 (46.5% before), rising to 95.6% in 2021 (`LABEL_COVERAGE.md`).
+The early dated years therefore lean toward survivors. Communication Services falls
+under 10 members before 2006-04-03 and Real Estate before 2007-01-10; both are
+missing, not zero, before those dates.
 
 Today's basis: only today's members; every name that left the index is absent
 from every past session, and today's labels apply throughout. 18 of today's 503
