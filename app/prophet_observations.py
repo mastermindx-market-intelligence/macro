@@ -24,6 +24,20 @@ _SESSION_FILE = re.compile(r"\d{4}-\d{2}-\d{2}\.json\Z", re.ASCII)
 _QUERIES = frozenset({"ticker", "security_id", "offset", "limit", "snapshot"})
 
 
+def _read_active_universe(data_root: Path, source_session: str) -> dict | None:
+    """Read the immutable universe contract for the artifact's source session.
+
+    The loader is additive: missing/tampered contracts return None rather than
+    raising — the B03 surface stays open and reports typed UNAVAILABLE.
+    """
+    try:
+        from engine import us_turn_watch as tw  # noqa: PLC0415
+        return tw.universe_contract_for_session(data_root, source_session)
+    except Exception:  # noqa: BLE001 — engine must not break the B03 read path
+        log.warning("active universe load failed for %s", data_root)
+        return None
+
+
 def read_current_observations() -> dict:
     """Select the newest completed-session input, then validate that exact file.
 
@@ -51,6 +65,7 @@ def read_current_observations() -> dict:
         pass
     if paths:
         source = max(paths, key=lambda p: p.stem)
+        active_universe = _read_active_universe(_DATA_ROOT, source.stem)
         try:
             spine = load_identity_spine(_DATA_ROOT)
         except (OSError, ValueError, TypeError, KeyError, ImportError):
@@ -59,6 +74,8 @@ def read_current_observations() -> dict:
             source, spine=spine, reference_session=reference,
             episode_root=_DATA_ROOT / "us_prophet_rank/episodes",
             public_artifact_path=_DATA_ROOT.parent / "site/turn_watch/turn_watch.json",
+            active_universe=active_universe,
+            universe_proof_artifact_path=_DATA_ROOT.parent / "site/turn_watch/turn_watch.json",
         )
         if (projection["status"] != "UNAVAILABLE"
                 and projection["clocks"]["source_session"] != source.stem):
@@ -117,10 +134,10 @@ def observations_v1(request: Request, _user: dict = Depends(require_site_full_us
                                                      if k != "expected_snapshot"})
             return JSONResponse(result, status_code=503, headers=_PRIVATE_HEADERS)
         result = query_observations(projection, **query)
+        return JSONResponse(result, headers=_PRIVATE_HEADERS)
     except ObservationQueryError as exc:
         return JSONResponse({"error": str(exc)}, status_code=409, headers=_PRIVATE_HEADERS)
     except Exception as exc:  # noqa: BLE001 — private transport boundary, no path/row disclosure
         log.warning("early observation read failed (%s)", type(exc).__name__)
         return JSONResponse({"error": "OBSERVATIONS_UNAVAILABLE"}, status_code=503,
                             headers=_PRIVATE_HEADERS)
-    return JSONResponse(result, headers=_PRIVATE_HEADERS)

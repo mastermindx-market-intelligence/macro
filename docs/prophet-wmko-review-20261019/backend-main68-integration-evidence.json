@@ -1,0 +1,63 @@
+{
+  "completed_at": "2026-10-19T09:52:20.600932+00:00",
+  "environment": {
+    "python": "/private/tmp/prophet-wmko-test-env-20261018/bin/python",
+    "version": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "yfinance": "/private/tmp/prophet-wmko-test-env-20261018/lib/python3.14/site-packages/yfinance/__init__.py"
+  },
+  "head": "9779142d9cb1fdce378703f46297d287b4041f77",
+  "merge_head": "68b205e59763eac97378295ff9df99147960dae3",
+  "protected_mastermind_pin": "d5cce731a23588ddbf4df806bd9e8dcfa5eecf24",
+  "raw_files_preserved": true,
+  "results": [
+    {
+      "argv": [
+        "/tmp/prophet-wmko-test-env-20261018/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_us_turn_watch.py",
+        "tests/test_us_turn_watch_v2.py",
+        "tests/test_prophet_early_observations.py",
+        "tests/test_prophet_early_observations_v2.py",
+        "tests/test_prophet_observations_api.py",
+        "tests/test_prophet_wmko_delivery_contract.py",
+        "tests/test_yahoo_universe_backfill.py",
+        "tests/test_us_scan_tier.py",
+        "tests/test_us_leader_pullback_coverage.py",
+        "-q"
+      ],
+      "elapsed_seconds": 44.748,
+      "exit_code": 0,
+      "name": "backend_battery"
+    },
+    {
+      "argv": [
+        "/tmp/prophet-wmko-test-env-20261018/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_deploy_update_self_heal.py::test_api_load_time_import_closure_is_covered_by_restart_regex",
+        "-q"
+      ],
+      "elapsed_seconds": 14.53,
+      "exit_code": 0,
+      "name": "restart_closure"
+    },
+    {
+      "argv": [
+        "bash",
+        "-n",
+        "app/deploy/update.sh"
+      ],
+      "elapsed_seconds": 0.021,
+      "exit_code": 0,
+      "name": "owner_shell_syntax"
+    }
+  ],
+  "root": "prophet-wmko-miss-20261018",
+  "scope": "Existing focused backend battery and precise restart union verification on the original uncommitted integration; no production data or deployment",
+  "started_at": "2026-10-19T09:51:21.300248+00:00",
+  "success": true,
+  "test_log_sha256": "9e4e0b57cab30a7dd88df71d3effc6378f474b4fd7dbece47fb70dc4b66b2286",
+  "tested_index_tree": "dc1a52c9841521bd825064748aa897debf2baebf",
+  "unstaged_tracked_paths": []
+}

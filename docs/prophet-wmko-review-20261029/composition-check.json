@@ -1,0 +1,186 @@
+{
+  "base": "625a36bbb76681b854d3f6c00316a6fa151d854f",
+  "head": "3ccc756ff18dba2b07ec479f965ce27c6140a4dc",
+  "main": "74cb9afe20d6b2a3e6466d24f5e6ceff9f0b9734",
+  "manifest_conflicts": 14,
+  "manifest_jobs": 356,
+  "modified_jobs": [
+    {
+      "job": "bea-gvc-current-descriptive-consumer",
+      "added_paths": [
+        "config/us_turn_watch_universe.v1.json",
+        "config/us_turn_watch_universe.v2.json",
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "c19-wp32-integrated-answer-correction-denial-pins",
+      "added_paths": [
+        "config/us_turn_watch_universe.v1.json",
+        "config/us_turn_watch_universe.v2.json",
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "c19-wp22-dhi-traversal",
+      "added_paths": [
+        "config/us_turn_watch_universe.v1.json",
+        "config/us_turn_watch_universe.v2.json",
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "options-matrix-code",
+      "added_paths": [
+        "config/us_turn_watch_universe.v1.json",
+        "config/us_turn_watch_universe.v2.json",
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "flow-surface",
+      "added_paths": [
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "prophet-lab",
+      "added_paths": [
+        "tests/test_prophet_early_observations_v2.py",
+        "tests/test_prophet_wmko_delivery_contract.py",
+        "tests/test_us_turn_watch_v2.py",
+        "config/us_turn_watch_universe.v2.json",
+        "config/us_turn_watch_universe.v1.json",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": true
+    },
+    {
+      "job": "fif-kernel-guards",
+      "added_paths": [
+        "config/us_turn_watch_universe.v1.json",
+        "config/us_turn_watch_universe.v2.json",
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "ontology-explorer",
+      "added_paths": [
+        "config/us_turn_watch_universe.v1.json",
+        "config/us_turn_watch_universe.v2.json",
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "qledger-cluster-honest-ci",
+      "added_paths": [
+        "config/us_turn_watch_universe.v2.json"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "nw-lobe-unfreeze",
+      "added_paths": [
+        "config/us_turn_watch_universe.v2.json"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "biocatalyst-history",
+      "added_paths": [
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "crypto-assistant-context",
+      "added_paths": [
+        "config/us_turn_watch_universe.v1.json",
+        "config/us_turn_watch_universe.v2.json",
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "unrun-government-revenue-candidate-projection",
+      "added_paths": [
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "washout-turn-organ",
+      "added_paths": [
+        "config/us_turn_watch_universe.v2.json"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "unrun-government-revenue-grader",
+      "added_paths": [
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "research-price-panel",
+      "added_paths": [
+        "config/us_turn_watch_universe.v1.json",
+        "config/us_turn_watch_universe.v2.json",
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "ticker-news-qbus",
+      "added_paths": [
+        "config/us_turn_watch_universe.v1.json",
+        "config/us_turn_watch_universe.v2.json",
+        "engine/us_basket_turn.py",
+        "engine/us_leader_pullback.py",
+        "engine/us_turn_watch.py"
+      ],
+      "steps_changed": false
+    },
+    {
+      "job": "eval-os-a1",
+      "added_paths": [
+        "config/us_turn_watch_universe.v2.json"
+      ],
+      "steps_changed": false
+    }
+  ],
+  "packing_ast_equal_main": true,
+  "updater_equals_main_plus_us_turn_watch": true
+}

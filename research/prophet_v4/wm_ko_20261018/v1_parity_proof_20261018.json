@@ -1,0 +1,15 @@
+{
+  "schema": "prophet.frozen_v1_parity/v1",
+  "base_commit": "1d20bdebb10b30e1924cfcf18c689440c2059d7c",
+  "changed_existing_definitions": [
+    "compute_deck_with_candidates",
+    "source_contract_status",
+    "universe"
+  ],
+  "unchanged_existing_definition_count": 37,
+  "public_artifact_sha256": "320fb0df32b83713f313b9769555570aaf7fea76ed89c5b4b5ffd48c25620ef3",
+  "candidate_rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "candidate_row_count": 0,
+  "source_session": "2026-10-16",
+  "fixture": "existing tests.test_us_turn_watch._UPTREND; one-member frozen-v1 fixture manifest; native functions unmodified"
+}

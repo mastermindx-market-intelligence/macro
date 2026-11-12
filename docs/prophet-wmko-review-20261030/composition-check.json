@@ -1,0 +1,57 @@
+{
+  "original_programme_root": "01a11e89-b35d-7a81-9404-5fce2c6170cb",
+  "assigning_parent": "01a11e89-b35d-7a81-9404-5fce2c6170cb",
+  "native_receiver": "01a19078-9f8c-7b10-9135-65d598b58f2a",
+  "previous_head": "484a17e18234de547b534083279e14cd3768d650",
+  "fixed_main": "6e721225979bc786e3a756cb41fdf71665e4efbe",
+  "prospective_source_tree": "19df9338745e9d4ee99f909859a9566280f875ca",
+  "conflicts": {
+    "file": ".github/ci/legacy-jobs.yml",
+    "regions": 2,
+    "jobs": [
+      "c19-wp22-dhi-traversal",
+      "options-matrix-code"
+    ],
+    "resolution": "Retain both additive path lists in order"
+  },
+  "verified": {
+    "main_jobs": 356,
+    "main_job_order_retained": true,
+    "main_fields_retained": true,
+    "original_feature_blobs_preserved": 42,
+    "wmko_modified_jobs": 18,
+    "sole_step_delta": "prophet-lab original three suites",
+    "main_only_integration_paths": [
+      "scripts/run_ci_pack.py"
+    ],
+    "raw_exact_current_main_blocks": 338,
+    "preamble_exact": true
+  },
+  "sha256": {
+    ".github/ci/legacy-jobs.yml": "e450f288e61cfa2a66bf1e5c92f3dec0c598ec076dc2d9ba01e373800ea802d8",
+    "tests/test_ci_pack.py": "7f446e1c273656a1469ca1ce7d3c88ce3756cb55da7787bed9a256387d61e209",
+    "scripts/run_ci_pack.py": "cfbcf08073600e91e657d0da4c2dd50172a59e7cdfd114e49d0cddf896e53b56",
+    "app/deploy/update.sh": "eb235cea4eb64165dd74b20e8748c003bf7d624ab6d437e034072c263a134ee2"
+  },
+  "previous_automatic_proof": {
+    "ci": 40929304906,
+    "fences": 40929304486,
+    "conclusion": "SUCCESS",
+    "head": "484a17e18234de547b534083279e14cd3768d650",
+    "scope": "Historical exact-head proof; not qualification of this new composition"
+  },
+  "release": "Fresh automatic exact-head/current-base qualification and supported nonauthor controller release owed; original access and unknown-effect holds preserved.",
+  "independent_review": {
+    "verdict": "PASS_SCOPED",
+    "reviewer_native_thread": "01a11e89-b35d-7a81-9404-5fce2c6170cb",
+    "author_native_thread": "01a19078-9f8c-7b10-9135-65d598b58f2a",
+    "subject_source_tree": "19df9338745e9d4ee99f909859a9566280f875ca",
+    "scope": "Fresh actual diff vs484a17: seven additive paths across six jobs, no deletions or changed commands/assertions; both conflicting path families retained; unchanged42-feature review reused. Not GitHub approval, CI or release."
+  },
+  "affected_checks": {
+    "command": "python3 -m pytest -q -o addopts= tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure tests/test_ci_pack.py::test_d5_route_closure_keeps_affected_curated_jobs_selecting_dependencies tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+    "result": "3 passed in172.62s",
+    "exit_code": 0,
+    "retained_native_handle": 4916
+  }
+}

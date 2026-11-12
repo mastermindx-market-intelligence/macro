@@ -5997,10 +5997,28 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
+#    2026-11-11 (PR #9610, preserve the current free-content allowance):
+#    Receiving main dce366ad retains the complete prophet-lab preimage from
+#    incorporated base7e85f62c. Preserve all 401 owners, the original 19-owner
+#    WM/KO path closure and all receiving changes in the three shared owners.
+#    The unchanged estimator counts 12 commands, 27->30 test references and
+#    1433->1553 joined characters in bucket 1: prophet-lab weight 67->73.
+#    Add only the original +6 to current 5966/5989/5724: 5972/5995/5730.
+#    Main's separately landed free-content +2 and both full histories remain.
+#    Keep jobs 137/138/131, ten packs and all selection/runtime/admission limits.
+#    All 51 feature/test/receipt blobs and their original modes stay exact H.
+#    This is static source accounting, not a new planner or installed run;
+#    natural successor CI must qualify the combined tree. Frozen scientific
+#    and runtime receipts retain their original inputs, dates and scope.
+
+# Prophet #9610 composed with main 0a0e48e4: the original three WM/KO suites
+# add six estimator units to prophet-lab (67 -> 73), selected by every probe.
+# Measured index137/5929, free137/5950, plan131/5687, each ten packs.
+# Fund those six units only. Job, runtime and pack limits remain fixed.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_972),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_730),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6026,31 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #9610, original-source recovery on main 7e85f62c):
+    Preserve all 401 current owners and both parents' complete histories.
+    The original three WM/KO suites retain the sole prophet-lab execution
+    change, 67 to 73 native estimator units. Compose the existing +6 source
+    contribution with main's 5966/5987/5724 ceilings to 5972/5993/5730.
+    Job caps137/138/131, ten packs, all assertions and qualified dependency
+    sources are unchanged. This is source accounting, not a fresh full-tree
+    packing measurement; the genuine successor must earn its own CI proof.
+
+    2026-11-10 (PR #9610, accepted main f860c281 composition):
+    Retain main's lifecycle/ledger composition and qualified Playwright pins.
+    The original three WM/KO suites still add only six prophet-lab weight
+    units; compose main ceilings 5958/5979/5716 to 5964/5985/5722. Preserve
+    job caps137/138/131, ten packs, all suites and both parent histories.
+    This is source accounting; natural successor CI remains required.
+
+    2026-11-09 (PR #9610, retain the actual F09 and ownership-ledger landings):
+    Current main carries all 400 owners, the filer +2 and ledger +3.
+    Preserve those accepted definitions and all historical measurements below.
+    The original three WM/KO suites still contribute only six units to
+    prophet-lab. Compose current ceilings 5948/5969/5706 with that +6 to
+    5954/5975/5712; keep job caps 137/138/131 and ten packs unchanged.
+    These are source-accounting ceilings, not a new complete-tree measurement;
+    the successor must earn its own hosted contract and semantic proof.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
@@ -6179,6 +6222,18 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     timeouts and admission/concurrency controls stay. This is measured planner
     accounting, not an elapsed-time claim; natural successor CI must qualify
     the repaired source.
+
+    2026-11-08 (PR #9610, main 0a0e48e4 integration):
+    Paired canonical plans on the SAME composed source universe preserve
+    all 395 current-main owners and every selected job ID. Only the three
+    accepted WM/KO suites change execution weight: the existing Prophet
+    Lab job rises from 67 to 73. Index remains 137 jobs, weight 5923 to
+    5929; free-content remains 137 jobs, weight 5944 to 5950; plan-book
+    remains 131 jobs, weight 5681 to 5687. All six plans retain ten packs.
+    The old main expectations fail by exactly six units on each probe.
+    Fund only those measured units; preserve job caps 137, 138, 131, the
+    ten-pack ceiling, runtime limits and every current-main job/command.
+    This is local planning proof, not current-head hosted qualification.
 
     2026-11-09 (PR #10571, snapshot base/parts readers, composed on accepted
     main 071ed19f5ce87927f078f94f3e126c24d8a0307e; code/catalog unchanged
@@ -6488,6 +6543,90 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     breached job ceilings move, to their measured values (index 136 -> 137,
     free-content 136 -> 138). Plan-book sits exactly at its 130 ceiling and
     stays. Weight and pack ceilings, selectors and suites stay unchanged.
+
+    2026-10-24 Prophet WM/KO current-source composition (PR #9610):
+    Accepted current-main cacdaf8 retains its complete suites, closures and
+    packing rules. Three original WM/KO tests add six estimator units to
+    prophet-lab. Canonical composed-source probes measure index 134 jobs /
+    5,830 units, free-content 134 / 5,828 and plan-book 127 / 5,580, each
+    in ten packs. All fit accepted current-main ceilings 5,886 / 5,877 /
+    5,636, so no ceiling, job bound, pack bound or selector is changed.
+    Older 51f0 measurements below remain specific to that historical tree.
+
+
+    2026-10-24 WM/KO integration against accepted 51f0ac98:
+    Independent whole-tree baseline and combined-tree canonical probes select
+    identical job IDs: index 135 / build 135 / plan 128, each in ten packs.
+    Accepted-main weights are 5,879 / 5,875 / 5,629; combined weights are
+    5,885 / 5,881 / 5,635. Only prophet-lab changes, 59 -> 65, for the
+    original three required WM/KO suites. Thus the subject adds exactly six
+    units to each probe. Accepted main itself already exceeds its build
+    ceiling 5,873 by two; the red baseline is retained separately, not
+    attributed to this PR. Set only that breached ceiling to measured 5,881.
+    Preserve index/plan ceilings, all job limits, ten packs, every suite,
+    scope rule, estimator and prior source-specific measurement below.
+
+    2026-10-20 WM/KO refresh onto accepted main e583b3aa preserves the
+    private company-news addition below: build keeps its 135-job ceiling and
+    5,795-unit accepted baseline. The already-reviewed WM/KO suites add six
+    estimator units, composing to 5,828 for index and 5,801 for build. Plan's
+    5,600 ceiling and the ten-pack bound remain unchanged. Exact combined
+    measurements are retained with the current integration validation.
+
+    WM/KO Prophet coverage (2026-10-20, PR9610) adds three required suites
+    to prophet-lab's existing invocation. The unchanged estimator retains eight
+    commands and one command-length unit; explicit test paths increase 20 -> 23,
+    so the job weight is 49 -> 55. Hosted contract-delta run 39350015873,
+    job 118391740353, tested synthetic 3ccda72 (base a914 + subject d940):
+    build_free_content selects the same 134 jobs / 10 packs, weight 5638 -> 5644,
+    with no new entrant. Index.html and plan_book also gain six units and remain
+    within their bounds. Fund only the measured six-unit excess, 5638 -> 5644.
+    All suites, selectors, job limits, the other weight ceilings and the ten-pack
+    bound remain unchanged; fresh hosted CI must execute this updated assertion.
+
+    Accepted d528 composition (2026-10-20) retains the four methodology /
+    seasonality units and the six WM/KO units: 5,638 + 4 + 6 = 5,648.
+    Both historical measurements above remain evidence for their original
+    source trees. Validate this combined manifest with the canonical probe and
+    the absolute packing assertion before publishing; all other bounds stay fixed.
+
+    Accepted 6629 composition (2026-10-20) retains the seven SPR units
+    and the six WM/KO units: 5,642 + 7 + 6 = 5,655. The prior accepted
+    local-projections curation and all earlier measurements remain intact.
+    Validate this combined manifest with the unchanged canonical estimator
+    and the absolute packing assertion; every other bound stays fixed.
+
+    Accepted f54eeb composition (2026-10-20) preserves the joint 5,661
+    ceiling above and adds only the six required WM/KO units: 5,667.
+    The fixed pin carries the nine-unit country-cycles step; its existing
+    three-unit Spvector allowance is retained without asserting that suite
+    is present. Validate the actual combined manifest; other bounds stay fixed.
+
+    Accepted 92c51f composition (2026-10-20) retains both W23-L11 and
+    W23-L13 Spvector steps and adds only the six required WM/KO units:
+    5,664 + 6 = 5,670. The older f54eeb allowance above describes that
+    earlier pin; both vector steps are present at this accepted base.
+    Validate the full combined manifest with the unchanged canonical
+    estimator and absolute assertion; every other bound stays fixed.
+
+
+    Accepted 13e098 composition (2026-10-20) preserves the four SPR
+    JODI/gold units above and the six required WM/KO units:
+    5,664 + 4 + 6 = 5,674. Both historical measurements and all
+    earlier composition notes retain their original source attribution.
+    Validate this combined manifest with the unchanged canonical estimator
+    and absolute assertion; every other bound stays fixed.
+
+
+    2026-10-20 WM/KO composition with accepted 6793c010:
+    Preserve the accepted Brain rich-answer contribution above and the six
+    retained WM/KO units. The accepted-main index/build weights plus those
+    six units compose to 5,822 + 6 = 5,828 and 5,697 + 6 = 5,703.
+    These are composition calculations, distinct from the later canonical
+    measurements recorded for this combined tree. Preserve both parents'
+    historical source attribution, the 5,600 plan-book ceiling, all job-count
+    bounds, the ten-pack bound, every suite and selector, and the unchanged
+    estimator and absolute assertions.
 
     2026-10-24 frozen-node canonical account reader (#10145): enroll the
     two-test suite once in incumbent CODE billing-emails/account-preferences,

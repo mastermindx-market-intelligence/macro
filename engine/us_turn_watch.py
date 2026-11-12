@@ -79,7 +79,7 @@ import json
 import logging
 import time
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -105,6 +105,11 @@ log = logging.getLogger(__name__)
 SCHEMA = "us_turn_watch.v1"
 #: Selection era this deck belongs to (§6.2 stamp law — a population change is dated).
 SELECTION_ERA = "anticipation-v1-2026-08-08"
+#: v2 selection era — activated on the first completed NYSE session >= 2026-10-19.
+SELECTION_ERA_V2 = "anticipation-v2-2026-10-19"
+#: Earliest completed NYSE session that activates v2 (the v1 era serves everything before).
+_V2_ACTIVATION_SESSION = date(2026, 10, 19)
+_UNSET_CONTRACT = object()
 #: Where the indicator legs come from, published so the era above travels with the numbers.
 INDICATOR_SOURCE = "engine.confluence_tiers"
 
@@ -143,12 +148,23 @@ _UNIVERSE_SKIP_SUFFIXES = ("-USD", "-EUR", "-GBP", "_X", "_F")
 #: grow for unrelated products; directory membership is therefore not strategy semantics.
 UNIVERSE_CONTRACT_SCHEMA = "us_turn_watch_universe.v1"
 UNIVERSE_CONTRACT_REL = Path("config/us_turn_watch_universe.v1.json")
+#: Prospective v2 selection-era universe contract — different schema, era and source basis.
+#: Activates only on a completed session >= 2026-10-19.  Before that, v1 is the active
+#: contract and this file is read but never used to populate the deck.
+UNIVERSE_CONTRACT_SCHEMA_V2 = "us_turn_watch_universe.v2"
+UNIVERSE_CONTRACT_REL_V2 = Path("config/us_turn_watch_universe.v2.json")
 
 
 def _universe_contract_path(data_root: Path) -> Path:
     root = Path(data_root)
     repo_root = root.parent if root.name == "data" else root
     return repo_root / UNIVERSE_CONTRACT_REL
+
+
+def _v2_universe_contract_path(data_root: Path) -> Path:
+    root = Path(data_root)
+    repo_root = root.parent if root.name == "data" else root
+    return repo_root / UNIVERSE_CONTRACT_REL_V2
 
 
 def universe_contract(data_root: Path) -> dict[str, Any] | None:
@@ -184,6 +200,112 @@ def universe_contract(data_root: Path) -> dict[str, Any] | None:
     return raw
 
 
+def _completed_session(now_utc: datetime | None = None) -> "datetime.date":
+    """The latest completed NYSE session per the canonical NYSE calendar.
+
+    Used only to dispatch between v1 and v2 contracts.  Tests monkeypatch this
+    to a fixed date so the dispatch is deterministic; production uses the
+    calendar's own ``expected_last_session`` reader.
+    """
+    from lib import nyse_calendar  # noqa: PLC0415, I001
+    return nyse_calendar.expected_last_session(now_utc)
+
+
+def universe_contract_v2(data_root: Path) -> dict[str, Any] | None:
+    """Load and authenticate the prospective v2 selection-era population contract.
+
+    Same fail-closed posture as :func:`universe_contract`, but for the v2 schema/era
+    and the canonical outcome-independent US membership roster
+    (``data/reference/security_master.parquet``) instead of the price-directory
+    enumeration v1 used.
+
+    The contract is NOT yet required by the engine — it only becomes the active
+    contract on a completed session >= 2026-10-19.  See :func:`active_selection_era`.
+    """
+    p = _v2_universe_contract_path(data_root)
+    try:
+        raw = json.loads(p.read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001
+        print(f"::warning title=us-turn-watch-universe::v2 contract unavailable ({e})", flush=True)
+        return None
+    if not isinstance(raw, dict):
+        print("::warning title=us-turn-watch-universe::v2 contract shape/era invalid", flush=True)
+        return None
+    tickers = raw.get("tickers")
+    if (raw.get("schema") != UNIVERSE_CONTRACT_SCHEMA_V2
+            or raw.get("selection_era") != SELECTION_ERA_V2
+            or not isinstance(tickers, list)
+            or not tickers
+            or not all(isinstance(t, str) and t for t in tickers)
+            or tickers != sorted(set(tickers))
+            or type(raw.get("population_count")) is not int
+            or raw.get("population_count") != len(tickers)
+            or not isinstance(raw.get("snapshot"), dict)
+            or any(type(raw["snapshot"].get(f"graded_min_bars_{bars}")) is not int
+                   or not 1 <= raw["snapshot"][f"graded_min_bars_{bars}"] <= len(tickers)
+                   for bars in (200, 260))
+            or raw["snapshot"]["graded_min_bars_260"] > raw["snapshot"]["graded_min_bars_200"]
+            or not isinstance(raw.get("freshness"), dict)
+            or raw["freshness"].get("reference") != "lib.nyse_calendar.expected_last_session"
+            or type(raw["freshness"].get("max_completed_session_lag")) is not int
+            or raw["freshness"]["max_completed_session_lag"] < 0):
+        print("::warning title=us-turn-watch-universe::v2 contract shape/era invalid", flush=True)
+        return None
+    digest = hashlib.sha256(("\n".join(tickers) + "\n").encode("utf-8")).hexdigest()
+    if raw.get("tickers_sha256") != digest:
+        print("::warning title=us-turn-watch-universe::v2 ticker digest mismatch", flush=True)
+        return None
+    return raw
+
+
+def selection_era_for_session(session: date | str | None) -> str | None:
+    """One effective-session rule shared by producer and historical readers."""
+    if isinstance(session, str):
+        try:
+            parsed = date.fromisoformat(session)
+            if parsed.isoformat() != session:
+                return None
+            session = parsed
+        except ValueError:
+            return None
+    if type(session) is not date:
+        return None
+    return SELECTION_ERA_V2 if session >= _V2_ACTIVATION_SESSION else SELECTION_ERA
+
+
+def universe_contract_for_session(data_root: Path, session: date | str | None) -> dict[str, Any] | None:
+    """Read the immutable contract applicable to an explicitly known source session."""
+    era = selection_era_for_session(session)
+    if era == SELECTION_ERA:
+        return universe_contract(data_root)
+    if era == SELECTION_ERA_V2:
+        contract = universe_contract_v2(data_root)
+        if contract is None:
+            print("::warning title=us-turn-watch-universe::v2 contract required after "
+                  "2026-10-19 but missing or invalid — deck fails closed", flush=True)
+        return contract
+    return None
+
+
+def universe_contract_for_active(data_root: Path, *,
+                                 now_utc: datetime | None = None) -> dict[str, Any] | None:
+    """Pin the completed-session contract; an unavailable calendar fails closed."""
+    try:
+        session = _completed_session(now_utc)
+    except Exception:  # noqa: BLE001
+        session = None
+    if selection_era_for_session(session) is None:
+        print("::warning title=us-turn-watch-universe::completed session unavailable "
+              "— deck fails closed", flush=True)
+        return None
+    return universe_contract_for_session(data_root, session)
+
+
+def active_selection_era(data_root: Path, *, now_utc: datetime | None = None) -> str | None:
+    contract = universe_contract_for_active(data_root, now_utc=now_utc)
+    return contract["selection_era"] if contract is not None else None
+
+
 def source_contract_status(
     data_root: Path,
     *,
@@ -194,6 +316,7 @@ def source_contract_status(
     min_bars: int,
     universe_limit: int | None = None,
     now_utc: datetime | None = None,
+    selected_contract: dict[str, Any] | None | object = _UNSET_CONTRACT,
 ) -> dict[str, Any]:
     """Truth receipt for the fixed population and its current source-session coverage.
 
@@ -203,7 +326,8 @@ def source_contract_status(
     benchmark reaches that session, and that modal session is no more stale than the versioned
     contract permits versus the existing NYSE calendar owner.
     """
-    contract = universe_contract(data_root)
+    contract = (universe_contract(data_root)
+                if selected_contract is _UNSET_CONTRACT else selected_contract)
     dates: list[str] = []
     for series in closes.values():
         try:
@@ -248,7 +372,7 @@ def source_contract_status(
             completed_session_lag = len(
                 nyse_calendar.sessions_between((pd.Timestamp(modal_session) + pd.Timedelta(days=1)).date(), expected)
             ) if modal_date < expected else 0
-            freshness_ok = completed_session_lag <= max_completed_session_lag
+            freshness_ok = modal_date <= expected and completed_session_lag <= max_completed_session_lag
         except Exception:  # noqa: BLE001, S110
             freshness_ok = False
 
@@ -262,6 +386,8 @@ def source_contract_status(
         and strict_majority
         and benchmark_covers_session
         and freshness_ok
+        and (selected_contract is _UNSET_CONTRACT
+             or selection_era_for_session(modal_session) == contract.get("selection_era"))
     )
     return {
         "schema": "us_turn_watch.source_contract.v1",
@@ -454,19 +580,25 @@ def load_close(ticker: str, data_root: Path,
     return None, None
 
 
-def universe(data_root: Path, limit: int | None = None) -> list[str]:
+def universe(data_root: Path, limit: int | None = None, *,
+             selected_contract: dict[str, Any] | None | object = _UNSET_CONTRACT) -> list[str]:
     """The immutable selection-era deck population, never raw-directory membership.
 
     The bar-count floor is still applied later, per name, exactly as in the original v1
     construction. ``limit`` remains a deterministic diagnostic lever, but source-contract
     qualification rejects limited populations so a subset cannot masquerade as the v1 RS ruler.
+
+    Legacy callers retain their frozen v1 ruler. The Turn Watch producer passes
+    its explicitly selected contract snapshot; another consumer cannot silently
+    inherit a new population without adopting and disclosing its selection era.
     """
     d = Path(data_root) / DECK_STORE
     if not d.exists():
         print(f"::warning title=us-turn-watch::price store {d} not found "
               f"— the deck is EMPTY for this run", flush=True)
         return []
-    contract = universe_contract(Path(data_root))
+    contract = (universe_contract(Path(data_root))
+                if selected_contract is _UNSET_CONTRACT else selected_contract)
     if contract is None:
         return []
     out = list(contract["tickers"])
@@ -1349,7 +1481,9 @@ def compute_deck_with_candidates(
     turn_evaluated = bool(turn)
     bidx = _basket_index(membership)
 
-    tickers = universe(root, universe_limit)
+    build_now_utc = datetime.now(timezone.utc)
+    selected_contract = universe_contract_for_active(root, now_utc=build_now_utc)
+    tickers = universe(root, universe_limit, selected_contract=selected_contract)
     closes: dict[str, pd.Series] = {}
     stores: dict[str, str] = {}
     short: list[str] = []
@@ -1401,6 +1535,7 @@ def compute_deck_with_candidates(
     source_contract = source_contract_status(
         root, members=tickers, closes=closes, missing_store=missing_store, benchmark=bench,
         min_bars=MIN_BARS, universe_limit=universe_limit,
+        now_utc=build_now_utc, selected_contract=selected_contract,
     )
 
     elapsed = round(time.time() - t0, 2)
@@ -1418,7 +1553,7 @@ def compute_deck_with_candidates(
         "data_session": session,
         "max_session": max_session,
         "session_note": session_note,
-        "selection_era": SELECTION_ERA,
+        "selection_era": (selected_contract or {}).get("selection_era"),
         "anchor_era": ANCHOR_ERA,
         "indicator_source": INDICATOR_SOURCE,
         "disclosure": DISCLOSURE, "disclosure_zh": DISCLOSURE_ZH,
