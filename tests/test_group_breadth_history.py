@@ -298,6 +298,30 @@ def test_week_end_rows_last_session_of_each_calendar_week():
     ]
 
 
+def test_weekly_final_week_rule_keeps_thursday_drops_wednesday():
+    idx = pd.bdate_range("2025-01-02", "2025-12-31")
+    closes = pd.DataFrame({f"T{i}": 100.0 + np.arange(len(idx)) * (i + 1) * 0.01
+                           for i in range(12)}, index=idx)
+    mem = pd.DataFrame({"ticker": closes.columns, "group": "G"})
+    thu = closes.loc[:"2025-12-18"]   # Thursday end (Good Friday-like week)
+    wed = closes.loc[:"2025-12-17"]   # Wednesday end, week in progress
+    w_thu = gbh.weekly_fixed_set(thu, mem, include_last_partial_week=False)
+    w_wed = gbh.weekly_fixed_set(wed, mem, include_last_partial_week=False)
+    assert pd.Timestamp(w_thu["date"].max()) == pd.Timestamp("2025-12-18")
+    assert pd.Timestamp(w_wed["date"].max()) == pd.Timestamp("2025-12-12")
+
+
+def test_through_last_complete_row_drops_partial_tail():
+    idx = pd.bdate_range("2025-01-02", periods=30)
+    closes = pd.DataFrame(100.0, index=idx, columns=[f"T{i}" for i in range(10)])
+    closes.iloc[-1, 3:] = np.nan          # last row priced 3/10: in progress
+    cut = gbh.through_last_complete_row(closes)
+    assert cut.index[-1] == idx[-2]
+    m = gbh.member_rows(cut, pd.DataFrame({"ticker": closes.columns, "group": "G"}))
+    assert (m["date"] == idx[-2].date().isoformat()).all()
+    assert gbh.through_last_complete_row(closes.iloc[:0]).empty
+
+
 # ── (h) member_rows ──────────────────────────────────────────────────────────
 
 def test_member_rows_schema_flags_and_source_asof():

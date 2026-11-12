@@ -133,6 +133,11 @@ def missing_sentence(closes: pd.DataFrame, mem: pd.DataFrame, basis: str) -> tup
 def drop_partial_rows(closes: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     """Drop rows priced for fewer than half the names priced on neighbouring rows.
 
+    Note: the centred median looks up to 10 rows ahead, so WHICH vendor rows
+    count as sessions depends on nearby later rows. No price, average or share
+    uses later data; the nightly ledger path does not use this filter (it uses
+    the collector's trailing 80% rule).
+
     Data cleaning, not a signal rule: a vendor row on a market holiday or a
     partial last capture otherwise becomes a 'session' and shifts every
     session-count horizon by one. The local reference is the centred 21-row
@@ -180,6 +185,15 @@ def build(closes_path: Path, breadth_dir: Path, basis: str, out: Path, src: str 
         "missing": sentence,
         "coverage": stats,
         "dropped_partial_rows": dropped_rows,
+        "dropped_partial_rows_rule": ("centred 21-row median of priced names; a row under half is "
+                                      "dropped. Looks ahead up to 10 rows to decide which rows are "
+                                      "sessions; values themselves use only data on or before their date."),
+        "members_counted_at_year_end": {
+            str(y): int(g.loc[g["date"] == g["date"].max(), "n_members"].sum())
+            for y, g in daily.groupby(daily["date"].dt.year)},
+        "members_counted_note": ("Sum across sectors of labelled, priced members on the year's last "
+                                 "session. Compare with about 500 index members to read the "
+                                 "survivorship lean of early years."),
         "rules": {"windows": list(gbh.WINDOWS), "horizons_sessions": list(gbh.HORIZONS),
                   "horizons_weeks": list(gbh.WEEKLY_HORIZONS), "min_members": gbh.MIN_MEMBERS,
                   "headline": gbh.HEADLINE},

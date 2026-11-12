@@ -571,11 +571,17 @@ class BreadthAdapter(Adapter):
         # rebuild. Never fatal: breadth itself must ship regardless.
         try:
             if self.name == "breadth" and not full_history and "sector" in members.columns:
-                from engine.group_breadth_history import member_rows
+                from engine.group_breadth_history import member_rows, through_last_complete_row
                 from engine.member_breadth_ledger import append_member_rows
                 membership = members[["symbol", "sector"]].rename(
                     columns={"symbol": "ticker", "sector": "group"})
-                n = append_member_rows(member_rows(closes, membership))
+                # Same partial-row rule as compute() below (a row priced for under
+                # 80% of the recent maximum is an in-progress day): stamp the last
+                # COMPLETE session, never a partial one, because keep-first means
+                # a later complete run the same night could not correct it.
+                ledger_closes = through_last_complete_row(closes)
+                n = (append_member_rows(member_rows(ledger_closes, membership))
+                     if len(ledger_closes) else 0)
                 log.info("breadth member ledger: %d row(s) appended", n)
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("breadth member ledger failed (%s) — breadth outputs unaffected", e)

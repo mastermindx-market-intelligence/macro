@@ -10,8 +10,7 @@ opened), synthetic made-up rows only:
     older than the newest prior date → 0 rows, prior bytes identical);
   * an EQUAL date is not a replay: new tickers on the same night append;
   * a multi-date batch is refused; missing columns → 0;
-  * a corrupt prior file does not raise (fresh start, mirroring
-    cycle_forward_log);
+  * a corrupt prior file does not raise and is left untouched (no write);
   * the default path resolves through lib.config.data_dir() to
     data/breadth/member_breadth_ledger.parquet.
 """
@@ -187,16 +186,15 @@ def test_empty_and_none_batches_return_zero(tmp_path, monkeypatch):
 
 # ── corrupt prior file ───────────────────────────────────────────────────────
 
-def test_corrupt_prior_file_does_not_raise(tmp_path, monkeypatch):
-    """A unreadable prior ledger is replaced by a fresh start, never a raise."""
+def test_corrupt_prior_file_is_left_untouched(tmp_path, monkeypatch):
+    """An unreadable prior ledger is never overwritten by one night, never a raise."""
     _patch_lane(monkeypatch)
     p = tmp_path / "member_breadth_ledger.parquet"
     p.write_bytes(b"this is not a parquet file")
 
     n = mbl.append_member_rows(_rows(_today(), ["AAPL", "MSFT"]), p)
-    assert n == 2
-    df = pd.read_parquet(p)
-    assert sorted(df["ticker"]) == ["AAPL", "MSFT"]
+    assert n == 0
+    assert p.read_bytes() == b"this is not a parquet file"
 
 
 # ── default path through lib.config.data_dir() ───────────────────────────────

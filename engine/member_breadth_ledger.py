@@ -41,8 +41,10 @@ with a log.warning and no write, all before any write:
               same night append; existing (date, ticker) rows keep the first
               write).
 
-Never raises: every failure is logged and returns 0 (a corrupt prior file is
-replaced by a fresh start, mirroring cycle_forward_log).
+Never raises: every failure is logged and returns 0. A prior ledger that
+cannot be read is left untouched and nothing is written (unlike
+cycle_forward_log, which starts fresh): one night must never overwrite the
+append-only record.
 """
 from __future__ import annotations
 
@@ -150,9 +152,11 @@ def _append(rows, path: Path | None) -> int:
         try:
             prior = pd.read_parquet(path)
         except Exception as e:  # noqa: BLE001
+            # An existing ledger that cannot be read is NEVER replaced: doing so
+            # would overwrite the append-only forward record with one night.
             log.warning("member_breadth_ledger: cannot read prior ledger (%s) — "
-                        "starting fresh", e)
-            prior = pd.DataFrame()
+                        "refusing to write; ledger left untouched", e)
+            return 0
 
     # B11 fence 3 — replay. An older session must not be backfilled after a
     # newer one was observed; an equal date falls through to keep-FIRST below.

@@ -306,7 +306,9 @@ def weekly_fixed_set(closes: pd.DataFrame, membership: pd.DataFrame,
     reassignment moves that one; it is kept for comparison, not as the measure).
 
     ``include_last_partial_week=False`` drops the final week when its last
-    session is not the week's final weekday (a week still in progress).
+    session is Monday-Wednesday (a week still in progress). A final week
+    ending Thursday is kept, so a holiday-shortened week is not lost; the cost
+    is that a normal week cut on Thursday is kept too.
     """
     closes = closes.sort_index()
     codes, groups = assign_groups(closes.index, list(closes.columns), membership, groups)
@@ -314,7 +316,11 @@ def weekly_fixed_set(closes: pd.DataFrame, membership: pd.DataFrame,
     rows = week_end_rows(closes.index)
     if not include_last_partial_week and len(rows):
         last = closes.index[rows[-1]]
-        if last.dayofweek < 4:
+        # in progress = the week's Friday has not passed yet in the data. A
+        # holiday-shortened week ending Thursday is complete only if a later
+        # date exists; at the end of the data we cannot tell, so Thursday is
+        # kept (Good Friday / July 4) and Monday-Wednesday ends are dropped.
+        if last.dayofweek < 3:
             rows = rows[:-1]
     idx = closes.index[rows]
     c_w, h_w, a_w = codes[rows], has[rows], above[rows]
@@ -331,6 +337,19 @@ def weekly_fixed_set(closes: pd.DataFrame, membership: pd.DataFrame,
         cols[f"n_fixed_{window}_{k}w"] = nfix
         cols[f"lvl_diff_pct_above_{window}_{k}w"] = level_change(lv[f"pct_above_{window}"], k)
     return _long(idx, groups, cols)
+
+
+def through_last_complete_row(closes: pd.DataFrame, frac: float = 0.8,
+                              lookback: int = 20) -> pd.DataFrame:
+    """``closes`` cut after its last complete row (trailing; no look-ahead).
+
+    A row priced for under ``frac`` of the trailing ``lookback``-row maximum of
+    priced names is an in-progress day (the collector's own rule). Empty when
+    no row is complete.
+    """
+    n = closes.notna().sum(axis=1)
+    full = n >= n.rolling(lookback, min_periods=1).max() * frac
+    return closes.loc[:full[full].index.max()] if full.any() else closes.iloc[:0]
 
 
 def member_rows(closes: pd.DataFrame, membership: pd.DataFrame,
