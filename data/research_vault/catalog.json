@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T22:16:59.552481+00:00",
-  "count": 3255,
+  "generated_at": "2026-11-12T22:28:41.835272+00:00",
+  "count": 3256,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -121,6 +121,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-milpduwrxwe-b70a01",
+      "title": "Brazil Energy Fuel distribution raising 4Q estimates, but Remain Neutral on longer term normalization in margins",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:01:10Z",
+      "summary_points": [
+        "Diesel Subsidy-Driven Margin Surge: Brazil's diesel pump prices rose sequentially (Sept/Oct) due to Petrobras subsidies and import support, lifting Vibra/Ultrapar’s Ipiranga 4Q Adj.",
+        "EBITDA margins to BRL 360-400/m³; subsidy policy risk threatens margin normalization.",
+        "Revised Valuation & Downgraded Targets: Target price cut to BRL 30.30 (Vibra) and BRL 32.40 (Ultrapar) from BRL 33.80/BRL 33.90, driven by +7% 2026E EBITDA margin revisions, higher risk-free rates, and reduced EV/EBITDA (4.4x).",
+        "Ultragaz Margin Resilience vs.",
+        "Ipiranga Volatility: Ultragaz’s EBITDA per ton (Exhibit 10) shows consistent YoY growth peaking in 2024, outperforming Ipiranga’s volatile EBITDA/m³ (Exhibit 9), signaling superior margin stability in gas distribution."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-izfasbj9sa0-3d10e7",
       "title": "Chips rebound, dollar stronger",
