@@ -593,11 +593,13 @@ def _statistical_forecast(t09_package: Any, day: date) -> dict:
             out_cell["calibration_ref"] = source["calibration_ref"]
         out_cells.append(out_cell)
 
-    # ``status`` reports package availability (the T09 package is readable and
-    # not after as_of). ``disposition`` is the section's own display word, the
-    # same vocabulary the sibling sections use: "unavailable" with basis
-    # "no_issued_cell" when no cell is supported, so a JSON consumer never reads
-    # an all-rejected package as an available forecast (T25 obligation O1).
+    # ``status`` reports package availability only (the T09 package is readable
+    # and not after as_of), so it stays "available" even when every cell is
+    # rejected. ``disposition`` is a separate section-level word: "available"
+    # when at least one cell is supported, otherwise "unavailable" with basis
+    # "no_issued_cell". A consumer that keys on ``disposition`` therefore does
+    # not treat an all-rejected package as an issued forecast (T25 obligation
+    # O1); each cell keeps its own per-cell disposition.
     issued = sum(1 for cell in out_cells if cell["disposition"] == "supported")
     section = {
         "status": "available",
