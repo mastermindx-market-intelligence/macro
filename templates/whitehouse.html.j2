@@ -148,12 +148,16 @@
         '财政部一般账户（TGA）是财政部在美联储的现金余额。余额下降时，现金进入银行准备金——形成机械性的流动性注入；余额回补时，准备金被抽离。季末与债务上限相关的大幅波动可能托底或收紧市场。') }}</p>
 
   {% if tg %}
+  {% macro tga_change_window(back) -%}
+    {% set window = (tg.change_windows|default({}, true)).get(back) %}
+    <div class="lab">{% if window %}{{ window.start_date }} → {{ window.end_date }} · {{ window.elapsed_calendar_days }} {{ t('calendar days', '个日历日') }}{% else %}{{ t('Observation interval unavailable', '观测区间不可用') }}{% endif %}</div>
+  {%- endmacro %}
   <div class="wh-stats">
     <div class="wh-stat">
       <div class="lab">{{ t('TGA balance', 'TGA 余额') }}{% if tg.asof %} · {{ tg.asof }}{% endif %}</div>
       <div class="val">${{ '%.0f'|format(tg.level_bn) }}<span class="u">bn</span></div>
-      {% if tg.chg_1d_bn is not none %}<div class="delta {{ 'up' if tg.chg_1d_bn >= 0 else 'dn' }}">{{ '%+.1f'|format(tg.chg_1d_bn) }} {{ t('1d','单日') }}</div>{% endif %}
-      {% if tg.chg_20d_bn is number %}<div class="delta {{ 'up' if tg.chg_20d_bn >= 0 else 'dn' }}">{{ '%+.0f'|format(tg.chg_20d_bn) }} {{ t('20d','20日') }}</div>{% endif %}
+      {% if tg.chg_1d_bn is not none %}<div class="delta {{ 'up' if tg.chg_1d_bn >= 0 else 'dn' }}">{{ '%+.1f'|format(tg.chg_1d_bn) }} {{ t('vs prior observation', '较上次观测') }}</div>{{ tga_change_window('1') }}{% endif %}
+      {% if tg.chg_20d_bn is number %}<div class="delta {{ 'up' if tg.chg_20d_bn >= 0 else 'dn' }}">{{ '%+.0f'|format(tg.chg_20d_bn) }} {{ t('vs 20 observations earlier', '较前20次观测') }}</div>{{ tga_change_window('20') }}{% endif %}
     </div>
 
     {% set qe = tg.quarter_end %}
@@ -166,8 +170,9 @@
     </div>
     {% elif tg.chg_5d_bn is not none %}
     <div class="wh-stat">
-      <div class="lab">{{ t('Δ 5 sessions', '5日变动') }}</div>
+      <div class="lab">{{ t('Δ vs 5 observations earlier', '较前5次观测的变动') }}</div>
       <div class="val {{ 'up' if tg.chg_5d_bn >= 0 else 'dn' }}">{{ '%+.0f'|format(tg.chg_5d_bn) }}<span class="u">bn</span></div>
+      {{ tga_change_window('5') }}
     </div>
     {% endif %}
 

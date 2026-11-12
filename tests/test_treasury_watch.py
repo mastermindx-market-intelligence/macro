@@ -327,3 +327,99 @@ def test_legacy_reference_does_not_invent_observation_date(lang, nominal):
     assert ("Δ from stored reference" if lang == "en" else "较存储参考值") in html
     assert ("Observation date unavailable" if lang == "en" else "观测日期不可用") in html
     assert ("Δ since quarter-end" if lang == "en" else "较季末") not in html
+
+
+@pytest.mark.parametrize("back", [1, 5, 20])
+@pytest.mark.parametrize("frequency", ["D", "B", "4D"])
+def test_tga_change_windows_disclose_retained_observation_endpoints(back, frequency):
+    dates = pd.date_range(end="2026-08-31", periods=25, freq=frequency)
+    pairs = [(d, 700.0 + i * 3.25) for i, d in enumerate(dates)]
+    snap = tw.snapshot(_tga=_mn_frame(pairs), _plumbing={}, _regime={})
+    window = snap["tga"]["change_windows"][str(back)]
+    assert window == {
+        "start_date": dates[-back-1].date().isoformat(),
+        "end_date": "2026-08-31",
+        "observation_steps": back,
+        "elapsed_calendar_days": (dates[-1].date() - dates[-back-1].date()).days,
+    }
+    assert snap["tga"][f"chg_{back}d_bn"] == round(3.25 * back, 3)
+
+
+@pytest.mark.parametrize("count", [0, 1, 5, 20, 21])
+def test_tga_change_windows_require_both_endpoints(count):
+    dates = pd.date_range(end="2026-08-31", periods=count, freq="D")
+    snap = tw.snapshot(_tga=_mn_frame([(d, 800.0) for d in dates]),
+                       _plumbing={}, _regime={})
+    if not count:
+        assert snap["tga"] is None
+        return
+    for back in (1, 5, 20):
+        window = snap["tga"]["change_windows"][str(back)]
+        if count <= back:
+            assert window is None and snap["tga"][f"chg_{back}d_bn"] is None
+        else:
+            assert window["observation_steps"] == back
+            assert window["elapsed_calendar_days"] == back
+            assert snap["tga"][f"chg_{back}d_bn"] == 0.0
+
+
+@pytest.mark.parametrize("back", [1, 5, 20])
+def test_missing_rows_and_nulls_disclose_identical_change_windows(back):
+    dates = pd.bdate_range(end="2026-08-31", periods=65)
+    frame = _mn_frame([(d, 800.0 + i) for i, d in enumerate(dates)])
+    missing = list(range(42, 64))
+    absent = frame.drop(frame.index[missing])
+    null = frame.copy()
+    null.iloc[missing, 0] = float("nan")
+    a = tw.snapshot(_tga=absent, _plumbing={}, _regime={})
+    b = tw.snapshot(_tga=null, _plumbing={}, _regime={})
+    assert a == b
+    window = a["tga"]["change_windows"][str(back)]
+    assert window["start_date"] == absent.index[-back-1].date().isoformat()
+    assert window["elapsed_calendar_days"] > back
+
+
+def test_change_window_uses_same_sorted_deduplicated_grid_as_delta():
+    frame = _mn_frame([("2026-08-31", 850), ("2026-08-03", 700),
+                       ("2026-08-03", 750), ("2026-08-20", float("nan"))])
+    tg = tw.snapshot(_tga=frame, _plumbing={}, _regime={})["tga"]
+    assert tg["chg_1d_bn"] == 100.0
+    assert tg["change_windows"]["1"] == {
+        "start_date": "2026-08-03", "end_date": "2026-08-31",
+        "observation_steps": 1, "elapsed_calendar_days": 28,
+    }
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("sparse", [False, True])
+def test_tga_fragment_labels_observations_and_actual_intervals(lang, sparse):
+    dates = pd.date_range(end="2026-08-31", periods=21, freq="4D" if sparse else "D")
+    snap = tw.snapshot(_tga=_mn_frame([(d, 700.0 + i) for i, d in enumerate(dates)]),
+                       _plumbing={}, _regime={})
+    html = _render_treasury_for_reference(snap, lang)
+    for back in (1, 5, 20):
+        w = snap["tga"]["change_windows"][str(back)]
+        assert f'{w["start_date"]} → {w["end_date"]}' in html
+        assert f'{w["elapsed_calendar_days"]} ' + ("calendar days" if lang == "en" else "个日历日") in html
+    for label in (("vs prior observation", "vs 5 observations earlier", "vs 20 observations earlier")
+                  if lang == "en" else ("较上次观测", "较前5次观测", "较前20次观测")):
+        assert label in html
+    assert "1d</div>" not in html and "20d</div>" not in html
+    assert "Δ 5 sessions" not in html and "5日变动" not in html
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("metadata", ["absent", "null", "empty"])
+def test_legacy_delta_payload_never_invents_elapsed_interval(lang, metadata):
+    dates = pd.date_range(end="2026-08-31", periods=21, freq="4D")
+    snap = tw.snapshot(_tga=_mn_frame([(d, 800.0) for d in dates]),
+                       _plumbing={}, _regime={})
+    if metadata == "absent":
+        snap["tga"].pop("change_windows", None)
+    else:
+        snap["tga"]["change_windows"] = None if metadata == "null" else {}
+    html = _render_treasury_for_reference(snap, lang)
+    assert html.count("Observation interval unavailable" if lang == "en" else "观测区间不可用") == 3
+    assert "vs prior observation" in html if lang == "en" else "较上次观测" in html
+    assert "1d</div>" not in html and "20d</div>" not in html
+    assert "Δ 5 sessions" not in html and "5日变动" not in html

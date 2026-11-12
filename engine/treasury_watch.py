@@ -403,6 +403,20 @@ def snapshot(root: str | Path | None = None, _tga: Any = None, _netliq: Any = No
                 return round(level - float(tga.iloc[-(back + 1)]), 3)
             return None
 
+        def _change_window(back: int) -> dict[str, Any] | None:
+            # Legacy *_d_bn names count retained observation steps, not elapsed days.
+            # Disclose the actual endpoints without inventing missing releases or a calendar.
+            if n <= back:
+                return None
+            start = pd.Timestamp(tga.index[-(back + 1)]).date()
+            end = pd.Timestamp(tga.index[-1]).date()
+            return {
+                "start_date": start.isoformat(),
+                "end_date": end.isoformat(),
+                "observation_steps": back,
+                "elapsed_calendar_days": (end - start).days,
+            }
+
         # quarter-end reference (most recent calendar quarter-end ≤ as_of, within 45 days)
         qe_block = None
         try:
@@ -437,6 +451,7 @@ def snapshot(root: str | Path | None = None, _tga: Any = None, _netliq: Any = No
             "chg_1d_bn": _chg(1),
             "chg_5d_bn": _chg(5),
             "chg_20d_bn": _chg(20),
+            "change_windows": {str(back): _change_window(back) for back in (1, 5, 20)},
             "quarter_end": qe_block,
             "spark_60d": spark_pairs,
             "spark_points": _spark_points(spark_pairs),
