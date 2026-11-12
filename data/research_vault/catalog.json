@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T16:21:39.873550+00:00",
-  "count": 3238,
+  "generated_at": "2026-11-12T22:16:59.552481+00:00",
+  "count": 3255,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -34,6 +34,7 @@
     "Citadel",
     "Citi",
     "CommBank",
+    "Commerzbank",
     "Curvature",
     "DBS",
     "Danske",
@@ -120,6 +121,104 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-izfasbj9sa0-3d10e7",
+      "title": "Chips rebound, dollar stronger",
+      "institution": "Commerzbank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T21:37:02Z",
+      "summary_points": [
+        "USD Strength & Geopolitical Shock: USD hits 18-month high amid AI chip rebound; oil surges due to Hormuz mine strikes (geopolitical risk), while US equities rise on AI trade revival.",
+        "India CPI Inflation Surge: October CPI likely exceeds 6% YoY (oil prices, domestic demand, low base), forcing RBI to hike rates (25bp Dec, 50bp Feb 2027).",
+        "Asian Tech Geopolitical Risk: Hormuz tensions (Iran mine claims, LNG supply cuts) + AI chipmaker executive investigation (8% share drop) create uncertainty in Taiwan/South Korea/Japan tech markets.",
+        "AI Infrastructure Demand vs.",
+        "USD Pressure: AI infrastructure demand boosts semiconductor indices (+5.7%); USD strength (Dollar Index 102.90) and rate hike expectations pressure gold (-1.1%)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jvi6mczmze6-3428ab",
+      "title": "GS Quinn Russell 2k Futures Another Retail Favorite 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T19:36:17Z",
+      "summary_points": [
+        "Funding Spike & Retail Initiation: Russell 2k 3-month funding surged 13bps (vs 6bps median) Nov 11, driven by Retail Favorites/Other/Non-Reportable longs (7% open interest), amid extended rate-hiking cycle threat.",
+        "Spread Volatility vs Fed Policy: Russell 2k funding spread vs Fed Funds shows extreme swings (peaking ~70 in Dec 2025, troughing ~-20 in May 2026), signaling credit market stress diverging from Fed policy during rate transitions.",
+        "Stabilization with Tension: Spread stabilized near 20-30 (Nov 2026) indicating partial normalization, but persistent credit-Fed Funds divergence constrains portfolio flexibility and demands heightened liquidity risk monitoring.",
+        "Positioning Divergence: Non-Reportable Longs spiked then declined (Feb 2026), while GS Retail Favorites sustained upward momentum, revealing conflicting strategies between opaque longs and retail-focused positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xyjt4ov1gma-2cfab0",
+      "title": "GS Stankard Vol Views 11 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T18:49:43Z",
+      "summary_points": [
+        "Concentrated Tech Risk: AI infra names (e.g., GSTMTDAT) show extreme volatility (~80v vs NDX’s ~44v), signaling concentrated risk amid US net leverage at 5-yr lows and record put volume.",
+        "NVDA Trade Catalyst: 30% drop since Oct, $1.75tn market cap loss, 24x P/E (2019 levels); elevated vol/skew supports long delta + short vol strategy with 10% cushion.",
+        "Biopharma Momentum: Post-midterms secular tailwinds, increased M&A, top-line beats + guidance raises driving sector strength.",
+        "VIX Skew Dynamics: Structurally short vol on down moves, long vol on up moves create asymmetric protection bid; SPX 18Dec26 risk reversals cost $29 (-41d) reflecting skew-driven positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-77nfnifsn3h-c81235",
+      "title": "GS Blekos Europe Macro Outlook AI Cycle Durable Siemens Energy PGHN & TKO (dg) Luxury Fieldtrip takes Reckitt Ceres Carbonomics 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:30:36Z",
+      "summary_points": [
+        "Consumption Stagnation: Real consumption growth stalls at 0% qoq winter, below trend 2027, signaling weak macro momentum in Europe.",
+        "Stock Selection Catalyst: Siemens Energy (Buy, €200 target) favored over PGNH/TKO (Sell) due to unfavorable fundraising/fee dynamics for the latter.",
+        "Luxury Sector Allocation: Prada/Moncler (Buy) highlighted for strong gross inflows/fee economics; Zegna (Neutral) reflects mixed sector dynamics.",
+        "Fee Economics Risk: PGNH/TKO's sell rating driven by structural fee dynamics and fundraising challenges impacting portfolio flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-bjgs4w6cphr-789660",
+      "title": "GS Dunn GS US Daily Download 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:30:04Z",
+      "summary_points": [
+        "AI Capex Surge: $900bn AI spending by 2026 ($550bn YoY increase), semiconductor investment undercounted in business stats; 2026 capex growth at 11% annualized - AI Economic Impact: AI boosts true capex growth by 5.3pp (measured 4.3pp) and true GDP by 0.6pp (measured 0.2pp); IRA/CHIPS drag capex growth by 0.5pp this year - Momentum Surge: Systematic LS Momentum +1.25% (2.6 SD move), 3/4 funds up (best 2-day returns in 3 years); AI/Semis shift into 6m momentum - Election Risk Nuance: Midterm election risks limited to unpermitted data center projects; 2027 construction remains strong despite IRA/CHIPS drag"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-asqmebngn99-1c1da3",
       "title": "GS Novak GS U.S. Industrials & Materials today + factors + AI EPS tomorrow 11 Nov 2026",
@@ -261,6 +360,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-yehki0mdi2n-efad97",
+      "title": "GS Warren Equity Index Vol Update 11Nov26 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:11:19Z",
+      "summary_points": [
+        "Nvidia CEO Risk: SPX/NDX surge on AI optimism offset by NVDIA -9% on CEO meeting rumors (NDX -80bps), creating volatility despite VIX decline; key risk: 1m call spreads for breakout amid pending CEO replacement.",
+        "Options Flow & Volatility Shift: Strong short-dated SPY call spread flows (27Nov 775/800) with straddle spreads at 66bps/88bps; declining Vol ATMF and Skew (e.g., 18Dec26: Vol ATMF Chg -1.65, Skew Chg -0.0264) signal reduced market stress.",
+        "US CPI & Fed Policy: Strong CPI print indicates Fed \"behind the curve,\" with December as critical inflection point for policy timing; data release Friday drives near-term rate expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ijddakaj5d4-f41e77",
       "title": "GS Slater GS MORNING 12 Nov 2026",
       "institution": "S&T",
@@ -278,6 +396,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-h7mgh0mz2xq-aa4b10",
+      "title": "GS Privorotsky GS Basics Retail Favorites. Vol Curve Un Inverts. European Consumer 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:11:09Z",
+      "summary_points": [
+        "Geopolitical Risks & Market Resilience: Iran's 2-week military window and US carrier deployment; market absorbs Nvidia pressure (Retail Favorites +495bps, SPX vol un-inverted, 3rd best day in 3 years).",
+        "AI Infrastructure Overhangs: Monetization velocity concerns and LT supply absorption risks outweigh capital cost/permitting issues.",
+        "Market Outlook: Durable breakout requires lower rates, energy stabilization, and broader leadership; current choppy market driven by high oil prices and aggressive rate hikes.",
+        "European Consumer Data: Declining retail sales (Headline, ex.",
+        "Fuels & Food) amid winter bills, signaling weak demand with Aug-25 to Aug-26 trends negative."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
@@ -426,6 +565,47 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-i2ctbuz60sw-65f975",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T09:33:00Z",
+      "summary_points": [
+        "Tech Rally vs.",
+        "Nvidia Risk: CoreWeave earnings drove S&P 500 tech rally (+1.31%), but Nvidia CEO ousting triggered Nasdaq (-1.09%) and Asian tech sell-off (Kospi -1.04%, Hang Seng -0.86%), highlighting concentrated tech volatility risk.",
+        "Fed/ECB Rate Shifts: Fed hike pricing down to 24bp (vs. 28bp), ECB pricing 28bp hikes by 2026; 10yr Treasury yield at 4.99% and dollar index at April 2025 highs signal hawkish monetary policy persistence.",
+        "Dollar & Euro Dynamics: Dollar index at highest since April 2025, euro at 18-month low ($1.109), reflecting Fed hawkishness and ECB's tightening bias (1yr Euro swaps +3.3bps)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mxxfarl5azt-5ab6f4",
+      "title": "Carbonomics 7th Annual Carbonomics Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:45:42Z",
+      "summary_points": [
+        "Geopolitical Energy Flows & Security: Hormuz crisis drives resilient shipping routes (e.g., TDCO MEC-China VLCC revenue peak at $1.3m/day) and supply diversification; Persian Gulf LNG exports at 33% pre-war levels, with storage below historical norms (e.g., South Korea -1.0 Bcm vs 5yr avg), heightening supply disruption risks.",
+        "AI Infrastructure Power Demand Surge: Agentic AI queries consume 5–6x more energy than chatbots (15 Wh/query vs 0.3 Wh), driving 170% global data center power demand growth by 2030; US DCs to reach 20% of total power demand by 2030, requiring $609bn grid capex amid interconnection delays.",
+        "LNG Supply Security & Price Volatility: Asian buyers diversify from Middle East amid sanctions (e.g., Perla FLNG, Fujairah), accelerating FIDs; European TTF prices face 47% probability of hitting 150 EUR/MWh (colder winter) or dropping to 45 EUR/MWh (warmer + supply surge), disrupting LNG competition.",
+        "Hydrocarbon Reserve Decline & AI Efficiency: Hydrocarbon reserve life rising (Exhibit 13) signals falling reserves, while AI-enhanced exploration boosts IRR by 19.0% (vs 15.5% base), critical for oil/gas project viability amid capex upcycle (Aramco, ENI, TotalEnergies strategies).",
+        "Critical LNG Import Dependence: South Korea (100% LNG import dependence), Japan (80%), and NW Europe (20%) face extreme vulnerability to supply shocks; Persian Gulf supply constraints (33% exports) and storage deficits amplify pricing volatility risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 65,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-novvllwfkjm-750d16",
       "title": "Boyd Group (BYD)",
       "institution": "Goldman Sachs",
@@ -443,6 +623,67 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lddjgx2eivt-36104c",
+      "title": "AVC (3017)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:44:46Z",
+      "summary_points": [
+        "Growth Driver & Capacity Expansion: Liquid cooling penetration to drive 44% YoY revenue growth in 2027, supported by 50% capacity expansion in Vietnam and next-gen GPU/ASIC server adoption.",
+        "Earnings Revision & Margin Expansion: Revised GPM up by 1.2/0.3/0.4ppt in 2026/27/28E, accelerated by product mix shift toward servers/liquid cooling, offsetting 1% 2026 revenue downgrade.",
+        "Buy Rating & Target Price: Goldman Sachs maintains Buy with 12-month target NT$4,820 (30.6x 2027E P/E), reflecting 72.8% upside from current price and stronger margins.",
+        "Key Downside Risks: Slower liquid cooling adoption, reduced AI server demand, intensified competition, and delayed general server recovery."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-9jtrijasq21-90388a",
+      "title": "Nippon Express Holdings (9147.T) First Take Earnings Review Results slightly above expectations, full year guidance raised...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:44:31Z",
+      "summary_points": [
+        "Earnings Beat & Guidance: Q3 2026 profits (¥31.1bn) beat estimates (¥27.8bn); full-year guidance raised to ¥105.0bn (vs. prior ¥95.0bn), driven by forwarding performance and asset reallocation.",
+        "Strategic Targets: FY2028 goals of ¥150bn profits and 10%+ ROE via pricing optimization, cost cuts (\"Japan Business Cost Reduction Project\"), and foundation strengthening.",
+        "Price Target Decline: Goldman Sachs’ target for Nippon Express (9147.T) fell to 3,400 JPY (below current 3,772 JPY), signaling strong bearish sentiment despite recent rating upgrade.",
+        "Rating vs Target Divergence: Shift from \"Not Recommended\" to \"Strong\" rating contrasts with declining price targets, indicating institutional disconnect between qualitative outlook and quantitative price expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-uhgifxlrori-b4da37",
+      "title": "Europe Healthcare Biotechnology 3Q26 updates for AUTL, BCYC, DBV, GUBRA and IMCR",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:44:18Z",
+      "summary_points": [
+        "AUTL Earnings Beat & Guidance: Q3 2026 revenue $41.2m (+95% YoY) and gross margin 57% beat consensus; FY26 revenue guidance raised to $150m+ (vs $140-150m), targeting 66% gross margin by 2028.",
+        "DBV Viaskin Regulatory Catalyst: FDA priority review decision for 4-7y age group expected Q4 2026; rolling BLA submission for 1-3y age group planned 2027, critical for market access and Viaskin Peanut revenue.",
+        "Bicycle Therapeutics Execution: Q3 2026 collaboration revenue $34.1m (291% vs consensus), operating expenses down 40%, cash $469.9m; pipeline advances (BT5528 Phase 2, BT1702 Phase 1) drive near-term valuation.",
+        "BT5528 PoS Sensitivity: 100% clinical success (PoS) could lift BT5528 valuation from $9 (bear) to $97 (bull), dominating price action; critical for European biotech holdings.",
+        "AUTL Critical Risks: Downside risks include negative trial outcomes (BOBCAT/ALICARIC), weaker commercial performance, clinical delays, and higher cash burn impacting profitability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 28,
       "language": "en",
       "needs_metadata": false
     },
@@ -485,6 +726,88 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-a0teuk3evbd-f0e828",
+      "title": "StubHub Holdings (STUB) Q3'26 Earnings Review Events Backup Produces Positive Mix of Growth and Margins",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:43:16Z",
+      "summary_points": [
+        "Q3 Earnings Highlights: Solid GMS/Adj.",
+        "EBITDA beat driven by live events demand and market share; debt leverage declining to 2.5x (vs 4.5x FY25) with $100mm debt repayment, TTM FCF at $192mm.",
+        "Q3 Revenue Miss & Downward Estimates: Q3 revenue missed due to World Cup lower take rates; revised Q4 GMS ($2.45bn vs $2.56bn), revenue ($483mm vs $504mm), and FY26 GMS ($10.38bn vs $10.52bn) with key risks: World Cup impact, MLB volatility.",
+        "Enhanced Liquidity & Capital Allocation: Net debt/EBITDA declining to 1.9x (12/26E) from 4.4x (12/25); operating cash flow surging to $402.5m (12/26E), enabling strategic investment capacity.",
+        "Key Downside Risks: World Cup impact, MLB volatility, 2027 concert visibility uncertainty, regulatory environment, and execution risk limiting near-term upside despite improved leverage."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ptbjarcjuyh-23bcfc",
+      "title": "GS Early Morning Research Recap Ratings and Target Price Changes November 11, 2026 as of 5 30 AM ET",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:43:01Z",
+      "summary_points": [
+        "US Rate Hike & China Growth Risks: Goldman Sachs forecasts third Fed rate hike in March 2026; Global Strategy Paper questions Chinese profit sustainability and growth drivers.",
+        "AI Investment Cycle Sustainability: Top macro focus on durability of AI-driven investment cycle amid global equity valuation pressures.",
+        "Argentina LNG Catalyst: Argentina Energy’s near-term LNG FID potential creates critical geopolitical exposure for energy portfolios.",
+        "Argentina Banks NIM Compression: Q3’26 preview reveals net interest margin compression threatening banking sector profitability.",
+        "China Property Fundamentals: Critical data releases on property sales/construction and post-2023 policy impacts (field trip Nov 12)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rjxupxovvtl-3efd12",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update(123)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:42:50Z",
+      "summary_points": [
+        "MXAPJ Undervaluation & Upside Target: Forward P/E 9.0x (3.2 s.d. below mean), 607bp equity/bond yield gap (1.3 s.d.), targets 1040 (+27%) by 12M, signaling strong growth expectations and significant undervaluation vs historical averages and bonds.",
+        "FII Capital Flight in EM Asia ex-China: Persistent negative net foreign inflows (India: -148.7B USD 2026 YTD; Taiwan: -89.57B USD), highlighting structural fragility and necessitating defensive positioning in EM Asia ex-China markets.",
+        "Taiwan vs Korea Divergence: Taiwan’s explosive Mtd return (11.9%) vs Korea’s severe underperformance (-7.5%), driven by geopolitical tensions (ex-KR/TW* rebasing) and sector leadership (Info Tech), revealing stark regional risk asymmetry.",
+        "AI/Semiconductor Momentum: AEJ AIGC Semiconductor (3.1% 1-day) and Taiwan Apple Suppliers (14.9% week-to-date) signal robust investor interest in AI-driven tech, aligning with fundamental trends and strategic flows toward high-growth baskets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ikgdfqoebnb-fbaad2",
+      "title": "TAG Immobilien AG (TEGG.DE) Polish engine remains resilient with balance sheet headroom, maintain Buy",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:42:07Z",
+      "summary_points": [
+        "<Polish Growth & Balance Sheet Strength>: Polish development sales target >2,077 units by FY30 with >20% EBITDA margins; robust balance sheet (42.6% LTV, 5.8x ICR) supports growth despite 20bp debt cost rise.",
+        "<Valuation & Buy Rating>: Maintained Buy with 20% upside; trades at 12.7% 12m forward earnings yield (vs. 9% avg) and 48% discount to 1-year NTA.",
+        "<Polish Credit Downgrade Risk>: Moody’s downgrade of Poland to A3 (Sept 2026) signals higher deficit/debt-to-GDP, risking negative impact on earnings.",
+        "<German Portfolio Stability>: German rental portfolio stable with 6.6% gross yield, 3.1% growth (9M26), 3.9% vacancy, and limited Berlin exposure (150 units) insulating from nationalization risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
@@ -607,6 +930,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ecq7yerhp9t-32a28d",
+      "title": "invesco nasdaq 100 Index commentary october 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-12T02:29:27Z",
+      "summary_points": [
+        "Geopolitical Inflation Catalyst: U.S.-Iran conflict drove oil to $117.64/bbl, intensifying inflation concerns amid Fed's hold, directly impacting monetary policy trajectory.",
+        "Sector Divergence: Tech/telecom underperformed (-7.83%) vs. consumer staples/healthcare outperformance, with basic materials key to relative S&P 500 performance.",
+        "AI Earnings Volatility: Alphabet/Amazon capex worries and NDX earnings growth (42% Oct 2026) signal heightened sector-specific volatility risk.",
+        "Tech Growth-Risk Paradox: NASDAQ-100 outperforms S&P 500 long-term (26.25% 3Y vs 23.38%) but faces sharp short-term swings (-27.6% Oct 21-Oct 22), demanding dynamic risk management."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
