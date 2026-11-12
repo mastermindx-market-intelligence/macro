@@ -341,6 +341,34 @@ def test_duplicate_series_scan_flags_copy_and_counts_it_once():
     assert closes.loc[idx[201]:, "BBB"].notna().all(), "input is never modified"
 
 
+def test_basket_build_counts_a_name_in_every_basket(tmp_path):
+    import json
+    from scripts.build_basket_breadth_history import build, expand_multi, membership_baskets
+    doc = {"baskets": {
+        "b1": {"members": [{"ticker": f"T{i}", "removed": None} for i in range(12)]},
+        "b2": {"members": [{"ticker": f"T{i}", "removed": None} for i in range(6, 18)]
+               + [{"ticker": "GONE", "removed": "2026-01-01"}]},
+    }}
+    mp = tmp_path / "membership.json"
+    mp.write_text(json.dumps(doc))
+    mem = membership_baskets(mp)
+    assert "GONE" not in set(mem["ticker"]) and len(mem) == 24
+    idx = pd.bdate_range("2024-01-01", periods=260)
+    rng = np.random.default_rng(3)   # independent series: identical returns would be flagged as copies
+    closes = pd.DataFrame({f"T{i}": 100 * np.exp(np.cumsum(0.004 + rng.normal(0, 0.002, 260)))
+                           for i in range(18)}, index=idx)
+    wide, emem = expand_multi(closes, mem)
+    assert wide.shape[1] == 24 and emem.groupby("group").size().to_dict() == {"b1": 12, "b2": 12}
+    cp = tmp_path / "closes.parquet"
+    closes.to_parquet(cp)
+    meta = build(cp, mp, tmp_path / "out")
+    d = pd.read_parquet(tmp_path / "out" / "basket_breadth_daily_current.parquet")
+    last = d[d["date"] == d["date"].max()].set_index("group")
+    assert last.loc["b1", "n_members"] == 12 and last.loc["b2", "n_members"] == 12
+    assert last.loc["b1", "pct_above_200"] == 100.0
+    assert meta["coverage"]["names_in_several_baskets"] == 6
+
+
 # ── (h) member_rows ──────────────────────────────────────────────────────────
 
 def test_member_rows_schema_flags_and_source_asof():
