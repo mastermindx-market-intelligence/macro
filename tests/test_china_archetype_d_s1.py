@@ -184,7 +184,12 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "{% set _ev_pool = [] %}" in TPL
     assert "if c.importance == 'high'" in TPL
     assert "if c.importance != 'high'" in TPL
+    assert "{% set _next_watch = _ev_pool[0] if _ev_pool else none %}" in TPL
     assert "{% set _ev_shown = _ev_pool[:4] %}" in TPL
+    assert "{{ t('Upcoming Events','近期数据') }}" in TPL
+    assert "Watching · {{ (_next_watch.name_en or '')|truncate(20, true, '…') }}" in TPL
+    assert "关注 · {{ (_next_watch.name_zh or _next_watch.name_en or '')|truncate(20, true, '…') }}" in TPL
+    assert "{{ t('NEXT 14 DAYS','未来14天') }}" in TPL
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
@@ -215,9 +220,30 @@ def test_mobile_section_index_improves_scanability_without_collapsing_depth() ->
     assert "ROW 4: Property + AI Brief + Alerts Centre" in TPL
 
 
+def test_mobile_deep_rows_become_swipeable_without_removing_cards() -> None:
+    assert "body.page-china .cnx-wrap > .cnx-rack3{display:flex;overflow-x:auto" in TPL
+    assert "body.page-china .cnx-wrap > .cnx-rack3 > .cnx-card{flex:0 0 calc(100% - 28px)" in TPL
+    assert "body.page-china .cnx-links[data-cn-driver-rail]{flex-wrap:nowrap;overflow-x:auto" in TPL
+    assert "scroll-snap-type:x mandatory" in TPL
+    assert "scroll-snap-align:start" in TPL
+    assert "scroll-snap-stop:always" in TPL
+    assert "document.addEventListener('focusin'" in TPL
+    assert "window.matchMedia('(max-width:760px)').matches" in TPL
+    assert "card.scrollIntoView({behavior:'auto',block:'nearest',inline:'start'})" in TPL
+    for target in ("cnx-focus-action", "cnx-focus-markets", "cnx-focus-drivers", "cnx-focus-deep"):
+        assert f'role="region" aria-labelledby="{target}"' in TPL
+
+    # Desktop/deep structure remains authored once; mobile only changes layout.
+    assert "ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature" in TPL
+    assert "ROW 3: Policy Monitor + Connect Flows + Macro News" in TPL
+    assert "ROW 4: Property + AI Brief + Alerts Centre" in TPL
+
+
 def test_deep_link_rail_avoids_redundant_news_and_alert_shortcuts() -> None:
     assert "{{ t('Go deeper','深入研究') }}" in TPL
     links = TPL.split('<div class="cnx-links">', 1)[1].split("</div>", 1)[0]
+    assert 'href="#cnx-dlg-playbook"' in links
+    assert "cnxOpenDlg('cnx-dlg-playbook')" in links
     assert 'href="china_policy_watch.html"' in links
     assert 'href="flow_velocity.html"' in links
     assert 'href="china_news.html"' not in links
