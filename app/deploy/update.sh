@@ -1562,6 +1562,11 @@ fi
 if grep -qE '^engine/(neuralweb/response_eval|options_hub_retention|options_scenario_capture)\.py$' <<<"$CHANGED"; then
 	API_RESTART_NEEDED=1
 fi
+# Prophet sector-members/v1: the route caches its pure join and, on the first
+# served request, the selected-generation reader it captures through.
+if grep -qE '^(engine/prophet_sector_members|scripts/vps_live_orchestrator)\.py$' <<<"$CHANGED"; then
+	API_RESTART_NEEDED=1
+fi
 # END MACRO_API_RESTART_TRIGGER
 if [ "$API_RESTART_NEEDED" -eq 1 ]; then
 	disarm_options_timer

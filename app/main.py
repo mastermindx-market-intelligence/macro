@@ -2661,6 +2661,12 @@ app.include_router(prophet_observations_router)
 from app.prophet_daily_brief import router as prophet_daily_brief_router  # noqa: E402
 app.include_router(prophet_daily_brief_router)
 
+# Prophet × Sector member join: one captured Sector generation + one Prophet
+# index read, joined by US listing ticker. Read-only, descriptive only, behind
+# the same site_full boundary the Prophet Lab routes use.
+from app.prophet_sector_members import router as prophet_sector_members_router  # noqa: E402
+app.include_router(prophet_sector_members_router)
+
 # Current research attention reuses the paid site-full owner boundary.
 from app.catalyst_opportunity import router as catalyst_opportunity_router  # noqa: E402
 app.include_router(catalyst_opportunity_router)
