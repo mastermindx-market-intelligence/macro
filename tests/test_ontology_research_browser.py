@@ -209,17 +209,25 @@ def test_research_final_session_switch_cannot_render(browser, status, final_call
 def test_pressure_watch_research_action_uses_full_row_measure(browser, width, theme, language):
     """The continuation must not inherit the ticker's 56px grid track."""
     import re
-    from jinja2 import Environment
+    from jinja2 import Environment, nodes
 
     template = (ROOT/'templates/ticker_index.html.j2').read_text()
-    macro = template[:template.index('{% set nav_prefix')]
-    section = template[template.index('{%- if P.open %}'):template.index('{#- One footnote')]
-    pressure = Environment(autoescape=True).from_string(macro + section).render(P={
+    environment = Environment(autoescape=True)
+    pressure_includes = [
+        node for node in environment.parse(template).body
+        if isinstance(node, nodes.Include) and isinstance(node.template, nodes.Const)
+        and node.template.value == '_pressure_watch.html.j2'
+    ]
+    assert len(pressure_includes) == 1
+    assert pressure_includes[0].with_context is True
+    assert pressure_includes[0].ignore_missing is False
+    partial = (ROOT/'templates/_pressure_watch.html.j2').read_text()
+    pressure = environment.from_string(partial).render(hub={'pressure': {
         'open': [{'href': 'CZR.html', 't': 'CZR', 'move_en': 'fell 0.2%',
                   'move_zh': '下跌 0.2%', 'cmp_en': '', 'fam_en': '', 'state_en': '',
                   'research_href': '../ontology.html?research_date=2026-10-15&research_ticker=CZR&research_side=down#ox-research'}],
         'count_en': 'one event', 'count_zh': '一个事件', 'demoted': False,
-    })
+    }})
     css = re.search(r'<style>(.*?)</style>', template, re.S).group(1)
     context = browser.new_context(viewport={'width': width, 'height': 900})
     page = context.new_page()
@@ -228,7 +236,7 @@ def test_pressure_watch_research_action_uses_full_row_measure(browser, width, th
     try:
         page.set_content(f'<html data-theme="{theme}" data-lang="{language}"><head><style>'
                          + (ROOT/'templates/theme.css').read_text() + css
-                         + '</style></head><body><section class="pw">' + pressure + '</section></body></html>')
+                         + '</style></head><body>' + pressure + '</body></html>')
         geometry = page.locator('.pw-research-action').evaluate('''note => {
           const row = note.previousElementSibling, grid = note.parentElement;
           const n = note.getBoundingClientRect(), r = row.getBoundingClientRect();

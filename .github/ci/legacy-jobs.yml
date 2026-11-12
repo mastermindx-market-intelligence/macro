@@ -6241,6 +6241,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/price_pressure/response_export.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -6953,6 +6954,31 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      - "engine/market_drivers.py"
+      - "engine/price_pressure/__init__.py"
+      - "engine/price_pressure/artifact.py"
+      - "engine/price_pressure/backfill.py"
+      - "engine/price_pressure/base_rates.py"
+      - "engine/price_pressure/completion.py"
+      - "engine/price_pressure/context.py"
+      - "engine/price_pressure/detect.py"
+      - "engine/price_pressure/ledger.py"
+      - "engine/price_pressure/panel.py"
+      - "engine/price_pressure/pipeline.py"
+      - "engine/thetadata_store.py"
+      - "research/DISLOCATION_RECOVERY_LOBE_MASTERPLAN_BY_FABLE.md"
+      - "scripts/build_price_pressure.py"
+      - "scripts/publish_r2.py"
+      - "scripts/replay_standout_pipeline.py"
+      - "scripts/research_liquidity_shock_reversal.py"
+      - "site/factordata/us_standouts.json"
+      - "tests/test_price_pressure.py"
+      - "tests/test_pressure_watch_freshness.py"
+      - "tests/test_pressure_watch_refresh.py"
+      - ".github/workflows/daily.yml"
+      - ".github/ci/legacy-jobs.yml"
+      - "engine/price_pressure/freshness.py"
+      - "templates/_pressure_watch.html.j2"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7080,6 +7106,12 @@ jobs:
 
       - name: Prophet Q06 SEC comparable-revenue Gate-S source contract
         run: python -m pytest tests/test_q06_sec_comparable_revenue_source_contract.py -q
+
+      # Pressure Watch must be tested on code PRs, not only data-health runs.
+      - name: Pressure Watch producer, source freshness and same-run page consumption
+        run: >-
+          python -m pytest tests/test_price_pressure.py
+          tests/test_pressure_watch_freshness.py tests/test_pressure_watch_refresh.py -q
   gmi-classification-axes:
     if: ${{ false }}
     gate: code
@@ -17133,6 +17165,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - templates/_pressure_watch.html.j2
+      - "engine/price_pressure/freshness.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
@@ -37619,6 +37653,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/price_pressure/__init__.py"
+      - "engine/price_pressure/freshness.py"
       - "engine/us_board_snapshots.py"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"

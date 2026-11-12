@@ -1828,10 +1828,10 @@ class TestPressureWatchBand:
         assert 'class="section-anchor"' in html
 
         for phrase in ("What usually happens", "Recently resolved",
-                       "Currently tracked"):
+                       "Tracked moves"):
             assert phrase in html, f"{phrase} missing"
         assert (html.index("What usually happens") < html.index("Recently resolved")
-                < html.index("Currently tracked")), "the band's strata are out of order"
+                < html.index("Tracked moves")), "the band's strata are out of order"
         # And the whole band still sits between the movers boards and the themes.
         assert html.index('id="today-movers"') < html.index('id="pressure"')
 
@@ -1842,7 +1842,7 @@ class TestPressureWatchBand:
         oldest event. If it ever renders first, something has started ranking.
         """
         html = self._render(self._band())
-        tracked = html[html.index("Currently tracked"):]
+        tracked = html[html.index("Tracked moves"):]
         order = re.findall(r'<span class="pw-t">([A-Z]+)</span>', tracked)
         assert order == ["CDE", "ARQT", "IONQ", "VKTX"]
 
@@ -2935,3 +2935,16 @@ def test_malformed_or_undated_news_cannot_borrow_the_row_receipt(top):
     per = {'blob': {'asof': '2026-10-30', 'tech': {'price': 59.05, 'price_asof': '2026-10-30'}},
            'blob_asof': '2026-10-30'}
     assert _issuer_clocks(per, None, {'asof': '2026-11-03', 'top': top})['freshness'] == '2026-10-30'
+
+
+def test_pressure_refresh_and_movers_stub_modes_refuse_combination_before_writes(monkeypatch):
+    from scripts import build_ticker_pages as builder
+
+    def unexpected_write(*args, **kwargs):
+        pytest.fail("combined page-only modes must fail before either writer")
+
+    monkeypatch.setattr(builder, "refresh_pressure_watch", unexpected_write)
+    monkeypatch.setattr(builder, "_write_movers_stub", unexpected_write)
+    with pytest.raises(SystemExit) as error:
+        builder.main(["--pressure-only", "--movers-page-only"])
+    assert error.value.code == 2
