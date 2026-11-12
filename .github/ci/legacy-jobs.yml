@@ -5192,6 +5192,10 @@ jobs:
       - tests/test_pivot_source_adapter.py
       - tests/test_signal_gate_coherence.py
       - tests/test_signal_gate_validity_contract.py
+      - config/sparse_worktree.json
+      - scripts/check_template_site_sync.py
+      - scripts/optimize_assets.py
+      - scripts/worktree_sparse.py
     if: ${{ false }}
     gate: code
     # #5490 tripwire. site/factordata/us_standouts.json and site/factordata/signal_gate.json
