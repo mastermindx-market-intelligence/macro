@@ -30,6 +30,27 @@ def run_steps(steps: Iterable[Step]) -> int:
     return 0
 
 
+def _fast_lens_nonfatal() -> int:
+    """Run the XSR fast-lens builder without ever voiding the generation (ruling 28).
+
+    scripts.build_us_sector_rotation.main already returns 0 on its own errors,
+    but run_steps treats an escaping exception — and any non-zero rc — as fatal.
+    The lens is additive: when it fails, the page keeps its stale-lens copy with
+    the input date, so both outcomes are logged and normalized to 0 HERE only.
+    Every other step keeps its fatal behaviour.
+    """
+    from scripts import build_us_sector_rotation
+
+    try:
+        rc = build_us_sector_rotation.main()
+    except Exception as exc:  # noqa: BLE001 - additive lens must never block the generation
+        log.exception("sector intelligence step scripts.build_us_sector_rotation raised (non-fatal): %s", exc)
+        return 0
+    if rc:
+        log.error("sector intelligence step scripts.build_us_sector_rotation failed with rc=%s (non-fatal)", rc)
+    return 0
+
+
 def default_steps() -> list[Step]:
     from scripts import build_baskets
     from scripts import build_sector_action_board
@@ -42,6 +63,9 @@ def default_steps() -> list[Step]:
             lambda: build_baskets.main(sector_intelligence_only=True),
         ),
         ("scripts.build_sector_action_board", build_sector_action_board.main),
+        # Ruling 28: refresh the fast lens in our own chain, immediately before
+        # sector central reads it. Non-fatal on its own — see _fast_lens_nonfatal.
+        ("scripts.build_us_sector_rotation", _fast_lens_nonfatal),
         (
             "scripts.build_sector_central",
             lambda: build_sector_central.main(strict=True),

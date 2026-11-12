@@ -708,6 +708,14 @@ def score_and_rank(
 # Convenience loader — build inputs from the live data stores
 # ---------------------------------------------------------------------------
 
+# Ruling 28: the cycle-state input vintage actually used by the most recent
+# load_inputs() call (max forward_log "date" after any asof slice). Additive
+# carriage out of load_inputs — the return tuple is unchanged for existing
+# callers. None until a load succeeds; reset on every call so a failed or empty
+# read never leaks a stale date into latest.json.
+_cycle_states_asof: Optional[str] = None
+
+
 def load_inputs(asof: Optional[str] = None) -> tuple[
     list[dict],           # records
     pd.DataFrame,         # etf_closes
@@ -720,6 +728,8 @@ def load_inputs(asof: Optional[str] = None) -> tuple[
 
     asof: optional ISO date string to slice closes up to that date (for replay).
     """
+    global _cycle_states_asof
+    _cycle_states_asof = None
     from engine.inputs import yahoo_closes
     from engine.equity_factors import _closes as stock_closes_fn
 
@@ -758,6 +768,9 @@ def load_inputs(asof: Optional[str] = None) -> tuple[
             fwd = fwd[fwd["date"] <= pd.Timestamp(asof)]
         # Keep most-recent row per id
         if not fwd.empty:
+            # Ruling 28: name the cycle-state input's own vintage (the max date
+            # actually used after the asof slice), not the lens's asof.
+            _cycle_states_asof = fwd["date"].max().strftime("%Y-%m-%d")
             latest_fwd = fwd.sort_values("date").groupby("id").last().reset_index()
             for _, row in latest_fwd.iterrows():
                 ts = row.get("timing_state")
@@ -882,10 +895,20 @@ def _append_forward_log(scored: list[dict], root: Optional[Path] = None) -> int:
 # JSON writer
 # ---------------------------------------------------------------------------
 
-def write_latest(scored: list[dict], root: Optional[Path] = None) -> Path:
+def write_latest(
+    scored: list[dict],
+    root: Optional[Path] = None,
+    *,
+    cycle_states_asof: Optional[str] = None,
+) -> Path:
     """Write data/us_sector_rotation/latest.json.
 
     Returns the path written.  Display-tier only — never gates anything.
+
+    cycle_states_asof: the vintage of the cycle-state input (forward_log max
+    date) the scores actually used; None when that input was unreadable/empty
+    or the caller did not load inputs. Ruling 28 — the page names this date so
+    a stale cycle-state input is never implied to be current.
     """
     base = config.data_dir() if root is None else (Path(root) / "data")
     out_dir = base / "us_sector_rotation"
@@ -903,6 +926,7 @@ def write_latest(scored: list[dict], root: Optional[Path] = None) -> Path:
                       else "settled_daily_session"),
         "ts":        datetime.now(timezone.utc).isoformat(),
         "authority": "DISPLAY-ONLY — re-orders display surfaces; feeds no gate, size, score, or calibrated key.",
+        "cycle_states_asof": cycle_states_asof,
         "instruments": scored,
     }
     out_path.write_text(json.dumps(payload, indent=2, default=str))
@@ -923,6 +947,7 @@ def compute_and_write(asof: Optional[str] = None) -> list[dict]:
     asof: optional ISO date string (for replay; if None, uses latest data).
     """
     records, etf_closes, bench, timing_states, stock_closes, membership = load_inputs(asof=asof)
+    cycle_states_asof = _cycle_states_asof
 
     scored = score_and_rank(
         records=records,
@@ -934,7 +959,7 @@ def compute_and_write(asof: Optional[str] = None) -> list[dict]:
         asof=asof,
     )
 
-    write_latest(scored)
+    write_latest(scored, cycle_states_asof=cycle_states_asof)
     _append_forward_log(scored)
 
     return scored

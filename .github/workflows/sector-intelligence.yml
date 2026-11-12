@@ -18,6 +18,7 @@ on:
       - "data/midcap_breadth/**"
       - "data/yahoo/SPY.parquet"
       - "data/regime/latest.json"
+      - "data/us_sector_rotation/latest.json"
       - "data/baskets/**"
       - "site/basketdata/**"
       - "site/sectordata/sector_central.json"
@@ -97,7 +98,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${{ github.event_name }}" = "schedule" ] && \
-             python -m scripts.check_sector_intelligence_freshness --quiet; then
+             python -m scripts.check_sector_intelligence_freshness --quiet --include-fast-lens; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             echo "Sector Intelligence is already coherent and within freshness budget."
           else
@@ -145,7 +146,11 @@ jobs:
             site/sector_central.html \
             site/sector_central_data.js \
             site/sectordata/sector_central.json \
-            site/premiumdata/sector_central.json
+            site/premiumdata/sector_central.json \
+            data/us_sector_rotation/latest.json
+          # The fast lens file only (ruling 28): tracked on main, refreshed by the
+          # chain's non-fatal XSR step, so the committed file and the page agree.
+          # Never the directory — the nightly forward ledger is not this lane's to stage.
           # ...and the content-hashed assets the pages now link (externalize_css rewrites the
           # pages to <link> site/assets/css/<hash>.css; staging pages without the asset ships a
           # 404 stylesheet). --ignore-removal never stages a deletion. Separate lines:

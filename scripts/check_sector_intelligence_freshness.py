@@ -107,13 +107,49 @@ def _check_hash(
         )
 
 
+def _check_fast_lens(root: Path, common_as_of: date | None, errors: list[str]) -> None:
+    """Ruling 28: the fast lens counts toward the scheduled preflight's freshness (opt-in).
+
+    A missing lens, or one dated older than the session the rest of the generation
+    is dated to, means the scheduled build must not skip. Preflight-only: the
+    revalidate step and the chain's final check never pass include_fast_lens, so
+    a failed lens build can never block publication.
+    """
+    p = root / "data" / "us_sector_rotation" / "latest.json"
+    try:
+        raw = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeDecodeError) as exc:
+        errors.append(f"data/us_sector_rotation/latest.json is absent or unreadable: {exc}")
+        return
+    if not isinstance(raw, dict):
+        errors.append("data/us_sector_rotation/latest.json must contain a JSON object")
+        return
+    lens_as_of = _parse_date(raw.get("asof"))
+    if lens_as_of is None:
+        errors.append(
+            f"data/us_sector_rotation/latest.json carries no usable as_of ({raw.get('asof')!r})"
+        )
+        return
+    if common_as_of is not None and lens_as_of < common_as_of:
+        errors.append(
+            "STALE FAST LENS: data/us_sector_rotation/latest.json as_of="
+            f"{lens_as_of.isoformat()} is older than the generation session "
+            f"{common_as_of.isoformat()}"
+        )
+
+
 def evaluate(
     root: Path,
     *,
     now: datetime | None = None,
     max_sessions_behind: int = 1,
+    include_fast_lens: bool = False,
 ) -> dict[str, Any]:
-    """Evaluate one repo/site tree without modifying it."""
+    """Evaluate one repo/site tree without modifying it.
+
+    include_fast_lens is opt-in for the scheduled preflight only (ruling 28);
+    without it the report is exactly the historical one.
+    """
     root = Path(root)
     site = root / "site"
     errors: list[str] = []
@@ -228,6 +264,9 @@ def evaluate(
                     f"sessions behind (limit {max_sessions_behind})"
                 )
 
+    if include_fast_lens:
+        _check_fast_lens(root, common_as_of, errors)
+
     facts: dict[str, Any] = {
         "as_of": common_as_of.isoformat() if common_as_of else None,
         "sessions_behind": sessions_behind,
@@ -248,12 +287,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--max-sessions-behind", type=int, default=1)
     parser.add_argument("--quiet", action="store_true")
+    parser.add_argument(
+        "--include-fast-lens",
+        action="store_true",
+        help="preflight-only: a missing or stale fast lens (data/us_sector_rotation/latest.json) "
+             "counts as not fresh; never used by the revalidate/publication gate",
+    )
     args = parser.parse_args(argv)
 
     report = evaluate(
         args.root,
         now=datetime.now(timezone.utc),
         max_sessions_behind=max(0, args.max_sessions_behind),
+        include_fast_lens=args.include_fast_lens,
     )
     if not args.quiet:
         for warning in report["warnings"]:

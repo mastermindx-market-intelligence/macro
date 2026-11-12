@@ -747,9 +747,16 @@ def _fast_lens_status(armed: bool, rotation_raw: dict) -> dict:
     the settled-session gate (SIC-D-B02) blanks a misaligned one. The reader needs the difference.
     A file that holds instruments but did not arm the board can only have failed that gate, so it
     is stale, and its own asof is the date to name. Read-only; never changes the order.
+
+    Ruling 28: when the artifact carries cycle_states_asof (the vintage of the
+    cycle-state input the lens used), pass it through so the page can name that
+    input's date instead of implying it is current.
     """
     if armed:
-        return {"state": "fresh", "asof": _lens_date((rotation_raw or {}).get("asof"))}
+        return _with_cycle_states_asof(
+            {"state": "fresh", "asof": _lens_date((rotation_raw or {}).get("asof"))},
+            rotation_raw,
+        )
     try:
         p = config.data_dir() / "us_sector_rotation" / "latest.json"
         raw = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
@@ -758,8 +765,16 @@ def _fast_lens_status(armed: bool, rotation_raw: dict) -> dict:
     if isinstance(raw, dict) and raw.get("instruments"):
         date = _lens_date(raw.get("asof")) or _lens_date(raw.get("ts"))
         if date:
-            return {"state": "stale", "asof": date}
+            return _with_cycle_states_asof({"state": "stale", "asof": date}, raw)
     return {"state": "absent", "asof": None}
+
+
+def _with_cycle_states_asof(status: dict, raw: dict) -> dict:
+    """Add the lens's cycle-state input date when the artifact carries a usable one."""
+    cycle_asof = _lens_date((raw or {}).get("cycle_states_asof"))
+    if cycle_asof:
+        status["cycle_states_asof"] = cycle_asof
+    return status
 
 
 def _load_rotation_events():

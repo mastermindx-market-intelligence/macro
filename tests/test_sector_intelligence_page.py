@@ -449,6 +449,102 @@ def test_semantic_freshness_rejects_empty_action_board(tmp_path: Path) -> None:
                for error in report["errors"]), report
 
 
+# ------------------------------------- ruling 28: opt-in fast-lens preflight check
+
+def _write_fast_lens(root: Path, asof: str | None) -> None:
+    lens_dir = root / "data" / "us_sector_rotation"
+    lens_dir.mkdir(parents=True, exist_ok=True)
+    (lens_dir / "latest.json").write_text(
+        json.dumps({"asof": asof, "instruments": [{"ticker": "XLK"}]}),
+        encoding="utf-8",
+    )
+
+
+def test_fast_lens_flag_fails_a_stale_lens_only_when_opted_in(tmp_path: Path) -> None:
+    from scripts.check_sector_intelligence_freshness import evaluate
+
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    baseline = _evaluate_sector_intelligence(tmp_path)
+    assert baseline["ok"] is True, baseline
+
+    _write_fast_lens(tmp_path, "2026-09-10")  # older than the generation session
+    without_flag = _evaluate_sector_intelligence(tmp_path)
+    assert without_flag == baseline, "without the flag the report must be unchanged"
+
+    with_flag = evaluate(
+        tmp_path,
+        now=datetime(2026, 9, 16, 6, tzinfo=timezone.utc),
+        max_sessions_behind=1,
+        include_fast_lens=True,
+    )
+    assert with_flag["ok"] is False
+    assert any("STALE FAST LENS" in error for error in with_flag["errors"]), with_flag
+
+
+def test_fast_lens_flag_fails_a_missing_lens_only_when_opted_in(tmp_path: Path) -> None:
+    from scripts.check_sector_intelligence_freshness import evaluate
+
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    assert _evaluate_sector_intelligence(tmp_path)["ok"] is True
+
+    with_flag = evaluate(
+        tmp_path,
+        now=datetime(2026, 9, 16, 6, tzinfo=timezone.utc),
+        max_sessions_behind=1,
+        include_fast_lens=True,
+    )
+    assert with_flag["ok"] is False
+    assert any("data/us_sector_rotation/latest.json" in error
+               for error in with_flag["errors"]), with_flag
+
+
+def test_fast_lens_flag_accepts_a_lens_dated_to_the_generation_session(
+    tmp_path: Path,
+) -> None:
+    from scripts.check_sector_intelligence_freshness import evaluate
+
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    _write_fast_lens(tmp_path, "2026-09-14")
+    with_flag = evaluate(
+        tmp_path,
+        now=datetime(2026, 9, 16, 6, tzinfo=timezone.utc),
+        max_sessions_behind=1,
+        include_fast_lens=True,
+    )
+    assert with_flag["ok"] is True, with_flag
+
+
+def test_fast_lens_flag_rejects_a_lens_with_no_usable_asof(tmp_path: Path) -> None:
+    from scripts.check_sector_intelligence_freshness import evaluate
+
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    _write_fast_lens(tmp_path, None)
+    with_flag = evaluate(
+        tmp_path,
+        now=datetime(2026, 9, 16, 6, tzinfo=timezone.utc),
+        max_sessions_behind=1,
+        include_fast_lens=True,
+    )
+    assert with_flag["ok"] is False
+    assert any("no usable as_of" in error for error in with_flag["errors"]), with_flag
+
+
+def test_fast_lens_flag_reaches_evaluate_through_main(monkeypatch, tmp_path: Path) -> None:
+    import scripts.check_sector_intelligence_freshness as freshness
+
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    _write_fast_lens(tmp_path, "2026-09-10")
+
+    class _FrozenDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return datetime(2026, 9, 16, 6, tzinfo=timezone.utc)
+
+    monkeypatch.setattr(freshness, "datetime", _FrozenDatetime)
+    assert freshness.main(["--root", str(tmp_path), "--quiet"]) == 0
+    assert freshness.main(["--root", str(tmp_path), "--quiet", "--include-fast-lens"]) == 1
+
+
 def test_action_board_writer_binds_exact_basket_bytes(tmp_path: Path) -> None:
     from scripts.build_sector_action_board import write_action_board
 
@@ -760,9 +856,91 @@ def test_orchestrator_uses_strict_sector_central_mode(monkeypatch) -> None:
 
     monkeypatch.setattr(build_sector_central, "main", fake_main)
     steps = default_steps()
-    assert steps[2][0] == "scripts.build_sector_central"
-    assert steps[2][1]() == 0
+    assert steps[3][0] == "scripts.build_sector_central"
+    assert steps[3][1]() == 0
     assert seen == [True]
+
+
+# ------------------------------------------- ruling 28: the fast lens in the chain
+
+def test_orchestrator_runs_the_fast_lens_immediately_before_sector_central() -> None:
+    from scripts.build_sector_intelligence import default_steps
+
+    names = [name for name, _ in default_steps()]
+    assert names == [
+        "scripts.build_baskets",
+        "scripts.build_sector_action_board",
+        "scripts.build_us_sector_rotation",
+        "scripts.build_sector_central",
+        "scripts.check_sector_intelligence_freshness",
+    ]
+
+
+def _stub_generation_steps(monkeypatch, calls: list[str], lens_main) -> None:
+    """Stub every producer in default_steps() so run_steps runs fully offline."""
+    from scripts import build_baskets, build_sector_action_board, build_sector_central
+    from scripts import build_us_sector_rotation, check_sector_intelligence_freshness
+
+    def baskets_main(*, sector_intelligence_only: bool = False) -> int:
+        calls.append("baskets")
+        return 0
+
+    def action_main() -> int:
+        calls.append("action_board")
+        return 0
+
+    def central_main(*, strict: bool = False) -> int:
+        calls.append("sector_central")
+        return 0
+
+    def freshness_main(argv) -> int:
+        calls.append("validate")
+        return 0
+
+    monkeypatch.setattr(build_baskets, "main", baskets_main)
+    monkeypatch.setattr(build_sector_action_board, "main", action_main)
+    monkeypatch.setattr(build_us_sector_rotation, "main", lens_main)
+    monkeypatch.setattr(build_sector_central, "main", central_main)
+    monkeypatch.setattr(check_sector_intelligence_freshness, "main", freshness_main)
+
+
+@pytest.mark.parametrize("lens_failure", ["raise", "nonzero_rc"])
+def test_lens_failure_never_voids_the_generation(monkeypatch, lens_failure: str) -> None:
+    """Ruling 28: the lens is additive — a raise OR a non-zero rc is logged and
+    treated as 0 for that step only; the later producers and the validator run."""
+    from scripts.build_sector_intelligence import default_steps, run_steps
+
+    calls: list[str] = []
+
+    def lens_main() -> int:
+        calls.append("fast_lens")
+        if lens_failure == "raise":
+            raise RuntimeError("lens blew up")
+        return 1
+
+    _stub_generation_steps(monkeypatch, calls, lens_main)
+    assert run_steps(default_steps()) == 0
+    assert calls == ["baskets", "action_board", "fast_lens", "sector_central", "validate"]
+
+
+def test_an_exception_in_any_other_step_still_fails_the_chain(monkeypatch) -> None:
+    from scripts import build_sector_action_board
+    from scripts.build_sector_intelligence import default_steps, run_steps
+
+    calls: list[str] = []
+
+    def lens_main() -> int:
+        calls.append("fast_lens")
+        return 0
+
+    _stub_generation_steps(monkeypatch, calls, lens_main)
+
+    def boom() -> int:
+        raise RuntimeError("action board blew up")
+
+    monkeypatch.setattr(build_sector_action_board, "main", boom)
+    assert run_steps(default_steps()) == 1
+    assert calls == ["baskets"]
 
 
 def test_targeted_allocation_skips_auxiliary_and_ai(monkeypatch, tmp_path) -> None:
