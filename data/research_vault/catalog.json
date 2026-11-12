@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T18:28:13.975481+00:00",
-  "count": 3244,
+  "generated_at": "2026-11-12T18:43:14.863610+00:00",
+  "count": 3245,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -502,6 +502,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-9jtrijasq21-90388a",
+      "title": "Nippon Express Holdings (9147.T) First Take Earnings Review Results slightly above expectations, full year guidance raised...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:44:31Z",
+      "summary_points": [
+        "Earnings Beat & Guidance: Q3 2026 profits (¥31.1bn) beat estimates (¥27.8bn); full-year guidance raised to ¥105.0bn (vs. prior ¥95.0bn), driven by forwarding performance and asset reallocation.",
+        "Strategic Targets: FY2028 goals of ¥150bn profits and 10%+ ROE via pricing optimization, cost cuts (\"Japan Business Cost Reduction Project\"), and foundation strengthening.",
+        "Price Target Decline: Goldman Sachs’ target for Nippon Express (9147.T) fell to 3,400 JPY (below current 3,772 JPY), signaling strong bearish sentiment despite recent rating upgrade.",
+        "Rating vs Target Divergence: Shift from \"Not Recommended\" to \"Strong\" rating contrasts with declining price targets, indicating institutional disconnect between qualitative outlook and quantitative price expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
