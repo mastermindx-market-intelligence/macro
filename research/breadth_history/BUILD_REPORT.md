@@ -161,11 +161,53 @@ shared span 2025-12-31..2026-10-09 (195 sessions). See `OVERLAP_CHECK.md`. No tu
 
 Same functions, two stores: on the collector's own closes the engine reproduces
 `sector_breadth.parquet` exactly (0.0 on all 11 sectors). The differences above
-come from the price store — names absent from Tiingo, and small adjusted-price
-differences that flip names sitting at their average — and, on the dated basis,
-from membership changes the collector does not see. Large maxima fall on the
-small sectors (Utilities, Real Estate, Energy), where one name moves the share by
-3 to 5 points.
+come from the price store, and, on the dated basis, from membership changes the
+collector does not see. Large maxima fall on the small sectors (Utilities, Real
+Estate, Energy), where one name moves the share by 3 to 5 points.
+
+**Correction (2026-11-12, COO ruling 27 section 6).** An earlier version of this
+report blamed "small adjusted-price differences" between the stores. That was
+not tested and is wrong. The tested cause (#11124;
+`research/sector_completion_20261021/SI_PRICE_STORE_FINDING_20261112.md`) is the
+collector's own store:
+- `collectors/breadth.py` re-downloads one month of dividend-adjusted closes
+  each night and lays them over the cached history;
+- the cache therefore mixes price vintages, and a dividend payer's 200-session
+  average is pushed up, so it reads "below" too often.
+
+The collector's `sector_breadth.parquet` is the series that is off, not this
+history. A single-vintage re-download cut name-week disagreements with the
+archive from 121 to 9. The other part of the gap is the 18 of today's members
+absent from the Tiingo capture.
+
+**Second-vendor agreement before 2000 (label, not cut).** A later
+full-history single-vintage download from a second vendor (yfinance) was
+compared with the Tiingo archive behind this history. The comparison counts
+name-weeks where both stores hold 200 sessions for the same S&P 500 member
+(485 names) and asks whether the above-200 flag disagrees. Group-level
+figures only:
+
+| Years | Name-weeks | Flag disagreement |
+|---|---|---|
+| 1960–64 | 812 | 4.56% |
+| 1965–69 | 1,820 | 3.41% |
+| 1970–74 | 6,693 | 3.83% |
+| 1975–79 | 11,440 | 6.64% |
+| 1980–84 | 17,679 | 5.85% |
+| 1985–89 | 38,830 | 2.33% |
+| 1990–94 | 58,218 | 0.80% |
+| 1995–99 | 75,577 | 1.20% |
+| 2000–04 | 89,694 | 0.31% |
+| 2005–09 | 98,717 | 0.17% |
+| 2010–14 | 107,164 | 0.09% |
+| 2015–19 | 116,649 | 0.09% |
+| 2020–24 | 123,116 | 0.04% |
+| 2025–26 | 44,774 | 0.04% |
+
+Before 2000 this sector history rests on one vendor, and a second vendor
+disagrees on the stated share of name-weeks. The two apply dividend adjustment
+differently in old history, and neither is shown to be right. The history is
+not cut.
 
 ## Not done here
 
