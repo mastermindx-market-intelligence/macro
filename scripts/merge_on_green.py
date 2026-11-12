@@ -462,6 +462,16 @@ ADAPTIVE_CENSUS_MATURITY_SECONDS = 240
 ADAPTIVE_CENSUS_JOB_PAGE = 100
 ADAPTIVE_SERVED_RUNS_FULL_HEADROOM = 2
 ADAPTIVE_PICKUP_GRACE_SECONDS = 120
+# A `queued` ci.yml run older than this is stranded GitHub-side, not pool
+# refusal.  From 2026-11-11 ~20:18Z seven runs sat queued with ZERO jobs ever
+# created (run 43095271395: jobs total_count=0) while the pool served new runs
+# in ~2 s; counting them zeroed adaptive headroom and withheld the refresh
+# floor for 12 h.  30 minutes is far beyond any real pickup latency (observed
+# 2-82 s; the grace is ADAPTIVE_PICKUP_GRACE_SECONDS), and a genuinely refusing
+# pool still shows FRESH queued runs plus refused jobs in mature in-progress
+# runs, so ignoring only OLD queued runs loses no real refusal signal.  A
+# stranded run that later starts re-enters the count as in_progress.
+ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS = 1800
 ADAPTIVE_HOSTED_LABEL_PREFIXES = ("ubuntu-", "windows-", "macos-")
 ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
 # S9 (2026-11-07) saturation floor.  Sweep 42339359763 (2026-11-07 04:39Z) read 12
@@ -3074,7 +3084,9 @@ def is_sweep_candidate(pull: dict[str, Any]) -> bool:
     )
 
 
-def in_flight_pr_proofs(repo: str, token: str) -> int | None:
+def in_flight_pr_proofs(
+    repo: str, token: str, *, now: dt.datetime | None = None
+) -> int | None:
     """Repo-wide active pull-request ``ci.yml`` runs, or ``None`` if unreadable.
 
     This is the controller's workload circuit breaker.  A per-sweep refresh cap
@@ -3083,19 +3095,30 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
     Five tiny ``per_page=1`` reads use GitHub's own status index and ``total_count``
     so proofs outside the pull-list/evaluation window still consume capacity.
 
+    The ``queued`` read counts only runs created within
+    ``ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS``: a run stranded ``queued``
+    GitHub-side for hours with zero jobs consumes no runners, and counting it
+    starved the controller of refresh slots for 12 h (2026-11-11).  A stranded
+    run that later starts re-enters the count as ``in_progress``; the other
+    status reads are unchanged.
+
     Unreadable is deliberately ``None`` rather than zero.  The caller pauses only
     NEW ``update-branch`` work while continuing to judge and merge already-proven
     heads; an API blip must not be interpreted as an empty runner pool.
     """
+    queued_cutoff = (now or dt.datetime.now(dt.timezone.utc)) - dt.timedelta(
+        seconds=ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS
+    )
     total = 0
     for run_status in ACTIVE_PR_PROOF_STATUSES:
-        query = urllib.parse.urlencode(
-            {
-                "event": "pull_request",
-                "status": run_status,
-                "per_page": "1",
-            }
-        )
+        params = {
+            "event": "pull_request",
+            "status": run_status,
+            "per_page": "1",
+        }
+        if run_status == "queued":
+            params["created"] = ">=" + queued_cutoff.strftime("%Y-%m-%dT%H:%M:%SZ")
+        query = urllib.parse.urlencode(params)
         status, payload = _request(
             "GET",
             f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/runs?{query}",
@@ -3117,7 +3140,9 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
 class HostedPoolCensus:
     """Job-level evidence of hosted-pool service for this repository's ci.yml."""
 
-    #: ci.yml runs whose first job (`ci-plan`, hosted) has no runner yet.
+    #: Recently created ci.yml runs whose first job (`ci-plan`, hosted) has no
+    #: runner yet; queued runs older than ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS
+    #: are stranded GitHub-side and excluded.
     queued_runs: int
     #: Mature in-progress ci.yml runs whose job lists were read.
     sampled_runs: int
@@ -3204,22 +3229,30 @@ def hosted_pool_census(
 ) -> HostedPoolCensus | None:
     """Sample this repository's mature in-progress ci.yml runs at the JOB level.
 
-    One ``per_page=1`` read of queued ci.yml runs, one list of the newest
-    in-progress ci.yml runs created at least ``ADAPTIVE_CENSUS_MATURITY_SECONDS``
-    ago (so their dynamic pack matrix is likely to exist), and one job list per
-    sampled run.  ``None`` on any read that is not clean, including a job list
-    longer than one page or a job without a usable timestamp, so the caller
-    falls back to the flat cap rather than reading an API blip as a free pool.
+    One ``per_page=1`` read of queued ci.yml runs created within
+    ``ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS`` (older ones are stranded
+    GitHub-side, not refusal), one list of the newest in-progress ci.yml runs
+    created at least ``ADAPTIVE_CENSUS_MATURITY_SECONDS`` ago (so their dynamic
+    pack matrix is likely to exist), and one job list per sampled run.
+    ``None`` on any read that is not clean, including a job list longer than
+    one page or a job without a usable timestamp, so the caller falls back to
+    the flat cap rather than reading an API blip as a free pool.
     """
     base = f"{GITHUB_API}/repos/{repo}/actions"
-    query = urllib.parse.urlencode({"status": "queued", "per_page": "1"})
+    now = now or dt.datetime.now(dt.timezone.utc)
+    queued_cutoff = now - dt.timedelta(seconds=ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS)
+    query = urllib.parse.urlencode(
+        {
+            "status": "queued",
+            "per_page": "1",
+            "created": ">=" + queued_cutoff.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+    )
     status, payload = _request("GET", f"{base}/workflows/ci.yml/runs?{query}", token)
     queued_runs = _clean_count(payload, "total_count") if status < 400 else None
     if queued_runs is None:
         return None
-    cutoff = (now or dt.datetime.now(dt.timezone.utc)) - dt.timedelta(
-        seconds=ADAPTIVE_CENSUS_MATURITY_SECONDS
-    )
+    cutoff = now - dt.timedelta(seconds=ADAPTIVE_CENSUS_MATURITY_SECONDS)
     query = urllib.parse.urlencode(
         {
             "status": "in_progress",

@@ -17,6 +17,7 @@ import ast
 import base64
 import datetime as dt
 import json
+import urllib.parse
 from pathlib import Path
 
 import pytest
@@ -4984,6 +4985,57 @@ def test_an_unreadable_proof_census_never_claims_zero_load(
     assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read") is None
 
 
+@pytest.mark.parametrize(
+    "fresh_queued,expected",
+    [
+        # The live stranding (2026-11-11 ~20:18Z): seven queued ci.yml runs with
+        # ZERO jobs ever created (run 43095271395).  They consume no runners, so
+        # the age-bounded queued read must exclude them or the controller
+        # starves at the flat cap while the pool serves new runs in ~2 s.
+        (0, 4),
+        # A genuinely refusing pool still shows a FRESH queued run.
+        (1, 5),
+    ],
+    ids=("stranded-queued-excluded", "fresh-queued-counted"),
+)
+def test_stranded_queued_runs_do_not_consume_proof_slots(
+    monkeypatch, fresh_queued, expected
+):
+    now = dt.datetime(2026, 11, 12, 8, 30, tzinfo=dt.timezone.utc)
+    runs = [("2026-11-11T20:18:53Z", "queued")] * 7
+    runs += [("2026-11-12T08:00:00Z", "in_progress")] * 4
+    if fresh_queued:
+        runs.append(("2026-11-12T08:29:00Z", "queued"))
+
+    def fake_request(method, url, token, payload=None):
+        assert method == "GET" and token == "read" and payload is None
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+        assert query["event"] == ["pull_request"] and query["per_page"] == ["1"]
+        run_status = query["status"][0]
+        if run_status == "queued":
+            # The API applies the created qualifier; a query without it would
+            # count the stranded runs (the bug).
+            assert "created" in query, url
+            assert query["created"][0].startswith(">="), url
+            cutoff = MOG._parse_dt(query["created"][0][2:])
+            assert cutoff == now - dt.timedelta(
+                seconds=MOG.ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS
+            )
+            count = sum(
+                1
+                for created, status in runs
+                if status == "queued" and MOG._parse_dt(created) >= cutoff
+            )
+        else:
+            # in_progress and the other active states keep counting every run.
+            assert "created" not in query
+            count = sum(1 for _created, status in runs if status == run_status)
+        return 200, {"total_count": count, "workflow_runs": []}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read", now=now) == expected
+
+
 def _refresh_owner(*, current_head="b" * 40):
     pull = _pull(
         999,
@@ -5383,6 +5435,9 @@ def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch
         assert method == "GET" and token == "read"
         if "/workflows/ci.yml/runs?" in url and "status=queued" in url:
             assert "per_page=1" in url
+            # Only queued runs created inside the age window are refusal
+            # evidence; older ones are stranded GitHub-side, not a busy pool.
+            assert "created=%3E%3D2026-11-05T13%3A55%3A00Z" in url
             return 200, {"total_count": 0}
         if "/workflows/ci.yml/runs?" in url and "status=in_progress" in url:
             # Mature = created before now - 240 s, newest first, sample of three.
@@ -5451,6 +5506,62 @@ def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
     census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read")
     assert census == MOG.HostedPoolCensus(0, 0, 0, 0, 0)
     assert MOG.adaptive_proof_cap(census)[0] == MOG.MAX_IN_FLIGHT_PR_PROOFS
+
+
+@pytest.mark.parametrize(
+    "fresh_queued,expected_queued,expected_cap,expected_floor",
+    [
+        # Seven runs stranded queued since 2026-11-11 ~20:18Z with zero jobs
+        # (run 43095271395): older than the window, so headroom and the
+        # saturation floor survive them.
+        (0, 0, 16, 1),
+        # A fresh queued run is still refusal: flat cap, floor withheld.
+        (1, 1, 8, 0),
+    ],
+    ids=("stranded-queued-ignored", "fresh-queued-refuses"),
+)
+def test_queued_run_age_bounds_headroom_and_the_refresh_floor(
+    monkeypatch, fresh_queued, expected_queued, expected_cap, expected_floor
+):
+    now = dt.datetime(2026, 11, 12, 8, 30, tzinfo=dt.timezone.utc)
+    queued_created = ["2026-11-11T20:18:53Z"] * 7
+    if fresh_queued:
+        queued_created.append("2026-11-12T08:29:00Z")
+    served = _census_jobs(*_first_wave(*_packs()))
+
+    def fake_request(method, url, token, payload=None):
+        assert method == "GET" and token == "read"
+        if "/workflows/ci.yml/runs?" in url and "status=queued" in url:
+            query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+            assert query["per_page"] == ["1"]
+            # The API applies the created qualifier; without it the stranded
+            # runs would zero headroom and withhold the floor (the bug).
+            assert "created" in query, url
+            assert query["created"][0].startswith(">="), url
+            cutoff = MOG._parse_dt(query["created"][0][2:])
+            assert cutoff == now - dt.timedelta(
+                seconds=MOG.ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS
+            )
+            count = sum(
+                1 for created in queued_created if MOG._parse_dt(created) >= cutoff
+            )
+            return 200, {"total_count": count}
+        if "/workflows/ci.yml/runs?" in url and "status=in_progress" in url:
+            return 200, {"workflow_runs": [{"id": 11}, {"id": 12}, {"id": 13}]}
+        if url.endswith("/runs/11/jobs?filter=latest&per_page=100"):
+            return served
+        if url.endswith("/runs/12/jobs?filter=latest&per_page=100"):
+            return served
+        if url.endswith("/runs/13/jobs?filter=latest&per_page=100"):
+            return served
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now)
+    assert census.queued_runs == expected_queued
+    assert census.served_runs == 3
+    assert MOG.adaptive_proof_cap(census)[0] == expected_cap
+    assert MOG.refresh_floor_allowance(census, 8)[0] == expected_floor
 
 
 @pytest.mark.parametrize(
