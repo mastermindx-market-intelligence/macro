@@ -1,16 +1,16 @@
 {
   "schema": "altdata_track_record.v1",
-  "as_of": "2026-11-08",
-  "scored_total": 532,
-  "open": 229,
+  "as_of": "2026-11-12",
+  "scored_total": 548,
+  "open": 225,
   "unscored_soft": 0,
   "expired": 18,
   "overall": {
-    "n": 532,
-    "hits": 288,
-    "misses": 244,
-    "hit_rate": 0.541,
-    "dir_accuracy": 0.408
+    "n": 548,
+    "hits": 296,
+    "misses": 252,
+    "hit_rate": 0.54,
+    "dir_accuracy": 0.407
   },
   "by_conviction": {
     "high": {
@@ -28,20 +28,20 @@
       "dir_accuracy": null
     },
     "low": {
-      "n": 532,
-      "hits": 288,
-      "misses": 244,
-      "hit_rate": 0.541,
-      "dir_accuracy": 0.408
+      "n": 548,
+      "hits": 296,
+      "misses": 252,
+      "hit_rate": 0.54,
+      "dir_accuracy": 0.407
     }
   },
   "by_kind": {
     "rel_return": {
-      "n": 532,
-      "hits": 288,
-      "misses": 244,
-      "hit_rate": 0.541,
-      "dir_accuracy": 0.408
+      "n": 548,
+      "hits": 296,
+      "misses": 252,
+      "hit_rate": 0.54,
+      "dir_accuracy": 0.407
     },
     "level": {
       "n": 0,
@@ -52,99 +52,99 @@
     }
   },
   "by_regime": {},
-  "calibration_note": "532 scored, hit-rate 0.541 (directional accuracy 0.408).",
+  "calibration_note": "548 scored, hit-rate 0.54 (directional accuracy 0.407).",
   "recent": [
     {
-      "id": "2026-08-07-WM-altconv",
-      "subject": "WM alt-data convergence",
+      "id": "2026-10-13-AXP-altconv",
+      "subject": "AXP alt-data convergence",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "hit",
-      "realized": 0.0592,
-      "check_by": "2026-11-04"
+      "realized": 0.0662,
+      "check_by": "2026-11-11"
     },
     {
-      "id": "2026-10-06-DIS-altconv",
-      "subject": "DIS alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.1592,
-      "check_by": "2026-11-04"
-    },
-    {
-      "id": "2026-10-06-AMGN-altconv",
-      "subject": "AMGN alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.1977,
-      "check_by": "2026-11-04"
-    },
-    {
-      "id": "2026-10-06-NVS-altconv",
-      "subject": "NVS alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.181,
-      "check_by": "2026-11-04"
-    },
-    {
-      "id": "2026-10-06-GEO-altconv",
-      "subject": "GEO alt-data convergence",
+      "id": "2026-10-13-AXON-altconv",
+      "subject": "AXON alt-data convergence",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "miss",
-      "realized": -0.1384,
-      "check_by": "2026-11-04"
+      "realized": -0.2135,
+      "check_by": "2026-11-11"
     },
     {
-      "id": "2026-08-09-FI-altconv",
-      "subject": "FI alt-data convergence",
+      "id": "2026-08-13-TPL-altconv",
+      "subject": "TPL alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.1696,
+      "check_by": "2026-11-10"
+    },
+    {
+      "id": "2026-08-13-RSG-altconv",
+      "subject": "RSG alt-data convergence",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "hit",
-      "realized": 0.1923,
-      "check_by": "2026-11-04"
+      "realized": 0.1849,
+      "check_by": "2026-11-10"
     },
     {
-      "id": "2026-08-09-MMC-altconv",
-      "subject": "MMC alt-data convergence",
+      "id": "2026-10-12-ACM-altconv",
+      "subject": "ACM alt-data convergence",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "hit",
-      "realized": 0.1061,
-      "check_by": "2026-11-04"
+      "realized": 0.2241,
+      "check_by": "2026-11-10"
     },
     {
-      "id": "2026-08-09-AMGN-altconv",
-      "subject": "AMGN alt-data convergence",
+      "id": "2026-10-12-HPE-altconv",
+      "subject": "HPE alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.3107,
+      "check_by": "2026-11-10"
+    },
+    {
+      "id": "2026-10-12-SMCI-altconv",
+      "subject": "SMCI alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.2993,
+      "check_by": "2026-11-10"
+    },
+    {
+      "id": "2026-10-12-AMAT-altconv",
+      "subject": "AMAT alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.2285,
+      "check_by": "2026-11-10"
+    },
+    {
+      "id": "2026-08-13-DUK-altconv",
+      "subject": "DUK alt-data convergence",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "hit",
-      "realized": 0.1727,
-      "check_by": "2026-11-04"
+      "realized": 0.0717,
+      "check_by": "2026-11-10"
     },
     {
-      "id": "2026-08-09-BRK.B-altconv",
-      "subject": "BRK.B alt-data convergence",
+      "id": "2026-08-13-COLL-altconv",
+      "subject": "COLL alt-data convergence",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "hit",
-      "realized": 0.1181,
-      "check_by": "2026-11-04"
-    },
-    {
-      "id": "2026-08-08-MSI-altconv",
-      "subject": "MSI alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.0713,
-      "check_by": "2026-11-04"
+      "realized": -0.0186,
+      "check_by": "2026-11-10"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 532 \u6761\uff0c\u547d\u4e2d\u7387 0.541\uff08\u65b9\u5411\u51c6\u786e\u7387 0.408\uff09\u3002",
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 548 \u6761\uff0c\u547d\u4e2d\u7387 0.54\uff08\u65b9\u5411\u51c6\u786e\u7387 0.407\uff09\u3002",
   "note": "Alt-data convergence theses graded vs SPY. Context-only \u2014 the signal earns a scored vote only once this track record shows forward edge."
 }
