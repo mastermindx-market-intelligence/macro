@@ -387,3 +387,42 @@ def test_walkforward_prefix_invariance_lagged_inputs_gate_and_state(monkeypatch)
         cols = [c for c in a.columns if c in b.columns]
         pd.testing.assert_frame_equal(a[cols], b[cols], check_freq=False, check_names=False)
     pd.testing.assert_series_equal(full[3], cut[3].reindex(full[3].index), check_names=False)
+
+
+@pytest.mark.parametrize("d", ["2020-03-18", "2022-06-15", "2024-08-07", "2025-04-09"])
+def test_pit_replay_matches_production_engine_at_d(monkeypatch, d):
+    """Addendum 3: each replayed FRED leg at session d equals what engine/risk_radar.leading_signals
+    computes when the store holds only what was released by d (production at d's nightly run)."""
+    from lib import store
+    from engine.risk_radar_eval import availability as A
+    d = pd.Timestamp(d)
+    full = rr.leading_signals()
+    pit = A.pit_signals(full)
+    orig = store.read
+
+    def as_of(group, name):
+        df = orig(group, name)
+        if df is None:
+            return None
+        df = df.copy()
+        ix = pd.to_datetime(df.index)
+        if group == "fred" and name in ("DEXJPUS", "DFII10", "BAMLH0A0HYM2"):
+            rel = A.release_dates(name, ix)
+            return df[(rel.values <= np.datetime64(d))]
+        return df[ix <= d]
+
+    monkeypatch.setattr(store, "read", as_of)
+    prod = rr.leading_signals()
+    for col in A.LEGS:
+        assert abs(prod.at[d, col] - pit.at[d, col]) < 1e-12, col
+
+
+def test_release_rules():
+    from engine.risk_radar_eval import availability as A
+    # rule only (dates outside the observed table): DEXJPUS Tue 2018-05-22 -> Mon 2018-05-28 is
+    # Memorial Day -> Tue 2018-05-29; DFII10 Fri 2018-06-29 -> Mon 2018-07-02
+    r = A.release_dates("DEXJPUS", pd.DatetimeIndex(["2018-05-22"]))
+    assert r.iloc[0] == pd.Timestamp("2018-05-29")
+    assert A.release_dates("DFII10", pd.DatetimeIndex(["2018-06-29"])).iloc[0] == pd.Timestamp("2018-07-02")
+    # observed table wins: the 2021-03-12 DEXJPUS anomaly was released 2021-03-22
+    assert A.release_dates("DEXJPUS", pd.DatetimeIndex(["2021-03-12"])).iloc[0] == pd.Timestamp("2021-03-22")

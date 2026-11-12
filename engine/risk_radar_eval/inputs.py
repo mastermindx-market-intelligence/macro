@@ -14,19 +14,22 @@ PCT_WIN = 504  # same trailing causal percentile window as the engine (engine/ri
 
 
 # Publication lag in sessions for legs whose source is stamped with its observation date but
-# published later (desk H19, 2026-11-12). FRED's ICE BofA HY OAS and DFII10 for date t appear the
-# next morning; DEXJPUS (H.10) is published weekly, so 1 session is a floor, not verified.
+# published later (desk H19, 2026-11-12). Superseded for the incumbent's legs by the point-in-time
+# replay in `availability.py` (prereg addendum 3: DEXJPUS weekly H.10 release joined as of its
+# release date; DFII10 and HY OAS next business day). Kept for `lag_for_availability` callers and
+# the HY OAS baseline (next business day = one session).
 AVAILABILITY_LAG = {"credit_oas_roc": 1, "rates_realrate": 1, "jpy_carry": 1}
 
 
 def incumbent_signals(*, availability_lag: bool = True) -> pd.DataFrame:
-    """Causal 0-1 leg percentiles from the live owner, each FRED-sourced leg shifted by its
-    publication lag (rows = SPY sessions) so a row holds only what was published by that close.
+    """Causal 0-1 leg percentiles from the live owner, with each FRED-sourced leg rebuilt point in
+    time (addendum 3) so a row holds only what was published by that close.
     availability_lag=False returns the live owner's panel unchanged."""
     from engine import risk_radar as rr
+    from engine.risk_radar_eval import availability
     sigs = rr.leading_signals()
     if availability_lag:
-        sigs = lag_for_availability(sigs)
+        sigs = availability.pit_signals(sigs)
     return sigs
 
 
