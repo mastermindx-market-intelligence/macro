@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_972),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_996),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_730),
+    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_998),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_732),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,41 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #10277, fixed-main conflict composition):
+    Receiver e7f8565ca26b74b9ae0d637b336e9985d513ff9d retains #11108's
+    five DATA dependency corrections and #11101's independent marketing
+    owner +2. Preserve all 401 current owner positions and 400 sibling
+    blocks. The current prophet-lab owner still equals incorporated 9d8a0c8b:
+    add only the original five W1 lines (415 characters, 417 UTF-8 bytes),
+    retaining the landed browser fallback and every incumbent command.
+    Declarations give 12->13 commands, 27->28 test references, 1662->1734
+    joined characters, length bucket two, and weight 68->71; no override.
+    Carry only W1's +3 onto 5971/5995/5729, yielding 5974/5998/5732.
+    Keep 137/138/131 job ceilings, ten packs, assertions, selectors,
+    dependencies, timeouts, admission limits and native browser contracts.
+    Preserve all published W1 provenance and every current-main paragraph.
+    The sole historical-text correction moves the 13-character date prefix
+    from the duplicated fallback header to the incomplete Start-page header;
+    no historical date, fact or paragraph is removed or remeasured.
+    This is declaration-derived source
+    accounting, not a new planner measurement or execution-time result.
+    Original run43143658505's exact-head proof remains accepted; new-source
+    paired packing and natural successor proof are separate obligations.
+    Private/UNKNOWN resources, November19 W2 and product limits stay closed.
+
+    2026-11-12 (PR #11101, runtime-adapter closure): wiring
+    tools/xguerrilla/tests/test_runtime_adapter.py into
+    marketing-social-publisher satisfies the closure doctrine —
+    contract-delta had flagged the suite as named by no run: step
+    (run 43143064165, job 130934421614). The join adds its run token
+    to that step with no new job selected ("newly selected: none");
+    the estimator measures +2 on the shared owner for all three
+    probes: index 5969->5971, free-content 5993->5995, Prophet
+    5727->5729. Jobs 137/138/131, ten packs, selectors, commands
+    and admission limits unchanged. The wider selection is intended
+    (closure-required); natural successor CI must qualify the
+    repaired source.
 
     2026-11-12 (PR #10277, preserve landed browser recovery):
     Receiver 9d8a0c8be5bbac0073b99762e46ae092235acf4f includes #11051's
@@ -6025,7 +6060,7 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     This note records source composition; actual native current-tree
     packing and natural successor proof remain separately accountable.
 
-2 (PR #10277, independent Start-page composition):
+    2026-11-12 (PR #10277, independent Start-page composition):
     main e752cc8a (#11019) adds its own data-base-shim +2; retain its
     current 5968/5991/5726 accounting and the complete original W1 history.
     Add only W1's accepted prophet-lab +3 -> 5971/5994/5729.
@@ -6095,7 +6130,7 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     pack, exclusion, changed selection or runtime allowance. Preserve
     all existing semantic test coverage and the 10-pack bound.
 
-    2026-11-1    2026-11-11 (playwright apt-outage fallback): the seven shell-executed
+    2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
     240s first attempt plus a 60s browser-only fallback (GitHub-hosted
     runners intermittently cannot resolve any Ubuntu archive and the apt
