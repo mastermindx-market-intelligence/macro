@@ -74,6 +74,28 @@ def membership_dated(breadth_dir: Path, src: str) -> pd.DataFrame:
     return out[["ticker", "group", "start_date", "end_date"]]
 
 
+def unpriced_in_window(closes: pd.DataFrame, mem: pd.DataFrame) -> pd.DataFrame:
+    """Membership rows with NO close inside their own [start_date, end_date) window.
+
+    The engine already counts a member only on sessions inside its window, so a
+    reused ticker whose stored history belongs to a later company (prices only
+    after the old member left) contributes nothing. This lists those rows so the
+    report can count them by year and the sidecar can name them.
+    """
+    idx = closes.index
+    rows = []
+    for r in mem.itertuples(index=False):
+        s = pd.Timestamp(r.start_date) if "start_date" in mem.columns and pd.notna(r.start_date) else idx.min()
+        e = pd.Timestamp(r.end_date) if "end_date" in mem.columns and pd.notna(r.end_date) else idx.max() + pd.Timedelta(days=1)
+        if r.ticker in closes.columns:
+            win = closes[r.ticker][(idx >= s) & (idx < e)]
+            if win.notna().any():
+                continue
+        rows.append({"ticker": r.ticker, "group": r.group, "start_date": s, "end_date": e,
+                     "ticker_in_store": r.ticker in closes.columns})
+    return pd.DataFrame(rows, columns=["ticker", "group", "start_date", "end_date", "ticker_in_store"])
+
+
 def missing_sentence(closes: pd.DataFrame, mem: pd.DataFrame, basis: str) -> tuple[str, dict]:
     tickers = set(closes.columns)
     ever = set(mem["ticker"])
@@ -87,8 +109,17 @@ def missing_sentence(closes: pd.DataFrame, mem: pd.DataFrame, basis: str) -> tup
              f"{closes.index.max().date()} is absent from every past session, and today's "
              f"sector labels are applied to the whole span.")
     else:
-        s = (f"{len(unpriced)} of {len(ever)} dated members have no stored close and are absent; "
-             f"{unlabeled} membership rows carry no sector label; labels are as of now, not era-correct.")
+        gone = unpriced_in_window(closes, mem)
+        stats["rows_unpriced_in_own_window"] = len(gone)
+        stats["rows_unpriced_in_own_window_ticker_present"] = int(gone["ticker_in_store"].sum())
+        stats["unpriced_in_window_by_start_year"] = {
+            str(k): int(v) for k, v in gone["start_date"].dt.year.value_counts().sort_index().items()}
+        stats["unpriced_in_window_sample"] = sorted(gone["ticker"].unique())[:25]
+        s = (f"{len(gone)} dated membership rows have no stored close inside their own membership "
+             f"window and are absent (of these, {stats['rows_unpriced_in_own_window_ticker_present']} "
+             f"tickers exist in the store only outside the window, a likely ticker reuse); "
+             f"{unlabeled} membership rows carry no sector label and are absent from every sector; "
+             f"labels are as of now, not era-correct.")
     return s, stats
 
 
@@ -108,6 +139,14 @@ def build(closes_path: Path, breadth_dir: Path, basis: str, out: Path, src: str 
                                breadth_dir / "sp1500_pit_sectors.parquet"])
     meta = {
         "basis": BASIS[basis],
+        "price_note": ("Adjusted closes are today's restated values (split and dividend "
+                       "adjustment as of the store's capture), not the prices printed at the time. "
+                       "The nightly member ledger reads the collector's closes; this history reads "
+                       "the closes file named in inputs. Same functions, two stores; their overlap "
+                       "is recorded in research/breadth_history/OVERLAP_CHECK.md."),
+        "redistribution_note": ("Group-level shares and counts only; no member prices. The "
+                                "Tiingo research reader marks raw views redistribution_admitted=false; "
+                                "member-level history stays off git."),
         "span": {"closes_start": str(closes.index.min().date()),
                  "closes_end": str(closes.index.max().date()),
                  "first_valid_pct_above_200": str(valid["date"].min().date()) if len(valid) else None},
