@@ -30,7 +30,7 @@ class PermissionPromptBoundaryTests(unittest.TestCase):
             with self.subTest(surface=name):
                 text = normalized(ROOT / name)
                 self.assertIn('administrative blockers are self-remedied', text)
-                self.assertIn('an explicit safety/permission refusal still ends that effect', text)
+                self.assertIn('classify the observed error before declaring a refusal', text)
                 self.assertIn('a permissive local setting does not authorize bypassing', text)
 
 
