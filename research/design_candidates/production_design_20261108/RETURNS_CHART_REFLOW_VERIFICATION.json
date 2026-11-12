@@ -1,0 +1,25 @@
+{
+  "status": "ILLUSTRATIVE_GEOMETRY_REFLOW_NOT_MARKET_DATA",
+  "outputs": [
+    {
+      "file": "evidence/returns-mobile-chart-390.svg",
+      "width": 320,
+      "height": 142,
+      "axis_font_px": 11,
+      "date_end_anchored": true,
+      "max_scale_error_pp": 7.105427357601002e-15
+    },
+    {
+      "file": "evidence/returns-mobile-chart-320.svg",
+      "width": 250,
+      "height": 142,
+      "axis_font_px": 11,
+      "date_end_anchored": true,
+      "max_scale_error_pp": 7.105427357601002e-15
+    }
+  ],
+  "series_points": {
+    "SPY": 127,
+    "NVDA": 127
+  }
+}
