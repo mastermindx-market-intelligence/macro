@@ -93,6 +93,47 @@ LEAD_MIN_MARGIN = 3
 # handoff below that margin is rank noise, not a leadership change worth announcing.
 _CONSTRUCTIVE_RECOS = {"accumulate", "enter"}
 _DEBOUNCE_KEY = "_debounce"   # reserved state.json key; theme ids never start with "_"
+_AS_OF_KEY = "_as_of"         # last accepted session; same-session corrections remain valid
+
+
+def _session_date(value) -> str:
+    """Normalize a real session stamp without treating missing/numeric values as dates."""
+    if value is None or isinstance(value, (bool, int, float)):
+        raise ValueError("missing or numeric session date")
+    stamp = pd.Timestamp(value)
+    if pd.isna(stamp):
+        raise ValueError("missing session date")
+    return stamp.strftime("%Y-%m-%d")
+
+
+def _state_watermark(state: dict, history: list[dict]) -> str | None:
+    """Use the accepted stamp, or recover only a lower bound from legacy evidence.
+
+    Old snapshots did not store their date. Pending streaks and existing events can
+    prove a lower bound, not the complete historical ordering. With no dated evidence,
+    the first accepted run establishes the watermark; no older date is invented.
+    """
+    if _AS_OF_KEY in state:
+        return _session_date(state[_AS_OF_KEY])
+    deb = state.get(_DEBOUNCE_KEY)
+    deb = deb if isinstance(deb, dict) else {}
+    values = [e.get("ts") for e in history]
+    for key in ("reco", "label"):
+        group = deb.get(key)
+        group = group if isinstance(group, dict) else {}
+        values.extend(s.get("bucket") for s in group.values()
+                      if isinstance(s, dict))
+    lead = deb.get("lead")
+    pending = lead.get("pending") if isinstance(lead, dict) else None
+    if isinstance(pending, dict):
+        values.append(pending.get("bucket"))
+    dates = []
+    for value in values:
+        try:
+            dates.append(_session_date(value))
+        except (TypeError, ValueError, OverflowError):
+            continue
+    return max(dates) if dates else None
 
 
 def _ev(asset, type_, ts, severity, headline, detail, context, to_state,
@@ -502,6 +543,18 @@ def rebuild(theme_intel: dict, region: str = "us") -> list[dict]:
     if not theme_intel or not theme_intel.get("themes"):
         return []
     state = load_state(region)
+    history = load_events(region)
+    try:
+        session = _session_date(theme_intel.get("as_of"))
+        watermark = _state_watermark(state, history)
+    except (TypeError, ValueError, OverflowError) as exc:
+        log.warning("theme alerts [%s]: invalid session watermark; preserving state (%s)",
+                    region, exc)
+        return []
+    if watermark is not None and session < watermark:
+        log.warning("theme alerts [%s]: ignoring older session %s before %s",
+                    region, session, watermark)
+        return []
     prior = {k: v for k, v in state.items() if not str(k).startswith("_")}
     cur = _snapshot(theme_intel)
     raw = compute_events(theme_intel, prior)
@@ -510,7 +563,7 @@ def rebuild(theme_intel: dict, region: str = "us") -> list[dict]:
     new_events = _annotate_confidence(kept, _calibration())
 
     # merge into history: keep-first by id, then trim to the KEEP_DAYS window
-    by_id = {e["id"]: e for e in load_events(region)}
+    by_id = {e["id"]: e for e in history}
     for e in new_events:
         by_id.setdefault(e["id"], e)
     merged = list(by_id.values())
@@ -522,6 +575,7 @@ def rebuild(theme_intel: dict, region: str = "us") -> list[dict]:
     write_events(merged, region)
     out_state = dict(cur)
     out_state[_DEBOUNCE_KEY] = deb_next
+    out_state[_AS_OF_KEY] = session
     write_state(out_state, region)
     log.info("theme alerts [%s]: %d new event(s), %d in window (seed=%s)",
              region, len(new_events), len(merged), not prior)
