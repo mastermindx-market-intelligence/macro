@@ -460,3 +460,51 @@ def test_distinct_global_endpoints_preserve_real_zero_and_pit_transition(monkeyp
     assert leg(late)['value'] is None and leg(late)['elevated'] is None
     assert late['measured_count']==1 and not late['coverage_ok']
     assert late['settlement_date']==early['settlement_date']
+
+# Synthetic finite-admission regressions; these do not assert live incidence.
+@pytest.mark.parametrize('bad', [float('inf'), -float('inf'), 'inf', '-Infinity'])
+@pytest.mark.parametrize('field,axis', [('days_to_cover','days_to_cover'), ('dtc_change','dtc_change'), ('si_change_pct','si_change_pct'), ('borrow_fee_pct','borrow_fee'), ('avail_shares','availability')])
+def test_nonfinite_axes_abstain_and_serialize(field, axis, bad):
+    import json
+    xs = pd.DataFrame([{field: bad}], index=['SYN'])
+    payload = sp.axes('SYN', xs=xs)
+    assert next(leg for leg in payload['legs'] if leg['axis'] == axis)['value'] is None
+    assert payload['measured_count'] == 0
+    assert not payload['coverage_ok']
+    json.dumps(payload, allow_nan=False)
+
+@pytest.mark.parametrize('n', [199, 200, 250])
+@pytest.mark.parametrize('field', ['days_to_cover', 'avg_daily_vol'])
+@pytest.mark.parametrize('bad', [float('inf'), -float('inf')])
+def test_nonfinite_population_cannot_dilute_valid_peers(n, field, bad):
+    good = _wide_panel(n=n)
+    invalid = _wide_panel(n=200, dtc_start=500.)
+    invalid['ticker'] = ['X'+str(i) for i in range(200)]
+    invalid['dtc_capped'] = False
+    invalid[field] = bad
+    clean = sp.cross_section(asof='2026-08-01', si_panel=good, borrow=pd.DataFrame())
+    mixed = sp.cross_section(asof='2026-08-01', si_panel=pd.concat([good, invalid]), borrow=pd.DataFrame())
+    pd.testing.assert_series_equal(clean.dtc_pctile, mixed.loc[clean.index, 'dtc_pctile'])
+    assert mixed.loc[invalid.ticker, 'dtc_pctile'].isna().all()
+    if n < 200:
+        assert mixed.dtc_pctile.isna().all()
+    else:
+        assert mixed.loc[f'T{n-1:04d}', 'dtc_pctile'] == 100.
+
+@pytest.mark.parametrize('bad', [float('inf'), -float('inf')])
+@pytest.mark.parametrize('endpoint', ['previous', 'current'])
+def test_nonfinite_endpoint_cannot_be_a_change(endpoint, bad):
+    old = _wide_panel(settlement='2026-07-01', n=1)
+    new = _wide_panel(settlement='2026-07-15', n=1)
+    (old if endpoint == 'previous' else new)['days_to_cover'] = bad
+    (old if endpoint == 'previous' else new)['dtc_capped'] = False
+    xs = sp.cross_section(asof='2026-08-01', si_panel=pd.concat([old,new]), borrow=pd.DataFrame())
+    assert pd.isna(xs.loc['T0000','dtc_change'])
+
+def test_finite_endpoint_subtraction_overflow_abstains():
+    old = _wide_panel(settlement='2026-07-01', n=1)
+    new = _wide_panel(settlement='2026-07-15', n=1)
+    old['days_to_cover'], new['days_to_cover'] = -1e308, 1e308
+    old['dtc_capped'] = new['dtc_capped'] = False
+    xs = sp.cross_section(asof='2026-08-01', si_panel=pd.concat([old,new]), borrow=pd.DataFrame())
+    assert pd.isna(xs.loc['T0000','dtc_change'])
