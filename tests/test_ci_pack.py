@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #7374, preserve landed marketing and DATA repairs):
+    Receiver e7f8565c retains the five DATA dependency repairs and
+    #11101's marketing-social-publisher enrollment. Its 5971/5995/5729
+    ceilings already fund that owner's independent +2; equal old-H
+    numbers do not fund the still-absent public-research suite.
+    The whole unrun-brain-gateway preimage remains unchanged. Restore
+    only its original full-suite token, weight 110 -> 112, and add only
+    its +2 to current main: 5973/5997/5731. Keep job ceilings 137/138/131,
+    ten packs, all 401 owner identities, selectors and runtime limits.
+    Preserve all five accepted feature objects, current main history
+    and every original research passage. The split historical date
+    header is rejoined by moving its existing prefix, not replacing facts.
+    This is source accounting, not a new planner or timing measurement.
+    New natural proof is owed; controller61575 and all provider/private,
+    rights/budget, live-canary, Brain, production and trading holds remain.
 
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
@@ -6023,6 +6039,62 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and admission limits unchanged. The wider selection is intended
     (closure-required); natural successor CI must qualify the
     repaired source.
+
+    2026-11-12 (PR #7374, preserve landed browser recovery):
+    Receiver 9d8a0c8be5bbac0073b99762e46ae092235acf4f includes #11051's
+    bounded browser-install fallback. Keep every current owner definition
+    and every current provenance paragraph; do not roll back or count the
+    independently landed +1/+2/+1 a second time. The retained unrun-brain-gateway
+    contribution adds only +2 per probe to current5969/5993/5727,
+    yielding5971/5995/5729. Retain job ceilings137/138/131, ten packs,
+    all assertions, selectors, runtime, admission and browser controls.
+    Preserve the accepted public-research suite token, all five feature
+    objects and every original provenance paragraph. Original refused
+    controller61575 and provider/live-canary/Brain/production limits remain.
+    This note records source composition; actual native current-tree
+    packing and natural successor proof remain separately accountable.
+
+    2026-11-10 (PR #7374, current-main conflict composition):
+    Receiver cfd3834d retains the landed lifecycle/ownership-ledger
+    enrollment and qualified Playwright pin. Preserve that complete
+    source and both provenance histories. The unchanged owner
+    estimator measures this PR's retained unrun-brain-gateway suite as +2;
+    apply it once to current 5958/5979/5716, yielding5960/5981/5718.
+    Keep 137/138/131 jobs, ten packs, all assertions, selectors,
+    commands, timeouts and admission limits. This is actual owner
+    estimator execution and source conservation, not a full-tree
+    planner or new hosted pass. Natural successor CI is required.
+
+    2026-11-09 (PR #7374, current-main conflict reconciliation):
+    retain the accepted full-suite enrollment and its independently measured
+    +2 planner-weight contribution. Main 9a13c64b already includes F09's
+    separate +2 in data-base-shim; identical scalar edits must not coalesce
+    the two owners. Apply this PR's +2 once to current 5945/5966/5703,
+    giving 5947/5968/5705. All 400 current owner definitions remain, with
+    only this PR's existing suite token appended to its incumbent owner.
+    Preserve 137/138/131 selected-job ceilings, ten packs, all assertions,
+    commands, timeouts and admission controls. This is source accounting;
+    fresh natural combined-head CI remains required before release.
+
+    2026-11-09 (PR #7374, public-evidence adapter suite enrollment):
+    natural contract run 42583154175 / job 129046497754 measured exact
+    head d040b328dd78e3993fde50814cbab414a9422ce8 with three introduced
+    packing findings and zero inherited findings. Appending the complete
+    tests/test_brain_public_research.py suite to existing unrun-brain-gateway
+    is the sole catalog change (53343f64 -> af1dd1d0). Its six commands
+    remain six; test references51->52 and command characters2345->2381
+    keep length bucket two, so owner weight110->112. The owner already
+    rides all three probes: index137jobs/5943->5945,
+    free-content137jobs/5964->5966, Prophet131jobs/5701->5703; each remains
+    ten packs, with no additional selected job. Fund only those measured
+    +2 expectations, with no cushion or unmerged sibling contribution.
+    This accounting amendment preserves all six published source objects,
+    the full suite, all 400 owner definitions and existing provenance.
+    Keep job ceilings137/138/131, ten-pack bound, selection and coverage
+    rules, assertions, timeouts and global admission/concurrency controls.
+    The paired measurements above are real contract output; this amendment
+    itself still requires natural exact-head successor proof. They are
+    planner weights, not elapsed-time measurements or provider acceptance.
 
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
