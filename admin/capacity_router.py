@@ -85,5 +85,12 @@ def panel(minutes=15, *, path=None, now=None):
         "models": len({m for r in data["routes"] for m in r["models"]}),
         "attributed_recent": sum(bool(r["agent_id"] or r["session_id"]) for r in recent),
         "recent_count": len(recent),
+        "overflowing_families": sum(f["overflowing"] for f in (data.get("overflow") or {}).get("families", {}).values()),
+        "over_target_keys": sum(k["over_target"] for k in (data.get("overflow") or {}).get("keys", {}).values()),
+        "benched_lanes": sum(
+            1 for a in (data.get("claude") or {}).get("accounts", [])
+            for lane in a["families"].values()
+            if lane["cooldown_until"] is not None and lane["cooldown_until"] > now),
+        "peak_active": bool((data.get("peak") or {}).get("active")),
     }
     return data
