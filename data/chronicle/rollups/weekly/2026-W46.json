@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-11-11",
+  "as_of": "2026-11-12",
   "coverage": {
-    "end": "2026-11-11",
+    "end": "2026-11-12",
     "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W46; 13 week(s) have events so far; chronicle event store begins 2008-03-25; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-08-12"
+    "start": "2026-08-13"
   },
   "iso_week": "2026-W46",
   "schema": "chronicle.rollup.weekly/v1",
@@ -163,7 +163,7 @@
           "top_events": []
         },
         {
-          "n_events": 2,
+          "n_events": 3,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -204,7 +204,7 @@
           "top_events": []
         },
         {
-          "n_events": 10,
+          "n_events": 11,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -551,6 +551,16 @@
           "theme": "regime",
           "top_events": [
             {
+              "date": "2026-08-18",
+              "id": "cev-regime_flip-473ee143192e",
+              "kind": "state_flip",
+              "source": "regime_flip",
+              "source_ref": "state_log#2026-08-18#regime_hk",
+              "tickers": [],
+              "title": "HK regime: Q1 Goldilocks → Q4 Growth-scare",
+              "weight_hint": 3
+            },
+            {
               "date": "2026-08-17",
               "id": "cev-regime_flip-ad3dc732fc9d",
               "kind": "state_flip",
@@ -586,13 +596,13 @@
     {
       "clusters": [
         {
-          "n_events": 301,
+          "n_events": 196,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 206,
+          "n_events": 192,
           "source": "research_vault",
           "theme": null,
           "top_events": [
@@ -639,27 +649,15 @@
           ]
         },
         {
-          "n_events": 112,
+          "n_events": 60,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 6,
+          "n_events": 5,
           "source": "prophet_ledger",
           "theme": null,
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "macro_release",
-          "theme": "cpi_headline",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "macro_release",
-          "theme": "cpi_core",
           "top_events": []
         },
         {

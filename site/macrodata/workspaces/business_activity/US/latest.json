@@ -171,25 +171,21 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "business_cycle:lagging_tier_diffusion:8b79b77ab4be2bf5",
-      "business_cycle:lagging_tier_index:8046d7839415d0d2",
-      "business_cycle:lagging_tier_momentum_6m:ced67b674129f545"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native tier fields changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "business_activity-US-c54dcfa436ab1da8"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked tier field changed value (no-change republication).",
+    "predecessor_generation_id": "business_activity-US-8d9c1cb6bfb09a7e"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-11-11T09:12:14Z",
+    "built_at": "2026-11-12T08:15:53Z",
     "calculation_as_of": "2026-11-30",
-    "code_version": "497d83de7c83f5139ea76bdb0a151506aebcbede",
-    "content_sha256": "8d9c1cb6bfb09a7ec748ae1789a64c10f36576cf10605a934626a6bf3a787eaf",
-    "generation_id": "business_activity-US-8d9c1cb6bfb09a7e",
+    "code_version": "565791e623bcfdba25bba6f5a0cc0482001030a5",
+    "content_sha256": "ccaf7ba8aac29e7ba357850f3ee31292f6692e2b6f98da4491ae4c7ec6dd7684",
+    "generation_id": "business_activity-US-ccaf7ba8aac29e7b",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -287,8 +283,8 @@
         "horizon": "current",
         "implication_id": "leading_tier_read",
         "text": {
-          "en": "Leading tier: 6-month momentum -0.6122102192241812, direction falling, breadth 33.333333333333336 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "领先层：6个月动量 -0.6122102192241812，方向 falling，广度 33.333333333333336（扩散窗口内上升分项占比，0-100）。"
+          "en": "Leading tier: 6-month momentum -0.5960711660006837, direction falling, breadth 33.333333333333336 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 -0.5960711660006837，方向 falling，广度 33.333333333333336（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
       },
