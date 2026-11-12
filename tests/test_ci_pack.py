@@ -5999,10 +5999,20 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
+# Manager Quality calendar regression enrollment (#11017): the existing CODE
+# unrun-factor-research owner adds one pytest path in its registry/research
+# command. Native estimator: 58 -> 60 (5 commands, 26 -> 27 test paths,
+# 1164 -> 1194 joined characters). Account only its +2 on the established
+# probes; keep 401 owners, job ceilings, ten packs and execution limits.
+# This is source/estimator accounting; full-tree selection and packing
+# remain required in the natural successor CI. No unmerged peer funded.
+# 2026-11-12 current-main composition for #11068: preserve main #11101's
+# independent marketing +2 and this branch's [2, 2, 2] contribution.
+# This does not fund another unmerged owned branch; current probes [5973, 5997, 5731].
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
