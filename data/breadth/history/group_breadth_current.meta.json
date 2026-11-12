@@ -1,0 +1,87 @@
+{
+  "basis": "reconstructed_current_membership",
+  "price_note": "Adjusted closes are today's restated values (split and dividend adjustment as of the store's capture), not the prices printed at the time. The nightly member ledger reads the collector's closes; this history reads the closes file named in inputs. Same functions, two stores; their overlap is recorded in research/breadth_history/OVERLAP_CHECK.md.",
+  "redistribution_note": "Group-level shares and counts only; no member prices. The Tiingo research reader marks raw views redistribution_admitted=false; member-level history stays off git.",
+  "span": {
+    "closes_start": "1962-01-02",
+    "closes_end": "2026-10-09",
+    "first_valid_pct_above_200": "1973-03-20"
+  },
+  "build_time_utc": "2026-11-12T02:02:28+00:00",
+  "code_version": "799a95246294",
+  "engine": "engine/group_breadth_history.py",
+  "inputs": [
+    {
+      "path": "/tmp/qb/tiingo/repo_closes.parquet",
+      "sha256_16": "740e8eb2f5fff02c"
+    },
+    {
+      "path": "/tmp/qb/data/breadth/constituents.parquet",
+      "sha256_16": "99f071b19a24cb67"
+    }
+  ],
+  "closes_store": "Tiingo EOD archive /Volumes/Mastermind/market-data/tiingo (normalized eod-bars, captures 2026-10-11..16) via scripts/build_tiingo_member_closes.py; member-level, off git",
+  "missing": "Only today's members are present: every name that left the index before 2026-10-09 is absent from every past session, and today's sector labels are applied to the whole span.",
+  "coverage": {
+    "members_in_map": 503,
+    "members_priced": 485,
+    "members_unpriced": 18,
+    "membership_rows_unlabeled": 0,
+    "unpriced_sample": [
+      "BNY",
+      "CEG",
+      "COHR",
+      "COR",
+      "DD",
+      "DELL",
+      "DOC",
+      "DOW",
+      "ECHO",
+      "FI",
+      "MMC",
+      "MRNA",
+      "OKE",
+      "P",
+      "Q",
+      "SNDK",
+      "TEL",
+      "VLTO"
+    ]
+  },
+  "dropped_partial_rows": [
+    "1970-02-23",
+    "1972-11-07",
+    "1972-12-28",
+    "1973-01-25",
+    "1976-11-02",
+    "1977-07-14",
+    "2026-02-16",
+    "2026-10-12",
+    "2026-10-13",
+    "2026-10-14",
+    "2026-10-15"
+  ],
+  "rules": {
+    "windows": [
+      50,
+      200
+    ],
+    "horizons_sessions": [
+      5,
+      20,
+      63,
+      126
+    ],
+    "horizons_weeks": [
+      13,
+      26
+    ],
+    "min_members": 10,
+    "headline": "fix_chg_pct_above_200_13w"
+  },
+  "rows": {
+    "daily": 179300,
+    "weekly": 37180
+  },
+  "not_an_outcome_claim": "Data only. No forward return, hit rate or backtest is attached."
+}

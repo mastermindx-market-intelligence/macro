@@ -20,5 +20,11 @@ Every sector matches exactly on every shared session. This is expected: both use
 the new code path reproduces the shipped series. It does **not** measure
 survivorship error, because both sides use today's members.
 
-The dated-membership comparison, where the two bases genuinely differ, comes in
-the build report once the deeper price store is chosen.
+## Second check — the published history (Tiingo closes) vs the same file
+
+Shared span 2025-12-31..2026-10-09, 195 sessions, share above the 200-session
+average. Mean absolute difference by sector 0.27 to 3.30 points on today's basis
+and 0.27 to 4.87 on the dated basis; per-sector table and the causes in
+`BUILD_REPORT.md` §Overlap check. The engine is the same; the difference is the
+price store (18 of today's members absent from the Tiingo capture, small
+adjusted-price differences) and, on the dated basis, membership changes.
