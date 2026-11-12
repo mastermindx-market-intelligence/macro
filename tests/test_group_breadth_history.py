@@ -322,6 +322,25 @@ def test_through_last_complete_row_drops_partial_tail():
     assert gbh.through_last_complete_row(closes.iloc[:0]).empty
 
 
+def test_duplicate_series_scan_flags_copy_and_counts_it_once():
+    from scripts.build_group_breadth_history import count_duplicates_once, duplicate_series_pairs
+    rng = np.random.default_rng(7)
+    idx = pd.bdate_range("2020-01-01", periods=400)
+    closes = pd.DataFrame({t: 50 * np.exp(np.cumsum(rng.normal(0, 0.01, 400)))
+                           for t in ("AAA", "BBB", "CCC")}, index=idx)
+    closes.loc[idx[200]:, "BBB"] = closes.loc[idx[200]:, "AAA"] * 0.5   # copied, scaled
+    closes["FLAT"] = 20.75                                               # flat, never matched
+    closes["FLT2"] = 20.75
+    mem = pd.DataFrame({"ticker": list(closes.columns), "group": "G"})
+    pairs = duplicate_series_pairs(closes, mem)
+    assert list(zip(pairs["ticker_a"], pairs["ticker_b"])) == [("AAA", "BBB")]
+    p = pairs.iloc[0]
+    assert p["identical_from"] == str(idx[201].date()) and p["ratio_cv"] < 1e-6
+    once = count_duplicates_once(closes, pairs)
+    assert once.loc[idx[201]:, "BBB"].isna().all() and once["AAA"].notna().all()
+    assert closes.loc[idx[201]:, "BBB"].notna().all(), "input is never modified"
+
+
 # ── (h) member_rows ──────────────────────────────────────────────────────────
 
 def test_member_rows_schema_flags_and_source_asof():

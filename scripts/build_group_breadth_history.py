@@ -130,6 +130,67 @@ def missing_sentence(closes: pd.DataFrame, mem: pd.DataFrame, basis: str) -> tup
     return s, stats
 
 
+def duplicate_series_pairs(closes: pd.DataFrame, mem: pd.DataFrame, min_sessions: int = 60,
+                           min_share: float = 0.95) -> pd.DataFrame:
+    """Pairs of distinct member tickers carrying the same price series (detection only).
+
+    A store can hold another company's prices under a ticker (a verbatim copy).
+    Candidates are found by hashing each ticker's daily returns month by month;
+    a pair is flagged when at least ``min_sessions`` overlapping returns are
+    identical and identical returns make up at least ``min_share`` of the overlap
+    between the first and last identical session. ``ratio_cv`` is the coefficient
+    of variation of the close ratio over that span (0 = constant ratio). Flat
+    months are not hashed. Nothing is repaired.
+    """
+    used = sorted(set(mem["ticker"]) & set(closes.columns))
+    c = closes[used]
+    r = c.pct_change(fill_method=None).round(8)
+    cand: set[tuple[str, str]] = set()
+    for _, block in r.groupby(r.index.to_period("M")):
+        b = block.loc[:, (block.notna().sum() >= 15) & ((block.fillna(0) != 0).sum() >= 5)]
+        if b.shape[1] < 2:
+            continue
+        h = pd.util.hash_pandas_object(b.T.fillna(-9.0), index=False)
+        h.index = b.columns
+        for _, grp in h.groupby(h):
+            names = sorted(grp.index)
+            cand.update((x, y) for i, x in enumerate(names) for y in names[i + 1:])
+    groups = mem.dropna(subset=["group"]).groupby("ticker")["group"].agg(lambda s: "|".join(sorted(set(s))))
+    out = []
+    for a, b in sorted(cand):
+        ra, rb = r[a], r[b]
+        both = ra.notna() & rb.notna()
+        same = both & ((ra - rb).abs() < 1e-9)
+        if same.sum() < min_sessions:
+            continue
+        lo, hi = same[same].index.min(), same[same].index.max()
+        span = both.loc[lo:hi]
+        share = same.loc[lo:hi].sum() / span.sum()
+        if share < min_share:
+            continue
+        ratio = (c[a] / c[b]).loc[lo:hi][span]
+        out.append({"ticker_a": a, "ticker_b": b, "group_a": groups.get(a), "group_b": groups.get(b),
+                    "overlap_returns": int(both.sum()), "identical_returns": int(same.sum()),
+                    "identical_share_in_span": round(float(share), 4),
+                    "identical_from": str(lo.date()), "identical_to": str(hi.date()),
+                    "ratio_cv": round(float(ratio.std() / ratio.mean()), 6) if len(ratio) > 1 else None})
+    return pd.DataFrame(out, columns=["ticker_a", "ticker_b", "group_a", "group_b", "overlap_returns",
+                                      "identical_returns", "identical_share_in_span", "identical_from",
+                                      "identical_to", "ratio_cv"])
+
+
+def count_duplicates_once(closes: pd.DataFrame, pairs: pd.DataFrame) -> pd.DataFrame:
+    """Blank ``ticker_b``'s closes over each flagged identical span (labelling, not repair).
+
+    Which side is the genuine company cannot be told from prices alone; the
+    sort-order second ticker is the one not counted. The store is untouched.
+    """
+    out = closes.copy()
+    for p in pairs.itertuples(index=False):
+        out.loc[p.identical_from:p.identical_to, p.ticker_b] = float("nan")
+    return out
+
+
 def drop_partial_rows(closes: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     """Drop rows priced for fewer than half the names priced on neighbouring rows.
 
@@ -153,6 +214,8 @@ def build(closes_path: Path, breadth_dir: Path, basis: str, out: Path, src: str 
           closes_label: str | None = None) -> dict:
     closes, dropped_rows = drop_partial_rows(pd.read_parquet(closes_path).sort_index())
     mem = membership_current(breadth_dir) if basis == "current" else membership_dated(breadth_dir, src)
+    dup_pairs = duplicate_series_pairs(closes, mem)
+    closes = count_duplicates_once(closes, dup_pairs)
     daily = gbh.daily_group_breadth(closes, mem)
     weekly = gbh.weekly_fixed_set(closes, mem, include_last_partial_week=False)
     tag = basis if basis == "current" else f"dated_{src}"
@@ -160,6 +223,14 @@ def build(closes_path: Path, breadth_dir: Path, basis: str, out: Path, src: str 
     daily.to_parquet(out / f"group_breadth_daily_{tag}.parquet", index=False, compression="zstd")
     weekly.to_parquet(out / f"group_breadth_weekly_{tag}.parquet", index=False, compression="zstd")
     sentence, stats = missing_sentence(closes, mem, basis)
+    if len(dup_pairs):
+        named = "; ".join(f"{p.ticker_a}={p.ticker_b} {p.identical_from}..{p.identical_to}"
+                          for p in dup_pairs.itertuples(index=False))
+        sentence += (f" {len(dup_pairs)} ticker pair(s) carry the same price series and are "
+                     f"counted once (the second ticker is not counted over the span): {named}.")
+    else:
+        sentence += (" Duplicate-series scan: no two member tickers carry the same price series "
+                     "(identical daily returns or a constant price ratio).")
     valid = daily.dropna(subset=["pct_above_200"])
     inputs = [closes_path] + ([breadth_dir / "constituents.parquet"] if basis == "current" else
                               [breadth_dir / "sp1500_pit_membership.parquet",
@@ -185,6 +256,10 @@ def build(closes_path: Path, breadth_dir: Path, basis: str, out: Path, src: str 
         "missing": sentence,
         "coverage": stats,
         "dropped_partial_rows": dropped_rows,
+        "duplicate_series_pairs": dup_pairs.to_dict("records"),
+        "duplicate_series_rule": ("month-by-month hash of daily returns, then pairwise check: >=60 "
+                                  "identical returns and >=95% identical between the first and last "
+                                  "identical session. Detection and labelling only; no store repaired."),
         "dropped_partial_rows_rule": ("centred 21-row median of priced names; a row under half is "
                                       "dropped. Looks ahead up to 10 rows to decide which rows are "
                                       "sessions; values themselves use only data on or before their date."),
