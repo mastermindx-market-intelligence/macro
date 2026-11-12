@@ -1,18 +1,30 @@
 {
-  "asof": "2026-11-05",
+  "asof": "2026-11-06",
   "last_event": {
     "event_date": "2026-11-05",
     "z": 3.163,
     "spread": 0.0861,
     "direction": "defensive",
-    "t1_attribution": null,
-    "verdict": null
+    "t1_attribution": {
+      "t1_date": "2026-11-06",
+      "t1_z": -1.2664,
+      "spread_persistence": {
+        "same_direction": false,
+        "magnitude": 0.035,
+        "direction": "offense"
+      },
+      "breadth_follow_through": null,
+      "absorption_delta": null,
+      "leadership_continuity": false,
+      "note_breadth": "breadth_follow_through omitted — no intraday advance/decline series in committed store"
+    },
+    "verdict": "FADED"
   },
   "base_rates": {
     "n_events": 30,
-    "n_graded": 29,
+    "n_graded": 30,
     "confirmed": 8,
-    "faded": 16,
+    "faded": 17,
     "mixed": 5
   },
   "descriptive_scan": [
@@ -601,8 +613,20 @@
       "z": 3.163,
       "spread": 0.0861,
       "direction": "defensive",
-      "t1_attribution": null,
-      "verdict": null
+      "t1_attribution": {
+        "t1_date": "2026-11-06",
+        "t1_z": -1.2664,
+        "spread_persistence": {
+          "same_direction": false,
+          "magnitude": 0.035,
+          "direction": "offense"
+        },
+        "breadth_follow_through": null,
+        "absorption_delta": null,
+        "leadership_continuity": false,
+        "note_breadth": "breadth_follow_through omitted — no intraday advance/decline series in committed store"
+      },
+      "verdict": "FADED"
     }
   ]
 }

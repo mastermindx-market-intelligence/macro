@@ -1,0 +1,280 @@
+{
+  "note": "Authenticated browser reads; payloads captured at their respective page navigation times and assembled at observed_at. Runtime artifacts are not repository fixtures. No production mutation performed.",
+  "observed_at": "2026-11-05T22:32:09.560Z",
+  "risk_state": {
+    "schema": "risk_state.v1",
+    "built": "2026-11-05 22:25:53 UTC",
+    "session": {
+      "region": "us",
+      "open": false,
+      "state": "postclose",
+      "local_time": "2026-11-05 17:25 EST",
+      "timezone": "America/New_York",
+      "session_date": "2026-11-05",
+      "holiday_name": null,
+      "holiday_name_zh": null,
+      "next_open": "2026-11-06T09:30:00-05:00",
+      "expected_session": "2026-11-05",
+      "calendar_verified": true,
+      "checked_at": "2026-11-05T22:25:53.284982+00:00",
+      "valid_until": "2026-11-06T00:00:00-05:00",
+      "early_close": false,
+      "data_frozen": false,
+      "closed_since": null,
+      "source_urls": [
+        "https://www.nyse.com/trade/hours-calendars",
+        "https://www.nasdaq.com/market-activity/stock-market-holiday-schedule"
+      ]
+    },
+    "live_active": false,
+    "stale": true,
+    "stale_reason": "market closed",
+    "delayed_min": 15,
+    "feed": "≈15-min delayed (Polygon Standard / Yahoo)",
+    "realtime": false,
+    "nightly_asof": "2026-11-04",
+    "polygon_status": "unused",
+    "n_live_symbols": 0,
+    "movers": [],
+    "display": {
+      "verdict": "MIXED",
+      "label_en": "Mixed",
+      "label_zh": "混合",
+      "color": "yellow",
+      "score": 57,
+      "raw_score": 57,
+      "band_changed": false,
+      "pending": null,
+      "headline_en": "Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
+      "headline_zh": "混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。",
+      "participation_scope": null
+    },
+    "live": {
+      "verdict": "MIXED",
+      "score": 57,
+      "raw_score": 57,
+      "color": "yellow",
+      "label_en": "Mixed",
+      "label_zh": "混合",
+      "headline_en": "Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
+      "headline_zh": "混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。",
+      "participation_scope": null,
+      "radar": {
+        "state": "caution",
+        "state_ungated": "risk-off",
+        "top_score": 82,
+        "label_en": "Growth scare / defensive rotation",
+        "label_zh": "增长恐慌/防御轮动",
+        "context_gate": {
+          "met": false,
+          "spy_below_200dma": false,
+          "breadth_weak": false
+        },
+        "amp": 2,
+        "ceiling": null,
+        "alert": false,
+        "conjunction": true
+      },
+      "overrides": [],
+      "source_event_time": null,
+      "source_quote_clocks": {}
+    },
+    "nightly": {
+      "verdict": "MIXED",
+      "score": 57,
+      "raw_score": 57,
+      "color": "yellow",
+      "label_en": "Mixed",
+      "label_zh": "混合",
+      "headline_en": "Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
+      "headline_zh": "混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。",
+      "participation_scope": null,
+      "radar": {
+        "state": "caution",
+        "state_ungated": null,
+        "top_score": 82,
+        "label_en": "Growth scare / defensive rotation",
+        "label_zh": "增长恐慌/防御轮动",
+        "context_gate": null,
+        "amp": 2,
+        "ceiling": null
+      },
+      "overrides": []
+    },
+    "legs": [
+      {
+        "key": "trend",
+        "label_en": "Trend & technicals",
+        "score": 49,
+        "basis": "carried",
+        "asof": "2026-11-04"
+      },
+      {
+        "key": "risk",
+        "label_en": "Risk appetite",
+        "score": 22,
+        "basis": "carried",
+        "asof": "2026-11-04"
+      },
+      {
+        "key": "vol",
+        "label_en": "Volatility regime",
+        "score": 75,
+        "basis": "carried",
+        "asof": "2026-11-04"
+      },
+      {
+        "key": "breadth",
+        "label_en": "Breadth & participation",
+        "score": 88,
+        "basis": "carried",
+        "asof": "2026-11-04"
+      },
+      {
+        "key": "liquidity",
+        "label_en": "Liquidity & credit",
+        "score": 39,
+        "basis": "carried",
+        "asof": "2026-11-04"
+      },
+      {
+        "key": "stress",
+        "label_en": "Downturn-risk guard",
+        "score": 80,
+        "basis": "carried",
+        "asof": "2026-11-04"
+      }
+    ],
+    "legs_asof": {
+      "tape_trend": "2026-11-04",
+      "volatility": "2026-11-04",
+      "radar_fast": "2026-11-04",
+      "credit_hy_oas": "2026-11-03",
+      "breadth": "2026-11-04",
+      "liquidity": "2026-11-04",
+      "macro_stress": "2026-11-04",
+      "cross_asset": "2026-11-04"
+    },
+    "note": "Fast legs (tape, vol, radar equity/vol/credit-proxy + SPY-200dma context gate) recomputed on live prices; slow legs (HY OAS, NFCI, breadth, macro) carried from the nightly build and stamped with their own as-of. The score moves every tick; the band word is debounced. De-risk = sizing, not selection."
+  },
+  "envelope": {
+    "schema": "mastermind.risk_envelope/v1",
+    "as_of": "2026-11-05",
+    "source_session": "2026-11-05",
+    "built": "2026-11-05 22:27:54 UTC",
+    "clocks": {
+      "event_time": null,
+      "observed_at": "2026-11-05T22:27:54.290Z",
+      "produced_at": "2026-11-05T22:27:55.757Z",
+      "upstream_built": "2026-11-05T22:25:53.000Z"
+    },
+    "data_state": "DEGRADED",
+    "measured_state": {
+      "as_of": "2026-11-05",
+      "role": "slow_confirmed_trend",
+      "score": null,
+      "source_artifact": "market-state-latest",
+      "usable": false,
+      "verdict": null
+    },
+    "hazard_summary": {
+      "active_episode_count": 0,
+      "capped_sources": [],
+      "contributing_sources": [
+        "leadership-crack-latest"
+      ],
+      "display_only": true,
+      "primary_episode_id": null,
+      "stage": "FRAGILE",
+      "stage_reason": "observed_settled_evidence",
+      "stage_since": null,
+      "stage_since_basis": "no_episode_lifecycle_in_v0",
+      "unmapped_required_sources": [],
+      "unreadable_sources": [
+        "risk-radar-us"
+      ]
+    },
+    "policy_summary": {
+      "active_policy_ids": [],
+      "basis": "zero_active_policies",
+      "display_only": true,
+      "policy_count": 0,
+      "posture": "NORMAL"
+    },
+    "precedence": "live",
+    "live_active": false,
+    "stale_reason": "market closed or no fresh live read",
+    "authority": {
+      "envelope_may_execute": false,
+      "envelope_may_gate": false,
+      "envelope_may_rank": false,
+      "envelope_may_size": false,
+      "policy_actions_require_individual_authority": true
+    }
+  },
+  "claims_release": {
+    "event_id": "claims:2026-11-05",
+    "type": "CLAIMS",
+    "date": "2026-11-05",
+    "time_et": "08:30",
+    "label": "Initial jobless claims",
+    "label_zh": "初请失业金",
+    "schedule_source": "computed",
+    "is_context_only": true,
+    "scheduled_at": "2026-11-05T08:30:00-05:00",
+    "status": "published",
+    "detected_at": "2026-11-05T13:30:41.181142+00:00",
+    "first_seen_at": "2026-11-05T13:30:41.181142+00:00",
+    "observed_at": "2026-11-05T13:30:41.181142+00:00",
+    "official_embargo_at": "2026-11-05T08:30:00-05:00",
+    "source_released_at": "2026-11-05T13:30:00+00:00",
+    "source_time_basis": "scheduled_embargo_floor",
+    "publisher": "U.S. Department of Labor",
+    "source_id": "dol_claims",
+    "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+    "content_sha256": "a5275deafed7afc13398a82440b2f5b2281956279abb0bc112a1eea997d77864",
+    "source_sha256": "a5275deafed7afc13398a82440b2f5b2281956279abb0bc112a1eea997d77864",
+    "data_ready": true,
+    "reference_period": "October 24, 2026",
+    "note": "Verified official facts are live. Canonical vintage and forward-ledger scoring reconcile nightly.",
+    "parser": {
+      "name": "claims",
+      "version": 1
+    },
+    "actual": {
+      "kind": "jobless_claims",
+      "initial_claims": 194000,
+      "change": -1000,
+      "prior_initial_claims": 195000,
+      "four_week_average": 196750,
+      "unit": "persons",
+      "reference_period": "October 24, 2026",
+      "metrics": [
+        {
+          "metric_id": "claims_initial",
+          "value": 194000,
+          "unit": "persons",
+          "period": "October 24, 2026"
+        },
+        {
+          "metric_id": "claims_change",
+          "value": -1000,
+          "unit": "persons",
+          "period": "October 24, 2026"
+        },
+        {
+          "metric_id": "claims_four_week_avg",
+          "value": 196750,
+          "unit": "persons",
+          "period": "October 24, 2026"
+        }
+      ],
+      "headline_en": "Initial claims 194k (-1k)",
+      "headline_zh": "初请失业金 194千（-1千）",
+      "summary_en": "Initial claims 194k (-1k) for the week ending October 24, 2026; four-week average 196.8k.",
+      "summary_zh": "初请失业金 194千（-1千），截至 October 24, 2026 当周；四周均值 196.8千。",
+      "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta"
+    },
+    "verified_at": "2026-11-05T13:30:41.181142+00:00"
+  }
+}

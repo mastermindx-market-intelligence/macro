@@ -70,3 +70,6 @@
 {"asof": "2026-11-03", "pred_modal_quad": "Q2", "p_quad_filtered": {"Q1": 0.0048, "Q2": 0.9769, "Q3": 0.0129, "Q4": 0.0054}, "realized_quad_at_21d": null}
 {"asof": "2026-11-04", "pred_modal_quad": "Q2", "p_quad_filtered": {"Q1": 0.0438, "Q2": 0.9129, "Q3": 0.0152, "Q4": 0.0282}, "realized_quad_at_21d": null}
 {"asof": "2026-11-05", "pred_modal_quad": "Q2", "p_quad_filtered": {"Q1": 0.1324, "Q2": 0.7596, "Q3": 0.0187, "Q4": 0.0894}, "realized_quad_at_21d": null}
+{"asof": "2026-11-06", "pred_modal_quad": "Q2", "p_quad_filtered": {"Q1": 0.2329, "Q2": 0.5012, "Q3": 0.0212, "Q4": 0.2447}, "realized_quad_at_21d": null}
+{"asof": "2026-11-09", "pred_modal_quad": "Q4", "p_quad_filtered": {"Q1": 0.403, "Q2": 0.1129, "Q3": 0.0094, "Q4": 0.4747}, "realized_quad_at_21d": null}
+{"asof": "2026-11-10", "pred_modal_quad": "Q1", "p_quad_filtered": {"Q1": 0.72, "Q2": 0.0062, "Q3": 0.0008, "Q4": 0.273}, "realized_quad_at_21d": null}

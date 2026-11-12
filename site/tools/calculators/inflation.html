@@ -383,6 +383,8 @@
     var lost = A - power;
     var erosionPct = 100 * (1 - 1/factor);   // = 100·(1 − power/A)
     var risePct = 100 * (factor - 1);
+    if(![futureCost, power, lost, erosionPct, risePct].every(isFinite))
+      return {ok:false, msg:"That combination is too extreme to compute — try a smaller amount, rate or fewer years."};
     return {
       ok:true, futureCost:futureCost, power:power, lost:lost,
       erosionPct:erosionPct, risePct:risePct, deflation: i < 0
@@ -476,7 +478,7 @@
 <script>window.MM_API=window.MM_API||'https://app.mastermind-x.com';window.__mmAccountLoading=true;</script>
 <script src="../../supabase.js?v=8596965f" defer></script>
 <script src="../../account.js?v=3a75ad49" defer></script>
-<script src="../../theme.js?v=3c193891" defer></script>
+<script src="../../theme.js?v=aa83d371" defer></script>
 
 <script>
 (function(){
