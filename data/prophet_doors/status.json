@@ -1,33 +1,62 @@
 {
-  "appended": 0,
-  "asof": "2026-11-10",
+  "appended": 10,
+  "asof": "2026-11-11",
   "candidates": {
-    "R": 0,
-    "T": 6,
+    "R": 1,
+    "T": 10,
     "W": 32
   },
   "deduped": {
     "R": 0,
-    "T": 6,
+    "T": 1,
     "W": 32
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "consulted": false
+      "asof": "2026-11-10",
+      "consulted": true,
+      "n_keys": 27,
+      "n_themes": 18,
+      "ok": true,
+      "reason": null,
+      "source": "site/basketdata/foresight_cascade.json"
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": false,
-      "null_reasons": {},
+      "consulted": true,
+      "null_reasons": {
+        "ohlcv_absent": 13
+      },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {},
+      "themes_read": {
+        "Defense & Aerospace": {
+          "theme_thrust_frac": 0.2,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Semiconductors": {
+          "theme_thrust_frac": 0.0811,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Space Tech": {
+          "theme_thrust_frac": 0.2,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Telecommunications": {
+          "theme_thrust_frac": 0.0968,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        }
+      },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 0,
-      "tickers_read": 0
+      "tickers_ok": 87,
+      "tickers_read": 100
     },
     "keys": [
       "relay_count_3d",
@@ -45,10 +74,21 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": false
+      "consulted": true,
+      "high_lookback": 63,
+      "members_indexed": 126,
+      "n_covered": 85,
+      "reason": null,
+      "window_sessions": 21
     },
     "turnover": {
-      "consulted": false
+      "consulted": true,
+      "last_session": "2026-11-11",
+      "n_tickers": 1551,
+      "ok": true,
+      "reason": null,
+      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
+      "window_max": 60
     }
   },
   "feature_source_w": {
@@ -76,51 +116,63 @@
     ]
   },
   "flag_tickers": {
-    "R": [],
-    "T": [],
+    "R": [
+      "CNK"
+    ],
+    "T": [
+      "IRDM",
+      "AVAV",
+      "MRCY",
+      "ACLS",
+      "KLAC",
+      "LSCC",
+      "WDC",
+      "ON",
+      "CIEN"
+    ],
     "W": []
   },
-  "n_universe": 1489,
+  "n_universe": 1490,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-11-11 17:21:56",
-  "runtime_s": 354.2,
+  "run_utc": "2026-11-12 14:16:37",
+  "runtime_s": 207.1,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": -1,
-    "asof": "2026-11-11",
-    "n_members": 155,
+    "asof": "2026-11-12",
+    "n_members": 126,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 4.461,
+        "emerging_score": 6.811,
         "rank": 1,
         "theme": "Space Tech"
       },
       {
-        "emerging_score": 3.66,
+        "emerging_score": 3.175,
         "rank": 2,
-        "theme": "Commodities Metals"
+        "theme": "Defense & Aerospace"
       },
       {
-        "emerging_score": 2.189,
+        "emerging_score": 2.275,
         "rank": 3,
-        "theme": "Digital Entertainment"
+        "theme": "Semiconductors"
       },
       {
-        "emerging_score": 1.776,
+        "emerging_score": 1.537,
         "rank": 4,
-        "theme": "Quantum Computing"
+        "theme": "Autonomous Systems"
       },
       {
-        "emerging_score": 1.498,
+        "emerging_score": 1.474,
         "rank": 5,
-        "theme": "Transportation & Logistics"
+        "theme": "Telecommunications"
       }
     ]
   },
@@ -130,15 +182,15 @@
       "3B"
     ],
     "aligned": 32,
-    "asof_max": "2026-11-10",
+    "asof_max": "2026-11-11",
     "asof_mismatch": 0,
-    "asof_run": "2026-11-10",
+    "asof_run": "2026-11-11",
     "evaluated": 713,
     "fresh": 32,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 57.1,
+    "runtime_s": 31.6,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 60,
