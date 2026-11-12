@@ -82,6 +82,13 @@ ExecStartPre=+/usr/bin/python3 -I /opt/macro/app/deploy/medtech-prereqs.py
 ExecStart=/opt/macro-api/.venv/bin/python3 -B -c "import sys; p='/opt/macro/app/runtime_attestation.py'; f=open(p,'rb'); b=f.read(262145); f.close(); 0<len(b)<=262144 or sys.exit('F04_BOOTSTRAP_BOUND'); c=compile(b,p,'exec',dont_inherit=True); exec(c,{'__name__':'__main__','__file__':p,'_BOOTSTRAP_SOURCE':b,'_BOOTSTRAP_CODE':c})"
 Restart=always
 RestartSec=2
+# Bound a repeat of the observed 10 GiB retained-swap incident.
+# High is the reclaim threshold; Max/SwapMax are last-resort containment,
+# not a claim that the allocation cause is fixed. Preserve normal Restart=.
+MemoryAccounting=yes
+MemoryHigh=1536M
+MemoryMax=3G
+MemorySwapMax=4G
 # Light hardening (still runs as root for MVP simplicity; tighten to a dedicated
 # user later). The app only reads /opt/macro and writes nothing.
 NoNewPrivileges=true

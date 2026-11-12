@@ -1260,7 +1260,7 @@ RENDER.overview = async () => {
     <header class="admin-home-header"><div><div class="eyebrow">Operations workspace</div><h1 id="admin-home-title">Admin overview</h1><p class="sub">Check the system, handle customer work, and review publishing.</p></div><button type="button" class="btn" id="adminRefresh">Refresh status</button></header>
     <div class="admin-status-grid">
       ${adminOverviewMetric("health", "Data pipeline", !healthKnown ? "Unavailable" : hh.healthy ? "Healthy" : "Needs attention", sourceDetail, !healthKnown || !hh.healthy ? "warn" : "ok")}
-      ${adminOverviewMetric("system", "Background services", serviceValue, sv.available && serviceCounts ? `${sv.ok_count}/${sv.total} services running` : "Live service checks unavailable", !serviceKnown ? "" : sv.healthy ? "ok" : "bad")}
+      ${adminOverviewMetric("system", "Background services", serviceValue, sv.available && serviceCounts ? `${sv.ok_count}/${sv.total} core services running${sv.failed_jobs && sv.failed_jobs.available ? " / " + sv.failed_jobs.count + " failed jobs" : " / job scan unavailable"}` : "Live service checks unavailable", !serviceKnown ? "" : sv.healthy ? "ok" : "bad")}
       ${adminOverviewMetric("system", "Server resources", serverValue, serverDetail)}
       ${adminOverviewMetric("cost", "Estimated AI cost", costValue, costDetail)}
     </div>
@@ -2883,36 +2883,55 @@ RENDER.system = async () => {
   const v = $("#view");
   const sys = SUMMARY.system || {}, sv = SUMMARY.services || {};
   const mem = sys.memory || {}, swap = sys.swap, disk = sys.disk || {}, cpu = sys.cpu || {};
-  const up = sys.uptime_s != null ? `${Math.floor(sys.uptime_s / 86400)}d ${Math.floor(sys.uptime_s % 86400 / 3600)}h` : "—";
+  const failures = sv.failed_jobs || {};
+  const number = (value, digits = 1) => Number.isFinite(value) ? value.toFixed(digits) : "\u2014";
+  const rate = value => Number.isFinite(value) ? fmtBytes(value) + "/s" : "awaiting sample";
+  const up = sys.uptime_s != null ? `${Math.floor(sys.uptime_s / 86400)}d ${Math.floor(sys.uptime_s % 86400 / 3600)}h` : "\u2014";
+  const pressures = ["cpu", "memory", "io"].map(key => {
+    const row = ((sys.pressure || {})[key] || {}).some || {};
+    return `${key.toUpperCase()} ${number(row.avg60)}%`;
+  }).join(" \u00b7 ");
   v.innerHTML = `
     <div class="grid">
       <div class="card"><h3>Server resources</h3>
         ${sys.available ? `
-        ${meter("CPU load (last 1 min)", cpu.load1_pct, (cpu.load1 != null ? cpu.load1.toFixed(2) : "—") + ` / ${cpu.count} cores`)}
+        ${Number.isFinite(cpu.utilization_pct)
+          ? meter("CPU utilization", cpu.utilization_pct, number(cpu.utilization_pct) + "%")
+          : `<div class="sub">CPU utilization: awaiting two kernel samples; refresh to measure.</div>`}
+        <div class="sub">${Number.isFinite(cpu.sample_seconds) ? `Measured over ${number(cpu.sample_seconds)}s \u00b7 ` : ""}I/O wait ${number(cpu.iowait_pct)}% \u00b7 stolen CPU ${number(cpu.steal_pct)}%</div>
+        <div class="kv"><span>Load average (1 / 5 / 15 min)</span><b>${number(cpu.load1, 2)} / ${number(cpu.load5, 2)} / ${number(cpu.load15, 2)}</b></div>
+        <div class="sub">${Number.isFinite(cpu.count) ? cpu.count : "\u2014"} logical CPUs \u00b7 1-minute load/core ${number(cpu.load1_ratio, 2)}\u00d7. Load includes runnable and I/O-blocked tasks; it is not CPU percent.</div>
         ${meter("Memory", mem.used_pct, fmtBytes(mem.used) + " / " + fmtBytes(mem.total))}
-        ${swap ? meter("Swap", swap.used_pct, fmtBytes(swap.used) + " / " + fmtBytes(swap.total)) : ""}
-        ${meter("Disk", disk.used_pct, fmtBytes(disk.used) + " / " + fmtBytes(disk.total) + " · " + fmtBytes(disk.free) + " free")}
-        <div class="sub">running for ${up} · load 5m/15m ${cpu.load5 != null ? cpu.load5.toFixed(2) : "—"} / ${cpu.load15 != null ? cpu.load15.toFixed(2) : "—"}</div>
+        ${swap ? meter("Swap allocated", swap.used_pct, fmtBytes(swap.used) + " / " + fmtBytes(swap.total)) : ""}
+        ${swap ? `<div class="sub">Swap I/O: in ${rate(swap.in_bytes_per_second)} \u00b7 out ${rate(swap.out_bytes_per_second)}. Allocated swap alone does not mean active thrashing.</div>` : ""}
+        ${meter("Disk", disk.used_pct, fmtBytes(disk.used) + " / " + fmtBytes(disk.total) + " \u00b7 " + fmtBytes(disk.free) + " free")}
+        <div class="sub">Resource stalls (60s, some tasks): ${pressures}</div>
+        <div class="sub">Uptime ${up}${Number.isFinite(sys.now) ? " \u00b7 sampled " + esc(new Date(sys.now * 1000).toLocaleTimeString()) : ""}</div>
         ` : `<div class="sub">Server stats are only available when this console is running on the server itself.</div>`}
       </div>
       <div class="card"><h3>Site uptime</h3><div id="upBoard"><button class="btn" id="upBtn">Check all sites are up</button></div></div>
     </div>
-    <div class="section">Background services <span class="cnt">${sv.available ? sv.ok_count + "/" + sv.total + " up" : "server only"}</span></div>
-    <div id="svcs"></div>`;
+    <div class="section">Core services <span class="cnt">${sv.available ? sv.ok_count + "/" + sv.total + " up" : "server only"}</span></div>
+    <div id="svcs"></div>
+    <div class="section">Failed services and scheduled jobs</div>
+    <div class="card">${!failures.available ? `<div class="sub">Failed-job inspection unavailable; this is not an all-clear.</div>`
+      : failures.count > 0 ? `<div class="sub">${esc(failures.count)} failed unit(s). Freshness warnings can indicate stale data, not a crashed web server. Inspect the cause before restarting.</div>` + (failures.units || []).map(s => `<div class="kv"><span>${esc(s.unit)}</span><span>${esc(s.description || s.sub || "failed")}</span></div>`).join("") + (failures.truncated ? `<div class="sub">Showing the first ${esc((failures.units || []).length)} units.</div>` : "")
+      : `<div class="sub">No failed systemd services at this sample. This does not certify data freshness.</div>`}</div>`;
   const svcs = $("#svcs");
   if (!sv.available) svcs.innerHTML = `<div class="card sub">${esc(sv.reason || "systemctl unavailable")}</div>`;
   else (sv.services || []).forEach(s => {
-    const led = s.ok ? "ok" : (s.active === "activating" ? "warn" : "bad");
-    const mem = s.memory != null ? " · " + fmtBytes(s.memory) : "";
+    const led = s.ok ? "ok" : (s.inspection_error || s.active === "activating" ? "warn" : "bad");
+    const resources = " \u00b7 RAM " + (s.memory != null ? fmtBytes(s.memory) : "unknown")
+      + " \u00b7 swap " + (s.swap_memory != null ? fmtBytes(s.swap_memory) : "unknown");
     svcs.appendChild(h(`<div class="svc"><span class="led ${led}" style="width:10px;height:10px;border-radius:50%;flex:none"></span>
-      <div><div class="nm">${esc(s.label)}</div><div class="meta mono">${esc(s.unit)} — ${esc(s.active || "?")}/${esc(s.sub || "")}${mem}${s.restarts ? " · " + s.restarts + " restarts" : ""}</div></div>
-      <span class="spacer"></span><span class="statpill ${s.ok ? "s-ok" : "s-bad"}">${esc(s.active || "?")}</span></div>`));
+      <div><div class="nm">${esc(s.label)}</div><div class="meta mono">${esc(s.unit)} \u2014 ${esc(s.active || "unknown")}/${esc(s.sub || "")}${resources}${s.restarts ? " \u00b7 " + s.restarts + " restarts" : ""}</div></div>
+      <span class="spacer"></span><span class="statpill ${s.ok ? "s-ok" : "s-bad"}">${esc(s.active || "unknown")}</span></div>`));
   });
   $("#upBtn").onclick = async () => {
-    $("#upBoard").innerHTML = "<span class='muted'>probing…</span>";
+    $("#upBoard").innerHTML = "<span class='muted'>probing\u2026</span>";
     const u = await api("/api/uptime/all");
     $("#upBoard").innerHTML = (u.targets || []).map(t => `<div class="kv"><span>${esc(t.label)}</span>
-      <b style="color:${t.ok ? "var(--ok)" : "var(--bad)"}">${t.ok ? esc(t.status || "up") + " · " + t.ms + "ms" : esc(t.status || "down")}</b></div>`).join("");
+      <b style="color:${t.ok ? "var(--ok)" : "var(--bad)"}">${t.ok ? esc(t.status || "up") + " \u00b7 " + t.ms + "ms" : esc(t.status || "down")}</b></div>`).join("");
   };
 };
 
