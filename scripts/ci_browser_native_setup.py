@@ -122,13 +122,19 @@ class Pending:
 BROWSER_ONLY_INSTALL_COMMAND = "python -m playwright install chromium"
 
 
-def stage_settled_failure(stage_result: dict) -> bool:
+# Only these stages are provably package-free: update refreshes indexes and
+# resolve is --print-uris. Never extend this to a stage that can run dpkg.
+PACKAGE_FREE_STAGES = frozenset({"update", "resolve"})
+
+
+def stage_settled_failure(stage_result: dict, mode: str) -> bool:
     """A native apt stage child that exited nonzero by itself, reaped with a
     returncode, is SETTLED: ``update``/``resolve`` apply no packages, so the
     failure proves nothing was installed and the browser-only fallback is
     safe. Unreaped children, lost responses and deadline kills raise before
     this point and keep their unknown settlement."""
-    return (type(stage_result) is dict and stage_result.get("outcome") == "failed"
+    return (mode in PACKAGE_FREE_STAGES
+            and type(stage_result) is dict and stage_result.get("outcome") == "failed"
             and stage_result.get("settlement") == "settled")
 
 
@@ -382,13 +388,13 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
         backend.deadline = deadline
         settled_failure = None
         update = backend.stage("update", deadline)
-        if stage_settled_failure(update):
+        if stage_settled_failure(update, "update"):
             settled_failure = f"apt update exited {update.get('returncode')} settled with no packages applied"
         elif update["outcome"] != "passed" or update["settlement"] != "settled":
             raise NativeUnknown("UPDATE_UNPROVEN", update.get("child_pid"), update["outcome"])
         if settled_failure is None:
             resolved = backend.stage("resolve", deadline)
-            if stage_settled_failure(resolved):
+            if stage_settled_failure(resolved, "resolve"):
                 settled_failure = f"apt resolve exited {resolved.get('returncode')} settled with no packages applied"
             elif resolved["outcome"] != "passed" or resolved["settlement"] != "settled":
                 raise NativeUnknown("RESOLUTION_UNPROVEN", resolved.get("child_pid"), resolved["outcome"])
@@ -411,7 +417,6 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
         if settled_failure is not None:
             evidence = original_attempt_detail.lstrip("; ") or f"installation={installation}; retained {root}"
             evidence += f"; downloads[index,returncode,reported_errors]={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}"
-            original_attempt_detail += f"; settled apt failure: {settled_failure}"
             return _browser_only_after_settled_failure(
                 reason=settled_failure, evidence=evidence, deadline=deadline,
                 command_env=command_env, browser_stream=browser_stream)
