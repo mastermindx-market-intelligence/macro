@@ -1,0 +1,45 @@
+{
+  "operation": "vps-resource-pressure-20261112",
+  "scope": "DigitalOcean VPS; no host reboot",
+  "effect": "one targeted systemctl restart macro-api.service",
+  "carrier": "existing authorized M2 Studio Direct session through existing verified VPS SSH alias",
+  "preflight": {
+    "canonical_update_lock_held": true,
+    "installed_unit_equals_reviewed_checkout_unit": true,
+    "api_and_bootstrap_syntax_valid": true,
+    "no_child_processes_in_api_cgroup": true,
+    "no_brain_chat_or_stream_submission_observed_in_preceding_75_minutes": true,
+    "idle_keepalive_connections_at_execution": 5,
+    "socket_recv_send_queues_zero": true,
+    "previous_preflight_aborted_before_mutation_due_to_connection_presence": true,
+    "material_preflight_refinement": "Five subsequent samples established idle keepalive connections with empty queues; standard graceful service shutdown retained."
+  },
+  "before": {
+    "utc": "2026-11-12T12:40:05.408868+00:00",
+    "api_pid": 3552857,
+    "api_memory_current_bytes": 287690752,
+    "api_memory_swap_bytes": 10962644992,
+    "host_mem_available_kib": 1912976,
+    "host_swap_total_kib": 16777200,
+    "host_swap_free_kib": 5000344,
+    "api_health_status": "ok",
+    "api_process_commit": "9a13c64bf",
+    "checkout_commit": "db1ac4ed95"
+  },
+  "after": {
+    "utc": "2026-11-12T12:40:22.691803+00:00",
+    "api_pid": 858889,
+    "api_memory_current_bytes": 318459904,
+    "api_memory_swap_bytes": 0,
+    "host_mem_available_kib": 1887284,
+    "host_swap_total_kib": 16777200,
+    "host_swap_free_kib": 15706008,
+    "api_health_status": "ok",
+    "api_process_commit": "db1ac4ed95",
+    "checkout_commit": "db1ac4ed95",
+    "boot_identity_unchanged": true,
+    "restart_command_exit": 0,
+    "elapsed_to_healthy_seconds": 17.221
+  },
+  "interpretation": "Confirmed stabilization and swap reclamation, not proof that the retained-memory root cause is fixed. No reboot, swapoff, timer disablement or security configuration change."
+}
