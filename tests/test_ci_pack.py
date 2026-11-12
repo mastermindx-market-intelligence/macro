@@ -6040,6 +6040,21 @@ def test_probe_weight_ceilings_follow_the_weight_rescale() -> None:
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    2026-11-12 (PR #8301, compose accepted runtime-adapter baseline):
+    Receiver e7f8565c preserves all six landed sibling-owner changes,
+    including #11101, and all 401 owners. Carry only the existing
+    unrun-scoring-engine regime step and eight exact feature objects.
+    Actual predecessor CI43148402672 passed 127 owners / 393 semantic
+    proofs with contract 0 introduced / 0 inherited at its own B/H/T.
+    The original owner remains 17 -> 18 commands, 21 -> 22 references,
+    1188 -> 1251 characters and weight 60 -> 63. Its +3 contribution
+    composes receiving 5971/5995/5729 to 5974/5998/5732.
+    Preserve all 97 H-only history lines and the complete main history,
+    137/138/131 job ceilings, ten packs, assertions and runtime controls.
+    Frozen reports remain exact objects; no research is regenerated.
+    These totals are source-derived composition, not a new planner run.
+    Natural successor CI must qualify the new exact combined source.
+
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
     marketing-social-publisher satisfies the closure doctrine —
@@ -6130,6 +6145,22 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     successor CI must qualify the composed source. The old run's separate
     private exact-base descendant UNKNOWN is neither retried nor settled.
 
+    2026-11-12 (PR #8301, preserve landed native acquisition recovery):
+    Receiver 27bdebdb retains Start and the landed #11051/#11064 recovery.
+    Preserve all 401 current owners, 400 whole sibling definitions and
+    all eight original regime, baseline, QLedger and frozen-report objects.
+    Carry only the original unrun-scoring-engine regime-suite step;
+    existing dependencies, inferred scope and QLedger enrollment remain.
+    Raw source accounting is 17 -> 18 commands, 21 -> 22 test references,
+    1188 -> 1251 joined characters and weight 60 -> 63. Its original +3
+    to each probe composes 5969/5993/5727 to 5972/5996/5730.
+    Keep 137/138/131 job ceilings, ten packs, every assertion, selector,
+    runtime and admission control. Preserve all current-main provenance
+    and all 81 original H-only historical lines at their original anchors.
+    These are static source/inverse/AST checks, not newly executed
+    project tests, paired planner measurements or hosted CI proof.
+    Natural exact-head successor CI must qualify this composition.
+
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
     240s first attempt plus a 60s browser-only fallback (GitHub-hosted
@@ -6156,6 +6187,29 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     10,859 / 11,241 / 10,818 weight and 10 / 10 / 10 packs. Job ceilings,
     selection and the ten-pack limit are unchanged.
 
+    2026-11-11 (PR #8301, conserve current free-content and regime coverage):
+    Receiving main dce366ad retains the exact unrun-scoring-engine preimage
+    from incorporated base65f534bd. Keep all 401 owner identities and 400
+    sibling blocks; preserve the one original regime regression step.
+    The unchanged estimator counts 17->18 commands, 21->22 test references
+    and 1188->1251 joined characters in the same 800-character bucket: 60->63.
+    Add only that original +3 to current 5966/5989/5724: 5969/5992/5727.
+    The free-content baseline already includes its independently landed +2.
+    Retain both full histories, jobs 137/138/131, ten packs and all controls.
+    This is source conservation and arithmetic, not a new planner execution.
+    Natural successor CI must qualify this combined source; frozen studies,
+    prior accepted execution and separate uncertain effects keep their scope.
+
+    2026-11-11 (PR #8301, current-main conflict and UTC fixture repair):
+    Preserve all 401 current owners and both complete provenance histories.
+    Native owner accounting keeps the original scoring-suite contribution:
+    commands17->18, test-path tokens21->22, characters1188->1251,
+    estimated weight60->63. Current5966/5987/5724 becomes5969/5990/5727.
+    Keep137/138/131jobs, ten packs, all assertions and admission limits.
+    The QLedger fixture correction uses its already-enrolled suite and adds
+    no owner or test-path token. This is source accounting, not a new
+    full-tree planner/runtime measurement; natural successor CI is required.
+
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
     lifecycle coverage and qualified Playwright dependency. Keep all
@@ -6167,6 +6221,23 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     admission limits. Preserve both entire provenance histories.
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-09 (PR #8301, compose the actual #6867 lifecycle landing):
+    Preserve all 400 current owners and both complete measurement histories.
+    Accepted main f3a8cf04 measures 5958/5979/5716; this PR's separately
+    qualified contribution remains +3, giving 5961/5982/5719.
+    The changed owner blocks have unchanged preimages; main changes only
+    data-base-shim, so neither contribution overwrites the other.
+    Job ceilings 137/138/131, ten packs and all assertions remain unchanged.
+    This is source conservation and arithmetic; new natural CI is still owed.
+
+    2026-11-09 (PR #8301, preserve the actual ownership-ledger landing):
+    Current main retains F09 plus the independent ledger +3 on each probe.
+    Preserve all current owners, the complete historical evidence below and
+    this PR's original +3 on each probe contribution. Derived union ceilings are
+    5951/5972/5709 with job caps 137/138/131 and ten packs unchanged.
+    This is source-accounting conservation, not a fresh full-tree measurement;
+    the successor must earn its own hosted contract and semantic proof.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
@@ -6250,6 +6321,47 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     current-tree failure claim. Natural own CI must qualify the result.
     If10192 actually lands before publication, retain that new baseline
     and add only ledger+3; do not enroll or fund the filer twice.
+
+    2026-11-09 (PR #8301, preserve actual F09 landing and regime coverage):
+    receiving main9a13c64 includes F09's own+2 as landed7bdfb249486d.
+    Keep that contribution, its full history and all other main source.
+    Only this carrier's accepted+3 remains: current5945/5966/5703 becomes
+    5948/5969/5706. The original H's complete historical notes remain
+    below with their original measured/composed revisions and numbers.
+    Current runner and product preimages are unchanged; catalog owners
+    commute with F09's separate data-base-shim change. This is preserving
+    source arithmetic, not a new planner or timing measurement. Keep
+    jobs137/138/131,ten packs and all selectors/assertions/admission limits.
+    The materially combined successor must earn its own natural CI proof.
+
+    PR8301 source conflict repair (2026-11-09): preserve current main's
+    QTUM offline-parser step and restore only this PR's accepted two-line
+    regime-coverage step. The current packer's weight and manifest-loading
+    functions are byte-identical to the historical runner below. With no
+    observed-duration override, the composed owner has commands17->18,
+    test-path occurrences21->22, joined command text1188->1251 characters,
+    and estimated weight60->63 (+3). This static arithmetic is not a new
+    planner/runtime measurement. Apply only that +3 to current-main ceilings
+    5943/5964/5701: 5946/5967/5704. Preserve jobs137/138/131, ten packs,
+    every assertion and all unrelated current-main history and coverage.
+    The earlier owner-equality and 57->60 observations below are historical;
+    successor CI must qualify this new composition.
+
+    PR8301 current-main composition (2026-11-07): retain its accepted
+    unrun-scoring-engine coverage command. The current owner is byte-identical
+    to the accepted owner after removing only that two-line step; unchanged
+    packer3cbed589 therefore retains the accepted accounting: commands16->17,
+    test-path occurrences20->21, joined command text1125->1188 characters,
+    no observed-duration override, fallback estimated weight57->60 (+3).
+    Own CI42318149338/contract128235817813 and gate128249908464 qualified
+    that source contribution; the owning coverage step actually passed29tests.
+    Protected mainf55fa485eba3 now carries ceilings5914/5933/5672. Preserve
+    its accepted GSC/gateway provenance and fund only this PR's own +3:
+    5917/5936/5675. This is arithmetic composition, not a new planner run
+    or runtime measurement. No unmerged sibling contribution is included.
+    Keep every assertion, job-count ceiling137/138/131, ten-pack bound,
+    selector, suite, timeout and runtime/admission limit. Natural successor
+    CI must qualify the new shared-CI composition.
 
     2026-11-09 (PR #6867, preserving current F09 receiver): retain the
     landed beneficial-ownership argument in the existing Shared Shell step

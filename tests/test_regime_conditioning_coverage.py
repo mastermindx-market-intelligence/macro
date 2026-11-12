@@ -133,3 +133,97 @@ def test_gate_constants_are_frozen():
     """These are pre-registered thresholds, not tunables. A silent loosening would let a
     starved axis publish a conditional claim."""
     assert (RCC.MIN_COVERAGE, RCC.MIN_STATES, RCC.MIN_MONTHS_STATE) == (0.20, 2, 12)
+
+
+# A large per-name trend sample must not masquerade as macro-regime history.
+def test_stock_trend_pass_does_not_become_a_market_context_pass():
+    frame = _frame(['bull', 'bear'], months=36, n_per=10, axis='regime_at_entry')
+    frame['vol_regime'] = 'normalizing'
+    result = RCC.assess(frame, axes=('regime_at_entry', 'vol_regime'))
+    assert result['estimable_axes'] == ['regime_at_entry']  # legacy contract retained
+    assert result['axes']['regime_at_entry']['axis_scope'] == 'security_price_trend'
+    assert result['axes']['vol_regime']['axis_scope'] == 'us_market_context'
+    assert result['estimable_axes_by_scope'] == {
+        'security_price_trend': ['regime_at_entry'],
+        'us_market_context': [],
+        'unspecified': [],
+    }
+    assert result['qualification_basis'] == 'coverage_and_state_contrast_only'
+    assert result['historical_availability'] == 'not_assessed'
+
+
+def test_market_context_pass_is_reported_separately_without_changing_gate():
+    frame = _frame(['Q1', 'Q2'], months=24, n_per=2)
+    result = RCC.assess(frame, axes=('quad_hard_label',))
+    assert result['any_estimable'] is True
+    assert result['estimable_axes_by_scope']['us_market_context'] == ['quad_hard_label']
+    assert result['estimable_axes_by_scope']['security_price_trend'] == []
+    assert result['axes']['quad_hard_label']['n_rows_stamped'] == 96
+    assert result['gates'] == {
+        'min_coverage': .20, 'min_states': 2, 'min_months_per_state': 12,
+    }
+
+
+def test_unrecognized_axis_never_inherits_market_scope_from_values_or_name():
+    frame = _frame(['Q1', 'Q2'], months=24, n_per=2, axis='new_macro_axis')
+    result = RCC.assess(frame, axes=('new_macro_axis',))
+    assert result['axes']['new_macro_axis']['estimable'] is True
+    assert result['axes']['new_macro_axis']['axis_scope'] == 'unspecified'
+    assert result['axes']['new_macro_axis']['axis_scope_basis'] == 'unrecognized_column'
+    assert result['estimable_axes_by_scope']['unspecified'] == ['new_macro_axis']
+    assert result['estimable_axes_by_scope']['us_market_context'] == []
+
+
+@pytest.mark.parametrize('axis,scope', [
+    ('regime_at_entry', 'security_price_trend'),
+    ('quad_hard_label', 'us_market_context'),
+    ('vol_regime', 'us_market_context'),
+    ('fused_risk_label', 'us_market_context'),
+    ('rate_pressure', 'us_market_context'),
+    ('risk_radar_state', 'us_market_context'),
+    ('custom_axis', 'unspecified'),
+])
+def test_missing_data_retains_axis_scope_without_claiming_readiness(axis, scope):
+    result = RCC.assess_axis(pd.DataFrame(), axis)
+    assert result['axis_scope'] == scope
+    assert result['estimable'] is False
+
+
+def test_real_report_consumer_states_scope_and_temporal_limit():
+    frame = _frame(['bull', 'bear'], months=24, axis='regime_at_entry')
+    frame['vol_regime'] = 'normalizing'
+    result = RCC.assess(frame, axes=('regime_at_entry', 'vol_regime'))
+    text = RCC.format_report(result)
+    assert '[PASS] regime_at_entry' in text
+    assert 'per-stock price trend' in text
+    assert 'US market context: NONE' in text
+    assert 'historical availability not assessed' in text
+    assert 'predictive value not assessed' in text
+    assert 'single_state' in text
+
+
+def test_legacy_saved_report_is_renderable_but_not_assigned_inferred_scope():
+    frame = _frame(['bull', 'bear'], months=24, axis='regime_at_entry')
+    result = RCC.assess(frame, axes=('regime_at_entry',))
+    result.pop('estimable_axes_by_scope', None)
+    result.pop('qualification_basis', None)
+    result.pop('historical_availability', None)
+    for row in result['axes'].values():
+        row.pop('axis_scope', None)
+    text = RCC.format_report(result)
+    assert '[PASS] regime_at_entry' in text
+    assert 'scope unavailable in saved report' in text
+    assert 'US market context: regime_at_entry' not in text
+
+
+def test_coverage_suite_has_exactly_one_existing_code_gate_owner():
+    from pathlib import Path
+    import yaml
+
+    root = Path(__file__).resolve().parents[1]
+    suite = 'tests/test_regime_conditioning_coverage.py'
+    jobs = yaml.safe_load((root / '.github/ci/legacy-jobs.yml').read_text())['jobs']
+    owners = [(name, job.get('gate')) for name, job in jobs.items()
+              if any(suite in str(step.get('run', '')) for step in job.get('steps', []))]
+    assert owners == [('unrun-scoring-engine', 'code')]
+    assert suite not in (root / 'config/unrun_test_baseline.json').read_text()
