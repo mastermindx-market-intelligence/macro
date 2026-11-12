@@ -480,7 +480,7 @@
   <span class="sh-sub">{{ t('who tends to move first', '谁通常先动') }}</span>
 </div>
 <div class="card">
-  {% if leadlag is not none and leadlag.verdict is not none and leadlag.verdict in ('lead', 'weak_lead') %}
+  {% if leadlag is mapping and leadlag.get('verdict') in ('lead', 'weak_lead') %}
     {# Show a flow strip #}
     {% set _ll_stable = leadlag.stability is not none and leadlag.stability == 'stable' %}
     <div class="flow-strip">
@@ -530,16 +530,22 @@
       </div>
     </details>
     {% endif %}
-  {% else %}
+  {% elif leadlag is mapping and leadlag.get('verdict') == 'contemporaneous' %}
     <p style="font-size:14px;color:var(--text);margin:0 0 8px;font-weight:500">
       {{ t('No one leads right now — big moves hit markets at the same time.',
           '当前无领先者——大幅波动同时冲击各市场。') }}
     </p>
+  {% else %}
+    <p style="font-size:14px;color:var(--text);margin:0 0 8px;font-weight:500">
+      {{ t('Lead/lag reading unavailable.', '领先滞后读数不可用。') }}
+    </p>
   {% endif %}
+  {% if leadlag is mapping and leadlag.get('verdict') in ('lead', 'weak_lead', 'contemporaneous') %}
   <p class="ca-note">
     {{ t('Mostly the clock, not prophecy — the US closes before Asia opens.',
         '主要是时区效应，而非预言——美股收盘早于亚洲开盘。') }}
   </p>
+  {% endif %}
 </div>
 
 {# ── §04 DO BONDS & CURRENCIES AGREE — conditional #}
