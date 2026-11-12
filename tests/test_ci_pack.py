@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_969),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_993),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_727),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -8124,6 +8124,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,909 / 5,924 / 5,665 with job sets identical to the branch tree (no job
     enters or leaves any probe). Fund exactly the measured values:
     5,906 -> 5,909, 5,921 -> 5,924, 5,662 -> 5,665; job-count ceilings,
+    selectors and the ten-pack bound stay unchanged. Planning weights are not
+    measured execution times.
+
+    Sector Intelligence breadth history (2026-11-12, #11094): the two new
+    suites tests/test_group_breadth_history.py and
+    tests/test_member_breadth_ledger.py join the existing pytest command of
+    unrun-site-surfaces (the step that already runs test_advanced_breadth /
+    test_breadth_panel), which rides all three probes. Measured locally on the
+    branch merged with main 4 commits past 4869c78575b9: main's
+    legacy-jobs.yml passes at 5,969 / 5,993 / 5,727; with the two suites the
+    probes measure 5,973 / 5,997 / 5,731 on the same job counts and ten packs
+    (no job enters or leaves). Fund exactly the measured +4 per probe:
+    5,969 -> 5,973, 5,993 -> 5,997, 5,727 -> 5,731; job-count ceilings,
     selectors and the ten-pack bound stay unchanged. Planning weights are not
     measured execution times.
     """
