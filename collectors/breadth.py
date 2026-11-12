@@ -3,8 +3,9 @@
 - Constituents: Wikipedia table (current members — survivorship caveat:
   fine for the live signal, biased for backtests; see LIMITATIONS.md).
 - Closes: yfinance in batches. The raw close matrix is a local cache
-  (data/breadth/_closes_cache.parquet, gitignored — in CI restored via
-  actions/cache; on miss it is re-downloaded, ~2 min). Only the small
+  (data/breadth/_closes_cache.parquet, gitignored). Each acquisition replaces
+  its full live window on one adjustment vintage; cached rows never fill a
+  newly adjusted close series. Only the small
   computed aggregate series is committed to the repo.
 - Outputs (data/breadth/breadth.parquet):
     pct_above_50, pct_above_200  — % of members above 50/200DMA
@@ -488,17 +489,14 @@ class BreadthAdapter(Adapter):
         if full_history:
             closes = self._download_closes(tickers, "max")
         else:
-            closes = None
-            if self.cache_path.exists():
-                cached = pd.read_parquet(self.cache_path)
-                # refresh tail; full re-pull if cache is stale beyond the overlap
-                age = (pd.Timestamp.utcnow().tz_localize(None) - cached.index.max()).days
-                if age <= 14:
-                    fresh = self._download_closes(tickers, "1mo")
-                    closes = self._merge_refreshed(fresh, cached)
-            if closes is None:
-                days = self.cfg["lookback_days_live"]
-                closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y")
+            # auto_adjust restates *all* earlier prices after dividends, not
+            # only splits. A one-month refresh combined with cached older rows
+            # creates mixed-vintage moving averages (#11124). Reuse the cold
+            # path's full live window on every acquisition, replacing rather
+            # than filling from the old cache. This also heals existing seams;
+            # a failed download aborts before any cache write.
+            days = self.cfg["lookback_days_live"]
+            closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y")
             cutoff = closes.index.max() - pd.Timedelta(days=self.cfg["lookback_days_live"] + 30)
             closes = closes[closes.index >= cutoff]
 
@@ -686,3 +684,4 @@ def breadth_summary(br: pd.DataFrame | None, full: bool) -> dict | None:
         "state": state, "tone": tone, "full": bool(full),
         "asof": pd.Timestamp(last.name).strftime("%Y-%m-%d"),
     }
+

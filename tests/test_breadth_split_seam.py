@@ -193,3 +193,61 @@ def test_seam_scan_sees_across_nan_gaps():
     cached.loc[DATES[95]:DATES[99], "AAA"] = np.nan
     merged = fresh.combine_first(cached)
     assert "AAA" in seam_suspects(None, None, merged)
+
+
+
+@pytest.mark.parametrize('cached_kind', ['dividend', 'historical_staircase', 'healthy', 'corrupt', 'missing_rows'])
+def test_fetch_replaces_cache_with_one_adjustment_vintage(tmp_path, monkeypatch, cached_kind):
+    """Warm cache cannot contribute old-basis rows to a new 200DMA."""
+    from lib import config
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    dates = pd.bdate_range(end=pd.Timestamp.now().normalize(), periods=260)
+    names = [f'T{i:03}' for i in range(400)]
+    # Last close above a coherent MA, but below the mixed-vintage MA.
+    values = np.full(260, 99.0); values[-1] = 99.5
+    coherent = pd.DataFrame({n: values for n in names}, index=dates)
+    cached = coherent.copy()
+    if cached_kind == 'dividend':
+        cached.iloc[:-20] *= 1.02
+    elif cached_kind == 'historical_staircase':
+        cached.iloc[:100] *= 1.04; cached.iloc[100:200] *= 1.02
+    if cached_kind == 'missing_rows':
+        coherent.iloc[:10, :10] = np.nan
+    a = BreadthAdapter.__new__(BreadthAdapter)
+    a.cfg = {'lookback_days_live': 1100, 'ma_windows': [50, 200], 'nhnl_window': 252}
+    a.cache_path = tmp_path / '_closes_cache.parquet'
+    if cached_kind == 'corrupt':
+        a.cache_path.write_bytes(b'not parquet')
+    else:
+        cached.to_parquet(a.cache_path)
+    a.constituents = lambda: pd.DataFrame({'symbol': names, 'name': names, 'sector': ['Tech']*400})
+    calls = []
+    def download(tickers, period):
+        calls.append((tickers, period))
+        a._last_extras = {}
+        return coherent.iloc[-20:].copy() if period == '1mo' else coherent.copy()
+    a._download_closes = download
+    result = a.fetch()
+    assert calls == [(names, '4y')]
+    pd.testing.assert_frame_equal(pd.read_parquet(a.cache_path), coherent, check_freq=False)
+    assert result['breadth'].iloc[-1]['pct_above_200'] == 100
+    assert result['sector_breadth'].iloc[-1]['Tech|pct_above_200'] == 100
+
+
+def test_failed_full_vintage_download_preserves_existing_cache(tmp_path):
+    a = BreadthAdapter.__new__(BreadthAdapter)
+    a.cfg = {'lookback_days_live': 1100}
+    a.cache_path = tmp_path / '_closes_cache.parquet'
+    original = b'retained cache, never a fallback success'
+    a.cache_path.write_bytes(original)
+    names = [f'T{i:03}' for i in range(400)]
+    a.constituents = lambda: pd.DataFrame({'symbol': names})
+    calls = []
+    def download(tickers, period):
+        calls.append(period)
+        raise RuntimeError('provider unavailable')
+    a._download_closes = download
+    with pytest.raises(RuntimeError, match='provider unavailable'):
+        a.fetch()
+    assert calls == ['4y']
+    assert a.cache_path.read_bytes() == original
