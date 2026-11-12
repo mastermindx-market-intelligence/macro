@@ -8395,12 +8395,13 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
 
     2026-11-12 (Sector Intelligence theme-tree breadth and equal-weight
     indexes, #11107): tests/test_build_tree_breadth_and_index.py joins the
-    same unrun-site-surfaces breadth pytest command. Measured on this branch:
-    5,975 / 5,999 / 5,733, job counts 137 / 137 / 131, ten packs each (no job
-    enters or leaves). Fund exactly the measured +2 per probe: 5,973 -> 5,975,
-    5,997 -> 5,999, 5,731 -> 5,733; job-count ceilings, selectors and the
-    ten-pack bound stay unchanged. Re-measured again when this branch merges
-    main.
+    same unrun-site-surfaces breadth pytest command. Re-measured 2026-11-12 on
+    this branch merged with main 949420c78732, which already carries the
+    planning-weight rescale and its ceilings: index 137 jobs / 10,874,
+    free-content 138 jobs / 11,378, plan-book 131 jobs / 10,833, ten packs
+    each, all within main's ceilings 11,431 / 11,504 / 10,969. No ceiling,
+    job-count ceiling, selector or ten-pack bound is changed by this branch.
+    Planning weights are not measured execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
