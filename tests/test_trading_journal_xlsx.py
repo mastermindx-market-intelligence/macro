@@ -21,6 +21,8 @@ from __future__ import annotations
 import math
 import os
 import re
+import shutil
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -505,3 +507,207 @@ def test_example_row_days_from_date_objects():
         # Days computed from date objects
         days = (d_close - d_open).days
         assert days >= 0, f"days must be non-negative, got {days}"
+
+# Formula execution regression subset: actual generated formula strings, not an
+# Excel/Sheets compatibility claim. Unsupported expressions fail loudly.
+from openpyxl.formula import Tokenizer
+
+PRECEDENCE={'=':1,'<>':1,'>':1,'<':1,'>=':1,'<=':1,'&':2,'+':3,'-':3,'*':4,'/':4}
+
+def parse(formula):
+    tokens=[t for t in Tokenizer(formula).items if t.type!='WHITE-SPACE']; i=0
+    def expr(minp=0):
+        nonlocal i
+        t=tokens[i]; i+=1
+        if t.type=='FUNC' and t.subtype=='OPEN':
+            args=[]
+            while tokens[i].subtype!='CLOSE':
+                args.append(expr())
+                if tokens[i].type=='SEP': i+=1
+                else: break
+            assert tokens[i].subtype=='CLOSE'; i+=1
+            left=('fn',t.value[:-1],args)
+        elif t.type=='PAREN' and t.subtype=='OPEN':
+            left=expr(); assert tokens[i].subtype=='CLOSE'; i+=1
+        elif t.type=='OPERAND':
+            if t.subtype=='TEXT': left=('const',t.value[1:-1].replace('""','"'))
+            elif t.subtype=='NUMBER': left=('const',float(t.value))
+            elif t.subtype=='RANGE': left=('ref',t.value)
+            else: raise AssertionError(t)
+        else: raise AssertionError(t)
+        while i<len(tokens) and tokens[i].type=='OPERATOR-INFIX' and PRECEDENCE[tokens[i].value]>=minp:
+            op=tokens[i].value; i+=1; left=('op',op,left,expr(PRECEDENCE[op]+1))
+        return left
+    result=expr(); assert i==len(tokens); return result
+
+def numeric(x): return isinstance(x,(int,float)) and not isinstance(x,bool)
+def num(x):
+    if x=='': return 0
+    if numeric(x): return x
+    raise ValueError('Non-numeric arithmetic')
+
+class Probe:
+    def __init__(self, wb, overrides=None): self.wb=wb; self.overrides=overrides or {}; self.cache={}
+    def cell(self,sheet,addr):
+        key=(sheet,addr.replace('$',''))
+        if key in self.cache: return self.cache[key]
+        v=self.overrides.get(key,self.wb[key[0]][key[1]].value)
+        if v is None: v=''
+        if isinstance(v,str) and v.startswith('='): v=self.eval(parse(v),sheet)
+        self.cache[key]=v; return v
+    def ref(self,sheet,ref):
+        if '!' in ref: sheet,ref=ref.rsplit('!',1); sheet=sheet.strip("'").replace("''", "'")
+        ref=ref.replace('$','')
+        if ':' in ref: return [self.cell(sheet,c.coordinate) for row in self.wb[sheet][ref] for c in row]
+        return self.cell(sheet,ref)
+    def eval(self,n,sheet):
+        kind=n[0]
+        if kind=='const': return n[1]
+        if kind=='ref': return self.ref(sheet,n[1])
+        if kind=='op':
+            op=n[1]; a=self.eval(n[2],sheet); b=self.eval(n[3],sheet)
+            if op=='&': return (str(int(a)) if numeric(a) and a==int(a) else str(a))+(str(int(b)) if numeric(b) and b==int(b) else str(b))
+            if op=='=': return a==b
+            if op=='<>': return a!=b
+            if op=='>': return a>b
+            if op=='<': return a<b
+            if op=='>=': return a>=b
+            if op=='<=': return a<=b
+            a,b=num(a),num(b)
+            if op=='+': return a+b
+            if op=='-': return a-b
+            if op=='*': return a*b
+            if op=='/': return a/b
+        name,args=n[1],n[2]
+        if name=='IF': return self.eval(args[1] if self.eval(args[0],sheet) else args[2],sheet)
+        if name=='IFERROR':
+            try: return self.eval(args[0],sheet)
+            except (ValueError,ZeroDivisionError): return self.eval(args[1],sheet)
+        vals=[self.eval(a,sheet) for a in args]
+        if name=='AND': return all(vals)
+        if name=='ABS': return abs(num(vals[0]))
+        if name=='COUNT': return sum(1 for x in vals for v in (x if isinstance(x,list) else [x]) if numeric(v))
+        if name=='SUM': return sum(v for x in vals for v in (x if isinstance(x,list) else [x]) if numeric(v))
+        if name in ('COUNTIF','SUMIF','AVERAGEIF'):
+            candidates,criterion=vals[:2]
+            def matches(v):
+                if criterion=='<>': return v!=''
+                if criterion=='>0': return numeric(v) and v>0
+                if criterion=='<0': return numeric(v) and v<0
+                raise AssertionError('Unsupported criterion '+str(criterion))
+            selected=[(vals[2] if len(vals)>2 else candidates)[i] for i,v in enumerate(candidates) if matches(v)]
+            if name=='COUNTIF': return len(selected)
+            selected=[v for v in selected if numeric(v)]
+            if name=='SUMIF': return sum(selected)
+            return sum(selected)/len(selected)
+        raise AssertionError('Unsupported function '+name)
+    def summary(self):
+        return {c:self.cell('Dashboard',c) for c in ['B3','B4','B5','B6','B9','B16','B17','B18','B19','B20']}
+
+
+
+def journal_probe(wb, rows):
+    # Remove only the three shipped example input rows. Computed columns stay native.
+    values={('Trade Log',f'{c}{r}'):None for r in (2,3,4) for c in ('A','B','C','D','E','F','G','H','I','L','M','N','S','T')}
+    for r,(stop,exit_price) in enumerate(rows,2):
+        for c,v in {'D':'Long','F':100,'G':stop,'H':120,'I':1,'M':exit_price,'N':0}.items():
+            values[('Trade Log',f'{c}{r}')]=v
+    return Probe(wb, values)
+
+@pytest.mark.parametrize('rows,expected', [
+    ([], ('','','','',0,0,0)),
+    ([(90,110)], ('','',1,1,1,1,10)),
+    ([(90,90)], ('',0,-1,-1,1,1,-10)),
+    ([(90,100)], ('','',0,0,1,1,0)),
+    ([(90,110),(90,90)], (1,1,0,0,2,2,0)),
+    ([(90,110),(90,100)], ('','',.5,.5,2,2,10)),
+    ([(90,110),(None,110)], ('','','',1,1,2,20)),
+    ([(90,110),(100,110)], ('','','',1,1,2,20)),
+    ([(None,110),(None,90)], (1,1,'','',0,2,0)),
+    ([(90,110),(90,None)], ('','',1,1,1,1,10)),
+    ([(90,120),(90,90)], (2,2,.5,.5,2,2,10)),
+    ([(90,100),(None,100)], ('','','',0,1,2,0)),
+], ids=['empty','all-win','all-loss','breakeven','mixed','true-zero-R',
+        'missing-risk','zero-risk','no-valid-R','open-trade','payoff-two','zero-plus-missing'])
+def test_metric_boundaries(wb, rows, expected):
+    p=journal_probe(wb, rows)
+    payoff,profit,expectancy,average,valid,total,pnl=expected
+    for addr,want in [('B16',payoff),('B17',profit),('B19',expectancy),('B20',average)]:
+        got=p.cell('Dashboard',addr)
+        assert (got == want if isinstance(want, str) else got == pytest.approx(want))
+    assert p.cell('Dashboard','C20') == f'{valid} of {total} closed trades have valid R'
+    assert p.cell('Dashboard','B3') == total
+    assert p.cell('Dashboard','B9') == pnl
+    wins = sum(exit_price > 100 for _, exit_price in rows if exit_price is not None)
+    assert p.cell('Dashboard','B6') == pytest.approx(wins / total if total else 0)
+    assert p.cell('Dashboard','B18') == pytest.approx(pnl / total if total else 0)
+
+
+def test_original_examples_keep_known_metrics(wb):
+    p=Probe(wb)
+    assert p.cell('Dashboard','B3') == 3
+    assert p.cell('Dashboard','B9') == 1088
+    assert p.cell('Dashboard','B19') == pytest.approx(0.9646666666666667)
+    assert p.cell('Dashboard','B20') == pytest.approx(0.9646666666666667)
+    assert p.cell('Dashboard','C20') == '3 of 3 closed trades have valid R'
+
+
+def test_last_prepared_row_contributes(wb):
+    p=journal_probe(wb, [])
+    p.overrides.update({('Trade Log',f'{c}601'):v for c,v in {
+        'D':'Long','F':100,'G':90,'H':120,'I':1,'M':110,'N':0}.items()})
+    assert p.cell('Dashboard','B19') == 1
+    assert p.cell('Dashboard','C20') == '1 of 1 closed trades have valid R'
+
+
+def test_scope_labels_distinguish_population_and_unavailable_ratios(wb):
+    ws=wb['Dashboard']
+    assert ws['A19'].value == 'Expectancy per trade (R)'
+    assert ws['A20'].value == 'Average R (valid-risk trades)'
+    assert 'any closed trade' in ws['C19'].value
+    assert 'both wins and losses' in ws['C16'].value
+    assert 'no losses' in ws['C17'].value
+
+
+def test_unsupported_formula_fails_loudly(wb):
+    with pytest.raises(AssertionError,match='Unsupported function'):
+        Probe(wb).eval(parse('=BOGUS(1)'), 'Dashboard')
+
+
+@pytest.mark.skipif(shutil.which('soffice') is None, reason='LibreOffice native reader is not installed')
+def test_native_reader_closed_trade_population(xlsx_path, tmp_path):
+    """Execute formulas in a real reader; the reference evaluator cannot prove compatibility."""
+    inputs = tmp_path / 'inputs'
+    outputs = tmp_path / 'outputs'
+    inputs.mkdir()
+    outputs.mkdir()
+    scenarios = {
+        'empty': ([], 0, 0, 0),
+        'win_and_open': ([(90, 110), (90, None)], 1, 1, 10),
+        'win_and_zero': ([(90, 110), (90, 100)], 2, .5, 5),
+        'loss_and_zero': ([(90, 90), (90, 100)], 2, 0, -5),
+    }
+    for name, (rows, _, _, _) in scenarios.items():
+        workbook = openpyxl.load_workbook(xlsx_path)
+        sheet = workbook['Trade Log']
+        for row in (2, 3, 4):
+            for col in ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'L', 'M', 'N', 'S', 'T'):
+                sheet[f'{col}{row}'] = None
+        for row, (stop, exit_price) in enumerate(rows, 2):
+            for col, value in {'D':'Long', 'F':100, 'G':stop, 'H':120, 'I':1, 'M':exit_price, 'N':0}.items():
+                sheet[f'{col}{row}'] = value
+        workbook.save(inputs / f'{name}.xlsx')
+    shutil.copyfile(xlsx_path, inputs / 'examples.xlsx')
+    profile = (tmp_path / 'profile').as_uri()
+    subprocess.run(
+        [shutil.which('soffice'), f'-env:UserInstallation={profile}', '--headless',
+         '--convert-to', 'xlsx', '--outdir', str(outputs),
+         *(str(path) for path in sorted(inputs.glob('*.xlsx')))],
+        check=True, capture_output=True, text=True, timeout=180,
+    )
+    expected = {name: values[1:] for name, values in scenarios.items()}
+    expected['examples'] = (3, 2 / 3, 1088 / 3)
+    for name, (count, win_rate, expectancy) in expected.items():
+        dashboard = openpyxl.load_workbook(outputs / f'{name}.xlsx', data_only=True)['Dashboard']
+        for address, value in [('B3', count), ('B6', win_rate), ('B18', expectancy)]:
+            assert dashboard[address].value == pytest.approx(value), (name, address)

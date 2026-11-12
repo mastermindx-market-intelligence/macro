@@ -728,7 +728,8 @@ def _build_dashboard(wb: Workbook) -> None:
     row += 1
 
     # Helper: closed-trade range definition
-    # "Closed" means P/L $ column (O) is not blank
+    # "Closed" means P/L $ column (O) contains a number, including zero.
+    # COUNTIF(..., "<>") can count formulas returning "" in native readers.
     # Trade Log data: O2:O601
     o_range = f"'Trade Log'!$O$2:$O${FIRST_DATA + DATA_ROWS - 1}"
     q_range = f"'Trade Log'!$Q$2:$Q${FIRST_DATA + DATA_ROWS - 1}"  # R Multiple
@@ -769,7 +770,7 @@ def _build_dashboard(wb: Workbook) -> None:
     # --- Section 1: Trade counts ---
     section_header("TRADE SUMMARY")
     stat_row("Total closed trades",
-             f"=COUNTIF({o_range},\"<>\"&\"\")",
+             f"=COUNT({o_range})",
              "0",
              "Closed = rows where P/L $ is present")
     stat_row("Wins (P/L $ > 0)",
@@ -779,7 +780,7 @@ def _build_dashboard(wb: Workbook) -> None:
              f"=COUNTIF({o_range},\"<0\")",
              "0")
     stat_row("Win rate",
-             f"=IFERROR(COUNTIF({o_range},\">0\")/COUNTIF({o_range},\"<>\"&\"\"),0)",
+             f"=IFERROR(COUNTIF({o_range},\">0\")/COUNT({o_range}),0)",
              "0.00%")
     row += 1
 
@@ -805,24 +806,25 @@ def _build_dashboard(wb: Workbook) -> None:
     # --- Section 3: Edge stats ---
     section_header("EDGE STATISTICS")
     stat_row("Payoff ratio (avg win / |avg loss|)",
-             f"=IFERROR(ABS(AVERAGEIF({o_range},\">0\")/AVERAGEIF({o_range},\"<0\")),0)",
+             f"=IFERROR(ABS(AVERAGEIF({o_range},\">0\")/AVERAGEIF({o_range},\"<0\")),\"\")",
              "0.00",
-             "Above 1.0 means wins are larger than losses on average")
+             "Blank unless both wins and losses are present")
     stat_row("Profit factor (gross wins / |gross losses|)",
-             f"=IFERROR(ABS(SUMIF({o_range},\">0\")/SUMIF({o_range},\"<0\")),0)",
+             f"=IFERROR(ABS(SUMIF({o_range},\">0\")/SUMIF({o_range},\"<0\")),\"\")",
              "0.00",
-             "Above 1.0 means the system is profitable overall")
+             "Blank when no losses exist; zero is valid with losses and no wins")
     stat_row("Expectancy per trade $",
-             f"=IFERROR(SUM({o_range})/COUNTIF({o_range},\"<>\"&\"\"),0)",
+             f"=IFERROR(SUM({o_range})/COUNT({o_range}),0)",
              "#,##0.00",
              "Average dollar earned per closed trade")
     stat_row("Expectancy per trade (R)",
-             f"=IFERROR(SUM({q_range})/COUNTIF({o_range},\"<>\"&\"\"),0)",
+             f"=IF(COUNT({q_range})=COUNT({o_range}),IFERROR(SUM({q_range})/COUNT({o_range}),\"\"),\"\")",
              "0.00",
-             "Average R earned per closed trade")
-    stat_row("Average R multiple",
-             f"=IFERROR(AVERAGEIF({o_range},\"<>\"&\"\",{q_range}),0)",
-             "0.00")
+             "Blank if any closed trade lacks valid planned risk")
+    stat_row("Average R (valid-risk trades)",
+             f"=IFERROR(SUM({q_range})/COUNT({q_range}),\"\")",
+             "0.00",
+             f"=COUNT({q_range})&\" of \"&COUNT({o_range})&\" closed trades have valid R\"")
     stat_row("Average days held",
              f"=IFERROR(AVERAGEIF({o_range},\"<>\"&\"\",{r_range}),0)",
              "0.0")
