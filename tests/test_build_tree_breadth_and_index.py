@@ -1193,3 +1193,169 @@ def test_group_index_existing_files_frozen():
     }
     for name, h in frozen.items():
         assert hashlib.sha256((HIST / name).read_bytes()).hexdigest() == h, name
+
+
+# ---- in-repo house builder (#11171 reproducibility) ---------------------------
+# scripts/build_group_index_house.py is the committed producer of the eight house
+# group-index files. The fixture tests run its core functions on made-up tickers
+# and prices only (no real ticker, no archive data). The value-equality test
+# rebuilds every committed file from the real price inputs named by the
+# GROUP_INDEX_* environment variables and skips cleanly when those inputs (or
+# the committed data/ files) are absent, e.g. in CI or on a sparse tree.
+import os  # noqa: E402
+
+from scripts import build_group_index_house as bh  # noqa: E402
+
+
+def test_house_builder_three_group_fixture():
+    """Core functions on a 3-group made-up fixture: dated [start, end) windows,
+    the floor of 5, the EW level convention, frame columns and the first-date
+    census. Every ticker and price here is synthetic."""
+    idx = pd.bdate_range("2001-01-01", periods=120)
+    rng = np.random.default_rng(11)
+    tickers = [f"FAKE{i:02d}" for i in range(1, 19)]
+    closes = pd.DataFrame(
+        100 * np.exp(np.cumsum(rng.normal(0.0003, 0.01, size=(120, 18)), axis=0)),
+        index=idx, columns=tickers)
+    # fixture_grp_a: six members over the whole span.
+    # fixture_grp_b: FAKE12 joins at session 30; FAKE11 is removed AT session 60.
+    # fixture_grp_c: only four in-window members until session 40 (below floor).
+    rows = [{"ticker": t, "group": "fixture_grp_a", "start_date": idx[0], "end_date": pd.NaT}
+            for t in tickers[0:6]]
+    rows += [{"ticker": t, "group": "fixture_grp_b", "start_date": idx[0], "end_date": pd.NaT}
+             for t in tickers[6:10]]
+    rows.append({"ticker": tickers[10], "group": "fixture_grp_b",
+                 "start_date": idx[0], "end_date": idx[60]})
+    rows.append({"ticker": tickers[11], "group": "fixture_grp_b",
+                 "start_date": idx[30], "end_date": pd.NaT})
+    rows += [{"ticker": t, "group": "fixture_grp_c", "start_date": idx[0], "end_date": pd.NaT}
+             for t in tickers[12:16]]
+    rows += [{"ticker": t, "group": "fixture_grp_c", "start_date": idx[40], "end_date": pd.NaT}
+             for t in tickers[16:18]]
+    mem = pd.DataFrame(rows, columns=["ticker", "group", "start_date", "end_date"])
+
+    rets, priced = bh.rets_priced(closes)
+    out = {}
+    for g, sub in mem.groupby("group"):
+        out[g] = bh.dated_index(rets, sub, priced, bh.FLOOR)
+
+    lvl_a, n_a = out["fixture_grp_a"]
+    assert (n_a == 6).all()
+    assert np.isnan(lvl_a.iloc[0])                    # no return on the first session
+    exp = (1 + rets[tickers[0:6]].mean(axis=1).fillna(0)).cumprod()
+    assert np.allclose(lvl_a.iloc[1:].values, exp.iloc[1:].values, atol=1e-12)
+
+    lvl_b, n_b = out["fixture_grp_b"]
+    assert (n_b.iloc[:30] == 5).all()                 # FAKE12 not yet in its window
+    assert (n_b.iloc[30:60] == 6).all()
+    assert (n_b.iloc[60:] == 5).all()                 # FAKE11 removed ON its end date
+    assert lvl_b.iloc[1:].notna().all()               # never below the floor of 5
+    r_b = lvl_b.pct_change()
+    assert np.allclose(r_b.iloc[2:30].values,
+                       rets[tickers[6:11]].iloc[2:30].mean(axis=1).values, atol=1e-12)
+    assert np.allclose(r_b.iloc[30:60].values,
+                       rets[tickers[6:12]].iloc[30:60].mean(axis=1).values, atol=1e-12)
+    assert np.allclose(r_b.iloc[60:].values,
+                       rets[tickers[6:10] + [tickers[11]]].iloc[60:].mean(axis=1).values,
+                       atol=1e-12)
+
+    lvl_c, n_c = out["fixture_grp_c"]
+    assert (n_c.iloc[:40] == 4).all() and (n_c.iloc[40:] == 6).all()
+    assert lvl_c.iloc[:40].isna().all()               # below floor: blank index
+    assert lvl_c.iloc[40:].notna().all()
+
+    # current-members convention on the same fixture matches the dated one when
+    # every member is in-window for the whole span
+    lvl_cur, n_cur = bh.current_index(rets, tickers[0:6], priced, bh.FLOOR)
+    assert (n_cur == 6).all()
+    assert np.allclose(lvl_cur.iloc[1:].values, exp.iloc[1:].values, atol=1e-12)
+
+    df = pd.concat([bh.frame(idx, "sector", g, lvl, n, bh.DATED_BASIS)
+                    for g, (lvl, n) in out.items()], ignore_index=True)
+    assert list(df.columns) == ["date", "level", "group", "index",
+                                "n_priced_members", "membership_basis"]
+    assert (df["index"].dropna() == df["index"].dropna().round(6)).all()
+    first, nlast = bh.firsts_n(df)
+    assert first == {"fixture_grp_a": str(idx[1].date()),
+                     "fixture_grp_b": str(idx[1].date()),
+                     "fixture_grp_c": str(idx[40].date())}
+    assert nlast == {"fixture_grp_a": 6, "fixture_grp_b": 5, "fixture_grp_c": 6}
+
+    # a group with no priced member yields a blank level and zero counts
+    lvl_none, n_none = bh.dated_index(rets, mem.iloc[0:0], priced, bh.FLOOR)
+    assert lvl_none.isna().all() and (n_none == 0).all()
+
+
+def test_house_builder_basket_windows_and_below_floor_counts():
+    """dated_basket_membership keeps removed members as [added, removed) windows;
+    below_floor_counts counts blank-index sessions per group. Made-up doc only."""
+    doc = {"seed_date": "2023-05-09", "baskets": {
+        "fixture_bk_a": {"members": [
+            {"ticker": "FAKE01", "added": "2023-05-09", "removed": None},
+            {"ticker": "FAKE02", "added": "2023-05-09", "removed": "2024-01-02"}]},
+        "fixture_bk_b": {"members": [
+            {"ticker": "FAKE03", "added": "2023-01-03", "removed": None}]}}}
+    mem = bh.dated_basket_membership(doc)
+    assert list(mem.columns) == ["ticker", "group", "start_date", "end_date"]
+    assert len(mem) == 3                              # removed members are kept
+    assert mem.loc[mem.ticker == "FAKE02", "end_date"].iloc[0] == pd.Timestamp("2024-01-02")
+    assert mem.loc[mem.ticker == "FAKE01", "end_date"].iloc[0] is pd.NaT
+    assert mem.loc[mem.ticker == "FAKE03", "start_date"].iloc[0] == pd.Timestamp("2023-01-03")
+    df = pd.DataFrame({"group": ["fixture_bk_a"] * 4 + ["fixture_bk_b"] * 2,
+                       "n_priced_members": [5, 4, 6, 3, 2, 5]})
+    assert bh.below_floor_counts(df) == {"fixture_bk_a": 2, "fixture_bk_b": 1}
+
+
+_HB_INPUT_ENV = ("GROUP_INDEX_CLOSES", "GROUP_INDEX_BASKET_CLOSES",
+                 "GROUP_INDEX_MEMBERSHIP_DIR", "GROUP_INDEX_BASKET_MEMBERSHIP")
+
+
+def _hb_inputs():
+    vals = [os.environ.get(k) for k in _HB_INPUT_ENV]
+    if not all(vals):
+        return None
+    paths = [Path(v) for v in vals]
+    return paths if all(p.exists() for p in paths) else None
+
+
+_HB_INPUTS = _hb_inputs()
+_hb_needs = pytest.mark.skipif(
+    _HB_INPUTS is None or not GI_DATED.exists() or not GI_BK_DATED.exists(),
+    reason="house-builder price inputs (GROUP_INDEX_* env) or committed data/ absent")
+
+
+def _hb_strip_volatile(obj):
+    """Sidecar comparison modulo the build timestamp and input-path fields — the
+    only keys the reproducibility contract allows to differ."""
+    if isinstance(obj, dict):
+        return {k: _hb_strip_volatile(v) for k, v in obj.items()
+                if k not in ("build_time_utc", "path")}
+    if isinstance(obj, list):
+        return [_hb_strip_volatile(v) for v in obj]
+    return obj
+
+
+@_hb_needs
+def test_house_builder_reproduces_committed_values(tmp_path):
+    """Rebuild all eight house files from the real inputs and assert VALUE
+    equality with the committed files (parquets exact; sidecars modulo the build
+    timestamp and input paths). Skips when the inputs or data/ are absent."""
+    closes, basket_closes, mem_dir, basket_mem = _HB_INPUTS
+    out = tmp_path / "house_out"
+    bh.main(["--closes", str(closes), "--basket-closes", str(basket_closes),
+             "--membership-dir", str(mem_dir), "--basket-membership", str(basket_mem),
+             "--out", str(out)])
+    for name in ("group_index_daily_dated.parquet",
+                 "group_index_daily_current_sensitivity.parquet",
+                 "group_index_basket_daily_dated.parquet",
+                 "group_index_daily_dated_sp400_sp600.parquet"):
+        pd.testing.assert_frame_equal(pd.read_parquet(out / name),
+                                      pd.read_parquet(HIST / name), check_exact=True)
+    pd.testing.assert_frame_equal(
+        pd.read_csv(out / "group_index_key_map.csv", keep_default_na=False),
+        pd.read_csv(GI_KEYMAP, keep_default_na=False), check_exact=True)
+    for name in ("group_index.meta.json", "group_index_basket_daily_dated.meta.json",
+                 "group_index_daily_dated_sp400_sp600.meta.json"):
+        got = json.loads((out / name).read_text())
+        want = json.loads((HIST / name).read_text())
+        assert _hb_strip_volatile(got) == _hb_strip_volatile(want), name

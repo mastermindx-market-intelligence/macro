@@ -130,6 +130,8 @@ first dates:
 The original dated sector index uses **sp500** (the same basis as #11094); the continuation
 adds **sp400 and sp600** as separate universes. **Nothing was purchased or downloaded.**
 
+The input data/breadth/sp1500_pit_membership.parquet (writer scripts/midsmall_pit.py) carries duplicate sp600 membership rows for 14 tickers; the index counts distinct tickers, so n_priced_members is unaffected. The input is not repaired here.
+
 Basket dated membership (the census answer for Fix 2): `data/baskets/membership.json` on main
 carries **49 baskets and 1,046 dated member rows** (1,020 active + 26 removed), seed
 **2023-05-09**, 713 unique member tickers of which 664 are priced in the basket store. 16
@@ -313,3 +315,19 @@ subsector builder (`scripts/build_vendor_subsector_index.py`) writes only outsid
 repository tree and now refuses an in-tree `--out` at the CLI with a non-zero exit before
 reading any prices; no vendor group name or per-group number appears in this report, the
 builder, its fixtures or any committed file.
+
+## In-repo producer (reproducibility, #11171)
+
+`scripts/build_group_index_house.py` is the in-repo producer of all eight house files
+above. It ports the ruling-38 builders' method verbatim (same engine loaders, same floor
+of 5, same rules and sidecar text); every input is a required command-line argument
+(`--closes`, `--basket-closes`, `--membership-dir`, `--basket-membership`) and `--out`
+defaults to `data/breadth/history/` at the repo root. Nothing is fetched.
+
+Reproduced 2026-11-12 from the same inputs the original builds used: all four parquets
+and `group_index_key_map.csv` are byte-equal (sha256) to the committed files at
+`66bb54ba0ae8c8a6489b1179cb9d312690d55e6a`; each sidecar differs only in `build_time_utc`.
+The committed data bytes are unchanged.
+`tests/test_build_tree_breadth_and_index.py` runs the builder's core functions on a
+made-up 3-group fixture everywhere, and asserts value equality of a full rebuild against
+the committed files when the price inputs are present (skips cleanly otherwise).
