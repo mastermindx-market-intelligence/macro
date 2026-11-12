@@ -113,3 +113,10 @@ The rule (§2), θ, spacing and clustering are unchanged. A2 adds series and thr
 **Dispersion regime (a column only, not a filter):** the cross-sectional std of 63-session returns across the 11 sectors on each pivot date. Tercile cut-points come from 2005–2019 only. Values are `low`, `mid` and `high`.
 
 **COUNTS.md additions:** F1, F2 and F3 counts as turns and clusters, by tier × block × dispersion tercile. Report F3 durable versus non-durable counts.
+
+## 8. Ruling R1 (Director, 2026-11-12T07:27Z, after the build and before any read)
+- **F1 primary** = the `family_variant` values `cap_weighted` and `equal_weighted` only.
+  - SPHB/SPLV (`factor`) is a separate secondary family, **F1f**.
+  - RSP/SPY (breadth of the index) is secondary too.
+- **Tier columns are not independent:** a cluster can hold both a major and a minor turn. All tests count clusters per type × block, as the primary N.
+- **Leg sizes are in rule space.** They are compared only within the same metric.
