@@ -2,7 +2,7 @@
   "store": "massive_stock_day",
   "n_tickers": 21851,
   "latest_date": "2026-11-10",
-  "updated_at": "2026-11-12T03:00:27.274908+00:00",
+  "updated_at": "2026-11-12T05:26:53.634630+00:00",
   "coverage": {
     "first_day": "2021-07-06",
     "last_day": "2026-11-10",

@@ -35893,7 +35893,7 @@
    "bucket_2_recent": 0,
    "bucket_3_rest": 1,
    "hub_current_surface": 46,
-   "hub_universe": 58,
+   "hub_universe": 59,
    "ledger_tickers": 9073,
    "missing": 2442,
    "parked": 1855,
@@ -35916,12 +35916,12 @@
    "unsupported_symbols": 886
   },
   "dry_run": false,
-  "elapsed_s": 270.4,
-  "no_data": 1,
+  "elapsed_s": 363.9,
+  "no_data": 2,
   "parked": 1,
   "period": "max",
   "planned": 1,
-  "ratio_anomalies": 21,
+  "ratio_anomalies": 20,
   "ratio_anomaly_names": {
    "BCPPF": [
     "tip ratio 0.971932 != 1.0"
@@ -35936,6 +35936,24 @@
     "15.7% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "GPTY": [
+    "21.0% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+   ],
+   "LFGY": [
+    "20.7% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+   ],
+   "MINY": [
+    "20.2% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+   ],
+   "MSST": [
+    "20.3% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+   ],
+   "NVIT": [
+    "20.3% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+   ],
+   "NVYY": [
+    "19.9% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+   ],
+   "QDTY": [
     "20.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "LFGY": [
@@ -35957,7 +35975,7 @@
     "20.8% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "SATA": [
-    "43.3% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "42.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "SDTY": [
     "20.5% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
@@ -35971,9 +35989,6 @@
    "TSYY": [
     "17.1% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
-   "ULTY": [
-    "15.2% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
-   ],
    "XBTY": [
     "19.9% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
@@ -35981,10 +35996,10 @@
     "20.4% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "YMAG": [
-    "17.6% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "17.2% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ],
    "YMAX": [
-    "16.9% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
+    "17.4% of bars step (> 15%) \u2014 the two bases do not look like TR vs split-only"
    ]
   },
   "refresh_attempted": 5680,
@@ -35992,17 +36007,17 @@
   "refresh_cap": 5680,
   "refresh_current_returned": 5333,
   "refresh_expected_session": "2026-11-11",
-  "refresh_noncurrent_returned": 339,
+  "refresh_noncurrent_returned": 335,
   "refresh_planned": 5680,
   "refresh_ran": true,
   "refresh_scope": "all_unmaintained",
   "refresh_unattempted": 0,
   "refreshable": 5680,
-  "refreshed": 5672,
+  "refreshed": 5668,
   "remaining": 0,
-  "schema_rejected": 7,
-  "short_history": 26,
-  "started_utc": "2026-11-12T05:32:41+00:00",
+  "schema_rejected": 10,
+  "short_history": 25,
+  "started_utc": "2026-11-12T07:32:42+00:00",
   "written": 1
  },
  "parked": {
@@ -44102,7 +44117,7 @@
    "attempts": 3,
    "error": "[refresh] no data returned for vendor symbol 'NIMUD'",
    "note": "the stored series could not be re-pulled; the EXISTING parquet is KEPT UNTOUCHED (stale-but-present beats absent \u2014 the ~7d bar-lag bound reports its staleness honestly downstream). NOT a delisting or death claim, and not a coverage loss",
-   "parked_utc": "2026-11-12T05:32:47+00:00",
+   "parked_utc": "2026-11-12T07:32:49+00:00",
    "reason": "refresh_failed"
   },
   "NIOBW": {
@@ -49005,15 +49020,25 @@
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
    "last_attempt": "2026-10-15T03:47:34+00:00"
   },
+  "BBLGW": {
+   "attempts": 1,
+   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
+   "last_attempt": "2026-11-12T07:32:48+00:00"
+  },
   "BTAI": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-11-12T05:32:46+00:00"
+   "last_attempt": "2026-11-12T07:32:48+00:00"
   },
   "BWMN": {
    "attempts": 1,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-11-12T05:33:25+00:00"
+   "last_attempt": "2026-11-12T07:33:32+00:00"
+  },
+  "BZLEY": {
+   "attempts": 1,
+   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
+   "last_attempt": "2026-11-12T07:32:48+00:00"
   },
   "DBRG": {
    "attempts": 1,
@@ -49023,29 +49048,39 @@
   "GLMD": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-11-12T05:32:46+00:00"
+   "last_attempt": "2026-11-12T07:32:48+00:00"
+  },
+  "GREEL": {
+   "attempts": 1,
+   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
+   "last_attempt": "2026-11-12T07:32:48+00:00"
+  },
+  "NHPBP": {
+   "attempts": 1,
+   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
+   "last_attempt": "2026-11-12T07:32:48+00:00"
   },
   "PHGE": {
    "attempts": 2,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-11-12T05:32:46+00:00"
+   "last_attempt": "2026-11-12T07:32:48+00:00"
   },
   "RAY": {
    "attempts": 2,
-   "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-11-12T05:32:46+00:00"
+   "error": "[refresh] no data returned for vendor symbol 'RAY'",
+   "last_attempt": "2026-11-12T07:32:48+00:00"
   },
   "TLSS": {
    "attempts": 1,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-11-12T05:36:44+00:00"
+   "last_attempt": "2026-11-12T07:38:03+00:00"
   },
   "XRPNU": {
    "attempts": 1,
    "error": "[refresh] schema gate: 1 row(s) \u2014 a one-bar stub, not a series",
-   "last_attempt": "2026-11-12T05:32:46+00:00"
+   "last_attempt": "2026-11-12T07:32:48+00:00"
   }
  },
  "schema": "yahoo_backfill_state/1",
- "updated_utc": "2026-11-12T05:37:11+00:00"
+ "updated_utc": "2026-11-12T07:38:45+00:00"
 }
