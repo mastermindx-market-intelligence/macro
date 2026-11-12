@@ -246,8 +246,11 @@ def test_overview_and_realtime_filter_excluded(monkeypatch):
     seen = _capture(monkeypatch)
     a.overview(days=7)
     assert "not exists (select 1 from excluded nx" in seen["sql"]
-    a.realtime()
-    assert "not in (select visitor_id from excluded)" in seen["sql"]   # unaliased form
+    seen["all"].clear()
+    a.realtime()   # two concurrent statements: one unaliased, one aliased
+    joined = " ".join(seen["all"])
+    assert "not in (select visitor_id from excluded)" in joined
+    assert "not exists (select 1 from excluded nx" in joined
 
 
 def test_terminal_filters_search_events_by_operator(monkeypatch):
