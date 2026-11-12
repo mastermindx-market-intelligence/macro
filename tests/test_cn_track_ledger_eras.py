@@ -58,7 +58,7 @@ class TestRealStoreEraSplit:
         assert len(board) > 1000
         assert "board_definition" in board.columns
 
-    def test_the_known_cohorts_partition_the_store_exactly(self, board):
+    def test_the_known_cohorts_partition_the_store_exactly(self, board, record_property):
         """Eras + adjudicated cohorts cover every row; an UNREGISTERED stamp fails here.
 
         2026-08-04: the reversal_watch shelf (#4393) wrote its first rows under
@@ -80,9 +80,17 @@ class TestRealStoreEraSplit:
         superseded = stamps.isin(bcl._CN_SUPERSEDED_ERA_STAMPS)
         # Parallel watch/measurement cohorts — from engine.china_standout_track.
         shelf = stamps.isin(cst.WATCH_DEFINITIONS)
+        # Visible membership is parallel to the featured board, but is not Watch.
+        membership = stamps == bcl._cn_more_actionable_stamp(china_board_rank.BOARD_DEFINITION)
 
         counts = (prior.astype(int) + current.astype(int)
-                  + superseded.astype(int) + shelf.astype(int))
+                  + superseded.astype(int) + shelf.astype(int) + membership.astype(int))
+        record_property("real_store_partition", json.dumps({
+            "rows": len(board), "prior": int(prior.sum()), "current": int(current.sum()),
+            "superseded": int(superseded.sum()), "watch": int(shelf.sum()),
+            "membership": int(membership.sum()), "unmatched": int((counts == 0).sum()),
+            "overlapping": int((counts > 1).sum()),
+        }, sort_keys=True))
         assert (counts <= 1).all(), \
             "a row landed in TWO cohorts: " + str(sorted(set(stamps[counts > 1])))
         assert int(counts.sum()) == len(board), \
@@ -498,3 +506,182 @@ class TestEraLabel:
     def test_label_degrades_without_dates(self):
         en, zh = bcl._cn_era_label(None, None)
         assert en and zh and en != zh
+
+
+# The producer's separate visible-membership cohort is neither a Watch shelf nor
+# a historical headline era. These checks exercise its runtime readers and writes.
+def test_membership_stamp_tracks_the_current_producer_at_call_time(monkeypatch):
+    current = china_board_rank.BOARD_DEFINITION
+    membership = bcl._cn_more_actionable_stamp(current)
+    assert membership == f"{current}_more_actionable"
+    assert membership in bcl._cn_known_cohort_stamps()
+    assert membership not in cst.WATCH_DEFINITIONS
+    assert membership not in bcl._CN_SUPERSEDED_ERA_STAMPS
+    monkeypatch.setattr(china_board_rank, "BOARD_DEFINITION", "cn_runtime_binding_proof")
+    changed = bcl._cn_known_cohort_stamps()
+    assert "cn_runtime_binding_proof_more_actionable" in changed
+    assert membership not in changed
+    assert "cn_prophet_v999_more_actionable" not in changed
+
+
+@pytest.mark.parametrize("unknown", [False, True], ids=["current-membership", "future-stamp"])
+def test_membership_emits_its_own_record_and_only_unknown_stamps_warn(
+    monkeypatch, tmp_path, capsys, record_property, unknown
+):
+    data = tmp_path / "data"
+    monkeypatch.setattr(bcl.config, "data_dir", lambda: data)
+    live = china_board_rank.BOARD_DEFINITION
+    stamp = ("cn_prophet_v999_more_actionable" if unknown
+             else bcl._cn_more_actionable_stamp(live))
+    watch = "cn_reversal_watch_v1"
+    assert watch in cst.WATCH_DEFINITIONS
+    path = cst._store_path()
+    path.parent.mkdir(parents=True)
+    pd.DataFrame([
+        {"date": "2026-06-01", "ticker": "600519.SS", "board_rank": 1,
+         "tier": "T1", "board_definition": None},
+        {"date": "2026-07-20", "ticker": "601318.SS", "board_rank": 1,
+         "tier": "T1", "board_definition": live},
+        {"date": "2026-06-15", "ticker": "000001.SZ", "board_rank": 1,
+         "tier": "T1", "board_definition": stamp},
+        {"date": "2026-06-01", "ticker": "300750.SZ", "board_rank": 1,
+         "tier": "T1", "board_definition": watch},
+    ]).to_parquet(path, index=False)
+    before = path.read_bytes()
+    monkeypatch.setattr(cst, "_price_frame", _price_frame)
+    monkeypatch.setattr(cst, "_bench_close", _bench)
+    site = tmp_path / "site"
+    (site / "factordata").mkdir(parents=True)
+    assert bcl.emit_cn_track_ledger(
+        site, None, [], board_definition=live, asof="2026-07-31", lane="daily"
+    ) is True
+    out = capsys.readouterr().out
+    doc = json.loads((site / "factordata/cn_track_ledger.json").read_text())
+    assert {r["t"] for r in doc["rows"]} == {"601318.SS"}
+    assert {r["t"] for r in doc["prior_record"]["rows"]} == {"600519.SS"}
+    extra = {block["board_definition"]: block for block in doc["extra_records"]}
+    assert set(extra) == {stamp, watch}
+    member = extra[stamp]
+    assert {(r["t"], r["d"]) for r in member["rows"]} == {("000001.SZ", "2026-06-15")}
+    assert member["meta"]["n_total"] == 1
+    assert member["meta"]["closed"] is False
+    assert member["summary"]["horizon"] == doc["summary"]["horizon"] == bcl._CN_HORIZON
+    assert member["meta"]["exit_rule"] == doc["meta"]["exit_rule"]
+    assert {r["t"] for r in extra[watch]["rows"]} == {"300750.SZ"}
+    assert (len(doc["rows"]) + doc["prior_record"]["meta"]["n_total"]
+            + sum(x["meta"]["n_total"] for x in extra.values())) == 4
+    warnings = [line for line in out.splitlines()
+                if "cn-track-unknown-board-definition" in line]
+    if unknown:
+        assert len(warnings) == 1
+        assert warnings[0].startswith("::warning title=cn-track-unknown-board-definition")
+        assert stamp in warnings[0] and live in warnings[0]
+    else:
+        assert warnings == []
+    assert path.read_bytes() == before
+    assert not cst._entry_latch_path().exists()
+    record_property("cohort_stamps", json.dumps(sorted(extra)))
+    record_property("unknown_warnings", json.dumps(warnings))
+
+
+def test_tenure_reader_includes_membership_and_excludes_watch_and_legacy():
+    from engine import prophet_board_since as pbs
+
+    live = china_board_rank.BOARD_DEFINITION
+    membership = bcl._cn_more_actionable_stamp(live)
+    frame = pd.DataFrame([
+        {"date": "2026-07-20", "ticker": "FEATURED", "board_definition": live},
+        {"date": "2026-07-20", "ticker": "MEMBER", "board_definition": membership},
+        {"date": "2026-07-20", "ticker": "WATCH", "board_definition": "cn_reversal_watch_v1"},
+        {"date": "2026-07-20", "ticker": "OLD", "board_definition": "legacy"},
+    ])
+    observations = pbs.observations_from_cn_frame(frame, cst.WATCH_DEFINITIONS)
+    assert observations == [("2026-07-20", frozenset({"FEATURED", "MEMBER"}))]
+
+
+@pytest.mark.parametrize("featured,lane", [
+    (True, "asia"), (False, "asia"), (True, None), (True, "daily"),
+], ids=["membership-before-featured", "zero-featured", "unnamed-lane", "non-asia-lane"])
+def test_actual_membership_append_block_preserves_headline_and_write_gates(
+    monkeypatch, tmp_path, record_property, featured, lane
+):
+    import ast
+    import copy
+    from engine import prophet_board_since as pbs
+
+    # Execute the actual guarded block and immediately following featured append.
+    # The rest of main() collects and publishes unrelated nightly state.
+    source_path = ROOT / "scripts/build_china_library.py"
+    tree = ast.parse(source_path.read_text(encoding="utf-8"))
+    guards = [node for node in ast.walk(tree)
+              if isinstance(node, ast.If) and isinstance(node.test, ast.Call)
+              and isinstance(node.test.func, ast.Name)
+              and node.test.func.id == "_more_actionable_append_is_safe"]
+    assert len(guards) == 1
+    guard = guards[0]
+    following = []
+    for parent in ast.walk(tree):
+        for _, values in ast.iter_fields(parent):
+            if isinstance(values, list):
+                for index, node in enumerate(values[:-1]):
+                    if node is guard:
+                        following.append(values[index + 1])
+    assert len(following) == 1
+    featured_append = following[0]
+    assert isinstance(featured_append, ast.Assign)
+    assert [target.id for target in featured_append.targets] == ["_bn"]
+    assert isinstance(featured_append.value, ast.Call)
+    assert ast.unparse(featured_append.value.func) == "china_standout_track.append_board"
+    assert ast.unparse(featured_append.value.args[0]) == "wide['buy']"
+
+    data = tmp_path / "data"
+    monkeypatch.setattr(bcl.config, "data_dir", lambda: data)
+    pending = tmp_path / "empty-pending-replay"
+    pending.mkdir()
+    monkeypatch.setattr(cst, "_pending_replay_dir", lambda: pending)
+    monkeypatch.setattr(cst, "session_status", lambda asof: {"partial_session": False})
+    path = cst._store_path()
+    assert not path.exists() and not list(pending.iterdir())
+    live = china_board_rank.BOARD_DEFINITION
+    membership = bcl._cn_more_actionable_stamp(live)
+    wide = {
+        "board_definition": live,
+        "buy": [{"ticker": "FEATURED", "board_definition": live}] if featured else [],
+        "more_actionable": [{"ticker": "MEMBER"}],
+    }
+    untouched = copy.deepcopy(wide)
+    calls = []
+    append = cst.append_board
+
+    def record_append(rows, **kwargs):
+        calls.append({"tickers": [r["ticker"] for r in rows],
+                      "definitions": [r.get("board_definition") for r in rows],
+                      "lane": kwargs["lane"]})
+        return append(rows, **kwargs)
+
+    monkeypatch.setattr(cst, "append_board", record_append)
+    namespace = dict(vars(bcl), wide=wide, as_of="2026-07-20", _lane=lane)
+    block = ast.Module(body=[guard, featured_append], type_ignores=[])
+    exec(compile(block, str(source_path), "exec"), namespace)
+    assert wide == untouched
+    assert [call["tickers"] for call in calls] == (
+        [["MEMBER"], ["FEATURED"]] if featured else [[]]
+    )
+    if featured:
+        assert calls[0]["definitions"] == [membership]
+        assert calls[1]["definitions"] == [live]
+    if featured and lane == "asia":
+        stored = pd.read_parquet(path)
+        assert list(zip(stored["ticker"], stored["board_definition"])) == [
+            ("MEMBER", membership), ("FEATURED", live)
+        ]
+        headline, definition = cst._latest_definition_frame(stored)
+        assert definition == live and set(headline["ticker"]) == {"FEATURED"}
+        assert pbs.observations_from_cn_frame(stored, cst.WATCH_DEFINITIONS) == [
+            ("2026-07-20", frozenset({"MEMBER", "FEATURED"}))
+        ]
+        assert namespace["_bn_ma"] == 1 and namespace["_bn"] == 2
+    else:
+        assert not path.exists() and namespace["_bn"] == 0
+    assert not list(pending.iterdir())
+    record_property("actual_append_calls", json.dumps(calls))
