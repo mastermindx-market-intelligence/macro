@@ -7336,7 +7336,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow jsonschema==4.26.0
       - name: paywall fail-closed contract (incl. enforced-early payload lane)
         run: python -m pytest tests/test_paywall.py tests/test_api_paywall.py tests/test_auth_cache_outage.py -q
       - name: Pro-only host gate (bot.mastermind-x.com -> /api/paywall/check_pro)
@@ -13815,7 +13815,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install capital-structure test deps
-        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3 beautifulsoup4
+        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3 beautifulsoup4 plotly
       # P1 unrun backfill 2026-08-14: the REGISTRATION-LIFECYCLE compiler joins the step
       # that already owns every other capital-structure compiler and contract.
       # tests/test_compile_capital_structure_registration_lifecycles.py was named by no
@@ -14890,7 +14890,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema==4.26.0
       - name: neural-web registry + envelope + bus-doc freshness tests
         run: python -m pytest tests/test_synapse_registry.py tests/test_neuralweb_envelope.py tests/test_signal_bus_doc.py tests/test_admin_neural_web.py tests/test_admin_intelligence_os.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_admin_intelligence_os_ui.py tests/test_admin_theme_tokens.py tests/test_eval_os_adversarial_acceptance.py tests/test_admin_metabolism.py tests/test_admin_metabolism_history.py tests/test_entity_thesis_registry.py tests/test_check_entity_thesis_registry.py tests/test_nw_lobe_descriptions.py tests/test_synapse_registry_contract.py -q
       - name: Neural Web constitution A0-A7 regression (A7 refusal + Wilson-gate sweep)
@@ -38604,7 +38604,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy jsonschema==4.26.0 rjsmin==1.2.5
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy jsonschema==4.26.0 rjsmin==1.2.5 html5lib
       # 2026-08-15 fusion override (WS:PROPHET-CONDITIONAL-FUSION): the C1 ranker
       # suite rides the step that already owns engine/us_board_rank.py rather than
       # opening a new one — it tests the SAME module's rank authority, and a
@@ -39642,7 +39642,7 @@ jobs:
         # jsonschema: lib/evidence_foundation.py:19 does `from jsonschema import
         # Draft202012Validator, FormatChecker, SchemaError` at module scope, so the
         # intraday-lane suites died ModuleNotFoundError without it.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema html5lib
       # P1 unrun backfill 2026-08-14 — three consumers of plumbing this step already
       # owns joined the list, appended rather than given a step of their own because a
       # step is the masking unit here (run_ci_pack.py returns on the first non-zero
