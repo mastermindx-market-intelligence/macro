@@ -2,8 +2,10 @@
 
 **Primary read (Chairman steer 2026-11-12):** the goal is identifying pivots accurately, not beating
 SPY. For every turn into risk-off (a top) and back to risk-on (a bottom): was it flagged, and how
-many sessions before or after. Paper economics (`SCORECARD_INSAMPLE_2026-11-12.md` §3b) are now a
-secondary column.
+many sessions before or after. Paper economics and the insurer sleeve (`SCORECARD_INSAMPLE_2026-11-12.md` §3b, §5) are a
+descriptive appendix only, never a bar or headline (Chairman correction 2026-11-12: "The point is
+pivot identification"). The Radar is judged on this read: flagged or not, sessions before/after
+the turn, false calls per year, against the near-high placebo and the two mechanical references.
 
 **Label: IN-SAMPLE.** v2 constants were chosen on this window; 2024+ is the Radar's own seen
 history, not the desk's sealed confirmation. Episode counts sit beside every figure; intervals are

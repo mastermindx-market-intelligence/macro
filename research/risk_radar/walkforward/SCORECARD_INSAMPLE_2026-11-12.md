@@ -106,7 +106,7 @@ gives the research desk the bar any challenger has to clear at the same budget. 
 - Breadth input history: present from 1962 in the store, but not re-audited for point-in-time
   membership.
 
-## 5. Insurer profile (secondary headline, added 2026-11-12; see PREREG addendum 1)
+## 5. Insurer profile (descriptive appendix only, never a bar or headline; added 2026-11-12, demoted same day; see PREREG addendum 1 note)
 
 > **In-sample, not a result** (principal ruling 2026-11-12). The incumbent on the years its
 > parameters were tuned on, including the sealed years. Do not quote in any summary; the

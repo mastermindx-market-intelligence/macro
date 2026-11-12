@@ -28,3 +28,11 @@ reads** (they choose nothing):
 3. **Read order.** Reports show recall on ≥10% turns, then ≥7%, then the ≥5% primary, each with
    false alarms and gains forgone beside it. Missing a large decline is the costlier error. This
    is presentation order only; the primary endpoint stays the ≥5% pivot read.
+
+---
+**Note 2026-11-12 (Chairman correction, via principal):** "we're not doing portfolio management… The
+point is pivot identification". Items 1–2 above are demoted to a **descriptive appendix**: never a
+bar, a headline or a comparator anything is judged against. Item 3's ≥10/≥7/≥5% order now applies
+to the pivot read only. SPY < 200d stays as an identification baseline (when it calls each turn and
+how late), as already listed in prereg §4. No frozen item changes; the primary endpoint was and
+remains the pivot read.

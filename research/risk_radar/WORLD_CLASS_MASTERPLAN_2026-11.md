@@ -625,7 +625,7 @@ Frozen as `walkforward/PREREG_WALKFORWARD_v1.md` (hash in `PREREG_WALKFORWARD_v1
 - Raw testing, data rebuilds, reruns and sweeps go to `deepseek-v4.1-flash` workers in parallel.
 - The principal directs, reviews and adjudicates.
 
-### 14.7 Chairman's objective: an insurer's profile (secondary column)
+### 14.7 Insurer profile (descriptive appendix; demoted 2026-11-12)
 
 Added as declared secondary reads in `walkforward/PREREG_WALKFORWARD_v1_ADDENDUM_1.md` with no
 frozen item changed. `engine/risk_radar_eval/insurer.py` reports:
@@ -640,3 +640,13 @@ The in-sample insurer figures are **not a result** (principal ruling 2026-11-12)
 incumbent on the years its parameters were tuned on, including the sealed years. They stay in
 `walkforward/SCORECARD_INSAMPLE_2026-11-12.md` §5–§6, labelled in-sample, and out of every summary
 until the walk-forward series replaces them.
+
+### 14.8 Chairman correction: pivot identification only (2026-11-12)
+
+"We're not doing portfolio management… The point is pivot identification." Every Radar summary
+leads with the pivot read: flagged or not, sessions before or after the turn, false calls per year,
+against the near-high placebo and the two mechanical references (within 1% of the high; ≥5% below
+it). The insurer read and the sleeve comparators (vol-matched SPY + bills, 60/40, the 200-session
+rule as a sleeve) are a descriptive appendix, never a bar or headline. The 200-session rule remains
+an identification baseline only. The frozen primary endpoint was already the pivot read; nothing
+frozen changes.
