@@ -1520,6 +1520,45 @@ class TestContextStale:
 # 16. Degraded-memo gate: last_run_state.json must NOT be written on degraded runs
 # ---------------------------------------------------------------------------
 
+@pytest.mark.parametrize("outcome", ["missing", "corrupt", "array", "previous_run", "no_status", "unknown_status", "wrong_schema", "contradictory_status"])
+def test_unverified_current_memo_keeps_input_gate_open(repo, outcome):
+    from engine.neuralweb.cortex import run
+
+    memo_path = repo / "data/neuralweb/cortex/memo.json"
+    gate_path = memo_path.with_name("last_run_state.json")
+
+    def incomplete_loop(root, cfg, providers, now_str, probation_status):
+        if outcome == "missing":
+            memo_path.unlink(missing_ok=True)
+        elif outcome == "corrupt":
+            memo_path.write_text("{not-json")
+        elif outcome == "array":
+            memo_path.write_text("[]")
+        else:
+            memo = {"schema": "neuralweb.cortex_memo.v1", "as_of": now_str,
+                    "run_status": {"status": "ok", "degraded": False},
+                    "tool_call_census": {"read_world_state": 1}}
+            if outcome == "previous_run":
+                memo["as_of"] = "2000-01-01T00:00:00Z"
+            elif outcome == "no_status":
+                del memo["run_status"]
+            elif outcome == "unknown_status":
+                memo["run_status"]["status"] = "not-a-result"
+            elif outcome == "wrong_schema":
+                memo["schema"] = "different.v1"
+            elif outcome == "contradictory_status":
+                memo["run_status"]["degraded"] = True
+            memo_path.write_text(json.dumps(memo))
+        return {"written": str(memo_path)}
+
+    with patch("engine.neuralweb.cortex._build_providers", return_value=[{}]), \
+         patch("engine.neuralweb.cortex._run_tool_loop", side_effect=incomplete_loop) as loop:
+        assert run(root=repo, force=True) == 0
+        assert not gate_path.exists()
+        assert run(root=repo) == 0
+        assert loop.call_count == 2
+
+
 class TestDegradedGate:
     """Regression guard for the sticky-failure bug.
 

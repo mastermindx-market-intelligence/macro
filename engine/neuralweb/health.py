@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -407,13 +408,23 @@ def _lobe_record(art_id: str, art: dict, root: Path) -> dict:
 
 # ---- cortex section ----------------------------------------------------------
 
+def _positive_finite(value: Any) -> bool:
+    if type(value) not in (int, float):
+        return False
+    try:
+        return value > 0 and math.isfinite(value)
+    except OverflowError:
+        return False
+
+
 def _derive_run_status_legacy(memo: dict) -> dict:
     """Derive run_status from tool_call_census for legacy memos (mirrors admin pattern)."""
     tcc = memo.get("tool_call_census") or {}
-    has_tools = bool(tcc) and not (len(tcc) == 1 and "fallback_call" in tcc)
+    tcc = {k: v for k, v in tcc.items() if _positive_finite(v)} if isinstance(tcc, dict) else {}
+    has_tools = any(k != "fallback_call" for k in tcc)
     return {
         # Legacy normal run (has_tools=True) maps to 'ok', not 'warn', so the
-        # health rollup sees it as fresh — 'warn' is reserved for PR-A partial runs
+        # health rollup qualifies freshness separately — 'warn' is for partial runs
         # (model_fallback, context_stale) that need operator attention.
         "status": "ok" if has_tools else "degraded",
         "degraded": not has_tools,
@@ -428,7 +439,7 @@ def _derive_run_status_legacy(memo: dict) -> dict:
     }
 
 
-def _cortex_section(root: Path, cortex_source: str = "previous_run") -> dict:
+def _cortex_section(root: Path, cortex_source: str = "previous_run", *, artifacts: dict | None = None) -> dict:
     """Build the cortex health section."""
     memo_path = root / "data" / "neuralweb" / "cortex" / "memo.json"
     prob_path = root / "data" / "neuralweb" / "cortex" / "probation.json"
@@ -439,41 +450,67 @@ def _cortex_section(root: Path, cortex_source: str = "previous_run") -> dict:
         "run_status": None,
         "probation": None,
         "status": "unknown",
+        "freshness_status": "unknown",
+        "age_hours": None,
+        "freshness_sla_hours": None,
     }
 
+    # Synapse owns cadence/SLA. A missing policy cannot establish freshness, and
+    # filesystem mtime (e.g. a deploy or mirror copy) is never a memo heartbeat.
+    if artifacts is None:
+        registry = _parse_yaml_synapse(root / "config" / "synapse.yml")
+        artifacts = registry.get("artifacts", {}) if isinstance(registry, dict) else {}
+    policy = artifacts.get("cortex-memo", {}) if isinstance(artifacts, dict) else {}
+    sla = policy.get("freshness_sla_hours") if isinstance(policy, dict) else None
+    if _positive_finite(sla):
+        out["freshness_sla_hours"] = sla
+
     memo = _read_json(memo_path)
-    if memo:
+    if isinstance(memo, dict) and memo:
         out["memo_as_of"] = memo.get("as_of") or memo.get("generated_at")
+        try:
+            stamp = datetime.fromisoformat(out["memo_as_of"].replace("Z", "+00:00"))
+            if stamp.tzinfo is None:
+                stamp = stamp.replace(tzinfo=timezone.utc)  # bus convention
+            age = (datetime.now(timezone.utc) - stamp).total_seconds() / 3600
+            out["age_hours"] = round(age, 2)
+            if age >= 0 and out["freshness_sla_hours"] is not None:
+                out["freshness_status"] = "stale" if age > sla else "fresh"
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            pass  # unknown clock must remain unknown
         raw_rs = memo.get("run_status")
-        run_status = raw_rs if raw_rs else _derive_run_status_legacy(memo)
+        run_status = _derive_run_status_legacy(memo) if raw_rs is None else raw_rs
+        if not isinstance(run_status, dict):
+            run_status = {}
         out["run_status"] = run_status
         degraded = run_status.get("degraded", False)
-        rs_status = run_status.get("status", "ok")
+        rs_status = run_status.get("status")
         # Honesty law: a fallback-model run sets degraded=False but status='warn'.
         # Map any non-ok run_status (warn = model_fallback, context_stale, budget)
         # to lobe status 'warn' so health/brief rollups surface it.
-        if degraded:
+        if degraded or rs_status == "degraded":
             out["status"] = "degraded"
         elif rs_status == "warn":
             out["status"] = "warn"
-        else:
-            out["status"] = "fresh"
+        elif rs_status == "ok" and run_status.get("degraded") is False:
+            out["status"] = out["freshness_status"]
     else:
-        out["status"] = "missing"
+        out["status"] = "unknown" if memo_path.exists() else "missing"
 
     # probation — may live in memo or separate file
     prob = None
-    if memo:
+    if isinstance(memo, dict):
         prob = memo.get("probation")
     if prob is None:
         prob_json = _read_json(prob_path)
         if prob_json:
             prob = prob_json
 
-    if prob:
+    if isinstance(prob, dict) and prob:
+        track_record = prob.get("attention_track_record")
         out["probation"] = {
             "granted": prob.get("granted", False),
-            "n": (prob.get("attention_track_record") or {}).get("n"),
+            "n": track_record.get("n") if isinstance(track_record, dict) else None,
             "min_n": prob.get("min_n", 30),
         }
 
@@ -555,7 +592,7 @@ def _overall_status(lobes: list[dict], cortex: dict, world_state_id: str = "worl
     # (model_fallback, context_stale, budget), or missing (memo absent) elevates
     # overall to warn.  An unverifiable cortex is treated as at-least-warn so the
     # operator sees it — nulls printed, not hidden.
-    if cortex_status in ("degraded", "warn", "missing"):
+    if cortex_status != "fresh":
         return "warn"
 
     any_bad = any(r["status"] in ("stale", "fresh_partial", "degraded", "unknown") for r in lobes)
@@ -938,7 +975,7 @@ def build(root: Path | None = None, cortex_source: str = "previous_run") -> dict
     _embed_support_impact(lobes, root)
 
     # Cortex section
-    cortex = _cortex_section(root, cortex_source=cortex_source)
+    cortex = _cortex_section(root, cortex_source=cortex_source, artifacts=artifacts)
 
     # Workflow conformance (daily-engine only)
     conformance_misses = _workflow_conformance(lobes, root)

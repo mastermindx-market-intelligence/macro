@@ -3388,11 +3388,24 @@ def _check_constitution(root: Path) -> dict:
 # Public entrypoint
 # ---------------------------------------------------------------------------
 
+def _verified_current_memo(root: Path, now_str: str) -> bool:
+    """Only an explicit, readable result from this run may close the input gate."""
+    try:
+        memo = json.loads((_cortex_dir(root) / "memo.json").read_text(encoding="utf-8"))
+        if not isinstance(memo, dict) or memo.get("schema") != _SCHEMA_MEMO or memo.get("as_of") != now_str:
+            return False
+        status = memo.get("run_status")
+        return (isinstance(status, dict) and status.get("status") in ("ok", "warn")
+                and status.get("degraded") is False)
+    except (OSError, ValueError, TypeError):
+        return False
+
+
 def run(root: Path | None = None, force: bool = False) -> int:
     """Main cortex run.  Returns exit code (always 0 — degrade-never-raise)."""
     t0 = time.monotonic()
     root = _repo_root(root)
-    now_str = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    now_str = datetime.now(timezone.utc).isoformat(timespec="microseconds")
     cfg = _cfg(root)
 
     log.info("cortex: starting run (now=%s, root=%s)", now_str, root)
@@ -3433,41 +3446,11 @@ def run(root: Path | None = None, force: bool = False) -> int:
         log.warning("cortex: tool loop raised (%s) — falling back to single-call", exc)
         _single_call_fallback(root, cfg, providers, now_str, probation_status, f"loop_error:{exc}")
 
-    # 5. Save run state only when memo is healthy (ok or warn).
-    # If run_status.status=='degraded', skip the save so the gate stays open and the
-    # next nightly sees unchanged inputs as still-stale, retrying the LLM call.
-    # On any read/parse failure, save conservatively — never crash.
-    _memo_run_status = "ok"  # conservative default
-    try:
-        _memo_path = _cortex_dir(root) / "memo.json"
-        _memo_doc = json.loads(_memo_path.read_text(encoding="utf-8"))
-        _raw_run_status = _memo_doc.get("run_status")
-        if isinstance(_raw_run_status, dict):
-            _memo_run_status = _raw_run_status.get("status", "ok")
-        elif _raw_run_status is None:
-            # Belt-and-suspenders: run_status absent means the stamping failed.
-            # Treat as degraded when the memo content indicates a failed run so
-            # the gate stays open and tonight retries.
-            _summary = _memo_doc.get("summary", "")
-            _census = _memo_doc.get("tool_call_census", {})
-            _degraded_summary = (
-                "Budget exhausted after 0" in _summary
-                or "Partial deliberation" in _summary
-                or "[DEGRADED:" in _summary
-            )
-            _empty_census = not _census or list(_census.values()) == [0] * len(_census)
-            if _degraded_summary or _empty_census:
-                log.warning(
-                    "cortex: memo has no run_status and degraded summary/census — "
-                    "treating as degraded so gate stays open"
-                )
-                _memo_run_status = "degraded"
-    except Exception:  # noqa: BLE001
-        pass  # read/parse failure → keep conservative default, save below
-
-    if _memo_run_status == "degraded":
+    # 5. A missing/corrupt/previous result is not completion. Leave the existing
+    # gate open until this run's stamped memo explicitly confirms ok or warn.
+    if not _verified_current_memo(root, now_str):
         log.info(
-            "cortex: skipping last_run_state save (memo run_status=degraded) — "
+            "cortex: skipping last_run_state save (current memo not verified) — "
             "gate stays open so next nightly retries"
         )
     else:
