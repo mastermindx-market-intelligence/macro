@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #11101, runtime-adapter closure): wiring
+    tools/xguerrilla/tests/test_runtime_adapter.py into
+    marketing-social-publisher satisfies the closure doctrine —
+    contract-delta had flagged the suite as named by no run: step
+    (run 43143064165, job 130934421614). The join adds its run token
+    to that step with no new job selected ("newly selected: none");
+    the estimator measures +2 on the shared owner for all three
+    probes: index 5969->5971, free-content 5993->5995, Prophet
+    5727->5729. Jobs 137/138/131, ten packs, selectors, commands
+    and admission limits unchanged. The wider selection is intended
+    (closure-required); natural successor CI must qualify the
+    repaired source.
 
     2026-11-12 (PR #7493, preserve Start coverage and browser fallback):
     Receiver 0b26ae364676069354a53d1d84be21ee94cd78a0 preserves the
