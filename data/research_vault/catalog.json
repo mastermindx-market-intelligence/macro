@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T16:51:33.761159+00:00",
-  "count": 3240,
+  "generated_at": "2026-11-12T17:21:59.455631+00:00",
+  "count": 3241,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -526,6 +526,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-a0teuk3evbd-f0e828",
+      "title": "StubHub Holdings (STUB) Q3'26 Earnings Review Events Backup Produces Positive Mix of Growth and Margins",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:43:16Z",
+      "summary_points": [
+        "Q3 Earnings Highlights: Solid GMS/Adj.",
+        "EBITDA beat driven by live events demand and market share; debt leverage declining to 2.5x (vs 4.5x FY25) with $100mm debt repayment, TTM FCF at $192mm.",
+        "Q3 Revenue Miss & Downward Estimates: Q3 revenue missed due to World Cup lower take rates; revised Q4 GMS ($2.45bn vs $2.56bn), revenue ($483mm vs $504mm), and FY26 GMS ($10.38bn vs $10.52bn) with key risks: World Cup impact, MLB volatility.",
+        "Enhanced Liquidity & Capital Allocation: Net debt/EBITDA declining to 1.9x (12/26E) from 4.4x (12/25); operating cash flow surging to $402.5m (12/26E), enabling strategic investment capacity.",
+        "Key Downside Risks: World Cup impact, MLB volatility, 2027 concert visibility uncertainty, regulatory environment, and execution risk limiting near-term upside despite improved leverage."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
