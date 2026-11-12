@@ -1,10 +1,16 @@
 {
+ "rights_class": "internal_only",
+ "source_family": "finviz_themes",
+ "rights_source": "config/theme_sources.yml:33",
+ "rights_sentence": "retained internal-only. NO public/customer display or redistribution rights granted",
+ "use": "internal research data: no name or number from these families goes to any site page, site data file, Terminal surface, member page or public bucket (COO ruling 32)",
  "basis": "reconstructed_current_membership",
  "basis_note": "today's members applied to the past; not point-in-time; survivors only",
  "families": {
   "subsector": {
    "registry": "data/themes_heatmap/themes_tree.json",
    "registry_sha256": "73cbe24731a6c410c899cc71f430268091037ccb660f26c47ca5f8371a902704",
+   "rights_class": "internal_only",
    "outputs": [
     "breadth",
     "index"
@@ -14,27 +20,12 @@
   "theme": {
    "registry": "data/themes_heatmap/themes_tree.json",
    "registry_sha256": "73cbe24731a6c410c899cc71f430268091037ccb660f26c47ca5f8371a902704",
+   "rights_class": "internal_only",
    "outputs": [
     "breadth",
     "index"
    ],
    "label": "themes_tree.json parent themes (group = theme key)"
-  },
-  "basket": {
-   "registry": "data/baskets/membership.json",
-   "registry_sha256": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae",
-   "outputs": [
-    "index"
-   ],
-   "label": "baskets, active members (basket breadth stays in basket_breadth_*_current.parquet on archive prices)"
-  },
-  "sector": {
-   "registry": "data/breadth/constituents.parquet",
-   "registry_sha256": "99f071b19a24cb6783e8ff061d07ae3006fb833af595602425e2a1eebc5aec2f",
-   "outputs": [
-    "index"
-   ],
-   "label": "S&P 500 GICS sectors (sector breadth stays in group_breadth_*_current.parquet on archive prices)"
   }
  },
  "multi_group": "a name in several groups counts in each",
@@ -434,20 +425,6 @@
    "unpriced": [
     "YYGH"
    ]
-  },
-  "basket": {
-   "groups": 49,
-   "tickers": 702,
-   "slots": 1020,
-   "tickers_priced": 702,
-   "unpriced": []
-  },
-  "sector": {
-   "groups": 11,
-   "tickers": 503,
-   "slots": 503,
-   "tickers_priced": 503,
-   "unpriced": []
   }
  },
  "valid_last_week": {
@@ -594,64 +571,6 @@
   "theme/Wearables": "2001-05-18"
  },
  "first_valid_index": {
-  "basket/ai_agents": "2021-04-23",
-  "basket/ai_infra": "2000-01-07",
-  "basket/ai_neoclouds": "2021-07-30",
-  "basket/ai_semiconductors": "2004-11-19",
-  "basket/ai_software": "2000-01-07",
-  "basket/big_pharma": "2000-01-07",
-  "basket/critical_minerals": "2018-07-06",
-  "basket/crypto": "2024-07-26",
-  "basket/crypto_rails": "2021-04-16",
-  "basket/cybersecurity": "2018-03-16",
-  "basket/data_center_power": "2018-04-27",
-  "basket/defense": "2000-01-07",
-  "basket/defensives": "2000-01-07",
-  "basket/energy_complex": "2000-01-07",
-  "basket/gold_miners": "2000-01-07",
-  "basket/housing": "2000-01-07",
-  "basket/industrial_distribution": "2000-01-07",
-  "basket/insurance": "2000-01-07",
-  "basket/mag7": "2004-08-20",
-  "basket/managed_care": "2001-11-02",
-  "basket/non_ai_software": "2012-10-12",
-  "basket/non_ai_tech": "2000-01-07",
-  "basket/nuclear_power": "2022-01-21",
-  "basket/obesity_glp1": "2000-01-07",
-  "basket/payments_fintech": "2001-01-19",
-  "basket/power_grid": "2000-01-07",
-  "basket/quantum_computing": "2004-08-20",
-  "basket/regional_banks": "2000-01-07",
-  "basket/reshoring": "2000-01-07",
-  "basket/retail": "2000-01-07",
-  "basket/robotics_automation": "2000-01-07",
-  "basket/semicap_equipment": "2000-01-07",
-  "basket/silver_miners": "2006-04-28",
-  "basket/space_economy": "2019-12-20",
-  "basket/travel": "2000-01-07",
-  "basket/uranium_miners": "2007-04-05",
-  "basket/us_sector_comm": "2000-01-07",
-  "basket/us_sector_discretionary": "2000-01-07",
-  "basket/us_sector_energy": "2000-01-07",
-  "basket/us_sector_financials": "2000-01-07",
-  "basket/us_sector_health": "2000-01-07",
-  "basket/us_sector_industrials": "2000-01-07",
-  "basket/us_sector_materials": "2000-01-07",
-  "basket/us_sector_realestate": "2000-01-07",
-  "basket/us_sector_staples": "2000-01-07",
-  "basket/us_sector_tech": "2000-01-07",
-  "basket/us_sector_utilities": "2000-01-07",
-  "sector/Communication Services": "2000-01-07",
-  "sector/Consumer Discretionary": "2000-01-07",
-  "sector/Consumer Staples": "2000-01-07",
-  "sector/Energy": "2000-01-07",
-  "sector/Financials": "2000-01-07",
-  "sector/Health Care": "2000-01-07",
-  "sector/Industrials": "2000-01-07",
-  "sector/Information Technology": "2000-01-07",
-  "sector/Materials": "2000-01-07",
-  "sector/Real Estate": "2000-01-07",
-  "sector/Utilities": "2000-01-07",
   "subsector/agriculturealtprotein": "2021-03-12",
   "subsector/agriculturecropinputs": "2017-07-21",
   "subsector/agricultureprocessing": "2000-01-07",
@@ -949,10 +868,15 @@
   "theme/Virtual & Augmented Reality": "2000-01-07",
   "theme/Wearables": "2000-01-07"
  },
+ "files": [
+  "internal_only/vendor_internal_only_breadth_weekly_current.parquet",
+  "internal_only/vendor_internal_only_ew_index_daily_current.parquet",
+  "internal_only/vendor_internal_only_ew_index_weekly_current.parquet"
+ ],
  "rows": {
-  "tree_breadth_weekly_current.parquet": 431508,
-  "group_ew_index_weekly_current.parquet": 515568,
-  "group_ew_index_daily_current.parquet": 2486208
+  "vendor_internal_only_breadth_weekly_current.parquet": 431508,
+  "vendor_internal_only_ew_index_weekly_current.parquet": 431508,
+  "vendor_internal_only_ew_index_daily_current.parquet": 2080848
  },
  "engine": "engine.group_breadth_history.weekly_fixed_set; engine.baskets._ew_level",
  "no_outcomes": "no forward returns, no outcome relation, no threshold, no signal"

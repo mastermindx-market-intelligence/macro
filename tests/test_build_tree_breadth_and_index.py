@@ -50,13 +50,14 @@ def world(tmp_path):
     pd.DataFrame({"both": [100, 100], "flag_dis": [9, 0], "has_only_one": [0, 0], "rate": [0.09, 0.0]},
                  index=pd.Index([1999, 2000], name="era")).to_csv(dis)
     out = tmp_path / "out"
-    meta = bt.build(cp, dm, dis, "1999-06-01", out, root=root, daily=True)
-    return closes, out, meta
+    res = bt.build(cp, dm, dis, "1999-06-01", out, root=root, daily=True)
+    return closes, out, res
 
 
 def test_no_row_before_start_and_floors(world):
-    closes, out, meta = world
-    b = pd.read_parquet(out / "tree_breadth_weekly_current.parquet")
+    closes, out, res = world
+    meta = res["internal_only"]
+    b = pd.read_parquet(out / "internal_only/vendor_internal_only_breadth_weekly_current.parquet")
     assert b["date"].min() >= pd.Timestamp("1999-06-01")
     lw = b[b["date"] == b["date"].max()].set_index(["family", "group"])
     H = "fix_chg_pct_above_200_13w"
@@ -69,7 +70,7 @@ def test_no_row_before_start_and_floors(world):
 
 def test_multi_group_name_counts_in_each(world):
     _, out, _ = world
-    b = pd.read_parquet(out / "tree_breadth_weekly_current.parquet")
+    b = pd.read_parquet(out / "internal_only/vendor_internal_only_breadth_weekly_current.parquet")
     lw = b[b["date"] == b["date"].max()].set_index(["family", "group"])
     # T10, T11 sit in a_big and a_mid; theme alpha counts each ticker once (19 distinct)
     assert lw.loc[("subsector", "a_big"), "n_members"] == 12
@@ -78,7 +79,7 @@ def test_multi_group_name_counts_in_each(world):
 
 def test_index_floor_and_reasons(world):
     closes, out, _ = world
-    d = pd.read_parquet(out / "group_ew_index_daily_current.parquet")
+    d = pd.read_parquet(out / "internal_only/vendor_internal_only_ew_index_daily_current.parquet")
     small = d[(d.family == "subsector") & (d.group == "a_small")]
     assert small["level"].isna().all() and (small["reason"] == bt.REASON_FLOOR).all()
     mid = d[(d.family == "subsector") & (d.group == "a_mid")]
@@ -88,7 +89,7 @@ def test_index_floor_and_reasons(world):
 
 def test_index_matches_ew_level_convention(world):
     closes, out, _ = world
-    d = pd.read_parquet(out / "group_ew_index_daily_current.parquet")
+    d = pd.read_parquet(out / "internal_only/vendor_internal_only_ew_index_daily_current.parquet")
     g = d[(d.family == "subsector") & (d.group == "a_mid")].set_index("date")["level"]
     m = closes.columns[10:16]
     r = closes[m].pct_change().loc["1999-06-01":].mean(axis=1)
@@ -97,8 +98,8 @@ def test_index_matches_ew_level_convention(world):
 
 
 def test_removed_basket_member_excluded(world):
-    _, out, meta = world
-    assert meta["members"]["basket"]["tickers"] == 6
+    _, out, res = world
+    assert res["house"]["members"]["basket"]["tickers"] == 6
 
 
 def test_floor_gap_carries_no_return(tmp_path):
@@ -122,7 +123,8 @@ def test_weekly_drops_in_progress_week(tmp_path):
 
 
 def test_meta_labels(world):
-    _, _, meta = world
+    _, _, res = world
+    meta = res["internal_only"]
     assert meta["basis"] == "reconstructed_current_membership"
     assert meta["basis_note"] == "today's members applied to the past; not point-in-time; survivors only"
     assert meta["start"]["reason_before"] == "second_source_disagreement"
@@ -147,9 +149,101 @@ def test_new_family_is_registry_file_plus_entry(tmp_path, world):
     pd.DataFrame({"both": [1], "flag_dis": [0], "has_only_one": [0], "rate": [0.0]},
                  index=pd.Index([2000], name="era")).to_csv(dis)
     spec = [{"family": "newfam", "registry": "data/x/reg.csv", "loader": "pairs",
-             "outputs": ["breadth", "index"], "label": "test family"}]
-    meta = bt.build(cp, dm, dis, "1999-06-01", tmp_path / "o", root=root, families=spec)
+             "outputs": ["breadth", "index"], "label": "test family", "rights_class": "house"}]
+    meta = bt.build(cp, dm, dis, "1999-06-01", tmp_path / "o", root=root, families=spec)["house"]
     assert meta["valid_last_week"] == {"newfam": 1}
     assert meta["families"]["newfam"]["label"] == "test family"
-    w = pd.read_parquet(tmp_path / "o/group_ew_index_weekly_current.parquet")
+    w = pd.read_parquet(tmp_path / "o/house_ew_index_weekly_current.parquet")
     assert set(w.family) == {"newfam"} and w.level.notna().any()
+
+
+def test_files_split_by_rights_class(world):
+    _, out, res = world
+    vend = pd.read_parquet(out / "internal_only/vendor_internal_only_ew_index_weekly_current.parquet")
+    house = pd.read_parquet(out / "house_ew_index_weekly_current.parquet")
+    assert set(vend.family) == {"subsector", "theme"}
+    assert set(house.family) == {"basket", "sector"}
+    assert not (out / "house_breadth_weekly_current.parquet").exists()   # no house breadth family yet
+    v = res["internal_only"]
+    assert v["source_family"] == "finviz_themes" and v["rights_class"] == "internal_only"
+    assert v["rights_source"] == "config/theme_sources.yml:33"
+    assert "NO public/customer display or redistribution" in v["rights_sentence"]
+    assert res["house"]["rights_class"] == "house" and "source_family" not in res["house"]
+
+
+def test_family_without_rights_class_refused(world, tmp_path):
+    closes, _, _ = world
+    root = tmp_path / "r"; (root / "x").mkdir(parents=True)
+    pd.DataFrame({"ticker": list(closes.columns[:6]), "group": "g"}).to_csv(root / "x/r.csv", index=False)
+    cp = tmp_path / "c.parquet"; closes.to_parquet(cp)
+    dm = tmp_path / "dm.json"; dm.write_text("{}")
+    dis = tmp_path / "dis.csv"
+    pd.DataFrame({"both": [1], "flag_dis": [0], "has_only_one": [0], "rate": [0.0]},
+                 index=pd.Index([2000], name="era")).to_csv(dis)
+    spec = [{"family": "f", "registry": "x/r.csv", "loader": "pairs", "outputs": ["index"], "label": "l"}]
+    with pytest.raises(ValueError, match="rights_class"):
+        bt.build(cp, dm, dis, "1999-06-01", tmp_path / "o", root=root, families=spec)
+
+
+# --- Vendor rights (COO ruling 32 s1, 2026-11-12) ---
+# Vendor-tree breadth series stay internal (COO ruling 32 s1, 2026-11-12).
+# 
+# The subsector and theme families come from the finviz_themes tree, recorded at
+# config/theme_sources.yml:33 as internal-only with no public or customer display
+# rights. Their files live under data/breadth/history/internal_only/. These tests
+# fail if a site builder, template, rendered page or publish script names those
+# files, or if the vendor sidecar loses its rights fields.
+
+ROOT = Path(__file__).resolve().parents[1]
+MARKERS = ("vendor_internal_only", "breadth/history/internal_only")
+SIDECAR = ROOT / "data/breadth/history/internal_only/vendor_internal_only_breadth_and_index_current.meta.json"
+
+
+def _surface_files():
+    out = list((ROOT / "scripts").glob("build_*.py"))
+    out += [p for p in (ROOT / "scripts").glob("*.py") if "publish" in p.name or "sync" in p.name]
+    for d in ("templates", "site"):
+        base = ROOT / d
+        if base.is_dir():
+            out += [p for p in base.rglob("*") if p.is_file() and p.suffix in
+                    {".py", ".j2", ".html", ".js", ".json", ".css", ".md", ".txt"}]
+    return out
+
+
+def test_no_display_surface_names_vendor_files():
+    own = ROOT / "scripts/build_tree_breadth_and_index.py"   # the writer itself
+    hits = []
+    for p in _surface_files():
+        if p == own:
+            continue
+        try:
+            text = p.read_text(errors="ignore")
+        except OSError:
+            continue
+        hits += [f"{p.relative_to(ROOT)}: {m}" for m in MARKERS if m in text]
+    assert not hits, hits
+
+
+def test_vendor_families_route_to_internal_set():
+    rc = {f["family"]: f["rights_class"] for f in bt.FAMILIES}
+    assert rc["subsector"] == rc["theme"] == "internal_only"
+    assert rc["basket"] == rc["sector"] == "house"
+    assert bt.RIGHTS_SETS["internal_only"]["dir"] == "internal_only"
+    assert all(n.startswith("vendor_internal_only_")
+               for k, n in bt.RIGHTS_SETS["internal_only"].items() if k not in ("dir", "prefix"))
+
+
+def test_rights_sentence_quotes_the_config_line():
+    line = (ROOT / "config/theme_sources.yml").read_text().splitlines()[32]
+    assert bt.VENDOR_RIGHTS["rights_source"] == "config/theme_sources.yml:33"
+    assert bt.VENDOR_RIGHTS["rights_sentence"] in line
+
+
+@pytest.mark.skipif(not SIDECAR.exists(), reason="data/ not materialised (sparse tree)")
+def test_committed_vendor_sidecar_has_rights_fields():
+    m = json.loads(SIDECAR.read_text())
+    assert m["source_family"] == "finviz_themes"
+    assert m["rights_class"] == "internal_only"
+    assert m["rights_source"] == "config/theme_sources.yml:33"
+    assert m["rights_sentence"] == bt.VENDOR_RIGHTS["rights_sentence"]
+    assert set(m["families"]) == {"subsector", "theme"}
