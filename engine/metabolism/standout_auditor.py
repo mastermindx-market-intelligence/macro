@@ -837,8 +837,9 @@ def _invoke_auditor_llm(
 
         # Capacity Fabric cutover (Chairman order 2026-11-12): one request through
         # the router, no local retry, no PR-R8 ladder behind it. With no router
-        # token, MACRO_METABOLISM_FABRIC=0, or an unreachable router
-        # (FabricUnavailable) the legacy path below runs byte-identically.
+        # token, MACRO_METABOLISM_FABRIC=0, or an unusable adapter
+        # (FabricUnavailable: no token or no SDK) the legacy path below runs
+        # byte-identically. A router that is merely DOWN is degraded, not bypassed.
         if fabric_lane.enabled("standout"):
             try:
                 text, reason, provider = fabric_lane.call(
@@ -1746,8 +1747,9 @@ Each object must have exactly these keys:
             #
             # Capacity Fabric cutover (Chairman order 2026-11-12): one request
             # through the router, no local retry. With no router token,
-            # MACRO_METABOLISM_FABRIC=0, or an unreachable router
-            # (FabricUnavailable) the legacy path below runs byte-identically.
+            # MACRO_METABOLISM_FABRIC=0, or an unusable adapter
+            # (FabricUnavailable: no token or no SDK) the legacy path below runs
+            # byte-identically. A router that is merely DOWN is degraded.
             reply_text: str | None = None
             used_fabric = False
             if fabric_lane.enabled("autopsy"):

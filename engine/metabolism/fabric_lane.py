@@ -115,6 +115,11 @@ def _usage_row(comp: Any) -> dict[str, Any]:
         "cache_read_tokens": _int("cache_read_input_tokens"),
         "cache_creation_tokens": _int("cache_creation_input_tokens"),
         "model": getattr(comp, "model_served", None) or "",
+        # Attribution, not billing: the consumer must not book router spend as
+        # Claude OAuth. scripts/metabolism_adjudicate.py defaulted to
+        # "claude_oauth" whenever this key was absent, which mislabelled every
+        # fabric adjudicate call in data/ai_costs/usage.jsonl.
+        "provider": PROVIDER,
     }
 
 
@@ -134,10 +139,15 @@ def call(
     metabolism caller already returns — where ``provider`` is ``"fabric"``.
     ``degraded_reason`` is None on success.
 
-    Raises ``FabricUnavailable`` when the router cannot be reached AT ALL, so the
-    caller can run its unchanged legacy ladder. Every other error is degraded
-    here and NOT retried: the router already walked its own ladder, and a second
-    request would double-serve.
+    Raises ``FabricUnavailable`` when the adapter is not usable at all — no
+    ``FABRIC_ROUTER_TOKEN``, or the anthropic SDK will not import — so the caller
+    can run its unchanged legacy ladder. That is the WHOLE of that contract: a
+    router that is merely down (connection refused, DNS, timeout) raises a
+    transport error, which is degraded here like any other failure and does NOT
+    reach the legacy ladder. Nothing was necessarily served in the refused case,
+    but a timeout may have been, so it is not safely retryable either.
+    Every error is degraded here and NOT retried: the router already walked its
+    own ladder, and a second request would double-serve.
 
     When ``usage_out`` is a list, one ``lib.ai_costs``-shaped usage row is
     appended so the script-level ``record_usage`` call still books fabric spend.
@@ -164,10 +174,12 @@ def call(
         except Exception as exc:  # noqa: BLE001 — telemetry only
             log.debug("fabric_lane[%s]: usage capture failed (%s)", stage, exc)
 
+    # A refusal is a refusal even when it carries partial text: every legacy
+    # _do_call drops the reply on any refusal, and truncated text must never
+    # reach a fail-closed parser where a complete-looking object could pass.
+    if getattr(comp.raw, "stop_reason", None) == "refusal":
+        return None, "stop_refusal", PROVIDER
     text = (comp.text or "").strip()
     if not text:
-        reason = ("stop_refusal"
-                  if getattr(comp.raw, "stop_reason", None) == "refusal"
-                  else "empty_reply")
-        return None, reason, PROVIDER
+        return None, "empty_reply", PROVIDER
     return text, None, PROVIDER

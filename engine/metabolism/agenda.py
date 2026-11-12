@@ -450,6 +450,7 @@ def _call_llm(
     user_prompt: str,
     max_tokens: int = 2000,
     cycle_id: str | None = None,
+    allow_fabric: bool = True,
 ) -> tuple[str | None, str | None, str | None]:
     """Call the LLM via llm_auth.make_call.
 
@@ -458,10 +459,12 @@ def _call_llm(
 
     Capacity Fabric cutover (Chairman order 2026-11-12): when the router is
     configured this stage routes through it instead of the legacy waterfall.
-    With no router token, MACRO_METABOLISM_FABRIC=0, or a router that cannot be
-    reached at all (FabricUnavailable), the legacy ladder below runs unchanged.
+    With no router token, MACRO_METABOLISM_FABRIC=0, ``allow_fabric=False``, or
+    an adapter that is not usable at all (FabricUnavailable), the legacy ladder
+    below runs unchanged. A router that is merely DOWN is degraded, not
+    bypassed — FabricUnavailable means no token or no SDK, nothing more.
     """
-    if fabric_lane.enabled("agenda"):
+    if allow_fabric and fabric_lane.enabled("agenda"):
         try:
             return fabric_lane.call(
                 stage="agenda",
@@ -672,6 +675,7 @@ def _build_agenda_inner(
             user_prompt=user_prompt,
             max_tokens=2000,
             cycle_id=cycle_id,
+            allow_fabric=allow_fabric,
         )
         raw_items = _parse_llm_items(text)
     else:

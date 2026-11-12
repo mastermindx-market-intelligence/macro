@@ -651,8 +651,9 @@ def _invoke_llm(
     # Capacity Fabric cutover (Chairman order 2026-11-12): one request through
     # the router, and NO PR-R8 retry ladder behind it — the router already walked
     # its own provider ladder, so a second attempt would double-serve. With no
-    # router token, MACRO_METABOLISM_FABRIC=0, or an unreachable router
-    # (FabricUnavailable) the legacy path below runs byte-identically.
+    # router token, MACRO_METABOLISM_FABRIC=0, or an unusable adapter
+    # (FabricUnavailable: no token or no SDK) the legacy path below runs
+    # byte-identically. A router that is merely DOWN is degraded, not bypassed.
     if fabric_lane.enabled("propose"):
         try:
             system = _build_system_prompt(lobe, root).replace("{max_n}", str(max_n))

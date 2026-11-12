@@ -186,8 +186,9 @@ def _call_llm(
 
     Capacity Fabric cutover (Chairman order 2026-11-12): when the router is
     configured this stage routes through it instead of the legacy waterfall.
-    With no router token, MACRO_METABOLISM_FABRIC=0, or a router that cannot be
-    reached at all (FabricUnavailable), the legacy ladder below runs unchanged.
+    With no router token, MACRO_METABOLISM_FABRIC=0, or an unusable adapter
+    (FabricUnavailable: no token or no SDK), the legacy ladder below runs
+    unchanged. A router that is merely DOWN is degraded, not bypassed.
     """
     if fabric_lane.enabled("attention"):
         try:

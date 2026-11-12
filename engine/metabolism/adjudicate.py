@@ -885,8 +885,9 @@ def _invoke_role_llm(
     # its own provider ladder, so a second attempt would double-serve. Judgments
     # stay FAIL-CLOSED: an empty or unparseable reply still returns None, and the
     # caller still refuses the merge. With no router token,
-    # MACRO_METABOLISM_FABRIC=0, or an unreachable router (FabricUnavailable) the
-    # legacy path below runs byte-identically.
+    # MACRO_METABOLISM_FABRIC=0, or an unusable adapter (FabricUnavailable: no
+    # token or no SDK) the legacy path below runs byte-identically. A router
+    # that is merely DOWN is degraded, not bypassed.
     if fabric_lane.enabled("adjudicate"):
         try:
             system = _ORCH_SYSTEM if role == ROLE_ORCH else _ADV_SYSTEM

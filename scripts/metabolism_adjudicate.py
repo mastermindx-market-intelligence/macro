@@ -532,7 +532,7 @@ def main(argv: list[str] | None = None) -> int:
                 from lib.ai_costs import record_usage as _rec_usage  # type: ignore[import]
                 _rec_usage(
                     lane="metabolism-adjudicate",
-                    provider="claude_oauth",
+                    provider=_adj_provider_name,
                     model=_used_model,
                     input_tokens=_input_tok,
                     output_tokens=_output_tok,

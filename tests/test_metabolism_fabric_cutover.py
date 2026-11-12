@@ -7,8 +7,11 @@ LLM call site gains an env-gated fabric branch:
 
   * configured (``FABRIC_ROUTER_TOKEN`` present) and ``MACRO_METABOLISM_FABRIC``
     != "0"  -> ONE ``fabric_client.complete`` call, no local retry;
-  * not configured, kill-switch set, or an unreachable router
-    (``FabricUnavailable``) -> the EXACT legacy ladder, byte-for-byte unchanged;
+  * not configured, kill-switch set, or an UNUSABLE adapter
+    (``FabricUnavailable``: no token or no SDK) -> the EXACT legacy ladder,
+    byte-for-byte unchanged. A router that is merely DOWN raises a transport
+    error and is degraded instead — nothing was necessarily served in the
+    refused case, but a timeout may have been, so it is not safely retryable;
   * ``AUTONOMY_PAUSED`` still wins over everything: the stage no-ops before any
     fabric call is considered.
 
@@ -41,7 +44,8 @@ class _Raw:
         self.stop_reason = stop_reason
 
 
-def _completion(text: str = "router reply", model: str = "deepseek-v4.1-flash") -> fc.Completion:
+def _completion(text: str = "router reply", model: str = "deepseek-v4.1-flash",
+                stop_reason: str = "end_turn") -> fc.Completion:
     return fc.Completion(
         text=text,
         model_served=model,
@@ -53,7 +57,7 @@ def _completion(text: str = "router reply", model: str = "deepseek-v4.1-flash") 
             "cache_read_input_tokens": 3,
             "cache_creation_input_tokens": 2,
         },
-        raw=_Raw(),
+        raw=_Raw(stop_reason),
     )
 
 
@@ -62,7 +66,7 @@ class _Recorder:
 
     def __init__(self) -> None:
         self.calls: list[dict] = []
-        self.state = {"reply": _AUDIT_REPLY}
+        self.state = {"reply": _AUDIT_REPLY, "stop_reason": "end_turn"}
 
     def __len__(self) -> int:
         return len(self.calls)
@@ -87,7 +91,7 @@ def fabric_calls(monkeypatch):
 
     def fake_complete(messages, **kwargs):
         rec.calls.append({"messages": messages, **kwargs})
-        return _completion(rec.state["reply"])
+        return _completion(rec.state["reply"], stop_reason=rec.state["stop_reason"])
 
     monkeypatch.setattr(fc, "is_configured", lambda: True)
     monkeypatch.setattr(fc, "complete", fake_complete)
@@ -112,9 +116,14 @@ def fabric_off(monkeypatch):
 
 @pytest.fixture
 def fabric_unavailable(monkeypatch):
-    """Router configured but unreachable: the legacy ladder must run instead."""
+    """The adapter is UNUSABLE (no token / no SDK): the legacy ladder must run.
+
+    This is the whole of the FabricUnavailable contract. A router that is merely
+    DOWN raises a transport error instead and is degraded, not bypassed — see
+    TestRouterDownIsNotFabricUnavailable.
+    """
     def boom(messages, **kwargs):
-        raise fc.FabricUnavailable("router is not listening")
+        raise fc.FabricUnavailable("FABRIC_ROUTER_TOKEN is not set")
 
     monkeypatch.setattr(fc, "is_configured", lambda: True)
     monkeypatch.setattr(fc, "complete", boom)
@@ -199,6 +208,8 @@ class TestAttribution:
             "cache_read_tokens": 3,
             "cache_creation_tokens": 2,
             "model": "deepseek-v4.1-flash",
+            # attribution: the consumer must not book router spend as claude_oauth
+            "provider": "fabric",
         }]
 
 
@@ -218,14 +229,61 @@ class TestNoRetry:
         assert provider == "fabric"
         assert len(calls) == 1, "the router owns fallback: one logical call = one request"
 
+    def test_adapter_disables_sdk_retries(self, monkeypatch):
+        """The SDK's own default is 2 retries, which would send ONE logical call
+        up to three times and re-walk the router's ladder each time. The stub
+        seam above cannot see this: it replaces complete(), so it counts Python
+        calls, not HTTP requests. So drive the REAL _make_client with a stand-in
+        anthropic module, which also keeps this runnable where the SDK is absent.
+        """
+        import types
+
+        seen: dict = {}
+
+        class _FakeAnthropic:
+            def __init__(self, **kwargs):
+                seen.update(kwargs)
+
+        fake_mod = types.ModuleType("anthropic")
+        fake_mod.Anthropic = _FakeAnthropic
+        monkeypatch.setitem(sys.modules, "anthropic", fake_mod)
+        monkeypatch.setenv(fc.TOKEN_ENV, "test-token")
+        fc._make_client("http://127.0.0.1:8313", 120.0)
+        assert seen.get("max_retries") == 0, (
+            "the adapter must not retry under the router; SDK default is 2")
+        assert seen.get("base_url") == "http://127.0.0.1:8313"
+
     def test_unavailable_is_re_raised_for_the_legacy_ladder(self, fabric_unavailable):
         with pytest.raises(fc.FabricUnavailable):
             fabric_lane.call(stage="propose", system="s", user="u")
+
+    def test_router_down_is_degraded_not_fabric_unavailable(self, monkeypatch):
+        """A router that is merely DOWN raises a transport error, NOT
+        FabricUnavailable. FabricUnavailable means no token or no SDK — the only
+        two cases where the legacy ladder is safe to run."""
+        def refused(messages, **kwargs):
+            raise ConnectionRefusedError("connection refused")
+
+        monkeypatch.setattr(fc, "is_configured", lambda: True)
+        monkeypatch.setattr(fc, "complete", refused)
+        text, reason, provider = fabric_lane.call(stage="propose", system="s", user="u")
+        assert text is None and provider == "fabric"
+        assert reason and reason.startswith("llm_error")
 
     def test_empty_reply_is_a_degraded_reason(self, fabric_calls):
         fabric_calls.state["reply"] = ""
         text, reason, provider = fabric_lane.call(stage="propose", system="s", user="u")
         assert text is None and reason == "empty_reply" and provider == "fabric"
+
+    def test_refusal_with_partial_text_is_still_a_refusal(self, fabric_calls):
+        """Every legacy _do_call drops the reply on any refusal. Truncated text
+        must never reach a fail-closed parser where a complete-looking object
+        could pass as an approval."""
+        fabric_calls.state["reply"] = '{"verdict": "approve", "confidence": 0.9}'
+        fabric_calls.state["stop_reason"] = "refusal"
+        text, reason, provider = fabric_lane.call(stage="audit", system="s", user="u")
+        assert text is None, "a refusal carrying text must not be parsed"
+        assert reason == "stop_refusal" and provider == "fabric"
 
 
 # ── per-site cutover ─────────────────────────────────────────────────────────
@@ -254,8 +312,10 @@ class TestAttention:
 
     def test_agenda_stage_allows_fabric_without_providers(self, fabric_calls, tmp_path):
         # an empty provider list must not be read as "no LLM wanted"
+        fabric_calls.state["reply"] = '{"items": []}'
         assert attention.build_attention(
             cycle_id="c1", root=tmp_path, providers=None).get("cycle_id") == "c1"
+        assert len(fabric_calls) == 1, "an empty provider list must still reach the router"
 
 
 class TestAgenda:

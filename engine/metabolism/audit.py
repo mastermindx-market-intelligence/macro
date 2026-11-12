@@ -361,8 +361,9 @@ def _call_llm_auditor(
         # the router, no local retry. This is a FAIL-CLOSED merge gate — an empty
         # or unparseable reply still returns no verdict, which blocks the merge
         # exactly as a legacy ladder failure does. With no router token,
-        # MACRO_METABOLISM_FABRIC=0, or an unreachable router (FabricUnavailable)
-        # the legacy path below runs byte-identically.
+        # MACRO_METABOLISM_FABRIC=0, or an unusable adapter (FabricUnavailable:
+        # no token or no SDK) the legacy path below runs byte-identically. A
+        # router that is merely DOWN is degraded, not bypassed.
         used_fabric = False
         if fabric_lane.enabled("audit"):
             try:

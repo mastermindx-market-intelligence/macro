@@ -106,6 +106,44 @@ the runner step (`metabolism-cycle.yml:84`), so the SDK is not a gap.
    until #11160 and #11177 are merged AND the token is confirmed on the runner —
    otherwise the loop re-runs a dead ladder with no signal.
 
+## Adversarial review (2026-11-12) — five confirmed defects, all fixed
+
+An independent reviewer returned **BLOCK** on the first cutover. Both PRs were
+disarmed (`merge-on-green` removed, `merge-blocked` left visible) before any fix.
+The defects were real and none was visible in the stub tests:
+
+1. **The adapter retried under the router.** `lib/fabric_client.py` built the SDK
+   client without `max_retries`, so the SDK default of 2 applied: one logical
+   call could issue three HTTP requests, each re-walking the router's provider
+   ladder, and a timeout could double-bill an already-served upstream. Fixed with
+   `max_retries=0`. **The tests could not have caught this** — they stub
+   `_make_client` and `complete`, so they count Python calls, not HTTP requests.
+   The new test drives the real `_make_client` with a stand-in `anthropic` module.
+2. **`scripts/metabolism_attention.py --dry-run` spent tokens.** Its docstring
+   promises a token-free dry run, but it called `build_attention(providers=[])`
+   without `allow_fabric=False`, so a present router token made it billable. The
+   cutover had fixed the other two token-free paths and missed this third one.
+3. **"Unreachable router → legacy ladder" was never true.** `FabricUnavailable`
+   is raised only for a missing token or an unimportable SDK. A router that is
+   merely DOWN raises a transport error, which is degraded — no legacy ladder.
+   The docstrings and one test fixture both asserted the imagined contract. All
+   claims corrected; a test now pins the real behaviour.
+4. **Fabric adjudicate spend was booked as `claude_oauth`.** The usage row had no
+   `provider` key, so `metabolism_adjudicate.py` fell back to its legacy default.
+   The row now carries `provider="fabric"` and the consumer uses it.
+5. **A refusal carrying partial text was parsed.** Now any `stop_reason ==
+   "refusal"` drops the reply, matching every legacy `_do_call`.
+
+Not defects, verified during the same review: the `standout_auditor.py` re-indent
+is a pure `if not used_fabric:` wrapper with byte-identical legacy control flow;
+fail-closed gates still refuse bad replies; `propose`/`adjudicate` are pause-gated
+at workflow level (`if: vars.AUTONOMY_PAUSED != 'true'` plus the in-script check),
+so the missing in-script check is not a spend path.
+
+Verification after the fixes: 33 cutover + 27 adapter + 12 master_brain =
+**72 passed**; consumer suites (`test_metabolism_audit`,
+`test_metabolism_shadow_cycle`) **97 passed**; `py_compile` clean.
+
 ## Verification performed
 
 **Live routed call (2026-11-12).** `fabric_lane.call(stage="propose", …)` executed

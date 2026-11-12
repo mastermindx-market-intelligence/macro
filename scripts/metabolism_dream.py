@@ -115,8 +115,9 @@ def _request_llm_summary(raw_lessons: str, root: Path) -> str | None:
 
         # Capacity Fabric cutover (Chairman order 2026-11-12): one request through
         # the router, no local retry. With no router token,
-        # MACRO_METABOLISM_FABRIC=0, or an unreachable router (FabricUnavailable)
-        # the legacy path below runs byte-identically.
+        # MACRO_METABOLISM_FABRIC=0, or an unusable adapter (FabricUnavailable:
+        # no token or no SDK) the legacy path below runs byte-identically. A
+        # router that is merely DOWN is degraded, not bypassed.
         if fabric_lane.enabled("dream"):
             try:
                 text, _reason, _provider = fabric_lane.call(

@@ -194,7 +194,16 @@ def _make_client(base_url: str, timeout: float):
             f"the anthropic SDK is not importable ({e}); the fabric router "
             f"cannot be reached from this host") from e
 
-    return anthropic.Anthropic(base_url=base_url, api_key=token, timeout=timeout)
+    return anthropic.Anthropic(
+        base_url=base_url, api_key=token, timeout=timeout,
+        # The router owns fallback; the adapter must not retry under it. The SDK
+        # default is 2 retries, so ONE logical call would send the SAME request
+        # up to three times — and the router walks its whole provider ladder on
+        # each one. On a timeout that is worse than wasted work: the upstream may
+        # already have served and been billed, so the retry bills it twice.
+        # engine/llm_auth.py:635 and :993-994 document the same SDK default.
+        max_retries=0,
+    )
 
 
 def _attribution(client: str, session_id: str | None, agent_id: str | None,
