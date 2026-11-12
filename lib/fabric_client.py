@@ -90,6 +90,23 @@ _LANES: dict[str, str] = {
 }
 _LANE_IDS: frozenset[str] = frozenset(_LANES.values()) | frozenset({"fabric/kimi-preferred"})
 
+# concrete slug -> provider. Used only as a fallback for `Completion.provider`
+# when the router did not send its own provider header; an unknown slug stays
+# None rather than being guessed.
+_SLUG_PROVIDERS: dict[str, str] = {v: k for k, v in _PROVIDER_MODELS.items()}
+
+# Response headers the router actually sets on a routed reply. Read from
+# ops/native_fabric/unified_router/gateway.py on the live host (2026-11-12):
+#   response.headers.update({"x-fabric-route": selected.route_id,
+#                            "x-fabric-model": resolved,
+#                            "x-fabric-request-id": ctx.request_id,
+#                            "x-fabric-policy": ...})
+# The "-id"/"-provider" spellings are kept as fallbacks for stub routers and
+# any older gateway; the live ones come first so production is never blank.
+_ROUTE_HEADERS = ("x-fabric-route", "x-fabric-route-id")
+_MODEL_HEADERS = ("x-fabric-model",)
+_PROVIDER_HEADERS = ("x-fabric-provider",)
+
 
 class FabricUnavailable(RuntimeError):
     """The router cannot be reached AT ALL — no token, or the SDK will not load.
@@ -108,7 +125,9 @@ class Completion:
 
     ``model_served`` is what the router actually ran (it may differ from the
     requested lane member); ``route_id``/``provider`` are best-effort and stay
-    None when the gateway did not report them.
+    None when the gateway did not report them. ``provider`` falls back to the
+    provider owning the served slug when no provider header was sent, so the
+    cost ledger can still attribute the call.
     """
 
     text: str
@@ -237,12 +256,13 @@ def _single_request(sdk: Any, kw: dict) -> tuple[Any, Mapping[str, str] | None]:
     """Perform the adapter's ONE request and return (message, response headers).
 
     ``with_raw_response`` is preferred because the gateway reports its routing
-    decision in headers (``x-fabric-route-id`` / ``x-fabric-provider``) and the
-    parsed Message does NOT retain them. Measured against anthropic 2.8.0
-    (2026-11-12): a plain ``messages.create()`` leaves ``msg._response`` as
-    None, so reading headers off the message silently yielded None for every
-    call — the attribution we report was always blank. The raw-response wrapper
-    exposes the real HTTP headers and ``.parse()`` returns the same Message.
+    decision in headers (``x-fabric-route`` / ``x-fabric-model``, see
+    ``_ROUTE_HEADERS``) and the parsed Message does NOT retain them. Measured
+    against anthropic 2.8.0 (2026-11-12): a plain ``messages.create()`` leaves
+    ``msg._response`` as None, so reading headers off the message silently
+    yielded None for every call — the attribution we report was always blank.
+    The raw-response wrapper exposes the real HTTP headers and ``.parse()``
+    returns the same Message.
 
     Falls back to the plain call for any SDK/client that lacks the wrapper;
     attribution then degrades to None rather than failing a served call.
@@ -351,6 +371,16 @@ def _header(msg: Any, name: str,
     return str(value) if value else None
 
 
+def _first_header(msg: Any, names: Sequence[str],
+                  headers: Mapping[str, str] | None = None) -> str | None:
+    """First non-empty value among ``names``. None when none is present."""
+    for name in names:
+        value = _header(msg, name, headers)
+        if value:
+            return value
+    return None
+
+
 def _usage_dict(msg: Any) -> dict:
     usage = getattr(msg, "usage", None)
     if usage is None:
@@ -376,11 +406,16 @@ def _completion_from(msg: Any,
     text = "".join(
         getattr(b, "text", "") for b in blocks
         if getattr(b, "type", "") == "text")
+    model_served = (_first_header(msg, _MODEL_HEADERS, headers)
+                    or getattr(msg, "model", None))
+    route_id = _first_header(msg, _ROUTE_HEADERS, headers)
+    provider = (_first_header(msg, _PROVIDER_HEADERS, headers)
+                or _SLUG_PROVIDERS.get(model_served or ""))
     return Completion(
         text=text,
-        model_served=getattr(msg, "model", None),
-        route_id=_header(msg, "x-fabric-route-id", headers),
-        provider=_header(msg, "x-fabric-provider", headers),
+        model_served=model_served,
+        route_id=route_id,
+        provider=provider,
         usage=_usage_dict(msg),
         raw=msg,
     )

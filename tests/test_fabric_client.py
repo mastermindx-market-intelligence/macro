@@ -270,7 +270,7 @@ def test_base_url_defaults_and_override(recorder):
 def test_complete_reads_route_headers_best_effort(recorder):
     recorder.state["message"] = _Message(
         "ok", model="glm-5.3",
-        headers={"x-fabric-route-id": "r-42", "x-fabric-provider": "glm"})
+        headers={"x-fabric-route": "r-42", "x-fabric-model": "glm-5.3"})
     comp = fc.complete([{"role": "user", "content": "x"}])
     assert comp.model_served == "glm-5.3"
     assert comp.route_id == "r-42"
@@ -280,9 +280,11 @@ def test_complete_reads_route_headers_best_effort(recorder):
 
 
 def test_complete_without_route_headers_returns_none_not_error(recorder):
-    recorder.state["message"] = _Message("ok")
+    recorder.state["message"] = _Message("ok")      # model deepseek-v4.1-flash
     comp = fc.complete([{"role": "user", "content": "x"}])
-    assert comp.route_id is None and comp.provider is None
+    assert comp.route_id is None
+    # No provider header, but the served slug is a known one -> attributed.
+    assert comp.provider == "deepseek"
 
 
 # --------------------------------------------------------------------------- #
@@ -298,8 +300,11 @@ def test_complete_without_route_headers_returns_none_not_error(recorder):
 def raw_recorder(monkeypatch):
     calls = _Recorder()
     state = {
-        "message": _Message("raw-path text"),
-        "headers": {"x-fabric-route-id": "route-xyz", "x-fabric-provider": "glm"},
+        "message": _Message("raw-path text",
+                            model="glm-5.3"),
+        # The LIVE router's header names, read from
+        # ops/native_fabric/unified_router/gateway.py on 2026-11-12.
+        "headers": {"x-fabric-route": "route-xyz", "x-fabric-model": "glm-5.3"},
     }
 
     def fake_make_client(base_url, timeout):
@@ -315,15 +320,44 @@ def raw_recorder(monkeypatch):
 def test_route_and_provider_come_from_raw_response_headers(raw_recorder):
     comp = fc.complete([{"role": "user", "content": "x"}], lane="fast")
     assert comp.route_id == "route-xyz"
-    assert comp.provider == "glm"
+    assert comp.model_served == "glm-5.3"        # header wins over msg.model
+    assert comp.provider == "glm"                # derived from the served slug
     assert comp.text == "raw-path text"
     assert len(raw_recorder) == 1
+
+
+def test_legacy_header_spellings_still_work(raw_recorder):
+    """Older/stub gateways may send -id/-provider; the live names take
+    precedence but the fallbacks must not silently drop attribution."""
+    raw_recorder.state["headers"] = {"x-fabric-route-id": "legacy-route",
+                                     "x-fabric-provider": "deepseek"}
+    comp = fc.complete([{"role": "user", "content": "x"}])
+    assert comp.route_id == "legacy-route"
+    assert comp.provider == "deepseek"
+
+
+def test_live_header_wins_over_legacy_spelling(raw_recorder):
+    raw_recorder.state["headers"] = {"x-fabric-route": "live-route",
+                                     "x-fabric-route-id": "legacy-route",
+                                     "x-fabric-model": "deepseek-v4.1-flash",
+                                     "x-fabric-provider": "wrong-rung"}
+    comp = fc.complete([{"role": "user", "content": "x"}])
+    assert comp.route_id == "live-route"
+    assert comp.model_served == "deepseek-v4.1-flash"
+    assert comp.provider == "wrong-rung"         # an explicit provider header wins
+
+
+def test_unknown_served_slug_leaves_provider_none(raw_recorder):
+    raw_recorder.state["headers"] = {"x-fabric-model": "some-model-we-do-not-know"}
+    comp = fc.complete([{"role": "user", "content": "x"}])
+    assert comp.provider is None                 # never guessed
 
 
 def test_raw_path_absent_headers_still_returns_none(raw_recorder):
     raw_recorder.state["headers"] = {}
     comp = fc.complete([{"role": "user", "content": "x"}])
-    assert comp.route_id is None and comp.provider is None
+    assert comp.route_id is None
+    assert comp.provider == "glm"        # still attributed from the served slug
 
 
 def test_raw_path_error_is_not_retried(monkeypatch):
