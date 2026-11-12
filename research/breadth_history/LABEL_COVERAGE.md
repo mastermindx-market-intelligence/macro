@@ -66,3 +66,25 @@ Not filled (575 rows): tickers with several companies in Tiingo metadata (ambigu
 reuse), tickers whose Tiingo series starts after the membership (a later holder), no
 Tiingo series at all, names with zero or several SEC CIKs, and two SIC codes that map
 to no sector.
+
+## Price coverage is the binding limit (read-only count, 2026-11-12)
+
+The 453 dated S&P 500 membership rows with no Tiingo close inside their own window
+were checked against the whole archive (47,564 tickers, all capture days) and the same
+Tiingo name -> SEC CIK chain:
+
+| Start year | (a) under another ticker | (b) ticker held only by a later company | (c) not in the archive | Total |
+|---|---|---|---|---|
+| 1996 | 2 | 93 | 173 | 268 |
+| 1997-2001 | 1 | 33 | 60 | 94 |
+| 2002-2010 | 1 | 12 | 35 | 48 |
+| 2011-2026 | 2 | 4 | 37 | 43 |
+| All | 6 | 142 | 305 | 453 |
+
+231 of the 453 rows resolve to no CIK, so the six rows under another ticker are a
+floor reached by this chain, not a proven total. The five unambiguous pairs are
+ANTM -> ELV, ENDP -> ENDPQ, RSHCQ -> RSH, SIVB -> SIVBQ and TUP -> TUPBQ; FPC matches
+two CIKs and is ambiguous. Because (a) is small, no remap was built. The early dated
+years are therefore a sample of about half the index (221 of 488 members priced at
+end-1996): the archive does not carry most pre-2000 leavers, and no free chain found
+here recovers them. No purchase.
