@@ -9,6 +9,7 @@ import pandas as pd
 import pytest
 
 from scripts import build_tree_breadth_and_index as bt
+from scripts import build_vendor_subsector_index as bv
 
 
 def _closes(n_tickers: int, start="1998-01-01", periods=1500, seed=0) -> pd.DataFrame:
@@ -905,3 +906,90 @@ def test_group_index_committed_sidecar_and_report_clean():
     for g, sub in dated.groupby("group"):
         v = sub.dropna(subset=["index"])
         assert fv[g] == (str(v["date"].min().date()) if len(v) else None)
+
+
+# ---- vendor subsector index (COO ruling 38 s2b) -------------------------------
+# The repository is public: the vendor builder writes only outside the tree and its
+# tests use a made-up fixture group, never a vendor name. No vendor data is committed.
+def _vendor_fixture_mem() -> pd.DataFrame:
+    rows = [{"ticker": f"T{i:02d}", "group": "fixture_group_a"} for i in range(6)]   # 6 -> reaches floor
+    rows += [{"ticker": f"T{i:02d}", "group": "fixture_group_b"} for i in range(6, 9)]  # 3 -> below floor
+    return pd.DataFrame(rows, columns=["ticker", "group"])
+
+
+def test_vendor_index_fixture_floor_and_rights():
+    closes = _closes(12, start="1999-01-01", periods=400)
+    mem = _vendor_fixture_mem()
+    engine_keys = {"fixture_group_a", "fixture_group_b", "fixture_store_only"}
+    start = pd.Timestamp("2000-01-01")
+    df, km, counts = bv.build_index(closes, mem, engine_keys, start)
+    assert list(df.columns) == bv.COLS
+    assert (df["level"] == "subsector").all()
+    assert (df["rights_class"] == "internal_only").all()           # rights on every row
+    assert (df["membership_basis"] == "reconstructed_current_membership").all()
+    assert pd.api.types.is_integer_dtype(df["n_priced_members"])
+    assert (df["index"].notna() == (df["n_priced_members"] >= 5)).all()
+    assert df["date"].min() >= start
+    assert set(df.group) == {"fixture_group_a", "fixture_group_b"}  # store-only key not built
+    a = df[df.group == "fixture_group_a"]
+    b = df[df.group == "fixture_group_b"]
+    assert a["index"].notna().any() and not b["index"].notna().any()
+    assert counts["built_keys"] == 2
+    assert counts["store_only_keys"] == 1 and counts["family_only_keys"] == 0
+    assert counts["groups_reaching_floor"] == 1
+    assert counts["groups_below_floor_throughout"] == 1
+    assert list(km.columns) == ["group_key", "level", "engine_key", "spdr_parent"]
+    assert (km.engine_key == km.group_key).all() and (km.spdr_parent == "").all()
+    assert set(km.group_key) == {"fixture_group_a", "fixture_group_b"}
+
+
+def test_vendor_index_family_only_key_not_built():
+    closes = _closes(12, start="1999-01-01", periods=400)
+    mem = _vendor_fixture_mem()
+    df, km, counts = bv.build_index(closes, mem, {"fixture_group_a"}, pd.Timestamp("2000-01-01"))
+    assert set(df.group) == {"fixture_group_a"}
+    assert counts["built_keys"] == 1
+    assert counts["family_only_keys"] == 1 and counts["store_only_keys"] == 0
+
+
+def test_vendor_guard_refuses_in_tree(tmp_path):
+    root = tmp_path / "repo"
+    root.mkdir()
+    with pytest.raises(ValueError):
+        bv.guard_out(root / "data/breadth/history", root)
+    with pytest.raises(ValueError):
+        bv.guard_out(root, root)
+    out = tmp_path / "outside"                       # sibling of the repo, not under it
+    assert bv.guard_out(out, root) == out.resolve()
+
+
+def test_vendor_default_out_is_out_of_tree():
+    assert bv.DEFAULT_OUT == Path("/tmp/r38b/vendor_out")
+    assert ROOT not in bv.DEFAULT_OUT.resolve().parents
+
+
+def test_vendor_write_outputs_out_of_tree(tmp_path):
+    closes = _closes(12, start="1999-01-01", periods=400)
+    mem = _vendor_fixture_mem()
+    start = pd.Timestamp("2000-01-01")
+    df, km, counts = bv.build_index(closes, mem, {"fixture_group_a", "fixture_group_b"}, start)
+    root = tmp_path / "repo"
+    root.mkdir()
+    out = tmp_path / "vendor_out"
+    meta = bv.write_outputs(df, km, counts, out, root, {"vintage": "fixture", "topup": None}, start)
+    for name in (bv.OUT_INDEX, bv.OUT_META, bv.OUT_KEYMAP):
+        assert (out / name).exists()
+    assert meta["rights_class"] == "internal_only"
+    assert meta["rights_sentence"] == bt.VENDOR_RIGHTS["rights_sentence"]
+    assert meta["use"] == bt.VENDOR_RIGHTS["use"]
+    assert meta["rights_source"] == "config/theme_sources.yml:33"
+    assert meta["sensitivity"] is True and meta["floor"] == 5
+    assert not list(root.rglob("*"))                 # nothing written under the repo root
+    back = pd.read_parquet(out / bv.OUT_INDEX)
+    assert (back["rights_class"] == "internal_only").all()
+
+
+def test_vendor_builder_source_names_no_vendor_file():
+    src = (ROOT / "scripts/build_vendor_subsector_index.py").read_text()
+    for m in MARKERS:                                # derives names from the rights prefix
+        assert m not in src
