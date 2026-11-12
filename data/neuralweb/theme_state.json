@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
-  "as_of": "2026-11-11",
-  "generated_at": "2026-11-11T12:44:07Z",
+  "as_of": "2026-11-12",
+  "generated_at": "2026-11-12T11:55:26Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -100,33 +100,33 @@
           "Semiconductors",
           "Artificial Intelligence"
         ],
-        "rollup_quadrant": "lagging",
+        "rollup_quadrant": "improving",
         "subsectors": [
           {
             "key": "Semiconductors",
-            "quadrant": "lagging",
+            "quadrant": "improving",
             "rs": {
-              "1W": -5.11,
-              "1M": -14.14,
-              "3M": -13.1,
-              "6M": -21.49,
-              "1Y": 40.85
+              "1W": 5.42,
+              "1M": -9.04,
+              "3M": -9.9,
+              "6M": -18.01,
+              "1Y": 53.62
             },
-            "accel_z": -1.643,
-            "emerging_score": -1.885
+            "accel_z": 1.699,
+            "emerging_score": 2.275
           },
           {
             "key": "Artificial Intelligence",
             "quadrant": "lagging",
             "rs": {
-              "1W": -1.53,
-              "1M": -5.93,
-              "3M": -1.84,
-              "6M": 2.28,
-              "1Y": 1.23
+              "1W": 1.33,
+              "1M": -4.11,
+              "3M": -1.96,
+              "6M": 5.17,
+              "1Y": 5.16
             },
-            "accel_z": -0.571,
-            "emerging_score": -1.171
+            "accel_z": 0.181,
+            "emerging_score": -0.268
           }
         ]
       },
@@ -188,20 +188,20 @@
         "keys": [
           "Semiconductors"
         ],
-        "rollup_quadrant": "lagging",
+        "rollup_quadrant": "improving",
         "subsectors": [
           {
             "key": "Semiconductors",
-            "quadrant": "lagging",
+            "quadrant": "improving",
             "rs": {
-              "1W": -5.11,
-              "1M": -14.14,
-              "3M": -13.1,
-              "6M": -21.49,
-              "1Y": 40.85
+              "1W": 5.42,
+              "1M": -9.04,
+              "3M": -9.9,
+              "6M": -18.01,
+              "1Y": 53.62
             },
-            "accel_z": -1.643,
-            "emerging_score": -1.885
+            "accel_z": 1.699,
+            "emerging_score": 2.275
           }
         ]
       },
@@ -269,20 +269,20 @@
         "keys": [
           "Semiconductors"
         ],
-        "rollup_quadrant": "lagging",
+        "rollup_quadrant": "improving",
         "subsectors": [
           {
             "key": "Semiconductors",
-            "quadrant": "lagging",
+            "quadrant": "improving",
             "rs": {
-              "1W": -5.11,
-              "1M": -14.14,
-              "3M": -13.1,
-              "6M": -21.49,
-              "1Y": 40.85
+              "1W": 5.42,
+              "1M": -9.04,
+              "3M": -9.9,
+              "6M": -18.01,
+              "1Y": 53.62
             },
-            "accel_z": -1.643,
-            "emerging_score": -1.885
+            "accel_z": 1.699,
+            "emerging_score": 2.275
           }
         ]
       },
@@ -368,14 +368,14 @@
             "key": "Artificial Intelligence",
             "quadrant": "lagging",
             "rs": {
-              "1W": -1.53,
-              "1M": -5.93,
-              "3M": -1.84,
-              "6M": 2.28,
-              "1Y": 1.23
+              "1W": 1.33,
+              "1M": -4.11,
+              "3M": -1.96,
+              "6M": 5.17,
+              "1Y": 5.16
             },
-            "accel_z": -0.571,
-            "emerging_score": -1.171
+            "accel_z": 0.181,
+            "emerging_score": -0.268
           }
         ]
       },
@@ -462,14 +462,14 @@
             "key": "Energy Renewable",
             "quadrant": "improving",
             "rs": {
-              "1W": -2.79,
-              "1M": -1.47,
-              "3M": -8.66,
-              "6M": -21.43,
-              "1Y": -9.5
+              "1W": -0.55,
+              "1M": -0.42,
+              "3M": -8.26,
+              "6M": -20.17,
+              "1Y": -7.73
             },
-            "accel_z": -0.863,
-            "emerging_score": -0.292
+            "accel_z": -0.268,
+            "emerging_score": 0.429
           }
         ]
       },
@@ -529,14 +529,14 @@
             "key": "Energy Renewable",
             "quadrant": "improving",
             "rs": {
-              "1W": -2.79,
-              "1M": -1.47,
-              "3M": -8.66,
-              "6M": -21.43,
-              "1Y": -9.5
+              "1W": -0.55,
+              "1M": -0.42,
+              "3M": -8.26,
+              "6M": -20.17,
+              "1Y": -7.73
             },
-            "accel_z": -0.863,
-            "emerging_score": -0.292
+            "accel_z": -0.268,
+            "emerging_score": 0.429
           }
         ]
       },
@@ -595,14 +595,14 @@
             "key": "Cybersecurity",
             "quadrant": "lagging",
             "rs": {
-              "1W": -2.63,
-              "1M": -7.69,
-              "3M": 2.7,
-              "6M": 43.77,
-              "1Y": 23.95
+              "1W": -0.73,
+              "1M": -5.88,
+              "3M": 0.71,
+              "6M": 45.31,
+              "1Y": 26.08
             },
-            "accel_z": -1.146,
-            "emerging_score": -3.306
+            "accel_z": -0.55,
+            "emerging_score": -2.529
           }
         ]
       },
@@ -668,14 +668,14 @@
             "key": "Defense & Aerospace",
             "quadrant": "leading",
             "rs": {
-              "1W": 0.06,
-              "1M": 10.79,
-              "3M": -6.26,
-              "6M": -6.35,
-              "1Y": -0.76
+              "1W": 5.55,
+              "1M": 12.72,
+              "3M": -5.7,
+              "6M": -4.48,
+              "1Y": 0.0
             },
-            "accel_z": 0.186,
-            "emerging_score": 1.249
+            "accel_z": 1.635,
+            "emerging_score": 3.175
           }
         ]
       },
@@ -701,7 +701,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 44.0,
+        "score": 45.0,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -743,40 +743,40 @@
             "key": "Robotics",
             "quadrant": "improving",
             "rs": {
-              "1W": -1.29,
-              "1M": -4.12,
-              "3M": -5.8,
-              "6M": -9.57,
-              "1Y": -3.5
+              "1W": -0.06,
+              "1M": -2.42,
+              "3M": -6.0,
+              "6M": -8.84,
+              "1Y": -0.59
             },
-            "accel_z": -0.357,
-            "emerging_score": -0.314
+            "accel_z": -0.166,
+            "emerging_score": -0.004
           },
           {
             "key": "Industrial Automation",
             "quadrant": "lagging",
             "rs": {
-              "1W": -3.26,
-              "1M": -2.11,
-              "3M": -2.31,
-              "6M": 0.83,
-              "1Y": 8.9
+              "1W": -1.34,
+              "1M": -0.99,
+              "3M": -2.64,
+              "6M": 1.94,
+              "1Y": 10.86
             },
-            "accel_z": -1.241,
-            "emerging_score": -1.649
+            "accel_z": -0.664,
+            "emerging_score": -0.975
           },
           {
             "key": "Autonomous Systems",
             "quadrant": "improving",
             "rs": {
-              "1W": -0.56,
-              "1M": -1.39,
-              "3M": -7.58,
-              "6M": -11.06,
-              "1Y": -6.79
+              "1W": 3.04,
+              "1M": -0.31,
+              "3M": -7.5,
+              "6M": -10.09,
+              "1Y": -4.38
             },
-            "accel_z": -0.018,
-            "emerging_score": 0.379
+            "accel_z": 0.87,
+            "emerging_score": 1.537
           }
         ]
       },
@@ -804,7 +804,7 @@
       "foresight": {
         "stage": "BROADENING (fingerprint)",
         "tier": "P",
-        "score": 42.3,
+        "score": 41.7,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -814,7 +814,7 @@
           "basket_id": "obesity_glp1",
           "name_en": "GLP-1 & Obesity",
           "name_zh": "GLP-1 与减肥药",
-          "score": 45,
+          "score": 47,
           "label": "emerging",
           "label_en": "EMERGING",
           "label_zh": "新兴",
@@ -852,23 +852,23 @@
             "key": "Healthcare & Biotech",
             "quadrant": "weakening",
             "rs": {
-              "1W": -0.55,
-              "1M": 5.74,
-              "3M": 12.48,
-              "6M": 30.26,
-              "1Y": 38.12
+              "1W": -2.76,
+              "1M": 7.09,
+              "3M": 11.36,
+              "6M": 31.92,
+              "1Y": 34.51
             },
-            "accel_z": -0.619,
-            "emerging_score": -1.784
+            "accel_z": -1.466,
+            "emerging_score": -2.876
           }
         ]
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.6471,
-        "narrative_pct": 0.2941,
-        "money_pct": 0.9412,
-        "asof": "2026-11-05",
+        "divergence": -0.5294,
+        "narrative_pct": 0.1765,
+        "money_pct": 0.7059,
+        "asof": "2026-11-12",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -885,7 +885,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 32.7,
+        "score": 33.3,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -919,20 +919,20 @@
         "keys": [
           "FinTech"
         ],
-        "rollup_quadrant": "leading",
+        "rollup_quadrant": "weakening",
         "subsectors": [
           {
             "key": "FinTech",
-            "quadrant": "leading",
+            "quadrant": "weakening",
             "rs": {
-              "1W": 0.73,
-              "1M": 4.71,
-              "3M": 3.76,
-              "6M": 2.28,
-              "1Y": -12.82
+              "1W": -1.24,
+              "1M": 6.15,
+              "3M": 1.84,
+              "6M": 5.79,
+              "1Y": -11.6
             },
-            "accel_z": 0.147,
-            "emerging_score": 0.173
+            "accel_z": -0.742,
+            "emerging_score": -0.88
           }
         ]
       },
@@ -958,7 +958,7 @@
       "foresight": {
         "stage": "BROADENING (fingerprint)",
         "tier": "P",
-        "score": 54.4,
+        "score": 55.0,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1006,14 +1006,14 @@
             "key": "Space Tech",
             "quadrant": "improving",
             "rs": {
-              "1W": 5.82,
-              "1M": 3.81,
-              "3M": -13.44,
-              "6M": -22.78,
-              "1Y": 16.48
+              "1W": 13.29,
+              "1M": 7.85,
+              "3M": -11.08,
+              "6M": -21.29,
+              "1Y": 19.5
             },
-            "accel_z": 2.676,
-            "emerging_score": 4.461
+            "accel_z": 4.266,
+            "emerging_score": 6.811
           }
         ]
       },
@@ -1079,14 +1079,14 @@
             "key": "Commodities Metals",
             "quadrant": "improving",
             "rs": {
-              "1W": 5.16,
-              "1M": -3.4,
-              "3M": -12.34,
-              "6M": -25.31,
-              "1Y": -1.03
+              "1W": 0.94,
+              "1M": -2.62,
+              "3M": -12.0,
+              "6M": -25.11,
+              "1Y": -1.43
             },
-            "accel_z": 2.38,
-            "emerging_score": 3.66
+            "accel_z": 0.306,
+            "emerging_score": 1.296
           }
         ]
       },
@@ -1145,23 +1145,23 @@
             "key": "Commodities Metals",
             "quadrant": "improving",
             "rs": {
-              "1W": 5.16,
-              "1M": -3.4,
-              "3M": -12.34,
-              "6M": -25.31,
-              "1Y": -1.03
+              "1W": 0.94,
+              "1M": -2.62,
+              "3M": -12.0,
+              "6M": -25.11,
+              "1Y": -1.43
             },
-            "accel_z": 2.38,
-            "emerging_score": 3.66
+            "accel_z": 0.306,
+            "emerging_score": 1.296
           }
         ]
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.7059,
-        "narrative_pct": 0.2941,
+        "divergence": -0.8235,
+        "narrative_pct": 0.1765,
         "money_pct": 1.0,
-        "asof": "2026-11-03",
+        "asof": "2026-11-12",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -1197,27 +1197,27 @@
             "key": "Agriculture & FoodTech",
             "quadrant": "improving",
             "rs": {
-              "1W": -0.15,
-              "1M": -3.46,
-              "3M": -10.52,
-              "6M": -17.82,
-              "1Y": -21.87
+              "1W": -0.48,
+              "1M": -4.51,
+              "3M": -11.7,
+              "6M": -16.82,
+              "1Y": -21.66
             },
-            "accel_z": 0.234,
-            "emerging_score": 0.842
+            "accel_z": -0.16,
+            "emerging_score": 0.341
           },
           {
             "key": "Commodities Agriculture",
             "quadrant": "leading",
             "rs": {
-              "1W": 1.45,
-              "1M": 1.5,
-              "3M": 0.0,
-              "6M": -11.83,
-              "1Y": 3.07
+              "1W": 1.28,
+              "1M": 0.69,
+              "3M": -0.26,
+              "6M": -10.68,
+              "1Y": 2.54
             },
-            "accel_z": 0.546,
-            "emerging_score": 0.97
+            "accel_z": 0.125,
+            "emerging_score": 0.359
           }
         ]
       },
@@ -1282,14 +1282,14 @@
             "key": "Healthcare & Biotech",
             "quadrant": "weakening",
             "rs": {
-              "1W": -0.55,
-              "1M": 5.74,
-              "3M": 12.48,
-              "6M": 30.26,
-              "1Y": 38.12
+              "1W": -2.76,
+              "1M": 7.09,
+              "3M": 11.36,
+              "6M": 31.92,
+              "1Y": 34.51
             },
-            "accel_z": -0.619,
-            "emerging_score": -1.784
+            "accel_z": -1.466,
+            "emerging_score": -2.876
           }
         ]
       },
@@ -1308,7 +1308,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 40.6,
+        "score": 43.1,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1326,14 +1326,14 @@
             "key": "Healthcare & Biotech",
             "quadrant": "weakening",
             "rs": {
-              "1W": -0.55,
-              "1M": 5.74,
-              "3M": 12.48,
-              "6M": 30.26,
-              "1Y": 38.12
+              "1W": -2.76,
+              "1M": 7.09,
+              "3M": 11.36,
+              "6M": 31.92,
+              "1Y": 34.51
             },
-            "accel_z": -0.619,
-            "emerging_score": -1.784
+            "accel_z": -1.466,
+            "emerging_score": -2.876
           }
         ]
       },
@@ -1375,14 +1375,14 @@
             "key": "Energy Renewable",
             "quadrant": "improving",
             "rs": {
-              "1W": -2.79,
-              "1M": -1.47,
-              "3M": -8.66,
-              "6M": -21.43,
-              "1Y": -9.5
+              "1W": -0.55,
+              "1M": -0.42,
+              "3M": -8.26,
+              "6M": -20.17,
+              "1Y": -7.73
             },
-            "accel_z": -0.863,
-            "emerging_score": -0.292
+            "accel_z": -0.268,
+            "emerging_score": 0.429
           }
         ]
       },
@@ -1404,10 +1404,9 @@
     "divergence_log[cybersecurity]: stale (as_of=2026-08-27)",
     "divergence_log[robotics_automation]: stale (as_of=2026-11-02)",
     "divergence_log[defense_aerospace]: stale (as_of=2026-11-04)",
-    "divergence_log[glp1_obesity]: stale (as_of=2026-11-05)",
+    "divergence_log[semicap_equipment]: stale (as_of=2026-11-07)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
     "divergence_log[diagnostics_lifesci]: stale (as_of=2026-10-14)",
-    "divergence_log[copper_steel_electrify]: stale (as_of=2026-11-03)",
     "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
     "divergence_log[solar]: stale (as_of=2026-10-10)",
     "divergence_log[ag_fertilizer]: stale (as_of=2026-11-02)"
@@ -1424,7 +1423,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-11-11T12:44:10Z",
-  "inputs_hash": "sha256:1b7580300bf7dd4035e9987ca55d17604fed3fc29d711a64074fa1e26957c185",
+  "produced_at": "2026-11-12T11:55:27Z",
+  "inputs_hash": "sha256:e7aa6f1494c424ac5a053457052b87fc9e05e2e7c717754c74fb38f8d1fa2ab7",
   "tier": "display"
 }
