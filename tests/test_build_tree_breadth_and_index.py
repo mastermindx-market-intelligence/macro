@@ -499,3 +499,259 @@ def test_gmi_group_ids_are_graph_node_ids():
         ids = set(pd.read_csv(reg / f"{f}.csv")["group"])
         assert ids and all(i.startswith("theme:") for i in ids)
     assert "node ids, unchanged" in bt.GROUP_ID_NOTE
+
+
+# ===========================================================================
+# Regime inputs (COO ruling 36 s2) — scripts/build_regime_inputs.py
+# Series only: group/universe numbers, no member ticker/row/price, no regime
+# category / cutoff / score / signal, nothing related to outcomes.
+# ===========================================================================
+import re  # noqa: E402
+
+from scripts import build_regime_inputs as rg  # noqa: E402
+
+_REGIME_PQ = HIST / "regime_inputs_daily_current.parquet"
+_REGIME_META = HIST / "regime_inputs_current.meta.json"
+_REGIME_REPORT = ROOT / "research/breadth_history/REGIME_INPUTS_REPORT.md"
+_regime_needs = pytest.mark.skipif(not _REGIME_PQ.exists(),
+                                   reason="data/ not checked out (sparse tree)")
+_FORBIDDEN = re.compile(r"\b(state|label|threshold|forward)\b", re.I)
+# Domain abbreviations that collide with S&P member tickers but are not member
+# references: EW = equal-weight, COO = the ruling authority. The real member-leak
+# surface (parquet group/series columns and raw ticker lists) is checked exactly.
+_TICKER_ABBREV = {"EW", "COO"}
+
+
+def _regime_member_tickers() -> set:
+    cons = pd.read_parquet(ROOT / "data/breadth/constituents.parquet")
+    bmem = json.loads((ROOT / "data/baskets/membership.json").read_text())
+    return (set(cons.index.astype(str))
+            | {m["ticker"] for b in bmem["baskets"].values() for m in b["members"]})
+
+
+def _regime_synth_root(tmp: Path, n=12, periods=700, start="2020-01-01"):
+    """Small synthetic universe + baskets + ETFs for a network-free regime build."""
+    rng = np.random.default_rng(11)
+    idx = pd.bdate_range(start, periods=periods)
+    r = rng.normal(0.0003, 0.01, size=(periods, n))
+    closes = pd.DataFrame(100 * np.exp(np.cumsum(r, axis=0)), index=idx,
+                          columns=[f"T{i:02d}" for i in range(n)])
+    t = list(closes.columns)
+    root = tmp / "root"
+    (root / "data/breadth").mkdir(parents=True)
+    (root / "data/baskets").mkdir(parents=True)
+    pd.DataFrame({"sector": ["S1"] * (n // 2) + ["S2"] * (n - n // 2)}, index=t).to_parquet(
+        root / "data/breadth/constituents.parquet")
+    baskets = {b: {"members": [{"ticker": x, "removed": None} for x in ms]}
+               for b, ms in (("ai_software", t[0:4]), ("non_ai_software", t[4:8]),
+                             ("ai_semiconductors", t[8:12]))}
+    (root / "data/baskets/membership.json").write_text(json.dumps({"baskets": baskets}))
+    etf_dir = tmp / "etfs"; etf_dir.mkdir()
+    rng2 = np.random.default_rng(12)
+    for e in rg.ETFS:
+        px = 100 * np.cumprod(1 + rng2.normal(0.0003, 0.01, size=len(closes)))
+        pd.DataFrame({"close": px}, index=closes.index).to_parquet(etf_dir / f"{e}.parquet")
+    cp = tmp / "closes.parquet"; closes.to_parquet(cp)
+    dm = tmp / "dm.json"; dm.write_text(json.dumps({"vintage": "synthetic-v1"}))
+    return closes, root, etf_dir, cp, dm
+
+
+# ---- synthetic: one test per statistic -------------------------------------
+def test_regime_return_conventions():
+    idx = pd.bdate_range("2020-01-01", periods=6)
+    closes = pd.DataFrame({"A": [100, 101, np.nan, 103, 104, 105],
+                           "B": [100, 100, 100, 100, 100, 100]}, index=idx)
+    dr = rg.daily_returns(closes)
+    assert np.isnan(dr["A"].iloc[2]) and np.isnan(dr["A"].iloc[3])  # both endpoints needed
+    assert dr["B"].iloc[1] == 0.0
+    wr = rg.window_return(closes, 2)
+    assert abs(wr["A"].iloc[3] - (103 / 101 - 1)) < 1e-12  # t-2 = idx 1 is valid
+    assert np.isnan(wr["A"].iloc[4])            # t-2 = idx 2 is NaN
+    assert abs(wr["A"].iloc[5] - (105 / 103 - 1)) < 1e-12
+
+
+def test_regime_ew_level_held_matches_house_convention(tmp_path):
+    closes, *_ = _regime_synth_root(tmp_path, n=8, periods=400)
+    rets = rg.daily_returns(closes)
+    priced = closes.notna()
+    members = list(closes.columns[:5])
+    held = pd.DataFrame(False, index=closes.index, columns=closes.columns)
+    held[members] = True
+    start = pd.Timestamp("2020-06-01")
+    lvl, n = rg.ew_level_held(rets, priced, held, start)
+    ref_lvl, ref_n, _ = bt.group_index(rets, members, start, priced=priced)
+    pd.testing.assert_series_equal(lvl, ref_lvl, check_names=False)
+    pd.testing.assert_series_equal(n, ref_n, check_names=False)
+
+
+def test_regime_rebased_ratio():
+    idx = pd.bdate_range("2020-01-01", periods=5)
+    num = pd.Series([np.nan, 2.0, 4.0, 6.0, 8.0], index=idx)
+    den = pd.Series([1.0, 1.0, 2.0, 3.0, 4.0], index=idx)
+    r = rg.rebased_ratio(num, den)
+    assert r.index[0] == idx[1]                 # first session both valid
+    assert r.iloc[0] == 100.0
+    assert abs(r.iloc[-1] - 100.0 * (8.0 / 4.0) / (2.0 / 1.0)) < 1e-12
+
+
+def test_regime_universe_breadth():
+    idx = pd.bdate_range("2020-01-01", periods=300)
+    up = np.linspace(100, 200, 300)
+    dn = np.linspace(200, 100, 300)
+    closes = pd.DataFrame({"A": up, "B": up, "C": dn, "D": dn}, index=idx)
+    out, ns = rg.universe_breadth(closes, pd.Timestamp("2020-01-01"))
+    last = idx[-1]
+    assert out["pct_above_50"].loc[last] == 50.0      # 2 of 4 above
+    assert out["n_above_50"].loc[last] == 2.0
+    assert ns["pct_above_50"].loc[last] == 4.0
+    assert out["diff_pct_above_50_21d"].loc[last] == 0.0
+    assert out["new_highs_252"].loc[last] == 2.0
+    assert out["new_lows_252"].loc[last] == 2.0
+    assert out["nh_nl_252"].loc[last] == 0.0
+    assert out["n_counted_nh"].loc[last] == 4.0
+
+
+def test_regime_dispersion(tmp_path):
+    closes, root, *_ = _regime_synth_root(tmp_path, n=12, periods=400)
+    sectors = {g: sorted(m["ticker"].tolist()) for g, m in
+               bt.sector_membership(root / "data/breadth/constituents.parquet").groupby("group")}
+    start = pd.Timestamp("2020-01-01")
+    got = rg.dispersion(closes, sectors, start)
+    r21 = rg.window_return(closes, 21)
+    exp = r21.std(axis=1, ddof=1) * 100.0
+    v, n = got["dispersion_21d"]["universe"]
+    pd.testing.assert_series_equal(v, exp.where(n >= bt.BREADTH_FLOOR), check_names=False)
+    assert (n == r21.notna().sum(axis=1)).all()
+    for g, members in sectors.items():
+        vg, ng = got["dispersion_21d"][g]
+        expg = r21[members].std(axis=1, ddof=1) * 100.0
+        pd.testing.assert_series_equal(vg, expg.where(ng >= bt.BREADTH_FLOOR), check_names=False)
+
+
+def test_regime_sector_dispersion(tmp_path):
+    closes, root, *_ = _regime_synth_root(tmp_path, n=12, periods=400)
+    sectors = {g: sorted(m["ticker"].tolist()) for g, m in
+               bt.sector_membership(root / "data/breadth/constituents.parquet").groupby("group")}
+    start = pd.Timestamp("2020-01-01")
+    levels = rg.ew_levels(closes, sectors, start)
+    got = rg.sector_dispersion(levels, sorted(sectors), start)
+    names = sorted(sectors)
+    rk = pd.DataFrame({g: rg.window_return(levels[g][0].to_frame("l"), 21)["l"] for g in names})
+    exp = rk.std(axis=1, ddof=1) * 100.0
+    v, n = got["sector_dispersion_21d"]
+    pd.testing.assert_series_equal(v, exp.where(n >= bt.BREADTH_FLOOR), check_names=False)
+    assert (n == rk.notna().sum(axis=1)).all()
+
+
+def test_regime_leadership():
+    idx = pd.bdate_range("2020-01-01", periods=200)
+    up = np.linspace(100, 200, 200)
+    dn = np.linspace(200, 100, 200)
+    closes = pd.DataFrame({"A": up, "B": up, "C": dn, "D": dn}, index=idx)
+    ew = pd.Series(100.0, index=idx)                 # flat index: 0 window return
+    out, ns = rg.leadership(closes, ew, pd.Timestamp("2020-01-01"))
+    last = idx[-1]
+    assert out["pct_beat_ew_63d"].loc[last] == 50.0   # the 2 rising members beat 0
+    assert out["n_beat_ew_63d"].loc[last] == 2.0
+    assert ns["pct_beat_ew_63d"].loc[last] == 4.0
+
+
+def test_regime_month_end_betas():
+    idx = pd.bdate_range("2020-01-01", periods=300)
+    rng = np.random.default_rng(0)
+    s = rng.normal(0, 0.01, 300)
+    mrets = pd.DataFrame({"A": 2.0 * s, "B": 0.5 * s}, index=idx)
+    sret = pd.Series(s, index=idx)
+    month_ends = pd.Series(idx, index=idx.to_period("M")).groupby(level=0).max()
+    betas = rg.month_end_betas(mrets, sret, month_ends)
+    last = betas[max(betas)]
+    assert abs(last["A"] - 2.0) < 1e-9 and abs(last["B"] - 0.5) < 1e-9
+    # month ends without a full trailing window are skipped, not estimated
+    assert all(list(idx).index(t) + 1 >= rg.BETA_WINDOW for t in
+               [month_ends[p] for p in betas])
+
+
+def test_regime_high_beta_cohorts():
+    idx = pd.bdate_range("2020-01-01", periods=700)
+    rng = np.random.default_rng(3)
+    s = rng.normal(0.0003, 0.01, 700)
+    spy = pd.Series(100 * np.cumprod(1 + s), index=idx)
+    betas = np.linspace(0.5, 1.5, 10)
+    closes = pd.DataFrame({f"T{i:02d}": 100 * np.cumprod(1 + b * s)
+                           for i, b in enumerate(betas)}, index=idx)
+    lvl, n, facts = rg.high_beta_cohorts(closes, spy, pd.Timestamp("2021-06-01"))
+    assert facts["cohort_size_max"] == 2            # ceil(10 / 5)
+    assert facts["months_selected"] > 0
+    valid = lvl.dropna()
+    assert len(valid) and (n.loc[valid.index] >= bt.INDEX_FLOOR).all()
+
+
+def test_regime_full_synthetic_build(tmp_path):
+    closes, root, etf_dir, cp, dm = _regime_synth_root(tmp_path)
+    meta = rg.build(cp, dm, tmp_path / "out", root=root, etf_dir=etf_dir, start="2021-06-01")
+    df = pd.read_parquet(tmp_path / "out/regime_inputs_daily_current.parquet")
+    assert list(df.columns) == ["date", "series", "group", "value", "n", "kind"]
+    assert set(df.kind) <= set(rg.KINDS)
+    assert (df.n >= 2).all() and not df.isna().any().any()
+    assert df.date.min() >= pd.Timestamp("2021-06-01")
+    assert not df.duplicated(["series", "group", "date"]).any()
+    rel = [s for s in df.series.unique() if s.startswith("rel_")]
+    assert len(rel) == 15                            # 5 numerators x 3 denominators
+    for s in ("ew_vs_spy", "rsp_vs_spy", "rel_igv_vs_ew_universe"):
+        v = df[df.series == s].sort_values("date").value
+        assert abs(v.iloc[0] - 100.0) < 1e-9          # rebased to 100
+    assert "computed" in set(df[df.series == "ew_index"].kind)
+    assert not _FORBIDDEN.search(json.dumps(meta))
+    for s, entry in meta["series"].items():
+        assert {"definition", "first_date", "source", "basis", "kind", "gaps"} <= set(entry)
+
+
+# ---- committed artifacts (skipped on a sparse tree without data/) ----------
+@_regime_needs
+def test_regime_committed_columns_kinds_floors():
+    df = pd.read_parquet(_REGIME_PQ)
+    assert list(df.columns) == ["date", "series", "group", "value", "n", "kind"]
+    assert not any("ticker" in c or "price" in c for c in df.columns)
+    assert set(df.kind) <= set(rg.KINDS)
+    assert (df.n >= 2).all() and not df.isna().any().any()
+    assert df.date.min() >= pd.Timestamp(rg.START)
+    assert not df.duplicated(["series", "group", "date"]).any()
+    tickers = _regime_member_tickers()
+    assert not (set(df.group) & tickers) and not (set(df.series) & tickers)
+
+
+@_regime_needs
+def test_regime_committed_no_forbidden_words():
+    df = pd.read_parquet(_REGIME_PQ, columns=["series", "group"])
+    assert not _FORBIDDEN.search(" ".join(df.series.unique()) + " " + " ".join(df.group.unique()))
+    assert not _FORBIDDEN.search(_REGIME_META.read_text())
+    assert not _FORBIDDEN.search(_REGIME_REPORT.read_text())
+
+
+@_regime_needs
+def test_regime_committed_sidecar_consistency():
+    df = pd.read_parquet(_REGIME_PQ)
+    meta = json.loads(_REGIME_META.read_text())
+    assert _REGIME_META.stat().st_size < 40_000
+    firsts = df.groupby("series").date.min()
+    kinds = df.groupby("series").kind.agg(lambda s: sorted(set(s)))
+    assert set(meta["series"]) == set(df.series.unique())
+    for s, entry in meta["series"].items():
+        assert {"definition", "first_date", "source", "basis", "kind", "gaps"} <= set(entry)
+        assert entry["first_date"] == str(firsts[s].date())
+        ek = entry["kind"] if isinstance(entry["kind"], list) else [entry["kind"]]
+        assert sorted(ek) == kinds[s]
+        assert len(entry["gaps"].split("; ")) <= 3
+        assert "groups" not in entry and "rows" not in entry   # no per-date/per-ticker lists
+    assert meta["no_outcomes"] and not _FORBIDDEN.search(meta["no_outcomes"])
+    assert "series" not in meta["rates_credit_dollar_on_main"]  # census list lives in the report
+    tickers = _regime_member_tickers() - _TICKER_ABBREV
+    report = _REGIME_REPORT.read_text()
+    table_part = report.split("## Rates, credit and dollar on main")[0]
+    # The census section is a read-only inventory of macro series already on main;
+    # its FRED ids (e.g. IR, CI) legitimately collide with member tickers and are
+    # not member references. The regime-series surfaces are checked exactly.
+    prose = _REGIME_META.read_text() + table_part
+    hits = {t for t in tickers if len(t) >= 2 and re.search(r"\b" + re.escape(t) + r"\b", prose)}
+    assert not hits, sorted(hits)
+    assert len(table_part.encode()) < 15_000
