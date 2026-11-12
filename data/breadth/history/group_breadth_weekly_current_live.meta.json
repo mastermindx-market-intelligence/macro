@@ -1,0 +1,73 @@
+{
+  "basis": "reconstructed_current_membership",
+  "basis_note": "today's members applied to the past; not point-in-time; survivors only",
+  "separate_sources": "This file and the long history (group_breadth_weekly_current.parquet, Tiingo archive) sit on different price sources. They are compared, not joined.",
+  "price_source": "yfinance auto_adjust=True full-window download (period 2y), one vintage per run; never the collector's cache (#11124)",
+  "price_vintage": "2026-11-12T07:08:50+00:00",
+  "as_of_week": "2026-11-06",
+  "span": {
+    "closes_start": "2024-11-12",
+    "closes_end": "2026-11-11"
+  },
+  "refresh": "every run rebuilds the whole file from one download; nothing is appended across vintages",
+  "stale_rule": "label stale at two or more completed weekly closes behind the latest session",
+  "members": {
+    "in_map": 503,
+    "priced": 503,
+    "unpriced": [],
+    "unpriced_by_group": {}
+  },
+  "aliases": {
+    "MMC": {
+      "downloaded_as": "MRSH",
+      "evidence": "same issuer: closes match the archive's series for the company over 478 sessions"
+    },
+    "FI": {
+      "downloaded_as": "FISV",
+      "evidence": "same issuer: closes match the archive's series for the company over 478 sessions"
+    }
+  },
+  "n_members_last_week": {
+    "Communication Services": 22,
+    "Consumer Discretionary": 47,
+    "Consumer Staples": 33,
+    "Energy": 21,
+    "Financials": 76,
+    "Health Care": 60,
+    "Industrials": 83,
+    "Information Technology": 76,
+    "Materials": 24,
+    "Real Estate": 30,
+    "Utilities": 31
+  },
+  "comparison_vs_archive": {
+    "metric": "fix_chg_pct_above_200_13w",
+    "common_weeks": 45,
+    "common_span": [
+      "2025-12-05",
+      "2026-10-09"
+    ],
+    "max_abs_diff_by_sector": {
+      "Communication Services": 7.7273,
+      "Consumer Discretionary": 0.0,
+      "Consumer Staples": 3.125,
+      "Energy": 4.0476,
+      "Financials": 3.5328,
+      "Health Care": 2.8736,
+      "Industrials": 2.5942,
+      "Information Technology": 2.4762,
+      "Materials": 5.2536,
+      "Real Estate": 6.4368,
+      "Utilities": 5.6989
+    },
+    "max_abs_diff": 7.7273,
+    "max_at": {
+      "group": "Communication Services",
+      "date": "2026-08-14"
+    },
+    "expectation": "about 4.76 points at most on the members priced in both stores (ruling 27 section 3 test). This comparison uses each file's own members: the live file prices members the archive capture lacks, which widens the gap",
+    "is_gate": false
+  },
+  "engine": "engine/group_breadth_history.py",
+  "rows": 1144
+}

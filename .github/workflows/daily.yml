@@ -2238,6 +2238,18 @@ jobs:
         run: |
           python -m engine.credit_momentum \
             || echo "::warning::credit_momentum engine failed (non-fatal)"
+      - name: live weekly sector breadth — single-vintage rebuild (non-fatal)
+        # Sector Intelligence, ruling 27 section 5 (#11124). One full-window yfinance
+        # download per night (~2m, 519 names), held in RUNNER_TEMP. Never the
+        # collector's _closes_cache.parquet, which mixes dividend vintages. Every
+        # week is recomputed from that one download; an unchanged result writes
+        # nothing. Writes data/breadth/history/group_breadth_weekly_current_live.*,
+        # covered by `git add data/` in "commit tail data" below. Off the render path.
+        continue-on-error: true
+        timeout-minutes: 15
+        run: |
+          python scripts/extend_group_breadth_weekly.py --scratch "${RUNNER_TEMP}/breadth_live" \
+            || echo "::warning::live weekly breadth rebuild failed (non-fatal)"
       - name: timings band — commit (W2)
         run: python3 scripts/nightly_timings.py mark --band commit || echo "::warning::timings band mark failed (non-fatal)"
       - name: commit tail data

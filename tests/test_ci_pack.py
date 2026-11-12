@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_980),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 6_018),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_738),
+    ("templates/index.html", 137, 5_982),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_020),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_740),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 11
@@ -6010,6 +6010,15 @@ PACKING_PROBE_MAX_PACKS = 11
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (Sector Intelligence live weekly breadth, COO ruling 27
+    section 5): tests/test_extend_group_breadth_weekly.py joins the existing
+    breadth pytest command of unrun-site-surfaces (the step that already
+    runs test_group_breadth_history / test_member_breadth_ledger), which
+    rides all three probes. Measured with packing_probe_measurements on this
+    branch: 5,980 -> 5,982, 6,018 -> 6,020, 5,738 -> 5,740 (+2 each), on the
+    same job counts 137/138/131 and packs 10/11/10, under the unchanged pack
+    ceiling 11. No selector, assertion, skip or allowlist changed.
 
     2026-11-12 (PR #11094 carrying PR #10924, COO ruling 25): the #11094
     branch (head abae99b163ee) merged #10924's head 877e4845e1e5, then
