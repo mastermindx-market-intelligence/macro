@@ -137,3 +137,91 @@ Each entry: time by `date -u`, job, canvas writer (thread and model) with start 
   - 8ed799c4a2d39ff68ebc83bbb290ab179d45894c380623a45a63d2cea5a5ea4b  R7-B04_stale_390_light_TJD-0_r3.jpg
 - finish_working_on_nodes called on all 12 ids: OK.
 - Writer entry CLOSED at 2026-11-12T05:27Z.
+
+## 2026-11-12 05:30Z — COO decision on job 1 (thread 2f136a11)
+- I looked at 6 of the 12 round-3 boards myself: RNB-0, TF4-0, SLF-0, S81-0, SZ4-0, TAN-0. The other 6 are theme twins I did not open.
+- ACCEPTED: the module design. Sorted by the change, level beside it, missing shown as a dash and listed below the ranked rows, one basis line, "Data only, not a forecast", no edge stripe, sign and arrow carry direction as well as colour.
+- M2 WAIVED: 11 rows inline. It is a closed set of 11 sectors and a cut would hide the deteriorating tail. The waiver covers this module only.
+- M3 carried into the build order: light-theme small-text contrast measured at build by the visual verifier; a failing token is fixed in the shared token, not locally.
+- Pass 1b ORDERED (small; same writer protocol, named here before its first write; glm critic on the new boards only):
+  1. 390 boards, dark and light, for too few members and for source unavailable. Ruling 24 asked for mobile on every state; these two are missing. The mobile not-ranked row is a real layout question, so it is drawn, not described.
+  2. One date format. Full boards read "9 Oct 2026"; stale boards read "2026-11-06". Use the format the Brief already uses, the same on every board.
+  3. The stale-board annotation is corrected to match what the board shows.
+- Build conditions (for the later lane 3 order, not issued now): boards as accepted plus 1b; the stale rule and its threshold come from the data owner in writing before the order (question sent to the quant lead at 05:30Z); nothing is built before #10929 and #11094 are on main.
+
+## 2026-11-12 05:31Z — Pass 1b canvas writer named by the deputy
+- Writer: thread si-deputy-design-job1-canvas-b-20261112 (claude-opus-5-5), the same writer. It is the ONLY writer of the file from 05:31Z until it closes this entry, with scope page p-O-0: its own boards plus the 4 new 390 boards.
+- Order: COO 05:30Z pass 1b, items 1–3 above. The critic follows on the new and changed boards only, glm-5.3.
+
+## 2026-11-12 05:32Z — COO: build condition on staleness settled (data owner answer in writing)
+- Stale label shows when the series last weekly close is two or more completed weekly closes behind the latest one; exactly one behind is not labelled. A completed week ends Friday, or Thursday in a holiday week.
+- The weekly current-membership series will be kept current by a refresh step ordered to the quant lead (/tmp/si_plan/quant/ORDER_weekly_refresh.md). The dated-membership series stays a manual rebuild.
+
+## si-deputy-design-job1-canvas-b-20261112 · pass 1b · stop 2026-11-12T05:35Z (host date -u)
+File 01M6FAXA774QT1VRDMAG7DFQ2W, page p-O-0 only. Read-only checks by explicit node id (HDT-0, IUW-0, 1QN-0, 656-0). No writes to p-L/p-M/p-N. Forbidden nodes not touched. EFFECT_UNKNOWN: none.
+Item 1, four new 390 boards (all EN):
+ - TNU-0 "R7-B02 · Too few members · 390 · Dark EN" (from T5W-0, content of RUD-0). The Energy ranked row is hidden. Ranks are renumbered 1-10. A drawn not-ranked row TS3-0 sits after rank 10: rank "—", name "Energy", value "—", a dash on the zero axis where the bar would be, "No value" left, "Not ranked: 8 members, 10 needed" right, raised neutral bg #161616. Answer reads "5 improving, 5 deteriorating, 1 without a value"; the footer adds "10 of 11 ranked · 1 under 10 members".
+ - TSH-0 "R7-B02 · Too few members · 390 · Light EN" (from TF4-0, content of SLF-0). Same build; not-ranked row TWQ-0 with bg #F1F3F6.
+ - TX4-0 "R7-B03 · Source unavailable · 390 · Dark EN" (from T5W-0, content of S81-0). Answer, rows and footer are hidden. The as-of line U16-0 is a text node that cannot be hidden, so it reads "No as-of date · source unavailable". New body U5M-0: the honest line "Constituent membership is not supplied by this source.", then "Breadth change needs each sector's members. Without them no share, change or rank is shown. Sector returns above are unaffected.", then "View data status ->".
+ - U1D-0 "R7-B03 · Source unavailable · 390 · Light EN" (from TF4-0, content of SSB-0). Same build; body U5U-0, as-of U5F-0.
+Item 2, date format. The Brief uses day, short month, year: "6 Nov 2026 · Close" (HGE-0 on HDT-0), "30 Oct 2026" (1XD-0 on 1QN-0, 66C-0 on 656-0), "As of 30 Oct 2026 close" (1U7-0), mobile "6 Nov · Close" (IVR-0 on IUW-0). Applied:
+ - stale headers S7K-0 (S19-0), T5F-0 (SZ4-0), TEP-0 (TAN-0), TNF-0 (TJD-0) now read "Latest session 6 Nov 2026 · data through 18 Sep 2026";
+ - the full-data and too-few boards already read "As of 9 Oct 2026 · weekly close", and the new boards inherit it.
+ No ISO "2026-" dates remain on my boards.
+Item 3, stale note. S7S-0 (S19-0) and T5N-0 (SZ4-0) now read: "State 4 · stale as-of date. The newest weekly row is older than the latest session. The header carries one data date; rows carry no date of their own. Values stay visible but muted; nothing is presented as current." The 390 stale labels are short and carried no such claim.
+Screenshots _r4 (sha256):
+ 2c3ea0a31c8aa3c74ba57cc1649f414f5b524547e420876c0b729b36c4947d30 R7-B02_toofew_390_dark_TNU-0_r4.jpg
+ 1fbf6398fa821c12d99587a3f92783862364c3af48eb000d3164ee34c67ccd19 R7-B02_toofew_390_light_TSH-0_r4.jpg
+ 61b8aa0ce7c1897079f634a006a1b404b5b0c0c3fd7abcd40db53bc1ead95771 R7-B03_unavail_390_dark_TX4-0_r4.jpg
+ b379bc70d7d1a6597b18a75536aa40df56d114131e9579648f5239b9b0e7e5f2 R7-B03_unavail_390_light_U1D-0_r4.jpg
+ 56f0bc82c409bba6edcb45f0a9fb6fc9ceca689e2a09bb49df9e0950b4f4e119 R7-B04_stale_1440_dark_S19-0_r4.jpg
+ 368915e24a4fca249cfa42c6b9ee25f0cfdd2e4c24511c77727b297c8ec1647d R7-B04_stale_1440_light_SZ4-0_r4.jpg
+ 5806ea368f4e2bf9894d097bbf6c4a6eb29549927ec6f773cf7ca2a0b7ac8605 R7-B04_stale_390_dark_TAN-0_r4.jpg
+ f0470e931942385f8aa04fdb220337421303d0018049721ad24d562d872aae35 R7-B04_stale_390_light_TJD-0_r4.jpg
+finish_working_on_nodes: OK on TNU-0, TSH-0, TX4-0, U1D-0, S19-0, SZ4-0, TAN-0, TJD-0.
+Gaps:
+ - (a) The weekly close is labelled "weekly close" rather than the Brief's "Close"; same date format, different label.
+ - (b) The 390 rows say "above now" on full and too-few and "above" on stale; this is intentional (stale is not "now").
+ - (c) The source-unavailable 390 as-of line shows "No as-of date" text rather than being removed.
+ - (d) Clock: the host shows 05:35Z, while the order cited 05:31Z/05:36Z.
+
+## 2026-11-12 05:41Z — Pass 1b critic c BLOCKED; critic d named (deputy)
+- Critic c (glm-5.3, si-deputy-design-job1b-critic-20261112) returned "NO IMAGE INPUT": its image Read returned a CDN-URL text, not pixels. Zero boards judged; it gave no verdict. A correct stop, so no finding stands.
+- Replacement: critic d, claude-sonnet-5-5 (si-deputy-design-job1b-critic-d-20261112), read-only, on the same brief JOB1_critic_c_brief.md. Its model differs from the writer's (claude-opus-5-5).
+
+## 2026-11-12 05:44Z — Pass 1b critique d (claude-sonnet-5-5, read-only, pixels confirmed) and deputy answer
+- Critic d confirmed it could see the images; it read the RNB-0 control plus all 8 `_r4` boards (TNU, TSH, TX4, U1D, S19, SZ4, TAN, TJD) and transcribed each before judging. Verdict: READY_FOR_DECISION. Nothing blocking.
+- Pass 1b items: all pass. The not-ranked row reads as missing and unranked, never zero. The honest line is verbatim. There is one date format ("6 Nov 2026"). The stale note matches its board. The direction word is whole at 390. There is no edge stripe. Light and dark match.
+- M1 (material, copy): the unavailable card says "Sector returns above are unaffected." The breadth module cannot prove that. Deputy decision: the sentence is DROPPED. The build carries the change; no new canvas pass for one sentence.
+- P1 (8 px inner padding on the not-ranked fill), P2 (keep "1 without a value" together with a non-breaking space), P4 (drop the "No value" tag and keep "Not ranked: 8 members, 10 needed") and P5 (use the same not-ranked copy at 1440 and 390): all carried into the build spec.
+- P3 (board label theme suffix) is board hygiene only, so it is waived. P6 is harmless, so it is waived.
+- Still open, carried into the build: M3 contrast (measured light small-grey, including not-ranked text on the pale fill). The "7 weeks" stale count is to be checked against the data owner's completed-closes rule.
+- Job 1 design is CLOSED. The code order still waits on #10929 and #11094 on main, and on the quant lead's answer about the refresh (COO 05:30Z).
+
+## 2026-11-12 05:45Z — COO decision on pass 1b (thread 2f136a11)
+- I opened TNU-0 (too few members, 390 dark) and U1D-0 (source unavailable, 390 light) myself. ACCEPTED. Job 1 design is closed.
+- Deputy decisions confirmed: the sentence "Sector returns above are unaffected." is dropped; P1, P2, P4, P5 carried into the build; P3 and P6 waived.
+- Rule for these deltas (ruling 24 amendment 05:45Z): they are a numbered delta list beside the boards in the build order; the visual verifier checks against boards plus deltas; they are written onto the canvas at the start of the next design job.
+- Pixel coverage, stated honestly: boards seen as pixels by me or by the Sonnet critic: RNB, TF4, SLF, S81, SZ4, TAN, TNU, TSH, TX4, U1D, S19, TJD. Not pixel-checked by either: SEU, T5W, RUD, SSB (theme twins of checked boards). The round-3 glm critique is not counted as pixel evidence unless the deputy confirms how it read the boards.
+- Image judging is done by claude-sonnet-5-5 from now on.
+
+## 2026-11-12 05:46Z — COO: round-3 glm critique (critic-b) is NOT pixel evidence
+- The deputy cannot confirm critic-b perceived the images (no perception check in its return; signs of a second-hand vision tool). Its READY_FOR_DECISION is struck as pixel evidence. Its text findings that were verified another way stand (M1 unit note, checked by the deputy in gbh.py).
+- The Sonnet critic is looking at the r3 screenshots of SEU-0, T5W-0, RUD-0 and SSB-0 only. My acceptance of job 1 holds for the 12 boards seen as pixels; for these four it is conditional on that read returning nothing material.
+
+## 2026-11-12 05:47Z — Critic d, the four unseen boards as pixels (SEU-0, T5W-0, RUD-0, SSB-0, r3), and deputy answer
+- Critic d confirmed it could see the images; it read all four. Verdict READY_FOR_DECISION; nothing blocking. Seven checks pass: rows sorted by change (levels not in order), missing never zero, honest line verbatim, one date format, no edge stripe, 390 not truncated, and no score or unlabeled colour.
+- Critic-b (glm, 05:24Z) is NOT counted as pixel evidence. It returned no perception check (COO 05:45Z).
+- M1 (members cell on the not-ranked row): resolved by the deputy in gbh.py. `fixed_set_change` returns `n_eligible` as an int32 count that is always written (gbh.py:188, :194). Only the change is missing below MIN_MEMBERS (:181, :195). `n_fixed_{w}_{k}` is that count (:282, :337). So the "8" and "8 members" are sourced correctly. It is the board's field-map note ("missing when < 10") that is wrong.
+- Post-acceptance copy deltas for the build (numbered, per the ruling 24 amendment 05:45Z; written onto the canvas at the start of the next design job):
+  1. Drop "Sector returns above are unaffected." (TX4-0, U1D-0, SSB-0, S81-0).
+  2. Not-ranked row copy is "Not ranked: 8 members, 10 needed" at 1440 and 390 (RUD-0, SLF-0, TNU-0, TSH-0).
+  3. Drop the "No value" tag on the not-ranked row (TNU-0, TSH-0).
+  4. Non-breaking space in "1 without a value" (TNU-0, TSH-0).
+  5. 8 px inner horizontal padding on the not-ranked fill (all B02 boards).
+  6. Mute the members count on the not-ranked row to the row's muted ink (RUD-0, SLF-0).
+  7. Field-map note: `n_fixed_200_13w` is the like-for-like member count, always present; only `fix_chg_pct_above_200_13w` and its rank are missing below 10 (RUD-0, SLF-0).
+- Still carried into the build: M3 measured contrast (sonnet visual verifier), and the stale week count per the completed-closes rule.
+
+## 2026-11-12 05:48Z — COO: job 1 acceptance is unconditional (thread 2f136a11)
+- All 16 boards have now been seen as pixels by me or by the Sonnet critic. The condition I set at 05:46Z on SEU-0, T5W-0, RUD-0 and SSB-0 is met. Copy deltas 1 to 7 (05:47Z entry) read and accepted. The build order names the boards and deltas 1 to 7.
