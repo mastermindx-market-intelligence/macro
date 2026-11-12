@@ -97,19 +97,7 @@ def _request_llm_summary(raw_lessons: str, root: Path) -> str | None:
     """
     try:
         from engine import llm_auth  # type: ignore[import]
-
-        cfg: dict[str, Any] = {
-            "provider_order": ["oauth", "anthropic"],
-            "oauth_token_env": "CLAUDE_CODE_OAUTH_TOKEN",
-            "oauth_pool_lane": "metabolism-dream",
-            "usage_lane": "metabolism-dream",
-            "api_key_env": "ANTHROPIC_API_KEY",
-            "opus_model": "claude-opus-4-8",
-            "max_tokens": 800,
-        }
-        providers = llm_auth.build_providers(cfg, opus_model=cfg["opus_model"])
-        if not providers:
-            return None
+        from engine.metabolism import fabric_lane  # type: ignore[import]
 
         system = (
             "You are a memory-compression assistant for the Metabolism system. "
@@ -124,6 +112,32 @@ def _request_llm_summary(raw_lessons: str, root: Path) -> str | None:
             "Lessons to summarize (old entries that will be compressed):\n\n"
             + raw_lessons[:4000]
         )
+
+        # Capacity Fabric cutover (Chairman order 2026-11-12): one request through
+        # the router, no local retry. With no router token,
+        # MACRO_METABOLISM_FABRIC=0, or an unreachable router (FabricUnavailable)
+        # the legacy path below runs byte-identically.
+        if fabric_lane.enabled("dream"):
+            try:
+                text, _reason, _provider = fabric_lane.call(
+                    stage="dream", system=system, user=user, max_tokens=800)
+                return text
+            except fabric_lane.FabricUnavailable as exc:
+                log.warning(
+                    "dream: fabric router unavailable (%s); using the legacy ladder", exc)
+
+        cfg: dict[str, Any] = {
+            "provider_order": ["oauth", "anthropic"],
+            "oauth_token_env": "CLAUDE_CODE_OAUTH_TOKEN",
+            "oauth_pool_lane": "metabolism-dream",
+            "usage_lane": "metabolism-dream",
+            "api_key_env": "ANTHROPIC_API_KEY",
+            "opus_model": "claude-opus-4-8",
+            "max_tokens": 800,
+        }
+        providers = llm_auth.build_providers(cfg, opus_model=cfg["opus_model"])
+        if not providers:
+            return None
 
         def _do_call(client: Any, model: str) -> tuple:
             resp = client.messages.create(

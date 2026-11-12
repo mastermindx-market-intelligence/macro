@@ -40,6 +40,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from engine.metabolism import fabric_lane
+
 log = logging.getLogger(__name__)
 
 # ── Config constants ──────────────────────────────────────────────────────────
@@ -350,36 +352,59 @@ def _call_llm_auditor(
     NEVER raises.
     """
     try:
-        from engine import llm_auth  # type: ignore[import]
-
-        providers = llm_auth.build_providers(
-            _LLM_CFG,
-            opus_model=_LLM_CFG.get("opus_model"),
-        )
-        if not providers:
-            return None, None, [], "", "no_provider"
-
         user_content = _build_user_prompt(proposal, diff_text, immutable_paths)
         max_tokens = int(_LLM_CFG.get("max_tokens", 4000))
+        text: str | None = None
+        reason: str | None = None
 
-        def _do_call(client: Any, model: str) -> tuple:
-            resp = client.messages.create(
-                model=model,
-                max_tokens=max_tokens,
-                system=_AUDIT_SYSTEM,
-                messages=[{"role": "user", "content": user_content}],
-                # temperature removed — rejected (400) on opus-4.7+ per Anthropic API
-            )
-            if getattr(resp, "stop_reason", None) == "refusal":
-                return None, "stop_refusal", resp
-            text_out = "".join(
-                b.text for b in resp.content if getattr(b, "type", "") == "text"
-            )
-            return (text_out or None), None, resp
+        # Capacity Fabric cutover (Chairman order 2026-11-12): one request through
+        # the router, no local retry. This is a FAIL-CLOSED merge gate — an empty
+        # or unparseable reply still returns no verdict, which blocks the merge
+        # exactly as a legacy ladder failure does. With no router token,
+        # MACRO_METABOLISM_FABRIC=0, or an unreachable router (FabricUnavailable)
+        # the legacy path below runs byte-identically.
+        used_fabric = False
+        if fabric_lane.enabled("audit"):
+            try:
+                text, reason, _provider = fabric_lane.call(
+                    stage="audit",
+                    system=_AUDIT_SYSTEM,
+                    user=user_content,
+                    max_tokens=max_tokens,
+                )
+                used_fabric = True
+            except fabric_lane.FabricUnavailable as exc:
+                log.warning(
+                    "audit: fabric router unavailable (%s); using the legacy ladder", exc)
 
-        text, reason, _provider = llm_auth.make_call(
-            providers, _do_call, context="metabolism_audit"
-        )
+        if not used_fabric:
+            from engine import llm_auth  # type: ignore[import]
+
+            providers = llm_auth.build_providers(
+                _LLM_CFG,
+                opus_model=_LLM_CFG.get("opus_model"),
+            )
+            if not providers:
+                return None, None, [], "", "no_provider"
+
+            def _do_call(client: Any, model: str) -> tuple:
+                resp = client.messages.create(
+                    model=model,
+                    max_tokens=max_tokens,
+                    system=_AUDIT_SYSTEM,
+                    messages=[{"role": "user", "content": user_content}],
+                    # temperature removed — rejected (400) on opus-4.7+ per Anthropic API
+                )
+                if getattr(resp, "stop_reason", None) == "refusal":
+                    return None, "stop_refusal", resp
+                text_out = "".join(
+                    b.text for b in resp.content if getattr(b, "type", "") == "text"
+                )
+                return (text_out or None), None, resp
+
+            text, reason, _provider = llm_auth.make_call(
+                providers, _do_call, context="metabolism_audit"
+            )
         if not text:
             return None, None, [], "", reason or "empty_reply"
 

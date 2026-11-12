@@ -75,7 +75,10 @@ def main(argv: list[str] | None = None) -> int:
     # Build providers (Opus model for reasoning)
     providers = _load_providers(args.model)
     if not providers:
-        log.warning("metabolism_agenda: no LLM providers available — will produce floor-only agenda")
+        log.warning(
+            "metabolism_agenda: no legacy LLM providers available — the Capacity "
+            "Fabric lane is used when configured, otherwise a floor-only agenda"
+        )
 
     log.info("Building agenda for cycle %s …", args.cycle_id)
     agenda = build_agenda(

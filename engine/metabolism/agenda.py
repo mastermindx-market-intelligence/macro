@@ -86,6 +86,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from engine.metabolism import fabric_lane
 from engine.metabolism.orchestrator_brain import _build_orchestrator_system  # noqa: PLC2403
 from engine.metabolism.insight_bus import get_open_rows  # noqa: F401
 from engine.metabolism.organism_state import build_organism_state  # noqa: F401
@@ -448,12 +449,31 @@ def _call_llm(
     system_prompt: str,
     user_prompt: str,
     max_tokens: int = 2000,
+    cycle_id: str | None = None,
 ) -> tuple[str | None, str | None, str | None]:
     """Call the LLM via llm_auth.make_call.
 
     Returns (text, degraded_reason, provider_used).
     NEVER-RAISE.
+
+    Capacity Fabric cutover (Chairman order 2026-11-12): when the router is
+    configured this stage routes through it instead of the legacy waterfall.
+    With no router token, MACRO_METABOLISM_FABRIC=0, or a router that cannot be
+    reached at all (FabricUnavailable), the legacy ladder below runs unchanged.
     """
+    if fabric_lane.enabled("agenda"):
+        try:
+            return fabric_lane.call(
+                stage="agenda",
+                system=system_prompt,
+                user=user_prompt,
+                max_tokens=max_tokens,
+                session_suffix=cycle_id,
+            )
+        except fabric_lane.FabricUnavailable as exc:
+            log.warning(
+                "agenda: fabric router unavailable (%s); using the legacy ladder", exc)
+
     try:
         from engine.llm_auth import make_call  # noqa: PLC0415
 
@@ -499,6 +519,7 @@ def build_agenda(
     providers: list[dict] | None = None,
     model: str | None = None,
     max_docket_size: int | None = None,
+    allow_fabric: bool = True,
 ) -> dict[str, Any]:
     """Build the agenda artifact for a given cycle.
 
@@ -515,6 +536,9 @@ def build_agenda(
         Model ID (used to decide fable_mode_core injection).
     max_docket_size : int | None
         Cap on total items; loaded from metabolism_budget.yml if not provided.
+    allow_fabric : bool
+        False forces the floor-only agenda even when the Capacity Fabric router
+        is configured (used by the shadow harness's --no-llm mode).
 
     Returns
     -------
@@ -527,6 +551,7 @@ def build_agenda(
             providers=providers,
             model=model,
             max_docket_size=max_docket_size,
+            allow_fabric=allow_fabric,
         )
     except Exception as exc:  # noqa: BLE001
         log.warning("agenda.build_agenda: fatal — %s", exc)
@@ -550,6 +575,7 @@ def _build_agenda_inner(
     providers: list[dict] | None,
     model: str | None,
     max_docket_size: int | None,
+    allow_fabric: bool = True,
 ) -> dict[str, Any]:
     """Inner builder — allowed to raise; wrapped by build_agenda."""
     repo = _repo_root(root)
@@ -639,12 +665,13 @@ def _build_agenda_inner(
     degraded_reason: str | None = None
     raw_items: list[dict] = []
 
-    if providers:
+    if providers or (allow_fabric and fabric_lane.enabled("agenda")):
         text, degraded_reason, provider_used = _call_llm(
             providers=providers,
             system_prompt=system_prompt,
             user_prompt=user_prompt,
             max_tokens=2000,
+            cycle_id=cycle_id,
         )
         raw_items = _parse_llm_items(text)
     else:
