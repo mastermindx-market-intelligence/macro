@@ -1,11 +1,11 @@
 """The ordinary factors producer emits strict finite JSON (no post-hoc repair).
 
-REAL   ``site/factordata/factors.json`` is the committed nightly output. It really
-       carries bare ``NaN`` literals (1,949 at the time of writing); the test
-       asserts it still does (so it is meaningful), feeds the parsed table through
-       the producer's own ``write_factors_json`` and requires: zero non-finite
-       tokens on a STRICT parse, every finite value identical, every previously
-       non-finite position null.
+REAL   ``site/factordata/factors.json`` is the committed nightly output. It may
+       already contain only finite JSON values. The test feeds the parsed table
+       through the producer's own ``write_factors_json`` and requires: zero
+       non-finite tokens on a STRICT parse, every finite value identical, every
+       previously non-finite position null. The fixed fixture below supplies
+       non-finite regression coverage independently of the nightly output.
 FIXTURE a tiny synthetic table with numpy/pandas missing values and a finite
        ``0.0`` (must stay 0.0, never become null) - labelled as such.
 """
@@ -48,9 +48,6 @@ def _walk(before, after, path="$"):
 def test_real_factors_table_round_trips_to_strict_finite_json(tmp_path):
     real = json.loads((REPO / "site/factordata/factors.json").read_text(),
                       parse_constant=lambda token: float("nan") if token == "NaN" else float(token))
-    nonfinite = sum(1 for row in real["table"] for v in row.values()
-                    if isinstance(v, float) and not math.isfinite(v))
-    assert nonfinite > 0  # the real defect this guards (1,949 when written)
     out = tmp_path / "factors.json"
     build_site.write_factors_json(real, out)
     produced = _strict(out.read_text())  # strict parse: any NaN/Infinity raises
