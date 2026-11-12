@@ -333,3 +333,72 @@ def test_us_spr_available_history_extrema_and_zero_are_truthful(monkeypatch):
     full = _render_spr_context(_spr_vm(monkeypatch, [400000 - 1000 * i for i in range(60)]))
     assert '<b class="down">−59 M</b>' in full
     assert '<b class="">0 M</b>' in full
+
+# World Bank annual change requires the exact preceding calendar-year pair,
+# not the previous surviving observation after null rows are dropped.
+def test_gold_annual_change_does_not_borrow_an_older_year():
+    cfg = {"iso": "USA", "name": "United States", "tonnes": 8133.5, "trend": "stable"}
+    for prior in (np.nan, np.inf, -np.inf):
+        total = _annual([200., prior, 244.])
+        exgold = _annual([100., 100., 100.])
+        row = sr.merge_gold_row(cfg, total, exgold)
+        assert row["value_yoy_pct"] is None
+        assert row["value_usd"] == 144.
+        assert row["share_pct"] == 59.
+        assert row["wb_year"] == 2024
+        assert row["tonnes"] == cfg["tonnes"]
+        assert row["trend"] == "stable"
+    for missing in ([1], [0, 1]):
+        total = _annual([200., 220., 244.]).drop(_annual([0, 0, 0]).index[missing])
+        row = sr.merge_gold_row(cfg, total, _annual([100., 100., 100.]))
+        assert row["value_yoy_pct"] is None
+
+
+def test_gold_annual_change_uses_selected_common_year_not_latest_unpaired_year():
+    cfg = {"iso": "USA", "name": "United States"}
+    total = _annual([200., np.nan, 244., 260.])
+    exgold = _annual([100., 100., 100.])
+    row = sr.merge_gold_row(cfg, total, exgold)
+    assert row["wb_year"] == 2024 and row["value_usd"] == 144.
+    assert row["value_yoy_pct"] is None
+    total.iloc[1] = 220.
+    row = sr.merge_gold_row(cfg, total, exgold)
+    assert row["value_yoy_pct"] == 20.
+
+
+def test_gold_annual_change_preserves_zero_decline_and_unavailable_prior_pair():
+    cfg = {"iso": "USA", "name": "United States"}
+    for total, exgold, expected in [
+        ([200., 200.], [100., 100.], 0.),
+        ([200., 150.], [100., 100.], -50.),
+        ([200., 244.], [np.nan, 100.], None),
+        ([100., 244.], [100., 100.], None),
+    ]:
+        row = sr.merge_gold_row(cfg, _annual(total), _annual(exgold))
+        assert row["value_yoy_pct"] == expected
+
+
+def test_gold_missing_year_native_adapter_and_bilingual_row(monkeypatch):
+    from scripts import build_spr
+    from jinja2 import Environment
+    frames = {
+        "reserves_total": _annual([200e9, np.nan, 244e9]).to_frame("USA"),
+        "reserves_exgold": _annual([100e9, 100e9, 100e9]).to_frame("USA"),
+    }
+    monkeypatch.setattr(build_spr.store, "read", lambda group, name: frames.get(name))
+    vm = build_spr._gold_vm({"countries": [
+        {"iso": "USA", "name": "United States", "name_zh": "美国",
+         "tonnes": 8133.5, "trend": "stable", "flag": "🇺🇸"}]})
+    source = (Path(__file__).resolve().parents[1] / "templates/spr.html.j2").read_text()
+    macros = source[:source.index("<!DOCTYPE html>")]
+    start = source.index("{% for r in gold.rows %}")
+    end = source.index("{% endfor %}", start) + len("{% endfor %}")
+    html = Environment(autoescape=True).from_string(macros + source[start:end]).render(gold=vm)
+    assert "$144B" in html and "59.0%" in html
+    import re
+    for hidden, expected in (("zh", "as of 2024"), ("en", "截至 2024")):
+        visible = re.sub(r'<span class="l-' + hidden + r'">.*?</span>', "", html, flags=re.S)
+        text = re.sub(r"<[^>]+>", "", visible)
+        assert expected in text
+    assert "%/yr" not in html and "+44" not in html
+    assert vm["rows"][0]["value_yoy_pct"] is None

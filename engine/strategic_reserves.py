@@ -255,14 +255,13 @@ def merge_gold_row(cfg: dict, total_s: pd.Series | None, exgold_s: pd.Series | N
     vs = gold_value_share(float(tot.loc[last]), float(xg.loc[last]))
     row.update(vs)
     row["wb_year"] = int(last.year)
-    # YoY change in gold VALUE (price + any buying), prior annual obs
-    prev = tot.index[tot.index < last]
-    if len(prev) and vs["value_usd"] is not None:
-        p = prev.max()
-        if p in xg.index:
-            pv = gold_value_share(float(tot.loc[p]), float(xg.loc[p]))["value_usd"]
-            if pv:
-                row["value_yoy_pct"] = round(100.0 * (vs["value_usd"] / pv - 1.0), 1)
+    # YoY requires the preceding calendar-year pair. Missing annual rows must
+    # not turn a multi-year cumulative change into a one-year rate.
+    p = pd.Timestamp(year=last.year - 1, month=12, day=31)
+    if p in tot.index and p in xg.index and vs["value_usd"] is not None:
+        pv = gold_value_share(float(tot.loc[p]), float(xg.loc[p]))["value_usd"]
+        if pv:
+            row["value_yoy_pct"] = round(100.0 * (vs["value_usd"] / pv - 1.0), 1)
     return row
 
 
