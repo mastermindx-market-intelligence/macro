@@ -10219,7 +10219,11 @@ jobs:
         # playwright: tests/test_intraday_flow_w11_r5.py:109 does
         # `from playwright.sync_api import sync_playwright` at test level for the
         # computed-style probe — the suite died ModuleNotFoundError without it.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5 playwright
+        # scipy: engine/risk_radar_eval/scorecard.py imports scipy.stats at module
+        # level for the beta Clopper–Pearson band, so the risk_radar_eval suites
+        # wired below cannot even be collected without it (same pattern as the
+        # other scipy lines in this file; unpinned).
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5 playwright scipy
       # tests/test_ud_b2_w1_red_first_proof.py reads site/macro.html at the pre-fold
       # commit, and this checkout is one commit deep. Fetch only that commit's trees;
       # git show then pulls the one blob it needs. fetch-depth: 0 would cost minutes.
@@ -10329,6 +10333,14 @@ jobs:
       # exercises scripts/build_aibrief.py alongside test_aibrief_w4_panels.py;
       # the same render-guard job already installs its required dependencies.
       # Keep the new suite explicit in this run step for contract-delta coverage.
+      # tests/test_risk_radar_eval.py + tests/test_risk_radar_eval_insurer.py
+      # (Risk Radar eval harness: leak/definition/scorecard/pivot/walk-forward
+      # tests for engine.risk_radar_eval) ride this step with the other
+      # test_risk_radar_* suites: same subject, synthetic prices plus the two
+      # prefix-invariance/PIT-replay tests that read the committed data/fred
+      # parquet stores this checkout already materialises, and numpy/pandas +
+      # the scipy install this step now owns (scorecard.py's module-level
+      # scipy.stats import). No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -10368,6 +10380,7 @@ jobs:
           tests/test_risk_radar_scorecard.py
           tests/test_vsb_radar_alert.py
           tests/test_risk_radar_intl_profiles.py
+          tests/test_risk_radar_eval.py tests/test_risk_radar_eval_insurer.py
           tests/test_gd4a_cnhk_ledger_repair.py
           tests/test_risk_radar_dlg_country_wiring.py
           tests/test_risk_radar_dlg_partial.py
