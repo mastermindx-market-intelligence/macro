@@ -494,7 +494,10 @@ def business_cycle_snapshot(frame: pd.DataFrame | None = None, cfg: dict | None 
             "direction": (None if mom is None else ("rising" if mom > 0 else "falling")),
             "spark_mom6": _spark(frame[f"{tname}_mom6"]),       # red line (momentum)
             "spark_trend": _spark(frame[f"{tname}_trend"]),     # blue line (smoothed trend)
-            "spark_index": _spark(frame[f"{tname}_index"]),
+            # The model carries its cumulative level through absent contributions.
+            # Export missing observations as gaps, not measured flat periods.
+            "spark_index": _spark(frame[f"{tname}_index"].where(
+                frame[f"{tname}_n_legs"] >= 2)),
         }
     asof = tiers_out.get("leading", {}).get("asof", str(frame.index[-1].date()))
 
@@ -599,3 +602,4 @@ def business_cycle_snapshot(frame: pd.DataFrame | None = None, cfg: dict | None 
         "caveat": caveat,
         "caveat_zh": caveat_zh,
     }
+

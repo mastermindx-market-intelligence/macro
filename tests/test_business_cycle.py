@@ -268,3 +268,27 @@ def test_snapshot_two_leg_current_control_keeps_existing_signal():
     assert snapshot["recession_signal"]["available"] is True
     assert snapshot["recession_signal"]["state"] == "on"
     assert snapshot["asof"] == str(frame.index[-1].date())
+
+
+
+def test_snapshot_index_spark_keeps_unsupported_months_missing():
+    for tier in ("leading", "coincident", "lagging"):
+        for support in (0, 1, float("nan")):
+            frame = _synthetic_frame()
+            frame.loc[frame.index[-3:], f"{tier}_n_legs"] = support
+            original = frame.copy(deep=True)
+            snapshot = bc.business_cycle_snapshot(frame=frame, cfg=_cfg())
+            spark = snapshot["tiers"][tier]["spark_index"]
+            assert spark[-3:] == [None, None, None]
+            expected = bc._spark(original[f"{tier}_index"])
+            assert spark[:-3] == expected[:-3]
+            pd.testing.assert_frame_equal(frame, original)
+
+
+def test_snapshot_index_spark_preserves_two_leg_measurements():
+    frame = _synthetic_frame()
+    for tier in ("leading", "coincident", "lagging"):
+        frame[f"{tier}_n_legs"] = 2
+    snapshot = bc.business_cycle_snapshot(frame=frame, cfg=_cfg())
+    for tier in ("leading", "coincident", "lagging"):
+        assert snapshot["tiers"][tier]["spark_index"] == bc._spark(frame[f"{tier}_index"])
