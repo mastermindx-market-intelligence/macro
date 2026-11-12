@@ -1,0 +1,3475 @@
+--- a/ops/native_fabric/quota_continuity/candidate/lease_broker.py
++++ b/ops/native_fabric/quota_continuity/candidate/lease_broker.py
+@@ -16,7 +16,7 @@
+ from __future__ import annotations
+ 
+ import argparse
+-from contextlib import contextmanager
++from contextlib import contextmanager, ExitStack
+ from contextvars import ContextVar
+ import fcntl
+ import hashlib
+@@ -41,6 +41,7 @@
+ # heartbeat/release/settlement operations never inherit another acquire's fuse.
+ _ACQUIRE_DEADLINE_NS = ContextVar("fabric_acquire_deadline_ns", default=None)
+ _APPLICATION_ACCOUNTS = ContextVar("fabric_application_accounts", default=None)
++_ACCOUNT_SOURCE_GUARD = ContextVar("fabric_account_source_guard", default=None)
+ 
+ 
+ class ApplicationAdmissionError(ValueError):
+@@ -49,6 +50,10 @@
+     def __init__(self, code):
+         self.code = code
+         super().__init__("application admission refused: " + code)
++
++
++class AccountPublicationUnavailable(ApplicationAdmissionError):
++    """The original publication owner refused a new claim before allocation."""
+ 
+ 
+ class ApplicationSelectionError(ApplicationAdmissionError):
+@@ -800,7 +805,7 @@
+ }
+ 
+ 
+-def _read_application_accounts(path):
++def _read_accounts_document(path):
+     """Fresh owner document; no mtime fallback, duplicate keys or secret lookup."""
+     try:
+         import yaml
+@@ -823,6 +828,20 @@
+         if len(raw) > 2 * 1024 * 1024:
+             raise ApplicationAdmissionError("invalid_accounts_document")
+         document = yaml.load(raw.decode("utf-8"), Loader=ClosedLoader)
++        if type(document) is not dict or type(document.get("providers")) is not dict:
++            raise ApplicationAdmissionError("invalid_accounts_document")
++        _application_json(document)
++        return document
++    except ApplicationAdmissionError:
++        raise
++    except Exception:
++        raise ApplicationAdmissionError("accounts_unavailable") from None
++
++
++def _read_application_accounts(path):
++    """Validate the existing application grant on a fresh owner document."""
++    try:
++        document = _read_accounts_document(path)
+         if (not isinstance(document, dict)
+                 or document.get("schema") != "mastermind.provider_accounts.v1"
+                 or not isinstance(document.get("providers"), dict)
+@@ -1188,6 +1207,7 @@
+     orchestrator_id: str = ""
+     pool: str = ""
+     quota_blockade: Optional[Dict[str, Any]] = None
++    account_admission: Optional[Dict[str, Any]] = None
+ 
+     def line(self) -> str:
+         if self.ok:
+@@ -1341,6 +1361,20 @@
+             )
+         if "purpose" not in lcols:
+             conn.execute("ALTER TABLE leases ADD COLUMN purpose TEXT NOT NULL DEFAULT 'WORKER'")
++        for field in ("account_admission_json", "account_admission_digest"):
++            if field not in lcols:
++                conn.execute("ALTER TABLE leases ADD COLUMN " + field + " TEXT")
++        conn.execute("""CREATE TRIGGER IF NOT EXISTS account_admission_binding_v1
++            BEFORE UPDATE ON leases WHEN OLD.account_admission_json IS NOT NULL AND (
++                NEW.id IS NOT OLD.id OR NEW.granted_at IS NOT OLD.granted_at
++                OR NEW.task_class IS NOT OLD.task_class
++                OR NEW.account_admission_json IS NOT OLD.account_admission_json
++                OR NEW.account_admission_digest IS NOT OLD.account_admission_digest
++                OR NEW.account IS NOT OLD.account OR NEW.pool IS NOT OLD.pool
++                OR NEW.model IS NOT OLD.model OR NEW.quota_scope IS NOT OLD.quota_scope
++                OR NEW.orchestrator_id IS NOT OLD.orchestrator_id OR NEW.host IS NOT OLD.host
++                OR NEW.purpose IS NOT OLD.purpose)
++            BEGIN SELECT RAISE(ABORT, 'account_admission_binding_immutable'); END""")
+         conn.execute("""CREATE TABLE IF NOT EXISTS application_turns (
+             principal_id TEXT NOT NULL, turn_id TEXT NOT NULL,
+             grant_id TEXT NOT NULL, grant_digest TEXT NOT NULL,
+@@ -1661,8 +1695,15 @@
+         if pname == "bailian":
+             return self._bailian_effective_cap(name, base)
+         if pname == "glm" and self.external_gates:
+-            from quota_remote import cached_glm_account_parked
+-            if cached_glm_account_parked(name, now_ts=now):
++            import quota_remote
++            binding = quota_remote._config_binding("glm")
++            generation = quota_remote._binding_generation(binding)
++            # Missing current configuration is not authority to ignore H2's
++            # generation fence or to resurrect an exhausted original account.
++            if generation is None:
++                return None
++            if quota_remote.cached_glm_account_parked(name, now_ts=now,
++                    config_generation=generation):
+                 return None
+         return base
+ 
+@@ -1922,6 +1963,9 @@
+         try:
+             return self._acquire(orchestrator_id, pool, account, task_class, host,
+                 pid, ttl, wait, poll, model, operator_child_id, capacity_handoff, not_before)
++        except AccountPublicationUnavailable as exc:
++            return AcquireResult(ok=False, reason=exc.code,
++                orchestrator_id=orchestrator_id, pool=self.provider_name(pool))
+         except CommissionDeadlineExpired:
+             return AcquireResult(ok=False, reason="commission_time_exhausted",
+                 orchestrator_id=orchestrator_id, pool=self.provider_name(pool))
+@@ -2112,6 +2156,215 @@
+                 return w["orchestrator_id"] == orch
+         return True
+ 
++    def _expiry_policy(self, spec, model, task_class):
++        """The account owner supplies a qualified hard claim ceiling, not an estimate."""
++        policy = spec.get("expiry_admission")
++        if policy is None:
++            return None
++        fields = {"schema", "required_windows", "reserve_units", "reserved_slots", "urgent_classes", "claims"}
++        if (type(policy) is not dict or set(policy) != fields
++                or policy["schema"] != "mastermind.expiry_account_admission.v1"):
++            raise ValueError("account_policy_invalid")
++        required = policy["required_windows"]
++        if (type(required) is not list or not 1 <= len(required) <= 8
++                or any(not isinstance(k, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", k) for k in required)
++                or len(set(required)) != len(required)):
++            raise ValueError("account_policy_invalid")
++        reserve = policy["reserve_units"]
++        if (type(reserve) is not dict or set(reserve) != set(required)
++                or any(type(v) is not int or not 0 <= v <= 2**63-1 for v in reserve.values())
++                or type(policy["reserved_slots"]) is not int or not 0 <= policy["reserved_slots"] <= 4096):
++            raise ValueError("account_policy_invalid")
++        urgent = policy["urgent_classes"]
++        if (type(urgent) is not list or len(urgent) > 16 or len(set(urgent)) != len(urgent)
++                or any(not isinstance(k, str) or not re.fullmatch(r"[a-z][a-z0-9_-]{0,63}", k) for k in urgent)):
++            raise ValueError("account_policy_invalid")
++        claim = policy["claims"][model][task_class]
++        if (type(claim) is not dict or set(claim) != {"budget_ref", "units"}
++                or not isinstance(claim["budget_ref"], str) or not 1 <= len(claim["budget_ref"]) <= 256
++                or any(ord(c) < 33 or ord(c) > 126 for c in claim["budget_ref"])
++                or type(claim["units"]) is not dict or set(claim["units"]) != set(required)):
++            raise ValueError("account_claim_budget_unqualified")
++        for value in claim["units"].values():
++            if (type(value) is not dict or set(value) != {"unit", "maximum"}
++                    or not isinstance(value["unit"], str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", value["unit"])
++                    or type(value["maximum"]) is not int or not 0 < value["maximum"] <= 2**63-1):
++                raise ValueError("account_claim_budget_unqualified")
++        return policy, claim
++
++    def _expiry_source_policy(self):
++        # Reuse the qualified existing pool-policy reader and its R31 thresholds.
++        # This read does not call any provider or change pool suitability.
++        import pick
++        snapshot = pick.read_application_policy()
++        document = snapshot.document
++        raw = document.get("routing", {}).get("burn_down", {})
++        if (type(raw) is not dict or ("promote" in raw and type(raw["promote"]) is not bool)
++                or any(k in raw and (type(raw[k]) not in (int, float) or not math.isfinite(raw[k]))
++                       for k in ("hours_before_reset", "min_remaining_pct"))):
++            raise ValueError("account_expiry_policy_invalid")
++        config = pick._burn_down_cfg(document)
++        if (type(config["promote"]) is not bool
++                or not math.isfinite(config["hours_before_reset"]) or config["hours_before_reset"] <= 0
++                or not math.isfinite(config["min_remaining_pct"]) or not 0 <= config["min_remaining_pct"] <= 100):
++            raise ValueError("account_expiry_policy_invalid")
++        return config, snapshot.bytes_sha256
++
++    def _expiry_account_candidates(self, conn, pool, model, task_class, candidates):
++        """Filter and rank under the existing transaction; retain one observation."""
++        import quota_circuit
++        import quota_remote
++        document = self.load_accounts_doc()
++        inventory = []
++        for provider, spec in document["providers"].items():
++            if type(spec) is not dict or type(spec.get("accounts", [])) is not list:
++                raise ValueError("account_inventory_invalid")
++            names = [a.get("name") for a in spec.get("accounts", []) if type(a) is dict]
++            if len(names) != len(spec.get("accounts", [])) or len(names) != len(set(names)):
++                raise ValueError("account_inventory_invalid")
++            for account in spec.get("accounts", []):
++                scope = quota_circuit.scope_for(self, provider, account["name"])
++                inventory.append((provider, spec, account, scope))
++        affected = {scope for _, spec, _, scope in inventory if "expiry_admission" in spec}
++        # Removing a policy or renaming a scope cannot erase the meaning of
++        # reservations already committed by this owner. Source rollback must
++        # preserve this reader until the original liabilities are reconciled.
++        for prior in conn.execute("SELECT DISTINCT pool, account, quota_scope FROM leases "
++                                  "WHERE account_admission_json IS NOT NULL"):
++            affected.add(prior["quota_scope"])
++            affected.add(quota_circuit.scope_for(self, prior["pool"], prior["account"]))
++        if not any(quota_circuit.scope_for(self, pool, a["name"]) in affected for a in candidates):
++            return candidates, {}, None
++        if _ACCOUNT_SOURCE_GUARD.get() is None:
++            raise ValueError("account_publication_unqualified")
++        cache, source_digest = quota_remote.read_account_admission_cache()
++        config, policy_digest = self._expiry_source_policy()
++        config_digest = hashlib.sha256(_application_json(document).encode()).hexdigest()
++        out, evidence = [], {}
++        now = self.now()
++        for account in candidates:
++            name = account["name"]
++            scope = quota_circuit.scope_for(self, pool, name)
++            if scope not in affected:
++                out.append(account)
++                continue
++            try:
++                if account.get("enabled", True) is not True:
++                    continue
++                policy, claim = self._expiry_policy(self.provider(pool), model, task_class)
++                obs = quota_remote.account_admission_observation(cache, provider=self.provider_name(pool),
++                    account=name, generation=account["capacity_generation"], quota_scope=scope,
++                    required_windows=policy["required_windows"], now_ts=now)
++                members = [(p, s, a) for p, s, a, q in inventory if q == scope and s.get("enabled", True) is True
++                           and a.get("enabled", True) is True]
++                caps = []
++                for p, spec, member in members:
++                    other = spec.get("expiry_admission")
++                    if (type(other) is not dict or any(other.get(k) != policy[k] for k in
++                            ("schema", "required_windows", "reserve_units", "reserved_slots", "urgent_classes"))):
++                        raise ValueError("shared_scope_policy_unqualified")
++                    paired = quota_remote.account_admission_observation(cache, provider=p,
++                        account=member["name"], generation=member["capacity_generation"], quota_scope=scope,
++                        required_windows=policy["required_windows"], now_ts=now)
++                    if paired["windows"] != obs["windows"] or paired["observed_at"] != obs["observed_at"]:
++                        raise ValueError("shared_scope_observation_disagrees")
++                    cap = self.account_cap(p, member, conn=conn)
++                    if cap is None:
++                        raise ValueError("shared_scope_unavailable")
++                    caps.append(cap)
++                providers = sorted({p for p, _, _ in members})
++                placeholders = ",".join("?" for _ in providers)
++                rows = [dict(r) for r in conn.execute(
++                    "SELECT * FROM leases WHERE (quota_scope=? OR (quota_scope IS NULL AND pool IN (" + placeholders + "))) "
++                    "LIMIT 4097", (scope, *providers))]
++                if len(rows) > 4096:
++                    raise ValueError("shared_scope_history_unqualified")
++                rows = [r for r in rows if (r["quota_scope"] or quota_circuit.scope_for(self, r["pool"], r["account"])) == scope]
++                # A config rename/scope change is not a drain or liability transfer.
++                # The existing publication owner must reconcile these originals.
++                for p, _, member in members:
++                    changed = conn.execute("SELECT 1 FROM leases WHERE pool=? AND account=? "
++                        "AND quota_scope IS NOT NULL AND quota_scope!=? "
++                        "AND (account_admission_json IS NOT NULL OR state IN ('held','rented')) LIMIT 1",
++                        (p, member["name"], scope)).fetchone()
++                    if changed:
++                        raise ValueError("account_scope_change_unreconciled")
++                priors = {}
++                for row in rows:
++                    raw = row["account_admission_json"]
++                    if raw is None:
++                        continue
++                    if hashlib.sha256(raw.encode()).hexdigest() != row["account_admission_digest"]:
++                        raise ValueError("shared_scope_lease_unqualified")
++                    prior = json.loads(raw)
++                    if (prior.get("quota_scope") != scope or prior.get("account") != row["account"]
++                            or prior.get("pool") != row["pool"] or prior.get("model") != row["model"]):
++                        raise ValueError("shared_scope_lease_unqualified")
++                    observed = prior["observation"]
++                    if (obs["observed_at"] < observed["observed_at"]
++                            or (obs["observed_at"] == observed["observed_at"]
++                                and obs["windows"] != observed["windows"])):
++                        raise ValueError("account_observation_regressed")
++                    priors[row["id"]] = prior
++                urgent = task_class in policy["urgent_classes"]
++                slots = 0 if urgent else policy["reserved_slots"]
++                if sum(r["state"] in ("held", "rented") for r in rows) + slots >= min(caps):
++                    continue
++                retained = []
++                deadline = None
++                for kind, window in obs["windows"].items():
++                    bound = claim["units"][kind]
++                    if bound["unit"] != window["unit"]:
++                        raise ValueError("account_budget_unit_mismatch")
++                    committed = 0
++                    for row in rows:
++                        active = row["state"] in ("held", "rented")
++                        if not active and row["id"] in window["accounted_lease_ids"]:
++                            continue
++                        prior = priors.get(row["id"])
++                        if prior is None:
++                            raise ValueError("shared_scope_lease_unqualified")
++                        matching = [w for w in prior["windows"] if w["kind"] == kind]
++                        if len(matching) != 1 or matching[0]["unit"] != window["unit"]:
++                            raise ValueError("shared_scope_lease_unqualified")
++                        previous = matching[0]
++                        if previous["epoch"] != window["epoch"]:
++                            # Terminal does not prove that delayed/cross-reset
++                            # consumption was included. Only H2's exact coverage
++                            # can discharge this original per-window liability.
++                            raise ValueError("shared_scope_window_crossing")
++                        amount = previous["reserved_units"]
++                        if type(amount) is not int or not 0 < amount <= 2**63-1:
++                            raise ValueError("shared_scope_lease_unqualified")
++                        committed += amount
++                    reserve = 0 if urgent else policy["reserve_units"][kind]
++                    available = window["remaining"] - committed - reserve
++                    if available < bound["maximum"]:
++                        raise ValueError("account_window_exhausted")
++                    reset = window["reset_at_epoch"]
++                    if (config["promote"] and reset is not None
++                            and 0 < reset - now <= config["hours_before_reset"] * 3600
++                            and 100 * available / window["limit"] >= config["min_remaining_pct"]):
++                        deadline = min(deadline, reset) if deadline is not None else reset
++                    retained.append({"kind": kind, "epoch": window["epoch"], "unit": window["unit"],
++                        "reserved_units": bound["maximum"], "remaining": window["remaining"],
++                        "committed_units": committed, "reserve_units": reserve,
++                        "starts_at": window["starts_at"], "reset_at": window["reset_at"], "limit": window["limit"]})
++                record = {"schema": "mastermind.account_admission.v1", "pool": self.provider_name(pool),
++                    "account": name, "model": model, "quota_scope": scope,
++                    "capacity_generation": account["capacity_generation"], "observed_at": obs["observed_at"],
++                    "admitted_at": now, "source_digest": source_digest, "config_digest": config_digest,
++                    "policy_digest": policy_digest, "budget_ref": claim["budget_ref"],
++                    "urgent_reserve_used": urgent, "windows": retained, "observation": obs,
++                    "reason": "expiring_allowance" if deadline is not None else "eligible_headroom"}
++                if len(_application_json(record).encode()) > 32768:
++                    raise ValueError("account_evidence_too_large")
++                out.append(dict(account, _expiry_rank=(0, deadline) if deadline is not None else (1, 0)))
++                evidence[name] = record
++            except (KeyError, TypeError, ValueError, OverflowError):
++                continue
++        return out, evidence, (source_digest, config_digest, policy_digest)
++
+     def _pick_account(
+         self,
+         conn: sqlite3.Connection,
+@@ -2152,6 +2405,7 @@
+                         return preferred
+                     return None
+             return None  # stickiness: requested account not grantable
++        expiry = {a["name"]: a.get("_expiry_rank", (1, 0)) for a in grantable}
+         scored: List[Tuple[int, int, str]] = []
+         for a in grantable:
+             name = str(a["name"])
+@@ -2220,12 +2474,52 @@
+                 return max(local_rank, observed)
+ 
+             scored.sort(key=lambda t: (
+-                cooldown_priority(t[2]),
++                cooldown_priority(t[2]), expiry[t[2]],
+                 t[0], -t[1], recent.get(t[2], float("-inf")), t[2]
+             ))
+         else:
+-            scored.sort(key=lambda t: (t[0], -t[1], t[2]))
++            scored.sort(key=lambda t: (expiry[t[2]], t[0], -t[1], t[2]))
+         return scored[0][2]
++
++    @contextmanager
++    def _account_source_scope(self):
++        """Original broker lock -> nonblocking native publication lock -> SQLite.
++
++        Never wait for publication while holding the broker lock. Legacy offline
++        fixtures may exercise non-strict admission without claiming atomicity.
++        Installed/external-gated or strict claims require the original topology.
++        Existing result recovery, settlement and release do not enter this scope.
++        """
++        import quota_remote
++        document = _read_accounts_document(self.accounts_path)
++        strict = any(isinstance(spec, dict) and "expiry_admission" in spec
++                     for spec in document.get("providers", {}).values())
++        if not self.external_gates and not strict:
++            yield None
++            return
++        from pathlib import Path
++        stable = Path(os.path.realpath(quota_remote.CACHE_PATH)).parent
++        if (Path(os.path.realpath(self.lock_path)).parent != stable / "broker"
++                or Path(os.path.realpath(self.db_path)).parent != stable / "broker"
++                or Path(os.path.realpath(self.accounts_path)).parent != stable.parent / "orch" / "fabric"):
++            raise AccountPublicationUnavailable("account_publication_topology_unqualified")
++        manager = quota_remote.quota_publication_scope(require_native=True)
++        try:
++            scope = manager.__enter__()
++        except quota_remote.QuotaPublicationUnavailable as exc:
++            reason = "account_publication_busy" if "busy" in str(exc) else "account_publication_unqualified"
++            raise AccountPublicationUnavailable(reason) from None
++        token = _ACCOUNT_SOURCE_GUARD.set(scope)
++        try:
++            yield scope
++        finally:
++            _ACCOUNT_SOURCE_GUARD.reset(token)
++            manager.__exit__(*sys.exc_info())
++
++    def _account_source_current(self):
++        scope = _ACCOUNT_SOURCE_GUARD.get()
++        if scope is not None:
++            scope["assert_current"]()
+ 
+     def _try_acquire(
+         self,
+@@ -2242,20 +2536,42 @@
+         capacity_handoff: bool = False,
+         not_before: Optional[str] = None,
+     ) -> Tuple[AcquireResult, Optional[str], str]:
+-        conn = self._conn()
++        with self._account_source_scope():
++            conn = self._conn()
++            try:
++                conn.execute("BEGIN IMMEDIATE")
++                result = self._try_acquire_in_transaction(conn, orch, pool, account, task_class,
++                    host, pid, ttl, waiter_id, model, operator_child_id, capacity_handoff, not_before)
++                self._account_source_current()
++                conn.commit()
++                return result
++            except BaseException:
++                conn.rollback()
++                raise
++            finally:
++                conn.close()
++
++    def _try_acquire_in_transaction(self, conn, orch, pool, account, task_class, host,
++                                    pid, ttl, waiter_id, model="", operator_child_id=None,
++                                    capacity_handoff=False, not_before=None, *, allowed_accounts=None,
++                                    purpose="WORKER"):
+         try:
+-            conn.execute("BEGIN IMMEDIATE")
+-            result = self._try_acquire_in_transaction(conn, orch, pool, account, task_class,
+-                host, pid, ttl, waiter_id, model, operator_child_id, capacity_handoff, not_before)
+-            conn.commit()
+-            return result
+-        except BaseException:
+-            conn.rollback()
+-            raise
++            document = _read_accounts_document(self.accounts_path)
++            current = _APPLICATION_ACCOUNTS.get()
++            if current is not None and current != document:
++                raise ValueError("account_configuration_changed")
++        except (ApplicationAdmissionError, ValueError):
++            return (AcquireResult(ok=False, reason="account_configuration_unavailable", pool=pool,
++                                  orchestrator_id=orch), waiter_id, "account_configuration_unavailable")
++        token = _APPLICATION_ACCOUNTS.set(document)
++        try:
++            return self._try_acquire_on_accounts(conn, orch, pool, account, task_class, host,
++                pid, ttl, waiter_id, model, operator_child_id, capacity_handoff, not_before,
++                allowed_accounts=allowed_accounts, purpose=purpose)
+         finally:
+-            conn.close()
+-
+-    def _try_acquire_in_transaction(
++            _APPLICATION_ACCOUNTS.reset(token)
++
++    def _try_acquire_on_accounts(
+         self,
+         conn: sqlite3.Connection,
+         orch: str,
+@@ -2363,8 +2679,15 @@
+                 "priority_wait",
+             )
+ 
++        candidates = self.grantable_accounts(pool, conn=conn) if compatible_accounts is None else compatible_accounts
++        try:
++            candidates, account_evidence, source_fence = self._expiry_account_candidates(
++                conn, pool, model, task_class, candidates)
++        except (OSError, KeyError, ValueError, TypeError, ImportError, ApplicationAdmissionError):
++            return (AcquireResult(ok=False, reason="account_capacity_unqualified", pool=pool,
++                                  orchestrator_id=orch), waiter_id, "account_capacity_unqualified")
+         picked = self._pick_account(conn, pool, account, model=model,
+-                                    grantable_override=compatible_accounts)
++                                    grantable_override=candidates)
+         if not picked:
+             reason = "account_unavailable" if account else "accounts_at_cap"
+             if account and any(self._parked(a, self.now()) for a in (spec.get("accounts") or []) if a.get("name") == account):
+@@ -2403,13 +2726,35 @@
+         if not_before is not None:
+             from commission_deadline import require_not_before
+             require_not_before(not_before)
++        admission = account_evidence.get(picked)
++        if admission is not None:
++            admission = dict(admission, lease_id=lid, orchestrator_id=orch,
++                task_class=task_class, purpose=purpose, admitted_at=now)
++        admission_json = _application_json(admission) if admission is not None else None
++        admission_digest = hashlib.sha256(admission_json.encode()).hexdigest() if admission_json is not None else None
++        if source_fence is not None:
++            try:
++                import quota_remote
++                _, fresh_source = quota_remote.read_account_admission_cache()
++                fresh_config = hashlib.sha256(_application_json(_read_accounts_document(self.accounts_path)).encode()).hexdigest()
++                _, fresh_policy = self._expiry_source_policy()
++                if source_fence != (fresh_source, fresh_config, fresh_policy):
++                    raise ValueError("account_capacity_changed")
++                if admission is not None and not 0 <= self.now() - admission["observed_at"] < quota_remote.FRESH_S:
++                    raise ValueError("account_capacity_stale")
++                if admission is not None and any(w["reset_at_epoch"] is not None and w["reset_at_epoch"] <= self.now()
++                        for w in admission["observation"]["windows"].values()):
++                    raise ValueError("account_capacity_window_changed")
++            except (OSError, KeyError, TypeError, ValueError, ImportError, ApplicationAdmissionError):
++                return (AcquireResult(ok=False, reason="account_capacity_changed", pool=pool,
++                                      orchestrator_id=orch), waiter_id, "account_capacity_changed")
+         conn.execute(
+             "INSERT INTO leases "
+             "(id, orchestrator_id, pool, account, task_class, model, host, pid, "
+-            "granted_at, ttl, last_heartbeat, state, renewable, quota_scope, purpose) "
+-            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
++            "granted_at, ttl, last_heartbeat, state, renewable, quota_scope, purpose, account_admission_json, account_admission_digest) "
++            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+             (lid, orch, pool, picked, task_class, model, host, pid, now, use_ttl, now, state, 1,
+-             __import__("quota_circuit").scope_for(self, pool, picked), purpose),
++             __import__("quota_circuit").scope_for(self, pool, picked), purpose, admission_json, admission_digest),
+         )
+         if operator_child_id is not None:
+             conn.execute("UPDATE operator_child_authorizations SET admitted_lease_id=? WHERE run_id=? AND root=? AND admitted_lease_id IS NULL",
+@@ -2424,6 +2769,7 @@
+                 ok=True,
+                 lease_id=lid,
+                 account=picked,
++                account_admission=admission,
+                 state=state,
+                 orchestrator_id=orch,
+                 pool=pool,
+@@ -2510,29 +2856,42 @@
+     # ── application purpose, same admission/effect owner ─────────────────────
+ 
+     @contextmanager
+-    def _application_transaction(self, *, deadline_ns=None, collect=False):
++    def _application_transaction(self, *, deadline_ns=None, collect=False, admission_identity=None):
+         deadline = validate_deadline_ns(deadline_ns) if deadline_ns is not None else None
+         token = _ACQUIRE_DEADLINE_NS.set(deadline)
+         lock = conn = None
++        source_scopes = ExitStack()
+         try:
+             lock = self._lock()
+             if collect:
+                 self._gc_locked()
+             conn = self._conn()
++            if admission_identity is not None:
++                # The broker lock serializes this owner. Existing originals do
++                # not need publication permission merely to recover their row.
++                existing = conn.execute("SELECT 1 FROM application_turns WHERE principal_id=? AND turn_id=?",
++                                        admission_identity).fetchone()
++                if existing is None:
++                    source_scopes.enter_context(self._account_source_scope())
+             conn.execute("BEGIN IMMEDIATE")
+             yield conn
++            self._account_source_current()
+             conn.commit()
+         except BaseException:
+             if conn is not None:
+                 conn.rollback()
+             raise
+         finally:
+-            if conn is not None:
+-                conn.close()
+-            if lock is not None:
+-                fcntl.flock(lock, fcntl.LOCK_UN)
+-                lock.close()
+-            _ACQUIRE_DEADLINE_NS.reset(token)
++            # Close every original owner even when an earlier release fails.
++            # Keep the publication scope until SQLite has closed/rolled back.
++            with ExitStack() as resources:
++                resources.callback(_ACQUIRE_DEADLINE_NS.reset, token)
++                if lock is not None:
++                    resources.callback(lock.close)
++                    resources.callback(fcntl.flock, lock, fcntl.LOCK_UN)
++                resources.callback(source_scopes.close)
++                if conn is not None:
++                    resources.callback(conn.close)
+ 
+     def _application_grant(self, principal_id, caller_host, workload, pool, model,
+                            expected_credential_ref=None, expected_recipe_digest=None):
+@@ -2830,6 +3189,13 @@
+             result.update(recipe_digest=turn["recipe_digest"], recipe_json=turn["recipe_json"])
+         if turn["transport_kind"] is not None:
+             result["transport_kind"] = turn["transport_kind"]
++        admission = conn.execute("SELECT account_admission_json, account_admission_digest FROM leases WHERE id=?",
++                                 (turn["lease_id"],)).fetchone()
++        if admission is not None and admission["account_admission_json"] is not None:
++            raw = admission["account_admission_json"]
++            if hashlib.sha256(raw.encode()).hexdigest() != admission["account_admission_digest"]:
++                raise ApplicationAdmissionError("stored_account_admission_invalid")
++            result.update(account_admission_json=raw, account_admission_digest=admission["account_admission_digest"])
+         result.update(selection_json=turn["selection_json"], selection_digest=turn["selection_digest"])
+         return result
+ 
+@@ -2862,7 +3228,8 @@
+             for account in transport_accounts:
+                 _application_id(account)
+             transport_accounts = frozenset(transport_accounts)
+-        with self._application_transaction(deadline_ns=deadline_ns, collect=True) as conn:
++        with self._application_transaction(deadline_ns=deadline_ns, collect=True,
++                admission_identity=(principal_id, turn_id)) as conn:
+             prior = conn.execute("SELECT * FROM application_turns WHERE principal_id=? AND turn_id=?",
+                                  (principal_id, turn_id)).fetchone()
+             if prior is not None:
+--- a/ops/native_fabric/quota_continuity/candidate/quota_remote.py
++++ b/ops/native_fabric/quota_continuity/candidate/quota_remote.py
+@@ -3,6 +3,16 @@
+ from __future__ import annotations
+ 
+ import argparse
++from contextlib import ExitStack, contextmanager
++from pathlib import Path
++import stat
++import fcntl
++import hashlib
++import math
++import selectors
++import shutil
++import signal
++import subprocess
+ import json
+ import os
+ import sys
+@@ -10,9 +20,12 @@
+ import time
+ import urllib.error
+ import urllib.request
+-from dataclasses import asdict, dataclass
++import uuid
++from dataclasses import asdict, dataclass, replace
+ from datetime import datetime, timezone
++from http import HTTPStatus
+ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
++from urllib.parse import urlsplit
+ 
+ HERE = os.path.dirname(os.path.abspath(__file__))
+ # Resolve the fixed native-generation alias before atomic cache replacement.
+@@ -21,6 +34,7 @@
+ REFRESH_INTERVAL_S = 300
+ TIMEOUT_S = 10
+ FRESH_S = 600
++CACHE_LOCK_WAIT_S = 1.0
+ 
+ GLM_URL = "https://api.z.ai/api/monitor/usage/quota/limit"
+ MINIMAX_URL = "https://www.minimax.io/v1/token_plan/remains"
+@@ -42,6 +56,135 @@
+     observed_at: str
+     confidence: float
+     detail: str
++    # Optional v1-compatible provenance. These identify the original owner;
++    # they are not credentials, provider account attestation or admission.
++    account: Optional[str] = None
++    config_generation: Optional[str] = None
++    account_generation: Optional[str] = None
++    allowance_scope: Optional[str] = None
++    endpoint: Optional[str] = None
++    units: str = "provider_percent"
++    refresh_error: Optional[str] = None
++    failure_config_generation: Optional[str] = None
++
++
++class ProviderQuotaRefusal(RuntimeError):
++    """Terminal account observation refusal, reconciled by the existing owner."""
++
++
++class QuotaCacheWriteError(RuntimeError):
++    """Original cache persistence failed; the owner must reconcile before retry."""
++
++
++class QuotaPublicationUnavailable(QuotaCacheWriteError):
++    """A source publication lock was unavailable before any cache mutation."""
++
++
++@contextmanager
++def quota_publication_scope(cache_path=None, *, require_native=False):
++    """Serialize the incumbent cache and native admission on their original owner.
++
++    Native publication reuses active/.admission.lock; it never creates a lock,
++    installation, generation or account. Standalone quota-only readers
++    retain H2's existing cache.lock and bounded wait. That fallback cannot
++    qualify admission. Native acquisition is always nonblocking.
++    """
++    target = Path(os.path.realpath(cache_path or CACHE_PATH))
++    directory = target.parent
++    handles = []
++    lock_fd = None
++    locked = False
++    identities = []
++
++    def directory_identity(info):
++        return info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid
++
++    def lock_identity(info):
++        return (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid,
++                info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
++
++    def open_directory(location):
++        if location.resolve(strict=True) != location:
++            raise QuotaPublicationUnavailable("quota publication directory is not canonical")
++        fd = os.open(location, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
++        handles.append(fd)
++        info = os.fstat(fd)
++        if info.st_uid != os.geteuid() or info.st_mode & 0o022:
++            raise QuotaPublicationUnavailable("quota publication directory is unsafe")
++        identities.append((location, fd, directory_identity(info)))
++        return fd
++
++    try:
++        try:
++            directory_fd = open_directory(directory)
++            active = directory / "active"
++            native = os.path.lexists(active)
++            if native:
++                active_fd = open_directory(active)
++                lock_fd = os.open(".admission.lock", os.O_RDWR | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC,
++                                  dir_fd=active_fd)
++                handles.append(lock_fd)
++                info = os.fstat(lock_fd)
++                if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid()
++                        or stat.S_IMODE(info.st_mode) != 0o600 or info.st_nlink != 1 or info.st_size != 0):
++                    raise QuotaPublicationUnavailable("native admission lock is invalid")
++                identity = lock_identity(info)
++            else:
++                if require_native:
++                    raise QuotaPublicationUnavailable("native admission lock is unavailable")
++                active_fd = directory_fd
++                lock_fd = os.open(target.name + ".lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC,
++                                  0o600, dir_fd=directory_fd)
++                handles.append(lock_fd)
++                info = os.fstat(lock_fd)
++                if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid()
++                        or info.st_mode & 0o022 or info.st_nlink != 1 or info.st_size != 0):
++                    raise QuotaPublicationUnavailable("quota cache lock is invalid")
++                identity = lock_identity(info)
++            deadline = time.monotonic() + (0 if native else CACHE_LOCK_WAIT_S)
++            while True:
++                try:
++                    fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
++                    break
++                except BlockingIOError:
++                    remaining = deadline - time.monotonic()
++                    if remaining <= 0:
++                        raise
++                    time.sleep(min(.02, remaining))
++            locked = True
++        except QuotaPublicationUnavailable:
++            raise
++        except (OSError, RuntimeError, ValueError):
++            raise QuotaPublicationUnavailable("quota publication scope unavailable or busy") from None
++
++        def current():
++            try:
++                for location, fd, expected in identities:
++                    if (directory_identity(os.fstat(fd)) != expected
++                            or directory_identity(location.lstat()) != expected
++                            or location.resolve(strict=True) != location):
++                        raise QuotaCacheWriteError("quota publication directory changed")
++                lock_name = ".admission.lock" if native else target.name + ".lock"
++                if (lock_identity(os.fstat(lock_fd)) != identity
++                        or lock_identity(os.stat(lock_name, dir_fd=active_fd,
++                                                follow_symlinks=False)) != identity):
++                    raise QuotaCacheWriteError("quota publication lock changed")
++            except (OSError, RuntimeError, ValueError):
++                raise QuotaCacheWriteError("quota publication scope changed") from None
++
++        current()
++        yield {"native": native, "directory": directory, "path": target, "assert_current": current}
++    finally:
++        # Attempt every release even if one descriptor operation fails. A
++        # release failure may follow publication and must not invite a retry.
++        try:
++            with ExitStack() as resources:
++                for fd in handles:
++                    resources.callback(os.close, fd)
++                if locked:
++                    resources.callback(fcntl.flock, lock_fd, fcntl.LOCK_UN)
++        except OSError:
++            raise QuotaCacheWriteError("quota publication release failed; owner reconciliation required") from None
+ 
+ 
+ def _utc_now() -> datetime:
+@@ -52,10 +195,12 @@
+     if value is None or value == "":
+         return None
+     if isinstance(value, datetime):
++        if value.tzinfo is None:
++            return None
+         return value.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+-    if isinstance(value, (int, float)):
+-        seconds = float(value)
+-        if seconds <= 0:
++    if type(value) in (int, float):
++        seconds = _num(value)
++        if seconds is None or seconds <= 0:
+             return None
+         if seconds > 10_000_000_000:
+             seconds /= 1000.0
+@@ -63,7 +208,9 @@
+             return _iso(datetime.fromtimestamp(seconds, tz=timezone.utc))
+         except (OverflowError, OSError, ValueError):
+             return None
+-    text = str(value).strip()
++    if not isinstance(value, str):
++        return None
++    text = value.strip()
+     if not text or text.lower() in ("none", "null", "unknown"):
+         return None
+     try:
+@@ -77,9 +224,239 @@
+     if isinstance(value, bool):
+         return None
+     try:
+-        return float(value)
+-    except (TypeError, ValueError):
++        number = float(value)
++        return number if math.isfinite(number) else None
++    except (TypeError, ValueError, OverflowError):
+         return None
++
++
++def _public_endpoint(value: Any) -> Optional[str]:
++    if not isinstance(value, str) or len(value) > 512:
++        return None
++    try:
++        parsed = urlsplit(value)
++        if (parsed.scheme != "https" or not parsed.hostname or parsed.username
++                or parsed.password or parsed.query or parsed.fragment
++                or any(ord(c) < 33 for c in value)):
++            return None
++        return value.rstrip("/")
++    except ValueError:
++        return None
++
++
++def _config_binding(provider: str) -> Optional[Dict[str, Any]]:
++    """Fence the existing credential owner's file revision without hashing a key.
++
++    This is a local configuration generation, NOT a provider account identity.
++    Only file metadata and public endpoint fields enter the digest. A key change
++    or atomic file replacement invalidates previous observations. Nothing here
++    writes configuration or creates another credential/entitlement store.
++    """
++    if provider not in ("glm", "minimax"):
++        return None
++    path = os.environ.get(provider.upper() + "_CONFIG") or os.path.expanduser(
++        "~/." + provider + "/config.json")
++    try:
++        before = os.stat(path)
++        with open(path, encoding="utf-8") as handle:
++            raw = json.load(handle)
++        after = os.stat(path)
++        def identity(st):
++            return (st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns, st.st_ctime_ns)
++        if not isinstance(raw, dict) or identity(before) != identity(after):
++            return None
++        endpoint = _public_endpoint(raw.get("openai_base_url"))
++        # Default endpoints are not inferred from a key or a plan label.
++        public = {"stat": identity(after), "endpoint": endpoint,
++                  "anthropic_endpoint": _public_endpoint(raw.get("anthropic_base_url"))}
++        digest = hashlib.sha256(json.dumps(public, sort_keys=True).encode()).hexdigest()
++        return {"config_generation": "config-" + digest, "endpoint": endpoint}
++    except (OSError, ValueError, TypeError):
++        return None
++
++
++def _bind_states(states: Iterable[ProviderQuotaState], account: str,
++                 binding: Optional[Dict[str, Any]]) -> List[ProviderQuotaState]:
++    return [replace(state, account=account,
++                    config_generation=(binding or {}).get("config_generation"),
++                    endpoint=(binding or {}).get("endpoint")) for state in states]
++
++
++def _binding_generation(binding: Any) -> Optional[str]:
++    value = binding.get("config_generation") if isinstance(binding, dict) else None
++    return value if isinstance(value, str) and value else None
++
++
++def _has_pending(entry: Any) -> bool:
++    return isinstance(entry, dict) and "refresh_pending" in entry
++
++
++def _pending_matches(pending: Any, attempt_id: Any, provider: str,
++                     account: Optional[str], binding: Any, started_at: float) -> bool:
++    return (isinstance(pending, dict) and isinstance(attempt_id, str) and bool(attempt_id)
++            and pending.get("attempt_id") == attempt_id and pending.get("provider") == provider
++            and pending.get("account") == account and pending.get("binding") == binding
++            and pending.get("started_at") == started_at)
++
++
++def _cache_fresh(entry: Any, now: float, binding: Any = None) -> bool:
++    if not isinstance(entry, dict) or not isinstance(entry.get("states"), list):
++        return False
++    if entry.get("refresh_error") or entry.get("terminal_refusal") or _has_pending(entry):
++        return False
++    stamp = _num(entry.get("refreshed_at"))
++    if stamp is None or not 0 <= now - stamp < REFRESH_INTERVAL_S:
++        return False
++    if binding is not None and entry.get("binding") != binding:
++        return False
++    for row in entry["states"]:
++        if not isinstance(row, dict):
++            return False
++        age = _cache_age(row, now)
++        reset = _iso(row.get("reset_at"))
++        if age is None or age > FRESH_S:
++            return False
++        if row.get("reset_at") is not None and reset is None:
++            return False
++        if reset and datetime.fromisoformat(reset.replace("Z", "+00:00")).timestamp() <= now:
++            return False
++    return bool(entry["states"])
++
++
++def parse_go_usage_payload(payload: Any, observed_at: Any, *, account: str,
++                           config_generation: Optional[str] = None,
++                           endpoint: Optional[str] = None) -> List[ProviderQuotaState]:
++    """Normalize the incumbent Go /usage response; do not poll or cache it.
++
++    The Go owner supplies its *original* successful-refresh clock and binding.
++    Legacy /status without that clock is unknown, even when read right now.
++    Each percentage belongs to its own shared account window, never a model
++    wallet. Model-equivalent dollar allowances are not balance observations.
++    """
++    usage = payload.get("usage") if isinstance(payload, dict) else None
++    out = []
++    for native, window in (("rolling", "5h"), ("weekly", "weekly"), ("monthly", "monthly")):
++        row = usage.get(native) if isinstance(usage, dict) else None
++        pct = _num(row.get("percent")) if isinstance(row, dict) else None
++        valid = (isinstance(row, dict) and row.get("status") == "ok"
++                 and pct is not None and 0 <= pct <= 100)
++        reset = row.get("resetsAt") if isinstance(row, dict) else None
++        if reset is not None and _iso(reset) is None:
++            valid = False
++        state = _state("go", window, pct if valid else None, 100.0 if valid else None,
++                       100.0 - pct if valid else None, reset,
++                       "PROVIDER_AUTHORITATIVE" if valid else "UNKNOWN", observed_at,
++                       0.98 if valid else 0.0, "OpenCode Go /usage" if valid else "Go window unavailable")
++        out.append(replace(state, account=account, config_generation=config_generation,
++                           endpoint=_public_endpoint(endpoint)))
++    return out
++
++
++def parse_go_response_allowance(payload: Any, observed_at: Any, *, account: str) -> ProviderQuotaState:
++    """Normalize one complete API response or its usage block, never a balance.
++
++    Chat/Responses/Messages use usage; Gemini uses usageMetadata. Missing final
++    usage or price is unknown, even when a different response reports cost=0.
++    """
++    usage = payload
++    if isinstance(payload, dict):
++        containers = [payload[key] for key in ("usage", "usageMetadata") if key in payload]
++        if containers:
++            usage = containers[0] if len(containers) == 1 else None
++    opencode = usage.get("opencode") if isinstance(usage, dict) else None
++    debit = _num(opencode.get("allowance")) if isinstance(opencode, dict) else None
++    if debit is not None and debit < 0:
++        debit = None
++    state = _state("go", "request", debit, None, None, None,
++                   "PROVIDER_RESPONSE_USAGE" if debit is not None else "UNKNOWN",
++                   observed_at, 0.98 if debit is not None else 0.0, "response debit; not a balance")
++    return replace(state, account=account, units="monthly_allowance_usd")
++
++
++def account_quota_view(provider: str, account: str, states: Iterable[ProviderQuotaState], *,
++                       config_generation: Optional[str], endpoint: Optional[str],
++                       allowance_scope: Optional[str] = None,
++                       account_generation: Optional[str] = None,
++                       required_windows: Optional[Iterable[str]] = None,
++                       now_ts: Optional[float] = None,
++                       refresh_error: Optional[str] = None,
++                       failure_config_generation: Optional[str] = None) -> Dict[str, Any]:
++    """Secret-free read projection for H3/H4/H5 over existing owner observations.
++
++    A true quota_ready means only current allowance evidence. The existing
++    entitlement, budget, no-overage, lease and provider refusal gates still decide
++    whether an actual model/workload may run. This helper owns no admission.
++    """
++    now = _utc_now().timestamp() if now_ts is None else _num(now_ts)
++    if now is None or now <= 0:
++        raise ValueError("invalid observation time")
++    defaults = {"glm": ("5h", "weekly"), "minimax": ("5h", "weekly"),
++                "go": ("5h", "weekly", "monthly")}
++    required = tuple(required_windows if required_windows is not None else defaults.get(provider, ()))
++    if not required or len(required) != len(set(required)):
++        raise ValueError("applicable quota windows required")
++    if not set(defaults.get(provider, ())).issubset(required):
++        raise ValueError("provider windows cannot be omitted")
++    rows = [state for state in states if isinstance(state, ProviderQuotaState)]
++    own_rows = [s for s in rows if s.provider == provider and s.account == account]
++    failures = {s.refresh_error for s in own_rows if s.refresh_error}
++    if refresh_error is None and failures:
++        refresh_error = next(iter(failures)) if len(failures) == 1 else "WINDOW_REFRESH_FAILED"
++    generations = {s.failure_config_generation for s in own_rows if s.failure_config_generation}
++    if failure_config_generation is None and len(generations) == 1:
++        failure_config_generation = next(iter(generations))
++    windows = []
++    binding_endpoint = _public_endpoint(endpoint)
++    for window in required:
++        candidates = [s for s in rows if s.provider == provider and s.account == account and s.window == window]
++        reason = None
++        state = candidates[0] if len(candidates) == 1 else None
++        age = _cache_age(asdict(state), now) if state else None
++        reset = _iso(state.reset_at) if state else None
++        reset_ts = datetime.fromisoformat(reset.replace("Z", "+00:00")).timestamp() if reset else None
++        pct = _num(state.remaining_pct) if state else None
++        confidence = _num(state.confidence) if state else None
++        if refresh_error or state is not None and state.refresh_error:
++            reason = "REFRESH_FAILED"
++        elif state is None:
++            reason = "WINDOW_MISSING" if not candidates else "WINDOW_AMBIGUOUS"
++        elif not config_generation or state.config_generation != config_generation:
++            reason = "CONFIG_GENERATION_UNQUALIFIED"
++        elif not binding_endpoint or state.endpoint != binding_endpoint:
++            reason = "ENDPOINT_UNQUALIFIED"
++        elif account_generation is not None and state.account_generation != account_generation:
++            reason = "ACCOUNT_GENERATION_CHANGED"
++        elif allowance_scope is not None and state.allowance_scope != allowance_scope:
++            reason = "ALLOWANCE_SCOPE_CHANGED"
++        elif state.source != "PROVIDER_AUTHORITATIVE":
++            reason = "NON_AUTHORITATIVE"
++        elif confidence is None or not 0 < confidence <= 1:
++            reason = "CONFIDENCE_INVALID"
++        elif age is None or age > FRESH_S:
++            reason = "OBSERVATION_STALE_OR_INVALID"
++        elif state.reset_at is not None and reset is None:
++            reason = "RESET_INVALID"
++        elif reset_ts is not None and reset_ts <= now:
++            reason = "RESET_REQUIRES_OBSERVATION"
++        elif pct is None or not 0 <= pct <= 100:
++            reason = "BALANCE_UNKNOWN"
++        elif pct == 0:
++            reason = "EXHAUSTED"
++        windows.append({"window": window, "remaining_pct": pct, "reset_at": reset,
++                        "observed_at": _iso(state.observed_at) if state else None,
++                        "source": state.source if state else "UNKNOWN", "age_s": age,
++                        "confidence": confidence if confidence is not None else 0.0,
++                        "units": state.units if state else "provider_percent",
++                        "reset_state": "UNKNOWN" if reset is None else "DUE" if reset_ts <= now else "FUTURE",
++                        "ready": reason is None, "reason": reason})
++    return {"provider": provider, "account": account, "allowance_scope": allowance_scope,
++            "account_generation": account_generation, "config_generation": config_generation,
++            "endpoint": binding_endpoint, "windows": windows,
++            "refresh_error": refresh_error,
++            "failure_config_generation": failure_config_generation,
++            "quota_ready": all(row["ready"] for row in windows),
++            "entitlement": "NOT_EVALUATED", "no_overage": "NOT_EVALUATED",
++            "admission": "NOT_EVALUATED"}
+ 
+ 
+ def _state(
+@@ -95,29 +472,34 @@
+     detail: str,
+ ) -> ProviderQuotaState:
+     observed = _iso(observed_at)
++    reset = _iso(reset_at)
++    if source == "PROVIDER_AUTHORITATIVE" and reset_at is not None and reset is None:
++        source, remaining_pct, confidence = "UNKNOWN", None, 0.0
+     return ProviderQuotaState(
+         provider=provider,
+         window=window,
+         used=used,
+         cap=cap,
+         remaining_pct=remaining_pct,
+-        reset_at=_iso(reset_at),
++        reset_at=reset,
+         source=source,
+-        observed_at=observed or _iso(_utc_now()) or "",
+-        confidence=max(0.0, min(1.0, confidence)),
++        # An absent/invalid producer clock must never acquire read-time freshness.
++        observed_at=observed or "",
++        confidence=max(0.0, min(1.0, _num(confidence) or 0.0)),
+         detail=detail,
+     )
+ 
+ 
+ def parse_glm_payload(payload: Dict[str, Any], observed_at: Any) -> List[ProviderQuotaState]:
+     """Parse Z.ai quota limits; numbers are normalized to percentage credits."""
+-    observed = observed_at or _utc_now()
++    observed = observed_at
++    if not isinstance(payload, dict):
++        return []
+     data = payload.get("data") if isinstance(payload.get("data"), dict) else payload
+     limits = data.get("limits") if isinstance(data, dict) else None
+     if not isinstance(limits, list):
+         return []
+     classified: List[Tuple[str, Dict[str, Any]]] = []
+-    fallback: List[Dict[str, Any]] = []
+     for item in limits:
+         if not isinstance(item, dict):
+             continue
+@@ -129,22 +511,18 @@
+             elif unit == 6:
+                 window = "weekly"
+             else:
+-                window = ""
+-                fallback.append(item)
++                # Array order is not evidence of a 5h or weekly window.
+                 continue
+         elif kind == "TIME_LIMIT":
+             window = "monthly"
+         else:
+             continue
+         classified.append((window, item))
+-    for item in fallback:
+-        if not any(window == "5h" for window, _ in classified):
+-            classified.append(("5h", item))
+-        elif not any(window == "weekly" for window, _ in classified):
+-            classified.append(("weekly", item))
+     out: List[ProviderQuotaState] = []
+     for window, item in classified:
+         pct = _num(item.get("percentage"))
++        if pct is not None and not 0 <= pct <= 100:
++            pct = None
+         detail = "z.ai quota/limit"
+         if window == "monthly":
+             current = _num(item.get("currentValue"))
+@@ -169,18 +547,18 @@
+ 
+ 
+ def parse_minimax_payload(payload: Dict[str, Any], observed_at: Any) -> List[ProviderQuotaState]:
+-    observed = observed_at or _utc_now()
++    observed = observed_at
++    if not isinstance(payload, dict):
++        return []
+     rows = payload.get("model_remains")
+     if not isinstance(rows, list):
+         return []
+-    row = next(
+-        (candidate for candidate in rows
++    general = [candidate for candidate in rows
+          if isinstance(candidate, dict)
+-         and str(candidate.get("model_name") or "").lower() == "general"),
+-        None,
+-    )
+-    if row is None:
++         and str(candidate.get("model_name") or "").lower() == "general"]
++    if len(general) != 1:
+         return []
++    row = general[0]
+     out: List[ProviderQuotaState] = []
+     fields = (
+         ("5h", "current_interval_remaining_percent",
+@@ -192,16 +570,18 @@
+         remaining_pct = _num(row.get(remaining_key))
+         used = _num(row.get(used_key))
+         cap = _num(row.get(cap_key))
+-        if remaining_pct is None:
+-            if used is not None and cap:
+-                remaining_pct = max(0.0, 100.0 * (cap - used) / cap)
+-            else:
+-                continue
+-        out.append(_state(
++        counts_valid = cap is not None and cap > 0 and used is not None and 0 <= used <= cap
++        if remaining_key not in row and counts_valid:
++            remaining_pct = 100.0 * (cap - used) / cap
++        if remaining_pct is not None and not 0 <= remaining_pct <= 100:
++            remaining_pct = None
++        state = _state(
+             "minimax", window, used, cap, remaining_pct, row.get(reset_key),
+-            "PROVIDER_AUTHORITATIVE", observed, 0.98,
++            "PROVIDER_AUTHORITATIVE" if remaining_pct is not None else "UNKNOWN",
++            observed, 0.98 if remaining_pct is not None else 0.0,
+             "minimax token_plan/remains general",
+-        ))
++        )
++        out.append(replace(state, units="provider_usage_count"))
+     return out
+ 
+ 
+@@ -253,8 +633,8 @@
+     """Per-account Z.ai quota read (W4-G9).
+ 
+     ``account_name`` is informational (used in error messages); ``key`` is
+-    the api_key to authenticate with. The Bearer/raw header retry strategy
+-    is unchanged from the legacy single-account reader.
++    the api_key to authenticate with. A terminal authentication/permission
++    refusal ends the observation: do not retry it with another header shape.
+     """
+     if not key:
+         raise RuntimeError(
+@@ -277,6 +657,11 @@
+             if states:
+                 return states
+             errors.append("no quota windows")
++        except urllib.error.HTTPError as exc:
++            exc.close()
++            if exc.code in (401, 403):
++                raise ProviderQuotaRefusal("provider refused quota observation") from None
++            errors.append(type(exc).__name__)
+         except Exception as exc:
+             errors.append(type(exc).__name__)
+     raise RuntimeError(
+@@ -322,9 +707,154 @@
+     return states
+ 
+ 
++def parse_grok_billing_payload(
++    payload: Dict[str, Any], observed_at: Any,
++) -> List[ProviderQuotaState]:
++    """First-party ACP weekly evidence; absent usage percent is UNKNOWN."""
++    if not isinstance(payload, dict):
++        return []
++    config = payload.get("config")
++    if not isinstance(config, dict):
++        return []
++    period = config.get("currentPeriod")
++    if not isinstance(period, dict) or period.get("type") != "USAGE_PERIOD_TYPE_WEEKLY":
++        return []
++    # Never reinterpret a provider timestamp lacking a timezone in the
++    # local host timezone. That would move the reset and model a false window.
++    raw_start, raw_end = period.get("start"), period.get("end")
++    if type(raw_start) is not str or type(raw_end) is not str:
++        return []
++    try:
++        if (datetime.fromisoformat(raw_start.replace("Z", "+00:00")).utcoffset() is None
++                or datetime.fromisoformat(raw_end.replace("Z", "+00:00")).utcoffset() is None):
++            return []
++    except ValueError:
++        return []
++    start = _iso(raw_start)
++    end = _iso(raw_end)
++    observed = _iso(observed_at)
++    if not all((start, end, observed)):
++        return []
++    try:
++        def seconds(v: str) -> float:
++            return datetime.fromisoformat(v.replace("Z", "+00:00")).timestamp()
++        start_s, end_s, obs_s = map(seconds, (start, end, observed))
++    except (ValueError, OverflowError):
++        return []
++    if not (4 * 86400 <= end_s - start_s <= 12 * 86400
++            and start_s <= obs_s < end_s):
++        return []
++    pct = config.get("creditUsagePercent")
++    if type(pct) in (int, float) and math.isfinite(pct) and 0 <= pct <= 100:
++        used, remaining, cap = float(pct), 100.0 - float(pct), 100.0
++    else:
++        used = remaining = cap = None
++    return [_state(
++        "grok", "weekly", used, cap, remaining, end,
++        "GROK_BUILD_ACP_BILLING" if remaining is not None
++        else "GROK_BUILD_ACP_WINDOW_ONLY",
++        observed, 0.95 if remaining is not None else 0.0,
++        "authenticated billing; unified="
++        + str(config.get("isUnifiedBillingUser") is True)
++        + "; period_start=" + start
++        + ("; quota UNKNOWN" if remaining is None else ""),
++    )]
++
++
++def _live_grok() -> List[ProviderQuotaState]:
++    """Read _x.ai/billing without session/new, prompt or paid model turn."""
++    path = shutil.which("grok")
++    if not path:
++        raise RuntimeError("grok_acp_missing")
++    proc = None
++    poller = None
++    try:
++        proc = subprocess.Popen(
++            [path, "agent", "stdio"],
++            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
++            bufsize=0, start_new_session=True,
++        )
++        if proc.stdin is None or proc.stdout is None:
++            raise RuntimeError("grok_acp_missing_stream")
++        poller = selectors.DefaultSelector()
++        poller.register(proc.stdout, selectors.EVENT_READ)
++        pending = b""
++
++        def rpc(method: str, rid: int, timeout: float, params: dict) -> dict:
++            nonlocal pending
++            proc.stdin.write((json.dumps({
++                "jsonrpc": "2.0", "id": rid, "method": method,
++                "params": params,
++            }, separators=(",", ":")) + "\n").encode())
++            proc.stdin.flush()
++            deadline = time.monotonic() + timeout
++            while time.monotonic() < deadline:
++                if proc.poll() is not None:
++                    raise RuntimeError("grok_acp_exited")
++                for _key, _events in poller.select(
++                        min(.5, max(0., deadline - time.monotonic()))):
++                    data = os.read(proc.stdout.fileno(), 65536)
++                    if not data:
++                        raise RuntimeError("grok_acp_closed")
++                    pending += data
++                    if len(pending) > 1024 * 1024:
++                        raise RuntimeError("grok_acp_oversize")
++                    while b"\n" in pending:
++                        line, pending = pending.split(b"\n", 1)
++                        try:
++                            result = json.loads(line)
++                        except (ValueError, UnicodeDecodeError):
++                            continue
++                        if not isinstance(result, dict) or result.get("id") != rid:
++                            continue
++                        if "error" in result or not isinstance(result.get("result"), dict):
++                            raise RuntimeError("grok_acp_refused")
++                        return result["result"]
++            raise RuntimeError("grok_acp_timeout")
++
++        rpc("initialize", 1, 12., {
++            "protocolVersion": 1,
++            "clientCapabilities": {
++                "fs": {"readTextFile": False, "writeTextFile": False},
++                "terminal": False,
++            },
++        })
++        # Verified on installed M2 Grok CLI 2026-10-22: x.ai/billing
++        # returned method-not-found (-32601), _x.ai/billing succeeded.
++        return parse_grok_billing_payload(
++            rpc("_x.ai/billing", 2, 20., {}), _utc_now(),
++        )
++    finally:
++        if poller is not None:
++            poller.close()
++        if proc is not None:
++            if proc.poll() is None:
++                try:
++                    os.killpg(proc.pid, signal.SIGTERM)
++                except ProcessLookupError:
++                    pass
++                try:
++                    proc.wait(timeout=3)
++                except subprocess.TimeoutExpired:
++                    try:
++                        os.killpg(proc.pid, signal.SIGKILL)
++                    except ProcessLookupError:
++                        pass
++                    # SIGKILL is only process termination; reap its child to
++                    # avoid a zombie while this long-lived broker host runs.
++                    proc.wait(timeout=3)
++            for stream in (proc.stdin, proc.stdout):
++                if stream is not None:
++                    try:
++                        stream.close()
++                    except OSError:
++                        pass
++
++
+ READERS: Dict[str, Callable[[], List[ProviderQuotaState]]] = {
+     "glm": _live_glm_no_args,
+     "minimax": _live_minimax,
++    "grok": _live_grok,
+ }
+ 
+ 
+@@ -366,9 +896,10 @@
+     if not observed:
+         return None
+     try:
+-        return max(0.0, now_ts - datetime.fromisoformat(
++        age = now_ts - datetime.fromisoformat(
+             observed[:-1] + "+00:00"
+-        ).timestamp())
++        ).timestamp()
++        return age if math.isfinite(age) and age >= 0 else None
+     except (OSError, ValueError):
+         return None
+ 
+@@ -389,11 +920,18 @@
+     except TypeError:
+         return None
+     age = _cache_age(entry, _utc_now().timestamp())
+-    if keep_authoritative:
+-        state.confidence = max(0.25, float(state.confidence))
++    confidence = _num(state.confidence)
++    if confidence is None or not 0 <= confidence <= 1:
++        return None
++    state.used, state.cap = _num(state.used), _num(state.cap)
++    state.remaining_pct = _num(state.remaining_pct)
++    if state.remaining_pct is not None and not 0 <= state.remaining_pct <= 100:
++        state.remaining_pct = None
++    if keep_authoritative and age is not None and age <= FRESH_S:
++        state.confidence = confidence
+     else:
+         state.source = "LOCAL_RECONSTRUCTION"
+-        state.confidence = _confidence_for_age(float(state.confidence), age)
++        state.confidence = _confidence_for_age(confidence, age)
+         state.detail = "stale cache after remote read failure: " + error
+     return state
+ 
+@@ -403,12 +941,173 @@
+     rows = entry.get("states") if isinstance(entry, dict) else None
+     if not isinstance(rows, list):
+         return []
+-    return [
++    failure = entry.get("refresh_error") or ("REFRESH_IN_PROGRESS" if _has_pending(entry) else None)
++    states = [
+         state for state in (
+-            _from_cache_entry(row, reason, keep_authoritative)
++            _from_cache_entry(row, reason, keep_authoritative and not failure)
+             for row in rows if isinstance(row, dict)
+         ) if state is not None
+     ]
++    failure_generation = _binding_generation(entry.get("failure_binding"))
++    return [replace(state, refresh_error=failure,
++                    failure_config_generation=failure_generation) for state in states]
++
++
++def _record_refresh_failure(cache_path: str, provider: str, account: Optional[str],
++                            entry: Any, binding: Any, now: float, exc: Exception,
++                            *, attempt_id: Optional[str] = None) -> str:
++    """Retain failure alongside the original cache, never in a second ledger."""
++    terminal = (isinstance(exc, ProviderQuotaRefusal)
++                or isinstance(exc, urllib.error.HTTPError) and exc.code in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN))
++    if isinstance(exc, urllib.error.HTTPError):
++        exc.close()
++    code = "PROVIDER_REFUSED" if terminal else "REMOTE_READ_FAILED"
++    def update(cache):
++        container, key = _cache_target(cache, provider, account)
++        current = container.get(key)
++        if isinstance(current, dict) and current.get("terminal_refusal"):
++            return False, current
++        pending = current.get("refresh_pending") if isinstance(current, dict) else None
++        if (attempt_id is not None or _has_pending(current)) and not _pending_matches(pending, attempt_id, provider, account, binding, now):
++            return False, current
++        # An older read cannot erase a later observation/failure. A permission
++        # refusal is retained even when a concurrent read happened to succeed.
++        if not terminal and _attempt_at(current) > now:
++            return False, current
++        row = dict(current) if isinstance(current, dict) else {"states": [], "binding": binding}
++        row.pop("refresh_pending", None)
++        row.update(refresh_error=code, refresh_failed_at=now, failure_binding=binding,
++                   terminal_refusal=bool(terminal or row.get("terminal_refusal")))
++        container[key] = row
++        return True, row
++    _update_cache(cache_path, update)
++    return code
++
++
++def _attempt_at(entry: Any) -> float:
++    if not isinstance(entry, dict):
++        return float("-inf")
++    stamps = [_num(entry.get(k)) for k in
++              ("refresh_started_at", "refreshed_at", "refresh_failed_at")]
++    return max((s for s in stamps if s is not None), default=float("-inf"))
++
++
++def _cache_target(cache: Dict[str, Any], provider: str,
++                  account: Optional[str]) -> Tuple[Dict[str, Any], str]:
++    if account is None:
++        return cache, provider
++    if not isinstance(cache.get(provider), dict):
++        cache[provider] = {}
++    if not isinstance(cache[provider].get("accounts"), dict):
++        cache[provider]["accounts"] = {}
++    return cache[provider]["accounts"], account
++
++
++def _update_cache(path: str, update: Callable) -> Any:
++    """Publish under H2's cache owner, joined to native claim publication.
++
++    Network I/O stays outside this scope. Installed native readers reuse the
++    incumbent admission lock; standalone readers keep H2's existing cache lock.
++    """
++    with quota_publication_scope(path) as scope:
++        # Publish to the same canonical cache that owns the held lock. Atomic
++        # replacement of a caller's symlink would otherwise detach that alias.
++        original_path = str(scope["path"])
++        cache = _load_cache(original_path)
++        changed, result = update(cache)
++        if changed:
++            scope["assert_current"]()
++            _atomic_write(original_path, cache)
++            scope["assert_current"]()
++        return result
++
++
++def _begin_refresh(path: str, provider: str, account: Optional[str],
++                   binding: Any, started_at: float) -> Optional[str]:
++    """Invalidate old positive evidence before a GET can return a refusal.
++
++    Completion must replace this exact marker in the existing cache. If final
++    publication fails or the reader exits, the unresolved marker remains closed
++    until the original owner reconciles it; force/TTL cannot replay that read.
++    """
++    marker = {"attempt_id": uuid.uuid4().hex, "provider": provider,
++              "account": account, "binding": binding, "started_at": started_at}
++    def update(cache):
++        container, key = _cache_target(cache, provider, account)
++        current = container.get(key)
++        if (isinstance(current, dict) and
++                (current.get("terminal_refusal") or _has_pending(current))
++                or _attempt_at(current) > started_at):
++            return False, current
++        row = dict(current) if isinstance(current, dict) else {"states": [], "binding": binding}
++        marker["previous_error"] = row.get("refresh_error")
++        row.update(refresh_pending=marker, refresh_error="REFRESH_IN_PROGRESS",
++                   refresh_started_at=started_at, failure_binding=binding)
++        container[key] = row
++        return True, row
++    retained = _update_cache(path, update)
++    if isinstance(retained, dict) and retained.get("refresh_pending") == marker:
++        return marker["attempt_id"]
++    return None
++
++
++def _publish_observation(path: str, provider: str, account: Optional[str],
++                         states: List[ProviderQuotaState], binding: Any,
++                         started_at: float, *, attempt_id: Optional[str] = None) -> Dict[str, Any]:
++    def update(cache):
++        container, key = _cache_target(cache, provider, account)
++        current = container.get(key)
++        pending = current.get("refresh_pending") if isinstance(current, dict) else None
++        matched = _pending_matches(pending, attempt_id, provider, account, binding, started_at)
++        if (isinstance(current, dict) and current.get("terminal_refusal")
++                or (attempt_id is not None or _has_pending(current)) and not matched
++                or _attempt_at(current) > started_at
++                or isinstance(current, dict) and current.get("refresh_error")
++                and _attempt_at(current) == started_at and not matched):
++            return False, current
++        row = {"refreshed_at": started_at, "refresh_started_at": started_at,
++               "binding": binding, "states": [asdict(state) for state in states]}
++        if provider == "glm" and account is not None:
++            previous = dict(current, refresh_error=pending.get("previous_error")) if matched else current
++            row["quota_change"] = _glm_quota_change(previous, row, account)
++        container[key] = row
++        return True, row
++    return _update_cache(path, update)
++
++
++def _glm_quota_change(previous: Any, current: Dict[str, Any], account: str) -> Dict[str, Any]:
++    """Describe observed counter/clock changes, without inferring voucher use."""
++    change = {"cause": "UNDETERMINED", "windows": []}
++    if (not isinstance(previous, dict) or previous.get("binding") != current.get("binding")
++            or previous.get("refresh_error") or previous.get("terminal_refusal")):
++        return change
++    prior_states = previous.get("states")
++    if not isinstance(prior_states, list):
++        return change
++    for window in ("5h", "weekly"):
++        old = [s for s in prior_states if isinstance(s, dict)
++               and s.get("window") == window and s.get("account") == account]
++        new = [s for s in current["states"] if s.get("window") == window]
++        if len(old) != 1 or len(new) != 1:
++            continue
++        a, b = old[0], new[0]
++        if any(s.get("source") != "PROVIDER_AUTHORITATIVE" or
++               _num(s.get("remaining_pct")) is None or
++               not 0 <= _num(s.get("remaining_pct")) <= 100 or
++               not _iso(s.get("observed_at")) or
++               s.get("reset_at") is not None and not _iso(s.get("reset_at"))
++               for s in (a, b)):
++            continue
++        if _iso(b["observed_at"]) <= _iso(a["observed_at"]):
++            continue
++        before, after = _num(a["remaining_pct"]), _num(b["remaining_pct"])
++        if after > before or _iso(b.get("reset_at")) != _iso(a.get("reset_at")):
++            change["windows"].append({
++                "window": window, "previous_remaining_pct": before,
++                "remaining_pct": after, "previous_reset_at": a.get("reset_at"),
++                "reset_at": b.get("reset_at"), "observed_at": b["observed_at"],
++            })
++    return change
+ 
+ 
+ def _load_cache(path: Optional[str] = None) -> Dict[str, Any]:
+@@ -422,25 +1121,49 @@
+ 
+ def _atomic_write(path: str, value: Dict[str, Any]) -> None:
+     directory = os.path.dirname(path) or "."
+-    fd, tmp = tempfile.mkstemp(prefix=".quota_cache.", dir=directory)
++    tmp = None
+     try:
++        fd, tmp = tempfile.mkstemp(prefix=".quota_cache.", dir=directory)
+         with os.fdopen(fd, "w", encoding="utf-8") as handle:
+-            json.dump(value, handle, indent=2, sort_keys=True)
++            json.dump(value, handle, indent=2, sort_keys=True, allow_nan=False)
+             handle.write("\n")
++            handle.flush()
++            os.fsync(handle.fileno())
+         os.replace(tmp, path)
++        directory_fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
++        try:
++            os.fsync(directory_fd)
++        finally:
++            os.close(directory_fd)
+     except Exception:
+         try:
+-            os.unlink(tmp)
++            if tmp is not None:
++                os.unlink(tmp)
+         except OSError:
+             pass
++        raise QuotaCacheWriteError("quota cache publication failed; owner reconciliation required") from None
+ 
+ 
+ def read_provider(provider: str, force: bool = False,
+                   now_ts: Optional[float] = None,
+                   cache_path: Optional[str] = None) -> List[ProviderQuotaState]:
+     provider = provider.lower()
+-    if provider not in {"glm", "minimax", "bailian"}:
++    if provider not in {"glm", "minimax", "bailian", "grok"}:
+         raise ValueError("unknown provider")
++    if provider == "grok":
++        # Unlike other pools, an older cached positive balance can never
++        # release a later 402. This read is manual and never mutates marker.
++        try:
++            states = READERS["grok"]()
++            if (len(states) != 1 or states[0].provider != "grok"
++                    or states[0].window != "weekly"):
++                raise ValueError("grok_billing_window_unusable")
++            return states
++        except Exception:
++            return [_state(
++                "grok", "weekly", None, None, None, None, "UNKNOWN",
++                _utc_now(), 0.0, "billing unavailable; marker unchanged",
++            )]
+     path = cache_path or CACHE_PATH
+     now = _utc_now().timestamp() if now_ts is None else float(now_ts)
+     if provider == "glm":
+@@ -454,25 +1177,15 @@
+         if _legacy_glm_mode():
+             cache = _load_cache(path)
+             entry = cache.get("glm")
+-            refreshed_at = (
+-                float((entry or {}).get("refreshed_at") or 0)
+-                if isinstance(entry, dict) else 0.0
+-            )
+             cached_states = _cache_states(entry, "cached", keep_authoritative=True)
+-            if (
+-                not force and refreshed_at
+-                and now - refreshed_at < REFRESH_INTERVAL_S
+-            ):
++            if not force and _cache_fresh(entry, now):
+                 return [state for state in cached_states if state is not None]
+             try:
+                 live = READERS["glm"]()
+-                cache = _load_cache(path)
+-                cache["glm"] = {
+-                    "refreshed_at": int(now),
+-                    "states": [asdict(state) for state in live],
+-                }
+-                _atomic_write(path, cache)
+-                return live
++                retained = _publish_observation(path, "glm", None, live, None, now)
++                return _cache_states(retained, "cached", keep_authoritative=True)
++            except QuotaCacheWriteError:
++                raise
+             except Exception as exc:
+                 if isinstance(entry, dict) and isinstance(
+                     entry.get("states"), list
+@@ -492,9 +1205,12 @@
+         return flat
+     cache = _load_cache(path)
+     entry = cache.get(provider)
+-    refreshed_at = float((entry or {}).get("refreshed_at") or 0) if isinstance(entry, dict) else 0.0
++    binding = _config_binding(provider) if provider == "minimax" else None
++    same_binding = binding is not None and isinstance(entry, dict) and entry.get("binding") == binding
+     cached_states = _cache_states(entry, "cached", keep_authoritative=True)
+-    if not force and refreshed_at and now - refreshed_at < REFRESH_INTERVAL_S:
++    if isinstance(entry, dict) and (entry.get("terminal_refusal") or _has_pending(entry)):
++        return cached_states if same_binding else []
++    if not force and same_binding and _cache_fresh(entry, now, binding):
+         return [state for state in cached_states if state is not None]
+     live: List[ProviderQuotaState]
+     if provider == "bailian":
+@@ -509,30 +1225,162 @@
+                 "bailian", "7d", None, None, None, None, "UNKNOWN", now,
+                 0.0, ALIBABA_DETAIL,
+             )]
++    attempt_id = _begin_refresh(path, provider, None, binding, now)
++    if attempt_id is None:
++        return _cache_states(_load_cache(path).get(provider), "cached", keep_authoritative=True)
+     try:
+         live = READERS[provider]()
+-        cache[provider] = {
+-            "refreshed_at": int(now),
+-            "states": [asdict(state) for state in live],
+-        }
+-        _atomic_write(path, cache)
+-        return live
++        after = _config_binding(provider)
++        if binding != after:
++            _record_refresh_failure(path, provider, None, entry, binding, now,
++                                    ValueError("configuration changed during refresh"), attempt_id=attempt_id)
++            return []
++        live = _bind_states(live, "default", binding)
++        retained = _publish_observation(path, provider, None, live, binding, now, attempt_id=attempt_id)
++        return _cache_states(retained, "cached", keep_authoritative=True)
++    except QuotaCacheWriteError:
++        raise
+     except Exception as exc:
+-        if isinstance(entry, dict) and isinstance(entry.get("states"), list):
++        code = _record_refresh_failure(path, provider, None, entry, binding, now, exc, attempt_id=attempt_id)
++        if same_binding and isinstance(entry.get("states"), list):
+             stale = [
+                 _from_cache_entry(row, type(exc).__name__)
+                 for row in entry["states"]
+             ]
+-            return [state for state in stale if state is not None]
++            return [replace(state, refresh_error=code,
++                            failure_config_generation=(binding or {}).get("config_generation"))
++                    for state in stale if state is not None]
+         return []
+ 
+ 
++def read_account_admission_cache():
++    """One bounded, read-only H2 observation from the incumbent cache owner.
++
++    This function never refreshes, resolves credentials or accepts a caller path.
++    A digest binds the retained bytes; it is not a grant or provider attestation.
++    """
++    import hashlib
++    import math
++    import stat
++
++    def object_pairs(pairs):
++        out = {}
++        for key, value in pairs:
++            if key in out:
++                raise ValueError("duplicate_capacity_key")
++            out[key] = value
++        return out
++
++    def invalid_constant(value):
++        raise ValueError("invalid_capacity_number")
++
++    fd = os.open(CACHE_PATH, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0))
++    with os.fdopen(fd, "rb") as source:
++        before = os.fstat(source.fileno())
++        if not stat.S_ISREG(before.st_mode) or before.st_size > 4 * 1024 * 1024:
++            raise ValueError("capacity_source_unavailable")
++        raw = source.read(4 * 1024 * 1024 + 1)
++        after = os.fstat(source.fileno())
++    if (len(raw) > 4 * 1024 * 1024 or
++            (before.st_ino, before.st_size, before.st_mtime_ns) !=
++            (after.st_ino, after.st_size, after.st_mtime_ns)):
++        raise ValueError("capacity_source_changed")
++    document = json.loads(raw.decode("utf-8"), object_pairs_hook=object_pairs,
++                          parse_constant=invalid_constant)
++    if type(document) is not dict:
++        raise ValueError("capacity_source_invalid")
++    return document, hashlib.sha256(raw).hexdigest()
++
++
++def account_admission_observation(cache, *, provider, account, generation,
++                                  quota_scope, required_windows, now_ts):
++    """Validate the qualified H2 envelope; legacy percentages cannot invent it.
++
++    H2's existing producer owns capacity_generation and exact coverage of settled
++    leases. Each window has its own native unit, epoch and remaining balance.
++    Null reset clocks may support headroom; they never establish expiry urgency.
++    """
++    import math
++    import re
++
++    def ident(value):
++        if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", value):
++            raise ValueError("capacity_identity_invalid")
++        return value
++
++    def number(value, *, positive=False, integral=False):
++        if type(value) not in (int, float) or not math.isfinite(value) or value < 0 or (positive and value == 0):
++            raise ValueError("capacity_number_invalid")
++        if integral and (type(value) is not int or value > 2**63-1):
++            raise ValueError("capacity_meter_must_use_exact_integer_units")
++        return value
++
++    def stamp(value):
++        if not isinstance(value, str):
++            raise ValueError("capacity_time_invalid")
++        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
++        if parsed.tzinfo is None:
++            raise ValueError("capacity_time_invalid")
++        return parsed.timestamp()
++
++    number(now_ts, positive=True)
++    ident(generation)
++    entry = cache[provider]["accounts"][account]
++    if (type(entry) is not dict or entry.get("terminal_refusal")
++            or entry.get("refresh_error") or _has_pending(entry)):
++        raise ValueError("capacity_refresh_unreconciled")
++    envelope = entry["admission"]
++    fields = {"schema", "provider", "account", "capacity_generation", "quota_scope",
++              "source", "observed_at", "windows"}
++    if (type(envelope) is not dict or set(envelope) != fields
++            or envelope["schema"] != "mastermind.account_capacity_observation.v1"
++            or envelope["provider"] != provider or envelope["account"] != account
++            or envelope["capacity_generation"] != generation
++            or envelope["quota_scope"] != quota_scope
++            or envelope["source"] != "PROVIDER_AUTHORITATIVE"):
++        raise ValueError("capacity_binding_unqualified")
++    observed = stamp(envelope["observed_at"])
++    if not 0 <= now_ts - observed < FRESH_S:
++        raise ValueError("capacity_observation_stale")
++    rows = envelope["windows"]
++    if type(rows) is not list or not 1 <= len(rows) <= 8:
++        raise ValueError("capacity_windows_invalid")
++    windows = {}
++    for row in rows:
++        expected = {"kind", "epoch", "unit", "limit", "remaining", "starts_at", "reset_at", "accounted_lease_ids"}
++        if type(row) is not dict or set(row) != expected:
++            raise ValueError("capacity_window_invalid")
++        kind = ident(row["kind"])
++        if kind in windows:
++            raise ValueError("capacity_window_duplicate")
++        ident(row["epoch"])
++        ident(row["unit"])
++        limit = number(row["limit"], positive=True, integral=True)
++        remaining = number(row["remaining"], integral=True)
++        start = stamp(row["starts_at"])
++        reset = None if row["reset_at"] is None else stamp(row["reset_at"])
++        if remaining > limit or start > observed or (reset is not None and reset <= now_ts):
++            raise ValueError("capacity_window_invalid")
++        covered = row["accounted_lease_ids"]
++        if (type(covered) is not list or len(covered) > 256
++                or any(not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{12}", value) for value in covered)
++                or len(set(covered)) != len(covered)):
++            raise ValueError("capacity_coverage_invalid")
++        windows[kind] = dict(row, starts_at_epoch=start, reset_at_epoch=reset)
++    if set(windows) != set(required_windows):
++        raise ValueError("capacity_windows_incomplete")
++    return {"schema": envelope["schema"], "provider": provider, "account": account,
++            "capacity_generation": generation, "quota_scope": quota_scope,
++            "source": envelope["source"], "observed_at": observed, "windows": windows}
++
+ def cached_glm_account_parked(account: str, *, now_ts: Optional[float] = None,
+-                              cache_path: Optional[str] = None) -> bool:
++                              cache_path: Optional[str] = None,
++                              config_generation: Optional[str] = None) -> bool:
+     """Narrow existing admission from a fresh authoritative account observation.
+ 
+-    No network, credential access, cache refresh or lease mutation. Unknown data
+-    preserves the incumbent decision; a passed reset never retains an old hold.
++    No network, credential access, cache refresh or lease mutation. The caller
++    must supply its current configuration generation. Unknown data cannot
++    establish this narrow account hold; it also cannot establish quota readiness.
+     Use the same 95-percent park threshold as glm_quota_decision, per account.
+     """
+     if not isinstance(account, str) or not account:
+@@ -543,6 +1391,10 @@
+     try:
+         cache = _load_cache(cache_path or CACHE_PATH)
+         entry = cache["glm"]["accounts"][account]
++        if (not config_generation or not isinstance(entry.get("binding"), dict)
++                or entry["binding"].get("config_generation") != config_generation
++                or entry.get("refresh_error") or entry.get("terminal_refusal") or _has_pending(entry)):
++            return False
+         refreshed = entry.get("refreshed_at")
+         if (type(refreshed) not in (int, float)
+                 or not 0 <= now - refreshed <= FRESH_S):
+@@ -577,125 +1429,124 @@
+     return False
+ 
+ 
++def glm_config_binding() -> Optional[Dict[str, Any]]:
++    """Public, secret-free binding from the existing GLM configuration owner."""
++    return _config_binding("glm")
++
++
++def _glm_cached_entry(path: str, account: str) -> Dict[str, Any]:
++    provider = _load_cache(path).get("glm")
++    accounts = provider.get("accounts") if isinstance(provider, dict) else None
++    entry = accounts.get(account) if isinstance(accounts, dict) else None
++    return entry if isinstance(entry, dict) else {}
++
++
++def cached_glm_account_view(account: str, *, binding: Any,
++                            now_ts: Optional[float] = None,
++                            cache_path: Optional[str] = None) -> Dict[str, Any]:
++    """Cache-only paired evidence for the incumbent broker; never refresh here."""
++    now = _utc_now().timestamp() if now_ts is None else now_ts
++    binding = binding if isinstance(binding, dict) else None
++    entry = _glm_cached_entry(cache_path or CACHE_PATH, account)
++    matches = bool(binding and entry.get("binding") == binding)
++    result = account_quota_view(
++        "glm", account, _cache_states(entry, "cached", keep_authoritative=True) if matches else [],
++        config_generation=_binding_generation(binding),
++        endpoint=(binding or {}).get("endpoint"), now_ts=now,
++        refresh_error=("PROVIDER_REFUSED" if entry.get("terminal_refusal") else
++                       entry.get("refresh_error") or
++                       ("REFRESH_IN_PROGRESS" if _has_pending(entry) else None))
++                      if matches else "CONFIG_UNQUALIFIED",
++        failure_config_generation=_binding_generation(entry.get("failure_binding")))
++    result["refresh_started_at"] = _num(entry.get("refresh_started_at")) if matches else None
++    result["quota_change"] = entry.get("quota_change") if matches else None
++    result["refresh_due"] = not _cache_fresh(entry, now, binding)
++    return result
++
++
+ def glm_accounts_state(
+     now_ts: Optional[float] = None,
+     cache_path: Optional[str] = None,
+     force: bool = False,
++    *, account: Optional[str] = None,
+ ) -> List[Dict[str, Any]]:
+-    """Per-account GLM quota state (W4-G9).
+-
+-    Returns one entry per account in ``glm_keys.accounts()``:
+-
+-        {
+-            "name": str,
+-            "states": List[ProviderQuotaState],
+-            "source": str,
+-            "observed_at": Optional[str],
+-            "error": Optional[str],
+-        }
+-
+-    Reads from ``cache["glm"]["accounts"][<name>]`` when fresh; otherwise
+-    falls back to ``_live_glm(name, key)`` and writes the result back.
+-    Stale-cache entries are preserved on live-read failure.
++    """Refresh current GLM accounts through their original owner and cache.
++
++    An explicit account selects only that configured account. The normal 300s
++    on-demand cadence still visits quota-exhausted accounts. A manual reset can
++    therefore replace both windows before the previously recorded deadline.
++    This function never redeems a reset card or clears a broker hold.
+     """
+     now = _utc_now().timestamp() if now_ts is None else float(now_ts)
+     path = cache_path or CACHE_PATH
+-    cache = _load_cache(path)
+-    glm_entry = cache.get("glm")
+-    if not isinstance(glm_entry, dict):
+-        glm_entry = {}
+-    accounts_block = glm_entry.get("accounts")
+-    if not isinstance(accounts_block, dict):
+-        accounts_block = {}
+-    new_accounts_block = dict(accounts_block)
+-
++    binding = _config_binding("glm")
+     accounts = _glm_accounts_dict()
++    if binding != _config_binding("glm"):
++        return []
++    if account is not None:
++        if not isinstance(account, str) or account not in accounts:
++            raise ValueError("GLM account is not configured")
++        accounts = {account: accounts[account]}
+     out: List[Dict[str, Any]] = []
+-    changed = False
+-
+     for name, info in accounts.items():
+-        key = ""
+-        if isinstance(info, dict):
+-            key = str(info.get("api_key") or "")
+-        cached = new_accounts_block.get(name)
+-        cached_refresh = (
+-            float(cached.get("refreshed_at") or 0)
+-            if isinstance(cached, dict) else 0.0
+-        )
+-        cached_age = now - cached_refresh if cached_refresh else None
+-
+-        states: List[ProviderQuotaState] = []
+-        source = "UNKNOWN"
+-        observed_at: Optional[str] = None
+-        error: Optional[str] = None
+-
+-        fresh_cache = (
+-            not force
+-            and isinstance(cached, dict)
+-            and cached_age is not None
+-            and cached_age < REFRESH_INTERVAL_S
+-            and isinstance(cached.get("states"), list)
+-        )
+-        if fresh_cache:
+-            cached_states = _cache_states(cached, "cached", keep_authoritative=True)
+-            states = list(cached_states)
+-            if states:
+-                source = states[0].source
+-                observed_at = states[0].observed_at
+-
+-        if not states:
+-            try:
+-                states = _live_glm(name, key)
+-                source = "PROVIDER_AUTHORITATIVE"
+-                observed_at = states[0].observed_at if states else None
+-                new_accounts_block[name] = {
+-                    "refreshed_at": int(now),
+-                    "states": [asdict(state) for state in states],
+-                }
+-                changed = True
+-            except Exception as exc:
+-                error = type(exc).__name__
+-                # Stale-cache fallback: keep the previous authoritative
+-                # reading, demoted to LOCAL_RECONSTRUCTION.
+-                if isinstance(cached, dict) and isinstance(
+-                    cached.get("states"), list
+-                ):
+-                    stale = [
+-                        s for s in (
+-                            _from_cache_entry(row, error)
+-                            for row in cached["states"]
+-                            if isinstance(row, dict)
+-                        ) if s is not None
+-                    ]
+-                    if stale:
+-                        states = stale
+-                        source = stale[0].source
+-                        observed_at = stale[0].observed_at
+-
++        cached = _glm_cached_entry(path, name)
++        same_binding = bool(binding and isinstance(cached, dict) and cached.get("binding") == binding)
++        terminal = isinstance(cached, dict) and (cached.get("terminal_refusal") or _has_pending(cached))
++        failed_at = _num(cached.get("refresh_failed_at"))
++        retry_due = (force or cached.get("failure_binding") != binding or failed_at is None
++                     or not 0 <= now - failed_at < REFRESH_INTERVAL_S)
++        if not terminal and retry_due and (force or not same_binding or not _cache_fresh(cached, now, binding)):
++            key = str(info.get("api_key") or "") if isinstance(info, dict) else ""
++            attempt_id = _begin_refresh(path, "glm", name, binding, now)
++            if attempt_id is not None:
++                try:
++                    states = _bind_states(_live_glm(name, key), name, binding)
++                except Exception as exc:
++                    _record_refresh_failure(path, "glm", name, cached, binding, now, exc, attempt_id=attempt_id)
++                else:
++                    if binding != _config_binding("glm"):
++                        _record_refresh_failure(path, "glm", name, cached, binding, now,
++                                                ValueError("configuration changed during refresh"), attempt_id=attempt_id)
++                        return []
++                    # No provider I/O occurs while holding the publication lock.
++                    _publish_observation(path, "glm", name, states, binding, now, attempt_id=attempt_id)
++        # A concurrent newer observation/refusal wins, including on this return.
++        retained = _glm_cached_entry(path, name)
++        same_binding = bool(binding and retained.get("binding") == binding)
++        states = _cache_states(retained, "cached", keep_authoritative=True) if same_binding else []
++        error = retained.get("refresh_error") or ("REFRESH_IN_PROGRESS" if _has_pending(retained) else None)
++        if retained.get("terminal_refusal"):
++            error = ("PROVIDER_REFUSED" if retained.get("failure_binding") == binding
++                     else "PRIOR_GENERATION_REFUSAL_UNRECONCILED")
+         out.append({
+-            "name": name,
+-            "states": states,
+-            "source": source,
+-            "observed_at": observed_at,
++            "name": name, "states": states,
++            "source": states[0].source if states and not error else "UNKNOWN",
++            "observed_at": states[0].observed_at if states else None,
+             "error": error,
++            "failure_config_generation": _binding_generation(retained.get("failure_binding")),
++            "config_generation": _binding_generation(binding),
++            "endpoint": (binding or {}).get("endpoint"),
++            "refresh_started_at": _num(retained.get("refresh_started_at")),
++            "quota_change": retained.get("quota_change"),
+         })
+-
+-    if changed:
+-        glm_entry["accounts"] = new_accounts_block
+-        cache["glm"] = glm_entry
+-        try:
+-            _atomic_write(path, cache)
+-        except Exception:
+-            pass
++    if binding != _config_binding("glm"):
++        return []
+     return out
+ 
+ 
+ def fresh_authoritative(provider: str, window: str,
+                         now_ts: Optional[float] = None,
+-                        cache_path: Optional[str] = None) -> Optional[ProviderQuotaState]:
+-    now = _utc_now().timestamp() if now_ts is None else float(now_ts)
+-    for state in read_provider(provider, now_ts=now, cache_path=cache_path):
+-        if state.window != window:
++                        cache_path: Optional[str] = None,
++                        account: Optional[str] = None) -> Optional[ProviderQuotaState]:
++    read_started = _utc_now().timestamp()
++    now = read_started if now_ts is None else float(now_ts)
++    eligible = []
++    observed_states = read_provider(provider, now_ts=now, cache_path=cache_path)
++    # The provider response can arrive after the read began. Judge its clock
++    # against completion time, without rewriting the producer's observation.
++    now += max(0.0, _utc_now().timestamp() - read_started)
++    for state in observed_states:
++        if state.window != window or account is not None and state.account != account:
+             continue
+         observed = _iso(state.observed_at)
+         try:
+@@ -704,9 +1555,17 @@
+             ).timestamp() if observed else None
+         except (OSError, ValueError):
+             age = None
+-        if state.source == "PROVIDER_AUTHORITATIVE" and age is not None and age <= FRESH_S:
+-            return state
+-    return None
++        reset = _iso(state.reset_at)
++        reset_ts = datetime.fromisoformat(reset.replace("Z", "+00:00")).timestamp() if reset else None
++        pct = _num(state.remaining_pct)
++        if (state.source == "PROVIDER_AUTHORITATIVE" and age is not None and 0 <= age <= FRESH_S
++                and not state.refresh_error
++                and pct is not None and 0 <= pct <= 100
++                and (state.reset_at is None or reset is not None)
++                and (reset_ts is None or reset_ts > now)):
++            eligible.append(state)
++    # A provider-wide flattened account list is not one physical allowance.
++    return eligible[0] if len(eligible) == 1 else None
+ 
+ 
+ def glm_quota_decision(now_ts: Optional[float] = None,
+@@ -717,18 +1576,19 @@
+     """R29 GLM quota decision (W4-G9 multi-account).
+ 
+     State rules:
+-      * ``PARKED`` when EVERY account's weekly pct >= 95 % (or every 5h pct
+-        >= 95 %).
+-      * ``SPILL`` only when EVERY account's 5h pct >= 90 % (no single account
+-        has spare capacity).
+-      * ``OK`` otherwise (at least one account has headroom).
++      * ``PARKED`` when every account has qualified evidence and EACH is
++        exhausted in at least one required window (95-percent park threshold).
++      * ``SPILL`` when every otherwise usable account's 5h pct >= 90 %.
++      * ``OK`` only when at least one account has paired, qualified headroom.
++      * ``UNKNOWN`` when no usable account exists and evidence is incomplete.
+ 
+     Returns the BEST account's quota fields at the top level (so callers
+     like ``pool_ledger.glm_burn`` keep working) plus a per-account
+     breakdown under ``accounts`` (ordered list, one entry per configured
+     account).
+     """
+-    now = _utc_now().timestamp() if now_ts is None else float(now_ts)
++    read_started = _utc_now().timestamp()
++    now = read_started if now_ts is None else float(now_ts)
+     per_account: List[Dict[str, Any]] = []
+     if read_remote:
+         if _legacy_glm_mode():
+@@ -766,18 +1626,37 @@
+             }
+         estimate = dict(local_estimate)
+         estimate["source"] = "LOCAL_RECONSTRUCTION"
+-        estimate["observed_at"] = estimate.get("observed_at") or _iso(now)
+-        estimate.setdefault("state", "OK")
++        estimate["observed_at"] = _iso(estimate.get("observed_at"))
++        # Historical reconstruction is useful telemetry, not live allowance.
++        estimate["state"] = "UNKNOWN"
+         estimate.setdefault("detail", "W4-G7 calibrated local reconstruction")
+-        estimate["confidence"] = min(0.80, float(estimate.get("confidence", 0.70)))
++        estimate["confidence"] = max(0.0, min(0.80, _num(estimate.get("confidence")) or 0.0))
+         estimate.setdefault("accounts", [])
+         return estimate
+ 
++    now += max(0.0, _utc_now().timestamp() - read_started)
+     breakdown: List[Dict[str, Any]] = []
+     best_idx = -1
+     best_score: Optional[Tuple[float, float, int]] = None
++    usable_indices = []
++    evidence_complete = []
++    parked_accounts = []
+     for idx, entry in enumerate(per_account):
+         states = entry.get("states") or []
++        qualified = account_quota_view(
++            "glm", entry["name"], states,
++            config_generation=entry.get("config_generation"),
++            endpoint=entry.get("endpoint"), now_ts=now,
++            refresh_error=entry.get("error"),
++            failure_config_generation=entry.get("failure_config_generation"),
++        )
++        complete = all(row["reason"] in (None, "EXHAUSTED") for row in qualified["windows"])
++        parked = complete and any(row["remaining_pct"] <= 5 for row in qualified["windows"])
++        usable = qualified["quota_ready"] and not parked
++        evidence_complete.append(complete)
++        parked_accounts.append(parked)
++        if usable:
++            usable_indices.append(idx)
+         s_5h = next((s for s in states if s.window == "5h"), None)
+         s_wk = next((s for s in states if s.window == "weekly"), None)
+         pct_5h = (
+@@ -803,10 +1682,11 @@
+             "source": entry["source"],
+             "observed_at": entry["observed_at"],
+             "error": entry.get("error"),
++            "qualified_quota": qualified,
+         })
+         score = (
+-            pct_5h if pct_5h is not None else float("inf"),
+-            pct_week if pct_week is not None else float("inf"),
++            (pct_5h if pct_5h is not None else float("inf")) if usable else float("inf"),
++            (pct_week if pct_week is not None else float("inf")) if usable else float("inf"),
+             idx,
+         )
+         if best_score is None or score < best_score:
+@@ -821,30 +1701,16 @@
+             "accounts": breakdown,
+         }
+ 
+-    pct_5h_values = [b["pct_5h"] for b in breakdown if b["pct_5h"] is not None]
+-    pct_week_values = [b["pct_week"] for b in breakdown if b["pct_week"] is not None]
+-    all_5h_at_or_above_95 = bool(pct_5h_values) and all(
+-        p >= 95.0 for p in pct_5h_values
+-    )
+-    all_5h_at_or_above_90 = bool(pct_5h_values) and all(
+-        p >= 90.0 for p in pct_5h_values
+-    )
+-    all_week_at_or_above_95 = bool(pct_week_values) and all(
+-        p >= 95.0 for p in pct_week_values
+-    )
+-    if all_5h_at_or_above_95 or all_week_at_or_above_95:
++    if usable_indices:
++        state = "SPILL" if all(breakdown[i]["pct_5h"] >= 90 for i in usable_indices) else "OK"
++    elif all(evidence_complete) and all(parked_accounts):
+         state = "PARKED"
+-    elif all_5h_at_or_above_90:
+-        state = "SPILL"
+     else:
+-        state = "OK"
++        state = "UNKNOWN"
+ 
+     best = breakdown[best_idx]
+     observed = best.get("observed_at") or ""
+-    confidence = min(
+-        best["remaining_pct_5h"] if best["remaining_pct_5h"] is not None else 1.0,
+-        best["remaining_pct_week"] if best["remaining_pct_week"] is not None else 1.0,
+-    )
++    confidence = min(row["confidence"] for row in best["qualified_quota"]["windows"])
+     return {
+         "state": state,
+         "source": best["source"],
+@@ -941,20 +1807,99 @@
+         )
+ 
+ 
++def qualified_provider_view(provider: str, *, force: bool = False,
++                            now_ts: Optional[float] = None,
++                            cache_path: Optional[str] = None,
++                            account: Optional[str] = None) -> List[Dict[str, Any]]:
++    """Join the incumbent GLM/MiniMax refresh to its per-account read view.
++
++    This does not perform Go authentication or replace the GoRouter refresh
++    owner. That owner must supply its original observation clock and binding to
++    parse_go_usage_payload/account_quota_view before publishing Go readiness.
++    """
++    read_started = _utc_now().timestamp()
++    now = read_started if now_ts is None else _num(now_ts)
++    if now is None or now <= 0:
++        raise ValueError("invalid observation time")
++    if provider == "glm":
++        entries = glm_accounts_state(force=force, now_ts=now, cache_path=cache_path,
++                                     account=account)
++    elif provider == "minimax":
++        if account not in (None, "default"):
++            raise ValueError("MiniMax account is not configured")
++        before = _config_binding(provider)
++        states = read_provider(provider, force=force, now_ts=now, cache_path=cache_path)
++        after = _config_binding(provider)
++        retained = _load_cache(cache_path or CACHE_PATH).get(provider)
++        retained = retained if isinstance(retained, dict) else {}
++        failure_binding = retained.get("failure_binding")
++        error = retained.get("refresh_error") or ("REFRESH_IN_PROGRESS" if _has_pending(retained) else None)
++        if retained.get("terminal_refusal") and failure_binding != after:
++            error = "PRIOR_GENERATION_REFUSAL_UNRECONCILED"
++        entries = [{"name": "default", "states": states if before == after else [],
++                    "config_generation": (after or {}).get("config_generation"),
++                    "endpoint": (after or {}).get("endpoint"),
++                    "failure_config_generation": _binding_generation(failure_binding),
++                    "error": error if before == after else "CONFIG_CHANGED"}]
++    else:
++        raise ValueError("qualified live reader only available for glm/minimax")
++    now += max(0.0, _utc_now().timestamp() - read_started)
++    return [dict(account_quota_view(provider, entry["name"], entry.get("states") or [],
++                               config_generation=entry.get("config_generation"),
++                               endpoint=entry.get("endpoint"), now_ts=now,
++                               refresh_error=entry.get("error"),
++                               failure_config_generation=entry.get("failure_config_generation")),
++                 refresh_started_at=entry.get("refresh_started_at"),
++                 quota_change=entry.get("quota_change"))
++            for entry in entries]
++
++
++def reconcile_glm_reset(account: str, *, now_ts: Optional[float] = None,
++                        cache_path: Optional[str] = None) -> Dict[str, Any]:
++    """One named-account quota read after an operator's reset; no redemption."""
++    rows = qualified_provider_view("glm", force=True, account=account,
++                                   now_ts=now_ts, cache_path=cache_path)
++    ready = len(rows) == 1 and rows[0]["quota_ready"]
++    return {"account": account, "state": "QUOTA_READY" if ready else "QUOTA_NOT_READY",
++            "redemption": "NOT_PERFORMED", "reset_cause": "UNDETERMINED",
++            "automatic_redemption": "NO_SUPPORTED_PUBLIC_CONTRACT",
++            "broker_hold": "NOT_MUTATED", "quota": rows[0] if len(rows) == 1 else None}
++
++
+ def main(argv: Optional[List[str]] = None) -> int:
+     parser = argparse.ArgumentParser(description=__doc__)
+     sub = parser.add_subparsers(dest="command", required=True)
+     show = sub.add_parser("show")
+-    show.add_argument("--provider", choices=("glm", "minimax", "bailian"))
++    show.add_argument("--provider", choices=("glm", "minimax", "bailian", "grok"))
+     show.add_argument("--force", action="store_true")
+     show.add_argument("--json", action="store_true")
++    show.add_argument("--account", help="read only this configured GLM account")
++    show.add_argument("--qualified", action="store_true",
++                      help="per-account freshness/binding view; does not grant admission")
++    reconcile = sub.add_parser("reconcile-reset", help="refresh GLM after a manual reset; never consume a card")
++    reconcile.add_argument("--account", required=True)
+     args = parser.parse_args(argv)
++    if args.command == "reconcile-reset":
++        try:
++            result = reconcile_glm_reset(args.account)
++        except ValueError as exc:
++            parser.error(str(exc))
++        print(json.dumps(result, indent=2, sort_keys=True, allow_nan=False))
++        return 0 if result["state"] == "QUOTA_READY" else 2
++    if args.account and args.provider != "glm":
++        parser.error("--account requires --provider glm")
++    if args.qualified:
++        if args.provider not in ("glm", "minimax"):
++            parser.error("--qualified requires --provider glm or minimax")
++        print(json.dumps(qualified_provider_view(args.provider, force=args.force, account=args.account),
++                         indent=2, sort_keys=True, allow_nan=False))
++        return 0
+     providers = (args.provider,) if args.provider else ("glm", "minimax", "bailian")
+     now_ts = _utc_now().timestamp()
+     for provider in providers:
+         if provider == "glm":
+             per_account = glm_accounts_state(
+-                now_ts=now_ts, force=args.force,
++                now_ts=now_ts, force=args.force, account=args.account,
+             )
+             _print_glm_accounts(per_account, args.json)
+             continue
+--- /dev/null
++++ b/ops/native_fabric/quota_continuity/tests/test_expiry_account_admission.py
+@@ -0,0 +1,505 @@
++"""H3 qualification against the exact native Broker and its real SQLite owner.
++
++Provider observations are synthetic. Network, subprocess and credential reads
++are denied. No provider account, live lease, runtime or credential is used.
++"""
++from concurrent.futures import ThreadPoolExecutor
++import copy
++from datetime import datetime, timezone
++import hashlib
++import json
++import os
++from pathlib import Path
++import sqlite3
++import sys
++import tempfile
++from threading import Barrier
++import unittest
++from unittest.mock import patch
++
++SOURCE = Path(os.environ.get("H3_NATIVE_SOURCE", Path(__file__).resolve().parents[1] / "candidate"))
++sys.path[:0] = [str(SOURCE), str(Path(__file__).resolve().parents[1] / "source")]
++from _offline_boundary import acquire as offline_acquire, release as offline_release
++import lease_broker
++import quota_remote
++
++
++def setUpModule():
++    offline_acquire()
++
++
++def tearDownModule():
++    offline_release()
++
++
++def iso(value):
++    return datetime.fromtimestamp(value, timezone.utc).isoformat()
++
++
++class ExpiryAdmissionTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name) / "kit" / "ext"
++        (self.root / "active").mkdir(parents=True)
++        (self.root / "broker").mkdir()
++        (self.root.parent / "orch" / "fabric").mkdir(parents=True)
++        (self.root / "active" / ".admission.lock").touch(mode=0o600)
++        self.clock = [1800000000.0]
++        self.cache_file = self.root / "quota.json"
++        self.accounts = self.root.parent / "orch" / "fabric" / "accounts.json"
++        self.windows = ["5h", "weekly"]
++        claims = {k: {"budget_ref": "fixture:enforced-request-ceiling", "units": {
++            w: {"unit": "requests", "maximum": 1} for w in self.windows}}
++            for k in ("build", "application", "review")}
++        self.policy = {"schema": "mastermind.expiry_account_admission.v1",
++            "required_windows": self.windows, "reserve_units": {w: 0 for w in self.windows},
++            "reserved_slots": 0, "urgent_classes": ["review"],
++            "claims": {"fixture-model": claims, "other-model": copy.deepcopy(claims)}}
++        self.grant = dict(grant_id="fixture-app", purpose="APPLICATION", enabled=True,
++            principal_id="macro", credential_ref="FIXTURE_REFERENCE", admission_root="service:fixture",
++            caller_hosts=["fixture-host"], workloads=["site_interactive"], pool="go",
++            accounts=["alpha-far", "zeta-near"], models=["fixture-model", "other-model"],
++            route="/v1/chat/completions", stream=False, expires_at=self.clock[0]+900,
++            max_turn_seconds=300, max_steps=2, qualification_ref="fixture:qualified",
++            application_permission_ref="fixture:application")
++        self.doc = {"schema": "mastermind.provider_accounts.v1", "providers": {"go": {
++            "enabled": True, "accounts": [{"name": n, "per_account_cap": 4,
++                "capacity_generation": "fixture-generation-1"} for n in self.grant["accounts"]],
++            "expiry_admission": self.policy}}, "application_grants": [self.grant]}
++        self.cache = {"go": {"accounts": {n: {"admission": self.observation(n,
++            self.clock[0] + (60*3600 if n == "alpha-far" else 3600))} for n in self.grant["accounts"]}}}
++        self.save()
++        cache_patch = patch.object(quota_remote, "CACHE_PATH", str(self.cache_file))
++        cache_patch.start()
++        self.addCleanup(cache_patch.stop)
++        # Source policy only is synthetic; the actual parser is separately qualified.
++        self.policy_patch = patch.object(lease_broker.Broker, "_expiry_source_policy", create=True,
++            return_value=({"promote": True, "hours_before_reset": 36.0,
++                           "min_remaining_pct": 15.0}, "a"*64))
++        self.policy_patch.start()
++        self.addCleanup(self.policy_patch.stop)
++        self.br = self.broker()
++        self.assertEqual(Path(lease_broker.__file__).resolve(), SOURCE.resolve()/"lease_broker.py")
++
++    def observation(self, name, reset):
++        return {"schema": "mastermind.account_capacity_observation.v1", "provider": "go",
++            "account": name, "capacity_generation": "fixture-generation-1", "quota_scope": "go:"+name,
++            "source": "PROVIDER_AUTHORITATIVE", "observed_at": iso(self.clock[0]),
++            "windows": [{"kind": kind, "epoch": "fixture-"+kind, "unit": "requests",
++                "limit": 100, "remaining": 80, "starts_at": iso(self.clock[0]-3600),
++                "reset_at": iso(reset) if kind == "weekly" else None,
++                "accounted_lease_ids": []} for kind in self.windows]}
++
++    def save(self):
++        self.accounts.write_text(json.dumps(self.doc))
++        self.cache_file.write_text(json.dumps(self.cache))
++
++    def broker(self):
++        br = lease_broker.Broker(db_path=str(self.root/"broker"/"leases.sqlite"), lock_path=str(self.root/"broker"/"leases.lock"),
++            accounts_path=str(self.accounts), now_fn=lambda: self.clock[0], check_pid=False,
++            external_gates=False, this_host="fixture-host", status_json=str(self.root/"status.json"))
++        return br
++
++    def claim(self, root="root", account=None, model="fixture-model", task_class="build", broker=None, pool="go"):
++        return (broker or self.br).acquire(root, pool, account=account, task_class=task_class,
++            host="fixture-host", pid=os.getpid(), model=model, wait=0)
++
++    def rows(self, table="leases"):
++        with sqlite3.connect(self.root/"broker"/"leases.sqlite") as conn:
++            conn.row_factory = sqlite3.Row
++            return [dict(r) for r in conn.execute("SELECT * FROM "+table)]
++
++    def near(self):
++        return self.cache["go"]["accounts"]["zeta-near"]["admission"]
++
++    def only_near(self, cap=4, remaining=80):
++        self.doc["providers"]["go"]["accounts"] = [{"name": "zeta-near", "per_account_cap": cap,
++                                                    "capacity_generation": "fixture-generation-1"}]
++        self.grant["accounts"] = ["zeta-near"]
++        for w in self.near()["windows"]:
++            w["remaining"] = remaining
++        self.save()
++
++    def refresh_time(self, seconds=1):
++        self.clock[0] += seconds
++        for group in self.cache.values():
++            for row in group["accounts"].values():
++                row["admission"]["observed_at"] = iso(self.clock[0])
++
++    def begin(self, turn="original-turn", broker=None):
++        return (broker or self.br).begin_application_turn(principal_id="macro", caller_host="fixture-host",
++            workload="site_interactive", turn_id=turn, pool="go", model="fixture-model",
++            transport_accounts=set(self.grant["accounts"]))
++
++    def prepared(self):
++        binding = self.begin()
++        request = self.br.prepare_application_request(principal_id="macro", turn_id="original-turn",
++            request_id="original-request", request_digest="b"*64)
++        return binding, request
++
++    def receipt(self, request):
++        return {"dispatch_id": request["dispatch_id"], "request_digest": "b"*64,
++            "lease_id": request["lease_id"], "account": request["account"], "model": "fixture-model",
++            "response_digest": "c"*64, "status_code": 200, "completed_at": self.clock[0],
++            "usage": {"input_tokens": 11, "output_tokens": 7}}
++
++    def test_actual_claim_chooses_near_and_retains_complete_evidence(self):
++        result = self.claim()
++        self.assertTrue(result.ok, result)
++        self.assertEqual(result.account, "zeta-near")
++        lease = self.rows()[0]
++        evidence = json.loads(lease["account_admission_json"])
++        self.assertEqual(hashlib.sha256(lease["account_admission_json"].encode()).hexdigest(), lease["account_admission_digest"])
++        self.assertEqual((lease["account"], evidence["account"], result.account_admission["account"]), ("zeta-near",)*3)
++        self.assertEqual(evidence["reason"], "expiring_allowance")
++        self.assertEqual({w["kind"] for w in evidence["windows"]}, {"5h", "weekly"})
++
++    def test_other_window_exhaustion_beats_expiry(self):
++        self.near()["windows"][0]["remaining"] = 0
++        self.save()
++        self.assertEqual(self.claim().account, "alpha-far")
++
++    def test_stale_future_past_null_and_wrong_generation_observations(self):
++        original = copy.deepcopy(self.near())
++        cases = [lambda x: x.update(observed_at=iso(self.clock[0]-600)),
++                 lambda x: x.update(observed_at=iso(self.clock[0]+1)),
++                 lambda x: x.update(capacity_generation="revoked-generation"),
++                 lambda x: x.update(source="LOCAL_ESTIMATE"),
++                 lambda x: x.update(account="other-account"),
++                 lambda x: x["windows"][1].update(reset_at=iso(self.clock[0])),
++                 lambda x: x["windows"][0].update(remaining=None)]
++        for change in cases:
++            with self.subTest(change=cases.index(change)):
++                self.cache["go"]["accounts"]["zeta-near"]["admission"] = copy.deepcopy(original)
++                change(self.near()); self.save()
++                result = self.claim(root="case-"+str(cases.index(change)))
++                self.assertEqual(result.account, "alpha-far")
++                self.assertTrue(self.br.release(result.lease_id, "case-"+str(cases.index(change))))
++
++    def test_null_clock_is_not_expiry_or_unknown_remaining(self):
++        self.near()["windows"][1]["reset_at"] = None
++        self.save()
++        result = self.claim(account="zeta-near")
++        self.assertTrue(result.ok)
++        self.assertEqual(result.account_admission["reason"], "eligible_headroom")
++
++    def test_missing_h2_envelope_fails_closed(self):
++        for row in self.cache["go"]["accounts"].values():
++            row.pop("admission")
++            row["states"] = [{"remaining_pct": 100, "reset_at": iso(self.clock[0]+1)}]
++        self.save()
++        self.assertFalse(self.claim().ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_unknown_or_zero_claim_ceiling_fails_closed(self):
++        self.only_near()
++        self.policy["claims"]["fixture-model"]["build"]["units"]["weekly"]["maximum"] = 0
++        self.save()
++        self.assertFalse(self.claim().ok)
++        self.assertFalse(self.claim(model="not-enrolled").ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_strict_pin_never_substitutes(self):
++        far = self.claim(account="alpha-far")
++        self.assertEqual(far.account, "alpha-far")
++        self.near()["windows"][0]["remaining"] = 0
++        self.save()
++        refused = self.claim(account="zeta-near")
++        self.assertFalse(refused.ok)
++        self.assertEqual(len(self.rows()), 1)
++
++    def test_revocation_between_preview_and_claim_same_mtime(self):
++        self.br.load_accounts_doc()
++        metadata = self.accounts.stat()
++        self.doc["providers"]["go"]["accounts"][1]["enabled"] = False
++        self.save()
++        os.utime(self.accounts, ns=(metadata.st_atime_ns, metadata.st_mtime_ns))
++        self.assertFalse(self.claim(account="zeta-near").ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_source_change_before_insert_refuses_without_a_lease(self):
++        reader = quota_remote.read_account_admission_cache
++        calls = [0]
++        def changed():
++            calls[0] += 1
++            if calls[0] == 2:
++                self.doc["providers"]["go"]["accounts"][1]["enabled"] = False
++                self.save()
++            return reader()
++        with patch.object(quota_remote, "read_account_admission_cache", side_effect=changed):
++            result = self.claim()
++        self.assertFalse(result.ok)
++        self.assertEqual(result.reason, "account_capacity_changed")
++        self.assertEqual(self.rows(), [])
++
++    def test_two_claims_compete_for_one_window_budget_across_models(self):
++        self.only_near(remaining=1)
++        barrier = Barrier(2)
++        brokers = [self.broker(), self.broker()]
++        def contend(i):
++            barrier.wait(timeout=5)
++            return self.claim(root="child-"+str(i), model=["fixture-model", "other-model"][i], broker=brokers[i])
++        with ThreadPoolExecutor(max_workers=2) as executor:
++            results = list(executor.map(contend, range(2)))
++        self.assertEqual(sum(r.ok for r in results), 1)
++        self.assertEqual(len(self.rows()), 1)
++
++    def test_shared_aliases_and_consumers_do_not_duplicate_budget(self):
++        for a in self.doc["providers"]["go"]["accounts"]:
++            a["quota_scope"] = "shared-account"
++        common = self.observation("alpha-far", self.clock[0]+3600)
++        common["quota_scope"] = "declared:shared-account"
++        for w in common["windows"]:
++            w["remaining"] = 1
++        for name in ("alpha-far", "zeta-near"):
++            self.cache["go"]["accounts"][name]["admission"] = dict(copy.deepcopy(common), account=name)
++        self.save()
++        self.assertTrue(self.claim(root="primary", account="alpha-far").ok)
++        self.assertFalse(self.begin(turn="website")["ok"])
++        self.assertFalse(self.claim(root="child", account="zeta-near", model="other-model").ok)
++        self.assertEqual(len(self.rows()), 1)
++
++    def test_unjoined_shared_alias_cannot_bypass_strict_owner(self):
++        self.only_near()
++        self.doc["providers"]["go"]["accounts"][0]["quota_scope"] = "shared-account"
++        self.near()["quota_scope"] = "declared:shared-account"
++        self.doc["providers"]["other"] = {"enabled": True, "accounts": [{"name": "other-key",
++            "per_account_cap": 10, "quota_scope": "shared-account"}]}
++        self.save()
++        self.assertFalse(self.claim().ok)
++        self.assertFalse(self.claim(pool="other").ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_reserves_survive_expiry_ranking(self):
++        self.only_near(cap=1, remaining=80)
++        self.policy["reserved_slots"] = 1
++        self.save()
++        self.assertFalse(self.claim().ok)
++        self.assertTrue(self.claim(task_class="review").ok)
++
++    def test_cumulative_reserve_is_independent_of_short_window(self):
++        self.only_near(remaining=2)
++        self.policy["reserve_units"]["weekly"] = 2
++        self.save()
++        self.assertFalse(self.claim().ok)
++        self.assertTrue(self.claim(task_class="review").ok)
++
++    def test_release_does_not_replenish_unrefreshed_allowance(self):
++        self.only_near(remaining=1)
++        first = self.claim()
++        self.assertTrue(first.ok)
++        self.assertTrue(self.br.release(first.lease_id, "root"))
++        self.assertFalse(self.claim(root="next").ok)
++        for w in self.near()["windows"]:
++            w["accounted_lease_ids"] = [first.lease_id]
++        self.refresh_time()
++        self.save()
++        self.assertTrue(self.claim(root="next").ok)
++
++    def test_active_claim_cannot_be_acknowledged_away(self):
++        self.only_near(remaining=1)
++        first = self.claim()
++        for w in self.near()["windows"]:
++            w["accounted_lease_ids"] = [first.lease_id]
++        self.save()
++        self.assertFalse(self.claim(root="next").ok)
++
++    def test_original_claim_recovers_after_response_loss_without_reallocation(self):
++        original = self.begin()
++        self.assertEqual(original["account"], "zeta-near")
++        recovered = self.begin(broker=self.broker())
++        self.assertEqual(recovered["lease_id"], original["lease_id"])
++        self.assertEqual(recovered["account_admission_digest"], original["account_admission_digest"])
++        self.assertEqual(len(self.rows()), 1)
++
++    def test_original_usage_settles_on_selected_account_after_unknown_response(self):
++        binding, request = self.prepared()
++        self.br.mark_application_request_unknown(dispatch_id=request["dispatch_id"], reason="response_lost")
++        self.grant["enabled"] = False
++        self.doc["providers"]["go"]["accounts"][1]["capacity_generation"] = "new-generation"
++        self.save()
++        recovered = self.br.recover_application_request(principal_id="macro", turn_id="original-turn",
++            request_id="original-request", request_digest="b"*64)
++        self.assertEqual(recovered["dispatch_id"], request["dispatch_id"])
++        self.assertEqual(len(self.rows()), 1)
++        wrong = dict(self.receipt(request), account="alpha-far")
++        with self.assertRaises(lease_broker.ApplicationAdmissionError):
++            self.br.complete_application_request(dispatch_id=request["dispatch_id"], terminal_receipt=wrong)
++        settled = self.br.complete_application_request(dispatch_id=request["dispatch_id"], terminal_receipt=self.receipt(request))
++        self.assertEqual(settled["terminal_receipt"]["account"], "zeta-near")
++        self.assertEqual(settled["terminal_receipt"]["usage"], {"input_tokens": 11, "output_tokens": 7})
++        self.br.close_application_turn(principal_id="macro", turn_id="original-turn")
++        self.assertEqual(self.rows()[0]["state"], "released")
++
++    def test_lease_binding_is_immutable(self):
++        result = self.claim()
++        self.assertTrue(result.ok)
++        for field, value in [("account", "alpha-far"), ("model", "other-model"),
++                             ("account_admission_json", None), ("quota_scope", "other")]:
++            with self.subTest(field=field), sqlite3.connect(self.root/"broker"/"leases.sqlite") as conn:
++                with self.assertRaises(sqlite3.IntegrityError):
++                    conn.execute("UPDATE leases SET "+field+"=? WHERE id=?", (value, result.lease_id))
++
++    def test_unconfigured_policy_preserves_incumbent_selection(self):
++        self.doc["providers"]["go"].pop("expiry_admission")
++        self.save()
++        result = self.claim()
++        self.assertTrue(result.ok)
++        self.assertEqual(result.account, "alpha-far")
++        self.assertIsNone(self.rows()[0]["account_admission_json"])
++
++    def test_duplicate_or_nonfinite_cache_is_refused(self):
++        for raw in ('{"go":{},"go":{}}', '{"go":NaN}'):
++            self.cache_file.write_text(raw)
++            self.assertFalse(self.claim().ok)
++            self.assertEqual(self.rows(), [])
++
++    def test_monthly_exhaustion_is_independent_of_near_weekly_reset(self):
++        self.windows.append("monthly")
++        self.policy["reserve_units"]["monthly"] = 0
++        for models in self.policy["claims"].values():
++            for claim in models.values():
++                claim["units"]["monthly"] = {"unit": "requests", "maximum": 1}
++        for name, row in self.cache["go"]["accounts"].items():
++            window = copy.deepcopy(row["admission"]["windows"][1])
++            window.update(kind="monthly", epoch="fixture-monthly", reset_at=iso(self.clock[0]+2000000),
++                          remaining=0 if name == "zeta-near" else 50)
++            row["admission"]["windows"].append(window)
++        self.save()
++        self.assertEqual(self.claim().account, "alpha-far")
++
++    def test_reset_never_discards_a_cross_window_terminal_liability(self):
++        self.only_near(remaining=1)
++        for w in self.near()["windows"]:
++            w["reset_at"] = iso(self.clock[0]+1)
++        self.save()
++        first = self.claim()
++        self.assertTrue(first.ok)
++        self.refresh_time(2)
++        for w in self.near()["windows"]:
++            w.update(epoch="next-"+w["kind"], starts_at=iso(self.clock[0]-1),
++                     reset_at=iso(self.clock[0]+3600), remaining=100)
++        self.save()
++        self.assertFalse(self.claim(root="next").ok)
++        self.assertTrue(self.br.release(first.lease_id, "root"))
++        self.assertFalse(self.claim(root="next").ok)
++        for w in self.near()["windows"]:
++            w["accounted_lease_ids"] = [first.lease_id]
++        self.refresh_time()
++        self.save()
++        self.assertTrue(self.claim(root="next").ok)
++
++    def test_observation_replay_cannot_restore_previous_allowance(self):
++        self.only_near(remaining=2)
++        self.assertTrue(self.claim().ok)
++        self.refresh_time(1)
++        self.save()
++        self.assertTrue(self.claim(root="newer-observation").ok)
++        for w in self.near()["windows"]:
++            w["remaining"] = 100
++        self.near()["observed_at"] = iso(self.clock[0]-1)
++        self.save()
++        self.assertFalse(self.claim(root="replay").ok)
++
++    def test_policy_removal_cannot_bypass_retained_liability(self):
++        self.only_near(remaining=1)
++        first = self.claim()
++        self.assertTrue(first.ok)
++        self.assertTrue(self.br.release(first.lease_id, "root"))
++        self.doc["providers"]["go"].pop("expiry_admission")
++        self.save()
++        self.assertFalse(self.claim(root="after-policy-removal").ok)
++
++    def test_scope_change_cannot_hide_original_account_liability(self):
++        self.only_near(remaining=1)
++        first = self.claim()
++        self.assertTrue(first.ok)
++        self.doc["providers"]["go"]["accounts"][0]["quota_scope"] = "renamed"
++        self.near()["quota_scope"] = "declared:renamed"
++        self.refresh_time()
++        self.save()
++        self.assertFalse(self.claim(root="after-scope-change").ok)
++
++    def test_real_fixed_policy_reader_supplies_existing_r31_thresholds(self):
++        import pick
++        self.policy_patch.stop()
++        path = self.root / "pools.yaml"
++        doc = {"routing": {"burn_down": {"promote": True, "hours_before_reset": 36,
++                                         "min_remaining_pct": 15}},
++               "pools": {"grok": {"windows": {"weekly": {}}}}}
++        path.write_text(json.dumps(doc))
++        with patch.object(pick, "POOLS_YAML", str(path)):
++            result = self.claim()
++        self.assertTrue(result.ok, result)
++        self.assertEqual(result.account, "zeta-near")
++        self.assertEqual(result.account_admission["policy_digest"], hashlib.sha256(path.read_bytes()).hexdigest())
++
++    def test_real_policy_reader_refuses_malformed_promotion(self):
++        import pick
++        self.policy_patch.stop()
++        path = self.root / "pools.yaml"
++        path.write_text(json.dumps({"routing": {"burn_down": {"promote": "false"}},
++                                    "pools": {"grok": {"windows": {"weekly": {}}}}}))
++        with patch.object(pick, "POOLS_YAML", str(path)):
++            self.assertFalse(self.claim().ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_gateway_dispatch_and_terminal_receipt_retain_selected_account(self):
++        from go_lease_gateway import GoLeaseGateway
++        gateway = GoLeaseGateway(str(self.root/"broker"/"leases.sqlite"), set(self.grant["accounts"]),
++            {"fixture-model", "other-model"}, clock=lambda: self.clock[0], signing_key=b"k"*32,
++            application_broker=self.br)
++        binding = gateway.begin_application({"workload": "site_interactive", "turn_id": "gateway-turn",
++            "pool": "go", "model": "fixture-model"}, principal_id="macro", host="fixture-host")
++        self.assertEqual(binding["account"], "zeta-near")
++        request = gateway.prepare_application(binding["token"], principal_id="macro", host="fixture-host",
++            turn_id="gateway-turn", request_id="original-request", path="/v1/chat/completions",
++            payload={"model": "fixture-model", "messages": [{"role": "user", "content": "fixture"}]})
++        self.assertTrue(request["dispatch_permitted"])
++        self.assertEqual(request["account"], binding["account"])
++        receipt = dict(self.receipt(request), request_digest=request["request_digest"])
++        terminal = gateway.complete_application(request["dispatch_id"], terminal_receipt=receipt)
++        self.assertEqual(terminal["terminal_receipt"]["account"], "zeta-near")
++        self.assertEqual(self.rows("application_requests")[0]["state"], "terminal")
++        self.assertEqual(self.rows()[0]["account"], "zeta-near")
++
++    def test_coverage_is_independent_for_each_window(self):
++        self.only_near(remaining=1)
++        first = self.claim()
++        self.assertTrue(self.br.release(first.lease_id, "root"))
++        self.near()["windows"][0]["accounted_lease_ids"] = [first.lease_id]
++        self.refresh_time()
++        self.save()
++        self.assertFalse(self.claim(root="next").ok)
++
++    def test_fractional_or_boolean_meter_cannot_become_a_hard_budget(self):
++        self.only_near(remaining=1)
++        for value in (0.5, True, 1.0, 2**63):
++            with self.subTest(value=value):
++                self.near()["windows"][0]["remaining"] = value
++                self.save()
++                self.assertFalse(self.claim().ok)
++        self.assertEqual(self.rows(), [])
++
++    def test_legacy_terminal_lease_needs_qualified_migration_coverage(self):
++        self.only_near(remaining=1)
++        policy = self.doc["providers"]["go"].pop("expiry_admission")
++        self.save()
++        first = self.claim()
++        self.assertTrue(self.br.release(first.lease_id, "root"))
++        self.doc["providers"]["go"]["expiry_admission"] = policy
++        self.refresh_time(4000)
++        for w in self.near()["windows"]:
++            w.update(starts_at=iso(self.clock[0]-1), reset_at=iso(self.clock[0]+3600))
++        self.save()
++        self.assertFalse(self.claim(root="next").ok)
++        for w in self.near()["windows"]:
++            w["accounted_lease_ids"] = [first.lease_id]
++        self.refresh_time()
++        self.save()
++        self.assertTrue(self.claim(root="next").ok)
++
++
++if __name__ == "__main__":
++    unittest.main(verbosity=2)
+--- /dev/null
++++ b/ops/native_fabric/quota_continuity/tests/test_h6_quota_publication.py
+@@ -0,0 +1,329 @@
++"""H6 source qualification: real file locks, original publishers and SQLite.
++
++All accounts and observations are synthetic. The existing offline boundary
++denies network, credentials and unguarded processes. No installed runtime is
++selected, and these tests do not qualify a provider balance or configuration
++writer that does not participate in the incumbent admission lock.
++"""
++from contextlib import contextmanager
++import copy
++from dataclasses import asdict
++from datetime import datetime, timezone
++import fcntl
++import hashlib
++import json
++import os
++from pathlib import Path
++import sqlite3
++import stat
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import test_expiry_account_admission as h3
++from _offline_boundary import acquire as offline_acquire, release as offline_release
++from ops.native_fabric.quota_continuity.candidate import support_bundle
++
++q = h3.quota_remote
++broker_owner = h3.lease_broker
++NOW = datetime(2026, 11, 7, 12, tzinfo=timezone.utc)
++STAMP = NOW.timestamp()
++BINDING = {"config_generation": "fixture-generation", "endpoint": "https://fixture.invalid/v1"}
++
++
++def setUpModule():
++    offline_acquire()
++
++
++def tearDownModule():
++    offline_release()
++
++
++def states(account="a", remaining=60):
++    return [q.ProviderQuotaState("glm", kind, 100-remaining, 100, remaining,
++        "2026-11-07T13:00:00Z", "PROVIDER_AUTHORITATIVE", q._iso(NOW), .98,
++        "synthetic observation", account=account,
++        config_generation=BINDING["config_generation"], endpoint=BINDING["endpoint"])
++        for kind in ("5h", "weekly")]
++
++
++def entry(account="a", remaining=60):
++    return {"refreshed_at": STAMP, "binding": dict(BINDING),
++            "states": [asdict(s) for s in states(account, remaining)]}
++
++
++class QuotaPublicationTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temp.cleanup)
++        self.path = Path(self.temp.name) / "quota.json"
++        self.original = entry()
++        self.path.write_text(json.dumps({"glm": {"accounts": {"a": self.original}}}))
++
++    def test_original_attempt_cannot_complete_after_its_pending_marker_is_removed(self):
++        attempt = q._begin_refresh(str(self.path), "glm", "a", BINDING, STAMP)
++        self.assertIsNotNone(attempt)
++        def remove(cache):
++            del cache["glm"]["accounts"]["a"]
++            return True, None
++        q._update_cache(str(self.path), remove)
++        before = self.path.read_bytes()
++        q._publish_observation(str(self.path), "glm", "a", states(), BINDING,
++                               STAMP, attempt_id=attempt)
++        self.assertEqual(self.path.read_bytes(), before)
++        q._record_refresh_failure(str(self.path), "glm", "a", self.original, BINDING,
++            STAMP, q.ProviderQuotaRefusal("synthetic refusal"), attempt_id=attempt)
++        self.assertEqual(self.path.read_bytes(), before)
++
++    def test_fsync_failure_after_replace_requires_reconciliation_with_visible_postimage(self):
++        actual_fsync = os.fsync
++        attempts = []
++        def fail_directory(fd):
++            if stat.S_ISDIR(os.fstat(fd).st_mode):
++                attempts.append("directory-sync")
++                raise OSError("synthetic durability failure")
++            return actual_fsync(fd)
++        def change(cache):
++            cache["glm"]["accounts"]["a"] = entry(remaining=33)
++            return True, None
++        with patch.object(q.os, "fsync", side_effect=fail_directory):
++            with self.assertRaisesRegex(q.QuotaCacheWriteError, "reconciliation required"):
++                q._update_cache(str(self.path), change)
++        self.assertEqual(attempts, ["directory-sync"])
++        self.assertEqual(json.loads(self.path.read_text())["glm"]["accounts"]["a"], entry(remaining=33))
++
++
++class NativeAdmissionPublicationTests(unittest.TestCase):
++    def setUp(self):
++        self.fx = h3.ExpiryAdmissionTests("runTest")
++        self.fx.setUp()
++        self.addCleanup(self.fx.doCleanups)
++
++    @contextmanager
++    def held(self):
++        # Hold the actual pre-existing native lock independently of the code
++        # being tested, so the unchanged pre-join source is a real falsifier.
++        with open(self.fx.root / "active" / ".admission.lock", "r+") as lock:
++            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
++            try:
++                yield
++            finally:
++                fcntl.flock(lock, fcntl.LOCK_UN)
++
++    def test_publication_contention_refuses_new_worker_and_application_without_allocating(self):
++        with self.held():
++            result = self.fx.claim()
++            self.assertFalse(result.ok)
++            self.assertEqual(result.reason, "account_publication_busy")
++            with self.assertRaisesRegex(broker_owner.AccountPublicationUnavailable, "account_publication_busy"):
++                self.fx.begin()
++        self.assertEqual(self.fx.rows(), [])
++        self.assertEqual(self.fx.rows("application_turns"), [])
++        self.assertTrue(self.fx.claim(root="after-publication").ok)
++
++    def test_original_recovery_settlement_and_release_remain_available_during_publication(self):
++        binding, request = self.fx.prepared()
++        with self.held():
++            recovered = self.fx.begin()
++            self.assertEqual(recovered["lease_id"], binding["lease_id"])
++            self.fx.br.mark_application_request_unknown(dispatch_id=request["dispatch_id"], reason="response_lost")
++            terminal = self.fx.br.complete_application_request(dispatch_id=request["dispatch_id"],
++                terminal_receipt=self.fx.receipt(request))
++            self.assertEqual(terminal["terminal_receipt"]["account"], binding["account"])
++            self.fx.br.close_application_turn(principal_id="macro", turn_id="original-turn")
++        self.assertEqual(len(self.fx.rows()), 1)
++        self.assertEqual(self.fx.rows()[0]["state"], "released")
++
++    def policy_artifacts(self):
++        import pick
++        self.fx.policy_patch.stop()
++        old = json.dumps({"routing": {"burn_down": {"promote": True}},
++                          "pools": {"grok": {"windows": {"weekly": {"remaining_pct": 60}}}}}).encode()
++        new = old.replace(b'60', b'61')
++        directory = self.fx.root.parent / "orch" / "fabric"
++        target, source, rollback = (directory / name for name in ("pools.yaml", "candidate.yaml", "retained.yaml"))
++        for path, data in ((target, old), (source, new), (rollback, old)):
++            path.write_bytes(data)
++            path.chmod(0o600)
++        patcher = patch.object(pick, "POOLS_YAML", str(target))
++        patcher.start()
++        self.addCleanup(patcher.stop)
++        args = (source, self.fx.root, hashlib.sha256(new).hexdigest())
++        kwargs = {"expected_current_hash": hashlib.sha256(old).hexdigest(), "rollback_source": rollback}
++        return target, old, new, args, kwargs
++
++    def test_actual_compatible_policy_publisher_is_excluded_through_claim_commit(self):
++        target, old, new, args, kwargs = self.policy_artifacts()
++        original_check = self.fx.br._account_source_current
++        attempts = []
++
++        def before_commit():
++            with patch.object(support_bundle, "_POLICY_LOCK_WAIT_SECONDS", 0):
++                with self.assertRaises(support_bundle.PolicyPublicationRefused):
++                    support_bundle.ensure_policy(*args, **kwargs)
++            attempts.append("publication-refused-before-commit")
++            self.assertEqual(target.read_bytes(), old)
++            original_check()
++
++        with patch.object(self.fx.br, "_account_source_current", side_effect=before_commit):
++            first = self.fx.claim()
++        self.assertTrue(first.ok, first)
++        self.assertEqual(attempts, ["publication-refused-before-commit"])
++        result = support_bundle.ensure_policy(*args, **kwargs)
++        self.assertEqual(result["state"], "POLICY_PUBLISHED")
++        self.assertEqual(target.read_bytes(), new)
++        second = self.fx.claim(root="after-policy")
++        self.assertTrue(second.ok, second)
++        self.assertEqual(first.account_admission["policy_digest"], hashlib.sha256(old).hexdigest())
++        self.assertEqual(second.account_admission["policy_digest"], hashlib.sha256(new).hexdigest())
++
++    def test_cache_publication_cannot_cross_claim_commit_boundary(self):
++        old = copy.deepcopy(self.fx.cache["go"]["accounts"]["zeta-near"])
++        new = copy.deepcopy(old)
++        new["admission"]["windows"][0]["remaining"] = 0
++        original_check = self.fx.br._account_source_current
++        def update(cache):
++            self.assertEqual(cache["go"]["accounts"]["zeta-near"], old)
++            cache["go"]["accounts"]["zeta-near"] = new
++            return True, new
++        def before_commit():
++            with self.assertRaises(q.QuotaPublicationUnavailable):
++                q._update_cache(str(self.fx.cache_file), update)
++            original_check()
++
++        with patch.object(self.fx.br, "_account_source_current", side_effect=before_commit):
++            first = self.fx.claim()
++        self.assertTrue(first.ok)
++        q._update_cache(str(self.fx.cache_file), update)
++        self.assertEqual(self.fx.claim(root="after-quota").account, "alpha-far")
++
++    def test_h2_pending_or_failed_refresh_cannot_leave_h3_old_envelope_admissible(self):
++        attempt = q._begin_refresh(str(self.fx.cache_file), "go", "zeta-near", BINDING, self.fx.clock[0])
++        self.assertIsNotNone(attempt)
++        first = self.fx.claim(root="pending-refresh")
++        self.assertTrue(first.ok)
++        self.assertEqual(first.account, "alpha-far")
++        q._record_refresh_failure(str(self.fx.cache_file), "go", "zeta-near", None,
++            BINDING, self.fx.clock[0], TimeoutError("synthetic timeout"), attempt_id=attempt)
++        self.assertFalse(self.fx.claim(root="failed-refresh", account="zeta-near").ok)
++        self.assertEqual(len(self.fx.rows()), 1)
++
++    def test_missing_or_unsafe_existing_native_lock_refuses_without_creating_a_lock(self):
++        path = self.fx.root / "active" / ".admission.lock"
++        path.unlink()
++        self.assertFalse(self.fx.claim().ok)
++        self.assertFalse(path.exists())
++        path.touch(mode=0o600)
++        path.chmod(0o666)
++        self.assertFalse(self.fx.claim().ok)
++        self.assertEqual(self.fx.rows(), [])
++
++    def test_changed_native_lock_aborts_original_claim_before_commit(self):
++        path = self.fx.root / "active" / ".admission.lock"
++        original_check = self.fx.br._account_source_current
++
++        def replace_lock():
++            path.unlink()
++            path.touch(mode=0o600)
++            original_check()
++
++        with patch.object(self.fx.br, "_account_source_current", side_effect=replace_lock):
++            with self.assertRaisesRegex(q.QuotaCacheWriteError, "changed"):
++                self.fx.claim()
++        self.assertEqual(self.fx.rows(), [])
++        self.assertTrue(self.fx.claim(root="reconciled-fixture").ok)
++
++    def test_alias_path_uses_original_native_publication_lock(self):
++        alias = Path(self.fx.temp.name) / "cache-alias.json"
++        alias.symlink_to(self.fx.cache_file)
++        with self.held():
++            with self.assertRaises(q.QuotaPublicationUnavailable):
++                with q.quota_publication_scope(alias):
++                    self.fail("alias escaped original publication lock")
++        def update(cache):
++            cache["fixture_alias_publication"] = True
++            return True, None
++        q._update_cache(str(alias), update)
++        self.assertTrue(alias.is_symlink())
++        self.assertTrue(json.loads(self.fx.cache_file.read_text())["fixture_alias_publication"])
++
++    def test_commit_failure_rolls_back_while_publication_lock_is_held(self):
++        original_conn = self.fx.br._conn
++        rollback_events = []
++
++        class CommitFailure:
++            def __init__(inner):
++                inner.real = original_conn()
++
++            def __getattr__(inner, name):
++                return getattr(inner.real, name)
++
++            def commit(inner):
++                raise sqlite3.OperationalError("synthetic commit failure")
++
++            def rollback(inner):
++                with self.assertRaises(q.QuotaPublicationUnavailable):
++                    with q.quota_publication_scope(require_native=True):
++                        self.fail("publication entered before rollback")
++                inner.real.rollback()
++                rollback_events.append("rolled-back-under-original-lock")
++
++        with patch.object(self.fx.br, "_gc_locked", return_value=None), \
++                patch.object(self.fx.br, "_conn", side_effect=CommitFailure):
++            with self.assertRaisesRegex(sqlite3.OperationalError, "synthetic commit failure"):
++                self.fx.begin()
++        self.assertEqual(rollback_events, ["rolled-back-under-original-lock"])
++        self.assertEqual(self.fx.rows(), [])
++        self.assertEqual(self.fx.rows("application_turns"), [])
++        self.assertTrue(self.fx.begin()["lease_id"])
++
++    def test_close_error_releases_owners_and_original_committed_turn_recovers_once(self):
++        original_conn = self.fx.br._conn
++
++        class CloseFailure:
++            def __init__(inner):
++                inner.real = original_conn()
++                inner.committed = False
++
++            def __getattr__(inner, name):
++                return getattr(inner.real, name)
++
++            def commit(inner):
++                inner.real.commit()
++                inner.committed = True
++
++            def close(inner):
++                inner.real.close()
++                if inner.committed:
++                    raise sqlite3.OperationalError("synthetic close failure after commit")
++
++        with patch.object(self.fx.br, "_gc_locked", return_value=None), \
++                patch.object(self.fx.br, "_conn", side_effect=CloseFailure):
++            with self.assertRaisesRegex(sqlite3.OperationalError, "close failure after commit"):
++                self.fx.begin()
++        original = self.fx.rows()[0]
++        with self.held():
++            recovered = self.fx.begin()
++        self.assertEqual(recovered["lease_id"], original["id"])
++        self.assertEqual(len(self.fx.rows()), 1)
++
++    def test_glm_park_uses_current_owner_generation_and_unknown_generation_refuses(self):
++        self.fx.br.external_gates = True
++        account = {"name": "fixture-glm", "per_account_cap": 4}
++        with patch.object(self.fx.br, "provider", return_value={}), \
++                patch.object(self.fx.br, "provider_name", return_value="glm"), \
++                patch.object(q, "_config_binding", return_value=BINDING), \
++                patch.object(q, "cached_glm_account_parked", return_value=True) as parked:
++            self.assertIsNone(self.fx.br._base_account_cap("glm", account))
++            parked.assert_called_once_with("fixture-glm", now_ts=self.fx.clock[0],
++                                          config_generation=BINDING["config_generation"])
++        with patch.object(self.fx.br, "provider", return_value={}), \
++                patch.object(self.fx.br, "provider_name", return_value="glm"), \
++                patch.object(q, "_config_binding", return_value=None), \
++                patch.object(q, "cached_glm_account_parked") as parked:
++            self.assertIsNone(self.fx.br._base_account_cap("glm", account))
++            parked.assert_not_called()
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- a/ops/native_fabric/grok47/quota_billing/quota_remote.py
++++ b/ops/native_fabric/grok47/quota_billing/quota_remote.py
+@@ -3,6 +3,9 @@
+ from __future__ import annotations
+ 
+ import argparse
++from contextlib import ExitStack, contextmanager
++from pathlib import Path
++import stat
+ import fcntl
+ import hashlib
+ import math
+@@ -71,6 +74,117 @@
+ 
+ class QuotaCacheWriteError(RuntimeError):
+     """Original cache persistence failed; the owner must reconcile before retry."""
++
++
++class QuotaPublicationUnavailable(QuotaCacheWriteError):
++    """A source publication lock was unavailable before any cache mutation."""
++
++
++@contextmanager
++def quota_publication_scope(cache_path=None, *, require_native=False):
++    """Serialize the incumbent cache and native admission on their original owner.
++
++    Native publication reuses active/.admission.lock; it never creates a lock,
++    installation, generation or account. Standalone quota-only readers
++    retain H2's existing cache.lock and bounded wait. That fallback cannot
++    qualify admission. Native acquisition is always nonblocking.
++    """
++    target = Path(os.path.realpath(cache_path or CACHE_PATH))
++    directory = target.parent
++    handles = []
++    lock_fd = None
++    locked = False
++    identities = []
++
++    def directory_identity(info):
++        return info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid
++
++    def lock_identity(info):
++        return (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid,
++                info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
++
++    def open_directory(location):
++        if location.resolve(strict=True) != location:
++            raise QuotaPublicationUnavailable("quota publication directory is not canonical")
++        fd = os.open(location, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
++        handles.append(fd)
++        info = os.fstat(fd)
++        if info.st_uid != os.geteuid() or info.st_mode & 0o022:
++            raise QuotaPublicationUnavailable("quota publication directory is unsafe")
++        identities.append((location, fd, directory_identity(info)))
++        return fd
++
++    try:
++        try:
++            directory_fd = open_directory(directory)
++            active = directory / "active"
++            native = os.path.lexists(active)
++            if native:
++                active_fd = open_directory(active)
++                lock_fd = os.open(".admission.lock", os.O_RDWR | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC,
++                                  dir_fd=active_fd)
++                handles.append(lock_fd)
++                info = os.fstat(lock_fd)
++                if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid()
++                        or stat.S_IMODE(info.st_mode) != 0o600 or info.st_nlink != 1 or info.st_size != 0):
++                    raise QuotaPublicationUnavailable("native admission lock is invalid")
++                identity = lock_identity(info)
++            else:
++                if require_native:
++                    raise QuotaPublicationUnavailable("native admission lock is unavailable")
++                active_fd = directory_fd
++                lock_fd = os.open(target.name + ".lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC,
++                                  0o600, dir_fd=directory_fd)
++                handles.append(lock_fd)
++                info = os.fstat(lock_fd)
++                if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.geteuid()
++                        or info.st_mode & 0o022 or info.st_nlink != 1 or info.st_size != 0):
++                    raise QuotaPublicationUnavailable("quota cache lock is invalid")
++                identity = lock_identity(info)
++            deadline = time.monotonic() + (0 if native else CACHE_LOCK_WAIT_S)
++            while True:
++                try:
++                    fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
++                    break
++                except BlockingIOError:
++                    remaining = deadline - time.monotonic()
++                    if remaining <= 0:
++                        raise
++                    time.sleep(min(.02, remaining))
++            locked = True
++        except QuotaPublicationUnavailable:
++            raise
++        except (OSError, RuntimeError, ValueError):
++            raise QuotaPublicationUnavailable("quota publication scope unavailable or busy") from None
++
++        def current():
++            try:
++                for location, fd, expected in identities:
++                    if (directory_identity(os.fstat(fd)) != expected
++                            or directory_identity(location.lstat()) != expected
++                            or location.resolve(strict=True) != location):
++                        raise QuotaCacheWriteError("quota publication directory changed")
++                lock_name = ".admission.lock" if native else target.name + ".lock"
++                if (lock_identity(os.fstat(lock_fd)) != identity
++                        or lock_identity(os.stat(lock_name, dir_fd=active_fd,
++                                                follow_symlinks=False)) != identity):
++                    raise QuotaCacheWriteError("quota publication lock changed")
++            except (OSError, RuntimeError, ValueError):
++                raise QuotaCacheWriteError("quota publication scope changed") from None
++
++        current()
++        yield {"native": native, "directory": directory, "path": target, "assert_current": current}
++    finally:
++        # Attempt every release even if one descriptor operation fails. A
++        # release failure may follow publication and must not invite a retry.
++        try:
++            with ExitStack() as resources:
++                for fd in handles:
++                    resources.callback(os.close, fd)
++                if locked:
++                    resources.callback(fcntl.flock, lock_fd, fcntl.LOCK_UN)
++        except OSError:
++            raise QuotaCacheWriteError("quota publication release failed; owner reconciliation required") from None
+ 
+ 
+ def _utc_now() -> datetime:
+@@ -854,7 +968,7 @@
+         if isinstance(current, dict) and current.get("terminal_refusal"):
+             return False, current
+         pending = current.get("refresh_pending") if isinstance(current, dict) else None
+-        if _has_pending(current) and not _pending_matches(pending, attempt_id, provider, account, binding, now):
++        if (attempt_id is not None or _has_pending(current)) and not _pending_matches(pending, attempt_id, provider, account, binding, now):
+             return False, current
+         # An older read cannot erase a later observation/failure. A permission
+         # refusal is retained even when a concurrent read happened to succeed.
+@@ -890,36 +1004,22 @@
+ 
+ 
+ def _update_cache(path: str, update: Callable) -> Any:
+-    """Serialize only publication in the incumbent cache, never network I/O.
+-
+-    Atomic rename alone loses concurrent account changes. This advisory lock is
+-    shared by every writer in this successor. A bounded wait acquires this same
+-    short lock; it never repeats a provider request or a failed publication.
++    """Publish under H2's cache owner, joined to native claim publication.
++
++    Network I/O stays outside this scope. Installed native readers reuse the
++    incumbent admission lock; standalone readers keep H2's existing cache lock.
+     """
+-    try:
+-        with open(path + ".lock", "a", encoding="utf-8") as lock:
+-            deadline = time.monotonic() + CACHE_LOCK_WAIT_S
+-            while True:
+-                try:
+-                    fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+-                    break
+-                except BlockingIOError:
+-                    remaining = deadline - time.monotonic()
+-                    if remaining <= 0:
+-                        raise
+-                    time.sleep(min(.02, remaining))
+-            try:
+-                cache = _load_cache(path)
+-                changed, result = update(cache)
+-                if changed:
+-                    _atomic_write(path, cache)
+-                return result
+-            finally:
+-                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+-    except QuotaCacheWriteError:
+-        raise
+-    except OSError:
+-        raise QuotaCacheWriteError("quota cache publication unavailable; reconcile original owner") from None
++    with quota_publication_scope(path) as scope:
++        # Publish to the same canonical cache that owns the held lock. Atomic
++        # replacement of a caller's symlink would otherwise detach that alias.
++        original_path = str(scope["path"])
++        cache = _load_cache(original_path)
++        changed, result = update(cache)
++        if changed:
++            scope["assert_current"]()
++            _atomic_write(original_path, cache)
++            scope["assert_current"]()
++        return result
+ 
+ 
+ def _begin_refresh(path: str, provider: str, account: Optional[str],
+@@ -960,7 +1060,7 @@
+         pending = current.get("refresh_pending") if isinstance(current, dict) else None
+         matched = _pending_matches(pending, attempt_id, provider, account, binding, started_at)
+         if (isinstance(current, dict) and current.get("terminal_refusal")
+-                or _has_pending(current) and not matched
++                or (attempt_id is not None or _has_pending(current)) and not matched
+                 or _attempt_at(current) > started_at
+                 or isinstance(current, dict) and current.get("refresh_error")
+                 and _attempt_at(current) == started_at and not matched):
+@@ -1027,7 +1127,14 @@
+         with os.fdopen(fd, "w", encoding="utf-8") as handle:
+             json.dump(value, handle, indent=2, sort_keys=True, allow_nan=False)
+             handle.write("\n")
++            handle.flush()
++            os.fsync(handle.fileno())
+         os.replace(tmp, path)
++        directory_fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
++        try:
++            os.fsync(directory_fd)
++        finally:
++            os.close(directory_fd)
+     except Exception:
+         try:
+             if tmp is not None:
+@@ -1146,6 +1253,126 @@
+         return []
+ 
+ 
++def read_account_admission_cache():
++    """One bounded, read-only H2 observation from the incumbent cache owner.
++
++    This function never refreshes, resolves credentials or accepts a caller path.
++    A digest binds the retained bytes; it is not a grant or provider attestation.
++    """
++    import hashlib
++    import math
++    import stat
++
++    def object_pairs(pairs):
++        out = {}
++        for key, value in pairs:
++            if key in out:
++                raise ValueError("duplicate_capacity_key")
++            out[key] = value
++        return out
++
++    def invalid_constant(value):
++        raise ValueError("invalid_capacity_number")
++
++    fd = os.open(CACHE_PATH, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0))
++    with os.fdopen(fd, "rb") as source:
++        before = os.fstat(source.fileno())
++        if not stat.S_ISREG(before.st_mode) or before.st_size > 4 * 1024 * 1024:
++            raise ValueError("capacity_source_unavailable")
++        raw = source.read(4 * 1024 * 1024 + 1)
++        after = os.fstat(source.fileno())
++    if (len(raw) > 4 * 1024 * 1024 or
++            (before.st_ino, before.st_size, before.st_mtime_ns) !=
++            (after.st_ino, after.st_size, after.st_mtime_ns)):
++        raise ValueError("capacity_source_changed")
++    document = json.loads(raw.decode("utf-8"), object_pairs_hook=object_pairs,
++                          parse_constant=invalid_constant)
++    if type(document) is not dict:
++        raise ValueError("capacity_source_invalid")
++    return document, hashlib.sha256(raw).hexdigest()
++
++
++def account_admission_observation(cache, *, provider, account, generation,
++                                  quota_scope, required_windows, now_ts):
++    """Validate the qualified H2 envelope; legacy percentages cannot invent it.
++
++    H2's existing producer owns capacity_generation and exact coverage of settled
++    leases. Each window has its own native unit, epoch and remaining balance.
++    Null reset clocks may support headroom; they never establish expiry urgency.
++    """
++    import math
++    import re
++
++    def ident(value):
++        if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}", value):
++            raise ValueError("capacity_identity_invalid")
++        return value
++
++    def number(value, *, positive=False, integral=False):
++        if type(value) not in (int, float) or not math.isfinite(value) or value < 0 or (positive and value == 0):
++            raise ValueError("capacity_number_invalid")
++        if integral and (type(value) is not int or value > 2**63-1):
++            raise ValueError("capacity_meter_must_use_exact_integer_units")
++        return value
++
++    def stamp(value):
++        if not isinstance(value, str):
++            raise ValueError("capacity_time_invalid")
++        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
++        if parsed.tzinfo is None:
++            raise ValueError("capacity_time_invalid")
++        return parsed.timestamp()
++
++    number(now_ts, positive=True)
++    ident(generation)
++    entry = cache[provider]["accounts"][account]
++    if (type(entry) is not dict or entry.get("terminal_refusal")
++            or entry.get("refresh_error") or _has_pending(entry)):
++        raise ValueError("capacity_refresh_unreconciled")
++    envelope = entry["admission"]
++    fields = {"schema", "provider", "account", "capacity_generation", "quota_scope",
++              "source", "observed_at", "windows"}
++    if (type(envelope) is not dict or set(envelope) != fields
++            or envelope["schema"] != "mastermind.account_capacity_observation.v1"
++            or envelope["provider"] != provider or envelope["account"] != account
++            or envelope["capacity_generation"] != generation
++            or envelope["quota_scope"] != quota_scope
++            or envelope["source"] != "PROVIDER_AUTHORITATIVE"):
++        raise ValueError("capacity_binding_unqualified")
++    observed = stamp(envelope["observed_at"])
++    if not 0 <= now_ts - observed < FRESH_S:
++        raise ValueError("capacity_observation_stale")
++    rows = envelope["windows"]
++    if type(rows) is not list or not 1 <= len(rows) <= 8:
++        raise ValueError("capacity_windows_invalid")
++    windows = {}
++    for row in rows:
++        expected = {"kind", "epoch", "unit", "limit", "remaining", "starts_at", "reset_at", "accounted_lease_ids"}
++        if type(row) is not dict or set(row) != expected:
++            raise ValueError("capacity_window_invalid")
++        kind = ident(row["kind"])
++        if kind in windows:
++            raise ValueError("capacity_window_duplicate")
++        ident(row["epoch"])
++        ident(row["unit"])
++        limit = number(row["limit"], positive=True, integral=True)
++        remaining = number(row["remaining"], integral=True)
++        start = stamp(row["starts_at"])
++        reset = None if row["reset_at"] is None else stamp(row["reset_at"])
++        if remaining > limit or start > observed or (reset is not None and reset <= now_ts):
++            raise ValueError("capacity_window_invalid")
++        covered = row["accounted_lease_ids"]
++        if (type(covered) is not list or len(covered) > 256
++                or any(not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{12}", value) for value in covered)
++                or len(set(covered)) != len(covered)):
++            raise ValueError("capacity_coverage_invalid")
++        windows[kind] = dict(row, starts_at_epoch=start, reset_at_epoch=reset)
++    if set(windows) != set(required_windows):
++        raise ValueError("capacity_windows_incomplete")
++    return {"schema": envelope["schema"], "provider": provider, "account": account,
++            "capacity_generation": generation, "quota_scope": quota_scope,
++            "source": envelope["source"], "observed_at": observed, "windows": windows}
++
+ def cached_glm_account_parked(account: str, *, now_ts: Optional[float] = None,
+                               cache_path: Optional[str] = None,
+                               config_generation: Optional[str] = None) -> bool:
