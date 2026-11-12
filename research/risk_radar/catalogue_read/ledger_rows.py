@@ -1,6 +1,7 @@
 """Write the Risk Radar catalogue-read ledger rows (Principal rulings 3a/3b/3c) BEFORE any read.
 
-Desk ledger: /home/ubuntu2/tmp/rotation-core/v4/trials.jsonl (append-only; DESK_RULES, APPROVAL_v2 A3).
+Desk ledger: the desk's v4/trials.jsonl, passed as the required argument (append-only; DESK_RULES,
+APPROVAL_v2 A3). Usage: python3 ledger_rows.py <path-to-trials.jsonl>
 Five primary sets: R-off {incumbent, confluence}; R-on {incumbent, confluence, exit-v1}.
 Refuses to run if any rr- row already exists.
 """
@@ -9,9 +10,9 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
+import sys
 from pathlib import Path
 
-LEDGER = Path("/home/ubuntu2/tmp/rotation-core/v4/trials.jsonl")
 AUTHOR = "risk-radar-lead/claude-opus-5-5 (Macro fable/risk-radar-masterplan-20261112)"
 SERIES = ['BAA_10Y', 'CYC/DEF', 'DIA', 'EEM/SPY', 'HYG/IEF', 'HY_OAS', 'IGV/EWDEF', 'IWM',
           'IWM/SPY', 'MDY', 'QQQ', 'QQQ/EWDEF', 'RSP', 'RSP/SPY', 'RSPT/EWDEF', 'SMH/EWDEF',
@@ -68,7 +69,10 @@ def utc_now() -> str:
 
 
 def main() -> None:
-    txt = LEDGER.read_text()
+    if len(sys.argv) != 2:
+        raise SystemExit("usage: ledger_rows.py <path-to-desk-trials.jsonl>")
+    ledger = Path(sys.argv[1])
+    txt = ledger.read_text()
     if '"id": "rr-' in txt or '"id":"rr-' in txt:
         raise SystemExit("rr- rows already exist; the ledger is append-only, not re-run")
     stamp = utc_now()
@@ -94,7 +98,7 @@ def main() -> None:
                      "model_class": "fixed rule as coded / written from reasoning (not fitted)",
                      "grid_size": 1, "window": "D", "utc": stamp, "family": fam, "role": role,
                      "primary_spec": spec, "spec_sha256": sha})
-    with LEDGER.open("a") as fh:
+    with ledger.open("a") as fh:
         for r in rows:
             fh.write(json.dumps(r, sort_keys=True) + "\n")
     for r in rows:

@@ -81,6 +81,12 @@ shared glossary.
 
 ### 2.1 Public states (four, mapped from today's five)
 
+> **Superseded names (2026-11-12, Principal ruling).** The Radar is a decline-confirmation state
+> with no false risk-off calls; it is not a warning and not a pivot call. The public names in the
+> table below, including "RISK-OFF WARNING", are withdrawn. No state is named or read as a warning
+> until a signal passes the identification pass line. Names will come from the Paper design
+> (designer → critic route); the table is kept only as the record of the earlier proposal.
+
 | Public state | Means for the user | Engine state | Why |
 |---|---|---|---|
 | **CLEAR** | No scare type is hot. | calm, watch | Watch has no measured lift; it stays an internal flag |
