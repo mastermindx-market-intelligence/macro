@@ -624,3 +624,18 @@ Frozen as `walkforward/PREREG_WALKFORWARD_v1.md` (hash in `PREREG_WALKFORWARD_v1
 
 - Raw testing, data rebuilds, reruns and sweeps go to `deepseek-v4.1-flash` workers in parallel.
 - The principal directs, reviews and adjudicates.
+
+### 14.7 Chairman's objective: an insurer's profile (secondary column)
+
+Added as declared secondary reads in `walkforward/PREREG_WALKFORWARD_v1_ADDENDUM_1.md` with no
+frozen item changed. `engine/risk_radar_eval/insurer.py` reports:
+- max drawdown and time under water;
+- drawdowns avoided and gains kept;
+- Sharpe and Sortino in excess of bills.
+
+These are shown against SPY, RSP, vol-matched SPY + bills, 60/40 and SPY-or-bills 200d. Reports
+read ≥10%, then ≥7%, then ≥5% turn recall, each with false alarms and gains forgone beside it.
+
+In-sample, the risk-off state is the best insurer-profile series (Sharpe 0.98 vs SPY 0.64; max DD
+−17% vs −34%), with the 200-day rule close behind. Credit-spread velocity wins on pivots and loses
+here. The two reads do not agree on a single best signal.

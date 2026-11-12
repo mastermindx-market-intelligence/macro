@@ -105,3 +105,30 @@ gives the research desk the bar any challenger has to clear at the same budget. 
 - Episode counts at h = 3, 5 and 10 are in the JSON file but are not summarised here.
 - Breadth input history: present from 1962 in the store, but not re-audited for point-in-time
   membership.
+
+## 5. Insurer profile (secondary headline, added 2026-11-12; see PREREG addendum 1)
+
+In-sample, 2020-01-02 → 2026-11-10. Paper sleeve: alert at d's close → bills on d+1, else SPY
+total return. Raw: `INSURER_INSAMPLE_v2.json`. ≥10% drawdowns: 3 episodes; ≥7%: 5; ≥5%: 9.
+
+| Series | Max DD | Longest under water (sessions) | Sharpe (excess) | Sortino | ≥10% DD avoided (pooled, n=3) | ≥7% DD avoided (pooled, n=5) | Gains kept outside ≥5% declines | Rebound kept | CAGR |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Radar risk-off | −17.4% | 359 | 0.98 | 1.36 | 58% | 49% | 81% | 68% | 16.5% |
+| Radar loud | −19.2% | 488 | 0.79 | 1.08 | 53% | 44% | 75% | 57% | 13.3% |
+| HY OAS top decile | −31.5% | 615 | 0.69 | 0.96 | 36% | 33% | 78% | 66% | 12.7% |
+| VIX ≥ 25 | −21.6% | 552 | 0.54 | 0.73 | 59% | 51% | 60% | 46% | 9.0% |
+| SPY | −33.7% | 488 | 0.64 | 0.91 | 0% | 0% | 100% | 100% | 14.8% |
+| RSP | −39.0% | 517 | 0.51 | 0.71 | 1% | 7% | 83% | 89% | 11.8% |
+| 60/40 SPY/IEF | −21.0% | 540 | 0.54 | 0.76 | 38% | 40% | 62% | 63% | 9.1% |
+| SPY-or-bills 200d | −18.1% | 497 | 0.71 | 0.96 | 54% | 47% | 69% | 48% | 11.7% |
+| SPY + bills, vol-matched to Radar loud (w = 0.66) | −23.3% | 383 | 0.64 | 0.91 | 36% | 36% | 69% | 69% | 11.1% |
+
+Read (in-sample, so an upper bound):
+- On the insurer profile, the shipped Radar's risk-off state is the strongest series in the
+  window. It roughly halves the ≥10% drawdowns and keeps about four fifths of the gains outside
+  declines.
+- It is closely matched by the plain SPY-or-bills 200-day rule: similar drawdown avoided, lower
+  gains kept.
+- Credit-spread velocity, the strongest pivot reader, is weak here. It flags early but switches
+  off inside declines and misses the 2022 drawdown's depth.
+- These figures were fitted on this window. The walk-forward version is what counts.
