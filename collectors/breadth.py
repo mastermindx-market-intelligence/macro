@@ -561,6 +561,24 @@ class BreadthAdapter(Adapter):
                 out["sector_breadth"] = sb
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("breadth sector split failed (%s) — market-wide only", e)
+        # Member-level breadth ledger (Historical Reconstruction Protocol §4.6 —
+        # keep recording forward): one row per member per night through the SAME
+        # member_rows() code path that builds the reconstructed history in
+        # engine/group_breadth_history.py, appended keep-FIRST per (date, ticker)
+        # by engine.member_breadth_ledger (lane/future/replay fenced there).
+        # S&P 500 adapter only — the midcap/smallcap/russell subclasses inherit
+        # fetch() and must not write this ledger — and never on a full-history
+        # rebuild. Never fatal: breadth itself must ship regardless.
+        try:
+            if self.name == "breadth" and not full_history and "sector" in members.columns:
+                from engine.group_breadth_history import member_rows
+                from engine.member_breadth_ledger import append_member_rows
+                membership = members[["symbol", "sector"]].rename(
+                    columns={"symbol": "ticker", "sector": "group"})
+                n = append_member_rows(member_rows(closes, membership))
+                log.info("breadth member ledger: %d row(s) appended", n)
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.warning("breadth member ledger failed (%s) — breadth outputs unaffected", e)
         # W2: up/down volume + points aggregate — accruing nightly into updown.parquet.
         # Volume comes from _volume_cache.parquet, a TRACKED committed store written
         # earlier in this same breadth run.  The try/except is a fail-soft for the case
