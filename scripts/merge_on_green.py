@@ -360,7 +360,7 @@ MAX_PULL_CAP = 128
 # Exhaustion keeps the affected inventory incomplete; it never clears a proof.
 COMMIT_FILE_PAGE_READ_CAP = 100
 # 87 measured + 58 for the job census: one queued-run list, up to
-# PHANTOM_QUEUED_READ_CAP phantom job reads, one in-progress-run list, and up to
+# PHANTOM_QUEUED_READ_CAP exact-run reads, one in-progress-run list, and up to
 # JOB_CENSUS_RUN_CAP job lists. Charge even on sweeps that skip it so the shrink
 # formula stays pessimistic.
 FULL_SWEEP_FIXED_REQUESTS = 145
@@ -465,23 +465,9 @@ ADAPTIVE_SERVED_RUNS_FULL_HEADROOM = 2
 ADAPTIVE_PICKUP_GRACE_SECONDS = 120
 ADAPTIVE_HOSTED_LABEL_PREFIXES = ("ubuntu-", "windows-", "macos-")
 ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
-# Phantom queued runs (2026-11-11).  A GitHub Actions incident (20:18-20:48Z) left
-# ci.yml runs whose status index says `queued` forever: no job was ever created,
-# `cancel` answers "cannot cancel a run that is completed", `force-cancel` 409s
-# with "has not been queued yet", rerun says "already running".  They will never
-# consume a runner, yet `in_flight_pr_proofs` counts them through `total_count`,
-# and the census's queued-run read reads them as pool refusal.  A `queued` run
-# older than PHANTOM_QUEUED_MIN_AGE_SECONDS whose job list is EMPTY is therefore
-# neither workload nor refusal evidence.  The bound equals ci.yml's 180-minute
-# run timeout: a genuine run superseded behind its per-PR concurrency group can
-# have zero jobs for that entire period and must remain real workload.
-# The classification is one bounded pass over the
-# queued list — at most PHANTOM_QUEUED_READ_CAP runs plus one job read each — and
-# ANY unclean read (HTTP error, malformed payload, a queued population larger
-# than the cap, a failed job read) returns None, which every caller reads as
-# "count every queued run", exactly the pre-2026-11-11 behaviour.  The cap is
-# itself saturation evidence: a healthy pool admits ci.yml runs within minutes,
-# so more than 16 queued ci.yml runs means the pool is refusing, not phantoms.
+# Age bounds the cost of checking stale queue-index entries. A job's timeout
+# starts after admission; an old workflow may still be waiting for its first job.
+# Only a completed matching run attempt proves that an indexed row has ended.
 PHANTOM_QUEUED_MIN_AGE_SECONDS = 180 * 60
 PHANTOM_QUEUED_READ_CAP = 16
 # Job-level admission (2026-11-11).  Run counts proved to be the wrong load
@@ -3116,7 +3102,9 @@ def is_sweep_candidate(pull: dict[str, Any]) -> bool:
     )
 
 
-def in_flight_pr_proofs(repo: str, token: str) -> int | None:
+def in_flight_pr_proofs(
+    repo: str, token: str, queued_pr_count: int | None = None
+) -> int | None:
     """Repo-wide active pull-request ``ci.yml`` runs, or ``None`` if unreadable.
 
     This is the controller's workload circuit breaker.  A per-sweep refresh cap
@@ -3129,12 +3117,14 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
     NEW ``update-branch`` work while continuing to judge and merge already-proven
     heads; an API blip must not be interpreted as an empty runner pool.
 
-    This count still includes incident phantom queued runs (zero jobs ever
-    created); the sweep subtracts them via :func:`classify_queued_ci_runs`
-    before using the number.
+    A classified queue supplies the PR subtotal from the same rows whose status
+    was checked. Otherwise keep GitHub's unfiltered queued count.
     """
     total = 0
     for run_status in ACTIVE_PR_PROOF_STATUSES:
+        if run_status == "queued" and queued_pr_count is not None:
+            total += queued_pr_count
+            continue
         query = urllib.parse.urlencode(
             {
                 "event": "pull_request",
@@ -3161,22 +3151,12 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
 
 @dataclass(frozen=True)
 class QueuedRunCensus:
-    """Classification of the queued ``ci.yml`` runs: real workload vs phantoms.
+    """Active and confirmed-terminal rows in one bounded queue snapshot."""
 
-    ``real_queued`` is refusal evidence for the hosted-pool census;
-    ``pull_request_phantoms`` is what the sweep subtracts from
-    :func:`in_flight_pr_proofs` (whose queued component is ``event=pull_request``
-    only).  ``None`` from the classifier means the read was unclean and every
-    queued run must be counted, exactly the pre-2026-11-11 behaviour.
-    """
-
-    #: Queued runs that are real workload: within the full run-timeout age bound,
-    #: or older with jobs already created.
     real_queued: int
-    #: Old queued runs GitHub never created a single job for (incident phantoms).
     phantoms: int
-    #: Phantoms among ``event=pull_request`` queued runs.
     pull_request_phantoms: int
+    real_pr_queued: int
 
 
 def classify_queued_ci_runs(
@@ -3184,14 +3164,8 @@ def classify_queued_ci_runs(
 ) -> QueuedRunCensus | None:
     """Split the queued ``ci.yml`` runs into real workload and phantom runs.
 
-    One read of the queued run list (``per_page=PHANTOM_QUEUED_READ_CAP``) plus
-    one ``per_page=1`` job read per listed run, so the cost is bounded by the
-    cap.  Any unclean read — an HTTP error, a malformed payload, a queued
-    population larger than the cap, a run without a usable id/age, or a job read
-    that fails to answer a clean ``total_count`` — returns ``None`` so callers
-    keep counting every queued run (today's behaviour).  A queued run younger
-    than ``PHANTOM_QUEUED_MIN_AGE_SECONDS`` is never verified and always counted:
-    ci.yml's per-PR concurrency group may leave it jobless up to the run timeout.
+    Recheck old entries using one direct run read each. Age alone never removes
+    workload. An unreadable or inconsistent snapshot keeps the raw queue count.
     """
     base = f"{GITHUB_API}/repos/{repo}/actions"
     query = urllib.parse.urlencode(
@@ -3206,7 +3180,8 @@ def classify_queued_ci_runs(
         return None
     current = now or dt.datetime.now(dt.timezone.utc)
     cutoff = current - dt.timedelta(seconds=PHANTOM_QUEUED_MIN_AGE_SECONDS)
-    real = phantoms = pr_phantoms = 0
+    real = phantoms = pr_phantoms = real_pr = 0
+    seen_ids: set[int] = set()
     for run in runs:
         if not isinstance(run, dict):
             return None
@@ -3216,27 +3191,40 @@ def classify_queued_ci_runs(
         if (
             not isinstance(run_id, int)
             or isinstance(run_id, bool)
+            or run_id <= 0
+            or run_id in seen_ids
             or created is None
             or not isinstance(event, str)
+            or not event
         ):
             return None
-        if created >= cutoff:
-            real += 1  # within the run-timeout bound: never excluded
-            continue
-        query = urllib.parse.urlencode({"filter": "latest", "per_page": "1"})
-        status, payload = _request(
-            "GET", f"{base}/runs/{run_id}/jobs?{query}", token
-        )
-        job_total = _clean_count(payload, "total_count") if status < 400 else None
-        if job_total is None:
-            return None
-        if job_total == 0:
-            phantoms += 1
-            if event == "pull_request":
-                pr_phantoms += 1
-        else:
-            real += 1
-    return QueuedRunCensus(real, phantoms, pr_phantoms)
+        seen_ids.add(run_id)
+        if created < cutoff:
+            attempt = _clean_count(run, "run_attempt")
+            head = run.get("head_sha")
+            if not attempt or not _is_full_sha(head):
+                return None
+            status, detail = _request("GET", f"{base}/runs/{run_id}", token)
+            if (
+                status != 200 or not isinstance(detail, dict)
+                or _clean_count(detail, "id") != run_id
+                or _clean_count(detail, "run_attempt") != attempt
+                or detail.get("head_sha") != head or detail.get("event") != event
+                or not isinstance(detail.get("status"), str)
+            ):
+                return None
+            if detail["status"] == "completed":
+                if detail.get("conclusion") not in (
+                    "success", "failure", "cancelled", "timed_out", "skipped",
+                    "neutral", "action_required", "stale", "startup_failure",
+                ):
+                    return None
+                phantoms += 1
+                pr_phantoms += event == "pull_request"
+                continue
+        real += 1
+        real_pr += event == "pull_request"
+    return QueuedRunCensus(real, phantoms, pr_phantoms, real_pr)
 
 
 @dataclass(frozen=True)
@@ -8785,32 +8773,26 @@ def main() -> int:
     # shared by those sweeps, so only the genuinely free repo-wide slots remain
     # available to `take_refresh`. An unreadable census means zero NEW workload, not
     # zero merging: already-proven heads continue through every correctness gate.
+    budget.refresh_lease = refresh_lease
+    # Read the unindexed owner before the queue. If it appears during the
+    # census, this sweep may reserve it twice but can never spend its slot.
+    reservation_count = refresh_lease_reservation_count(
+        repo, read_token, refresh_lease, pulls
+    )
     refresh_load_detail = ""
-    try:
-        active_pr_proofs = in_flight_pr_proofs(repo, read_token)
-    except Exception as exc:
-        active_pr_proofs = None
-        refresh_load_detail = f"census failed ({exc}); new refreshes paused"
-    # Incident phantoms (2026-11-11) sit in the `queued` status index forever
-    # with zero jobs ever created; they are not workload.  An unclean
-    # classification subtracts nothing — every queued run keeps counting, the
-    # pre-2026-11-11 behaviour — and never pauses the sweep by itself.
     try:
         queued_census = classify_queued_ci_runs(repo, read_token)
     except Exception:
         queued_census = None
-    phantom_pr_runs = (
-        queued_census.pull_request_phantoms if queued_census is not None else 0
-    )
-    budget.refresh_lease = refresh_lease
-    # A durable owner closes the update-branch -> Actions indexing gap. Count only
-    # the unindexed gap as an extra reservation: once an exact-current-head ci.yml
-    # run is visible, GitHub's active-run census already includes that workload.
-    reservation_count = refresh_lease_reservation_count(
-        repo, read_token, refresh_lease, pulls
-    )
+    try:
+        active_pr_proofs = in_flight_pr_proofs(
+            repo, read_token, queued_census.real_pr_queued if queued_census else None
+        )
+    except Exception as exc:
+        active_pr_proofs = None
+        refresh_load_detail = f"census failed ({exc}); new refreshes paused"
     effective_active_proofs = (
-        max(0, active_pr_proofs + reservation_count - phantom_pr_runs)
+        active_pr_proofs + reservation_count
         if active_pr_proofs is not None
         else None
     )
@@ -8827,6 +8809,7 @@ def main() -> int:
     job_level_path = False
     if (
         active_pr_proofs is not None
+        and queued_census is not None
         and refresh_lease.readable
         and budget.refresh_authorized
         and budget.max_refreshes > 0
@@ -8877,10 +8860,11 @@ def main() -> int:
             )
         else:
             job_census_detail = "hosted job count not read"
+        indexed_pr_proofs = active_pr_proofs + (queued_census.pull_request_phantoms if queued_census else 0)
         refresh_load_detail = (
-            f"{active_pr_proofs} indexed pull-request ci run(s)"
+            f"{indexed_pr_proofs} indexed pull-request ci run(s)"
             + (
-                f" ({phantom_pr_runs} phantom queued run(s) excluded, "
+                f" ({queued_census.pull_request_phantoms} phantom queued run(s) excluded, "
                 f"{effective_proofs} effective proof(s))"
                 if queued_census is not None
                 else ""
