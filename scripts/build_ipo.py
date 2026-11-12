@@ -267,9 +267,16 @@ HK_LEG_NOTE_ZH = {
     "inflow side supports issuance": "资金流入一侧支撑新股发行",
     "risk-on tape welcomes new issues": "风险偏好升温的盘面欢迎新股",
 }
-# missing-HK-leg plain disclosure (HIBOR is the only leg realistically absent keylessly)
+# Missing-input disclosure follows the existing engine keys, not a presumed missing feed.
 HK_MISSING_NOTE_EN = "Subscription-funding cost unavailable — this read excludes it."
 HK_MISSING_NOTE_ZH = "认购融资成本数据缺失 —— 本读数未纳入。"
+HK_MISSING_NOTES = {
+    "southbound": ("Southbound flow unavailable — this read excludes it.", "南向资金流数据缺失 —— 本读数未纳入。"),
+    "hibor": (HK_MISSING_NOTE_EN, HK_MISSING_NOTE_ZH),
+    "peg": ("HKD peg pressure unavailable — this read excludes it.", "港元联系汇率压力数据缺失 —— 本读数未纳入。"),
+    "risk": ("HK risk appetite unavailable — this read excludes it.", "香港风险偏好数据缺失 —— 本读数未纳入。"),
+}
+
 
 # ---- plain-word STANCE doctrine (glance-tier "so what do I do") -------------- #
 # Act / Get ready / Watch — don't chase / Protect gains / Stand aside / Ignore
@@ -487,6 +494,49 @@ def _lockup_vm() -> dict:
     return {"rows": out, "summary": il.summary(rows), "phase0": phase0, "raw": rows}
 
 
+def _hk_evidence(key: str, evidence: dict) -> tuple[str, str]:
+    """Localise the actual input window; no inferred freshness or trading calendar."""
+    dates = evidence.get("observation_dates") or []
+    count = evidence.get("observations", 0)
+    dated = evidence.get("dated_observations", 0)
+    en, zh = [], []
+    if key == "southbound":
+        en.append(f"{count} observations")
+        zh.append(f"{count}个观测值")
+        if dates and dates[0] and dates[-1]:
+            en.append(f"{dates[0]} to {dates[-1]}")
+            zh.append(f"{dates[0]}至{dates[-1]}")
+        if dated < count or not count:
+            en.append(f"dates available for {dated} of {count}")
+            zh.append(f"{count}个观测值中{dated}个有日期")
+        if dated == count and count > 1 and not evidence.get("dates_in_order"):
+            en.append("stored dates are duplicated or out of order")
+            zh.append("所存日期有重复或未按时间排序")
+    elif key in ("peg", "risk"):
+        stamp = evidence.get("snapshot_date")
+        en.append(f"Regime snapshot date: {stamp}" if stamp else "Regime snapshot date unavailable")
+        zh.append(f"市场状态快照日期：{stamp}" if stamp else "市场状态快照日期缺失")
+    else:
+        stamp = dates[-1] if dates else None
+        en.append(f"Observation: {stamp}" if stamp else "Observation date unavailable")
+        zh.append(f"观测日期：{stamp}" if stamp else "观测日期缺失")
+    trailing = evidence.get("trailing_missing", 0)
+    if trailing:
+        stamp = evidence.get("source_date")
+        en.append(f"source rows through {stamp}" if stamp else "source-row date unavailable")
+        zh.append(f"源数据行截至{stamp}" if stamp else "源数据行日期缺失")
+        en.append(f"{trailing} trailing rows have no reading")
+        zh.append(f"末尾{trailing}行没有读数")
+    if evidence.get("status") == "invalid_value":
+        en.append("invalid or non-finite reading; input excluded")
+        zh.append("读数无效或不是有限数值；本读数未纳入")
+    elif evidence.get("status") == "insufficient_history":
+        required = evidence.get("required", 20)
+        en.append(f"requires {required} observations; input excluded")
+        zh.append(f"需要{required}个观测值；本读数未纳入")
+    return "; ".join(en) + ".", "；".join(zh) + "。"
+
+
 def _hk_vm() -> dict:
     """Hong Kong IPO liquidity-backdrop view-model (Phase 3). Display-only."""
     try:
@@ -501,6 +551,7 @@ def _hk_vm() -> dict:
     except Exception:  # noqa: BLE001
         def tr(x):
             return x
+    coverage = b.get("coverage") or {}
     legs = []
     for l in b["legs"]:
         v = l["value"]
@@ -512,12 +563,14 @@ def _hk_vm() -> dict:
             vzh = vdisp
         else:                                   # peg / risk are text values → glossary
             vdisp, vzh = str(v), tr(str(v))
+        evidence_en, evidence_zh = _hk_evidence(l["key"], coverage.get(l["key"], {}))
         legs.append({
             "label": l["label"], "label_zh": HK_LEG_ZH.get(l["label"], l["label"]),
             "value": vdisp, "value_zh": vzh,
             "state": l["state"], "state_zh": STATE_ZH.get(l["state"], l["state"]),
             "color": STATE_COLOR.get(l["state"], C["muted"]),
             "note": l["note"], "note_zh": HK_LEG_NOTE_ZH.get(l["note"], l["note"]),
+            "evidence_en": evidence_en, "evidence_zh": evidence_zh,
         })
     st_en, st_zh = _window_stance("OPEN" if b["verdict"] == "receptive"
                                   else "SHUT" if b["verdict"] == "poor" else "MIXED")
@@ -530,9 +583,31 @@ def _hk_vm() -> dict:
            "missing_legs": b.get("missing_legs") or [],
            "stance_en": st_en, "stance_zh": st_zh,
            "note": b["note"], "note_zh": HK_NOTE_ZH}
+    count, expected = b.get("n_legs", len(legs)), b.get("n_expected", 4)
+    out["coverage_en"] = f"Input coverage: {count} of {expected}."
+    out["coverage_zh"] = f"数据覆盖：{expected}项中有{count}项。"
+    if out["low_confidence"]:
+        out["coverage_en"] += " Limited coverage."
+        out["coverage_zh"] += " 数据覆盖有限。"
+    out["excluded_evidence"] = []
+    for key in out["missing_legs"]:
+        evidence = coverage.get(key, {})
+        if evidence.get("status") in ("invalid_value", "insufficient_history"):
+            en, zh = _hk_evidence(key, evidence)
+            labels = {
+                "southbound": ("Southbound flow", "南向资金流"),
+                "hibor": ("Subscription funding", "认购融资成本"),
+                "peg": ("HKD peg pressure", "港元联系汇率压力"),
+                "risk": ("HK risk appetite", "香港风险偏好"),
+            }
+            label, label_zh = labels.get(key, ("Backdrop input", "发行背景数据"))
+            out["excluded_evidence"].append({"en": f"{label}: {en}", "zh": f"{label_zh}：{zh}"})
     if out["missing_legs"]:
-        out["missing_note_en"] = HK_MISSING_NOTE_EN
-        out["missing_note_zh"] = HK_MISSING_NOTE_ZH
+        notes = [HK_MISSING_NOTES.get(key, (
+            "A backdrop input is unavailable — this read excludes it.",
+            "一项发行背景数据缺失 —— 本读数未纳入。")) for key in out["missing_legs"]]
+        out["missing_note_en"] = " ".join(note[0] for note in notes)
+        out["missing_note_zh"] = " ".join(note[1] for note in notes)
     return out
 
 
