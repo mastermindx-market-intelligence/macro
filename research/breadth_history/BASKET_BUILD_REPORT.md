@@ -6,7 +6,7 @@ to any outcome on any period (no forward returns, hit rates or backtests).
 (`reconstructed_current_membership`), so every early value is a survivor-only
 sample: names that left a basket or stopped trading are absent throughout. 16 of
 49 baskets never reach 10 counted members and are missing on every date; of the
-33 that do, the median first valid date is 1994 and five themes only begin after
+33 that do, the median first valid date is 1994 and six themes only begin after
 2010. The companion sector history carries its own line: on its dated basis only
 46.5% of members carry a sector label at the end of 1996, and all 11 sectors are
 valid only from about 2010.
@@ -38,7 +38,7 @@ Same rules as the sectors: a member counts only with 200 sessions of its own
 history at both dates; a basket is valid only with 10 or more such members, else
 missing, not zero; no tuned threshold.
 
-**Overlap.** 254 of 702 names sit in more than one basket and count in each (one
+**Overlap.** 243 of the 664 priced names sit in more than one basket and count in each (one
 engine column per name-and-basket pair). The `us_sector_*` baskets overlap the
 themes heavily. Ranks across baskets are therefore not across independent groups.
 
@@ -71,7 +71,7 @@ The "never" baskets are small (under 10 priced names) or mostly young listings.
 - 38 of 702 names have no close in this capture and are absent: B, BNY, BTDR, CEG,
   COHR, COR, CRCL, CZR, DD, DELL, DOC, DOW, DRS, ECHO, EU, FI, FLY, GLXY, HUT, IBIT,
   LAC, MMC, MRNA, OKE, P, PATH, PL, PPTA, PSKY, Q, S, SGML, SNDK, SNOW, TEL, TLN,
-  UROY, VLTO. Most are renamed tickers or recent listings the capture did not cover.
+  UROY, VLTO. The cause (renamed ticker, recent listing or capture gap) is not checked here.
 - Duplicate-series scan (the same check as the sector build): no two basket
   tickers carry the same price series.
 - The roster includes non-company instruments where a basket lists them (IBIT

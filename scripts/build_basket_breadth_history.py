@@ -72,14 +72,14 @@ def build(closes_path: Path, membership_path: Path, out: Path, closes_label: str
     weekly.to_parquet(out / "basket_breadth_weekly_current.parquet", index=False, compression="zstd")
 
     unpriced = sorted(set(mem["ticker"]) - set(closes.columns))
-    multi = int((mem["ticker"].value_counts() > 1).sum())
+    multi = int((mem.loc[mem["ticker"].isin(closes.columns), "ticker"].value_counts() > 1).sum())
     valid = daily.dropna(subset=["pct_above_200"])
     first_valid = valid.groupby("group")["date"].min()
     last = daily[daily["date"] == daily["date"].max()]
     never = sorted(set(mem["group"]) - set(first_valid.index))
     sentence = (f"Only today's active basket members are present; {len(unpriced)} of "
                 f"{mem['ticker'].nunique()} names have no stored close and are absent "
-                f"({', '.join(unpriced)}). {multi} names sit in more than one basket and count in each. "
+                f"({', '.join(unpriced)}). {multi} priced names sit in more than one basket and count in each. "
                 f"{len(never)} of {mem['group'].nunique()} baskets never reach {gbh.MIN_MEMBERS} members "
                 f"with a 200-session history and are missing throughout ({', '.join(never)}).")
     if len(dup_pairs):
