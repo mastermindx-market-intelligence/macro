@@ -104,6 +104,18 @@ from lib import growth_registry  # noqa: E402
 from app.observability import init_sentry  # noqa: E402
 from app.live_status_projection import flow_pulse_fields, intraday_quotes_fields  # noqa: E402
 
+# The opt-in Portfolio brief snapshot witness (portfolio_snapshot_witness.v1).
+# Pure stdlib, no app import cycle: it owns the capture/validation/projection
+# and the endpoint above owns only the wiring.
+from app.portfolio_brief_context import (  # noqa: E402
+    SnapshotUnavailable,
+    build_witness,
+    capture_snapshot,
+    composer_inputs,
+    snapshot_header_unsupported,
+    snapshot_requested,
+)
+
 init_sentry("macro-api")
 
 REPO = Path(os.environ.get("MACRO_REPO", "/opt/macro"))
@@ -2141,8 +2153,24 @@ def _portfolio_load_holdings(uid: str) -> tuple[list[dict], str]:
     return rows, "watchlist_union"
 
 
+def _portfolio_load_ctx(ctx_path: Path) -> dict:
+    """Read the nightly portfolio_ctx.v1 artifact from disk.
+
+    Same contract for both response modes: a missing or corrupt artifact is
+    503 {error:ctx_unavailable}, never an empty brief.
+    """
+    try:
+        ctx = json.loads(ctx_path.read_text(encoding="utf-8"))
+        if not isinstance(ctx, dict):
+            raise ValueError("ctx not an object")
+    except Exception:  # noqa: BLE001
+        raise HTTPException(503, detail={"error": "ctx_unavailable"}) from None
+    return ctx
+
+
 @app.get("/api/portfolio/brief")
-def portfolio_brief(response: Response, user: dict = Depends(require_user)):
+def portfolio_brief(response: Response, user: dict = Depends(require_user),
+                    x_mastermind_portfolio_context: str | None = Header(default=None)):
     """Pro-only personalized daily portfolio brief (portfolio_brief.v2).
 
     401 (require_user) → not signed in. 403 {error:pro_required,tier} → not Pro.
@@ -2150,6 +2178,15 @@ def portfolio_brief(response: Response, user: dict = Depends(require_user)):
     503 {error:portfolio_store_unavailable} → private holdings did not answer.
     Cache: in-process per (uid, ctx-file-mtime, holdings fingerprint), TTL 300s;
     Cache-Control private,no-store.
+
+    Opt-in witness: a request carrying `X-Mastermind-Portfolio-Context: snapshot-v1`
+    ALSO receives `portfolio_context` (portfolio_snapshot_witness.v1). In that
+    mode ONE complete, count-proved, owner-filtered positions read supplies both
+    the rows the composer is called with and the witness that describes them.
+    Bound mode bypasses the legacy cache entirely — it neither reads it nor
+    writes it — so a fresh witness can never be stamped onto a stale cached
+    brief, and a cached brief is never mutated. An ordinary request (no header)
+    keeps the exact legacy loader, cache and response behaviour.
     """
     from datetime import date as _date  # noqa: PLC0415
     response.headers["Cache-Control"] = "private, no-store"
@@ -2164,12 +2201,48 @@ def portfolio_brief(response: Response, user: dict = Depends(require_user)):
     if not entitled:
         raise HTTPException(403, detail={"error": "pro_required", "tier": tier})
 
+    # The opt-in header selects a RESPONSE CONTRACT; it grants no authority.
+    # An unsupported version is told, not quietly answered with an ordinary
+    # response the caller would read as a witness.
+    if snapshot_header_unsupported(x_mastermind_portfolio_context):
+        raise HTTPException(400, detail={"error": "unsupported_portfolio_context"})
+    bound = snapshot_requested(x_mastermind_portfolio_context)
+
     # ctx artifact from disk (same idiom the gateway uses for site/ artifacts).
     ctx_path = REPO / _PORTFOLIO_CTX_PATH
     try:
         mtime = ctx_path.stat().st_mtime
     except OSError:
         raise HTTPException(503, detail={"error": "ctx_unavailable"}) from None
+
+    if bound:
+        # ── Bound (snapshot-v1) mode ────────────────────────────────────────
+        # One complete, count-proved, owner-filtered read supplies BOTH the
+        # composer rows and the witness. There is no second positions read, no
+        # legacy loader call and no cache lookup on this path.
+        ctx = _portfolio_load_ctx(ctx_path)
+        try:
+            from engine.portfolio_brief import compose_brief  # noqa: PLC0415
+        except ImportError as exc:
+            log.warning("portfolio_brief module unavailable (%s)", exc)
+            raise HTTPException(503, "portfolio brief unavailable") from exc
+        try:
+            snapshot = capture_snapshot(uid)
+        except SnapshotUnavailable as exc:
+            # An unknown book is NOT an empty book. Fail closed with the
+            # reason rather than compose a brief from an unproven capture.
+            raise HTTPException(
+                503,
+                detail={"error": "portfolio_snapshot_unavailable", "reason": exc.reason},
+            ) from None
+        today = _date.today().isoformat()
+        generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+        brief = compose_brief(ctx, composer_inputs(snapshot), today, generated_at,
+                              population=snapshot.population)
+        # The witness rides ALONGSIDE the brief; it never replaces it and never
+        # enters the cache.
+        brief["portfolio_context"] = build_witness(snapshot)
+        return brief
 
     # Holdings first: the population they carry is part of the cache key (see
     # _holdings_fingerprint), so the lookup cannot happen before the load.
@@ -2190,12 +2263,7 @@ def portfolio_brief(response: Response, user: dict = Depends(require_user)):
     if hit and hit[1] > now:
         return hit[0]
 
-    try:
-        ctx = json.loads(ctx_path.read_text(encoding="utf-8"))
-        if not isinstance(ctx, dict):
-            raise ValueError("ctx not an object")
-    except Exception:  # noqa: BLE001
-        raise HTTPException(503, detail={"error": "ctx_unavailable"}) from None
+    ctx = _portfolio_load_ctx(ctx_path)
 
     try:
         from engine.portfolio_brief import compose_brief  # noqa: PLC0415
