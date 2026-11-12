@@ -2427,63 +2427,20 @@ body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);
  position:relative;isolation:isolate;overflow-x:hidden}
 .wrap{width:100%;max-width:1180px;display:flex;flex-direction:column}
 @media(min-width:1600px){.wrap{max-width:1360px}}
-.hub-top{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:10px}
-.hub-signin{background:none;border:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;padding:4px 2px;border-radius:6px;transition:color .14s ease}
-.hub-signin:hover{color:var(--text)}
-.hub-signin .l-zh{display:none}
-html[data-lang="zh"] .hub-signin .l-en{display:none}
-html[data-lang="zh"] .hub-signin .l-zh{display:inline}
-.h{text-align:center;margin:6px 0 22px;position:relative;isolation:isolate}
-.hub-page .h,.hub-page .globe-deck{
- transition:opacity .18s ease,transform .22s cubic-bezier(.2,.82,.2,1),filter .18s ease}
-/* The global nav search is intentionally an overlay. On the hub, gently yield
-   the duplicate hero/globe layer while it is open so the result panel reads as
-   a focused command surface rather than an accidental collision. */
-.hub-page.nav-search-focus .h{opacity:.12;transform:translateY(5px) scale(.992);filter:saturate(.72)}
-.hub-page.nav-search-focus .globe-deck{opacity:.58;filter:saturate(.68)}
+.h{text-align:center;margin:26px 0 6px;position:relative}
+.hub-kicker{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 13px;
+ font:600 var(--fs-label)/1.4 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.hub-kicker::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--info);box-shadow:0 0 12px color-mix(in srgb,var(--info) 30%,transparent)}
+.h h1{font-size:clamp(34px,4.3vw,60px);font-weight:700;letter-spacing:-.045em;line-height:1.08;margin:0 0 14px;color:var(--text);text-wrap:balance}
+html[data-lang="zh"] .h h1{letter-spacing:.02em}
+.h p{font-size:var(--fs-md);line-height:1.65;color:var(--muted);margin:0 auto;max-width:600px;text-wrap:balance}
 .hub-snapshot-meta{display:flex;justify-content:center;align-items:center;margin-top:14px}
-.hub-snapshot-meta .eyebrow{margin-bottom:0}
-.hub-clock-wrap{display:inline-flex;align-items:center;gap:.35em;min-height:1em}
-.hub-clock-skel{display:inline-block;width:18ch;height:.85em;vertical-align:-.1em}
-.hub-clock-wrap:not(.is-live) .hub-clock-live{display:none}
-.hub-clock-wrap.is-live .hub-clock-skel,.hub-clock-wrap.is-live .hub-clock-static{display:none}
-.hub-clock-wrap.no-clock .hub-clock-skel,.hub-clock-wrap.no-clock .hub-clock-live{display:none}
-@media(scripting:none){.hub-clock-skel{display:none}}
+.hub-snapshot-meta .eyebrow{display:inline-flex;align-items:center;gap:6px;font:500 var(--fs-micro)/1.4 var(--font-mono);letter-spacing:.08em;color:var(--muted)}
+.snapshot-dot{width:5px;height:5px;border-radius:50%;background:var(--muted)}
+.hub-page .h,.hub-page .globe-deck{transition:opacity .18s ease}
+.hub-page.nav-search-focus .h{opacity:.2}
+.hub-page.nav-search-focus .globe-deck{opacity:.5}
 .chips .pill[data-tip-en]{cursor:help}
-/* a soft, feathered radial --bg scrim sits BEHIND the hero text (own stacking
-   context via isolation) so the bright sun/moon disc never washes the headline
-   out. Radial + fully transparent edges = no hard rectangular line across the body. */
-.h::before{content:'';position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);z-index:-1;pointer-events:none;
- width:min(720px,94%);height:128%;
- background:radial-gradient(58% 54% at 50% 50%,color-mix(in srgb,var(--bg) 74%,transparent),color-mix(in srgb,var(--bg) 32%,transparent) 52%,transparent 76%)}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--muted);
- background:color-mix(in srgb,var(--panel) 64%,transparent);border:1px solid var(--line);padding:6px 14px;border-radius:999px;
- margin-bottom:14px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.eyebrow .snapshot-dot{width:7px;height:7px;border-radius:50%;background:var(--info)}
-.h h1{font-size:clamp(31px,4.6vw,48px);font-weight:800;letter-spacing:-.035em;line-height:1.04;margin:0 0 10px;
- background:linear-gradient(176deg,var(--text) 24%,color-mix(in srgb,var(--text) 56%,var(--muted)));
- -webkit-background-clip:text;background-clip:text;color:transparent;
- /* legibility over the disc comes from BOTH the soft radial scrim on .h::before AND
-    this multi-layer --bg glyph halo — belt and braces, no hard scrim edge */
- filter:drop-shadow(0 1px 1px var(--bg)) drop-shadow(0 0 12px var(--bg)) drop-shadow(0 0 26px var(--bg)) drop-shadow(0 0 46px var(--bg))}
-html[data-lang="zh"] .h h1{letter-spacing:0}
-/* ===== brand lockup — the crafted Mastermind “M” glyph + the MASTERMIND wordmark,
-   standing in for the old plain-text title. The container drops the gradient-text
-   treatment (it would clip the SVG); the wordmark span keeps it. ===== */
-/* display:flex (block-level), NOT inline-flex — the preceding .eyebrow is itself
-   inline-flex, so an inline-flex h1 would share its line and sit off-centre. A
-   block-level flex takes its own line and centres the glyph+wordmark via justify. */
-.h h1.hub-logo{display:flex;align-items:center;justify-content:center;gap:clamp(12px,1.7vw,19px);
- background:none;-webkit-text-fill-color:currentColor;color:var(--text);filter:none}
-.h h1.hub-logo .brand-glyph{width:clamp(48px,6.4vw,66px);height:clamp(48px,6.4vw,66px);flex:none;
- filter:drop-shadow(0 6px 18px rgba(40,56,128,.42)) drop-shadow(0 1px 2px var(--bg)) drop-shadow(0 0 18px var(--bg)) drop-shadow(0 0 34px var(--bg))}
-.h h1.hub-logo .logo-word{font-family:var(--font-ui);font-weight:900;letter-spacing:.015em;-webkit-text-fill-color:transparent;
- background:linear-gradient(176deg,var(--text) 24%,color-mix(in srgb,var(--text) 56%,var(--muted)));
- -webkit-background-clip:text;background-clip:text;color:transparent;
- filter:drop-shadow(0 1px 1px var(--bg)) drop-shadow(0 0 12px var(--bg)) drop-shadow(0 0 26px var(--bg)) drop-shadow(0 0 46px var(--bg))}
-@media(max-width:520px){.h h1.hub-logo{gap:11px}.h h1.hub-logo .brand-glyph{width:44px;height:44px}}
-.h p{color:color-mix(in srgb,var(--text) 72%,var(--muted));font-size:clamp(14px,2vw,16px);margin:0 auto;max-width:548px;line-height:1.55;text-wrap:balance;
- text-shadow:0 1px 2px var(--bg),0 0 8px var(--bg),0 0 18px var(--bg),0 0 30px var(--bg)}
 
 /* ===== glass + accent primitives ===== */
 .glass{position:relative;border-radius:16px;overflow:hidden;isolation:isolate;
@@ -2497,9 +2454,6 @@ html[data-theme="light"] .glass{background:color-mix(in srgb,var(--panel) 90%,tr
 /* one radius for every glass surface on the hub — out-specifies theme.css's
    `html body .card{border-radius:12px}` so cards match the clock, alerts + tooltip */
 .wrap .glass{border-radius:16px}
-.acc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;z-index:2;
- background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 22%,transparent));
- transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.2,.7,.3,1)}
 .acc::after{content:'';position:absolute;inset:0;z-index:-1;opacity:0;
  background:radial-gradient(360px 180px at 100% 0%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 68%);transition:opacity .25s ease}
 
@@ -2726,8 +2680,6 @@ a:focus-visible,.links a:focus-visible,.ha-item summary:focus-visible{outline:2p
 .gd-isl .body::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
  background:linear-gradient(140deg,rgba(255,255,255,.62),rgba(255,255,255,.06) 40%,rgba(0,0,0,.16));
  -webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);-webkit-mask-composite:xor;mask-composite:exclude;padding:1px;opacity:.95}
-.gd-isl .body::after{content:'';position:absolute;left:16%;right:16%;bottom:-.5px;height:2.5px;border-radius:2px;
- background:var(--qc);box-shadow:0 0 10px var(--qc),0 0 3px var(--qc);opacity:calc(.35 + .65*var(--f,1))}
 .gd-isl .body:hover,.gd-isl .body:focus-visible{outline:none;border-color:color-mix(in srgb,var(--qc) 62%,var(--line));
  box-shadow:inset 0 1px 0 rgba(255,255,255,.66),inset 0 -9px 15px rgba(0,0,0,.32),0 14px 30px -10px rgba(0,0,0,.72),0 7px 22px -6px color-mix(in srgb,var(--qc) 62%,transparent)}
 .gd-isl.sel .body{border-color:color-mix(in srgb,var(--qc) 70%,var(--line))}
@@ -2811,119 +2763,6 @@ html.soft-contrast[data-theme="dark"]{--bg:#0d1018;--panel:#151820;--panel2:#1b1
 .gd-mini-risk{font-size:11.5px;font-weight:600;color:var(--muted);flex:none}
 @media (prefers-reduced-motion: reduce){.gd-tip{transition:none}}
 
-/* ===== sidebar clock ===== */
-.gd-clock{display:flex;flex-direction:column;padding:14px 14px 12px;min-width:0;max-width:100%}
-.gd-clock>header{font-size:12px;font-weight:800;color:var(--text);letter-spacing:-.01em;margin:0 2px 11px;display:flex;gap:6px;align-items:baseline}
-.gd-clock>header .gd-utc{color:var(--muted);font-variant-numeric:tabular-nums;font-weight:600}
-.gd-clock ul{list-style:none;margin:0;padding:0;flex:1;display:flex;flex-direction:column;gap:3px}
-.gd-row{display:flex;align-items:center;gap:10px;padding:7px 9px;border-radius:10px;border:1px solid transparent;cursor:pointer;transition:background .14s,border-color .14s}
-.gd-row:hover,.gd-row.sel{background:color-mix(in srgb,var(--info) 7%,var(--panel2));border-color:color-mix(in srgb,var(--info) 22%,var(--line))}
-.gd-row:focus-visible{outline:2px solid var(--link);outline-offset:1px}
-.gd-r-sm{width:26px;flex:none}
-.gd-sm{width:26px;height:16px;display:block}
-.gd-r-main{flex:1;display:flex;flex-direction:column;min-width:0;gap:1px}
-.gd-r-idx{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gd-r-px{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.gd-r-px em{font-style:normal;font-weight:700}
-.gd-r-state{display:flex;flex-direction:column;align-items:flex-end;gap:2px;text-align:right;flex:none}
-.gd-r-stat{display:flex;align-items:center;gap:6px}
-.gd-r-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex:none}
-.gd-r-dot.on{background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 22%,transparent)}
-.gd-r-dot.off{background:var(--muted)} .gd-r-dot.lunch{background:var(--warn)}
-.gd-r-txt{font-size:11px;font-weight:700;color:var(--text)}
-.gd-r-cd{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.gd-asof,.gd-foot{font-size:10px;color:var(--muted);margin:8px 2px 0;line-height:1.4}
-.gd-clock .l-zh{display:none} html[data-lang="zh"] .gd-clock .l-en{display:none} html[data-lang="zh"] .gd-clock .l-zh{display:inline}
-.gd-r-cd .l-zh,.gd-r-txt .l-zh{display:none} html[data-lang="zh"] .gd-r-cd .l-en,html[data-lang="zh"] .gd-r-txt .l-en{display:none}
-html[data-lang="zh"] .gd-r-cd .l-zh,html[data-lang="zh"] .gd-r-txt .l-zh{display:inline}
-
-/* ===== celestial day/night backdrop (sky.js) =====
-   #sky floats at z-index:-1 — ABOVE the ambient aurora (body::before, also -1
-   but earlier in tree order) and BEHIND all page content. Sun parks on a
-   time-of-day arc in light mode; a breathing starfield + moon take over in dark. */
-#sky{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;--cs:clamp(120px,13vw,214px)}
-@media(max-width:560px){#sky{--cs:clamp(92px,26vw,124px)}}  /* smaller disc on phones so it stays fully on-screen */
-#sky-stars{position:absolute;inset:0;width:100%;height:100%;display:block}
-#sky-sun,#sky-moon{position:absolute;width:var(--cs);height:var(--cs);border-radius:50%;
- transform:translate(-50%,calc(-50% + 80vh));opacity:0;
- transition:transform 1.7s cubic-bezier(.16,.78,.29,1),opacity 1.25s ease}
-#sky[data-sky="day"] #sky-sun{transform:translate(-50%,-50%);opacity:1}
-#sky[data-sky="night"] #sky-moon{transform:translate(-50%,-50%);opacity:1}
-/* sun — a luminous light source: white-hot core, warm body, big soft bloom + a
-   faint blurred corona flare (no hard cartoon spokes) */
-#sky-sun{background:radial-gradient(circle at 50% 50%,#fffdf7 0%,#fff2cc 20%,#ffd87f 40%,#ffb84d 58%,rgba(255,156,54,.34) 76%,transparent 84%);
- box-shadow:0 0 46px 6px rgba(255,226,150,.6),0 0 110px 28px rgba(255,192,92,.38),0 0 220px 86px rgba(255,170,68,.18),0 0 360px 160px rgba(255,160,60,.08)}
-#sky-sun::before{content:'';position:absolute;inset:-46%;border-radius:50%;filter:blur(11px);opacity:.5;
- background:repeating-conic-gradient(from 0deg,rgba(255,222,150,.16) 0deg 7deg,transparent 7deg 22deg);
- -webkit-mask:radial-gradient(circle,transparent 46%,#000 62%,transparent 92%);mask:radial-gradient(circle,transparent 46%,#000 62%,transparent 92%);
- animation:sky-spin 90s linear infinite}
-#sky-sun::after{content:'';position:absolute;inset:12%;border-radius:50%;mix-blend-mode:screen;
- background:radial-gradient(circle at 44% 40%,rgba(255,255,255,.95) 0%,rgba(255,247,214,.25) 42%,transparent 62%);
- animation:sky-breathe 6.5s ease-in-out infinite}
-/* ===== light mode: dim the sun ~45% so text stays legible ===== */
-html[data-theme="light"] #sky-sun{box-shadow:0 0 22px 3px rgba(255,210,100,.28),0 0 52px 10px rgba(255,180,70,.16),0 0 110px 36px rgba(255,160,60,.08),0 0 180px 64px rgba(255,150,50,.04)}
-html[data-theme="light"] #sky-sun::before{opacity:.2}
-html[data-theme="light"] #sky-sun::after{opacity:.55}
-/* moon — a 3-D shaded sphere: soft terminator, faint craters, cool halo */
-#sky-moon{background:radial-gradient(circle at 34% 28%,#ffffff 0%,#eef2fb 26%,#cdd8ee 58%,#9fafcf 100%);
- box-shadow:inset -24px -20px 50px rgba(16,26,54,.58),inset 12px 9px 24px rgba(255,255,255,.42),0 0 56px 10px rgba(150,182,242,.3),0 0 160px 60px rgba(120,162,232,.15)}
-#sky-moon::before{content:'';position:absolute;inset:0;border-radius:50%;opacity:.3;
- background:radial-gradient(circle at 63% 31%,rgba(116,132,166,.6) 0 5%,transparent 6%),
-  radial-gradient(circle at 39% 58%,rgba(116,132,166,.5) 0 3.6%,transparent 4.6%),
-  radial-gradient(circle at 71% 64%,rgba(116,132,166,.45) 0 2.6%,transparent 3.6%),
-  radial-gradient(circle at 30% 37%,rgba(116,132,166,.4) 0 2%,transparent 3%),
-  radial-gradient(circle at 52% 72%,rgba(116,132,166,.4) 0 2.4%,transparent 3.4%)}
-#sky-moon::after{content:'';position:absolute;inset:-30%;border-radius:50%;
- background:radial-gradient(circle,rgba(150,182,242,.16) 0%,transparent 62%);
- animation:sky-breathe 7.5s ease-in-out infinite}
-@keyframes sky-spin{to{transform:rotate(360deg)}}
-@keyframes sky-breathe{0%,100%{opacity:.6}50%{opacity:.95}}
-/* ===== orbital satellite (sky.js) — DARK MODE ONLY =====
-   Orbits the globe in a tilted 3-D ellipse; sky.js drives transform/opacity each
-   frame. Lives in #sky so it sits in front of the moon but behind the page (the
-   "earth") — reading as a true orbit between earth and moon. */
-#sky-sat{position:absolute;left:0;top:0;width:var(--satw,118px);opacity:0;
- transform-origin:50% 50%;will-change:transform,opacity;pointer-events:none;
- filter:drop-shadow(0 0 7px rgba(150,185,255,.35))}
-#sky-sat svg{display:block;width:100%;height:auto;overflow:visible}
-#sky[data-sky="day"] #sky-sat{opacity:0!important}
-@media(max-width:560px){#sky-sat{--satw:78px}#sky-sat .sat-fine{display:none}}  /* smaller, simpler silhouette on phones */
-/* headline legibility over the sun/moon is handled by a soft --bg glyph halo on
-   the text itself (see .h h1 / .h p) — no backdrop scrim, so nothing draws an
-   edge across the celestial body */
-.h{position:relative}
-@media (prefers-reduced-motion: reduce){
- #sky-sun,#sky-moon{transition:none}
- #sky-sun::before,#sky-sun::after,#sky-moon::after{animation:none}}
-/* market clock — live index level (.nb-px) + % change (.nb-chg) patched in place
-   by live.js; theme the change color (live.js ships a generic green/red) */
-.gd-clock .nb-chg.up{color:var(--up)}
-.gd-clock .nb-chg.down{color:var(--down)}
-.gd-clock .nb-chg.stale{color:var(--muted)}
-
-/* ===== scroll CTA pill ===== */
-@keyframes gd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@keyframes gd-halo-glow{0%,100%{opacity:0.7}50%{opacity:1}}
-@keyframes gd-chev-drift{0%,100%{transform:translateY(0);opacity:.95}50%{transform:translateY(3.5px);opacity:.4}}
-.gd-cta{display:flex;justify-content:center;margin:6px 0 2px;padding-bottom:26px}
-.gd-scroll{position:relative;display:inline-flex;align-items:center;gap:11px;padding:14px 28px 14px 30px;border-radius:999px;border:none;cursor:pointer;font-family:inherit;font-size:14.5px;font-weight:700;letter-spacing:.015em;color:var(--text);background:color-mix(in srgb,var(--panel2) 90%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 30px -12px rgba(0,0,0,.6);animation:gd-float 5.6s cubic-bezier(.37,0,.63,1) infinite;transition:box-shadow .45s ease;overflow:visible}
-.gd-scroll::before{content:'';position:absolute;inset:-1px;border-radius:999px;background:linear-gradient(135deg,var(--info),#7c5cff);-webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);-webkit-mask-composite:xor;mask-composite:exclude;padding:1px;pointer-events:none}
-.gd-scroll::after{content:'';position:absolute;inset:-10px;border-radius:999px;background:radial-gradient(closest-side,color-mix(in srgb,var(--info) 22%,transparent),transparent 70%);z-index:-1;opacity:0.7;animation:gd-halo-glow 5.6s cubic-bezier(.37,0,.63,1) infinite;pointer-events:none}
-.gd-scroll-chev{position:relative;width:16px;height:18px;overflow:hidden}
-.gd-scroll-chev svg{position:absolute;left:0}
-.gd-scroll-chev svg:first-child{top:0;animation:gd-chev-drift 2.6s cubic-bezier(.45,0,.55,1) infinite}
-.gd-scroll-chev svg:last-child{top:8px;animation:gd-chev-drift 2.6s cubic-bezier(.45,0,.55,1) infinite;animation-delay:-1.3s}
-.gd-scroll:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 16px 40px -12px rgba(0,0,0,.68)}
-.gd-scroll:active{filter:brightness(1.08)}
-.gd-scroll:hover::after{opacity:1;animation:none}
-.gd-scroll:hover .gd-scroll-chev svg{animation-duration:.9s}
-.gd-scroll:active{transform:scale(1.02)}
-.gd-scroll:focus-visible{outline:2px solid var(--link);outline-offset:2px}
-.gd-scroll .l-zh{display:none}
-html[data-lang="zh"] .gd-scroll .l-en{display:none}
-html[data-lang="zh"] .gd-scroll .l-zh{display:inline}
-html[data-theme="light"] .gd-scroll{background:color-mix(in srgb,var(--panel) 62%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 22px -12px rgba(28,40,64,.3)}
-
 /* ===== mobile segmented toggle ===== */
 .hub-seg{display:none}
 @media(max-width:560px){
@@ -2976,66 +2815,78 @@ html[data-lang="zh"] .hub-seg .l-zh{display:inline}
 .rep-latest{font-size:11px;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:32ch;display:block;margin-top:2px}
 .ipo-line{font-size:11px;opacity:.82;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;margin-top:2px}
 
-/* ===== personal welcome — a thought suspended above the globe.
-   The neutral radial veil gives the words enough separation to read as glass without
-   becoming a card, console, or chat bubble. Greeting + brand share one grid cell so
-   the handoff never shifts the globe. Decorative (aria-hidden); brand stays accessible. ===== */
-.hub-hero-stack{display:grid;isolation:isolate}
-.hub-hero-stack>.hub-greet,.hub-hero-stack>.hub-brand{grid-area:1/1}
-.hub-brand{transition:opacity .82s ease,transform .82s cubic-bezier(.2,.75,.25,1)}
-.hub-greet{display:flex;align-items:center;justify-content:center;min-height:clamp(122px,15vw,158px);
- opacity:0;pointer-events:none;transform:translateY(-6px) scale(.99);
- transition:opacity .62s ease,transform .8s cubic-bezier(.2,.75,.25,1)}
-.h.greet-run .hub-greet{opacity:1;transform:none}
-.h.greet-run .hub-brand{opacity:0;transform:translateY(9px) scale(.99)}
-.hub-intel-shell{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;
- width:min(820px,calc(100vw - 40px));min-height:clamp(112px,13vw,140px);padding:22px clamp(26px,6vw,72px)}
-.hub-intel-shell::before{content:"";position:absolute;z-index:-1;inset:-24px -56px;
- background:radial-gradient(ellipse at center,
-  color-mix(in srgb,var(--panel) 82%,transparent) 0,
-  color-mix(in srgb,var(--panel) 56%,transparent) 40%,
-  color-mix(in srgb,var(--panel) 22%,transparent) 63%,transparent 78%);
- -webkit-backdrop-filter:blur(18px) saturate(1.04);backdrop-filter:blur(18px) saturate(1.04);
- -webkit-mask-image:radial-gradient(ellipse at center,#000 27%,rgba(0,0,0,.84) 48%,transparent 77%);
- mask-image:radial-gradient(ellipse at center,#000 27%,rgba(0,0,0,.84) 48%,transparent 77%);
- opacity:.68;transform:scale(.94);transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.75,.25,1);
- filter:drop-shadow(0 18px 26px color-mix(in srgb,var(--text) 9%,transparent))}
-.h.greet-run .hub-intel-shell::before{opacity:.92;transform:scale(1)}
-.hub-greet.is-speaking .hub-intel-shell::before{opacity:1}
-.hub-greet.is-thinking .hub-intel-shell::before{opacity:.72}
-.hub-intel-message{display:flex;align-items:center;justify-content:center;gap:5px;min-height:78px;width:100%}
-.hub-greet .greet-tx{font-family:var(--font-ui);font-weight:820;letter-spacing:-.018em;line-height:1.07;text-align:center;
- font-size:clamp(29px,4.5vw,48px);text-wrap:balance;transition:opacity .32s ease;
- color:var(--text);text-shadow:0 1px 1px var(--bg),0 10px 34px color-mix(in srgb,var(--text) 14%,transparent)}
-.hub-greet .greet-caret{width:2px;height:clamp(27px,4vw,40px);flex:none;border-radius:2px;transform:translateY(3px);
- background:color-mix(in srgb,var(--text) 72%,transparent);box-shadow:0 0 10px color-mix(in srgb,var(--text) 22%,transparent);
- animation:greetCaret 1.05s steps(1) infinite}
-.hub-greet.convo .greet-tx{font-size:clamp(19px,2.45vw,28px);font-weight:620;letter-spacing:-.008em;line-height:1.33;
- max-width:min(33ch,calc(100vw - 108px))}
-html[data-lang="zh"] .hub-greet.convo .greet-tx{max-width:min(20em,calc(100vw - 108px));letter-spacing:.01em;line-height:1.42}
-.hub-greet.convo .greet-caret{display:none}
-.hub-greet.convo .greet-tx::after{content:"";display:inline-block;width:2px;height:1.02em;margin-left:4px;transform:translateY(3px);
- border-radius:1px;background:color-mix(in srgb,var(--text) 72%,transparent);
- box-shadow:0 0 8px color-mix(in srgb,var(--text) 22%,transparent);animation:greetCaret 1.05s steps(1) infinite}
-@keyframes greetCaret{0%,49%{opacity:1}50%,100%{opacity:0}}
+/* ===== globe-led Home, inside or outside the shared shell ===== */
+#sky[data-sky-mode="quiet"]{display:none}
+.hub-page::before{opacity:.22}
+.globe-deck{gap:0;margin-bottom:32px}
+.gd-topline{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 0 0;color:var(--muted);font-size:var(--fs-label)}
+.gd-topline h2{font:500 var(--fs-label)/1.5 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--muted)}
+.gd-stage{height:clamp(360px,54svh,590px);min-height:0;isolation:isolate;overflow:hidden;width:100%;contain:layout}
+.gd-stage::before{content:'';position:absolute;inset:4% 14%;z-index:-1;pointer-events:none;
+ background:radial-gradient(ellipse at 50% 58%,color-mix(in srgb,var(--info) 8%,transparent),transparent 67%)}
+.gd-stage::after{content:'';position:absolute;bottom:3%;left:30%;right:30%;height:10%;z-index:-1;pointer-events:none;
+ background:radial-gradient(ellipse,color-mix(in srgb,var(--text) 6%,transparent),transparent 68%)}
+.gd-canvas{position:absolute;inset:0;max-width:100%;height:100%}
+.gd-controls{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px;margin:4px 0 22px}
+.gd-control-group{display:flex;gap:4px;align-items:center;padding:4px;background:color-mix(in srgb,var(--panel) 70%,transparent);border:1px solid var(--line);border-radius:var(--r-btn,10px)}
+.gd-controls button,.gd-retry{min-height:36px;padding:8px 12px;border:1px solid transparent;border-radius:var(--r-ctl,8px);font:500 var(--fs-sm)/1.2 var(--font-ui);color:var(--muted);background:transparent;cursor:pointer;transition:background .18s ease,color .18s ease}
+.gd-controls button:hover,.gd-controls button[aria-pressed="true"],.gd-retry:hover{color:var(--text);background:var(--panel2)}
+.gd-controls button:disabled{opacity:.45;cursor:default}
+.gd-controls button[data-gd-action^="zoom-"]{min-width:38px;font-size:var(--fs-h2);padding:5px 9px}
+.globe-deck button:focus-visible,.gd-market-link:focus-visible{outline:2px solid var(--link);outline-offset:3px}
+.gd-retry{border-color:var(--line);background:var(--panel);color:var(--text)}
+.gd-markets-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 10px}
+.gd-markets-head h3{margin:0;color:var(--muted);font:500 var(--fs-label)/1.5 var(--font-mono);letter-spacing:.08em;text-transform:uppercase}
+.gd-markets-head p{margin:0;color:var(--muted);font-size:var(--fs-label)}
+.gd-legend{position:static;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:7px;width:auto;height:auto;clip:auto;clip-path:none;overflow:visible;white-space:normal;padding:0;margin:0;list-style:none}
+.gd-leg,.gd-market-link{width:100%;min-height:60px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;padding:10px 5px;border:1px solid var(--line);border-radius:var(--r-btn,10px);background:color-mix(in srgb,var(--panel) 65%,transparent);font:500 var(--fs-label)/1.3 var(--font-ui);color:var(--muted);text-align:center;text-decoration:none;transition:background .18s ease,color .18s ease}
+.gd-leg .gd-market-name{min-height:1.3em}
+.gd-leg:hover,.gd-market-link:hover,.gd-leg[aria-pressed="true"]{color:var(--text);background:var(--panel2);border-color:var(--line)}
+.gd-leg[aria-pressed="true"]{box-shadow:inset 0 0 0 1px var(--muted)}
+.gd-market-flag{font-size:var(--fs-h2);line-height:1}
+.globe-deck:not([data-globe-state="ready"]) .gd-leg,.globe-deck[data-globe-state="ready"] .gd-market-link{display:none}
+.gd-legend-note{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:12px;color:var(--muted);font-size:var(--fs-label);line-height:1.6}
+.gd-legend-key{display:flex;gap:13px;flex-wrap:wrap}
+.gd-legend-key span{display:inline-flex;align-items:center;gap:5px}
+.gd-legend-key i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.gd-legend-key .q1 i{background:var(--q1)}.gd-legend-key .q2 i{background:var(--q2)}.gd-legend-key .q3 i{background:var(--q3)}.gd-legend-key .q4 i{background:var(--q4)}
+.gd-route-note{margin:0 0 14px;text-align:center;font-size:var(--fs-label);color:var(--muted)}
+.gd-route-note[hidden]{display:none}
+.gd-isl .body,html[data-theme="light"] .gd-isl .body{padding:7px 10px;gap:7px;border-color:var(--line);background:color-mix(in srgb,var(--panel) 92%,transparent);box-shadow:0 4px 16px color-mix(in srgb,var(--bg) 28%,transparent);border-radius:var(--r-ctl,8px);opacity:1}
+.gd-isl .body::before,.gd-isl .body::after{display:none}
+.gd-isl .body:hover,.gd-isl.sel .body,html[data-theme="light"] .gd-isl .body:hover{border-color:var(--muted);box-shadow:0 4px 16px color-mix(in srgb,var(--bg) 28%,transparent)}
+.gd-isl .isl-chg{font:600 var(--fs-sm)/1.2 var(--font-mono)}
+.gd-isl .isl-px,.gd-isl .isl-sem,.gd-isl .ring{display:none}
+.gd-isl .glow{animation:none;opacity:.28}
+.gd-tip{max-height:calc(100% - 20px);overflow:auto}
+.gd-tip-h{padding-right:24px}
+.gd-tip-close{position:absolute;top:8px;right:7px;width:32px;height:32px;border:0;border-radius:var(--r-ctl,8px);background:transparent;color:var(--muted);font-size:var(--fs-h2);cursor:pointer}
+.gd-tip-close:hover{background:var(--panel2);color:var(--text)}
+.gd-loader,.gd-status{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:25;text-align:center;pointer-events:auto;padding:24px;color:var(--muted);font-size:var(--fs-sm)}
+.gd-loader::before{content:'';display:block;width:clamp(200px,36vw,360px);aspect-ratio:1;border:1px solid var(--line);border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--panel2),var(--bg) 75%);box-shadow:0 0 50px color-mix(in srgb,var(--info) 5%,transparent)}
+.gd-status h3{margin:0;color:var(--text);font-size:var(--fs-h2)}
+.gd-status p{max-width:36ch;margin:0;line-height:1.6}
+.gd-status[hidden],.globe-deck[data-globe-state="ready"] .gd-loader,.globe-deck[data-globe-state="error"] .gd-loader{display:none}
+.globe-deck:not([data-globe-state="ready"]) .gd-canvas,.globe-deck:not([data-globe-state="ready"]) .gd-islands{visibility:hidden}
+.gd-cta{display:flex;justify-content:center;padding:22px 0 0}
+.gd-scroll{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:10px 18px;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-btn,10px);font:600 var(--fs-sm)/1.4 var(--font-ui);cursor:pointer}
+.gd-scroll:hover{background:var(--panel2)}
+html.gd-parked .globe-deck *, .globe-deck[data-motion="paused"] *{animation-play-state:paused!important}
+html[data-mmx-shared-shell="1"] .hub-page .h{margin-top:18px}
+html[data-mmx-shared-shell="1"] .hub-page .wrap{max-width:1180px}
+@media(min-width:1600px){.gd-stage{min-height:0}}
+@media(max-width:880px){.gd-legend{grid-template-columns:repeat(5,minmax(0,1fr))}.gd-topline{padding-top:22px}.gd-stage{height:clamp(340px,55vw,480px)}}
 @media(max-width:560px){
- .hub-greet{min-height:132px}.hub-intel-shell{width:calc(100vw - 24px);min-height:120px;padding:18px 23px}
- .hub-intel-shell::before{inset:-18px -22px}.hub-intel-message{min-height:78px}
- .hub-greet.convo .greet-tx,html[data-lang="zh"] .hub-greet.convo .greet-tx{max-width:calc(100vw - 58px)}
+ .h{margin:22px 0 4px}.h h1{font-size:36px}.h p{font-size:var(--fs-body);max-width:31ch}.hub-kicker{font-size:var(--fs-micro);margin-bottom:12px}.hub-snapshot-meta{margin-top:10px}
+ .gd-topline{justify-content:center;padding-top:22px}.gd-instructions{display:none}
+ .gd-stage{height:350px}.gd-controls{gap:6px;margin:0 0 24px}.gd-control-group{gap:0;padding:3px}.gd-controls button{min-height:40px;font-size:var(--fs-label);padding:7px 10px}
+ .gd-legend{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.gd-leg,.gd-market-link{flex-direction:row;gap:6px;min-height:48px;padding:8px 5px;font-size:var(--fs-label)}
+ .gd-markets-head{align-items:flex-start}.gd-markets-head p{max-width:19ch;text-align:right}
+ .gd-legend-note{justify-content:center}.gd-legend-key{gap:10px;justify-content:center}.gd-legend-note>span{text-align:center}
+ .gd-tip.mini{max-width:calc(100% - 20px);white-space:normal;flex-wrap:wrap}
+ .gd-isl .body{padding:6px 8px}.gd-isl .isl-chg{font-size:var(--fs-label)}
 }
-@media(prefers-reduced-motion:reduce){
- .hub-brand,.hub-greet,.hub-intel-shell::before{transition:none;animation:none}
- .hub-greet .greet-caret,.hub-greet.convo .greet-tx::after{animation:none}
-}
-/* ══ LIGHT MODE — the celestial backdrop ═══════════════════════════════════════
-   #sky is position:fixed, so its disc is pinned to the VIEWPORT, not to the deck
-   it belongs to. Scroll away from the globe in light mode and the sun follows —
-   an amber orb glowing in the empty canvas past the footer, lighting nothing and
-   belonging to nothing. The page below the deck is a briefing sheet; it does not
-   want a sun in it, and the deck does not need one to read.
-   (The starfield canvas paints nothing in light — sky.js only draws stars on the
-   dark path — so hiding the disc empties #sky entirely, no other ambient left.) */
-html[data-theme="light"] #sky-sun{display:none}
+@media(prefers-reduced-motion:reduce){.globe-deck *,.hub-page .h{animation:none!important;transition:none!important}}
 </style>"""
 
 # Critical a11y CSS that must ship INLINE in the hub page itself (start.html
@@ -3050,21 +2901,30 @@ body{padding:22px max(20px,env(safe-area-inset-right)) calc(56px + env(safe-area
 html[data-theme="light"] .pill{color:color-mix(in srgb,var(--accent) 42%,var(--text))}
 </style>"""
 
-_GLOBE_DECK_DOM = r"""<section class="globe-deck command" aria-label="Global macro regime globe">
+_GLOBE_DECK_DOM = r"""<section class="globe-deck command" data-globe-state="static" aria-label="Global market atlas / 全球市场地图">
+    <div class="gd-topline"><h2><span class="l-en">Global market atlas</span><span class="l-zh">全球市场地图</span></h2><span class="gd-instructions"><span class="l-en">Drag to rotate · Select a market to explore</span><span class="l-zh">拖动旋转 · 选择市场查看详情</span></span></div>
     <div class="gd-stage">
       <div class="gd-islands gd-isl-back" aria-hidden="true"></div>
       <canvas class="gd-canvas" data-topo="world-110m.json" role="application" tabindex="0"
         aria-roledescription="interactive macro-regime globe"
-        aria-label="Macro regime globe. Arrow keys rotate, plus and minus zoom, Escape deselects." aria-describedby="gd-live"></canvas>
+        aria-label="Market globe / 市场地球仪. Arrow keys rotate / 方向键旋转. Plus and minus zoom / 加减号缩放. Escape closes details / Esc 关闭详情." aria-describedby="gd-live"></canvas>
       <div class="gd-islands gd-isl-front" aria-hidden="true"></div>
       <span id="gd-live" class="sr-only" aria-live="polite"></span>
       <div class="gd-tip glass" role="tooltip" hidden></div>
-      <ul class="gd-legend" aria-label="Markets / 市场列表">__LEGEND__</ul>
+      <div class="gd-loader" role="status"><span class="l-en">Preparing your global view…</span><span class="l-zh">正在加载全球视图…</span></div>
+      <div class="gd-status" role="status" hidden><h3><span class="l-en">The globe couldn’t load.</span><span class="l-zh">地球仪暂时无法加载。</span></h3><p><span class="l-en">Your market dashboards are still available below.</span><span class="l-zh">您仍可通过下方入口访问各市场看板。</span></p><button class="gd-retry" type="button" data-gd-action="retry"><span class="l-en">Try again</span><span class="l-zh">重试</span></button></div>
     </div>
-    <div class="gd-cta"><button class="gd-scroll" type="button" aria-label="Explore markets">
-<span class="gd-scroll-tx"><span class="l-en">Explore</span><span class="l-zh">探索</span></span>
-<span class="gd-scroll-chev" aria-hidden="true"><svg width="16" height="10" viewBox="0 0 20 12" fill="none"><path d="M3 3 L10 9 L17 3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><svg width="16" height="10" viewBox="0 0 20 12" fill="none"><path d="M3 3 L10 9 L17 3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-</button></div>
+    <div class="gd-controls" role="group" aria-label="Globe controls / 地球仪控制">
+      <div class="gd-control-group"><button type="button" data-gd-action="motion" aria-pressed="true" disabled><span class="l-en">Pause rotation</span><span class="l-zh">暂停旋转</span></button><button type="button" data-gd-action="reset" disabled><span class="l-en">Reset view</span><span class="l-zh">重置视角</span></button></div>
+      <div class="gd-control-group"><button type="button" data-gd-action="zoom-out" aria-label="Zoom out / 缩小" disabled>−</button><button type="button" data-gd-action="zoom-in" aria-label="Zoom in / 放大" disabled>+</button></div>
+      <div class="gd-control-group"><button type="button" data-gd-action="tour" aria-pressed="false" disabled><span class="l-en">Market tour</span><span class="l-zh">市场巡览</span></button><button type="button" data-gd-action="routes" aria-pressed="false" disabled><span class="l-en">Routes</span><span class="l-zh">航线</span></button></div>
+    </div>
+    <p class="gd-route-note" hidden><span class="l-en">Illustrative routes and orbits · Not live traffic</span><span class="l-zh">航线与轨道为示意 · 非实时交通数据</span></p>
+    <div class="gd-markets-head"><h3><span class="l-en">Choose your market</span><span class="l-zh">选择市场</span></h3><p><span class="l-en">One framework. Nine markets.</span><span class="l-zh">同一框架，九大市场。</span></p></div>
+    <ul class="gd-legend" aria-label="Markets / 市场列表">__LEGEND__</ul>
+    <div class="gd-legend-note"><div class="gd-legend-key" aria-label="Regime colors / 周期颜色"><span class="q1"><i aria-hidden="true"></i><span class="l-en">Goldilocks</span><span class="l-zh">理想增长</span></span><span class="q2"><i aria-hidden="true"></i><span class="l-en">Reflation</span><span class="l-zh">再通胀</span></span><span class="q3"><i aria-hidden="true"></i><span class="l-en">Stagflation</span><span class="l-zh">滞胀</span></span><span class="q4"><i aria-hidden="true"></i><span class="l-en">Growth scare</span><span class="l-zh">增长恐慌</span></span></div><span><span class="l-en">Data dates and sources in each market</span><span class="l-zh">数据日期与来源见各市场看板</span></span></div>
+    <noscript><p><span class="l-en">Open a market above to explore its dashboard. Enable JavaScript for the interactive globe.</span><span class="l-zh">选择上方市场访问看板。启用 JavaScript 后可使用交互地球仪。</span></p><style>.gd-loader,.gd-controls{display:none}.gd-stage{height:0}</style></noscript>
+    <div class="gd-cta"><button class="gd-scroll" type="button" aria-label="Explore markets / 探索市场"><span class="l-en">Explore the dashboards</span><span class="l-zh">探索市场看板</span><span aria-hidden="true">↓</span></button></div>
   </section>"""
 
 _HUB_SEG_HTML = """<div class="hub-seg" role="group" aria-label="Sections / 版块">
@@ -3297,11 +3157,14 @@ def _tip_attrs(en: str, zh: str) -> str:
 
 
 def _g_legend(blob):
+    """Visible market controls, with real dashboard links before/without JS."""
     out = []
     for m in blob:
-        out.append('<li><button class="gd-leg ' + m["quad"] + '" data-cc="' + m["cc"] + '">'
-                   '<span class="dot"></span>' + m["flag"] + ' '
-                   + _bi(m["cc"], m["cc"]) + '</button></li>')
+        label = ('<span class="gd-market-flag" aria-hidden="true">' + m["flag"] + '</span>'
+                 '<span class="gd-market-name">' + _bi(m["name_en"], m["name_zh"]) + '</span>')
+        out.append('<li><button type="button" class="gd-leg ' + m["quad"] + '" data-cc="' + m["cc"]
+                   + '" aria-pressed="false" disabled>' + label + '</button>'
+                   '<a class="gd-market-link" href="' + _esc(m["href"], quote=True) + '">' + label + '</a></li>')
     return "".join(out)
 
 
@@ -3902,7 +3765,7 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
               canada: dict | None = None,
               intl: dict | None = None, ipo: dict | None = None, spr: dict | None = None,
               **_ignored) -> str:
-    """The AURORA globe flight-deck landing hub. ipo feeds the IPO Radar vector card
+    """The globe-led shared-shell Home and standalone landing hub. ipo feeds the IPO Radar vector card
     (rendered in _g_vectors when ipo.present); intl/spr (+ any future state) are still
     accepted-and-ignored: build_landing passes them, so the signature must absorb them
     or every daily build crashes (TypeError)."""
@@ -3984,42 +3847,14 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
     # Site status describes this served website, not real-time market-data freshness.
 
     body = (
-        '<div id="sky" aria-hidden="true"><canvas id="sky-stars"></canvas><div id="sky-sun"></div><div id="sky-moon"></div>'
-        '<div id="sky-sat"><svg viewBox="0 0 148 74" xmlns="http://www.w3.org/2000/svg"><defs>'
-        '<linearGradient id="satPanel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d7cc8"/><stop offset=".2" stop-color="#3a5495"/><stop offset=".6" stop-color="#273768"/><stop offset="1" stop-color="#1b294f"/></linearGradient>'
-        '<linearGradient id="satSheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#bcd6ff" stop-opacity="0"/><stop offset=".5" stop-color="#cfe2ff" stop-opacity=".6"/><stop offset="1" stop-color="#bcd6ff" stop-opacity="0"/></linearGradient>'
-        '<linearGradient id="satFoil" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7df9a"/><stop offset=".34" stop-color="#d8af57"/><stop offset=".52" stop-color="#b6882f"/><stop offset=".72" stop-color="#caa149"/><stop offset="1" stop-color="#8a6020"/></linearGradient>'
-        '<radialGradient id="satDish" cx=".36" cy=".3" r=".85"><stop offset="0" stop-color="#f0f4fc"/><stop offset=".55" stop-color="#bcc7dc"/><stop offset="1" stop-color="#8a98b6"/></radialGradient>'
-        '<radialGradient id="satGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e0ecff" stop-opacity=".5"/><stop offset=".45" stop-color="#9fc0ff" stop-opacity=".15"/><stop offset="1" stop-color="#9fc0ff" stop-opacity="0"/></radialGradient>'
-        '<pattern id="satCells" width="7.4" height="8.6" patternUnits="userSpaceOnUse"><path d="M7.4 0V8.6M0 4.3H7.4" stroke="#0d1730" stroke-opacity=".5" stroke-width=".7"/></pattern></defs>'
-        '<ellipse cx="74" cy="37" rx="66" ry="30" fill="url(#satGlow)"/>'
-        '<g stroke="#101c3a" stroke-width=".8" stroke-opacity=".75">'
-        '<rect x="5" y="23" width="45" height="28" rx="2.2" fill="url(#satPanel)"/><rect x="5" y="23" width="45" height="28" rx="2.2" fill="url(#satCells)"/>'
-        '<rect x="98" y="23" width="45" height="28" rx="2.2" fill="url(#satPanel)"/><rect x="98" y="23" width="45" height="28" rx="2.2" fill="url(#satCells)"/></g>'
-        '<rect x="5" y="24.2" width="45" height="2.8" rx="1.4" fill="url(#satSheen)"/><rect x="98" y="24.2" width="45" height="2.8" rx="1.4" fill="url(#satSheen)"/>'
-        '<rect x="49" y="35.6" width="10" height="2.8" fill="#9a7a33"/><rect x="89" y="35.6" width="10" height="2.8" fill="#9a7a33"/>'
-        '<g><rect x="58" y="21.5" width="32" height="31" rx="3.4" fill="url(#satFoil)" stroke="#6e4e1c" stroke-width="1"/>'
-        '<path d="M58 29.5H90M58 44H90" stroke="#7c5820" stroke-opacity=".5" stroke-width=".7"/>'
-        '<path d="M74 21.5V52.5" stroke="#fff" stroke-opacity=".13" stroke-width=".8"/>'
-        '<rect x="62" y="39.5" width="7" height="7" rx="1.3" fill="#212e4c"/>'
-        '<ellipse cx="65.5" cy="28" rx="5.2" ry="2.4" fill="#fff" opacity=".18" transform="rotate(-20 65.5 28)"/></g>'
-        '<g class="sat-fine"><path d="M67 22 60 8" stroke="#c9d3e6" stroke-width="1.1" stroke-linecap="round"/><circle cx="60" cy="8" r="1.5" fill="#dfe7f5"/></g>'
-        '<g transform="rotate(-17 76 14)"><line x1="74" y1="21" x2="76" y2="15" stroke="#9aa7c2" stroke-width="1.3"/><ellipse cx="76" cy="13.5" rx="8.6" ry="5" fill="url(#satDish)" stroke="#75839f" stroke-width=".8"/><circle cx="74.2" cy="12" r="1.5" fill="#5f6c88"/></g>'
-        '</svg></div></div>'
+        '<div id="sky" data-sky-mode="quiet" aria-hidden="true"><canvas id="sky-stars"></canvas></div>'
         + _hub_product_nav_html()
         + '<div class="wrap has-new-footer">'
         '<header class="h">'
-        # hero stack: the personal typed greeting overlays the brand lockup in one
-        # grid cell, then cross-dissolves into it (hub-greet.js). Brand is the
-        # accessible content; the greeting is decorative (aria-hidden).
-        + '<div class="hub-hero-stack">'
-        + '<div class="hub-greet" aria-hidden="true"><div class="hub-intel-shell">'
-        + '<div class="hub-intel-message"><span class="greet-tx"></span><span class="greet-caret"></span></div>'
-        + '</div></div>'
-        + '<div class="hub-brand"><h1 class="hub-logo">' + _BRAND_MARK_SVG
-        + '<span class="logo-word">MASTERMINDX</span></h1>'
-        '<p>' + _bi("One disciplined view across every major market.",
-                    "一套框架，看清全球主要市场。") + '</p></div></div>'
+        + '<div class="hub-kicker">' + _bi("Home / Global overview", "首页 / 全球概览") + '</div>'
+        + '<h1>' + _bi("The world, in focus.", "全球脉动，一览于心。") + '</h1>'
+        + '<p>' + _bi("Understand the cycle. Connect the markets. Find your next question.",
+                      "看清周期，串联市场，发现值得深入研究的线索。") + '</p>'
         '<div class="hub-snapshot-meta"><span class="eyebrow"><span class="snapshot-dot" aria-hidden="true"></span>'
         '<span class="hub-site-status">' + _bi("SITE LIVE", "网站运行中") + '</span>'
         '</span></div></header>'
@@ -5447,3 +5282,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
