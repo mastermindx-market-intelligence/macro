@@ -6449,7 +6449,7 @@ def main() -> int:
     # origins live in the Supabase dashboard (see ACCOUNTS_SETUP.md).
     # copy shared static assets (theme + visual widgets) into the site
     for asset in ("government-revenue-parity.css","government-revenue-dossiers.js","government-revenue-candidate-radar.js","government-revenue-briefcase.js","government-revenue-briefcase-ui.js","government-revenue-sbir.js","government-revenue-sbir.css","government-revenue-investor.js","government-revenue-investor.css","government-revenue-theme-context.js","government-revenue-theme-context.css",
-                  "theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
+                  "theme.css", "neural-map.css", "neural-map.js", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
                   "theme.js", "terminal_overlay.js", "mtf.js", "chart_i18n.js", "timemachine.js",
                   "illus.css", "illus.js",
                   "mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css", "mm_brain_presentation.js", "mm_brain_markdown.js", "mm_brain_finance.js", "mm_brain_finance.css", "mm_brain_finance_math_v1.js", "mm_brain_math.js",

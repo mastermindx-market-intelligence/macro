@@ -1,0 +1,10 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/neural-map.css
+  - templates/neural-map.js
+  - templates/committee.html.j2
+  - site/neural-map.css
+  - site/neural-map.js
+  - site/committee.html
+  - admin/static/app.js
+manifest: mockups/evidence/neural-web-living-map/manifest.json

@@ -3816,12 +3816,11 @@ function nwMapLabel(label) {
    not a replacement:
      · lobes   — nwSystemMap's computed radial dendrogram: which lobe sits WHERE,
                  a deterministic structural map that looks the same all day.
-     · synapse — committee.html's living canvas map: which signals are FIRING
-                 right now, with pulses travelling real confluence edges.
+     · synapse — committee.html's interactive snapshot map: recorded relationships,
+                 with clearly labelled illustrative motion.
 
-   The synapse map is EMBEDDED, never re-implemented here. It is ~200 lines of
-   canvas simulation (pulses, dust, pan/zoom, hover cards) over a 616KB
-   confluence_graph payload; a second copy in this file would drift from the
+   The synapse map is EMBEDDED, never re-implemented here. It owns its canvas, accessible inspector, search and
+   interaction lifecycle over the confluence_graph payload; a second copy in this file would drift from the
    original the first time either side changed, and the drift would be invisible
    because both would still render something.
 
@@ -3849,8 +3848,8 @@ function nwMapSwitch(d) {
 function nwSynapseEmbed() {
   return `<div class="card" style="padding:0;overflow:hidden">
     <iframe id="nw-synapse-frame" src="/research-tools/committee.html"
-      title="Synapse map — Neural Web confluence graph" loading="lazy"
-      style="width:100%;height:760px;border:0;display:block"></iframe>
+      title="Synapse map — Neural Web confluence graph" loading="lazy" allowfullscreen
+      style="width:100%;height:840px;border:0;display:block"></iframe>
   </div>`;
 }
 
@@ -3881,8 +3880,34 @@ function nwWireSynapseFrame(root) {
       if (p === doc.body) break;
     }
     doc.body.style.background = "transparent";
-    doc.body.style.padding = "10px 12px";
+    doc.body.style.padding = "0";
     doc.documentElement.style.background = "transparent";
+    const section = doc.getElementById("cm_graph_section");
+    if (section) { section.style.padding = "0"; section.style.margin = "0"; section.style.border = "0"; }
+    // Each frame owns these observers. Disconnect on removal, replacement or
+    // navigation; route changes must not retain a detached document.
+    const syncAppearance = () => {
+      ["data-theme", "data-lang"].forEach((key) => {
+        const value = document.documentElement.getAttribute(key);
+        if (value === null) doc.documentElement.removeAttribute(key);
+        else doc.documentElement.setAttribute(key, value);
+      });
+    };
+    const resize = () => {
+      if (!f.isConnected) return;
+      const height = Math.ceil(wrap.getBoundingClientRect().height);
+      if (height > 0) f.style.height = `${height + 2}px`;
+    };
+    const appearance = new MutationObserver(syncAppearance);
+    appearance.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "data-lang"] });
+    const size = new ResizeObserver(resize);
+    size.observe(wrap);
+    const removal = new MutationObserver(() => { if (!f.isConnected) cleanup(); });
+    removal.observe(document.body, { childList: true, subtree: true });
+    const cleanup = () => { appearance.disconnect(); size.disconnect(); removal.disconnect(); };
+    f.contentWindow.addEventListener("pagehide", (event) => { if (!event.persisted) cleanup(); });
+    syncAppearance();
+    resize();
   });
 }
 
