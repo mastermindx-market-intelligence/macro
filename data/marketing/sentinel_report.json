@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-11-11T14:32:06Z",
+  "produced_at": "2026-11-11T16:52:29Z",
   "as_of": "2026-11-11",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 34,
-    "passed": 31,
+    "items": 32,
+    "passed": 29,
     "quarantined": 3,
     "quarantined_policy": 3,
     "quarantined_overflow": 0,
@@ -32,27 +32,27 @@
       ]
     },
     {
-      "id": "post-sophia-012",
-      "account": "sophia",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "The slowdown story isn't showing up in claims",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-flagship-020"
-      ]
-    },
-    {
-      "id": "post-insider-004",
-      "account": "sophia",
-      "slot": "D1-S16",
+      "id": "post-insider-003",
+      "account": "meagan",
+      "slot": "D1-S6",
       "type": "insider",
-      "cashtag": "$CNXN",
+      "cashtag": "$WD",
       "headline": "",
       "class": "policy",
       "reasons": [
-        "near_dup:post-insider-003"
+        "near_dup:post-insider-002"
+      ]
+    },
+    {
+      "id": "post-insider-005",
+      "account": "kelly",
+      "slot": "D1-S9",
+      "type": "insider",
+      "cashtag": "$ADM",
+      "headline": "",
+      "class": "policy",
+      "reasons": [
+        "near_dup:post-insider-002"
       ]
     }
   ],
@@ -63,6 +63,14 @@
       "slot": "D1-S16",
       "type": "chart",
       "cashtag": "$GPK",
+      "headline": ""
+    },
+    {
+      "id": "post-flagship-019",
+      "account": "flagship",
+      "slot": "D1-S19",
+      "type": "chart",
+      "cashtag": "$ARR",
       "headline": ""
     },
     {
@@ -87,15 +95,15 @@
       "slot": "D1-S34",
       "type": "receipt",
       "cashtag": "$AGNT",
-      "headline": "$AGNT prints another closing low"
+      "headline": "$AGNT posts its lowest weekly close in 5 years"
     },
     {
-      "id": "post-flagship-042",
+      "id": "post-flagship-052",
       "account": "flagship",
-      "slot": "D1-S42",
-      "type": "watchlist",
-      "cashtag": "$ARR",
-      "headline": "$ARR is back near the floor"
+      "slot": "D1-S52",
+      "type": "signal",
+      "cashtag": "$MOS",
+      "headline": ""
     },
     {
       "id": "post-conf-flagship-001",
@@ -106,6 +114,14 @@
       "headline": "$WMB just lined up a pattern we track."
     },
     {
+      "id": "post-theme-003",
+      "account": "flagship",
+      "slot": "D1-S2",
+      "type": "theme_list",
+      "cashtag": "$MNTK",
+      "headline": "Energy Renewable selling off, -3.7% avg on Tuesday"
+    },
+    {
       "id": "post-congress-001",
       "account": "flagship",
       "slot": "D1-S9",
@@ -114,11 +130,11 @@
       "headline": ""
     },
     {
-      "id": "post-founder-016",
+      "id": "post-founder-010",
       "account": "founder",
-      "slot": "D1-S16",
-      "type": "macro",
-      "cashtag": "",
+      "slot": "D1-S10",
+      "type": "chart",
+      "cashtag": "$LYV",
       "headline": ""
     },
     {
@@ -138,20 +154,12 @@
       "headline": ""
     },
     {
-      "id": "post-founder-031",
+      "id": "post-insider-002",
       "account": "founder",
-      "slot": "D1-S31",
-      "type": "chart",
-      "cashtag": "$LYV",
+      "slot": "D1-S19",
+      "type": "insider",
+      "cashtag": "$FLOC",
       "headline": ""
-    },
-    {
-      "id": "post-founder-043",
-      "account": "founder",
-      "slot": "D1-S43",
-      "type": "receipt",
-      "cashtag": "$AGNT",
-      "headline": "$AGNT closes the week at 3.10"
     },
     {
       "id": "post-housepick-004",
@@ -162,20 +170,12 @@
       "headline": ""
     },
     {
-      "id": "post-meagan-009",
+      "id": "post-meagan-012",
       "account": "meagan",
-      "slot": "D1-S9",
-      "type": "watchlist",
-      "cashtag": "$SOXS",
+      "slot": "D1-S12",
+      "type": "receipt",
+      "cashtag": "$POWL",
       "headline": ""
-    },
-    {
-      "id": "post-meagan-022",
-      "account": "meagan",
-      "slot": "D1-S22",
-      "type": "chart",
-      "cashtag": "$MTG",
-      "headline": "$MTG at the line"
     },
     {
       "id": "post-meagan-029",
@@ -186,12 +186,12 @@
       "headline": ""
     },
     {
-      "id": "post-meagan-038",
+      "id": "post-meagan-036",
       "account": "meagan",
-      "slot": "D1-S38",
-      "type": "receipt",
-      "cashtag": "$POWL",
-      "headline": ""
+      "slot": "D1-S36",
+      "type": "watchlist",
+      "cashtag": "$HR",
+      "headline": "Healthcare Realty $HR needs 21.3 back"
     },
     {
       "id": "post-theme-004",
@@ -202,14 +202,6 @@
       "headline": "Commodities Energy selling off, -3.1% avg on Tuesday"
     },
     {
-      "id": "post-insider-003",
-      "account": "meagan",
-      "slot": "D1-S6",
-      "type": "insider",
-      "cashtag": "$WD",
-      "headline": ""
-    },
-    {
       "id": "post-sophia-008",
       "account": "sophia",
       "slot": "D1-S8",
@@ -218,35 +210,35 @@
       "headline": ""
     },
     {
+      "id": "post-sophia-012",
+      "account": "sophia",
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
+      "headline": "The growth scare still isn't in weekly claims"
+    },
+    {
       "id": "post-sophia-020",
       "account": "sophia",
       "slot": "D1-S20",
       "type": "chart",
       "cashtag": "$TROW",
-      "headline": "$TROW has climbed 4 weeks in a row"
+      "headline": "$TROW has closed higher 4 weeks in a row"
     },
     {
-      "id": "post-sophia-042",
+      "id": "post-insider-004",
       "account": "sophia",
-      "slot": "D1-S42",
-      "type": "chart",
-      "cashtag": "$TFX",
-      "headline": "The line that matters for $TFX"
-    },
-    {
-      "id": "post-kelly-021",
-      "account": "kelly",
       "slot": "D1-S21",
-      "type": "chart",
-      "cashtag": "$CAR",
-      "headline": "$CAR has reached the first test"
+      "type": "insider",
+      "cashtag": "$CNXN",
+      "headline": ""
     },
     {
-      "id": "post-kelly-027",
+      "id": "post-kelly-024",
       "account": "kelly",
-      "slot": "D1-S27",
-      "type": "receipt",
-      "cashtag": "$LSTR",
+      "slot": "D1-S24",
+      "type": "chart",
+      "cashtag": "$FLS",
       "headline": ""
     },
     {
@@ -255,22 +247,14 @@
       "slot": "D1-S44",
       "type": "receipt",
       "cashtag": "$CMI",
-      "headline": "$CMI's weekly losing streak is still intact"
+      "headline": "$CMI's decline is sitting on the floor"
     },
     {
-      "id": "post-theme-005",
-      "account": "kelly",
+      "id": "post-cici-003",
+      "account": "cici",
       "slot": "D1-S3",
-      "type": "theme_list",
-      "cashtag": "$MVST",
-      "headline": "Electric Vehicles selling off, -3.1% avg on Tuesday"
-    },
-    {
-      "id": "post-insider-005",
-      "account": "kelly",
-      "slot": "D1-S9",
-      "type": "insider",
-      "cashtag": "$ADM",
+      "type": "macro",
+      "cashtag": "",
       "headline": ""
     },
     {
@@ -282,11 +266,11 @@
       "headline": ""
     },
     {
-      "id": "post-cici-021",
+      "id": "post-cici-033",
       "account": "cici",
-      "slot": "D1-S21",
+      "slot": "D1-S33",
       "type": "chart",
-      "cashtag": "$CAR",
+      "cashtag": "$AWR",
       "headline": ""
     },
     {
@@ -295,7 +279,7 @@
       "slot": "D1-S47",
       "type": "receipt",
       "cashtag": "$MLI",
-      "headline": "账要算清 (the books must balance)"
+      "headline": "条件先行 (conditions first)"
     },
     {
       "id": "post-theme-006",
@@ -308,7 +292,7 @@
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 418,
+      "pairs_checked": 366,
       "hits": 3,
       "shared_media_hits": 0
     },
