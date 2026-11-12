@@ -1,2 +1,33 @@
-<script>window.__plotlyQ=[];window.Plotly={newPlot:function(){window.__plotlyQ.push(['newPlot',[].slice.call(arguments)]);return Promise.resolve();},react:function(){window.__plotlyQ.push(['react',[].slice.call(arguments)]);return Promise.resolve();},relayout:function(){window.__plotlyQ.push(['relayout',[].slice.call(arguments)]);}};
-</script><script defer src="plotly-2.32.0.min.js"></script><script>document.addEventListener('DOMContentLoaded',function(){var q=window.__plotlyQ||[];window.__plotlyQ=null;q.forEach(function(c){try{window.Plotly[c[0]].apply(window.Plotly,c[1]);}catch(e){}});});</script>
+<script>
+(function () {
+  var q = window.__plotlyQ = [];
+  function queued(method) {
+    return function () {
+      var args = [].slice.call(arguments);
+      return new Promise(function (resolve, reject) {
+        q.push([method, args, resolve, reject]);
+      });
+    };
+  }
+  window.Plotly = {
+    newPlot: queued('newPlot'),
+    react: queued('react'),
+    relayout: queued('relayout'),
+    restyle: queued('restyle')
+  };
+}());
+</script>
+<script defer src="plotly-2.32.0.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var q = window.__plotlyQ || [];
+  window.__plotlyQ = null;
+  q.forEach(function (call) {
+    try {
+      Promise.resolve(window.Plotly[call[0]].apply(window.Plotly, call[1])).then(call[2], call[3]);
+    } catch (error) {
+      call[3](error);
+    }
+  });
+});
+</script>

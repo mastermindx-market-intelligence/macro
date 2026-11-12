@@ -96,7 +96,13 @@
                (k.indexOf('range') > -1 || k.indexOf('autorange') > -1);
       });
       if (!touchedX) return;
-      rescale();
+      // Coalesce zoom bursts against the latest layout; keep current legend and missing-data behavior.
+      if (gd._tmRescaleRaf) return;
+      gd._tmRescaleRaf = requestAnimationFrame(function () {
+        gd._tmRescaleRaf = 0;
+        if (gd._tmLock || !gd.isConnected) return;
+        rescale();
+      });
     });
     // legend clicks emit plotly_restyle ([{visible:[…]}, [idx]]), not plotly_relayout;
     // once this module owns the y range, re-fit it to the traces now visible
