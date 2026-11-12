@@ -70,7 +70,7 @@ from __future__ import annotations
 import json
 import logging
 import os
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
@@ -78,6 +78,9 @@ import pandas as pd
 
 from engine import opex as _opex_cal
 from lib import config
+from lib.nyse_calendar import (
+    expected_last_session, is_session, last_session_on_or_before, sessions_between,
+)
 
 log = logging.getLogger(__name__)
 
@@ -407,6 +410,37 @@ def _window_phase(spy_close: pd.Series | None) -> dict:
         return null
 
 
+def _forward_window(spy_close: pd.Series | None) -> dict:
+    """Exact upcoming schedule, separate from historical observed-bar tags.
+
+    Never manufacture future price bars to extend opex.expiration_days().
+    The source endpoint is a daily session label, not the build clock.
+    """
+    null = {"source_asof": None, "expiry_date": None, "td_to_opex": None}
+    if spy_close is None or len(spy_close) < 500:
+        return null
+    try:
+        if not spy_close.index.is_monotonic_increasing or not spy_close.index.is_unique:
+            return null
+        if not np.isfinite(float(spy_close.iloc[-1])):
+            return null
+        source = pd.Timestamp(spy_close.index[-1]).date()
+        if not is_session(source):
+            return null
+        expiry = last_session_on_or_before(_opex_cal._third_friday(source.year, source.month))
+        if expiry < source:
+            month = source.month % 12 + 1
+            year = source.year + (source.month == 12)
+            expiry = last_session_on_or_before(_opex_cal._third_friday(year, month))
+        return {
+            "source_asof": source.isoformat(),
+            "expiry_date": expiry.isoformat(),
+            "td_to_opex": len(sessions_between(source + timedelta(days=1), expiry)),
+        }
+    except (TypeError, ValueError, OverflowError):
+        return null
+
+
 # ── Level words ───────────────────────────────────────────────────────────────
 
 def _level_word(n_hot: int) -> str:
@@ -452,6 +486,8 @@ def snapshot(
         level_zh        Chinese level word
         states          dict of per-state results (bool | None for event_collision)
         window_phase    dict from engine/opex.py
+        forward_window  exact upcoming expiry and source endpoint for ledger admission;
+                        separate from historical observed-price phase tags
         glance_en       Tier-1 stance sentence (EN)
         glance_zh       Tier-1 stance sentence (ZH)
         doctrine        Standing law reminder
@@ -568,6 +604,7 @@ def _snapshot_inner(
         "level_zh": level_zh,
         "states": states,
         "window_phase": wp,
+        "forward_window": _forward_window(spy_close),
         "glance_en": glance_en,
         "glance_zh": glance_zh,
         "doctrine": _DOCTRINE,
@@ -748,8 +785,9 @@ def log_window(
 
     Schema (opex_window_log.v1):
       window_month    str   YYYY-MM of the monthly expiration cycle
-      entry_date      str   ISO date this row was stamped (T-5 before expiry)
-      expiry_date     str   ISO date of the monthly 3rd-Friday expiration
+      entry_date      str   ISO date of the completed source-price session
+      expiry_date     str   ISO date of the NYSE-adjusted monthly expiration
+      forward_window dict  exact source/expiry/count binding; no approximate fallback
       n_hot           int   count of hot states at entry
       n_applicable    int   count of applicable states at entry
       level           str   "quiet"|"elevated"|"heavy"
@@ -763,29 +801,27 @@ def log_window(
         if not ledger_lane_armed():
             log.debug("opex_risk: log_window skipped — lane not armed")
             return False
-        # Only stamp if we are T-5 or closer to the next expiry
-        wp = snap.get("window_phase") or {}
-        td_to = wp.get("td_to_opex")
-        if td_to is None or td_to > 5:
+        # Revalidate exact source/schedule binding. Legacy or forged snapshots
+        # without these fields cannot be admitted by approximate date arithmetic.
+        fw = snap.get("forward_window") or {}
+        source = date.fromisoformat(fw["source_asof"])
+        expiry = date.fromisoformat(fw["expiry_date"])
+        if source.isoformat() != fw["source_asof"] or expiry.isoformat() != fw["expiry_date"]:
+            return False
+        now = datetime.now(timezone.utc)
+        if source != expected_last_session(now):
+            return False
+        canonical_expiry = last_session_on_or_before(_opex_cal._third_friday(source.year, source.month))
+        if expiry != canonical_expiry or source > expiry:
+            return False
+        td_to = len(sessions_between(source + timedelta(days=1), expiry))
+        if type(fw.get("td_to_opex")) is not int or fw["td_to_opex"] != td_to:
+            return False
+        if td_to > 5:
             log.debug("opex_risk: log_window skipped — td_to_opex=%s (need <=5)", td_to)
             return False
-        # Compute the window_month from the expiry date
-        # We reconstruct the expiry from today + td_to_opex trading days
-        # Simpler: use year+month of today if in opex_week, else the next expiry month
-        today = date.today()
-        # Estimate expiry: today + td_to calendar days (approximate; within 5 td it's close)
-        # Use window_phase for the month key
-        phase = wp.get("phase")
-        if phase == "post_opex":
-            # Already past — don't re-log (the T-5 window has passed)
-            return False
-        # window_month key: current month if in opex_week, next month otherwise
-        # We use today + td_to to get an approximate expiry date for the month key
-        approx_expiry = today
-        if td_to is not None and td_to >= 0:
-            from datetime import timedelta
-            approx_expiry = today + timedelta(days=int(td_to) + 1)
-        window_month = approx_expiry.strftime("%Y-%m")
+        wp = snap.get("window_phase") or {}
+        window_month = expiry.strftime("%Y-%m")
         p = _ledger_path(data_root)
         rows = _read_ledger(p)
         # Keep-FIRST: skip if this window month already logged
@@ -796,8 +832,9 @@ def log_window(
         entry: dict = {
             "schema": "opex_window_log.v1",
             "window_month": window_month,
-            "entry_date": str(today),
-            "expiry_date": str(approx_expiry),
+            "entry_date": source.isoformat(),
+            "expiry_date": expiry.isoformat(),
+            "forward_window": fw,
             "n_hot": snap.get("n_hot"),
             "n_applicable": snap.get("n_applicable"),
             "level": snap.get("level"),
@@ -831,7 +868,7 @@ def log_window(
                 },
             },
             "graded": None,
-            "logged_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "logged_at": now.isoformat(timespec="seconds"),
         }
         rows.append(entry)
         _write_ledger(p, rows)

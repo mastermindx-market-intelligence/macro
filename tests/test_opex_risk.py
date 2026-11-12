@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+from datetime import date, datetime, timedelta, timezone
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -25,7 +26,7 @@ import pytest
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from engine import opex_risk
+from engine import opex, opex_risk
 from engine.event_calendar import enrich_opex_events
 
 
@@ -233,6 +234,16 @@ class TestLevelWords:
 # ── D. Keep-FIRST idempotency ─────────────────────────────────────────────────
 
 class TestLogWindowIdempotency:
+    @pytest.fixture(autouse=True)
+    def bound_clock(self):
+        from datetime import datetime, timezone
+        class FixedClock(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return cls(2026, 11, 17, 23, tzinfo=timezone.utc)
+        with patch.object(opex_risk, "datetime", FixedClock):
+            yield
+
     def _make_snap(self, n_hot=1, td_to=3):
         return {
             "schema": "opex_risk.v1",
@@ -241,6 +252,7 @@ class TestLogWindowIdempotency:
             "level": "quiet",
             "states": {},
             "window_phase": {"phase": "opex_week", "td_to_opex": td_to, "is_quad_cycle": False},
+            "forward_window": {"source_asof": "2026-11-17", "expiry_date": "2026-11-20", "td_to_opex": td_to},
             "glance_en": "Test glance.",
         }
 
@@ -403,3 +415,130 @@ class TestEnrichOpexEvents:
 
     def test_empty_events_returns_empty(self):
         assert enrich_opex_events([], {"level": "quiet"}) == []
+
+
+# Forward-ledger contracts from #2781; freeze both calendar and UTC build clocks.
+
+class Clock(date):
+    current=date(2026,11,20)
+    @classmethod
+    def today(cls): return cls.current
+
+class BuildClock(datetime):
+    @classmethod
+    def now(cls, tz=None):
+        return cls.combine(Clock.current, datetime.min.time(), timezone.utc).replace(hour=23)
+
+def close(end,holiday=None):
+    idx=pd.bdate_range(end=end,periods=800)
+    if holiday: idx=idx[idx!=pd.Timestamp(holiday)]
+    return pd.Series(100*np.exp(.0002*np.arange(len(idx))),index=idx)
+
+def execute(tmp_path,day,source_day=None,holiday=None):
+    Clock.current=date.fromisoformat(day)
+    with patch.object(opex_risk,'date',Clock),patch.object(opex_risk,'datetime',BuildClock),patch.dict(os.environ,{'COLLECT_LANE':'nightly'}):
+        s=opex_risk.snapshot(close(source_day or day,holiday),None,data_root=tmp_path)
+        wrote=opex_risk.log_window(s,data_root=tmp_path)
+    p=tmp_path/'opex_windows/forward_log.jsonl'
+    rows=[json.loads(x) for x in p.read_text().splitlines()] if p.exists() else []
+    return s,wrote,rows
+
+def test_t_minus_five_stamps_the_declared_window(tmp_path):
+    s,wrote,rows=execute(tmp_path,'2026-11-13')
+    assert wrote, 'The declared T-5 entry is currently skipped.'
+    assert rows[0]['expiry_date']=='2026-11-20'
+
+def test_expiry_day_does_not_record_saturday(tmp_path):
+    s,wrote,rows=execute(tmp_path,'2026-11-20')
+    assert wrote
+    assert rows[0]['expiry_date']=='2026-11-20'
+
+def test_good_friday_effective_expiry_is_thursday(tmp_path):
+    s,wrote,rows=execute(tmp_path,'2025-04-17',holiday='2025-04-18')
+    assert wrote, 'Holiday-adjusted expiry must not disappear.'
+    assert rows[0]['expiry_date']=='2025-04-17'
+
+def test_old_expiry_endpoint_cannot_create_a_new_month(tmp_path):
+    s,wrote,rows=execute(tmp_path,'2026-11-30','2026-10-16')
+    assert not wrote, 'An October price endpoint cannot author a December window.'
+    assert rows==[]
+
+def test_accepted_historical_tail_guard_is_preserved():
+    s=close('2026-11-13')
+    exp=opex.expiration_days(s.index)
+    assert pd.Timestamp('2026-11-13') not in exp.index
+    assert exp.index[-1]==pd.Timestamp('2026-10-16')
+
+def test_off_lane_no_write(tmp_path):
+    with patch.dict(os.environ,{'COLLECT_LANE':'render','US_LANE':''}):
+        s=opex_risk.snapshot(close('2026-11-20'),None,data_root=tmp_path)
+        assert not opex_risk.log_window(s,data_root=tmp_path)
+    assert not (tmp_path/'opex_windows/forward_log.jsonl').exists()
+
+@pytest.mark.parametrize('month', range(1, 13))
+def test_all_months_capture_six_session_entries(tmp_path, month):
+    from lib.nyse_calendar import last_session_on_or_before, sessions_between
+    expiry = last_session_on_or_before(opex._third_friday(2026, month))
+    entries = sessions_between(expiry-timedelta(days=14), expiry)[-6:]
+    for count, day in enumerate(reversed(entries)):
+        snap,wrote,rows = execute(tmp_path / str(day), day.isoformat())
+        assert wrote
+        assert snap['forward_window']['td_to_opex'] == count
+        assert rows[0]['expiry_date'] == expiry.isoformat()
+        assert rows[0]['entry_date'] == day.isoformat()
+        assert rows[0]['window_month'] == expiry.strftime('%Y-%m')
+
+@pytest.mark.parametrize('field,value', [
+    ('source_asof',None),('source_asof','2026-11-16'),
+    ('source_asof','2026-11-18'),('source_asof','20261117'),
+    ('expiry_date','2026-11-21'),('expiry_date','2026-12-18'),
+    ('expiry_date','oops'),('expiry_date','20261120'),
+    ('td_to_opex',True),('td_to_opex',3.0),('td_to_opex',-1),
+    ('td_to_opex',4),('td_to_opex',None),
+])
+def test_writer_revalidates_binding_before_file_creation(tmp_path,field,value):
+    Clock.current=date(2026,11,17)
+    with patch.object(opex_risk,'datetime',BuildClock),patch.dict(os.environ,{'COLLECT_LANE':'nightly'}):
+        s=opex_risk.snapshot(close('2026-11-17'),None,data_root=tmp_path)
+        s['forward_window'][field]=value
+        assert not opex_risk.log_window(s,data_root=tmp_path)
+    assert not (tmp_path/'opex_windows').exists()
+
+def test_utc_rollover_uses_completed_exchange_session(tmp_path):
+    class Rollover(datetime):
+        @classmethod
+        def now(cls,tz=None): return cls(2026,11,18,3,tzinfo=timezone.utc)
+    with patch.object(opex_risk,'datetime',Rollover),patch.dict(os.environ,{'COLLECT_LANE':'nightly'}):
+        s=opex_risk.snapshot(close('2026-11-17'),None,data_root=tmp_path)
+        assert opex_risk.log_window(s,data_root=tmp_path)
+    row=json.loads((tmp_path/'opex_windows/forward_log.jsonl').read_text())
+    assert row['entry_date']=='2026-11-17'
+    assert row['logged_at']=='2026-11-18T03:00:00+00:00'
+
+@pytest.mark.parametrize('shape',['empty','short','nan','duplicate','unsorted','weekend'])
+def test_unusable_price_endpoint_never_authors_window(tmp_path,shape):
+    s=close('2026-11-17')
+    if shape=='empty': s=s.iloc[:0]
+    if shape=='short': s=s.iloc[-499:]
+    if shape=='nan': s.iloc[-1]=np.nan
+    if shape=='duplicate': s=pd.concat([s,s.iloc[-1:]])
+    if shape=='unsorted': s=s.iloc[::-1]
+    if shape=='weekend': s.index=list(s.index[:-1])+[pd.Timestamp('2026-11-21')]
+    snap=opex_risk.snapshot(s,None,data_root=tmp_path)
+    assert snap['forward_window']=={'source_asof':None,'expiry_date':None,'td_to_opex':None}
+    with patch.dict(os.environ,{'COLLECT_LANE':'nightly'}):
+        assert not opex_risk.log_window(snap,data_root=tmp_path)
+    assert not (tmp_path/'opex_windows').exists()
+
+def test_stale_legacy_snapshot_cannot_use_approximate_fallback(tmp_path):
+    with patch.dict(os.environ,{'COLLECT_LANE':'nightly'}):
+        assert not opex_risk.log_window({'window_phase':{'td_to_opex':0}},data_root=tmp_path)
+    assert not (tmp_path/'opex_windows').exists()
+
+def test_existing_wrong_row_is_not_rewritten(tmp_path):
+    path=tmp_path/'opex_windows/forward_log.jsonl'; path.parent.mkdir()
+    original='{"window_month":"2026-11","expiry_date":"2026-11-21","marker":"keep"}\n'
+    path.write_text(original)
+    _,wrote,_=execute(tmp_path,'2026-11-20')
+    assert not wrote
+    assert path.read_text()==original
