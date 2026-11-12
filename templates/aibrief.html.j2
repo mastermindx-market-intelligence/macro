@@ -89,6 +89,7 @@
   .cortex-list li { margin:2px 0; }
 {% include "_aibrief_css.j2" %}
 {% include "_mor2b_blocks_css.j2" %}
+{% include "_options_pulse_css.j2" %}
 </style>
 </head>
 <body>
@@ -266,6 +267,11 @@
   {% else %}
   <p class="muted sm">{{ t(_absent_en, _absent_zh) }}</p>
   {% endif %}
+  {# ── Options Pulse (options_pulse/v1): deterministic, source-labelled options
+       card rendered INSIDE the existing Macro lens. Not a new tab, page or
+       runtime; `options_pulse` is None whenever the projector could not run, and
+       an absent source renders the projector's own unavailable state. ── #}
+  {% include "_options_pulse.html.j2" %}
 </div>
 
 <div class="panel ai-brief brief-tab" data-lens="china">

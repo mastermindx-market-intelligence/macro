@@ -311,6 +311,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -1391,6 +1395,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -2461,6 +2469,8 @@ jobs:
       - "tests/test_integrated_answer_v0.py"
       - "tools/**"
       - "worker/**"
+      - "templates/_options_pulse.html.j2"
+      - "templates/_options_pulse_css.j2"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -3561,6 +3571,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4654,6 +4668,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -6953,6 +6971,10 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7964,6 +7986,9 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9288,6 +9313,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9983,6 +10012,9 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10165,6 +10197,12 @@ jobs:
       - "lib/pages.py"
       - "lib/site_assets.py"
       - "lib/shared_shell.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
+      - "templates/_options_pulse.html.j2"
+      - "templates/_options_pulse_css.j2"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -10473,6 +10511,8 @@ jobs:
           tests/test_stock_technicals.py
           tests/test_aibrief_page.py
           tests/test_aibrief_w4_panels.py
+          tests/test_options_pulse.py
+          tests/test_aibrief_options_pulse.py
           tests/test_aibrief_countdown_qual.py
           tests/test_market_reference.py
           tests/test_validated_claims_thirdparty.py
@@ -10995,6 +11035,10 @@ jobs:
       - "scripts/thematic_rotation_phase0.py"
       - "scripts/validate_regime_fwd.py"
       - "site/factordata/basket_washout_state.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     # Budget 8 -> 15 (2026-10-31, macro #10333 ci run 41221939325 attempts 1+2, jobs
     # 124598642578 / 124621444781): on a PULL REQUEST the fail-closed "canonical base"
     # step fetches origin/main in ~4 min on a hosted runner (17:27->17:31Z, 19:02->19:07Z),
@@ -11388,6 +11432,10 @@ jobs:
       - "config/theme_sources.yml"
       # W2F-X closure widening: the observation seam widened these import closures
       - "lib/intl_gs_observations.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -11825,6 +11873,10 @@ jobs:
       - "tests/intl_gs_dossier_fixture.py"
       - "tests/intl_gs_dossier_browser.test.cjs"
       - "tests/__init__.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     # Measured cost, not a guess (DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031):
     # run 41227508685 (ci-pack-9, job 124615360658, head 2c5d125e) hit the 12-minute
     # cap at 18:27:48Z (job start 18:15:48Z) with every completed subtest passing —
@@ -13606,6 +13658,10 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15259,6 +15315,9 @@ jobs:
       - "lib/intl_gs_observations.py"
       - engine/postmortem.py
       - research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md
+      - "data/options_flow/signing_gate.json"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15616,6 +15675,10 @@ jobs:
       - "tests/test_cn_standout_audit.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      - "templates/_options_pulse.html.j2"
+      - "templates/_options_pulse_css.j2"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -18464,6 +18527,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -19171,6 +19238,11 @@ jobs:
       # published JSON and the liquidity-plumbing read).
       - "site/uk_policy.json"
       - "site/neuralwebdata/liquidity_plumbing.json"
+      - "data/options_flow/signing_gate.json"
+      - "templates/_options_pulse.html.j2"
+      - "templates/_options_pulse_css.j2"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20675,6 +20747,10 @@ jobs:
       - research/cycle_masterplan/W41_PANEL_CENSUS.md
       - scripts/build_hazard_panel.py
       - scripts/fit_cycle_hazard.py
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21397,6 +21473,9 @@ jobs:
       - "site/sector_cycles_china_narr_data.js"
       - "site/sector_cycles_dna_data.js"
       - "site/sector_cycles_narr_data.js"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23035,6 +23114,10 @@ jobs:
       - "scripts/worktree_sparse.py"
       - "tests/__init__.py"
       - "tests/test_leadership_rotation_contract.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     # LR T03/T04/T05/T08 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the measured-product contract layer
     # engine/leadership_rotation_context.py — a stateless display-only projection over the
     # rotation_events / leadership_receipt / sector_cycles / ratio_lens owners (owners imported lazily).
@@ -23729,6 +23812,10 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "tests/__init__.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -24035,6 +24122,10 @@ jobs:
       - "tests/intl_gs_transmission_fixture.py"
       - "tests/test_intl_gs_transmission_view.py"
       - "tests/test_intl_transmission_evidence.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
 
     timeout-minutes: 10
     runs-on: ubuntu-latest
@@ -24459,6 +24550,10 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     # ITR-W1 (research/INTL_TURN_ROTATION_REVAMP.md): per-market turn state
     # machine (crash/breaking/topping/... incl. KOSPI replay goldens on the
     # committed _KS11 store) + fast rotation re-rank + ITR-R6 benchmark
@@ -25708,6 +25803,10 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25913,6 +26012,10 @@ jobs:
       - "tests/test_sector_completion_ownership_map.py"
       - "tests/test_sector_metric_definitions.py"
       - "tests/test_cycle_forward_log_fence.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
     # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
     # as_of) and never built from later prices; retained ledger receipts are never rewritten
@@ -27277,6 +27380,10 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/release_forecast/PREREG_COHERENT_RIDGE_V1.md"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28076,6 +28183,10 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     # Hermetic LocalStore/source contracts must execute on the PR head.
     # Keep one canonical test list; mutable data health is a separate concern.
     # RV W1 ingestion spine: the sidecar contract normalization + every fallback
@@ -28919,6 +29030,9 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -29558,6 +29672,9 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -29755,6 +29872,9 @@ jobs:
       - "site/prophet/index.json"
       - "site/turn_watch/turn_watch.json"
       - "site/vol/regime.json"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     # The pack runner owns execution; keep both new source/API suites in CI.
     timeout-minutes: 12
     runs-on: ubuntu-latest
@@ -30992,6 +31112,7 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      - "site/gex/QQQ.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -32541,6 +32662,10 @@ jobs:
       - "engine/earnings_narrative/__init__.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33000,6 +33125,10 @@ jobs:
       - "tests/test_crypto_t15_transition_scaffold.py"
       - "tests/test_vector_scorecard_gap_semantics.py"
       - "scripts/calibrate_rate_inflation.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33806,6 +33935,9 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "data/options_flow/signing_gate.json"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -34711,6 +34843,9 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -34971,6 +35106,9 @@ jobs:
       - "tests/test_analytics_exclusions.py"
       - "tests/test_analytics_pages_postgres.py"
       - "tests/test_analytics_query_budget.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -36004,6 +36142,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -37194,6 +37336,10 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -37512,6 +37658,8 @@ jobs:
       - "tests/test_coiled_mtf_anchor_invariance.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38601,6 +38749,9 @@ jobs:
       - "engine/theme_graph/materialize.py"
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -41244,6 +41395,9 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -42604,6 +42758,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43236,6 +43394,10 @@ jobs:
       - "tests/test_leadership_rotation_countercases.py"
       - "tests/test_sector_central_measured_panel.py"
       - "scripts/calibrate_rate_inflation.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -45923,6 +46085,10 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -47124,6 +47290,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -48095,6 +48265,9 @@ jobs:
       # Import closure added by the main 80f270c4 merge (the union of both sides; measured
       - "contracts/theme_graph/curation_assertion.v1.schema.json"
       - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "data/options_flow/signing_gate.json"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -48385,6 +48558,9 @@ jobs:
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -49224,6 +49400,11 @@ jobs:
       - scripts/build_security_master.py
       - scripts/publish_company_disclosure.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
+      - "engine/options_pulse.py"
+      - "lib/nyse_calendar.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -49274,6 +49455,11 @@ jobs:
       - tests/__init__.py
       - tests/conftest.py
       - tests/test_gmi_source_diagnostic_kernel.py
+      - "engine/options_pulse.py"
+      - "lib/nyse_calendar.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50018,6 +50204,10 @@ jobs:
       - lib/ticker_aliases.py
       - lib/tsx_calendar.py
       - lib/us_cash_calendar.py
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50376,6 +50566,10 @@ jobs:
       - "tests/test_sni_denominator_guard_properties.py"
       - "tests/test_sni_correction_lineage_guard_properties.py"
       - "tests/test_sni_entitlement_guard_properties.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51180,6 +51374,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52958,6 +53156,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53086,6 +53288,9 @@ jobs:
       - "tests/conftest.py"
       - "admin/press_audience.py"
       - "tests/test_press_account_claims.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -53600,6 +53805,10 @@ jobs:
       - "site/factordata/basket_washout_state.json"
       - "tests/__init__.py"
       - "tests/test_build_signal_quality_fail_closed.py"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
