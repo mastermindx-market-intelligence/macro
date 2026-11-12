@@ -1,6 +1,6 @@
 {
   "organ": "credit_momentum.v1",
-  "as_of": "2026-11-11",
+  "as_of": "2026-11-12",
   "data_session": "2026-11-09",
   "authority": {
     "rank": false,
@@ -622,63 +622,63 @@
       "series_id": "JNK",
       "orientation": "price",
       "severity_note": null,
-      "level": 92.63,
-      "d1": -0.38,
-      "d21": -0.3,
+      "level": 92.83,
+      "d1": 0.2,
+      "d21": 0.7121,
       "velocity": {
-        "vel21": -0.3,
-        "vel63": -2.1435,
-        "vel21_pctile": 25.6349,
-        "vel63_pctile": 9.0079,
-        "vel21_pctile_post2021": 28.2801,
-        "vel63_pctile_post2021": 10.537,
-        "accel_vel21": -0.48
+        "vel21": 0.7121,
+        "vel63": -1.5757,
+        "vel21_pctile": 64.0873,
+        "vel63_pctile": 10.5556,
+        "vel21_pctile_post2021": 63.9266,
+        "vel63_pctile_post2021": 12.5679,
+        "accel_vel21": 0.4684
       },
       "grids": {
         "1D": {
-          "macd": 2.5792,
-          "signal": 2.1282,
-          "hist": 0.451,
-          "hist_vel3": -0.2833,
-          "k": 60.5115,
-          "d": 65.2164,
-          "depth_pctile": 66.9048,
-          "as_of": "2026-11-10",
-          "n_bars": 4764,
+          "macd": 5.7861,
+          "signal": 5.0724,
+          "hist": 0.7137,
+          "hist_vel3": -0.626,
+          "k": 70.1482,
+          "d": 74.5457,
+          "depth_pctile": 87.4206,
+          "as_of": "2026-11-11",
+          "n_bars": 4765,
           "secondary_note": null
         },
         "2B": {
-          "macd": -6.84,
-          "signal": -8.1477,
-          "hist": 1.3077,
-          "hist_vel3": 0.2155,
-          "k": 84.1022,
-          "d": 80.5715,
-          "depth_pctile": 11.4768,
+          "macd": -5.1729,
+          "signal": -7.0607,
+          "hist": 1.8878,
+          "hist_vel3": 0.4129,
+          "k": 87.1538,
+          "d": 88.1983,
+          "depth_pctile": 18.4929,
           "as_of": "2026-11-10",
           "n_bars": 2382,
           "secondary_note": null
         },
         "3B": {
-          "macd": -9.7817,
-          "signal": -10.2326,
-          "hist": 0.4509,
-          "hist_vel3": 0.628,
-          "k": 56.4783,
-          "d": 49.3104,
-          "depth_pctile": 5.0165,
+          "macd": -8.6593,
+          "signal": -9.6083,
+          "hist": 0.9491,
+          "hist_vel3": 1.1261,
+          "k": 78.1978,
+          "d": 63.0268,
+          "depth_pctile": 7.9868,
           "as_of": "2026-11-10",
           "n_bars": 1588,
           "secondary_note": null
         },
         "W-FRI": {
-          "macd": -10.2178,
-          "signal": -9.125,
-          "hist": -1.0927,
-          "hist_vel3": 1.2125,
-          "k": 22.7285,
-          "d": 16.9587,
-          "depth_pctile": 6.0109,
+          "macd": -9.709,
+          "signal": -8.9555,
+          "hist": -0.7535,
+          "hist_vel3": 1.5518,
+          "k": 28.8969,
+          "d": 19.0149,
+          "depth_pctile": 7.8689,
           "as_of": "2026-11-06",
           "n_bars": 988,
           "secondary_note": null
@@ -1036,17 +1036,17 @@
       "series_id": "market_ig_gspread",
       "orientation": "spread",
       "severity_note": "spread: widening = deterioration",
-      "level": 119.7261,
-      "d1": 5.8282,
-      "d21": 23.3301,
+      "level": 131.5068,
+      "d1": 13.5139,
+      "d21": 33.8175,
       "velocity": {
-        "vel21": 23.3301,
-        "vel63": 9.5475,
-        "vel21_pctile": 97.6744,
+        "vel21": 33.8175,
+        "vel63": 21.644,
+        "vel21_pctile": 97.7778,
         "vel63_pctile": null,
-        "vel21_pctile_post2021": 97.6744,
+        "vel21_pctile_post2021": 97.7778,
         "vel63_pctile_post2021": null,
-        "accel_vel21": 6.2014
+        "accel_vel21": 12.0034
       },
       "grids": {
         "1D": null,
@@ -1055,23 +1055,23 @@
         "W-FRI": null
       },
       "state": "widening_stress",
-      "accruing_note": "accruing (64 dates of history)"
+      "accruing_note": "accruing (66 dates of history)"
     },
     "hy": {
       "series_id": "market_hy_gspread",
       "orientation": "spread",
       "severity_note": "spread: widening = deterioration",
-      "level": 521.3313,
-      "d1": 14.0031,
-      "d21": 93.392,
+      "level": 526.0888,
+      "d1": 8.7796,
+      "d21": 93.8511,
       "velocity": {
-        "vel21": 93.392,
-        "vel63": 92.4822,
-        "vel21_pctile": 97.6744,
+        "vel21": 93.8511,
+        "vel63": 93.4473,
+        "vel21_pctile": 97.7778,
         "vel63_pctile": null,
-        "vel21_pctile_post2021": 97.6744,
+        "vel21_pctile_post2021": 97.7778,
         "vel63_pctile_post2021": null,
-        "accel_vel21": 15.4772
+        "accel_vel21": 4.0181
       },
       "grids": {
         "1D": null,
@@ -1080,13 +1080,13 @@
         "W-FRI": null
       },
       "state": "widening_stress",
-      "accruing_note": "accruing (64 dates of history)"
+      "accruing_note": "accruing (66 dates of history)"
     }
   },
   "themes": {
     "ai_hardware_credit": {
       "theme": "ai_hardware_credit",
-      "n_dates": 64,
+      "n_dates": 66,
       "density_gate": {
         "open": true,
         "reason": "density gate open"
@@ -1095,350 +1095,12 @@
         "series_id": "theme_ai_hardware_credit_gspread",
         "orientation": "spread",
         "severity_note": "spread: widening = deterioration",
-        "level": 130.7801,
-        "d1": 7.8804,
-        "d21": 19.8334,
-        "velocity": {
-          "vel21": 19.8334,
-          "vel63": -15.4024,
-          "vel21_pctile": 97.0588,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 97.0588,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": null
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "widening_stress"
-      },
-      "price": {
-        "series_id": "theme_ai_hardware_credit_price",
-        "orientation": "price",
-        "severity_note": null,
-        "level": 96.9629,
-        "d1": 0.0399,
-        "d21": -0.2296,
-        "velocity": {
-          "vel21": -0.2296,
-          "vel63": -1.3579,
-          "vel21_pctile": 62.7907,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 62.7907,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": 0.3091
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "active"
-      }
-    },
-    "ai_power_credit": {
-      "theme": "ai_power_credit",
-      "n_dates": 64,
-      "density_gate": {
-        "open": true,
-        "reason": "density gate open"
-      },
-      "spread": {
-        "series_id": "theme_ai_power_credit_gspread",
-        "orientation": "spread",
-        "severity_note": "spread: widening = deterioration",
-        "level": 120.8731,
-        "d1": 4.6382,
-        "d21": 37.0254,
-        "velocity": {
-          "vel21": 37.0254,
-          "vel63": 5.649,
-          "vel21_pctile": 97.2222,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 97.2222,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": null
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "widening_stress"
-      },
-      "price": {
-        "series_id": "theme_ai_power_credit_price",
-        "orientation": "price",
-        "severity_note": null,
-        "level": 97.5806,
-        "d1": 0.0469,
-        "d21": 0.5419,
-        "velocity": {
-          "vel21": 0.5419,
-          "vel63": -0.3683,
-          "vel21_pctile": 95.3488,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 95.3488,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": 0.2289
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "active"
-      }
-    },
-    "dc_reit_credit": {
-      "theme": "dc_reit_credit",
-      "n_dates": 64,
-      "density_gate": {
-        "open": true,
-        "reason": "density gate open"
-      },
-      "spread": {
-        "series_id": "theme_dc_reit_credit_gspread",
-        "orientation": "spread",
-        "severity_note": "spread: widening = deterioration",
-        "level": 138.267,
-        "d1": 4.5466,
-        "d21": 42.1998,
-        "velocity": {
-          "vel21": 42.1998,
-          "vel63": 5.678,
-          "vel21_pctile": 97.2973,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 97.2973,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": null
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "widening_stress"
-      },
-      "price": {
-        "series_id": "theme_dc_reit_credit_price",
-        "orientation": "price",
-        "severity_note": null,
-        "level": 95.9224,
-        "d1": 0.1551,
-        "d21": 0.198,
-        "velocity": {
-          "vel21": 0.198,
-          "vel63": 0.2034,
-          "vel21_pctile": 79.0698,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 79.0698,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": 0.3651
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "active"
-      }
-    },
-    "hyperscaler_credit": {
-      "theme": "hyperscaler_credit",
-      "n_dates": 64,
-      "density_gate": {
-        "open": true,
-        "reason": "density gate open"
-      },
-      "spread": {
-        "series_id": "theme_hyperscaler_credit_gspread",
-        "orientation": "spread",
-        "severity_note": "spread: widening = deterioration",
-        "level": 163.4107,
-        "d1": 3.9268,
-        "d21": 54.7675,
-        "velocity": {
-          "vel21": 54.7675,
-          "vel63": 49.2353,
-          "vel21_pctile": 96.9697,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 96.9697,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": null
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "widening_stress"
-      },
-      "price": {
-        "series_id": "theme_hyperscaler_credit_price",
-        "orientation": "price",
-        "severity_note": null,
-        "level": 92.1439,
-        "d1": 0.1262,
-        "d21": -0.0905,
-        "velocity": {
-          "vel21": -0.0905,
-          "vel63": -1.8576,
-          "vel21_pctile": 74.4186,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 74.4186,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": 0.4921
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "active"
-      }
-    },
-    "memory_credit": {
-      "theme": "memory_credit",
-      "n_dates": 64,
-      "density_gate": {
-        "open": false,
-        "reason": "avg n_bonds 6.4 < 8 (density gate: too few bonds)"
-      },
-      "spread": {
-        "series_id": "theme_memory_credit_gspread",
-        "orientation": "spread",
-        "severity_note": "spread: widening = deterioration",
-        "level": 189.9384,
-        "d1": 8.9007,
-        "d21": 28.4477,
-        "velocity": {
-          "vel21": 28.4477,
-          "vel63": -131.8569,
-          "vel21_pctile": 89.1892,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 89.1892,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": null
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "widening_stress",
-        "accruing_note": "density gate closed: avg n_bonds 6.4 < 8 (density gate: too few bonds) \u2014 velocity only, no oscillator"
-      },
-      "price": {
-        "series_id": "theme_memory_credit_price",
-        "orientation": "price",
-        "severity_note": null,
-        "level": 93.5829,
-        "d1": -0.0002,
-        "d21": -0.6531,
-        "velocity": {
-          "vel21": -0.6531,
-          "vel63": -8.7594,
-          "vel21_pctile": 81.3953,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 81.3953,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": 0.2905
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "active"
-      }
-    },
-    "neocloud_credit": {
-      "theme": "neocloud_credit",
-      "n_dates": 64,
-      "density_gate": {
-        "open": false,
-        "reason": "avg n_bonds 4.0 < 8 (density gate: too few bonds)"
-      },
-      "spread": {
-        "series_id": "theme_neocloud_credit_gspread",
-        "orientation": "spread",
-        "severity_note": "spread: widening = deterioration",
-        "level": 1286.2383,
-        "d1": 95.8814,
-        "d21": 433.6264,
-        "velocity": {
-          "vel21": 433.6264,
-          "vel63": 644.123,
-          "vel21_pctile": 97.6744,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 97.6744,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": 78.1004
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "widening_stress",
-        "accruing_note": "density gate closed: avg n_bonds 4.0 < 8 (density gate: too few bonds) \u2014 velocity only, no oscillator"
-      },
-      "price": {
-        "series_id": "theme_neocloud_credit_price",
-        "orientation": "price",
-        "severity_note": null,
-        "level": 75.8058,
-        "d1": -2.1916,
-        "d21": -10.8074,
-        "velocity": {
-          "vel21": -10.8074,
-          "vel63": -19.2729,
-          "vel21_pctile": 0.0,
-          "vel63_pctile": null,
-          "vel21_pctile_post2021": 0.0,
-          "vel63_pctile_post2021": null,
-          "accel_vel21": -1.4166
-        },
-        "grids": {
-          "1D": null,
-          "2B": null,
-          "3B": null,
-          "W-FRI": null
-        },
-        "state": "active"
-      }
-    },
-    "telecom_legacy": {
-      "theme": "telecom_legacy",
-      "n_dates": 64,
-      "density_gate": {
-        "open": true,
-        "reason": "density gate open"
-      },
-      "spread": {
-        "series_id": "theme_telecom_legacy_gspread",
-        "orientation": "spread",
-        "severity_note": "spread: widening = deterioration",
-        "level": 111.8761,
-        "d1": 2.8173,
-        "d21": 20.1383,
+        "level": 143.6432,
+        "d1": 14.8145,
+        "d21": 30.4879,
         "velocity": {
           "vel21": null,
-          "vel63": 12.9393,
+          "vel63": null,
           "vel21_pctile": null,
           "vel63_pctile": null,
           "vel21_pctile_post2021": null,
@@ -1454,20 +1116,358 @@
         "state": "accruing"
       },
       "price": {
+        "series_id": "theme_ai_hardware_credit_price",
+        "orientation": "price",
+        "severity_note": null,
+        "level": 96.3368,
+        "d1": -0.5262,
+        "d21": -0.9688,
+        "velocity": {
+          "vel21": -0.9688,
+          "vel63": -2.3991,
+          "vel21_pctile": 24.4444,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 24.4444,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": -0.5279
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "active"
+      }
+    },
+    "ai_power_credit": {
+      "theme": "ai_power_credit",
+      "n_dates": 66,
+      "density_gate": {
+        "open": true,
+        "reason": "density gate open"
+      },
+      "spread": {
+        "series_id": "theme_ai_power_credit_gspread",
+        "orientation": "spread",
+        "severity_note": "spread: widening = deterioration",
+        "level": 131.8334,
+        "d1": 12.2804,
+        "d21": 45.3683,
+        "velocity": {
+          "vel21": 45.3683,
+          "vel63": null,
+          "vel21_pctile": 97.3684,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 97.3684,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": 10.6454
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "widening_stress"
+      },
+      "price": {
+        "series_id": "theme_ai_power_credit_price",
+        "orientation": "price",
+        "severity_note": null,
+        "level": 97.1591,
+        "d1": -0.3661,
+        "d21": 0.0351,
+        "velocity": {
+          "vel21": 0.0351,
+          "vel63": -1.0358,
+          "vel21_pctile": 80.0,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 80.0,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": -0.3809
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "active"
+      }
+    },
+    "dc_reit_credit": {
+      "theme": "dc_reit_credit",
+      "n_dates": 66,
+      "density_gate": {
+        "open": true,
+        "reason": "density gate open"
+      },
+      "spread": {
+        "series_id": "theme_dc_reit_credit_gspread",
+        "orientation": "spread",
+        "severity_note": "spread: widening = deterioration",
+        "level": 154.1204,
+        "d1": 15.2038,
+        "d21": 56.5019,
+        "velocity": {
+          "vel21": 56.5019,
+          "vel63": 35.3026,
+          "vel21_pctile": 97.3684,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 97.3684,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": null
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "widening_stress"
+      },
+      "price": {
+        "series_id": "theme_dc_reit_credit_price",
+        "orientation": "price",
+        "severity_note": null,
+        "level": 95.3939,
+        "d1": -0.3908,
+        "d21": -0.4776,
+        "velocity": {
+          "vel21": -0.4776,
+          "vel63": -1.0391,
+          "vel21_pctile": 31.1111,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 31.1111,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": -0.4412
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "active"
+      }
+    },
+    "hyperscaler_credit": {
+      "theme": "hyperscaler_credit",
+      "n_dates": 66,
+      "density_gate": {
+        "open": true,
+        "reason": "density gate open"
+      },
+      "spread": {
+        "series_id": "theme_hyperscaler_credit_gspread",
+        "orientation": "spread",
+        "severity_note": "spread: widening = deterioration",
+        "level": 173.0389,
+        "d1": 12.1932,
+        "d21": 62.327,
+        "velocity": {
+          "vel21": 62.327,
+          "vel63": 56.1341,
+          "vel21_pctile": 97.1429,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 97.1429,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": 10.4466
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "widening_stress"
+      },
+      "price": {
+        "series_id": "theme_hyperscaler_credit_price",
+        "orientation": "price",
+        "severity_note": null,
+        "level": 91.6442,
+        "d1": -0.4923,
+        "d21": -0.7481,
+        "velocity": {
+          "vel21": -0.7481,
+          "vel63": -2.2985,
+          "vel21_pctile": 53.3333,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 53.3333,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": -0.4758
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "active"
+      }
+    },
+    "memory_credit": {
+      "theme": "memory_credit",
+      "n_dates": 66,
+      "density_gate": {
+        "open": false,
+        "reason": "avg n_bonds 6.3 < 8 (density gate: too few bonds)"
+      },
+      "spread": {
+        "series_id": "theme_memory_credit_gspread",
+        "orientation": "spread",
+        "severity_note": "spread: widening = deterioration",
+        "level": 192.6577,
+        "d1": 9.1184,
+        "d21": 31.9031,
+        "velocity": {
+          "vel21": 31.9031,
+          "vel63": -66.9685,
+          "vel21_pctile": 89.7436,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 89.7436,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": 7.8732
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "widening_stress",
+        "accruing_note": "density gate closed: avg n_bonds 6.3 < 8 (density gate: too few bonds) \u2014 velocity only, no oscillator"
+      },
+      "price": {
+        "series_id": "theme_memory_credit_price",
+        "orientation": "price",
+        "severity_note": null,
+        "level": 93.2865,
+        "d1": -0.323,
+        "d21": -1.5229,
+        "velocity": {
+          "vel21": -1.5229,
+          "vel63": -10.1492,
+          "vel21_pctile": 66.6667,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 66.6667,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": -0.5593
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "active"
+      }
+    },
+    "neocloud_credit": {
+      "theme": "neocloud_credit",
+      "n_dates": 66,
+      "density_gate": {
+        "open": false,
+        "reason": "avg n_bonds 4.0 < 8 (density gate: too few bonds)"
+      },
+      "spread": {
+        "series_id": "theme_neocloud_credit_gspread",
+        "orientation": "spread",
+        "severity_note": "spread: widening = deterioration",
+        "level": 1147.5205,
+        "d1": -20.4681,
+        "d21": 313.04,
+        "velocity": {
+          "vel21": 313.04,
+          "vel63": 462.4301,
+          "vel21_pctile": 84.4444,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 84.4444,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": -8.0206
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "widening",
+        "accruing_note": "density gate closed: avg n_bonds 4.0 < 8 (density gate: too few bonds) \u2014 velocity only, no oscillator"
+      },
+      "price": {
+        "series_id": "theme_neocloud_credit_price",
+        "orientation": "price",
+        "severity_note": null,
+        "level": 79.2596,
+        "d1": 0.5337,
+        "d21": -7.9968,
+        "velocity": {
+          "vel21": -7.9968,
+          "vel63": -14.5142,
+          "vel21_pctile": 22.2222,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 22.2222,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": 0.1489
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "active"
+      }
+    },
+    "telecom_legacy": {
+      "theme": "telecom_legacy",
+      "n_dates": 66,
+      "density_gate": {
+        "open": true,
+        "reason": "density gate open"
+      },
+      "spread": {
+        "series_id": "theme_telecom_legacy_gspread",
+        "orientation": "spread",
+        "severity_note": "spread: widening = deterioration",
+        "level": 122.0656,
+        "d1": 13.0159,
+        "d21": 43.4065,
+        "velocity": {
+          "vel21": 43.4065,
+          "vel63": 22.2228,
+          "vel21_pctile": 97.561,
+          "vel63_pctile": null,
+          "vel21_pctile_post2021": 97.561,
+          "vel63_pctile_post2021": null,
+          "accel_vel21": 24.8514
+        },
+        "grids": {
+          "1D": null,
+          "2B": null,
+          "3B": null,
+          "W-FRI": null
+        },
+        "state": "widening_stress"
+      },
+      "price": {
         "series_id": "theme_telecom_legacy_price",
         "orientation": "price",
         "severity_note": null,
-        "level": 89.5012,
-        "d1": 0.1864,
-        "d21": -0.0098,
+        "level": 88.9212,
+        "d1": -0.5552,
+        "d21": -1.0381,
         "velocity": {
-          "vel21": -0.0098,
-          "vel63": -2.0417,
-          "vel21_pctile": 83.7209,
+          "vel21": -1.0381,
+          "vel63": -2.8681,
+          "vel21_pctile": 48.8889,
           "vel63_pctile": null,
-          "vel21_pctile_post2021": 83.7209,
+          "vel21_pctile_post2021": 48.8889,
           "vel63_pctile_post2021": null,
-          "accel_vel21": 0.9859
+          "accel_vel21": -0.8208
         },
         "grids": {
           "1D": null,
@@ -1496,10 +1496,10 @@
         "tag": "credit_theme_stress",
         "theme": "ai_hardware_credit",
         "fired": false,
-        "score": 1,
+        "score": 0,
         "as_of": null,
         "legs": {
-          "vel21_pctile_ge85": true,
+          "vel21_pctile_ge85": false,
           "spread_3b_bull_cross_widening_secondary": false,
           "price_3b_bear_cross": false
         },
@@ -1548,10 +1548,10 @@
         "tag": "credit_theme_stress",
         "theme": "telecom_legacy",
         "fired": false,
-        "score": 0,
+        "score": 1,
         "as_of": null,
         "legs": {
-          "vel21_pctile_ge85": false,
+          "vel21_pctile_ge85": true,
           "spread_3b_bull_cross_widening_secondary": false,
           "price_3b_bear_cross": false
         },
@@ -1776,152 +1776,158 @@
   "breadth": {
     "own_store": {
       "_source": "own-store holdings (SPSB/SPIB/SPLB/JNK/SPHY)",
-      "n_snapshots": 65,
+      "n_snapshots": 66,
       "ig": {
-        "n_days": 64,
-        "n_bonds_latest": 8453,
-        "adv_share_latest": 0.3370401041050515,
-        "latest_date": "2026-11-09",
-        "note": "accruing (64 day(s) of history)"
+        "n_days": 65,
+        "n_bonds_latest": 8478,
+        "adv_share_latest": 0.0012974758197688134,
+        "latest_date": "2026-11-10",
+        "note": "accruing (65 day(s) of history)"
       },
       "hy": {
-        "n_days": 64,
-        "n_bonds_latest": 1971,
-        "adv_share_latest": 0.7311009639776763,
-        "latest_date": "2026-11-09",
-        "note": "accruing (64 day(s) of history)"
+        "n_days": 65,
+        "n_bonds_latest": 1975,
+        "adv_share_latest": 0.1478481012658228,
+        "latest_date": "2026-11-10",
+        "note": "accruing (65 day(s) of history)"
       },
       "all": {
-        "n_days": 64,
-        "n_bonds_latest": 10425,
-        "adv_share_latest": 0.41160671462829734,
-        "latest_date": "2026-11-09",
-        "note": "accruing (64 day(s) of history)"
+        "n_days": 65,
+        "n_bonds_latest": 10454,
+        "adv_share_latest": 0.02898412091065621,
+        "latest_date": "2026-11-10",
+        "note": "accruing (65 day(s) of history)"
       },
-      "note": "accruing (65 snapshots; 192 advance records)"
+      "note": "accruing (66 snapshots; 195 advance records)"
     },
     "finra": {
       "_source": "FINRA trade data",
       "_note": "CCW-R14: never blended with own-store numbers; distinctly labeled",
       "breadth": {
         "all securities": {
-          "advance_share_latest": 0.1531326281529699,
-          "advance_share_5d_ma": 0.4966174345911883,
-          "vel21_advance_share": -0.0145,
-          "vel21_pctile_advance_share": 48.7117,
-          "wk52_high_low_net_share": -0.0271,
-          "n_days": 836,
-          "latest_date": "2026-11-10",
+          "advance_share_latest": 0.4785388127853881,
+          "advance_share_5d_ma": 0.43493441318656634,
+          "vel21_advance_share": -0.0488,
+          "vel21_pctile_advance_share": 39.3382,
+          "wk52_high_low_net_share": 0.0,
+          "n_days": 837,
+          "latest_date": "2026-11-11",
           "momentum_1d": {
-            "macd": 2.2426,
-            "signal": 2.8696,
-            "hist": -0.627,
-            "hist_vel3": -0.8646,
-            "k": 24.3502,
-            "d": 53.8172,
-            "depth_pctile": 79.4233,
-            "as_of": "2026-11-10",
-            "n_bars": 836
+            "macd": 1.0478,
+            "signal": 2.2623,
+            "hist": -1.2145,
+            "hist_vel3": -1.1816,
+            "k": 10.0951,
+            "d": 30.7096,
+            "depth_pctile": 63.4817,
+            "as_of": "2026-11-11",
+            "n_bars": 837
           }
         },
         "investment grade": {
-          "advance_share_latest": 0.10907872055161846,
-          "advance_share_5d_ma": 0.49396224242466735,
-          "vel21_advance_share": -0.0119,
-          "vel21_pctile_advance_share": 49.6933,
-          "wk52_high_low_net_share": -0.0263,
-          "n_days": 836,
-          "latest_date": "2026-11-10",
+          "advance_share_latest": 0.44831880448318806,
+          "advance_share_5d_ma": 0.4227698559843214,
+          "vel21_advance_share": -0.0573,
+          "vel21_pctile_advance_share": 37.8676,
+          "wk52_high_low_net_share": -0.0121,
+          "n_days": 837,
+          "latest_date": "2026-11-11",
           "momentum_1d": {
-            "macd": 2.0889,
-            "signal": 2.6911,
-            "hist": -0.6022,
-            "hist_vel3": -0.9003,
-            "k": 23.8342,
-            "d": 53.2149,
-            "depth_pctile": 78.3748,
-            "as_of": "2026-11-10",
-            "n_bars": 836
+            "macd": 0.873,
+            "signal": 2.0851,
+            "hist": -1.2121,
+            "hist_vel3": -1.2384,
+            "k": 9.5987,
+            "d": 30.2001,
+            "depth_pctile": 60.6021,
+            "as_of": "2026-11-11",
+            "n_bars": 837
           }
         },
         "high yield": {
-          "advance_share_latest": 0.39843279083785416,
-          "advance_share_5d_ma": 0.5147672663873202,
-          "vel21_advance_share": -0.0163,
-          "vel21_pctile_advance_share": 46.0123,
-          "wk52_high_low_net_share": -0.0292,
-          "n_days": 836,
-          "latest_date": "2026-11-10",
+          "advance_share_latest": 0.44537815126050423,
+          "advance_share_5d_ma": 0.4637602520113219,
+          "vel21_advance_share": -0.0325,
+          "vel21_pctile_advance_share": 39.8284,
+          "wk52_high_low_net_share": 0.0441,
+          "n_days": 837,
+          "latest_date": "2026-11-11",
           "momentum_1d": {
-            "macd": 3.5049,
-            "signal": 4.1027,
-            "hist": -0.5978,
-            "hist_vel3": -0.2442,
-            "k": 21.6182,
-            "d": 25.7901,
-            "depth_pctile": 82.962,
-            "as_of": "2026-11-10",
-            "n_bars": 836
+            "macd": 2.2842,
+            "signal": 3.4965,
+            "hist": -1.2123,
+            "hist_vel3": -0.6856,
+            "k": 15.898,
+            "d": 20.5792,
+            "depth_pctile": 73.822,
+            "as_of": "2026-11-11",
+            "n_bars": 837
           }
         },
         "convertibles": {
-          "advance_share_latest": 0.43386243386243384,
-          "advance_share_5d_ma": 0.4661411892774122,
-          "vel21_advance_share": 0.0138,
-          "vel21_pctile_advance_share": 57.4233,
-          "wk52_high_low_net_share": -0.0462,
-          "n_days": 836,
-          "latest_date": "2026-11-10",
+          "advance_share_latest": 0.6416184971098265,
+          "advance_share_5d_ma": 0.48546488869937754,
+          "vel21_advance_share": 0.0952,
+          "vel21_pctile_advance_share": 87.6225,
+          "wk52_high_low_net_share": 0.0057,
+          "n_days": 837,
+          "latest_date": "2026-11-11",
           "momentum_1d": {
-            "macd": 1.2426,
-            "signal": 2.2019,
-            "hist": -0.9593,
-            "hist_vel3": -0.0799,
-            "k": 22.9689,
-            "d": 21.2495,
-            "depth_pctile": 67.4967,
-            "as_of": "2026-11-10",
-            "n_bars": 836
+            "macd": 1.1004,
+            "signal": 1.8347,
+            "hist": -0.7344,
+            "hist_vel3": 0.288,
+            "k": 28.5575,
+            "d": 22.6853,
+            "depth_pctile": 65.0524,
+            "as_of": "2026-11-11",
+            "n_bars": 837
           }
         }
       },
       "sentiment": {
         "investment grade": {
-          "buy_sell_ratio_latest": 0.9772,
-          "buy_sell_ratio_5d_ma": 1.0935,
-          "buy_vol_latest": 14314.201988,
-          "sell_vol_latest": 14648.220671,
-          "n_days": 836,
-          "latest_date": "2026-11-10",
+          "buy_sell_ratio_latest": 0.9127,
+          "buy_sell_ratio_5d_ma": 1.0474,
+          "buy_vol_latest": 37.579,
+          "sell_vol_latest": 41.175,
+          "n_days": 837,
+          "latest_date": "2026-11-11",
           "_note": "ratio>1 = customer net buyer; productCategory carries buy/sell; tradeType carries grade (CCW-W5 FINRA schema)"
         },
         "high yield": {
-          "buy_sell_ratio_latest": 1.3033,
-          "buy_sell_ratio_5d_ma": 1.2762,
-          "buy_vol_latest": 3751.472812,
-          "sell_vol_latest": 2878.345326,
-          "n_days": 836,
-          "latest_date": "2026-11-10",
+          "buy_sell_ratio_latest": 0.5163,
+          "buy_sell_ratio_5d_ma": 1.1452,
+          "buy_vol_latest": 46.851291,
+          "sell_vol_latest": 90.739,
+          "n_days": 837,
+          "latest_date": "2026-11-11",
           "_note": "ratio>1 = customer net buyer; productCategory carries buy/sell; tradeType carries grade (CCW-W5 FINRA schema)"
         },
         "all securities": {
-          "buy_sell_ratio_latest": 1.0363,
-          "buy_sell_ratio_5d_ma": 1.116,
-          "buy_vol_latest": 19070.490205,
-          "sell_vol_latest": 18402.402022,
-          "n_days": 836,
-          "latest_date": "2026-11-10",
+          "buy_sell_ratio_latest": 0.8524,
+          "buy_sell_ratio_5d_ma": 1.0591,
+          "buy_vol_latest": 947.407295,
+          "sell_vol_latest": 1111.416,
+          "n_days": 837,
+          "latest_date": "2026-11-11",
           "_note": "ratio>1 = customer net buyer; productCategory carries buy/sell; tradeType carries grade (CCW-W5 FINRA schema)"
         }
       },
-      "n_days_breadth": 836
+      "n_days_breadth": 837
     },
     "_note": "Two breadth sources; labeled distinctly; NEVER blended (CCW-R14)"
   },
   "watch": {
     "transition": {
-      "n_snapshots": 65,
+      "n_snapshots": 66,
       "fallen_angel_candidates": [
+        {
+          "isin": "US524660BA49",
+          "name": "LEGGETT + PLATT INC SR UNSECURED 11/51 3.5",
+          "last_ig_date": "2026-10-01",
+          "first_hy_date": "2026-10-06"
+        },
         {
           "isin": "US524660AY34",
           "name": "LEGGETT + PLATT INC SR UNSECURED 11/27 3.5",
@@ -1933,12 +1939,6 @@
           "name": "FLOWERS FOODS INC SR UNSECURED 03/31 2.4",
           "last_ig_date": "2026-09-24",
           "first_hy_date": "2026-10-19"
-        },
-        {
-          "isin": "US524660BA49",
-          "name": "LEGGETT + PLATT INC SR UNSECURED 11/51 3.5",
-          "last_ig_date": "2026-10-01",
-          "first_hy_date": "2026-10-06"
         }
       ],
       "rising_star_candidates": [
@@ -1951,8 +1951,8 @@
       ],
       "new_issuance_events": [
         {
-          "date": "2026-11-09",
-          "n_new_isins": 48,
+          "date": "2026-11-10",
+          "n_new_isins": 24,
           "note": "new ISINs entering panel \u2014 potential new issuance"
         }
       ],
@@ -1960,9 +1960,9 @@
     },
     "orcl": {
       "issuer": "ORCL",
-      "g_spread_bp_pw": 285.13,
-      "ig_peer_median_bp": 108.07,
-      "premium_vs_ig_peers_bp": 177.06,
+      "g_spread_bp_pw": 299.17,
+      "ig_peer_median_bp": 118.26,
+      "premium_vs_ig_peers_bp": 180.92,
       "peer_group": "IG-segment bonds at matched maturity bucket (no per-bond ratings available; BBB-median deferred)",
       "note": "live \u2014 labeled vs IG peers at matched maturity"
     }
@@ -1971,60 +1971,60 @@
     {
       "theme": "ai_hardware_credit",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 19.83,
-      "equity_return_21d": -36.9,
+      "credit_d21_bp": 30.49,
+      "equity_return_21d": -30.8,
       "n_equity_tickers": 2,
       "note": null
     },
     {
       "theme": "ai_power_credit",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 37.03,
-      "equity_return_21d": -5.35,
+      "credit_d21_bp": 45.37,
+      "equity_return_21d": -5.0,
       "n_equity_tickers": 3,
       "note": null
     },
     {
       "theme": "dc_reit_credit",
       "quadrant": "risk_formation",
-      "credit_d21_bp": 42.2,
-      "equity_return_21d": 1.04,
+      "credit_d21_bp": 56.5,
+      "equity_return_21d": 3.23,
       "n_equity_tickers": 2,
       "note": null
     },
     {
       "theme": "hyperscaler_credit",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 54.77,
-      "equity_return_21d": -8.69,
+      "credit_d21_bp": 62.33,
+      "equity_return_21d": -9.22,
       "n_equity_tickers": 5,
       "note": null
     },
     {
       "theme": "memory_credit",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 28.45,
-      "equity_return_21d": -28.45,
+      "credit_d21_bp": 31.9,
+      "equity_return_21d": -19.58,
       "n_equity_tickers": 3,
       "note": null
     },
     {
       "theme": "neocloud_credit",
       "quadrant": "converging_bad",
-      "credit_d21_bp": 433.63,
-      "equity_return_21d": -39.28,
+      "credit_d21_bp": 313.04,
+      "equity_return_21d": -21.9,
       "n_equity_tickers": 1,
       "note": null
     },
     {
       "theme": "telecom_legacy",
       "quadrant": "risk_formation",
-      "credit_d21_bp": 20.14,
-      "equity_return_21d": 2.9,
+      "credit_d21_bp": 43.41,
+      "equity_return_21d": 2.24,
       "n_equity_tickers": 2,
       "note": null
     }
   ],
-  "_timing_s": 75.14,
+  "_timing_s": 25.23,
   "_n_ledger_new": 0
 }

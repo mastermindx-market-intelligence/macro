@@ -1817,3 +1817,287 @@ class TestAnApprovedItemCannotOutliveItsWindow:
         # whether the reaper took it on the way in.
         assert "expired: superseded by tonight's plan" not in self._notes(
             tmp_path, item_id)
+
+
+# ---------------------------------------------------------------------------
+# Queued workflow dispatches must acquire canonical state at job start.
+# ---------------------------------------------------------------------------
+
+class TestQueuedPublishCheckout:
+    """Real local Git checkouts and the real publisher; no provider transport.
+
+    Both jobs are dispatched at D. A accepts and pushes a receipt before B's
+    checkout begins. The checkout inputs are read from the shipped workflow:
+    absent an explicit ref, checkout@v4 uses the event's dispatch SHA D.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _no_network(self, monkeypatch):
+        import socket
+
+        attempts = []
+
+        def denied(*args, **kwargs):
+            attempts.append("network attempted")
+            raise AssertionError("queued-checkout regression is offline")
+
+        monkeypatch.setattr(socket, "getaddrinfo", denied)
+        monkeypatch.setattr(socket.socket, "connect", denied)
+        monkeypatch.setattr(socket.socket, "connect_ex", denied)
+        monkeypatch.setenv("MARKETING_LLM_ENABLED", "0")
+        monkeypatch.delenv("OLLAMA_BASE_URL", raising=False)
+        yield
+        assert attempts == []
+
+    def _git(self, root: Path, *args: str) -> str:
+        import os
+        import subprocess
+
+        # These repositories and their only remote are under pytest's tmp_path.
+        # Ignore host Git configuration/hooks and prohibit every network protocol.
+        env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+        env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull,
+                   GIT_ALLOW_PROTOCOL="file", GIT_TERMINAL_PROMPT="0")
+        result = subprocess.run(
+            ["git", "-c", "core.hooksPath=" + os.devnull,
+             "-c", "user.name=Checkout regression",
+             "-c", "user.email=checkout-regression@example.invalid",
+             "-C", str(root), *args],
+            env=env, check=True, capture_output=True, text=True, timeout=20,
+        )
+        return result.stdout.strip()
+
+    def _seed_origin(self, tmp_path: Path, *, queued: bool = False):
+        from engine.marketing import outbox
+
+        seed = tmp_path / "seed"
+        seed.mkdir()
+        _write_publish_cfg(seed, approval_desk=False)
+        if queued:
+            cfg = seed / "config" / "marketing.yml"
+            cfg.write_text(
+                cfg.read_text().replace(
+                    "  auto_approve: false",
+                    "  auto_approve: true\n  auto_approve_scope: all"),
+                encoding="utf-8")
+            item = outbox.make_item(
+                account="flagship", kind="signal",
+                text="$PLTR reclaimed the 50-day. Watching the soldiers now.",
+                as_of=_AS_OF, scheduled_at="immediate",
+                provenance="content_studio", now=_FIXED_NOW,
+            )
+            outbox.enqueue(item, root=seed, max_per_account_day=99)
+            item_id = item["id"]
+        else:
+            item_id = _seed_approved_item(seed)
+        self._git(seed, "init", "--initial-branch=main")
+        self._git(seed, "add", "--", "config", "data")
+        self._git(seed, "commit", "-m", "eligible item at dispatch")
+        dispatch_sha = self._git(seed, "rev-parse", "HEAD")
+        origin = tmp_path / "origin.git"
+        origin.mkdir()
+        self._git(origin, "init", "--bare", "--initial-branch=main")
+        self._git(seed, "remote", "add", "origin", origin.as_uri())
+        self._git(seed, "push", "origin", "HEAD:refs/heads/main")
+        return origin, dispatch_sha, item_id
+
+    def _admission(self, output: Path, event_ref: str):
+        import os
+        import subprocess
+        import yaml
+
+        workflow = yaml.safe_load(
+            (Path(__file__).resolve().parents[1] /
+             ".github/workflows/marketing-publish.yml").read_text(encoding="utf-8")
+        )
+        guard = next((s for s in workflow["jobs"]["publish"]["steps"]
+                      if s.get("id") == "main_ref"), None)
+        if guard is None:
+            # The old workflow had no exact-ref barrier; retain that behavior
+            # when running this regression against its original source.
+            return 0, "canonical_main=true\n"
+        env = dict(os.environ, PUBLISH_EVENT_REF=event_ref, GITHUB_OUTPUT=str(output))
+        env.pop("BASH_ENV", None)
+        env.pop("ENV", None)
+        result = subprocess.run(
+            ["bash", "--noprofile", "--norc", "-e", "-o", "pipefail",
+             "-c", guard["run"]],
+            env=env, capture_output=True, text=True, timeout=10,
+        )
+        return result.returncode, output.read_text() if output.exists() else ""
+
+    def _checkout(self, path: Path, origin: Path, dispatch_sha: str) -> str:
+        import yaml
+
+        workflow = yaml.safe_load(
+            (Path(__file__).resolve().parents[1] /
+             ".github/workflows/marketing-publish.yml").read_text(encoding="utf-8")
+        )
+        steps = workflow["jobs"]["publish"]["steps"]
+        checkout = next(s for s in steps
+                        if str(s.get("uses", "")).startswith("actions/checkout@"))
+        options = checkout.get("with") or {}
+        # Mirrors checkout@v4's documented input boundary, not the outbox:
+        # no explicit ref means the event SHA; an explicit branch is resolved
+        # by the Git fetch when this job actually starts.
+        requested_ref = options.get("ref") or dispatch_sha
+        path.mkdir()
+        admitted, output = self._admission(path.parent / (path.name + "-admission"),
+                                           "refs/heads/main")
+        assert admitted == 0 and output == "canonical_main=true\n"
+        self._git(path, "init", "--initial-branch=main")
+        self._git(path, "remote", "add", "origin", origin.as_uri())
+        self._git(path, "fetch", "--no-tags", "--depth",
+                  str(options.get("fetch-depth", 1)), "origin", requested_ref)
+        if requested_ref.startswith("refs/heads/"):
+            self._git(path, "checkout", "-B",
+                      requested_ref.removeprefix("refs/heads/"), "FETCH_HEAD")
+        else:
+            self._git(path, "checkout", "--detach", "FETCH_HEAD")
+        assert self._git(path, "rev-parse", "--is-shallow-repository") == "true"
+        return self._git(path, "rev-parse", "HEAD")
+
+    def _persist(self, checkout: Path) -> str:
+        self._git(checkout, "add", "--", "data/marketing")
+        self._git(checkout, "commit", "-m", "persist canonical decision or receipt")
+        self._git(checkout, "push", "origin", "HEAD:refs/heads/main")
+        return self._git(checkout, "rev-parse", "HEAD")
+
+    @staticmethod
+    def _receipt_bytes(root: Path) -> dict[str, bytes | None]:
+        paths = ("data/marketing/outbox/status_ledger.jsonl",
+                 "data/marketing/outbox/decisions.jsonl",
+                 "data/marketing/publications.jsonl")
+        return {p: (root / p).read_bytes() if (root / p).exists() else None
+                for p in paths}
+
+    @pytest.mark.parametrize("first_post_now", [False, True])
+    @pytest.mark.parametrize("second_post_now", [False, True])
+    def test_delayed_checkout_cannot_resend_a_persisted_acceptance(
+            self, monkeypatch, tmp_path, first_post_now, second_post_now):
+        from engine.marketing import outbox
+
+        # The ordinary sweep's positive control is genuine queued carryover;
+        # neither this fixture nor the correction deletes carryover items.
+        origin, dispatch_sha, item_id = self._seed_origin(tmp_path, queued=True)
+        first = tmp_path / "first"
+        assert self._checkout(first, origin, dispatch_sha) == dispatch_sha
+        accepted = _FakePublisher(external_id="accepted-by-first-job")
+        first_args = ["--live"] + (["--post-now", item_id] if first_post_now else [])
+        assert _run_publisher(monkeypatch, first, first_args,
+                              fake_publisher=accepted, kill_switch=True) == 0
+        assert len(accepted.calls) == 1
+        state = outbox.fold_state(first)
+        assert state["status"][item_id] == "posted"
+        assert state["last"][item_id]["receipt"]["external_id"] == "accepted-by-first-job"
+        original_bytes = self._receipt_bytes(first)
+        posting_day = state["last"][item_id]["at"][:10]
+        original_count = outbox.posted_today_by_account(state, posting_day)
+        assert original_count.get("flagship") == 1
+        accepted_sha = self._persist(first)
+        assert accepted_sha != dispatch_sha
+
+        # B was dispatched at the SAME stale SHA, but acquires its own checkout
+        # only after A's real native receipt is committed to the origin.
+        second = tmp_path / "second"
+        actual_checkout = self._checkout(second, origin, dispatch_sha)
+        again = _FakePublisher(external_id="must-not-be-created")
+        second_args = ["--live"] + (["--post-now", item_id] if second_post_now else [])
+        rc = _run_publisher(monkeypatch, second, second_args,
+                            fake_publisher=again, kill_switch=True)
+        assert again.calls == [], "a queued stale checkout sent the accepted item again"
+        assert actual_checkout == accepted_sha
+        assert rc == (3 if second_post_now else 0)  # unchanged terminal post-now policy
+        after = outbox.fold_state(second)
+        assert after["status"][item_id] == "posted"
+        assert after["last"][item_id]["receipt"]["external_id"] == "accepted-by-first-job"
+        assert after["attempts"].get(item_id, 0) == state["attempts"].get(item_id, 0) == 0
+        assert outbox.posted_today_by_account(after, posting_day) == original_count
+        assert self._receipt_bytes(second) == original_bytes
+
+    @pytest.mark.parametrize("canonical_status", ["posting", "quarantined", "recalled"])
+    @pytest.mark.parametrize("post_now", [False, True])
+    def test_delayed_checkout_respects_new_inflight_or_terminal_state(
+            self, monkeypatch, tmp_path, canonical_status, post_now):
+        from engine.marketing import outbox
+
+        origin, dispatch_sha, item_id = self._seed_origin(tmp_path)
+        first = tmp_path / "first"
+        self._checkout(first, origin, dispatch_sha)
+        if canonical_status == "recalled":
+            assert outbox.transition(item_id, "posted", actor="fixture", root=first,
+                                     receipt={"external_id": "recalled-receipt"})
+        assert outbox.transition(item_id, canonical_status, actor="fixture", root=first)
+        canonical_bytes = self._receipt_bytes(first)
+        canonical_sha = self._persist(first)
+        second = tmp_path / "second"
+        checkout_sha = self._checkout(second, origin, dispatch_sha)
+        fake = _FakePublisher()
+        args = ["--live"] + (["--post-now", item_id] if post_now else [])
+        rc = _run_publisher(monkeypatch, second, args,
+                            fake_publisher=fake, kill_switch=True)
+        assert fake.calls == []
+        assert checkout_sha == canonical_sha
+        assert rc == (3 if post_now else 0)
+        assert outbox.current_statuses(second)[item_id] == canonical_status
+        assert self._receipt_bytes(second) == canonical_bytes
+
+    @pytest.mark.parametrize("post_now", [False, True])
+    def test_delayed_checkout_respects_a_new_operator_hold(
+            self, monkeypatch, tmp_path, post_now):
+        from engine.marketing import outbox
+
+        origin, dispatch_sha, item_id = self._seed_origin(tmp_path, queued=True)
+        first = tmp_path / "first"
+        self._checkout(first, origin, dispatch_sha)
+        assert outbox.record_decision(item_id, "hold", actor="fixture", root=first)
+        canonical_bytes = self._receipt_bytes(first)
+        canonical_sha = self._persist(first)
+        second = tmp_path / "second"
+        checkout_sha = self._checkout(second, origin, dispatch_sha)
+        fake = _FakePublisher()
+        args = ["--live"] + (["--post-now", item_id] if post_now else [])
+        rc = _run_publisher(monkeypatch, second, args,
+                            fake_publisher=fake, kill_switch=True)
+        assert fake.calls == []
+        assert checkout_sha == canonical_sha
+        assert rc == (3 if post_now else 0)
+        state = outbox.fold_state(second)
+        assert state["status"][item_id] == "queued" and item_id in state["held"]
+        assert self._receipt_bytes(second) == canonical_bytes
+
+    def test_delayed_ordinary_checkout_does_not_retry_a_new_failure(
+            self, monkeypatch, tmp_path):
+        from engine.marketing import outbox
+
+        origin, dispatch_sha, item_id = self._seed_origin(tmp_path)
+        first = tmp_path / "first"
+        self._checkout(first, origin, dispatch_sha)
+        assert outbox.transition(item_id, "posting", actor="fixture", root=first)
+        assert outbox.transition(item_id, "failed", actor="fixture", root=first,
+                                 note="explicit provider rejection")
+        canonical_bytes = self._receipt_bytes(first)
+        self._persist(first)
+        second = tmp_path / "second"
+        self._checkout(second, origin, dispatch_sha)
+        fake = _FakePublisher()
+        assert _run_publisher(monkeypatch, second, ["--live"],
+                              fake_publisher=fake, kill_switch=True) == 0
+        assert fake.calls == []
+        state = outbox.fold_state(second)
+        assert state["status"][item_id] == "failed"
+        assert state["attempts"][item_id] == 1
+        assert self._receipt_bytes(second) == canonical_bytes
+
+    @pytest.mark.parametrize("event_ref, allowed", [
+        ("refs/heads/main", True),
+        ("refs/heads/Main", False),
+        ("refs/heads/MAIN", False),
+        ("refs/heads/main-fix", False),
+        ("refs/tags/main", False),
+    ])
+    def test_actual_admission_shell_requires_the_exact_canonical_ref(
+            self, tmp_path, event_ref, allowed):
+        code, output = self._admission(tmp_path / "step-output", event_ref)
+        assert (code == 0) is allowed
+        assert output == ("canonical_main=true\n" if allowed else "")
