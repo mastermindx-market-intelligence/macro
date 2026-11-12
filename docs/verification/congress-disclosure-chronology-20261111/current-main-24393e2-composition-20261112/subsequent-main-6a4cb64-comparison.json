@@ -1,0 +1,557 @@
+{
+  "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/compare/24393e2adccc8abc094a635a3b37771b9a57be80...6a4cb6429db84a111182138a7c969ea5e657a48b",
+  "html_url": "https://github.com/mastermindx-market-intelligence/macro/compare/24393e2adccc8abc094a635a3b37771b9a57be80...6a4cb6429db84a111182138a7c969ea5e657a48b",
+  "permalink_url": "https://github.com/mastermindx-market-intelligence/macro/compare/mastermindx-market-intelligence:24393e2...mastermindx-market-intelligence:6a4cb64",
+  "diff_url": "https://github.com/mastermindx-market-intelligence/macro/compare/24393e2adccc8abc094a635a3b37771b9a57be80...6a4cb6429db84a111182138a7c969ea5e657a48b.diff",
+  "patch_url": "https://github.com/mastermindx-market-intelligence/macro/compare/24393e2adccc8abc094a635a3b37771b9a57be80...6a4cb6429db84a111182138a7c969ea5e657a48b.patch",
+  "base_commit": {
+    "sha": "24393e2adccc8abc094a635a3b37771b9a57be80",
+    "node_id": "C_kwDOS4LjItoAKDI0MzkzZTJhZGNjYzhhYmMwOTRhNjM1YTNiMzc3NzFiOWE1N2JlODA",
+    "commit": {
+      "author": {
+        "name": "dashboard-bot",
+        "email": "actions@users.noreply.github.com",
+        "date": "2026-11-12T02:29:52Z"
+      },
+      "committer": {
+        "name": "dashboard-bot",
+        "email": "actions@users.noreply.github.com",
+        "date": "2026-11-12T02:30:19Z"
+      },
+      "message": "render-sync: post-rebase guards (re-stamp + template re-copy + ms-board coherence)",
+      "tree": {
+        "sha": "b20c59b78d4cc2c8e0fb0a3e5db7215b4b3ff4dc",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/b20c59b78d4cc2c8e0fb0a3e5db7215b4b3ff4dc"
+      },
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/commits/24393e2adccc8abc094a635a3b37771b9a57be80",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/24393e2adccc8abc094a635a3b37771b9a57be80",
+    "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/24393e2adccc8abc094a635a3b37771b9a57be80",
+    "comments_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/24393e2adccc8abc094a635a3b37771b9a57be80/comments",
+    "author": {
+      "login": "actions",
+      "id": 44036562,
+      "node_id": "MDEyOk9yZ2FuaXphdGlvbjQ0MDM2NTYy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44036562?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/actions",
+      "html_url": "https://github.com/actions",
+      "followers_url": "https://api.github.com/users/actions/followers",
+      "following_url": "https://api.github.com/users/actions/following{/other_user}",
+      "gists_url": "https://api.github.com/users/actions/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/actions/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/actions/subscriptions",
+      "organizations_url": "https://api.github.com/users/actions/orgs",
+      "repos_url": "https://api.github.com/users/actions/repos",
+      "events_url": "https://api.github.com/users/actions/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/actions/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "actions",
+      "id": 44036562,
+      "node_id": "MDEyOk9yZ2FuaXphdGlvbjQ0MDM2NTYy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44036562?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/actions",
+      "html_url": "https://github.com/actions",
+      "followers_url": "https://api.github.com/users/actions/followers",
+      "following_url": "https://api.github.com/users/actions/following{/other_user}",
+      "gists_url": "https://api.github.com/users/actions/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/actions/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/actions/subscriptions",
+      "organizations_url": "https://api.github.com/users/actions/orgs",
+      "repos_url": "https://api.github.com/users/actions/repos",
+      "events_url": "https://api.github.com/users/actions/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/actions/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "b59a953dac7a5049d5a172e451080eab546f968f",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/b59a953dac7a5049d5a172e451080eab546f968f",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/b59a953dac7a5049d5a172e451080eab546f968f"
+      }
+    ]
+  },
+  "merge_base_commit": {
+    "sha": "24393e2adccc8abc094a635a3b37771b9a57be80",
+    "node_id": "C_kwDOS4LjItoAKDI0MzkzZTJhZGNjYzhhYmMwOTRhNjM1YTNiMzc3NzFiOWE1N2JlODA",
+    "commit": {
+      "author": {
+        "name": "dashboard-bot",
+        "email": "actions@users.noreply.github.com",
+        "date": "2026-11-12T02:29:52Z"
+      },
+      "committer": {
+        "name": "dashboard-bot",
+        "email": "actions@users.noreply.github.com",
+        "date": "2026-11-12T02:30:19Z"
+      },
+      "message": "render-sync: post-rebase guards (re-stamp + template re-copy + ms-board coherence)",
+      "tree": {
+        "sha": "b20c59b78d4cc2c8e0fb0a3e5db7215b4b3ff4dc",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/b20c59b78d4cc2c8e0fb0a3e5db7215b4b3ff4dc"
+      },
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/commits/24393e2adccc8abc094a635a3b37771b9a57be80",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/24393e2adccc8abc094a635a3b37771b9a57be80",
+    "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/24393e2adccc8abc094a635a3b37771b9a57be80",
+    "comments_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/24393e2adccc8abc094a635a3b37771b9a57be80/comments",
+    "author": {
+      "login": "actions",
+      "id": 44036562,
+      "node_id": "MDEyOk9yZ2FuaXphdGlvbjQ0MDM2NTYy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44036562?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/actions",
+      "html_url": "https://github.com/actions",
+      "followers_url": "https://api.github.com/users/actions/followers",
+      "following_url": "https://api.github.com/users/actions/following{/other_user}",
+      "gists_url": "https://api.github.com/users/actions/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/actions/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/actions/subscriptions",
+      "organizations_url": "https://api.github.com/users/actions/orgs",
+      "repos_url": "https://api.github.com/users/actions/repos",
+      "events_url": "https://api.github.com/users/actions/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/actions/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "actions",
+      "id": 44036562,
+      "node_id": "MDEyOk9yZ2FuaXphdGlvbjQ0MDM2NTYy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44036562?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/actions",
+      "html_url": "https://github.com/actions",
+      "followers_url": "https://api.github.com/users/actions/followers",
+      "following_url": "https://api.github.com/users/actions/following{/other_user}",
+      "gists_url": "https://api.github.com/users/actions/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/actions/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/actions/subscriptions",
+      "organizations_url": "https://api.github.com/users/actions/orgs",
+      "repos_url": "https://api.github.com/users/actions/repos",
+      "events_url": "https://api.github.com/users/actions/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/actions/received_events",
+      "type": "Organization",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "b59a953dac7a5049d5a172e451080eab546f968f",
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/b59a953dac7a5049d5a172e451080eab546f968f",
+        "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/b59a953dac7a5049d5a172e451080eab546f968f"
+      }
+    ]
+  },
+  "status": "ahead",
+  "ahead_by": 3,
+  "behind_by": 0,
+  "total_commits": 3,
+  "commits": [
+    {
+      "sha": "27bdebdbdc973398c0caa509498c568816871bf5",
+      "node_id": "C_kwDOS4LjItoAKDI3YmRlYmRiZGM5NzMzOThjMGNhYTUwOTQ5OGM1Njg4MTY4NzFiZjU",
+      "commit": {
+        "author": {
+          "name": "mastermindxryan",
+          "email": "ryan@mastermind-x.com",
+          "date": "2026-11-12T02:58:51Z"
+        },
+        "committer": {
+          "name": "GitHub",
+          "email": "noreply@github.com",
+          "date": "2026-11-12T02:58:51Z"
+        },
+        "message": "ci(native): settle apt-outage failures into a bounded browser-only fallback (#11064)\n\n* ci(pack): survive hosted-runner apt outages with a bounded browser-only fallback\n\nSince ~13:45Z 2026-11-11 GitHub-hosted runners intermittently cannot\nresolve any Ubuntu archive, so the apt stage of 'playwright install\n--with-deps chromium' killed whole packs before any test ran (run\n43039248114: packs 1,2,3,4,5,7,8,10 red). Give every shell-executed\ninstall the bounded fallback proven in terminal PR #1469: a 240s\nTERM-bounded --with-deps attempt, then a ::warning and a 60s\nbrowser-only install. The hosted image already ships Chromium's system\nlibraries, so a genuinely missing library fails the launch visibly.\nThe three acquisition: native_parallel contract installs stay\nbyte-identical (run_ci_pack validates their exact run token; they do\nnot shell out to apt directly).\n\ntests/test_ci_browser_setup.py pins the census (7 fallback installs +\n3 exact native tokens) and executes both real step shapes under mocked\ninstallers across full/browser exit-code combinations. Four owners\ncrossed an 800-character planner bucket (+1 each); PACKING_PROBES\nweight ceilings funded with the measured +1/+2/+1 (137/138/131 jobs,\nten packs unchanged).\n\nCo-Authored-By: Claude Code <noreply@anthropic.com>\n\n* ci: run test_ci_browser_setup.py in ci-control-plane-structure\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* ci(native): settle apt-outage failures into a bounded browser-only fallback\n\nDuring a hosted-runner Ubuntu-archive resolution outage, the native browser\nsetup turned any nonzero apt exit into UPDATE_UNPROVEN/RESOLUTION_UNPROVEN\n(or burned the whole total bound in completion retries) and returned an\nunknown settlement, which poisoned every remaining job in the pack (~20\nunrelated \"infrastructure unknown\" failures per affected pack).\n\nA native apt child that exited with a returncode is settled, not unknown:\nupdate/resolve apply no packages, and an acquisition whose install stage\nnever started, with no pending child and every reaped observation settled\n(downloads rc=100/FETCH, completion retry also failing), provably applied\nnothing. Both classes now emit ::warning and attempt the incumbent\nbrowser-only chromium install under the remaining original deadline; a\nfailed fallback is a settled job-local failure so sibling jobs keep\nrunning. Genuinely unknown cases (unreaped children, killed stages,\nstarted/unknown installation) stay fail-closed. The update stage also\ngains bounded Acquire::Retries/Timeout options so a resolution outage\nexits nonzero by itself instead of hanging to the total bound.\n\nCo-Authored-By: Claude Code <noreply@anthropic.com>\n\n* fix(ci): require a settled completion response before browser fallback\n\nKeep missing and unknown completion observations unknown on both sides of the original deadline. Allow positively observed nonzero completion exits after settled downloads.\n\n* ci(native): limit settled-stage fallback to package-free stages; pin update argv\n\nReview follow-ups on top of 96f93254: stage_settled_failure now requires the\nstage name and only accepts update/resolve (provably package-free), drops a\ndead detail assignment, and pins the bounded apt update argv in a test.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: chriswong6031-creator <chriswong6031@gmail.com>\nCo-authored-by: Claude Code <noreply@anthropic.com>\nCo-authored-by: MastermindX1 <team1@mastermind-x.com>",
+        "tree": {
+          "sha": "7c251a5c1ca0ee4db489e5f41c140730f934a9ac",
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/7c251a5c1ca0ee4db489e5f41c140730f934a9ac"
+        },
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/commits/27bdebdbdc973398c0caa509498c568816871bf5",
+        "comment_count": 0,
+        "verification": {
+          "verified": true,
+          "reason": "valid",
+          "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq9StrCRC1aQ7uu5UhlAAAXVcQABVpH1+o0xWLapUxoTuQpZ6m\nd6U2zUfHM3WlOPNRmVthtCY9bRFowIk6AyDCpmoqBeITil221D1uyXjU+JZQwo+m\n7yQEpoPHPHdsH/1xpgn2Bjr09cuieyWhdf6u4OT1PnsgaY8gwknh/YUKcIblT7Ak\nlQRJEKpwepvRH4K5kXIaF48LP2VkVXNO+PVhTeowLh4TYc1JEvQPx/xVQzDCyNDN\npr5XrKFiNOLYCvrl8yTmeBtKqDMrQyR2mzeWYxxxdRdKAaDiNW3Ilz5+k3f08TZN\nOkJtbe2U3pxhIbrnVnaVVPxNGvZ8OFswMX1Xz/CakTzQi/tEkzGNgnsBmUxAi5ds\naQEz6O4f7t61DOvAA/kfbCT+Q8QB+VhVLKCUoNr4L5UEkye2jqPHUZd61YuWLaR1\nwqoZ4kkI5EDLMX2XTpk/yPtshOPT8McbX2YdRFLI5GHETO9t4gMhvUIIT+KyTBHn\npU8hjidvYQENIhZuJSh1W/SvADaqCK7kF7sR6mmpZMNnTUVxiSUlA7BlvD3VfK/a\nr2mzQp/35YhTjdBdY2vPBs8852s4MzmcvtOtefXffSAVQMeRVlsXl74rS3rWMzTL\n9luMyMTAIOl1GCMfBYBT3nXFiDTBoCLRzHUBYju93fIijAppIknmN2LjWcdKyLYL\n752+4doSdDCYCia8v38k\n=qGMQ\n-----END PGP SIGNATURE-----\n",
+          "payload": "tree 7c251a5c1ca0ee4db489e5f41c140730f934a9ac\nparent 24393e2adccc8abc094a635a3b37771b9a57be80\nauthor mastermindxryan <ryan@mastermind-x.com> 1794452331 -0700\ncommitter GitHub <noreply@github.com> 1794452331 -0700\n\nci(native): settle apt-outage failures into a bounded browser-only fallback (#11064)\n\n* ci(pack): survive hosted-runner apt outages with a bounded browser-only fallback\n\nSince ~13:45Z 2026-11-11 GitHub-hosted runners intermittently cannot\nresolve any Ubuntu archive, so the apt stage of 'playwright install\n--with-deps chromium' killed whole packs before any test ran (run\n43039248114: packs 1,2,3,4,5,7,8,10 red). Give every shell-executed\ninstall the bounded fallback proven in terminal PR #1469: a 240s\nTERM-bounded --with-deps attempt, then a ::warning and a 60s\nbrowser-only install. The hosted image already ships Chromium's system\nlibraries, so a genuinely missing library fails the launch visibly.\nThe three acquisition: native_parallel contract installs stay\nbyte-identical (run_ci_pack validates their exact run token; they do\nnot shell out to apt directly).\n\ntests/test_ci_browser_setup.py pins the census (7 fallback installs +\n3 exact native tokens) and executes both real step shapes under mocked\ninstallers across full/browser exit-code combinations. Four owners\ncrossed an 800-character planner bucket (+1 each); PACKING_PROBES\nweight ceilings funded with the measured +1/+2/+1 (137/138/131 jobs,\nten packs unchanged).\n\nCo-Authored-By: Claude Code <noreply@anthropic.com>\n\n* ci: run test_ci_browser_setup.py in ci-control-plane-structure\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* ci(native): settle apt-outage failures into a bounded browser-only fallback\n\nDuring a hosted-runner Ubuntu-archive resolution outage, the native browser\nsetup turned any nonzero apt exit into UPDATE_UNPROVEN/RESOLUTION_UNPROVEN\n(or burned the whole total bound in completion retries) and returned an\nunknown settlement, which poisoned every remaining job in the pack (~20\nunrelated \"infrastructure unknown\" failures per affected pack).\n\nA native apt child that exited with a returncode is settled, not unknown:\nupdate/resolve apply no packages, and an acquisition whose install stage\nnever started, with no pending child and every reaped observation settled\n(downloads rc=100/FETCH, completion retry also failing), provably applied\nnothing. Both classes now emit ::warning and attempt the incumbent\nbrowser-only chromium install under the remaining original deadline; a\nfailed fallback is a settled job-local failure so sibling jobs keep\nrunning. Genuinely unknown cases (unreaped children, killed stages,\nstarted/unknown installation) stay fail-closed. The update stage also\ngains bounded Acquire::Retries/Timeout options so a resolution outage\nexits nonzero by itself instead of hanging to the total bound.\n\nCo-Authored-By: Claude Code <noreply@anthropic.com>\n\n* fix(ci): require a settled completion response before browser fallback\n\nKeep missing and unknown completion observations unknown on both sides of the original deadline. Allow positively observed nonzero completion exits after settled downloads.\n\n* ci(native): limit settled-stage fallback to package-free stages; pin update argv\n\nReview follow-ups on top of 96f93254: stage_settled_failure now requires the\nstage name and only accepts update/resolve (provably package-free), drops a\ndead detail assignment, and pins the bounded apt update argv in a test.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: chriswong6031-creator <chriswong6031@gmail.com>\nCo-authored-by: Claude Code <noreply@anthropic.com>\nCo-authored-by: MastermindX1 <team1@mastermind-x.com>",
+          "verified_at": "2026-11-12T02:58:51Z"
+        }
+      },
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/27bdebdbdc973398c0caa509498c568816871bf5",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/27bdebdbdc973398c0caa509498c568816871bf5",
+      "comments_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/27bdebdbdc973398c0caa509498c568816871bf5/comments",
+      "author": {
+        "login": "mastermindxryan",
+        "id": 333722846,
+        "node_id": "U_kgDOE-Q03g",
+        "avatar_url": "https://avatars.githubusercontent.com/u/333722846?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/mastermindxryan",
+        "html_url": "https://github.com/mastermindxryan",
+        "followers_url": "https://api.github.com/users/mastermindxryan/followers",
+        "following_url": "https://api.github.com/users/mastermindxryan/following{/other_user}",
+        "gists_url": "https://api.github.com/users/mastermindxryan/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/mastermindxryan/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/mastermindxryan/subscriptions",
+        "organizations_url": "https://api.github.com/users/mastermindxryan/orgs",
+        "repos_url": "https://api.github.com/users/mastermindxryan/repos",
+        "events_url": "https://api.github.com/users/mastermindxryan/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/mastermindxryan/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "committer": {
+        "login": "web-flow",
+        "id": 19864447,
+        "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+        "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/web-flow",
+        "html_url": "https://github.com/web-flow",
+        "followers_url": "https://api.github.com/users/web-flow/followers",
+        "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+        "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+        "organizations_url": "https://api.github.com/users/web-flow/orgs",
+        "repos_url": "https://api.github.com/users/web-flow/repos",
+        "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/web-flow/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "parents": [
+        {
+          "sha": "24393e2adccc8abc094a635a3b37771b9a57be80",
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/24393e2adccc8abc094a635a3b37771b9a57be80",
+          "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/24393e2adccc8abc094a635a3b37771b9a57be80"
+        }
+      ]
+    },
+    {
+      "sha": "0290e4c41f6cc5032fe4594d009ee2c71055dc5b",
+      "node_id": "C_kwDOS4LjItoAKDAyOTBlNGM0MWY2Y2M1MDMyZmU0NTk0ZDAwOWVlMmM3MTA1NWRjNWI",
+      "commit": {
+        "author": {
+          "name": "dashboard-bot",
+          "email": "actions@users.noreply.github.com",
+          "date": "2026-11-12T03:03:07Z"
+        },
+        "committer": {
+          "name": "dashboard-bot",
+          "email": "actions@users.noreply.github.com",
+          "date": "2026-11-12T03:03:13Z"
+        },
+        "message": "whitehouse: alert update 2026-11-12T03:03Z",
+        "tree": {
+          "sha": "3aa5bdb5cfdfbd45a57b6700df76e5ea1c696652",
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/3aa5bdb5cfdfbd45a57b6700df76e5ea1c696652"
+        },
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/commits/0290e4c41f6cc5032fe4594d009ee2c71055dc5b",
+        "comment_count": 0,
+        "verification": {
+          "verified": false,
+          "reason": "unsigned",
+          "signature": null,
+          "payload": null,
+          "verified_at": null
+        }
+      },
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/0290e4c41f6cc5032fe4594d009ee2c71055dc5b",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/0290e4c41f6cc5032fe4594d009ee2c71055dc5b",
+      "comments_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/0290e4c41f6cc5032fe4594d009ee2c71055dc5b/comments",
+      "author": {
+        "login": "actions",
+        "id": 44036562,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjQ0MDM2NTYy",
+        "avatar_url": "https://avatars.githubusercontent.com/u/44036562?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/actions",
+        "html_url": "https://github.com/actions",
+        "followers_url": "https://api.github.com/users/actions/followers",
+        "following_url": "https://api.github.com/users/actions/following{/other_user}",
+        "gists_url": "https://api.github.com/users/actions/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/actions/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/actions/subscriptions",
+        "organizations_url": "https://api.github.com/users/actions/orgs",
+        "repos_url": "https://api.github.com/users/actions/repos",
+        "events_url": "https://api.github.com/users/actions/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/actions/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "committer": {
+        "login": "actions",
+        "id": 44036562,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjQ0MDM2NTYy",
+        "avatar_url": "https://avatars.githubusercontent.com/u/44036562?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/actions",
+        "html_url": "https://github.com/actions",
+        "followers_url": "https://api.github.com/users/actions/followers",
+        "following_url": "https://api.github.com/users/actions/following{/other_user}",
+        "gists_url": "https://api.github.com/users/actions/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/actions/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/actions/subscriptions",
+        "organizations_url": "https://api.github.com/users/actions/orgs",
+        "repos_url": "https://api.github.com/users/actions/repos",
+        "events_url": "https://api.github.com/users/actions/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/actions/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "parents": [
+        {
+          "sha": "27bdebdbdc973398c0caa509498c568816871bf5",
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/27bdebdbdc973398c0caa509498c568816871bf5",
+          "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/27bdebdbdc973398c0caa509498c568816871bf5"
+        }
+      ]
+    },
+    {
+      "sha": "6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "node_id": "C_kwDOS4LjItoAKDZhNGNiNjQyOWRiODRhMTExMTgyMTM4YTdjOTY5ZWE1ZTY1N2E0OGI",
+      "commit": {
+        "author": {
+          "name": "mastermindxryan",
+          "email": "ryan@mastermind-x.com",
+          "date": "2026-11-12T03:10:09Z"
+        },
+        "committer": {
+          "name": "GitHub",
+          "email": "noreply@github.com",
+          "date": "2026-11-12T03:10:09Z"
+        },
+        "message": "research(xg): X grant-number gate verdict — NOT SATISFIED as of 2026-11-12 (#11105)\n\nRead-only evidence sweep across research/agentic_media, tools/xguerrilla,\ngit history and kanban: zero real entitlements (no grant/pack number,\ninvoice, paid-tier receipt, or vendor quote) exist on disk. Registry stays\nproposed; runtime stubs refuse, correctly. Gate lifts only via entitlement\nread-back, purchase receipt, admission receipt under research/admissions/,\nor a written Chairman waiver. 20 cited rows in the file.\n\nCo-authored-by: marketing <marketing@mastermind-x.com>",
+        "tree": {
+          "sha": "51d7ba4f397f1e36c989efecdeb4d599cd60524e",
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/trees/51d7ba4f397f1e36c989efecdeb4d599cd60524e"
+        },
+        "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/commits/6a4cb6429db84a111182138a7c969ea5e657a48b",
+        "comment_count": 0,
+        "verification": {
+          "verified": true,
+          "reason": "valid",
+          "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq9S4RCRC1aQ7uu5UhlAAA0fEQADyy3wla7SBllEYZ3+cwo1wq\nzXiKy20u8qsPFX9cs7Ebme4mPyuM1ghoI6oxsgcMHQWxjFt6LNsAqLM62FGvq8pI\nNNYb17ghbwcpmzm/k75I7OTIiP6No0ED5+eYPrEZ1jgBOfbEXBSyTzh80cYuvhtB\n7QZx3fjFmWoPMidBTeiq28ExIkh7FwxAwCIkUOMuu14Tl9RJHr19oq0bPKPzdw7+\noyhpEfx8CZA76cU3FJ0rX4NUeltBg4o21meyylxKnDv0x4zXfNREkuzHZwN6NrP8\nZPRZyQieitfUGCS1P1lVhpqveSrHLKY1TO7flO/RXD8Yv9Muz1JYJIxmLfG2SkWG\nIsX5+NQUQJmgI6rCbYfG2diqO+toOz4K3tflEaPPbVvlFoIkhHcMxlJk+xvsU0Ih\nQd+413Bur0knKO0eMsRN9w8skJxJc9+kv8DWAsruBqyY4aSy8lMYNBhtiK1no3Kk\n7GYSCVWgh7YtlPCvd66asHiwVQzixM9KejgEoS3zpxiJeRYncV6sy5MDZz4+sGXu\n9Wlcq5L/5RUCRiv8GbwXErSr2uJW0rblOgExdleK/W6Ct2WgGyuN6flr1kDezcL8\ng4RQt8e7gLqWY92HOMiTu1+wWwh+0RI+x+29qb+t0QtltJOsp1cwiF1r0muQOqcC\n2GTSxtKcZCa1QnqyJT/w\n=+Dbc\n-----END PGP SIGNATURE-----\n",
+          "payload": "tree 51d7ba4f397f1e36c989efecdeb4d599cd60524e\nparent 0290e4c41f6cc5032fe4594d009ee2c71055dc5b\nauthor mastermindxryan <ryan@mastermind-x.com> 1794453009 -0700\ncommitter GitHub <noreply@github.com> 1794453009 -0700\n\nresearch(xg): X grant-number gate verdict — NOT SATISFIED as of 2026-11-12 (#11105)\n\nRead-only evidence sweep across research/agentic_media, tools/xguerrilla,\ngit history and kanban: zero real entitlements (no grant/pack number,\ninvoice, paid-tier receipt, or vendor quote) exist on disk. Registry stays\nproposed; runtime stubs refuse, correctly. Gate lifts only via entitlement\nread-back, purchase receipt, admission receipt under research/admissions/,\nor a written Chairman waiver. 20 cited rows in the file.\n\nCo-authored-by: marketing <marketing@mastermind-x.com>",
+          "verified_at": "2026-11-12T03:10:09Z"
+        }
+      },
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "comments_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/6a4cb6429db84a111182138a7c969ea5e657a48b/comments",
+      "author": {
+        "login": "mastermindxryan",
+        "id": 333722846,
+        "node_id": "U_kgDOE-Q03g",
+        "avatar_url": "https://avatars.githubusercontent.com/u/333722846?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/mastermindxryan",
+        "html_url": "https://github.com/mastermindxryan",
+        "followers_url": "https://api.github.com/users/mastermindxryan/followers",
+        "following_url": "https://api.github.com/users/mastermindxryan/following{/other_user}",
+        "gists_url": "https://api.github.com/users/mastermindxryan/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/mastermindxryan/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/mastermindxryan/subscriptions",
+        "organizations_url": "https://api.github.com/users/mastermindxryan/orgs",
+        "repos_url": "https://api.github.com/users/mastermindxryan/repos",
+        "events_url": "https://api.github.com/users/mastermindxryan/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/mastermindxryan/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "committer": {
+        "login": "web-flow",
+        "id": 19864447,
+        "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+        "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/web-flow",
+        "html_url": "https://github.com/web-flow",
+        "followers_url": "https://api.github.com/users/web-flow/followers",
+        "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+        "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+        "organizations_url": "https://api.github.com/users/web-flow/orgs",
+        "repos_url": "https://api.github.com/users/web-flow/repos",
+        "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/web-flow/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "parents": [
+        {
+          "sha": "0290e4c41f6cc5032fe4594d009ee2c71055dc5b",
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/0290e4c41f6cc5032fe4594d009ee2c71055dc5b",
+          "html_url": "https://github.com/mastermindx-market-intelligence/macro/commit/0290e4c41f6cc5032fe4594d009ee2c71055dc5b"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "sha": "4d2433975962fa67b056b3c63c79ad1ddf76883f",
+      "filename": "data/ai_costs/usage.d/whitehouse-sentinel-43144959106-1.jsonl",
+      "status": "added",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "blob_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6a4cb6429db84a111182138a7c969ea5e657a48b/data%2Fai_costs%2Fusage.d%2Fwhitehouse-sentinel-43144959106-1.jsonl",
+      "raw_url": "https://github.com/mastermindx-market-intelligence/macro/raw/6a4cb6429db84a111182138a7c969ea5e657a48b/data%2Fai_costs%2Fusage.d%2Fwhitehouse-sentinel-43144959106-1.jsonl",
+      "contents_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/data%2Fai_costs%2Fusage.d%2Fwhitehouse-sentinel-43144959106-1.jsonl?ref=6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "patch": "@@ -0,0 +1 @@\n+{\"schema\":\"ai_costs.usage.v1\",\"ts\":\"2026-11-12T03:00:31Z\",\"lane\":\"whitehouse\",\"provider\":\"deepseek\",\"model\":\"deepseek-v4-pro\",\"key_id\":\"deepseek_api_key\",\"input_tokens\":2035,\"output_tokens\":15,\"cache_read_tokens\":768,\"cache_creation_tokens\":0,\"est_cost_usd\":0.00093168,\"cost_basis\":\"metered\",\"cycle_id\":\"\",\"stage\":\"whitehouse_brain\",\"note\":\"\"}"
+    },
+    {
+      "sha": "1acfdd373ac9f39a053cbabc36d447ace62f0d31",
+      "filename": "data/whitehouse/health.json",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 4,
+      "changes": 8,
+      "blob_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6a4cb6429db84a111182138a7c969ea5e657a48b/data%2Fwhitehouse%2Fhealth.json",
+      "raw_url": "https://github.com/mastermindx-market-intelligence/macro/raw/6a4cb6429db84a111182138a7c969ea5e657a48b/data%2Fwhitehouse%2Fhealth.json",
+      "contents_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/data%2Fwhitehouse%2Fhealth.json?ref=6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "patch": "@@ -1,15 +1,15 @@\n {\n   \"schema\": \"wh_health.v1\",\n-  \"as_of\": \"2026-11-11T21:59:14.748821+00:00\",\n+  \"as_of\": \"2026-11-12T03:00:31.591152+00:00\",\n   \"posts_seen\": 19,\n-  \"seen_total\": 346,\n+  \"seen_total\": 347,\n   \"evaluated\": 1,\n   \"activated\": 0,\n   \"provider\": \"Claude claude-opus-4-8 (subscription)\",\n   \"gate_scores\": [\n     {\n-      \"id\": \"wh-2026-11-11-presidential-message-on-victory-day-for-world-war-i-dd1e\",\n-      \"importance\": 5,\n+      \"id\": \"wh-2026-11-11-we-render-you-the-highest-salute-president-trump-honors-americas-veterans-on-hal\",\n+      \"importance\": 20,\n       \"activated\": false,\n       \"degraded_reason\": \"served_by:deepseek\"\n     }"
+    },
+    {
+      "sha": "5387bcccb179b57f53ae8b2c8edc7240bc48e1eb",
+      "filename": "data/whitehouse/processed.json",
+      "status": "modified",
+      "additions": 6,
+      "deletions": 0,
+      "changes": 6,
+      "blob_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6a4cb6429db84a111182138a7c969ea5e657a48b/data%2Fwhitehouse%2Fprocessed.json",
+      "raw_url": "https://github.com/mastermindx-market-intelligence/macro/raw/6a4cb6429db84a111182138a7c969ea5e657a48b/data%2Fwhitehouse%2Fprocessed.json",
+      "contents_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/data%2Fwhitehouse%2Fprocessed.json?ref=6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "patch": "@@ -2075,6 +2075,12 @@\n       \"at\": \"2026-11-11T21:59:14.747254+00:00\",\n       \"activated\": false,\n       \"importance\": 5\n+    },\n+    \"https://www.whitehouse.gov/?p=54395\": {\n+      \"id\": \"wh-2026-11-11-we-render-you-the-highest-salute-president-trump-honors-americas-veterans-on-hal\",\n+      \"at\": \"2026-11-12T03:00:31.586214+00:00\",\n+      \"activated\": false,\n+      \"importance\": 20\n     }\n   },\n   \"_note\": \"W5 baseline \\u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked.\""
+    },
+    {
+      "sha": "58870c47cfdf08cf9c8b5874501b3c0b09ba0377",
+      "filename": "data/whitehouse/reply_cache/39f0c8d8e051918f0123c05a2461cdbcf1e080a86a9edc013ddaaccad189e224.txt",
+      "status": "added",
+      "additions": 4,
+      "deletions": 0,
+      "changes": 4,
+      "blob_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6a4cb6429db84a111182138a7c969ea5e657a48b/data%2Fwhitehouse%2Freply_cache%2F39f0c8d8e051918f0123c05a2461cdbcf1e080a86a9edc013ddaaccad189e224.txt",
+      "raw_url": "https://github.com/mastermindx-market-intelligence/macro/raw/6a4cb6429db84a111182138a7c969ea5e657a48b/data%2Fwhitehouse%2Freply_cache%2F39f0c8d8e051918f0123c05a2461cdbcf1e080a86a9edc013ddaaccad189e224.txt",
+      "contents_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/data%2Fwhitehouse%2Freply_cache%2F39f0c8d8e051918f0123c05a2461cdbcf1e080a86a9edc013ddaaccad189e224.txt?ref=6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "patch": "@@ -0,0 +1,4 @@\n+{\n+  \"activate\": false,\n+  \"importance\": 20\n+}\n\\ No newline at end of file"
+    },
+    {
+      "sha": "c88383eb297de8286adf6c7be0b1cfea5e0a3603",
+      "filename": "research/agentic_media/research/X_GRANT_VERDICT_2026-11-12.md",
+      "status": "added",
+      "additions": 52,
+      "deletions": 0,
+      "changes": 52,
+      "blob_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6a4cb6429db84a111182138a7c969ea5e657a48b/research%2Fagentic_media%2Fresearch%2FX_GRANT_VERDICT_2026-11-12.md",
+      "raw_url": "https://github.com/mastermindx-market-intelligence/macro/raw/6a4cb6429db84a111182138a7c969ea5e657a48b/research%2Fagentic_media%2Fresearch%2FX_GRANT_VERDICT_2026-11-12.md",
+      "contents_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/research%2Fagentic_media%2Fresearch%2FX_GRANT_VERDICT_2026-11-12.md?ref=6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "patch": "@@ -0,0 +1,52 @@\n+# Verdict — \"X grant number is real\" gate\n+\n+**As of:** 2026-11-12 (MST) · **Card:** kanban `t_e305794e` (XG registry content v1) · **Gathered:** read-only, worktree `/Users/chriswong/.hermes/profiles/marketing/cache/scratch/xg-wt` @ branch `xg/runtime-adapter-v1`, HEAD `254d89c473`\n+\n+VERDICT: **GATE NOT SATISFIED — no real grant on record as of 2026-11-12**\n+\n+No X/Twitter API grant number, pack number, invoice, paid-tier receipt, entitlement read-back, or vendor Enterprise quote for this programme exists anywhere on disk. Every mention is one of: (a) a recommendation/budget/modelling assumption, (b) a documented limitation with entitlement explicitly *unresolved*, or (c) a proposal explicitly marked unapproved. Category (c) of the brief — a REAL issued/paid entitlement with a number or receipt — has **zero** occurrences.\n+\n+## Evidence\n+\n+| # | Citation (exact) | Class | What it establishes |\n+|---|---|---|---|\n+| 1 | `research/agentic_media/research/X_API_FOLLOW_LIMITS_BRIEF_2026-11.md:3` | (b) | \"This is a planning brief. **No account was accessed, credits purchased or platform action tested.**\" |\n+| 2 | `research/agentic_media/research/X_API_FOLLOW_LIMITS_BRIEF_2026-11.md:13` | (b) | \"**Minimum pack and Enterprise quote remain UNRESOLVED.** The earlier $42,000–$50,000 Enterprise figures were third-party reports, not a vendor quote for this programme.\" — no pack id, no quote number |\n+| 3 | `research/agentic_media/research/X_API_FOLLOW_LIMITS_BRIEF_2026-11.md:11` | (a) | The $5 credit pack + single-follow probe is \"**unapproved future work**\" |\n+| 4 | `research/agentic_media/X_GUERRILLA_NETWORK_MASTERPLAN.md:20` | gate def | \"Account entitlement and platform permission \\| Required before any live action … **a generic price row or vendor endpoint is not permission**\" |\n+| 5 | `research/agentic_media/X_GUERRILLA_NETWORK_MASTERPLAN.md:268` (§12.5) | (b) | Self-serve follow/like/quote \"unsupported absent **actual account-specific entitlement**\"; \"Minimum purchase and Enterprise pricing are **unverified**\"; the $5 probe \"**is not approved here**\" |\n+| 6 | `research/agentic_media/X_GUERRILLA_NETWORK_MASTERPLAN.md:466` (§22.3) | (b) | \"Actual account checkout, features and eligibility remain **UNVERIFIED**. Do not buy a tier or infer reach from the $8 modelling unit.\" |\n+| 7 | `research/agentic_media/X_GUERRILLA_NETWORK_MASTERPLAN.md:234` | (a) | Vendor follow/unfollow \"60 credits, $0.0006/call — Published endpoint price; **no account action or invoice tested**\" |\n+| 8 | `research/agentic_media/X_GUERRILLA_NETWORK_MASTERPLAN.md:384` (§18.6) | (a)/(b) | \"$8 unit is an **unverified modelling assumption, not proof of tier eligibility**, checkmark or approved subscription\"; seat cap remains a proposal |\n+| 9 | `research/agentic_media/X_GUERRILLA_NETWORK_MASTERPLAN.md:382` (§18.4) | (a) | \"$50–75 minimum pack … remain **separate unapproved spend**\"; new purchase receipt not established |\n+| 10 | `research/agentic_media/X_GUERRILLA_NETWORK_MASTERPLAN.md:255` | (a) | Buffer $6/$4/$3/$1 bands are \"author-reported **illustrative model, not a currently verified checkout**… Actual connected/billed inventory and invoice remain unverified\" |\n+| 11 | `research/agentic_media/research/X_AUTOMATION_RAILS_2026-11.md:66` | (b) | Comparison row: \"Current programme status \\| **No new account entitlement proved**\" |\n+| 12 | `research/agentic_media/research/X_AUTOMATION_RAILS_2026-11.md:5` | (b) | \"A capability comparison **is not an execution grant**\"; brief \"admits no account, browser, credentials, spending or live action\" |\n+| 13 | `research/agentic_media/research/X_PUBLISHING_SCALE_DECISION_2026-11-07.md:25` | (b) | \"Actual connected inventory, plan, tax, billing cycle and invoice must be read before a purchase… **This correction did not access a billing account.**\" |\n+| 14 | kanban `t_da720ee4` comment, engineering, 2026-11-08 04:52:55 | (b) | Preconditions table row: \"**X grant number real \\| NO**\" citing brief `:9,13,28`, masterplan `:268,466`, rails `:66` |\n+| 15 | kanban `t_e305794e` comment, marketing, 2026-11-10 09:43:55 | (b) | \"**X grant number: not real.**\" Cites `:20`, `:268`, `:466`; notes this does **not** block a `proposed`-state registry but does block any advance to `admitted`/`suspended` |\n+| 16 | `tools/xguerrilla/registry.yml:11-14,36,39` (at merge `8f12b4e2a1` and HEAD) | state of record | All five entries + domain `state: proposed`, `admission_receipt: null`; header states \"no admission receipt exists on disk for any identity\" |\n+| 17 | commit `8f12b4e2a1` (squash of PR #10947, merged 2026-11-10T10:28:44Z) | disposition | Registry content landed **only** because it is inert: engineering review (`t_e305794e`, 2026-11-10 10:15:32) records \"landing it **enables no live action and does not satisfy or waive the grant gate**\" |\n+| 18 | kanban `t_fd170576` (\"X posting gate — endpoint permission + entitlement + spend + credential custody\") | blocked | Still `blocked`, no `completed_at`, opened 2026-11-08 04:36; the gate item itself has never closed |\n+| 19 | commit `254d89c473`, 2026-11-11 18:57 MST (HEAD, newest XG work) | (b) | New adapter binds \"content-pinned admission receipts ({path, sha256})\" before any effect — structurally presumes a receipt that does not exist; adds refusals, not an entitlement |\n+| 20 | `research/admissions/` | absent | Directory does not exist; `git log --all -- research/admissions` is **empty** — no admission receipt has ever been committed |\n+\n+Absence checks run and returning nothing: `git grep` over `research/agentic_media/*` and `tools/xguerrilla/*` for `pack[_ -]?id`, `entitlement[_ -]?id`, `invoice`, `order[_ -]?(id|number)`, `purchase receipt`, `credits? purchased`, `billing account`, `INV-[0-9]` — only the \"no invoice tested / unverified\" prose rows above. Kanban: no task created on/after 2026-11-10 mentioning X API grant, pack, enterprise, or entitlement status change. Git: only one commit touched `tools/xguerrilla/`/`research/agentic_media/` since 2026-11-10 (`254d89c473`), and it contains no entitlement.\n+\n+## What a marginal reader might mistake for the gate, and why it isn't\n+\n+- **PR #10947 merged (`8f12b4e2a1`) → `t_e305794e` is `done`.** The card's *content* deliverable was always gated on \"proposed\"-state records, and every record is `state: proposed` with `admission_receipt: null`. The reviewing engineer stated the sequencing gate \"is still unmet\" in the same breath as approving. Card completion ≠ gate satisfaction.\n+- **Published X API unit prices ($0.015 create, $0.200 URL post, $0.010 read).** These are public tariff rows; brief `:5` and masterplan `:20` both say a price row is not an entitlement, and `:13`/`:268` say this account's minimum purchase and Enterprise quote are unresolved.\n+- **$350 / $347.56 / $8-per-seat figures.** Explicitly labelled recommendation and unverified modelling unit (`:384`, `:466`, §18.3, §22.4) — no purchase, no approval, no checkout.\n+\n+## What would satisfy the gate\n+\n+1. **An account-specific entitlement read-back** from the X developer portal for the actual account/app: plan name, tier, and confirmation that follow/like/quote endpoints are enabled for *this* account — stored as a dated receipt (not a screenshot of a price page).\n+2. **Or a purchase receipt / invoice with an identifier** — pack number, invoice number, or Enterprise order/SOW reference — showing money actually paid to X for the programme's API access, plus the credit balance read back from the account.\n+3. **Then** at least one `admission_receipt: {path, sha256}` committed under `research/admissions/`, which flips one registry entry from `proposed` to `admitted` and makes `XG-W8` (rail proof) executable.\n+4. Failing 1–3, an explicit **Chairman waiver** recorded in a decision record — that would satisfy the *programme* gate by ruling it unnecessary, but it must be a written ruling, not an inference from merged docs.\n+\n+Until one of those exists, the gate is NOT SATISFIED. No grant number, pack id, or price has been invented here.\n+\n+---\n+*Method note: prior child attempt (2026-11-10) died on a provider 429 before any tool call; this verdict was gathered fresh. Read-only throughout — no writes in the worktree, no git mutations.*"
+    },
+    {
+      "sha": "99e043f79dddbacfaa0e379d0e8f755621a969d5",
+      "filename": "scripts/ci_apt_native_stage.py",
+      "status": "modified",
+      "additions": 8,
+      "deletions": 1,
+      "changes": 9,
+      "blob_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6a4cb6429db84a111182138a7c969ea5e657a48b/scripts%2Fci_apt_native_stage.py",
+      "raw_url": "https://github.com/mastermindx-market-intelligence/macro/raw/6a4cb6429db84a111182138a7c969ea5e657a48b/scripts%2Fci_apt_native_stage.py",
+      "contents_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/scripts%2Fci_apt_native_stage.py?ref=6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "patch": "@@ -414,7 +414,14 @@ def run_stage(root: Path, mode: str, index: int | None, deadline: float) -> dict\n         raise AcquisitionRefused(\"TOTAL_DEADLINE_BEFORE_LAUNCH\")\n     if mode == \"update\":\n         (root / \"update-attempt\").mkdir()\n-        code, _ = observe_command((\"/usr/bin/apt-get\", \"-o\", \"Acquire::AllowInsecureRepositories=false\", \"update\"), deadline=deadline)\n+        # Bounded network failure: apt must exit nonzero by itself (settled,\n+        # no package applied) rather than burn the total setup deadline. An\n+        # archive-name-resolution outage then reaches the owner's browser-only\n+        # fallback instead of an unreaped-child unknown settlement.\n+        code, _ = observe_command((\"/usr/bin/apt-get\", \"-o\", \"Acquire::AllowInsecureRepositories=false\",\n+                                   \"-o\", \"Acquire::Retries=1\",\n+                                   \"-o\", \"Acquire::http::Timeout=30\", \"-o\", \"Acquire::https::Timeout=30\",\n+                                   \"update\"), deadline=deadline)\n     elif mode == \"resolve\":\n         (root / \"resolve-attempt\").mkdir()\n         apt_directory(root / \"planning-cache\")"
+    },
+    {
+      "sha": "8dea348b28215366d52dac43526ca868ca2f1ccd",
+      "filename": "scripts/ci_browser_native_setup.py",
+      "status": "modified",
+      "additions": 104,
+      "deletions": 17,
+      "changes": 121,
+      "blob_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6a4cb6429db84a111182138a7c969ea5e657a48b/scripts%2Fci_browser_native_setup.py",
+      "raw_url": "https://github.com/mastermindx-market-intelligence/macro/raw/6a4cb6429db84a111182138a7c969ea5e657a48b/scripts%2Fci_browser_native_setup.py",
+      "contents_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/scripts%2Fci_browser_native_setup.py?ref=6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "patch": "@@ -117,6 +117,77 @@ class Pending:\n     eof: bool = False\n \n \n+# The exact browser-only vendor command of the incumbent bounded fallback: the\n+# hosted image's preinstalled Chromium system libraries replace the apt stage.\n+BROWSER_ONLY_INSTALL_COMMAND = \"python -m playwright install chromium\"\n+\n+\n+# Only these stages are provably package-free: update refreshes indexes and\n+# resolve is --print-uris. Never extend this to a stage that can run dpkg.\n+PACKAGE_FREE_STAGES = frozenset({\"update\", \"resolve\"})\n+\n+\n+def stage_settled_failure(stage_result: dict, mode: str) -> bool:\n+    \"\"\"A native apt stage child that exited nonzero by itself, reaped with a\n+    returncode, is SETTLED: ``update``/``resolve`` apply no packages, so the\n+    failure proves nothing was installed and the browser-only fallback is\n+    safe. Unreaped children, lost responses and deadline kills raise before\n+    this point and keep their unknown settlement.\"\"\"\n+    return (mode in PACKAGE_FREE_STAGES\n+            and type(stage_result) is dict and stage_result.get(\"outcome\") == \"failed\"\n+            and stage_result.get(\"settlement\") == \"settled\")\n+\n+\n+def acquisition_settled_failure_without_applied_packages(result) -> bool:\n+    \"\"\"Require positive settlement of every launched stage before fallback.\"\"\"\n+    if result.installation != \"never_started\" or result.pending or not result.observations:\n+        return False\n+    if any(outcome not in {\"passed\", \"failed\"} or settlement != \"settled\"\n+           for _index, outcome, settlement in result.observations):\n+        return False\n+\n+    completion = result.completion\n+    if completion is None:\n+        return result.settlement == \"settled\" and result.initial_download_failure is None\n+    if completion.settlement != \"settled\" or completion.outcome not in {\"passed\", \"failed\"}:\n+        return False\n+    # The acquisition core marks an unsuccessful completion unproven even when\n+    # its process returned a settled nonzero exit. Only that positive receipt\n+    # distinguishes this case from a lost response to the completion stage.\n+    return result.settlement == \"settled\" or (\n+        result.reason == \"NATIVE_COMPLETION_UNPROVEN\"\n+        and result.initial_download_failure == \"NATIVE_DOWNLOAD_FAILED\"\n+        and completion.outcome == \"failed\"\n+    )\n+\n+\n+def _browser_only_after_settled_failure(*, reason: str, evidence: str, deadline: float,\n+                                        command_env: dict, browser_stream) -> dict:\n+    \"\"\"After a SETTLED apt failure with no packages applied, attempt the same\n+    bounded browser-only install as the incumbent fallback path.\n+\n+    The remaining original setup deadline bounds this single attempt. A failed\n+    fallback is a settled job-local failure (siblings in the pack keep\n+    running); a genuinely unsettled fallback observation keeps its unknown\n+    settlement and never degrades the fail-closed contract.\n+    \"\"\"\n+    remaining = deadline - time.monotonic()\n+    if remaining <= 0:\n+        return {\"outcome\": \"timed_out\", \"returncode\": None, \"failure_signature\": None,\n+                \"timeout_settlement\": \"not_started\",\n+                \"detail\": f\"native cold acquisition settled failure ({reason}); {evidence}; \"\n+                          \"original total exhausted before the browser-only fallback could start\"}\n+    print(f\"::warning title=native-browser-setup::{reason}; no packages applied; \"\n+          \"attempting browser-only chromium install\", flush=True)\n+    observation = browser_stream(BROWSER_ONLY_INSTALL_COMMAND, env=command_env, timeout_seconds=remaining)\n+    return {\"outcome\": observation.outcome, \"returncode\": observation.returncode,\n+            \"failure_signature\": observation.failure_signature,\n+            \"timeout_settlement\": observation.timeout_settlement,\n+            \"detail\": f\"native cold acquisition settled failure ({reason}); {evidence}; \"\n+                      f\"browser-only fallback {observation.outcome}; \"\n+                      + (observation.detail or f\"browser acquisition {observation.outcome}\")}\n+\n+\n class NativeAptBackend:\n     def __init__(self, root: str, command_env: dict, plan):\n         if not re.fullmatch(r\"/tmp/ci-apt-[A-Za-z0-9_-]+\", root):\n@@ -315,29 +386,45 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di\n         root = bootstrap_root(packet, command_env, deadline)\n         backend = NativeAptBackend(root, command_env, None)\n         backend.deadline = deadline\n+        settled_failure = None\n         update = backend.stage(\"update\", deadline)\n-        if update[\"outcome\"] != \"passed\" or update[\"settlement\"] != \"settled\":\n+        if stage_settled_failure(update, \"update\"):\n+            settled_failure = f\"apt update exited {update.get('returncode')} settled with no packages applied\"\n+        elif update[\"outcome\"] != \"passed\" or update[\"settlement\"] != \"settled\":\n             raise NativeUnknown(\"UPDATE_UNPROVEN\", update.get(\"child_pid\"), update[\"outcome\"])\n-        resolved = backend.stage(\"resolve\", deadline)\n-        if resolved[\"outcome\"] != \"passed\" or resolved[\"settlement\"] != \"settled\":\n-            raise NativeUnknown(\"RESOLUTION_UNPROVEN\", resolved.get(\"child_pid\"), resolved[\"outcome\"])\n-        backend.plan = make_download_plan(tuple(Archive(**row) for row in resolved[\"archives\"]))\n-        result = acquire_and_install(backend.plan, backend, deadline=deadline)\n-        installation = result.installation\n-        if result.initial_download_failure is not None:\n-            completion = result.completion\n-            original_detail = (f\"; initial_download_failure={result.initial_download_failure}; \"\n-                               f\"completion={completion.outcome if completion else 'unknown'}/{completion.settlement if completion else 'unknown'}\")\n-            original_attempt_detail = original_detail + f\"; original_downloads={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; retained {root}\"\n-        if result.outcome != \"passed\":\n-            return {\"outcome\": result.outcome, \"returncode\": None if result.settlement == \"unknown\" or result.outcome == \"timed_out\" else 1, \"failure_signature\": None,\n-                    \"timeout_settlement\": \"unknown\" if result.settlement == \"unknown\" else None,\n-                    \"detail\": f\"native cold acquisition {result.reason}{original_detail}; downloads[index,returncode,reported_errors]={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; installation={result.installation}; retained {root}; pending={result.pending}; handles={backend.handles}; native_children={[(i, r.get('child_pid')) for i, r in backend.records.items() if type(r.get('child_pid')) is int and 0 < r['child_pid'] <= 2147483647]}\"}\n+        if settled_failure is None:\n+            resolved = backend.stage(\"resolve\", deadline)\n+            if stage_settled_failure(resolved, \"resolve\"):\n+                settled_failure = f\"apt resolve exited {resolved.get('returncode')} settled with no packages applied\"\n+            elif resolved[\"outcome\"] != \"passed\" or resolved[\"settlement\"] != \"settled\":\n+                raise NativeUnknown(\"RESOLUTION_UNPROVEN\", resolved.get(\"child_pid\"), resolved[\"outcome\"])\n+            else:\n+                backend.plan = make_download_plan(tuple(Archive(**row) for row in resolved[\"archives\"]))\n+                result = acquire_and_install(backend.plan, backend, deadline=deadline)\n+                installation = result.installation\n+                if result.initial_download_failure is not None:\n+                    completion = result.completion\n+                    original_detail = (f\"; initial_download_failure={result.initial_download_failure}; \"\n+                                       f\"completion={completion.outcome if completion else 'unknown'}/{completion.settlement if completion else 'unknown'}\")\n+                    original_attempt_detail = original_detail + f\"; original_downloads={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; retained {root}\"\n+                if result.outcome != \"passed\":\n+                    if acquisition_settled_failure_without_applied_packages(result):\n+                        settled_failure = f\"native acquisition {result.reason} with every native child settled and no packages applied\"\n+                    else:\n+                        return {\"outcome\": result.outcome, \"returncode\": None if result.settlement == \"unknown\" or result.outcome == \"timed_out\" else 1, \"failure_signature\": None,\n+                                \"timeout_settlement\": \"unknown\" if result.settlement == \"unknown\" else None,\n+                                \"detail\": f\"native cold acquisition {result.reason}{original_detail}; downloads[index,returncode,reported_errors]={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; installation={result.installation}; retained {root}; pending={result.pending}; handles={backend.handles}; native_children={[(i, r.get('child_pid')) for i, r in backend.records.items() if type(r.get('child_pid')) is int and 0 < r['child_pid'] <= 2147483647]}\"}\n+        if settled_failure is not None:\n+            evidence = original_attempt_detail.lstrip(\"; \") or f\"installation={installation}; retained {root}\"\n+            evidence += f\"; downloads[index,returncode,reported_errors]={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}\"\n+            return _browser_only_after_settled_failure(\n+                reason=settled_failure, evidence=evidence, deadline=deadline,\n+                command_env=command_env, browser_stream=browser_stream)\n         remaining = deadline - time.monotonic()\n         if remaining <= 0:\n             return {\"outcome\": \"timed_out\", \"returncode\": None, \"failure_signature\": None,\n                     \"timeout_settlement\": \"not_started\", \"detail\": \"native packages applied; original total exhausted before browser acquisition\" + original_attempt_detail}\n-        observation = browser_stream(\"python -m playwright install chromium\", env=command_env, timeout_seconds=remaining)\n+        observation = browser_stream(BROWSER_ONLY_INSTALL_COMMAND, env=command_env, timeout_seconds=remaining)\n         browser_outcome = observation.outcome\n         if observation.outcome == \"passed\" and observation.timeout_settlement != \"unknown\" and result.initial_download_failure is None:\n             cleaned = backend.stage(\"cleanup\", deadline)"
+    },
+    {
+      "sha": "0a2b595c02c168a4b2b855a21eaf284f391f80fb",
+      "filename": "tests/test_ci_apt_native_stage.py",
+      "status": "modified",
+      "additions": 17,
+      "deletions": 0,
+      "changes": 17,
+      "blob_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6a4cb6429db84a111182138a7c969ea5e657a48b/tests%2Ftest_ci_apt_native_stage.py",
+      "raw_url": "https://github.com/mastermindx-market-intelligence/macro/raw/6a4cb6429db84a111182138a7c969ea5e657a48b/tests%2Ftest_ci_apt_native_stage.py",
+      "contents_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/tests%2Ftest_ci_apt_native_stage.py?ref=6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "patch": "@@ -473,3 +473,20 @@ def holder():\n     assert not thread.is_alive() and not holder_errors and not second_effects\n     assert (tmp_path/('completion-attempt' if first=='complete' else 'install-attempt')).is_dir()\n     assert not (tmp_path/('completion-attempt' if second=='complete' else 'install-attempt')).exists()\n+\n+\n+def test_update_stage_bounds_network_retries_so_an_outage_settles(tmp_path, monkeypatch):\n+    # An archive outage must make apt exit nonzero by itself (settled) instead of\n+    # consuming the whole setup deadline as an unreaped child.\n+    monkeypatch.setattr(STAGE.time, 'monotonic', lambda: 0)\n+    calls = []\n+    def native(argv, **kwargs):\n+        calls.append((argv, kwargs))\n+        return 100, b'E: Temporary failure resolving archive\\n'\n+    monkeypatch.setattr(STAGE, 'observe_command', native)\n+    result = STAGE.run_stage(tmp_path, 'update', None, 600)\n+    assert calls == [(('/usr/bin/apt-get', '-o', 'Acquire::AllowInsecureRepositories=false',\n+                       '-o', 'Acquire::Retries=1',\n+                       '-o', 'Acquire::http::Timeout=30', '-o', 'Acquire::https::Timeout=30',\n+                       'update'), {'deadline': 600})]\n+    assert result['outcome'] == 'failed' and result['settlement'] == 'settled'"
+    },
+    {
+      "sha": "0133a8a86f78b659de35c8c297fe601533ad7bdb",
+      "filename": "tests/test_ci_browser_native_setup.py",
+      "status": "modified",
+      "additions": 150,
+      "deletions": 0,
+      "changes": 150,
+      "blob_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6a4cb6429db84a111182138a7c969ea5e657a48b/tests%2Ftest_ci_browser_native_setup.py",
+      "raw_url": "https://github.com/mastermindx-market-intelligence/macro/raw/6a4cb6429db84a111182138a7c969ea5e657a48b/tests%2Ftest_ci_browser_native_setup.py",
+      "contents_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/tests%2Ftest_ci_browser_native_setup.py?ref=6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "patch": "@@ -263,6 +263,156 @@ def acquire(plan,backend,*,deadline):\n     assert 'cleanup' not in [event[0] for event in events]\n \n \n+def _stage_failure_runtime(monkeypatch, mode, code=100):\n+    events=runtime(monkeypatch)\n+    backend=SETUP.NativeAptBackend;original=backend.stage\n+    def stage(self,selected,deadline):\n+        if selected==mode:\n+            events.append((selected,deadline))\n+            return {'outcome':'failed','settlement':'settled','returncode':code}\n+        return original(self,selected,deadline)\n+    monkeypatch.setattr(backend,'stage',stage)\n+    return events\n+\n+\n+def test_settled_update_failure_falls_back_to_browser_only_and_lets_job_proceed(monkeypatch,capsys):\n+    events=_stage_failure_runtime(monkeypatch,'update');calls=[]\n+    def browser(command,**kwargs):calls.append((command,kwargs));return observed()\n+    result=SETUP.run_native_setup(deadline=600,command_env={'PATH':'/isolated/bin'},expected_sources=sources(),browser_stream=browser)\n+    assert result['outcome']=='passed' and result['timeout_settlement'] is None and result['returncode']==0\n+    assert [e[0] for e in events]==['bootstrap','update']\n+    assert [c[0] for c in calls]==[SETUP.BROWSER_ONLY_INSTALL_COMMAND]\n+    assert calls[0][1]['timeout_seconds']==500 and calls[0][1]['env']=={'PATH':'/isolated/bin'}\n+    assert 'settled failure (apt update exited 100 settled with no packages applied)' in result['detail']\n+    assert 'retained /tmp/ci-apt-fixture' in result['detail']\n+    assert '::warning title=native-browser-setup::apt update exited 100 settled with no packages applied' in capsys.readouterr().out\n+\n+\n+def test_settled_resolve_failure_falls_back_without_native_acquisition(monkeypatch,capsys):\n+    events=_stage_failure_runtime(monkeypatch,'resolve');calls=[]\n+    def browser(command,**kwargs):calls.append(command);return observed()\n+    result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),browser_stream=browser)\n+    assert result['outcome']=='passed' and result['timeout_settlement'] is None\n+    assert [e[0] for e in events]==['bootstrap','update','resolve']\n+    assert calls==[SETUP.BROWSER_ONLY_INSTALL_COMMAND]\n+    assert 'settled failure (apt resolve exited 100 settled with no packages applied)' in result['detail']\n+    assert 'native-browser-setup' in capsys.readouterr().out\n+\n+\n+def test_browser_only_fallback_failure_is_a_settled_job_local_failure(monkeypatch,capsys):\n+    events=_stage_failure_runtime(monkeypatch,'update')\n+    fallback=SimpleNamespace(outcome='failed',returncode=1,timeout_settlement=None,failure_signature=None,detail='browser-only install failed')\n+    result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),browser_stream=lambda *a,**k:fallback)\n+    assert result['outcome']=='failed' and result['returncode']==1\n+    assert result['timeout_settlement'] is None  # known settlement: pack siblings keep running\n+    assert 'browser-only fallback failed' in result['detail']\n+    assert 'settled failure (apt update exited 100 settled with no packages applied)' in result['detail']\n+    assert 'native-browser-setup' in capsys.readouterr().out\n+\n+\n+@pytest.mark.parametrize(\"exhausted\", [False, True], ids=[\"remaining-time\", \"deadline-exhausted\"])\n+@pytest.mark.parametrize(\n+    \"reason, completion_receipt\",\n+    [\n+        (\"NATIVE_COMPLETION_RESPONSE_UNKNOWN\", (\"failed\", \"unknown\")),\n+        (\"NATIVE_COMPLETION_UNPROVEN\", None),\n+        (\"NATIVE_COMPLETION_UNPROVEN\", (\"timed_out\", \"unknown\")),\n+    ],\n+)\n+def test_unsettled_completion_never_falls_back(monkeypatch, exhausted, reason, completion_receipt):\n+    from scripts.ci_apt_cold_acquisition import ChildResult\n+\n+    events = runtime(monkeypatch)\n+\n+    def acquire(plan, backend, *, deadline):\n+        for index in (0, 1, 3, 4):\n+            backend.records[index] = {\n+                \"mode\": \"download\", \"index\": index, \"outcome\": \"failed\", \"settlement\": \"settled\",\n+                \"returncode\": 100, \"reported_errors\": [\"FETCH\"], \"raw\": \"private fixture detail\",\n+            }\n+        if exhausted:\n+            monkeypatch.setattr(SETUP.time, \"monotonic\", lambda: deadline)\n+        return AcquisitionResult(\n+            \"timed_out\" if exhausted else \"failed\", \"unknown\", (2,), (), \"never_started\", reason,\n+            ((0, \"failed\", \"settled\"), (1, \"failed\", \"settled\"), (2, \"passed\", \"settled\"),\n+             (3, \"failed\", \"settled\"), (4, \"failed\", \"settled\")),\n+            \"NATIVE_DOWNLOAD_FAILED\", ChildResult(*completion_receipt) if completion_receipt else None,\n+        )\n+\n+    monkeypatch.setattr(SETUP, \"acquire_and_install\", acquire)\n+    result = SETUP.run_native_setup(\n+        deadline=600, command_env={}, expected_sources=sources(),\n+        browser_stream=lambda *args, **kwargs: pytest.fail(\"fallback after unproven completion\"),\n+    )\n+    assert result[\"timeout_settlement\"] == \"unknown\"\n+    assert result[\"outcome\"] == (\"timed_out\" if exhausted else \"failed\")\n+    assert reason in result[\"detail\"]\n+    assert '[0,100,[\"FETCH\"]]' in result[\"detail\"]\n+    assert \"private fixture detail\" not in result[\"detail\"]\n+    assert \"retained /tmp/ci-apt-fixture\" in result[\"detail\"]\n+    assert \"cleanup\" not in [event[0] for event in events]\n+\n+\n+def test_completion_with_a_settled_nonzero_exit_can_fall_back(monkeypatch):\n+    from scripts.ci_apt_cold_acquisition import ChildResult\n+\n+    runtime(monkeypatch)\n+    calls = []\n+\n+    def acquire(plan, backend, *, deadline):\n+        return AcquisitionResult(\n+            \"failed\", \"unknown\", (), (), \"never_started\", \"NATIVE_COMPLETION_UNPROVEN\",\n+            ((0, \"failed\", \"settled\"),), \"NATIVE_DOWNLOAD_FAILED\", ChildResult(\"failed\", \"settled\"),\n+        )\n+\n+    def browser(command, **kwargs):\n+        calls.append((command, kwargs[\"timeout_seconds\"]))\n+        return observed()\n+\n+    monkeypatch.setattr(SETUP, \"acquire_and_install\", acquire)\n+    result = SETUP.run_native_setup(\n+        deadline=600, command_env={}, expected_sources=sources(), browser_stream=browser,\n+    )\n+    assert result[\"outcome\"] == \"passed\" and result[\"timeout_settlement\"] is None\n+    assert calls == [(SETUP.BROWSER_ONLY_INSTALL_COMMAND, 500)]\n+\n+\n+@pytest.mark.parametrize('pending,observations', [((0,),()), ((),((0,'timed_out','unknown'),)), ((),((0,'failed','unknown'),))])\n+def test_unsettled_observations_or_pending_children_never_fall_back(monkeypatch,pending,observations):\n+    runtime(monkeypatch)\n+    def acquire(plan,backend,*,deadline):\n+        return AcquisitionResult('timed_out','unknown',(),pending,'never_started','CHILD_SETTLEMENT_UNKNOWN',observations)\n+    monkeypatch.setattr(SETUP,'acquire_and_install',acquire)\n+    result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),\n+                                  browser_stream=lambda *a,**k:pytest.fail('no fallback after an unsettled child'))\n+    assert result['outcome']!='passed' and result['timeout_settlement']=='unknown'\n+\n+\n+def test_settled_download_failure_without_completion_also_falls_back(monkeypatch,capsys):\n+    events=runtime(monkeypatch);calls=[]\n+    def acquire(plan,backend,*,deadline):\n+        backend.records[0]={'mode':'download','index':0,'outcome':'failed','settlement':'settled','returncode':100,'reported_errors':['FETCH']}\n+        return AcquisitionResult('failed','settled',(),(),'never_started','NATIVE_DOWNLOAD_FAILED',((0,'failed','settled'),))\n+    monkeypatch.setattr(SETUP,'acquire_and_install',acquire)\n+    def browser(command,**kwargs):calls.append(command);return observed()\n+    result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),browser_stream=browser)\n+    assert result['outcome']=='passed' and result['timeout_settlement'] is None\n+    assert calls==[SETUP.BROWSER_ONLY_INSTALL_COMMAND]\n+    assert 'settled failure (native acquisition NATIVE_DOWNLOAD_FAILED' in result['detail']\n+    assert 'downloads[index,returncode,reported_errors]=[[0,100,[\"FETCH\"]]]' in result['detail']\n+    assert 'native-browser-setup' in capsys.readouterr().out\n+\n+\n+def test_settled_failure_with_exhausted_total_never_launches_fallback(monkeypatch):\n+    events=_stage_failure_runtime(monkeypatch,'update')\n+    ticks=iter([100,600]);monkeypatch.setattr(SETUP.time,'monotonic',lambda:next(ticks))\n+    result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),\n+                                  browser_stream=lambda *a,**k:pytest.fail('no fallback after an exhausted total'))\n+    assert result['outcome']=='timed_out' and result['timeout_settlement']=='not_started'\n+    assert 'original total exhausted before the browser-only fallback could start' in result['detail']\n+    assert 'settled failure (apt update exited 100 settled' in result['detail']\n+\n+\n @pytest.mark.parametrize('code,reported,expected_code,expected_reported', [\n     (100,['AUTH','FETCH'],100,['AUTH','FETCH']),\n     (-9,['UNCLASSIFIED'],-9,['UNCLASSIFIED']),"
+    },
+    {
+      "sha": "2f765e9a8a63240a0d14486aa4e1adf53b15eed4",
+      "filename": "tests/test_ci_browser_setup.py",
+      "status": "modified",
+      "additions": 8,
+      "deletions": 4,
+      "changes": 12,
+      "blob_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6a4cb6429db84a111182138a7c969ea5e657a48b/tests%2Ftest_ci_browser_setup.py",
+      "raw_url": "https://github.com/mastermindx-market-intelligence/macro/raw/6a4cb6429db84a111182138a7c969ea5e657a48b/tests%2Ftest_ci_browser_setup.py",
+      "contents_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/tests%2Ftest_ci_browser_setup.py?ref=6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "patch": "@@ -14,10 +14,14 @@\n \n The three ``phase: browser_setup`` + ``acquisition: native_parallel`` steps\n (bea-gvc-current-descriptive-consumer, ontology-explorer, unrun-brain-gateway)\n-are deliberately EXCLUDED: their ``run`` string is a validated contract token\n-consumed by scripts/ci_browser_native_setup.py (the pack runner never executes\n-it as a shell command), and scripts/run_ci_pack.py rejects any other text with\n-\"browser setup must be the exact standalone installer\".\n+are deliberately EXCLUDED from this shell-level pattern: their ``run`` string\n+is a validated contract token consumed by scripts/ci_browser_native_setup.py\n+(the pack runner never executes it as a shell command), and\n+scripts/run_ci_pack.py rejects any other text with \"browser setup must be the\n+exact standalone installer\". The native adapter performs the equivalent\n+bounded fallback in Python: after a SETTLED apt failure that provably applied\n+no packages, it attempts the same browser-only chromium install under the\n+remaining original deadline; unsettled native children stay fail-closed.\n \"\"\"\n \n import os"
+    },
+    {
+      "sha": "a7b1191e54f7f4c25b53dbb15b58230d320b11a3",
+      "filename": "tests/test_ci_pack_semantic.py",
+      "status": "modified",
+      "additions": 24,
+      "deletions": 0,
+      "changes": 24,
+      "blob_url": "https://github.com/mastermindx-market-intelligence/macro/blob/6a4cb6429db84a111182138a7c969ea5e657a48b/tests%2Ftest_ci_pack_semantic.py",
+      "raw_url": "https://github.com/mastermindx-market-intelligence/macro/raw/6a4cb6429db84a111182138a7c969ea5e657a48b/tests%2Ftest_ci_pack_semantic.py",
+      "contents_url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/contents/tests%2Ftest_ci_pack_semantic.py?ref=6a4cb6429db84a111182138a7c969ea5e657a48b",
+      "patch": "@@ -3228,6 +3228,30 @@ def setup(**kwargs):\n     assert result.infrastructure[\"outcome\"]==\"unknown\"\n \n \n+def test_native_settled_apt_failure_fallback_fails_only_this_job_and_not_the_pack(monkeypatch):\n+    from scripts import ci_browser_native_setup as native\n+    _capture_job_environment(monkeypatch)\n+    job=_job(\"ontology-explorer\", [{**_browser_setup_step(),\"acquisition\":\"native_parallel\"}, {\"name\":\"assertion\",\"run\":\"true\"}],timeout=10)\n+    calls=[];ticks=iter([0.,0.,20.,40.])\n+    monkeypatch.setattr(PACK.time,\"monotonic\",lambda:next(ticks))\n+    monkeypatch.setattr(PACK,\"_stream_command\",lambda c,**k:calls.append(c) or PACK.CommandObservation(outcome=\"passed\",returncode=0))\n+    def setup(**kwargs):\n+        assert kwargs[\"deadline\"]==600 and len(kwargs[\"expected_sources\"])==7\n+        calls.append(\"native once\")\n+        # A settled apt failure whose browser-only fallback also failed keeps a\n+        # KNOWN settlement: only this logical job fails, never the pack.\n+        return dict(outcome=\"failed\",returncode=1,failure_signature=None,timeout_settlement=None,\n+                    detail=\"native cold acquisition settled failure (apt update exited 100 settled with no packages applied); \"\n+                           \"installation=never_started; retained /tmp/ci-apt-fixture; browser-only fallback failed\")\n+    monkeypatch.setattr(native,\"run_native_setup\",setup)\n+    result=PACK._run_job(job,base_ref=\"main\",head_ref=\"\",command_env={})\n+    assert calls==[\"capture apt\",\"capture playwright\",\"native once\"]\n+    assert result.timeout_settlement is None\n+    assert result.infrastructure[\"outcome\"]==\"dependency_failed\"\n+    assert result.steps[0][\"outcome\"]==\"infrastructure_blocked\"\n+    assert result.failure is not None and \"browser setup failed (exit 1); original outcome retained\" in result.failure\n+\n+\n def test_native_acquisition_normal_success_leaves_only_remaining_total_for_assertions(monkeypatch):\n     from scripts import ci_browser_native_setup as native\n     _capture_job_environment(monkeypatch)"
+    }
+  ]
+}

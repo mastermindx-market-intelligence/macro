@@ -1,0 +1,81 @@
+{
+  "schema": "congress.current-main-composition.v1",
+  "files": {
+    "README.md": {
+      "bytes": 3078,
+      "sha256": "01a6c4ba0016ca096a64107fbfd594b4006630f790cb45df9625dbbbb6c9a172"
+    },
+    "absolute-assertion-intent.json": {
+      "bytes": 1121,
+      "sha256": "9ee75e8c239cd704af0898d2fbc3886b8771bb81e17e4960d388204af05fc909"
+    },
+    "absolute-assertion-result.json": {
+      "bytes": 1953,
+      "sha256": "850ebd266cc15485d5b293e7c05525cee19aad2c0219c6cbe81a0667de0c65a8"
+    },
+    "absolute-assertion.log": {
+      "bytes": 110,
+      "sha256": "45ad40d74108c3df51303da50beb5f874145024b8d01636d53fe46e2c7efbfbc"
+    },
+    "focused-ci-contracts-intent.json": {
+      "bytes": 660,
+      "sha256": "6fc41dccae062544c434a95a4ad62fe8d55e03a993325708f20890439a0676f0"
+    },
+    "focused-ci-contracts-result.json": {
+      "bytes": 1285,
+      "sha256": "8e56294fcf695779ece47a284a95a2f0e242c1ba7704576e19795fbc473e3e00"
+    },
+    "focused-ci-contracts.log": {
+      "bytes": 100,
+      "sha256": "6b1eed7d041e6c64f6e8a0d31ea748566f9619cb2e457542f91296c1a850c37e"
+    },
+    "measurement-before.json": {
+      "bytes": 12600,
+      "sha256": "ffeb50aae3165daeb37888291f7e4978cc8403a2b60197848cabc7a9d9d5caca"
+    },
+    "measurement-execution.json": {
+      "bytes": 1463,
+      "sha256": "88ab2c9f99cec0fc855690b774a5f0278fe54c51be7c88794e55520490177677"
+    },
+    "qualification.json": {
+      "bytes": 2667,
+      "sha256": "59f5c48a3e6a2bcfdbe9b1403a52a83344f0244c0bc67ad4660c2f6098adc251"
+    },
+    "source-journal-calibration-commit.log": {
+      "bytes": 297,
+      "sha256": "c86e85ced94970cb782631afdb849672d8e054d92d1eac5ff4ca9562ea202f8e"
+    },
+    "source-journal-calibration-intent.json": {
+      "bytes": 450,
+      "sha256": "687ebbf977f4fe3fba3a9c0b48e9ed9a6fc0dbb8b28895578222f1b60fcef743"
+    },
+    "source-journal-calibration-result.json": {
+      "bytes": 804,
+      "sha256": "1c30efc6ad8c28606f98dcfcda3f5a73da827eb9ddb3db8fb0efbf44aefdf8f5"
+    },
+    "source-journal-integration-commit-intent.json": {
+      "bytes": 1900,
+      "sha256": "3ad0575942b4e07f26e9783f40d62a84bc3991768a0d76429f2a6aa05c46a965"
+    },
+    "source-journal-integration-commit-result.json": {
+      "bytes": 2518,
+      "sha256": "f61294429e9fb37651405181fe9f3e8e1b2606a95f724f7280a1a4e5ba22674e"
+    },
+    "source-journal-merge-intent.json": {
+      "bytes": 355,
+      "sha256": "5a6722b083a3e3133234b38c102708efc24de35719cc2d781e7aa04a4045ed2f"
+    },
+    "source-journal-merge-result.json": {
+      "bytes": 901,
+      "sha256": "57ff7cb75ec1ce16fd0e68f5dabf3942882fada72b5968871ee98ca3c7ed6d8f"
+    },
+    "source-journal-merge.log": {
+      "bytes": 201,
+      "sha256": "25af4cf1aaa878a01c8aa3e131c525e08fff8494b0cd11c4bc2dcf9d51ca6672"
+    },
+    "subsequent-main-6a4cb64-comparison.json": {
+      "bytes": 77155,
+      "sha256": "fec0f6f4afa3ae2a0c405ea31a621a86fb32bc4201540ac1c2b79caec66ced2e"
+    }
+  }
+}
