@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T20:58:31.536599+00:00",
-  "count": 3252,
+  "generated_at": "2026-11-12T21:22:05.057500+00:00",
+  "count": 3253,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -177,6 +177,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-bjgs4w6cphr-789660",
+      "title": "GS Dunn GS US Daily Download 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:30:04Z",
+      "summary_points": [
+        "AI Capex Surge: $900bn AI spending by 2026 ($550bn YoY increase), semiconductor investment undercounted in business stats; 2026 capex growth at 11% annualized - AI Economic Impact: AI boosts true capex growth by 5.3pp (measured 4.3pp) and true GDP by 0.6pp (measured 0.2pp); IRA/CHIPS drag capex growth by 0.5pp this year - Momentum Surge: Systematic LS Momentum +1.25% (2.6 SD move), 3/4 funds up (best 2-day returns in 3 years); AI/Semis shift into 6m momentum - Election Risk Nuance: Midterm election risks limited to unpermitted data center projects; 2027 construction remains strong despite IRA/CHIPS drag"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
