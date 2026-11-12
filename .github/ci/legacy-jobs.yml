@@ -301,6 +301,7 @@ jobs:
       - "scripts/validate_regime_fwd.py"
       - "tests/__init__.py"
       - "tests/test_sector_holdings_coverage.py"
+      - "lib/fabric_client.py"
       # SIC 2026-11-02 (#7646): curated-exclusive import closure reached on the merge of main f125051f into the integration branch — widened to cover (tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure)
       - "engine/cycle_phase_age.py"
       - "engine/cycle_rhythm.py"
@@ -343,6 +344,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2531,6 +2533,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3626,6 +3629,7 @@ jobs:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -5466,6 +5470,11 @@ jobs:
         run: python -m pytest tests/test_admin_inline_handler_attrs.py -q
       - name: admin navigation and copy UX guardrails
         run: python -m pytest tests/test_admin_navigation_ux.py -q
+      # #11154 added this suite with no run: step; the zero-run census failed
+      # every PR on a base at or after it. Same pytest-only lane as the nav test,
+      # which already imports admin.capacity_router.
+      - name: capacity observatory overflow/peak/Claude-lane extension contract
+        run: python -m pytest tests/test_capacity_observatory_extension.py -q
 
   path-prune-lint:
     if: ${{ false }}
@@ -6313,6 +6322,7 @@ jobs:
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
+      - "lib/fabric_client.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/hazard_parity.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
@@ -8304,6 +8314,7 @@ jobs:
       - "engine/neuralweb/options_selection_context.py"
       - "tests/test_options_selection_context.py"
       - "tests/fixtures/options_selection_question/terminal-mint-v1.json"
+      - "lib/fabric_client.py"
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -10897,6 +10908,7 @@ jobs:
       - "mockups/evidence/intl-gs-w3u/manifest.json"
       - "tests/__init__.py"
       - "scripts/__init__.py"
+      - "lib/fabric_client.py"
       # measured render closure of the real intl.html fixture path
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -11215,6 +11227,7 @@ jobs:
       - "lib/shared_shell.py"
       - "lib/intl_surveillance_mount.py"
       - "lib/intl_gs_display.py"
+      - "lib/fabric_client.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
@@ -11602,6 +11615,7 @@ jobs:
       - "templates/intl_workspace.js"
       - "templates/intl_workspace/compare.html.j2"
       - "templates/intl_workspace/chart_cohorts.html.j2"
+      - "lib/fabric_client.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
@@ -12607,6 +12621,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -14977,7 +14992,7 @@ jobs:
       - name: factor boundary selftest (guard fires on planted violations)
         run: python3 scripts/check_factor_boundaries.py --selftest
       - name: synapse owning contracts in one pytest session
-        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
+        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q tests/test_mastermind_feedback.py --deselect tests/test_mastermind_feedback.py::TestRealArtifactSmoke
       # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
@@ -15318,6 +15333,7 @@ jobs:
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "lib/fabric_client.py"
       # ITP-ES wave 1: additive builder and test/template closure.
       - "scripts/build_expectation_surface.py"
       - "scripts/build_index_leadership.py"
@@ -15788,6 +15804,7 @@ jobs:
       - "tests/test_cn_standout_audit.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      - lib/fabric_client.py
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17307,6 +17324,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
       # its current CODE consumer owner; the older signal-contract copy is DATA.
       - "engine/entry_radar/minute_resolution.py"
@@ -20857,6 +20875,7 @@ jobs:
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/market_ontology/__init__.py"
+      - "lib/fabric_client.py"
       # SIC 2026-11-02 (#7646): curated-exclusive import closure reached on the merge of main f125051f into the integration branch — widened to cover (tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure)
       - engine/cycle_phase_age.py
       - engine/cycle_rhythm.py
@@ -23949,6 +23968,7 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "tests/__init__.py"
+      - "lib/fabric_client.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -24255,6 +24275,7 @@ jobs:
       - "tests/intl_gs_transmission_fixture.py"
       - "tests/test_intl_gs_transmission_view.py"
       - "tests/test_intl_transmission_evidence.py"
+      - "lib/fabric_client.py"
 
     timeout-minutes: 10
     runs-on: ubuntu-latest
@@ -24428,6 +24449,7 @@ jobs:
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
       - "lib/intl_chart_publication.py"
+      - "lib/fabric_client.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - lib/intl_eod_publication.py
@@ -24760,6 +24782,7 @@ jobs:
       - "engine/intl_global_universe.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
+      - "lib/fabric_client.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/hazard_parity.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
@@ -27407,6 +27430,7 @@ jobs:
       - "engine/release_target_truth.py"
       - "engine/trial_ledger.py"
       - "lib/store.py"
+      - "lib/fabric_client.py"
       # Full import closure of the two runner suites (contract-delta).
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -28313,6 +28337,7 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      - "lib/fabric_client.py"
     # Hermetic LocalStore/source contracts must execute on the PR head.
     # Keep one canonical test list; mutable data health is a separate concern.
     # RV W1 ingestion spine: the sidecar contract normalization + every fallback
@@ -31759,6 +31784,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -32857,6 +32883,7 @@ jobs:
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/shared_shell.py"
+      - "lib/fabric_client.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/hazard_parity.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
@@ -35761,7 +35788,10 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts
-        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_china_intel_hub_command.py tests/test_narrative_crossmarket.py tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
+        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_china_intel_hub_command.py tests/test_narrative_crossmarket.py tests/test_fabric_client.py tests/test_master_brain.py tests/test_master_brain_fabric_cutover.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
+      # Capacity Fabric consumer adapter + AI Brief writer cutover (Chairman
+      # 2026-11-12): lib/fabric_client.py, its unit suite, and the env-gated
+      # _call_model cutover suite ride the master_brain layer that owns them.
       # China Alpha Intelligence P1 (#6050): the china_intel_hub dossier's
       # descriptive-only visits block — joins the china_intel_hub owner lane.
       # test_china_intel_visits_render.py is the SOL-repair template render
@@ -36312,6 +36342,7 @@ jobs:
       - "tests/test_regime_history_china_analogs.py"
       - "tests/test_regime_history_hk_current.py"
       - "tests/test_regime_history_us_basis.py"
+      - "lib/fabric_client.py"
       # SIC 2026-11-02 (#7646): curated-exclusive import closure reached on the merge of main f125051f into the integration branch — widened to cover (tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure)
       - "engine/cycle_phase_age.py"
       - "engine/cycle_rhythm.py"
@@ -37273,6 +37304,7 @@ jobs:
       - "engine/sector_intelligence/__init__.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "lib/fabric_client.py"
       # ITP-ES wave 1: additive builder and test/template closure.
       - "scripts/build_expectation_surface.py"
       - "tests/test_build_expectation_surface.py"
@@ -37851,6 +37883,7 @@ jobs:
       - "tests/test_coiled_mtf_anchor_invariance.py"
       - contracts/theme_graph/selection_cohort_read.v1.schema.json
       - contracts/theme_graph/selection_cohort_source.v1.schema.json
+      - lib/fabric_client.py
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -41686,6 +41719,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -43414,6 +43448,7 @@ jobs:
     paths:
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
+      - "lib/fabric_client.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
       - "engine/hazard_parity.py"
@@ -45132,6 +45167,7 @@ jobs:
     paths:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -47557,6 +47593,7 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "lib/fabric_client.py"
       # PR #10929 contract-delta registration (2026-11-10): exact closure
       # paths named by scripts/check_contract_delta.py at head
       # 595fe6b7 — widening is the safe direction.
@@ -50364,6 +50401,7 @@ jobs:
       - tests/test_sni_a8_us_transfer_draft.py
       - tests/test_sni_s0_amendment_a01_draft.py
       - tests/test_sni_us_stress.py
+      - lib/fabric_client.py
       # Measured closure of tests/test_sni_a8_us_transfer_draft.py, which reads
       # engine/qledger.py as text to pin GRADE_HORIZONS against the owner; the
       # inferer conservatively owns that file's import closure. Listed, not hidden.
@@ -50837,6 +50875,7 @@ jobs:
       - "tests/test_sni_denominator_guard_properties.py"
       - "tests/test_sni_correction_lineage_guard_properties.py"
       - "tests/test_sni_entitlement_guard_properties.py"
+      - "lib/fabric_client.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51635,6 +51674,7 @@ jobs:
       - "scripts/validate_regime_fwd.py"
       - "tests/__init__.py"
       - "tests/test_rotation_relative_trend.py"
+      - "lib/fabric_client.py"
       # SIC 2026-11-02 (#7646): curated-exclusive import closure reached on the merge of main f125051f into the integration branch — widened to cover (tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure)
       - "engine/cycle_phase_age.py"
       - "engine/cycle_rhythm.py"
@@ -51883,6 +51923,7 @@ jobs:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "admin/press_audience.py"
+      - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
