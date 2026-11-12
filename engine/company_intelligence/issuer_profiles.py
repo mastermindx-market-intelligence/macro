@@ -1916,12 +1916,42 @@ _INDUSTRIALS_PROFILE_FACTORIES: dict[str, Callable[[], IssuerProfile]] = {
 }
 
 
+# Communications Alphabet enrollment is a lazy sibling registration. The owner
+# module imports IssuerProfile/_no_guidance from this module, so these wrappers
+# defer its import until lookup time instead of creating a module-load cycle.
+def _alphabet_issuer_factory() -> IssuerIdentity:
+    from .communications_profiles import alphabet_issuer
+    return alphabet_issuer()
+
+
+def _googl_profile_factory() -> IssuerProfile:
+    from .communications_profiles import googl_profile
+    return googl_profile()
+
+
+def _goog_profile_factory() -> IssuerProfile:
+    from .communications_profiles import goog_profile
+    return goog_profile()
+
+
+_COMMUNICATIONS_ISSUER_FACTORIES: dict[str, Callable[[], IssuerIdentity]] = {
+    "GOOGL": _alphabet_issuer_factory,
+    "GOOG": _alphabet_issuer_factory,
+}
+
+_COMMUNICATIONS_PROFILE_FACTORIES: dict[str, Callable[[], IssuerProfile]] = {
+    "GOOGL": _googl_profile_factory,
+    "GOOG": _goog_profile_factory,
+}
+
+
 def issuer_for_ticker(ticker: str) -> IssuerIdentity | None:
     """The registered :class:`IssuerIdentity` for a homebuilder, an Industrials
-    issuer, or a T05a semiconductor witness.
+    issuer, a T05a semiconductor witness, or Alphabet.
 
     Homebuilders are DHI, PHM, KBH, and TOL. Industrials T02 issuers are EXPO
-    and PNR. Semiconductor witnesses are TSM and ON. ``None`` for AAPL (use :func:`event_workspace.apple_issuer`
+    and PNR. Semiconductor witnesses are TSM and ON. Alphabet's dual listing is
+    GOOGL and GOOG (one CIK). ``None`` for AAPL (use :func:`event_workspace.apple_issuer`
     directly) and for any unknown ticker.  Acquisition needs the CIK and
     ``fiscal_year_end_month`` before an event's fiscal period can be derived
     from a discovered filing's ``report_date``, which is why this is exposed
@@ -1933,6 +1963,8 @@ def issuer_for_ticker(ticker: str) -> IssuerIdentity | None:
         factory = _INDUSTRIALS_ISSUER_FACTORIES.get(normalized)
     if factory is None:
         factory = _SEMICONDUCTOR_ISSUER_FACTORIES.get(normalized)
+    if factory is None:
+        factory = _COMMUNICATIONS_ISSUER_FACTORIES.get(normalized)
     return factory() if factory is not None else None
 
 
@@ -1963,6 +1995,8 @@ def profile_for_ticker(
         factory = _INDUSTRIALS_PROFILE_FACTORIES.get(normalized)
     if factory is None:
         factory = _SEMICONDUCTOR_PROFILE_FACTORIES.get(normalized)
+    if factory is None:
+        factory = _COMMUNICATIONS_PROFILE_FACTORIES.get(normalized)
     return factory() if factory is not None else None
 
 
