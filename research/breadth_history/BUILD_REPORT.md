@@ -2,6 +2,19 @@
 
 Sector Intelligence quant lead, 2026-11-12. Data only: nothing here relates breadth
 to any outcome on any period (no forward returns, hit rates or backtests).
+**Read before the tables:** on the dated basis only 46.5% of members carry a sector
+label at the end of 1996, and all 11 sectors are valid (10 or more counted members)
+only from about 2010. The pre-2010 dated series is a thin, survivor-leaning sample.
+
+**Rights.** The Tiingo archive's member rows stay on the SSD and never enter git.
+What is committed is group-level aggregates (shares and counts per sector), the
+same class as the aggregate evidence already published under
+`docs/tiingo-evidence/`. The Chairman's Business Advanced / full-redistribution
+attestation is on record in `docs/TIINGO_DATA_OS_INGESTION_20261009.md` (lines
+10-11). The research reader's `redistribution_admitted=false` (same document,
+lines 586-595) applies to licensed rows read through it, which are not committed
+here. No sentence in that document forbids committing derived aggregates; its
+one prohibition on redistribution (line 192) covers news and fee feeds.
 
 ## What was built
 
