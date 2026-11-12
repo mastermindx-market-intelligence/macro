@@ -1,5 +1,5 @@
 schema: house_law_checks.v1
-updated: "2026-10-21"
+updated: "2026-11-06"
 
 # Canonical registry of every house law and its enforcement status.
 # Maintained by scripts/check_house_law_registry.py (meta-guard).
@@ -4282,3 +4282,43 @@ checks:
       `python3 scripts/check_tushare_compliance_resurrection.py`. Promotion to
       hard needs a `run:` step in a `gate: code` job — an UPGRADE, no ruling
       required.
+
+  - law_id: publication.shared_shell_publication_delta
+    summary: >
+      A successful earnings-public-wire publication with changed Shared Shell
+      membership or source policy retains a bounded cue for the existing
+      compatibility owner, without admitting routes or deploying a consumer.
+    source_ref:
+      - scripts/check_shared_shell_publication_delta.py
+      - tests/test_shared_shell_publication_delta.py
+      - .github/workflows/earnings-public-wire.yml
+      - research/market_os/SHARED_SHELL_GENERATED_PUBLICATION_2026-10-18.md
+    severity: hard
+    check_script: scripts/check_shared_shell_publication_delta.py
+    ci_wiring:
+      - workflow: .github/workflows/earnings-public-wire.yml
+        job: publish
+        lane: render
+    selftest: false
+    selftest_exempt_reason: >
+      No --selftest flag. tests/test_shared_shell_publication_delta.py covers
+      immutable Git source identities, membership and policy changes, receipt
+      refusal, and the successful-push workflow seam in the existing
+      ci.yml/data-base-shim finite-route pytest command.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - Runs after the successful earnings-public-wire push; a review cue fails
+        that post-publication step but does not undo the completed publication.
+      - Changed HTML and policy bindings are a review cue, not a complete catalog,
+        route admission, Compatibility pickup, installation or served-host proof.
+      - Covers earnings-public-wire only; render.yml and engine-render.yml keep
+        their separate publication owners and integration obligations.
+    owner_program: market-os-shared-shell
+    notes: >
+      The existing publish job invokes the helper only when its successful
+      transaction emits exact base_sha and published_sha outputs. Exit 3 retains
+      the cue and requires consumer review; invalid inputs fail closed. Failed
+      attempts and no-op exits emit no identities. The pytest suite qualifies
+      source behavior on PR CI; the helper itself is invoked after publication,
+      not as a standalone PR-CI check. No new publisher or retry path is created.

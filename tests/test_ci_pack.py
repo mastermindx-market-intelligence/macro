@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #10609, current-main source conflict repair):
+    Receiver e7f8565ca26b74b9ae0d637b336e9985d513ff9d retains all 401
+    owners, the six landed CI owner changes, five DATA dependency fixes,
+    and #11101's independent marketing suite contribution exactly once.
+    Preserve the data-base-shim contribution and its original
+    feature objects; retain every other current-main owner and source path.
+    Carry only this carrier's 2/2/2 marginal weights onto
+    5971/5995/5729, yielding 5973/5997/5731; keep 137/138/131 job
+    ceilings, ten packs, all selectors, assertions, and runtime controls.
+    Retain all 2886 bytes/43 lines of published carrier history
+    at their original anchors and every current-main provenance paragraph.
+    This is source accounting; actual paired native proof and natural
+    successor CI are separate evidence. Original UNKNOWN effects, closed
+    grants, and private/provider/product/release limits remain unchanged.
 
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
@@ -6040,6 +6055,49 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
     is measured planner accounting, not an execution-time estimate; natural
     successor CI must qualify the repaired source.
+
+    2026-11-11 (PR #10609, current-main source composition):
+    Base catalog b68f93a812c85ddaea5dad71c295c51659b7d371 and packing
+    89c9d99733f7c7559646401e2dbf06dfe8595097 retain all current-main history.
+    Preserve all 401 owner positions and the other 400 owner blocks.
+    Add only this carrier's existing test argument to data-base-shim.
+    Current owner: 7 commands, 15->16 test references, 814->859 joined
+    characters; _job_weight is 38->40 without an observed-duration override.
+    Carry 5966/5989/5724 to 5968/5991/5726; retain 137/138/131 job bounds
+    and ten packs. Main already includes #10837; do not add its +20 again.
+    Retain the exact original #10609 history below and all other controls.
+    This is declaration-derived arithmetic, not a new planner/runtime result.
+    Natural exact-head CI is still owed; existing product/UNKNOWN limits remain.
+
+    2026-11-08 second #10609 composition after landed #10837: preserve both
+    independent measured owner contributions. Current main e326d600aa900
+    carries marketing-social-publisher's +20 at 5943/5964/5701; the
+    data-base-shim preimage is unchanged and this carrier still adds only
+    its measured +2. The resulting bounds are 5945/5966/5703, with the
+    same job ceilings 137/138/131 and ten packs. Retain the complete
+    earlier #10609 and #10837 histories below. This is arithmetic source
+    composition, not a new planner measurement or execution-time result.
+
+    2026-11-06 Shared Shell publication cue (#10609): hosted contract-delta
+    run 42289885144 / job 128140223968 measured tested merge
+    f49d84920b58d84495ee6cc29e8fdd62eff5f803 against exact base
+    f929573ccf1ea8142fa0e6728f70d49f94324457. Each probe retains its selected
+    jobs and adds exactly two estimated-weight units: index 5912 -> 5914,
+    free-content 5927 -> 5929, Prophet 5668 -> 5670; no new selected jobs.
+    All 389 manifest job blocks were compared; only data-base-shim changes,
+    adding tests/test_shared_shell_publication_delta.py to its incumbent
+    command (weight 23 -> 25). Retain every suite, separate semantic step and
+    post-step repository-integrity check. Fund exactly this measured coverage
+    addition; job/pack ceilings, selectors, execution timeouts, observed-weight
+    overrides and admission limits remain unchanged. These are deterministic
+    planner estimates, not measured execution times or final CI acceptance.
+
+    2026-11-08 current-main composition of #10609: the incumbent owner remains
+    byte-exact with the measured base (5 commands, 9 -> 10 test tokens,
+    541 -> 586 command characters; canonical weight 23 -> 25, no override).
+    Carry only its existing +2 allowance onto current 5923/5944/5681 weights:
+    5925/5946/5683. Preserve all later accounting notes and every job/pack bound.
+    This is source attribution, not a new full-tree planner measurement.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
