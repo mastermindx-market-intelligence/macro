@@ -310,30 +310,71 @@ def test_browser_only_fallback_failure_is_a_settled_job_local_failure(monkeypatc
     assert 'native-browser-setup' in capsys.readouterr().out
 
 
-def test_completion_unknown_after_settled_download_failures_falls_back_like_the_observed_outage(monkeypatch,capsys):
+@pytest.mark.parametrize("exhausted", [False, True], ids=["remaining-time", "deadline-exhausted"])
+@pytest.mark.parametrize(
+    "reason, completion_receipt",
+    [
+        ("NATIVE_COMPLETION_RESPONSE_UNKNOWN", ("failed", "unknown")),
+        ("NATIVE_COMPLETION_UNPROVEN", None),
+        ("NATIVE_COMPLETION_UNPROVEN", ("timed_out", "unknown")),
+    ],
+)
+def test_unsettled_completion_never_falls_back(monkeypatch, exhausted, reason, completion_receipt):
     from scripts.ci_apt_cold_acquisition import ChildResult
-    events=runtime(monkeypatch);calls=[]
-    def acquire(plan,backend,*,deadline):
-        for index in (0,1,3,4):
-            backend.records[index]={'mode':'download','index':index,'outcome':'failed','settlement':'settled',
-                                    'returncode':100,'reported_errors':['FETCH'],'raw':'SECRET http://private.invalid'}
-        return AcquisitionResult('timed_out','unknown',(2,),(),'never_started','NATIVE_COMPLETION_RESPONSE_UNKNOWN',
-                                 ((0,'failed','settled'),(1,'failed','settled'),(2,'passed','settled'),
-                                  (3,'failed','settled'),(4,'failed','settled')),
-                                 'NATIVE_DOWNLOAD_FAILED',ChildResult('failed','unknown'))
-    monkeypatch.setattr(SETUP,'acquire_and_install',acquire)
-    def browser(command,**kwargs):calls.append((command,kwargs['timeout_seconds']));return observed()
-    result=SETUP.run_native_setup(deadline=600,command_env={},expected_sources=sources(),browser_stream=browser)
-    assert result['outcome']=='passed' and result['timeout_settlement'] is None
-    assert calls==[(SETUP.BROWSER_ONLY_INSTALL_COMMAND,500)]
-    detail=result['detail']
-    assert 'settled failure (native acquisition NATIVE_COMPLETION_RESPONSE_UNKNOWN' in detail
-    assert 'initial_download_failure=NATIVE_DOWNLOAD_FAILED' in detail and 'completion=failed/unknown' in detail
-    assert 'original_downloads=[[0,100,["FETCH"]],[1,100,["FETCH"]],[3,100,["FETCH"]],[4,100,["FETCH"]]]' in detail
-    assert 'downloads[index,returncode,reported_errors]=' in detail
-    assert 'retained /tmp/ci-apt-fixture' in detail and 'SECRET' not in detail
-    assert 'cleanup' not in [e[0] for e in events]
-    assert 'native-browser-setup' in capsys.readouterr().out
+
+    events = runtime(monkeypatch)
+
+    def acquire(plan, backend, *, deadline):
+        for index in (0, 1, 3, 4):
+            backend.records[index] = {
+                "mode": "download", "index": index, "outcome": "failed", "settlement": "settled",
+                "returncode": 100, "reported_errors": ["FETCH"], "raw": "private fixture detail",
+            }
+        if exhausted:
+            monkeypatch.setattr(SETUP.time, "monotonic", lambda: deadline)
+        return AcquisitionResult(
+            "timed_out" if exhausted else "failed", "unknown", (2,), (), "never_started", reason,
+            ((0, "failed", "settled"), (1, "failed", "settled"), (2, "passed", "settled"),
+             (3, "failed", "settled"), (4, "failed", "settled")),
+            "NATIVE_DOWNLOAD_FAILED", ChildResult(*completion_receipt) if completion_receipt else None,
+        )
+
+    monkeypatch.setattr(SETUP, "acquire_and_install", acquire)
+    result = SETUP.run_native_setup(
+        deadline=600, command_env={}, expected_sources=sources(),
+        browser_stream=lambda *args, **kwargs: pytest.fail("fallback after unproven completion"),
+    )
+    assert result["timeout_settlement"] == "unknown"
+    assert result["outcome"] == ("timed_out" if exhausted else "failed")
+    assert reason in result["detail"]
+    assert '[0,100,["FETCH"]]' in result["detail"]
+    assert "private fixture detail" not in result["detail"]
+    assert "retained /tmp/ci-apt-fixture" in result["detail"]
+    assert "cleanup" not in [event[0] for event in events]
+
+
+def test_completion_with_a_settled_nonzero_exit_can_fall_back(monkeypatch):
+    from scripts.ci_apt_cold_acquisition import ChildResult
+
+    runtime(monkeypatch)
+    calls = []
+
+    def acquire(plan, backend, *, deadline):
+        return AcquisitionResult(
+            "failed", "unknown", (), (), "never_started", "NATIVE_COMPLETION_UNPROVEN",
+            ((0, "failed", "settled"),), "NATIVE_DOWNLOAD_FAILED", ChildResult("failed", "settled"),
+        )
+
+    def browser(command, **kwargs):
+        calls.append((command, kwargs["timeout_seconds"]))
+        return observed()
+
+    monkeypatch.setattr(SETUP, "acquire_and_install", acquire)
+    result = SETUP.run_native_setup(
+        deadline=600, command_env={}, expected_sources=sources(), browser_stream=browser,
+    )
+    assert result["outcome"] == "passed" and result["timeout_settlement"] is None
+    assert calls == [(SETUP.BROWSER_ONLY_INSTALL_COMMAND, 500)]
 
 
 @pytest.mark.parametrize('pending,observations', [((0,),()), ((),((0,'timed_out','unknown'),)), ((),((0,'failed','unknown'),))])
