@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T21:56:57.745013+00:00",
-  "count": 3254,
+  "generated_at": "2026-11-12T22:06:53.529653+00:00",
+  "count": 3255,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -34,6 +34,7 @@
     "Citadel",
     "Citi",
     "CommBank",
+    "Commerzbank",
     "Curvature",
     "DBS",
     "Danske",
@@ -120,6 +121,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-izfasbj9sa0-3d10e7",
+      "title": "Chips rebound, dollar stronger",
+      "institution": "Commerzbank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T21:37:02Z",
+      "summary_points": [
+        "USD Strength & Geopolitical Shock: USD hits 18-month high amid AI chip rebound; oil surges due to Hormuz mine strikes (geopolitical risk), while US equities rise on AI trade revival.",
+        "India CPI Inflation Surge: October CPI likely exceeds 6% YoY (oil prices, domestic demand, low base), forcing RBI to hike rates (25bp Dec, 50bp Feb 2027).",
+        "Asian Tech Geopolitical Risk: Hormuz tensions (Iran mine claims, LNG supply cuts) + AI chipmaker executive investigation (8% share drop) create uncertainty in Taiwan/South Korea/Japan tech markets.",
+        "AI Infrastructure Demand vs.",
+        "USD Pressure: AI infrastructure demand boosts semiconductor indices (+5.7%); USD strength (Dollar Index 102.90) and rate hike expectations pressure gold (-1.1%)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-jvi6mczmze6-3428ab",
       "title": "GS Quinn Russell 2k Futures Another Retail Favorite 12 Nov 2026",
