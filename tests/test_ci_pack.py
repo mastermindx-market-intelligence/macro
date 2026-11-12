@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_731),
+    ("templates/index.html", 137, 5_975),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_999),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_733),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,34 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #7217, compose the accepted runtime-adapter baseline):
+    Receiver 5b0c3030 retains #11111 and all six earlier sibling-owner
+    changes, including #11101. Preserve the eight original bridge objects,
+    all 401 owners and the twelve original dependency/enrollment changes.
+    Predecessor CI43146485374 passed 125 owners / 369 semantic proofs
+    with actual contract 0 introduced / 0 inherited at its own B/H/T.
+    Brain raw accounting remains 6 -> 7 commands, 51 -> 52 test references,
+    2353 -> 2410 joined characters and weight 110 -> 114. The original
+    +4 contribution composes receiving 5971/5995/5729 to 5975/5999/5733.
+    Preserve all 69 H-only historical lines and every main history line,
+    including the separate #11101 contribution. Keep 137/138/131 job
+    ceilings, ten packs, every assertion and all selection/runtime controls.
+    These are source-derived totals, not newly executed planner measurements.
+    Natural successor CI must qualify the exact new combined source.
+
+    2026-11-12 (PR #11101, runtime-adapter closure): wiring
+    tools/xguerrilla/tests/test_runtime_adapter.py into
+    marketing-social-publisher satisfies the closure doctrine —
+    contract-delta had flagged the suite as named by no run: step
+    (run 43143064165, job 130934421614). The join adds its run token
+    to that step with no new job selected ("newly selected: none");
+    the estimator measures +2 on the shared owner for all three
+    probes: index 5969->5971, free-content 5993->5995, Prophet
+    5727->5729. Jobs 137/138/131, ten packs, selectors, commands
+    and admission limits unchanged. The wider selection is intended
+    (closure-required); natural successor CI must qualify the
+    repaired source.
 
     2026-11-12 (PR #7217, current-main bridge coverage conservation):
     Receiver 27bdebdbdc973398c0caa509498c568816871bf5 preserves landed

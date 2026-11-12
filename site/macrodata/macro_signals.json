@@ -1,6 +1,6 @@
 {
   "date": "2026-11-10",
-  "generated_utc": "2026-11-12 00:47",
+  "generated_utc": "2026-11-12 02:01",
   "business_cycle": {
     "available": true,
     "asof": "2026-11-30",
@@ -4209,7 +4209,7 @@
       "skew_pctile": 0.7232142857142857,
       "stock_bond_corr": -0.031126653025416583,
       "stock_bond_regime": "diversifying (bonds hedge)",
-      "roro": -0.7276059569930392,
+      "roro": -0.7366345922748374,
       "roro_state": "risk-off",
       "vol_target_scalar": 0.5582392624973173,
       "news_sentiment": 0.08978667110204697,
@@ -4353,7 +4353,7 @@
   "fear_euphoria": {
     "fe_score": 15,
     "band": "Fear",
-    "roro": -0.7276059569930392,
+    "roro": -0.7366345922748374,
     "roro_state": "risk-off",
     "legs": [
       {
@@ -4400,16 +4400,16 @@
         "key": "copper_gold",
         "name_en": "Copper/Gold",
         "name_zh": "\u94dc\uff0f\u91d1 \u6bd4",
-        "value": 1.176,
-        "pct": 90,
+        "value": 1.09,
+        "pct": 89,
         "lean": "risk-on"
       },
       {
         "key": "dxy",
         "name_en": "Dollar (20d %\u0394)",
         "name_zh": "\u7f8e\u5143\uff0820\u65e5 %\u53d8\u52a8\uff09",
-        "value": 0.076,
-        "pct": 53,
+        "value": 0.099,
+        "pct": 55,
         "lean": "risk-on"
       }
     ],
@@ -6226,7 +6226,7 @@
     },
     "doctrine": "Event-window calendar seasonality \u2014 thin, widely-known calendar tilts measured on price history. Context only, never a buy/sell. Pre-FOMC drift expected DEAD post-2016 (house ruling)."
   },
-  "growth_score": 0.333,
+  "growth_score": 0.2,
   "inflation_score": -0.52,
   "components_confirming": [
     "<span class=\"l-en\">growth \u00b7 small caps</span><span class=\"l-zh\">\u589e\u957f \u00b7 \u5c0f\u76d8\u80a1</span>",
@@ -6242,6 +6242,7 @@
     "<span class=\"l-en\">inflation \u00b7 TIPS spread</span><span class=\"l-zh\">\u901a\u80c0 \u00b7 TIPS \u5229\u5dee</span>"
   ],
   "components_contradicting": [
+    "<span class=\"l-en\">growth \u00b7 copper vs gold</span><span class=\"l-zh\">\u589e\u957f \u00b7 \u94dc\u5bf9\u9ec4\u91d1</span>",
     "<span class=\"l-en\">growth \u00b7 2-yr yield</span><span class=\"l-zh\">\u589e\u957f \u00b7 2\u5e74\u671f\u6536\u76ca\u7387</span>",
     "<span class=\"l-en\">growth \u00b7 cyclical sectors</span><span class=\"l-zh\">\u589e\u957f \u00b7 \u5468\u671f\u6027\u677f\u5757</span>",
     "<span class=\"l-en\">inflation \u00b7 inflation-winners basket</span><span class=\"l-zh\">\u901a\u80c0 \u00b7 \u901a\u80c0\u53d7\u76ca\u7bee\u5b50</span>",
@@ -6251,62 +6252,62 @@
     {
       "ticker": "GC=F",
       "name": "Gold",
-      "price": 4051.3,
+      "price": 3993.2,
       "above50": false,
       "above200": false,
-      "pct_vs_50dma": -3.2,
-      "pct_vs_200dma": -8.6,
-      "rsi14": 46.0,
+      "pct_vs_50dma": -4.4,
+      "pct_vs_200dma": -9.8,
+      "rsi14": 42.0,
       "macd_pos": true,
-      "off_52w_high_pct": -23.8,
+      "off_52w_high_pct": -24.9,
       "season_this": "Nov: +1.4% avg, up 59% of years (n=27)",
       "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.4%\uff0c59% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-      "mom_60d_pct": -10.6
+      "mom_60d_pct": -11.5
     },
     {
       "ticker": "CL=F",
       "name": "Crude Oil",
-      "price": 86.72,
+      "price": 85.45,
       "above50": false,
       "above200": false,
-      "pct_vs_50dma": -9.6,
-      "pct_vs_200dma": -3.0,
-      "rsi14": 37.0,
+      "pct_vs_50dma": -10.6,
+      "pct_vs_200dma": -4.5,
+      "rsi14": 35.0,
       "macd_pos": false,
-      "off_52w_high_pct": -23.2,
+      "off_52w_high_pct": -24.3,
       "season_this": "Nov: -3.2% avg, up 41% of years (n=27)",
       "season_this_zh": "11\u6708\uff1a\u5e73\u5747 -3.2%\uff0c41% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-      "mom_60d_pct": 4.0
+      "mom_60d_pct": 1.3
     },
     {
       "ticker": "HG=F",
       "name": "Copper",
-      "price": 6.31,
+      "price": 6.26,
       "above50": false,
-      "above200": true,
-      "pct_vs_50dma": -3.4,
-      "pct_vs_200dma": 0.5,
-      "rsi14": 41.0,
+      "above200": false,
+      "pct_vs_50dma": -4.0,
+      "pct_vs_200dma": -0.3,
+      "rsi14": 40.0,
       "macd_pos": false,
-      "off_52w_high_pct": -7.3,
+      "off_52w_high_pct": -8.0,
       "season_this": "Nov: +1.4% avg, up 52% of years (n=27)",
       "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +1.4%\uff0c52% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=27\uff09",
-      "mom_60d_pct": -3.9
+      "mom_60d_pct": -5.7
     },
     {
       "ticker": "DX-Y.NYB",
       "name": "US Dollar",
-      "price": 102.26,
+      "price": 102.84,
       "above50": true,
       "above200": true,
-      "pct_vs_50dma": 0.9,
-      "pct_vs_200dma": 2.3,
-      "rsi14": 56.0,
-      "macd_pos": false,
-      "off_52w_high_pct": -0.3,
+      "pct_vs_50dma": 1.4,
+      "pct_vs_200dma": 2.8,
+      "rsi14": 62.0,
+      "macd_pos": true,
+      "off_52w_high_pct": 0.0,
       "season_this": "Nov: +0.2% avg, up 54% of years (n=56)",
       "season_this_zh": "11\u6708\uff1a\u5e73\u5747 +0.2%\uff0c54% \u7684\u5e74\u4efd\u4e0a\u6da8\uff08n=56\uff09",
-      "mom_60d_pct": 3.1
+      "mom_60d_pct": 3.2
     }
   ],
   "vix": {
