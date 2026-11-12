@@ -50,6 +50,79 @@ def test_deep_dashboard_keeps_major_clickthrough_dialogs() -> None:
         assert dialog_id in TPL
 
 
+def test_dialog_triggers_expose_controls_to_assistive_tech() -> None:
+    for dialog_id in (
+        "cnx-dlg-markets",
+        "cnx-dlg-playbook",
+        "cnx-dlg-events",
+        "cnx-dlg-risk",
+        "cnx-dlg-sentiment",
+        "cnx-dlg-sector",
+        "cnx-dlg-policy",
+        "cnx-dlg-flows",
+        "cnx-dlg-news",
+        "cnx-dlg-property",
+        "cnx-dlg-aibrief",
+        "cnx-dlg-alerts",
+    ):
+        assert f'aria-controls="{dialog_id}"' in TPL
+
+    # Every explicit dialog trigger should advertise the popup relationship.
+    assert TPL.count('aria-haspopup="dialog"') >= 12
+
+
+def test_policy_and_property_copy_follows_actual_state() -> None:
+    policy = TPL.split("{# Policy Monitor card #}", 1)[1].split("{# Connect Flows card #}", 1)[0]
+    assert "Policy context." not in policy
+    assert "Policy is easing, but credit impulse remains negative." in policy
+    assert "Policy is tightening while credit impulse remains positive." in policy
+    assert "I.pboc.bias == 'easing'" in policy
+    assert "I.pboc.bias == 'tightening'" in policy
+
+    prop = TPL.split("{# Property card #}", 1)[1].split("{# AI Brief card", 1)[0]
+    assert "{% set _prop_impact =" in prop
+    assert "'neg':['growth drag','增长拖累']" in prop
+    assert "'warn':['growth headwind','增长逆风']" in prop
+    assert "'neutral':['stabilizing','筑底企稳']" in prop
+    assert "'pos':['recovery','回暖复苏']" in prop
+    assert "Still the economy's main drag." not in prop
+    assert "easing at the margin" not in prop
+
+
+def test_data_health_footer_is_signal_only() -> None:
+    assert "{% if _health_n and _health_ok < _health_n %}" in TPL
+    assert 'class="cnx-dh warn" role="status"' in TPL
+    assert "{{ t('Data health warning','数据健康警告') }}" in TPL
+    assert "{{ _health_ok }} of {{ _health_n }} feeds fresh" in TPL
+    assert "cnx-dh.warn .d{background:var(--warn)}" in TPL
+
+
+def test_deep_cards_fail_closed_to_truthful_empty_states() -> None:
+    sector = TPL.split("{# Sector Temperature card #}", 1)[1].split("ROW 3: Policy Monitor", 1)[0]
+    assert "Sector read unavailable." in sector
+    assert "No current leaders, buy-zone candidates, or sector heat were published" in sector
+
+    policy = TPL.split("{# Policy Monitor card #}", 1)[1].split("{# Connect Flows card #}", 1)[0]
+    assert "{% set _has_credit_impulse =" in policy
+    assert "{% set _has_policy_read =" in policy
+    assert "Policy read unavailable." in policy
+
+    flows = TPL.split("{# Connect Flows card #}", 1)[1].split("{# What Changed:", 1)[0]
+    assert "Connect-flow read unavailable." in flows
+    assert "Southbound flow is supportive." in flows
+    assert "Southbound flow is a headwind." in flows
+    assert "Mainland money supporting Hong Kong." not in flows
+
+    prop = TPL.split("{# Property card #}", 1)[1].split("{# AI Brief card", 1)[0]
+    assert "{% if P and P.regime %}" in prop
+    assert "Property regime unavailable." in prop
+
+    brief = TPL.split("{# AI Brief card", 1)[1].split("{# Alerts Centre card #}", 1)[0]
+    assert "AI brief unavailable." in brief
+    assert "Brief loaded without a publishable summary." in brief
+    assert "<span class=\"cnx-chip\">{{ t('Regime','周期') }}</span>" not in brief
+
+
 def test_dashboard_header_keeps_effective_date_visible() -> None:
     assert (
         '<div class="cnx-secbar"><b>{{ t(\'CHINA DASHBOARD\',\'中国看板\') }}</b>'
