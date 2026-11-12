@@ -875,6 +875,33 @@ def test_selection_fails_safe_toward_running_everything(real_manifest_scopes) ->
         assert job in hit, f"{job.job_id} must run when {probe} changes"
 
 
+
+def test_code_owner_executes_company_intelligence_refresh_contract(real_manifest_scopes) -> None:
+    """The refresh suite executes on PRs as well as in the existing data owner."""
+    jobs, _note = real_manifest_scopes
+    by_id = {job.job_id: job for job in jobs}
+    for owner, gate in (("prophet-lab", "code"), ("publish-r2-client", "data")):
+        job = by_id[owner]
+        assert job.gate == gate
+        commands = "\n".join(
+            str(step.get("run", ""))
+            for step in job.definition["steps"]
+            if isinstance(step, dict)
+        )
+        assert "tests/test_company_intelligence_refresh.py" in commands  # ci-trigger-closure: data — suite NAME checked in manifest commands, not opened
+
+    assert by_id["prophet-lab"].is_scoped, "code-owner proof needs inferred scope"
+    code_jobs = [job for job in jobs if job.gate == "code"]
+    for changed in (
+        "scripts/refresh_company_intelligence.py",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        ".github/workflows/company-intelligence.yml",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+        "tests/test_company_intelligence_refresh.py",  # ci-trigger-closure: data — path NAME used as selector/manifest metadata, not opened
+    ):
+        selected, reason = PACK.select_jobs(code_jobs, [changed])
+        assert "prophet-lab" in {item.job_id for item in selected}, reason
+
+
+
 def test_declared_scope_must_cover_paths_the_job_itself_reads() -> None:
     """A scope narrower than the job's own commands is a hard manifest error.
 

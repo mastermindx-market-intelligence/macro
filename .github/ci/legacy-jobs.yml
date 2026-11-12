@@ -12001,6 +12001,10 @@ jobs:
       # gate:code job rather than only neural-web-core's nightly data lane.
       - "tests/test_company_intelligence_workspace_chain.py"
       - "tests/test_company_intelligence_event_evolution.py"
+      # Refresh freshness and publication outcomes must execute on ordinary PRs.
+      - "scripts/refresh_company_intelligence.py"
+      - ".github/workflows/company-intelligence.yml"
+      - "tests/test_company_intelligence_refresh.py"
       - "tests/test_prophet_lab_timeparse.py"
       - "tests/test_prophet_lab_commissioning.py"
       - "tests/fixtures/prophet_lab/**"
@@ -12085,6 +12089,7 @@ jobs:
           tests/test_treasury_daily_history.py tests/test_treasury_history_api.py
           tests/test_company_intelligence_workspace_chain.py
           tests/test_company_intelligence_event_evolution.py
+          tests/test_company_intelligence_refresh.py
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
@@ -12107,18 +12112,22 @@ jobs:
       # B1's hermetic source, intake and generation contracts guard the reader
       # used by this projection. Keep their existing proof in the PR code gate;
       # the context-and-grades data job only runs after merge.
-      - name: entry-timing W2 estimator (conservative-of-two block bounds)
-        run: python -m pytest tests/test_entry_timing_w2_estimator.py tests/test_entry_timing_w2_freeze.py -q
-      - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
-        run: python -m pytest tests/test_us_candidate_episode.py tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py tests/test_us_candidate_episode_identity_retry.py -q
-
-      # B21 U2: the pure producer half over the B1 ledger and B3 projections.
-      # Hermetic — fixtures mint real B1 envelopes through the B1 writer and
-      # B3-shaped rows; imports fif/B1/B3/tiers for pinning only. Belongs in
-      # this gate:code job (never prophet-anticipation-intake, which is
-      # gate:data and packed only post-merge by data-health.yml).
-      - name: Prophet B21 journey notifications — pure producer half (identity, eligibility, correction table, tier)
-        run: python -m pytest tests/test_prophet_journey_notifications.py -q
+      # Keep the same hermetic suites and order in one interpreter; the two
+      # saved pytest startups offset the refresh suite's registration weight.
+      # B21 U2 remains the pure producer half over the B1 ledger and B3
+      # projections, in this code-gated owner rather than the nightly data lane.
+      - name: W2 estimator, B1 episodes and B21 journey contracts
+        run: >-
+          python -m pytest
+          tests/test_entry_timing_w2_estimator.py
+          tests/test_entry_timing_w2_freeze.py
+          tests/test_us_candidate_episode.py
+          tests/test_us_candidate_episode_intake.py
+          tests/test_us_candidate_episode_reconciler.py
+          tests/test_us_candidate_episode_wiring.py
+          tests/test_us_candidate_episode_identity_retry.py
+          tests/test_prophet_journey_notifications.py
+          -q
 
       # B03 shares the existing authenticated Prophet read projection owner.
       # Keep conservative transitive inference, with no duplicate broad job.
