@@ -215,6 +215,6 @@ python scripts/export_gmi_history_registry.py --root <same> --commit <sha> --ind
 
 The vendor daily index is no longer committed. With size class and the small groups it
 measures 18.2 MB at the repository's compression, or 14.4 MB at maximum zstd. Either way the
-total would be over 25 MB. It rebuilds from the scratch download with `--daily`. The house
+total would be over 25 MB (a working size figure, not a repository rule). It rebuilds from the scratch download with `--daily`. The house
 daily index is committed. #11107's committed files are unchanged at their checked head. This
 draft regenerates them on top of it.

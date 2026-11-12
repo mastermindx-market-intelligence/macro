@@ -469,3 +469,33 @@ def test_committed_gmi_and_relationship_families_built():
     assert "one member in three" in rel["sentence"] and "chips and hardware" in rel["hubs_note"]
     assert meta["families"]["rel_customers_of"]["basis"] == "proposed_relationships_unadmitted"
     assert meta["price_topup"]["names"] == 4 and "single download" in meta["price_topup"]["rule"]
+    assert meta["families"]["gmi_theme"]["label"].startswith("GMI house themes (18 themes, 15 with US-listed")
+    assert meta["families"]["gmi_macro_category"]["label"].startswith(
+        "GMI macro categories (10 macro categories, 7 with US-listed")
+    assert meta["group_ids"] == bt.GROUP_ID_NOTE
+
+
+@_needs
+def test_topup_and_first_download_share_no_ticker():
+    """COO 2026-11-12 09:39Z: no ticker has history from two downloads. The first download
+    priced the registries of the families built before the top-up (subsector, theme, basket,
+    sector); every top-up name must lie outside all of them and inside a family that needed it."""
+    meta = json.loads((HIST / "house_breadth_and_index_current.meta.json").read_text())
+    top = set(meta["price_topup"]["tickers"])
+    assert len(top) == meta["price_topup"]["names"] == 4
+    fams = bt.load_families(ROOT)
+    first = set().union(*(set(m["ticker"]) for f, (_, m) in fams.items()
+                          if not f.startswith(("gmi_", "rel_"))))
+    assert not top & first, sorted(top & first)
+    later = set().union(*(set(m["ticker"]) for f, (_, m) in fams.items()
+                          if f.startswith(("gmi_", "rel_"))))
+    assert top <= later
+
+
+@_needs
+def test_gmi_group_ids_are_graph_node_ids():
+    reg = HIST / "registry"
+    for f in ("gmi_theme", "gmi_macro_category"):
+        ids = set(pd.read_csv(reg / f"{f}.csv")["group"])
+        assert ids and all(i.startswith("theme:") for i in ids)
+    assert "node ids, unchanged" in bt.GROUP_ID_NOTE

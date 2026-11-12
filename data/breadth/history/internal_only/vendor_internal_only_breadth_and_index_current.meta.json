@@ -31,6 +31,7 @@
   }
  },
  "multi_group": "a name in several groups counts in each",
+ "group_ids": "gmi_theme and gmi_macro_category group ids are the theme graph's own node ids, unchanged; macro categories are graph nodes of kind theme at tier macro_category, so they carry the theme: prefix too",
  "price_source": "yfinance yf.download(auto_adjust=True, period='max'), one single-vintage download, held off git; never the collector cache or data/yahoo",
  "price_vintage": "2026-11-12T07:33:42.601690+00:00",
  "price_retry": {
@@ -426,7 +427,7 @@
   "dividend_effect": "A difference in dividend method shifts the long-run level of a total-return index, not the timing of its turns.",
   "survivors_only_effect": "The index holds only names alive today, so its past returns are overstated, more so the further back and in themes with high failure rates; relative turns between groups are less affected than levels, and that is not tested here.",
   "daily_committed": false,
-  "daily_note": "the daily index of this class is not committed (it would take the committed files over 25 MB); weekly is committed and the daily rebuilds from the scratch download with --daily"
+  "daily_note": "the daily index of this class is not committed (it would take the committed files over 25 MB, a working size figure, not a repository rule); weekly is committed and the daily rebuilds from the scratch download with --daily"
  },
  "members": {
   "subsector": {

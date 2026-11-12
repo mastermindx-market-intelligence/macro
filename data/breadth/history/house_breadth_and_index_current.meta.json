@@ -51,7 +51,7 @@
     "breadth",
     "index"
    ],
-   "label": "GMI house themes (18): open latest-belief company->basket->theme edges of data/theme_graph, US-listed resolved identities; exported by scripts/export_gmi_history_registry.py at the commit in group_links_current.meta.json",
+   "label": "GMI house themes (18 themes, 15 with US-listed members): open latest-belief company->basket->theme edges of data/theme_graph, US-listed resolved identities; exported by scripts/export_gmi_history_registry.py at the commit in group_links_current.meta.json",
    "basis": "reconstructed_current_membership"
   },
   "gmi_macro_category": {
@@ -62,7 +62,7 @@
     "breadth",
     "index"
    ],
-   "label": "GMI macro categories (10): gmi_theme members rolled up through open PARENT_OF edges",
+   "label": "GMI macro categories (10 macro categories, 7 with US-listed members): gmi_theme members rolled up through open PARENT_OF edges",
    "basis": "reconstructed_current_membership"
   },
   "rel_customers_of": {
@@ -89,6 +89,7 @@
   }
  },
  "multi_group": "a name in several groups counts in each",
+ "group_ids": "gmi_theme and gmi_macro_category group ids are the theme graph's own node ids, unchanged; macro categories are graph nodes of kind theme at tier macro_category, so they carry the theme: prefix too",
  "price_source": "yfinance yf.download(auto_adjust=True, period='max'), one single-vintage download, held off git; never the collector cache or data/yahoo",
  "price_vintage": "2026-11-12T07:33:42.601690+00:00",
  "price_retry": {

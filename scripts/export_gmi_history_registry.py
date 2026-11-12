@@ -3,8 +3,8 @@
 Reads a theme-graph snapshot (``data/theme_graph/`` at one pinned commit), the
 vendor theme tree, the basket roster and ``config/theme_pathways.yml``. Writes:
 
-  data/breadth/history/registry/gmi_theme.csv           (ticker, group)  18 house themes
-  data/breadth/history/registry/gmi_macro_category.csv  (ticker, group)  10 macro categories
+  data/breadth/history/registry/gmi_theme.csv           (ticker, group)  18 themes, 15 with US-listed members
+  data/breadth/history/registry/gmi_macro_category.csv  (ticker, group)  10 macro categories, 7 with US-listed members
   data/breadth/history/registry/rel_customers_of.csv    (ticker, group)  customers of 4 supplier hubs
   data/breadth/history/registry/rel_suppliers_of.csv    (ticker, group)  suppliers of 3 customer hubs
   data/breadth/history/group_links_current.parquet      house links (one row per link)

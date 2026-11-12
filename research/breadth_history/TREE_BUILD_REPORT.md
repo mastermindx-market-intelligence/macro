@@ -78,7 +78,7 @@ The sidecar also carries the table year by year.
 > - ranks within the same family and size class only.
 >
 > The new valid-group counts and file sizes are in `GMI_FAMILIES_REPORT.md`. In that draft
-> the vendor daily index is no longer committed, so the committed files stay under 25 MB.
+> the vendor daily index is no longer committed, so the committed files stay under 25 MB, a working size figure, not a repository rule.
 
 - **Floors:**
   - Share, change, rank and state need 10 counted members (engine `MIN_MEMBERS`). Below that a group has counts only.

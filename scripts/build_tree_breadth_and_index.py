@@ -42,7 +42,7 @@ Usage:
       --start 2000-01-01 [--daily [house internal_only]] [--out data/breadth/history]
 
 ``--daily`` alone writes the daily index for every rights class; with class names it
-writes it for those only (the committed set keeps the total under 25 MB: house only).
+writes it for those only (house only: the committed set keeps the total under 25 MB, a working size figure, not a repository rule).
 """
 from __future__ import annotations
 
@@ -141,6 +141,8 @@ LOADERS = {
 
 # One entry per family: label, registry path (repo-relative), loader, and outputs.
 # ``breadth`` -> weekly fixed-set breadth file; ``index`` -> equal-weight index files.
+GROUP_ID_NOTE = ("gmi_theme and gmi_macro_category group ids are the theme graph's own node ids, unchanged; macro categories are graph nodes of kind theme at tier macro_category, so they carry the theme: prefix too")
+
 FAMILIES = [
     {"family": "subsector", "registry": "data/themes_heatmap/themes_tree.json", "loader": "tree_subsector",
      "rights_class": "internal_only", "outputs": ["breadth", "index"], "label": "themes_tree.json subsectors (group = subsector key)"},
@@ -154,12 +156,12 @@ FAMILIES = [
                                     "group_breadth_*_current.parquet on archive prices)"},
     {"family": "gmi_theme", "registry": "data/breadth/history/registry/gmi_theme.csv", "loader": "pairs",
      "rights_class": "house", "outputs": ["breadth", "index"],
-     "label": "GMI house themes (18): open latest-belief company->basket->theme edges of "
+     "label": "GMI house themes (18 themes, 15 with US-listed members): open latest-belief company->basket->theme edges of "
               "data/theme_graph, US-listed resolved identities; exported by "
               "scripts/export_gmi_history_registry.py at the commit in group_links_current.meta.json"},
     {"family": "gmi_macro_category", "registry": "data/breadth/history/registry/gmi_macro_category.csv",
      "loader": "pairs", "rights_class": "house", "outputs": ["breadth", "index"],
-     "label": "GMI macro categories (10): gmi_theme members rolled up through open PARENT_OF edges"},
+     "label": "GMI macro categories (10 macro categories, 7 with US-listed members): gmi_theme members rolled up through open PARENT_OF edges"},
     {"family": "rel_customers_of", "registry": "data/breadth/history/registry/rel_customers_of.csv",
      "loader": "pairs", "rights_class": "house", "outputs": ["breadth", "index"],
      "basis": "proposed_relationships_unadmitted",
@@ -382,6 +384,7 @@ def _write_set(rights: str, fams: dict, closes: pd.DataFrame, start_ts: pd.Times
                          "basis": s.get("basis", BASIS)}
                      for f, (s, _) in fams.items()},
         "multi_group": "a name in several groups counts in each",
+        "group_ids": GROUP_ID_NOTE,
         "price_source": "yfinance yf.download(auto_adjust=True, period='max'), one single-vintage "
                         "download, held off git; never the collector cache or data/yahoo",
         "price_vintage": dm.get("vintage"), "price_retry": dm.get("retry"),
@@ -415,7 +418,8 @@ def _write_set(rights: str, fams: dict, closes: pd.DataFrame, start_ts: pd.Times
                   "daily_committed": bool(daily),
                   "daily_note": (None if daily else
                                  "the daily index of this class is not committed (it would take the "
-                                 "committed files over 25 MB); weekly is committed and the daily "
+                                 "committed files over 25 MB, a working size figure, not a repository rule); weekly is "
+                                 "committed and the daily "
                                  "rebuilds from the scratch download with --daily")},
         "members": members,
         "valid_last_week": ({f: int(breadth[(breadth["date"] == breadth["date"].max())
