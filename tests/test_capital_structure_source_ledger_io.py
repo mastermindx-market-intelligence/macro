@@ -38,8 +38,10 @@ from engine.capital_structure.source_ledger_io import (
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 COMMITTED_LEDGER = REPO_ROOT / "data" / "capital_structure" / SOURCE_LEDGER_FILENAME
-# Pinned in data/capital_structure/telemetry.json as source_ledger_receipt,
-# which declares immutable_prefix: true.  The JSONL migration preserved it.
+# The immutable-prefix receipt created by the JSONL migration (#4600,
+# 9db63100978f63070c3aaf860a675c203d66506b) commits to these first 1,258
+# records. Later appends extend the ledger without changing that receipt.
+PINNED_PREFIX_RECORD_COUNT = 1258
 PINNED_PREFIX_SHA256 = "73631e1f83f1d5deb4ee240680534fe4764201e908091e6fa8b315a6277a16e3"
 
 
@@ -180,8 +182,8 @@ def test_committed_ledger_validates_and_matches_its_pinned_receipt() -> None:
     """The migrated ledger must still be the exact prefix the receipt commits to."""
     records = read_source_ledger(COMMITTED_LEDGER)
     validate_manifest_ledger(records)
-    assert records
-    assert source_ledger_prefix_hash(records) == PINNED_PREFIX_SHA256
+    assert len(records) >= PINNED_PREFIX_RECORD_COUNT
+    assert source_ledger_prefix_hash(records, PINNED_PREFIX_RECORD_COUNT) == PINNED_PREFIX_SHA256
 
 
 # The 2026-08-05 nightly failure, quoted verbatim from run 30960328285:
