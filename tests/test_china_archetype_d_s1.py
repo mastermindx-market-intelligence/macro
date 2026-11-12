@@ -10,6 +10,8 @@ the production composition until separately matured and approved.
 
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 TPL = (ROOT / "templates" / "china.html.j2").read_text(encoding="utf-8")
 
@@ -313,6 +315,150 @@ def test_no_network_render_skips_stock_library_drips(monkeypatch) -> None:
 
     monkeypatch.setenv("RENDER_NO_DRIP", "1")
     assert build_china._build_china_library_for_page(alpha=None) is None
+
+
+def _set_context_drip_flags(monkeypatch, no_drip, fast_render) -> None:
+    for name, value in (
+        ("RENDER_NO_DRIP", no_drip),
+        ("CHINA_FAST_RENDER", fast_render),
+    ):
+        if value is None:
+            monkeypatch.delenv(name, raising=False)
+        else:
+            monkeypatch.setenv(name, value)
+
+
+@pytest.mark.parametrize(
+    ("no_drip", "fast_render"),
+    [("1", None), (None, "1"), ("1", "1")],
+)
+def test_direct_china_library_no_network_render_imports_no_collectors(
+    monkeypatch, no_drip, fast_render
+) -> None:
+    import importlib
+
+    from scripts import build_china_library
+
+    attempted = []
+    real_import = importlib.import_module
+
+    def forbidden_import(name, *args, **kwargs):
+        if name.startswith("collectors."):
+            attempted.append(name)
+            raise AssertionError(f"render lane imported network collector {name}")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(importlib, "import_module", forbidden_import)
+    _set_context_drip_flags(monkeypatch, no_drip, fast_render)
+    build_china_library._refresh_context_drips()
+
+    # The helper catches Exception per collector, including AssertionError.
+    # Observe attempts after it returns so a swallowed assertion cannot pass.
+    assert attempted == []
+
+
+@pytest.mark.parametrize(
+    ("no_drip", "fast_render"),
+    [(None, None), ("0", "0"), ("true", "true")],
+)
+def test_direct_china_library_data_lane_preserves_context_refreshes(
+    monkeypatch, no_drip, fast_render
+) -> None:
+    import importlib
+    from types import SimpleNamespace
+
+    from scripts import build_china_library
+
+    calls = []
+    real_import = importlib.import_module
+
+    def fake_import(name, *args, **kwargs):
+        if not name.startswith("collectors."):
+            return real_import(name, *args, **kwargs)
+
+        def refresh(**kw):
+            calls.append((name, kw))
+            if name == "collectors.china_analyst":
+                raise RuntimeError("synthetic additive source failure")
+
+        return SimpleNamespace(refresh=refresh)
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+    monkeypatch.setattr(
+        build_china_library.config,
+        "load",
+        lambda: {"china": {"valuation_per_build": 37}},
+    )
+    _set_context_drip_flags(monkeypatch, no_drip, fast_render)
+    build_china_library._refresh_context_drips()
+
+    assert len(calls) == len(dict(calls)) == 20
+    assert calls[0] == ("collectors.china_analyst", {})
+    assert dict(calls)["collectors.china_valuation"] == {"max_new": 37}
+    assert calls[-1] == ("collectors.tushare_history", {})
+    assert all(kw == {} for name, kw in calls if name != "collectors.china_valuation")
+
+
+@pytest.mark.parametrize(
+    ("no_drip", "fast_render"),
+    [("1", None), (None, "1"), ("1", "1")],
+)
+def test_direct_china_library_main_reaches_guard_before_later_builder(
+    monkeypatch, tmp_path, no_drip, fast_render
+) -> None:
+    import importlib
+    import sys
+    from types import SimpleNamespace
+
+    from scripts import build_china_library
+
+    class ContextBoundaryReached(BaseException):
+        pass
+
+    class UnexpectedLaterBuilder(BaseException):
+        pass
+
+    attempted = []
+    completed = []
+    real_import = importlib.import_module
+    real_refresh = build_china_library._refresh_context_drips
+
+    def forbidden_import(name, *args, **kwargs):
+        if name.startswith("collectors."):
+            attempted.append(name)
+            raise AssertionError(f"render lane imported network collector {name}")
+        return real_import(name, *args, **kwargs)
+
+    def stop_after_refresh():
+        real_refresh()
+        completed.append(True)
+        raise ContextBoundaryReached()
+
+    def forbid_later_builder(*args, **kwargs):
+        raise UnexpectedLaterBuilder()
+
+    monkeypatch.setattr(importlib, "import_module", forbidden_import)
+    monkeypatch.setattr(build_china_library, "_refresh_context_drips", stop_after_refresh)
+    monkeypatch.setattr(build_china_library.config, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        build_china_library.config,
+        "load",
+        lambda: {"storage": {"site_dir": "site"}},
+    )
+    # If the main call is accidentally removed, fail before status writes.
+    monkeypatch.setitem(
+        sys.modules,
+        "engine.tushare_freshness",
+        SimpleNamespace(staleness_badge=forbid_later_builder),
+    )
+    _set_context_drip_flags(monkeypatch, no_drip, fast_render)
+
+    with pytest.raises(ContextBoundaryReached):
+        build_china_library.main()
+
+    assert completed == [True]
+    assert attempted == []
+    assert (tmp_path / "site" / "chinastockdata").is_dir()
 
 
 def test_no_network_render_disables_live_news_fetches(monkeypatch) -> None:
