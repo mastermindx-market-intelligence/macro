@@ -57,7 +57,9 @@ WINDOWS: tuple[int, int] = (50, 200)
 HORIZONS: tuple[int, ...] = (5, 20, 63, 126)
 WEEKLY_HORIZONS: tuple[int, ...] = (13, 26)
 MIN_MEMBERS = 10
-HEADLINE = "fix_chg_pct_above_200_63"
+# COO addendum 2026-11-12 01:13Z: the headline is the WEEKLY fixed-set change,
+# k = 13 weeks (weekly_fixed_set). The daily 63-session columns stay as specified.
+HEADLINE = "fix_chg_pct_above_200_13w"
 
 STATE_IMPROVING = "improving"
 STATE_DETERIORATING = "deteriorating"
