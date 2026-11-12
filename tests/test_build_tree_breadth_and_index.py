@@ -53,7 +53,8 @@ def world(tmp_path):
                  index=pd.Index([1999, 2000], name="era")).to_csv(dis)
     out = tmp_path / "out"
     tree_fams = [f for f in bt.FAMILIES if not f["family"].startswith(("gmi_", "rel_"))]
-    res = bt.build(cp, dm, dis, "1999-06-01", out, root=root, daily=True, families=tree_fams)
+    res = bt.build(cp, dm, dis, "1999-06-01", out, root=root, daily=True, families=tree_fams,
+                   vendor_out=out / "internal_only")
     return closes, out, res
 
 
@@ -211,14 +212,16 @@ def test_family_without_rights_class_refused(world, tmp_path):
         bt.build(cp, dm, dis, "1999-06-01", tmp_path / "o", root=root, families=spec)
 
 
-# --- Vendor rights (COO ruling 32 s1, 2026-11-12) ---
+# --- Vendor rights (COO ruling 32 s1, 2026-11-12; COO ruling 38 §2b) ---
 # Vendor-tree breadth series stay internal (COO ruling 32 s1, 2026-11-12).
-# 
+#
 # The subsector and theme families come from the finviz_themes tree, recorded at
 # config/theme_sources.yml:33 as internal-only with no public or customer display
-# rights. Their files live under data/breadth/history/internal_only/. These tests
-# fail if a site builder, template, rendered page or publish script names those
-# files, or if the vendor sidecar loses its rights fields.
+# rights. The repository is public, so their files are kept off git, in scratch
+# (builder default /tmp/si_plan/quant/vendor_out), never committed or pushed
+# (COO ruling 38 §2b). These tests fail if a site builder, template, rendered page
+# or publish script names those files, or if the vendor sidecar loses its rights
+# fields. The committed-sidecar test below skips while the file is absent.
 
 ROOT = Path(__file__).resolve().parents[1]
 MARKERS = ("vendor_internal_only", "breadth/history/internal_only")
@@ -257,6 +260,13 @@ def test_vendor_families_route_to_internal_set():
     assert bt.RIGHTS_SETS["internal_only"]["dir"] == "internal_only"
     assert all(n.startswith("vendor_internal_only_")
                for k, n in bt.RIGHTS_SETS["internal_only"].items() if k not in ("dir", "prefix"))
+
+
+def test_default_vendor_out_is_off_tree():
+    # COO ruling 38 §2b: the repository is public; the vendor set is built to
+    # scratch outside the repository tree and never committed.
+    assert bt.VENDOR_OUT_DEFAULT.is_absolute()
+    assert not bt.VENDOR_OUT_DEFAULT.is_relative_to(ROOT)
 
 
 def test_rights_sentence_quotes_the_config_line():
@@ -401,11 +411,20 @@ VEND = HIST / "internal_only"
 LINK_FILES = {"house": (HIST / "group_links_current.parquet", HIST / "house_ew_index_weekly_current.parquet"),
               "internal_only": (VEND / "vendor_internal_only_group_links_current.parquet",
                                 VEND / "vendor_internal_only_ew_index_weekly_current.parquet")}
+# The vendor files are kept off git, in scratch (public repository; COO ruling 38 §2b),
+# so the internal_only entries are absent from the tree. Tests that read them skip;
+# the house assertions still run wherever the house files are present.
+_needs_vendor = pytest.mark.skipif(not LINK_FILES["internal_only"][0].exists(),
+                                   reason="vendor files kept off git (public repo; COO ruling 38 §2b)")
+
+
+def _link_files_present():
+    return {rc: paths for rc, paths in LINK_FILES.items() if paths[0].exists()}
 
 
 def _series():
     out = set()
-    for _, ix_path in LINK_FILES.values():
+    for _, ix_path in _link_files_present().values():
         ix = pd.read_parquet(ix_path, columns=["family", "group", "level"]).dropna(subset=["level"])
         out |= set(zip(ix.family, ix.group))
     return out
@@ -414,7 +433,7 @@ def _series():
 @_needs
 def test_committed_links_have_no_tickers_and_match_index():
     series = _series()
-    for rc, (path, _) in LINK_FILES.items():
+    for rc, (path, _) in _link_files_present().items():
         lk = pd.read_parquet(path)
         assert list(lk.columns) == ex.LINK_COLUMNS
         assert not any("ticker" in c or "price" in c for c in lk.columns)
@@ -429,6 +448,7 @@ def test_committed_links_have_no_tickers_and_match_index():
 
 
 @_needs
+@_needs_vendor
 def test_vendor_links_stay_with_vendor_files():
     house = pd.read_parquet(LINK_FILES["house"][0])
     vend = pd.read_parquet(LINK_FILES["internal_only"][0])
@@ -445,7 +465,7 @@ def test_vendor_links_stay_with_vendor_files():
 
 @_needs
 def test_overlap_rows_are_consistent():
-    for path, _ in LINK_FILES.values():
+    for path, _ in _link_files_present().values():
         ov = pd.read_parquet(path)
         ov = ov[ov.link_type == "overlap"]
         assert len(ov) and (ov.n_shared >= 1).all()
