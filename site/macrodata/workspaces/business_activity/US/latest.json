@@ -181,9 +181,9 @@
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-11-12T08:15:53Z",
+    "built_at": "2026-11-12T10:43:41Z",
     "calculation_as_of": "2026-11-30",
-    "code_version": "565791e623bcfdba25bba6f5a0cc0482001030a5",
+    "code_version": "e59e713d589666a7e7e694f922985eddb28872b3",
     "content_sha256": "ccaf7ba8aac29e7ba357850f3ee31292f6692e2b6f98da4491ae4c7ec6dd7684",
     "generation_id": "business_activity-US-ccaf7ba8aac29e7b",
     "producer": "engine.market_os.macro_workspaces.business_activity",
