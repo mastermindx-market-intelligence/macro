@@ -77,9 +77,39 @@ class _FakeStream:
 class _FakeSDK:
     def __init__(self, **kw):
         self.init_kwargs = kw
-        self.messages = _FakeMessages(
+        self.messages = kw.get("_messages") or _FakeMessages(
             kw["_recorder"], message=kw.get("_message"),
             error=kw.get("_error"), events=kw.get("_events"))
+
+
+class _RawResponse:
+    """What ``messages.with_raw_response.create`` returns: headers + parse()."""
+
+    def __init__(self, message, headers):
+        self._message = message
+        self.headers = headers
+
+    def parse(self):
+        return self._message
+
+
+class _RawAPI:
+    def __init__(self, parent):
+        self._parent = parent
+
+    def create(self, **kwargs):
+        self._parent._recorder.append(kwargs)
+        return _RawResponse(self._parent._message, self._parent._headers)
+
+
+class _RawMessages:
+    """Messages surface exposing ONLY the raw-response path."""
+
+    def __init__(self, recorder, message, headers):
+        self._recorder = recorder
+        self._message = message
+        self._headers = headers
+        self.with_raw_response = _RawAPI(self)
 
 
 class _Recorder(list):
@@ -253,6 +283,68 @@ def test_complete_without_route_headers_returns_none_not_error(recorder):
     recorder.state["message"] = _Message("ok")
     comp = fc.complete([{"role": "user", "content": "x"}])
     assert comp.route_id is None and comp.provider is None
+
+
+# --------------------------------------------------------------------------- #
+# route/provider attribution must survive the REAL SDK shape.
+#
+# Measured against anthropic 2.8.0 (2026-11-12): a plain messages.create()
+# leaves msg._response as None, so reading headers off the parsed Message
+# yielded None for EVERY call — the router's routing decision was always blank.
+# with_raw_response exposes the real headers. These tests pin that path so a
+# silent regression back to always-None is caught here, not in production.
+# --------------------------------------------------------------------------- #
+@pytest.fixture
+def raw_recorder(monkeypatch):
+    calls = _Recorder()
+    state = {
+        "message": _Message("raw-path text"),
+        "headers": {"x-fabric-route-id": "route-xyz", "x-fabric-provider": "glm"},
+    }
+
+    def fake_make_client(base_url, timeout):
+        return _FakeSDK(_recorder=calls, _messages=_RawMessages(
+            calls, state["message"], state["headers"]))
+
+    monkeypatch.setattr(fc, "_make_client", fake_make_client)
+    monkeypatch.setenv(fc.TOKEN_ENV, "test-token")
+    calls.state = state
+    return calls
+
+
+def test_route_and_provider_come_from_raw_response_headers(raw_recorder):
+    comp = fc.complete([{"role": "user", "content": "x"}], lane="fast")
+    assert comp.route_id == "route-xyz"
+    assert comp.provider == "glm"
+    assert comp.text == "raw-path text"
+    assert len(raw_recorder) == 1
+
+
+def test_raw_path_absent_headers_still_returns_none(raw_recorder):
+    raw_recorder.state["headers"] = {}
+    comp = fc.complete([{"role": "user", "content": "x"}])
+    assert comp.route_id is None and comp.provider is None
+
+
+def test_raw_path_error_is_not_retried(monkeypatch):
+    calls: list[dict] = []
+
+    class _Boom(_RawAPI):
+        def create(self, **kwargs):
+            calls.append(kwargs)
+            raise RuntimeError("router exhausted its ladder")
+
+    class _BoomMessages:
+        with_raw_response = _Boom(None)
+
+    monkeypatch.setattr(
+        fc, "_make_client",
+        lambda base_url, timeout: _FakeSDK(_recorder=calls, _messages=_BoomMessages()))
+    monkeypatch.setenv(fc.TOKEN_ENV, "test-token")
+
+    with pytest.raises(RuntimeError, match="router exhausted"):
+        fc.complete([{"role": "user", "content": "x"}])
+    assert len(calls) == 1
 
 
 # --------------------------------------------------------------------------- #

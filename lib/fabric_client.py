@@ -217,6 +217,31 @@ def _request_kwargs(messages: Sequence[Mapping[str, Any]], *,
     return kw
 
 
+def _single_request(sdk: Any, kw: dict) -> tuple[Any, Mapping[str, str] | None]:
+    """Perform the adapter's ONE request and return (message, response headers).
+
+    ``with_raw_response`` is preferred because the gateway reports its routing
+    decision in headers (``x-fabric-route-id`` / ``x-fabric-provider``) and the
+    parsed Message does NOT retain them. Measured against anthropic 2.8.0
+    (2026-11-12): a plain ``messages.create()`` leaves ``msg._response`` as
+    None, so reading headers off the message silently yielded None for every
+    call — the attribution we report was always blank. The raw-response wrapper
+    exposes the real HTTP headers and ``.parse()`` returns the same Message.
+
+    Falls back to the plain call for any SDK/client that lacks the wrapper;
+    attribution then degrades to None rather than failing a served call.
+    """
+    raw_api = getattr(getattr(sdk, "messages", None), "with_raw_response", None)
+    create_raw = getattr(raw_api, "create", None)
+    if callable(create_raw):
+        response = create_raw(**kw)
+        parse = getattr(response, "parse", None)
+        if callable(parse):
+            headers = getattr(response, "headers", None)
+            return parse(), headers
+    return sdk.messages.create(**kw), None
+
+
 def complete(messages: Sequence[Mapping[str, Any]], *,
              system: str | None = None,
              lane: str | None = "fast",
@@ -248,8 +273,8 @@ def complete(messages: Sequence[Mapping[str, Any]], *,
     sdk = _make_client(
         base_url or (os.environ.get(BASE_URL_ENV) or "").strip() or DEFAULT_BASE_URL,
         timeout)
-    msg = sdk.messages.create(**kw)   # <- the single attempt
-    return _completion_from(msg)
+    msg, headers = _single_request(sdk, kw)   # <- the single attempt
+    return _completion_from(msg, headers)
 
 
 def stream(messages: Sequence[Mapping[str, Any]], *,
@@ -290,14 +315,21 @@ def stream(messages: Sequence[Mapping[str, Any]], *,
                 yield text
 
 
-def _header(msg: Any, name: str) -> str | None:
-    """Best-effort response-header read across SDK/httpx shapes."""
-    resp = getattr(msg, "_response", None)
-    headers = getattr(resp, "headers", None)
-    if headers is None:
+def _header(msg: Any, name: str,
+            headers: Mapping[str, str] | None = None) -> str | None:
+    """Best-effort response-header read.
+
+    ``headers`` is what ``_single_request`` captured from the raw response and is
+    the reliable path; ``msg._response`` is kept for SDKs that attach the
+    response to the parsed message. Returns None rather than raising — an
+    attribution miss must never break a call that otherwise succeeded.
+    """
+    source = headers if headers is not None else getattr(
+        getattr(msg, "_response", None), "headers", None)
+    if source is None:
         return None
     try:
-        value = headers.get(name)
+        value = source.get(name)
     except Exception:  # noqa: BLE001 — attribution must never break a served call
         return None
     return str(value) if value else None
@@ -322,7 +354,8 @@ def _usage_dict(msg: Any) -> dict:
         return {}
 
 
-def _completion_from(msg: Any) -> Completion:
+def _completion_from(msg: Any,
+                    headers: Mapping[str, str] | None = None) -> Completion:
     blocks = getattr(msg, "content", None) or []
     text = "".join(
         getattr(b, "text", "") for b in blocks
@@ -330,8 +363,8 @@ def _completion_from(msg: Any) -> Completion:
     return Completion(
         text=text,
         model_served=getattr(msg, "model", None),
-        route_id=_header(msg, "x-fabric-route-id"),
-        provider=_header(msg, "x-fabric-provider"),
+        route_id=_header(msg, "x-fabric-route-id", headers),
+        provider=_header(msg, "x-fabric-provider", headers),
         usage=_usage_dict(msg),
         raw=msg,
     )
