@@ -1694,6 +1694,12 @@ def _fabric_brief_call(system: str, user: str, cfg: dict,
     makes exactly one request: a raised SDK error degrades the brief exactly as
     a legacy ladder failure would, and a second attempt here would double-serve
     a call the router already resolved.
+
+    FabricUnavailable is the one exception and is re-raised: it means no request
+    ever left this host (no token, or the SDK will not import), so nothing was
+    served and nothing was billed. _call_model catches it and runs the legacy
+    ladder — blanking a brief that a healthy legacy path could still produce
+    would be a regression, not a degradation.
     """
     stage = str(cfg.get("usage_stage") or "macro")
     try:
@@ -1706,6 +1712,8 @@ def _fabric_brief_call(system: str, user: str, cfg: dict,
             project_id=_FABRIC_PROJECT_ID,
             session_id=f"macro-brief-{stage}",
         )
+    except fabric_client.FabricUnavailable:
+        raise
     except Exception as e:  # noqa: BLE001 — degrade, never raise
         log.warning("master_brain: fabric brief call failed (%s)", e)
         return None, "llm_error"
@@ -1759,9 +1767,15 @@ def _call_model(system: str, user: str, cfg: dict,
     """
     # Capacity Fabric cutover (Chairman order 2026-11-12): the BRIEF WRITER goes
     # through the router when it is configured. When it is not — no token, or
-    # MACRO_BRIEF_FABRIC=0 — the legacy ladder below runs unchanged.
+    # MACRO_BRIEF_FABRIC=0 — the legacy ladder below runs unchanged. A router that
+    # cannot be reached at all (FabricUnavailable: no token after all, or the SDK
+    # will not import) also falls through here rather than blanking the brief.
     if _fabric_brief_enabled(cfg):
-        return _fabric_brief_call(system, user, cfg, served)
+        try:
+            return _fabric_brief_call(system, user, cfg, served)
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "master_brain: fabric router unavailable (%s); using the legacy ladder", e)
 
     from engine import llm_auth
 

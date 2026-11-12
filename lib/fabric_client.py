@@ -91,6 +91,17 @@ _LANES: dict[str, str] = {
 _LANE_IDS: frozenset[str] = frozenset(_LANES.values()) | frozenset({"fabric/kimi-preferred"})
 
 
+class FabricUnavailable(RuntimeError):
+    """The router cannot be reached AT ALL — no token, or the SDK will not load.
+
+    This is deliberately distinct from a served call that failed. A caller that
+    has a working fallback should catch this and use the fallback; catching it
+    as an ordinary failure would blank output that a healthy legacy path could
+    still produce. It is NOT used for errors the router returns: those mean the
+    router's own ladder was already walked, and a local retry is forbidden.
+    """
+
+
 @dataclass
 class Completion:
     """One router completion.
@@ -151,8 +162,13 @@ def _make_client(base_url: str, timeout: float):
     host without the anthropic package (the adapter is default-off)."""
     token = (os.environ.get(TOKEN_ENV) or "").strip()
     if not token:
-        raise RuntimeError(f"{TOKEN_ENV} is not set; fabric router is not configured")
-    import anthropic  # noqa: PLC0415 — lazy: optional dependency at import time
+        raise FabricUnavailable(f"{TOKEN_ENV} is not set; fabric router is not configured")
+    try:
+        import anthropic  # noqa: PLC0415 — lazy: optional dependency at import time
+    except ImportError as e:
+        raise FabricUnavailable(
+            f"the anthropic SDK is not importable ({e}); the fabric router "
+            f"cannot be reached from this host") from e
 
     return anthropic.Anthropic(base_url=base_url, api_key=token, timeout=timeout)
 

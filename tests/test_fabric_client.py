@@ -365,6 +365,29 @@ def test_missing_token_raises_without_a_request(monkeypatch):
         fc.complete([{"role": "user", "content": "x"}])
 
 
+def test_unreachable_router_raises_fabric_unavailable(monkeypatch):
+    """FabricUnavailable is the signal callers use to fall back to a working
+    local path — a missing token and an unimportable SDK must both raise it,
+    never a bare RuntimeError that reads the same as a served-call failure."""
+    monkeypatch.delenv(fc.TOKEN_ENV, raising=False)
+    with pytest.raises(fc.FabricUnavailable):
+        fc.complete([{"role": "user", "content": "x"}])
+
+    monkeypatch.setenv(fc.TOKEN_ENV, "test-token")
+    real_import = __builtins__["__import__"] if isinstance(__builtins__, dict) \
+        else __builtins__.__import__
+
+    def no_anthropic(name, *a, **kw):
+        if name == "anthropic":
+            raise ImportError("No module named 'anthropic'")
+        return real_import(name, *a, **kw)
+
+    monkeypatch.setattr("builtins.__import__", no_anthropic)
+    with pytest.raises(fc.FabricUnavailable, match="not importable"):
+        fc.complete([{"role": "user", "content": "x"}])
+    assert issubclass(fc.FabricUnavailable, RuntimeError)
+
+
 # --------------------------------------------------------------------------- #
 # streaming
 # --------------------------------------------------------------------------- #

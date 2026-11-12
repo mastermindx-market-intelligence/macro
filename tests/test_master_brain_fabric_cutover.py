@@ -179,6 +179,71 @@ def test_kill_switch_forces_legacy_even_when_configured(monkeypatch):
 
 
 # --------------------------------------------------------------------------- #
+# router UNREACHABLE -> fall through to legacy, never blank the brief
+#
+# FabricUnavailable means no request ever left this host (no token, or the SDK
+# will not import). Blanking a brief that the legacy ladder could still produce
+# would be a regression, so _call_model must fall through rather than degrade.
+# --------------------------------------------------------------------------- #
+def test_router_unavailable_falls_through_to_legacy_ladder(monkeypatch):
+    calls: list[dict] = []
+
+    def unavailable(messages, **kwargs):
+        calls.append(kwargs)
+        raise fc.FabricUnavailable("the anthropic SDK is not importable")
+
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete", unavailable)
+    monkeypatch.setattr(llm_auth_mod, "build_providers", lambda *a, **kw: [{"name": "x"}])
+    monkeypatch.setattr(llm_auth_mod, "make_call",
+                        lambda *a, **kw: ("legacy reply", None, "deepseek"))
+    monkeypatch.delenv("MACRO_BRIEF_FABRIC", raising=False)
+
+    served: dict = {}
+    text, reason = mb._call_model(
+        "sys", "user", {**_SHIPPED_CFG, "usage_stage": "macro"}, served=served)
+    assert (text, reason) == ("legacy reply", None)
+    assert len(calls) == 1                # one fabric attempt, then the ladder
+    assert served.get("provider") != "fabric"   # legacy rung reported itself
+
+
+def test_router_unavailable_empty_ladder_reports_legacy_reason(monkeypatch):
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        fc, "complete",
+        lambda messages, **kw: (_ for _ in ()).throw(fc.FabricUnavailable("no sdk")))
+    monkeypatch.setattr(llm_auth_mod, "build_providers", lambda *a, **kw: [])
+    monkeypatch.delenv("MACRO_BRIEF_FABRIC", raising=False)
+
+    text, reason = mb._call_model("sys", "user", {**_SHIPPED_CFG,
+                                                  "usage_stage": "macro"})
+    # The legacy diagnosis, not "llm_error": the fabric path was never reached.
+    assert text is None and reason == "no_client_or_key"
+
+
+def test_served_call_error_still_does_not_fall_through(monkeypatch):
+    """Only FabricUnavailable falls through. A served-call error means the
+    router's own ladder was already walked, so a local legacy call would
+    double-serve — it must degrade instead."""
+    calls: list[dict] = []
+
+    def boom(messages, **kwargs):
+        calls.append(kwargs)
+        raise RuntimeError("router exhausted its ladder")
+
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete", boom)
+    monkeypatch.setattr(llm_auth_mod, "build_providers",
+                        lambda *a, **kw: pytest.fail("legacy ladder must not run"))
+    monkeypatch.delenv("MACRO_BRIEF_FABRIC", raising=False)
+
+    text, reason = mb._call_model("sys", "user", {**_SHIPPED_CFG,
+                                                  "usage_stage": "macro"})
+    assert text is None and reason == "llm_error"
+    assert len(calls) == 1
+
+
+# --------------------------------------------------------------------------- #
 # scope: the zh pass and other consumers stay on the legacy ladder
 # --------------------------------------------------------------------------- #
 def test_zh_pass_is_not_routed_to_fabric(monkeypatch):
