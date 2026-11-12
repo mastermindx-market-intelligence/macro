@@ -48,13 +48,17 @@ import argparse
 import gzip
 import json
 import re
+import sys
 import time
 from datetime import UTC, datetime
 from pathlib import Path
 
-import pandas as pd
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
-from collectors.sp1500_pit_sectors import VALID_SECTORS, _clean_sic, _get_submissions, _map_sic
+import pandas as pd  # noqa: E402
+
+from collectors.sp1500_pit_sectors import VALID_SECTORS, _clean_sic, _get_submissions, _map_sic  # noqa: E402
 
 BASIS = "sic_derived_fill"
 COLUMNS = ["ticker", "cik", "sec_name", "sic", "sic_desc", "sector", "basis", "label_join",
