@@ -8,9 +8,13 @@ from __future__ import annotations
 import argparse
 import json
 import mimetypes
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
 
 
 def fixtures() -> tuple[dict, dict]:
@@ -191,8 +195,7 @@ def main() -> None:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--browser", default=None)
     args = parser.parse_args()
-    root = Path(__file__).resolve().parents[1]
-    print(json.dumps(capture(root, args.out, args.browser), indent=2))
+    print(json.dumps(capture(REPO_ROOT, args.out, args.browser), indent=2))
 
 
 if __name__ == "__main__":
