@@ -109,6 +109,41 @@ def test_bad_or_missing_family_observations_fail_closed(part, field, value, matc
         qualify_ndx_family(raw, ASOF)
 
 
+@pytest.mark.parametrize("root", ["NDX", "NDXP"])
+@pytest.mark.parametrize("iv", ["not-a-volatility", "", "NaN"])
+def test_present_malformed_iv_refuses_family_output(root, iv):
+    raw = _both()
+    greek, interest = raw[root]
+    malformed, second_interest = greek.copy(), interest.copy()
+    malformed["strike"] += 100
+    second_interest["strike"] += 100
+    malformed["implied_vol"] = iv
+    raw[root] = (pd.concat([greek, malformed], ignore_index=True),
+                 pd.concat([interest, second_interest], ignore_index=True))
+    with pytest.raises(FamilySourceUnavailable, match=f"{root}: malformed implied_vol"):
+        build_ndx_family_gex(raw, ASOF)
+
+
+@pytest.mark.parametrize("root", ["NDX", "NDXP"])
+@pytest.mark.parametrize("kind,iv", [
+    ("absent", None), ("null", None), ("nan", float("nan")),
+    ("nullable", pd.NA), ("number", 0.25), ("numeric_string", "0.25"),
+])
+def test_missing_or_valid_iv_preserves_observed_family_gamma(root, kind, iv):
+    raw = _both()
+    if kind == "absent":
+        raw[root] = (raw[root][0].drop(columns=["implied_vol"]), raw[root][1])
+    else:
+        raw[root][0]["implied_vol"] = iv
+    result = build_ndx_family_gex(raw, ASOF)
+    assert result["net_gex_bn"] == pytest.approx(0.18, abs=0.0001)
+    assert result["coverage"]["n_contracts"] == 2
+    assert result["family_source"]["root_contract_counts"] == {"NDX": 1, "NDXP": 1}
+    assert result["family_source"]["state"] == "OFFLINE_SOURCE_QUALIFIED_NOT_PUBLISHABLE"
+    assert result["family_source"]["redistribution_grant"] is None
+    assert result["family_source"]["complete_chain_receipt"] is False
+
+
 def test_missing_contract_side_cannot_be_treated_as_zero():
     raw = _both()
     greek, oi = raw["NDXP"]

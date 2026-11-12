@@ -23,6 +23,7 @@ import re
 import unicodedata
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -410,6 +411,15 @@ def _one_decimal(n: float) -> str:
     return text
 
 
+def _per_share_magnitude(value: int | float) -> str:
+    """Preserve the represented number without inferring source decimal places."""
+    number = Decimal(str(abs(value)))
+    if not number.is_finite():
+        raise ValueError("per-share amount must be finite")
+    text = format(number, "f")
+    return text.rstrip("0").rstrip(".") if "." in text else text
+
+
 # Non-monetary contract units (endpoints.v1 normalisation.unit_map). A currency
 # code is never appended to these.
 _NON_MONETARY_UNITS = frozenset({"shares", "percent", "units"})
@@ -460,7 +470,9 @@ def format_amount(quantity: Mapping[str, Any], locale: str) -> str:
     the unit (endpoints.v1 normalisation; eval_grade does the same), so a
     "thousands" unit is displayed as written. Tiers are chosen after rounding,
     so 999999.96 shows as $1 million. A negative amount carries exactly one
-    minus sign, dropped when the shown figure rounds to 0.
+    minus sign, dropped when the shown figure rounds to 0. Unscaled per-share
+    amounts preserve the represented value instead of rounding away cents or
+    finer precision; this does not derive EPS or change the scaled USD tiers.
     """
     if quantity.get("form") == "absent":
         return ""
@@ -492,11 +504,19 @@ def format_amount(quantity: Mapping[str, Any], locale: str) -> str:
         en = f"${shown} million"
         zh = f"{_one_decimal(magnitude / 1e4)}万美元"
     elif usd:
-        shown = _one_decimal(magnitude)
+        shown = (
+            _per_share_magnitude(value)
+            if quantity.get("basis") == "per_share"
+            else _one_decimal(magnitude)
+        )
         en = f"${shown}"
         zh = f"{shown}美元"
     else:
-        shown = _one_decimal(magnitude)
+        shown = (
+            _per_share_magnitude(value)
+            if quantity.get("basis") == "per_share"
+            else _one_decimal(magnitude)
+        )
         label = unit
         if (
             currency not in ("", "NA")

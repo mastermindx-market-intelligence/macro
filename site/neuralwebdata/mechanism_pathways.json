@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-11-08",
+  "as_of": "2026-11-12",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -23,15 +23,116 @@
       "mastermind_arming"
     ]
   },
-  "pathways": [],
-  "no_pathway": {
-    "reason": "scare_unattributed",
-    "printed": true,
-    "trigger_context": {
-      "dominant_scare": "growth",
-      "label_en": "Growth scare / defensive rotation",
-      "label_zh": "增长恐慌/防御轮动",
-      "state": "caution"
+  "pathways": [
+    {
+      "family": "real_rate_shock",
+      "driver": "real_rate_shock",
+      "pathway_role": "primary",
+      "as_of": "2026-11-12",
+      "direction_en": "Rates / inflation shock",
+      "direction_zh": "利率/通胀冲击",
+      "confidence_ceiling": "context_only",
+      "coverage_score": null,
+      "coherence": "partial",
+      "stale_legs": [],
+      "nodes": [
+        {
+          "node_id": "driver_real_rate_shock",
+          "as_of": "2026-11-12",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "real_rate_shock",
+          "observation": {
+            "en": "Rates / inflation shock",
+            "zh": "利率/通胀冲击"
+          },
+          "direction": "",
+          "value": 68.7,
+          "z_or_percentile": null,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "trigger",
+          "evidence_refs": [
+            "market_drivers.primary"
+          ]
+        }
+      ],
+      "edges": [],
+      "coverage_basis": "scare_trigger",
+      "source_trigger": "risk_radar",
+      "scare": "rates"
+    },
+    {
+      "family": "crypto",
+      "driver": "crypto_liquidity",
+      "pathway_role": "alternate",
+      "as_of": "2026-11-12",
+      "direction_en": "crypto liquidity draining — BTC/ETH lead down",
+      "direction_zh": "",
+      "confidence_ceiling": "context_only",
+      "coverage_score": null,
+      "coherence": "partial",
+      "stale_legs": [],
+      "nodes": [
+        {
+          "node_id": "driver_crypto_liquidity",
+          "as_of": "2026-11-12",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "crypto_liquidity",
+          "observation": {
+            "en": "crypto liquidity draining — BTC/ETH lead down",
+            "zh": ""
+          },
+          "direction": "",
+          "value": 1.32,
+          "z_or_percentile": null,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "trigger",
+          "evidence_refs": [
+            "market_drivers.primary"
+          ]
+        }
+      ],
+      "edges": [],
+      "coverage_basis": "scare_trigger"
+    },
+    {
+      "family": "fx",
+      "driver": "usd_shock",
+      "pathway_role": "alternate",
+      "as_of": "2026-11-12",
+      "direction_en": "dollar surging — squeeze, commodities & EM pressured",
+      "direction_zh": "",
+      "confidence_ceiling": "context_only",
+      "coverage_score": null,
+      "coherence": "partial",
+      "stale_legs": [],
+      "nodes": [
+        {
+          "node_id": "driver_usd_shock",
+          "as_of": "2026-11-12",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "usd_shock",
+          "observation": {
+            "en": "dollar surging — squeeze, commodities & EM pressured",
+            "zh": ""
+          },
+          "direction": "",
+          "value": 1.14,
+          "z_or_percentile": null,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "trigger",
+          "evidence_refs": [
+            "market_drivers.primary"
+          ]
+        }
+      ],
+      "edges": [],
+      "coverage_basis": "scare_trigger"
     }
-  }
+  ]
 }

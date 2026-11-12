@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-11-08T05:02:54.522017+00:00",
+"updated":"2026-11-12T07:01:11.134682+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -16321,11 +16321,11 @@
 ]
 },
 "UNF":{
-"foreign_pct":7.7,
-"asof":"2025-08-30",
-"source":"10-K 2025-08-30",
-"fy":2025,
-"accession":"0001193125-25-256222",
+"foreign_pct":8.0,
+"asof":"2026-08-29",
+"source":"10-K 2026-08-29",
+"fy":2026,
+"accession":"0001628280-26-067689",
 "method":"us_member",
 "concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
 "by_region":[
@@ -16333,13 +16333,13 @@
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":92.3
+"pct":92.0
 },
 {
-"key":"EuropeAndCanada",
-"label":"Europe And Canada",
-"cls":"mixed",
-"pct":7.7
+"key":"NonUs",
+"label":"Non Us",
+"cls":"foreign_total",
+"pct":8.0
 }
 ]
 },
@@ -16529,11 +16529,11 @@
 ]
 },
 "FDS":{
-"foreign_pct":39.0,
-"asof":"2025-08-31",
-"source":"10-K 2025-08-31",
-"fy":2025,
-"accession":"0001628280-25-045769",
+"foreign_pct":38.8,
+"asof":"2026-08-31",
+"source":"10-K 2026-08-31",
+"fy":2026,
+"accession":"0001628280-26-066391",
 "method":"us_member",
 "concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
 "by_region":[
@@ -16541,25 +16541,19 @@
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":61.0
-},
-{
-"key":"AllOtherEMEACountries",
-"label":"All Other EMEACountries",
-"cls":"mixed",
-"pct":15.0
+"pct":61.2
 },
 {
 "key":"OtherCountries",
 "label":"Other Countries",
 "cls":"mixed",
-"pct":14.0
+"pct":29.0
 },
 {
 "key":"GB",
 "label":"GB",
 "cls":"dm",
-"pct":9.9
+"pct":9.8
 }
 ]
 },
@@ -17331,6 +17325,41 @@
 "label":"All Other",
 "cls":"mixed",
 "pct":5.4
+}
+]
+},
+"FICO":{
+"foreign_pct":21.1,
+"asof":"2026-09-30",
+"source":"10-K 2026-09-30",
+"fy":2026,
+"accession":"0000814547-26-000042",
+"method":"us_member",
+"concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
+"by_region":[
+{
+"key":"Americas",
+"label":"Americas",
+"cls":"mixed",
+"pct":89.7
+},
+{
+"key":"US",
+"label":"US",
+"cls":"us",
+"pct":78.9
+},
+{
+"key":"EMEA",
+"label":"EMEA",
+"cls":"mixed",
+"pct":6.7
+},
+{
+"key":"AsiaPacific",
+"label":"Asia Pacific",
+"cls":"mixed",
+"pct":3.6
 }
 ]
 },
@@ -35764,12 +35793,12 @@
 }
 },
 "meta":{
-"universe":2872,
-"attempted":2880,
-"parsed":1001,
+"universe":2874,
+"attempted":2881,
+"parsed":1002,
 "skips":{
-"no_geo_axis":1373,
-"no_denominator":398,
+"no_geo_axis":1374,
+"no_denominator":397,
 "no_10k":72,
 "no_instance":27,
 "agg_no_total":3,

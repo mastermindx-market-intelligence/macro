@@ -96,6 +96,9 @@ def _validated_frame(
         df["underlying_price"] = spot.astype(float)
         if "implied_vol" in df.columns:
             iv = pd.to_numeric(df["implied_vol"], errors="coerce")
+            # A malformed present value must not acquire missing-IV semantics.
+            if (df["implied_vol"].notna() & iv.isna()).any():
+                raise FamilySourceUnavailable(f"{root}: malformed implied_vol")
             if ((iv.notna()) & ((iv < MIN_QUOTED_IV) | (~iv.map(math.isfinite)))).any():
                 raise FamilySourceUnavailable(f"{root}: degenerate IV would drop a family contract")
     df["contract_root"] = root

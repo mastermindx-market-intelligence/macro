@@ -129,6 +129,35 @@ def test_real_parquet_store_via_actual_cli_offline_only(monkeypatch, tmp_path):
     assert [p.name for p in stage.rglob("*.json")] == ["NDX.json"]
 
 
+@pytest.mark.parametrize("bad_root", ["NDX", "NDXP"])
+def test_actual_cli_refuses_malformed_iv_from_parquet_without_output(
+    monkeypatch, tmp_path, caplog, bad_root,
+):
+    for root in ("NDX", "NDXP"):
+        greek, interest = _frames(root)
+        if root == bad_root:
+            greek["implied_vol"] = "not-a-volatility"
+        for kind, frame in (("greeks", greek), ("oi", interest)):
+            frame["date"] = pd.to_datetime(frame["date"])
+            path = tmp_path / "theta" / kind / root / "2026.parquet"
+            path.parent.mkdir(parents=True)
+            frame.to_parquet(path, index=False)
+    stage = tmp_path / "refused"
+    def forbidden(*args, **kwargs):
+        pytest.fail("offline refusal reached the scheduled publisher")
+    for name in ("_arm_stall_watchdog", "_r2_client", "_upload_r2"):
+        monkeypatch.setattr(hub, name, forbidden)
+    monkeypatch.setattr("sys.argv", [
+        "build_options_hub_nightly.py", "--ndx-family-offline", "--no-publish",
+        "--date", ASOF, "--theta-store", str(tmp_path / "theta"), "--out", str(stage),
+    ])
+    with pytest.raises(SystemExit) as exc:
+        hub.main()
+    assert exc.value.code == 1
+    assert f"{bad_root}: malformed implied_vol" in caplog.text
+    assert not stage.exists()
+
+
 def test_offline_writer_rejects_a_gex_parent_symlink_before_any_escape(monkeypatch, tmp_path):
     """Regression: the old write_text followed candidate/gex -> outside."""
     target = tmp_path / "candidate"
