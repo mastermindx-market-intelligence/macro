@@ -1,0 +1,11 @@
+{
+  "acceptedOriginalSubject": "29793e95657201db0dffc3a6e427616fb23e3aea",
+  "at": "2026-11-12T01:22:09.141512+00:00",
+  "integratedSubject": "d4d3696dc6b38a02461b36a7a2a98d7685a79bd3",
+  "qualification": "All five declared source/test and nine visual inputs (10 unique paths) were independently compared against the original qualified subject and matched the current merged index/worktree; original captures and 103 affected tests are retained without relabeling.",
+  "records": {
+    "manifest.json": "57ffd1beaca4463d7df93cd07cfbb6563aa9c9466f69d5de69cd665e3c3ba080",
+    "visual-fixture-provenance.json": "8e31e55cd23d72c3fee0d298312691333982a072cb63ce8ffc553df86a5e8763",
+    "visual-qualification.json": "b7a313290f49f96f481eff2582b621ce26e63cff105d5920476e2229461c0da1"
+  }
+}

@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_726),
+    ("templates/index.html", 137, 5_970),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_993),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_728),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -8120,6 +8120,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Fund only this measured +2 on each ceiling: 5,966 -> 5,968, 5,989 -> 5,991,
     and 5,724 -> 5,726. Retain all job ceilings, the ten-pack bound, selectors,
     execution limits, and every previous provenance entry.
+
+    Congress current-main composition (PR #11084, 2026-11-12) retains the
+    accepted Start-page builder registration from #11019/main 89bf0c038ac7
+    together with the Congress registration. The existing commit-bound owner
+    measures actual integration HEAD d4d3696dc6b38a02461b36a7a2a98d7685a79bd3,
+    tree d184bb988a3189f5d088629ef42d52177cd12a8e:
+    index 137 jobs / 5,970 weight, free-content 137 / 5,993, and Prophet
+    131 / 5,728; every row uses ten packs. Fund only these measured +2
+    breaches against the independently calibrated 5,968 / 5,991 / 5,726.
+    Preserve both registrations, all job ceilings, the ten-pack bound,
+    selectors, timeouts and execution limits. These remain planning weights,
+    not measured execution times. Full exact-tree rows and input hashes are
+    retained under current-main-composition-20261112/measurement-before.json.
 
     """
     rows = packing_probe_measurements(
