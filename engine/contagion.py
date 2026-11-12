@@ -156,7 +156,17 @@ def _fit_var(Y: np.ndarray, p: int) -> tuple[np.ndarray, np.ndarray]:
     A_stacked shape: (K, K*p) — coefficient matrices [A1 | A2 | ... | Ap]
     Sigma: (K, K) innovation covariance matrix.
     """
+    Y = np.asarray(Y, dtype=float)
+    if Y.ndim != 2 or not np.isfinite(Y).all():
+        raise ValueError("DY: nonfinite or malformed VAR observations")
     T, K = Y.shape
+    # A flat series has no identified innovations. Roundoff in the OLS
+    # residual of a nonzero constant must not create a connectedness estimate.
+    # This relative machine-precision check is invariant to positive units.
+    magnitude = np.max(np.abs(Y), axis=0) if T else np.zeros(K)
+    if (K == 0 or p < 1 or T <= p or
+            np.any(np.ptp(Y, axis=0) <= 64 * np.finfo(float).eps * magnitude)):
+        raise ValueError("DY: numerically constant or insufficient VAR observations")
     # Build regressor matrix X with lags
     rows = T - p
     X = np.ones((rows, K * p), dtype=float)
@@ -169,8 +179,8 @@ def _fit_var(Y: np.ndarray, p: int) -> tuple[np.ndarray, np.ndarray]:
         XtX = X.T @ X
         XtY = X.T @ y
         A = np.linalg.lstsq(XtX, XtY, rcond=None)[0]  # (K*p, K)
-    except np.linalg.LinAlgError:
-        return np.zeros((K, K * p)), np.eye(K)
+    except np.linalg.LinAlgError as exc:
+        raise ValueError("DY: VAR fit unavailable") from exc
 
     Amat = A.T  # (K, K*p)
     resid = y - X @ A
@@ -207,35 +217,43 @@ def _gfevd(Phi: list[np.ndarray], Sigma: np.ndarray, H: int) -> np.ndarray:
 
     Ref: Diebold & Yilmaz (2012), equation (4).
     """
+    Sigma = np.asarray(Sigma, dtype=float)
+    if (Sigma.ndim != 2 or Sigma.shape[0] == 0 or
+            Sigma.shape[0] != Sigma.shape[1] or not np.isfinite(Sigma).all() or
+            not isinstance(H, (int, np.integer)) or isinstance(H, bool) or
+            H <= 0 or len(Phi) < H):
+        raise ValueError("DY: malformed FEVD inputs")
     K = Sigma.shape[0]
-    sigma_diag = np.diag(Sigma)  # (K,) variance vector
-
-    # Numerator: sum_{h=0}^{H-1} (e_i' Phi_h Sigma e_j)^2 / sigma_jj
-    # e_j is the j-th unit vector
+    diagonal = np.diag(Sigma)
+    if np.any(diagonal <= 0):
+        raise ValueError("DY: unidentified innovation variance")
+    scale = np.sqrt(diagonal)
+    # Work in standardized coordinates: the receiver-variance denominator
+    # cancels in row normalization. No absolute variance floor is needed.
+    # Sequential division avoids underflow of an outer product of tiny units.
+    with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+        correlation = (Sigma / scale[:, None]) / scale[None, :]
+    tolerance = 64 * np.finfo(float).eps * K
+    if (not np.isfinite(correlation).all() or
+            not np.allclose(correlation, correlation.T, rtol=0, atol=tolerance)):
+        raise ValueError("DY: invalid innovation covariance")
+    try:
+        if np.linalg.eigvalsh((correlation + correlation.T) / 2).min() < -tolerance:
+            raise ValueError("DY: indefinite innovation covariance")
+    except np.linalg.LinAlgError as exc:
+        raise ValueError("DY: covariance qualification unavailable") from exc
     numer = np.zeros((K, K))
-    denom = np.zeros(K)
-    for h in range(H):
-        Ph = Phi[h]
-        PhS = Ph @ Sigma  # (K, K)
-        # theta_h numerator contribution: (PhS)_{i,j}^2 / sigma_jj
-        for j in range(K):
-            numer[:, j] += (PhS[:, j] ** 2) / max(sigma_diag[j], 1e-12)
-        # Denominator for variable i = sum_h e_i' Phi_h Sigma Phi_h' e_i
-        for i in range(K):
-            e_i = Ph[i, :]  # i-th row of Phi_h
-            denom[i] += float(e_i @ Sigma @ e_i)
-
-    # Row-normalize so rows sum to 1
-    theta = np.zeros((K, K))
-    for i in range(K):
-        d = denom[i]
-        if d > 1e-12:
-            theta[i, :] = numer[i, :] / d
-    # Row-normalize to ensure exact sum-to-1 (generalized FEVD normalization)
-    row_sums = theta.sum(axis=1, keepdims=True)
-    row_sums = np.where(row_sums < 1e-12, 1.0, row_sums)
-    theta = theta / row_sums
-    return theta
+    for Ph in Phi[:H]:
+        Ph = np.asarray(Ph, dtype=float)
+        if Ph.shape != (K, K) or not np.isfinite(Ph).all():
+            raise ValueError("DY: malformed MA coefficients")
+        with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+            standardized = (Ph * scale[None, :]) / scale[:, None]
+            numer += np.square(standardized @ correlation)
+    mass = numer.sum(axis=1, keepdims=True)
+    if not np.isfinite(numer).all() or not np.isfinite(mass).all() or np.any(mass <= 0):
+        raise ValueError("DY: unidentified forecast-error mass")
+    return numer / mass
 
 
 def _dy_connectedness(theta: np.ndarray) -> dict:
@@ -243,6 +261,11 @@ def _dy_connectedness(theta: np.ndarray) -> dict:
 
     Returns total_connectedness (0-100), to_others[:], from_others[:].
     """
+    theta = np.asarray(theta, dtype=float)
+    if (theta.ndim != 2 or theta.shape[0] == 0 or
+            theta.shape[0] != theta.shape[1] or not np.isfinite(theta).all() or
+            np.any(theta < 0) or not np.allclose(theta.sum(axis=1), 1, rtol=0, atol=1e-12)):
+        raise ValueError("DY: connectedness requires normalized finite shares")
     K = theta.shape[0]
     # Own-share = diagonal; off-diagonal = spillovers
     own_share = np.diag(theta)
@@ -375,25 +398,26 @@ def spillover() -> dict:
 
     # --- Current snapshot DY (on last 150d window) ---
     Y = mat[-_DY_WINDOW:, :]
-    Amat, Sigma = _fit_var(Y, _DY_VAR_LAG)
-    Phi = _var_to_ma(Amat, _DY_VAR_LAG, _DY_HORIZON)
-    theta = _gfevd(Phi, Sigma, _DY_HORIZON)
-    conn = _dy_connectedness(theta)
+    conn = None
+    try:
+        Amat, Sigma = _fit_var(Y, _DY_VAR_LAG)
+        Phi = _var_to_ma(Amat, _DY_VAR_LAG, _DY_HORIZON)
+        theta = _gfevd(Phi, Sigma, _DY_HORIZON)
+        conn = _dy_connectedness(theta)
+    except (ValueError, np.linalg.LinAlgError, FloatingPointError) as exc:
+        gaps.append(f"DY: current estimate unavailable ({exc})")
 
-    to_dict = {loaded_tickers[j]: _r(conn["to_others"][j] * 100.0, 1)
-               for j in range(K)}
-    from_dict = {loaded_tickers[j]: _r(conn["from_others"][j] * 100.0, 1)
-                 for j in range(K)}
-
-    # Top 3 transmitters
+    to_dict = ({loaded_tickers[j]: _r(conn["to_others"][j] * 100.0, 1)
+                for j in range(K)} if conn is not None else {})
+    from_dict = ({loaded_tickers[j]: _r(conn["from_others"][j] * 100.0, 1)
+                  for j in range(K)} if conn is not None else {})
     top3 = sorted(to_dict.items(), key=lambda x: x[1] or 0, reverse=True)[:3]
     top_transmitters = [{"ticker": t, "to_others_pct": v} for t, v in top3]
-
-    # SPY from_others
     spy_from = from_dict.get("SPY")
 
     # --- Weekly history (~52 weeks of 5th-business-day strides) ---
     history: list[dict] = []
+    unavailable_windows = 0
     n_hist_steps = 260  # ~52 weeks * 5 trading days
     # Compute on weekly strides ending at most recent window
     stride_ends = list(range(len(all_idx) - 1, max(_DY_WINDOW - 1, len(all_idx) - n_hist_steps - 1), -_DY_WEEKLY_STRIDE))
@@ -413,13 +437,17 @@ def spillover() -> dict:
             d_str = str(all_idx[end_idx].date())
             history.append({"date": d_str, "total": _r(c_w["total"], 1)})
         except Exception:
+            unavailable_windows += 1
             continue
 
+    if unavailable_windows:
+        gaps.append(f"DY: {unavailable_windows} weekly estimates unavailable")
     elapsed = time.time() - t0
     print(f"[timing] DY spillover snapshot: {elapsed:.2f}s ({len(loaded_tickers)} series, {len(history)} history points)")
 
     return {
-        "total_connectedness": _r(conn["total"], 1),
+        "total_connectedness": _r(conn["total"], 1) if conn is not None else None,
+        **({"state": "unavailable"} if conn is None else {}),
         "to_others": to_dict,
         "from_others": from_dict,
         "top_transmitters": top_transmitters,

@@ -213,8 +213,13 @@ class TestSpilloverFunction:
             assert "to_others_pct" in item
 
     def test_us_from_others_is_present_when_spy_loaded(self):
-        """SPY is in the basket → us_from_others should be a number."""
+        """SPY with identified varying innovations has a receiving estimate."""
         store_map = _full_basket_store(n=350)
+        rng = np.random.default_rng(10962)
+        for frame in store_map.values():
+            # The default fixed OHLC ratios have numerically constant GK vol.
+            # Use actual varying ranges for this positive-evidence control.
+            frame["high"] = frame["close"] * (1.01 + rng.uniform(0, .02, len(frame)))
         with patch("engine.contagion.store.read", _make_store(store_map)):
             result = spillover()
         if result.get("n_series", 0) >= 3:
@@ -463,3 +468,93 @@ class TestFrozenBasket:
         assert not overlap, (
             f"Old coverage-greedy tickers still in basket: {overlap}"
         )
+
+
+class TestFEVDQualification:
+    """#10962: units cannot become risk, and undefined evidence is not zero."""
+
+    @pytest.mark.parametrize("variance", [1e-240, 1e-16, 1e-13, 1e-12, 1., 1e240])
+    @pytest.mark.parametrize("rho", [0., .5, -.5])
+    def test_covariance_units_do_not_change_shares(self, variance, rho):
+        cov = np.array([[1., rho], [rho, 1.]]) * variance
+        got = _gfevd([np.eye(2)], cov, 1)
+        expected = np.array([[1., rho*rho], [rho*rho, 1.]]) / (1+rho*rho)
+        np.testing.assert_allclose(got, expected, atol=1e-14, rtol=1e-14)
+        c = _dy_connectedness(got)
+        assert c["total"] == pytest.approx(100*rho*rho/(1+rho*rho), abs=1e-12)
+        assert sum(c["to_others"]) == pytest.approx(sum(c["from_others"]))
+
+    @pytest.mark.parametrize("units", [[1e-7, 1.], [1e70, 1e-70], [2., .25]])
+    def test_individual_variable_units(self, units):
+        d = np.array(units)
+        cov = np.array([[1., .5], [.5, 1.]])
+        phi = [np.eye(2), np.array([[.3, .2], [.1, .4]])]
+        expected = _gfevd(phi, cov, 2)
+        scaled_phi = [p*d[:, None]/d[None, :] for p in phi]
+        actual = _gfevd(scaled_phi, cov*d[:, None]*d[None, :], 2)
+        np.testing.assert_allclose(actual, expected, atol=1e-14, rtol=1e-14)
+
+    @pytest.mark.parametrize("cov", [np.zeros((2,2)), np.diag([1.,0.]),
+        np.diag([1.,-1.]), np.array([[1.,2.],[2.,1.]]),
+        np.array([[1.,.2],[.3,1.]]), np.array([[1.,np.nan],[np.nan,1.]]),
+        np.array([[1.,0.],[0.,np.inf]])])
+    def test_undefined_covariance_refuses(self, cov):
+        with pytest.raises(ValueError):
+            _gfevd([np.eye(2)], cov, 1)
+
+    @pytest.mark.parametrize("theta", [np.zeros((3,3)), np.diag([1.,1.,0.]),
+        np.array([[1.1,-.1],[0.,1.]]), np.array([[1.,np.nan],[0.,1.]]),
+        np.ones((2,3)), np.empty((0,0))])
+    def test_connectedness_requires_actual_unit_mass(self, theta):
+        with pytest.raises(ValueError):
+            _dy_connectedness(theta)
+
+    def test_malformed_ma_and_horizon_refuse(self):
+        for ph, horizon in [([],1), ([np.eye(2)],0), ([np.eye(2)],True),
+                            ([np.eye(3)],1), ([np.ones((2,2))*np.inf],1),
+                            ([np.zeros((2,2))],1)]:
+            with pytest.raises(ValueError):
+                _gfevd(ph,np.eye(2),horizon)
+
+    @pytest.mark.parametrize("constant", [0., .1, 1e-100, 1e100])
+    def test_flat_fit_never_fabricates_residual_evidence(self, constant):
+        with pytest.raises(ValueError):
+            _fit_var(np.full((200,3),constant),2)
+
+    def test_failed_solver_is_not_independent_innovations(self):
+        with patch("engine.contagion.np.linalg.lstsq", side_effect=np.linalg.LinAlgError):
+            with pytest.raises(ValueError):
+                _fit_var(np.random.default_rng(4).normal(size=(200,3)),2)
+
+    @pytest.mark.parametrize("zero_range", [False,True])
+    def test_native_flat_ohlc_store_is_unavailable(self,zero_range):
+        import json
+        frames=_full_basket_store(n=400)
+        if zero_range:
+            for frame in frames.values():
+                for key in ("open","high","low"):
+                    frame[key]=frame["close"]
+        with patch("engine.contagion.store.read",_make_store(frames)):
+            result=spillover()
+        assert result["state"]=="unavailable"
+        assert result["total_connectedness"] is None
+        assert result["us_from_others"] is None
+        assert result["to_others"]==result["from_others"]=={}
+        assert result["top_transmitters"]==result["history_weekly"]==[]
+        assert any("current estimate unavailable" in x for x in result["gaps"])
+        assert any("weekly estimates unavailable" in x for x in result["gaps"])
+        json.dumps(result,allow_nan=False)
+
+    def test_valid_history_survives_invalid_current_window(self):
+        import engine.contagion as c
+        n=500;idx=_bdate_index(n);rng=np.random.default_rng(7)
+        panels={t:pd.Series(np.r_[rng.uniform(.1,.3,n-150),np.full(150,.2)],index=idx)
+                for t in _ETF_BASKET}
+        frames=_full_basket_store(n=n)
+        with patch("engine.contagion.store.read",_make_store(frames)), patch(
+            "engine.contagion._garman_klass_vol",side_effect=list(panels.values())):
+            result=c.spillover()
+        assert result["total_connectedness"] is None
+        assert result["history_weekly"]
+        assert result["history_weekly"][-1]["date"] < str(idx[-1].date())
+        assert all(0<=r["total"]<=100 for r in result["history_weekly"])
