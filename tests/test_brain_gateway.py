@@ -3927,10 +3927,11 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
     def _spy_dispatch(
         name, params, root_, tdd, thu, user_id="", internals_ok=False,
         chart_client="", chart_origin_id="", chart_context_revision=None,
-        allowed_tool_names=None,
+        allowed_tool_names=None, mode="chat",
     ):
         seen["allowed_tools"] = allowed_tool_names
         seen["user_id"] = user_id
+        seen["mode"] = mode
         return {"available": False, "note": "stub"}
 
     with patch.object(gw, "_dispatch_brain_tool", side_effect=_spy_dispatch):
@@ -3939,6 +3940,7 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
             client, "deepseek-chat", 2000, 5, user_id="user-77",
         )
     assert seen.get("user_id") == "user-77"
+    assert seen.get("mode") == "chat"
     assert "get_watchlist" in seen["allowed_tools"]
 
 

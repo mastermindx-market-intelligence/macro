@@ -301,6 +301,7 @@ _BRAIN_TOOLS = frozenset({
     "annotate_chart",
     # Finance tool suite (W6d) — read-only reads over calibrated nightly artifacts
     "get_fundamentals",
+    "calculate_financial_bridge",
     "get_earnings",
     "get_insider_activity",
     "get_congress_trades",
@@ -362,6 +363,7 @@ _BRAIN_ONLY_TOOLS = frozenset({
     "annotate_chart",
     # Finance tool suite (W6d)
     "get_fundamentals",
+    "calculate_financial_bridge",
     "get_earnings",
     "get_insider_activity",
     "get_congress_trades",
@@ -2497,9 +2499,11 @@ def _chart_command_tool_schemas() -> list[dict]:
 
 def _brain_tool_schemas() -> list[dict]:
     """Return brain-gateway-only schemas (excluding separately gated chart tools)."""
+    from engine.neuralweb.brain_financial_bridge import financial_bridge_tool_schema
     from engine.neuralweb.brain_visuals import tool_schema
     from engine.neuralweb.brain_financial_views import financial_widget_tool_schema
     return [tool_schema(), financial_widget_tool_schema(),
+        financial_bridge_tool_schema(),
         {
             "name": "get_quote",
             "description": (
@@ -7521,6 +7525,7 @@ def _dispatch_brain_tool(
     chart_context_revision: int | None = None,
     allowed_tool_names: set[str] | None = None,
     _financial_source_read: bool = False,
+    mode: str = "chat",
 ) -> dict:
     """Dispatch a brain gateway tool call.
 
@@ -7541,6 +7546,8 @@ def _dispatch_brain_tool(
         # CXI-R23a: exclude internals tool names for non-allowlisted sessions so the
         # model never learns of context_search / context_open from this error path.
         _disclosed_tools = set(_BRAIN_TOOLS)
+        if type(mode) is not str or mode.strip().lower() != "chat":
+            _disclosed_tools.discard("calculate_financial_bridge")
         _disclosed_tools.discard("read_financial_statements")
         if not internals_ok:
             _disclosed_tools.difference_update(_BRAIN_INTERNALS_TOOLS)
@@ -7576,6 +7583,11 @@ def _dispatch_brain_tool(
             }
 
     if tool_name in _BRAIN_ONLY_TOOLS:
+        if tool_name == "calculate_financial_bridge":
+            if type(mode) is not str or mode.strip().lower() != "chat":
+                return {"error": "This calculation is available in chat mode only."}
+            from engine.neuralweb.brain_financial_bridge import analyze_financial_bridge
+            return analyze_financial_bridge(tool_params)
         if tool_name == "get_quote":
             return _tool_get_quote(tool_params, terminal_data_dir, terminal_hub_url, root)
         if tool_name == "get_symbol_context":
@@ -7751,7 +7763,8 @@ def _dispatch_brain_tool(
             from engine.neuralweb.brain_financial_reader import prepare_widget_read
             admitted = allowed_tool_names if allowed_tool_names is not None else {
                 s["name"] for s in _all_brain_tool_schemas(
-                    root, page=chart_client, internals_allowed=internals_ok, user_id=user_id)}
+                    root, page=chart_client, internals_allowed=internals_ok,
+                    user_id=user_id, mode=mode)}
             return prepare_widget_read(
                 tool_params,
                 lambda name, params: _dispatch_brain_tool(
@@ -7759,7 +7772,8 @@ def _dispatch_brain_tool(
                     user_id=user_id, internals_ok=internals_ok, chart_client=chart_client,
                     chart_origin_id=chart_origin_id, chart_context_revision=chart_context_revision,
                     allowed_tool_names=admitted,
-                    _financial_source_read=name == "read_financial_statements"),
+                    _financial_source_read=name == "read_financial_statements",
+                    mode=mode),
                 set(admitted), root)
         if tool_name == "read_financial_statements":
             if not _financial_source_read or not {"render_financial_widget", "get_fundamentals"}.issubset(allowed_tool_names or set()):
@@ -7796,7 +7810,8 @@ def _dispatch_brain_tool(
             return _dispatch_brain_tool(
                 "emit_chart_command", params, root, terminal_data_dir, terminal_hub_url,
                 user_id=user_id, internals_ok=internals_ok, chart_client=chart_client,
-                chart_origin_id=chart_origin_id, chart_context_revision=chart_context_revision)
+                chart_origin_id=chart_origin_id, chart_context_revision=chart_context_revision,
+                mode=mode)
         if tool_name == "run_chart_detection":
             return {"error": "legacy_detection_not_targeted",
                     "note": "Read the exact native chart observations; use targeted emit_chart_command for requested supported geometry."}
@@ -7874,6 +7889,7 @@ def _all_brain_tool_schemas(
     page: str = "",
     internals_allowed: bool = False,
     user_id: str = "",
+    mode: str = "chat",
 ) -> list[dict]:
     """Return the full tool schema list (ask_brain read tools + brain-only tools).
 
@@ -7886,6 +7902,8 @@ def _all_brain_tool_schemas(
     """
     from engine.neuralweb.ask_brain import _read_tool_schemas  # noqa: PLC0415
     schemas = _read_tool_schemas() + _brain_tool_schemas()
+    if type(mode) is not str or mode.strip().lower() != "chat":
+        schemas = [s for s in schemas if s.get("name") != "calculate_financial_bridge"]
     if not _earnings_evidence_allowed(user_id, root):
         schemas = [s for s in schemas if s.get("name") != "read_earnings_evidence"]
     # Analyst OS P0: market-intel retrieval (live events wire + research-vault search).
@@ -7993,6 +8011,10 @@ def _fast_visible_tool_schemas(
         return full_schemas
 
     allowed = set(visible_names)
+    # Supplied financial assumptions may use the pure calculator when upstream
+    # permits it, without admitting any external evidence readers.
+    if profile.name == "self_contained_financial" and "calculate_financial_bridge" in authorized_names:
+        allowed.add("calculate_financial_bridge")
     # Presentation eligibility is independent of evidence-family selection.
     # Intersect with the already-authorized surface; never turn a self-contained
     # illustration into permission to fetch external market data.
@@ -10764,6 +10786,7 @@ def _run_brain_loop(
             page=safe_page,
             internals_allowed=internals_ok,
             user_id=user_id,
+            mode=mode,
         )
     tool_schemas = _fast_visible_tool_schemas(
         tool_schemas,
@@ -10989,6 +11012,7 @@ def _run_brain_loop(
                     chart_origin_id=chart_origin_id,
                     chart_context_revision=chart_context_revision,
                     allowed_tool_names={s["name"] for s in tool_schemas},
+                    mode=mode,
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {
@@ -11188,6 +11212,7 @@ _TOOL_LABELS: dict[str, tuple[str, str]] = {
     "get_symbol_backtest":    ("Checking how this has paid before", "看这类形态过去的表现"),
     "screen_universe":        ("Combing the market for matches", "在全市场里筛匹配的标的"),
     "get_fundamentals":       ("Looking at the business underneath", "看背后的基本面"),
+    "calculate_financial_bridge": ("Checking the financial assumptions", "核算财务假设"),
     "get_earnings":           ("Checking the earnings picture", "查看财报情况"),
     "get_insider_activity":   ("Seeing what insiders have done", "看内部人最近的动作"),
     "get_congress_trades":    ("Checking congressional trades", "查看国会交易记录"),
@@ -11788,6 +11813,7 @@ def _run_brain_loop_stream(
             page=safe_page,
             internals_allowed=internals_ok,
             user_id=user_id,
+            mode=mode,
         )
     tool_schemas = _fast_visible_tool_schemas(
         tool_schemas,
@@ -12169,6 +12195,7 @@ def _run_brain_loop_stream(
                     chart_origin_id=chart_origin_id,
                     chart_context_revision=chart_context_revision,
                     allowed_tool_names={s["name"] for s in tool_schemas},
+                    mode=mode,
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {

@@ -780,15 +780,40 @@ def test_fast_portfolio_options_composes_qualified_visibility_in_stream_loop(qui
     assert _visible_names(client.stream_kwargs[0]) == (_PORTFOLIO_VISIBLE | _OPTIONS_VISIBLE)
 
 
-def test_fast_self_contained_financial_scenario_sends_no_tool_schema(quiet_grounding):
+@pytest.mark.parametrize("streaming", [False, True])
+def test_fast_self_contained_financial_scenario_uses_only_calculator(quiet_grounding, streaming):
+    from tests.test_brain_financial_bridge import _BridgeResponseClient, scenario
+
     root = _root()
-    client = _CaptureClient()
-    _drive_loop(
+    client = _BridgeResponseClient(scenario())
+    drive = _drive_stream if streaming else _drive_loop
+    drive(
         root,
         client,
-        "Using only these assumptions: revenue 100, operating margin 20%, EPS 5, value at 20x P/E.",
+        "Using only these supplied assumptions, calculate operating profit and cash flow.",
     )
-    assert client.create_kwargs[0].get("tools") == []
+    assert _visible_names(client.calls[0]) == {"calculate_financial_bridge"}
+    assert client.tool_result["calculations"]["current.operating_profit"]["value"] == "7.5"
+    assert client.tool_result["calculations"]["current.simplified_operating_cash"]["value"] == "-0.5"
+
+
+@pytest.mark.parametrize(("names", "expected"), [
+    ([], []),
+    (["get_quote", "get_fundamentals"], []),
+    (["get_quote", "calculate_financial_bridge", "render_inline_chart",
+      "render_financial_widget"], ["calculate_financial_bridge"]),
+    (["get_quote", "calculate_financial_bridge", "render_inline_visual",
+      "render_inline_chart", "render_financial_widget"],
+     ["calculate_financial_bridge", "render_inline_visual"]),
+])
+def test_fast_financial_scenario_never_invents_withheld_tools(names, expected):
+    schemas = [{"name": name} for name in names]
+    visible = gw._fast_visible_tool_schemas(
+        schemas,
+        "Using only these assumptions, chart revenue of 100 and operating margin of 20%.",
+        None, lane="fast", mode="chat", page="macro", internals_allowed=False,
+    )
+    assert [schema["name"] for schema in visible] == expected
 
 
 def test_fast_specialist_question_fails_open_to_full_authorized_surface(quiet_grounding):

@@ -79,7 +79,9 @@ def test_exact_request_offers_tool_and_delivers_real_visual(tmp_path, monkeypatc
         charts = gw._run_brain_loop(*args)[-1]
     assert len(charts) == 1
     assert charts[0]["visual"]["rows"] == request["rows"]
-    assert {s["name"] for s in client.calls[0]["tools"]} == {"render_inline_visual"}
+    assert {s["name"] for s in client.calls[0]["tools"]} == {
+        "calculate_financial_bridge", "render_inline_visual",
+    }
 
 @pytest.mark.parametrize("text", [
     '<tool_calls><invoke name="render_inline_visual">bad</invoke></tool_calls>',

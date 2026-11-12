@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_975),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_999),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_733),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #7217, compose the accepted runtime-adapter baseline):
+    Receiver 5b0c3030 retains #11111 and all six earlier sibling-owner
+    changes, including #11101. Preserve the eight original bridge objects,
+    all 401 owners and the twelve original dependency/enrollment changes.
+    Predecessor CI43146485374 passed 125 owners / 369 semantic proofs
+    with actual contract 0 introduced / 0 inherited at its own B/H/T.
+    Brain raw accounting remains 6 -> 7 commands, 51 -> 52 test references,
+    2353 -> 2410 joined characters and weight 110 -> 114. The original
+    +4 contribution composes receiving 5971/5995/5729 to 5975/5999/5733.
+    Preserve all 69 H-only historical lines and every main history line,
+    including the separate #11101 contribution. Keep 137/138/131 job
+    ceilings, ten packs, every assertion and all selection/runtime controls.
+    These are source-derived totals, not newly executed planner measurements.
+    Natural successor CI must qualify the exact new combined source.
 
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
@@ -6023,6 +6038,23 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and admission limits unchanged. The wider selection is intended
     (closure-required); natural successor CI must qualify the
     repaired source.
+
+    2026-11-12 (PR #7217, current-main bridge coverage conservation):
+    Receiver 27bdebdbdc973398c0caa509498c568816871bf5 preserves landed
+    Start coverage and #11051 browser fallback/tests and accounting, plus
+    #11064 native acquisition recovery and the complete current render.
+    Add only this carrier's 11 original bridge-path declarations and the
+    mandatory financial-bridge suite in existing unrun-brain-gateway.
+    Preserve all 401 owner positions and 389 other whole blocks, including
+    the current catalyst browser fallback under its new bridge declaration.
+    Brain command accounting stays 6->7 runs, 51->52 test references,
+    2353->2410 raw joined characters and source-formula weight 110->114.
+    Receiving 5969/5993/5727 therefore projects to 5973/5997/5731.
+    These are source-derived expectations, not newly executed measurements.
+    Actual own-head paired contract and integrated CI must qualify them.
+    Keep 137/138/131 job ceilings, ten packs, all assertions and controls.
+    Retain every original history block below. Source claim #7217
+    comment6812867198; provider/private/live acceptance remains separate.
 
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
@@ -6041,6 +6073,17 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     is measured planner accounting, not an execution-time estimate; natural
     successor CI must qualify the repaired source.
 
+    2026-11-11 (PR #7217, exact current-main bridge composition):
+    Paired native measurements on M18de8ef0 and candidatead1d8877 preserve
+    identical selected owner IDs and ten packs for all three probes.
+    Actual jobs137/137/131 stay within137/138/131; weights5966/5989/5724
+    become5970/5993/5728. The sole changed estimator is the original
+    unrun-brain-gateway suite,110 ->114. Reconcile only this measured+4.
+    Keep all401 owners,389 sibling blocks, eight exact feature objects,
+    both complete prior histories, commands/assertions and admission limits.
+    This is actual isolated native packing proof, not model/provider,
+    browser, production or successor hosted-CI acceptance.
+
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
     lifecycle coverage and qualified Playwright dependency. Keep all
@@ -6052,6 +6095,30 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     admission limits. Preserve both entire provenance histories.
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-09 (PR #7217, compose landed ledger and lifecycle coverage):
+    Preserve all 400 current owners, all eight accepted product objects and
+    both complete histories. Main's data-base-shim adds the landed ledger+3
+    and lifecycle+10; none of the 12 bridge-owner preimages changed. Own
+    natural contract run42654754562/job129290136844 measured bridge+4
+    on 5945/5966/5703, with no newly selected owner. Carry only that +4
+    onto main 5958/5979/5716 to yield 5962/5983/5720. Keep all commands,
+    137/138/131 job ceilings, ten packs, assertions and admission controls.
+    This is source conservation and arithmetic, not a new planner, browser
+    or model/provider measurement. The successor needs its own natural CI.
+
+    2026-11-09 (PR #7217, preserving current F09 and admission receiver):
+    retain all 400 current owners and only the original 12 existing-owner
+    contributions. Eleven owners gain the financial-bridge source path;
+    unrun-brain-gateway gains its original mandatory suite before gateway.
+    Correct YAML folding preserves 2345 -> 2402 joined command characters:
+    commands 6 -> 7, test references 51 -> 52 and the 800-character bucket
+    2 -> 3 give exactly 110 -> 114. Carry only the original +4 onto current
+    5945/5966/5703 -> 5949/5970/5707. Preserve jobs 137/138/131, ten packs,
+    all existing tests, selectors, runtime/admission limits and all F09,
+    access and XGuerrilla contributions. The original 17-line history stays
+    at its #10837 anchor. This is static source accounting, not a new paired
+    planner or model/provider measurement; natural successor proof is owed.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
@@ -6248,6 +6315,23 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     selectors, dependencies, timeouts and admission/concurrency controls.
     This is measured planner weight, not an execution-time estimate.
     All earlier landed contributions and provenance remain below.
+
+    2026-11-09 (PR #7217, financial-bridge regression enrollment):
+    Natural contract run42547747036/job128936325119 measured H0be13427e611
+    against base0997d488f73e on tested merge8e49046b6459: index137jobs
+    5943->5947, free137jobs5964->5968, Prophet131jobs5701->5705,
+    all ten packs and no newly selected owner. Existing unrun-brain-gateway
+    gains its mandatory financial-bridge suite: commands6->7, literal test
+    references51->52, command characters2345->2402, length//800 term2->3.
+    The unchanged estimator therefore increases that owner110->114.
+    Fund exactly these four measured static-weight units on all three probes.
+    Keep both the new suite and every existing suite, owner and selection rule.
+    Current main's separately landed Figma exclusive owner matches none of
+    these three probe paths. Preserve its complete block and curated member.
+    Job ceilings137/138/131, ten packs, timeouts, runtime and admission caps
+    stay unchanged. No unmerged sibling allowance or runtime estimate is
+    imported. This is exact measured-cost composition; successor CI must
+    qualify the new tree, and all older provenance below remains historical.
 
     2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
     current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural
