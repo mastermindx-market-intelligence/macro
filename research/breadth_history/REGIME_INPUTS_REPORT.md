@@ -828,8 +828,10 @@ Display surfaces owned by other systems; listed for completeness, not inputs to 
 
 - `data/breadth/history/regime_inputs_daily_current.parquet` — 494,532 rows, 4,186,568 bytes (zstd).
 - `data/breadth/history/regime_inputs_current.meta.json` — per-series definition, first date, source, basis, kind, gaps; basis and no-outcome sentences; price vintage; registry hashes; the house self-check; a compact rates/credit/dollar census summary.
-- `scripts/build_regime_inputs.py` — the builder (off the render path, never nightly).
-- Tests in `tests/test_build_tree_breadth_and_index.py` (already CI-registered): 10 synthetic tests (one per statistic plus a full synthetic build) and 3 committed-file tests (columns/kinds/floors/no member tickers, no forbidden words, sidecar consistency).
+- `scripts/build_regime_inputs.py` — the builder (off the render path, never nightly); `--basis dated` and `--basis fixchg-current` add the two bases below.
+- `data/breadth/history/regime_inputs_dated_sp500_daily.parquet` + `regime_inputs_dated_sp500.meta.json` — the dated-membership basis from 1996 (see "Dated membership (from 1996)" below).
+- `data/breadth/history/regime_inputs_fixchg_current.parquet` + `regime_inputs_fixchg_current.meta.json` — the like-for-like fixed-set universe change on the current basis, in a separate file so the two frozen current outputs stay byte-identical.
+- Tests in `tests/test_build_tree_breadth_and_index.py` (already CI-registered): 10 synthetic tests (one per statistic plus a full synthetic build) and 3 committed-file tests for the current basis; plus 7 dated/fixed-set synthetic tests and 4 committed-file tests (dated columns/kinds/floors, dated sidecar, the current-basis fixed-set file, and a frozen-byte guard on the two current outputs).
 
 Rebuild (member closes stay off git; ETFs read from main):
 
@@ -842,3 +844,73 @@ python3 scripts/build_regime_inputs.py \
   --census-json <rates/credit/dollar census.json>
 ```
 
+Dated basis (Tiingo archive member closes and dated membership stay off git; SPY read from main):
+
+```
+python3 scripts/build_regime_inputs.py --basis dated \
+  --closes <scratch>/tiingo_member_closes.parquet \
+  --pit-dir <scratch>/breadth \
+  --out data/breadth/history \
+  --start 1996-01-02            # add --minimum for the COO 13:58Z minimum set
+```
+
+Current-basis fixed-set change (same members and prices as the frozen current file):
+
+```
+python3 scripts/build_regime_inputs.py --basis fixchg-current \
+  --closes <scratch>/closes_with_topup.parquet \
+  --download-meta <scratch>/download_meta_with_topup.json \
+  --out data/breadth/history
+```
+
+## Dated membership (from 1996)
+
+A second basis alongside the current one: `reconstructed_dated_membership` — the S&P 500
+dated membership windows (`sp1500_pit_membership`, src=sp500), so a member counts only on
+sessions inside its own window. Start 1996-01-02. Where the current basis applies today's
+members to the whole past (survivors only), this basis holds the names that were actually
+in the index on each date, removing that survivor bias. Sector labels are as of now, not
+era-correct.
+
+- **Prices**: the licensed Tiingo EOD archive (normalized eod-bars, captures 2026-10-11..16),
+  member-level and held off git. Adjusted closes are the archive's split- and dividend-adjusted
+  values as of the capture, not the prices printed at the time. Group-level shares and counts
+  only; no member price, row or ticker is committed.
+- **Cleaning**: identical to the house dated sector history
+  (`scripts/build_group_breadth_history.py`) — partial-session rows dropped by a centred 21-row
+  median rule, a duplicate-series scan, and the same missing-rows accounting. 11 partial
+  rows dropped; 0 duplicate ticker pairs found.
+- **Missing rows**: 453 dated membership rows have no stored close inside their own
+  window and are absent. Early-year coverage is lean.
+- **Floors**: index 2 priced members; every share and statistic 2 counted members; `n` beside
+  every value. Unsupported spans are left missing, never approximated.
+- **Not included**: curated basket relative indices (ai_software, non_ai_software, IGV, SOXX and SPHB legs) are not included: no dated membership exists for curated baskets. The computed high-beta group IS included; it is derived from the dated universe.
+- **No outcomes**: series only: no outcome relation, no regime assignment, no trading call of
+  any kind, on any period.
+
+19 daily series, long format `date, series, group, value, n, kind`, data end 2026-10-09;
+`regime_inputs_dated_sp500_daily.parquet` holds 146,883 rows (913,569 bytes, zstd). This is the **minimum** set.
+The like-for-like fixed-set change is also built on the current basis in a separate small file
+(`regime_inputs_fixchg_current.parquet`) so the frozen current outputs stay byte-identical.
+
+| series | definition | first date | gaps |
+|---|---|---|---|
+| `diff_pct_above_200_21d` | plain difference (points) of the percent-above-200 share, session t minus t-21 | 1996-01-31 | the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `diff_pct_above_200_63d` | plain difference (points) of the percent-above-200 share, session t minus t-63 | 1996-04-01 | the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `dispersion_21d` | cross-sectional standard deviation (ddof=1, percent) of member simple 21-session returns, universe and per sector; dated members must be in-window at both ends | 1996-01-31 | members without both endpoint closes, or outside their membership window at either end, are not counted; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `ew_index` | equal-weight total-return index level of the group, chained from 1.0 (daily rebalance) | 1996-01-02 | members without a stored close inside their own window are absent; early-year coverage is lean |
+| `fix_chg_pct_above_200_21` | like-for-like change (points) of the percent-above-200 share over 21 sessions: universe members at t with a defined 200-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k | 1996-01-02 | the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `fix_chg_pct_above_200_63` | like-for-like change (points) of the percent-above-200 share over 63 sessions: universe members at t with a defined 200-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k | 1996-01-02 | the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `fix_chg_pct_above_50_21` | like-for-like change (points) of the percent-above-50 share over 21 sessions: universe members at t with a defined 50-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k | 1996-01-02 | the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `fix_chg_pct_above_50_63` | like-for-like change (points) of the percent-above-50 share over 63 sessions: universe members at t with a defined 50-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k | 1996-01-02 | the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `n_above_200` | count of universe members strictly above their own 200-session SMA (n = counted members) | 1996-01-02 | the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `n_beat_ew_63d` | count of members beating the EW universe index over 63 sessions (n = counted members) | 1996-04-01 | membership is required on the session; the return window may span a member's entry date; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `n_counted_nh` | universe members with a close and a full prior 252-session window on the session; the member must be in-window on the session | 1996-01-02 | a close and a full prior 252-session window are both required; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `n_fixed_200_21` | members counted at both ends of the 21-session fixed-set change of the percent-above-200 share (defined 200-session average at t and t-k) | 1996-01-02 | the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `n_fixed_200_63` | members counted at both ends of the 63-session fixed-set change of the percent-above-200 share (defined 200-session average at t and t-k) | 1996-01-02 | the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `n_fixed_50_21` | members counted at both ends of the 21-session fixed-set change of the percent-above-50 share (defined 50-session average at t and t-k) | 1996-01-02 | the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `n_fixed_50_63` | members counted at both ends of the 63-session fixed-set change of the percent-above-50 share (defined 50-session average at t and t-k) | 1996-01-02 | the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `nh_nl_252` | new 252-session highs minus new lows (counts); the member must be in-window on the session | 1996-01-02 | a close and a full prior 252-session window are both required; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `pct_above_200` | percent of counted universe members strictly above their own 200-session simple moving average | 1996-01-02 | the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `pct_beat_ew_63d` | percent of counted members whose simple 63-session return strictly exceeds the EW universe index's over the same window | 1996-04-01 | membership is required on the session; the return window may span a member's entry date; members without a stored close inside their own window are absent; early-year coverage is lean |
+| `rel_high_beta_computed_vs_ew_universe` | computed high-beta EW index divided by the EW universe index, rebased to 100 at the first common session | 1996-02-01 | computed, not curated; selection restricted to dated members with a full 252-session window at the selection session; the cohort is held fixed within the month |
