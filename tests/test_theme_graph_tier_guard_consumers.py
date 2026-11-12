@@ -102,6 +102,17 @@ def test_research_priority_still_counts_membership_into_a_theme_tier_node():
     assert "2026-11-12" in dates["theme:legacy"]
 
 
+def test_legacy_null_tier_survives_the_parquet_round_trip(tmp_path):
+    """The store reads a null tier back as float NaN; that legacy theme must stay
+    canonical (not hierarchy), so its membership dates still count."""
+    path = tmp_path / "nodes.parquet"
+    pd.DataFrame(NODES).to_parquet(path, index=False)
+    rows = {r["node_id"]: r for r in pd.read_parquet(path).to_dict("records")}
+    assert not is_hierarchy_tier_node(rows["theme:legacy"])
+    assert not is_hierarchy_tier_node(rows["theme:t1"])
+    assert is_hierarchy_tier_node(rows["theme:micro1"])
+
+
 def test_research_priority_without_type_column_is_unchanged():
     builder = _load_builder()
     edges = pd.DataFrame(BASE_EDGES).drop(columns=["type"])
