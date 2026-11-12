@@ -3117,7 +3117,7 @@ def in_flight_pr_proofs(
             "per_page": "1",
         }
         if run_status == "queued":
-            params["created"] = ">=" + queued_cutoff.strftime("%Y-%m-%dT%H:%M:%SZ")
+            params["created"] = ">=" + queued_cutoff.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         query = urllib.parse.urlencode(params)
         status, payload = _request(
             "GET",
@@ -3245,7 +3245,7 @@ def hosted_pool_census(
         {
             "status": "queued",
             "per_page": "1",
-            "created": ">=" + queued_cutoff.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "created": ">=" + queued_cutoff.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         }
     )
     status, payload = _request("GET", f"{base}/workflows/ci.yml/runs?{query}", token)
