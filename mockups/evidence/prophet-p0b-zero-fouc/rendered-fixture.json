@@ -62,7 +62,7 @@
         {
           "path": "engine/i18n.py",
           "role": "jinja_globals",
-          "sha256": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152"
+          "sha256": "4a65f2e09fbc7bdf02a69e56b55b3c1d96e7d90a603e2bc0619a62cb7c0e6de2"
         },
         {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json",
@@ -92,7 +92,7 @@
         {
           "path": "templates/_icons.html.j2",
           "role": "jinja_template",
-          "sha256": "91e9ed18b6423b41793062ccde2406222b66f646f6f3928f272e71318c9e0dab"
+          "sha256": "96c5fa3bfc317acb9cdc50d41af1b70b6d93afe538397246913100624f038af8"
         },
         {
           "path": "templates/_lens.html.j2",
@@ -401,7 +401,7 @@
         {
           "path": "engine/i18n.py",
           "role": "jinja_globals",
-          "sha256": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152"
+          "sha256": "4a65f2e09fbc7bdf02a69e56b55b3c1d96e7d90a603e2bc0619a62cb7c0e6de2"
         },
         {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json",
@@ -441,7 +441,7 @@
         {
           "path": "templates/_icons.html.j2",
           "role": "jinja_template",
-          "sha256": "91e9ed18b6423b41793062ccde2406222b66f646f6f3928f272e71318c9e0dab"
+          "sha256": "96c5fa3bfc317acb9cdc50d41af1b70b6d93afe538397246913100624f038af8"
         },
         {
           "path": "templates/_lens.html.j2",

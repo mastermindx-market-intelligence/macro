@@ -583,8 +583,9 @@ def main() -> int:
         env.globals.update(td=i18n.td, tr=i18n.tr)
     except Exception:  # noqa: BLE001
         env.globals.update(td=lambda en: en, tr=lambda en: en)
-    from engine.flow_observatory.contract import QUADRANT_LABELS, STATUS_WORD
-    env.globals.update(quadrant_labels=QUADRANT_LABELS, status_word=STATUS_WORD)
+    from engine.flow_observatory.contract import QUADRANT_LABELS, STATUS_WORD, sigma_meaning
+    env.globals.update(quadrant_labels=QUADRANT_LABELS, status_word=STATUS_WORD,
+                       sigma_meaning=sigma_meaning)
     # S9: `terminal_link` as a template global + `known_tickers` as a render-context
     # var — `nameln` gates on `terminal_link is defined` so a caller that never
     # supplies either (this repo's own W2/W4 test suites' minimal `_render` helpers)

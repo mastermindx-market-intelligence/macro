@@ -27,7 +27,8 @@
 
 Replace returned strings exactly per masterplan §6 table:
 `above norm, rising`/`高于常态·升温` · `above norm, cooling`/`高于常态·降温` ·
-`below norm, worsening`/`低于常态·加剧` · `below norm, easing`/`低于常态·趋缓` ·
+`below norm, worsening`/`低于常态·加剧` · `selling easing`/`卖出趋缓` ·
+`buying slowing`/`买入放缓` · `pace easing`/`步伐放缓` ·
 `near its norm`/`接近常态` · `no data`/`无数据`.
 
 ### 1.2 Quadrant (new helper in flow_velocity.py or contract.py)
