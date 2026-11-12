@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 6_012),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_732),
+    ("templates/index.html", 137, 5_980),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_018),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_738),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 11
@@ -6010,6 +6010,20 @@ PACKING_PROBE_MAX_PACKS = 11
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #11094 carrying PR #10924, COO ruling 25): the #11094
+    branch (head abae99b163ee) merged #10924's head 877e4845e1e5, then
+    main e7f8565ca26b (#11101). Re-measured on that merged tree with the
+    same probe measurement (packing_probe_measurements over the merged
+    .github/ci/legacy-jobs.yml), not summed by hand: index 137/5,980,
+    free-content 138/6,018, plan_book 131/5,738. That equals main's
+    5,971/5,995/5,729 plus #10924's previously measured +5/+19/+5 plus
+    #11094's measured +4 on each probe. Free-content packs into 11 packs
+    at PACK_TARGET_SECONDS 600, at the existing parent-approved pack
+    ceiling 11; the other two probes pack into 10. Job ceilings stay
+    137/138/131. Every selector and every assertion is unchanged; the
+    provenance paragraphs from main (#11101), #10924 and #11094 below
+    are kept verbatim.
 
     2026-11-12 (PR #10924, merge of main 9d8a0c8be5bb / #11051):
     re-measured on the merged tree with the same probe measurement
@@ -6042,6 +6056,18 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceiling 11 — no pack change. Every selector and every assertion is
     unchanged; main's #11019 two-line comment is kept, and every prior
     provenance paragraph below is kept verbatim.
+    2026-11-12 (PR #11101, runtime-adapter closure): wiring
+    tools/xguerrilla/tests/test_runtime_adapter.py into
+    marketing-social-publisher satisfies the closure doctrine —
+    contract-delta had flagged the suite as named by no run: step
+    (run 43143064165, job 130934421614). The join adds its run token
+    to that step with no new job selected ("newly selected: none");
+    the estimator measures +2 on the shared owner for all three
+    probes: index 5969->5971, free-content 5993->5995, Prophet
+    5727->5729. Jobs 137/138/131, ten packs, selectors, commands
+    and admission limits unchanged. The wider selection is intended
+    (closure-required); natural successor CI must qualify the
+    repaired source.
 
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
