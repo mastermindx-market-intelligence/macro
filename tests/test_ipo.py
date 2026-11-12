@@ -1405,3 +1405,144 @@ def test_published_view_includes_both_languages_and_actual_dates(monkeypatch):
         html = env.from_string(text[start:end]).render(prospectus_deals=[deal], t=lambda en, zh: (en, zh)[language])
         assert "2025-06-04" in html and "2025-06-05" in html and "2025-09-30" in html
         assert "5,100,000" in html and deal["source_url"] in html
+
+
+# Phase-0 finite-evidence boundary (#10957). This deliberately does not choose
+# an exchange calendar or resolve conditional prospectus expiry dates.
+@pytest.mark.parametrize("side", ["stock", "benchmark"])
+@pytest.mark.parametrize("offset", [-1, 0, 1])
+@pytest.mark.parametrize("invalid", [0.0, -1.0, float("nan"), float("inf"), -float("inf")])
+def test_phase0_rejects_invalid_required_prices(side, offset, invalid):
+    from scripts import ipo_lockup_phase0 as phase
+    idx = pd.bdate_range("2025-01-01", periods=100)
+    stock = pd.Series(100.0, index=idx)
+    spy = stock.copy()
+    (stock if side == "stock" else spy).iloc[50 + offset] = invalid
+    assert phase._car(stock, spy, idx[50], 0, 1) is None
+
+
+def test_phase0_zero_return_remote_gap_and_overflow():
+    from scripts import ipo_lockup_phase0 as phase
+    idx = pd.bdate_range("2025-01-01", periods=100)
+    stock = pd.Series(100.0, index=idx)
+    spy = stock.copy()
+    stock.iloc[3] = float("nan")
+    assert phase._car(stock, spy, idx[50], 0, 1) == 0.0
+    stock.iloc[49] = 1e-308
+    stock.iloc[50] = 1e308
+    assert phase._car(stock, spy, idx[50], 0, 1) is None
+
+
+def test_phase0_spy_preserves_explicit_missing_sessions(monkeypatch):
+    from scripts import ipo_lockup_phase0 as phase
+    idx = pd.bdate_range("2025-01-01", periods=100)
+    frame = pd.DataFrame({"close": 100.0}, index=idx)
+    frame.iloc[50, 0] = float("nan")
+    monkeypatch.setattr(phase.store, "read", lambda *a: frame)
+    actual = phase._spy()
+    assert actual.index.equals(idx)
+    assert pd.isna(actual.iloc[50])
+
+
+def _phase0_synthetic_run(monkeypatch, bad_count=0, invalid=0.0):
+    import sys
+    import types
+    import numpy as np
+    from scripts import ipo_lockup_phase0 as phase
+    idx = pd.bdate_range("2025-01-01", periods=200)
+    names = [f"S{i:02d}" for i in range(25)]
+    event = idx[100]
+    sample = pd.DataFrame({"ticker": names, "priced": event - pd.Timedelta(days=180)})
+    prices = pd.DataFrame(index=idx)
+    for i, name in enumerate(names):
+        values = np.full(len(idx), 100.0)
+        values[99:] = 100.0 * (1.0 - .001 * (i + 1))
+        if i < bad_count:
+            values[98] = invalid
+        prices[(name, "Close")] = values
+    prices.columns = pd.MultiIndex.from_tuples(prices.columns)
+    monkeypatch.setattr(phase, "load_calendar", lambda: pd.DataFrame({"seed": [1]}))
+    monkeypatch.setattr(phase, "load_lockups", pd.DataFrame)
+    monkeypatch.setattr(phase, "_sample", lambda *a: sample)
+    monkeypatch.setattr(phase, "_spy", lambda: pd.Series(100.0, index=idx))
+    monkeypatch.setitem(sys.modules, "yfinance", types.SimpleNamespace(download=lambda *a, **k: prices))
+    return phase, phase.run(140, 50e6)
+
+
+@pytest.mark.parametrize("bad_count", [0, 1, 25])
+@pytest.mark.parametrize("invalid", [0.0, float("nan"), float("inf")])
+def test_phase0_native_run_excludes_invalid_windows(monkeypatch, tmp_path, bad_count, invalid):
+    import json
+    import sys
+    phase, result = _phase0_synthetic_run(monkeypatch, bad_count, invalid)
+    row = result["windows"][phase.FOCUS]
+    assert row["n"] == 25 - bad_count
+    assert row["n_unavailable"] == bad_count
+    assert result["n_names"] + result["n_unavailable_names"] == result["n_sampled"] == 25
+    for window in result["windows"].values():
+        assert window["n"] + window["n_unavailable"] == 25
+    assert result["verdict"].startswith("DISPLAY-ONLY")
+    if bad_count:
+        assert "insufficient" in result["verdict"]
+        assert result["tier"] == "none"
+    else:
+        assert "drift confirmed" in result["verdict"]
+        assert row["mean_pct"] == -1.3
+        assert row["t"] == -4.481
+    json.dumps(result, allow_nan=False)
+    monkeypatch.setattr(phase.config, "ROOT", tmp_path)
+    monkeypatch.setattr(phase.config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(phase, "run", lambda *a: result)
+    monkeypatch.setattr(sys, "argv", ["ipo_lockup_phase0"])
+    assert phase.main() == 0
+    badge = json.loads((tmp_path / "data/ipo/lockup_phase0.json").read_text(),
+                       parse_constant=lambda token: (_ for _ in ()).throw(ValueError(token)))
+    assert badge["stat"] == row
+    report = (tmp_path / "reports/ipo-lockup-phase0.md").read_text()
+    assert result["verdict"] in report
+    assert "unavailable | status" in report
+    assert "names with at least one usable window" in report
+
+
+@pytest.mark.parametrize("value", [None, float("nan"), float("inf"), -float("inf")])
+def test_phase0_aggregate_failure_is_unavailable(monkeypatch, value):
+    import json
+    from scripts import ipo_lockup_phase0 as phase
+    monkeypatch.setattr(phase, "newey_west_tstat", lambda *a, **k: {"t": value, "p": .01})
+    _, result = _phase0_synthetic_run(monkeypatch)
+    assert result["windows"][phase.FOCUS] == {
+        "n": 25, "n_unavailable": 0, "status": "unavailable_statistics"}
+    assert "statistics unavailable" in result["verdict"]
+    json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf")])
+def test_phase0_defensive_sample_guard(monkeypatch, value):
+    from scripts import ipo_lockup_phase0 as phase
+    monkeypatch.setattr(phase, "_car", lambda *a: value)
+    _, result = _phase0_synthetic_run(monkeypatch)
+    assert result["n_names"] == 0
+    assert result["n_unavailable_names"] == 25
+    assert all(row["n"] == 0 and row["n_unavailable"] == 25
+               for row in result["windows"].values())
+    assert "insufficient" in result["verdict"]
+
+
+def test_phase0_bad_json_fails_before_either_output(monkeypatch, tmp_path):
+    import sys
+    phase, result = _phase0_synthetic_run(monkeypatch)
+    result["windows"][phase.FOCUS]["mean_pct"] = float("inf")
+    monkeypatch.setattr(phase, "run", lambda *a: result)
+    monkeypatch.setattr(phase.config, "ROOT", tmp_path)
+    monkeypatch.setattr(phase.config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(sys, "argv", ["ipo_lockup_phase0"])
+    report = tmp_path / "reports/ipo-lockup-phase0.md"
+    badge = tmp_path / "data/ipo/lockup_phase0.json"
+    report.parent.mkdir(parents=True)
+    badge.parent.mkdir(parents=True)
+    report.write_text("previous report")
+    badge.write_text("previous badge")
+    with pytest.raises(ValueError):
+        phase.main()
+    assert report.read_text() == "previous report"
+    assert badge.read_text() == "previous badge"
