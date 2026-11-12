@@ -775,3 +775,189 @@ def test_regime_committed_sidecar_consistency():
     hits = {t for t in tickers if len(t) >= 2 and re.search(r"\b" + re.escape(t) + r"\b", prose)}
     assert not hits, sorted(hits)
     assert len(table_part.encode()) < 15_000
+
+# ===========================================================================
+# Organ alert histories (COO ruling 38 Part A) — scripts/build_organ_histories.py
+# Three HOUSE organs only: us_basket washout (dated + current membership),
+# rolling-over override and phase_v2 (11 SPDR sectors). Group-level rows only:
+# no member ticker, price or per-security date; nothing related to outcomes.
+# The `state` column holds the engine's OWN output, so the regime _FORBIDDEN
+# regex (which bans the word "state") does NOT apply to these files.
+# Fidelity tests recompute via the build script's own comparison functions on
+# the committed parquet and assert the observed counts + "no new mismatch".
+# ===========================================================================
+from scripts import build_organ_histories as oh  # noqa: E402
+
+_ORGAN_PQ = HIST / "organ_histories_house.parquet"
+_ORGAN_META = HIST / "organ_histories_house.meta.json"
+_ORGAN_REPORT = ROOT / "research/breadth_history/ORGAN_HISTORIES_REPORT.md"
+_LEDGER = ROOT / "data/us_basket_turn/ledger.jsonl"
+_BACKFILL = ROOT / "data/sector_cycles/backfill.parquet"
+_FORWARD = ROOT / "data/sector_cycles/forward_log.parquet"
+_YAHOO = ROOT / "data/yahoo"
+
+_organ_needs = pytest.mark.skipif(not _ORGAN_PQ.exists(),
+                                  reason="data/ not checked out (sparse tree)")
+_organ_ledger_needs = pytest.mark.skipif(
+    not (_ORGAN_PQ.exists() and _LEDGER.exists()),
+    reason="organ parquet or us_basket ledger not checked out (sparse tree)")
+_organ_sector_store_needs = pytest.mark.skipif(
+    not (_ORGAN_PQ.exists() and _BACKFILL.exists() and _FORWARD.exists()),
+    reason="organ parquet or sector cycle stores not checked out (sparse tree)")
+# rolling-over has no persisted store: fidelity recomputes the live engine path
+# on the latest sessions, so it needs the price panel at the PIN basis (the
+# committed parquet was built on pin prices). The sentinel skips when the panel
+# is absent (sparse CI) or restored to HEAD bytes (post-build cleanup).
+_PIN_SPY_SHA256 = "37bad67655facda3cb3b171f34dde36471b975bcfdf16f438f33a66bf5368eb5"
+
+
+def _pin_price_panel() -> bool:
+    import hashlib
+    spy = _YAHOO / "SPY.parquet"
+    if not spy.exists():
+        return False
+    try:
+        return hashlib.sha256(spy.read_bytes()).hexdigest() == _PIN_SPY_SHA256
+    except OSError:
+        return False
+
+
+_organ_yahoo_needs = pytest.mark.skipif(
+    not (_ORGAN_PQ.exists() and _pin_price_panel()),
+    reason="organ parquet or pin-basis yahoo panel not present (sparse tree / restored inputs)")
+
+# --- Observed fidelity (full build @ engine pin 72082493, restated prices).
+# --- These literals are the regression baseline: the test asserts the counts
+# --- AND the sha256 of the full sorted mismatch detail ("no new mismatch" — any
+# --- added/removed/changed mismatch flips the hash). Every mismatch is enumerated
+# --- by (group_key, session_date) in ORGAN_HISTORIES_REPORT.md and the sidecar.
+# --- The replay is faithful to the LIVE engine (phase_v2 and rolling_over both
+# --- 110/110 vs sector_cycles.compute on the latest sessions); the store
+# --- mismatches are restated-price vintage effects plus a calendar-vs-trading
+# --- date convention (stores stamp month-end/run dates incl. weekends). They are
+# --- reported, never tuned (brief; ruling 38 s2d).
+_OB_US = {"total": 1911, "match": 1803, "mismatch": 108}         # us_basket dated vs ledger
+_OB_US_MM_SHA = "f294e536e376992592d40e26853b94b473897d6ffecf6dfcfe192c584d485507"
+_OB_PH_BF = {"total": 1881, "match": 652, "mismatch": 1229}      # phase_v2 vs backfill (month_end)
+_OB_PH_BF_MM_SHA = "7bd59797d33dee41e66916c27338212525d7764e03e5635dff5f68233f77ace8"
+_OB_PH_FL = {"total": 858, "match": 601, "mismatch": 257}        # phase_v2 vs forward_log (daily)
+_OB_PH_FL_MM_SHA = "61a9f9e6818960af3031a1dbdc332b45c0f8a0d9b132b2a407ddb18599812a3a"
+_OB_RO = {"total": 110, "match": 110, "mismatch": 0}             # rolling_over vs live engine
+_OB_RO_MM_SHA = "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+_OB_RO_N = 10                                                    # --rolling-fidelity-sessions
+
+_ORGAN_COLS = [
+    "organ", "level", "group_key", "session_date", "state", "first_knowable_date",
+    "membership_basis", "n_members", "engine_code_sha", "after_2023_12_29",
+    "days_in_state", "confirmed_transition", "phase", "pos_v2", "osc_slope",
+    "basis", "phase_v2_source", "rolling", "pos", "timing_state", "signal",
+    "divergence",
+]
+
+
+def _mm_sha(res: dict) -> str:
+    import hashlib
+    mm = sorted(res.get("mismatches", []),
+                key=lambda x: (x.get("group_key", ""), x.get("session_date", ""), x.get("kind", "")))
+    return hashlib.sha256(json.dumps(mm, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def _assert_fidelity(res: dict, observed: dict, observed_sha: str):
+    assert (res["total"], res["match"], res["mismatch"]) == (
+        observed["total"], observed["match"], observed["mismatch"]), res
+    assert _mm_sha(res) == observed_sha, "fidelity mismatch detail changed (new/removed/changed mismatch)"
+
+
+@_organ_needs
+def test_organ_histories_schema_and_provenance():
+    df = pd.read_parquet(_ORGAN_PQ)
+    assert list(df.columns) == _ORGAN_COLS
+    assert set(df["organ"].unique()) == {"us_basket", "rolling_over", "phase_v2"}
+    # one pinned engine commit for every row; no hand-copied threshold/rule
+    assert set(df["engine_code_sha"].unique()) == {oh.ENGINE_CODE_SHA}
+    assert oh.ENGINE_CODE_SHA == "72082493cb5e29cf5fe4a093fadf6f435b6fe2c3"
+    # levels + membership bases
+    assert set(df.loc[df.organ == "us_basket", "level"]) == {"basket"}
+    assert set(df.loc[df.organ != "us_basket", "level"]) == {"sector"}
+    assert set(df.loc[df.organ == "us_basket", "membership_basis"]) == {"dated", "current"}
+    assert set(df.loc[df.organ != "us_basket", "membership_basis"]) == {"etf_price"}
+    # two labelled membership versions of the basket washout, both present
+    ub = df[df.organ == "us_basket"]
+    assert set(ub["membership_basis"]) == {"dated", "current"}
+    assert set(ub.loc[ub.membership_basis == "dated", "group_key"]) == \
+        set(ub.loc[ub.membership_basis == "current", "group_key"])
+    # group keys are organ ids, never member tickers
+    spdr_ids = {t.lower() for t in oh.SPDRS}
+    sec = df[df.organ != "us_basket"]
+    assert set(sec["group_key"]) == spdr_ids
+    assert set(sec["n_members"].dropna().astype(int)) == {1}
+    bmem = json.loads((ROOT / "data/baskets/membership.json").read_text())
+    assert set(ub["group_key"]) <= set(bmem["baskets"])
+    # first knowable never after the session; desk-block flag consistent
+    assert (df["first_knowable_date"] <= df["session_date"]).all()
+    expect_after = df["session_date"] > oh.DESK_BLOCK.strftime("%Y-%m-%d")
+    assert (df["after_2023_12_29"].astype(bool) == expect_after).all()
+    # state is the engine's own output. us_basket and phase_v2 always carry a
+    # state string; rolling_over carries the engine's phaseLabel, which may be
+    # null during warm-up (the rolling boolean is the organ's primary output).
+    assert df.loc[df.organ != "rolling_over", "state"].notna().all()
+    assert df.loc[df.organ == "rolling_over", "rolling"].notna().all()
+    # nothing related to outcomes / prices: the exact column set above is the guard
+    assert not (set(df.columns) & {"forward", "outcome", "return", "price", "close",
+                                   " fwd_ret", "forward_return"})
+
+
+@_organ_ledger_needs
+def test_organ_us_basket_fidelity_vs_ledger():
+    df = pd.read_parquet(_ORGAN_PQ)
+    res = oh.fidelity_us_basket(df)
+    _assert_fidelity(res, _OB_US, _OB_US_MM_SHA)
+
+
+@_organ_sector_store_needs
+def test_organ_phase_v2_fidelity_vs_stores():
+    df = pd.read_parquet(_ORGAN_PQ)
+    res = oh.fidelity_phase_v2(df)
+    _assert_fidelity(res["backfill"], _OB_PH_BF, _OB_PH_BF_MM_SHA)
+    _assert_fidelity(res["forward_log"], _OB_PH_FL, _OB_PH_FL_MM_SHA)
+
+
+@_organ_yahoo_needs
+def test_organ_rolling_over_fidelity_vs_live_engine():
+    df = pd.read_parquet(_ORGAN_PQ)
+    res = oh.fidelity_rolling_over(df, _OB_RO_N)
+    _assert_fidelity(res, _OB_RO, _OB_RO_MM_SHA)
+
+
+@_organ_needs
+def test_organ_sidecar_consistency():
+    import hashlib
+    df = pd.read_parquet(_ORGAN_PQ)
+    meta = json.loads(_ORGAN_META.read_text())
+    raw = _ORGAN_PQ.read_bytes()
+    assert meta["parquet"]["bytes"] == len(raw)
+    assert meta["parquet"]["sha256"] == hashlib.sha256(raw).hexdigest()
+    assert meta["engine_code_sha"] == oh.ENGINE_CODE_SHA
+    assert meta["price_basis"] == "restated"
+    assert meta["no_outcome"]
+    # sidecar fidelity counts agree with the regression baseline
+    fid = meta["fidelity"]
+    us = fid["us_basket"]
+    assert (us["total"], us["match"], us["mismatch"]) == (
+        _OB_US["total"], _OB_US["match"], _OB_US["mismatch"])
+    bf = fid["phase_v2"]["backfill"]
+    fl = fid["phase_v2"]["forward_log"]
+    assert (bf["total"], bf["match"], bf["mismatch"]) == (
+        _OB_PH_BF["total"], _OB_PH_BF["match"], _OB_PH_BF["mismatch"])
+    assert (fl["total"], fl["match"], fl["mismatch"]) == (
+        _OB_PH_FL["total"], _OB_PH_FL["match"], _OB_PH_FL["mismatch"])
+    ro = fid["rolling_over"]
+    assert (ro["total"], ro["match"], ro["mismatch"]) == (
+        _OB_RO["total"], _OB_RO["match"], _OB_RO["mismatch"])
+    # first-knowable in the sidecar matches the parquet group minima
+    fk = meta["first_knowable"]["by_organ_key"]
+    for organ in ("phase_v2", "rolling_over"):
+        g = df[df.organ == organ].groupby("group_key")["first_knowable_date"].min()
+        for key, val in g.items():
+            assert fk[organ][key] == val
+    assert _ORGAN_REPORT.exists()
