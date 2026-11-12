@@ -6000,16 +6000,48 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_731),
+    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_012),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_732),
 )
 # Twelve packs per shape was the pre-curation measurement.
-PACKING_PROBE_MAX_PACKS = 10
+PACKING_PROBE_MAX_PACKS = 11
 
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #10924, merge of main 9d8a0c8be5bb / #11051):
+    re-measured on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged .github/ci/legacy-jobs.yml).
+    Main's #11051 bounded browser-only Chromium fallback raises its own
+    composition to 5,969/5,993/5,727 (its measured +1/+2/+1 over #11019's
+    5,968/5,991/5,726, recorded in its playwright apt-outage paragraph
+    below); this PR's own jobs still add exactly their previously measured
+    excess over main (+5/+19/+5), so the merged ceilings are index
+    137/5,974, free-content 138/6,012, plan_book 131/5,732 — measured on
+    the merged tree, not smeared. Job ceilings stay 137/138/131; the
+    free-content weight 6,012 packs into 11 packs at
+    PACK_TARGET_SECONDS 600, at the existing parent-approved pack ceiling
+    11 — no pack change. Every selector and every assertion is unchanged;
+    main's #11051 playwright apt-outage paragraph and every prior
+    provenance paragraph below are kept verbatim.
+
+    2026-11-12 (PR #10924, merge of main e752cc8a98a8 / #11019):
+    re-measured on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged .github/ci/legacy-jobs.yml).
+    Main's #11019 Start-page regression adds tests/test_hub_glance_copy.py
+    to the existing data-base-shim builder step, so its own composition
+    carries 5,968/5,991/5,726 (its +2 on every probe, recorded in the
+    two-line comment above); this PR's own jobs still add exactly their
+    previously measured excess over main (+5/+19/+5), so the merged
+    ceilings are index 137/5,973, free-content 138/6,010, plan_book
+    131/5,731 — measured on the merged tree, not smeared. Job ceilings
+    stay 137/138/131; the free-content weight 6,010 packs into 11 packs
+    at PACK_TARGET_SECONDS 600, at the existing parent-approved pack
+    ceiling 11 — no pack change. Every selector and every assertion is
+    unchanged; main's #11019 two-line comment is kept, and every prior
+    provenance paragraph below is kept verbatim.
 
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
@@ -6028,6 +6060,45 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     is measured planner accounting, not an execution-time estimate; natural
     successor CI must qualify the repaired source.
 
+    2026-11-11 (PR #10924, second main conflict 82930233f83a / #9230):
+    re-measured on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged .github/ci/legacy-jobs.yml).
+    Main's #9230 composition carries 5,966/5,989/5,724 (its own +2 on
+    free-content only); this PR's own jobs still add exactly their
+    previously measured excess (+5/+19/+5), so the merged ceilings are
+    index 137/5,971, free-content 138/6,008, plan_book 131/5,729 —
+    measured on the merged tree, not smeared. Only the free-content
+    weight ceiling moves (6,006 -> 6,008, main's +2 composed with this
+    PR's already-recorded +19); index and plan_book land on the values
+    both prior measurements already composed. The free-content weight
+    6,008 packs into 11 packs at PACK_TARGET_SECONDS 600, at the
+    existing parent-approved pack ceiling 11 — no pack change. Job
+    ceilings stay 137/138/131; every selector and every assertion is
+    unchanged; main's #9230 provenance paragraphs and its
+    CURATED_EXCLUSIVE entry are kept verbatim.
+
+    2026-11-11 (packs ceiling re-based 10 -> 11, parent-approved): the
+    merged-tree free-content probe measures 6,006 weight-seconds = 11 packs
+    at PACK_TARGET_SECONDS 600; main #10571 (+8) and this pull request
+    (+19) each measure under the 6,000 line alone, so the eleventh pack is
+    the measured cost of their composition, accepted per the recorded packs
+    rule (V11 17.3: "11 packs is the measured cost and is accepted with the
+    reason recorded"). No selector, assertion or job ceiling changed.
+
+    2026-11-11 (PR #10924, merge of main 9d9aac1bf323 / #10571):
+    re-measured on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged .github/ci/legacy-jobs.yml).
+    Main's #10571 composition carries 5,966/5,987/5,724; this PR's own
+    jobs add exactly their previously measured excess: index 137/5,966 ->
+    137/5,971, free-content 138/5,987 -> 138/6,006, plan_book 131/5,724 ->
+    131/5,729 — measured, not smeared. Weight ceilings re-based by exactly
+    that excess; job ceilings stay 137/138/131; every selector and every
+    assertion is unchanged. The free-content weight 6,006 packs into 11
+    packs at PACK_TARGET_SECONDS 600; at resolution time this breach was
+    reported to the commissioning parent rather than waived, and the
+    parent's 2026-11-11 ruling approved the measured pack-ceiling re-base
+    recorded in the dated line above.
+
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
     lifecycle coverage and qualified Playwright dependency. Keep all
@@ -6039,6 +6110,20 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     admission limits. Preserve both entire provenance histories.
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-10 (PR #10924, SI lane 8 CI registration): wired the two new
+    sector-analytics suites (tests/test_sector_analytics_boundaries.py,
+    tests/test_sector_forecast_heads.py) into cycle-forward-log as a real
+    run step, and widened 21 legacy jobs' paths for engine/sector_heads.py
+    and the B12 v1.1 research artifacts. Measured at head d70025383c2d by
+    scripts/check_contract_delta.py against base e11afd6d8549: index
+    137 jobs / 5,963 s, free-content 138 jobs / 5,998 s (cycle-forward-log
+    newly selected — the boundaries suite's engine/sector_central.py
+    closure reaches scripts/build_free_content.py, so the wider selection
+    is the true cost of running it, not smear), plan_book 131 jobs /
+    5,721 s; ten packs on every probe. Fund only the measured excess:
+    5,958 -> 5,963, 5,979 -> 5,998, 5,716 -> 5,721. Job ceilings, the
+    pack ceiling, every selector and every assertion are unchanged.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
