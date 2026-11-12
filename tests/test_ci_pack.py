@@ -6000,12 +6000,41 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_975),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_999),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_733),
+    ("templates/index.html", 137, 11_414),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 11_460),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 10_952),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
+# The weight ceilings above as they stood on the pre-2026-11-11 weight scale.
+# Each live ceiling must equal its legacy value rescaled by run_ci_pack's one
+# WEIGHT_RESCALE ratio (see test_probe_weight_ceilings_follow_the_weight_rescale);
+# job-count ceilings and PACKING_PROBE_MAX_PACKS are not weight-denominated and
+# did not move.
+LEGACY_PACKING_PROBE_WEIGHT_CEILINGS = {
+    "templates/index.html": 5_975,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    "scripts/build_free_content.py": 5_999,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    "engine/prophet/plan_book.py": 5_733,
+}
+
+
+def test_probe_weight_ceilings_follow_the_weight_rescale() -> None:
+    """2026-11-11: weights moved to measured hosted seconds (PACK.WEIGHT_RESCALE_*).
+
+    The probe ratchet must move by the same derived ratio as the weights and
+    the pack target, never by a hand-picked number, so a probe still reds on
+    the same relative growth it did before the refresh.
+    """
+    assert {probe for probe, _jobs, _weight in PACKING_PROBES} == set(
+        LEGACY_PACKING_PROBE_WEIGHT_CEILINGS
+    )
+    for probe, _max_jobs, max_weight in PACKING_PROBES:
+        assert max_weight == PACK.rescale_legacy_weight(
+            LEGACY_PACKING_PROBE_WEIGHT_CEILINGS[probe]
+        ), probe
+    assert PACK.PACK_TARGET_SECONDS == PACK.rescale_legacy_weight(
+        PACK.LEGACY_PACK_TARGET_SECONDS
+    )
 
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
@@ -6117,6 +6146,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
     is measured planner accounting, not an execution-time estimate; natural
     successor CI must qualify the repaired source.
+
+    2026-11-11 (planner weight refresh to measured hosted seconds):
+    OBSERVED_COMMAND_SECONDS now prices every code job from 17 ci.yml runs, so
+    the whole manifest moved 15,670 -> 29,934 weight-seconds. The three weight
+    ceilings move by exactly that ratio (PACK.rescale_legacy_weight):
+    5,966 -> 11,397, 5,987 -> 11,437, 5,724 -> 10,934; PACK_TARGET_SECONDS moves
+    600 -> 1,146 by the same function. Measured on the refreshed weights:
+    10,859 / 11,241 / 10,818 weight and 10 / 10 / 10 packs. Job ceilings,
+    selection and the ten-pack limit are unchanged.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,

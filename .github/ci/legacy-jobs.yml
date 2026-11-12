@@ -26964,6 +26964,14 @@ jobs:
     # the s10 render guards. No ceiling moves.
     paths:
       - "config/global_liquidity_transmission_v1.yml"
+      - "engine/cross_asset.py"
+      - "engine/cross_asset_trend.py"
+      - "engine/crossasset_shadow.py"
+      - "engine/funding_stress.py"
+      - "engine/i18n.py"
+      - "engine/validation.py"
+      - "lib/forex_link.py"
+      - "scripts/build_crossasset.py"
       - "engine/global_liquidity.py"
       - "engine/global_liquidity_transmission.py"
       - "engine/global_liquidity_views.py"
