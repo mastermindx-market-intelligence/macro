@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T16:21:39.873550+00:00",
-  "count": 3238,
+  "generated_at": "2026-11-12T16:44:50.899297+00:00",
+  "count": 3239,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -443,6 +443,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lddjgx2eivt-36104c",
+      "title": "AVC (3017)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:44:46Z",
+      "summary_points": [
+        "Growth Driver & Capacity Expansion: Liquid cooling penetration to drive 44% YoY revenue growth in 2027, supported by 50% capacity expansion in Vietnam and next-gen GPU/ASIC server adoption.",
+        "Earnings Revision & Margin Expansion: Revised GPM up by 1.2/0.3/0.4ppt in 2026/27/28E, accelerated by product mix shift toward servers/liquid cooling, offsetting 1% 2026 revenue downgrade.",
+        "Buy Rating & Target Price: Goldman Sachs maintains Buy with 12-month target NT$4,820 (30.6x 2027E P/E), reflecting 72.8% upside from current price and stronger margins.",
+        "Key Downside Risks: Slower liquid cooling adoption, reduced AI server demand, intensified competition, and delayed general server recovery."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
