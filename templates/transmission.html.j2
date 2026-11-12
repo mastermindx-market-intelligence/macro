@@ -971,7 +971,7 @@ html[data-theme="light"] .cm-cos-list{background:transparent}
           <div class="sub" style="font-size:11.5px;font-weight:700;color:var(--ink)">{{ t('Market tendency (curve-speed → drawdown risk)','市场倾向（曲线速度→回撤风险）') }}</div>
           {% set MT = SG.market_tendency %}
           {% set mtc = {'calm': C.green, 'watch': C.amber, 'elevated': C.red} %}
-          <span class="band-chip" style="background:{{ mtc.get(MT.drawdown_risk, C.muted) }};margin:6px 0">{{ t(MT.drawdown_risk, {'calm':'平静','watch':'观察','elevated':'升高'}.get(MT.drawdown_risk, MT.drawdown_risk)) }}</span>
+          <span class="band-chip" style="background:{{ mtc.get(MT.drawdown_risk, C.muted) }};margin:6px 0">{{ t({'unavailable':'Unavailable'}.get(MT.drawdown_risk, MT.drawdown_risk), {'calm':'平静','watch':'观察','elevated':'升高','unavailable':'不可用'}.get(MT.drawdown_risk, MT.drawdown_risk)) }}</span>
           <p class="note" style="font-size:12px">{{ b(MT.label) }}</p>
         </div>
         <div class="flag info" style="display:block;margin-top:10px">{{ b(yc.scored_status) }}</div>

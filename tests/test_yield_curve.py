@@ -347,3 +347,31 @@ def test_pca_health_json_serializable():
     reloaded = json.loads(dumped)
     # pca_health preserved through round-trip
     assert "pca_health" in reloaded["shape"]["pca"]
+
+import pytest
+from pathlib import Path
+from jinja2 import Environment, StrictUndefined
+
+@pytest.mark.parametrize('speed,pct,flags,expected', [
+ (None,None,0,'unavailable'), (None,.2,0,'unavailable'), (0,None,0,'unavailable'),
+ (0,0,0,'calm'), (10,.2,0,'calm'), (75,None,0,'elevated'),
+ (None,.8,0,'watch'), (-75,None,0,'watch'), (None,None,2,'watch'),
+ (None,.2,1,'unavailable'), (0,None,1,'unavailable'), (74,.79,0,'calm'),
+])
+def test_market_tendency_missing_is_not_calm(speed,pct,flags,expected):
+    mt=yc.market_tendency(pd.DataFrame(), {'real10y_speed_bp':speed,'real_speed_pctile':pct}, {'n_flags':flags})
+    assert mt['drawdown_risk']==expected
+    assert mt['basis']=='measured-direction, display-only'
+    assert mt['real_speed_pctile']==pct
+    json.loads(json.dumps(mt,allow_nan=False))
+    source=(Path(__file__).resolve().parents[1]/'templates/transmission.html.j2').read_text()
+    a=source.index('          <div class="sub" style="font-size:11.5px;font-weight:700;color:var(--ink)">{{ t(\'Market tendency')
+    fragment=source[a:source.index('\n        </div>',a)]
+    tpl=Environment(autoescape=True,undefined=StrictUndefined).from_string(fragment)
+    for lang in ['en','zh']:
+        html=tpl.render(SG={'market_tendency':mt},C={'green':'GREEN','amber':'AMBER','red':'RED','muted':'MUTED'},
+                        t=lambda en,zh:en if lang=='en' else zh,b=lambda x:x[lang])
+        if expected=='unavailable':
+            assert ('Unavailable' if lang=='en' else '不可用') in html
+            assert 'background:MUTED' in html and 'background:GREEN' not in html
+            assert 'No fast real-rate repricing' not in html and '无快速实际利率重定价' not in html
