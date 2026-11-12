@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T17:21:59.455631+00:00",
-  "count": 3241,
+  "generated_at": "2026-11-12T17:36:26.066460+00:00",
+  "count": 3242,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -547,6 +547,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rjxupxovvtl-3efd12",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update(123)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:42:50Z",
+      "summary_points": [
+        "MXAPJ Undervaluation & Upside Target: Forward P/E 9.0x (3.2 s.d. below mean), 607bp equity/bond yield gap (1.3 s.d.), targets 1040 (+27%) by 12M, signaling strong growth expectations and significant undervaluation vs historical averages and bonds.",
+        "FII Capital Flight in EM Asia ex-China: Persistent negative net foreign inflows (India: -148.7B USD 2026 YTD; Taiwan: -89.57B USD), highlighting structural fragility and necessitating defensive positioning in EM Asia ex-China markets.",
+        "Taiwan vs Korea Divergence: Taiwan’s explosive Mtd return (11.9%) vs Korea’s severe underperformance (-7.5%), driven by geopolitical tensions (ex-KR/TW* rebasing) and sector leadership (Info Tech), revealing stark regional risk asymmetry.",
+        "AI/Semiconductor Momentum: AEJ AIGC Semiconductor (3.1% 1-day) and Taiwan Apple Suppliers (14.9% week-to-date) signal robust investor interest in AI-driven tech, aligning with fundamental trends and strategic flows toward high-growth baskets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
