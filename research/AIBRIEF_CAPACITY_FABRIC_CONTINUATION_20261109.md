@@ -278,3 +278,40 @@ first-frame suite 120 passed. Repo-wide grep: no other stale pins.
 Head now 404fafb1, armed, all three 43099993549 atoms locally proven healed.
 LESSON: p0b's heal command remints receipts but NOT manifest.json — run the
 FULL first-frame + ew-p4 suites after any p0b remint, not just the named tests.
+
+## 2026-11-12 (~07:5xZ) — #11075 act 4: stale-proof unblock via main-merge
+
+All checks went green on 404fafb1 (run 43111793535, completed 23:47Z 11-11),
+but the PR did not merge for ~9h. Diagnosis (controller sweep 43176044399,
+07:34Z): "proof is stale — main commit e7f8565ca26b changed the check
+definitions themselves" (.github/ci/legacy-jobs.yml + tests/test_ci_pack.py,
+landed 03:52Z 11-12, AFTER the 23:47Z green). The controller wants to merge
+main into the head + run fresh checks, but every sweep reports 0 CI workload
+slots (global cap 8, 14-15 indexed PR runs in flight, hosted pool refused 7
+queued runs) -> "Controller state is unchanged; a later sweep picks it up."
+Stuck ~4h system-wide (250 armed PRs, 128/sweep rotating cap).
+
+ACT 4 (5cc4bf4d42b7): merged origin/main (53c3feeed584) into the head myself
+under #5291 (disarm -> merge -> push -> rearm, custody comments 6818000471 +
+6818091135). The push triggers fresh CI directly (pull_request synchronize),
+NOT gated by the controller's slot budget. Main touched NONE of this PR's
+tested surface (empty diff across templates/, first-frame/ew-p4 tests, p0b+
+ew-p4 evidence, render scripts) so every receipt pin stays valid; the
+legacy-jobs.yml hunks are disjoint (mine ~line 10464, main's elsewhere).
+Local proofs: freshness suite 105 passed, p0b closure gate exit 0, both
+legacy-jobs sides intact. Main's own CI proof at 2be1126ba783 already includes
+e7f8565 and is green, so the new check definitions are proven.
+
+Head now 5cc4bf4d42b7, armed; fresh ci run 43179124170 + fences 43179124160
+in_progress, ci-authority green. When green, the proof postdates e7f8565 ->
+fresh -> controller merges without a refresh slot.
+
+LESSON: a green PR can stall merge when main changes check definitions after
+the proof AND the hosted CI pool is saturated (controller can't schedule the
+refresh). The lawful unblock is to merge main into your OWN head under #5291
+so the push triggers fresh CI directly — never self-merge, never bypass the
+controller. Verify main touched none of your pinned surface first.
+
+REMAINING: fresh CI green -> controller merges -> render auto-dispatches ->
+live chip readback on dashboard/china/hk at mastermind-x.com -> append + post
+v2 readback to Mastermind #983. Then P2-P4.
