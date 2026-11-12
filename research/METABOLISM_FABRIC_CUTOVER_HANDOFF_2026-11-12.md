@@ -59,17 +59,35 @@ production-protection gates; the rest are advisory generation.
   `provider="fabric"` is treated as non-metered in `scripts/metabolism_propose.py`
   so the $25 metered circuit breaker is not charged for a router-billed call.
 
-## Wiring (no workflow edit needed)
+## Wiring (corrected 2026-11-12 — the earlier "no workflow edit needed" claim was wrong)
 
-`metabolism-cycle.yml` / `metabolism-agenda.yml` and the brief job all run on
-`[self-hosted, macstudio]`, the host that exports `FABRIC_ROUTER_TOKEN` for the
-loopback router. Absent that export, the lane is simply inert.
+An earlier revision of this record said the macstudio runners already export
+`FABRIC_ROUTER_TOKEN`. **They do not.** Checked: the variable is absent from the
+launchd user session (`launchctl getenv` → 0 bytes), absent from every
+`~/actions-runner*/.env`, absent from `~/.config/mastermind`, and no workflow
+referenced any `FABRIC*` variable. Unwired, this cutover would have merged and
+stayed permanently inert — the exact outcome it exists to prevent.
 
-Verified from this session: the router answers on `127.0.0.1:8313` (401 without
-a token, so it is up and enforcing auth). The token was **not** present in the
-build host's shell environment, so live verification of a routed metabolism call
-was not possible from here — it must be done on the render host or with the
-token exported.
+The token's actual owner is the router process itself:
+`python -m ops.native_fabric.unified_router.service --env-file
+/Users/chriswong/.local/share/mastermind/fabric-router/router.env` (mode 0600).
+
+`FABRIC_ROUTER_TOKEN: ${{ secrets.FABRIC_ROUTER_TOKEN }}` is now passed in the
+five workflows that execute a fabric-wired stage — `metabolism-agenda.yml`,
+`metabolism-propose.yml`, `metabolism-adjudicate.yml`, `metabolism-audit.yml`,
+`metabolism-dream.yml`. `metabolism-cycle.yml` and `metabolism-build.yml` are
+deliberately not wired: the former only dispatches and runs the budget gate; the
+latter's LLM surface is the headless Claude Code dispatch (item 1 below), which
+the router cannot serve.
+
+**Still required, and not done here: the repo secret.** `FABRIC_ROUTER_TOKEN`
+must be provisioned as a GitHub Actions secret with the value from `router.env`.
+That is credential provisioning, so it is left to the credential owner rather
+than copied into GitHub by this session. Until it exists the secret resolves to
+an empty string and `fabric_lane.enabled()` is False — inert, not broken.
+
+`anthropic>=0.40` is already declared (`requirements.txt:16`) and installed by
+the runner step (`metabolism-cycle.yml:84`), so the SDK is not a gap.
 
 ## Remaining work (not in #11177)
 
@@ -89,6 +107,14 @@ token exported.
    otherwise the loop re-runs a dead ladder with no signal.
 
 ## Verification performed
+
+**Live routed call (2026-11-12).** `fabric_lane.call(stage="propose", …)` executed
+against the real router on `127.0.0.1:8313` from `mm-venv-mac-builder-3`:
+`enabled("propose") = True`, `provider = "fabric"`, reply `{"ok": true}`, usage
+row `{input 45, output 23, model: deepseek-v4.1-flash}`. The lane, the adapter,
+the router and the `lib/ai_costs` row mapping are therefore proven together, not
+only against stubs. The router answers 401 without a token, so it is up and
+enforcing auth.
 
 `tests/test_metabolism_fabric_cutover.py` — 30 tests, all stub-based, green.
 Full metabolism sweep: 459 passed, 2 failed; both failures are this sparse
