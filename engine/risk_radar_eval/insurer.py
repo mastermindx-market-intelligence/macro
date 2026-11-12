@@ -5,8 +5,8 @@ Research-only, paper-only: never a trading rule, sizing or execution. Chairman's
 S&P 500 outperformance. This is a declared SECONDARY read; the frozen prereg's primary endpoint
 (the pivot read, `pivots.py`) is unchanged (PREREG_WALKFORWARD_v1_ADDENDUM_1.md).
 
-Paper sleeve for an alert: alert on at day d's close -> bills for session d+1, else SPY (total
-return). Bills = FRED DTB3 3-month yield, the prior session's value / 100 / 252 per session.
+Paper sleeve for an alert: alert seen at day d's close, executed at d+1's close -> bills for
+session d+2, else SPY total return (one-session execution lag, desk H19; `exec_lag`). Bills = FRED DTB3 3-month yield, the prior session's value / 100 / 252 per session.
 
 Metrics (per series, over its own window):
 - max drawdown; longest time under water (sessions below the prior peak) and share of sessions
@@ -47,9 +47,11 @@ def bill_returns(index: pd.DatetimeIndex) -> pd.Series:
     return (y.shift(1) / 100.0 / SESSIONS_PER_YEAR).fillna(0.0)
 
 
-def sleeve_returns(alert: pd.Series, spy_ret: pd.Series, bill_ret: pd.Series) -> pd.Series:
-    """Alert at d's close -> bills on d+1."""
-    out_ = alert.astype(bool).shift(1, fill_value=False).reindex(spy_ret.index).fillna(False)
+def sleeve_returns(alert: pd.Series, spy_ret: pd.Series, bill_ret: pd.Series,
+                   exec_lag: int = 1) -> pd.Series:
+    """Alert seen at d's close, executed at d+exec_lag's close -> bills for session d+1+exec_lag.
+    Default exec_lag=1 (desk H19); exec_lag=0 reproduces the earlier same-close reading."""
+    out_ = alert.astype(bool).shift(1 + exec_lag, fill_value=False).reindex(spy_ret.index).fillna(False)
     return spy_ret.where(~out_, bill_ret)
 
 
@@ -118,7 +120,7 @@ def comparators(index: pd.DatetimeIndex, *, spy_ret: pd.Series, bill_ret: pd.Ser
     ief = _tr("IEF").pct_change().reindex(index)
     out["60/40 SPY/IEF"] = 0.6 * out["SPY"] + 0.4 * ief
     below = (spy_px < spy_px.rolling(200, min_periods=200).mean()).reindex(index).fillna(False)
-    out["SPY-or-bills 200d"] = sleeve_returns(below, out["SPY"], bill_ret.reindex(index))
+    out["SPY-or-bills 200d"] = sleeve_returns(below, out["SPY"], bill_ret.reindex(index))  # same lag
     if match_vol_of is not None:
         w = float(match_vol_of.reindex(index).std() / out["SPY"].std())
         w = min(max(w, 0.0), 1.0)

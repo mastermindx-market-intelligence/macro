@@ -16,7 +16,7 @@ def test_out_during_decline_cuts_drawdown_and_keeps_gains():
     px = _px(); idx = px.index
     spy = px.pct_change().fillna(0.0); bills = pd.Series(0.0, index=idx)
     alert = pd.Series(False, index=idx); alert.iloc[29:38] = True     # out onset..trough
-    sl = N.sleeve_returns(alert, spy, bills)
+    sl = N.sleeve_returns(alert, spy, bills, exec_lag=0)
     a = N.profile(sl, spy_ret=spy, bill_ret=bills, px=px, outcomes_through=idx[-1], depths=(0.10,))
     b = N.profile(spy, spy_ret=spy, bill_ret=bills, px=px, outcomes_through=idx[-1], depths=(0.10,))
     assert a["max_drawdown"] > b["max_drawdown"]
@@ -30,4 +30,15 @@ def test_alert_acts_next_session():
     idx = pd.bdate_range("2020-01-01", periods=4)
     spy = pd.Series([0.01, -0.05, 0.02, 0.0], index=idx); bills = pd.Series(0.0, index=idx)
     alert = pd.Series([True, False, False, False], index=idx)
-    assert N.sleeve_returns(alert, spy, bills).tolist() == [0.01, 0.0, 0.02, 0.0]
+    assert N.sleeve_returns(alert, spy, bills, exec_lag=0).tolist() == [0.01, 0.0, 0.02, 0.0]
+    # default: one-session execution lag (seen at d close, executed at d+1 close)
+    assert N.sleeve_returns(alert, spy, bills).tolist() == [0.01, -0.05, 0.0, 0.0]
+
+
+def test_hy_lag_shifts_credit_leg_only():
+    from engine.risk_radar_eval import inputs as I
+    idx = pd.bdate_range("2020-01-01", periods=4)
+    s = pd.DataFrame({"credit_oas_roc": [0.1, 0.2, 0.3, 0.4], "bubble_ext": [1, 2, 3, 4.0]}, index=idx)
+    o = I.lag_for_availability(s)
+    assert np.isnan(o["credit_oas_roc"].iloc[0]) and o["credit_oas_roc"].iloc[1] == 0.1
+    assert o["bubble_ext"].tolist() == [1, 2, 3, 4.0]

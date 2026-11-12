@@ -150,11 +150,15 @@ def _cp(k: int, n: int, level: float = 0.90):
     return [round(lo, 3), round(hi, 3)]
 
 
-def _economics(a_np, px, pos, episodes, *, lo_pos, hi_pos, h, years) -> dict:
+EXEC_LAG = 1   # desk H19: an alert seen at d's close is acted on at d+1's close
+
+
+def _economics(a_np, px, pos, episodes, *, lo_pos, hi_pos, h, years,
+               exec_lag: int = EXEC_LAG) -> dict:
     """Paper accounting of an alert, descriptive only (never a trading rule).
 
-    The alert at close d is read as "out of SPY for session d+1". Next-session returns on alert
-    days are split by where session d+1 falls:
+    The alert at close d is read as "out of SPY for session d+1+exec_lag" (default exec_lag=1:
+    decided at d's close, executed at d+1's close). Returns on those sessions are split by phase:
       decline  = onset..trough of a scored episode  -> loss avoided (positive is good)
       rebound  = trough+1..recovery                 -> rebound forgone (cost)
       outside  = any other session                  -> return given up outside episodes (cost)
@@ -178,7 +182,8 @@ def _economics(a_np, px, pos, episodes, *, lo_pos, hi_pos, h, years) -> dict:
         decline = px[pk] - px[t]
         share = 0.0
         if first is not None and decline > 0:
-            share = float(np.clip((min(px[first], px[pk]) - px[t]) / decline, 0.0, 1.0))
+            fx = min(first + exec_lag, n - 1)
+            share = float(np.clip((min(px[fx], px[pk]) - px[t]) / decline, 0.0, 1.0))
         clear = 0
         if a_np[t]:
             j = t
@@ -189,9 +194,10 @@ def _economics(a_np, px, pos, episodes, *, lo_pos, hi_pos, h, years) -> dict:
                        "lead_to_breach": (b - first) if (first is not None and first <= b) else None,
                        "trough_to_all_clear": int(clear)})
     sel = np.zeros(n, dtype=bool)
-    sel[lo_pos + 1:hi_pos + 2 if hi_pos + 2 <= n else n] = True   # sessions d+1 for d in window
+    k = 1 + exec_lag
+    sel[lo_pos + k:min(hi_pos + k + 1, n)] = True   # sessions d+k for d in window
     on_prev = np.zeros(n, dtype=bool)
-    on_prev[1:] = a_np[:-1]
+    on_prev[k:] = a_np[:-k]
     m = sel & on_prev & np.isfinite(r)
     dec = float(-np.nansum(r[m & (phase == 1)]))
     reb = float(np.nansum(r[m & (phase == 2)]))
@@ -205,6 +211,7 @@ def _economics(a_np, px, pos, episodes, *, lo_pos, hi_pos, h, years) -> dict:
         "net_per_year": _r((dec - reb - outside) / years) if years else None,
         "median_loss_avoided_share": _med(shares),
         "median_trough_to_all_clear": _med(clears),
+        "exec_lag": exec_lag,
         "per_episode": per_ep,
     }
 

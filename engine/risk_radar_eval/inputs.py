@@ -13,10 +13,29 @@ from engine.indicators import pct_rank_window
 PCT_WIN = 504  # same trailing causal percentile window as the engine (engine/risk_radar.py:52)
 
 
-def incumbent_signals() -> pd.DataFrame:
-    """Causal 0-1 leg percentiles, one column per leg (live owner, unchanged)."""
+# Publication lag in sessions for legs whose source is stamped with its observation date but
+# published later (desk H19, 2026-11-12). FRED's ICE BofA HY OAS and DFII10 for date t appear the
+# next morning; DEXJPUS (H.10) is published weekly, so 1 session is a floor, not verified.
+AVAILABILITY_LAG = {"credit_oas_roc": 1, "rates_realrate": 1, "jpy_carry": 1}
+
+
+def incumbent_signals(*, availability_lag: bool = True) -> pd.DataFrame:
+    """Causal 0-1 leg percentiles from the live owner, each FRED-sourced leg shifted by its
+    publication lag (rows = SPY sessions) so a row holds only what was published by that close.
+    availability_lag=False returns the live owner's panel unchanged."""
     from engine import risk_radar as rr
-    return rr.leading_signals()
+    sigs = rr.leading_signals()
+    if availability_lag:
+        sigs = lag_for_availability(sigs)
+    return sigs
+
+
+def lag_for_availability(sigs: pd.DataFrame, lags: dict | None = None) -> pd.DataFrame:
+    out = sigs.copy()
+    for col, k in (AVAILABILITY_LAG if lags is None else lags).items():
+        if col in out:
+            out[col] = out[col].shift(k)
+    return out
 
 
 def gate_components(index: pd.DatetimeIndex | None = None) -> pd.DataFrame:
@@ -69,8 +88,10 @@ def baseline_scores() -> pd.DataFrame:
     if hy is not None:
         h = hy["hy_oas"].astype(float)
         h.index = pd.to_datetime(h.index)
-        h = h.reindex(out.index).ffill(limit=3)
+        h = h.reindex(out.index).ffill(limit=3).shift(AVAILABILITY_LAG["credit_oas_roc"])
         out["hy_oas_chg21_pct"] = pct_rank_window(h.diff(21), PCT_WIN)
+    # mechanical reference (desk H20): distance below the running total-return peak, causal
+    out["dd_from_peak"] = spy / spy.cummax() - 1.0
     return out
 
 
@@ -83,4 +104,9 @@ def baseline_flags(scores: pd.DataFrame) -> pd.DataFrame:
         f["vix_ge_25"] = scores["vix"] >= 25
     if "hy_oas_chg21_pct" in scores:
         f["hy_oas_chg21_top_decile"] = scores["hy_oas_chg21_pct"] >= 0.90
+    if "dd_from_peak" in scores:
+        # mechanical references: "near the high" (fires where onsets happen by construction) and
+        # "already down 5%" (confirms by construction); convention levels, never fitted
+        f["mech_near_high_1pct"] = scores["dd_from_peak"] >= -0.01
+        f["mech_dd_ge_5pct"] = scores["dd_from_peak"] <= -0.05
     return f.fillna(False).astype(bool)

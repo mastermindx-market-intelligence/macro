@@ -133,3 +133,72 @@ Read (in-sample, so an upper bound):
   2022-01-04 to trough 2022-10-12) its sleeve lost 29.9% against SPY's 24.5%: it was out on rally
   days and in on falling days. Radar risk-off lost 8.6% in the same span.
 - These figures were fitted on this window. The walk-forward version is what counts.
+
+
+## 6. Restatement with availability and execution lags (2026-11-12, PREREG addendum 2)
+
+The in-sample reads above are **superseded by this section**. Changes:
+- The FRED legs (HY OAS, DFII10, DEXJPUS) are lagged one session for publication.
+- The paper sleeve and economics are executed one session after the signal close.
+- Two mechanical references (H20) are added.
+
+87 of 1,724 Radar state rows since 2020 change. Raw output: `INSAMPLE_READS_LAG1_v2.json`; runner:
+`scripts/research/risk_radar_insample_reads_lag1.py`.
+
+### Pivot read (post 10), shown in order ≥10%, then ≥7%, then ≥5%
+
+Tops and bottoms flagged are each given as k/n.
+
+| Series | Budget | ≥10% tops | ≥10% bottoms | ≥7% tops | ≥7% bottoms | ≥5% tops | ≥5% top delays | ≥5% bottoms | False risk-off /yr | Premature all-clear /yr |
+|---|---:|---|---|---|---|---|---|---|---:|---:|
+| Radar loud | 15.7% | 1/3 | 0/3 | 1/5 | 1/5 | 1/9 | +6 | 1/8 | 0.0 | 1.32 |
+| Radar risk-off | 14.0% | 1/3 | 0/3 | 1/5 | 1/5 | 1/9 | +6 | 1/8 | 0.0 | 1.75 |
+| HY OAS top decile (lagged) | 11.0% | 1/3 | 1/3 | 1/5 | 3/5 | 3/9 | −15, −12, −5 | 4/8 | 0.15 | 3.07 |
+| SPY < 200d | 19.3% | 1/3 | 0/3 | 1/5 | 1/5 | 1/9 | +6 | 1/8 | 0.0 | 1.17 |
+| VIX ≥ 20 | 41.2% | 3/3 | 0/3 | 4/5 | 2/5 | 6/9 | median −8 | 4/8 | 2.78 | 2.19 |
+| **Mech: within 1% of peak** | 37.3% | 3/3 | 1/3 | 4/5 | 3/5 | 8/9 | median −13 | 6/8 | 6.58 | 1.75 |
+| **Mech: ≥5% below peak** | 34.9% | 2/3 | 0/3 | 2/5 | 2/5 | 2/9 | +4, +9 | 5/8 | 0.0 | 0.88 |
+
+Episode level (h21) for the lagged HY OAS baseline:
+- ≥5% episodes caught before onset: 3/9, unchanged.
+- ≥5% episodes caught by breach: 4/9, was 5/9.
+- Median lead to the ≥10% breach: 16 sessions, was 17.
+- Its top delays each move one session later.
+
+### Placebo (near-start, 300 draws; ≥5% tops)
+
+| Series | Observed | Placebo p90 | False risk-off /yr observed | Placebo median |
+|---|---:|---:|---:|---:|
+| Radar loud | 0.11 | 0.78 | 0.0 | 1.90 |
+| HY OAS | 0.33 | 0.89 | 0.15 | 3.22 |
+| Mech near-high | 0.89 | 1.00 | 6.58 | 7.16 |
+
+### Insurer profile (execution lag 1)
+
+| Series | Max DD | Sharpe (excess) | Sortino | ≥10% DD avoided | ≥7% DD avoided | Gains kept outside declines | Rebound kept | CAGR |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Radar loud | −16.4% | 0.91 | 1.28 | 60% | 52% | 76% | 60% | 15.2% |
+| Radar risk-off | −17.7% | 0.87 | 1.21 | 63% | 55% | 73% | 56% | 14.7% |
+| HY OAS top decile (lagged) | −28.7% | 0.78 | 1.10 | 40% | 36% | 81% | 70% | 14.3% |
+| Mech ≥5% below peak | −13.9% | 0.57 | 0.76 | 75% | 65% | 52% | 20% | 8.7% |
+| Mech within 1% of peak | −30.4% | 0.67 | 0.95 | 11% | 15% | 88% | 94% | 14.6% |
+| SPY | −33.7% | 0.64 | 0.91 | 0% | 0% | 100% | 100% | 14.8% |
+| SPY-or-bills 200d | −21.9% | 0.70 | 0.96 | 60% | 54% | 65% | 42% | 11.6% |
+| 60/40 SPY/IEF | −21.0% | 0.54 | 0.76 | 38% | 40% | 62% | 63% | 9.1% |
+| SPY+bills vol-matched (w=0.66) | −23.4% | 0.64 | 0.91 | 36% | 36% | 70% | 69% | 11.1% |
+| RSP | −39.0% | 0.51 | 0.71 | 1% | 7% | 83% | 89% | 11.8% |
+
+### What changes in the reading (in-sample, an upper bound)
+
+1. **The near-high reference flags 8 of 9 tops and all 9 onsets, and makes 6.6 false calls a
+   year.**
+   - Being near a high flags tops by construction.
+   - The HY OAS early catches (3/9) sit inside what the near-high reference already catches.
+   - The Radar (1/9) flags fewer than either.
+2. **The ≥5%-below-peak reference avoids the most drawdown (75% of the ≥10% declines).** It does
+   so by giving up four fifths of every rebound. On the insurer read, the Radar keeps the best
+   balance: Sharpe 0.91 against 0.57 for this reference and 0.70 for the 200-day rule.
+3. **The lags do not overturn any earlier conclusion.**
+   - The credit baseline's leads shorten by one session and it loses one breach catch.
+   - The Radar's insurer figures improve slightly under the execution lag. This was not
+     diagnosed; it is consistent with short loud runs near troughs.
