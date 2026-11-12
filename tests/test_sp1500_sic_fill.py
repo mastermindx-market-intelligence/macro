@@ -36,13 +36,32 @@ def test_candidates_keep_only_unambiguous_chains():
     lookup = {"OKAY": {1}, "TWO A": {2}, "LATE": {3}, "AMB": {4, 5}, "NOSIC": {6}}
     cand, funnel = fill.candidates(_sectors(), meta, closes, lookup)
     assert sorted(cand["ticker"]) == ["NOSIC", "OK"]
-    assert funnel == {"unlabeled": 5, "one_tiingo_company": 4, "series_covers_window": 3, "one_sec_cik": 2}
+    assert funnel == {"unlabeled": 5, "one_tiingo_company": 4, "series_covers_window_no_handover": 3, "one_sec_cik": 2}
+
+
+def test_handover_inside_one_index_is_excluded():
+    mem = pd.DataFrame({"ticker": ["GAS", "GAS", "FL", "FL", "OK"],
+                        "src": ["sp500", "sp500", "sp500", "sp500", "sp500"],
+                        "start_date": pd.to_datetime(["1996-01-02", "2011-12-13", "1996-01-02", "2016-04-04",
+                                                      "2000-01-03"]),
+                        "end_date": pd.to_datetime(["2011-12-12", "2016-07-01", "1999-01-04", "2019-08-09",
+                                                    "2010-01-04"])})
+    assert fill.handover_tickers(mem) == {"GAS"}     # FL re-entry years later is not a handover
+    idx = pd.bdate_range("1990-01-01", "2016-07-01")
+    closes = pd.DataFrame(1.0, index=idx, columns=["GAS", "OK"])
+    sec = pd.DataFrame({"ticker": ["GAS", "OK"], "basis": "unlabeled", "sector": None,
+                        "membership_start": pd.to_datetime(["1996-01-02", "2000-01-03"])})
+    meta = pd.DataFrame({"ticker": ["GAS", "OK"], "name": ["Agl Resources Inc", "Okay Corp"]})
+    cand, _ = fill.candidates(sec, meta, closes, {"AGL RESOURCES": {1}, "OKAY": {2}}, mem)
+    assert list(cand["ticker"]) == ["OK"]
 
 
 def test_build_writes_as_of_now_labels_only_when_sic_maps(tmp_path, monkeypatch):
     bd = tmp_path / "breadth"
     bd.mkdir()
     _sectors().to_parquet(bd / "sp1500_pit_sectors.parquet")
+    pd.DataFrame({"ticker": ["OK", "NOSIC"], "src": "sp500", "start_date": pd.to_datetime(["2000-01-03"] * 2),
+                  "end_date": pd.to_datetime(["2010-01-04"] * 2)}).to_parquet(bd / "sp1500_pit_membership.parquet")
     idx = pd.bdate_range("1999-06-01", "2010-01-04")
     pd.DataFrame(1.0, index=idx, columns=["OK", "NOSIC"]).to_parquet(tmp_path / "c.parquet")
     with gzip.open(tmp_path / "meta.raw.gz", "wt") as f:

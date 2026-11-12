@@ -15,10 +15,22 @@ sources and no hand labelling:
 A row is filled only when every link is unambiguous:
   * the ticker has exactly ONE company in the Tiingo metadata;
   * the ticker's Tiingo price series starts on or before the membership start
-    (+10 days), so the vendor's company under that ticker is the listing that
-    was in the index, not a later holder of the reused ticker;
+    (+10 days). This screens out a ticker whose vendor history begins only after
+    the membership (a later holder) but does NOT prove identity: a vendor may
+    attach a predecessor's history to today's ticker;
+  * the ticker has no handover inside one index (two windows in the same index
+    within 5 days of each other): a split window under one ticker can mark a
+    change of company (GAS: Nicor until 2011-12-12, AGL Resources after);
   * the normalized name maps to exactly ONE CIK in the SEC lookup;
   * the SEC SIC maps to one of the 11 sectors.
+
+Leaver rule (collectors/sp1500_pit_sectors.py, seat ruling 2026-10-04): leavers
+are labelled by CIK only, never by matching today's ticker universe. This fill
+reaches the CIK through the vendor's ticker -> company-name record, which covers
+inactive companies; it is a ticker-keyed route to a CIK and is disclosed as such.
+Hand review of all 228 first-run fills found 1 plainly wrong company and about 6
+earlier or later filers of the same company family (research/breadth_history/
+LABEL_COVERAGE.md).
 
 Every label written here is ``basis = sic_derived_fill``, as of now (the
 filer's CURRENT SIC), ``era_correct = False``. The output is a separate overlay
@@ -81,18 +93,31 @@ def series_covers(closes: pd.DataFrame, ticker: str, start) -> bool:
     return len(x) > 0 and x.index.min() <= pd.Timestamp(start) + pd.Timedelta(days=10)
 
 
+def handover_tickers(membership: pd.DataFrame | None, gap_days: int = 5) -> set[str]:
+    """Tickers with two windows in the same index within ``gap_days``: a possible
+    change of company under one ticker."""
+    if membership is None or membership.empty:
+        return set()
+    m = membership.sort_values(["ticker", "src", "start_date"])
+    prev_end = m.groupby(["ticker", "src"])["end_date"].shift()
+    near = (m["start_date"] - prev_end).dt.days.abs() <= gap_days
+    return set(m.loc[near.fillna(False), "ticker"])
+
+
 def candidates(sectors: pd.DataFrame, meta: pd.DataFrame, closes: pd.DataFrame,
-               lookup: dict[str, set[int]]) -> tuple[pd.DataFrame, dict]:
+               lookup: dict[str, set[int]],
+               membership: pd.DataFrame | None = None) -> tuple[pd.DataFrame, dict]:
     """Unlabeled rows whose ticker -> name -> CIK chain is unambiguous."""
     u = sectors[sectors["basis"] == "unlabeled"]
     n_meta = meta["ticker"].value_counts()
     one = u[u["ticker"].map(n_meta).eq(1)]
     cov = one[[series_covers(closes, r.ticker, r.membership_start) for r in one.itertuples()]]
+    cov = cov[~cov["ticker"].isin(handover_tickers(membership))]
     j = cov.merge(meta, on="ticker")
     j["ciks"] = j["name"].map(lambda n: lookup.get(norm_name(n), set()))
     ok = j[j["ciks"].map(len) == 1].copy()
     ok["cik"] = ok["ciks"].map(lambda s: next(iter(s)))
-    funnel = {"unlabeled": len(u), "one_tiingo_company": len(one), "series_covers_window": len(cov),
+    funnel = {"unlabeled": len(u), "one_tiingo_company": len(one), "series_covers_window_no_handover": len(cov),
               "one_sec_cik": len(ok)}
     return ok[["ticker", "cik"]], funnel
 
@@ -118,7 +143,9 @@ def build(breadth_dir: Path, fund_meta: Path, closes_path: Path, sec_lookup: Pat
           out: Path, cik_sic_path: Path | None = None) -> dict:
     sectors = pd.read_parquet(breadth_dir / "sp1500_pit_sectors.parquet")
     closes = pd.read_parquet(closes_path)
-    cand, funnel = candidates(sectors, load_fund_meta(fund_meta), closes, load_sec_lookup(sec_lookup))
+    membership = pd.read_parquet(breadth_dir / "sp1500_pit_membership.parquet")
+    cand, funnel = candidates(sectors, load_fund_meta(fund_meta), closes, load_sec_lookup(sec_lookup),
+                              membership)
     cache = json.loads(cache_path.read_text()) if cache_path.exists() else {}
     cik_sic = json.loads(cik_sic_path.read_text()) if cik_sic_path and cik_sic_path.exists() else {}
     cache = resolve_sic(cand["cik"], cache, cik_sic)
