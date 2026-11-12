@@ -76,11 +76,12 @@ def installed_checkout(
         capture.LIB_INIT_RELATIVE_PATH,
         capture.SELECTOR_RECEIPT_RELATIVE_PATH,
     ):
-        (root / relative.parent).mkdir(parents=True, exist_ok=True)
-        # Establish the verifier's valid baseline before adversarial mutations.
-        for parent in relative.parents:
-            if parent != Path("."):
-                (root / parent).chmod(0o755)
+        directory = root / relative.parent
+        directory.mkdir(parents=True, exist_ok=True)
+        # The production attestor requires exact modes for all tracked parents.
+        while directory != root:
+            directory.chmod(0o755)
+            directory = directory.parent
     shutil.copyfile(Path(capture.__file__), root / capture.MODULE_RELATIVE_PATH)
     shutil.copyfile(
         capture.ENGINE_INIT_PATH,
@@ -1010,10 +1011,11 @@ def test_raw_tree_verifier_bypasses_clean_filter_and_attributes(
     _git(root, "config", "filter.capture-mask.clean", f"python3 {filter_script}")
     _git(root, "config", "filter.capture-mask.smudge", "cat")
     _git(root, "config", "filter.capture-mask.required", "true")
-    (root / ".gitattributes").write_text(
+    attributes = root / ".gitattributes"
+    attributes.write_text(
         "filtered.txt filter=capture-mask\n", encoding="utf-8"
     )
-    (root / ".gitattributes").chmod(0o644)
+    attributes.chmod(0o644)
     filtered = root / "filtered.txt"
     filtered.write_text("worktree\n", encoding="utf-8")
     filtered.chmod(0o644)
@@ -1050,14 +1052,19 @@ def test_raw_tree_verifier_rejects_mode_drift_hidden_by_local_config(
         capture._ORIGINAL_TRACKED_TREE_VERIFIER(root, head=head)
 
 
-def test_raw_tree_verifier_rejects_intermediate_directory_symlink(
+@pytest.mark.parametrize("damage", ["symlink", "group-writable"])
+def test_raw_tree_verifier_rejects_unsafe_intermediate_directory(
     installed_checkout: tuple[Path, str, capture.CaptureReleasePolicy],
+    damage: str,
 ) -> None:
     root, head, _policy = installed_checkout
     engine = root / "engine"
-    parked = root / "engine-real"
-    engine.rename(parked)
-    engine.symlink_to(parked.name)
+    if damage == "symlink":
+        parked = root / "engine-real"
+        engine.rename(parked)
+        engine.symlink_to(parked.name)
+    else:
+        engine.chmod(0o775)
     with pytest.raises(capture.MastermindXCaptureError, match="tracked directory engine is unsafe"):
         capture._ORIGINAL_TRACKED_TREE_VERIFIER(root, head=head)
 
