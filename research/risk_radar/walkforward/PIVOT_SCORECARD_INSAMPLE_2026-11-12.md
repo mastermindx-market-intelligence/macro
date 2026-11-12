@@ -5,7 +5,7 @@ SPY. For every turn into risk-off (a top) and back to risk-on (a bottom): was it
 many sessions before or after. Paper economics and the insurer sleeve (`SCORECARD_INSAMPLE_2026-11-12.md` §3b, §5) are a
 descriptive appendix only, never a bar or headline (Chairman correction 2026-11-12: "The point is
 pivot identification"). The Radar is judged on this read: flagged or not, sessions before/after
-the turn, false calls per year, against the near-high placebo and the two mechanical references.
+the turn, false calls per year, against the near-high placebo (not verified until the placement repair, PR comment 6835380019) and the two mechanical references.
 
 **Label: IN-SAMPLE.** v2 constants were chosen on this window; 2024+ is the Radar's own seen
 history, not the desk's sealed confirmation. Episode counts sit beside every figure; intervals are
@@ -85,6 +85,8 @@ persistence), placing each run start (a) anywhere, (b) within 1% of the running 
 1% of the lowest close since the running high. Raw: `PIVOT_PLACEBO_INSAMPLE_v2.json`. ≥5% turns,
 post 10, in-sample.
 
+> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows (2,000 draws, seed 0). Figures in this table are not verified until the repair.
+
 | Series | Tops: observed vs placebo (any / near high) | Bottoms: observed vs placebo (any / near low) | False risk-off /yr: observed vs placebo (any / near high) |
 |---|---|---|---|
 | Radar loud | 0.11 vs 0.39 / 0.61 | 0.13 vs 0.37 / 0.43 | 0.0 vs 1.2 / 2.2 |
@@ -92,8 +94,8 @@ post 10, in-sample.
 | VIX ≥ 20 | 0.67 vs 0.75 / 0.89 | 0.50 vs 0.64 / 0.67 | 2.8 vs 3.0 / 5.7 |
 | SPY < 200d | 0.11 vs 0.29 / 0.50 | 0.13 vs 0.29 / 0.34 | 0.0 vs 0.8 / 1.6 |
 
-**Every series flags fewer turns than random runs of the same lengths, near-high placebo
-included.** Random runs spread their starts across the calendar, so they land in more turn
+**NOT VERIFIED (placebo placement defect, PR comment 6835380019); this whole paragraph rests on the placebo:** Every series flags fewer turns than random runs of the same lengths, near-high placebo
+included. Random runs spread their starts across the calendar, so they land in more turn
 windows, and they pay for it in false calls. The real signals buy their low false-call rates by
 concentrating inside declines. That also explains why they record more premature all-clears than
 the placebo: a placebo that is rarely on inside a decline rarely switches off inside one.
@@ -101,7 +103,7 @@ the placebo: a placebo that is rarely on inside a decline rarely switches off in
 Consequence for the shared scorecard: **a flagged share is not readable on its own.** It is read
 against the placebo at the same false-call rate. The proposed primary statement is a pair: flagged
 share and false calls per year, each beside its near-high (tops) or near-low (bottoms) placebo.
-None of the in-sample Radar or baseline series beats its placebo on flagged share; all of them beat
+**NOT VERIFIED (placebo placement defect, PR comment 6835380019):** both halves of this sentence are unverified: None of the in-sample Radar or baseline series beats its placebo on flagged share; all of them beat
 it on false calls.
 
 ## Early catches beyond the near-high reference (secondary, added 2026-11-12)

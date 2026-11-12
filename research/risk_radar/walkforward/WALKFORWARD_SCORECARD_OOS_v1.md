@@ -76,6 +76,8 @@ that the "within 1% of high" reference does not also make, at any depth. Same as
 
 ## 3. Against the placebo (2,000 draws, seed 0, tol 0.01; ≥5%, post 10)
 
+> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows (2,000 draws, seed 0). Figures in this table are not verified until the repair.
+
 | Radar loud | Observed | Near-high / near-low placebo median | Placebo p90 | Draws ≥ observed |
 |---|---:|---:|---:|---:|
 | Tops flagged | 0.00 | 0.67 (near high) | 0.83 | 100% |
@@ -83,17 +85,17 @@ that the "within 1% of high" reference does not also make, at any depth. Same as
 | False risk-off /yr | 0.0 | 2.07 (near high) | — | — |
 | Premature all-clear /yr | 1.45 | 0.21 (near high) / 0.62 (near low) | — | — |
 
-Against the proposed slate-v2 pass line (flagged share ≥ placebo p90 and false calls ≤ placebo
+**NOT VERIFIED (placebo placement defect, PR comment 6835380019):** both halves are unverified: Against the proposed slate-v2 pass line (flagged share ≥ placebo p90 and false calls ≤ placebo
 median), the Radar fails on flagged share for both turn kinds and passes on false calls.
 
 ## 4. What this says
 
 1. **The loud Radar does not identify tops.** Pooled over out-of-sample 2022–23 and seen 2024+ it flags 0 of 6
    ≥5% tops within 10 sessions (1 within 21) and no ≥7% or ≥10% top. Random runs of the same
-   lengths placed near highs do better on every draw. Its loud state behaves as a mid-decline
+   lengths placed near highs do better on every draw. (NOT VERIFIED: placebo placement defect, PR comment 6835380019) Its loud state behaves as a mid-decline
    confirmation, not a pivot call.
 2. **Its virtue is silence outside declines:** zero false risk-off calls. Its fault is the
-   all-clear: 1.45 premature all-clears a year against a placebo median of 0.2–0.6.
+   all-clear: 1.45 premature all-clears a year (against a placebo median of 0.2–0.6: NOT VERIFIED, placebo placement defect, PR comment 6835380019).
 3. **Credit-spread velocity remains the stronger pivot reader** (pooled: 2/6 tops flagged, one early;
    4/6 bottoms within 3 sessions; 0 false calls) but it re-alarms inside declines (3.7 premature
    all-clears a year).

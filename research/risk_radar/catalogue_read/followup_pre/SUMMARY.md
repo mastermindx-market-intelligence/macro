@@ -12,13 +12,18 @@ Ledger row `rr-roff-confluence-k3-followup`. Window 2006-01-03..2019-12-31, pre 
 
 **selected after seeing D; decisive PRE read; next: desk attack seat; forward candidate only (no hold-out)**
 
+> Part (a) is provisional (placebo placement defect, PR comment 6835380019). This set was closed on
+> part (c), so the no-nomination verdict does not rest on (a).
+
+> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows (2,000 draws, seed 0). The p90 in this table are not verified until the repair.
+
 | criterion | met |
 |---|---|
-| (a) cluster share > near-turn placebo p90 at cluster level (0.370) | True |
+| (a) cluster share > near-turn placebo p90 at cluster level (0.370) | provisional, placebo under repair |
 | (b) > better reference (near) at <= false rate | True |
 | (c) > best single leg (rates_realrate) at <= false rate | False |
 
-**criteria_met:** ['a', 'b']  
+**criteria_met:** ['a', 'b']  (part (a) provisional, placebo under repair)  
 **nomination:** False
 
 ## Table — candidate, better reference, 12 single legs
@@ -46,7 +51,7 @@ Ledger row `rr-roff-confluence-k3-followup`. Window 2006-01-03..2019-12-31, pre 
 - turns scored: 471 (flagged 198), dates 2006-01-11 .. 2019-12-31
 - clusters scored: 127 (flagged 57), turn dates 2006-01-11 .. 2019-12-20
 - censored turns: 1
-- near-turn placebo p90 (cluster): 0.370; observed 0.449; 2000 valid draws
+- near-turn placebo p90 (cluster): 0.370; observed 0.449; 2000 valid draws; **not verified**: placebo not matched on alert exposure (PR comment 6835380019)
 
 ## Alert share and available legs by year (description)
 

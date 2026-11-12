@@ -15,6 +15,8 @@ Alerts are built causally on the full history from 2019-06-03 by the Macro engin
 
 ### R-off (top)
 
+> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows (2,000 draws, seed 0). The per-asset pass columns in this table (`assets_pass`, `assets_no_calls`, `clusters_pass_all_assets`, `clusters_pass_any_asset`) are not verified until the repair.
+
 | family | set | direction | role | primary_post | n_draws | seed | turns_scored | turns_flagged | turn_share | turn_lo90 | turn_hi90 | clusters_scored | clusters_flagged | cluster_share | cluster_lo90 | cluster_hi90 | median_delay_sessions | false_col | false_per_asset_year | alert_on_share | sessions_in_episode | spans | open_spans | false_calls | false_in_rebound | assets | assets_pass | assets_no_calls | clusters_pass_all_assets | clusters_pass_any_asset | catch_target_75 | catch_gap_pp | false_target_2 | censored |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | R-off | confluence_k4 | top | set | 5 | 2000 | 20261112 | 191 | 83 | 0.4346 | 0.374 | 0.497 | 45 | 23 | 0.5111 | 0.38 | 0.641 | -15 | false_risk_off_per_asset_year | 2.007 | 0.138 | 0.409 | 988 | 18 | 172 | 172 | 21 | 12 | 0 | 4 | 24 | not met | -31.5 | not met | 0 |
@@ -26,6 +28,8 @@ Alerts are built causally on the full history from 2019-06-03 by the Macro engin
 | R-off | trend_200 | top | reference (R1g) | 5 | 2000 | 20261112 | 191 | 41 | 0.2147 | 0.167 | 0.269 | 45 | 20 | 0.4444 | 0.317 | 0.577 | -1 | false_risk_off_per_asset_year | 1.248 | 0.399 | 0.409 | 988 | 18 | 107 | 107 | 21 | 7 | 5 | 6 | 24 | not met | -53.5 | met | 0 |
 
 ### R-on (bottom)
+
+> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows (2,000 draws, seed 0). The per-asset pass columns in this table (`assets_pass`, `assets_no_calls`, `clusters_pass_all_assets`, `clusters_pass_any_asset`) are not verified until the repair.
 
 | family | set | direction | role | primary_post | n_draws | seed | turns_scored | turns_flagged | turn_share | turn_lo90 | turn_hi90 | clusters_scored | clusters_flagged | cluster_share | cluster_lo90 | cluster_hi90 | median_delay_sessions | false_col | false_per_asset_year | alert_on_share | sessions_in_episode | spans | open_spans | false_calls | false_in_rebound | assets | assets_pass | assets_no_calls | clusters_pass_all_assets | clusters_pass_any_asset | catch_target_75 | catch_gap_pp | false_target_2 | censored |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -104,6 +108,8 @@ These are not sets and cannot pass. Shifted, 500 draws.
 ## 4. Sets read and alert ON share
 
 Five sets read (R-off incumbent, R-off confluence_k4, R-on incumbent, R-on confluence_k4, R-on exit_v1), each with an unshifted control that cannot pass.
+
+> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows (2,000 draws, seed 0). The per-asset pass columns in this table (`assets_pass`, `assets_no_calls`, `clusters_pass_all_assets`, `clusters_pass_any_asset`) are not verified until the repair.
 
 | family | set | alert_on_share | cluster_catch | false_per_asset_year | assets_pass | clusters_pass_all_assets |
 |---|---|---|---|---|---|---|

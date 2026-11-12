@@ -4,6 +4,8 @@ Window 2020-01-02..2023-12-29, pre 21, primary post 5 (R-off) / 10 (R-on), seed 
 
 **Every row below is seen before the set-level definition, not a nomination.** The `nomination` boolean is description, not a verdict.
 
+> Part (a) in every set below is provisional: the near-turn placebo is not matched on alert exposure (placement defect, PR comment 6835380019; on 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows, 2,000 draws, seed 0). The two confluence sets were closed on part (c), so the no-nomination verdict does not rest on (a).
+
 ## Pins
 
 - `bm_ref.py` `c5130e9e2f80c9da3ff85d66a9f3070367f02e71c10d3e411205a97f12a9f066`
@@ -33,8 +35,8 @@ Window 2020-01-02..2023-12-29, pre 21, primary post 5 (R-off) / 10 (R-on), seed 
 - better reference: **near**
 - ref dd budget: target 0.2240, achieved 0.2242
 - ref near budget: target 0.2240, achieved 0.2239
-- near-turn placebo p90 (cluster): 0.378; observed 0.333; 2000 valid draws
-- (a) > p90: **False**; (b) > better ref at <= false: **False**; (c) n/a (not a confluence set)
+- near-turn placebo p90 (cluster): 0.378; observed 0.333; 2000 valid draws; **not verified**: placebo not matched on alert exposure (PR comment 6835380019)
+- (a) > p90: **provisional, placebo under repair**; (b) > better ref at <= false: **False**; (c) n/a (not a confluence set)
 - criteria_met: `[]`; nomination (description only): **False**
 
 ### Matched threshold x per series
@@ -77,9 +79,9 @@ Window 2020-01-02..2023-12-29, pre 21, primary post 5 (R-off) / 10 (R-on), seed 
 - better reference: **near**
 - ref dd budget: target 0.1383, achieved 0.1386
 - ref near budget: target 0.1383, achieved 0.1384
-- near-turn placebo p90 (cluster): 0.400; observed 0.511; 2000 valid draws
-- (a) > p90: **True**; (b) > better ref at <= false: **True**; (c) > best single leg `rates_realrate` at <= false: **False**
-- criteria_met: `['a', 'b']`; nomination (description only): **False**
+- near-turn placebo p90 (cluster): 0.400; observed 0.511; 2000 valid draws; **not verified**: placebo not matched on alert exposure (PR comment 6835380019)
+- (a) > p90: **provisional, placebo under repair**; (b) > better ref at <= false: **True**; (c) > best single leg `rates_realrate` at <= false: **False**
+- criteria_met: `['a', 'b']`; nomination (description only): **False**; part (a) provisional, placebo under repair. This set was closed on part (c), so the no-nomination verdict does not rest on (a).
 
 ### 12 single legs alone (this family)
 
@@ -138,8 +140,8 @@ Window 2020-01-02..2023-12-29, pre 21, primary post 5 (R-off) / 10 (R-on), seed 
 - ref dd budget: target 0.2240, achieved 0.1965 — **budget capped: the >=5% bottom gate makes the candidate's ON share unreachable, so this reference runs a smaller budget than the candidate**
 - ref near budget: target 0.2240, achieved 0.1965 — **budget capped: the >=5% bottom gate makes the candidate's ON share unreachable, so this reference runs a smaller budget than the candidate**
 - note: the `dd` and `near` forms scored identically here (same cluster share and false rate); under the bottom gate `<` vs `<=` on `r` separates the two forms only at an exact tie, which the matched thresholds did not hit
-- near-turn placebo p90 (cluster): 0.583; observed 0.250; 2000 valid draws
-- (a) > p90: **False**; (b) > better ref at <= false: **False**; (c) n/a (not a confluence set)
+- near-turn placebo p90 (cluster): 0.583; observed 0.250; 2000 valid draws; **not verified**: placebo not matched on alert exposure (PR comment 6835380019)
+- (a) > p90: **provisional, placebo under repair**; (b) > better ref at <= false: **False**; (c) n/a (not a confluence set)
 - criteria_met: `[]`; nomination (description only): **False**
 
 ### Matched threshold x per series
@@ -183,8 +185,8 @@ Window 2020-01-02..2023-12-29, pre 21, primary post 5 (R-off) / 10 (R-on), seed 
 - ref dd budget: target 0.1383, achieved 0.1224 — **budget capped: the >=5% bottom gate makes the candidate's ON share unreachable, so this reference runs a smaller budget than the candidate**
 - ref near budget: target 0.1383, achieved 0.1224 — **budget capped: the >=5% bottom gate makes the candidate's ON share unreachable, so this reference runs a smaller budget than the candidate**
 - note: the `dd` and `near` forms scored identically here (same cluster share and false rate); under the bottom gate `<` vs `<=` on `r` separates the two forms only at an exact tie, which the matched thresholds did not hit
-- near-turn placebo p90 (cluster): 0.646; observed 0.438; 2000 valid draws
-- (a) > p90: **False**; (b) > better ref at <= false: **False**; (c) > best single leg `rates_realrate` at <= false: **False**
+- near-turn placebo p90 (cluster): 0.646; observed 0.438; 2000 valid draws; **not verified**: placebo not matched on alert exposure (PR comment 6835380019)
+- (a) > p90: **provisional, placebo under repair**; (b) > better ref at <= false: **False**; (c) > best single leg `rates_realrate` at <= false: **False**
 - criteria_met: `[]`; nomination (description only): **False**
 
 ### 12 single legs alone (this family)
@@ -244,8 +246,8 @@ Window 2020-01-02..2023-12-29, pre 21, primary post 5 (R-off) / 10 (R-on), seed 
 - ref dd budget: target 0.2833, achieved 0.2471 — **budget capped: the >=5% bottom gate makes the candidate's ON share unreachable, so this reference runs a smaller budget than the candidate**
 - ref near budget: target 0.2833, achieved 0.2471 — **budget capped: the >=5% bottom gate makes the candidate's ON share unreachable, so this reference runs a smaller budget than the candidate**
 - note: the `dd` and `near` forms scored identically here (same cluster share and false rate); under the bottom gate `<` vs `<=` on `r` separates the two forms only at an exact tie, which the matched thresholds did not hit
-- near-turn placebo p90 (cluster): 0.458; observed 0.271; 2000 valid draws
-- (a) > p90: **False**; (b) > better ref at <= false: **False**; (c) n/a (not a confluence set)
+- near-turn placebo p90 (cluster): 0.458; observed 0.271; 2000 valid draws; **not verified**: placebo not matched on alert exposure (PR comment 6835380019)
+- (a) > p90: **provisional, placebo under repair**; (b) > better ref at <= false: **False**; (c) n/a (not a confluence set)
 - criteria_met: `[]`; nomination (description only): **False**
 
 ### Matched threshold x per series

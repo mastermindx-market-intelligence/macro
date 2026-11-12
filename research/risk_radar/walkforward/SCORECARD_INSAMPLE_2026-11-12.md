@@ -173,6 +173,8 @@ Episode level (h21) for the HY OAS baseline (release-rule lag, corrected 2026-11
 
 ### Placebo (near-start, 300 draws; ≥5% tops)
 
+> **Placebo not matched on alert exposure** (placement defect, see PR comment 6835380019). On 2022–23 the mean placed mass was 32 of 193 sessions near highs and 125 of 193 near lows (2,000 draws, seed 0). Figures in this table are not verified until the repair.
+
 | Series | Observed | Placebo p90 | False risk-off /yr observed | Placebo median |
 |---|---:|---:|---:|---:|
 | Radar loud | 0.11 | 0.78 | 0.0 | 1.90 |
