@@ -6,6 +6,11 @@
 # which stays in the YAML.
 # Invoked as: bash scripts/ci/daily_engine_prophet_nightly.sh
 set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declares no shell:
+# The M2 PATH resolves Homebrew Bash 5.3.9, which deadlocks in heredoc_write.
+# Before the first large Python heredoc, use the macOS system Bash instead.
+if [ "$(uname -s)" = "Darwin" ] && [ "${BASH:-}" != "/bin/bash" ]; then
+    exec /bin/bash "$0" "$@"
+fi
 
 set +e
 PROPHET_BASELINE="${RUNNER_TEMP}/prophet-build-${GITHUB_RUN_ID}.before.json"

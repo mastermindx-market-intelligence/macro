@@ -2048,8 +2048,11 @@ def _run_fast_exit(tmp_path, *, board, is_session_returns: bool,
     out_file = tmp_path / "gh_output.txt"
     out_file.write_text("", encoding="utf-8")
     env = dict(os.environ, GITHUB_OUTPUT=str(out_file), RUNNER_TEMP=str(tmp_path))
+    # Homebrew Bash 5.3.9 can deadlock on large heredocs on macOS,
+    # leaving detached test shells. Pin the system Bash there.
+    bash = "/bin/bash" if sys.platform == "darwin" else "bash"
     proc = subprocess.run(
-        ["bash", "-e", "-c", STEPS[_step_index("backstop fast-exit")]["run"]],
+        [bash, "-e", "-c", STEPS[_step_index("backstop fast-exit")]["run"]],
         cwd=tmp_path, env=env, capture_output=True, text=True, timeout=120)
     parsed = dict(line.split("=", 1) for line in
                   out_file.read_text(encoding="utf-8").splitlines() if "=" in line)
