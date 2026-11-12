@@ -1,16 +1,16 @@
 {
   "schema": "altdata_brain_track_record.v1",
-  "as_of": "2026-11-11",
-  "scored_total": 11,
-  "open": 19,
+  "as_of": "2026-11-12",
+  "scored_total": 12,
+  "open": 18,
   "unscored_soft": 0,
   "expired": 0,
   "overall": {
-    "n": 11,
+    "n": 12,
     "hits": 10,
-    "misses": 1,
-    "hit_rate": 0.909,
-    "dir_accuracy": 0.909
+    "misses": 2,
+    "hit_rate": 0.833,
+    "dir_accuracy": 0.833
   },
   "by_conviction": {
     "high": {
@@ -28,20 +28,20 @@
       "dir_accuracy": 1.0
     },
     "low": {
-      "n": 9,
+      "n": 10,
       "hits": 8,
-      "misses": 1,
-      "hit_rate": 0.889,
-      "dir_accuracy": 0.889
+      "misses": 2,
+      "hit_rate": 0.8,
+      "dir_accuracy": 0.8
     }
   },
   "by_kind": {
     "rel_return": {
-      "n": 11,
+      "n": 12,
       "hits": 10,
-      "misses": 1,
-      "hit_rate": 0.909,
-      "dir_accuracy": 0.909
+      "misses": 2,
+      "hit_rate": 0.833,
+      "dir_accuracy": 0.833
     },
     "level": {
       "n": 0,
@@ -53,11 +53,11 @@
   },
   "by_regime": {
     "Reflation": {
-      "n": 10,
+      "n": 11,
       "hits": 9,
-      "misses": 1,
-      "hit_rate": 0.9,
-      "dir_accuracy": 0.9
+      "misses": 2,
+      "hit_rate": 0.818,
+      "dir_accuracy": 0.818
     },
     "Stagflation": {
       "n": 1,
@@ -67,8 +67,17 @@
       "dir_accuracy": 1.0
     }
   },
-  "calibration_note": "11 scored, hit-rate 0.909 (directional accuracy 0.909).",
+  "calibration_note": "12 scored, hit-rate 0.833 (directional accuracy 0.833).",
   "recent": [
+    {
+      "id": "2026-08-19-T-brain",
+      "subject": "T alt-data brain AVOID",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0961,
+      "check_by": "2026-11-11"
+    },
     {
       "id": "2026-08-18-LUV-brain",
       "subject": "LUV alt-data brain WATCH",
@@ -149,17 +158,8 @@
       "outcome": "hit",
       "realized": 0.2249,
       "check_by": "2026-10-20"
-    },
-    {
-      "id": "2026-08-05-QCOM-brain",
-      "subject": "QCOM alt-data brain AVOID",
-      "lean": "underweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.0812,
-      "check_by": "2026-10-07"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 11 \u6761\uff0c\u547d\u4e2d\u7387 0.909\uff08\u65b9\u5411\u51c6\u786e\u7387 0.909\uff09\u3002",
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 12 \u6761\uff0c\u547d\u4e2d\u7387 0.833\uff08\u65b9\u5411\u51c6\u786e\u7387 0.833\uff09\u3002",
   "note": "Alt-data brain theses graded vs SPY. The actionable axis is calibrated by this track record; conviction defers to it."
 }

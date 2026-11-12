@@ -1,12 +1,12 @@
 {
   "schema": "shadow_audit.v1",
-  "n_booked": 8458,
+  "n_booked": 8586,
   "booked_dates": [
     "2026-06-18",
-    "2026-11-06"
+    "2026-11-11"
   ],
-  "asof": "2026-11-10",
-  "n_matured": 2993,
+  "asof": "2026-11-11",
+  "n_matured": 3028,
   "by_horizon": {
     "h21": {
       "ic": {
@@ -45,24 +45,24 @@
     },
     "h63": {
       "ic": {
-        "mean_ic": 0.2007,
-        "ic_vol": 0.1796,
-        "ic_ir": 1.118,
-        "ic_ir_ann": 2.236,
+        "mean_ic": 0.1971,
+        "ic_vol": 0.1776,
+        "ic_ir": 1.11,
+        "ic_ir_ann": 2.22,
         "t_hac": null,
         "p_hac": null,
-        "hit": 0.793,
-        "n": 29,
-        "hac_lags": 28,
+        "hit": 0.8,
+        "n": 30,
+        "hac_lags": 29,
         "hac_lags_requested": 63,
-        "t_suppressed": "n=29 cannot carry the lag-63 overlap correction (needs n>=189; Bartlett variance degenerates as lag approaches n)"
+        "t_suppressed": "n=30 cannot carry the lag-63 overlap correction (needs n>=189; Bartlett variance degenerates as lag approaches n)"
       },
-      "n_dates": 29,
-      "n_obs": 866,
+      "n_dates": 30,
+      "n_obs": 901,
       "n_indep_windows": 1,
       "span": [
         "2026-06-18",
-        "2026-08-12"
+        "2026-08-13"
       ],
       "verdict": "building",
       "clark_west": {
@@ -71,12 +71,12 @@
     }
   },
   "coverage": {
-    "n_tickers_booked": 1382,
-    "n_tickers_resolvable": 432,
+    "n_tickers_booked": 1387,
+    "n_tickers_resolvable": 435,
     "note": "booked names absent from the free price panel never mature \u2014 part of the survivorship bound, not a maturation lag (prereg \u00a74.3)"
   },
   "price_basis": "raw closes \u2014 price-only forward return, not the total return the prereg names; dividend payers are penalized (tests/test_price_basis_graders.py)",
   "interpretation": "Realized forward cross-sectional IC of the FROZEN stock score per horizon. Empty/thin until horizons elapse. Honest prior: likely \u22480 \u2014 and knowing that is the institutional win. Verdicts stay 'building' until the FROZEN pre-registration's \u00a73 sample floor (research/SHADOW_BOOK_PREREGISTRATION.md).",
   "survivorship": "OPTIMISTIC bound \u2014 free prices serve listed names only.",
-  "generated_utc": "2026-11-11T12:32:14+00:00"
+  "generated_utc": "2026-11-12T13:56:22+00:00"
 }
