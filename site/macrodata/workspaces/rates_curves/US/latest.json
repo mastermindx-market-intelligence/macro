@@ -93,12 +93,8 @@
       "zh": null
     },
     "coverage_ratio": 1.0,
-    "degraded": [
-      "iorb"
-    ],
-    "reasons": [
-      "worst_required_source_freshness=SOURCE_FAILED"
-    ],
+    "degraded": [],
+    "reasons": [],
     "required": [
       {
         "component_id": "us3m",
@@ -258,7 +254,7 @@
       },
       {
         "component_id": "iorb",
-        "freshness": "SOURCE_FAILED",
+        "freshness": "CURRENT",
         "label": {
           "en": "Interest on Reserve Balances node (iorb)",
           "zh": "Interest on Reserve Balances节点（iorb）"
@@ -266,7 +262,7 @@
         "null_reason": null,
         "required": true,
         "source_asof": "2026-11-12",
-        "status": "PARTIAL"
+        "status": "PRESENT"
       },
       {
         "component_id": "us1y",
@@ -329,8 +325,8 @@
         "status": "PRESENT"
       }
     ],
-    "state": "SOURCE_FAILED",
-    "worst_freshness": "SOURCE_FAILED"
+    "state": "CURRENT",
+    "worst_freshness": "CURRENT"
   },
   "axes": {
     "items": []
@@ -376,8 +372,8 @@
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "rates_curves-US-35e39d8b0685c231"
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "rates_curves-US-d5d650d24dd0f324"
   },
   "drivers": {
     "balance_sheet": [
@@ -512,11 +508,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-11T09:12:14Z",
+    "built_at": "2026-11-12T08:15:53Z",
     "calculation_as_of": "2026-11-12",
-    "code_version": "497d83de7c83f5139ea76bdb0a151506aebcbede",
-    "content_sha256": "d5d650d24dd0f3248a97da293866acece017be8c84603467b3e4fb6a664dddab",
-    "generation_id": "rates_curves-US-d5d650d24dd0f324",
+    "code_version": "565791e623bcfdba25bba6f5a0cc0482001030a5",
+    "content_sha256": "9e68041783d0353ac6ab20f4cedddcd316600e22874c78e41e354712d572c903",
+    "generation_id": "rates_curves-US-9e68041783d0353a",
     "producer": "engine.market_os.macro_workspaces.rates_curves",
     "rendered_at": null
   },
@@ -580,7 +576,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -602,7 +598,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -625,7 +621,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -649,7 +645,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -672,7 +668,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -694,7 +690,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -717,7 +713,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -739,7 +735,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -761,7 +757,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -783,7 +779,7 @@
           "evidence_breadth": "HIGH",
           "method_stability": "HIGH",
           "revision_risk": "LOW",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -1469,7 +1465,7 @@
         "definition_id": "fred.IORB.iorb",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_tighter_policy_stance",
-        "freshness": "SOURCE_FAILED",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "iorb_level",
         "model_version": "rates_curves.compose.v1",
@@ -1910,7 +1906,7 @@
         "definition_id": "fred.EFFR - fred.IORB",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_leg_a_trading_rich_to_leg_b",
-        "freshness": "SOURCE_FAILED",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "corridor_effr_minus_iorb_bp",
         "model_version": "rates_curves.compose.v1",
@@ -1984,7 +1980,7 @@
         "definition_id": "fred.SOFR - fred.IORB",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_leg_a_trading_rich_to_leg_b",
-        "freshness": "SOURCE_FAILED",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "corridor_sofr_minus_iorb_bp",
         "model_version": "rates_curves.compose.v1",
@@ -5119,7 +5115,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "SOURCE_FAILED",
+        "freshness": "CURRENT",
         "label": {
           "en": "Interest on Reserve Balances (IORB, via FRED)",
           "zh": "Interest on Reserve Balances（IORB，经FRED）"
