@@ -386,3 +386,57 @@ input history reaches far enough back for fold 1 without gaps.
 - PRO-RUN D (critique of v2's walk-forward design: is walk-forward refit with this little history
   informative, and what would make it more so): to be sent.
 - Each point will be recorded here as accepted / rejected / deferred with the reason.
+
+---
+
+## 12. Scorecard, shared code and the challenger rule (ruling 2026-11-12, second)
+
+The Chairman's bar: 43.8% against a 17.6% base is not world class. Refitting today's constants
+will not reach it, so accuracy becomes a research problem with the Radar as the incumbent.
+**The research desk owns discovery. This programme owns the incumbent, the scorecard and the
+installation path.**
+
+### 12.1 Scorecard (built: `engine/risk_radar_eval/scorecard.py`)
+
+One function scores any daily alert series on identical terms:
+- budget (share of days on);
+- day-level precision/lift (the definition behind the 43.8% figure);
+- episode level at ≥5/7/10% drawdowns and h = 3/5/10/21:
+  - caught before onset;
+  - caught by breach;
+  - median lead;
+  - alert runs split into in-episode, early-true and false alarms;
+  - false alarms per year;
+- h21 probability calibration (Brier skill, reliability bins).
+
+The first in-sample reference is at `research/risk_radar/walkforward/SCORECARD_INSAMPLE_2026-11-12.md`.
+Its headline: the loud Radar caught **0 of 9** ≥5% episodes before onset since 2020. All 25 of
+its loud runs began inside an episode already under way, so it is a confirmation signal. At a
+smaller budget, HY OAS velocity alone matches its day-level precision and leads the 10% breaches
+by 17 sessions against 3.
+
+### 12.2 Shared label and input code (built: `engine/risk_radar_eval/`)
+
+- `labels.py`: SPY total-return day-level labels and drawdown episodes. Every call requires an
+  explicit `outcomes_through`. Scoring at or after 2024-01-02 is refused unless declared the
+  incumbent's seen history.
+- `inputs.py`: the incumbent's leg panel (the live `leading_signals()`), gate components and the
+  fixed-rule baselines.
+- Tests are in `tests/test_risk_radar_eval.py`.
+
+The research desk imports these, so a challenger is scored exactly as the incumbent is.
+
+### 12.3 Challenger rule
+
+A candidate replaces or joins the fitted composite only if it beats the walk-forward incumbent
+on the shared scorecard, at the same alert budget, through the same written fitting procedure
+(folds, embargo, objective, search discipline). No candidate enters the live engine any other
+way. For challengers, 2024-01-02 onward stays sealed. A pass makes the candidate eligible for a
+new version (§3.5), whose own forward record then runs from its freeze. Paper-only throughout.
+
+### 12.4 Change to slice 1
+
+Slice 1 now also ships the scorecard and shared code (done on the branch, unmerged). The
+objective in the fitting procedure moves from day-level precision to **episode recall by breach
+at a fixed budget**; see `research/risk_radar/walkforward/FITTING_PROCEDURE_DRAFT.md`. This
+supersedes the objective stated in §3.2.
