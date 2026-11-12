@@ -36,7 +36,7 @@ from engine.theme_graph.membership_evidence import (  # noqa: E402
 )
 
 ROOT = Path(__file__).resolve().parent.parent
-_ROLES = ("component_supplier", "platform_owner")
+_ROLES = ("component_supplier", "platform_owner", "operator")
 
 
 def _default_code_version() -> str:
@@ -52,9 +52,30 @@ def _default_code_version() -> str:
 
 def _cmd_propose(args: argparse.Namespace) -> int:
     code_version = args.code_version or _default_code_version()
+    disclosure_reader = None
+    exposure_role = None
+    profit_driver = None
+    if args.segment_packet:
+        # Explicit deployment-owned segment packet selection, exactly the way
+        # CommittedDisclosureSource(sec_supplier_paths=...) selects a supplier
+        # packet: no discovery, no default activation.
+        from engine.company_intelligence import issuer_disclosure_owner as owner
+        source = owner.CommittedDisclosureSource(ROOT, sec_segment_paths=tuple(args.segment_packet))
+
+        def disclosure_reader(root, cv):
+            return source.snapshot()
+
+        exposure_role = args.exposure_role
+        profit_driver = args.profit_driver
+    elif args.exposure_role is not None or args.profit_driver is not None:
+        raise ActivityAdmissionRefusal(
+            "EXPOSURE_SPECIES_MISMATCH",
+            "--exposure-role/--profit-driver require --segment-packet")
     evidence = build_activity_membership_evidence(
         issuer_node_id=args.issuer, target_theme_id=args.theme, role=args.role,
-        knowledge_cutoff=args.knowledge_cutoff, code_version=code_version, root=ROOT)
+        knowledge_cutoff=args.knowledge_cutoff, code_version=code_version, root=ROOT,
+        disclosure_reader=disclosure_reader,
+        exposure_role=exposure_role, profit_driver=profit_driver)
     row = probation.make_activity_membership_proposal(evidence, created=args.created)
     result = probation.append_activity_proposals([row], args.ledger)
     print(f'{{"proposal_id": "{row["proposal_id"]}", "status": "{row["status"]}", '
@@ -100,6 +121,15 @@ def main(argv: list[str] | None = None) -> int:
     propose.add_argument("--code-version", default=None,
                          help="source code version (default: git rev-parse HEAD)")
     propose.add_argument("--ledger", default=None, help=f"default: {probation.ACTIVITY_PROPOSALS_PATH}")
+    propose.add_argument("--segment-packet", nargs=3, default=None,
+                         metavar=("SPEC", "POLICY", "THEME_SOURCES"),
+                         help="explicit protected segment packet paths (owner decision, "
+                              "source-use policy, theme_sources); selects the "
+                              "principal_business_activity species, no default activation")
+    propose.add_argument("--exposure-role", default=None, choices=("primary", "secondary"),
+                         help="segment only: the proposer's exposure role judgment")
+    propose.add_argument("--profit-driver", action=argparse.BooleanOptionalAction, default=None,
+                         help="segment only: whether the disclosed line is a profit driver")
     propose.set_defaults(func=_cmd_propose)
 
     curate = sub.add_parser("curate", help="append one curator decision for a PROPOSED row")

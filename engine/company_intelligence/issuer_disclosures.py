@@ -27,10 +27,16 @@ EDITION_SCHEMA = "company_intelligence.issuer_disclosure_edition/v1"
 FACT_SCHEMA = "company_intelligence.product_integration_fact/v1"
 SEC_EDITION_SCHEMA = "company_intelligence.sec_disclosure_edition/v1"
 SUPPLIER_FACT_SCHEMA = "company_intelligence.disclosed_supplier_fact/v1"
+SEGMENT_FACT_SCHEMA = "company_intelligence.segment_activity_fact/v1"
 SEC_SUPPLIER_PURPOSE = "private_company_intelligence_context"
 SEC_SUPPLIER_AUDIENCE = "company_intelligence_entitled"
 EDITION_SCHEMAS = frozenset({EDITION_SCHEMA, SEC_EDITION_SCHEMA})
-FACT_SCHEMAS = frozenset({FACT_SCHEMA, SUPPLIER_FACT_SCHEMA})
+FACT_SCHEMAS = frozenset({FACT_SCHEMA, SUPPLIER_FACT_SCHEMA, SEGMENT_FACT_SCHEMA})
+# The annual report (an amendment counts) is the only form that admits a segment
+# activity fact; any other form is refused. The pinned EDGAR manifest's own form
+# must additionally equal this value at source replay.
+SEGMENT_FORM_TYPES = frozenset({"10-K", "10-K/A", "20-F", "20-F/A"})
+SEGMENT_SHARE_SCOPES = frozenset({"segment", "product_line"})
 MAX_OBJECT_BYTES = 16 * 1024
 MAX_SOURCE_BYTES = 1024 * 1024
 MAX_SEC_SOURCE_BYTES = 4 * 1024 * 1024
@@ -125,6 +131,17 @@ def fact_id(disclosure: str, claim_key: str) -> str:
     return "integration:" + hashlib.sha256(json.dumps(material, separators=(",", ":")).encode()).hexdigest()
 
 
+def activity_fact_id(disclosure: str, claim_key: str) -> str:
+    """Stable native identity for a segment-activity fact (``activity:`` prefix).
+
+    The ``integration:`` identity above is left untouched for the existing two
+    species; the activity route gets its own prefix so a segment fact can never
+    collide with or impersonate a product-integration or supplier fact.
+    """
+    material = [_identifier(disclosure), _identifier(claim_key)]
+    return "activity:" + hashlib.sha256(json.dumps(material, separators=(",", ":")).encode()).hexdigest()
+
+
 @dataclass(frozen=True)
 class Reference:
     schema: str
@@ -203,6 +220,8 @@ def validate_edition(value: dict) -> Reference:
 
 def validate_fact(value: dict) -> Reference:
     _require(type(value) is dict, "SCHEMA_INVALID")
+    if value.get("schema") == SEGMENT_FACT_SCHEMA:
+        return _validate_segment_fact(value)
     supplier = value.get("schema") == SUPPLIER_FACT_SCHEMA
     _closed(value, {"schema", "fact_id", "claim_key", "disclosure_id", "edition",
                     "revision", "previous", "review_revision", "subject_id", "object_id",
@@ -236,6 +255,81 @@ def validate_fact(value: dict) -> Reference:
         _require(q["direction"] == "object_supplies_subject" and q["identity_mode"] == "current", "SUPPLIER_QUALIFICATION_INVALID")
         _require(_instant(q["identity_observed_at"]) <= adopted <= datetime.now(timezone.utc), "SUPPLIER_ADOPTION_CLOCK_INVALID")
         _digest(q["evidence_revision"])
+    return _ref(value)
+
+
+def _segment_span(value: object) -> dict:
+    """A required, non-zero-length byte span; missing or empty is ``SPAN_REQUIRED``."""
+    _require(type(value) is dict, "SPAN_REQUIRED")
+    span = _closed(value, {"start_byte", "end_byte", "text_sha256"})
+    _integer(span["start_byte"], 0, MAX_SEC_SOURCE_BYTES)
+    _require(type(span["end_byte"]) is int and span["end_byte"] > span["start_byte"], "SPAN_REQUIRED")
+    _integer(span["end_byte"], span["start_byte"] + 1, MAX_SEC_SOURCE_BYTES)
+    _digest(span["text_sha256"])
+    return span
+
+
+def _segment_number(value: object, code: str, *, minimum: float | None = None,
+                    exclusive: bool = False) -> None:
+    """A disclosed magnitude: null when undisclosed, never a fabricated zero."""
+    if value is None:
+        return
+    _require(type(value) in (int, float) and not isinstance(value, bool), code)
+    if minimum is not None:
+        _require((value > minimum) if exclusive else (value >= minimum), code)
+
+
+def _validate_segment_fact(value: dict) -> Reference:
+    """The ``segment_activity`` species: one issuer's own disclosed business line.
+
+    Single-party (the subject is the issuer itself), so there is no object,
+    direction or supplier qualification. The annual-report form gate and the
+    required activity span are the species-specific admission boundaries; the
+    exposure magnitudes stay null when the filing does not disclose them.
+    """
+    # The activity span is a required admission boundary: a missing span key is
+    # SPAN_REQUIRED, not a generic closed-set mismatch (the closed-set check below
+    # still governs every other field).
+    _require("span" in value, "SPAN_REQUIRED")
+    _closed(value, {"schema", "fact_id", "claim_key", "disclosure_id", "edition",
+                    "revision", "previous", "review_revision", "subject_id",
+                    "subject_identity", "kind", "lifecycle", "form_type", "accession",
+                    "disclosed_line", "share_scope", "revenue", "revenue_denominator",
+                    "profit", "profit_denominator", "profit_measure", "fiscal_year",
+                    "span", "revenue_span", "known_at"})
+    _require(value["schema"] == SEGMENT_FACT_SCHEMA, "SCHEMA_INVALID")
+    _require(value["fact_id"] == activity_fact_id(value["disclosure_id"], value["claim_key"]), "FACT_ID_MISMATCH")
+    _reference(value["edition"], SEC_EDITION_SCHEMA)
+    _integer(value["revision"], 1, MAX_REVISIONS)
+    _require((value["revision"] == 1) == (value["previous"] is None), "PREDECESSOR_REQUIRED")
+    if value["previous"] is not None:
+        _reference(value["previous"], value["schema"])
+    _digest(value["review_revision"])
+    _digest(value["subject_identity"])
+    _identifier(value["subject_id"])
+    _require((value["kind"], value["lifecycle"]) == ("segment_activity", "reported"), "FACT_SPECIES_INVALID")
+    _require(type(value["form_type"]) is str and value["form_type"] in SEGMENT_FORM_TYPES,
+             "SEGMENT_FORM_NOT_ADMITTED")
+    _require(type(value["accession"]) is str
+             and re.fullmatch(r"[0-9]{10}-[0-9]{2}-[0-9]{6}", value["accession"]) is not None,
+             "SEGMENT_ACCESSION_INVALID")
+    line = value["disclosed_line"]
+    _require(type(line) is str and 0 < len(line) <= 256 and len(line.encode("utf-8")) <= 256
+             and line.strip() == line, "FACT_SCOPE_INVALID")
+    _require(type(value["share_scope"]) is str and value["share_scope"] in SEGMENT_SHARE_SCOPES,
+             "SEGMENT_SHARE_SCOPE_INVALID")
+    _segment_number(value["revenue"], "SEGMENT_EXPOSURE_INVALID", minimum=0)
+    _segment_number(value["revenue_denominator"], "SEGMENT_EXPOSURE_INVALID", minimum=0, exclusive=True)
+    _segment_number(value["profit"], "SEGMENT_EXPOSURE_INVALID")
+    _segment_number(value["profit_denominator"], "SEGMENT_EXPOSURE_INVALID", minimum=0, exclusive=True)
+    measure = value["profit_measure"]
+    _require(measure is None or (type(measure) is str and 0 < len(measure) <= 128 and measure.strip() == measure),
+             "SEGMENT_EXPOSURE_INVALID")
+    _integer(value["fiscal_year"], 1900, 2200)
+    _segment_span(value["span"])
+    if value["revenue_span"] is not None:
+        _segment_span(value["revenue_span"])
+    _instant(value["known_at"])
     return _ref(value)
 
 

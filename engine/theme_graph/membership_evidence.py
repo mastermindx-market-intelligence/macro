@@ -1483,11 +1483,17 @@ def render_microtheme_curator_readiness_markdown(report: Mapping[str, Any]) -> s
 # expression or a prepared coverage profile is never an admission basis.
 
 ACTIVITY_EVIDENCE_SCHEMA = "gmi.activity_membership_evidence/v1"
-ADMITTED_ACTIVITY_SPECIES = frozenset({"planned_product_integration"})
-ACTIVITY_ROLES = frozenset({"component_supplier", "platform_owner"})
+ADMITTED_ACTIVITY_SPECIES = frozenset({"planned_product_integration", "principal_business_activity"})
+ACTIVITY_ROLES = frozenset({"component_supplier", "platform_owner", "operator"})
 ACTIVITY_CROSSWALK_PATH = "config/theme_crosswalk.yml"
 ACTIVITY_SOURCE_OWNER = "engine.company_intelligence.issuer_disclosure_owner"
-_ACTIVITY_SPECIES_BY_FACT = {("product_integration", "planned"): "planned_product_integration"}
+_ACTIVITY_SPECIES_BY_FACT = {("product_integration", "planned"): "planned_product_integration",
+                             ("segment_activity", "reported"): "principal_business_activity"}
+#: House rule v1: a disclosed line is a member only if it is a reportable segment
+#: (share_scope == "segment") OR its revenue share is at least this threshold.
+_ACTIVITY_HOUSE_RULE_MIN_SHARE = 0.10
+_ACTIVITY_EXPOSURE_BASIS = "house_rule_v1"
+_ACTIVITY_EXPOSURE_ROLES = frozenset({"primary", "secondary"})
 _NATIVE_BASIS = {"kind": "native_disclosure_fact"}
 _HINT_KEYS = frozenset({"identity_hint_state", "possible_current_issuer_refs"})
 
@@ -1612,7 +1618,9 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
                                        role: str, knowledge_cutoff: str, code_version: str,
                                        root: Path = ROOT, identity_reader=None,
                                        disclosure_reader=None,
-                                       basis: Mapping[str, Any] | None = None) -> dict[str, Any]:
+                                       basis: Mapping[str, Any] | None = None,
+                                       exposure_role: str | None = None,
+                                       profit_driver: bool | None = None) -> dict[str, Any]:
     """Bind one native disclosed activity to one micro-theme as proposal evidence.
 
     Refuses (``ActivityAdmissionRefusal.code``) rather than guessing: a name-prefix
@@ -1622,6 +1630,14 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
     ambiguous or mismatched issuer identity; a target that is not one current
     micro-theme definition; an unadmitted role. The result is evidence only:
     graph-membership use is NOT_GRANTED because no source-purpose ruling grants it.
+
+    For the ``principal_business_activity`` species the evidence also carries a
+    closed ``exposure`` block. Its shares are computed from the owner fact
+    (revenue / revenue_denominator), never from caller numbers; ``exposure_role``
+    (primary or secondary) and ``profit_driver`` are the proposer's judgments and
+    are required for that species only. House rule v1 admits a line only if it is a
+    reportable segment or its revenue share is >= 0.10, else
+    ``EXPOSURE_BELOW_HOUSE_RULE``.
     """
     if basis is not None:
         if isinstance(basis, Mapping) and _HINT_KEYS & set(basis):
@@ -1683,7 +1699,63 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
     from engine.company_intelligence import issuer_disclosure_owner as owner
     from engine.theme_graph import rights
 
-    return {
+    exposure = None
+    if species == "principal_business_activity":
+        # The segment species is the issuer's own disclosed line: role operator,
+        # lifecycle current, segment-only scope, and a pinned exposure block.
+        if role != "operator":
+            raise ActivityAdmissionRefusal("ROLE_NOT_ADMITTED", repr(role))
+        if exposure_role not in _ACTIVITY_EXPOSURE_ROLES:
+            raise ActivityAdmissionRefusal("EXPOSURE_ROLE_NOT_ADMITTED", repr(exposure_role))
+        if type(profit_driver) is not bool:
+            raise ActivityAdmissionRefusal("EXPOSURE_PROFIT_DRIVER_INVALID", repr(profit_driver))
+        revenue, revenue_denominator = fact.get("revenue"), fact.get("revenue_denominator")
+        revenue_share = (revenue / revenue_denominator
+                         if revenue is not None and revenue_denominator is not None else None)
+        profit, profit_denominator = fact.get("profit"), fact.get("profit_denominator")
+        profit_share = (profit / profit_denominator
+                        if profit is not None and profit_denominator is not None else None)
+        share_scope = fact["share_scope"]
+        # House rule v1: a reportable segment OR a revenue share >= 0.10. A minor
+        # line stays in research lists, never proposed as a member.
+        if share_scope != "segment" and not (revenue_share is not None
+                                             and revenue_share >= _ACTIVITY_HOUSE_RULE_MIN_SHARE):
+            raise ActivityAdmissionRefusal(
+                "EXPOSURE_BELOW_HOUSE_RULE",
+                f"{fact['disclosed_line']!r} share_scope={share_scope!r} revenue_share={revenue_share!r}")
+        scope = {"segment": {"value": fact["disclosed_line"], "state": "KNOWN"}}
+        lifecycle = "current"
+        exposure = {
+            "basis": _ACTIVITY_EXPOSURE_BASIS,
+            "role": exposure_role,
+            "profit_driver": profit_driver,
+            "disclosed_line": fact["disclosed_line"],
+            "share_scope": share_scope,
+            "revenue_share": revenue_share,
+            "revenue_denominator": revenue_denominator,
+            "profit_share": profit_share,
+            "profit_denominator": profit_denominator,
+            "profit_measure": fact.get("profit_measure"),
+            "fiscal_year": fact["fiscal_year"],
+            "accession": fact["accession"],
+        }
+    else:
+        # planned_product_integration: unchanged scope/lifecycle; operator and the
+        # segment-only exposure judgments are not admitted for this species.
+        if role == "operator":
+            raise ActivityAdmissionRefusal("ROLE_NOT_ADMITTED", repr(role))
+        if exposure_role is not None or profit_driver is not None:
+            raise ActivityAdmissionRefusal("EXPOSURE_SPECIES_MISMATCH",
+                                           "exposure judgments are segment-only")
+        scope = {
+            "product": fact["product"],
+            "platform": fact["platform"],
+            "counterparty_issuer_id": fact["object_id"],
+            "segment": {"value": None, "state": "UNDISCLOSED"},
+        }
+        lifecycle = fact["lifecycle"]
+
+    evidence = {
         "schema": ACTIVITY_EVIDENCE_SCHEMA,
         "issuer": {
             "node_id": node,
@@ -1695,14 +1767,9 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
             "identity_read_sha256": hashlib.sha256(_canonical(row).encode()).hexdigest(),
         },
         "species": species,
-        "scope": {
-            "product": fact["product"],
-            "platform": fact["platform"],
-            "counterparty_issuer_id": fact["object_id"],
-            "segment": {"value": None, "state": "UNDISCLOSED"},
-        },
+        "scope": scope,
         "role": role,
-        "lifecycle": fact["lifecycle"],
+        "lifecycle": lifecycle,
         "endpoints": {"source_node_id": node, "target_node_id": target["theme_id"],
                       "direction": "SOURCE_TO_TARGET"},
         "target_definition": target,
@@ -1745,3 +1812,6 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
             "served_generation": {"value": None, "precision": None, "state": "NOT_APPLICABLE"},
         },
     }
+    if exposure is not None:
+        evidence["exposure"] = exposure
+    return evidence
