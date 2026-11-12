@@ -2821,7 +2821,7 @@ html[data-lang="zh"] .hub-seg .l-zh{display:inline}
 .globe-deck{gap:0;margin-bottom:32px}
 .gd-topline{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 0 0;color:var(--muted);font-size:var(--fs-label)}
 .gd-topline h2{font:500 var(--fs-label)/1.5 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--muted)}
-.gd-stage{height:clamp(360px,54svh,590px);min-height:0;isolation:isolate;overflow:hidden;width:100%;contain:layout}
+.gd-stage{height:clamp(340px,46svh,590px);min-height:0;isolation:isolate;overflow:hidden;width:100%;contain:layout}
 .gd-stage::before{content:'';position:absolute;inset:4% 14%;z-index:-1;pointer-events:none;
  background:radial-gradient(ellipse at 50% 58%,color-mix(in srgb,var(--info) 8%,transparent),transparent 67%)}
 .gd-stage::after{content:'';position:absolute;bottom:3%;left:30%;right:30%;height:10%;z-index:-1;pointer-events:none;
@@ -2869,7 +2869,7 @@ html[data-lang="zh"] .hub-seg .l-zh{display:inline}
 .gd-status[hidden],.globe-deck[data-globe-state="ready"] .gd-loader,.globe-deck[data-globe-state="error"] .gd-loader{display:none}
 .globe-deck:not([data-globe-state="ready"]) .gd-canvas,.globe-deck:not([data-globe-state="ready"]) .gd-islands{visibility:hidden}
 .gd-cta{display:flex;justify-content:center;padding:22px 0 0}
-.gd-scroll{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:10px 18px;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-btn,10px);font:600 var(--fs-sm)/1.4 var(--font-ui);cursor:pointer}
+.gd-scroll{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:10px 18px;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-btn,10px);font:600 var(--fs-sm)/1.4 var(--font-ui);cursor:pointer;text-decoration:none}
 .gd-scroll:hover{background:var(--panel2)}
 html.gd-parked .globe-deck *, .globe-deck[data-motion="paused"] *{animation-play-state:paused!important}
 html[data-mmx-shared-shell="1"] .hub-page .h{margin-top:18px}
@@ -2924,7 +2924,7 @@ _GLOBE_DECK_DOM = r"""<section class="globe-deck command" data-globe-state="stat
     <ul class="gd-legend" aria-label="Markets / 市场列表">__LEGEND__</ul>
     <div class="gd-legend-note"><div class="gd-legend-key" aria-label="Regime colors / 周期颜色"><span class="q1"><i aria-hidden="true"></i><span class="l-en">Goldilocks</span><span class="l-zh">理想增长</span></span><span class="q2"><i aria-hidden="true"></i><span class="l-en">Reflation</span><span class="l-zh">再通胀</span></span><span class="q3"><i aria-hidden="true"></i><span class="l-en">Stagflation</span><span class="l-zh">滞胀</span></span><span class="q4"><i aria-hidden="true"></i><span class="l-en">Growth scare</span><span class="l-zh">增长恐慌</span></span></div><span><span class="l-en">Data dates and sources in each market</span><span class="l-zh">数据日期与来源见各市场看板</span></span></div>
     <noscript><p><span class="l-en">Open a market above to explore its dashboard. Enable JavaScript for the interactive globe.</span><span class="l-zh">选择上方市场访问看板。启用 JavaScript 后可使用交互地球仪。</span></p><style>.gd-loader,.gd-controls{display:none}.gd-stage{height:0}</style></noscript>
-    <div class="gd-cta"><button class="gd-scroll" type="button" aria-label="Explore markets / 探索市场"><span class="l-en">Explore the dashboards</span><span class="l-zh">探索市场看板</span><span aria-hidden="true">↓</span></button></div>
+    <div class="gd-cta"><a class="gd-scroll" href="#hub-views" aria-label="Explore markets / 探索市场"><span class="l-en">Explore the dashboards</span><span class="l-zh">探索市场看板</span><span aria-hidden="true">↓</span></a></div>
   </section>"""
 
 _HUB_SEG_HTML = """<div class="hub-seg" role="group" aria-label="Sections / 版块">
@@ -3892,7 +3892,7 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
         'if(sec){sec.style.animation="none";void sec.offsetWidth;sec.style.animation="";}'
         '});});'
         'var sb=document.querySelector(".gd-scroll");'
-        'if(sb){sb.addEventListener("click",function(){'
+        'if(sb){sb.addEventListener("click",function(e){e.preventDefault();'
         'var to=hv.getBoundingClientRect().top+(window.pageYOffset||document.documentElement.scrollTop)-12;'
         'var rm=false;try{rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}'
         'if(rm){window.scrollTo(0,to);}else{try{window.scrollTo({top:to,behavior:"smooth"});}catch(e){window.scrollTo(0,to);}}'

@@ -135,3 +135,10 @@ deployment proof.
 - Paper inspect succeeded, but its active document is AERLOR
   `01M6JNN71ZN4867VJZ83PPXQZ0`, not the Mastermind target. No Paper edit attempted.
 - Implementation and product acceptance are not yet established.
+
+
+### 2026-11-12 implementation checkpoint
+
+GitHub-native carrier: `sol/web-landing-globe-shell-20261112-c2`. Initial implementation commit `35daf5a641de10e59b183a0c880cf471af6e3f21` was read back at exact blob content. The existing D3 canvas now has a globe-led Home layout, explicit controls and fallback dashboard anchors; the existing shared-shell visibility event owns suspension. No shell protocol, data math, auth, or provider changes.
+
+Focused verification: syntax checks; seven executable Node lifecycle cases (shell/document suspension, reduced motion with interactive repaint, container resize/focus, failed fetch retry, missing canvas, quality-governor single-loop ownership, and timeout); five retained tooltip/mobile/source checks through pytest. The first actual dark desktop preview renders. Full theme/locale/viewport and hover/focus captures, final source self-check, required CI, qualified merge-on-green enrollment, and production proof remain owed. No PR is armed. Paper's artboard mutation contract is held in this connection; the current Paper file is unrelated, so no Paper content was edited. The working browser preview is the design surface.

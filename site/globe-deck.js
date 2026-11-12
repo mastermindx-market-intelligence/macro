@@ -42,7 +42,6 @@
   var _userMotion = true, _shellVisible = true, _pageSuspended = false, _contextLost = false;
   var _showRoutes = false, _tourEnabled = false;
   try { if (localStorage.getItem("fx") === "min") { _userMotion = false; motionOK = false; } } catch (e) {}
-  var touchlessMobile = !!(window.matchMedia && matchMedia("(hover: none) and (pointer: coarse)").matches);
   var isDark = function () { return document.documentElement.getAttribute("data-theme") !== "light"; };
 
   // ---- visibility & quality state ------------------------------------------
@@ -234,6 +233,7 @@
     var rect = stage.getBoundingClientRect();
     _stageHasSize = rect.width > 0 && rect.height > 0;
     if (!_stageHasSize || _contextLost) { _stopFrame(); return; }
+    var previousFit = fitScale;
     var zoom = fitScale > 0 ? scale / fitScale : 1;
     W = Math.max(200, Math.floor(rect.width)); H = Math.max(240, Math.floor(rect.height));
     // Q-governed dpr: tier 2=full, 1=mid, 0=low
@@ -259,13 +259,14 @@
                                  // canvas rect at the DEFAULT zoom (0.43*1.13 = 0.486 < 0.5),
                                  // so it's never cut off by the canvas edge — bigger hero globe
     fitScale = R; scale = R * Math.max(0.8, Math.min(1.3, zoom));
+    if (flying && previousFit > 0) { flying.s0 *= R / previousFit; flying.s1 *= R / previousFit; }
     apply();
     // assign glowPath now that projection is configured
     glowPath = glowCtx ? d3.geoPath(projection, glowCtx) : null;
     // invalidate gradient caches after resize (W/H/scale changed)
     _atmoKey = null; _oceanKey = null;
     if (ready && !_skipSizeRender) render(performance.now());   // repaint + reposition islands on resize even when paused
-    if (selected && ready) showTip(byCC[selected], null, null, true, false, true);
+    if (selected && ready) positionTip(null, null, true, false, true);
     _requestFrame();
   }
   function apply() { projection.rotate([rot[0], rot[1], 0]).scale(scale).translate([W / 2, H / 2]); clipHit(); }
@@ -1016,7 +1017,7 @@
       rot[0] += 0.035 * spd * (rdt / 16.7); apply();
     }
     render(t);
-    raf = requestAnimationFrame(frame);
+    _requestFrame();
   }
   function clampLat(p) { return Math.max(-78, Math.min(78, p)); }
   // Fly-to longitudes must take the SHORT way around: rot[0] grows unbounded from the
@@ -1089,7 +1090,7 @@
   });
   canvas.addEventListener("contextrestored", function () {
     _contextLost = false; ctx = canvas.getContext("2d"); path = d3.geoPath(projection, ctx);
-    sceneState(ready ? "ready" : "loading"); _resumeScene();
+    sceneState(ready ? "ready" : "loading"); _syncControls(); _resumeScene();
   });
   ["pointerdown", "keydown", "touchstart"].forEach(function (ev) {
     window.addEventListener(ev, _wake, { passive: true });
@@ -1170,12 +1171,16 @@
   }
   function clickAt(cx, cy) {
     var m = pick(cx, cy);
-    if (m) toggleSelect(m, cx, cy); else deselect();
+    if (m) toggleSelect(m, cx, cy, canvas); else deselect();
   }
   // press an already-open market again to close it; otherwise open / switch
   // Any select/deselect — pebble, legend, canvas click — counts as user interaction
   // for the tour (a bare deselect must not let the tour resume with no grace period).
-  function toggleSelect(m, cx, cy) { _tourPause(); if (selected === m.cc) deselect(); else selectMarket(m, cx, cy); }
+  function toggleSelect(m, cx, cy, trigger) {
+    _tourPause();
+    if (selected === m.cc) deselect();
+    else selectMarket(m, cx, cy, trigger || deck.querySelector('.gd-leg[data-cc="' + m.cc + '"]') || canvas);
+  }
   function deselect() {
     selected = null; hovered = null; tip.classList.remove("pinned"); concealTip();
     tip.removeAttribute("role"); tip.tabIndex = -1;
@@ -1183,7 +1188,8 @@
     if (_tipTrigger) { try { _tipTrigger.focus(); } catch (e) {} _tipTrigger = null; }
     _redraw();
   }
-  function selectMarket(m, cx, cy) {
+  function selectMarket(m, cx, cy, trigger) {
+    _tipTrigger = trigger || canvas;
     selected = m.cc; hovered = null; lastInteract = performance.now();
     var ll = m.kind === "marker" ? m.marker_lonlat : (byCC[m.cc] && paintCentroid(m.cc)) || [0, 0];
     flying = { t0: performance.now(), dur: 700, a0: rot[0], b0: rot[1], a1: shortestLon(rot[0], -ll[0]), b1: clampLat(-ll[1]), s0: scale, s1: fitScale * 1.12 };
@@ -1331,6 +1337,9 @@
       tip.tabIndex = -1;
       tip.style.pointerEvents = "";
     }
+    positionTip(cx, cy, pinned, isTour, keepFocus);
+  }
+  function positionTip(cx, cy, pinned, isTour, keepFocus) {
     // Mobile: a pinned tooltip becomes a bottom sheet inside the globe stage.
     // It therefore scrolls away with the globe instead of following the viewport.
     if (!isTour && pinned && W <= 560) {
@@ -1583,9 +1592,7 @@
   deck.querySelectorAll(".gd-leg").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var m = byCC[btn.getAttribute("data-cc")]; if (!m) return;
-      // track keyboard trigger for focus-return on deselect; clear if already selected (will deselect)
-      if (selected !== m.cc) _tipTrigger = btn; else _tipTrigger = null;
-      toggleSelect(m);
+      toggleSelect(m, null, null, btn);
     });
     btn.addEventListener("mouseenter", function () { hovered = btn.getAttribute("data-cc"); });
     btn.addEventListener("mouseleave", function () { if (!dragging) hovered = null; });
@@ -1604,13 +1611,13 @@
       if (action === "motion") {
         btn.setAttribute("aria-pressed", motionOK ? "true" : "false");
         btn.innerHTML = bilingual(motionOK ? "Pause rotation" : "Play rotation", motionOK ? "暂停旋转" : "开始旋转");
-        btn.disabled = !ready || !!(reducedMotion && reducedMotion.matches);
+        btn.disabled = !ready || _contextLost || !!(reducedMotion && reducedMotion.matches);
         btn.title = reducedMotion && reducedMotion.matches ? "Reduced motion / 已启用减少动态效果" : "";
       }
       if (action === "routes") btn.setAttribute("aria-pressed", _showRoutes ? "true" : "false");
       if (action === "tour") {
         btn.setAttribute("aria-pressed", _tourEnabled ? "true" : "false");
-        btn.disabled = !ready || !motionOK;
+        btn.disabled = !ready || _contextLost || !motionOK;
       }
     });
     var note = deck.querySelector(".gd-route-note");
