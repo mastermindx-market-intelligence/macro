@@ -6,6 +6,7 @@ research/crypto_science/patches/. No network and no data/ reads.
 from __future__ import annotations
 
 import inspect
+import itertools
 import math
 from pathlib import Path
 
@@ -560,3 +561,47 @@ def test_finite_matching_observation_keeps_its_number() -> None:
     )
     assert found["state"] == "observed"
     assert found["value"] == pytest.approx(0.42)
+
+
+@pytest.mark.parametrize("states", list(itertools.product(
+    ("absent", "missing", "low", "neutral", "high"), repeat=3)))
+def test_optional_unknown_family_does_not_vote_neutral(states):
+    from lib import config
+    cfg = config.load()["vector"]
+    cfg = {**cfg["valuation"], **cfg["extreme"]}
+    idx = pd.date_range("2026-11-01", periods=12)
+    levels = {
+        "nupl": {"low": -.3, "neutral": .3, "high": .8},
+        "supply_in_profit_pct": {"low": .2, "neutral": .6, "high": .99},
+        "fear_greed": {"low": 5., "neutral": 50., "high": 99.},
+    }
+    inputs = {"price": pd.DataFrame({"close": 100.}, index=idx)}
+    for (key, values), state in zip(levels.items(), states):
+        if state != "absent":
+            inputs[key] = pd.Series(np.nan if state == "missing" else values[state], index=idx)
+    out = S.market_extreme(inputs, pd.DataFrame(index=idx), cfg)
+    observed = [s for s in states if s not in ("absent", "missing")]
+    if not observed:
+        assert out.empty or pd.isna(out.iloc[-1]["market_extreme"])
+        assert out.empty or pd.isna(out.iloc[-1]["extreme_score"])
+    else:
+        lo, hi = observed.count("low"), observed.count("high")
+        expected = ("capitulation" if lo >= cfg["min_votes"] else
+                    "euphoria" if hi >= cfg["min_votes"] else "normal")
+        assert out.iloc[-1]["market_extreme"] == expected
+        assert out.iloc[-1]["extreme_score"] == pytest.approx((hi-lo)/len(observed))
+
+def test_compute_all_preserves_optional_family_unknown_and_real_neutral():
+    idx = pd.date_range("2025-01-01", periods=600)
+    price = pd.DataFrame({"open": 100., "high": 101., "low": 99.,
+                          "close": 100.+np.sin(np.arange(600)/10), "volume": 1000.}, index=idx)
+    inputs = {"price": price, "supply_in_profit_pct": pd.Series(np.nan, index=idx),
+              "fear_greed": pd.Series(np.nan, index=idx)}
+    missing = S.compute_all(inputs)
+    assert pd.isna(missing.iloc[-1]["market_extreme"])
+    assert pd.isna(missing.iloc[-1]["extreme_score"])
+    inputs["supply_in_profit_pct"] = pd.Series(.6, index=idx)
+    inputs["fear_greed"] = pd.Series(50., index=idx)
+    neutral = S.compute_all(inputs)
+    assert neutral.iloc[-1]["market_extreme"] == "normal"
+    assert neutral.iloc[-1]["extreme_score"] == 0.

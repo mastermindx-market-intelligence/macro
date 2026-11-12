@@ -1779,13 +1779,13 @@ def market_extreme(inputs: dict, val: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     sip = inputs.get("supply_in_profit_pct")
     if sip is not None:
         s = sip.reindex(idx).ffill(limit=5)
-        capit["sip"] = s < cfg["sip_capitulation"]
-        euph["sip"] = s > cfg["sip_euphoria"]
+        capit["sip"] = (s < cfg["sip_capitulation"]).where(s.notna())
+        euph["sip"] = (s > cfg["sip_euphoria"]).where(s.notna())
     fg = inputs.get("fear_greed")
     if fg is not None:
         f = fg.reindex(idx).ffill(limit=3)
-        capit["fg"] = f < cfg["fg_capitulation"]
-        euph["fg"] = f > cfg["fg_euphoria"]
+        capit["fg"] = (f < cfg["fg_capitulation"]).where(f.notna())
+        euph["fg"] = (f > cfg["fg_euphoria"]).where(f.notna())
     out = pd.DataFrame(index=idx)
     if capit.empty:
         return out
@@ -1794,8 +1794,8 @@ def market_extreme(inputs: dict, val: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     navail = capit.notna().sum(axis=1).replace(0, np.nan)
     out["extreme_score"] = ((ev - cv) / navail).clip(-1, 1)  # -1 capit .. +1 euph
     mn = cfg["min_votes"]
-    out["market_extreme"] = np.where(cv >= mn, "capitulation",
-                            np.where(ev >= mn, "euphoria", "normal"))
+    out["market_extreme"] = pd.Series(np.where(cv >= mn, "capitulation",
+                            np.where(ev >= mn, "euphoria", "normal")), index=idx).where(navail.notna())
     return out
 
 
