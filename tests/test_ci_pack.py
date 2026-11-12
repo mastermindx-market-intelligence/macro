@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (Congress plus protected e7f8565 composition): preserve the
+    five accepted owner dependency repairs from #11108 and the XG runtime
+    adapter registration from #11101 alongside both Congress chronology
+    registrations. The existing tracked-tree owner measured actual integration
+    3300374be54cf32b993d5c377ba451f0a8658765 (tree
+    e0bdaf2cf55457b7e748e2f1954596825b3a464d): index 137/5973,
+    free-content 137/5997, Prophet 131/5731 jobs/weight, all ten packs.
+    Fund only these three measured +2 weight breaches; job ceilings
+    137/138/131, the ten-pack bound, selectors and execution limits stay.
+    These are planning weights, not measured execution durations. Complete
+    rows and stable input hashes are retained under
+    docs/verification/congress-disclosure-chronology-20261111/
+    current-main-e7f8565-composition-20261112/measurement-before.json.
 
     2026-11-12 (Congress chronology on current main 24393e2): the actual
     tracked composition c038a854 was measured with packing_probe_measurements
