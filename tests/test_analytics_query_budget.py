@@ -98,7 +98,7 @@ def test_every_statement_carries_the_sort_memory_prelude(patched):
 
     assert a._query("select 1") == [{"n": 1}]
     assert "16MB" in a._QUERY_PRELUDE
-    assert sent["query"] == a._QUERY_PRELUDE + "select 1"
+    assert sent["query"] == a._statement_timeout_sql(a._QUERY_TIMEOUT_S) + a._QUERY_PRELUDE + "select 1"
 
 
 def test_timeout_cap_narrows_the_reported_budget(patched):
@@ -111,3 +111,52 @@ def test_timeout_cap_narrows_the_reported_budget(patched):
 
     with pytest.raises(TimeoutError, match=r"within 0\.8s"):
         a._query("select 1", timeout_cap_s=0.75)
+
+
+def test_every_statement_is_bounded_server_side_by_its_own_budget(patched):
+    """An abandoned HTTP request must not leave its statement running.
+
+    The role's statement_timeout is 2min, so before this every panel the client gave up on
+    kept scanning server-side for up to 1m53s (production 2026-11-12) and the stacked
+    orphans starved the next attempt. `set local statement_timeout` bounds the statement
+    to the same budget the client waits for.
+    """
+    sent = {}
+
+    class _Response:
+        status_code = 201
+        text = ""
+
+        @staticmethod
+        def json():
+            return []
+
+    def capture(url, headers=None, json=None, timeout=None):
+        sent.update(json, http_timeout=timeout)
+        return _Response()
+
+    patched.setattr(a.requests, "post", capture)
+    a._query("select 1", timeout_cap_s=3)
+    assert sent["query"].startswith("set local statement_timeout = '3000ms'; ")
+    assert sent["http_timeout"] > 3   # the server, not the socket, fires first
+    assert a._statement_timeout_sql(0.1) == "set local statement_timeout = '500ms'; "
+
+
+def test_server_side_statement_timeout_reads_as_the_panel_budget(patched):
+    class _Response:
+        status_code = 400
+        text = '{"message":"ERROR:  57014: canceling statement due to statement timeout"}'
+
+    patched.setattr(a.requests, "post", lambda *args, **kwargs: _Response())
+    with pytest.raises(TimeoutError, match=r"did not finish within 9\.0s"):
+        a._query("select 1")
+
+
+def test_other_upstream_errors_are_not_disguised_as_timeouts(patched):
+    class _Response:
+        status_code = 400
+        text = '{"message":"ERROR:  42P01: relation does not exist"}'
+
+    patched.setattr(a.requests, "post", lambda *args, **kwargs: _Response())
+    with pytest.raises(RuntimeError, match="HTTP 400"):
+        a._query("select 1")
