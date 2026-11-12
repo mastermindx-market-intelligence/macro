@@ -16,6 +16,9 @@
      Included from _market_state.css.j2 (the single style include already shared by
      china / hk / canada). Markup: _risk_radar_dlg.html.j2. ============================ */
 
+  .rrd-sr { position: absolute !important; width: 1px !important; height: 1px !important;
+    padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+    clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
   .rrd { font-family: var(--font-ui, inherit); --rrd-c: var(--muted); }
   .rrd, .rrd * { min-width: 0; }
   .rrd .tone-down { --rrd-c: var(--down); }
@@ -38,6 +41,26 @@
   .rrd-hd-sub + .rrd-hd-sub { margin-top: 3px; }
   .rrd-hd-sub b { font-family: var(--num); font-variant-numeric: tabular-nums;
     font-weight: 700; color: var(--text); }
+  .rrd-measured-state { margin-bottom: 16px; }
+  .rrd-evidence-label { margin-top: 16px; }
+  .rrd-evidence { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+    margin: 0 0 20px; padding: 11px 13px; border-radius: 10px;
+    background: color-mix(in srgb, var(--text) 3%, transparent);
+    border: 1px solid color-mix(in srgb, var(--text) 8%, transparent); }
+  .rrd-evidence-copy { flex: 1 1 320px; min-width: 0; overflow-wrap: anywhere;
+    font-size: 11px; line-height: 1.5; color: var(--muted); }
+  .rrd-evidence-copy b { font-family: var(--num); font-variant-numeric: tabular-nums;
+    color: var(--text); }
+  .rrd-evidence-authority { flex: 0 1 auto; max-width: 100%; font-size: 10.5px;
+    line-height: 1.4; font-weight: 750; color: var(--muted); overflow-wrap: anywhere; }
+  .rrd-evidence-context { flex: 1 0 100%; max-width: 100%; font-size: 10px;
+    line-height: 1.45; color: var(--muted); overflow-wrap: anywhere; }
+  .rrd-evidence.is-binding .rrd-evidence-authority { color: var(--rrd-c, var(--down)); }
+  @media (max-width: 640px) {
+    .rrd-hd { align-items: flex-start; padding: 14px; }
+    .rrd-evidence { align-items: flex-start; }
+    .rrd-evidence-authority { flex-basis: 100%; }
+  }
 
   /* ── section furniture (clone of .mx5-dlg-eyebrow / .mx5-dlg-sep) ─────────── */
   .rrd-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .09em;
