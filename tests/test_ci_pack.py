@@ -6001,7 +6001,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_969),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_993),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_727),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6010,6 +6010,123 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #7350, preserve Start coverage and browser fallback):
+    Receiver 0b26ae364676069354a53d1d84be21ee94cd78a0 preserves the
+    accepted Start data-base-shim contribution and landed #11051 browser
+    setup fallback, its regression suite and measured +1/+2/+1 accounting.
+    Carry only this original research-vault enrollment into that receiver,
+    preserving 401 owner positions, 400 sibling blocks and both histories.
+    Receiving weights 5969/5993/5727 compose to 5969/5995/5727.
+    These are source-derived expectations from the retained measured
+    contribution; actual paired contract/planner proof must qualify them.
+    Keep 137/138/131 job ceilings, ten packs and every runtime/selection
+    control. Source claim #7350 comment6811961787; original effect and
+    product acceptance boundaries remain separate and unreplayed.
+
+    2026-11-11 (PR #7350, current-main source composition):
+    Base catalog b68f93a812c85ddaea5dad71c295c51659b7d371 and packing
+    89c9d99733f7c7559646401e2dbf06dfe8595097 retain all current-main history.
+    Preserve all 401 owner positions and the other 400 owner blocks.
+    The current research-vault block equals the original base; use this
+    carrier's exact head block: 3 commands, 44->45 test references,
+    2095->2141 joined characters; _job_weight is 93->95 without an override.
+    Carry only free-content 5989->5991; keep index 5966 and Prophet 5724,
+    137/138/131 job bounds, ten packs and every other control unchanged.
+    Retain the exact original #7350 history; import no sibling contribution.
+    This is declaration-derived arithmetic, not a new planner/runtime result.
+    Natural exact-head CI is still owed; existing product/UNKNOWN limits remain.
+
+    2026-11-09 (PR #7350, original-carrier CI-conflict composition):
+    main15364780 retains the accepted W4 feature preimages and the current
+    research-vault owner, including landed benchmark/theme-graph coverage.
+    Preserve all400 owners and399 other blocks; restore only this carrier's
+    five declared paths and one complete ZeroHedge suite argument. Current
+    owner has three commands,44 test tokens,2095 characters and weight93;
+    the composed owner has45 tokens,2141 characters and weight95. Only
+    free-content selects this exclusive owner among the three probes.
+    Carry the W4-only +2 proved by run42378726182/job128421630052 below:
+    current5943/5964/5701 becomes5943/5966/5701. Retain jobs137/138/131,
+    ten packs,all current provenance,selectors,suites,timeouts and global
+    admission/concurrency controls. No sibling allowance is imported.
+    This is exact source composition of the prior measured contribution,
+    not a new planner execution or elapsed-time result. Own new-head CI
+    must qualify this tree. Live research/product acceptance stays separate.
+
+    2026-11-08 (PR #7350, post-#7352 actual shared-CI conflict):
+    own42442867558/gate128629039526 proved3eb684dc CLEAR105jobs/304steps,
+    but controller6717287482 identifies landedc9e069 check-definition change
+    and a REAL content conflict. Preserve the three accepted W4 objects
+    and compose onto actual main067c320, retaining #7352's benchmark,
+    #10735's split, #8240 and all395 owners/394 other owner blocks.
+    The old base had43 suite tokens/2049 characters/weight91; W4-only
+    and benchmark-only each have44/2095/93. Both suites require45/2141/95,
+    with three commands and the same800-character bucket2. Their identical
+    old5939->5941 edits cannot represent both independent contributions.
+    Retain current5941 and add only W4's remaining+2free:5943. Index5920,
+    Prophet5678, jobs137/138/131, ten packs and all runtime controls stay.
+    The exclusive owner selects only free-content among the three probes.
+    Preserve the original W4 provenance below and every current-main note.
+    No unmerged #7387/#7385/other sibling allowance is imported. These are
+    source counters/accounting, not a new combined planner or pytest result.
+    This exact composed source still requires its own natural CI proof.
+
+    Earlier W4 provenance at its recorded identities:
+    2026-11-08 (PR #7350, current-main shared-CI conflict repair):
+    preserve the accepted W4 ZeroHedge adapter source and its
+    existing research-vault enrollment. Current mainec26dac8 retains the
+    exact research-vault preimage from incorporated base2ac8eef3ca97.
+    Restore only this carrier's 5 paths and one full suite argument;
+    all393 current owners and the other392 blocks stay unchanged.
+    Its exclusive owner keeps three commands, with43->44 test tokens
+    and2049->2095 characters, so the unchanged estimator is91->93.
+    Only free-content selects this owner: carry its accepted +2 from
+    current5939->5941, retaining index5920/Prophet5678, jobs137/138/131,
+    ten packs, every command/selector/timeout and admission limit.
+    Preserve landed #7694 accounting/provenance and all #10752 compactor
+    tests. No unmerged sibling funding or old runner is imported.
+    This is static source arithmetic, not a new whole-tree selected-set,
+    planner, pytest or elapsed-time result. Natural new-head CI must
+    qualify the actual composition. Original scope/effect fences remain.
+    Source: PR7350 issuecomment6710944715; dated evidence follows.
+
+    2026-11-07 second conflict composition for Macro #7350, main2ac8eef3:
+    Preserve current main's accepted P5.T9.S5 GSC contribution and every
+    other current owner and provenance record. Its ceilings are now
+    index5914/free5933/plan-book5672. Add only this unchanged W4 source's
+    previously measured two free-content units:5933->5935. This is
+    arithmetic composition, not a new planner run or runtime measurement.
+    No #7352/#7385 sibling allowance is imported. All job-count ceilings,
+    ten-pack bounds, selectors, suites, timeouts and admission limits stay.
+    The preceding80fc head passed its own natural42394974233 proof; it
+    does not prove this new combined source. Natural CI must qualify it.
+
+    Earlier same-carrier provenance, at its recorded source identities:
+    2026-11-07 conflict composition for Macro #7350 against main0c02daa5:
+    retain the current accepted #10710 source, owner enrollment and measured
+    index/free/Prophet ceilings 5,914/5,931/5,672. Add only this carrier's
+    already measured +2 free-content contribution, yielding 5,914/5,933/5,672.
+    This is arithmetic composition, not a new paired execution measurement.
+    Natural current-head CI must qualify it. No unmerged sibling funding,
+    job-count, ten-pack, runtime, selector or admission limit is imported.
+    The preceding carrier-specific measurements below keep their dated bases.
+
+    2026-11-07 Macro #7350 ZeroHedge W4: exact natural CI 42378726182,
+    contract-delta job 128421630052, subject 7c1e5dca8e83 against base
+    eb326523fb4f (tested merge 7e196c3ed1b7) measured:
+
+        templates/index.html          137 jobs / 5,912 weight / 10 packs
+        scripts/build_free_content.py 137 jobs / 5,929 -> 5,931 / 10 packs
+        engine/prophet/plan_book.py   131 jobs / 5,670 weight / 10 packs
+
+    Free-content selected no new job. W4's one added tests/test_ argument
+    is in the incumbent research-vault command, with exact dependency
+    paths retained in that existing exclusive CODE owner. Fund only its
+    measured +2 on the free-content ceiling, 5,929 -> 5,931. Index, Prophet,
+    job-count ceilings, selected owners, ten-pack bounds and all global
+    runtime/capacity/selector controls are unchanged. These are planner
+    weights, not measured execution times. #7352 and other unmerged PRs
+    carry independent contributions; this does not import or fund them.
 
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
