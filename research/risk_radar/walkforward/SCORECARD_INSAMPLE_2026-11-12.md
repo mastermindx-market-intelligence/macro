@@ -129,6 +129,7 @@ Read (in-sample, so an upper bound):
   declines.
 - It is closely matched by the plain SPY-or-bills 200-day rule: similar drawdown avoided, lower
   gains kept.
-- Credit-spread velocity, the strongest pivot reader, is weak here. It flags early but switches
-  off inside declines and misses the 2022 drawdown's depth.
+- Credit-spread velocity, the strongest pivot reader, is weak here. In the 2022 decline (onset
+  2022-01-04 to trough 2022-10-12) its sleeve lost 29.9% against SPY's 24.5%: it was out on rally
+  days and in on falling days. Radar risk-off lost 8.6% in the same span.
 - These figures were fitted on this window. The walk-forward version is what counts.
