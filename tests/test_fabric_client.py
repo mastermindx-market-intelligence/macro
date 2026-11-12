@@ -270,7 +270,7 @@ def test_base_url_defaults_and_override(recorder):
 def test_complete_reads_route_headers_best_effort(recorder):
     recorder.state["message"] = _Message(
         "ok", model="glm-5.3",
-        headers={"x-fabric-route": "r-42", "x-fabric-model": "glm-5.3"})
+        headers={"x-fabric-route": "r-42", "x-fabric-resolved-model": "glm-5.3"})
     comp = fc.complete([{"role": "user", "content": "x"}])
     assert comp.model_served == "glm-5.3"
     assert comp.route_id == "r-42"
@@ -302,9 +302,12 @@ def raw_recorder(monkeypatch):
     state = {
         "message": _Message("raw-path text",
                             model="glm-5.3"),
-        # The LIVE router's header names, read from
-        # ops/native_fabric/unified_router/gateway.py on 2026-11-12.
-        "headers": {"x-fabric-route": "route-xyz", "x-fabric-model": "glm-5.3"},
+        # The LIVE router's header names, read from the RUNNING gateway
+        # (release model-tier-20261111-peak-…-obs-d4ee4ad515d4, gateway.py
+        # ~L946-949, verified 2026-11-12): the served-model header is
+        # "x-fabric-resolved-model", NOT "x-fabric-model".
+        "headers": {"x-fabric-route": "route-xyz",
+                    "x-fabric-resolved-model": "glm-5.3"},
     }
 
     def fake_make_client(base_url, timeout):
@@ -339,16 +342,27 @@ def test_legacy_header_spellings_still_work(raw_recorder):
 def test_live_header_wins_over_legacy_spelling(raw_recorder):
     raw_recorder.state["headers"] = {"x-fabric-route": "live-route",
                                      "x-fabric-route-id": "legacy-route",
-                                     "x-fabric-model": "deepseek-v4.1-flash",
+                                     "x-fabric-resolved-model": "deepseek-v4.1-flash",
+                                     "x-fabric-model": "legacy-model-should-lose",
                                      "x-fabric-provider": "wrong-rung"}
     comp = fc.complete([{"role": "user", "content": "x"}])
     assert comp.route_id == "live-route"
-    assert comp.model_served == "deepseek-v4.1-flash"
+    assert comp.model_served == "deepseek-v4.1-flash"   # live resolved-model wins
     assert comp.provider == "wrong-rung"         # an explicit provider header wins
 
 
+def test_legacy_model_header_still_attributed(raw_recorder):
+    """A stub/older gateway that only sends the legacy "x-fabric-model" spelling
+    must still attribute the served model (fallback after the live header)."""
+    raw_recorder.state["headers"] = {"x-fabric-route": "r-legacy",
+                                     "x-fabric-model": "glm-5.3"}
+    comp = fc.complete([{"role": "user", "content": "x"}])
+    assert comp.model_served == "glm-5.3"
+    assert comp.provider == "glm"
+
+
 def test_unknown_served_slug_leaves_provider_none(raw_recorder):
-    raw_recorder.state["headers"] = {"x-fabric-model": "some-model-we-do-not-know"}
+    raw_recorder.state["headers"] = {"x-fabric-resolved-model": "some-model-we-do-not-know"}
     comp = fc.complete([{"role": "user", "content": "x"}])
     assert comp.provider is None                 # never guessed
 

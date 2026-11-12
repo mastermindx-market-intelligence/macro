@@ -95,16 +95,21 @@ _LANE_IDS: frozenset[str] = frozenset(_LANES.values()) | frozenset({"fabric/kimi
 # None rather than being guessed.
 _SLUG_PROVIDERS: dict[str, str] = {v: k for k, v in _PROVIDER_MODELS.items()}
 
-# Response headers the router actually sets on a routed reply. Read from
-# ops/native_fabric/unified_router/gateway.py on the live host (2026-11-12):
-#   response.headers.update({"x-fabric-route": selected.route_id,
-#                            "x-fabric-model": resolved,
-#                            "x-fabric-request-id": ctx.request_id,
-#                            "x-fabric-policy": ...})
-# The "-id"/"-provider" spellings are kept as fallbacks for stub routers and
-# any older gateway; the live ones come first so production is never blank.
+# Response headers the router actually sets on a routed reply. Read from the
+# RUNNING gateway (pid cwd release model-tier-20261111-peak-…-obs-d4ee4ad515d4,
+# ops/native_fabric/unified_router/gateway.py ~L946-949, verified 2026-11-12):
+#   response.headers["x-fabric-resolved-model"] = resolved
+#   response.headers["x-fabric-route"]          = route.route_id
+#   response.headers["x-fabric-routing-policy"] = VERSION
+#   response.headers["x-fabric-request-id"]     = nonce
+# The resolved-model header is "x-fabric-resolved-model" on EVERY release in the
+# estate (no release emits "x-fabric-model"); the body's ``model`` field is the
+# upstream provider's own name, which can differ from the gateway slug, so the
+# header is the authoritative served-model source. The "-model"/"-id"/"-provider"
+# spellings are kept as fallbacks for stub routers and any older gateway; the
+# live ones come first so production attribution is never blank.
 _ROUTE_HEADERS = ("x-fabric-route", "x-fabric-route-id")
-_MODEL_HEADERS = ("x-fabric-model",)
+_MODEL_HEADERS = ("x-fabric-resolved-model", "x-fabric-model")
 _PROVIDER_HEADERS = ("x-fabric-provider",)
 
 
@@ -256,7 +261,7 @@ def _single_request(sdk: Any, kw: dict) -> tuple[Any, Mapping[str, str] | None]:
     """Perform the adapter's ONE request and return (message, response headers).
 
     ``with_raw_response`` is preferred because the gateway reports its routing
-    decision in headers (``x-fabric-route`` / ``x-fabric-model``, see
+    decision in headers (``x-fabric-route`` / ``x-fabric-resolved-model``, see
     ``_ROUTE_HEADERS``) and the parsed Message does NOT retain them. Measured
     against anthropic 2.8.0 (2026-11-12): a plain ``messages.create()`` leaves
     ``msg._response`` as None, so reading headers off the message silently
