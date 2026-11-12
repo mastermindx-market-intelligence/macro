@@ -5997,10 +5997,12 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
+# The Start-page regression adds one test file to the existing builder step.
+# All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_724),
+    ("templates/index.html", 137, 5_969),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_727),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6010,38 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #7387, preserve landed native acquisition recovery):
+    Receiver 27bdebdb retains Start and the landed #11051/#11064 recovery.
+    Preserve all 401 current owners, 400 whole sibling definitions and
+    the three original evidence-delta feature objects. Carry only the
+    original research-vault paths and complete mandatory test argument.
+    Raw source accounting is 3 commands, 44 -> 45 test references,
+    2095 -> 2146 joined characters and weight 93 -> 95. Its original
+    free-content-only +2 composes 5969/5993/5727 to 5969/5995/5727.
+    Keep 137/138/131 job ceilings, ten packs, every assertion, selector,
+    dependency, runtime and admission control. Preserve all current-main
+    provenance and all 49 original H-only historical lines verbatim.
+    These are static source/inverse/AST checks, not newly executed
+    project tests, paired planner measurements or hosted CI proof.
+    Natural exact-head successor CI must qualify this composition.
+
+    2026-11-11 (playwright apt-outage fallback): the seven shell-executed
+    ``playwright install --with-deps chromium`` steps each gained a bounded
+    240s first attempt plus a 60s browser-only fallback (GitHub-hosted
+    runners intermittently cannot resolve any Ubuntu archive and the apt
+    stage was killing whole packs before a test ran; terminal PR #1469
+    precedent). The three ``acquisition: native_parallel`` contract installs
+    stay byte-identical (run_ci_pack validates their exact run token).
+    Four owners crossed an 800-character estimator bucket, +1 each:
+    catalyst-loop-integrated 27->28, international-dislocation-explorer
+    7->8, international-workspace-browser 58->59, prophet-lab 67->68
+    (engine-render-guards keeps its pinned observed 875). Measured probes:
+    index 137 jobs 5966->5967, free-content 138 jobs 5987->5989, Prophet
+    131 jobs 5724->5725; ten packs, every selected job and every job-count
+    ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
+    is measured planner accounting, not an execution-time estimate; natural
+    successor CI must qualify the repaired source.
 
     2026-11-11 (PR #7387, current-main source composition):
     Base catalog b68f93a812c85ddaea5dad71c295c51659b7d371 and packing
