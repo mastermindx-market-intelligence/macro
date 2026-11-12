@@ -136,7 +136,7 @@ STANCES: dict[str, dict] = {
 # production templates already render for the same doctrine word: get_ready
 # templates/china_altdata.html.j2:227; watch / protect / aside
 # templates/stage_analysis.html.j2:1497 / :1499 / :1500 (stand-aside also
-# templates/_market_regime_strip.html.j2:8); ignore templates/options.html.j2:3630.
+# templates/_market_regime_strip.html.j2:8); ignore templates/options.html.j2:3742.
 # "act" has no production ZH origin and is the one NEW string. No doctrine ZH may equal
 # an engine STANCES zh word (WAIT 观望, GET READY 准备, AVOID 回避 …) and Watch never
 # carries the engine's WAIT word 观望 — asserted below and in tests/test_cycle_ontology.py.

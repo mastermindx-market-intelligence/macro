@@ -262,7 +262,7 @@
     "stance_watch": {"en": "Watch — don't chase", "zh": "观察 —— 别追", "role": "chip", "source": "templates/stage_analysis.html.j2:1497"},
     "stance_protect": {"en": "Protect gains", "zh": "保护利润", "role": "chip", "source": "templates/stage_analysis.html.j2:1499"},
     "stance_aside": {"en": "Stand aside", "zh": "暂时观望", "role": "chip", "source": "templates/stage_analysis.html.j2:1500"},
-    "stance_ignore": {"en": "Ignore", "zh": "忽略", "role": "chip", "source": "templates/options.html.j2:3740"},
+    "stance_ignore": {"en": "Ignore", "zh": "忽略", "role": "chip", "source": "templates/options.html.j2:3742"},
     "asof_label": {"en": "As of", "zh": "截至", "role": "asof", "source": "templates/sector_cycles.html.j2:45"},
     "asof_pattern": {"en": "As of {date} · {source}", "zh": "截至 {date} · {source}", "role": "asof", "source": "templates/sector_central.html.j2:3886"},
     "footnote_pattern": {"en": "Display-only context, never a signal.", "zh": "仅供展示，绝非信号。", "role": "footnote", "source": "templates/sector_cycles.js:1222"},

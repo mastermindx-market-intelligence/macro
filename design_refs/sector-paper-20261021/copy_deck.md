@@ -195,7 +195,7 @@ colour.
 | `stance_watch` | chip | Watch — don’t chase | 观察 —— 别追 | 3 | 6 | templates/stage_analysis.html.j2:1497 |
 | `stance_protect` | chip | Protect gains | 保护利润 | 2 | 4 | templates/stage_analysis.html.j2:1499 |
 | `stance_aside` | chip | Stand aside | 暂时观望 | 2 | 4 | templates/stage_analysis.html.j2:1500 |
-| `stance_ignore` | chip | Ignore | 忽略 | 1 | 2 | templates/options.html.j2:3630 |
+| `stance_ignore` | chip | Ignore | 忽略 | 1 | 2 | templates/options.html.j2:3742 |
 | `asof_label` | asof | As of | 截至 | 2 | 2 | templates/sector_cycles.html.j2:45 |
 | `asof_pattern` | asof | As of {date} · {source} | 截至 {date} · {source} | 4 | 17 | templates/sector_central.html.j2:3866 |
 | `footnote_pattern` | footnote | Display-only context — never a signal. | 仅供展示，绝非信号。 | 6 | 10 | templates/sector_cycles.js:1196 |
