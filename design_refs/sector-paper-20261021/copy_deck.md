@@ -266,7 +266,7 @@ colour.
 | `tagline` | subtitle | What is current, candidate, and archived | 何为现行、候选、归档 | 6 | 10 | NEW |
 | `current_label` | label | Current | 现行 | 1 | 2 | NEW |
 | `candidate_label` | label | Candidate | 候选 | 1 | 2 | NEW |
-| `archive_label` | label | Archive | 归档 | 1 | 2 | templates/committee.html.j2:1702 |
+| `archive_label` | label | Archive | 归档 | 1 | 2 | templates/committee.html.j2:1594 |
 | `toc_label` | label | Table of contents | 目录 | 3 | 2 | NEW |
 | `built_asof` | asof | Built {timestamp} | 生成于 {timestamp} | 2 | 14 | templates/sector_central.html.j2:2440 |
 | `generated_asof` | asof | Generated {timestamp} | 生成于 {timestamp} | 2 | 14 | templates/sector_central.html.j2:2448 |
