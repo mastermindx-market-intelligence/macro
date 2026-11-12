@@ -320,7 +320,10 @@ def _css_blocks(css: str) -> list[tuple[str, str]]:
     """(selector, body) pairs for top-level blocks, by brace matching."""
     stripped = re.sub(r"/\*.*?\*/", "", css, flags=re.S)  # comments can hold braces
     blocks: list[tuple[str, str]] = []
+    consumed_to = 0
     for match in re.finditer(r"([^{}]+)\{", stripped):
+        if match.start() < consumed_to:
+            continue  # nested rules belong to their enclosing conditional block
         head = match.group(1).strip()
         depth, body_start = 1, match.end()
         i = body_start
@@ -330,7 +333,9 @@ def _css_blocks(css: str) -> list[tuple[str, str]]:
             elif stripped[i] == "}":
                 depth -= 1
             i += 1
+        assert depth == 0, f"unterminated CSS block: {head}"
         blocks.append((head, stripped[body_start:i - 1]))
+        consumed_to = i
     return blocks
 
 
@@ -345,8 +350,8 @@ def test_line_quiet_lives_in_the_dark_root_token_block():
 def test_line_quiet_lives_in_the_light_token_block():
     css = THEME_CSS.read_text(encoding="utf-8")
     light = [body for head, body in _css_blocks(css)
-             if head.startswith('html[data-theme="light"]') and "--line:" in body]
-    assert light, "light token block with --line not found"
+             if head == 'html[data-theme="light"]' and "--line-quiet:" in body]
+    assert len(light) == 1, "expected one unconditional light quiet-border token block"
     assert "--line-quiet: #E2E6EC;" in light[0]
 
 
