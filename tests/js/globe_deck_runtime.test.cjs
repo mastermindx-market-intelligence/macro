@@ -25,6 +25,7 @@ class Element {
   emit(k, extra = {}) { for (const fn of this.listeners[k] || []) fn({ preventDefault() {}, stopPropagation() {}, ...extra }); }
   getBoundingClientRect() { return this.rect; }
   setPointerCapture() {}
+  scrollIntoView() {}
   focus() { this.focusCount = (this.focusCount || 0) + 1; }
   appendChild(el) { el.parentNode = this; }
   querySelector(k) {
@@ -180,4 +181,21 @@ test('a stalled request reaches the recoverable error state within the deadline'
   assert.ok(deadline); deadline.fn(); await s.flush();
   assert.equal(s.deck.getAttribute('data-globe-state'), 'error');
   assert.equal(s.retry.hidden, false); assert.equal(s.frames.size, 0);
+});
+
+test('a resize during fly-to preserves the destination zoom ratio', async () => {
+  const s = await scene(); s.leg.emit('click');
+  assert.ok(s.state().flying);
+  s.resize(700, 350); s.advance(800); s.frame();
+  assert.equal(s.state().flying, null);
+  assert.ok(Math.abs(s.state().scale / s.state().fit - 1.12) < 1e-9);
+});
+
+test('Escape returns focus for both legend and direct globe selections', async () => {
+  const s = await scene(); s.click('motion'); s.leg.emit('click');
+  s.document.emit('keydown', { key: 'Escape' }); assert.equal(s.leg.focusCount, 1);
+  s.sandbox.__test.select({ cc: 'US', kind: 'country', name_en: 'United States', name_zh: '美国',
+    quad: 'q1', quad_name_en: 'Goldilocks', quad_name_zh: '理想增长', href: 'macro.html' });
+  s.document.emit('keydown', { key: 'Escape' }); assert.equal(s.canvas.focusCount, 1);
+  assert.equal(s.leg.focusCount, 1);
 });

@@ -19,6 +19,7 @@
     deck.setAttribute("data-globe-state", state);
     stage.setAttribute("aria-busy", state === "loading" ? "true" : "false");
     if (status) status.hidden = state !== "error";
+    if (canvas) canvas.tabIndex = state === "ready" ? 0 : -1;
     deck.querySelectorAll(".gd-leg, .gd-controls button").forEach(function (btn) {
       btn.disabled = state !== "ready";
     });
@@ -1338,6 +1339,12 @@
       tip.style.pointerEvents = "";
     }
     positionTip(cx, cy, pinned, isTour, keepFocus);
+    if (pinned && !keepFocus) {
+      var visibleRect = tip.getBoundingClientRect();
+      if (visibleRect.top < 16 || visibleRect.bottom > window.innerHeight - 16) {
+        tip.scrollIntoView({ block: "nearest", behavior: motionOK ? "smooth" : "auto" });
+      }
+    }
   }
   function positionTip(cx, cy, pinned, isTour, keepFocus) {
     // Mobile: a pinned tooltip becomes a bottom sheet inside the globe stage.
@@ -1566,6 +1573,7 @@
     var old = {};
     paint.forEach(function (p) { old[p.cc] = qcolor(p.m.quad); });
     readPalette(); buildStars();
+    if (selected) tip.setAttribute("aria-label", document.documentElement.getAttribute("data-lang") === "zh" ? byCC[selected].name_zh : byCC[selected].name_en);
     if (motionOK) sweep = { t0: performance.now(), dur: 700, old: old };
     _syncControls(); _redraw();
   }
@@ -1609,7 +1617,7 @@
     deck.querySelectorAll("[data-gd-action]").forEach(function (btn) {
       var action = btn.getAttribute("data-gd-action");
       if (action === "motion") {
-        btn.setAttribute("aria-pressed", motionOK ? "true" : "false");
+        btn.removeAttribute("aria-pressed");
         btn.innerHTML = bilingual(motionOK ? "Pause rotation" : "Play rotation", motionOK ? "暂停旋转" : "开始旋转");
         btn.disabled = !ready || _contextLost || !!(reducedMotion && reducedMotion.matches);
         btn.title = reducedMotion && reducedMotion.matches ? "Reduced motion / 已启用减少动态效果" : "";

@@ -2613,8 +2613,7 @@ a:focus-visible,.links a:focus-visible,.ha-item summary:focus-visible{outline:2p
 ::selection{background:color-mix(in srgb,var(--link) 26%,transparent)}
 
 @keyframes smReveal{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
-.reveal{animation:smReveal .45s cubic-bezier(.2,.7,.3,1) both}
-.state.reveal{animation-delay:0ms} .nav.mk.reveal{animation-delay:70ms} .nav.vc.reveal{animation-delay:120ms} .alerts.reveal{animation-delay:160ms}
+.reveal{animation:none}
 @media (prefers-reduced-motion: reduce){
  .reveal{animation:none}
  .card,.ico,.ha-item summary{transition:none} .card:hover{transform:none}
@@ -2858,7 +2857,7 @@ html[data-lang="zh"] .hub-seg .l-zh{display:inline}
 .gd-isl .isl-chg{font:600 var(--fs-sm)/1.2 var(--font-mono)}
 .gd-isl .isl-px,.gd-isl .isl-sem,.gd-isl .ring{display:none}
 .gd-isl .glow{animation:none;opacity:.28}
-.gd-tip{max-height:calc(100% - 20px);overflow:auto}
+.gd-tip{max-height:calc(100% - 20px);overflow:auto;scroll-margin-block:20px}
 .gd-tip-h{padding-right:24px}
 .gd-tip-close{position:absolute;top:8px;right:7px;width:32px;height:32px;border:0;border-radius:var(--r-ctl,8px);background:transparent;color:var(--muted);font-size:var(--fs-h2);cursor:pointer}
 .gd-tip-close:hover{background:var(--panel2);color:var(--text)}
@@ -2915,7 +2914,7 @@ _GLOBE_DECK_DOM = r"""<section class="globe-deck command" data-globe-state="stat
       <div class="gd-status" role="status" hidden><h3><span class="l-en">The globe couldn’t load.</span><span class="l-zh">地球仪暂时无法加载。</span></h3><p><span class="l-en">Your market dashboards are still available below.</span><span class="l-zh">您仍可通过下方入口访问各市场看板。</span></p><button class="gd-retry" type="button" data-gd-action="retry"><span class="l-en">Try again</span><span class="l-zh">重试</span></button></div>
     </div>
     <div class="gd-controls" role="group" aria-label="Globe controls / 地球仪控制">
-      <div class="gd-control-group"><button type="button" data-gd-action="motion" aria-pressed="true" disabled><span class="l-en">Pause rotation</span><span class="l-zh">暂停旋转</span></button><button type="button" data-gd-action="reset" disabled><span class="l-en">Reset view</span><span class="l-zh">重置视角</span></button></div>
+      <div class="gd-control-group"><button type="button" data-gd-action="motion" disabled><span class="l-en">Pause rotation</span><span class="l-zh">暂停旋转</span></button><button type="button" data-gd-action="reset" disabled><span class="l-en">Reset view</span><span class="l-zh">重置视角</span></button></div>
       <div class="gd-control-group"><button type="button" data-gd-action="zoom-out" aria-label="Zoom out / 缩小" disabled>−</button><button type="button" data-gd-action="zoom-in" aria-label="Zoom in / 放大" disabled>+</button></div>
       <div class="gd-control-group"><button type="button" data-gd-action="tour" aria-pressed="false" disabled><span class="l-en">Market tour</span><span class="l-zh">市场巡览</span></button><button type="button" data-gd-action="routes" aria-pressed="false" disabled><span class="l-en">Routes</span><span class="l-zh">航线</span></button></div>
     </div>
@@ -2923,7 +2922,7 @@ _GLOBE_DECK_DOM = r"""<section class="globe-deck command" data-globe-state="stat
     <div class="gd-markets-head"><h3><span class="l-en">Choose your market</span><span class="l-zh">选择市场</span></h3><p><span class="l-en">One framework. Nine markets.</span><span class="l-zh">同一框架，九大市场。</span></p></div>
     <ul class="gd-legend" aria-label="Markets / 市场列表">__LEGEND__</ul>
     <div class="gd-legend-note"><div class="gd-legend-key" aria-label="Regime colors / 周期颜色"><span class="q1"><i aria-hidden="true"></i><span class="l-en">Goldilocks</span><span class="l-zh">理想增长</span></span><span class="q2"><i aria-hidden="true"></i><span class="l-en">Reflation</span><span class="l-zh">再通胀</span></span><span class="q3"><i aria-hidden="true"></i><span class="l-en">Stagflation</span><span class="l-zh">滞胀</span></span><span class="q4"><i aria-hidden="true"></i><span class="l-en">Growth scare</span><span class="l-zh">增长恐慌</span></span></div><span><span class="l-en">Data dates and sources in each market</span><span class="l-zh">数据日期与来源见各市场看板</span></span></div>
-    <noscript><p><span class="l-en">Open a market above to explore its dashboard. Enable JavaScript for the interactive globe.</span><span class="l-zh">选择上方市场访问看板。启用 JavaScript 后可使用交互地球仪。</span></p><style>.gd-loader,.gd-controls{display:none}.gd-stage{height:0}</style></noscript>
+    <noscript><p><span class="l-en">Open a market above to explore its dashboard. Enable JavaScript for the interactive globe.</span><span class="l-zh">选择上方市场访问看板。启用 JavaScript 后可使用交互地球仪。</span></p><style>.gd-loader,.gd-controls,.gd-topline,.hub-seg{display:none}.gd-stage{height:0}.hub-views .vc-sec{display:block!important}</style></noscript>
     <div class="gd-cta"><a class="gd-scroll" href="#hub-views" aria-label="Explore markets / 探索市场"><span class="l-en">Explore the dashboards</span><span class="l-zh">探索市场看板</span><span aria-hidden="true">↓</span></a></div>
   </section>"""
 
@@ -3853,8 +3852,8 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
         '<header class="h">'
         + '<div class="hub-kicker">' + _bi("Home / Global overview", "首页 / 全球概览") + '</div>'
         + '<h1>' + _bi("The world, in focus.", "全球脉动，一览于心。") + '</h1>'
-        + '<p>' + _bi("Understand the cycle. Connect the markets. Find your next question.",
-                      "看清周期，串联市场，发现值得深入研究的线索。") + '</p>'
+        + '<p>' + _bi("Track the cycle. Compare nine markets. Explore the drivers.",
+                      "看清周期，比较九大市场，追踪变化背后的驱动因素。") + '</p>'
         '<div class="hub-snapshot-meta"><span class="eyebrow"><span class="snapshot-dot" aria-hidden="true"></span>'
         '<span class="hub-site-status">' + _bi("SITE LIVE", "网站运行中") + '</span>'
         '</span></div></header>'
