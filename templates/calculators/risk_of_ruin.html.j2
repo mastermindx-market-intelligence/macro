@@ -44,7 +44,7 @@
 </div>
 
 <div class="calc-actions">
-  <button class="gbtn" id="copy-result" type="button">{{ t('Copy result', '复制结果') }}</button>
+  <button class="gbtn" id="copy-result" type="button" disabled>{{ t('Copy result', '复制结果') }}</button>
   <span class="copied" id="copied" role="status">{{ t('Copied', '已复制') }}</span>
 </div>
 {% endblock %}
@@ -224,10 +224,24 @@
       [outExp,outDd,outM,outN].forEach(function(e){e.textContent="—"; e.className="";}); }
 
     var worker = makeWorker(), useWorker = !!worker;
-    var last=null, pending=null, seq=0, busyTimer=null;
+    var last=null, pending=null, seq=0, busyTimer=null, renderTimer=null, copyTimer=null;
 
-    // paint the instant (non-simulated) fields; the ruin % arrives separately
-    function paintFrame(p){
+    // An input edit ends the old result's eligibility before the debounce runs.
+    function invalidateResult(){
+      seq++;
+      if(renderTimer){ clearTimeout(renderTimer); renderTimer=null; }
+      if(busyTimer){ clearTimeout(busyTimer); busyTimer=null; }
+      if(copyTimer){ clearTimeout(copyTimer); copyTimer=null; }
+      pending=null; last=null; copyBtn.disabled=true;
+      copied.classList.remove("show");
+      dash();
+      outPlain.className="co-plain";
+      outPlain.textContent="Calculating risk for the current inputs…";
+    }
+
+    // Paint current, non-simulated fields while the current result is pending.
+    function paintFrame(p, generation){
+      p.generation = generation;
       outExp.textContent = (p.expR>=0?"+":"") + p.expR.toFixed(2) + " R";
       outExp.className   = p.expR>0 ? "pos" : (p.expR<0 ? "neg" : "");
       outDd.textContent  = p.dd.toFixed(p.dd%1?1:0) + "%";
@@ -236,10 +250,11 @@
       pending = p;
     }
 
-    // apply the simulated risk-of-ruin once it comes back (worker or sync)
+    // Commit one current-generation snapshot for display and export together.
     function applyRuin(ruinPct){
-      if(!pending) return;
-      pending.ruinPct = ruinPct; last = pending;
+      if(!pending || pending.generation!==seq) return;
+      var result = pending;
+      result.ruinPct = ruinPct;
       if(busyTimer){ clearTimeout(busyTimer); busyTimer=null; }
       outMain.textContent = pct(ruinPct); outMain.style.opacity="";
       var band;
@@ -248,17 +263,18 @@
       else if(ruinPct < 20) band = "meaningful — a real minority of accounts blow up";
       else if(ruinPct < 50) band = "high — a large share of accounts hit ruin";
       else                  band = "severe — most accounts do not survive";
-      var edge = pending.expR>0 ? "a positive edge" : (pending.expR<0 ? "a negative edge" : "no edge (break-even)");
+      var edge = result.expR>0 ? "a positive edge" : (result.expR<0 ? "a negative edge" : "no edge (break-even)");
       var plain = "About " + pct(ruinPct) + " of 10,000 simulated accounts crossed the " +
-        pending.dd.toFixed(pending.dd%1?1:0) + "% ruin line — " + band + ". With " + edge +
+        result.dd.toFixed(result.dd%1?1:0) + "% ruin line — " + band + ". With " + edge +
         ", the outcome is shaped mostly by how much you risk per trade.";
-      if(pending.capped){ plain += " Simulation capped at 1,000 trades."; }
+      if(result.capped){ plain += " Simulation capped at 1,000 trades."; }
       outPlain.className = ruinPct>=20 ? "co-plain warn" : "co-plain";
       outPlain.textContent = plain;
+      last = result; pending = null; copyBtn.disabled=false;
     }
 
     function render(){
-      seq++;                                    // invalidate any in-flight worker result
+      invalidateResult();
       var mySeq = seq;
       var inp={ W:numFrom(els.winrate), b:numFrom(els.payoff), r:numFrom(els.riskpct),
                 dd:numFrom(els.ruindd), N:numFrom(els.trades) };
@@ -267,46 +283,61 @@
       if(isNaN(inp.N)  && (els.trades.value||"").trim()==="")  inp.N  = 500;
       var p=params(inp);
       if(!p.ok){
-        if(busyTimer){ clearTimeout(busyTimer); busyTimer=null; }
-        dash(); pending=null; last=null;
+        dash();
         outPlain.textContent=p.msg; outPlain.className="co-plain"; return;
       }
-      paintFrame(p);
+      paintFrame(p, mySeq);
       if(useWorker){
-        // subtle "recomputing" cue only if the sim takes a beat (avoids flicker
-        // on short runs); the worker keeps the UI fully responsive meanwhile
-        if(busyTimer) clearTimeout(busyTimer);
+        // The current headline stays withheld throughout recomputation.
         busyTimer = setTimeout(function(){ if(seq===mySeq) outMain.style.opacity="0.5"; }, 200);
-        worker.postMessage({ id:mySeq, sim:p.sim });
+        try{ worker.postMessage({ id:mySeq, sim:p.sim }); }
+        catch(_){ fallBackToSync(); }
       } else {
         applyRuin(simulate(p.sim));             // fallback: synchronous
       }
     }
 
+    function fallBackToSync(){
+      if(!useWorker) return;
+      useWorker=false; try{worker.terminate();}catch(_){}
+      render();                                // cancels debounce; uses the current form
+    }
     if(worker){
       worker.onmessage = function(e){ var d=e.data; if(d.id!==seq) return; applyRuin(d.ruinPct); };
-      worker.onerror = function(){                // CSP/exec failure → drop to sync
-        useWorker=false; try{worker.terminate();}catch(_){}
-        if(busyTimer){ clearTimeout(busyTimer); busyTimer=null; } render(); };
+      worker.onerror = fallBackToSync;
     }
 
     function copyLine(){
-      if(!last || !last.ok) return "";
+      if(!last || !last.ok || last.generation!==seq) return "";
       return "Risk of ruin: " + pct(last.ruinPct) + " (over " + last.N.toLocaleString("en-US") +
         " trades, " + last.dd.toFixed(last.dd%1?1:0) + "% ruin line) · expectancy " +
         (last.expR>=0?"+":"") + last.expR.toFixed(2) + " R — mastermind-x.com";
     }
     copyBtn.addEventListener("click", function(){
-      var line=copyLine(); if(!line) return;
-      var done=function(){ copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
-      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(line).then(done,done); }
-      else { var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
-        try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(); }
+      var report=last, line=copyLine(); if(!line) return;
+      var done=function(){
+        // Editing cannot revoke a started OS write, but it invalidates its UI feedback.
+        if(last!==report || report.generation!==seq) return;
+        if(copyTimer) clearTimeout(copyTimer);
+        copied.classList.add("show");
+        var timer=setTimeout(function(){
+          if(copyTimer!==timer) return;
+          copied.classList.remove("show"); copyTimer=null;
+        },1600);
+        copyTimer=timer;
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        try{ navigator.clipboard.writeText(line).then(done, function(){}); }catch(_){}
+      } else {
+        var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
+        var success=false;
+        try{ success=document.execCommand("copy")===true; }catch(e){}
+        document.body.removeChild(ta); if(success) done();
+      }
     });
 
-    // debounce input; the sim itself runs in the worker so typing stays smooth
-    var renderTimer=null;
-    function scheduleRender(){ if(renderTimer) clearTimeout(renderTimer); renderTimer=setTimeout(render, 150); }
+    // Debounce only the computation; stale output/export ends at the edit itself.
+    function scheduleRender(){ invalidateResult(); renderTimer=setTimeout(render, 150); }
     ["winrate","payoff","riskpct","ruindd","trades"].forEach(function(id){
       els[id].addEventListener("input", scheduleRender);
     });
