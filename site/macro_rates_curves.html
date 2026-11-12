@@ -52,13 +52,10 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<script src="macro_suite_boot.js?v=768a4342" defer></script>
-<link rel="stylesheet" href="theme.css?v=9bd171a6">
-<link rel="stylesheet" href="macro_suite.css?v=8d30ac57">
-<link rel="stylesheet" href="macro_command.css?v=803860e3">
-<link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
-<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
-<link rel="preload" as="style" href="assets/css/51d21ca0.css?v=51d21ca0">
+<script src="macro_suite_boot.js"></script>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="macro_suite.css">
+<link rel="stylesheet" href="macro_command.css">
 </head>
 <body class="mq-page mc-page mq-suite-page" data-mq-workspace="rates_curves" data-mq-region="US">
 
@@ -69,7 +66,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
 
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -289,10 +286,10 @@
     </div>
   </div>
 
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f8cda39d" defer></script>
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -418,7 +415,7 @@
   <div class="mq-context-state">
     <div class="mq-avail">
       <span class="mq-avail-label"><span class="l-en">Data we need today</span><span class="l-zh">今天需要的数据</span></span>
-      <strong class="mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></strong>
+      <strong class="mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></strong>
     </div>
     <dl class="mq-context-meta">
       <div><dt><span class="l-en">Coverage</span><span class="l-zh">覆盖率</span></dt><dd>100.0%</dd></div>
@@ -439,7 +436,7 @@
         <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
              <dd><time>2026-11-12</time></dd></div>
         <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-             <dd><time>2026-11-12T02:26:46Z</time></dd></div>
+             <dd><time>2026-11-12T11:25:31Z</time></dd></div>
       </dl>
 
   </div>
@@ -538,8 +535,8 @@
         </tr>
         <tr>
           <th scope="row"><span class="l-en">Interest on reserves</span><span class="l-zh">准备金利息</span></th>
-          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Partial</span><span class="l-zh">部分具备</span></span></td>
-          <td><span class="mq-chip mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span></td>
+          <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
+          <td><span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span></td>
           <td><time>2026-11-12</time></td>
         </tr>
         <tr>
@@ -580,7 +577,105 @@
 
 
 
-<link rel="stylesheet" href="assets/css/51d21ca0.css?v=51d21ca0">
+<style>
+  .mq-curve-hero {
+    width: min(100%, 1440px);
+    margin: 18px auto 0;
+    padding: 18px 20px 16px;
+    background: var(--mq-surface);
+    border: 1px solid var(--mq-line);
+    border-radius: var(--r-card);
+    box-shadow: var(--mq-shadow);
+    color: var(--mq-ink);
+  }
+  .mq-curve-hero h2 {
+    margin: 0;
+    font-size: clamp(20px, 2.4vw, 28px);
+    letter-spacing: -0.03em;
+  }
+  .mq-curve-sub { margin: 6px 0 0; color: var(--mq-muted); font-size: 13px; }
+  .mq-curve-asof { margin: 4px 0 0; color: var(--mq-muted); font-size: 12px; }
+  .mq-curve-chart { margin: 14px 0 8px; }
+  .mq-curve-plot { position: relative; max-width: 640px; }
+  .mq-curve-plot svg { display: block; width: 100%; height: auto; }
+  .mq-curve-line-today { fill: none; stroke: var(--mq-ink); stroke-width: 2.2; }
+  .mq-curve-line-close { fill: none; stroke: var(--mq-accent); stroke-width: 1.6; }
+  .mq-curve-line-month { fill: none; stroke: var(--mq-muted); stroke-width: 1.4; stroke-dasharray: 4 3; }
+  .mq-curve-axis { stroke: var(--mq-line-strong); stroke-width: 1; }
+  .mq-curve-xlabels,
+  .mq-curve-ylabels {
+    position: absolute; inset: 0; margin: 0; padding: 0; list-style: none;
+    pointer-events: none;
+  }
+  .mq-curve-xlabels li,
+  .mq-curve-ylabels li {
+    position: absolute;
+    color: var(--mq-muted);
+    font-size: 10px; /* CSS px — does not scale with the SVG viewBox */
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .mq-curve-xlabels li {
+    top: auto;
+    bottom: 2px;
+    transform: translateX(-50%);
+  }
+  .mq-curve-xlabels li.is-last { transform: translateX(-100%); }
+  .mq-curve-xlabel-short { display: none; }
+  .mq-curve-ylabels li {
+    left: 0;
+    /* Exactly pad_l/width from lib.macro_suite_view._chart_payload (72/640).
+       There is deliberately no media-query override of this width: a wider box
+       would overhang the plot and the lowest tick would sit under the data. */
+    width: 11.25%;
+    text-align: right;
+    transform: translateY(-50%);
+    box-sizing: border-box;
+    padding-right: 4px;
+  }
+  .mq-curve-legend {
+    display: flex; flex-wrap: wrap; gap: 12px 18px;
+    margin: 0 0 12px; padding: 0; list-style: none;
+    color: var(--mq-muted); font-size: 12px;
+  }
+  .mq-curve-legend i {
+    display: inline-block; width: 16px; height: 2px; margin-right: 6px;
+    vertical-align: middle; background: currentColor;
+  }
+  .mq-curve-legend .is-today { color: var(--mq-ink); }
+  .mq-curve-legend .is-close { color: var(--mq-accent); }
+  .mq-curve-legend .is-month { color: var(--mq-muted); }
+  .mq-curve-legend .is-month i { border-top: 2px dashed currentColor; height: 0; background: none; }
+  .mq-curve-legend .is-null { color: var(--mq-muted); }
+  .mq-curve-legend .is-null i { display: none; }
+  .mq-curve-spreads {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px; margin: 0 0 12px;
+  }
+  .mq-curve-spread {
+    padding: 10px 12px;
+    background: var(--mq-raised);
+    border: 1px solid var(--mq-line);
+    border-radius: var(--r-ctl);
+  }
+  .mq-curve-spread dt { margin: 0; color: var(--mq-muted); font-size: 11px; }
+  .mq-curve-spread dd { margin: 4px 0 0; font-size: 20px; letter-spacing: -0.03em; }
+  .mq-curve-deltas { margin: 6px 0 0; color: var(--mq-muted); font-size: 11px; }
+  .mq-curve-shape { margin: 0; max-width: 62ch; font-size: 14px; }
+  .mq-curve-null { margin: 12px 0 0; color: var(--mq-muted); font-size: 14px; }
+  .mq-curve-missing { margin: 8px 0 0; color: var(--mq-muted); font-size: 12px; }
+  @media (max-width: 640px) {
+    .mq-curve-hero { margin: 12px 0 0; padding: 14px 12px 12px; }
+    .mq-curve-spread dd { font-size: 18px; }
+    .mq-curve-xlabels li,
+    .mq-curve-ylabels li { font-size: 10px; }
+    .mq-curve-xlabel-long { display: none; }
+    .mq-curve-xlabel-short { display: inline; }
+    /* Ten tenor labels cannot clear each other at 390. The five the builder
+       does not mark `mobile` keep their <li> and are hidden here only. */
+    .mq-curve-xlabels li.is-mobile-hidden { visibility: hidden; }
+  }
+</style>
 <section class="mq-curve-hero" id="mq-curve-hero">
   <header>
     <h2><span class="l-en">The Treasury curve</span><span class="l-zh">美债收益率曲线</span></h2>
@@ -733,7 +828,7 @@
         <p><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></p>
         <dl class="mq-confidence-grid">
           <div><dt><span class="l-en">Data coverage</span><span class="l-zh">数据覆盖</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
-          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
+          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Revision risk</span><span class="l-zh">修订风险</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
           <div><dt><span class="l-en">Method stability</span><span class="l-zh">方法稳定性</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Evidence breadth</span><span class="l-zh">证据广度</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
@@ -757,7 +852,7 @@
         <p><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></p>
         <dl class="mq-confidence-grid">
           <div><dt><span class="l-en">Data coverage</span><span class="l-zh">数据覆盖</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
-          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
+          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Revision risk</span><span class="l-zh">修订风险</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
           <div><dt><span class="l-en">Method stability</span><span class="l-zh">方法稳定性</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Evidence breadth</span><span class="l-zh">证据广度</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
@@ -779,7 +874,7 @@
         <p><span class="l-en">Confidence basis</span><span class="l-zh">置信度依据</span></p>
         <dl class="mq-confidence-grid">
           <div><dt><span class="l-en">Data coverage</span><span class="l-zh">数据覆盖</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
-          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
+          <div><dt><span class="l-en">Source health</span><span class="l-zh">数据源健康度</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Revision risk</span><span class="l-zh">修订风险</span></dt><dd><span class="l-en">Low</span><span class="l-zh">低</span></dd></div>
           <div><dt><span class="l-en">Method stability</span><span class="l-zh">方法稳定性</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
           <div><dt><span class="l-en">Evidence breadth</span><span class="l-zh">证据广度</span></dt><dd><span class="l-en">High</span><span class="l-zh">高</span></dd></div>
@@ -883,14 +978,6 @@
 </details>
   </div>
   <ul class="mq-diag-list">
-    <li class="mq-diag mq-tone-warn">
-      <strong><span class="l-en">Required source not current</span><span class="l-zh">必需数据源并非最新</span></strong>
-      <span><span class="l-en">Degraded required components: Interest on reserves.</span><span class="l-zh">降级的必需分项：准备金利息。</span></span>
-    </li>
-    <li class="mq-diag mq-tone-warn">
-      <strong><span class="l-en">Optional legs degraded</span><span class="l-zh">可选分项已降级</span></strong>
-      <span><span class="l-en">Shown separately, and excluded from the page state: Interest on reserves.</span><span class="l-zh">单独呈现，且不计入本页状态：准备金利息。</span></span>
-    </li>
     <li class="mq-diag mq-tone-neutral">
       <strong><span class="l-en">Scenario execution not available</span><span class="l-zh">情景推演功能不可用</span></strong>
       <span><span class="l-en">The assumption vocabulary is declared and closed, but no scenario function is published — so no Scenario tab is offered.</span><span class="l-zh">假设变量词表已声明并封闭，但尚未发布情景函数 — 因此不提供“情景”标签页。</span></span>
@@ -1947,7 +2034,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Iorb level</span><span class="l-zh">准备金利息水平</span></span>
-        <span class="mq-chip mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span>
+        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">3.90</span><span class="l-zh">3.90</span><span class="mq-metric-unit"><span class="l-en">%</span><span class="l-zh">%</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher tighter policy stance</span><span class="l-zh">数值越高＝政策立场越紧</span></p>
@@ -2607,7 +2694,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Corridor effr minus iorb bp</span><span class="l-zh">走廊：有效联邦基金减准备金利息（基点）</span></span>
-        <span class="mq-chip mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span>
+        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−2.00</span><span class="l-zh">−2.00</span><span class="mq-metric-unit"><span class="l-en">bp</span><span class="l-zh">基点</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher leg a trading rich to leg b</span><span class="l-zh">数值越高＝A端相对B端越贵</span></p>
@@ -2717,7 +2804,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Corridor sofr minus iorb bp</span><span class="l-zh">走廊：SOFR 减准备金利息（基点）</span></span>
-        <span class="mq-chip mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span>
+        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">−2.00</span><span class="l-zh">−2.00</span><span class="mq-metric-unit"><span class="l-en">bp</span><span class="l-zh">基点</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher leg a trading rich to leg b</span><span class="l-zh">数值越高＝A端相对B端越贵</span></p>
@@ -3912,7 +3999,7 @@
       <article class="mq-source">
         <header>
           <strong><span class="l-en">Interest on Reserve Balances (IORB, via FRED)</span><span class="l-zh">Interest on Reserve Balances（IORB，经FRED）</span></strong>
-          <span class="mq-chip mq-tone-bad"><span class="l-en">Source failed</span><span class="l-zh">数据源获取失败</span></span>
+          <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
         </header>
         <dl class="mq-method-grid">
           <div><dt><span class="l-en">Provider</span><span class="l-zh">提供方</span></dt><dd>FRED (Federal Reserve Bank of St. Louis)</dd></div>
@@ -3962,11 +4049,11 @@
       <dl class="mq-clocks">
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Build stamp</span><span class="l-zh">生成时间</span></span><span class="mq-clock-meaning"><span class="l-en">Producer generation time. Not an economic clock.</span><span class="l-zh">生产端生成时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-11-11T09:12:14Z</time></dd>
+          <dd><time>2026-11-12T08:15:53Z</time></dd>
         </div>
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Page refreshed</span><span class="l-zh">页面更新于</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-11-12T02:26:46Z</time></dd>
+          <dd><time>2026-11-12T11:25:31Z</time></dd>
         </div>
       </dl>
     </section>
@@ -3976,11 +4063,11 @@
       <dl class="mq-method-grid">
         <div><dt><span class="l-en">Artifact path</span><span class="l-zh">产物路径</span></dt><dd><code>macrodata/workspaces/rates_curves/US/latest.json</code></dd></div>
         <div><dt><span class="l-en">Manifest path</span><span class="l-zh">清单路径</span></dt><dd><code>macrodata/workspaces/manifest.json</code></dd></div>
-        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">d5d650d24dd0f3248a97da293866acece017be8c84603467b3e4fb6a664dddab</code></dd></div>
-        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>171245</dd></div>
-        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>rates_curves-US-d5d650d24dd0f324</code></dd></div>
+        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">9e68041783d0353ac6ab20f4cedddcd316600e22874c78e41e354712d572c903</code></dd></div>
+        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>171111</dd></div>
+        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>rates_curves-US-9e68041783d0353a</code></dd></div>
         <div><dt><span class="l-en">Producer</span><span class="l-zh">生产者</span></dt><dd><code>engine.market_os.macro_workspaces.rates_curves</code></dd></div>
-        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>497d83de7c83f5139ea76bdb0a151506aebcbede</code></dd></div>
+        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>565791e623bcfdba25bba6f5a0cc0482001030a5</code></dd></div>
         <div><dt><span class="l-en">Client contract</span><span class="l-zh">客户端契约</span></dt><dd><code>mastermind.macro_workspace_snapshot.v1@1.0.0</code></dd></div>
       </dl>
       <p class="mq-lineage-note"><span class="l-en">The page checked this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.</span><span class="l-zh">本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。</span></p>
@@ -3991,8 +4078,8 @@
 </aside>
 <div class="mq-scrim" id="mq-scrim" hidden></div>
 
-<script src="theme.js?v=aa83d371" defer></script>
-<script src="macro_suite.js?v=66404d9b" defer></script>
-<script src="macro_command.js?v=87fdd0b5" defer></script>
+<script src="theme.js" defer></script>
+<script src="macro_suite.js" defer></script>
+<script src="macro_command.js" defer></script>
 </body>
 </html>

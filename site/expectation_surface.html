@@ -564,10 +564,444 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=9bd171a6">
-<link rel="stylesheet" href="assets/css/06419b67.css?v=06419b67">
-<link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
-<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
+<link rel="stylesheet" href="theme.css">
+<style>
+/* ===== Expectation Surface: page scope ===== */
+body.page-es{
+  margin:0; background:var(--bg); color:var(--text); font-family:var(--font-ui);
+  --fig:var(--font-mono);
+  --hair:var(--esurf-hair);
+  --hair-soft:var(--esurf-hair-soft);
+  --es-ser1:var(--esurf-ser1);
+  --es-ser2:var(--esurf-ser2);
+  --es-band:var(--esurf-band);
+  --es-flat:var(--esurf-flat);
+  --es-skel:var(--esurf-skel);
+  --es-neutral-soft:var(--esurf-neutral-soft);
+  --es-warn-soft:var(--esurf-warn-soft);
+  --es-warn-line:var(--esurf-warn-line);
+  --es-ok-soft:var(--esurf-ok-soft);
+  --es-shadow:none;
+  --es-up:var(--ink-up,var(--up));
+  --es-down:var(--ink-down,var(--down));
+  --es-warn-ink:var(--ink-warn,var(--warn));
+  --es-ok-ink:var(--ink-ok,var(--ok));
+  --es-link-ink:var(--ink-link,var(--link));
+}
+html[data-theme="light"] body.page-es{
+  --es-shadow:var(--card-shadow);
+}
+body.page-es > .site-nav{ max-width:1200px; margin:14px auto 6px; padding:0 20px; }  /* same placement rule as page-hub; no nav restyling */
+
+.page-es .f{ font-family:var(--fig); font-variant-numeric:tabular-nums; }
+.page-es [hidden]{ display:none !important; }
+.page-es .es-sr{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+.page-es .es-short, .page-es .es-m-only{ display:none; }
+.page-es p{ margin:0; }
+.page-es code{ font-family:var(--fig); }
+.page-es .es-ic{ flex:none; display:block; }
+
+/* focus: every control, mover row, chart */
+.page-es a:focus-visible, .page-es button:focus-visible, .page-es summary:focus-visible,
+.page-es [tabindex]:focus-visible{ outline:2px solid var(--link); outline-offset:2px; }
+.page-es .es-mv:focus-visible{ position:relative; z-index:1; }
+.page-es .es-seg input:focus-visible + span{ outline:2px solid var(--link); outline-offset:2px; }
+
+/* ----- frame ----- */
+.es-wrap{ box-sizing:border-box; max-width:1200px; margin:0 auto; padding:6px 20px 64px; display:flex; flex-direction:column; gap:24px; }
+.es-panel{ box-sizing:border-box; background:var(--panel); border:1px solid var(--hair); border-radius:var(--r-btn,10px);
+  box-shadow:var(--es-shadow); padding:20px 22px 22px; display:flex; flex-direction:column; gap:18px; min-width:0; }
+#es-census{ gap:16px; } #es-explorer, #es-method{ gap:20px; }
+
+.es-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:24px; }
+.es-head-text{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.es-head-aside{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:flex-end; }
+.es-h2{ margin:0; font:700 17px/22px var(--font-ui); letter-spacing:-0.01em; color:var(--text); }
+.es-h3{ margin:0; font:600 14px/20px var(--font-ui); color:var(--text); }
+.es-sub{ font:400 13px/18px var(--font-ui); color:var(--muted); max-width:72ch; }
+.es-asof{ display:flex; align-items:center; gap:6px; font:600 11.5px/16px var(--font-ui); color:var(--muted); white-space:nowrap; }
+.es-asof .f{ font-weight:400; font-size:11.5px; }
+.es-foot{ font:400 12px/18px var(--font-ui); color:var(--muted); max-width:80ch; }
+.es-hint{ font:400 12px/18px var(--font-ui); color:var(--muted); }
+
+/* ----- shared controls ----- */
+.es-seg{ display:inline-flex; gap:2px; padding:2px; margin:0; min-width:0; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--bg); }
+.es-seg label{ position:relative; display:flex; }
+.es-seg input{ position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:pointer; }
+.es-seg span{ display:inline-flex; align-items:center; justify-content:center; height:28px; padding:0 12px; border-radius:var(--r-ctl,6px);
+  font:500 12.5px/16px var(--font-ui); color:var(--muted); white-space:nowrap; }
+.es-seg input:checked + span{ background:var(--panel2); color:var(--text); font-weight:600; }
+.es-seg input:disabled + span{ opacity:.45; }
+.es-seg input:disabled{ cursor:not-allowed; }
+.es-seg--line{ padding:3px; background:transparent; }
+.es-seg--line span{ border-radius:var(--r-ctl,5px); }
+.es-seg--hz span{ padding:0 10px; }
+
+.es-btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; align-self:flex-start; box-sizing:border-box;
+  height:32px; padding:0 14px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); color:var(--text);
+  font:600 13px/16px var(--font-ui); white-space:nowrap; cursor:pointer; }
+.es-btn:hover{ background:var(--esurf-btn-hover); }
+
+.es-chip{ box-sizing:border-box; display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 10px; margin:0;
+  border:1px solid var(--hair); border-radius:var(--r-ctl,6px); background:var(--panel); font:600 12px/16px var(--font-ui); color:var(--muted); white-space:nowrap; }
+.es-chip--neutral{ background:var(--es-neutral-soft); color:var(--text); }
+.es-chip--warn, .es-chip--stale{ background:var(--es-warn-soft); border-color:var(--es-warn-line); color:var(--es-warn-ink); gap:7px; padding:0 9px; }
+.es-chip--warn{ cursor:pointer; font-family:var(--font-ui); }
+:is(.es-chip--warn):hover{ background:var(--esurf-chip-warn-hover); }
+.es-chip-state{ font:500 10.5px/14px var(--fig); color:var(--es-warn-ink); }
+.es-chip--warn[aria-expanded="false"] .es-chev{ transform:rotate(180deg); }
+.es-chip-v{ font:500 11.5px/16px var(--fig); color:var(--text); }
+.es-dot{ width:7px; height:7px; border-radius:var(--r-pill,999px); background:var(--ok); flex:none; }
+.es-dot--off{ box-sizing:border-box; background:transparent; border:1.5px solid var(--muted); }
+
+/* ----- hero ----- */
+.es-hero{ display:flex; justify-content:space-between; gap:40px; padding-top:28px; }
+.es-hero-main{ flex:0 1 700px; min-width:0; display:flex; flex-direction:column; }
+.es-eyebrow{ margin-bottom:10px; font:600 12.5px/16px var(--font-ui); color:var(--muted); }
+.es-h1{ margin:0 0 8px; font:800 40px/44px var(--font-ui); letter-spacing:-0.03em; color:var(--text); }
+.es-promise{ margin-bottom:28px; font:400 15px/22px var(--font-ui); color:var(--muted); }
+.es-latest{ margin-bottom:6px; display:flex; align-items:center; gap:8px; font:600 11.5px/16px var(--font-ui); color:var(--muted); }
+.es-latest .f{ font-weight:500; }
+.es-answer{ margin-bottom:10px; max-width:680px; font:600 21px/29px var(--font-ui); letter-spacing:-0.01em; color:var(--text); }
+.es-hero-foot{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.es-context{ font:400 13px/20px var(--font-ui); color:var(--muted); }
+.es-link{ font:600 13px/20px var(--font-ui); color:var(--es-link-ink); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; }
+.es-status{ flex:0 0 410px; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding-top:26px; }
+.es-note{ box-sizing:border-box; width:100%; display:flex; flex-direction:column; gap:8px; padding:12px 14px;
+  background:var(--panel2); border:1px solid var(--hair); border-radius:var(--r-ctl,8px); }
+.es-note p{ font:400 13px/19px var(--font-ui); color:var(--text); }
+.es-note p.es-note-dec{ display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 8px; }
+.es-note-dec > span{ font:600 11.5px/16px var(--font-ui); color:var(--muted); }
+.es-note-dec code{ font:400 11px/16px var(--fig); color:var(--muted); overflow-wrap:anywhere; }
+.es-clocks{ display:flex; flex-direction:column; align-items:flex-start; gap:8px; }
+
+/* ----- census ----- */
+.es-tiles{ margin:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px; background:var(--hair);
+  border:1px solid var(--hair); border-radius:var(--r-ctl,8px); overflow:hidden; }
+.es-tile{ background:var(--panel); padding:14px 16px; display:flex; flex-direction:column; gap:4px; min-width:0; }
+.es-tile dt{ font:600 11.5px/16px var(--font-ui); color:var(--muted); }
+.es-tile dd{ margin:0; }
+.es-tile-v{ font:500 24px/30px var(--fig); font-variant-numeric:tabular-nums; color:var(--text); }
+.es-tile-v--na{ font-size:18px; line-height:22px; font-weight:600; color:var(--muted); }
+.es-tile-unit{ margin-left:6px; font:400 13px/30px var(--font-ui); color:var(--text); }
+.es-tile-sub{ font:400 12px/17px var(--font-ui); color:var(--muted); }
+.es-tile-sub.f{ font-family:var(--fig); font-size:11.5px; }
+.es-tile-pair{ display:flex; align-items:baseline; gap:6px; }
+.es-tile-pair > .f{ font:500 15px/20px var(--fig); color:var(--text); }
+.es-tile-pair > span:last-child{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+
+/* ----- breadth ----- */
+.es-breadth-body{ display:flex; justify-content:space-between; align-items:flex-start; gap:36px; }
+.es-strip{ flex:0 1 676px; min-width:0; margin:0; display:flex; flex-direction:column; gap:14px; }
+.es-legend{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 18px; margin:0; padding:0; list-style:none; }
+.es-legend li{ display:flex; align-items:center; gap:6px; font:500 12px/16px var(--font-ui); color:var(--text); }
+.es-legend-note{ font:400 12px/17px var(--font-ui); color:var(--muted); margin-top:-8px; }
+.es-sw{ width:10px; height:10px; border-radius:var(--r-ctl,2px); flex:none; }
+.es-sw--up{ background:var(--up); } .es-sw--flat{ background:var(--es-flat); } .es-sw--down{ background:var(--down); }
+.es-strip-cap{ font:600 12px/16px var(--font-ui); color:var(--text); }
+.es-cols{ display:flex; justify-content:space-between; align-items:flex-end; margin:0; padding:0; list-style:none; }
+.es-col{ width:52px; display:flex; flex-direction:column; align-items:center; }
+.es-col.is-cap{ display:none; }
+.es-col-tag{ height:18px; display:flex; align-items:center; font:700 11px/14px var(--font-ui); color:var(--text); }
+.es-col-up, .es-col-down{ font:500 11.5px/16px var(--fig); }
+.es-col-up{ color:var(--es-up); margin-bottom:6px; }
+.es-col-down{ color:var(--es-down); margin-top:6px; }
+.es-bar{ box-sizing:border-box; width:40px; height:200px; display:flex; flex-direction:column; gap:1px; border-radius:var(--r-ctl,3px); overflow:hidden; }
+.es-bar-up{ flex:none; height:calc(var(--u) * 1%); background:var(--up); }
+.es-bar-flat{ flex:1 1 auto; min-height:0; background:var(--es-flat); }
+.es-bar-down{ flex:none; height:calc(var(--d) * 1%); background:var(--down); }
+.es-col-date{ margin-top:8px; font:400 11px/14px var(--fig); color:var(--muted); }
+.es-col.is-latest .es-col-up, .es-col.is-latest .es-col-down{ font-weight:700; }
+.es-col.is-latest .es-col-date{ font-weight:600; color:var(--text); }
+
+.es-btable{ flex:0 1 404px; min-width:0; display:flex; flex-direction:column; gap:10px; }
+.es-btable table, .es-ntable{ width:100%; border-collapse:collapse; table-layout:fixed; }
+.es-btable caption, .es-ntable caption{ caption-side:top; text-align:left; padding:0 0 8px; font:600 12.5px/16px var(--font-ui); color:var(--text); }
+.es-btable col.c1{ width:108px; } .es-btable col.c2{ width:72px; } .es-btable col.c3{ width:64px; }
+.es-btable col.c4{ width:84px; } .es-btable col.c5{ width:76px; }
+.es-btable thead th, .es-ntable thead th{ height:30px; padding:0; text-align:right; vertical-align:middle;
+  font:600 11.5px/14px var(--font-ui); color:var(--muted); border-bottom:1px solid var(--line); }
+.es-btable tbody th, .es-btable td, .es-ntable tbody th, .es-ntable td{ height:32px; padding:0; text-align:right;
+  font:400 12.5px/16px var(--fig); font-variant-numeric:tabular-nums; color:var(--text); border-bottom:1px solid var(--hair-soft); }
+.es-btable :is(th,td):first-child, .es-ntable :is(th,td):first-child{ text-align:left; }
+.es-btable tr.is-latest :is(th,td){ font-weight:700; }
+.es-btable:not(.is-expanded) tr.es-x{ display:none; }
+
+/* ----- movers ----- */
+.es-sortnote{ box-sizing:border-box; display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 10px;
+  border:1px solid var(--hair); border-radius:var(--r-ctl,6px); background:var(--es-neutral-soft); font:600 12px/16px var(--font-ui); color:var(--text); white-space:nowrap; cursor:default; }
+.es-sides{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px; }
+.es-side{ display:flex; flex-direction:column; gap:8px; min-width:0; }
+.es-side-h{ display:flex; align-items:center; gap:8px; height:24px; }
+.es-side-h h3{ margin:0; font:600 14px/18px var(--font-ui); color:var(--text); }
+.es-sq{ width:8px; height:8px; border-radius:var(--r-ctl,2px); flex:none; }
+.es-sq--up{ background:var(--up); } .es-sq--down{ background:var(--down); }
+.es-side-count{ margin-left:auto; font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-mv-head, .es-mv{ display:grid; grid-template-columns:64px minmax(0,100px) 64px 64px 80px 64px 60px minmax(46px,1fr); align-items:center; }
+.es-mv-head{ height:30px; border-bottom:1px solid var(--line); font:600 11.5px/14px var(--font-ui); color:var(--muted); }
+.es-mv-head .r{ text-align:right; }
+.es-mv-head .es-mv-head-chg{ grid-column:5 / span 2; }
+.es-mv-list{ margin:0; padding:0; list-style:none; }
+.es-mv-list li.es-x{ display:none; }
+.es-side.is-expanded .es-mv-list li.es-x{ display:block; }
+.es-mv{ box-sizing:border-box; width:100%; height:42px; padding:0; margin:0; border:0; border-bottom:1px solid var(--hair-soft);
+  background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; }
+.es-mv:hover{ background:var(--esurf-mv-hover); }
+.es-mv-t{ font:600 13px/16px var(--fig); color:var(--es-link-ink); }
+.es-mv-hz{ display:flex; flex-direction:column; min-width:0; font:400 12.5px/15px var(--font-ui); color:var(--text); }
+.es-mv-pe{ font:400 11px/14px var(--fig); color:var(--muted); }
+.es-mv-prior, .es-mv-latest, .es-mv-an{ font:400 12.5px/16px var(--fig); text-align:right; }
+.es-mv-prior{ color:var(--muted); } .es-mv-latest, .es-mv-an{ color:var(--text); }
+.es-mv-bar{ justify-self:end; width:64px; height:6px; border-radius:var(--r-ctl,3px); background:var(--es-neutral-soft); overflow:hidden; }
+.es-mv-bar i{ display:block; height:100%; width:calc(var(--w) * 1%); border-radius:var(--r-ctl,3px); }
+.es-mv--up .es-mv-bar i{ background:var(--up); } .es-mv--down .es-mv-bar i{ background:var(--down); }
+.es-mv-chg{ font:600 12.5px/16px var(--fig); text-align:right; }
+.es-mv--up .es-mv-chg{ color:var(--es-up); } .es-mv--down .es-mv-chg{ color:var(--es-down); }
+.es-mv-asof{ font:400 11.5px/16px var(--fig); color:var(--muted); text-align:right; }
+.es-mv-meta{ display:none; }
+.es-empty{ display:flex; flex-direction:column; gap:6px; padding:18px 0 6px; }
+.es-empty-t{ font:600 14px/20px var(--font-ui); color:var(--text); }
+.es-empty p:not(.es-empty-t){ font:400 13px/20px var(--font-ui); color:var(--muted); }
+.es-empty-line{ padding:12px 0; font:400 13px/20px var(--font-ui); color:var(--muted); border-bottom:1px solid var(--hair-soft); }
+
+/* ----- explorer ----- */
+.es-xp{ display:grid; grid-template-columns:332px minmax(0,1fr); gap:32px; }
+.es-find{ display:flex; flex-direction:column; gap:16px; min-width:0; }
+.es-field{ position:relative; display:flex; flex-direction:column; gap:8px; }
+.es-find-label{ font:600 12.5px/16px var(--font-ui); color:var(--text); }
+.es-combo{ box-sizing:border-box; display:flex; align-items:center; gap:10px; height:44px; padding:0 6px 0 12px;
+  border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--bg); color:var(--muted); }
+.es-combo:focus-within{ outline:2px solid var(--link); outline-offset:2px; }
+.es-q{ flex:1; min-width:0; height:100%; padding:0; border:0; background:transparent; color:var(--text);
+  font:600 14px/18px var(--fig); text-transform:uppercase; outline:none; }
+.es-q::placeholder{ color:var(--muted); font-weight:400; text-transform:none; font-family:var(--font-ui); }
+.es-q-clear{ flex:none; width:32px; height:32px; display:grid; place-items:center; padding:0; border:0; border-radius:var(--r-ctl,6px); background:transparent; color:var(--muted); cursor:pointer; }
+.es-q-clear:hover{ background:var(--panel2); color:var(--text); }
+.es-q-clear[hidden]{ display:none; }
+.es-lb-wrap{ position:absolute; z-index:20; left:0; right:0; top:68px; box-sizing:border-box; padding:4px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--r-ctl,8px); box-shadow:var(--popover-shadow); }
+.es-lb-wrap[hidden]{ display:none; }
+.es-lb-note{ padding:6px 8px 4px; font:400 11.5px/15px var(--font-ui); color:var(--muted); }
+.es-lb{ margin:0; padding:0; list-style:none; }
+.es-lb li{ box-sizing:border-box; height:40px; padding:0 10px; display:flex; align-items:center; justify-content:space-between; gap:10px; border-radius:var(--r-ctl,6px); cursor:pointer; }
+.es-lb li .f{ font:600 13px/16px var(--fig); color:var(--text); }
+.es-lb li .es-lb-m{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-lb li[aria-selected="true"]{ background:var(--panel2); outline:1px solid var(--line); }
+.es-card{ display:flex; flex-direction:column; gap:14px; padding:16px; background:var(--panel2); border:1px solid var(--hair); border-radius:var(--r-ctl,8px); }
+.es-card-h{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.es-card-link{ margin-right:auto; }
+.es-card-t{ margin:0; font:700 28px/32px var(--fig); letter-spacing:-0.01em; color:var(--text); }
+.es-card-t:focus{ outline:none; } .es-card-t:focus-visible{ outline:2px solid var(--link); outline-offset:2px; }
+.es-pill{ display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px; border-radius:var(--r-card,12px); background:var(--es-ok-soft); font:700 11px/14px var(--font-ui); color:var(--es-ok-ink); }
+.es-pill::before{ content:""; width:6px; height:6px; border-radius:var(--r-pill,999px); background:var(--ok); }
+.es-pill--other{ background:var(--es-neutral-soft); color:var(--text); font-family:var(--fig); font-weight:500; }
+:is(.es-pill--other)::before{ background:var(--muted); }
+.es-card dl{ margin:0; display:flex; flex-direction:column; gap:8px; }
+.es-card dl > div{ display:flex; justify-content:space-between; gap:12px; }
+.es-card dt{ font:400 12.5px/16px var(--font-ui); color:var(--muted); }
+.es-card dd{ margin:0; font:400 12.5px/16px var(--fig); color:var(--text); text-align:right; }
+.es-picks{ display:flex; flex-direction:column; gap:8px; }
+.es-picks-l{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-picks-row{ display:flex; flex-wrap:wrap; gap:8px; }
+.es-pick{ box-sizing:border-box; height:32px; padding:0 12px; border:1px solid var(--hair); border-radius:var(--r-ctl,6px); background:transparent;
+  font:600 12.5px/16px var(--fig); color:var(--es-link-ink); cursor:pointer; }
+.es-pick[aria-pressed="true"]{ background:var(--panel2); border-color:var(--line); color:var(--text); }
+.es-nomatch{ display:flex; flex-direction:column; gap:10px; }
+.es-nomatch[hidden]{ display:none; }
+.es-nomatch-t{ font:500 12px/16px var(--font-ui); color:var(--muted); }
+.es-nomatch p:not(.es-nomatch-t):not(.es-hint){ font:400 13px/19px var(--font-ui); color:var(--text); }
+
+.es-view{ display:flex; flex-direction:column; gap:16px; min-width:0; }
+.es-view-ctl{ display:flex; align-items:center; flex-wrap:wrap; gap:12px 16px; }
+.es-unit{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-unit .f{ font-size:12px; color:var(--text); }
+.es-view-body{ display:flex; flex-direction:column; gap:12px; }
+.es-readout{ margin:0; min-height:62px; display:grid; grid-template-columns:repeat(6,auto); justify-content:space-between; align-items:center; gap:8px 16px; }
+.es-readout > div{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.es-readout dt{ display:flex; align-items:center; gap:6px; font:400 11.5px/14px var(--font-ui); color:var(--muted); }
+.es-readout dd{ margin:0; font:600 15px/20px var(--fig); color:var(--text); white-space:nowrap; }
+.es-ro-chg.is-up{ color:var(--es-up); } .es-ro-chg.is-down{ color:var(--es-down); }
+.es-ro-sw{ width:14px; height:2px; flex:none; background:var(--es-ser1); }
+.es-ro-sw--med{ background:repeating-linear-gradient(90deg,var(--es-ser2) 0 5px,transparent 5px 9px); }
+.es-chart{ position:relative; height:266px; border-radius:var(--r-ctl,6px); }
+.es-chart svg{ display:block; width:100%; height:100%; overflow:visible; }
+.es-chart .es-g{ stroke:var(--hair); stroke-width:1; }
+.es-chart .es-base{ stroke:var(--line); stroke-width:1; }
+.es-chart .es-ylab, .es-chart .es-xlab{ font-family:var(--fig); font-size:11px; fill:var(--muted); }
+.es-chart .es-ylab{ text-anchor:end; dominant-baseline:middle; }
+.es-chart .es-xlab{ text-anchor:middle; }
+.es-chart .es-xlab.is-sel{ font-weight:600; fill:var(--text); }
+.es-chart .es-band{ fill:var(--es-band); stroke:none; }
+.es-chart .es-avg{ fill:none; stroke:var(--es-ser1); stroke-width:2.25; stroke-linecap:round; stroke-linejoin:round; }
+.es-chart .es-med{ fill:none; stroke:var(--es-ser2); stroke-width:1.75; stroke-dasharray:5 4; }
+.es-chart .es-sel{ stroke:var(--muted); stroke-width:1; stroke-dasharray:2 3; }
+.es-chart .es-pt{ fill:var(--es-ser1); stroke:var(--panel); stroke-width:2; }
+.es-cover{ display:flex; flex-direction:column; gap:6px; }
+.es-cover-l{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; padding-left:44px; }
+.es-cover-t{ font:600 12px/16px var(--font-ui); color:var(--text); }
+.es-cover-s{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+#es-cover-svg{ display:block; width:100%; height:78px; overflow:visible; }
+#es-cover-svg .es-cov-bar{ fill:var(--es-flat); }
+#es-cover-svg .es-cov-bar.is-sel{ fill:var(--muted); }
+#es-cover-svg .es-cov-n{ font-family:var(--fig); font-size:10.5px; fill:var(--muted); text-anchor:middle; }
+#es-cover-svg .es-cov-n.is-sel{ font-weight:600; fill:var(--text); }
+.es-view-foot{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.es-kbd-hint{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-num[hidden]{ display:none; }
+.es-loading{ display:flex; flex-direction:column; gap:12px; }
+.es-loading-l{ font:500 12px/16px var(--font-ui); color:var(--muted); }
+.es-skel{ background:var(--es-skel); border-radius:var(--r-ctl,8px); }
+.es-skel--ro{ height:62px; } .es-skel--chart{ height:266px; } .es-skel--cover{ height:60px; }
+
+/* ----- states ----- */
+.es-offline, .es-err{ box-sizing:border-box; display:flex; flex-direction:column; gap:10px; padding:14px;
+  background:var(--es-warn-soft); border:1px solid var(--line); border-radius:var(--r-btn,10px); }
+.es-offline-h{ display:flex; align-items:center; gap:10px; font:600 14px/20px var(--font-ui); color:var(--text); }
+.es-offline > p:not(.es-offline-h):not(.es-reason), .es-err > p:not(.es-offline-h){ font:400 13px/20px var(--font-ui); color:var(--text); }
+.es-reason{ display:flex; flex-direction:column; gap:2px; }
+.es-reason span{ font:400 12px/16px var(--font-ui); color:var(--muted); }
+.es-reason code{ font:400 12px/16px var(--fig); color:var(--text); }
+
+/* ----- method ----- */
+.es-method-cols{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.es-acc{ display:flex; flex-direction:column; gap:12px; min-width:0; }
+.es-acc > summary{ list-style:none; cursor:default; display:flex; align-items:center; justify-content:space-between; }
+.es-acc > summary::-webkit-details-marker{ display:none; }
+.es-acc-sub, .es-acc-chev{ display:none; }
+.es-acc-body{ display:flex; flex-direction:column; gap:12px; }
+.es-acc-body > p{ font:400 13px/20px var(--font-ui); color:var(--muted); }
+.es-facts{ margin:0; display:flex; flex-direction:column; gap:10px; padding:12px 14px; background:var(--panel2); border-radius:var(--r-ctl,8px); }
+.es-facts > div{ display:flex; flex-direction:column; gap:2px; }
+.es-facts dt{ font:400 11.5px/16px var(--font-ui); color:var(--muted); }
+.es-facts dd{ margin:0; font:400 12px/17px var(--fig); color:var(--text); overflow-wrap:anywhere; }
+.es-facts dd.es-path{ font-size:11px; line-height:16px; }
+.es-dec{ display:flex; flex-direction:column; gap:6px; padding:12px 14px; background:var(--panel2); border-radius:var(--r-ctl,8px); }
+.es-dec code{ font:400 11.5px/16px var(--fig); color:var(--text); overflow-wrap:anywhere; }
+.es-dec p{ font:400 13px/20px var(--font-ui); color:var(--muted); }
+.es-not{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+.es-not li{ display:flex; align-items:flex-start; gap:10px; font:400 13px/20px var(--font-ui); color:var(--text); }
+.es-not li svg{ flex:none; margin-top:2px; color:var(--muted); }
+.es-inset{ display:flex; flex-direction:column; gap:4px; margin-top:4px; padding:10px 12px; background:var(--bg); border:1px solid var(--hair); border-radius:var(--r-ctl,6px); }
+.es-inset span{ font:400 11.5px/15px var(--font-ui); color:var(--muted); }
+.es-inset code{ font:400 12px/17px var(--fig); color:var(--text); }
+.es-doclink{ display:inline-flex; align-items:center; gap:8px; align-self:flex-start; font:600 13px/18px var(--font-ui);
+  color:var(--es-link-ink); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; }
+
+/* ----- ZH typography ----- */
+html[data-lang="zh"] .es-h1{ font-weight:700; letter-spacing:0; }
+html[data-lang="zh"] .es-h2{ font-weight:600; letter-spacing:0; }
+html[data-lang="zh"] .es-answer{ letter-spacing:0; }
+
+/* ===== 390 reduction (<768) ===== */
+@media (max-width:767px){
+  .page-es .es-long, .page-es .es-d-only{ display:none; }
+  .page-es .es-short, .page-es .es-m-only{ display:inline; }
+  .page-es p.es-m-only, .page-es div.es-m-only{ display:flex; }
+  .page-es .es-strip-cap.es-m-only{ display:block; }
+  .es-wrap{ padding:4px 16px 48px; gap:16px; }
+  .es-panel{ padding:16px 16px 18px; gap:16px; }
+  #es-census, #es-method{ gap:14px; } #es-explorer{ gap:16px; }
+  .es-head{ flex-direction:column; align-items:stretch; gap:12px; }
+  .es-head-aside{ flex-direction:column; align-items:stretch; gap:10px; }
+  .es-sub{ line-height:19px; }
+  .es-asof .f{ font-size:11px; }
+  .es-btn{ height:44px; align-self:stretch; }
+  .es-seg{ display:flex; width:100%; box-sizing:border-box; }
+  .es-seg label{ flex:1 1 0; }
+  .es-seg span{ width:100%; height:44px; padding:0 8px; font-size:13.5px; }
+  .es-seg--hz{ display:grid; grid-template-columns:1fr 1fr; }
+  .es-seg--hz span{ font-size:13px; }
+
+  .es-hero{ flex-direction:column; gap:20px; padding-top:20px; }
+  .es-hero-main{ flex:none; }
+  .es-eyebrow{ font-size:12px; }
+  .es-h1{ font-size:32px; line-height:36px; }
+  .es-promise{ font-size:14px; line-height:20px; margin-bottom:20px; }
+  .es-answer{ font-size:18px; line-height:25px; }
+  .es-link{ display:inline-flex; align-items:center; min-height:44px; font-size:13.5px; }
+  .es-status{ flex:none; width:100%; padding-top:0; }
+  .es-chip--warn{ height:44px; font-size:12.5px; }
+  .es-clocks{ display:grid; grid-template-columns:1fr 1fr; gap:8px; width:100%; }
+  .es-clocks .es-chip{ height:auto; min-height:44px; padding:7px 10px; flex-wrap:wrap; row-gap:2px; white-space:normal; }
+  .es-clocks .es-chip-v{ flex-basis:100%; font-size:11px; }
+  .es-clocks .es-chip--stale{ grid-column:1 / -1; }
+
+  .es-tiles{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .es-tile{ padding:10px 12px; }
+  .es-tile-v{ font-size:20px; line-height:26px; }
+  .es-tile-unit{ font-size:12px; line-height:26px; }
+  .es-tile-sub.f{ font-size:10.5px; }
+  .es-tile-pair > .f{ font-size:13px; line-height:16px; font-weight:600; }
+
+  .es-breadth-body{ flex-direction:column; gap:20px; }
+  .es-strip{ flex:none; width:100%; gap:10px; }
+  .es-legend-note{ margin-top:-4px; }
+  .es-col{ width:44px; }
+  .es-col.is-older{ display:none; }
+  .es-col-tag{ height:16px; }
+  .es-col-up, .es-col-down{ font-size:11px; }
+  .es-col.is-latest .es-col-up, .es-col.is-latest .es-col-down{ font-size:11.5px; }
+  .es-bar{ width:36px; height:160px; }
+  .es-btable{ flex:none; width:100%; gap:8px; }
+  .es-btable col.c1{ width:84px; } .es-btable col.c2{ width:56px; } .es-btable col.c3{ width:48px; }
+  .es-btable col.c4{ width:70px; } .es-btable col.c5{ width:66px; }
+  .es-btable thead th, .es-ntable thead th{ font-size:11px; }
+  .es-btable tbody th, .es-btable td, .es-ntable tbody th, .es-ntable td{ font-size:12px; }
+  .es-btable:not(.is-expanded) tr.es-xm{ display:none; }
+
+  .es-sortnote{ align-self:flex-start; }
+  .es-sides{ grid-template-columns:1fr; gap:20px; }
+  .es-mv-head{ display:none; }
+  .es-mv{ height:60px; grid-template-columns:52px minmax(0,1fr) 40px 58px; grid-template-areas:"t hz bar chg" ". meta meta meta";
+    column-gap:10px; row-gap:4px; align-content:center; }
+  .es-mv-t{ grid-area:t; font-size:14px; line-height:18px; }
+  .es-mv-hz{ grid-area:hz; flex-direction:row; align-items:baseline; gap:6px; }
+  .es-mv-bar{ grid-area:bar; width:40px; }
+  .es-mv-chg{ grid-area:chg; font-size:13.5px; line-height:18px; }
+  .es-mv-prior, .es-mv-latest, .es-mv-an, .es-mv-asof{ display:none; }
+  .es-mv-meta{ grid-area:meta; display:flex; gap:10px; font:400 11.5px/16px var(--font-ui); color:var(--muted); white-space:nowrap; }
+  .es-mv-meta .f{ font-size:11.5px; }
+
+  .es-xp{ grid-template-columns:1fr; gap:16px; }
+  .es-combo{ padding-right:0; }
+  .es-q{ font-size:15px; font-weight:500; }
+  .es-q-clear{ width:44px; height:44px; }
+  .es-lb li{ height:48px; }
+  .es-card-t{ font-size:20px; line-height:24px; font-weight:600; }
+  .es-card dl{ display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; }
+  .es-card dl > div{ flex-direction:column; gap:2px; justify-content:flex-start; }
+  .es-card dt{ font-size:11px; line-height:14px; }
+  .es-card dd{ text-align:left; font:600 14px/18px var(--fig); }
+  .es-card .es-card-l{ grid-column:1 / -1; order:3; }
+  .es-card .es-card-l dd{ font-size:13px; }
+  .es-pick{ height:44px; font-size:13.5px; }
+  .es-readout{ grid-template-columns:repeat(3,minmax(0,1fr)); justify-content:stretch; row-gap:12px; min-height:0; }
+  .es-readout dd{ font-size:14px; line-height:18px; }
+  .es-chart{ height:178px; }
+  .es-cover-l{ padding-left:0; }
+  #es-cover-svg{ height:64px; }
+  #es-cover-svg .es-cov-n{ font-size:10px; }
+  .es-skel--ro{ height:52px; } .es-skel--chart{ height:160px; } .es-skel--cover{ height:48px; }
+
+  .es-method-cols{ display:flex; flex-direction:column; gap:0; border:1px solid var(--hair); border-radius:var(--r-ctl,8px); overflow:hidden; }
+  .es-acc{ gap:0; }
+  .es-acc + .es-acc{ border-top:1px solid var(--hair); }
+  .es-acc > summary{ min-height:52px; padding:0 14px; cursor:pointer; }
+  .es-acc-tt{ display:flex; flex-direction:column; gap:1px; }
+  .es-acc .es-h3{ font-size:14.5px; line-height:19px; font-weight:500; }
+  .es-acc-sub{ display:block; font:400 11.5px/15px var(--font-ui); color:var(--muted); }
+  .es-acc[open] .es-acc-sub{ display:none; }
+  .es-acc-chev{ display:block; color:var(--muted); }
+  .es-acc[open] .es-acc-chev{ transform:rotate(180deg); color:var(--text); }
+  .es-acc[open]{ background:var(--panel2); }
+  .es-acc-body{ padding:0 14px 14px; }
+  .es-acc .es-facts, .es-acc .es-dec{ background:var(--panel); }
+  .es-not li{ font-size:13.5px; line-height:19px; }
+  .es-inset code{ font-size:12.5px; line-height:18px; }
+  .es-doclink{ box-sizing:border-box; width:100%; min-height:44px; padding:0 14px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); font-size:13.5px; }
+  .es-method-rendered{ justify-content:space-between; padding-top:2px; }
+}
+</style>
 </head>
 <body class="page-es">
 
@@ -576,7 +1010,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -796,10 +1230,10 @@
     </div>
   </div>
   
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f8cda39d" defer></script>
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -831,7 +1265,7 @@
       <p class="es-eyebrow"><span class="l-en">Information→Price</span><span class="l-zh">信息→价格</span></p>
       <h1 class="es-h1"><span class="l-en">Expectation Surface</span><span class="l-zh">预期曲面</span></h1>
       <p class="es-promise"><span class="l-en">How analyst EPS and revenue estimates moved, session by session.</span><span class="l-zh">分析师 EPS 与营收预期如何逐期变动。</span></p>
-      <p class="es-latest"><span><span class="l-en">Latest session</span><span class="l-zh">最新采集期</span></span><time class="f" datetime="2026-11-10T09:04:50.646504Z">2026-11-10</time></p>
+      <p class="es-latest"><span><span class="l-en">Latest session</span><span class="l-zh">最新采集期</span></span><time class="f" datetime="2026-11-12T08:27:22.347662Z">2026-11-12</time></p>
       <p class="es-answer" id="es-answer"><span class="l-en">More EPS upgrades than cuts this session. More revenue upgrades than cuts.</span><span class="l-zh">本期 EPS 上调多于下调；营收预期上调多于下调。</span></p>
       <div class="es-hero-foot">
         <span class="es-context"><span class="l-en">Context only — not a trade cue.</span><span class="l-zh">仅供背景参考，非交易提示。</span></span>
@@ -857,7 +1291,7 @@
       </button>
       <div class="es-note" id="es-id-note" role="region" data-a-en="Identity disclosure" data-a-zh="身份披露">
         
-        <p><span class="l-en">Identity is partly matched. 5 vendor names are not yet matched to a security and 1,501 aliases have no effective date, so both are left out. Counts on this page cover matched securities only.</span><span class="l-zh">身份仅部分匹配。5 个供应商名称尚未匹配到证券，1,501 个别名缺少生效日期，两者均未计入。本页计数仅涵盖已匹配证券。</span></p>
+        <p><span class="l-en">Identity is partly matched. 5 vendor names are not yet matched to a security and 1,502 aliases have no effective date, so both are left out. Counts on this page cover matched securities only.</span><span class="l-zh">身份仅部分匹配。5 个供应商名称尚未匹配到证券，1,502 个别名缺少生效日期，两者均未计入。本页计数仅涵盖已匹配证券。</span></p>
         
         <p class="es-note-dec"><span><span class="l-en">Decision</span><span class="l-zh">决定</span></span><code>DEC:ITP-R1-COMPLETE-DEGRADED-2026-10-07</code></p>
       </div>
@@ -866,7 +1300,7 @@
         <p class="es-chip es-chip--clock">
           <span class="es-dot" aria-hidden="true"></span>
           <span class="es-chip-k"><span class="l-en">Source snapshot</span><span class="l-zh">源数据快照</span></span>
-          <time class="es-chip-v f" id="es-src-at" datetime="2026-11-10T09:04:50.646504Z">2026-11-10 09:04 UTC</time>
+          <time class="es-chip-v f" id="es-src-at" datetime="2026-11-12T08:27:22.347662Z">2026-11-12 08:27 UTC</time>
           
         </p>
         <p class="es-chip es-chip--stale" id="es-stale" hidden><svg class="es-ic" width="13" height="13" viewBox="0 0 16 16" aria-hidden="true">
@@ -876,7 +1310,7 @@
           <span id="es-stale-text"></span></p>
         <p class="es-chip es-chip--clock">
           <span class="es-chip-k"><span class="l-en">Rendered</span><span class="l-zh">页面生成</span></span>
-          <time class="es-chip-v f" id="es-rendered-at" datetime="2026-11-12T02:26:38.829376Z">2026-11-12 02:26 UTC</time>
+          <time class="es-chip-v f" id="es-rendered-at" datetime="2026-11-12T11:25:25.231377Z">2026-11-12 11:25 UTC</time>
         </p>
       </div>
     </div>
@@ -892,18 +1326,18 @@
       </div>
       <div class="es-head-aside">
         <p class="es-asof"><span><span class="l-en">As of</span><span class="l-zh">截至</span></span>
-          <time class="f" datetime="2026-11-10T09:04:50.646504Z"><span class="es-long">2026-11-10 09:04 UTC</span><span class="es-short">11-10</span></time>
+          <time class="f" datetime="2026-11-12T08:27:22.347662Z"><span class="es-long">2026-11-12 08:27 UTC</span><span class="es-short">11-12</span></time>
           </p>
       </div>
     </div>
     
     <dl class="es-tiles">
       <div class="es-tile"><dt><span class="l-en">Observations</span><span class="l-zh">观测值</span></dt>
-        <dd class="es-tile-v f">787,192</dd>
+        <dd class="es-tile-v f">798,224</dd>
         <dd class="es-tile-sub"><span class="l-en">Estimate values captured</span><span class="l-zh">已采集的预期数值</span></dd>
         </div>
       <div class="es-tile"><dt><span class="l-en">Securities</span><span class="l-zh">证券</span></dt>
-        <dd class="es-tile-v f">1,509</dd>
+        <dd class="es-tile-v f">1,510</dd>
         <dd class="es-tile-sub"><span class="l-en">Matched to a security</span><span class="l-zh">已匹配到证券</span></dd>
         </div>
       <div class="es-tile"><dt><span class="l-en">Metrics</span><span class="l-zh">指标</span></dt>
@@ -917,13 +1351,13 @@
         
         </div>
       <div class="es-tile"><dt><span class="l-en">Sessions</span><span class="l-zh">采集期</span></dt>
-        <dd class="es-tile-v f">73</dd>
+        <dd class="es-tile-v f">74</dd>
         <dd class="es-tile-sub"><span class="l-en">Irregular captures</span><span class="l-zh">采集间隔不固定</span></dd>
         </div>
       <div class="es-tile"><dt><span class="l-en">Date span</span><span class="l-zh">时间跨度</span></dt>
         
         <dd class="es-tile-v"><span class="f">11</span><span class="es-tile-unit"><span class="l-en">weeks</span><span class="l-zh">周</span></span></dd>
-        <dd class="es-tile-sub f"><span class="es-long">2026-08-25 – 2026-11-10</span><span class="es-short">08-25 – 11-10</span></dd>
+        <dd class="es-tile-sub f"><span class="es-long">2026-08-25 – 2026-11-12</span><span class="es-short">08-25 – 11-12</span></dd>
         </div>
       <div class="es-tile"><dt><span class="l-en">Median covering analysts</span><span class="l-zh">覆盖分析师中位数</span></dt>
         
@@ -934,7 +1368,7 @@
         
         <dd class="es-tile-pair"><span class="f">5</span>
           <span><span class="es-long"><span class="l-en">vendor names unmatched</span><span class="l-zh">个供应商名称未匹配</span></span><span class="es-short"><span class="l-en">names unmatched</span><span class="l-zh">个名称未匹配</span></span></span></dd>
-        <dd class="es-tile-pair"><span class="f">1,501</span>
+        <dd class="es-tile-pair"><span class="f">1,502</span>
           <span><span class="es-long"><span class="l-en">aliases with no effective date</span><span class="l-zh">个别名无生效日期</span></span><span class="es-short"><span class="l-en">aliases undated</span><span class="l-zh">个别名缺少日期</span></span></span></dd>
         
       </div>
@@ -954,7 +1388,7 @@
       </div>
       <div class="es-head-aside">
         <p class="es-asof"><span><span class="l-en">As of</span><span class="l-zh">截至</span></span>
-          <time class="f" datetime="2026-11-10T09:04:50.646504Z"><span class="es-long">2026-11-10 09:04 UTC</span><span class="es-short">11-10</span></time>
+          <time class="f" datetime="2026-11-12T08:27:22.347662Z"><span class="es-long">2026-11-12 08:27 UTC</span><span class="es-short">11-12</span></time>
           </p>
         
         <fieldset class="es-seg" data-target="breadth">
@@ -3837,8 +4271,8 @@
     
     
     <p class="es-foot">
-      <span class="es-long"><span class="l-en">A change is the session-over-session move in each security's average estimate, per metric and horizon. Unchanged means no move at the reported precision. The first capture, 2026-08-25, has no prior session, so 73 captures give 58 compared sessions. Answer rule: one side leads when it is more than 1.2 times the other.</span><span class="l-zh">变动指每只证券在各指标与期限上的平均预期较上一采集期的变化。不变指在报告精度下无变化。首次采集（2026-08-25）没有上一期可比，因此 73 次采集对应 58 个可比较采集期。判断规则：一方超过另一方的 1.2 倍时视为占多。</span></span>
-      <span class="es-short"><span class="l-en">A change is the session-over-session move in an estimate's average. 73 captures give 58 compared sessions. One side leads when it is more than 1.2 times the other.</span><span class="l-zh">变动指某项预期平均值相对上一采集期的变化。73 次采集形成 58 个可比较采集期。一方超过另一方的 1.2 倍时视为占多。</span></span>
+      <span class="es-long"><span class="l-en">A change is the session-over-session move in each security's average estimate, per metric and horizon. Unchanged means no move at the reported precision. The first capture, 2026-08-25, has no prior session, so 74 captures give 58 compared sessions. Answer rule: one side leads when it is more than 1.2 times the other.</span><span class="l-zh">变动指每只证券在各指标与期限上的平均预期较上一采集期的变化。不变指在报告精度下无变化。首次采集（2026-08-25）没有上一期可比，因此 74 次采集对应 58 个可比较采集期。判断规则：一方超过另一方的 1.2 倍时视为占多。</span></span>
+      <span class="es-short"><span class="l-en">A change is the session-over-session move in an estimate's average. 74 captures give 58 compared sessions. One side leads when it is more than 1.2 times the other.</span><span class="l-zh">变动指某项预期平均值相对上一采集期的变化。74 次采集形成 58 个可比较采集期。一方超过另一方的 1.2 倍时视为占多。</span></span>
     </p>
     
   </section>
@@ -3850,7 +4284,7 @@
     <div class="es-head">
       <div class="es-head-text">
         <h2 class="es-h2" id="es-movers-h"><span class="l-en">Largest consensus moves</span><span class="l-zh">预期变动最大</span></h2>
-        <p class="es-sub"><span class="l-en">Latest session against the prior one, 2026-11-09 to 2026-11-10. Change in the average estimate.</span><span class="l-zh">最新采集期与上一期对比（2026-11-09 至 2026-11-10），平均预期的变化。</span></p>
+        <p class="es-sub"><span class="l-en">Latest session against the prior one, 2026-11-10 to 2026-11-12. Change in the average estimate.</span><span class="l-zh">最新采集期与上一期对比（2026-11-10 至 2026-11-12），平均预期的变化。</span></p>
       </div>
       <div class="es-head-aside">
         <p class="es-sortnote"><svg class="es-ic" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
@@ -3862,7 +4296,7 @@
     
     <div class="es-empty">
       <p class="es-empty-t"><span class="l-en">No moves between sessions</span><span class="l-zh">两期之间无变动</span></p>
-      <p><span class="l-en">No consensus moves to show. No average estimate changed between 2026-11-09 and 2026-11-10 for EPS.</span><span class="l-zh">暂无一致预期变动。2026-11-09 至 2026-11-10 期间 EPS 平均预期没有变化。</span></p>
+      <p><span class="l-en">No consensus moves to show. No average estimate changed between 2026-11-10 and 2026-11-12 for EPS.</span><span class="l-zh">暂无一致预期变动。2026-11-10 至 2026-11-12 期间 EPS 平均预期没有变化。</span></p>
       <p class="es-hint"><span class="l-en">Switch to Revenue, or open the breadth table for earlier sessions.</span><span class="l-zh">可切换至营收，或打开广度表查看更早的采集期。</span></p>
     </div>
     
@@ -3878,7 +4312,7 @@
       </div>
       <div class="es-head-aside">
         <p class="es-asof"><span><span class="l-en">As of</span><span class="l-zh">截至</span></span>
-          <time class="f" datetime="2026-11-10T09:04:50.646504Z"><span class="es-long">2026-11-10 09:04 UTC</span><span class="es-short">11-10</span></time>
+          <time class="f" datetime="2026-11-12T08:27:22.347662Z"><span class="es-long">2026-11-12 08:27 UTC</span><span class="es-short">11-12</span></time>
           </p>
       </div>
     </div>
@@ -3902,7 +4336,7 @@
             <p class="es-lb-note" aria-hidden="true"></p>
             <ul class="es-lb" id="es-lb" role="listbox" data-a-en="Matching tickers" data-a-zh="匹配的代码"></ul>
           </div>
-          <p class="es-hint" id="es-q-hint"><span class="l-en">Ticker, e.g. MU. 1,509 matched securities.</span><span class="l-zh">输入代码，如 MU。共 1,509 只已匹配证券。</span></p>
+          <p class="es-hint" id="es-q-hint"><span class="l-en">Ticker, e.g. MU. 1,510 matched securities.</span><span class="l-zh">输入代码，如 MU。共 1,510 只已匹配证券。</span></p>
           <p class="es-sr" id="es-q-status" role="status" aria-live="polite"></p>
           <div class="es-nomatch" id="es-nomatch" hidden>
             <p class="es-nomatch-t"><span class="l-en">No matching ticker</span><span class="l-zh">无匹配代码</span></p>
@@ -3989,7 +4423,7 @@
     <div class="es-head">
       <div class="es-head-text"><h2 class="es-h2" id="es-method-h"><span class="l-en">Method and provenance</span><span class="l-zh">方法与来源</span></h2>
         <p class="es-sub"><span class="l-en">Where these numbers come from, and what they must not be used for.</span><span class="l-zh">这些数字的来源，以及不得用于的用途。</span></p></div>
-      <p class="es-asof es-d-only"><span><span class="l-en">Rendered</span><span class="l-zh">页面生成</span></span><time class="f" datetime="2026-11-12T02:26:38.829376Z">2026-11-12 02:26 UTC</time></p>
+      <p class="es-asof es-d-only"><span><span class="l-en">Rendered</span><span class="l-zh">页面生成</span></span><time class="f" datetime="2026-11-12T11:25:25.231377Z">2026-11-12 11:25 UTC</time></p>
     </div>
     <div class="es-method-cols">
       <details class="es-acc" open data-m="closed">
@@ -4002,9 +4436,9 @@
             <div><dt><span class="l-en">Page schema</span><span class="l-zh">页面结构</span></dt><dd>expectation_surface.page.v1</dd></div>
             <div><dt><span class="l-en">Reader schema</span><span class="l-zh">读取结构</span></dt><dd>k3e.declared_capture_inspection.v1</dd></div>
             <div><dt><span class="l-en">Source file</span><span class="l-zh">源文件</span></dt><dd class="es-path">data/revisions/expectation_observations.parquet</dd></div>
-            <div><dt><span class="l-en">Source revision</span><span class="l-zh">源版本</span></dt><dd>caa42374</dd></div>
-            <div><dt><span class="l-en">Latest session</span><span class="l-zh">最新采集期</span></dt><dd>2026-11-10 09:04 UTC</dd></div>
-            <div><dt><span class="l-en">Prior session</span><span class="l-zh">上一采集期</span></dt><dd>2026-11-09 06:48 UTC</dd></div>
+            <div><dt><span class="l-en">Source revision</span><span class="l-zh">源版本</span></dt><dd>565791e6</dd></div>
+            <div><dt><span class="l-en">Latest session</span><span class="l-zh">最新采集期</span></dt><dd>2026-11-12 08:27 UTC</dd></div>
+            <div><dt><span class="l-en">Prior session</span><span class="l-zh">上一采集期</span></dt><dd>2026-11-10 09:04 UTC</dd></div>
           </dl>
         </div>
       </details>
@@ -4036,14 +4470,14 @@
       </details>
     </div>
     <a class="es-doclink" href="research/index.html"><svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5H10.5L13 5V13.5H3V2.5Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5.5 7.5H10.5M5.5 10H9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="l-en">Read the research program</span><span class="l-zh">阅读研究项目说明</span></a>
-    <p class="es-asof es-m-only es-method-rendered"><span><span class="l-en">Rendered</span><span class="l-zh">页面生成</span></span><time class="f" datetime="2026-11-12T02:26:38.829376Z">2026-11-12 02:26 UTC</time></p>
+    <p class="es-asof es-m-only es-method-rendered"><span><span class="l-en">Rendered</span><span class="l-zh">页面生成</span></span><time class="f" datetime="2026-11-12T11:25:25.231377Z">2026-11-12 11:25 UTC</time></p>
   </section>
 
 </main>
 
 
 <script type="application/json" id="es-strings">{"en": {"+1q": "Next Q", "+1y": "Next FY", "0q": "Current Q", "0y": "Current FY", "all_sessions": "All {n} compared sessions", "chart_cap": "{T} {metric}, {horizon}: average estimate by session from {first} to {last}, with the low-to-high range and the median.", "chart_live": "{date}: average {avg}, median {med}, low {lo}, high {hi}, {n} analysts.", "empty_series": "No {metric} estimates for {T} at this horizon. Choose another horizon.", "err_body": "Could not load {T}. The ticker file did not respond. The rest of the page still works.", "err_title": "Security failed to load", "fewer_sessions": "Fewer sessions", "hide_numbers": "Hide the numbers", "hint_after": "The view is a record of what analysts published, not a forecast of the price.", "hint_default": "Opened on {T}, the largest EPS move this session. The view is a record of what analysts published, not a forecast of the price.", "id_matched": "Matched", "id_resolved": "Identity resolved", "id_undated": "Alias undated \u00b7 excluded from identity", "id_unknown": "Identity unknown (aliases unavailable)", "id_unresolved": "Identity unresolved", "k_of_n": "{k} of {n} shown", "loading": "Loading {T} estimates", "match_one": "1 match. Arrow keys move, Enter opens, Esc closes.", "matches": "{k} matches. Arrow keys move, Enter opens, Esc closes.", "metric_eps": "EPS", "metric_rev": "revenue", "no_est": "(no estimates)", "nomatch_body": "No ticker matches \u201c{q}\u201d. The surface covers {n} matched securities; {u} vendor names are not matched yet.", "nomatch_title": "No matching ticker", "ntable_cap": "{T} {metric}, {horizon}, by session", "opt_meta": "{n} sessions, latest {md}", "retry": "Retry", "ro_no_prior": "No prior session", "show_fewer": "Show fewer", "show_more": "Show {n} more", "show_numbers": "Show the numbers", "stale": "Snapshot is {d} days old"}, "zh": {"+1q": "\u4e0b\u5b63", "+1y": "\u4e0b\u8d22\u5e74", "0q": "\u5f53\u5b63", "0y": "\u5f53\u8d22\u5e74", "all_sessions": "\u5168\u90e8 {n} \u4e2a\u53ef\u6bd4\u8f83\u91c7\u96c6\u671f", "chart_cap": "{T} {metric}\uff0c{horizon}\uff1a{first} \u81f3 {last} \u5404\u91c7\u96c6\u671f\u7684\u5e73\u5747\u9884\u671f\uff0c\u542b\u6700\u4f4e\u81f3\u6700\u9ad8\u533a\u95f4\u53ca\u4e2d\u4f4d\u6570\u3002", "chart_live": "{date}\uff1a\u5e73\u5747\u503c {avg}\uff0c\u4e2d\u4f4d\u6570 {med}\uff0c\u6700\u4f4e {lo}\uff0c\u6700\u9ad8 {hi}\uff0c{n} \u4f4d\u5206\u6790\u5e08\u3002", "empty_series": "{T} \u5728\u6b64\u671f\u9650\u6ca1\u6709 {metric} \u9884\u671f\u3002\u8bf7\u9009\u62e9\u5176\u4ed6\u671f\u9650\u3002", "err_body": "\u65e0\u6cd5\u52a0\u8f7d {T}\u3002\u8bc1\u5238\u6570\u636e\u6587\u4ef6\u65e0\u54cd\u5e94\u3002\u9875\u9762\u5176\u4ed6\u90e8\u5206\u4ecd\u53ef\u4f7f\u7528\u3002", "err_title": "\u8bc1\u5238\u52a0\u8f7d\u5931\u8d25", "fewer_sessions": "\u6536\u8d77", "hide_numbers": "\u9690\u85cf\u6570\u503c", "hint_after": "\u672c\u89c6\u56fe\u8bb0\u5f55\u5206\u6790\u5e08\u53d1\u5e03\u7684\u9884\u671f\uff0c\u5e76\u975e\u4ef7\u683c\u9884\u6d4b\u3002", "hint_default": "\u9ed8\u8ba4\u663e\u793a {T}\uff08\u672c\u671f EPS \u53d8\u52a8\u6700\u5927\uff09\u3002\u672c\u89c6\u56fe\u8bb0\u5f55\u5206\u6790\u5e08\u53d1\u5e03\u7684\u9884\u671f\uff0c\u5e76\u975e\u4ef7\u683c\u9884\u6d4b\u3002", "id_matched": "\u5df2\u5339\u914d", "id_resolved": "\u8eab\u4efd\u5df2\u89e3\u6790", "id_undated": "\u522b\u540d\u65e0\u65e5\u671f \u00b7 \u4e0d\u8ba1\u5165\u8eab\u4efd", "id_unknown": "\u8eab\u4efd\u672a\u77e5\uff08\u522b\u540d\u4e0d\u53ef\u7528\uff09", "id_unresolved": "\u8eab\u4efd\u672a\u89e3\u6790", "k_of_n": "\u663e\u793a {k} / \u5171 {n}", "loading": "\u6b63\u5728\u52a0\u8f7d {T} \u7684\u9884\u671f", "match_one": "1 \u4e2a\u5339\u914d\u3002\u65b9\u5411\u952e\u79fb\u52a8\uff0c\u56de\u8f66\u6253\u5f00\uff0cEsc \u5173\u95ed\u3002", "matches": "{k} \u4e2a\u5339\u914d\u3002\u65b9\u5411\u952e\u79fb\u52a8\uff0c\u56de\u8f66\u6253\u5f00\uff0cEsc \u5173\u95ed\u3002", "metric_eps": "EPS", "metric_rev": "\u8425\u6536", "no_est": "\uff08\u65e0\u9884\u671f\uff09", "nomatch_body": "\u6ca1\u6709\u4e0e\u300c{q}\u300d\u5339\u914d\u7684\u4ee3\u7801\u3002\u672c\u9875\u6db5\u76d6 {n} \u53ea\u5df2\u5339\u914d\u8bc1\u5238\uff1b\u53e6\u6709 {u} \u4e2a\u4f9b\u5e94\u5546\u540d\u79f0\u5c1a\u672a\u5339\u914d\u3002", "nomatch_title": "\u65e0\u5339\u914d\u4ee3\u7801", "ntable_cap": "{T} {metric}\uff0c{horizon}\uff0c\u6309\u91c7\u96c6\u671f", "opt_meta": "{n} \u4e2a\u91c7\u96c6\u671f\uff0c\u6700\u8fd1 {md}", "retry": "\u91cd\u8bd5", "ro_no_prior": "\u65e0\u4e0a\u4e00\u671f", "show_fewer": "\u6536\u8d77", "show_more": "\u518d\u663e\u793a {n} \u9879", "show_numbers": "\u67e5\u770b\u6570\u503c", "stale": "\u5feb\u7167\u5df2\u6709 {d} \u5929"}}</script>
-<script type="application/json" id="es-default-series">{"horizon": "+1y", "securities": 1509, "ticker": "", "unresolved": 5}</script>
+<script type="application/json" id="es-default-series">{"horizon": "+1y", "securities": 1510, "ticker": "", "unresolved": 5}</script>
 <script>
 (function () {
   'use strict';
@@ -4856,6 +5290,6 @@
   } catch (e) {}
 })();
 </script>
-<script src="theme.js?v=aa83d371" defer></script>
+<script src="theme.js"></script>
 </body>
 </html>
