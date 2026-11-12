@@ -1,13 +1,13 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-11-11",
-  "generated_utc": "2026-11-11T12:54:37Z",
+  "as_of": "2026-11-12",
+  "generated_utc": "2026-11-12T11:56:21Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 328,
     "by_state": {
-      "overdue": 212,
-      "due": 5,
+      "overdue": 213,
+      "due": 4,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
@@ -466,7 +466,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 6932,
-        "n_past_check_by": 6772
+        "n_past_check_by": 6802
       },
       "allowed_actions": [
         "inspect",
@@ -514,7 +514,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 96,
-        "n_past_check_by": 94
+        "n_past_check_by": 95
       },
       "allowed_actions": [
         "inspect",
@@ -2383,7 +2383,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 14879,
-        "n_past_check_by": 9482
+        "n_past_check_by": 9754
       },
       "allowed_actions": [
         "inspect",
@@ -2930,7 +2930,7 @@
       "date_state": "overdue",
       "readiness": {
         "n_open": 203,
-        "n_past_check_by": 166
+        "n_past_check_by": 173
       },
       "allowed_actions": [
         "inspect",
@@ -7044,8 +7044,8 @@
       "clock_type": "come_back_on",
       "due_at": "2026-11-04",
       "as_of": "2026-10-07",
-      "state": "due",
-      "date_state": "due",
+      "state": "overdue",
+      "date_state": "overdue",
       "readiness": {
         "horizon_d": 21,
         "status": "registered"
@@ -7074,7 +7074,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-11",
+      "due_at": "2026-11-12",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7106,7 +7106,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-11",
+      "due_at": "2026-11-12",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7138,7 +7138,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-11",
+      "due_at": "2026-11-12",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -7170,7 +7170,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-11-11",
+      "due_at": "2026-11-12",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
