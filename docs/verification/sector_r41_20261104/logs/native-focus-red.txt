@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Volumes/Mastermind/agent-workspaces/macro/web/sector-r41-dossier-cycle-impl-20261104-sol-001/docs/verification/sector_r41_20261104/verify_native_receiver.py", line 120, in <module>
+    assert page.evaluate('document.activeElement===document.querySelector(".sdc-state .sdc-title")'), 'supersession must keep focus on the replacement state, not body'
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: supersession must keep focus on the replacement state, not body

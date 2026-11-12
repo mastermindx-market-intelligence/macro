@@ -1,0 +1,4 @@
+outcome: captured
+pages: 1  states: 24/24 captured
+manifest: /Volumes/Mastermind/agent-workspaces/macro/web/sector-r41-dossier-cycle-impl-20261104-sol-001/mockups/evidence/sector-r41-dossier-component/manifest.json
+smells: /Volumes/Mastermind/agent-workspaces/macro/web/sector-r41-dossier-cycle-impl-20261104-sol-001/mockups/evidence/sector-r41-dossier-component/smells.json

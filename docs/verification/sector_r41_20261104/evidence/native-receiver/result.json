@@ -1,0 +1,130 @@
+{
+  "status": "passed",
+  "source_ref": "a97b8f50cdf3a16ad8cba3a52edf76fc9ef30f14",
+  "dependency_sha256": {
+    "scripts/__init__.py": "099b906ef95aec83bbfc4d84b5ceb4f050e57a5fd2840e99faa9dc202e90c378",
+    "scripts/_cycles_payload.py": "261fd72e212f241c9fdef07d5ef507b83866c2af0ccfebef1843cf3ca4d0c24f",
+    "engine/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "engine/sector_generation_guard.py": "c16d0c74fb35f2c19a5ffda816f988e8435b5b6608690d1df53f871319417ae3",
+    "templates/sector_cycles.js": "34176d7d7f056b4096959b6677419a778ea2e777fc94b191c34aae73476b9dcc"
+  },
+  "scenarios": [
+    {
+      "scenario": "verified",
+      "status": "passed",
+      "receipt": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-ef2435b2a438d7b6141bc9faf41937f45a8bed173f14662d40ad1894104f7fab",
+        "asOf": "2026-10-30",
+        "region": "us",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "us_sectors_11",
+          "sha256": "db2650cf7e309a16c56d520660d92a521cade5b22394e9b1580c7785c7a000bf"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "verified",
+          "narr": "pending",
+          "dna": "pending"
+        },
+        "sources": {
+          "dna": {
+            "status": "unverified"
+          },
+          "narr": {
+            "status": "unverified"
+          }
+        }
+      }
+    },
+    {
+      "scenario": "mixed_sector_series",
+      "status": "passed",
+      "receipt": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-ef2435b2a438d7b6141bc9faf41937f45a8bed173f14662d40ad1894104f7fab",
+        "asOf": "2026-10-30",
+        "region": "us",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "us_sectors_11",
+          "sha256": "db2650cf7e309a16c56d520660d92a521cade5b22394e9b1580c7785c7a000bf"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "incompatible_publication",
+          "narr": "pending",
+          "dna": "pending"
+        },
+        "sources": {
+          "dna": {
+            "status": "unverified"
+          },
+          "narr": {
+            "status": "unverified"
+          }
+        }
+      }
+    },
+    {
+      "scenario": "mixed_basket_series",
+      "status": "passed",
+      "receipt": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "verified",
+        "publicationId": "cycp1-ef2435b2a438d7b6141bc9faf41937f45a8bed173f14662d40ad1894104f7fab",
+        "asOf": "2026-10-30",
+        "region": "us",
+        "spine": {
+          "schema": "sector_cycles.sector_spine.v1",
+          "scope": "us_sectors_11",
+          "sha256": "db2650cf7e309a16c56d520660d92a521cade5b22394e9b1580c7785c7a000bf"
+        },
+        "parts": {
+          "core": "verified",
+          "series": "incompatible_publication",
+          "narr": "pending",
+          "dna": "pending"
+        },
+        "sources": {
+          "dna": {
+            "status": "unverified"
+          },
+          "narr": {
+            "status": "unverified"
+          }
+        }
+      }
+    },
+    {
+      "scenario": "tampered_core",
+      "status": "passed",
+      "receipt": {
+        "schema": "sector_cycles.evidence.v1",
+        "status": "integrity_failed",
+        "publicationId": "cycp1-ef2435b2a438d7b6141bc9faf41937f45a8bed173f14662d40ad1894104f7fab",
+        "asOf": "2026-10-30",
+        "region": "us",
+        "spine": null,
+        "parts": {
+          "core": "integrity_failed",
+          "series": "pending",
+          "narr": "pending",
+          "dna": "pending"
+        },
+        "sources": {
+          "dna": {
+            "status": "unverified"
+          },
+          "narr": {
+            "status": "unverified"
+          }
+        }
+      }
+    }
+  ],
+  "scope": "Dossier component consumes real producer/verifier; not full native route or production proof"
+}

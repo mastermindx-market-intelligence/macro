@@ -1,0 +1,98 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__ test_cycle_dossier_boundary[legacy_classifier_is_never_labelled_ontology] ___
+
+case = 'legacy_classifier_is_never_labelled_ontology'
+
+    @pytest.mark.parametrize("case", CASES, ids=CASES.keys())
+    def test_cycle_dossier_boundary(case: str) -> None:
+        assert MODULE.is_file(), "Dossier Cycle source component is not implemented"
+        if not NODE:
+            pytest.skip("Node is required for the real JavaScript boundary test")
+        result = subprocess.run(
+            [NODE, "-e", PRELUDE + CASES[case], str(MODULE)],
+            text=True, capture_output=True, timeout=15, check=False,
+        )
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: node:internal/assert/utils:146
+E           throw error;
+E           ^
+E
+E         AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+E
+E         'Downturn' !== null
+E
+E             at [eval]:34:32
+E             at runScriptInThisContext (node:internal/vm:219:10)
+E             at node:internal/process/execution:483:12
+E             at [eval]-wrapper:6:24
+E             at runScriptInContext (node:internal/process/execution:481:60)
+E             at evalFunction (node:internal/process/execution:315:30)
+E             at evalTypeScript (node:internal/process/execution:327:3)
+E             at node:internal/main/eval_string:71:3 {
+E           generatedMessage: true,
+E           code: 'ERR_ASSERTION',
+E           actual: 'Downturn',
+E           expected: null,
+E           operator: 'strictEqual',
+E           diff: 'simple'
+E         }
+E
+E         Node.js v26.5.0
+E
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/homebrew/bin/node', '-e', "\nconst assert = require('node:assert/strict');\nconst api = r...ION',\n  actual: 'Downturn',\n  expected: null,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v26.5.0\n").returncode
+
+tests/test_sector_dossier_cycle_js.py:230: AssertionError
+__ test_cycle_dossier_boundary[phase_fallback_provenance_remains_inspectable] __
+
+case = 'phase_fallback_provenance_remains_inspectable'
+
+    @pytest.mark.parametrize("case", CASES, ids=CASES.keys())
+    def test_cycle_dossier_boundary(case: str) -> None:
+        assert MODULE.is_file(), "Dossier Cycle source component is not implemented"
+        if not NODE:
+            pytest.skip("Node is required for the real JavaScript boundary test")
+        result = subprocess.run(
+            [NODE, "-e", PRELUDE + CASES[case], str(MODULE)],
+            text=True, capture_output=True, timeout=15, check=False,
+        )
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: node:internal/assert/utils:146
+E           throw error;
+E           ^
+E
+E         AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+E         + actual - expected
+E
+E         + undefined
+E         - 'legacy_fallback'
+E
+E             at [eval]:33:14
+E             at runScriptInThisContext (node:internal/vm:219:10)
+E             at node:internal/process/execution:483:12
+E             at [eval]-wrapper:6:24
+E             at runScriptInContext (node:internal/process/execution:481:60)
+E             at evalFunction (node:internal/process/execution:315:30)
+E             at evalTypeScript (node:internal/process/execution:327:3)
+E             at node:internal/main/eval_string:71:3 {
+E           generatedMessage: true,
+E           code: 'ERR_ASSERTION',
+E           actual: undefined,
+E           expected: 'legacy_fallback',
+E           operator: 'strictEqual',
+E           diff: 'simple'
+E         }
+E
+E         Node.js v26.5.0
+E
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/opt/homebrew/bin/node', '-e', "\nconst assert = require('node:assert/strict');\nconst api = r...ual: undefined,\n  expected: 'legacy_fallback',\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v26.5.0\n").returncode
+
+tests/test_sector_dossier_cycle_js.py:230: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_sector_dossier_cycle_js.py::test_cycle_dossier_boundary[legacy_classifier_is_never_labelled_ontology]
+FAILED tests/test_sector_dossier_cycle_js.py::test_cycle_dossier_boundary[phase_fallback_provenance_remains_inspectable]
+2 failed, 31 deselected in 6.16s
