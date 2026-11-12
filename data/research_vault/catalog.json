@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T15:23:22.664311+00:00",
-  "count": 3235,
+  "generated_at": "2026-11-12T15:39:00.962769+00:00",
+  "count": 3236,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -401,6 +401,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 66,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-novvllwfkjm-750d16",
+      "title": "Boyd Group (BYD)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:45:32Z",
+      "summary_points": [
+        "Valuation Discount vs Peers: Boyd trades at 6.9x NTM EBITDA (vs historical 8.2x/10.3x and peer average 11x-12x), with target price C$185.00 (vs current C$111.32) implying 66% upside.",
+        "EBITDA Downgrades from Claims Softening: FY26-29 adj.",
+        "EBITDA revised lower due to 3Q miss and 4Q outlook; reparable claims down 7.0% YoY (2024-2025), increasing sales/margin risk.",
+        "Capital Allocation at Discount: Share repurchases (C$13.6m, 167k shares) viewed as compelling at depressed valuation, with NCIB allowing 2.6m shares remaining and net debt/EBITDA at 2.9x.",
+        "Key Upside Catalysts: Potential for improved repair claims, margin expansion (operating leverage), and M&A pace; downside risk from elevated loss rates and inflationary pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
