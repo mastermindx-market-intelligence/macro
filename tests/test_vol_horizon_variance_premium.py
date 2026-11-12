@@ -322,3 +322,85 @@ def test_no_silent_activation_module_contract():
     for name in ("register", "REGISTRY", "schedule", "main", "run", "activate", "publish"):
         assert not hasattr(mod, name)
     assert mod.AUTHORITY == "none"
+
+
+# Public-leg measurement admission. Synthetic inputs only; no frozen trial rerun.
+def _admission_record(route, implied=0.004, physical=0.003):
+    basis = _basis()
+    implied_leg = vp.ImpliedLeg(
+        implied, basis, "strip", 100,
+        {"tail_strikes": "synthetic", "overnight": "included"},
+    )
+    physical_leg = _phys(
+        physical, basis, "forecast" if route == "ante" else "forward_label",
+        info=100 if route == "ante" else 130,
+    )
+    builder = vp.build_premium if route == "ante" else vp.ex_post_premium
+    return builder(implied_leg, physical_leg)
+
+
+@pytest.mark.parametrize("route", ["ante", "post"])
+@pytest.mark.parametrize("slot", ["implied", "physical"])
+@pytest.mark.parametrize(
+    "value",
+    [np.nan, np.inf, -np.inf, -0.004, True, False, np.bool_(True),
+     np.bool_(False), None, "0.004", complex(0.004, 0), [0.004],
+     np.array([0.004]), np.array(0.004), 10 ** 400],
+    ids=["nan", "inf", "negative-inf", "negative", "true", "false",
+         "numpy-true", "numpy-false", "none", "numeric-string", "complex",
+         "list", "array", "zero-dim-array", "overflowing-integer"],
+)
+def test_variance_admission_refuses_invalid_measurement(route, slot, value):
+    with pytest.raises(ValueError, match="variance must be"):
+        _admission_record(route, **{slot: value})
+
+
+@pytest.mark.parametrize("leg", ["implied", "physical"])
+@pytest.mark.parametrize("value", [np.nan, np.inf, -0.004, False])
+def test_variance_admission_is_at_constructor_not_only_builder(leg, value):
+    with pytest.raises(ValueError, match="variance must be"):
+        if leg == "implied":
+            vp.ImpliedLeg(value, _basis(), "strip", 100,
+                          {"tail_strikes": "synthetic", "overnight": "included"})
+        else:
+            _phys(value)
+
+
+@pytest.mark.parametrize("route", ["ante", "post"])
+@pytest.mark.parametrize("slot", ["implied", "physical"])
+@pytest.mark.parametrize("value", [0.0, -0.0, 0.004, 1, np.float64(0.004), np.int64(0)])
+def test_variance_admission_preserves_measured_nonnegative_value(route, slot, value):
+    import json
+
+    record = _admission_record(route, **{slot: value})
+    assert record.authority == "none"
+    actual = record.implied_variance if slot == "implied" else record.physical_variance
+    assert actual == float(value)
+    assert math.copysign(1.0, actual) == math.copysign(1.0, float(value))
+    json.dumps(vp.assemble_history([record])[0].to_dict(), allow_nan=False)
+
+
+@pytest.mark.parametrize("route", ["ante", "post"])
+def test_variance_admission_keeps_negative_premium_valid(route):
+    record = _admission_record(route, implied=0.001, physical=0.004)
+    assert record.premium_variance == -0.003
+    assert record.authority == "none"
+
+
+@pytest.mark.parametrize("ask", [np.nan, np.inf, -100.0])
+def test_variance_admission_refuses_invalid_native_strip_leg(ask):
+    raw = vp.strip_variance(
+        [90.0, 100.0, 110.0], [12.0, 4.0, 1.0], [12.0, 4.0, 1.0],
+        [1.0, 4.0, 12.0], [ask, 4.0, 12.0], 100.0, 0.0, 30 / 365,
+    )
+    with pytest.raises(ValueError, match="variance must be"):
+        vp.strip_leg(raw, _basis(), 100)
+
+
+def test_variance_admission_preserves_valid_native_strip_leg():
+    raw = vp.strip_variance(
+        [90.0, 100.0, 110.0], [12.0, 4.0, 1.0], [12.0, 4.0, 1.0],
+        [1.0, 4.0, 12.0], [1.0, 4.0, 12.0], 100.0, 0.0, 30 / 365,
+    )
+    leg = vp.strip_leg(raw, _basis(), 100)
+    assert leg.value == pytest.approx(0.012122028364452607)
