@@ -1,32 +1,32 @@
 {
-  "08698d48e1a9": {
-    "name_en": "Cross-sector cluster \u00b7 Basic Materials + Energy",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Basic Materials + Energy",
-    "score": 57.2
+  "09e43053c530": {
+    "name_en": "Cross-sector cluster \u00b7 Technology + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Technology + Industrials",
+    "score": 52.2
   },
-  "0b4ec15377f6": {
-    "name_en": "Emerging Industrials cluster",
-    "name_zh": "\u65b0\u5174 Industrials \u96c6\u7fa4",
-    "score": 51.5
+  "1e05ffb7093d": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Consumer Cyclical",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Consumer Cyclical",
+    "score": 59.4
   },
-  "61a55f63f603": {
+  "382c381207b1": {
     "name_en": "Emerging Basic Materials cluster",
     "name_zh": "\u65b0\u5174 Basic Materials \u96c6\u7fa4",
-    "score": 55.0
+    "score": 56.9
   },
-  "71f0aa208556": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Cyclical + Real Estate",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Cyclical + Real Estate",
-    "score": 51.6
+  "3aa342f3e923": {
+    "name_en": "Emerging Consumer Cyclical cluster",
+    "name_zh": "\u65b0\u5174 Consumer Cyclical \u96c6\u7fa4",
+    "score": 51.7
   },
-  "bbb7d32e69fd": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
-    "score": 56.1
+  "67eba2a661da": {
+    "name_en": "Cross-sector cluster \u00b7 Technology + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Technology + Industrials",
+    "score": 47.5
   },
-  "cfcb580681ec": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Basic Materials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Basic Materials",
-    "score": 41.1
+  "c4d41c2e7b83": {
+    "name_en": "Cross-sector cluster \u00b7 Consumer Cyclical + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Cyclical + Industrials",
+    "score": 42.4
   }
 }

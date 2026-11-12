@@ -116,6 +116,108 @@ DOL_JULY_30_LISTING = b"""
 """
 
 
+def _claims_identity_event(day="2026-07-30"):
+    return {"event_id": "claims:" + day, "type": "CLAIMS", "date": day,
+            "time_et": "08:30", "label": "Initial jobless claims", "is_context_only": True}
+
+
+def _claims_identity_tick(monkeypatch, body, *, state=None, day="2026-07-30", hour=15, minute=0):
+    event = _claims_identity_event(day)
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *a, **k: [event])
+    if state is None:
+        state = {"coverage_started_at_by_type": {"CLAIMS": day + "T12:00:00+00:00"},
+                 "sources": {}, "publications": {}}
+    now = datetime.fromisoformat(day).replace(hour=hour, minute=minute, tzinfo=timezone.utc)
+    return wrp.detect(now=now, state=state, fetcher=lambda *a: _http_result(body))
+
+
+def test_claims_identity_undated_or_other_week_listing_cannot_publish(monkeypatch):
+    for body in (
+        DOL_JULY_30_LISTING.replace(b"20260730", b"20260723").replace(b"July 30, 2026", b"July 23, 2026"),
+        DOL_JULY_30_LISTING.replace(b"20260730", b"20260806").replace(b"July 30, 2026", b"August 6, 2026"),
+        CLAIMS_JULY_30_PAGE,  # raw claims-shaped page is not a dated listing entry
+        DOL_JULY_30_LISTING.replace(b"July 30, 2026", b"July 23, 2026"),  # even with matching URL
+        DOL_JULY_30_LISTING.replace(b"July 30, 2026", b"July 32, 2026"),
+    ):
+        _, payload = _claims_identity_tick(monkeypatch, body)
+        assert not any(row.get("data_ready") for row in payload["publications"])
+        assert all("actual" not in row for row in payload["publications"])
+
+
+def test_claims_identity_wrong_reference_week_cannot_be_verified(monkeypatch):
+    _, payload = _claims_identity_tick(monkeypatch, DOL_JULY_30_LISTING.replace(b"July 25", b"July 18"))
+    row = payload["publications"][0]
+    assert row["status"] == "published_unparsed" and row["data_ready"] is False
+    assert "actual" not in row
+
+
+def test_claims_identity_printed_date_supports_dol_path_forms(monkeypatch):
+    for path in (b"/newsroom/releases/eta/eta20260730", b"/index.php/newsroom/releases/eta/eta20260730", b"/node/186182"):
+        body = DOL_JULY_30_LISTING.replace(b"/newsroom/releases/eta/eta20260730", path)
+        _, payload = _claims_identity_tick(monkeypatch, body)
+        row = payload["publications"][0]
+        assert row["data_ready"] is True
+        assert row["actual"]["initial_claims"] == 219_000
+        assert row["source_document_date"] == "2026-07-30"
+        assert row["source_url"] == "https://www.dol.gov/index.php" + path.decode().removeprefix("/index.php")
+        assert wrp._claims_publication_is_bound(row)
+
+
+def test_claims_identity_node_needs_own_date_not_another_nodes_date(monkeypatch):
+    other = DOL_JULY_30_LISTING.replace(b"/newsroom/releases/eta/eta20260730", b"/node/111")
+    other = other.replace(b"July 30, 2026", b"July 23, 2026").replace(b"219,000", b"999,000")
+    correct = DOL_JULY_30_LISTING.replace(b"/newsroom/releases/eta/eta20260730", b"/node/222")
+    correct = correct.replace(b"<h3>", b"<img src='icon.png'><br/><h3>")
+    _, payload = _claims_identity_tick(monkeypatch, other + correct)
+    row = payload["publications"][0]
+    assert row["actual"]["initial_claims"] == 219_000
+    assert row["source_url"].endswith("/node/222")
+
+
+def test_claims_identity_holiday_and_year_boundary_reference(monkeypatch):
+    for day, printed, week, expected in (
+        ("2026-11-25", b"November 25, 2026", b"November 21", "November 21, 2026"),
+        ("2026-01-02", b"January 2, 2026", b"December 27", "December 27, 2025"),
+    ):
+        body = DOL_JULY_30_LISTING.replace(b"20260730", day.replace("-", "").encode())
+        body = body.replace(b"July 30, 2026", printed).replace(b"July 25", week)
+        _, payload = _claims_identity_tick(monkeypatch, body, day=day)
+        row = payload["publications"][0]
+        assert row["data_ready"] is True
+        assert row["actual"]["reference_period"] == expected
+        assert all(metric["period"] == expected for metric in row["actual"]["metrics"])
+
+
+def test_claims_identity_withdraws_retained_bad_value_and_existing_retry_recovers(monkeypatch):
+    source_url = "https://www.dol.gov/index.php/newsroom/releases/eta"
+    bad = {**_claims_identity_event(), "source_id": "dol_claims", "status": "published",
+           "data_ready": True, "source_url": source_url, "source_sha256": "a" * 64,
+           "content_sha256": "a" * 64, "verified_at": "2026-07-30T12:30:41+00:00",
+           "actual": {"initial_claims": 194000, "reference_period": "July 18, 2026", "source_url": source_url}}
+    state = {"coverage_started_at_by_type": {"CLAIMS": "2026-07-30T12:00:00+00:00"},
+             "sources": {}, "publications": {"claims:2026-07-30": bad}}
+    old_listing = DOL_JULY_30_LISTING.replace(b"20260730", b"20260723")
+    state2, payload = _claims_identity_tick(monkeypatch, old_listing, state=state, hour=23, minute=15)
+    row = payload["publications"][0]
+    assert row["status"] == "published_unparsed" and row["data_ready"] is False
+    assert "actual" not in row and "verified_at" not in row
+    assert row["source_url"] == source_url and row["source_sha256"] == "a" * 64
+    assert "withdrawn" in row["note"]
+    assert bad["data_ready"] is True  # never mutate the caller's prior observation
+    _, recovered = _claims_identity_tick(monkeypatch, DOL_JULY_30_LISTING, state=state2, hour=23, minute=30)
+    row = recovered["publications"][0]
+    assert row["data_ready"] is True and row["actual"]["initial_claims"] == 219_000
+    assert wrp._claims_publication_is_bound(row)
+
+
+def test_claims_identity_keeps_verified_facts_when_listing_rolls_forward(monkeypatch):
+    state, payload = _claims_identity_tick(monkeypatch, DOL_JULY_30_LISTING)
+    before = dict(payload["publications"][0])
+    future_listing = DOL_JULY_30_LISTING.replace(b"20260730", b"20260806").replace(b"July 30, 2026", b"August 6, 2026")
+    _, payload2 = _claims_identity_tick(monkeypatch, future_listing, state=state, minute=15)
+    assert payload2["publications"][0] == before
+
+
 def _bls_cpi_feed(*, event_date: str, content: str = CPI_ENTRY_TEXT) -> bytes:
     return f"""
     <feed xmlns="http://www.w3.org/2005/Atom">
@@ -1526,6 +1628,175 @@ def test_cutover_guards_keep_manual_recovery():
     assert "data/regime/latest.json data/market_state/latest.json data/reflexes/" in self_heal
     legacy = (root / ".github" / "workflows" / "heartbeat.yml").read_text()
     assert 'VPS_LIVE_PRIMARY: ${{ vars.VPS_LIVE_PRIMARY }}' in legacy
+
+
+def test_regime_self_heal_runs_after_the_us_close():
+    """VPS cutover must retain a pass after the just-settled US session."""
+    root = Path(__file__).resolve().parents[1]
+    workflow = (root / ".github" / "workflows" / "regime-self-heal.yml").read_text()
+
+    # Keep the morning recovery pass for a missed prior close. 21:15 UTC is
+    # 16:15 EST / 17:15 EDT, safely after the regular US close year-round.
+    assert '- cron: "5 14 * * 1-5"' in workflow
+    assert '- cron: "15 21 * * 1-5"' in workflow
+
+
+def test_regime_self_heal_dispatches_macro_render_only_after_repair_push():
+    """A fresh canonical pointer must reach the existing static render carrier."""
+    root = Path(__file__).resolve().parents[1]
+    workflow = (root / ".github" / "workflows" / "regime-self-heal.yml").read_text()
+
+    assert "actions: write" in workflow
+    assert "id: commit" in workflow
+    assert 'echo "changed=false" >> "$GITHUB_OUTPUT"' in workflow
+    assert 'echo "changed=true" >> "$GITHUB_OUTPUT"' in workflow
+    assert "if: ${{ steps.commit.outputs.changed == 'true' }}" in workflow
+    assert "gh workflow run render.yml" in workflow
+    assert '--ref main' in workflow
+    assert '-f scope=macro' in workflow
+    assert '-f runner=macstudio' in workflow
+
+
+@pytest.mark.parametrize(
+    ("checkout_kind", "repair_changed"),
+    [("main", True), ("main", False), ("feature", True), ("detached", True)],
+    ids=["main-repair", "main-noop", "feature-refused", "detached-refused"],
+)
+def test_regime_self_heal_binds_repair_push_to_main(
+    tmp_path, checkout_kind, repair_changed
+):
+    """The actual commit step must not publish to a configured decoy ref."""
+    import os
+    import subprocess
+
+    import yaml
+
+    root = Path(__file__).resolve().parents[1]
+    workflow = yaml.safe_load(
+        (root / ".github" / "workflows" / "regime-self-heal.yml").read_text()
+    )
+    job = workflow["jobs"]["reconcile"]
+    assert job["if"] == (
+        "${{ github.ref == 'refs/heads/main' && "
+        "(github.event_name == 'workflow_dispatch' || vars.VPS_LIVE_PRIMARY == 'true') }}"
+    )
+    checkout = next(
+        step for step in job["steps"]
+        if str(step.get("uses", "")).startswith("actions/checkout@")
+    )
+    assert checkout["with"]["ref"] == "main"
+    commit = next(step for step in job["steps"] if step.get("id") == "commit")
+    dispatch = next(
+        step for step in job["steps"]
+        if step.get("name") == "dispatch visible Macro render"
+    )
+    assert dispatch["if"] == "${{ steps.commit.outputs.changed == 'true' }}"
+
+    # Only local temporary repositories are used. Inherited Git config must
+    # not redirect these operations or supply a worktree/index from CI.
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update({
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_TERMINAL_PROMPT": "0",
+    })
+
+    def git(*args, cwd=tmp_path):
+        return subprocess.run(
+            ["git", *args], cwd=cwd, env=env, check=True,
+            capture_output=True, text=True, timeout=30,
+        ).stdout.strip()
+
+    remote = tmp_path / "origin.git"
+    seed = tmp_path / "seed"
+    work = tmp_path / "work"
+    git("init", "--bare", "--initial-branch=main", str(remote))
+    git("init", "--initial-branch=main", str(seed))
+    git("config", "user.name", "Fixture", cwd=seed)
+    git("config", "user.email", "fixture@example.invalid", cwd=seed)
+    paths = (
+        "data/regime/latest.json",
+        "data/market_state/latest.json",
+        "data/reflexes/example.json",
+    )
+    baseline = '{"marker":"baseline"}\n'
+    repaired = '{"marker":"repaired"}\n'
+    for relative in paths:
+        target = seed / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(baseline, encoding="utf-8")
+    # Execute the actual shared main-push guard inside the local checkout.
+    policy = seed / "scripts" / "ci" / "push_retry.sh"
+    policy.parent.mkdir(parents=True, exist_ok=True)
+    policy.write_bytes((root / "scripts" / "ci" / "push_retry.sh").read_bytes())
+    git("add", ".", cwd=seed)
+    git("commit", "-m", "fixture baseline", cwd=seed)
+    git("remote", "add", "origin", str(remote), cwd=seed)
+    git("push", "origin", "HEAD:refs/heads/main", "HEAD:refs/heads/decoy", cwd=seed)
+    git("clone", str(remote), str(work))
+    git("config", "user.name", "Fixture", cwd=work)
+    git("config", "user.email", "fixture@example.invalid", cwd=work)
+    # A bare git push would update decoy and leave the rendered main stale.
+    git("config", "remote.origin.push", "HEAD:refs/heads/decoy", cwd=work)
+    if checkout_kind == "feature":
+        git("checkout", "-b", "feature", cwd=work)
+    elif checkout_kind == "detached":
+        git("checkout", "--detach", cwd=work)
+    if repair_changed:
+        for relative in paths:
+            (work / relative).write_text(repaired, encoding="utf-8")
+
+    def remote_heads():
+        listing = git(
+            "--git-dir", str(remote), "for-each-ref",
+            "--format=%(refname) %(objectname)", "refs/heads",
+        )
+        return dict(line.split(" ", 1) for line in listing.splitlines())
+
+    before_refs = remote_heads()
+    before_head = git("rev-parse", "HEAD", cwd=work)
+    before_index = git("ls-files", "--stage", cwd=work)
+    before_status = git("status", "--porcelain=v1", cwd=work)
+    output = tmp_path / "github-output"
+    env["GITHUB_OUTPUT"] = str(output)
+    env["GITHUB_WORKSPACE"] = str(work)
+    result = subprocess.run(
+        ["bash", "-c", commit["run"]], cwd=work, env=env,
+        capture_output=True, text=True, timeout=30,
+    )
+    output_lines = output.read_text().splitlines()
+    assert output_lines[0] == "changed=false"
+    # GitHub uses the last value when the same output name is written twice.
+    outputs = dict(line.split("=", 1) for line in output_lines)
+    after_refs = remote_heads()
+
+    if checkout_kind != "main":
+        assert result.returncode != 0
+        assert "canonical regime repair requires local main branch" in result.stdout
+        assert outputs["changed"] == "false"
+        assert after_refs == before_refs
+        assert git("rev-parse", "HEAD", cwd=work) == before_head
+        assert git("ls-files", "--stage", cwd=work) == before_index
+        assert git("status", "--porcelain=v1", cwd=work) == before_status
+        assert git("config", "user.name", cwd=work) == "Fixture"
+        for relative in paths:
+            assert (work / relative).read_text() == repaired
+    elif repair_changed:
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert outputs["changed"] == "true"
+        assert after_refs.keys() == before_refs.keys()
+        assert after_refs["refs/heads/main"] != before_refs["refs/heads/main"]
+        assert after_refs["refs/heads/decoy"] == before_refs["refs/heads/decoy"]
+        assert git("rev-parse", "HEAD", cwd=work) == after_refs["refs/heads/main"]
+        for relative in paths:
+            assert git(
+                "--git-dir", str(remote), "show", f"refs/heads/main:{relative}"
+            ) == repaired.strip()
+    else:
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert outputs["changed"] == "false"
+        assert after_refs == before_refs
+        assert git("rev-parse", "HEAD", cwd=work) == before_head
 
 
 def test_live_setup_retires_legacy_only_after_smoke_and_timer_enable():
