@@ -1,160 +1,173 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-11-06",
-  "generated_at": "2026-11-10T13:17:22.276180+00:00",
+  "as_of": "2026-11-11",
+  "generated_at": "2026-11-12T14:44:20.366875+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-11-06-FNV-20261110131722-1",
-      "ticker": "FNV",
-      "name": "Franco-Nevada",
+      "id": "2026-11-11-AMG-20261112144420-1",
+      "ticker": "AMG",
+      "name": "Affiliated Managers Group",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The bottoming turn and positive moving-average structure are offset by a mixed weekly regime, late left-translated cycle, contracting liquidity and imminent earnings risk. The validated event-risk control argues for waiting rather than treating the board rank as return evidence.",
+      "thesis": "The engine flags a Constructive bottoming setup at a 52-week high (off_high 0%), but the 'building a base' label sits on a left-translated cycle with mixed bigger-picture trend and contracting liquidity \u2014 the validated edge here is only the risk reshape (half-size, macro tax), not forward alpha. Watch, don't chase.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Above 50-day and 200-day averages; MACD positive",
-        "Weekly timeframe has not turned; prior cycle was left-translated",
-        "Earnings in 1 day can override the setup"
+        "verdict: Constructive \u2014 building a base",
+        "ladder_label: BOTTOMING / TURN SIGNALED, entry_tag HALF SIZE",
+        "cycle.translation: left (bearish structural tell)",
+        "technical.off_52w_high_pct: 0.0 (at highs)",
+        "trust_tier: event-edge (confluence, not standalone alpha)"
       ],
-      "dissent": "The rejected low and renewed momentum could develop into persistent relative strength despite the incomplete weekly turn.",
+      "dissent": "Momentum is intact (above 50/200dma, MACD positive, fresh swing low) and a leader can keep leading; fading it just because it's extended has been wrong ~83% of the time on this desk.",
       "falsifier": {
-        "text": "The weekly trend turns up and FNV outperforms the S&P 500 over the next 20 trading days.",
+        "text": "A decisive break below the new swing low (under ~350.54) or a weekly close below the 10-day average",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-04",
-      "engine_verdict": "Neutral \u2014 no clear edge"
+      "check_by": "2026-12-09",
+      "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-11-06-BTG-20261110131722-2",
-      "ticker": "BTG",
-      "name": "B2Gold",
+      "id": "2026-11-11-PWR-20261112144420-2",
+      "ticker": "PWR",
+      "name": "Quanta Services Inc",
+      "lean": "constructive",
+      "conviction": "medium",
+      "horizon_d": 30,
+      "thesis": "A validated SUE leg (z 2.37) plus revisions (z 1.65) and favorable November/December seasonality support a Leader call; the engine's own caution is the accounting flag, so the constructive lean rides the event-edge while respecting the verify-before-sizing risk control.",
+      "evidence": [
+        "verdict: Leader \u00b7 accounting warning \u2014 verify before buying",
+        "selection.basis.sue: z 2.37, fresh_days 74 (validated tier)",
+        "revision z 1.65, alpha z 1.05",
+        "seasonality: Nov +3.0% avg (59% up), Dec +1.6% (57%)",
+        "cycle.translation: right"
+      ],
+      "dissent": "Quality axis is negative (-0.5) with an accounting warning, SUE is 74 days stale (past its native quarterly cadence), and the name is below both the 50dma and 200dma \u2014 the factor profile is broadly weak.",
+      "falsifier": {
+        "text": "A close below the recent cycle low near 509.06 or a fresh accounting-quality deterioration that invalidates the SUE leg",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "PWR",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 30
+        }
+      },
+      "check_by": "2026-12-23",
+      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
+    },
+    {
+      "id": "2026-11-11-HUM-20261112144420-3",
+      "ticker": "HUM",
+      "name": "Humana",
+      "lean": "cautious",
+      "conviction": "medium",
+      "horizon_d": 20,
+      "thesis": "This is not merely extended \u2014 the engine's cycle_blocked is true, entry is blocked (z -1.47), and the caution explicitly warns of chasing at 42% above trend with a crowded, stretched sector basket; this is an actual bearish/overbought-timing signal, distinct from a leader that's simply at highs.",
+      "evidence": [
+        "verdict: Extended \u2014 wait for a pullback",
+        "conviction.cycle_blocked: true",
+        "entry.z: -1.47, pct 29 (blocked)",
+        "caution: Trades 42% above long-term trend line",
+        "caution: Health Care basket crowded and stretched"
+      ],
+      "dissent": "Price is above the 50/200dma with MACD positive and revisions z 1.34; momentum can persist and the pullback may not come within the horizon.",
+      "falsifier": {
+        "text": "A pullback to at least the 10-day average followed by a resumption above the recent high, or price holding above current level for two straight weeks",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "HUM",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 20
+        }
+      },
+      "check_by": "2026-12-09",
+      "engine_verdict": "Extended \u2014 wait for a pullback"
+    },
+    {
+      "id": "2026-11-11-TLN-20261112144420-4",
+      "ticker": "TLN",
+      "name": "Talen Energy",
+      "lean": "cautious",
+      "conviction": "medium",
+      "horizon_d": 30,
+      "thesis": "The verdict says Lagging \u2014 relative weakness, the selection axis is negative (SUE z -1.03, revisions -0.77, momentum -0.28), and fundamentals are deteriorating (negative net income, -122% NI growth, negative ROE) with a factor composite of -1.37; this is a genuinely weak name, not a leader to be given the benefit of the doubt.",
+      "evidence": [
+        "verdict: Lagging \u2014 relative weakness",
+        "selection.z: -0.68, SUE z -1.03",
+        "quality.z: -0.99, composite: -1.37",
+        "fundamentals: net_income -219M, ROE -20%, NI growth -121.9%",
+        "cycle.translation: left"
+      ],
+      "dissent": "Entry axis is actually positive (z 0.48, not blocked) with the name off only -13.6% from highs and a fresh swing low; the bottoming setup could spark a tactical bounce.",
+      "falsifier": {
+        "text": "A confirmed swing-low hold above 316.23 followed by a weekly close above the 50dma, or a material positive revision",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "TLN",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 30
+        }
+      },
+      "check_by": "2026-12-23",
+      "engine_verdict": "Lagging \u2014 relative weakness"
+    },
+    {
+      "id": "2026-11-11-CEG-20261112144420-5",
+      "ticker": "CEG",
+      "name": "Constellation Energy",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The daily bottoming signal is improving, but the larger trend remains mixed and its miner basket is below its long-term trend. The validated basket and macro-risk haircuts offset the unblocked entry setup without establishing a bearish relative view.",
+      "thesis": "The engine itself says no clear edge: selection z is -0.29 (SUE -0.86, alpha -0.77), the 27% drawdown from highs means the bottoming setup is a repair attempt against a right-translated, late-investor-phase cycle with contracting liquidity; neutral is the only supported direction.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Swing low held; price reclaimed a rising 10-day average",
-        "Above 50-day and 200-day averages; MACD positive",
-        "Gold Miners basket is below its long-term trend"
+        "verdict: Neutral \u2014 no clear edge",
+        "selection.z: -0.29, SUE z -0.86",
+        "off_52w_high_pct: -27.1",
+        "cycle.investor_phase: late"
       ],
-      "dissent": "Right-translated cycle structure and fresh upward momentum could produce sustained relative outperformance.",
+      "dissent": "Quality is clean (accruals -0.215, accounting clean) and the name is fundamentally profitable with a 9% margin; the drawdown may already price in the negative surprise, leaving room for a bounce.",
       "falsifier": {
-        "text": "BTG establishes an upward weekly trend and outperforms the S&P 500 over the next 20 trading days.",
+        "text": "A weekly close back above the 200-day average on expanding volume, confirming trend repair",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-04",
+      "check_by": "2026-12-09",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-11-06-GFI-20261110131722-3",
-      "ticker": "GFI",
-      "name": "Gold Fields",
+      "id": "2026-11-11-BRKR-20261112144420-6",
+      "ticker": "BRKR",
+      "name": "Bruker",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The daily reversal is constructive, but GFI remains slightly below its 200-day average, nearly 30% below its high and tied to a miner basket below its long-term trend. Those validated risk controls justify patience, while the active bottoming signal is too strong to support a directional short.",
+      "thesis": "The recent SUE is strongly negative (z -1.69, 6 days fresh) and fundamentals are weak (negative margin, negative ROE, -107% NI growth), while the bottoming cycle is middle-translated and only approaching the band \u2014 the engine's neutral verdict correctly reflects no directional edge.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Turn signaled with positive MACD and price above the 50-day average",
-        "Price is 0.5% below the 200-day average",
-        "Gold Miners basket is below its long-term trend"
+        "verdict: Neutral \u2014 no clear edge",
+        "selection.basis.sue: z -1.69, fresh_days 6 (validated tier, negative)",
+        "fundamentals: net_margin -0.2%, ROE -0.3%, NI growth -107.3%",
+        "cycle.translation: middle"
       ],
-      "dissent": "The large drawdown and failure to regain the 200-day average could mark a weak rebound that resumes underperforming.",
+      "dissent": "Entry axis is positive (z 0.50, not blocked) and the name is only -6.2% off highs with momentum z +0.54 \u2014 the technical setup is actually decent.",
       "falsifier": {
-        "text": "GFI loses its recent bottoming structure and underperforms the S&P 500 over the next 20 trading days.",
+        "text": "A daily close above the 52-week high (~66.5) on above-average volume",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-04",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-11-06-AEM-20261110131722-4",
-      "ticker": "AEM",
-      "name": "Agnico Eagle Mines",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "AEM has reclaimed both major averages and produced a daily turn, but its weekly trend is unresolved and the late, left-translated cycle weakens follow-through odds. The miner-basket and macro-risk controls support a watch posture, not a short based only on stretch.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Above 50-day and 200-day averages; MACD positive",
-        "Weekly timeframe has not turned",
-        "Late, stretched and left-translated cycle",
-        "Gold Miners basket is below its long-term trend"
-      ],
-      "dissent": "The reclaimed averages and positive residual momentum context could carry AEM higher before the weekly signal confirms.",
-      "falsifier": {
-        "text": "AEM turns its weekly trend up and outperforms the S&P 500 over the next 20 trading days.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-12-04",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-11-06-CNMD-20261110131722-5",
-      "ticker": "CNMD",
-      "name": "CONMED Corporation",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "CNMD's trend and daily turn remain intact, so extension alone is not grounds for a relative short. The validated extension and lottery-spike brakes, broad-tape stress and weak earnings growth argue against chasing, while the selection evidence is essentially flat.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Board state: HOLD \u2014 EXTENDED",
-        "Entry axis includes extension and lottery-spike controls",
-        "Above 50-day and 200-day averages; MACD positive",
-        "Net income growth: -64.4%"
-      ],
-      "dissent": "Deteriorating earnings, left-translated cycle structure and a lottery-spike flag could precede sharp relative underperformance.",
-      "falsifier": {
-        "text": "CNMD breaks below its 50-day average and underperforms the S&P 500 over the next 15 trading days.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-11-27",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-11-06-UHS-20261110131722-6",
-      "ticker": "UHS",
-      "name": "Universal Health Services",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "Strong profitability and cash generation coexist with a positive daily turn, but the selection axis is weak and the health-care basket is crowded and stretched. The validated extension and tape-risk controls support waiting rather than chasing or shorting intact momentum.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Board state: HOLD \u2014 EXTENDED",
-        "Selection axis at the 45th percentile",
-        "Health Care equal-weight basket is crowded and stretched",
-        "ROE 20.5%; net income growth 30.4%; CFO exceeds net income"
-      ],
-      "dissent": "Weak residual momentum and negative revisions could overwhelm the healthy fundamentals and turn the rebound into relative underperformance.",
-      "falsifier": {
-        "text": "UHS loses its 50-day average and underperforms the S&P 500 over the next 20 trading days.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-12-04",
+      "check_by": "2026-12-09",
       "engine_verdict": "Neutral \u2014 no clear edge"
     }
   ],

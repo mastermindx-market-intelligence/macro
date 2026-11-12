@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.covariance_spine.v1",
-  "as_of": "2026-11-10",
+  "as_of": "2026-11-12",
   "display_only": true,
   "authority": "context",
   "descriptive_not_gauntleted": true,
@@ -8,7 +8,7 @@
     "rates": {
       "dominant_pc_share": 0.8276,
       "first3_var": 0.9639,
-      "effective_dimension_pr": 1.4367,
+      "effective_dimension_pr": 1.4368,
       "pc3_to_pc4_gap": null,
       "oos_pctile_vs_null": null,
       "curvature_stability_tag": "stable",
@@ -19,8 +19,8 @@
       "source": "data/regime/latest.json#yield_curve"
     },
     "factors": {
-      "dominant_factor_pc_share": 0.6489,
-      "effective_factor_bets_pr": 2.1959,
+      "dominant_factor_pc_share": 0.6525,
+      "effective_factor_bets_pr": 2.1764,
       "n_factors_used": 7,
       "n_obs_used": 252,
       "caveat": "~3y history, annual fundamentals; descriptive only",
@@ -28,11 +28,11 @@
     },
     "dispersion": {
       "state": "lean_in",
-      "dispersion_pctile": 0.94,
-      "avg_corr": 0.09,
-      "dominant_equity_pc_share": 0.1765,
-      "effective_universe_bets_pr": 21.48,
-      "idio_dispersion_share": 0.552
+      "dispersion_pctile": 0.99,
+      "avg_corr": 0.11,
+      "dominant_equity_pc_share": 0.1791,
+      "effective_universe_bets_pr": 21.0,
+      "idio_dispersion_share": 0.5199
     },
     "lobes": {
       "effective_independent_lobes": 1.0,
@@ -68,7 +68,7 @@
           "desk:narrative_brain": 7,
           "desk:policy_intent": 10,
           "desk:radar": 5,
-          "desk:stock_desk": 19,
+          "desk:stock_desk": 20,
           "desk:thematic_desk": 17,
           "hk_board": 20,
           "intel_hub": 15,
@@ -115,7 +115,7 @@
       "desk:narrative_brain": 7,
       "desk:policy_intent": 10,
       "desk:radar": 5,
-      "desk:stock_desk": 19,
+      "desk:stock_desk": 20,
       "desk:thematic_desk": 17,
       "hk_board": 20,
       "intel_hub": 15,
