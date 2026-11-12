@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T22:16:59.552481+00:00",
-  "count": 3255,
+  "generated_at": "2026-11-12T23:16:07.108405+00:00",
+  "count": 3258,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -121,6 +121,68 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-dfnvf28sjr9-991fb6",
+      "title": "GS Chryssafis 10 Charts We're Talking About 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:45:33Z",
+      "summary_points": [
+        "Hyperscaler Debt Risk: IG Hyperscaler Spread (162.9) widens significantly vs IG 30y Spread (115), indicating elevated debt risk in hyperscaler segments relative to investment-grade bonds.",
+        "NVDA Leadership Catalyst: Leadership transition risk (analogous to Apple post-Jobs) may depress stock until business momentum clarity; current price offers favorable risk/reward with ~80% EPS growth.",
+        "Fed Hike Probability: 35% chance of four Fed hikes (higher terminal rate), 50% of three hikes with cuts to 3.25-3.5% later; hot CPI and geopolitical risks constrain Fed policy.",
+        "AI Infrastructure Link: \"AI/Data Centers\" highlighted as relevant to voter priorities (economy focus), directly linking AI infrastructure growth to economic policy drivers.",
+        "Wealth Effect Dependency: 2027 growth hinges on equities (AI stocks driving 20% upside/downside scenarios), with H1 2026 equity surges driving >0.4pp annualized consumption growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nwddwoitkyu-5def51",
+      "title": "Swisscom (SCMN.S) Data Update Changes to estimates",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:03:31Z",
+      "summary_points": [
+        "Sell Rating & Downside: Goldman Sachs rates Swisscom \"Sell\" with SFr470 target (33.9% downside from SFr711.50), citing valuation concerns despite modest revenue/EBITDA growth.",
+        "FCF Impact: 2027E FCF (co-defined) down -20.6%, driven by spectrum auction payment (CHF 360mn Q3 2027), pressuring cash flow fundamentals.",
+        "Target Price Trend: Declining target prices (495.00 Nov 2023 → 450.00 Nov 2024) reflect deteriorating analyst sentiment and downward revisions.",
+        "Key Risk: Leases included in net debt/EV add debt burden, pressuring margins amid low EPS growth (SFr24.56→27.27) and underperformance risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-milpduwrxwe-b70a01",
+      "title": "Brazil Energy Fuel distribution raising 4Q estimates, but Remain Neutral on longer term normalization in margins",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:01:10Z",
+      "summary_points": [
+        "Diesel Subsidy-Driven Margin Surge: Brazil's diesel pump prices rose sequentially (Sept/Oct) due to Petrobras subsidies and import support, lifting Vibra/Ultrapar’s Ipiranga 4Q Adj.",
+        "EBITDA margins to BRL 360-400/m³; subsidy policy risk threatens margin normalization.",
+        "Revised Valuation & Downgraded Targets: Target price cut to BRL 30.30 (Vibra) and BRL 32.40 (Ultrapar) from BRL 33.80/BRL 33.90, driven by +7% 2026E EBITDA margin revisions, higher risk-free rates, and reduced EV/EBITDA (4.4x).",
+        "Ultragaz Margin Resilience vs.",
+        "Ipiranga Volatility: Ultragaz’s EBITDA per ton (Exhibit 10) shows consistent YoY growth peaking in 2024, outperforming Ipiranga’s volatile EBITDA/m³ (Exhibit 9), signaling superior margin stability in gas distribution."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-izfasbj9sa0-3d10e7",
       "title": "Chips rebound, dollar stronger",

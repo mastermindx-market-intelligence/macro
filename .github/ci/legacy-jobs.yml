@@ -312,6 +312,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -6963,6 +6967,13 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7233,6 +7244,14 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: forward-log writer contract tests (keep-FIRST, cone edges, never-raise)
         run: python -m pytest tests/test_cycle_forward_log.py tests/test_cycle_phase_age.py tests/test_sector_cycles.py tests/test_cycle_rhythm_disclosure.py tests/test_hazard_parity.py tests/test_hazard_score.py -q -o faulthandler_timeout=480
+      # SI lane 8 (#10924, 2026-11-10): the two new sector-analytics suites join this
+      # battery — the B04/B12 boundary register and the v1.1 forecast-heads contract.
+      # This job is non-exclusive (no declared paths), so the wiring adds no closure
+      # obligations. The boundaries suite skips its data/hazard and data/baskets cases
+      # when those tracked artifacts are absent (sparse checkout); the hosted full
+      # checkout runs them.
+      - name: sector analytics boundaries and forecast heads (lane 8)
+        run: python -m pytest tests/test_sector_analytics_boundaries.py tests/test_sector_forecast_heads.py -q
 
   tier-gate:
     if: ${{ false }}
@@ -7551,6 +7570,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7974,6 +7997,9 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14619,6 +14645,10 @@ jobs:
       - "tests/test_china_universe_extras.py"
       - "tests/test_china_universe_index_constituents.py"
       - "tests/test_ths_collection_receipts.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/ledger_lane.py"
+      - "engine/member_breadth_ledger.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14782,6 +14812,10 @@ jobs:
       - "templates/china_altdata.html.j2"
       - "templates/options.html.j2"
       - "templates/stage_analysis.html.j2"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # W3.6 (R3-M3): the SAME instrument must show the SAME pos_v2/phase_v2 across every
     # page that renders it (cycle.html flagship / country_cycles / markets.html / sector),
     # within tolerance, OR carry a declared basis label explaining the difference.  A page
@@ -20707,6 +20741,10 @@ jobs:
       - research/cycle_masterplan/W41_PANEL_CENSUS.md
       - scripts/build_hazard_panel.py
       - scripts/fit_cycle_hazard.py
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23067,6 +23105,10 @@ jobs:
       - "scripts/worktree_sparse.py"
       - "tests/__init__.py"
       - "tests/test_leadership_rotation_contract.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # LR T03/T04/T05/T08 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the measured-product contract layer
     # engine/leadership_rotation_context.py — a stateless display-only projection over the
     # rotation_events / leadership_receipt / sector_cycles / ratio_lens owners (owners imported lazily).
@@ -23166,6 +23208,10 @@ jobs:
       - "tests/test_leadership_rotation_p0.py"
       - "tests/test_leadership_rotation_run.py"
       - "tests/test_leadership_rotation_study.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -23302,6 +23348,10 @@ jobs:
       - "tests/conftest.py"
       - "tests/fixtures/leadership_rotation/measured_read_v1.json"
       - "tests/test_leadership_measured_read.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25744,6 +25794,13 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25949,6 +26006,10 @@ jobs:
       - "tests/test_sector_completion_ownership_map.py"
       - "tests/test_sector_metric_definitions.py"
       - "tests/test_cycle_forward_log_fence.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
     # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
     # as_of) and never built from later prices; retained ledger receipts are never rewritten
@@ -33040,6 +33101,13 @@ jobs:
       - "tests/test_crypto_t15_transition_scaffold.py"
       - "tests/test_vector_scorecard_gap_semantics.py"
       - "scripts/calibrate_rate_inflation.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33846,6 +33914,9 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -35391,7 +35462,7 @@ jobs:
       # pyyaml/requests — all on the install line above — plus PIL transitively, which
       # blocking leaves 10-passed, so it is optional and stays off the line.
       - name: scripts/build_site.py panels and view-models — the dashboard organs the nightly render ships
-        run: python -m pytest tests/test_action_board_coherence.py tests/test_advanced_breadth.py tests/test_basket_integration.py tests/test_breadth_panel.py tests/test_c4_dollar.py tests/test_factor_ic_panel.py tests/test_macro_glance.py tests/test_macro_signals_vm.py tests/test_market_gamma.py tests/test_market_gamma_contract.py tests/test_regime_snap.py tests/test_spark_zone_band.py tests/test_ts_u3_dashboard_surfaces.py tests/test_vol_shock_scorecard.py tests/test_wiki_pageviews.py tests/test_inflation_units.py -q
+        run: python -m pytest tests/test_action_board_coherence.py tests/test_advanced_breadth.py tests/test_basket_integration.py tests/test_breadth_panel.py tests/test_c4_dollar.py tests/test_factor_ic_panel.py tests/test_macro_glance.py tests/test_macro_signals_vm.py tests/test_market_gamma.py tests/test_market_gamma_contract.py tests/test_regime_snap.py tests/test_spark_zone_band.py tests/test_ts_u3_dashboard_surfaces.py tests/test_vol_shock_scorecard.py tests/test_wiki_pageviews.py tests/test_inflation_units.py tests/test_group_breadth_history.py tests/test_member_breadth_ledger.py -q
       # Unrun backfill 2026-08-03: the Prophet Live P1 user-facing dashboard
       # surfaces join the lane that owns the dashboard organs. (Distinct from
       # the #4331 prophet-board suites, whose staging follows that PR's merge.)
@@ -36048,6 +36119,13 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -38602,6 +38680,10 @@ jobs:
       - "engine/theme_graph/structural_navigation.py"
       # Import closure added by the main 80f270c4 merge (the union of both sides; measured
       - "engine/theme_graph/curation_assertion.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # 2026-08-15 pack-9 / run 31881072256 on PR #5750: the first semantic step
     # (1253 tests) took 223.76s; the fusion step was SIGKILL'd when this
     # 5-minute logical-job deadline expired at 300s, and the post-kill
@@ -38647,6 +38729,9 @@ jobs:
       - "engine/theme_graph/materialize.py"
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -42651,6 +42736,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43284,6 +43373,10 @@ jobs:
       - "tests/test_leadership_rotation_countercases.py"
       - "tests/test_sector_central_measured_panel.py"
       - "scripts/calibrate_rate_inflation.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -48435,6 +48528,9 @@ jobs:
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -50985,6 +51081,10 @@ jobs:
       - "tests/test_commodity_workspace_contracts.js"
       - "tests/test_commodity_workspace_ui.js"
       - "tests/test_commodity_workspace_presentation.js"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 7
     runs-on: ubuntu-latest
     steps:
@@ -51233,6 +51333,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51434,6 +51538,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
