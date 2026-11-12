@@ -92,7 +92,9 @@ def test_alias_member_priced_under_its_listed_ticker(tmp_path):
     assert "MRSH" in asked and "MMC" not in asked
     assert "MMC" not in r["members"]["unpriced"]
     assert r["aliases"]["MMC"]["downloaded_as"] == "MRSH"
-    assert int(r["n_members_last_week"]["Alpha"]) == 12
+    alpha = r["counts_last_week"]["by_sector"]["Alpha"]
+    assert alpha["in_map"] == alpha["n_members"] == 12
+    assert alpha["n_fixed_200_13w"] <= alpha["n_has_200"] <= alpha["n_members"]
 
 
 def test_download_never_lands_in_the_collector_cache(tmp_path):
@@ -113,5 +115,27 @@ def test_comparison_recorded_never_a_gate(tmp_path):
     r = ext.build(bd, out, downloader=_fake("2026-11-06"), scratch=tmp_path / "s2", now=NOW)
     cmp = json.loads((out / f"{ext.LIVE_NAME}.meta.json").read_text())["comparison_vs_archive"]
     assert r["status"] == "written" and cmp["is_gate"] is False
-    assert abs(cmp["max_abs_diff"] - 50.0) < 1e-6
-    assert cmp["common_weeks"] > 0
+    assert abs(cmp["each_file_own_members"]["max_abs_diff"] - 50.0) < 1e-6
+    assert cmp["each_file_own_members"]["common_weeks"] > 0
+
+
+def test_comparison_records_both_member_sets(tmp_path):
+    """Own members vs common members: the second drops the names the archive could not price."""
+    bd, out = _members(tmp_path, _groups()), tmp_path / "out"
+    ext.build(bd, out, downloader=_fake("2026-11-06"), scratch=tmp_path / "s1", now=NOW)
+    live = pd.read_parquet(out / f"{ext.LIVE_NAME}.parquet")
+    live.to_parquet(out / ext.ARCHIVE_NAME, index=False)
+    (out / ext.ARCHIVE_META).write_text(json.dumps(
+        {"coverage": {"members_unpriced": 2, "unpriced_sample": ["A00", "A01"]}}))
+    (out / f"{ext.LIVE_NAME}.parquet").unlink()
+    ext.build(bd, out, downloader=_fake("2026-11-06"), scratch=tmp_path / "s2", now=NOW)
+    cmp = json.loads((out / f"{ext.LIVE_NAME}.meta.json").read_text())["comparison_vs_archive"]
+    assert cmp["each_file_own_members"]["max_abs_diff"] == 0.0
+    assert cmp["members_priced_only_in_live"] == {"count": 2, "tickers": ["A00", "A01"]}
+    assert "common_members_only" in cmp
+
+
+def test_truncated_archive_sample_skips_common_comparison(tmp_path):
+    meta = tmp_path / "m.json"
+    meta.write_text(json.dumps({"coverage": {"members_unpriced": 30, "unpriced_sample": ["X"]}}))
+    assert ext.archive_unpriced(meta) is None

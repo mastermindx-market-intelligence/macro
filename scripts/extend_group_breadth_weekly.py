@@ -54,6 +54,7 @@ from scripts.build_group_breadth_history import membership_current  # noqa: E402
 
 LIVE_NAME = "group_breadth_weekly_current_live"
 ARCHIVE_NAME = "group_breadth_weekly_current.parquet"
+ARCHIVE_META = "group_breadth_current.meta.json"
 PRICE_ALIASES = {"MMC": "MRSH", "FI": "FISV"}
 PERIOD = "2y"  # a 200-session average plus 26 weeks, with room
 BATCH = 100
@@ -100,10 +101,7 @@ def download_members(tickers: list[str], downloader: Downloader, period: str = P
     return raw.reindex(columns=sorted(set(tickers)))
 
 
-def comparison_vs_archive(live: pd.DataFrame, archive: pd.DataFrame | None) -> dict:
-    """Largest |difference| of the headline per sector over common weeks. Recorded, never a gate."""
-    if archive is None or not len(archive):
-        return {"common_weeks": 0, "note": "archive weekly file not found"}
+def _max_diff(live: pd.DataFrame, archive: pd.DataFrame) -> dict:
     m = archive.merge(live, on=["date", "group"], suffixes=("_a", "_l"))
     m = m.dropna(subset=[f"{HEADLINE}_a", f"{HEADLINE}_l"])
     if not len(m):
@@ -111,17 +109,46 @@ def comparison_vs_archive(live: pd.DataFrame, archive: pd.DataFrame | None) -> d
     m["d"] = (m[f"{HEADLINE}_a"] - m[f"{HEADLINE}_l"]).abs()
     worst = m.loc[m["d"].idxmax()]
     return {
-        "metric": HEADLINE,
         "common_weeks": int(m["date"].nunique()),
         "common_span": [str(m["date"].min().date()), str(m["date"].max().date())],
         "max_abs_diff_by_sector": {g: round(float(v), 4) for g, v in m.groupby("group")["d"].max().items()},
         "max_abs_diff": round(float(worst["d"]), 4),
         "max_at": {"group": str(worst["group"]), "date": str(pd.Timestamp(worst["date"]).date())},
-        "expectation": ("about 4.76 points at most on the members priced in both stores (ruling 27 "
-                        "section 3 test). This comparison uses each file's own members: the live "
-                        "file prices members the archive capture lacks, which widens the gap"),
+    }
+
+
+def comparison_vs_archive(live: pd.DataFrame, archive: pd.DataFrame | None,
+                          live_common: pd.DataFrame | None = None,
+                          live_only: list[str] | None = None) -> dict:
+    """Largest |difference| of the headline per sector over common weeks. Recorded, never a gate.
+
+    Two numbers, so the price-source part and the member-set part stay apart:
+    ``each_file_own_members`` compares the live file as published; ``common_members_only``
+    recomputes the live side on the members the archive file also prices.
+    """
+    if archive is None or not len(archive):
+        return {"common_weeks": 0, "note": "archive weekly file not found", "is_gate": False}
+    out = {
+        "metric": HEADLINE,
+        "each_file_own_members": _max_diff(live, archive),
+        "expectation": "about 4.76 points at most on the common members (ruling 27 section 3 test)",
         "is_gate": False,
     }
+    if live_common is not None:
+        out["common_members_only"] = _max_diff(live_common, archive)
+        out["members_priced_only_in_live"] = {"count": len(live_only or []), "tickers": sorted(live_only or [])}
+    return out
+
+
+def archive_unpriced(meta_path: Path) -> set[str] | None:
+    """Members the archive history could not price, from its own sidecar (None if not complete)."""
+    if not meta_path.exists():
+        return None
+    cov = json.loads(meta_path.read_text()).get("coverage", {})
+    names = cov.get("unpriced_sample")
+    if names is None or len(names) != cov.get("members_unpriced"):
+        return None  # a truncated sample cannot define the common set
+    return set(names)
 
 
 def _same(a: pd.DataFrame, b: pd.DataFrame) -> bool:
@@ -162,6 +189,13 @@ def build(breadth_dir: Path, out: Path, downloader: Downloader = yf_download,
     unpriced_by_group = mem[mem["ticker"].isin(unpriced)].groupby("group")["ticker"].apply(sorted).to_dict()
     arch_path = out / ARCHIVE_NAME
     archive = pd.read_parquet(arch_path) if arch_path.exists() else None
+    live_common, live_only = None, None
+    arch_unpriced = archive_unpriced(out / ARCHIVE_META)
+    if archive is not None and arch_unpriced is not None:
+        live_only = sorted(set(priced) & arch_unpriced)
+        keep = [t for t in closes.columns if t not in arch_unpriced]
+        live_common = gbh.weekly_fixed_set(closes[keep], mem[mem["ticker"].isin(keep)],
+                                           include_last_partial_week=False)
 
     meta = {
         "basis": "reconstructed_current_membership",
@@ -179,8 +213,20 @@ def build(breadth_dir: Path, out: Path, downloader: Downloader = yf_download,
         "aliases": {k: {"downloaded_as": v,
                         "evidence": "same issuer: closes match the archive's series for the company over 478 sessions"}
                     for k, v in PRICE_ALIASES.items()},
-        "n_members_last_week": {str(r.group): int(r.n_members) for r in lastrows.itertuples()},
-        "comparison_vs_archive": comparison_vs_archive(weekly, archive),
+        "counts_last_week": {
+            "definitions": {
+                "in_map": "members of the sector on today's list",
+                "n_members": "members with a close that week",
+                "n_has_200": "members with a defined 200-session average that week (the share's denominator)",
+                "n_fixed_200_13w": ("members counted in the 13-week like-for-like change: a defined "
+                                    "200-session average both that week and 13 weeks earlier (the headline's set)"),
+            },
+            "by_sector": {str(r.group): {"in_map": int((mem["group"] == r.group).sum()),
+                                         "n_members": int(r.n_members), "n_has_200": int(r.n_has_200),
+                                         "n_fixed_200_13w": int(r.n_fixed_200_13w)}
+                          for r in lastrows.itertuples()},
+        },
+        "comparison_vs_archive": comparison_vs_archive(weekly, archive, live_common, live_only),
         "engine": "engine/group_breadth_history.py",
         "rows": len(weekly),
     }
