@@ -393,7 +393,7 @@
     var marginCallPrice = p * (1 - im/100) / (1 - mm/100);
     return {
       ok:true, buyingPower:buyingPower, leverage:leverage, maxShares:maxShares,
-      positionValue:positionValue, marginCallPrice:marginCallPrice
+      positionValue:positionValue, marginCallPrice:marginCallPrice, noBorrowing:im===100
     };
   }
 
@@ -419,6 +419,9 @@
         outLev=$("out-lev"), outShares=$("out-shares"), outPos=$("out-pos"), outCall=$("out-call"),
         copyBtn=$("copy-result"), copied=$("copied");
 
+    function noBorrowingText(en, zh){
+      return document.documentElement.getAttribute("data-lang")==="zh" ? zh : en;
+    }
     function numFrom(el){ var v=parseFloat((el.value||"").replace(/,/g,"").trim()); return isFinite(v)?v:NaN; }
     function money(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
     function levStr(x){ return (x % 1 === 0 ? x.toFixed(0) : x.toFixed(2).replace(/0+$/,"").replace(/\.$/,"")) + ":1"; }
@@ -434,16 +437,34 @@
       outLev.textContent    = levStr(res.leverage);
       outShares.textContent = res.maxShares.toLocaleString("en-US");
       outPos.textContent    = money(res.positionValue);
-      outCall.textContent   = money(res.marginCallPrice);
+      outCall.textContent   = res.noBorrowing ? noBorrowingText("N/A (no borrowing)", "不适用（无借款）") : money(res.marginCallPrice);
       // Law 3: plain-word interpretation under the number
       var plain = money(res.buyingPower) + " of buying power — " + levStr(res.leverage) +
         " leverage. At " + money(inp.p) + " that's up to " + res.maxShares.toLocaleString("en-US") +
         " shares; a fully-margined long would face a margin call near " + money(res.marginCallPrice) + ".";
+      if(res.noBorrowing){
+        plain = noBorrowingText(
+          money(res.buyingPower) + " of buying power — " + levStr(res.leverage) +
+          " leverage. At " + money(inp.p) + " that's up to " + res.maxShares.toLocaleString("en-US") +
+          " shares. With 100% initial margin, this single-long model has no borrowing and no borrowing-driven margin-call price.",
+          "购买力 " + money(res.buyingPower) + "，杠杆 " + levStr(res.leverage) +
+          "。以 " + money(inp.p) + " 入场，最多可持有 " + res.maxShares.toLocaleString("en-US") +
+          " 股。初始保证金为 100% 时，本单笔做多模型无借款，因此没有因借款触发的追缴价格。"
+        );
+      }
       outPlain.textContent = plain; outPlain.className="co-plain";
     }
 
     function copyLine(){
       if(!last || !last.ok) return "";
+      if(last.noBorrowing) return noBorrowingText(
+        "Margin: " + money(last.buyingPower) + " buying power · " + levStr(last.leverage) +
+        " leverage · " + last.maxShares.toLocaleString("en-US") +
+        " shares · margin-call price: N/A (no borrowing in this single-long model) — mastermind-x.com",
+        "保证金：购买力 " + money(last.buyingPower) + " · 杠杆 " + levStr(last.leverage) +
+        " · " + last.maxShares.toLocaleString("en-US") +
+        " 股 · 追缴价格：不适用（本单笔做多模型无借款） — mastermind-x.com"
+      );
       return "Margin: " + money(last.buyingPower) + " buying power · " + levStr(last.leverage) +
         " leverage · " + last.maxShares.toLocaleString("en-US") + " shares · call near " +
         money(last.marginCallPrice) + " — mastermind-x.com";
@@ -459,6 +480,7 @@
     ["equity","initial","maint","price"].forEach(function(id){
       els[id].addEventListener("input", render);
     });
+    document.addEventListener("langchange", render);
     render();
   });
 })();
