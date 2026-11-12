@@ -4,19 +4,21 @@ Off the render path; never run nightly. Inputs are one single-vintage, full-hist
 download held off git (scratch), the registries on main, and the yearly
 second-source disagreement table measured against the Tiingo archive.
 
-Writes one file set per rights class (``RIGHTS_SETS``) under ``--out`` (default
-data/breadth/history):
+Writes one file set per rights class (``RIGHTS_SETS``):
 
-  house (plain path): house_breadth_weekly_current.parquet (breadth families, when
+  house (plain path under ``--out``, default data/breadth/history):
+      house_breadth_weekly_current.parquet (breadth families, when
       any), house_ew_index_{weekly,daily}_current.parquet, house_breadth_and_index_current.meta.json
       — families basket (data/baskets/membership.json, active members) and sector
       (S&P 500 GICS sectors), and later house families such as the GMI graph's.
-  internal_only (subdirectory internal_only/): vendor_internal_only_breadth_weekly_current.parquet,
+  internal_only (``--vendor-out``, default /tmp/si_plan/quant/vendor_out, outside the
+      repository tree): vendor_internal_only_breadth_weekly_current.parquet,
       vendor_internal_only_ew_index_{weekly,daily}_current.parquet and its sidecar —
       the vendor tree's 268 subsectors and 40 parent themes
       (data/themes_heatmap/themes_tree.json, source family finviz_themes). Internal
       research data under the Chairman's gate 2 ruling (config/theme_sources.yml:33):
-      never displayed or published.
+      never displayed or published. The repository is public, so these files are kept
+      off git, in scratch (COO ruling 38 §2b); they are never committed or pushed.
 
 Breadth is the weekly fixed-set change (``engine.group_breadth_history.weekly_fixed_set``);
 the index is a (date, family, group) equal-weight total-return level.
@@ -36,6 +38,7 @@ Usage:
   python scripts/build_tree_breadth_and_index.py --closes <scratch closes.parquet> \
       --download-meta <scratch download_meta.json> --disagreement <yearly csv> \
       --start 2000-01-01 [--daily] [--out data/breadth/history]
+      [--vendor-out /tmp/si_plan/quant/vendor_out]
 """
 from __future__ import annotations
 
@@ -237,8 +240,11 @@ def first_valid(df: pd.DataFrame, col: str) -> dict:
 
 
 # Output sets by rights class (COO ruling 32 s1). Vendor-tree families are internal
-# research data: their files carry the class in the name and live under an unserved
-# path; house families keep the plain names.
+# research data: their files carry the class in the name. The repository is public,
+# so the vendor set is written to scratch outside the tree (VENDOR_OUT_DEFAULT) and
+# never committed or pushed (COO ruling 38 §2b); house families keep the plain names
+# under --out.
+VENDOR_OUT_DEFAULT = Path("/tmp/si_plan/quant/vendor_out")
 RIGHTS_SETS = {
     "house": {"dir": "", "prefix": "house",
               "breadth": "house_breadth_weekly_current.parquet",
@@ -263,12 +269,12 @@ VENDOR_RIGHTS = {
 
 
 def _write_set(rights: str, fams: dict, closes: pd.DataFrame, start_ts: pd.Timestamp, out: Path,
-               root: Path, daily: bool, dm: dict, tab: pd.DataFrame) -> dict:
+               root: Path, daily: bool, dm: dict, tab: pd.DataFrame, vendor_out: Path) -> dict:
     spec = RIGHTS_SETS[rights]
     mems = {f: m for f, (_, m) in fams.items()}
     b_fams = {f: m for f, (s, m) in fams.items() if "breadth" in s["outputs"]}
     i_fams = {f: m for f, (s, m) in fams.items() if "index" in s["outputs"]}
-    d = out / spec["dir"] if spec["dir"] else out
+    d = vendor_out if rights == "internal_only" else (out / spec["dir"] if spec["dir"] else out)
     d.mkdir(parents=True, exist_ok=True)
     files = {}
     breadth = tree_breadth_weekly(closes, b_fams, start_ts) if b_fams else None
@@ -325,7 +331,7 @@ def _write_set(rights: str, fams: dict, closes: pd.DataFrame, start_ts: pd.Times
                              for f in b_fams} if breadth is not None else {}),
         "first_valid_breadth": first_valid(breadth, gbh.HEADLINE) if breadth is not None else {},
         "first_valid_index": first_valid(idx_weekly, "level") if idx_weekly is not None else {},
-        "files": sorted(str((d / n).relative_to(out)) for n in files),
+        "files": sorted(str((d / n).relative_to(out if d.is_relative_to(out) else d)) for n in files),
         "rows": {k: int(len(v)) for k, v in files.items()},
         "engine": "engine.group_breadth_history.weekly_fixed_set; engine.baskets._ew_level",
         "no_outcomes": "no forward returns, no outcome relation, no threshold, no signal",
@@ -336,8 +342,11 @@ def _write_set(rights: str, fams: dict, closes: pd.DataFrame, start_ts: pd.Times
 
 def build(closes_path: Path, download_meta: Path, disagreement: Path, start: str,
           out: Path, root: Path = _ROOT, daily: bool = False,
-          families: list[dict] = FAMILIES) -> dict:
-    """Build every family; write one file set per rights class. Returns {rights_class: meta}."""
+          families: list[dict] = FAMILIES, vendor_out: Path | None = None) -> dict:
+    """Build every family; write one file set per rights class. Returns {rights_class: meta}.
+
+    The internal_only set goes to ``vendor_out`` (default VENDOR_OUT_DEFAULT, outside
+    the repository tree, off git); the house set goes under ``out``."""
     start_ts = pd.Timestamp(start)
     closes = gbh.through_last_complete_row(pd.read_parquet(closes_path).sort_index())
     fams = load_families(root, families)
@@ -348,7 +357,8 @@ def build(closes_path: Path, download_meta: Path, disagreement: Path, start: str
         if s.get("rights_class") not in RIGHTS_SETS:
             raise ValueError(f"family {f}: rights_class must be one of {sorted(RIGHTS_SETS)}")
         by_class.setdefault(s["rights_class"], {})[f] = (s, m)
-    return {rc: _write_set(rc, fs, closes, start_ts, out, root, daily, dm, tab)
+    vout = Path(vendor_out) if vendor_out is not None else VENDOR_OUT_DEFAULT
+    return {rc: _write_set(rc, fs, closes, start_ts, out, root, daily, dm, tab, vout)
             for rc, fs in sorted(by_class.items())}
 
 
@@ -359,9 +369,12 @@ def main() -> None:
     ap.add_argument("--disagreement", type=Path, required=True)
     ap.add_argument("--start", required=True)
     ap.add_argument("--out", type=Path, default=_ROOT / "data/breadth/history")
+    ap.add_argument("--vendor-out", type=Path, default=VENDOR_OUT_DEFAULT,
+                    help="scratch directory for the internal_only set (off git; public repository)")
     ap.add_argument("--daily", action="store_true")
     a = ap.parse_args()
-    res = build(a.closes, a.download_meta, a.disagreement, a.start, a.out, daily=a.daily)
+    res = build(a.closes, a.download_meta, a.disagreement, a.start, a.out, daily=a.daily,
+                vendor_out=a.vendor_out)
     print(json.dumps({rc: {"files": m["files"], "valid_last_week": m["valid_last_week"],
                            "last_week": m["last_week"]} for rc, m in res.items()}))
 

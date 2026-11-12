@@ -50,7 +50,8 @@ def world(tmp_path):
     pd.DataFrame({"both": [100, 100], "flag_dis": [9, 0], "has_only_one": [0, 0], "rate": [0.09, 0.0]},
                  index=pd.Index([1999, 2000], name="era")).to_csv(dis)
     out = tmp_path / "out"
-    res = bt.build(cp, dm, dis, "1999-06-01", out, root=root, daily=True)
+    res = bt.build(cp, dm, dis, "1999-06-01", out, root=root, daily=True,
+                   vendor_out=out / "internal_only")
     return closes, out, res
 
 
@@ -185,14 +186,16 @@ def test_family_without_rights_class_refused(world, tmp_path):
         bt.build(cp, dm, dis, "1999-06-01", tmp_path / "o", root=root, families=spec)
 
 
-# --- Vendor rights (COO ruling 32 s1, 2026-11-12) ---
+# --- Vendor rights (COO ruling 32 s1, 2026-11-12; COO ruling 38 §2b) ---
 # Vendor-tree breadth series stay internal (COO ruling 32 s1, 2026-11-12).
-# 
+#
 # The subsector and theme families come from the finviz_themes tree, recorded at
 # config/theme_sources.yml:33 as internal-only with no public or customer display
-# rights. Their files live under data/breadth/history/internal_only/. These tests
-# fail if a site builder, template, rendered page or publish script names those
-# files, or if the vendor sidecar loses its rights fields.
+# rights. The repository is public, so their files are kept off git, in scratch
+# (builder default /tmp/si_plan/quant/vendor_out), never committed or pushed
+# (COO ruling 38 §2b). These tests fail if a site builder, template, rendered page
+# or publish script names those files, or if the vendor sidecar loses its rights
+# fields. The committed-sidecar test below skips while the file is absent.
 
 ROOT = Path(__file__).resolve().parents[1]
 MARKERS = ("vendor_internal_only", "breadth/history/internal_only")
@@ -231,6 +234,13 @@ def test_vendor_families_route_to_internal_set():
     assert bt.RIGHTS_SETS["internal_only"]["dir"] == "internal_only"
     assert all(n.startswith("vendor_internal_only_")
                for k, n in bt.RIGHTS_SETS["internal_only"].items() if k not in ("dir", "prefix"))
+
+
+def test_default_vendor_out_is_off_tree():
+    # COO ruling 38 §2b: the repository is public; the vendor set is built to
+    # scratch outside the repository tree and never committed.
+    assert bt.VENDOR_OUT_DEFAULT.is_absolute()
+    assert not bt.VENDOR_OUT_DEFAULT.is_relative_to(ROOT)
 
 
 def test_rights_sentence_quotes_the_config_line():
