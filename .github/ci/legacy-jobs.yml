@@ -33251,6 +33251,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_market_ontology_exposure_map.py -q
       - name: market ontology — theme-tier guard (category and micro_theme nodes never compose as themes)
         run: TZ=UTC python -m pytest tests/test_theme_graph_tier_guard.py -q
+      - name: theme graph — tier guard on state-of-themes research priority and capability (activity members never change either)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_tier_guard_consumers.py -q
       - name: market ontology — US/China cohort delivery contract (positive vs degraded vs refused, grant != enrollment)
         run: TZ=UTC python -m pytest tests/test_cohort_us_china_contract.py -q
       - name: CN limit-rule registry — schema, continuity, parity vs china_microstructure
