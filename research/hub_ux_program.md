@@ -70,3 +70,68 @@ Opus review (block → fixed): expander onclick was invalid JS (quote-nesting �
 pre-rendered label spans + class toggle, e2e-tested 5→8→5); `#hub-signin` never unhid
 ([hidden] vs inline display); observer now syncs `documentElement.lang`; theme segment got
 `aria-pressed`; chip counts deduped total; tickers added to `.l-zh` too.
+
+
+## 2026-11-12 — Landing globe and shared-shell continuation
+
+Current Chairman commission: enhance the earth globe and the entire start.html experience,
+make the landing robust, and integrate its composition with the shared shell. This
+extends the existing Hub UX Program; prior accepted work and data contracts remain inputs.
+
+Source baseline: macro `e907472c31478649d0827b128da577dd05ee39c2`.
+Procedure: Mastermind `0e1ca7a2d8aa95ac415191d64bd3a39212be39d0`, skillpack 1.0.1.
+Carrier: GitHub-native branch `sol/web-landing-globe-shell-20261112-c2`; authenticated author
+`mastermindxryan`. No pre-existing globe-titled open PR was found; three start.html
+search hits concern independent intake, IPO date semantics, and Terminal fallback.
+Changes must preserve those domains and the existing shared-shell owner.
+
+DONE_WHEN: a visually coherent global Home, with an enhanced earth, understandable market
+selection, keyboard/touch operation, controllable motion, honest data freshness and a
+useful degraded state; the same content works standalone and within the existing shell.
+The source must pass affected checks and required CI, enter the repository's permitted
+release path, and receive actual browser proof. A design, PR or green CI alone is not
+production acceptance.
+
+### Execution sequence
+
+1. Inspect the live globe and current renderer, content producer, shell contract and
+   accepted design doctrine. Keep the existing d3 canvas and data/quote ownership unless
+   a concrete incompatibility requires a change. Resolve the Home vs marketing distinction.
+2. Freeze desktop/mobile and dark/light composition with EN/ZH parity. Preserve the
+   existing rejection of regime/mover side rails. Paper may supply a mockup only when the
+   intended Mastermind file is exactly bound; the observed active AERLOR file is unrelated.
+3. Implement through the existing globe runtime and build_vector Home producer,
+   retaining single runtime loads, shell routing, data provenance and page destinations.
+   Add only focused regression coverage for real changed behavior.
+4. Inspect actual screenshots and exercise market selection, motion controls,
+   resize, keyboard, mobile scrolling, reduced motion, shell visibility and failure
+   fallback. Save exact evidence with the source.
+5. Publish one coherent candidate; self-check, consume required CI, repair scoped
+   failures, qualify normal protected release and verify the resulting live journey.
+
+### Design direction and constraints
+
+Home is the global-overview Command Center, not another marketing header.
+The globe remains the visual centre; concise purpose and next actions should read
+immediately. Prefer a restrained atmospheric earth, legible market markers and
+explicit controls to competing sun/moon ornament. Use accepted tokens and shared
+navigation. Dark: calm luminous depth and restrained atmosphere. Light: clear research
+canvas, hairlines and shadow, without the previously rejected blue-marble recolour.
+Data timestamps and availability are facts, not decorative LIVE claims.
+
+No changes to auth, subscription gates, market calculations, provider routing,
+global shell protocol, or unrelated dashboards. No copied competitor assets.
+No direct main push, self-approval/self-merge, native Macro auto-merge or invented
+deployment proof.
+
+### Current execution facts
+
+- Live page inspected in the connected browser; no sampled console error, but globe
+  ornament competes with hierarchy and market labels crowd. Existing motion and
+  keyboard paths are present and must be preserved or improved.
+- Fabric capability preflight reports adapter_available=false; no worker requested or
+  started. Direct implementation is retained under LOWER_TOTAL_OVERHEAD and
+  PRINCIPAL_JUDGMENT, with one native read-only architecture counsel role.
+- Paper inspect succeeded, but its active document is AERLOR
+  `01M6JNN71ZN4867VJZ83PPXQZ0`, not the Mastermind target. No Paper edit attempted.
+- Implementation and product acceptance are not yet established.
