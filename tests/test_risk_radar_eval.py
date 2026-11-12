@@ -221,3 +221,169 @@ def test_beyond_reference_literal_and_strict():
     assert r["incremental_strict_dates"] == ["2021-06-01"]
     ref_lo = dict(ref_hi, false_risk_off_per_year=0.2)
     assert beyond_reference(sig, ref_lo)["incremental_literal"] == 1
+
+
+# ---- walk-forward harness (prereg §5) -------------------------------------------------------
+from engine import risk_radar as rr
+from engine.risk_radar_eval import walkforward as W
+from engine.risk_radar_eval import inputs as I
+
+
+def _calib_fixture():
+    """Two Tier-A scares, one validated leg each (minimal but structurally real)."""
+    return {
+        "bands": {"watch": 55.0, "caution": 68.0, "elevated": 78.0, "risk_off": 88.0},
+        "legs": {"legA": {"lift_2020": 1.5, "thr_pct": 0.90},
+                 "legB": {"lift_2020": 1.5, "thr_pct": 0.90}},
+        "scares": {"credit": {"tier": "A", "legs": [("legA", 1.0)]},
+                   "rates": {"tier": "A", "legs": [("legB", 1.0)]}},
+        "alert_from": "elevated",
+    }
+
+
+def _wf_fixture(n=40):
+    idx = pd.bdate_range("2020-01-02", periods=n)
+    subs = pd.DataFrame({"credit": 80.0, "rates": 10.0}, index=idx)
+    sigs = pd.DataFrame({"legA": 0.95, "legB": 0.10}, index=idx)
+    return idx, subs, sigs
+
+
+def test_walkforward_label_maturity():
+    """A top whose window passes the cutoff, and a bottom whose recovery passes it, are refused."""
+    up = np.linspace(100, 110, 40)              # peak at 39
+    down = np.linspace(110, 99.0, 11)[1:]       # trough at 49
+    rec = np.linspace(99.0, 111.0, 20)[1:]      # recovery ~67
+    flat = np.linspace(111, 112, 30)
+    peak2 = np.linspace(112, 113, 6)[1:]        # second peak at 104
+    down2 = np.linspace(113, 105.5, 11)[1:]     # breaches before the cutoff, never recovers
+    tail = np.linspace(105.5, 106.0, 15)
+    px = _px(np.concatenate([up, down, rec, flat, peak2, down2, tail]), start="2020-01-02")
+    cut = px.index[112]                         # between the second breach and its window end
+    eps, turns = W.fit_labels(px, cut)
+    kinds = [(t.kind, t.date) for t in turns]
+    assert ("top", px.index[39]) in kinds
+    assert ("bottom", px.index[49]) in kinds
+    late = [e for e in eps if e.peak >= px.index[100]]
+    assert late, "the second episode exists at the cutoff"
+    assert not any(t.date == late[0].peak for t in turns), "top window passes fit_end"
+    # the second episode is still open at the cutoff -> no bottom turn for it
+    assert [t.kind for t in turns].count("bottom") == 1
+    # moving the cutoff back before the first recovery drops its bottom too
+    _, early = W.fit_labels(px, px.index[60])
+    assert [t.kind for t in early] == ["top"]
+
+
+def test_walkforward_parameter_intervention(monkeypatch):
+    """g changes the gate series and Delta changes the bands; both change states."""
+    idx, subs, sigs = _wf_fixture()
+    calib = _calib_fixture()
+    always_on = pd.Series(True, index=idx)
+    always_off = pd.Series(False, index=idx)
+
+    s_gate_on = W.states_for(subs, sigs, calib, always_on, 0.0)
+    s_gate_off = W.states_for(subs, sigs, calib, always_off, 0.0)
+    assert s_gate_on.iloc[0] == "elevated"       # 80 >= 78
+    assert s_gate_off.iloc[0] == "caution"       # gate caps the loud state
+    assert not s_gate_on.equals(s_gate_off)
+
+    s_dn = W.states_for(subs, sigs, calib, always_on, -10.0)
+    s_dp = W.states_for(subs, sigs, calib, always_on, 10.0)
+    assert s_dn.iloc[0] == "risk-off" and s_dp.iloc[0] == "caution"
+    assert not s_dn.equals(s_dp)
+    # delta is a pure band shift, not a calibration mutation
+    assert calib["bands"]["elevated"] == 78.0
+
+    # the harness injects its gate and never reads the module gate constant
+    def _boom(*a, **k):
+        raise AssertionError("states_for must not call context_gate_series")
+    monkeypatch.setattr(rr, "context_gate_series", _boom)
+    W.states_for(subs, sigs, calib, always_on, 0.0)
+
+
+def test_walkforward_gate_none_is_always_true():
+    idx, subs, sigs = _wf_fixture()
+    calib = _calib_fixture()
+    assert W.states_for(subs, sigs, calib, None, 0.0).iloc[0] == "elevated"
+    assert W.loud_share(W.states_for(subs, sigs, calib, pd.Series(False, index=idx), 0.0)) == 0.0
+
+
+def test_walkforward_feature_prefix_invariance(monkeypatch):
+    """Truncating every store frame at t leaves leading_signals() unchanged at and before t."""
+    from lib import store
+    t = pd.Timestamp("2024-06-03")
+    full = rr.leading_signals()
+    assert not full.empty
+    orig = store.read
+
+    def truncating(group, name):
+        df = orig(group, name)
+        return None if df is None else df.loc[:t]
+
+    monkeypatch.setattr(store, "read", truncating)
+    cut = rr.leading_signals()
+    assert cut.index.max() <= t
+    a = full.loc[full.index <= t]
+    b = cut.reindex(a.index)
+    common = [c for c in a.columns if c in b.columns]
+    pd.testing.assert_frame_equal(a[common], b[common], check_freq=False, check_names=False)
+
+
+def test_walkforward_calendar_refuses_nan():
+    """The walk-forward scoring path refuses an alert with a missing session."""
+    px = _dip(depth=0.12)
+    idx = px.index
+    eps = L.drawdown_episodes(px, 0.10, outcomes_through=idx[-1])
+    loud = pd.Series(False, index=idx)
+    loud.iloc[30:40] = True
+    loud = loud.astype(object)
+    loud.iloc[5] = None
+    with pytest.raises(ValueError):
+        W._series_block({"wf": loud}, eps, idx[-1])
+
+
+def test_walkforward_effective_state_hash_fields():
+    calib = _calib_fixture()
+    rec = W.effective_state("F22", 0.40, 2.0, calib)
+    for k in ("fold", "g", "delta", "bands", "code_commit", "prereg_sha256",
+              "effective_state_sha256"):
+        assert k in rec
+    assert rec["bands"]["elevated"] == 80.0
+    assert rec["g"] == 0.40 and rec["delta"] == 2.0
+    # the hash actually tracks the parameters
+    assert rec["effective_state_sha256"] != W.effective_state("F22", 0.40, 4.0, calib)[
+        "effective_state_sha256"]
+    hdr = W.build_header([{"effective_state": rec}])
+    assert hdr["folds"][0]["effective_state_sha256"] == rec["effective_state_sha256"]
+    for k in ("prereg_sha256", "code_commit", "generated_utc", "input_last_dates", "folds"):
+        assert k in hdr
+
+
+def test_walkforward_prefix_invariance_lagged_inputs_gate_and_state(monkeypatch):
+    """Prereg §5.2 in full: lagged legs, gate inputs, sub-scores and state at <= t are unchanged
+    when every store frame is truncated at t."""
+    from lib import store
+    t = pd.Timestamp("2024-06-03")
+    calib = rr._calib()
+
+    def build():
+        sg = I.incumbent_signals()
+        gc = I.gate_components()
+        sb = rr.subscore_series(sg, calib)
+        win = sb.index[(sb.index > t - pd.Timedelta(days=120)) & (sb.index <= t)]
+        gate = I.gate_series(gc, 0.40).reindex(sb.index).fillna(False)
+        st = W.states_for(sb.loc[win], sg, calib, gate, 0.0)
+        return sg, gc, sb, st
+
+    full = build()
+    assert len(full[0].loc[:t]) > 500 and len(full[3]) > 50
+    assert full[0].index.max() > t and full[2].index.max() > t  # something was truncated
+    orig = store.read
+    monkeypatch.setattr(store, "read",
+                        lambda g, n: (lambda df: None if df is None else df.loc[:t])(orig(g, n)))
+    cut = build()
+    for a, b in zip(full[:3], cut[:3]):
+        a = a.loc[a.index <= t]
+        b = b.reindex(a.index)
+        cols = [c for c in a.columns if c in b.columns]
+        pd.testing.assert_frame_equal(a[cols], b[cols], check_freq=False, check_names=False)
+    pd.testing.assert_series_equal(full[3], cut[3].reindex(full[3].index), check_names=False)
