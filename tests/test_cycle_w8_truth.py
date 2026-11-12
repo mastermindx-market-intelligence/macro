@@ -192,7 +192,7 @@ def test_every_emitted_card_turn_kind_agrees_or_headline_suppressed():
         tk = _turn_kind_from_hz(hz)
         agrees = (tk == pj.get("nextTurn")) if tk and pj.get("nextTurn") else False
         if hz.get("direction_agrees") is not None:
-            agrees = bool(hz["direction_agrees"])
+            assert hz["direction_agrees"] is agrees, (cid, tk, pj.get("nextTurn"))
         lead = _lead_cell(hz) if agrees else None
         rows.append((cid, tk, pj.get("nextTurn"), agrees, lead))
         if hz.get("unavailable") and not hz.get("turn_kind") and not hz.get("direction"):
@@ -208,40 +208,6 @@ def test_every_emitted_card_turn_kind_agrees_or_headline_suppressed():
         else:
             assert lead is None
     assert rows, "no hazard bands in committed engine"
-
-
-def test_vol_and_biotech_suppress_the_trough_model_peak_label():
-    """Today both print P(Peak ≤ 6m) from a P(trough) model. After B1 the
-    hazard headline is suppressed (direction_agrees is false) and the card
-    falls back to the overdue-aware projection wording."""
-    engine = _load_engine()
-    receipts = {}
-    for cid in ("vol", "biotech"):
-        card = engine["cycles"][cid]
-        band = next(b for b in card["bands"] if b.get("tier") == "measured")
-        hz = (band.get("now") or {}).get("hazard")
-        pj = band.get("proj") or {}
-        tk = _turn_kind_from_hz(hz)
-        agrees = tk == pj.get("nextTurn")
-        assert tk == "trough", f"{cid}: hazard model is P(trough), got turn_kind={tk}"
-        assert pj.get("nextTurn") == "peak"
-        assert agrees is False
-        assert _lead_cell(hz) is None or not agrees
-        if pj.get("overdue"):
-            word = f"ref: Peak was proj. {pj.get('central')} — elapsed"
-        else:
-            word = f"Peak ≈ {pj.get('central')}"
-        receipts[cid] = {
-            "turn_kind": tk,
-            "proj_next": pj.get("nextTurn"),
-            "headline": "SUPPRESSED",
-            "fallback": word,
-            "overdue": bool(pj.get("overdue")),
-        }
-    assert receipts["vol"]["headline"] == "SUPPRESSED"
-    assert receipts["biotech"]["headline"] == "SUPPRESSED"
-    # stash on the test for the session report (also asserted)
-    test_vol_and_biotech_suppress_the_trough_model_peak_label.receipts = receipts
 
 
 # ── B2 ───────────────────────────────────────────────────────────────────────
@@ -534,43 +500,58 @@ console.log("OK unavailable why both reasons both lanes");
     assert proc.returncode == 0, proc.stdout + proc.stderr
 
 
-def test_unknown_phase_consumer_null_branch_falls_to_projection(tmp_path):
+@pytest.mark.parametrize(
+    ("direction", "next_turn", "overdue", "expected"),
+    [
+        pytest.param("", "peak", False, "Peak ≈", id="unknown-phase"),
+        pytest.param("down", "peak", False, "Peak ≈", id="trough-model-peak-projection"),
+        pytest.param("down", "peak", True, "Peak was proj.", id="overdue-peak-projection"),
+        pytest.param("up", "trough", False, "Trough ≈", id="peak-model-trough-projection"),
+        pytest.param("up", "peak", False, "P(Peak within 1 month): 70%", id="matching-peak"),
+        pytest.param("down", "trough", False, "P(Trough within 1 month): 70%", id="matching-trough"),
+    ],
+)
+def test_card_and_headline_render_hazard_only_on_agreement(direction, next_turn, overdue, expected):
+    """Replay the W8 vol/biotech mismatch independently of the current market phase."""
     js = _read_app()
     node = shutil.which("node")
     if not node:
         pytest.skip("node not on PATH")
-    harness = tmp_path / "null_branch.js"
-    harness.write_text(
-        'var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];\n'
-        "function curLang(){ return 'en'; }\n"
-        "function L(en, zh){ return curLang() === 'zh' ? zh : en; }\n"
-        + _extract_js_function(js, "turnWord") + "\n"
-        + _extract_js_function(js, "fmtMon") + "\n"
-        + _extract_js_function(js, "hazardTurnKind") + "\n"
-        + _extract_js_function(js, "hazardDirectionAgrees") + "\n"
-        + _extract_js_function(js, "hazardCdfMonotone") + "\n"
-        + _extract_js_function(js, "hazardLeadCell") + "\n"
-        + _extract_js_function(js, "projFallbackInner") + "\n"
-        + _extract_js_function(js, "hazardLeadInner") + "\n"
-        + _extract_js_function(js, "cardNextInnerHTML") + "\n"
-        + r"""
-const hz = {epoch:"E", unavailable:true, unavailable_reason:"unknown_phase", direction_agrees:null};
-if (hazardTurnKind(hz) !== null) throw new Error("hazardTurnKind should be null, got " + hazardTurnKind(hz));
-if (hazardLeadCell(hz) !== null) throw new Error("hazardLeadCell should be null");
-const pj = {nextTurn:"peak", central:"2026-09", overdue:false};
-const html = cardNextInnerHTML({now:{hazard:hz}}, pj);
-if (html.indexOf("Peak ≈") < 0 && html.indexOf("peak") < 0) {
-  throw new Error("expected projection fallback, got " + html);
-}
-if (html.indexOf("P(") >= 0) throw new Error("null branch leaked a P() hazard claim: " + html);
-console.log("OK null branch fallback", html);
-""",
-        encoding="utf-8",
+    projection = {"nextTurn": next_turn, "central": "2026-09", "overdue": overdue}
+    hazard = build_cycle._attach_hazard_agreement(
+        {"1m": {"p": 0.7, "source": "MODEL", "cell_verdict": "PASS"}},
+        direction,
+        projection,
     )
-    proc = subprocess.run([node, str(harness)], capture_output=True, text=True)
-    print(proc.stdout)
-    print(proc.stderr)
-    assert proc.returncode == 0, proc.stdout + proc.stderr
+    functions = (
+        "L", "turnWord", "fmtMon", "hazardTurnKind", "hazardDirectionAgrees",
+        "hazardCdfMonotone", "hazardLeadCell", "projFallbackInner", "hazardLeadInner",
+        "cardNextInnerHTML", "hazardHeadlineHTML",
+    )
+    harness = "\n".join(_extract_js_function(js, name) for name in functions) + r"""
+const assert = require("node:assert/strict");
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const HORIZON_PLAIN = {"1m": {en: "within 1 month", zh: "一个月内"}};
+function curLang() { return "en"; }
+const {hazard, projection, expected} = JSON.parse(require("node:fs").readFileSync(0, "utf8"));
+if (hazard.unavailable) {
+  assert.equal(hazardTurnKind(hazard), null);
+  assert.equal(hazardLeadCell(hazard), null);
+}
+const band = {now: {hazard}};
+for (const render of [cardNextInnerHTML, hazardHeadlineHTML]) {
+  const html = render(band, projection);
+  assert.ok(html.includes(expected), render.name + ": " + html);
+  assert.equal(html.includes("P("), expected.startsWith("P("), html);
+  if (projection.overdue) assert.ok(html.includes("— elapsed"), html);
+}
+"""
+    subprocess.run(
+        [node, "-e", harness],
+        input=json.dumps({"hazard": hazard, "projection": projection, "expected": expected}),
+        text=True,
+        check=True,
+    )
 
 
 def test_frame_record_emits_no_series_last():
