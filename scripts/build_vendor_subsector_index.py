@@ -160,6 +160,13 @@ def main() -> None:
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
     ap.add_argument("--root", type=Path, default=_ROOT)
     a = ap.parse_args()
+    try:
+        # Fail closed BEFORE reading prices or building: an in-tree output path is
+        # refused with a non-zero exit (COO ruling 38 s2b; the repository is public).
+        a.out = guard_out(a.out, a.root)
+    except ValueError as e:
+        print(f"refused: {e}", file=sys.stderr)
+        raise SystemExit(2)
     closes = pd.read_parquet(a.closes)
     dm = json.loads(Path(a.download_meta).read_text())
     mem_sub, _ = bt.tree_membership(a.tree)

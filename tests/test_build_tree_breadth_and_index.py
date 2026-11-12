@@ -1013,3 +1013,183 @@ def test_vendor_builder_source_names_no_vendor_file():
     src = (ROOT / "scripts/build_vendor_subsector_index.py").read_text()
     for m in MARKERS:                                # derives names from the rights prefix
         assert m not in src
+
+
+def test_vendor_cli_refuses_in_tree_out(tmp_path, monkeypatch):
+    """COO ruling 38 continuation A: the builder CLI exits non-zero with a clear message
+    when --out is inside the repository tree, using a made-up fixture group."""
+    import sys  # noqa: E402
+    root = tmp_path / "repo"
+    root.mkdir()
+    closes = _closes(12, start="1999-01-01", periods=400)
+    cp = tmp_path / "closes.parquet"; closes.to_parquet(cp)
+    dm = tmp_path / "dm.json"; dm.write_text(json.dumps({"vintage": "fixture"}))
+    tree = tmp_path / "tree.json"
+    tree.write_text(json.dumps([{"theme": "Fixture", "key": "fixture_theme", "subsectors": [
+        {"key": "fixture_group_a", "members": list(closes.columns[:6])}]}]))
+    state = tmp_path / "state.json"; state.write_text(json.dumps({"fixture_group_a": {}}))
+    monkeypatch.setattr(sys, "argv", ["build_vendor_subsector_index.py",
+                                      "--closes", str(cp), "--download-meta", str(dm),
+                                      "--tree", str(tree), "--state", str(state),
+                                      "--root", str(root),
+                                      "--out", str(root / "data/breadth/history")])
+    with pytest.raises(SystemExit) as ei:
+        bv.main()
+    assert ei.value.code not in (0, None)
+    assert not list(root.rglob("*"))                 # refused before writing anything
+
+
+# ---- continuation fixes (ruling 38 Part B): dated baskets, dated sp400/sp600 ----
+# New files only; the four existing group_index files stay byte-frozen. The dated
+# basket index uses the engine's [added, removed) inclusion windows from
+# data/baskets/membership.json (seed 2023-05-09); the sp400/sp600 sector indexes are
+# built per universe and never pooled with sp500.
+GI_BK_DATED = HIST / "group_index_basket_daily_dated.parquet"
+GI_BK_META = HIST / "group_index_basket_daily_dated.meta.json"
+GI_SP_EXT = HIST / "group_index_daily_dated_sp400_sp600.parquet"
+GI_SP_META = HIST / "group_index_daily_dated_sp400_sp600.meta.json"
+_gi_ext_needs = pytest.mark.skipif(not GI_BK_DATED.exists(),
+                                   reason="data/ not checked out (sparse tree)")
+
+
+def test_basket_dated_window_counts_only_inside_window():
+    """Synthetic: the dated basket method (engine.baskets._ew_level) counts a member only
+    on sessions inside [added, removed): a late entrant joins at added, and a removed
+    member stops counting ON the removed date."""
+    idx = pd.bdate_range("2024-01-01", periods=30)
+    closes = pd.DataFrame({f"T{i}": 100 * np.cumprod(
+        1 + np.random.default_rng(i).normal(0.0003, 0.01, 30)) for i in range(6)}, index=idx)
+    rets = closes.pct_change(fill_method=None).where(closes.notna() & closes.shift(1).notna())
+    base = [f"T{i}" for i in range(4)]
+    roster = [{"ticker": t, "added": str(idx[0].date()), "removed": None} for t in base]
+    roster.append({"ticker": "T4", "added": str(idx[10].date()), "removed": None})
+    roster.append({"ticker": "T5", "added": str(idx[0].date()), "removed": str(idx[15].date())})
+    lvl = _ew_level(rets, roster, idx)
+    assert np.isnan(lvl.iloc[0])                       # no return on the first session
+    r = lvl.pct_change()
+    # T5 is active from idx[0] until removed (exclusive) at idx[15]; T4 joins at idx[10].
+    assert np.allclose(r.iloc[2:10].values,
+                       rets[base + ["T5"]].iloc[2:10].mean(axis=1).values, atol=1e-12)
+    assert np.allclose(r.iloc[10:15].values,
+                       rets[base + ["T4", "T5"]].iloc[10:15].mean(axis=1).values, atol=1e-12)
+    assert np.allclose(r.iloc[15:].values,
+                       rets[base + ["T4"]].iloc[15:].mean(axis=1).values, atol=1e-12)
+    # a late entrant never changes history before its added date
+    no_late = _ew_level(rets, [m for m in roster if m["ticker"] != "T4"], idx)
+    assert np.allclose(lvl.iloc[:10].values, no_late.iloc[:10].values,
+                       atol=1e-12, equal_nan=True)
+
+
+@_gi_ext_needs
+def test_basket_dated_committed_window_bound_and_floor():
+    df = pd.read_parquet(GI_BK_DATED)
+    assert list(df.columns) == _GI_COLS
+    assert set(df.level) == {"basket"}
+    assert df.membership_basis.unique().tolist() == ["reconstructed_dated_membership"]
+    assert (df["index"].notna() == (df.n_priced_members >= GI_FLOOR)).all()
+    assert str(df.date.min().date()) == "2023-05-09"   # dated basket membership starts at the seed
+    assert df.group.nunique() == 49
+    assert pd.api.types.is_integer_dtype(df.n_priced_members)
+    assert not df.duplicated(["level", "group", "date"]).any()
+    # Repo-only window bound: the priced count can never exceed the number of members
+    # whose recorded [added, removed) window covers the session (prices only lower it).
+    doc = json.loads((ROOT / "data/baskets/membership.json").read_text())
+    dates = pd.DatetimeIndex(df.date.drop_duplicates().sort_values())
+    for bid, b in doc["baskets"].items():
+        cap = pd.Series(0, index=dates)
+        for m in b["members"]:
+            w = dates >= pd.Timestamp(m["added"])
+            if m.get("removed"):
+                w = w & (dates < pd.Timestamp(m["removed"]))
+            cap = cap + w.astype(int)
+        n = df[df.group == bid].set_index("date").n_priced_members.reindex(dates)
+        assert (n <= cap).all(), bid
+
+
+@_gi_ext_needs
+def test_group_index_extension_no_ticker():
+    tickers = _gi_member_tickers() - _GI_ABBREV
+    bk = pd.read_parquet(GI_BK_DATED)
+    sp = pd.read_parquet(GI_SP_EXT)
+    assert list(sp.columns) == _GI_COLS + ["index_universe"]
+    for df in (bk, sp):
+        assert not any("ticker" in c for c in df.columns)
+        assert not (set(df.group) & tickers)
+    assert set(sp[sp.index_universe == "sp400"].group) == set(GICS_TO_ETF)
+    assert set(sp[sp.index_universe == "sp600"].group) == set(GICS_TO_ETF)
+    for p in (GI_BK_META, GI_SP_META):
+        text = p.read_text()
+        assert not _FORBIDDEN.search(text)
+        hits = {t for t in tickers if len(t) >= 2 and re.search(r"\b" + re.escape(t) + r"\b", text)}
+        assert not hits, sorted(hits)
+
+
+@_gi_ext_needs
+def test_group_index_extension_floor_basis_and_separation():
+    sp = pd.read_parquet(GI_SP_EXT)
+    assert set(sp.level) == {"sector"}
+    assert sp.membership_basis.unique().tolist() == ["reconstructed_dated_membership"]
+    assert set(sp.index_universe) == {"sp400", "sp600"}
+    assert (sp["index"].notna() == (sp.n_priced_members >= GI_FLOOR)).all()
+    assert not sp.duplicated(["level", "group", "date", "index_universe"]).any()
+    assert str(sp[sp.index_universe == "sp400"].date.min().date()) == "2012-01-13"
+    assert str(sp[sp.index_universe == "sp600"].date.min().date()) == "2019-12-17"
+    sm = json.loads(GI_SP_META.read_text())
+    assert sm["never_pooled"] == "The S&P 500, 400 and 600 indexes are never pooled."
+    bm = json.loads(GI_BK_META.read_text())
+    assert bm["dated_membership_start"] == "2023-05-09"
+    assert bm["index"]["floor"] == GI_FLOOR and sm["index"]["floor"] == GI_FLOOR
+
+
+@_gi_ext_needs
+def test_group_index_extension_sidecars_consistent():
+    bk = pd.read_parquet(GI_BK_DATED)
+    bm = json.loads(GI_BK_META.read_text())
+    for g, sub in bk.groupby("group"):
+        v = sub.dropna(subset=["index"])
+        assert bm["first_valid_index"][g] == (str(v.date.min().date()) if len(v) else None)
+        assert bm["n_priced_at_last_date"][g] == int(sub.loc[sub.date.idxmax(), "n_priced_members"])
+        assert bm["below_floor_sessions_per_basket"][g] == int((sub.n_priced_members < GI_FLOOR).sum())
+    sp = pd.read_parquet(GI_SP_EXT)
+    sm = json.loads(GI_SP_META.read_text())
+    for src in ("sp400", "sp600"):
+        u = sp[sp.index_universe == src]
+        um = sm["universes"][src]
+        assert um["rows"] == len(u)
+        for g, sub in u.groupby("group"):
+            v = sub.dropna(subset=["index"])
+            assert um["first_valid_index"][g] == (str(v.date.min().date()) if len(v) else None)
+            assert um["n_priced_at_last_date"][g] == int(sub.loc[sub.date.idxmax(), "n_priced_members"])
+
+
+@_gi_needs
+def test_group_index_key_map_house_only():
+    """COO continuation B: the committed key map stays HOUSE ONLY — exactly 11 sector and
+    49 basket rows; the extension files add no new key (levels stay sector and basket)."""
+    km = pd.read_csv(GI_KEYMAP, keep_default_na=False)
+    assert len(km) == 60
+    assert km.level.value_counts().to_dict() == {"basket": 49, "sector": 11}
+    if GI_BK_DATED.exists():
+        bk = pd.read_parquet(GI_BK_DATED, columns=["level", "group"])
+        sp = pd.read_parquet(GI_SP_EXT, columns=["level", "group"])
+        keys = set(zip(km.level, km.group_key))
+        assert set(zip(bk.level, bk.group)) <= keys
+        assert set(zip(sp.level, sp.group)) <= keys
+
+
+@_gi_needs
+def test_group_index_existing_files_frozen():
+    """COO continuation D: the four existing group_index files keep their exact bytes from
+    ac0da85fadab861477c23d107eaa62033fcc06a0; the extension adds new files only."""
+    frozen = {
+        "group_index.meta.json":
+            "5a22beeb1e09b0bb618913de1cafc8043a21ff5f9a9e59815733b3bd535e02da",
+        "group_index_daily_current_sensitivity.parquet":
+            "1116577f3fb10a7fe9f9da534c9726fa63009ccd3c6496c30229a87be0514fba",
+        "group_index_daily_dated.parquet":
+            "27a4420e0c990fb97486a3e2829e6e3580f5f199a3267ba2d09731f68ebea6e3",
+        "group_index_key_map.csv":
+            "b34de4871aac30c0e26c1735092163f88d77867bfe0944e7700866d85f1b7de2",
+    }
+    for name, h in frozen.items():
+        assert hashlib.sha256((HIST / name).read_bytes()).hexdigest() == h, name
