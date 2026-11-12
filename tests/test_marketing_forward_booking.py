@@ -676,7 +676,10 @@ class TestPublishLaneCheckout:
     @pytest.mark.parametrize("name", ["marketing-publish.yml",
                                       "marketing-media-backfill.yml"])
     def test_checkout_is_shallow(self, name):
-        steps = self._wf(name)["jobs"][next(iter(self._wf(name)["jobs"]))]["steps"]
+        jobs = self._wf(name)["jobs"]
+        # The delivery-readback job is first; it must not stand in for the sender.
+        job = jobs["publish"] if name == "marketing-publish.yml" else next(iter(jobs.values()))
+        steps = job["steps"]
         checkout = [s for s in steps if "actions/checkout" in str(s.get("uses", ""))]
         assert checkout, f"{name}: no checkout step found"
         for s in checkout:
