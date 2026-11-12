@@ -411,6 +411,15 @@ cohorts concentrate the dead; (4) **red-team** — make-or-break calls get an op
 briefed to break the conclusion against the operator's actual use-case BEFORE the main loop
 presents it. The operator often cannot audit these calls and will not be the safety net.
 
+## History is reconstructed, never awaited (Chairman 2026-11-12)
+
+When a metric, signal input or study needs a past, build that past from historical data. A
+written-forward record is never a prerequisite, and point-in-time data is not a requirement.
+Before reporting an input or a history as missing, list the store on the default branch; session
+checkouts are sparse. Label the basis beside every result; the label informs, it does not gate.
+Promotion gates and the kill registry are unchanged. Rule text and the amendments to the Temporal
+Data Standard: `research/HISTORICAL_RECONSTRUCTION_PROTOCOL.md`.
+
 ## Kill-registry citations (DO_NOT_REBUILD.md)
 
 Rows in `research/DO_NOT_REBUILD.md` carry a stable `Key` column (`KILL-…` §1–2,
