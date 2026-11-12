@@ -3368,6 +3368,14 @@ class ProofFreshness:
                         f"main commit {commit['sha'][:12]} changed the check definitions "
                         "themselves, so no existing green describes the checks that run now"
                     )
+                # Companion source can change an unchanged job's inferred inputs.
+                # A changed-job manifest delta cannot rule out that selection drift.
+                if any(name != LEGACY_MANIFEST_PATH for name in files):
+                    return True, (
+                        f"main commit {commit['sha'][:12]} changed the job manifest "
+                        "with other files, so unchanged-job source inference "
+                        "requires fresh proof"
+                    )
                 # An edit to the job manifest alone that the pack scopes to the
                 # jobs it changes stales only the pull requests those jobs select.
                 reason = self._bounded_manifest_verdict(commit["sha"], number)

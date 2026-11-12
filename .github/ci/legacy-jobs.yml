@@ -15737,10 +15737,12 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/signal_engine/confluence.py"
+      - "research/signal_engine/SCHEMA.json"
       - "scripts/notify.py"
       - "scripts/oracle_reversion_screen.py"
       - "scripts/oracle_screen.py"
       - "scripts/validate_regime_fwd.py"
+      - "scripts/validate_signals.py"
       - "site/qledger/track_record.json"
       # Ancestor package initializers of the declared subjects (2026-11-04,
       # ancestor-init census): importing a declared module executes these, so a

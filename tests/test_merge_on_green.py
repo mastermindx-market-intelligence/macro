@@ -11162,18 +11162,163 @@ def test_a_bounded_manifest_edit_with_unknown_pull_request_files_re_proves():
     assert "own changed files could not be established" in reason
 
 
-def test_a_bounded_manifest_edit_still_classifies_its_other_files():
-    """The manifest is skipped as a candidate, not the rest of the commit."""
+@pytest.mark.parametrize(
+    "pr_files, companion, expected_reason",
+    [
+        (
+            ["engine/signal_quality.py"], "engine/signal_quality.py", None,
+        ),  # ci-trigger-closure: data — fixture changed-file names, never opened
+        (
+            ["scripts/validate_signals.py"], "engine/signal_quality.py",
+            "manifest with other files",
+        ),  # ci-trigger-closure: data — fixture changed-file names, never opened
+        (
+            ["scripts/validate_signals.py"], "requirements.txt",
+            "a global CI invalidator",
+        ),  # ci-trigger-closure: data — fixture changed-file names, never opened
+    ],
+    ids=["related-source", "disjoint-source", "global-invalidator"],
+)
+def test_a_bounded_manifest_edit_still_classifies_its_other_files(
+    pr_files, companion, expected_reason
+):
+    """Mixed commits need fresh proof, with global invalidators checked first."""
     after = _edited("fx-guard", paths=["engine/fx/**"])
-    also = ["engine/signal_quality.py"]  # ci-trigger-closure: data — fixture changed-file name, never opened
-    stale, reason = _judge_manifest_edit(after, also, also_changed=also)
+    stale, reason = _judge_manifest_edit(after, pr_files, also_changed=[companion])
     assert stale is True, reason
-    assert "inside this pull request's tested surface" in reason
-    stale, reason = _judge_manifest_edit(after, ["scripts/validate_signals.py"], also_changed=also)  # ci-trigger-closure: data — fixture changed-file name, never opened
+    if expected_reason is not None:
+        assert expected_reason in reason
+
+
+
+def test_a_mixed_manifest_commit_reproves_an_unchanged_native_owner(
+    tmp_path, monkeypatch
+):
+    """Real source inference can change selection without a manifest-owner edit.
+
+    Adapt the executed #10596 counterexample (6790993381) to this controller's
+    incumbent loader and fixture helpers; no held validator API is imported.
+    """
+    import copy
+    import os
+    import subprocess
+
+    from scripts import audit_unrun_tests as AUDIT
+    from scripts import ci_scope_dependencies as DEPS
+    from scripts import run_ci_pack as PLAN
+
+    pr_file = "app/quokka.py"  # ci-trigger-closure: data — materialized fixture
+    suite = "tests/test_dynamic_scope.py"  # ci-trigger-closure: data — fixture suite
+    widget_suite = "tests/test_widgets.py"  # ci-trigger-closure: data — fixture suite
+    frame = {"if": "${{ false }}", "runs-on": "ubuntu-latest", "gate": "code"}
+    before = {
+        "jobs": {
+            "widget-suite": {
+                **frame,
+                "scope": "exclusive",
+                "paths": ["engine/widgets/**", widget_suite],
+                "steps": [
+                    {"name": "widget proof", "run": f"python -m pytest {widget_suite} -q"}
+                ],
+            },
+            "dynamic-suite": {
+                **frame,
+                "steps": [
+                    {"name": "dynamic proof", "run": f"python -m pytest {suite} -q"}
+                ],
+            },
+        }
+    }
+    after = copy.deepcopy(before)
+    after["jobs"]["widget-suite"]["timeout-minutes"] = 45
+    assert before["jobs"]["dynamic-suite"] == after["jobs"]["dynamic-suite"]
+    sources_before = {
+        "app/__init__.py": "",
+        pr_file: "VALUE = 1\n",
+        "engine/widgets/__init__.py": "",
+        widget_suite: "def test_widget():\n    assert True\n",
+        suite: "def test_dynamic():\n    assert True\n",
+    }
+    sources_after = {
+        **sources_before,
+        suite: "from app.quokka import VALUE\n\ndef test_dynamic():\n    assert VALUE == 1\n",
+    }
+    selections, scopes = [], []
+    fixture_env = {key: value for key, value in os.environ.items()
+                   if not key.startswith("GIT_")}
+    fixture_env.update(
+        GIT_CONFIG_COUNT="2",
+        GIT_CONFIG_KEY_0="gc.auto", GIT_CONFIG_VALUE_0="0",
+        GIT_CONFIG_KEY_1="maintenance.auto", GIT_CONFIG_VALUE_1="false",
+    )
+    for label, sources, document in (
+        ("before", sources_before, before), ("after", sources_after, after)
+    ):
+        root = tmp_path / label
+        for relative, content in sources.items():
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(content, encoding="utf-8")
+        manifest = root / MOG.LEGACY_MANIFEST_PATH
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+        for args in (("init", "-q"), ("add", "-A")):
+            subprocess.run(
+                ["git", "-C", str(root), *args], check=True, env=fixture_env,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            )
+        with monkeypatch.context() as scoped:
+            for key in list(os.environ):
+                if key.startswith("GIT_"):
+                    scoped.delenv(key, raising=False)
+            scoped.chdir(root)
+            scoped.setattr(AUDIT, "ROOT", root)
+            scoped.setattr(DEPS, "ROOT", root)
+            AUDIT._classify.cache_clear()
+            DEPS._selector_file_analysis.cache_clear()
+            try:
+                assert DEPS._ACTIVE_TRACKED_PATHS is None
+                assert suite in AUDIT.discover_suites()
+                jobs = PLAN.load_legacy_jobs(manifest, gate="code")
+                inferred, summary = PLAN.infer_job_scopes(jobs)
+                assert "scope inference unavailable" not in summary
+                dynamic = next(job for job in inferred if job.job_id == "dynamic-suite")
+                assert not dynamic.exclusive and dynamic.is_scoped
+                selected, _reason = PLAN.select_jobs(inferred, [pr_file])
+                selections.append({job.job_id for job in selected})
+                scopes.append(dynamic.paths)
+            finally:
+                AUDIT._classify.cache_clear()
+                DEPS._selector_file_analysis.cache_clear()
+    assert "dynamic-suite" not in selections[0]
+    assert "dynamic-suite" in selections[1]
+    assert pr_file not in scopes[0] and pr_file in scopes[1]
+    for path in (pr_file, suite):
+        assert not MOG._selector_matches_any(MOG.MAIN_GLOBAL_INVALIDATORS, path)
+
+    # Use every real PR workflow, not a narrowed stand-in for its path filters.
+    gates = MOG.load_pr_gates()
+    commit = f"{1:040d}"
+    fresh = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, [MOG.LEGACY_MANIFEST_PATH, suite])],
+        pull_files={4242: [pr_file]}, gates=gates,
+    )
+    _seed_manifest_edit(fresh, commit, before, after)
+    # The actual manifest comparison sees only the unrelated exclusive owner.
+    assert set(fresh._manifest_job_delta(commit)) == {"widget-suite"}
+    assert fresh._bounded_manifest_verdict(commit, 4242) is None
+    stale, reason = fresh.stale_for(_pull(), _clean_proof())
+    assert stale is True, reason
+    assert "manifest with other files" in reason
+
+    # With identical source inputs, the valid manifest-only exemption survives.
+    control = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, [MOG.LEGACY_MANIFEST_PATH])],
+        pull_files={4242: [pr_file]}, gates=gates,
+    )
+    _seed_manifest_edit(control, commit, before, after)
+    stale, reason = control.stale_for(_pull(), _clean_proof())
     assert stale is False, reason
-    stale, reason = _judge_manifest_edit(after, ["scripts/validate_signals.py"], also_changed=["requirements.txt"])  # ci-trigger-closure: data — fixture changed-file name, never opened
-    assert stale is True, reason
-    assert "a global CI invalidator" in reason
 
 
 def test_the_manifest_read_walks_small_trees_and_fails_closed(monkeypatch):
@@ -11324,11 +11469,12 @@ def test_a_bounded_manifest_verdict_agrees_with_the_ci_pack(tmp_path, before, af
     for the pull request's files.  A kept proof must be one the pack would not
     rerun; for exclusive and data-gate jobs the verdicts must match exactly.
 
-    Scope inference (`infer_job_scopes`) is left out because it reads the
-    repository's suites.  It changes only non-exclusive jobs, and an unchanged
-    job selects the same way under both manifests, so it can move the pack's
-    answer only when a non-exclusive job was edited, which the sweeper always
-    re-proves."""
+    These fixtures are manifest-only commits: every source input stays fixed.
+    Scope inference (`infer_job_scopes`) is left out only under that condition.
+    The unchanged non-exclusive jobs then select the same way on both sides;
+    changed non-exclusive jobs always re-prove. Mixed manifest/source commits
+    have a separate native-inference regression because an unchanged job can
+    gain an input when a companion suite changes."""
     before = before or _pack_manifest()
     reruns = _pack_reruns(tmp_path, before, after, pr_files)
     stale, reason = _judge_manifest_edit(after, pr_files, before=before)
