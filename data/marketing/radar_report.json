@@ -2,7 +2,7 @@
   "schema": "marketing.radar_report/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-11-12T13:32:30Z",
+  "produced_at": "2026-11-12T14:59:21Z",
   "tier": "display",
   "as_of": "2026-11-12",
   "feeds": [
@@ -38,7 +38,7 @@
     }
   ],
   "posted_recent": {
-    "n_tickers": 2547,
+    "n_tickers": 2546,
     "window_plans": 7
   },
   "surplus": [
@@ -115,6 +115,14 @@
       "opportunity_id": "radar-earnings-ASND-2026-11-12"
     },
     {
+      "ticker": "AADX",
+      "feed": "movers",
+      "why": "S&P mover -13.2% 1D ()",
+      "as_of": "2026-11-11",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-AADX-2026-11-11"
+    },
+    {
       "ticker": "AMCR",
       "feed": "confluence",
       "why": "confluence combo Weekly 21/100 golden cross + weekly reclaims 35-day line + weekly Stochastic-RSI bullish cross + above the cloud firing, test WR 76%",
@@ -131,28 +139,44 @@
       "opportunity_id": "radar-confluence-AWK-2026-11-11"
     },
     {
-      "ticker": "CRSP",
+      "ticker": "AXGN",
       "feed": "movers",
-      "why": "S&P mover -9.8% 1D ()",
+      "why": "S&P mover +15.2% 1D ()",
       "as_of": "2026-11-11",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-CRSP-2026-11-11"
+      "opportunity_id": "radar-movers-AXGN-2026-11-11"
     },
     {
-      "ticker": "CSQR",
+      "ticker": "AZTA",
       "feed": "movers",
-      "why": "S&P mover +14.7% 1D ()",
+      "why": "S&P mover +20.8% 1D ()",
       "as_of": "2026-11-11",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-CSQR-2026-11-11"
+      "opportunity_id": "radar-movers-AZTA-2026-11-11"
     },
     {
-      "ticker": "HIMS",
+      "ticker": "CRWV",
       "feed": "movers",
-      "why": "S&P mover -16.6% 1D ()",
+      "why": "S&P mover +24.7% 1D ()",
       "as_of": "2026-11-11",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-HIMS-2026-11-11"
+      "opportunity_id": "radar-movers-CRWV-2026-11-11"
+    },
+    {
+      "ticker": "DNA",
+      "feed": "movers",
+      "why": "S&P mover -14.7% 1D ()",
+      "as_of": "2026-11-11",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-DNA-2026-11-11"
+    },
+    {
+      "ticker": "GO",
+      "feed": "movers",
+      "why": "S&P mover -6.4% 1D ()",
+      "as_of": "2026-11-11",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-GO-2026-11-11"
     },
     {
       "ticker": "HWM",
@@ -171,28 +195,20 @@
       "opportunity_id": "radar-confluence-KMB-2026-11-11"
     },
     {
-      "ticker": "LITE",
+      "ticker": "LGN",
       "feed": "movers",
-      "why": "S&P mover +10.7% 1D (Technology)",
+      "why": "S&P mover +15.7% 1D ()",
       "as_of": "2026-11-11",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-LITE-2026-11-11"
+      "opportunity_id": "radar-movers-LGN-2026-11-11"
     },
     {
-      "ticker": "NG",
+      "ticker": "NBIS",
       "feed": "movers",
-      "why": "S&P mover -9.3% 1D ()",
+      "why": "S&P mover +15.4% 1D ()",
       "as_of": "2026-11-11",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-NG-2026-11-11"
-    },
-    {
-      "ticker": "QLYS",
-      "feed": "movers",
-      "why": "S&P mover -13.5% 1D ()",
-      "as_of": "2026-11-11",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-QLYS-2026-11-11"
+      "opportunity_id": "radar-movers-NBIS-2026-11-11"
     },
     {
       "ticker": "ROST",
@@ -201,22 +217,6 @@
       "as_of": "2026-11-11",
       "staleness_days": 1,
       "opportunity_id": "radar-confluence-ROST-2026-11-11"
-    },
-    {
-      "ticker": "RUN",
-      "feed": "movers",
-      "why": "S&P mover -10.6% 1D ()",
-      "as_of": "2026-11-11",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-RUN-2026-11-11"
-    },
-    {
-      "ticker": "SOC",
-      "feed": "movers",
-      "why": "S&P mover -14.7% 1D ()",
-      "as_of": "2026-11-11",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-SOC-2026-11-11"
     },
     {
       "ticker": "TRGP",
@@ -364,8 +364,8 @@
     }
   ],
   "queue": {
-    "added": 15,
-    "expired": 8,
+    "added": 0,
+    "expired": 0,
     "total": 435,
     "open": 302,
     "doa_skipped": 8
@@ -373,8 +373,8 @@
   "tiers_summary": {
     "as_of": "2026-11-11",
     "t1": 28,
-    "t2": 588,
-    "t3": 2127
+    "t2": 560,
+    "t3": 2157
   },
   "cadence": {
     "available": true,
