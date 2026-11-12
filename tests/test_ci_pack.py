@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_976),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_000),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_734),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #8686, current-main source conflict repair):
+    Receiver e7f8565ca26b74b9ae0d637b336e9985d513ff9d retains all 401
+    owners, the six landed CI owner changes, five DATA dependency fixes,
+    and #11101's independent marketing suite contribution exactly once.
+    Preserve the billing-emails contribution and its original
+    feature objects; retain every other current-main owner and source path.
+    Carry only this carrier's 5/5/5 marginal weights onto
+    5971/5995/5729, yielding 5976/6000/5734; keep 137/138/131 job
+    ceilings, ten packs, all selectors, assertions, and runtime controls.
+    Retain all 3638 bytes/56 lines of published carrier history
+    at their original anchors and every current-main provenance paragraph.
+    This is source accounting; actual paired native proof and natural
+    successor CI are separate evidence. Original UNKNOWN effects, closed
+    grants, and private/provider/product/release limits remain unchanged.
 
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
@@ -6040,6 +6055,62 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
     is measured planner accounting, not an execution-time estimate; natural
     successor CI must qualify the repaired source.
+
+    2026-11-11 (PR #8686, current-source privacy conflict composition):
+    Preserve all 401 accepted owners and both original mailer/privacy blobs.
+    Native fdd099b87cf72e8221372ef55de95efa2b7d284e owner estimation
+    confirms billing-emails 25 -> 30 for the original two-suite enrollment.
+    Carry only its +5 onto 5966/5987/5724, yielding 5971/5992/5729.
+    Keep 137/138/131 jobs, ten packs, selectors and admission limits.
+    Full inverse recovers main bbe1bcbd7b1b07ea039d3211b75cce9a3504c7dd.
+    This is source and owner-estimator proof, not full-tree timing or CI.
+    The successor still requires its own natural hosted qualification.
+
+    2026-11-09 (PR #8686, actual conflict after the ledger repair landed):
+    Receiving maind59a58ac retains PR10226's actual ledger+3 and the
+    already-landed F09+2. Preserve that complete source history once.
+    The whole billing-emails preimage still equals the prior base;
+    its original two-suite command remains9->10 commands,8->10 test
+    paths,568->646 joined characters,unchanged weight25->30 (+5).
+    Compose current5948/5969/5706 plus only that5 to5953/5974/5711.
+    Retain137/138/131 jobs,ten packs,all test assertions,selectors,
+    timeouts,runtime/admission limits and every prior provenance line.
+    The historical measurements below retain their original bases;
+    this is exact source arithmetic,not a new planner or timing run.
+    Preserve both accepted Mailer/privacy-test objects and no-send
+    behavior. Natural successor proof remains required before release.
+
+    2026-11-09 (PR #8686, preserve actual F09 landing and Mailer privacy coverage):
+    receiving main9a13c64 includes F09's own+2 as landed7bdfb249486d.
+    Keep that contribution, its full history and all other main source.
+    Only this carrier's accepted+5 remains: current5945/5966/5703 becomes
+    5950/5971/5708. The original H's complete historical notes remain
+    below with their original measured/composed revisions and numbers.
+    Current runner and product preimages are unchanged; catalog owners
+    commute with F09's separate data-base-shim change. This is preserving
+    source arithmetic, not a new planner or timing measurement. Keep
+    jobs137/138/131,ten packs and all selectors/assertions/admission limits.
+    The materially combined successor must earn its own natural CI proof.
+
+    Mailer privacy C3 current-main conflict repair (2026-11-09): preserve
+    the complete original paired measurement below and all current history.
+    The whole billing-emails preimage is unchanged; the accepted two-suite
+    step still adds five estimated units under the current literal estimator.
+    Apply only +5 to 5943/5964/5701 -> 5948/5969/5706, retaining 137/138/131
+    jobs and ten packs. This is source accounting, not a new planner run.
+
+    2026-11-07 PR #8686: natural hosted contract-delta run 42325389739,
+    job 128259346939, paired b560da5d4814 against real base b2cc9808cbd0.
+    Enroll incumbent mailer and private-failure tests together in the existing
+    CODE billing-emails owner; the prior DATA-only command did not execute
+    on ordinary code PRs. Measured planner weights increase by exactly five:
+    index137jobs/5912->5917, free137jobs/5927->5932,
+    Prophet131jobs/5668->5673, all ten packs and no newly selected jobs.
+    Fund only those three measured weight deltas; retain the existing
+    job ceilings 137/138/131, pack ceiling ten, selectors, timeouts and
+    admission bounds. These are planning estimates, not runtime evidence.
+    Full decoded contract log SHA256:
+    6d36cd720be3012ffc4cd3f8564170248ebcda2fc85c807b1be85d1e192a9496.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
