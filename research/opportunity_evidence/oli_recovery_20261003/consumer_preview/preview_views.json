@@ -1,0 +1,4452 @@
+{
+  "confirmed": {
+    "private": {
+      "audience": "private",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "d8c0d48b993e4c4c7fdc4a60eb672b6c0599dccdeb7e72342855aba55b74d6b2",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": "SAVED",
+        "ref": {
+          "generation": "fixture-generation-1",
+          "identity_epoch": "fixture-identity-1",
+          "native_id": "fixture:plan:demo",
+          "owner": "portfolio.plan",
+          "schema": "fixture.plan/v1",
+          "security_id": "fixture:security:demo",
+          "strategy_id": "fixture:strategy:pullback",
+          "strategy_owner": "prophet.strategy",
+          "strategy_version": "fixture.v1"
+        },
+        "status": "AVAILABLE"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Confirmed, but no fresh entry",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    },
+    "public": {
+      "audience": "public",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "178d8252627b0b6c89e378b137fdf33b6640bcd09dd6c54e44b3d7ff7983c4b0",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": null,
+        "status": "PRIVATE_CONTEXT_NOT_JOINED"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Confirmed, but no fresh entry",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    }
+  },
+  "correction": {
+    "private": {
+      "audience": "private",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "b0fb438bb8999d2f4c8e52684bac9ecb11b7a0fa461df1f51306690a909d8c6f",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": "SAVED",
+        "ref": {
+          "generation": "fixture-generation-1",
+          "identity_epoch": "fixture-identity-1",
+          "native_id": "fixture:plan:demo",
+          "owner": "portfolio.plan",
+          "schema": "fixture.plan/v1",
+          "security_id": "fixture:security:demo",
+          "strategy_id": "fixture:strategy:pullback",
+          "strategy_owner": "prophet.strategy",
+          "strategy_version": "fixture.v1"
+        },
+        "status": "AVAILABLE"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "A source correction retains its prior reference",
+      "sources": {
+        "contradiction": {
+          "correction_of": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "The owner corrected the earlier peer-coverage reading; the prior generation is retained."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-2",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    },
+    "public": {
+      "audience": "public",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "f722f87efeb3d23cb73a51f85ea706b46f6cefccafcd3e4a1c0e42bb2eb7df87",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": null,
+        "status": "PRIVATE_CONTEXT_NOT_JOINED"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "A source correction retains its prior reference",
+      "sources": {
+        "contradiction": {
+          "correction_of": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "The owner corrected the earlier peer-coverage reading; the prior generation is retained."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-2",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    }
+  },
+  "expired_entry": {
+    "private": {
+      "audience": "private",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "35971307f5b04bb45abd4e60bdecc6fbde09e07070b6fea55a4b3efc4bf9c763",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "entry",
+          "status": "EXPIRED"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": "SAVED",
+        "ref": {
+          "generation": "fixture-generation-1",
+          "identity_epoch": "fixture-identity-1",
+          "native_id": "fixture:plan:demo",
+          "owner": "portfolio.plan",
+          "schema": "fixture.plan/v1",
+          "security_id": "fixture:security:demo",
+          "strategy_id": "fixture:strategy:pullback",
+          "strategy_owner": "prophet.strategy",
+          "strategy_version": "fixture.v1"
+        },
+        "status": "AVAILABLE"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Fresh quote cannot refresh expired permission",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "EXPIRED",
+          "display_value": null,
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:00:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    },
+    "public": {
+      "audience": "public",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "9c8e7fa7472be8b173702164f4dbbb6bcdc76331316d6127acbc3f0a605cb4e3",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "entry",
+          "status": "EXPIRED"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": null,
+        "status": "PRIVATE_CONTEXT_NOT_JOINED"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Fresh quote cannot refresh expired permission",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "EXPIRED",
+          "display_value": null,
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:00:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    }
+  },
+  "future_knowledge": {
+    "private": {
+      "audience": "private",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "dd0a4a67c83da0cddb3f45b17fa067c55d5fcda5ba56638d75c1fe4d0d38e2c2",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "phase",
+          "status": "NOT_YET_KNOWN"
+        },
+        {
+          "source": "entry",
+          "status": "DEPENDENCY_UNAVAILABLE"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": "SAVED",
+        "ref": {
+          "generation": "fixture-generation-1",
+          "identity_epoch": "fixture-identity-1",
+          "native_id": "fixture:plan:demo",
+          "owner": "portfolio.plan",
+          "schema": "fixture.plan/v1",
+          "security_id": "fixture:security:demo",
+          "strategy_id": "fixture:strategy:pullback",
+          "strategy_owner": "prophet.strategy",
+          "strategy_version": "fixture.v1"
+        },
+        "status": "AVAILABLE"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Known-later confirmation stays undisplayed",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "DEPENDENCY_UNAVAILABLE",
+          "display_value": null,
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "NOT_YET_KNOWN",
+          "display_value": null,
+          "known_at": "2026-10-02T15:01:00Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    },
+    "public": {
+      "audience": "public",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "4b25d2071a97aaabe92e3a5a9515a933b0f4c2895c8f1cb75bf9a697ec1b8a4d",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "phase",
+          "status": "NOT_YET_KNOWN"
+        },
+        {
+          "source": "entry",
+          "status": "DEPENDENCY_UNAVAILABLE"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": null,
+        "status": "PRIVATE_CONTEXT_NOT_JOINED"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Known-later confirmation stays undisplayed",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "DEPENDENCY_UNAVAILABLE",
+          "display_value": null,
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "NOT_YET_KNOWN",
+          "display_value": null,
+          "known_at": "2026-10-02T15:01:00Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    }
+  },
+  "holding": {
+    "private": {
+      "audience": "private",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "d1ef39e2243149c4f8c904860b7a68b43f52ca39414bc1866eceabfc60560b36",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": true,
+        "native_state": "ENTERED",
+        "ref": {
+          "generation": "fixture-generation-1",
+          "identity_epoch": "fixture-identity-1",
+          "native_id": "fixture:plan:demo",
+          "owner": "portfolio.plan",
+          "schema": "fixture.plan/v1",
+          "security_id": "fixture:security:demo",
+          "strategy_id": "fixture:strategy:pullback",
+          "strategy_owner": "prophet.strategy",
+          "strategy_version": "fixture.v1"
+        },
+        "status": "AVAILABLE"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Existing position, no fresh entry",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    },
+    "public": {
+      "audience": "public",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "c694790f6686a2dab63f2bdb9d784583e9f64e8baffb0014a0111180e23d5b39",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": null,
+        "status": "PRIVATE_CONTEXT_NOT_JOINED"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Existing position, no fresh entry",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    }
+  },
+  "missing_optional": {
+    "private": {
+      "audience": "private",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "f3a18381ec1b267128eb055a0225d3f79204b217e0f6244884888d77eadf2776",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "contradiction",
+          "status": "NOT_COVERED"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": "SAVED",
+        "ref": {
+          "generation": "fixture-generation-1",
+          "identity_epoch": "fixture-identity-1",
+          "native_id": "fixture:plan:demo",
+          "owner": "portfolio.plan",
+          "schema": "fixture.plan/v1",
+          "security_id": "fixture:security:demo",
+          "strategy_id": "fixture:strategy:pullback",
+          "strategy_owner": "prophet.strategy",
+          "strategy_version": "fixture.v1"
+        },
+        "status": "AVAILABLE"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Optional peer context unavailable",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "NOT_COVERED",
+          "display_value": null,
+          "known_at": null,
+          "observed_at": null,
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "NOT_COVERED",
+          "valid_until": null
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    },
+    "public": {
+      "audience": "public",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "566ef525ac240ba5215501a90bd18242bcee8e52103b4131105d7da003a92d2c",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "contradiction",
+          "status": "NOT_COVERED"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": null,
+        "status": "PRIVATE_CONTEXT_NOT_JOINED"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Optional peer context unavailable",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "NOT_COVERED",
+          "display_value": null,
+          "known_at": null,
+          "observed_at": null,
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "NOT_COVERED",
+          "valid_until": null
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    }
+  },
+  "mixed_generation": {
+    "private": {
+      "audience": "private",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "16c7a0c1033456fd3fadac5513c8b2c8af024b79e0464fec7db6b7e14972e76f",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "entry",
+          "status": "GENERATION_MISMATCH"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": "SAVED",
+        "ref": {
+          "generation": "fixture-generation-1",
+          "identity_epoch": "fixture-identity-1",
+          "native_id": "fixture:plan:demo",
+          "owner": "portfolio.plan",
+          "schema": "fixture.plan/v1",
+          "security_id": "fixture:security:demo",
+          "strategy_id": "fixture:strategy:pullback",
+          "strategy_owner": "prophet.strategy",
+          "strategy_version": "fixture.v1"
+        },
+        "status": "AVAILABLE"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "New quote generation, old permission",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "GENERATION_MISMATCH",
+          "display_value": null,
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-2",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    },
+    "public": {
+      "audience": "public",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "f35c8a9a06598a8f6629e00cd45da4240ae3940c08399089304741ca0275b925",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "entry",
+          "status": "GENERATION_MISMATCH"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": null,
+        "status": "PRIVATE_CONTEXT_NOT_JOINED"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "New quote generation, old permission",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "GENERATION_MISMATCH",
+          "display_value": null,
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-2",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    }
+  },
+  "native_extended": {
+    "private": {
+      "audience": "private",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "22ff4cf78f30c17dbf4e3be160bd4712bb875d6cd5c1d1115ee81ff97861523e",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": true,
+        "native_state": "ENTERED",
+        "ref": {
+          "generation": "fixture-generation-1",
+          "identity_epoch": "fixture-identity-1",
+          "native_id": "fixture:plan:demo",
+          "owner": "portfolio.plan",
+          "schema": "fixture.plan/v1",
+          "security_id": "fixture:security:demo",
+          "strategy_id": "fixture:strategy:pullback",
+          "strategy_owner": "prophet.strategy",
+          "strategy_version": "fixture.v1"
+        },
+        "status": "AVAILABLE"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Native EXTENDED is not a sell instruction",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "EXTENDED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    },
+    "public": {
+      "audience": "public",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "0c04c632687bcd0f8a198bafdee6e428dacb39d35f9ba464268e1d297f1851a6",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": null,
+        "status": "PRIVATE_CONTEXT_NOT_JOINED"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Native EXTENDED is not a sell instruction",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "EXTENDED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    }
+  },
+  "rights": {
+    "private": {
+      "audience": "private",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "c43d9594607dc56909a50aeaabd280f89712121017870db9ad8ce9a9d2c77e6c",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "support",
+          "status": "RIGHTS_BLOCKED"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": "SAVED",
+        "ref": {
+          "generation": "fixture-generation-1",
+          "identity_epoch": "fixture-identity-1",
+          "native_id": "fixture:plan:demo",
+          "owner": "portfolio.plan",
+          "schema": "fixture.plan/v1",
+          "security_id": "fixture:security:demo",
+          "strategy_id": "fixture:strategy:pullback",
+          "strategy_owner": "prophet.strategy",
+          "strategy_version": "fixture.v1"
+        },
+        "status": "AVAILABLE"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Source rights blocked",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "RIGHTS_BLOCKED",
+          "display_value": null,
+          "known_at": null,
+          "observed_at": null,
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "RIGHTS_BLOCKED",
+          "valid_until": null
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    },
+    "public": {
+      "audience": "public",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "9f4c917d57522b73996a53f5d4a75874feedb66b9bb787f483457de28adf4717",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "support",
+          "status": "RIGHTS_BLOCKED"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": null,
+        "status": "PRIVATE_CONTEXT_NOT_JOINED"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Source rights blocked",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "geometry_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:geometry:demo",
+              "owner": "prophet.strategy_geometry",
+              "schema": "fixture.geometry/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "native_verdict": "WAIT_FOR_RESET",
+            "phase_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:phase:demo",
+              "owner": "prophet.candidate_state",
+              "schema": "fixture.phase/v1",
+              "security_id": "fixture:security:demo",
+              "strategy_id": "fixture:strategy:pullback",
+              "strategy_owner": "prophet.strategy",
+              "strategy_version": "fixture.v1"
+            },
+            "quote_ref": {
+              "generation": "fixture-generation-1",
+              "identity_epoch": "fixture-identity-1",
+              "native_id": "fixture:quote:demo",
+              "owner": "market_data.quote",
+              "schema": "fixture.quote/v1",
+              "security_id": "fixture:security:demo"
+            },
+            "reason": "The source fixture does not offer a fresh entry at this quote."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "RIGHTS_BLOCKED",
+          "display_value": null,
+          "known_at": null,
+          "observed_at": null,
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "RIGHTS_BLOCKED",
+          "valid_until": null
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    }
+  },
+  "transport_failure": {
+    "private": {
+      "audience": "private",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "4269d313c08240f0b9210bdbc222c35b358175d0b6a39fcc5187c77806b61a50",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "entry",
+          "status": "TRANSPORT_UNAVAILABLE"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": "SAVED",
+        "ref": {
+          "generation": "fixture-generation-1",
+          "identity_epoch": "fixture-identity-1",
+          "native_id": "fixture:plan:demo",
+          "owner": "portfolio.plan",
+          "schema": "fixture.plan/v1",
+          "security_id": "fixture:security:demo",
+          "strategy_id": "fixture:strategy:pullback",
+          "strategy_owner": "prophet.strategy",
+          "strategy_version": "fixture.v1"
+        },
+        "status": "AVAILABLE"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Entry transport unavailable — not a quiet market",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "TRANSPORT_UNAVAILABLE",
+          "display_value": null,
+          "known_at": null,
+          "observed_at": null,
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "TRANSPORT_UNAVAILABLE",
+          "valid_until": null
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    },
+    "public": {
+      "audience": "public",
+      "authority": {
+        "can_execute": false,
+        "can_gate": false,
+        "can_mutate_plan": false,
+        "can_originate_signal": false,
+        "can_rank": false,
+        "can_size": false
+      },
+      "content_sha256": "cdf3ba5f8882b18d6745202ed82d0de395c9d6c96c9adc64c727019806635a24",
+      "decision_at": "2026-10-02T15:00:00Z",
+      "degradations": [
+        {
+          "source": "entry",
+          "status": "TRANSPORT_UNAVAILABLE"
+        }
+      ],
+      "forecast_status": "NOT_QUALIFIED",
+      "forecasts": null,
+      "plan": {
+        "has_position": null,
+        "native_state": null,
+        "status": "PRIVATE_CONTEXT_NOT_JOINED"
+      },
+      "profile": "oli.consumer_preview.synthetic.v1",
+      "scenario": "Entry transport unavailable — not a quiet market",
+      "sources": {
+        "contradiction": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "peer_breadth",
+            "text": "Peer participation is weak despite the subject's advance."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:contradiction:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.contradiction/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "entry": {
+          "correction_of": null,
+          "display_status": "TRANSPORT_UNAVAILABLE",
+          "display_value": null,
+          "known_at": null,
+          "observed_at": null,
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:entry:demo",
+            "owner": "prophet.entry_availability",
+            "schema": "fixture.entry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "TRANSPORT_UNAVAILABLE",
+          "valid_until": null
+        },
+        "geometry": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "basis_at": "2026-10-02T14:30:00Z",
+            "currency": "USD",
+            "invalidation": "123.40",
+            "opportunity_expires_at": "2026-10-09T20:00:00Z",
+            "price_basis": "fixture-unadjusted",
+            "trigger": "128.00"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:geometry:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.geometry/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "next_condition": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "strategy_rule",
+            "text": "Reassess only after the owner records a qualified reset and a new entry verdict."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:next_condition:demo",
+            "owner": "prophet.strategy_geometry",
+            "schema": "fixture.next_condition/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "phase": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "native_state": "CONFIRMED",
+            "reason": "The fixture's completed-bar confirmation remains recorded."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:phase:demo",
+            "owner": "prophet.candidate_state",
+            "schema": "fixture.phase/v1",
+            "security_id": "fixture:security:demo",
+            "strategy_id": "fixture:strategy:pullback",
+            "strategy_owner": "prophet.strategy",
+            "strategy_version": "fixture.v1"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "quote": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "currency": "USD",
+            "price": "132.10",
+            "price_basis": "fixture-unadjusted"
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:quote:demo",
+            "owner": "market_data.quote",
+            "schema": "fixture.quote/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        },
+        "support": {
+          "correction_of": null,
+          "display_status": "AVAILABLE",
+          "display_value": {
+            "dependence_group": "price_structure",
+            "text": "The completed-bar confirmation remains intact."
+          },
+          "known_at": "2026-10-02T14:59:10Z",
+          "observed_at": "2026-10-02T14:59:00Z",
+          "ref": {
+            "generation": "fixture-generation-1",
+            "identity_epoch": "fixture-identity-1",
+            "native_id": "fixture:support:demo",
+            "owner": "alpha.opportunity_evidence",
+            "schema": "fixture.support/v1",
+            "security_id": "fixture:security:demo"
+          },
+          "status": "AVAILABLE",
+          "valid_until": "2026-10-02T15:05:00Z"
+        }
+      },
+      "strategy": {
+        "holding_horizon": "10–30 trading sessions",
+        "id": "fixture:strategy:pullback",
+        "label": "Pullback continuation",
+        "owner": "prophet.strategy",
+        "version": "fixture.v1"
+      },
+      "subject": {
+        "identity_epoch": "fixture-identity-1",
+        "name": "Demonstration Semiconductor",
+        "security_id": "fixture:security:demo",
+        "ticker": "DEMO"
+      },
+      "synthetic": true
+    }
+  }
+}

@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #8333, compose OLI with landed marketing closure):
+    Receiver e7f8565c retains #11101's independent marketing +2 and the five
+    DATA-owner dependency changes. Its complete prophet-lab owner equals
+    incorporated 0290e4c4; retain every current browser acquisition contract.
+    Restore only OLI's original declared path and folded pytest argument:
+    12 commands remain 12, test tokens 27 -> 28, characters 1662 -> 1708,
+    and owner weight 68 -> 70. Equal H/main ceilings funded different owners.
+    Carry only OLI's +2 onto current 5971/5995/5729 -> 5973/5997/5731.
+    Preserve all three complete OLI history insertions, every main paragraph,
+    job caps 137/138/131, ten packs, assertions, timeouts and admission limits.
+    This is source conservation and arithmetic, not a fresh planner result;
+    paired current-tree attribution and natural successor proof remain owed.
+    Original replay UNKNOWN, private-route refusals and science holds persist.
 
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
@@ -6023,6 +6037,18 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and admission limits unchanged. The wider selection is intended
     (closure-required); natural successor CI must qualify the
     repaired source.
+
+    2026-11-12 (PR #8333, preserve accepted bounded-browser fallback):
+    Keep all 401 current owners, their full commands and current accounting.
+    The landed #11051 fallback remains byte-exact in prophet-lab; its longer
+    command moves the current owner to weight 68. Restore only OLI's original
+    declared path and pytest argument: weight 68 -> 70, no new command.
+    Carry only OLI's accepted +2: 5969/5993/5727 -> 5971/5995/5729.
+    Preserve both complete OLI history insertions in their original places,
+    job caps 137/138/131, ten packs, all assertions and runtime limits.
+    This is source accounting, not a fresh whole-tree planner measurement;
+    current-tree attribution and natural successor proof remain required.
+    Original replay UNKNOWN, private-route refusals and science holds remain.
 
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
@@ -6052,6 +6078,23 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     admission limits. Preserve both entire provenance histories.
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-09 (PR #8333, compose the actual #6867 lifecycle landing):
+    Preserve all 400 current owners and both complete measurement histories.
+    Accepted main f3a8cf04 measures 5958/5979/5716; this PR's separately
+    qualified contribution remains +2, giving 5960/5981/5718.
+    The changed owner blocks have unchanged preimages; main changes only
+    data-base-shim, so neither contribution overwrites the other.
+    Job ceilings 137/138/131, ten packs and all assertions remain unchanged.
+    This is source conservation and arithmetic; new natural CI is still owed.
+
+    2026-11-09 (PR #8333, preserve the actual ownership-ledger landing):
+    Current main retains F09 plus the independent ledger +3 on each probe.
+    Preserve all current owners, the complete historical evidence below and
+    this PR's original +2 on each probe contribution. Derived union ceilings are
+    5950/5971/5708 with job caps 137/138/131 and ten packs unchanged.
+    This is source-accounting conservation, not a fresh full-tree measurement;
+    the successor must earn its own hosted contract and semantic proof.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
@@ -6135,6 +6178,48 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     current-tree failure claim. Natural own CI must qualify the result.
     If10192 actually lands before publication, retain that new baseline
     and add only ledger+3; do not enroll or fund the filer twice.
+
+    2026-11-09 (PR #8333, preserve actual F09 landing and OLI coverage with B17 retained):
+    receiving main9a13c64 includes F09's own+2 as landed7bdfb249486d.
+    Keep that contribution, its full history and all other main source.
+    Only this carrier's accepted+2 remains: current5945/5966/5703 becomes
+    5947/5968/5705. The original H's complete historical notes remain
+    below with their original measured/composed revisions and numbers.
+    Current runner and product preimages are unchanged; catalog owners
+    commute with F09's separate data-base-shim change. This is preserving
+    source arithmetic, not a new planner or timing measurement. Keep
+    jobs137/138/131,ten packs and all selectors/assertions/admission limits.
+    The materially combined successor must earn its own natural CI proof.
+
+    PR8333 source conflict repair (2026-11-09): preserve current main's
+    landed B-17 paths, provenance and separate pytest step in prophet-lab.
+    Restore only the original OLI declared path and pytest argument; do
+    not replace the complete owner from its older head. Old/current packer
+    weight and loader functions match, with no observed owner override.
+    Current commands12->12, test-path tokens27->28 and characters1433->1479
+    keep the same800-character band: weight67->69, only OLI's own +2.
+    Main's already-funded B-17 contribution remains intact. Compose current
+    ceilings5943/5964/5701->5945/5966/5703, preserving jobs137/138/131,
+    197 curated owners, ten packs, all assertions and current provenance.
+    Historical owner-equality/accounting notes below refer to their own
+    older generation. This is static attribution, not a new planner/runtime
+    observation; natural successor CI must qualify this current composition.
+
+    PR8333 (2026-11-07): own hosted contract-delta run42296647367,
+    job128163508766, measured base574ce2822b4a against head0ba0333a028c:
+    index137/5912->5914, free-content137/5927->5929, Prophet131/5668->5670.
+    No newly selected job IDs; all probes retain ten packs. The only
+    prophet-lab owner delta registers the unchanged OLI suite in its existing
+    paths and pytest command, contributing exactly two planning-weight units.
+    Current main60dbeffbc710 retains that same owner without the two OLI
+    registration lines and unchanged planner3cbed589. Carry only this own +2
+    onto current ceilings5914/5933/5672, yielding5916/5935/5674; do not copy
+    old whole-file limits or import unmerged sibling funding. This is
+    arithmetic composition, not a new planner or runtime measurement.
+    Preserve all job-count ceilings, ten-pack bound, selectors, assertions,
+    suites, timeouts, admission limits and prior accounting below. Natural
+    successor CI must qualify this distinct correction; the original
+    ci-base-replay-cxp_tnca descendant settlement remains UNKNOWN.
 
     2026-11-09 (PR #6867, preserving current F09 receiver): retain the
     landed beneficial-ownership argument in the existing Shared Shell step

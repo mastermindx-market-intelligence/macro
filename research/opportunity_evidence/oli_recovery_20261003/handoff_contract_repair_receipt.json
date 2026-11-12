@@ -1,0 +1,43 @@
+{
+  "schema": "oli.handoff_contract_repair.v1",
+  "source_commit": "616ec5a353448c64594196b1ae49831a16fd52b8",
+  "validator_sha256": "540e9e490955c975a18e2ee3425a264b641c4442b646789899f73f4a8e937ad1",
+  "path": "agentos/handoffs/ALPHA-INTELLIGENCE-INTEGRATION-2026-10-03-oli-recovery.md",
+  "before_blob": "acf856e08c86864e5f00b600bcf3e6c4744a1c68",
+  "before_findings": [
+    {
+      "rule": "required-field",
+      "message": "missing required field 'unresolved'"
+    },
+    {
+      "rule": "required-field",
+      "message": "missing required field 'next_actions'"
+    },
+    {
+      "rule": "required-field",
+      "message": "missing required field 'do_not_redo'"
+    },
+    {
+      "rule": "required-field",
+      "message": "missing required field 'danger_areas'"
+    },
+    {
+      "rule": "required-field",
+      "message": "missing required field 'unverified' \u2014 an empty list is a valid answer, its ABSENCE is not"
+    },
+    {
+      "rule": "bad-enum",
+      "message": "'model' is 'astra'; allowed: codex, fable, haiku, local, opus, sol, sonnet"
+    },
+    {
+      "rule": "bad-enum",
+      "message": "'ended_because' is 'checkpoint'; allowed: blocked, ci_handoff, complete, context_budget, crashed"
+    }
+  ],
+  "after_findings": [],
+  "after_sha256": "5931eb7b2024ce121f14fa4537934b8e5729b6208d3bd94a676fd473232cae7b",
+  "limitations": [
+    "single-record validator, not whole-store or hosted acceptance"
+  ],
+  "validation_function": "scripts/agentos.py::parse_record + check_handoff"
+}
