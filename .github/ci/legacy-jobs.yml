@@ -7336,7 +7336,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow jsonschema==4.26.0
       - name: paywall fail-closed contract (incl. enforced-early payload lane)
         run: python -m pytest tests/test_paywall.py tests/test_api_paywall.py tests/test_auth_cache_outage.py -q
       - name: Pro-only host gate (bot.mastermind-x.com -> /api/paywall/check_pro)
@@ -9829,6 +9829,9 @@ jobs:
       - "templates/navigation-refresh.css"
       - "templates/theme.css"
       - "tests/test_aibrief_page.py"
+      # contract-delta (PR #10918): tests/test_aibrief_page.py imports
+      # scripts.build_aibrief — flow-surface's closure must cover the script.
+      - "scripts/build_aibrief.py"
       - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
@@ -10223,7 +10226,15 @@ jobs:
       - name: fetch the pre-fold commit for the red-first proof
         run: git fetch --no-tags --depth=1 --filter=blob:none origin c22864f80967e77e6e42cd926ef00f11f7197d06
       - name: Install Chromium for the browser-backed render guards
-        run: python -m playwright install --with-deps chromium
+        # Hosted runners intermittently cannot resolve the Ubuntu archive; a
+        # --with-deps stall then kills the pack before any test runs. The
+        # hosted image already ships Chromium's system libraries, so keep the
+        # cached browser path alive and let a genuinely missing library fail
+        # the launch visibly (no pixel-baseline test depends on apt fonts).
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
       # NEVER put a `#` comment inside the folded `run: >` scalar below. YAML folds it
       # onto ONE shell line, where `#` starts a SHELL comment — everything after it,
       # including every remaining test path and the trailing `-q`, silently vanishes
@@ -11012,7 +11023,11 @@ jobs:
       - name: install browser test dependencies
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
-          npx playwright install --with-deps chromium
+          # Bounded --with-deps first, then the browser-only fallback when the
+          # hosted Ubuntu archive is down (see the render-guards install note).
+          timeout --signal=TERM --kill-after=15s 240s npx playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s npx playwright install chromium; }
       # F10 (intl-GS CI budget, DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031):
       # the unrestricted post-checkout base fetch cost ~4 minutes on hosted runners
       # (PR full-suite runs of 2026-10-31; every subtest green, job cut at the pack
@@ -11841,7 +11856,11 @@ jobs:
       - name: install browser test dependencies
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
-          npx playwright install --with-deps chromium
+          # Bounded --with-deps first, then the browser-only fallback when the
+          # hosted Ubuntu archive is down (see the render-guards install note).
+          timeout --signal=TERM --kill-after=15s 240s npx playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s npx playwright install chromium; }
       - name: canonical base for the frozen-file guard (fail closed)
         run: |
           python - <<'PY'
@@ -12113,7 +12132,12 @@ jobs:
           tests/test_prophet_today_provenance.py
           tests/test_prophet_daily_brief_api.py -q
       - name: install observation browser
-        run: python -m playwright install --with-deps chromium
+        # See the render-guards install note: bounded --with-deps first, then
+        # the browser-only fallback when the hosted Ubuntu archive is down.
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
       - name: Prophet observation discovery — full-population search, access failure and theme geometry
         run: python -m pytest tests/test_prophet_observations_browser.py -q
 
@@ -13791,7 +13815,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install capital-structure test deps
-        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3 beautifulsoup4
+        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3 beautifulsoup4 plotly
       # P1 unrun backfill 2026-08-14: the REGISTRATION-LIFECYCLE compiler joins the step
       # that already owns every other capital-structure compiler and contract.
       # tests/test_compile_capital_structure_registration_lifecycles.py was named by no
@@ -14866,7 +14890,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema==4.26.0
       - name: neural-web registry + envelope + bus-doc freshness tests
         run: python -m pytest tests/test_synapse_registry.py tests/test_neuralweb_envelope.py tests/test_signal_bus_doc.py tests/test_admin_neural_web.py tests/test_admin_intelligence_os.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_admin_intelligence_os_ui.py tests/test_admin_theme_tokens.py tests/test_eval_os_adversarial_acceptance.py tests/test_admin_metabolism.py tests/test_admin_metabolism_history.py tests/test_entity_thesis_registry.py tests/test_check_entity_thesis_registry.py tests/test_nw_lobe_descriptions.py tests/test_synapse_registry_contract.py -q
       - name: Neural Web constitution A0-A7 regression (A7 refusal + Wilson-gate sweep)
@@ -15861,6 +15885,7 @@ jobs:
       - "tests/test_ci_browser_capture.py"
       - "tests/test_ci_browser_dependency_inputs.py"
       - "tests/test_ci_browser_native_setup.py"
+      - "tests/test_ci_browser_setup.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
       - "config/theme_crosswalk.yml"
@@ -16033,6 +16058,7 @@ jobs:
       - "tests/test_ci_browser_capture.py"
       - "tests/test_ci_browser_dependency_inputs.py"
       - "tests/test_ci_browser_native_setup.py"
+      - "tests/test_ci_browser_setup.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
       - "config/theme_crosswalk.yml"
@@ -16067,7 +16093,7 @@ jobs:
       # untested code otherwise); no importorskip, no data/ or site/ reads, so it
       # cannot skip its way to a green on a pack runner.
       - name: ci-plan/ci-pack/ci-gate workflow structure contract
-        run: python -m pytest tests/test_ci_plan_workflow.py tests/test_ci_semantic_proof.py tests/test_ci_pack_semantic.py tests/test_ci_browser_dependency_inputs.py tests/test_ci_browser_capture.py tests/test_ci_apt_cold_acquisition.py tests/test_ci_apt_native_plan.py tests/test_ci_apt_transaction_contract.py tests/test_ci_apt_native_stage.py tests/test_ci_browser_native_setup.py -q
+        run: python -m pytest tests/test_ci_plan_workflow.py tests/test_ci_semantic_proof.py tests/test_ci_pack_semantic.py tests/test_ci_browser_dependency_inputs.py tests/test_ci_browser_capture.py tests/test_ci_apt_cold_acquisition.py tests/test_ci_apt_native_plan.py tests/test_ci_apt_transaction_contract.py tests/test_ci_apt_native_stage.py tests/test_ci_browser_native_setup.py tests/test_ci_browser_setup.py -q
       # The merge-gate reliability report is the progress metric for
       # research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md, so a silent
       # regression in it would make that program's acceptance gate meaningless.
@@ -16233,6 +16259,7 @@ jobs:
       - "tests/test_ci_browser_capture.py"
       - "tests/test_ci_browser_dependency_inputs.py"
       - "tests/test_ci_browser_native_setup.py"
+      - "tests/test_ci_browser_setup.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
       - "config/theme_crosswalk.yml"
@@ -22021,7 +22048,7 @@ jobs:
       - name: ownership forward ledger read-failure preservation
         run: python -m pytest tests/test_ownership_ledger.py -q
       - name: every page builder emits the shim (runs each against a fixture root)
-        run: python -m pytest tests/test_builder_shim_writes.py -q
+        run: test -f site/start.html && python -m pytest tests/test_builder_shim_writes.py tests/test_hub_glance_copy.py -q
       # Hermetic Forex producer/projector/writer/HTML contracts belong to PR code CI,
       # not the main-only data-health plane. Preserve real-data macro tests below.
       - name: Forex context bus (synthetic inputs, temporary output)
@@ -22123,7 +22150,12 @@ jobs:
       - name: install Forex fixture dependencies
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn playwright
       - name: install isolated Forex browser
-        run: python -m playwright install --with-deps chromium
+        # See the render-guards install note: bounded --with-deps first, then
+        # the browser-only fallback when the hosted Ubuntu archive is down.
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
       - name: R26 decision, consumer and shared-window contracts
         run: python -m pytest tests/test_forex_r26_decision_contract.py tests/test_forex_r4_contract.py tests/test_forex_hero_spark_window.py tests/test_forex_r26_consumer.py tests/test_forex_r26_consumer_freshness.py tests/test_forex_r26_event_display.py tests/test_forex_r26_workspace.py tests/test_forex_watch_client_js.py tests/test_forex_watch_workspace_browser.py -q
 
@@ -29956,7 +29988,12 @@ jobs:
         # Harness cases use generated temporary config and fake drivers.
         # Public runtime operations refuse; no live pool/persona/profile is read.
         # Git policy checks inspect ignore/index metadata, not the private file.
-        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py -q
+        # test_runtime_adapter joins (2026-11-12, #11101): the source-qualified
+        # adapter suite for the same runtime boundary — five-binding gate before
+        # any effect, authorized CdpDriver subclass, base stubs still refusing.
+        # Same lane, same deps (pure stdlib + pytest, Playwright lazily imported
+        # and never touched on the refusal paths), so it runs with its sibling.
+        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py tools/xguerrilla/tests/test_runtime_adapter.py -q
 
   xguerrilla-admission:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
@@ -38603,7 +38640,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy jsonschema==4.26.0 rjsmin==1.2.5
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy jsonschema==4.26.0 rjsmin==1.2.5 html5lib
       # 2026-08-15 fusion override (WS:PROPHET-CONDITIONAL-FUSION): the C1 ranker
       # suite rides the step that already owns engine/us_board_rank.py rather than
       # opening a new one — it tests the SAME module's rank authority, and a
@@ -39641,7 +39678,7 @@ jobs:
         # jsonschema: lib/evidence_foundation.py:19 does `from jsonschema import
         # Draft202012Validator, FormatChecker, SchemaError` at module scope, so the
         # intraday-lane suites died ModuleNotFoundError without it.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema html5lib
       # P1 unrun backfill 2026-08-14 — three consumers of plumbing this step already
       # owns joined the list, appended rather than given a step of their own because a
       # step is the masking unit here (run_ci_pack.py returns on the first non-zero
@@ -47134,7 +47171,12 @@ jobs:
         # browser contract only ever SKIPS on the merge gate.
         run: pip install pytest pandas pyarrow pyyaml requests fastapi httpx jinja2 websockets jsonschema referencing playwright
       - name: Install Chromium for the scan-card browser contract
-        run: python -m playwright install --with-deps chromium
+        # See the render-guards install note: bounded --with-deps first, then
+        # the browser-only fallback when the hosted Ubuntu archive is down.
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
       - name: Anonymous scan, rights, consent and first-value UX
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
@@ -51236,7 +51278,12 @@ jobs:
       - name: install browser test dependencies
         run: pip install pytest playwright
       - name: install Chromium
-        run: python -m playwright install --with-deps chromium
+        # See the render-guards install note: bounded --with-deps first, then
+        # the browser-only fallback when the hosted Ubuntu archive is down.
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
       - name: Bot recovery deadline, replay, cookie and cross-tab contracts
         run: MM_REQUIRE_BROWSER=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_bot_session_recovery_browser.py -q
 
