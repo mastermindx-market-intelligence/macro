@@ -755,3 +755,153 @@ def test_regime_committed_sidecar_consistency():
     hits = {t for t in tickers if len(t) >= 2 and re.search(r"\b" + re.escape(t) + r"\b", prose)}
     assert not hits, sorted(hits)
     assert len(table_part.encode()) < 15_000
+
+
+# ===========================================================================
+# Group price indexes (COO ruling 38 Part B) — house sectors + baskets.
+# Reuses engine.baskets._ew_level and build_tree_breadth_and_index.group_index
+# with a floor of 5 priced members. Group-level numbers and counts only: no
+# member ticker, price or per-security date in the committed files.
+# ===========================================================================
+import hashlib  # noqa: E402
+
+from engine.baskets import _ew_level  # noqa: E402
+from engine.neuralweb.sector_map import GICS_TO_ETF  # noqa: E402
+
+GI_DATED = HIST / "group_index_daily_dated.parquet"
+GI_SENS = HIST / "group_index_daily_current_sensitivity.parquet"
+GI_META = HIST / "group_index.meta.json"
+GI_KEYMAP = HIST / "group_index_key_map.csv"
+GI_REPORT = ROOT / "research/breadth_history/GROUP_INDEX_REPORT.md"
+GI_FLOOR = 5
+_GI_COLS = ["date", "level", "group", "index", "n_priced_members", "membership_basis"]
+_GI_ABBREV = {"EW", "COO"}   # equal-weight / ruling authority, not member references
+_gi_needs = pytest.mark.skipif(not GI_DATED.exists(),
+                               reason="data/ not checked out (sparse tree)")
+
+
+def _gi_member_tickers() -> set:
+    cons = pd.read_parquet(ROOT / "data/breadth/constituents.parquet")
+    bmem = json.loads((ROOT / "data/baskets/membership.json").read_text())
+    return (set(cons.index.astype(str))
+            | {m["ticker"] for b in bmem["baskets"].values() for m in b["members"]})
+
+
+# ---- synthetic: EW convention, floor of 5, dated window --------------------
+def test_group_index_ew_matches_manual_cumprod():
+    closes = _closes(6, start="1999-01-01", periods=400)
+    start = pd.Timestamp("2000-01-03")
+    rets = closes.pct_change(fill_method=None).where(closes.notna() & closes.shift(1).notna())
+    members = list(closes.columns)
+    lvl, n, reason = bt.group_index(rets, members, start, floor=GI_FLOOR, priced=closes.notna())
+    r = closes[members].pct_change().loc[start:].mean(axis=1)
+    exp = (1 + r.fillna(0)).cumprod()
+    assert np.allclose(lvl.loc[start:].values, exp.round(6).values, atol=2e-6)
+    assert (n.loc[start:] == 6).all()
+    assert reason.loc[start:].isna().all()
+    assert lvl.loc[:start].iloc[:-1].isna().all()        # blank before the start gate
+
+
+def test_group_index_floor_of_5_blanks_below_floor():
+    closes = _closes(6, start="2000-01-03", periods=300)
+    closes.iloc[100:110, :2] = np.nan                    # 4 priced -> below floor of 5
+    rets = closes.pct_change(fill_method=None).where(closes.notna() & closes.shift(1).notna())
+    lvl, n, reason = bt.group_index(rets, list(closes.columns), pd.Timestamp("2000-01-03"),
+                                    floor=GI_FLOOR, priced=closes.notna())
+    assert (n.iloc[100:110] == 4).all() and n.iloc[110] == 6   # floor counts closes, not returns
+    assert lvl.iloc[100:110].isna().all()
+    assert (reason.iloc[100:110] == bt.REASON_FLOOR).all()
+    assert lvl.iloc[110:].notna().all() and lvl.iloc[99] > 0
+    closes.iloc[120:130, :1] = np.nan                    # exactly 5 priced -> at the floor
+    rets2 = closes.pct_change(fill_method=None).where(closes.notna() & closes.shift(1).notna())
+    lvl2, n2, _ = bt.group_index(rets2, list(closes.columns), pd.Timestamp("2000-01-03"),
+                                 floor=GI_FLOOR, priced=closes.notna())
+    assert (n2.iloc[120:130] == 5).all() and lvl2.iloc[120:130].notna().all()
+
+
+def test_group_index_dated_window_added_member_not_counted_early():
+    idx = pd.bdate_range("2000-01-03", periods=12)
+    closes = pd.DataFrame({f"T{i}": 100 * np.cumprod(1 + np.random.default_rng(i).normal(0.0003, 0.01, 12))
+                           for i in range(4)}, index=idx)
+    rets = closes.pct_change(fill_method=None).where(closes.notna() & closes.shift(1).notna())
+    base = [{"ticker": f"T{i}", "added": "2000-01-03", "removed": None} for i in range(3)]
+    late = base + [{"ticker": "T3", "added": str(idx[6].date()), "removed": None}]
+    lvl_base = _ew_level(rets, base, idx)
+    lvl_late = _ew_level(rets, late, idx)
+    # before T3's added date both rosters have the same active members -> identical level
+    assert np.allclose(lvl_base.loc[idx[1]:idx[5]].values, lvl_late.loc[idx[1]:idx[5]].values, atol=1e-9)
+    # once added, the fourth member changes the equal-weight return -> levels diverge
+    assert not np.allclose(lvl_base.loc[idx[8]:].values, lvl_late.loc[idx[8]:].values)
+
+
+# ---- committed artifacts (skipped on a sparse tree without data/) ----------
+@_gi_needs
+def test_group_index_committed_columns_and_no_ticker_column():
+    tickers = _gi_member_tickers() - _GI_ABBREV
+    for p in (GI_DATED, GI_SENS):
+        df = pd.read_parquet(p)
+        assert list(df.columns) == _GI_COLS
+        assert not any("ticker" in c for c in df.columns)   # n_priced_members is a count, not a price
+        assert pd.api.types.is_integer_dtype(df["n_priced_members"])
+        assert not df.duplicated(["level", "group", "date"]).any()
+        assert not (set(df.group) & tickers)
+
+
+@_gi_needs
+def test_group_index_committed_floor_and_basis():
+    dated = pd.read_parquet(GI_DATED)
+    sens = pd.read_parquet(GI_SENS)
+    assert set(dated.level) == {"sector"}
+    assert dated.membership_basis.unique().tolist() == ["reconstructed_dated_membership"]
+    assert set(sens.level) == {"sector", "basket"}
+    assert sens.membership_basis.unique().tolist() == ["reconstructed_current_membership"]
+    for df in (dated, sens):
+        assert (df["index"].notna() == (df["n_priced_members"] >= GI_FLOOR)).all()
+    meta = json.loads(GI_META.read_text())
+    assert meta["files"]["group_index_daily_current_sensitivity.parquet"]["sensitivity"] is True
+    assert meta["levels"]["basket"]["dated"] is False
+    assert meta["index"]["floor"] == GI_FLOOR
+
+
+@_gi_needs
+def test_group_index_key_map_one_row_per_key():
+    km = pd.read_csv(GI_KEYMAP, keep_default_na=False)
+    assert list(km.columns) == ["group_key", "level", "engine_key", "spdr_parent"]
+    assert len(km) == km.group_key.nunique()
+    assert (km.spdr_parent == "").all()
+    dated = pd.read_parquet(GI_DATED, columns=["level", "group"])
+    sens = pd.read_parquet(GI_SENS, columns=["level", "group"])
+    keys = set(zip(dated.level, dated.group)) | set(zip(sens.level, sens.group))
+    assert set(zip(km.level, km.group_key)) == keys
+    sec = km[km.level == "sector"]
+    assert set(sec.engine_key) == set(GICS_TO_ETF.values())      # SPDR tickers, from the code map
+    for r in sec.itertuples(index=False):
+        assert GICS_TO_ETF[r.group_key] == r.engine_key
+    bk = km[km.level == "basket"]
+    assert (bk.engine_key == bk.group_key).all()                 # basket id is the organ key
+
+
+@_regime_needs
+def test_group_index_regime_files_frozen():
+    assert hashlib.sha256((HIST / "regime_inputs_daily_current.parquet").read_bytes()).hexdigest() == \
+        "c15d5c2d533ae7d66dd84a67c8c1abfa19457aa44fcd1e8504d00bc0c9348177"
+    assert hashlib.sha256((HIST / "regime_inputs_current.meta.json").read_bytes()).hexdigest() == \
+        "552260044b01a67b6a5aed0a30dee52db634c77dd100fb7726d5f282cf0f634d"
+
+
+@_gi_needs
+def test_group_index_committed_sidecar_and_report_clean():
+    meta_text = GI_META.read_text()
+    report = GI_REPORT.read_text()
+    assert not _FORBIDDEN.search(meta_text)
+    assert not _FORBIDDEN.search(report)
+    tickers = _gi_member_tickers() - _GI_ABBREV
+    for text in (meta_text, report):
+        hits = {t for t in tickers if len(t) >= 2 and re.search(r"\b" + re.escape(t) + r"\b", text)}
+        assert not hits, sorted(hits)
+    meta = json.loads(meta_text)
+    dated = pd.read_parquet(GI_DATED)
+    fv = meta["levels"]["sector"]["dated"]["first_valid_index"]
+    for g, sub in dated.groupby("group"):
+        v = sub.dropna(subset=["index"])
+        assert fv[g] == (str(v["date"].min().date()) if len(v) else None)
