@@ -857,8 +857,96 @@ def test_no_triggers_empty_state_preserved():
     empty state (distinct from the all-overlap state)."""
     vm = _vm_with_setups([])
     html = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
-    assert "No fresh buy triggers today" in html
+    assert "No qualifying triggers in this snapshot" in html
     assert "already on the board above" not in html
+
+
+def test_trigger_rows_do_not_promote_pending_or_unknown_signals_to_buys():
+    from engine.signal_gate import buy_signal
+    env = _env()
+    partial = env.get_template("_us_setups_rows.html.j2")
+    cases = [
+        ({"eligible": True, "tier_cascade": "T1", "tier": "anticipation",
+          "sub": "pending", "provisional": False}, "Unconfirmed — wait", "未确认 — 等待"),
+        ({"eligible": True, "tier_cascade": "T1"}, "Unverified — wait", "未核实 — 等待"),
+        ({"eligible": False, "tier_cascade": "T1", "tier": "take"}, "Not eligible — wait", "不符合条件 — 等待"),
+        ({"tier_cascade": "T1", "tier": "take"}, "Unverified — wait", "未核实 — 等待"),
+        ({"eligible": True, "tier_cascade": "T1", "tier": "take",
+          "tier_observation_provisional": True}, "Forming — wait", "形成中 — 等待"),
+        ({"eligible": True, "tier_cascade": "T1", "tier": "take",
+          "provisional": True}, "Forming — wait", "形成中 — 等待"),
+        ({"eligible": True, "tier_cascade": "T1", "tier": "take",
+          "tier_observation_provisional": False}, "Signal confirmed", "信号已确认"),
+        ({"eligible": True, "tier_cascade": "T2"}, "Early trigger", "早期触发"),
+        ({"eligible": True, "tier_cascade": "T3"}, "Forming — wait", "形成中 — 等待"),
+    ]
+    for source, en, zh in cases:
+        row = _setup_row(ticker="TKR", alpha=1.83, alpha_entry="pullback",
+                         signal=buy_signal(source))
+        html = partial.render(rows=[row])
+        assert en in html and zh in html, source
+        assert "Buy zone" not in html and "Early buy" not in html
+        assert 'class="ts-buy ok"' not in html
+        assert 'class="ent-good"' not in html
+        assert "Weak month" in html and "近期偏弱" in html
+        assert _ts_tkr_anchor("TKR") in html
+
+
+def test_trigger_snapshot_date_cannot_be_replaced_by_newer_board_date():
+    vm = _vm_with_setups([_setup_row(ticker="TKR", alpha=1.83)])
+    vm["top_setups"]["as_of"] = "2026-11-03"
+    vm["us_standouts"]["as_of"] = "2026-11-04"
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
+    stamp = re.search(r'<span class="muted ts-snapshot".*?</span>', html, re.S).group(0)
+    # t() contains spans, so inspect the complete panel for the displayed date too.
+    panel = html[html.index('<div class="topsetups">'):]
+    panel = panel[:panel.index('<table class="ts-tbl">')]
+    assert "List snapshot" in stamp
+    assert "2026-11-03" in panel
+    assert "Older snapshot — check current data" in panel
+    assert "近期触发按相对强度排序" in panel
+    assert "buy signal today" not in panel
+    assert "chance of winning" in panel
+
+
+def test_trigger_price_context_never_overrides_pending_confirmation():
+    row = _setup_row(price_context={"status": "buy_now", "asof": "2026-11-04"},
+                     signal={"eligible": True, "tier_cascade": "T1", "tier": "anticipation",
+                             "sub": "pending", "tier_observed_date": "2026-11-03"})
+    html = _env().get_template("_us_setups_rows.html.j2").render(rows=[row])
+    assert "Unconfirmed — wait" in html and "Entry check needed" in html
+    assert "未确认 — 等待" in html and "入场仍需核实" in html
+    assert "Signal confirmed" not in html and "Buy zone" not in html
+
+
+def test_trigger_price_context_absence_is_visible_in_legacy_snapshots():
+    partial = _env().get_template("_us_setups_rows.html.j2")
+    for context in (None, {}, {"status": "buy_now"},
+                    {"status": "future_owner_status", "asof": "2026-11-04"}):
+        html = partial.render(rows=[_setup_row(price_context=context)])
+        assert "Price context unavailable" in html and "价格背景不可用" in html
+        assert "Entry check needed" not in html
+
+
+def test_trigger_snapshot_unavailable_is_not_an_empty_signal_result():
+    vm = _vm_with_setups([])
+    vm["top_setups"] = {"as_of": None, "buy": [], "snapshot_unavailable": True}
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
+    assert "Signal snapshot unavailable" in html
+    assert "List date unavailable" in html
+    assert "No qualifying triggers in this snapshot" not in html
+
+
+def test_trigger_observation_date_is_not_the_list_date():
+    row = _setup_row(signal={"eligible": True, "tier_cascade": "T1", "tier": "take",
+                            "asof": "2026-10-30", "tier_event_date": "2026-10-29",
+                            "tier_observed_date": "2026-11-02"})
+    vm = _vm_with_setups([row])
+    vm["top_setups"]["as_of"] = "2026-11-03"
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
+    clock = re.search(r'<small class="ts-signal-date muted">.*?</small>', html, re.S).group(0)
+    assert "Observed" in clock and "观测日" in clock and "2026-11-02" in clock
+    assert "2026-11-03" not in clock and "2026-10-29" not in clock
 
 
 # --------------------------------------------------------------------------- #
