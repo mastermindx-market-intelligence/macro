@@ -1375,6 +1375,7 @@ class BrainChatRequest(BaseModel):
     history: list[dict] | None = Field(None, description="Client-sent fallback history (max 12 turns; used only when thread store is absent)")
     context: dict | None = Field(None, description="Optional page/symbol context hint")
     company_source_span: dict | None = Field(None, description="Optional closed exact-source reference; source bytes are never accepted from the client")
+    options_question_reference: dict | None = Field(None, description="Closed pinned Options selection reference; no policy or source bytes")
     mode: str = Field("chat", description="'chat' (default) or 'research' (W6b Deep Research — forces pro lane, raises tool budget, structured multi-section cited report; requires pro quota)")
     images: list[str] | None = Field(None, max_length=4, description="Optional image attachments (W6c vision) — base64 data URIs or https URLs; served by a vision model (Haiku on Fast, Opus on Pro). Invalid/oversized dropped. Max 4.")
 
@@ -1626,6 +1627,9 @@ def brain_chat(body: BrainChatRequest, request: Request, background: BackgroundT
         history=history,
         context=body.context,
         company_source_span=body.company_source_span,
+        options_question_reference=body.options_question_reference,
+        options_question_runtime=(resolve_options_question_runtime(request.app)
+                                      if body.options_question_reference is not None else None),
         root=REPO,
         mode=mode,
         images=body.images,
@@ -1701,6 +1705,9 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             history=history,
             context=body.context,
             company_source_span=body.company_source_span,
+            options_question_reference=body.options_question_reference,
+            options_question_runtime=(resolve_options_question_runtime(request.app)
+                                      if body.options_question_reference is not None else None),
             root=REPO,
             mode=mode,
             images=body.images,
@@ -1714,7 +1721,13 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             user_jwt="" if is_guest else (user.get("_access_token") or ""),
         )
 
-    # The turn is registered as a server-side RUN before a single byte goes out.
+    # Options questions are request-scoped: neither OFF refusals nor answers enter
+    # the generic recoverable-run registry. The gateway still buffers and checks
+    # the complete answer before yielding; disconnect does not authorize a retry.
+    if body.options_question_reference is not None:
+        return StreamingResponse(_gen(), media_type="text/event-stream", headers=_SSE_BRAIN_HEADERS)
+
+    # The ordinary turn is registered as a server-side RUN before a byte goes out.
     # brain_runs pumps the generator on its own thread into an ordered event buffer,
     # so the answer is produced (and persisted to the thread) whether or not this
     # socket survives — a backgrounded tab, a slept laptop or a culled connection no
@@ -2760,6 +2773,10 @@ from app.options_matrix_http import router as options_matrix_display_router  # n
 app.include_router(options_matrix_display_router)
 from app.options_matrix_runtime import install_matrix_display_runtime  # noqa: E402
 install_matrix_display_runtime(app, repo=REPO)
+from app.options_question_runtime import (  # noqa: E402
+    install_options_question_runtime, resolve_options_question_runtime,
+)
+install_options_question_runtime(app, config_loader=lambda: _brain_module()._load_brain_config(REPO))
 
 # Lifecycle mail sweeper (SEE W3 — app/billing_emails.py): the behaviour-triggered
 # trial-ending T-2 reminder. DEFAULT OFF — register_lifecycle is a no-op unless the

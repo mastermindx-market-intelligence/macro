@@ -105,6 +105,7 @@ from dataclasses import dataclass, fields as dataclass_fields
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
+from urllib.parse import urlsplit
 
 # The evidence-pointer law is imported (not re-typed) from the registry: the
 # row's `granted` rights are only as lawful as the registry's own R00.02
@@ -242,6 +243,37 @@ class _VerifiedEvidence:
 
 
 @dataclass(frozen=True)
+class ProcessorDestination:
+    """Non-secret actual dispatch identity, injected by the trusted gateway.
+
+    Equality is literal. This value is neither a credential nor an enrollment.
+    A new fallback destination needs its own policy evaluation.
+    """
+    provider: str
+    endpoint: str
+    model: str
+
+
+def validate_processor(value):
+    if type(value) is not ProcessorDestination:
+        raise SourceUseRefused("processor_invalid")
+    for item in (value.provider, value.endpoint, value.model):
+        if not _is_valid_scalar(item) or "*" in item or item.lower() in ("unknown", "default"):
+            raise SourceUseRefused("processor_invalid")
+    try:
+        url = urlsplit(value.endpoint)
+        if (url.scheme != "https" or not url.hostname or url.username is not None
+                or url.password is not None or url.query or url.fragment
+                or "?" in value.endpoint or "#" in value.endpoint
+                or "\\" in value.endpoint or not value.endpoint.isascii()):
+            raise ValueError()
+        _ = url.port
+    except (ValueError, TypeError):
+        raise SourceUseRefused("processor_invalid") from None
+    return value
+
+
+@dataclass(frozen=True)
 class ServerUseContext:
     """The trusted server's own record of the use it is about to perform.
 
@@ -269,6 +301,7 @@ class ServerUseContext:
     recipients: tuple[str, ...]
     customer_id: str
     required_rights: tuple[str, ...]
+    processor: ProcessorDestination | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -296,6 +329,7 @@ class ActionUseScope:
     auth_epoch: str
     customer_id: str
     required_rights: tuple[tuple[str, str], ...]
+    processor: ProcessorDestination | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -495,7 +529,15 @@ def _validate_context(context: Any, request: OptionUseRequest) -> ServerUseConte
             raise SourceUseRefused("context_invalid", f"context {name} must be unique bounded scalars")
     if context.output not in _OUTPUT_VALUES:
         raise SourceUseRefused("context_invalid", "context output is not raw/derived")
-    if any(r not in _RECIPIENT_VALUES for r in context.recipients):
+    permitted_recipients = _RECIPIENT_VALUES
+    if context.processor is not None:
+        validate_processor(context.processor)
+        if (request.action != "export" or context.channel not in
+                ("/api/brain/chat", "/api/brain/stream") or
+                set(context.recipients) != {"authenticated_customer", "external_processor"}):
+            raise SourceUseRefused("processor_scope_invalid")
+        permitted_recipients = (*_RECIPIENT_VALUES, "external_processor")
+    if any(r not in permitted_recipients for r in context.recipients):
         raise SourceUseRefused("context_invalid", "context recipients are not the closed set")
     if any(r not in RIGHTS_KEYS for r in context.required_rights):
         raise SourceUseRefused("context_invalid", "context names a right outside the native vocabulary")
@@ -606,14 +648,30 @@ def _load_policy_record(raw: bytes) -> dict[str, Any]:
         raise SourceUseRefused("evidence_invalid", "policy evidence is not strict JSON") from None
     if type(record) is not dict:
         raise SourceUseRefused("evidence_invalid", "policy evidence is not a JSON object")
-    if set(record) != _POLICY_KEYS:
+    v2 = record.get("schema") == "options.source_use.question/v2"
+    if set(record) != (_POLICY_KEYS | {"schema"} if v2 else _POLICY_KEYS):
         raise SourceUseRefused("evidence_invalid", "policy evidence keys are not the closed set")
     return record
 
 
-def _parse_action_scope(action: str, block: object) -> ActionUseScope:
-    if type(block) is not dict or set(block) != _ACTION_SCOPE_KEYS:
+def _parse_action_scope(action: str, block: object, *, question_v2=False) -> ActionUseScope:
+    expected = _ACTION_SCOPE_KEYS | {"processor"} if question_v2 else _ACTION_SCOPE_KEYS
+    if type(block) is not dict or set(block) != expected:
         raise SourceUseRefused("evidence_invalid", "action scope keys are not the closed set")
+    processor = None
+    permitted_recipients = _RECIPIENT_VALUES
+    if question_v2:
+        raw_processor = block["processor"]
+        if (action != "export" or type(raw_processor) is not dict
+                or set(raw_processor) != {"provider", "endpoint", "model"}):
+            raise SourceUseRefused("processor_scope_invalid")
+        processor = validate_processor(ProcessorDestination(**raw_processor))
+        if (block["channel"] not in ("/api/brain/chat", "/api/brain/stream") or
+                type(block["recipients"]) is not list or
+                any(type(r) is not str for r in block["recipients"]) or
+                set(block["recipients"]) != {"authenticated_customer", "external_processor"}):
+            raise SourceUseRefused("processor_scope_invalid")
+        permitted_recipients = (*_RECIPIENT_VALUES, "external_processor")
     allowed = block["allowed"]
     if type(allowed) is not bool:
         raise SourceUseRefused("evidence_invalid", "action allowed flag must be a bool")
@@ -637,7 +695,7 @@ def _parse_action_scope(action: str, block: object) -> ActionUseScope:
         type(recipients) is not list
         or not recipients
         or len(recipients) > _MAX_RECIPIENTS
-        or any(r not in _RECIPIENT_VALUES for r in recipients)
+        or any(r not in permitted_recipients for r in recipients)
         or len(set(recipients)) != len(recipients)
     ):
         raise SourceUseRefused("evidence_invalid", "action recipients are not the closed set")
@@ -674,6 +732,7 @@ def _parse_action_scope(action: str, block: object) -> ActionUseScope:
         auth_epoch=identity["auth_epoch"],
         customer_id=identity["customer_id"],
         required_rights=tuple(sorted((str(k), str(v)) for k, v in required.items())),
+        processor=processor,
     )
 
 
@@ -898,8 +957,12 @@ def _resolve_joined(
     unknown = sorted(set(actions) - set(_ACTION_VERBS))
     if unknown:
         raise SourceUseRefused("evidence_invalid", "actions name unknown verbs")
+    question_v2 = record.get("schema") == "options.source_use.question/v2"
+    if question_v2 and set(actions) != {"export"}:
+        raise SourceUseRefused("processor_scope_invalid")
     scopes = tuple(
-        (name, _parse_action_scope(name, block)) for name, block in actions.items()
+        (name, _parse_action_scope(name, block, question_v2=question_v2))
+        for name, block in actions.items()
     )
     action = request.action
     scope = next((s for n, s in scopes if n == action), None)
@@ -909,6 +972,8 @@ def _resolve_joined(
 
     # Scope vs trusted-context joins: the policy must license exactly the use
     # the trusted server says it is about to perform — nothing inferred.
+    if scope.processor != context.processor:
+        raise SourceUseRefused("processor_scope_mismatch")
     if scope.output != context.output or scope.channel != context.channel:
         raise SourceUseRefused("scope_mismatch", "policy output/channel does not match the intended use")
     if set(scope.recipients) != set(context.recipients):
