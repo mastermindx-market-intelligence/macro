@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-12T10:27:17.536259+00:00",
+  "generated_utc": "2026-11-12T19:51:29.422727+00:00",
   "as_of": "2026-11-12",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -27014,13 +27014,13 @@
       },
       {
         "ticker": "ISRG",
-        "net_up_30d": 22,
+        "net_up_30d": 23,
         "breadth": 0.92,
-        "est_chg_30d": 3.13,
-        "n_analysts": 24,
+        "est_chg_30d": 2.99,
+        "n_analysts": 25,
         "bull_ratio": 0.96,
         "rising": true,
-        "revision_delta": 22,
+        "revision_delta": 23,
         "hot": true
       },
       {
@@ -28306,10 +28306,10 @@
         {
           "ticker": "BBD",
           "buy_usd": 104303593.0,
-          "sell_usd": 5567116.0,
-          "net_usd": 98736477.0,
+          "sell_usd": 5566554.0,
+          "net_usd": 98737039.0,
           "buyers": 55,
-          "sellers": 10
+          "sellers": 8
         },
         {
           "ticker": "UUU",
