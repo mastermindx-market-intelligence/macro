@@ -2,6 +2,21 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-11-12",
+      "tickers": [
+        "ADM",
+        "DEA",
+        "HQY",
+        "IBOC",
+        "MBGL",
+        "MRP",
+        "MTG",
+        "VRT",
+        "WD",
+        "WWW"
+      ]
+    },
+    {
       "as_of": "2026-11-11",
       "tickers": [
         "ADM",
@@ -155,35 +170,6 @@
         "NUE",
         "OSK",
         "UVV",
-        "XRAY"
-      ]
-    },
-    {
-      "as_of": "2026-11-05",
-      "tickers": [
-        "ARRY",
-        "CACC",
-        "CPK",
-        "DG",
-        "EEFT",
-        "GEHC",
-        "GEN",
-        "GFI",
-        "LECO",
-        "LRN",
-        "MSEX",
-        "NFG",
-        "NFLX",
-        "NXST",
-        "OKE",
-        "OSK",
-        "PEGA",
-        "SBH",
-        "SFM",
-        "SHEN",
-        "SYF",
-        "TREX",
-        "WLK",
         "XRAY"
       ]
     }
