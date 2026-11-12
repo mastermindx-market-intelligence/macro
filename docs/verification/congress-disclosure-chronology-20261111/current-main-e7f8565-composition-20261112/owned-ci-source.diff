@@ -1,0 +1,102 @@
+diff --git a/.github/ci/legacy-jobs.yml b/.github/ci/legacy-jobs.yml
+index 4874e3be03cb..810767a776e8 100644
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -39522,7 +39522,7 @@ jobs:
+       # Placed right after test_yield_momentum.py so a source regression is the masking unit and a
+       # consumer regression is the next failure a reader sees. Paths widened for the suite + engine.
+       - name: commodities / forex / rates / news / policy panels and their calibration guards
+-        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_credit_momentum_yield_consumer.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
++        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_congress_chronology.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_credit_momentum_yield_consumer.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
+       - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
+         run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
+       # E1c4 (Granular Regime Intelligence, 2026-10-04): scripts/build_rates_command.py now
+@@ -39572,6 +39572,7 @@ jobs:
+       - "tests/test_build_factor_panel.py"
+       - "tests/test_commodity_mtf_verdict_honesty.py"
+       - "tests/test_congress_score.py"
++      - "tests/test_congress_chronology.py"
+       - "tests/test_context_risk.py"
+       - "tests/test_cross_asset_context.py"
+       - "tests/test_crossasset_flows.py"
+diff --git a/tests/test_ci_pack.py b/tests/test_ci_pack.py
+index 21e6b9507200..ecebe0268456 100644
+--- a/tests/test_ci_pack.py
++++ b/tests/test_ci_pack.py
+@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
+ # The Start-page regression adds one test file to the existing builder step.
+ # All three probes select data-base-shim, whose measured weight rises by two.
+ PACKING_PROBES = (
+-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+-    ("engine/prophet/plan_book.py", 131, 5_729),
++    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
++    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
++    ("engine/prophet/plan_book.py", 131, 5_731),
+ )
+ # Twelve packs per shape was the pre-curation measurement.
+ PACKING_PROBE_MAX_PACKS = 10
+@@ -6011,6 +6011,31 @@ PACKING_PROBE_MAX_PACKS = 10
+ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
+     """The measured before/after this wave exists to produce.
+ 
++    2026-11-12 (Congress plus protected e7f8565 composition): preserve the
++    five accepted owner dependency repairs from #11108 and the XG runtime
++    adapter registration from #11101 alongside both Congress chronology
++    registrations. The existing tracked-tree owner measured actual integration
++    3300374be54cf32b993d5c377ba451f0a8658765 (tree
++    e0bdaf2cf55457b7e748e2f1954596825b3a464d): index 137/5973,
++    free-content 137/5997, Prophet 131/5731 jobs/weight, all ten packs.
++    Fund only these three measured +2 weight breaches; job ceilings
++    137/138/131, the ten-pack bound, selectors and execution limits stay.
++    These are planning weights, not measured execution durations. Complete
++    rows and stable input hashes are retained under
++    docs/verification/congress-disclosure-chronology-20261111/
++    current-main-e7f8565-composition-20261112/measurement-before.json.
++
++    2026-11-12 (Congress chronology on current main 24393e2): the actual
++    tracked composition c038a854 was measured with packing_probe_measurements
++    inside _tracked_tree_inventory. The three probes selected 137/5971,
++    137/5995, and 131/5729 jobs/weight-seconds, all ten packs. Fund only
++    those measured weight ceilings: 5970->5971, 5993->5995, 5728->5729.
++    Keep job ceilings 137/138/131, the ten-pack ceiling, selectors,
++    assertions, timeouts, and browser fallback behavior unchanged.
++    Raw measurements and source identity are retained in
++    docs/verification/congress-disclosure-chronology-20261111/
++    current-main-24393e2-composition-20261112/.
++
+     2026-11-12 (PR #11101, runtime-adapter closure): wiring
+     tools/xguerrilla/tests/test_runtime_adapter.py into
+     marketing-social-publisher satisfies the closure doctrine —
+@@ -8139,6 +8164,31 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
+     5,906 -> 5,909, 5,921 -> 5,924, 5,662 -> 5,665; job-count ceilings,
+     selectors and the ten-pack bound stay unchanged. Planning weights are not
+     measured execution times.
++    Congress disclosure chronology (PR #11084, 2026-11-11) wires the existing
++    tests/test_congress_chronology.py into unrun-macro-panels. Exact tracked-tree
++    measurement at a05ff957 gives index 137 jobs / 5,968 weight, free-content
++    137 / 5,991, and Prophet 131 / 5,726, each in ten packs. Hosted contract-delta
++    run 43118438608 reports no newly selected job on any probe. The owner keeps
++    seven commands, its seven-minute timeout, data gate and existing scope;
++    pytest tokens increase 37 -> 38, command characters 1,520 -> 1,554 remain
++    in the same 800-character bucket, and owner weight increases 82 -> 84.
++    Fund only this measured +2 on each ceiling: 5,966 -> 5,968, 5,989 -> 5,991,
++    and 5,724 -> 5,726. Retain all job ceilings, the ten-pack bound, selectors,
++    execution limits, and every previous provenance entry.
++
++    Congress current-main composition (PR #11084, 2026-11-12) retains the
++    accepted Start-page builder registration from #11019/main 89bf0c038ac7
++    together with the Congress registration. The existing commit-bound owner
++    measures actual integration HEAD d4d3696dc6b38a02461b36a7a2a98d7685a79bd3,
++    tree d184bb988a3189f5d088629ef42d52177cd12a8e:
++    index 137 jobs / 5,970 weight, free-content 137 / 5,993, and Prophet
++    131 / 5,728; every row uses ten packs. Fund only these measured +2
++    breaches against the independently calibrated 5,968 / 5,991 / 5,726.
++    Preserve both registrations, all job ceilings, the ten-pack bound,
++    selectors, timeouts and execution limits. These remain planning weights,
++    not measured execution times. Full exact-tree rows and input hashes are
++    retained under current-main-composition-20261112/measurement-before.json.
++
+     """
+     rows = packing_probe_measurements(
+         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

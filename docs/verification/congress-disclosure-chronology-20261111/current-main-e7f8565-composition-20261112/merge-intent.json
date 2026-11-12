@@ -1,0 +1,25 @@
+{
+  "at": "2026-11-12T04:40:00.267295+00:00",
+  "base": "05ec269cece04cb0282f86cba0ffcb1503833b46",
+  "protected_input": "e7f8565ca26b74b9ae0d637b336e9985d513ff9d",
+  "branch": "sol/web-terminal-congress-main-composition-20261112-c3",
+  "tree": "fad8f8aa597166547b94763b0ccf9cff252abe01",
+  "owner_status": {
+    "action": "status",
+    "effect": "NOT_APPLIED",
+    "receipt": {
+      "branch": "sol/web-terminal-congress-main-composition-20261112-c3",
+      "dirty": false,
+      "head_sha": "05ec269cece04cb0282f86cba0ffcb1503833b46",
+      "reason": "workspace is clean and its HEAD is recoverable without this checkout",
+      "recoverability": "UNCHANGED_FROM_ACQUIRED_BASE",
+      "removed": false,
+      "source_repository": "/Users/chriswong/Documents/Cluade/macro-main",
+      "state": "RELEASABLE",
+      "workspace_path": "/Volumes/Mastermind/agent-workspaces/macro/web/terminal-congress-main-composition-20261112-c3"
+    },
+    "repository": "macro",
+    "schema_version": "mastermind.workspace_cli/v2"
+  },
+  "acquisition_reconciliation": "Original allocation returned unqualified; exact owner path, registered worktree, branch, clean base and typed status positively prove APPLIED. No acquire retry."
+}

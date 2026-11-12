@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-12T04:40:00.799106+00:00",
+  "exit_code": 1,
+  "head": "05ec269cece04cb0282f86cba0ffcb1503833b46",
+  "merge_head": "e7f8565ca26b74b9ae0d637b336e9985d513ff9d",
+  "unmerged": [
+    "tests/test_ci_pack.py"
+  ],
+  "status_count": 1136,
+  "stdout_tail": "Auto-merging .github/ci/legacy-jobs.yml\nAuto-merging tests/test_ci_pack.py\nCONFLICT (content): Merge conflict in tests/test_ci_pack.py\nAutomatic merge failed; fix conflicts and then commit the result.\n",
+  "stderr_tail": ""
+}

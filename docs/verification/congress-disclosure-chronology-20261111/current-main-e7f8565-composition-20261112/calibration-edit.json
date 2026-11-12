@@ -1,0 +1,28 @@
+{
+  "at": "2026-11-12T04:49:59.100180+00:00",
+  "head": "3300374be54cf32b993d5c377ba451f0a8658765",
+  "before_sha256": "d3db5b9850a34b3479a5d6f758685b55e5a90e4a8db1e5c507c38664e47b9539",
+  "after_sha256": "dbbebff3e962a0b8463842780a5fbcdfaa45445e0e4f7df299507b13a6324ab3",
+  "funded_breaches": [
+    [
+      "templates/index.html",
+      "weight",
+      5973,
+      5971
+    ],
+    [
+      "scripts/build_free_content.py",
+      "weight",
+      5997,
+      5995
+    ],
+    [
+      "engine/prophet/plan_book.py",
+      "weight",
+      5731,
+      5729
+    ]
+  ],
+  "only_path": "tests/test_ci_pack.py",
+  "job_and_pack_ceilings_unchanged": true
+}

@@ -1,0 +1,128 @@
+{
+  "schema": "mastermind.proof.manifest.v1",
+  "createdAt": "2026-11-12T04:59:21.008512+00:00",
+  "qualifiedSourceHead": "7ba62f323889c2d829c285bd29b3a701b66f23a5",
+  "qualifiedSourceTree": "6c224be6af23da0770ccc9dbb857dc4c6cdff9ce",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3547,
+      "sha256": "7aa9e1b3dc860da61735d34ba6449c63c07252e35a0bf70df1f343f448e0b3f0"
+    },
+    {
+      "path": "calibration-commit-receipt.json",
+      "bytes": 609,
+      "sha256": "a51083c5ec865e008e7d99f905efb7ef38b0d59e2e2c04cb2d9e2102b1e1aa03"
+    },
+    {
+      "path": "calibration-edit.json",
+      "bytes": 646,
+      "sha256": "b1769284bf2b25b8ee6a49fed8c791e39910f829ec037b4425c2e6bd42629a47"
+    },
+    {
+      "path": "integration-commit-intent.json",
+      "bytes": 1049,
+      "sha256": "533840802c4f728bb2046639c67294cda39899fffd9447cd892b0b9c147f4009"
+    },
+    {
+      "path": "integration-commit-result.json",
+      "bytes": 305,
+      "sha256": "bd5968b605ddb61623b6029910d98717e03cc5fdfaf9e474d8b00c2d04b89cd3"
+    },
+    {
+      "path": "integration-commit.stderr",
+      "bytes": 110,
+      "sha256": "44677f705137e2381bbdbf6739c20637e61ea493713c7e26063b02b0cbd02c69"
+    },
+    {
+      "path": "integration-commit.stdout",
+      "bytes": 129,
+      "sha256": "e9e47085e722dadb9fe9b6e317f57d8ca266b73cef63e0143363a46d38f200f9"
+    },
+    {
+      "path": "manifest-against-protected.diff",
+      "bytes": 2815,
+      "sha256": "badcc8c8c3600063acd8dd29e617aead441fca523c1060b7bbfcc332775fb36c"
+    },
+    {
+      "path": "measurement-before.json",
+      "bytes": 12600,
+      "sha256": "3276fd510c5b008fc2eb8eedc2e265cf0c5a81a0b9f7764b4f9118d891c3a34c"
+    },
+    {
+      "path": "measurement-execution.json",
+      "bytes": 1732,
+      "sha256": "001dc0d4b03e46c445c8e691c3dd5df7453ff632e3906a55a9446ab085c51e9c"
+    },
+    {
+      "path": "measurement.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "measurement.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "merge-intent.json",
+      "bytes": 1217,
+      "sha256": "f16d49f85d0c7f7915ca96f62e41c40dd5451d582b4fe49a4e77c971432694cc"
+    },
+    {
+      "path": "merge-result.json",
+      "bytes": 499,
+      "sha256": "9d5d938b62e6ac3b75d93c324a5761e6c7569531a23e4439ecf243f94c592ff3"
+    },
+    {
+      "path": "merge.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "merge.stdout",
+      "bytes": 201,
+      "sha256": "25af4cf1aaa878a01c8aa3e131c525e08fff8494b0cd11c4bc2dcf9d51ca6672"
+    },
+    {
+      "path": "owned-ci-source.diff",
+      "bytes": 8143,
+      "sha256": "78a2d3a0f2769bedd4771a262b2978ba0da275fdb65bb145d59e37a1b7251715"
+    },
+    {
+      "path": "qualification.json",
+      "bytes": 2447,
+      "sha256": "cceb9f6eda31a2031b87496dd3c2f9a324202658515c5d56db3dc14a1dc3ba07"
+    },
+    {
+      "path": "qualified-ci-contracts-intent.json",
+      "bytes": 961,
+      "sha256": "b28ecbd2c903251efa13f5748e5a7cf8d335ff685a6a3d4d1671afdf703b508d"
+    },
+    {
+      "path": "qualified-ci-contracts-result.json",
+      "bytes": 3631,
+      "sha256": "7cabc8ca6bbd656924b137ccc04bbbc89a611f30986af4cd15bfa8ffdbc5ca53"
+    },
+    {
+      "path": "qualified-ci-contracts.junit.xml",
+      "bytes": 1820,
+      "sha256": "18d115cb06794841011bc130f19fff6b4949225b7307518e4d25ef2baed29f58"
+    },
+    {
+      "path": "qualified-ci-contracts.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qualified-ci-contracts.stdout",
+      "bytes": 111,
+      "sha256": "6532e2e86b2ce8cac5bad44a308d24762d0668e12c06112730358910e43e417b"
+    },
+    {
+      "path": "retained-congress-inputs.json",
+      "bytes": 1779,
+      "sha256": "9a6436d6ccfdfc5dae6b228de70cc1ccacd8c6b68268db939f22627cebb70f1e"
+    }
+  ]
+}

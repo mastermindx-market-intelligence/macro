@@ -1,0 +1,66 @@
+{
+  "schema": "terminal.estate.congress.current-main-composition.v1",
+  "duty": "terminal-pr-estate-support-20261111-c3",
+  "governingMastermindPin": "bb2c2e4437e6ee250f9d4ee9b6b420abdfbbc178",
+  "pr": 11084,
+  "previousPublishedHead": "05ec269cece04cb0282f86cba0ffcb1503833b46",
+  "protectedInput": "e7f8565ca26b74b9ae0d637b336e9985d513ff9d",
+  "integrationHead": "3300374be54cf32b993d5c377ba451f0a8658765",
+  "integrationTree": "e0bdaf2cf55457b7e748e2f1954596825b3a464d",
+  "calibrationHead": "7ba62f323889c2d829c285bd29b3a701b66f23a5",
+  "calibrationTree": "6c224be6af23da0770ccc9dbb857dc4c6cdff9ce",
+  "measurements": [
+    {
+      "probe": "templates/index.html",
+      "jobs": 137,
+      "weight": 5973,
+      "packs": 10
+    },
+    {
+      "probe": "scripts/build_free_content.py",
+      "jobs": 137,
+      "weight": 5997,
+      "packs": 10
+    },
+    {
+      "probe": "engine/prophet/plan_book.py",
+      "jobs": 131,
+      "weight": 5731,
+      "packs": 10
+    }
+  ],
+  "measurementSha256": "3276fd510c5b008fc2eb8eedc2e265cf0c5a81a0b9f7764b4f9118d891c3a34c",
+  "sourceScope": "Protected manifest, dependency repairs and XG registration plus both Congress chronology registrations; exact measured packing ceilings and both provenance entries retained.",
+  "unchangedProductEvidence": {
+    "sourceInputs": 10,
+    "tests": 103,
+    "nativeSyntheticConsumers": 5,
+    "inspectedImages": 8,
+    "originalProofManifestSha256": "57ffd1beaca4463d7df93cd07cfbb6563aa9c9466f69d5de69cd665e3c3ba080",
+    "previousCompositionManifestSha256": "764342a5b6ec1fe8980342b93bfe1953342570a0baadc4eee174a587f8c3042e",
+    "identitiesRestamped": false
+  },
+  "localChecks": {
+    "absolutePackingAssertion": "PASS",
+    "browserSetupAndManifestContracts": 11,
+    "total": 12,
+    "failures": 0,
+    "skips": 0,
+    "sourceStable": true
+  },
+  "delivery": {
+    "published": false,
+    "ciAcceptedForCandidate": false,
+    "mergeOnGreenArmed": false,
+    "merge": false,
+    "renderedConsumer": false,
+    "installedConsumer": false,
+    "servedConsumer": false
+  },
+  "currentController": {
+    "path": "scripts/merge_on_green.py",
+    "blob": "deb9bfec7e3b8a6e56ecc74b539c787862ab263c",
+    "workflowBlob": "35d6dfc75f0f4425273cfd3f14a4911061afbc95"
+  },
+  "next": "Publish one normal fast-forward to the original #11084 branch, qualify natural successor CI, then use the existing MOG owner and actual post-merge data/render/installed/HTTPS consumers."
+}
