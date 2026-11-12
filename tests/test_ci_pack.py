@@ -5999,10 +5999,13 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
+# 2026-11-12 current-main composition for #11061: preserve main #11101's
+# independent marketing +2 and this branch's [2, 2, 2] contribution.
+# This does not fund another unmerged owned branch; current probes [5973, 5997, 5731].
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6013,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #11101, runtime-adapter closure): wiring
+    tools/xguerrilla/tests/test_runtime_adapter.py into
+    marketing-social-publisher satisfies the closure doctrine —
+    contract-delta had flagged the suite as named by no run: step
+    (run 43143064165, job 130934421614). The join adds its run token
+    to that step with no new job selected ("newly selected: none");
+    the estimator measures +2 on the shared owner for all three
+    probes: index 5969->5971, free-content 5993->5995, Prophet
+    5727->5729. Jobs 137/138/131, ten packs, selectors, commands
+    and admission limits unchanged. The wider selection is intended
+    (closure-required); natural successor CI must qualify the
+    repaired source.
 
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
@@ -6027,22 +6043,6 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
     is measured planner accounting, not an execution-time estimate; natural
     successor CI must qualify the repaired source.
-
-    2026-11-12 (FINRA current-main conflict resolution):
-    Main independently carries Start +2 and bounded browser setup +1/+2/+1.
-    Add only FINRA's preserved +2 owner contribution to current main:
-    5969/5993/5727 -> 5971/5995/5729. Keep 137/138/131 jobs and ten packs.
-    This composition does not fund the separate unmerged Manager carrier.
-    Natural exact-head CI must qualify full-tree packing and acceptance.
-
-    2026-11-11 (FINRA paired-volume admission, issue #11050):
-    Enroll tests/test_short_volume.py in the existing c19-wp24-consumer-states
-    CODE owner and add its collector/test selectors. The unchanged estimator
-    measures that owner 4 -> 6: the same two commands, one additional test path.
-    Fund only its +2 contribution: 5966/5989/5724 -> 5968/5991/5726.
-    Preserve every other owner, all job/pack ceilings and admission controls.
-    This is isolated owner accounting; natural CI must qualify the composed
-    source and actual packing probes. No unmerged carrier cost is pre-funded.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
