@@ -2,11 +2,13 @@
 
 Sector Intelligence quant lead, 2026-11-12. Data only: nothing here relates breadth
 to any outcome on any period (no forward returns, hit rates or backtests).
-**Read before the tables:** on the dated basis only 50.8% of members carry a sector
+**Read before the tables:** on the dated basis only 50.6% of members carry a sector
 label at the end of 1996 (46.5% before the free SIC fill), and only 221 of 488 have a
-Tiingo close; all 11 sectors are valid (10 or more counted members) only from
-2007-01-10 (about 2010 before the fill). The pre-2007 dated series is a thin,
-survivor-leaning sample.
+Tiingo close, so the early years are a sample of about half the index. All 11 sectors
+(10 or more counted members) are first valid together on 2007-01-10, but
+Communication Services drops out again on some sessions until 2009-03-26; all 11 are
+valid without a break only from 2009-03-27 (2014-04-02 before the fill). The pre-2009
+dated series is a thin, survivor-leaning sample.
 
 **Rights.** The Tiingo archive's member rows stay on the SSD and never enter git.
 What is committed is group-level aggregates (shares and counts per sector), the
@@ -67,22 +69,22 @@ shared sessions: no name has a median daily-return difference above 0.5%.
 
 | Basis | First valid 200-session share | First weekly 13-week change | All 11 sectors valid from |
 |---|---|---|---|
-| Dated membership (S&P 500) | 1996-01-02 | 1996-01-05 | about 2010 (9 of 11 before) |
+| Dated membership (S&P 500) | 1996-01-02 | 1996-01-05 | first 2007-01-10; without a break from 2009-03-27 (2014-04-02 before the free SIC fill) |
 | Today's membership | 1973-03-20 | 1973-06-22 | about 2010 (9 by 1990, 10 by 1996) |
 
-Year-end members counted across sectors (labelled and priced) / with 200 sessions:
+Year-end members counted across sectors (labelled and priced) / with 200 sessions (dated column includes the free SIC fill):
 
 | Year | Dated | Today's members |
 |---|---|---|
 | 1973 | — | 42 / 38 |
 | 1985 | — | 144 / 129 |
 | 1990 | — | 217 / 192 |
-| 1996 | 188 / 187 | 293 / 289 |
-| 2000 | 245 / 242 | 339 / 329 |
-| 2005 | 283 / 282 | 374 / 368 |
-| 2010 | 356 / 355 | 409 / 401 |
-| 2015 | 402 / 399 | 445 / 438 |
-| 2020 | 464 / 462 | 471 / 467 |
+| 1996 | 208 / 207 | 293 / 289 |
+| 2000 | 265 / 262 | 339 / 329 |
+| 2005 | 308 / 307 | 374 / 368 |
+| 2010 | 383 / 382 | 409 / 401 |
+| 2015 | 421 / 417 | 445 / 438 |
+| 2020 | 471 / 469 | 471 / 467 |
 | 2026-10-09 | 482 / 481 | 485 / 482 |
 
 ## Who is missing
@@ -92,12 +94,12 @@ window and are absent; for 144 of them the ticker exists in the archive only
 outside the window (a likely ticker reuse — the engine already counts a member
 only inside its window, so a later company's prices never enter). By start year:
 1996 268 (rows open at the membership file's start), 1997–2001 94, 2002–2010 48,
-2011–2026 43. Separately, 423 membership rows carry no sector label and are absent
-from every sector (484 before the free SIC fill); label coverage is 50.8% of members
+2011–2026 43. Separately, 425 membership rows carry no sector label and are absent
+from every sector (484 before the free SIC fill); label coverage is 50.6% of members
 at the end of 1996 (46.5% before), rising to 95.6% in 2021 (`LABEL_COVERAGE.md`).
 The early dated years therefore lean toward survivors. Communication Services falls
-under 10 members before 2006-04-03 and Real Estate before 2007-01-10; both are
-missing, not zero, before those dates.
+under 10 members before 2006-04-03 and again on some sessions to 2009-03-26, and
+Real Estate before 2007-01-10; both are missing, not zero, on those sessions.
 
 Today's basis: only today's members; every name that left the index is absent
 from every past session, and today's labels apply throughout. 18 of today's 503

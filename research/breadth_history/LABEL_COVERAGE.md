@@ -27,7 +27,7 @@ with that in mind; basis (b), today's members, is survivors-only by construction
 
 ## Free SIC fill (2026-11-12, `scripts/build_sp1500_sic_fill.py`)
 
-Overlay `data/breadth/sp1500_pit_sectors_sic_fill.parquet`, 228 tickers, every row
+Overlay `data/breadth/sp1500_pit_sectors_sic_fill.parquet`, 227 tickers, every row
 `basis = sic_derived_fill`, as of now (the filer's CURRENT SEC SIC), `era_correct =
 False`. Chain: Tiingo fundamentals metadata name for the ticker -> SEC EDGAR public
 `cik-lookup-data.txt` CIK -> SEC submissions SIC -> sector by the existing collector
@@ -41,31 +41,73 @@ A row is filled only when every link is unambiguous:
 |---|---|
 | Unlabeled in the substrate | 803 |
 | Exactly one company under the ticker in Tiingo metadata | 584 |
-| Tiingo price series starts by the membership start (not a later holder of a reused ticker) | 304 |
-| Name maps to exactly one SEC CIK | 230 |
-| SIC maps to one of the 11 sectors | 228 |
+| Tiingo price series starts by the membership start, and no handover inside one index | 303 |
+| Name maps to exactly one SEC CIK | 229 |
+| SIC maps to one of the 11 sectors | 227 |
 
 Coverage after the fill, beside the table above:
 
 | Year-end | Members | Labeled before | Labeled after | Priced members | Priced and labeled before | after |
 |---|---|---|---|---|---|---|
-| 1996 | 488 | 46.5% | 50.8% | 221 | 85.1% | 94.6% |
-| 2001 | 496 | 60.3% | 65.1% | 296 | 85.5% | 93.6% |
-| 2006 | 497 | 66.6% | 71.8% | 352 | 84.4% | 91.8% |
-| 2011 | 497 | 78.9% | 84.7% | 415 | 88.0% | 94.9% |
+| 1996 | 488 | 46.5% | 50.6% | 221 | 85.1% | 94.1% |
+| 2001 | 496 | 60.3% | 64.9% | 296 | 85.5% | 93.2% |
+| 2006 | 497 | 66.6% | 71.6% | 352 | 84.4% | 91.5% |
+| 2011 | 497 | 78.9% | 84.5% | 415 | 88.0% | 94.7% |
 | 2016 | 506 | 86.8% | 90.1% | 457 | 91.9% | 95.6% |
 | 2021 | 505 | 94.3% | 95.6% | 475 | 97.7% | 99.2% |
 
 The priced columns are what the series uses (an unpriced member is absent with or
 without a label). After the fill, the binding limit in early years is price
 coverage, not labels: only 221 of 488 members at end-1996 have a Tiingo close.
-On the rebuilt dated basis all 11 sectors are valid from 2007-01-10 (Real Estate is
-last; Communication Services from 2006-04-03); before the fill, about 2010.
+On the rebuilt dated basis all 11 sectors are first valid together on 2007-01-10
+(Real Estate last), but Communication Services drops below 10 members again on some
+sessions until 2009-03-26; all 11 are valid without a break from 2009-03-27 (before
+the fill: first 2009-06-30, without a break from 2014-04-02).
 
-Not filled (575 rows): tickers with several companies in Tiingo metadata (ambiguous
-reuse), tickers whose Tiingo series starts after the membership (a later holder), no
-Tiingo series at all, names with zero or several SEC CIKs, and two SIC codes that map
-to no sector.
+Not filled (576 rows): tickers with several companies in Tiingo metadata (ambiguous
+reuse), tickers whose Tiingo series starts after the membership (a later holder), a
+ticker handed over inside one index (GAS: Nicor to 2011-12-12, AGL Resources after),
+no Tiingo series at all, names with zero or several SEC CIKs, and two SIC codes that
+map to no sector.
+
+**Limits (independent review, all 228 first-run fills checked by hand).** The series
+start check screens out a later holder whose vendor history begins after the
+membership, but it does not prove identity: a vendor can attach a predecessor's
+history to today's ticker. The review found 1 plainly wrong company (GAS, now
+excluded) and about 6 earlier or later filers of the same company family (PCH, GRA,
+CCEP, MWV, X, MYL); none of these six changes the sector the CIK gives. Labels are the
+filer's CURRENT SIC, so some early-year sectors are era-wrong: PCH reads Real Estate
+for 1996-2001 when it was a paper company, NC reads Energy (coal) for 1996-2000 when
+it was an industrial. The existing collector labels leavers by CIK only (seat ruling
+2026-10-04); this fill reaches the CIK through the vendor's ticker -> company-name
+record, which includes inactive companies. That route is disclosed here and in the
+builder's docstring, and every row carries `label_join = tiingo_name_sec_cik`.
+
+Sample of filled rows (5 per start-year bucket, seed 11, reviewer's verdicts; SEC
+names, no vendor names):
+
+| ticker | membership window | SEC company name | SIC | sector | verdict |
+|---|---|---|---|---|---|
+| HSH | sp500 1996-01-02..2012-06-29 | Hillshire Brands Co | 2000 | Consumer Staples | right company (Sara Lee CIK, renamed) |
+| MWV | sp500 1996-01-02..2015-07-02 | MEADWESTVACO Corp | 2621 | Materials | unsure (2002 filer; 1996-2001 member a predecessor; same sector) |
+| CAL | sp500 1996-01-02..1996-07-22 | CALERES INC | 3140 | Consumer Discretionary | right company (Brown Group CIK) |
+| CVG | sp500 2000-06-13..2009-12-21 | CONCENTRIX CVG Corp | 7373 | Information Technology | right company (Convergys CIK, later acquired) |
+| FDO | sp500 2001-08-06..2015-07-07 | FAMILY DOLLAR STORES INC | 5331 | Consumer Discretionary | right company |
+| CHK | sp500 2006-03-03..2018-03-19 | EXPAND ENERGY Corp | 1311 | Energy | right company (Chesapeake, renamed) |
+| MTW | sp500 2007-11-16..2009-09-01 | MANITOWOC CO INC | 3531 | Industrials | right company |
+| HCBK | sp500 2007-02-15..2015-11-02 | HUDSON CITY BANCORP INC | 6036 | Financials | right company |
+| TWC | sp500 2009-03-30..2016-05-18 | SPECTRUM MANAGEMENT HOLDING COMPANY, LLC | 4841 | Communication Services | right company (Time Warner Cable CIK, renamed) |
+| DNR | sp500 2009-04-02..2015-03-23 | DENBURY INC | 1311 | Energy | right company |
+| VVC | sp400 2012-01-13..2019-02-06 | VECTREN CORP | 4932 | Utilities | right company |
+| CAA | sp400 2012-01-13..2018-02-13 | CalAtlantic Group, LLC | 1531 | Industrials | right company; homebuilder to Industrials is a SIC-map limit |
+| CVEO | sp400 2014-05-30..2014-12-16 | Civeo Corp | 7000 | Consumer Discretionary | right company |
+| WBMD | sp400 2016-04-04..2017-09-18 | WebMD Health Corp. | 7389 | Industrials | right company |
+| CCEP | sp500 2016-01-04..2016-05-31 | COCA-COLA EUROPACIFIC PARTNERS plc | 2086 | Consumer Staples | wrong filer (successor plc; member was Coca-Cola Enterprises; same sector) |
+| SITC | sp600 2019-12-17..2025-12-22 | SITE Centers Corp. | 6798 | Real Estate | right company |
+| VSI | sp600 2019-12-17..2019-12-17 | Vitamin Shoppe, Inc. | 5400 | Consumer Staples | right company |
+| MEI | sp600 2019-12-17..2024-06-24 | METHODE ELECTRONICS INC | 3678 | Information Technology | right company |
+| COOP | sp600 2020-09-21..2025-10-06 | Maverick Merger Sub 2, LLC | 6199 | Financials | right company (Mr. Cooper CIK, now a merger subsidiary) |
+| ARCH | sp600 2024-03-18..2025-01-14 | ARCH RESOURCES, INC. | 1221 | Energy | right company |
 
 ## Price coverage is the binding limit (read-only count, 2026-11-12)
 
