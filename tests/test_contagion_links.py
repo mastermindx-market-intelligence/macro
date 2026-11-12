@@ -950,7 +950,8 @@ def test_undefined_dynamic_compute_discloses_current_and_history(constant, tmp_p
 
 
 @pytest.mark.parametrize("seed", [4, 17, 83])
-def test_full_dynamic_pressure_and_history_are_unit_invariant(seed, tmp_path, monkeypatch):
+@pytest.mark.parametrize("unit_mode", ["common", "individual"])
+def test_full_dynamic_pressure_and_history_are_unit_invariant(seed, unit_mode, tmp_path, monkeypatch):
     """#10962: preserve CGL attribution and percentiles under positive unit changes."""
     monkeypatch.setattr(cgl, "date", _PinnedClock)
     rng = np.random.default_rng(seed)
@@ -961,7 +962,8 @@ def test_full_dynamic_pressure_and_history_are_unit_invariant(seed, tmp_path, mo
     for t in range(1, n):
         x[t] = .45*x[t-1] + .25*np.roll(x[t-1], 1) + .35*shocks[t] + .2*shocks[t, 0]
     vol = {m: pd.Series(.15*np.exp(.25*x[:, i]), index=idx) for i, m in enumerate(MARKETS)}
-    low = {m: s*1e-7 for m, s in vol.items()}
+    low = {m: s * (1e-7 if unit_mode == "common" else [1e-7, 1e4, 1.][i % 3])
+           for i, (m, s) in enumerate(vol.items())}
     prices = 100*np.exp(np.cumsum(rng.normal(.0002, .012, size=(n, k)), axis=0))
     bench = {m: pd.Series(prices[:, i], index=idx) for i, m in enumerate(MARKETS)}
     by_key = {cgl._BENCH[m]: bench[m] for m in MARKETS}

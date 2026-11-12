@@ -473,6 +473,50 @@ class TestFrozenBasket:
 class TestFEVDQualification:
     """#10962: units cannot become risk, and undefined evidence is not zero."""
 
+    @pytest.mark.parametrize("seed", [4, 17, 83])
+    @pytest.mark.parametrize("units", [[1e-7, 1., 1.], [1e-10, 1., 1.],
+                                       [1e7, 1e-7, 1.]])
+    @pytest.mark.parametrize("positive", [False, True])
+    def test_full_var_to_fevd_is_invariant_to_individual_units(self, seed, units, positive):
+        """Qualify the estimated coefficients, not only precomputed MA inputs."""
+        rng = np.random.default_rng(seed)
+        y = np.zeros((500, 3))
+        shocks = rng.normal(size=y.shape)
+        transition = np.array([[.7, 0., 0.], [.7, .2, 0.], [0., .7, .2]])
+        for t in range(1, len(y)):
+            y[t] = transition @ y[t-1] + shocks[t]
+        if positive:
+            y = .15 * np.exp(.1*y)
+        units = np.asarray(units)
+        a, sigma = _fit_var(y, 2)
+        scaled_a, scaled_sigma = _fit_var(y*units, 2)
+        np.testing.assert_allclose(
+            scaled_a / units[:, None] * np.tile(units, 2)[None, :],
+            a, rtol=1e-9, atol=1e-10)
+        np.testing.assert_allclose(
+            scaled_sigma / units[:, None] / units[None, :], sigma,
+            rtol=1e-10, atol=1e-12)
+        expected = _gfevd(_var_to_ma(a, 2, 10), sigma, 10)
+        actual = _gfevd(_var_to_ma(scaled_a, 2, 10), scaled_sigma, 10)
+        np.testing.assert_allclose(actual, expected, rtol=1e-9, atol=1e-10)
+        assert _dy_connectedness(actual)["total"] == pytest.approx(
+            _dy_connectedness(expected)["total"], abs=1e-8)
+
+    @pytest.mark.parametrize("k", [2, 3, 14])
+    @pytest.mark.parametrize("positive", [False, True])
+    def test_conditioned_fit_preserves_no_intercept_ols_and_covariance(self, k, positive):
+        y = np.random.default_rng(10962+k).normal(size=(200, k))
+        if positive:
+            y = .15 * np.exp(.1*y)
+        p = 2
+        x = np.concatenate([y[p-lag:-lag] for lag in range(1, p+1)], axis=1)
+        coef = np.linalg.lstsq(x, y[p:], rcond=None)[0]
+        residual = y[p:] - x @ coef
+        covariance = residual.T @ residual / (len(x)-k*p-1)
+        actual_a, actual_sigma = _fit_var(y, p)
+        np.testing.assert_allclose(actual_a, coef.T, rtol=1e-10, atol=1e-11)
+        np.testing.assert_allclose(actual_sigma, covariance, rtol=1e-10, atol=1e-12)
+
     @pytest.mark.parametrize("variance", [1e-240, 1e-16, 1e-13, 1e-12, 1., 1e240])
     @pytest.mark.parametrize("rho", [0., .5, -.5])
     def test_covariance_units_do_not_change_shares(self, variance, rho):

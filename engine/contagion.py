@@ -167,24 +167,31 @@ def _fit_var(Y: np.ndarray, p: int) -> tuple[np.ndarray, np.ndarray]:
     if (K == 0 or p < 1 or T <= p or
             np.any(np.ptp(Y, axis=0) <= 64 * np.finfo(float).eps * magnitude)):
         raise ValueError("DY: numerically constant or insufficient VAR observations")
+    # Condition each series before fitting. Otherwise the solver's relative
+    # rank cutoff can discard a smaller-unit predictor and change transmission
+    # merely because one input is expressed in different positive units.
+    # Scaling is reversible; keep the same no-intercept VAR and lag order.
+    normalized = Y / magnitude
     # Build regressor matrix X with lags
     rows = T - p
     X = np.ones((rows, K * p), dtype=float)
     for lag in range(1, p + 1):
-        X[:, (lag - 1) * K: lag * K] = Y[p - lag: T - lag, :]
-    y = Y[p:, :]
+        X[:, (lag - 1) * K: lag * K] = normalized[p - lag: T - lag, :]
+    y = normalized[p:, :]
 
-    # OLS: A = (X'X)^-1 X'Y  (coefficient matrix, shape (K*p, K))
+    # Solve OLS directly rather than squaring the design's condition number.
     try:
-        XtX = X.T @ X
-        XtY = X.T @ y
-        A = np.linalg.lstsq(XtX, XtY, rcond=None)[0]  # (K*p, K)
+        A = np.linalg.lstsq(X, y, rcond=None)[0]  # (K*p, K)
     except np.linalg.LinAlgError as exc:
         raise ValueError("DY: VAR fit unavailable") from exc
 
-    Amat = A.T  # (K, K*p)
     resid = y - X @ A
-    Sigma = (resid.T @ resid) / max(rows - K * p - 1, 1)
+    with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+        Amat = (A.T * magnitude[:, None]) / np.tile(magnitude, p)[None, :]
+        Sigma = (resid.T @ resid) / max(rows - K * p - 1, 1)
+        Sigma = (Sigma * magnitude[:, None]) * magnitude[None, :]
+    if not np.isfinite(Amat).all() or not np.isfinite(Sigma).all():
+        raise ValueError("DY: nonfinite fitted VAR")
     return Amat, Sigma
 
 
