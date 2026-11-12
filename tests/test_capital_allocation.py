@@ -357,8 +357,8 @@ class TestAnnualFallback:
         assert result["sbc_note"] is not None
         assert "period mismatch" in result["sbc_note"]
 
-    def test_net_buyback_after_sbc_computed_for_annual_fallback(self) -> None:
-        """With annual_fallback coverage AND available SBC, net_buyback_after_sbc is computed."""
+    def test_net_buyback_after_sbc_withheld_for_mismatched_annual_fallback(self) -> None:
+        """Retained FY2025/FY2024 witness must no longer subtract mismatched years."""
         q_df = _make_quarterly([
             {"fiscal_quarter": 1, "period_end": "2025-09-30", "filed": "2025-11-01", "repurchases": 25e9},
         ])
@@ -376,8 +376,8 @@ class TestAnnualFallback:
             as_of_date="2026-01-01",
         )
         assert result["repurch_coverage"] == "annual_fallback"
-        # net_buyback_after_sbc = (90B - 12B) / 3T
-        assert result["net_buyback_after_sbc"] == pytest.approx((90e9 - 12e9) / mcap)
+        assert result["net_buyback_after_sbc"] is None
+        assert "annual periods" in result["sbc_note"]
 
 
 # ── Group C: SBC path ─────────────────────────────────────────────────────────
@@ -798,3 +798,52 @@ class TestFirewall:
         )
         assert result["_horizon_role"] == _HORIZON_ROLE == "hold_thesis"
         assert result["_display_only"] is True
+
+
+
+@pytest.mark.parametrize('rep_year', [2023, 2024, 2025])
+@pytest.mark.parametrize('sbc_year', [2023, 2024, 2025])
+def test_annual_fallback_nets_only_same_selected_period(rep_year, sbc_year):
+    q = _make_quarterly([{'period_end':'2026-06-30','filed':'2026-08-01','repurchases':10e6}])
+    f = _make_fundamentals_panel([
+        {'fy':rep_year,'period_end':f'{rep_year}-12-31','repurchases':100e6},
+        {'fy':2026,'period_end':'2026-06-30','repurchases':np.nan},
+    ])
+    sbc = _make_statements([{'fy':sbc_year,'period_end':f'{sbc_year}-12-31','sbc':20e6}])
+    out = compute_capital_allocation('TEST',q,f,sbc,mcap=1e9,as_of_date='2026-11-12')
+    assert out['repurch_coverage'] == 'annual_fallback'
+    assert out['repurch_ttm'] == 100e6 and out['sbc_ttm'] == 20e6
+    if rep_year == sbc_year:
+        assert out['net_buyback_after_sbc'] == .08
+        assert out['sbc_note'] is None
+    else:
+        assert out['net_buyback_after_sbc'] is None
+        assert 'annual periods' in out['sbc_note']
+
+
+@pytest.mark.parametrize('rep_end,sbc_end', [(None,'2024-12-31'),('bad','2024-12-31'),('2024-12-31',None),('2024-06-30','2024-12-31')])
+def test_annual_fallback_requires_known_equal_period_ends(rep_end,sbc_end):
+    q=_make_quarterly([{'period_end':'2025-03-31','filed':'2025-05-01'}])
+    f=_make_fundamentals_panel([{'repurchases':100e6,'period_end':rep_end}])
+    s=_make_statements([{'sbc':20e6,'period_end':sbc_end}])
+    out=compute_capital_allocation('TEST',q,f,s,mcap=1e9,as_of_date='2025-06-01')
+    assert out['net_buyback_after_sbc'] is None
+    assert 'annual periods' in out['sbc_note']
+
+
+@pytest.mark.parametrize('rep_year', [2024, 2025])
+@pytest.mark.parametrize('amount', [0.,100e6,200e6])
+def test_selected_annual_period_survives_parquet_and_strict_json(tmp_path,rep_year,amount):
+    import json
+    from engine.capital_allocation import load_and_compute
+    q=_make_quarterly([{'period_end':'2026-06-30','filed':'2026-08-01','repurchases':10e6}])
+    f=_make_fundamentals_panel([{'fy':rep_year,'period_end':f'{rep_year}-12-31','repurchases':amount}])
+    s=_make_statements([{'fy':2024,'period_end':'2024-12-31','sbc':20e6}])
+    paths=[tmp_path/x for x in ['q.parquet','f.parquet','s.parquet']]
+    for frame,path in zip([q,f,s],paths): frame.to_parquet(path)
+    out=load_and_compute('TEST',*[str(p) for p in paths],mcap=1e9,as_of_date='2026-11-12')
+    result=json.loads(json.dumps(out,allow_nan=False))
+    assert result['repurch_annual_period']=={'fy':rep_year,'period_end':f'{rep_year}-12-31'}
+    assert result['sbc_annual_period']=={'fy':2024,'period_end':'2024-12-31'}
+    assert result['net_buyback_after_sbc']==((amount-20e6)/1e9 if rep_year==2024 else None)
+    assert result['_display_only'] is True
