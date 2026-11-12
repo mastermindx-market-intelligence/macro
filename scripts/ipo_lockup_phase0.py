@@ -54,7 +54,7 @@ FOCUS = "event[-1,+3]"
 
 def _spy() -> pd.Series:
     df = store.read("yahoo", "SPY")
-    return df["close"].astype(float).dropna()
+    return df["close"].astype(float)
 
 
 def _sample(cal: pd.DataFrame, min_size: float, max_names: int) -> pd.DataFrame:
@@ -77,16 +77,26 @@ def _car(stock: pd.Series, spy: pd.Series, event: pd.Timestamp,
     idx = stock.index.intersection(spy.index)
     if len(idx) < 60:
         return None
-    s = stock.reindex(idx).dropna()
+    s = stock.reindex(idx)
     m = spy.reindex(s.index)
     pos = s.index.searchsorted(event)          # first trading day >= event
     lo, hi = pos + w0, pos + w1
     if lo < 1 or hi >= len(s):
         return None
-    sr = s.iloc[lo:hi + 1].to_numpy() / s.iloc[lo - 1:hi].to_numpy() - 1.0
-    mr = m.iloc[lo:hi + 1].to_numpy() / m.iloc[lo - 1:hi].to_numpy() - 1.0
-    ar = sr - mr
-    return float(np.prod(1.0 + ar) - 1.0)
+    # Preserve explicit missing rows; neither a missing observation nor an
+    # invalid price is a zero return. Validate the return base as well as every
+    # selected window observation. Absent-index/calendar policy is separate.
+    sp = s.iloc[lo - 1:hi + 1].to_numpy(dtype=float)
+    mp = m.iloc[lo - 1:hi + 1].to_numpy(dtype=float)
+    if not (np.isfinite(sp).all() and np.isfinite(mp).all()
+            and (sp > 0).all() and (mp > 0).all()):
+        return None
+    with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+        sr = sp[1:] / sp[:-1] - 1.0
+        mr = mp[1:] / mp[:-1] - 1.0
+        ar = sr - mr
+        car = float(np.prod(1.0 + ar) - 1.0)
+    return car if np.isfinite(car) else None
 
 
 def run(max_names: int, min_size: float) -> dict:
@@ -107,17 +117,20 @@ def run(max_names: int, min_size: float) -> dict:
     def close(t):
         try:
             s = px[t]["Close"] if isinstance(px.columns, pd.MultiIndex) else px["Close"]
-            return s.astype(float).dropna()
+            return s.astype(float)
         except Exception:  # noqa: BLE001
             return None
 
     cars = {w: [] for w in WINDOWS}
+    unavailable = {w: 0 for w in WINDOWS}
     used, missing = [], 0
     for _, r in samp.iterrows():
         t = str(r["ticker"]).upper()
         s = close(t)
-        if s is None or s.empty:
+        if s is None or s.empty or not s.notna().any():
             missing += 1
+            for w in WINDOWS:
+                unavailable[w] += 1
             continue
         days = 180
         if not lk.empty and t in lk.index and pd.notna(lk.loc[t].get("lockup_days")):
@@ -126,9 +139,11 @@ def run(max_names: int, min_size: float) -> dict:
         got = False
         for w, (a, b) in WINDOWS.items():
             c = _car(s, spy, event, a, b)
-            if c is not None:
+            if c is not None and np.isfinite(c):
                 cars[w].append(c)
                 got = True
+            else:
+                unavailable[w] += 1
         if got:
             used.append(t)
     log.info("usable: %d names (%d missing price data)", len(used), missing)
@@ -136,25 +151,38 @@ def run(max_names: int, min_size: float) -> dict:
     rows = {}
     for w, vals in cars.items():
         a = np.asarray(vals, float)
+        row = {"n": len(a), "n_unavailable": unavailable[w]}
         if len(a) < 8:
-            rows[w] = {"n": len(a)}
+            rows[w] = {**row, "status": "insufficient"}
             continue
         # outlier-trimmed mean (drop the 5% tails) for robustness
         lo, hi = np.percentile(a, [5, 95])
         trimmed = a[(a >= lo) & (a <= hi)]
         nw = newey_west_tstat(a, lags=4)
-        rows[w] = {"n": len(a), "mean_pct": round(float(a.mean()) * 100, 2),
+        stats = {"mean_pct": round(float(a.mean()) * 100, 2),
                    "median_pct": round(float(np.median(a)) * 100, 2),
                    "trimmed_mean_pct": round(float(trimmed.mean()) * 100, 2),
                    "pct_negative": round(float((a < 0).mean()) * 100, 1),
                    "t": nw["t"], "p": nw["p"]}
+        # Even finite operands may overflow the aggregate/HAC calculation.
+        # Retain the admitted sample count, but never publish a bad statistic
+        # or use it as evidence of no edge.
+        valid = all(v is not None and np.isfinite(v) for v in stats.values())
+        rows[w] = ({**row, "status": "available", **stats} if valid else
+                   {**row, "status": "unavailable_statistics"})
 
     f = rows.get(FOCUS, {})
     # verdict: even a significant negative drift stays DISPLAY-ONLY (long-only-avoidable,
     # not shortable net of borrow); we only escalate the LABEL, never to "scored".
     sig = (f.get("n", 0) >= 25 and f.get("t") is not None and f["t"] <= -2.0
            and f.get("pct_negative", 0) >= 55 and f.get("trimmed_mean_pct", 0) < 0)
-    if sig:
+    if f.get("n", 0) < 25:
+        verdict = "DISPLAY-ONLY · insufficient usable event windows"
+        tier = "none"
+    elif f.get("status") != "available":
+        verdict = "DISPLAY-ONLY · event-window statistics unavailable"
+        tier = "none"
+    elif sig:
         verdict = "DISPLAY-ONLY · drift confirmed (avoid, not shortable)"
         tier = "confirmed-overhang"
     elif f.get("n", 0) >= 25 and f.get("mean_pct") is not None and f["mean_pct"] < 0:
@@ -165,7 +193,8 @@ def run(max_names: int, min_size: float) -> dict:
         tier = "none"
 
     return {"windows": rows, "focus": FOCUS, "verdict": verdict, "tier": tier,
-            "n_names": len(used), "n_missing": missing, "min_size_usd": min_size,
+            "n_names": len(used), "n_missing": missing, "n_sampled": len(samp),
+            "n_unavailable_names": len(samp) - len(used), "min_size_usd": min_size,
             "as_of": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
             "caveats": ["survivorship (delisted IPOs absent → drift biased upward)",
                         "small/time-clustered sample (cross-sectional t overstates)",
@@ -176,17 +205,19 @@ def _write_report(res: dict) -> Path:
     out = config.ROOT / "reports" / "ipo-lockup-phase0.md"
     out.parent.mkdir(parents=True, exist_ok=True)
     L = ["# IPO lock-up expiry — Phase-0 event study", "",
-         f"As of {res['as_of']} · {res['n_names']} usable names "
-         f"({res['n_missing']} missing price data) · min deal size "
+         f"As of {res['as_of']} · {res['n_names']} names with at least one usable window "
+         f"({res['n_missing']} missing price data; "
+         f"{res['n_unavailable_names']} with no usable window) · min deal size "
          f"${res['min_size_usd'] / 1e6:.0f}M", "",
          f"**Verdict: {res['verdict']}**", "",
-         "| Window | n | mean % | median % | trimmed % | % neg | t (HAC) | p |",
-         "|---|--:|--:|--:|--:|--:|--:|--:|"]
+         "| Window | n | unavailable | status | mean % | median % | trimmed % | % neg | t (HAC) | p |",
+         "|---|--:|--:|---|--:|--:|--:|--:|--:|--:|"]
     for w, r in res["windows"].items():
-        if r.get("n", 0) < 8:
-            L.append(f"| {w} | {r.get('n', 0)} | — | — | — | — | — | — |")
+        prefix = f"| {w} | {r.get('n', 0)} | {r['n_unavailable']} | {r['status']} |"
+        if "mean_pct" not in r:
+            L.append(f"{prefix} — | — | — | — | — | — |")
         else:
-            L.append(f"| {w} | {r['n']} | {r['mean_pct']} | {r['median_pct']} | "
+            L.append(f"{prefix} {r['mean_pct']} | {r['median_pct']} | "
                      f"{r['trimmed_mean_pct']} | {r['pct_negative']} | {r['t']} | {r['p']} |")
     L += ["", "### Honest caveats"] + [f"- {c}" for c in res["caveats"]]
     L += ["", "Market-adjusted (stock − SPY) cumulative returns around the lock-up "
@@ -205,15 +236,18 @@ def main() -> int:
     ap.add_argument("--min-size", type=float, default=50e6)
     args = ap.parse_args()
     res = run(args.max_names, args.min_size)
+    # Validate the complete result before either output is touched.
+    json.dumps(res, allow_nan=False)
     rep = _write_report(res)
     badge = config.data_dir() / "ipo" / "lockup_phase0.json"
     badge.parent.mkdir(parents=True, exist_ok=True)
     badge.write_text(json.dumps({"verdict": res["verdict"], "tier": res["tier"],
                                  "focus": res["focus"], "stat": res["windows"].get(res["focus"]),
-                                 "n_names": res["n_names"], "as_of": res["as_of"]}, indent=2))
+                                 "n_names": res["n_names"], "as_of": res["as_of"]},
+                                indent=2, allow_nan=False))
     print(f"\n[verdict] {res['verdict']}")
     f = res["windows"].get(res["focus"], {})
-    if f.get("n", 0) >= 8:
+    if "mean_pct" in f:
         print(f"[{res['focus']}] mean {f['mean_pct']}%  trimmed {f['trimmed_mean_pct']}%  "
               f"%neg {f['pct_negative']}  t {f['t']}  n {f['n']}")
     print(f"[report] {rep}")
