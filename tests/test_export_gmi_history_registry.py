@@ -96,6 +96,24 @@ def test_links_shape_and_series_flags(graph):
     assert (lk.source_commit == "abc").all()
 
 
+def test_overlap_single_name_and_rights_rows(graph):
+    g = ex.graph_frames(graph)
+    mems = {"basket": pd.DataFrame({"ticker": ["A", "B", "C"], "group": ["b1", "b1", "b1"]}),
+            "subsector": pd.DataFrame({"ticker": ["A", "B", "Z"], "group": ["sub1", "sub1", "sub2"]}),
+            "sector": pd.DataFrame({"ticker": ["C", "D"], "group": ["S", "S"]})}
+    lk, m = ex.links(graph, g, "abc", {"basket": {"b1"}}, mems)
+    ov = lk[lk.link_type == "overlap"].set_index(["child_family", "child_id", "parent_family", "parent_id"])
+    assert ov.loc[("basket", "b1", "subsector", "sub1"), "n_shared"] == 2
+    assert ov.loc[("basket", "b1", "sector", "S"), "n_shared"] == 1
+    assert ov.loc[("basket", "b1", "sector", "S"), ["child_n", "parent_n"]].tolist() == [3, 2]
+    assert ov.loc[("basket", "b1", "subsector", "sub1"), "rights_class"] == "internal_only"
+    assert ov.loc[("basket", "b1", "sector", "S"), "rights_class"] == "house"
+    assert ("subsector", "sub2") not in {(a, b) for a, b, _, _ in ov.index}   # shares nothing
+    assert m["single_name_groups"] == {"subsector": ["sub2"]}
+    one = lk[(lk.child_family == "subsector") & (lk.child_id == "sub2")]
+    assert one.child_single_name.all()
+
+
 def test_unresolved_id_refused(graph):
     g = ex.graph_frames(graph)
     pw = yaml.safe_load((graph / "config/theme_pathways.yml").read_text())
@@ -109,24 +127,72 @@ _needs = pytest.mark.skipif(not (HIST / "group_links_current.parquet").exists(),
                             reason="data/ not checked out (sparse tree)")
 
 
+VEND = HIST / "internal_only"
+LINK_FILES = {"house": (HIST / "group_links_current.parquet", HIST / "house_ew_index_weekly_current.parquet"),
+              "internal_only": (VEND / "vendor_internal_only_group_links_current.parquet",
+                                VEND / "vendor_internal_only_ew_index_weekly_current.parquet")}
+
+
+def _series():
+    out = set()
+    for _, ix_path in LINK_FILES.values():
+        ix = pd.read_parquet(ix_path, columns=["family", "group", "level"]).dropna(subset=["level"])
+        out |= set(zip(ix.family, ix.group))
+    return out
+
+
 @_needs
 def test_committed_links_have_no_tickers_and_match_index():
-    lk = pd.read_parquet(HIST / "group_links_current.parquet")
-    assert list(lk.columns) == ex.LINK_COLUMNS
-    ix = pd.read_parquet(HIST / "group_ew_index_weekly_current.parquet", columns=["family", "group", "level"])
-    ok = ix.dropna(subset=["level"])
-    series = {(f, g) for f, g in zip(ok.family, ok.group)}
-    for fc, ic, hc in (("child_family", "child_id", "child_has_series"),
-                       ("parent_family", "parent_id", "parent_has_series")):
-        exp = [(f, i) in series for f, i in zip(lk[fc], lk[ic])]
-        assert lk[hc].tolist() == exp
-    meta = json.loads((HIST / "group_links_current.meta.json").read_text())
-    assert len(meta["source_commit"]) == 40 and meta["no_tickers_no_prices"] is True
+    series = _series()
+    for rc, (path, _) in LINK_FILES.items():
+        lk = pd.read_parquet(path)
+        assert list(lk.columns) == ex.LINK_COLUMNS
+        assert not any("ticker" in c or "price" in c for c in lk.columns)
+        assert (lk["rights_class"] == rc).all()
+        for fc, ic, hc in (("child_family", "child_id", "child_has_series"),
+                           ("parent_family", "parent_id", "parent_has_series")):
+            exp = [(f, i) in series for f, i in zip(lk[fc], lk[ic])]
+            assert lk[hc].tolist() == exp
+        meta = json.loads(path.with_suffix(".meta.json").read_text())
+        assert len(meta["source_commit"]) == 40 and meta["no_tickers_no_prices"] is True
+        assert meta["rights_class"] == rc
 
 
 @_needs
-def test_committed_gmi_families_built():
-    meta = json.loads((HIST / "tree_breadth_and_index_current.meta.json").read_text())
+def test_vendor_links_stay_with_vendor_files():
+    house = pd.read_parquet(LINK_FILES["house"][0])
+    vend = pd.read_parquet(LINK_FILES["internal_only"][0])
+    fam = lambda d: set(d.child_family) | set(d.parent_family)  # noqa: E731
+    assert not fam(house) & set(ex.VENDOR_FAMILIES)
+    assert ((vend.child_family.isin(ex.VENDOR_FAMILIES)) | (vend.parent_family.isin(ex.VENDOR_FAMILIES))).all()
+    meta = json.loads(LINK_FILES["internal_only"][0].with_suffix(".meta.json").read_text())
+    assert meta["source_family"] == "finviz_themes"
+
+
+@_needs
+def test_overlap_rows_are_consistent():
+    for path, _ in LINK_FILES.values():
+        ov = pd.read_parquet(path)
+        ov = ov[ov.link_type == "overlap"]
+        assert len(ov) and (ov.n_shared >= 1).all()
+        assert (ov.n_shared <= ov[["child_n", "parent_n"]].min(axis=1)).all()
+        key = list(zip(ov.child_family, ov.child_id, ov.parent_family, ov.parent_id))
+        assert len(key) == len(set(key))
+        assert not set(key) & {(c, d, a, b) for a, b, c, d in key}     # unordered: one row per pair
+
+
+@_needs
+def test_committed_gmi_and_relationship_families_built():
+    meta = json.loads((HIST / "house_breadth_and_index_current.meta.json").read_text())
     assert meta["members"]["gmi_theme"]["groups"] == 15        # 18 house themes, 3 member-empty
     assert meta["members"]["gmi_macro_category"]["groups"] == 7
-    assert meta["members"]["gmi_theme"]["unpriced"] == []
+    for f in ("gmi_theme", "gmi_macro_category", "rel_customers_of", "rel_suppliers_of"):
+        assert meta["members"][f]["unpriced"] == []
+    assert meta["members"]["rel_customers_of"]["groups"] == 4
+    assert meta["members"]["rel_suppliers_of"]["groups"] == 3
+    rel = meta["relationship_families"]
+    assert rel["basis"] == "proposed_relationships_unadmitted"
+    assert rel["precision"]["value"] == 0.6621 and rel["recall"]["value"] == 0.3487
+    assert "one member in three" in rel["sentence"] and "chips and hardware" in rel["hubs_note"]
+    assert meta["families"]["rel_customers_of"]["basis"] == "proposed_relationships_unadmitted"
+    assert meta["price_topup"]["names"] == 4 and "single download" in meta["price_topup"]["rule"]

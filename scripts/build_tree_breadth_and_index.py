@@ -4,33 +4,45 @@ Off the render path; never run nightly. Inputs are one single-vintage, full-hist
 download held off git (scratch), the registries on main, and the yearly
 second-source disagreement table measured against the Tiingo archive.
 
-Writes to ``--out`` (default data/breadth/history):
+Writes one file set per rights class (``RIGHTS_SETS``) under ``--out`` (default
+data/breadth/history):
 
-  tree_breadth_weekly_current.parquet  (date, family, group) weekly fixed-set
-      breadth for family ``subsector`` (268 groups in data/themes_heatmap/themes_tree.json)
-      and family ``theme`` (its 40 parent themes); same engine functions as the
-      sector history (``engine.group_breadth_history.weekly_fixed_set``).
-  group_ew_index_weekly_current.parquet  (date, family, group) equal-weight
-      total-return index level for families subsector, theme, basket
-      (data/baskets/membership.json, active members) and sector (S&P 500 GICS sectors).
-  group_ew_index_daily_current.parquet   the same index daily (only with --daily).
-  tree_breadth_and_index_current.meta.json  sidecar.
+  house (plain path): house_breadth_weekly_current.parquet (breadth families, when
+      any), house_ew_index_{weekly,daily}_current.parquet, house_breadth_and_index_current.meta.json
+      — families basket (data/baskets/membership.json, active members) and sector
+      (S&P 500 GICS sectors), and later house families such as the GMI graph's.
+  internal_only (subdirectory internal_only/): vendor_internal_only_breadth_weekly_current.parquet,
+      vendor_internal_only_ew_index_{weekly,daily}_current.parquet and its sidecar —
+      the vendor tree's 268 subsectors and 40 parent themes
+      (data/themes_heatmap/themes_tree.json, source family finviz_themes). Internal
+      research data under the Chairman's gate 2 ruling (config/theme_sources.yml:33):
+      never displayed or published.
+
+Breadth is the weekly fixed-set change (``engine.group_breadth_history.weekly_fixed_set``);
+the index is a (date, family, group) equal-weight total-return level.
 
 Basis: ``reconstructed_current_membership``. Today's members applied to the past;
 not point-in-time; survivors only. A name in several groups counts in each.
 
 Start date: ``--start`` (the second-source rule date). Before it every value is
 missing with reason ``second_source_disagreement``; no row is emitted before it.
-Floors: share, change, rank and state at 10 counted members (engine MIN_MEMBERS);
-index at 5 priced members (``INDEX_FLOOR``); counts at any size. Ranks are among
-valid groups of the same family only.
+Floors (COO ruling 34 s2, replacing the floors of rulings 27, 31 and 32 for these
+files): share, change, rank and state from 2 counted members (``BREADTH_FLOOR``),
+each share committed with ``n_above_200`` and ``n_counted_200`` beside it; index
+from 2 priced members (``INDEX_FLOOR``). A one-member group has no series.
+``size_class`` per group per date: ``small`` under 10 counted members, else
+``standard``. Ranks are within the same family AND size class on each date only.
+The live engine's own floor (engine MIN_MEMBERS) is unchanged.
 
 No forward returns, no outcome relation, no threshold, no signal.
 
 Usage:
   python scripts/build_tree_breadth_and_index.py --closes <scratch closes.parquet> \
       --download-meta <scratch download_meta.json> --disagreement <yearly csv> \
-      --start 2000-01-01 [--daily] [--out data/breadth/history]
+      --start 2000-01-01 [--daily [house internal_only]] [--out data/breadth/history]
+
+``--daily`` alone writes the daily index for every rights class; with class names it
+writes it for those only (the committed set keeps the total under 25 MB: house only).
 """
 from __future__ import annotations
 
@@ -52,7 +64,9 @@ from engine.baskets import _ew_level  # noqa: E402
 
 BASIS = "reconstructed_current_membership"
 BASIS_NOTE = "today's members applied to the past; not point-in-time; survivors only"
-INDEX_FLOOR = 5
+INDEX_FLOOR = 2
+BREADTH_FLOOR = 2
+SIZE_STANDARD = 10
 REASON_START = "second_source_disagreement"
 REASON_FLOOR = "below_index_member_floor"
 _SEP = "@"
@@ -64,9 +78,9 @@ DIVIDEND_SENTENCE = ("Before about 2000 the two price vendors (this download and
                      "archive behind the sector history) apply dividend adjustment differently "
                      "in old history; neither is shown to be right. The yearly name-week "
                      "disagreement table below states the rate.")
-GROUP_SIZE_SENTENCE = ("In a 10-name group one name moves the share by 10 points, and a 13-week "
-                       "change differences two such shares; a large group-level gap between "
-                       "vendors can come from one name.")
+GROUP_SIZE_SENTENCE = ("In a group of n members the share moves in steps of 100/n; read a small "
+                       "group's share as a count (n_above_200 of n_counted_200). A 13-week change "
+                       "differences two such shares, so in a small group one name moves it a lot.")
 SURVIVOR_INDEX_SENTENCE = ("The index holds only names alive today, so its past returns are "
                            "overstated, more so the further back and in themes with high failure "
                            "rates; relative turns between groups are less affected than levels, "
@@ -76,7 +90,7 @@ INDEX_SENTENCE = ("A difference in dividend method shifts the long-run level of 
 SOURCE_SENTENCE = ("These series sit on a different price source from the sector breadth "
                    "history (group_breadth_*_current.parquet, Tiingo archive); the two are "
                    "never joined or mixed.")
-FLOOR_GAP_NOTE = ("On a session with fewer than 5 priced members the level is missing "
+FLOOR_GAP_NOTE = ("On a session with fewer than 2 priced members the level is missing "
                   "(reason below_index_member_floor) and that session carries no return; the "
                   "chain resumes from the last valid level.")
 
@@ -129,24 +143,49 @@ LOADERS = {
 # ``breadth`` -> weekly fixed-set breadth file; ``index`` -> equal-weight index files.
 FAMILIES = [
     {"family": "subsector", "registry": "data/themes_heatmap/themes_tree.json", "loader": "tree_subsector",
-     "outputs": ["breadth", "index"], "label": "themes_tree.json subsectors (group = subsector key)"},
+     "rights_class": "internal_only", "outputs": ["breadth", "index"], "label": "themes_tree.json subsectors (group = subsector key)"},
     {"family": "theme", "registry": "data/themes_heatmap/themes_tree.json", "loader": "tree_theme",
-     "outputs": ["breadth", "index"], "label": "themes_tree.json parent themes (group = theme key)"},
+     "rights_class": "internal_only", "outputs": ["breadth", "index"], "label": "themes_tree.json parent themes (group = theme key)"},
     {"family": "basket", "registry": "data/baskets/membership.json", "loader": "baskets",
-     "outputs": ["index"], "label": "baskets, active members (basket breadth stays in "
+     "rights_class": "house", "outputs": ["index"], "label": "baskets, active members (basket breadth stays in "
                                     "basket_breadth_*_current.parquet on archive prices)"},
     {"family": "sector", "registry": "data/breadth/constituents.parquet", "loader": "constituents_sector",
-     "outputs": ["index"], "label": "S&P 500 GICS sectors (sector breadth stays in "
+     "rights_class": "house", "outputs": ["index"], "label": "S&P 500 GICS sectors (sector breadth stays in "
                                     "group_breadth_*_current.parquet on archive prices)"},
     {"family": "gmi_theme", "registry": "data/breadth/history/registry/gmi_theme.csv", "loader": "pairs",
-     "outputs": ["breadth", "index"],
+     "rights_class": "house", "outputs": ["breadth", "index"],
      "label": "GMI house themes (18): open latest-belief company->basket->theme edges of "
               "data/theme_graph, US-listed resolved identities; exported by "
               "scripts/export_gmi_history_registry.py at the commit in group_links_current.meta.json"},
     {"family": "gmi_macro_category", "registry": "data/breadth/history/registry/gmi_macro_category.csv",
-     "loader": "pairs", "outputs": ["breadth", "index"],
+     "loader": "pairs", "rights_class": "house", "outputs": ["breadth", "index"],
      "label": "GMI macro categories (10): gmi_theme members rolled up through open PARENT_OF edges"},
+    {"family": "rel_customers_of", "registry": "data/breadth/history/registry/rel_customers_of.csv",
+     "loader": "pairs", "rights_class": "house", "outputs": ["breadth", "index"],
+     "basis": "proposed_relationships_unadmitted",
+     "label": "customers of a supplier hub (group = the supplier: TSM, UMC, AMKR, GFS), from the "
+              "proposed edges of relationship_edges.json, roles normalised"},
+    {"family": "rel_suppliers_of", "registry": "data/breadth/history/registry/rel_suppliers_of.csv",
+     "loader": "pairs", "rights_class": "house", "outputs": ["breadth", "index"],
+     "basis": "proposed_relationships_unadmitted",
+     "label": "suppliers of a customer hub (group = the customer: AAPL, FTNT, INTC), from the "
+              "proposed edges of relationship_edges.json, roles normalised"},
 ]
+
+# Relationship families (COO ruling 32 s2): proposed, unadmitted edges.
+REL_NOTE = {
+    "basis": "proposed_relationships_unadmitted",
+    "precision": {"value": 0.6621, "basis": "stratum-weighted, 100-item owner sample, Wilson 95% "
+                                             "[0.5596, 0.7646]",
+                  "source": "research/theme_graph/GMI_O5_VERIFICATION_VERDICTS_2026-11-02.md:210"},
+    "recall": {"value": 0.3487, "basis": "83/238, 31 issuers, Wilson 95% [0.291, 0.4113]",
+               "source": "research/theme_graph/GMI_O5_VERIFICATION_VERDICTS_2026-11-02.md:201"},
+    "sentence": ("About one member in three may be wrong, and about two in three true members are "
+                 "missing. Today's proposed edges are applied to the past."),
+    "hubs_note": "All seven hubs are chips and hardware companies.",
+    "hub_rule": "hubs are the companies with 5 or more counterparties (ruling 32); no further "
+                "relationship series until the edge set grows",
+}
 
 
 def load_families(root: Path, specs: list[dict] = FAMILIES) -> dict[str, tuple[dict, pd.DataFrame]]:
@@ -175,11 +214,28 @@ def tree_breadth_weekly(closes: pd.DataFrame, families: dict[str, pd.DataFrame],
     for fam, mem in families.items():
         wide, emem = expand_multi(closes, mem)
         groups = sorted(mem["group"].unique())
-        w = gbh.weekly_fixed_set(wide, emem, groups=groups, include_last_partial_week=False)
-        w = w[w["date"] >= start]
+        w = gbh.weekly_fixed_set(wide, emem, groups=groups, include_last_partial_week=False,
+                                 min_members=BREADTH_FLOOR)
+        w = w[w["date"] >= start].copy()
         w.insert(1, "family", fam)
         out.append(w)
-    return pd.concat(out, ignore_index=True)
+    return with_size_class(pd.concat(out, ignore_index=True))
+
+
+def with_size_class(b: pd.DataFrame) -> pd.DataFrame:
+    """Counts beside every share, ``size_class`` per group per date, and every rank
+    recomputed within (date, family, size_class): no rank across classes."""
+    b = b.rename(columns={"n_has_200": "n_counted_200"})
+    n = b["n_counted_200"]
+    b.insert(b.columns.get_loc("pct_above_200"), "n_above_200",
+             (b["pct_above_200"] * n / 100).round().astype("Int64"))
+    b.insert(3, "size_class", np.where(n < SIZE_STANDARD, "small", "standard"))
+    keys = [b["date"], b["family"], b["size_class"]]
+    for c in [c for c in b.columns if c.startswith("fix_chg_")]:
+        g = b[c].groupby(keys)
+        b[f"rank_{c}"] = g.rank(method="min", ascending=False)
+        b[f"n_ranked_{c}"] = g.transform("count").astype("int32")
+    return b
 
 
 # ---------------------------------------------------------------- index
@@ -216,9 +272,11 @@ def ew_index_daily(closes: pd.DataFrame, families: dict[str, pd.DataFrame],
         for g, sub in mem.groupby("group", sort=True):
             lvl, n, reason = group_index(rets, sub["ticker"].tolist(), start, priced=priced)
             keep = closes.index >= start
+            nk = n[keep].values
             parts.append(pd.DataFrame({"date": closes.index[keep], "family": fam, "group": g,
+                                       "size_class": np.where(nk < SIZE_STANDARD, "small", "standard"),
                                        "level": lvl[keep].round(6).values,
-                                       "n_priced": n[keep].values, "reason": reason[keep].values}))
+                                       "n_priced": nk, "reason": reason[keep].values}))
     return pd.concat(parts, ignore_index=True)
 
 
@@ -234,53 +292,100 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def single_name_groups(mem: pd.DataFrame) -> list[str]:
+    n = mem.groupby("group")["ticker"].nunique()
+    return sorted(n[n < 2].index)
+
+
+def _by_class_last(b: pd.DataFrame) -> dict:
+    lw = b[(b["date"] == b["date"].max()) & b[gbh.HEADLINE].notna()]
+    return {f: {k: int(v) for k, v in g["size_class"].value_counts().items()}
+            for f, g in lw.groupby("family")}
+
+
+def _index_last(w: pd.DataFrame) -> dict:
+    lw = w[(w["date"] == w["date"].max()) & w["level"].notna()]
+    return {f: int(n) for f, n in lw.groupby("family").size().items()}
+
+
 def first_valid(df: pd.DataFrame, col: str) -> dict:
     v = df.dropna(subset=[col]).groupby(["family", "group"])["date"].min()
     return {f"{f}/{g}": str(pd.Timestamp(d).date()) for (f, g), d in v.items()}
 
 
-def build(closes_path: Path, download_meta: Path, disagreement: Path, start: str,
-          out: Path, root: Path = _ROOT, daily: bool = False,
-          families: list[dict] = FAMILIES) -> dict:
-    start_ts = pd.Timestamp(start)
-    closes = pd.read_parquet(closes_path).sort_index()
-    closes = gbh.through_last_complete_row(closes)
-    fams = load_families(root, families)
+# Output sets by rights class (COO ruling 32 s1). Vendor-tree families are internal
+# research data: their files carry the class in the name and live under an unserved
+# path; house families keep the plain names.
+RIGHTS_SETS = {
+    "house": {"dir": "", "prefix": "house",
+              "breadth": "house_breadth_weekly_current.parquet",
+              "index_weekly": "house_ew_index_weekly_current.parquet",
+              "index_daily": "house_ew_index_daily_current.parquet",
+              "meta": "house_breadth_and_index_current.meta.json"},
+    "internal_only": {"dir": "internal_only", "prefix": "vendor_internal_only",
+                      "breadth": "vendor_internal_only_breadth_weekly_current.parquet",
+                      "index_weekly": "vendor_internal_only_ew_index_weekly_current.parquet",
+                      "index_daily": "vendor_internal_only_ew_index_daily_current.parquet",
+                      "meta": "vendor_internal_only_breadth_and_index_current.meta.json"},
+}
+VENDOR_RIGHTS = {
+    "source_family": "finviz_themes",
+    "rights_class": "internal_only",
+    "rights_source": "config/theme_sources.yml:33",
+    "rights_sentence": ("retained internal-only. NO public/customer display or redistribution "
+                        "rights granted"),
+    "use": ("internal research data: no name or number from these families goes to any site "
+            "page, site data file, Terminal surface, member page or public bucket (COO ruling 32)"),
+}
+
+
+def _write_set(rights: str, fams: dict, closes: pd.DataFrame, start_ts: pd.Timestamp, out: Path,
+               root: Path, daily: bool, dm: dict, tab: pd.DataFrame) -> dict:
+    spec = RIGHTS_SETS[rights]
     mems = {f: m for f, (_, m) in fams.items()}
-    b_fams = {f: m for f, (s, m) in fams.items() if "breadth" in s["outputs"]}
-    i_fams = {f: m for f, (s, m) in fams.items() if "index" in s["outputs"]}
-
-    breadth = tree_breadth_weekly(closes, b_fams, start_ts)
-    idx_daily = ew_index_daily(closes, i_fams, start_ts)
-    idx_weekly = to_weekly(idx_daily, closes.index)
-
-    out.mkdir(parents=True, exist_ok=True)
-    files = {"tree_breadth_weekly_current.parquet": breadth,
-             "group_ew_index_weekly_current.parquet": idx_weekly}
-    if daily:
-        files["group_ew_index_daily_current.parquet"] = idx_daily
+    single = {f: single_name_groups(m) for f, m in mems.items()}
+    series = {f: m[~m["group"].isin(single[f])] for f, m in mems.items()}
+    b_fams = {f: series[f] for f, (s, _) in fams.items() if "breadth" in s["outputs"]}
+    i_fams = {f: series[f] for f, (s, _) in fams.items() if "index" in s["outputs"]}
+    d = out / spec["dir"] if spec["dir"] else out
+    d.mkdir(parents=True, exist_ok=True)
+    files = {}
+    breadth = tree_breadth_weekly(closes, b_fams, start_ts) if b_fams else None
+    if breadth is not None:
+        files[spec["breadth"]] = breadth
+    idx_daily = ew_index_daily(closes, i_fams, start_ts) if i_fams else None
+    idx_weekly = to_weekly(idx_daily, closes.index) if idx_daily is not None else None
+    if idx_weekly is not None:
+        files[spec["index_weekly"]] = idx_weekly
+        if daily:
+            files[spec["index_daily"]] = idx_daily
+        elif (d / spec["index_daily"]).exists():
+            (d / spec["index_daily"]).unlink()      # never leave a stale daily file
     for name, df in files.items():
-        df.to_parquet(out / name, index=False, compression="zstd")
-
-    dm = json.loads(Path(download_meta).read_text())
-    tab = pd.read_csv(disagreement, index_col=0)
+        df.to_parquet(d / name, index=False, compression="zstd")
     priced = set(closes.columns[closes.notna().any()])
-    members = {}
-    for fam, mem in mems.items():
-        members[fam] = {"groups": int(mem["group"].nunique()), "tickers": int(mem["ticker"].nunique()),
-                        "slots": int(len(mem)),
-                        "tickers_priced": len(set(mem["ticker"]) & priced),
-                        "unpriced": sorted(set(mem["ticker"]) - priced)}
-    last_week = breadth["date"].max()
-    lw = breadth[breadth["date"] == last_week]
-    meta = {
+    members = {f: {"groups": int(m["group"].nunique()), "tickers": int(m["ticker"].nunique()),
+                   "slots": int(len(m)), "tickers_priced": len(set(m["ticker"]) & priced),
+                   "unpriced": sorted(set(m["ticker"]) - priced)} for f, m in mems.items()}
+    last_dates = [x["date"].max() for x in (breadth, idx_weekly) if x is not None]
+    last_week = max(last_dates)
+    meta = {"rights_class": rights}
+    if rights == "internal_only":
+        meta.update(VENDOR_RIGHTS)
+    rel = sorted(f for f, (s, _) in fams.items() if s.get("basis") == REL_NOTE["basis"])
+    if rel:
+        meta["relationship_families"] = {"families": rel, **REL_NOTE}
+    meta.update({
         "basis": BASIS, "basis_note": BASIS_NOTE,
         "families": {f: {"registry": s["registry"], "registry_sha256": _sha(root / s["registry"]),
-                         "outputs": s["outputs"], "label": s["label"]} for f, (s, _) in fams.items()},
+                         "rights_class": s["rights_class"], "outputs": s["outputs"], "label": s["label"],
+                         "basis": s.get("basis", BASIS)}
+                     for f, (s, _) in fams.items()},
         "multi_group": "a name in several groups counts in each",
         "price_source": "yfinance yf.download(auto_adjust=True, period='max'), one single-vintage "
                         "download, held off git; never the collector cache or data/yahoo",
         "price_vintage": dm.get("vintage"), "price_retry": dm.get("retry"),
+        "price_topup": dm.get("topup"),
         "aliases": {"MMC": "MRSH", "FI": "FISV"},
         "data_end": str(closes.index.max().date()), "last_week": str(pd.Timestamp(last_week).date()),
         "source_sentence": SOURCE_SENTENCE,
@@ -294,23 +399,59 @@ def build(closes_path: Path, download_meta: Path, disagreement: Path, start: str
             str(y): {"name_weeks": int(r["both"]), "disagree": int(r["flag_dis"]),
                      "rate": round(float(r["rate"]), 5)} for y, r in tab.iterrows()},
         "dividend_sentence": DIVIDEND_SENTENCE, "group_size_sentence": GROUP_SIZE_SENTENCE,
-        "floors": {"share_change_rank_state": gbh.MIN_MEMBERS, "index": INDEX_FLOOR,
-                   "counts": "any size", "rank": "among valid groups of the same family"},
+        "floors": {"share_change_rank_state": BREADTH_FLOOR, "index": INDEX_FLOOR,
+                   "counts": "any size", "single_name": "a one-member group has no series; the "
+                   "links table marks it single_name (the stock is the series)",
+                   "size_class": f"small under {SIZE_STANDARD} counted members on that date, "
+                                 "else standard",
+                   "rank": "within the same family and size class on each date; no rank across "
+                           "classes",
+                   "source": "COO ruling 34 s2 (replaces the floors of rulings 27, 31 and 32 for "
+                             "these files); the live engine's floor is unchanged"},
+        "single_name_groups": {f: g for f, g in single.items() if g},
         "index": {"rebalance_rule": REBALANCE_RULE, "return": "total return (auto_adjust closes)",
                   "floor_gap": FLOOR_GAP_NOTE, "dividend_effect": INDEX_SENTENCE,
                   "survivors_only_effect": SURVIVOR_INDEX_SENTENCE,
-                  "daily_committed": bool(daily)},
+                  "daily_committed": bool(daily),
+                  "daily_note": (None if daily else
+                                 "the daily index of this class is not committed (it would take the "
+                                 "committed files over 25 MB); weekly is committed and the daily "
+                                 "rebuilds from the scratch download with --daily")},
         "members": members,
-        "valid_last_week": {f: int(lw[(lw.family == f)][gbh.HEADLINE].notna().sum())
-                            for f in b_fams},
-        "first_valid_breadth": first_valid(breadth, gbh.HEADLINE),
-        "first_valid_index": first_valid(idx_weekly, "level"),
+        "valid_last_week": ({f: int(breadth[(breadth["date"] == breadth["date"].max())
+                                             & (breadth.family == f)][gbh.HEADLINE].notna().sum())
+                             for f in b_fams} if breadth is not None else {}),
+        "valid_last_week_by_size_class": (_by_class_last(breadth) if breadth is not None else {}),
+        "index_valid_last_week": (_index_last(idx_weekly) if idx_weekly is not None else {}),
+        "first_valid_breadth": first_valid(breadth, gbh.HEADLINE) if breadth is not None else {},
+        "first_valid_index": first_valid(idx_weekly, "level") if idx_weekly is not None else {},
+        "files": sorted(str((d / n).relative_to(out)) for n in files),
         "rows": {k: int(len(v)) for k, v in files.items()},
         "engine": "engine.group_breadth_history.weekly_fixed_set; engine.baskets._ew_level",
         "no_outcomes": "no forward returns, no outcome relation, no threshold, no signal",
-    }
-    (out / "tree_breadth_and_index_current.meta.json").write_text(json.dumps(meta, indent=1) + "\n")
+    })
+    (d / spec["meta"]).write_text(json.dumps(meta, indent=1) + "\n")
     return meta
+
+
+def build(closes_path: Path, download_meta: Path, disagreement: Path, start: str,
+          out: Path, root: Path = _ROOT, daily: bool | set[str] = False,
+          families: list[dict] = FAMILIES) -> dict:
+    """Build every family; write one file set per rights class. Returns {rights_class: meta}."""
+    start_ts = pd.Timestamp(start)
+    closes = gbh.through_last_complete_row(pd.read_parquet(closes_path).sort_index())
+    fams = load_families(root, families)
+    dm = json.loads(Path(download_meta).read_text())
+    tab = pd.read_csv(disagreement, index_col=0)
+    by_class: dict[str, dict] = {}
+    for f, (s, m) in fams.items():
+        if s.get("rights_class") not in RIGHTS_SETS:
+            raise ValueError(f"family {f}: rights_class must be one of {sorted(RIGHTS_SETS)}")
+        by_class.setdefault(s["rights_class"], {})[f] = (s, m)
+    want = (lambda rc: rc in daily) if isinstance(daily, (set, frozenset, list, tuple)) \
+        else (lambda rc: bool(daily))
+    return {rc: _write_set(rc, fs, closes, start_ts, out, root, want(rc), dm, tab)
+            for rc, fs in sorted(by_class.items())}
 
 
 def main() -> None:
@@ -320,11 +461,12 @@ def main() -> None:
     ap.add_argument("--disagreement", type=Path, required=True)
     ap.add_argument("--start", required=True)
     ap.add_argument("--out", type=Path, default=_ROOT / "data/breadth/history")
-    ap.add_argument("--daily", action="store_true")
+    ap.add_argument("--daily", nargs="*", default=None, choices=sorted(RIGHTS_SETS))
     a = ap.parse_args()
-    m = build(a.closes, a.download_meta, a.disagreement, a.start, a.out, daily=a.daily)
-    print(json.dumps({"rows": m["rows"], "valid_last_week": m["valid_last_week"],
-                      "last_week": m["last_week"]}))
+    daily = False if a.daily is None else (set(a.daily) if a.daily else True)
+    res = build(a.closes, a.download_meta, a.disagreement, a.start, a.out, daily=daily)
+    print(json.dumps({rc: {"files": m["files"], "valid_last_week": m["valid_last_week"],
+                           "last_week": m["last_week"]} for rc, m in res.items()}))
 
 
 if __name__ == "__main__":

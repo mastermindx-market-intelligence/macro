@@ -7,20 +7,36 @@ index levels to any outcome on any period (no forward returns, hit rates or back
 (`reconstructed_current_membership`). The history is not point-in-time and covers survivors only.
 A name that sits in several groups counts in each.
 
-## What is committed (`data/breadth/history/`)
+## What is committed (`data/breadth/history/`), split by rights class
+
+The files are split by rights class (COO ruling 32 section 1). The rows are the same as in the first build; only the files they sit in changed.
+
+**Vendor files, internal only** (`internal_only/`). Families `subsector` (268) and `theme` (40) come from the vendor's theme tree (`finviz_themes`). The Chairman's gate 2 ruling, recorded at `config/theme_sources.yml:33`, reads: "retained internal-only. NO public/customer display or redistribution rights granted". These series are internal research data. No name and no number from them goes to any site page, site data file, Terminal surface, member page or public bucket. The sidecar carries `source_family: finviz_themes`, `rights_class: internal_only` and that sentence with its path and line.
 
 | File | Content | Size |
 |---|---|---|
-| `tree_breadth_weekly_current.parquet` | weekly fixed-set breadth for family `subsector` (268) and family `theme` (40) | 1.3 MB |
-| `group_ew_index_weekly_current.parquet` | weekly equal-weight total-return index for `subsector`, `theme`, `basket` (49) and `sector` (11) | 3.7 MB |
-| `group_ew_index_daily_current.parquet` | the same index, daily | 18.0 MB |
-| `tree_breadth_and_index_current.meta.json` | sidecar | 0.03 MB |
+| `internal_only/vendor_internal_only_breadth_weekly_current.parquet` | weekly fixed-set breadth for `subsector` and `theme` | 1.3 MB |
+| `internal_only/vendor_internal_only_ew_index_weekly_current.parquet` | weekly equal-weight total-return index for `subsector` and `theme` | 3.1 MB |
+| `internal_only/vendor_internal_only_ew_index_daily_current.parquet` | the same index, daily | 14.7 MB |
+| `internal_only/vendor_internal_only_breadth_and_index_current.meta.json` | sidecar with the rights fields | 0.03 MB |
 
-The new files total 23.0 MB, under the 25 MB limit, so the daily index is committed.
+**House files.** Families `basket` (49) and `sector` (11) are house data. Later house families, such as the GMI theme-graph levels and the links between house groups, will go here too. No house family has breadth in this build (basket and sector breadth stay in their existing files), so there is no house breadth file.
+
+| File | Content | Size |
+|---|---|---|
+| `house_ew_index_weekly_current.parquet` | weekly equal-weight total-return index for `basket` and `sector` | 0.6 MB |
+| `house_ew_index_daily_current.parquet` | the same index, daily | 3.3 MB |
+| `house_breadth_and_index_current.meta.json` | sidecar | 0.01 MB |
+
+The new files total 23.1 MB, under the 25 MB limit, so the daily index is committed.
+
+**Where the files are served.** One read was made before choosing the path. The live site serves `site.served` and the live public root (`app/deploy/Caddyfile`), not the repository's `data/`. The only bucket upload (`scripts/publish_r2.py`) sends named per-ticker site stores. No deploy or sync step copies `data/breadth/history/`. The vendor files still sit in a subfolder of their own, named so their class is visible.
+
+**Guard.** `tests/test_build_tree_breadth_and_index.py` fails if any `scripts/build_*.py`, publish or sync script, `templates/` or `site/` file names the vendor files, if the vendor sidecar loses a rights field, or if the quoted sentence no longer matches line 33 of the config.
 
 - **Registries:** `data/themes_heatmap/themes_tree.json` (subsectors and their parent themes), `data/baskets/membership.json` (active members) and `data/breadth/constituents.parquet` (GICS sector).
 - **Basket breadth and sector breadth** stay in their existing files, which are built on the Tiingo archive. These new series sit on a different price source and are never joined or mixed with them.
-- **Adding a family** (for example a GMI theme-graph level) takes a registry file of (ticker, group) rows and one entry in `FAMILIES` in `scripts/build_tree_breadth_and_index.py`. No new code is needed.
+- **Adding a family** (for example a GMI theme-graph level) takes a registry file of (ticker, group) rows and one entry, with its rights class, in `FAMILIES` in `scripts/build_tree_breadth_and_index.py`. No new code is needed.
 
 ## Price source and start date
 
@@ -53,6 +69,16 @@ The sidecar also carries the table year by year.
 - No row is dropped for a group-level gap after the start date: the gap is labelled, not used as a gate.
 
 ## Floors and coverage
+
+> **Superseded floors (2026-11-12, COO ruling 34 §2).** This section and the tables below
+> describe the build as checked in #11107. The ruling 34 draft rebuilds every family:
+> - breadth from 2 counted members, with `n_above_200` and `n_counted_200` beside each share;
+> - index from 2 priced members;
+> - a `size_class` per group per date (small under 10 counted members);
+> - ranks within the same family and size class only.
+>
+> The new valid-group counts and file sizes are in `GMI_FAMILIES_REPORT.md`. In that draft
+> the vendor daily index is no longer committed, so the committed files stay under 25 MB.
 
 - **Floors:**
   - Share, change, rank and state need 10 counted members (engine `MIN_MEMBERS`). Below that a group has counts only.

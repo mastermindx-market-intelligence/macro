@@ -5,8 +5,24 @@ vendor theme tree, the basket roster and ``config/theme_pathways.yml``. Writes:
 
   data/breadth/history/registry/gmi_theme.csv           (ticker, group)  18 house themes
   data/breadth/history/registry/gmi_macro_category.csv  (ticker, group)  10 macro categories
-  data/breadth/history/group_links_current.parquet      one row per link between two groups
-  data/breadth/history/group_links_current.meta.json    sidecar (pinned commit, counts)
+  data/breadth/history/registry/rel_customers_of.csv    (ticker, group)  customers of 4 supplier hubs
+  data/breadth/history/registry/rel_suppliers_of.csv    (ticker, group)  suppliers of 3 customer hubs
+  data/breadth/history/group_links_current.parquet      house links (one row per link)
+  data/breadth/history/internal_only/vendor_internal_only_group_links_current.parquet
+                                                        links touching a vendor family
+  and a sidecar beside each links file (pinned commit, counts).
+
+Link types: EXPRESSES / PARENT_OF / PATHWAY_* from the graph and the pathways file;
+``overlap`` (COO ruling 34 s3) for every pair of groups in the history build that
+share at least one member, with the shared count and each side's member count. A
+group of one member is marked ``single_name`` (it has no series; the stock is the
+series). Rows touching the vendor families (subsector, theme) carry
+``rights_class: internal_only`` and live only in the vendor file.
+
+Relationship hubs (COO ruling 32 s2): proposed edges of
+``data/company_intelligence/relationships/relationship_edges.json`` of species
+supplier_customer, contract_manufacturing and component_dependency, roles normalised
+to (supplier, customer); a hub is a company with 5 or more counterparties.
 
 The registries are membership only (ticker -> group), the same class as
 ``data/baskets/membership.json``; no prices. The links table has no ticker column
@@ -37,6 +53,7 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
+import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 import yaml  # noqa: E402
 
@@ -44,9 +61,14 @@ TG = "data/theme_graph"
 TREE = "data/themes_heatmap/themes_tree.json"
 BASKETS = "data/baskets/membership.json"
 PATHWAYS = "config/theme_pathways.yml"
+RELS = "data/company_intelligence/relationships/relationship_edges.json"
+REL_SPECIES = ("supplier_customer", "contract_manufacturing", "component_dependency")
+HUB_MIN = 5
+VENDOR_FAMILIES = ("subsector", "theme")
 LINK_COLUMNS = ["child_family", "child_id", "parent_family", "parent_id", "link_type",
                 "pathway_node", "node_type", "source_file", "source_commit",
-                "child_has_series", "parent_has_series"]
+                "child_has_series", "parent_has_series", "n_shared", "child_n", "parent_n",
+                "child_single_name", "parent_single_name", "rights_class"]
 DATED_SENTENCE = ("The graph's dated membership is not used: most of its dates are a seed "
                   "constant or a reconstruction, not observed change, so today's members "
                   "are applied to the past (reconstructed_current_membership).")
@@ -106,16 +128,54 @@ def registries(root: Path, g: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
     return tidy(th), tidy(mc)
 
 
+def relationship_registries(root: Path) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+    """(customers_of, suppliers_of) registries of the hubs, plus counts."""
+    doc = json.loads((root / RELS).read_text())
+    t = lambda i: i.split("-", 2)[2].replace(".", "-")  # noqa: E731
+    pairs = sorted({(t(e["direction"]["from_issuer_id"]), t(e["direction"]["to_issuer_id"]))
+                    for e in doc["edges"] if e["species"] in REL_SPECIES})
+    p = pd.DataFrame(pairs, columns=["supplier", "customer"])
+    out, hubs = [], {}
+    for fam, grp, mem in (("rel_customers_of", "supplier", "customer"),
+                          ("rel_suppliers_of", "customer", "supplier")):
+        n = p.groupby(grp)[mem].nunique()
+        h = sorted(n[n >= HUB_MIN].index)
+        hubs[fam] = {g: int(n[g]) for g in h}
+        r = p[p[grp].isin(h)].rename(columns={mem: "ticker", grp: "group"})[["ticker", "group"]]
+        out.append(r.drop_duplicates().sort_values(["group", "ticker"]).reset_index(drop=True))
+    meta = {"edges_in_scope": sum(e["species"] in REL_SPECIES for e in doc["edges"]),
+            "pairs": len(pairs), "hubs": hubs, "species": list(REL_SPECIES),
+            "package_admission": doc.get("adoption_state")}
+    return out[0], out[1], meta
+
+
+def overlap_links(mems: dict[str, pd.DataFrame]) -> pd.DataFrame:
+    """One row per unordered pair of groups sharing at least one member."""
+    slot = pd.concat([m.assign(family=f)[["family", "group", "ticker"]] for f, m in mems.items()],
+                     ignore_index=True).drop_duplicates()
+    size = slot.groupby(["family", "group"])["ticker"].nunique()
+    j = slot.merge(slot, on="ticker", suffixes=("_a", "_b"))
+    j = j[(j["family_a"] + "\0" + j["group_a"]) < (j["family_b"] + "\0" + j["group_b"])]
+    c = j.groupby(["family_a", "group_a", "family_b", "group_b"]).size().rename("n_shared").reset_index()
+    c["child_n"] = [int(size[(f, g)]) for f, g in zip(c.family_a, c.group_a)]
+    c["parent_n"] = [int(size[(f, g)]) for f, g in zip(c.family_b, c.group_b)]
+    return c.rename(columns={"family_a": "child_family", "group_a": "child_id",
+                             "family_b": "parent_family", "group_b": "parent_id"})
+
+
 def _basket_id(node_id: str) -> str:
     return node_id.split(":", 2)[2]
 
 
-def unresolved_ids(df: pd.DataFrame, g: dict, baskets: set[str], subs: set[str], pw: dict) -> list:
+def unresolved_ids(df: pd.DataFrame, g: dict, baskets: set[str], subs: set[str], pw: dict,
+                   groups: dict[str, set[str]] | None = None) -> list:
     """Every (family, id) in the table must name a graph node, a basket, a subsector
-    key or a pathway node of the config."""
+    key, a pathway node of the config, or a group of a history-build family."""
     graph = set(g["nodes"]["node_id"])
     pnodes = {nd["id"] for th in pw["themes"] for nd in th["nodes"]}
-    known = {"basket": baskets, "subsector": subs, "pathway_node": pnodes}
+    known = {f: set(v) for f, v in (groups or {}).items() if not f.startswith("gmi_")}
+    known.update({"basket": baskets | known.get("basket", set()),
+                  "subsector": subs | known.get("subsector", set()), "pathway_node": pnodes})
     bad = []
     for fam_col, id_col in (("child_family", "child_id"), ("parent_family", "parent_id")):
         for f, i in zip(df[fam_col], df[id_col]):
@@ -125,8 +185,11 @@ def unresolved_ids(df: pd.DataFrame, g: dict, baskets: set[str], subs: set[str],
     return bad
 
 
-def links(root: Path, g: dict, commit: str, series: dict[str, set[str]]) -> tuple[pd.DataFrame, dict]:
-    """``series``: family -> set of group ids that have a series (index file)."""
+def links(root: Path, g: dict, commit: str, series: dict[str, set[str]],
+          mems: dict[str, pd.DataFrame] | None = None) -> tuple[pd.DataFrame, dict]:
+    """``series``: family -> set of group ids that have a series (index file).
+    ``mems``: family -> (ticker, group) registry of every history-build family, for
+    the overlap rows and member counts."""
     rows = []
     tier = g["tier"]
     fam_of_tier = {"theme": "gmi_theme", "macro_category": "gmi_macro_category",
@@ -169,45 +232,99 @@ def links(root: Path, g: dict, commit: str, series: dict[str, set[str]]) -> tupl
         for ed in th.get("edges") or []:
             add("pathway_node", ed["dst"], "pathway_node", ed["src"], f"PATHWAY_{ed['side'].upper()}",
                 PATHWAYS, pn=ed["dst"], nt=f"order_{ed['order']}")
-    df = pd.DataFrame(rows, columns=LINK_COLUMNS).drop_duplicates().reset_index(drop=True)
-    unresolved = unresolved_ids(df, g, us_baskets, subs, pw)
+    df = pd.DataFrame(rows, columns=LINK_COLUMNS)
+    mems = mems or {}
+    size = {(f, gid): int(n) for f, m in mems.items()
+            for gid, n in m.groupby("group")["ticker"].nunique().items()}
+    if mems:
+        ov = overlap_links(mems)
+        ov["link_type"] = "overlap"
+        ov["source_file"] = "registries of the history build (sidecar families.registry)"
+        ov["source_commit"] = commit
+        ov["child_has_series"] = [has(f, i) for f, i in zip(ov.child_family, ov.child_id)]
+        ov["parent_has_series"] = [has(f, i) for f, i in zip(ov.parent_family, ov.parent_id)]
+        df = pd.concat([df, ov.reindex(columns=LINK_COLUMNS)], ignore_index=True)
+    df["child_n"] = [size.get((f, i)) for f, i in zip(df.child_family, df.child_id)]
+    df["parent_n"] = [size.get((f, i)) for f, i in zip(df.parent_family, df.parent_id)]
+    df["n_shared"] = df["n_shared"].astype("Int64")
+    for side in ("child", "parent"):
+        df[f"{side}_n"] = df[f"{side}_n"].astype("Int64")
+        df[f"{side}_single_name"] = df[f"{side}_n"].eq(1).fillna(False).astype(bool)
+    vend = df["child_family"].isin(VENDOR_FAMILIES) | df["parent_family"].isin(VENDOR_FAMILIES)
+    df["rights_class"] = np.where(vend, "internal_only", "house")
+    df = df.drop_duplicates().reset_index(drop=True)
+    unresolved = unresolved_ids(df, g, us_baskets, subs, pw,
+                                {f: set(m["group"]) for f, m in mems.items()})
     if unresolved:
         raise ValueError(f"link ids that resolve to no node or config entry: {unresolved[:10]}")
+    single = {f: sorted(k for (ff, k), n in size.items() if ff == f and n == 1) for f in mems}
     return df, {"subsectors_total": len(subs), "subsectors_matched_to_local_theme": len(matched),
-                "subsectors_unmatched": sorted(subs - matched)}
+                "subsectors_unmatched": sorted(subs - matched),
+                "single_name_groups": {f: v for f, v in single.items() if v}}
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--root", type=Path, required=True)
+    ap.add_argument("--root", type=Path, required=True, help="tree with the pinned graph inputs")
     ap.add_argument("--commit", required=True)
     ap.add_argument("--out", type=Path, default=_ROOT / "data/breadth/history")
-    ap.add_argument("--index", type=Path, default=None,
-                    help="group_ew_index_weekly_current.parquet, for has_series")
+    ap.add_argument("--build-root", type=Path, default=_ROOT,
+                    help="tree with the registries the history build reads (overlap rows)")
+    ap.add_argument("--index", type=Path, nargs="*", default=[],
+                    help="weekly index files (house and vendor), for has_series")
+    ap.add_argument("--registries-only", action="store_true")
     a = ap.parse_args()
     g = graph_frames(a.root)
     th, mc = registries(a.root, g)
+    cu, su, rmeta = relationship_registries(a.root)
     reg = a.out / "registry"
     reg.mkdir(parents=True, exist_ok=True)
     th.to_csv(reg / "gmi_theme.csv", index=False)
     mc.to_csv(reg / "gmi_macro_category.csv", index=False)
+    cu.to_csv(reg / "rel_customers_of.csv", index=False)
+    su.to_csv(reg / "rel_suppliers_of.csv", index=False)
+    if a.registries_only:
+        print(json.dumps({"gmi_theme": len(th), "gmi_macro_category": len(mc),
+                          "rel_customers_of": len(cu), "rel_suppliers_of": len(su), **rmeta}))
+        return
+    from scripts import build_tree_breadth_and_index as bt
+    mems = {f: m for f, (_, m) in bt.load_families(a.build_root).items()}
     series: dict[str, set[str]] = {}
-    if a.index is not None and a.index.exists():
-        ix = pd.read_parquet(a.index, columns=["family", "group", "level"])
-        ok = ix.dropna(subset=["level"])
-        series = {f: set(s) for f, s in ok.groupby("family")["group"]}
-    lk, m = links(a.root, g, a.commit, series)
-    lk.to_parquet(a.out / "group_links_current.parquet", index=False, compression="zstd")
-    meta = {"source_commit": a.commit, "edges_open_latest_belief": g["n_edges"],
-            "dropped_lifecycle_nodes": g["dead"], "dated_membership_note": DATED_SENTENCE,
-            "registry_rows": {"gmi_theme": int(len(th)), "gmi_macro_category": int(len(mc))},
-            "links_by_type": lk.groupby(["child_family", "parent_family", "link_type"]).size()
-                              .rename("n").reset_index().to_dict("records"),
-            "has_series_source": "group_ew_index_weekly_current.parquet (any valid level)",
-            "no_tickers_no_prices": True, **m}
-    (a.out / "group_links_current.meta.json").write_text(json.dumps(meta, indent=1) + "\n")
-    print(json.dumps({"registry_rows": meta["registry_rows"], "links": int(len(lk)),
-                      "subsectors_matched": m["subsectors_matched_to_local_theme"]}))
+    for p in a.index:
+        ix = pd.read_parquet(p, columns=["family", "group", "level"]).dropna(subset=["level"])
+        for f, s_ in ix.groupby("family")["group"]:
+            series.setdefault(f, set()).update(s_)
+    lk, m = links(a.root, g, a.commit, series, mems)
+    sets = {"house": (a.out, "group_links_current"),
+            "internal_only": (a.out / "internal_only", "vendor_internal_only_group_links_current")}
+    summary = {}
+    for rc, (d, stem) in sets.items():
+        part = lk[lk["rights_class"] == rc].reset_index(drop=True)
+        d.mkdir(parents=True, exist_ok=True)
+        part.to_parquet(d / f"{stem}.parquet", index=False, compression="zstd")
+        meta = {"rights_class": rc, "source_commit": a.commit,
+                "edges_open_latest_belief": g["n_edges"],
+                "dropped_lifecycle_nodes": g["dead"], "dated_membership_note": DATED_SENTENCE,
+                "registry_rows": {"gmi_theme": int(len(th)), "gmi_macro_category": int(len(mc)),
+                                  "rel_customers_of": int(len(cu)), "rel_suppliers_of": int(len(su))},
+                "relationships": rmeta,
+                "links_by_type": part.groupby(["child_family", "parent_family", "link_type"]).size()
+                                     .rename("n").reset_index().to_dict("records"),
+                "rows": int(len(part)),
+                "has_series_source": [str(p.name) for p in a.index],
+                "member_counts": "child_n / parent_n count registry members (any price state)",
+                "overlap": "one row per unordered pair of groups sharing at least one member; "
+                           "n_shared is the shared member count; no tickers",
+                "no_tickers_no_prices": True, **m}
+        if rc == "internal_only":
+            from scripts.build_tree_breadth_and_index import VENDOR_RIGHTS
+            meta.update(VENDOR_RIGHTS)
+        (d / f"{stem}.meta.json").write_text(json.dumps(meta, indent=1, default=str) + "\n")
+        summary[rc] = int(len(part))
+    print(json.dumps({"rows": summary, "subsectors_matched": m["subsectors_matched_to_local_theme"],
+                      "by_type": {f"{r}/{t}": int(n) for (r, t), n in
+                                  lk.groupby(["rights_class", "link_type"]).size().items()}},
+                     default=str))
 
 
 if __name__ == "__main__":
