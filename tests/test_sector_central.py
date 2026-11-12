@@ -9,6 +9,8 @@ The public compute() is checked for fail-soft well-formedness, and the grader fo
 """
 from __future__ import annotations
 
+from copy import deepcopy
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -162,6 +164,122 @@ def test_trend_gates_keys_sectors_by_ticker_and_baskets_by_bid():
 
 
 # --------------------------------------------------------------- compute (soft) ----
+
+def _strength_rows(values):
+    return [{"id": str(i), "momentum": {"rs_63d": value}}
+            for i, value in enumerate(values)]
+
+
+def _strength(rows, peer_group="sectors"):
+    sc._attach_strength(rows, peer_group=peer_group, as_of="2023-12-29")
+    return {row["id"]: row["strength"] for row in rows}
+
+
+def test_washout_setup_and_peer_strength_can_disagree_without_reweighting():
+    recs = [_rec(ticker="XLF", pos=5, phase="Trough", rs_rank=3, rs_63d=-12),
+            _rec(ticker="XLP", pos=50, phase="Expansion", signal=None, rs_rank=2, rs_63d=0),
+            _rec(ticker="XLK", pos=95, phase="Peak", signal="SELL", rs_rank=1, rs_63d=12)]
+    rows = [{"id": rec["id"], **sc._fuse(rec, _mkt(), 3, trend={"pass": True})}
+            for rec in recs]
+    before = deepcopy(rows)
+    _strength(rows)
+    assert rows[0]["conviction"]["score"] > rows[2]["conviction"]["score"]
+    assert rows[0]["strength"]["band"] == "lagging"
+    assert rows[2]["strength"]["band"] == "leading"
+    assert [{k: v for k, v in row.items() if k != "strength"} for row in rows] == before
+
+
+def test_strength_ignores_setup_fast_momentum_legacy_ranks_and_display_order():
+    rows = _strength_rows([-5, -3, -1])
+    expected = _strength(rows)
+    for row in rows:
+        row.update(conviction={"score": 99, "dir": "up"},
+                   state={"pos": 1, "phase": "Recovery", "signal": "BUY"},
+                   forward={"trend_pass": False}, heat={"heat_1M": 100},
+                   crowding={"frac": 1}, rotation={"ordinal": 1})
+        row["momentum"].update(rs_rank=1, rs_21d=100, rs_21d_rank=1, lead="leading")
+    assert _strength(list(reversed(rows))) == expected
+    # The strongest peer can still be down relative to SPY.
+    assert expected["2"]["band"] == "leading" and expected["2"]["rs_63d"] == -1
+
+
+@pytest.mark.parametrize("values,expected", [
+    ([3, 2, 1, 0], ["leading", "leading", "lagging", "lagging"]),
+    ([6, 5, 4, 3, 2, 1, 0], ["leading"] * 3 + ["mid-pack"] + ["lagging"] * 3),
+    ([3, 2, 2, 0], ["leading", "mid-pack", "mid-pack", "lagging"]),
+    ([7, 6, 6, 4, 3, 3, 1], ["leading"] * 3 + ["mid-pack"] + ["lagging"] * 3),
+    ([0, 0, 0], ["mid-pack"] * 3),
+])
+def test_strength_thirds_keep_ties_and_exact_boundaries(values, expected):
+    rows = _strength_rows(values)
+    readings = _strength(rows)
+    assert [row["strength"]["band"] for row in rows] == expected
+    assert _strength(list(reversed(rows))) == readings
+
+
+def test_strength_missing_values_do_not_vote_or_fall_back_to_fast_rs():
+    invalid = [None, float("nan"), float("inf"), -float("inf"), True, np.bool_(False), "12", {}, 10**400]
+    rows = _strength_rows([1, 0, -1] + invalid)
+    for row in rows:
+        row["momentum"].update(rs_rank=1, rs_21d=100, rs_21d_rank=1)
+    _strength(rows)
+    assert [row["strength"]["band"] for row in rows[:3]] == ["leading", "mid-pack", "lagging"]
+    assert rows[1]["strength"]["rs_63d"] == 0
+    for row in rows:
+        assert row["strength"]["n_measured"] == 3
+        assert row["strength"]["n_peers"] == len(rows)
+    for row in rows[3:]:
+        assert row["strength"]["band"] == "unavailable"
+        assert row["strength"]["rs_63d"] is None
+        assert row["strength"]["reason"] == "missing_rs63"
+
+
+@pytest.mark.parametrize("values", [[], [0], [-1, 1]])
+def test_strength_requires_three_measured_peers_without_hiding_valid_rs(values):
+    rows = _strength_rows(values)
+    _strength(rows)
+    for row, value in zip(rows, values):
+        assert row["strength"]["band"] == "unavailable"
+        assert row["strength"]["reason"] == "insufficient_peers"
+        assert row["strength"]["rs_63d"] == value
+
+
+def test_compute_attaches_separate_peer_boards_without_changing_legacy_output(monkeypatch, tmp_path):
+    from engine import inputs, narrative_rotation, sector_cycles
+
+    cyc = {"meta": {"asOf": "2023-12-29"},
+           "sectors": [_rec(ticker=t, rs_63d=v) for t, v in zip(("XLK", "XLF", "XLP"), (-3, -2, -1))],
+           "baskets": [_rec(ticker=t, rs_63d=v, kind="basket")
+                       for t, v in zip(("A", "B", "C"), (100, 200, 300))]}
+    monkeypatch.setattr(sector_cycles, "compute", lambda: deepcopy(cyc))
+    monkeypatch.setattr(inputs, "yahoo_closes", lambda: None)
+    monkeypatch.setattr(narrative_rotation, "compute_narrative_rotation", lambda **kw: None)
+    monkeypatch.setattr(sc, "market_context", _mkt)
+    monkeypatch.setattr(sc, "_trend_gates", lambda *args: {})
+    monkeypatch.setattr(sc, "_load_rotation_artifact", lambda: {})
+    monkeypatch.setattr(sc, "_measured_read", lambda data: None)
+    monkeypatch.setattr(sc.config, "data_dir", lambda: tmp_path)
+    out = sc.compute()
+    assert out is not None
+    for key in ("sectors", "baskets"):
+        rows = out[key]
+        assert {row["strength"]["band"] for row in rows} == {"leading", "mid-pack", "lagging"}
+        assert all(row["strength"]["peer_group"] == key for row in rows)
+        assert all(row["strength"]["n_measured"] == 3 for row in rows)
+        assert all(row["strength"]["as_of"] == "2023-12-29" for row in rows)
+        for row in rows:
+            row.pop("strength")
+    monkeypatch.setattr(sc, "_attach_strength", lambda *args, **kwargs: None)
+    assert out == sc.compute()  # existing scores, fields, ordering and metadata are identical
+
+
+def test_split_copy_does_not_infer_strength_or_extension_from_setup():
+    for label in ("Accumulate", "Constructive"):
+        text = sc._SPLIT_COPY_EN["slower"].format(conv=sc._CONV_PLAIN_EN[label])
+        assert "setup" in text
+        assert "extended" not in text and "after the run" not in text
+        assert "强势" not in sc._CONV_PLAIN_ZH[label]
+
 
 def test_compute_is_fail_soft_and_well_formed():
     """compute() must return None OR a well-formed payload — never raise (additive build)."""
@@ -345,19 +463,19 @@ def test_note_keeps_the_fast_lens_sentence_only_when_the_lens_ordered_the_board(
     assert "卡片按快速轮动视角排序" in zh
 
 
-def test_note_says_conviction_and_names_the_date_when_stale():
+def test_note_says_setup_and_names_the_date_when_stale():
     en, zh = _note({"state": "stale", "asof": "2026-10-16"})
-    assert en.startswith("Cards are ordered by conviction.") and "2026-10-16" in en
-    assert zh.startswith("卡片按信念排序。") and "2026-10-16" in zh
+    assert en.startswith("Cards are ordered by setup score.") and "2026-10-16" in en
+    assert zh.startswith("卡片按形态条件评分排序。") and "2026-10-16" in zh
     assert "ordered by the fast rotation lens" not in en
     assert "按快速轮动视角排序" not in zh
 
 
 @pytest.mark.parametrize("fast_lens", [{"state": "absent", "asof": None}, {}, None])
-def test_note_says_conviction_with_no_date_when_nothing_was_published(fast_lens):
+def test_note_says_setup_with_no_date_when_nothing_was_published(fast_lens):
     en, zh = _note(fast_lens)
-    assert en.startswith("Cards are ordered by conviction.") and "not published" in en
-    assert zh.startswith("卡片按信念排序。") and "尚未发布" in zh
+    assert en.startswith("Cards are ordered by setup score.") and "not published" in en
+    assert zh.startswith("卡片按形态条件评分排序。") and "尚未发布" in zh
     assert "ordered by the fast rotation lens" not in en
 
 
@@ -404,3 +522,50 @@ def test_card_rail_uses_the_copy_function_and_the_payload_status():
 def test_the_page_no_longer_promises_data_tonight():
     assert "awaiting tonight" not in _TEMPLATE
     assert "等待今晚数据" not in _TEMPLATE
+
+
+def _render_central_card(row, language="en"):
+    """Run the actual renderer used by both the sector board and basket expansions."""
+    scripts = _re.findall(r"<script[^>]*>(.*?)</script>", _TEMPLATE, _re.S)
+    script = next(src for src in scripts if "function card(s)" in src and "window.__siTrace" in src)
+    payload = {"sectors": [row] if row["kind"] == "sector" else [],
+               "baskets": [row] if row["kind"] == "basket" else []}
+    src = ("var window={SECTOR_CENTRAL:" + _json.dumps(payload) + "};"
+           "var document={readyState:'loading',addEventListener:function(){},getElementById:function(){return null;},"
+           "documentElement:{getAttribute:function(){return " + _json.dumps(language) + ";}}};"
+           + script + "process.stdout.write(window.__siTrace(" + _json.dumps(row["id"]) + "));")
+    res = _subprocess.run(["node", "-e", src], capture_output=True, text=True, timeout=30)
+    assert res.returncode == 0, res.stderr
+    return res.stdout
+
+
+@_needs_node
+@pytest.mark.parametrize("kind", ["sector", "basket"])
+@pytest.mark.parametrize("language", ["en", "zh"])
+def test_card_displays_strength_beside_setup_in_both_consumers(kind, language):
+    row = {"id": "sample", "name": "Sample", "name_zh": "示例", "kind": kind,
+           "conviction": {"score": 80, "label_en": "Accumulate", "label_zh": "积极配置", "dir": "up"},
+           "cycle": {"phase": "Recovery", "rs_rank": 11, "rs_21d_rank": 1},
+           "strength": {"band": "lagging", "rs_63d": -12, "n_measured": 11,
+                        "n_peers": 11, "peer_group": "baskets" if kind == "basket" else "sectors"}}
+    html = _render_central_card(row, language)
+    assert ("示例" if language == "zh" else "Sample") in html
+    for text in ("Setup", "形态条件", "Lagging peers", "同组落后", "-12.0%", "vs SPY", "63 sessions"):
+        assert text in html
+    assert 'class="conv-score">80<' in html
+    assert "63d RS rank" not in html
+    assert 'class="strength-read"' in html
+
+
+@_needs_node
+def test_card_unknown_strength_never_falls_back_to_conviction_or_fast_rank():
+    row = {"id": "sample", "name": "Sample", "kind": "sector",
+           "conviction": {"score": 99, "label_en": "Accumulate", "dir": "up"},
+           "cycle": {"rs_rank": 1, "rs_21d_rank": 1}, "momentum": {"rs_21d": 100}}
+    html = _render_central_card(row)
+    assert "Unavailable" in html and "暂无比较" in html
+    assert "Leading peers" not in html and 'class="strength-rs"' not in html
+    assert "0 measured" not in html
+    row["strength"] = {"band": "leading", "rs_63d": -1, "n_measured": 3, "n_peers": 3}
+    html = _render_central_card(row)
+    assert "Leading peers" in html and "-1.0%" in html
