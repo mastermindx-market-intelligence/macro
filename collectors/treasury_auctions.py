@@ -2,8 +2,9 @@
 
 The DEMAND side of the Treasury market: how well each marketable auction clears. The
 companion to engine/event_calendar's *upcoming* auction calendar — this fetches the
-*results* (TA_WS/securities/auctioned): bid-to-cover, the indirect-bidder
-(foreign/real-money) share, primary-dealer takedown, issue size & tenor.
+*results* (TA_WS/securities/auctioned): bid-to-cover, the indirect-customer share, primary-dealer takedown, issue size & tenor.
+Indirect/direct are Treasury submission categories, not domicile labels; foreign participation
+requires Treasury's separate Investor Class Auction Allotments data.
 
 Accrues to data/treasury_auctions/auctions.parquet, deduped on (cusip, auction_date)
 so the reopenings of one CUSIP are kept as the distinct auctions they are (a 10y note

@@ -6000,7 +6000,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_729),
 )
@@ -6010,6 +6010,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #7320, current-main source conflict repair):
+    Receiver e7f8565ca26b74b9ae0d637b336e9985d513ff9d retains all 401
+    owners, the six landed CI owner changes, five DATA dependency fixes,
+    and #11101's independent marketing suite contribution exactly once.
+    Preserve the ccw-w4-credit-desk contribution and its original
+    feature objects; retain every other current-main owner and source path.
+    Carry only this carrier's 2/0/0 marginal weights onto
+    5971/5995/5729, yielding 5973/5995/5729; keep 137/138/131 job
+    ceilings, ten packs, all selectors, assertions, and runtime controls.
+    Retain all 3357 bytes/51 lines of published carrier history
+    at their original anchors and every current-main provenance paragraph.
+    This is source accounting; actual paired native proof and natural
+    successor CI are separate evidence. Original UNKNOWN effects, closed
+    grants, and private/provider/product/release limits remain unchanged.
 
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
@@ -6040,6 +6055,29 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
     is measured planner accounting, not an execution-time estimate; natural
     successor CI must qualify the repaired source.
+
+    2026-11-11 (PR #7320, current-source Treasury conflict composition):
+    Preserve all 401 accepted owners and three accepted Treasury source/test
+    blobs. Current native fdd099b87cf72e8221372ef55de95efa2b7d284e
+    estimates the unchanged-preimage CCW owner 10 -> 12 with its original
+    requests/Treasury-suite enrollment. Carry only its recorded index +2:
+    5966 -> 5968; free-content 5987 and Prophet 5724 remain unchanged.
+    All added declared paths miss these three probes under the native matcher.
+    Keep 137/138/131 jobs, ten packs, selectors and admission/runtime limits.
+    Both original provenance blocks below and all current main history remain.
+    Full inverse recovers main 8f37b43f1d1128a2614928204db0c95dc53c68f0.
+    This is source and owner-estimator conservation, not a new full-tree
+    planner/runtime measurement. Successor natural CI remains required.
+
+    2026-11-09 (PR #7320, preserving current F09 receiver): retain all
+    400 current owners, F09 and the registry/admission tests and histories.
+    The unchanged CCW owner preimage still gives 10 -> 12 for the original
+    Treasury suite/requests enrollment. Carry only its recorded index +2:
+    5945 -> 5947; keep free-content 5966 and Prophet 5703 unchanged.
+    Preserve jobs 137/138/131, ten packs, every assertion, selector and runtime
+    limit. The original 28-line Treasury provenance remains at its #8899
+    anchor. This is source-derived conservation, not a new paired planner
+    measurement or provider/runtime acceptance; successor CI remains required.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
@@ -6478,6 +6516,34 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     those two estimator units; preserve all job-count/pack ceilings,
     selectors, previous commands, runtime timeouts and admission controls.
     This is a planner workload estimate, not runtime or funding authority.
+
+    2026-11-09 #7320 conflict composition at main448f681b preserves the
+    complete current owner catalog and all accepted packing contributions.
+    The unchanged ccw-w4-credit-desk base commands still estimate10 units;
+    the accepted Treasury suite/requests append estimates12: two commands,
+    four->five test references,220->259 characters, no character bucket change.
+    Carry the recorded index-only +2 contribution below onto current main:
+    5943->5945; free-content5964 and Prophet5701 remain unchanged.
+    This is source-attributed conservation, not a new planner/runtime run.
+    Preserve137/138/131 job caps, ten packs, all suites, and runtime limits.
+
+    2026-11-07 #7320 conflict composition: retain current main, including
+    #8899's independent free-content/Prophet ceilings5929/5670. Add only
+    this Treasury owner's recorded +2 index contribution:5912->5914.
+    These are composed recorded deltas, not a new paired measurement.
+
+    2026-11-06 Treasury auction-results recovery (#7320): exact paired
+    canonical measurements against real main 0cd0e3284b10, planner3cbed589.
+    Candidate engine3ceb00c0, Treasury tests452ca4b8 and manifest180c6f63;
+    comparison SHA256
+    d11eae62cd4ff0e1ed24fc14eb0e81cc0c6718c36190c7b9a0d9073c2c21d356.
+    The existing ccw-w4-credit-desk command gains the previously unowned
+    Treasury suite; its derived estimate rises10->12. Complete selected IDs
+    are identical for all probes. Index137jobs/5912->5914 is the sole delta;
+    free-content137/5927 and Prophet131/5668 are unchanged, all ten packs.
+    Fund only index's two measured estimate units. Job, pack, timeout and
+    admission bounds, selectors and every existing suite remain intact.
+    These are planner estimates, not hosted execution-time measurements.
 
     PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
     contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:
