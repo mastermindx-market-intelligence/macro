@@ -70,7 +70,7 @@ shared sessions: no name has a median daily-return difference above 0.5%.
 | Basis | First valid 200-session share | First weekly 13-week change | All 11 sectors valid from |
 |---|---|---|---|
 | Dated membership (S&P 500) | 1996-01-02 | 1996-01-05 | first 2007-01-10; without a break from 2009-03-27 (2014-04-02 before the free SIC fill) |
-| Today's membership | 1973-03-20 | 1973-06-22 | about 2010 (9 by 1990, 10 by 1996) |
+| Today's membership | 1973-03-20 | 1973-06-22 | 2008-02-01, without a break after (9 by end-1990, 10 by end-1996) |
 
 Year-end members counted across sectors (labelled and priced) / with 200 sessions (dated column includes the free SIC fill):
 
@@ -120,8 +120,8 @@ no price store is repaired and nothing under `data/yahoo/` is touched.
 
 - **Members used, both bases:** no pairs. Both sidecars say so in the "missing"
   sentence and carry an empty `duplicate_series_pairs` list.
-- **SUPN in the Tiingo archive is genuine** for 2022-06-01..06-07: 27.98, 28.11,
-  28.28, 27.97, 28.66 (2022-05-31 27.87, 06-08 28.22). The defective copy is
+- **SUPN in the Tiingo archive is genuine** for 2022-06-01..06-07: the archive
+  series changes on every session of that span, while the defective copy is
   flat at 20.75. SUPN and INDV are both in the store and do not flag.
 - **The note's 16 alias pairs:** none has both tickers in the Tiingo matrix
   (only HLX, MRSH, SKYD of those 32 names appear, each without its partner).
@@ -211,7 +211,6 @@ not cut.
 
 ## Not done here
 
-- Free SIC fill of unlabeled leavers: next pull request (`LABEL_COVERAGE.md`).
 - S&P 400 and 600 dated bases: the functions take them (`--src`); not built.
 - Themes and baskets: second pull request.
 
