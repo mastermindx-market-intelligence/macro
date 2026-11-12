@@ -4743,6 +4743,9 @@ CURATED_EXCLUSIVE = {
     # company-intelligence / theme-graph fallback reads are not declared
     # and the packing probes stay unselected. Paths are the owned closure.
     "theme-research-shared-shell",
+    # Nuclear research boundary: the route suite imports app.theme_research,
+    # so inference would smear whole-tree roots onto the packing probes.
+    "energy-nuclear-boundary",
     # 2026-08-19 wave 5. #6027 moved #5984's three dossier suites into
     # conviction-profile — the right call, because their #6023 home
     # (unrun-publish-ops) is `gate: data`, which ci.yml never plans, so they
