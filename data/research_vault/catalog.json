@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T20:30:40.229268+00:00",
-  "count": 3250,
+  "generated_at": "2026-11-12T20:58:31.536599+00:00",
+  "count": 3252,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -526,6 +526,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-mxxfarl5azt-5ab6f4",
+      "title": "Carbonomics 7th Annual Carbonomics Conference — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:45:42Z",
+      "summary_points": [
+        "Geopolitical Energy Flows & Security: Hormuz crisis drives resilient shipping routes (e.g., TDCO MEC-China VLCC revenue peak at $1.3m/day) and supply diversification; Persian Gulf LNG exports at 33% pre-war levels, with storage below historical norms (e.g., South Korea -1.0 Bcm vs 5yr avg), heightening supply disruption risks.",
+        "AI Infrastructure Power Demand Surge: Agentic AI queries consume 5–6x more energy than chatbots (15 Wh/query vs 0.3 Wh), driving 170% global data center power demand growth by 2030; US DCs to reach 20% of total power demand by 2030, requiring $609bn grid capex amid interconnection delays.",
+        "LNG Supply Security & Price Volatility: Asian buyers diversify from Middle East amid sanctions (e.g., Perla FLNG, Fujairah), accelerating FIDs; European TTF prices face 47% probability of hitting 150 EUR/MWh (colder winter) or dropping to 45 EUR/MWh (warmer + supply surge), disrupting LNG competition.",
+        "Hydrocarbon Reserve Decline & AI Efficiency: Hydrocarbon reserve life rising (Exhibit 13) signals falling reserves, while AI-enhanced exploration boosts IRR by 19.0% (vs 15.5% base), critical for oil/gas project viability amid capex upcycle (Aramco, ENI, TotalEnergies strategies).",
+        "Critical LNG Import Dependence: South Korea (100% LNG import dependence), Japan (80%), and NW Europe (20%) face extreme vulnerability to supply shocks; Persian Gulf supply constraints (33% exports) and storage deficits amplify pricing volatility risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 65,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-novvllwfkjm-750d16",
       "title": "Boyd Group (BYD)",
       "institution": "Goldman Sachs",
@@ -667,6 +688,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ptbjarcjuyh-23bcfc",
+      "title": "GS Early Morning Research Recap Ratings and Target Price Changes November 11, 2026 as of 5 30 AM ET",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:43:01Z",
+      "summary_points": [
+        "US Rate Hike & China Growth Risks: Goldman Sachs forecasts third Fed rate hike in March 2026; Global Strategy Paper questions Chinese profit sustainability and growth drivers.",
+        "AI Investment Cycle Sustainability: Top macro focus on durability of AI-driven investment cycle amid global equity valuation pressures.",
+        "Argentina LNG Catalyst: Argentina Energy’s near-term LNG FID potential creates critical geopolitical exposure for energy portfolios.",
+        "Argentina Banks NIM Compression: Q3’26 preview reveals net interest margin compression threatening banking sector profitability.",
+        "China Property Fundamentals: Critical data releases on property sales/construction and post-2023 policy impacts (field trip Nov 12)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
       "language": "en",
       "needs_metadata": false
     },
