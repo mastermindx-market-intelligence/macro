@@ -316,6 +316,7 @@ def refresh_cache_for_cik(
     got_any = False
     any_clean_response = False
     n_clean_responses = 0
+    invalid_payload = False
     for tag in _ALL_TAGS:
         url = _SEC_COMPANYCONCEPT_URL.format(cik=cik, tag=tag)
         try:
@@ -338,13 +339,18 @@ def refresh_cache_for_cik(
         try:
             payload = resp.json()
         except Exception:  # noqa: BLE001
+            invalid_payload = True
             continue
         units = payload.get("units") if isinstance(payload, dict) else None
-        if not units:
+        if not isinstance(units, dict) or not units:
+            invalid_payload = True
             continue
         merged["facts"]["us-gaap"][tag] = {"units": units}
         got_any = True
-    if not any_clean_response:
+    # A transport success with no usable concept body is a failed refresh,
+    # not evidence that the issuer has no filings. Keep any last-good cache
+    # byte-for-byte, including its existing fetched_at (never relabel it current).
+    if invalid_payload or not any_clean_response:
         return False
     merged["fetched_at"] = _utc_now_iso()
     # Round-2 review MAJOR-2 (round 2 of the fix was still only a HALF fix):
