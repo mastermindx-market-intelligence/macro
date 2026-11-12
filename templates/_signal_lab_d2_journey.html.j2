@@ -1,0 +1,169 @@
+{% set reason_labels = {
+  'no_source_generation': ('No prospective observation recorded yet', '尚未记录前瞻观察'),
+  'generation_integrity_error': ('Research evidence is damaged; original records retained', '研究证据损坏；原始记录已保留'),
+  'entry_asof_invalid': ('Entry date is invalid', '入场日期无效'),
+  'btc_close_source_unavailable': ('BTC daily closes are unavailable', 'BTC 日收盘数据不可用'),
+  'requires_previous_complete_source_and_entry_close': ('Complete source and entry closes are required', '需要完整来源和入场收盘数据'),
+  'previous_daily_btc_close_missing': ('The previous BTC daily close is missing', '缺少前一日 BTC 收盘数据'),
+  'dvol_source_unavailable': ('DVOL source is unavailable', 'DVOL 来源不可用'),
+  'dvol_columns_incomplete': ('DVOL fields are incomplete', 'DVOL 字段不完整'),
+  'previous_complete_dvol_bar_missing': ('The previous complete DVOL observation is missing', '缺少前一完整 DVOL 观察'),
+  'dvol_history_incomplete': ('DVOL history is too short', 'DVOL 历史数据不足'),
+  'dvol_values_invalid': ('DVOL values are invalid', 'DVOL 数值无效'),
+  'dvol_range_invalid': ('DVOL range is invalid', 'DVOL 区间无效'),
+  'late_source_arrival': ('Source arrived late', '来源延迟到达'),
+  'source_restatement': ('Source inputs restated', '来源输入已重述'),
+  'source_trigger_evidence_unavailable': ('Frozen trigger evidence cannot be reproduced', '冻结触发证据无法重现'),
+  'source_evaluator_mismatch': ('Frozen fire flag conflicts with source inputs', '冻结触发标记与来源输入冲突'),
+  'outcome_evidence_unavailable': ('Frozen outcome close path cannot be reproduced', '冻结结果收盘路径无法重现'),
+  'outcome_evaluator_mismatch': ('Frozen outcome conflicts with its close path', '冻结结果与其收盘路径冲突'),
+  'outcome_input_restatement': ('Forward closes restated', '后续收盘数据已重述')
+} %}
+{% macro observation(journey, heading_en, heading_zh) %}
+<div class="extra d2-observation" data-d2-entry="{{ journey.entry_asof or '' }}">
+  <strong>{{ t(heading_en, heading_zh) }}</strong><br>
+  {{ t('Observed: ' ~ (journey.source_asof or '—'), '观察：' ~ (journey.source_asof or '—')) }}<br>
+  {{ t('Entry date: ' ~ (journey.entry_asof or '—'), '入场日期：' ~ (journey.entry_asof or '—')) }}<br>
+  {% if journey.entry_close is not none %}
+    {{ t('Entry BTC close: ' ~ ('%.2f'|format(journey.entry_close)), '入场 BTC 收盘：' ~ ('%.2f'|format(journey.entry_close))) }}<br>
+  {% else %}
+    {{ t('Entry BTC close: —', '入场 BTC 收盘：—') }}<br>
+  {% endif %}
+  {{ t('Grade after: ' ~ (journey.check_after or '—'), '评估日：' ~ (journey.check_after or '—')) }}<br>
+  {{ t('Immutable generations: ' ~ (journey.generation_count or 0), '不可变代次：' ~ (journey.generation_count or 0)) }}<br>
+  {% if journey.fired is sameas true %}
+    {{ t('Raw D2 observation: fired', '原始 D2 观察：已触发') }}
+  {% elif journey.fired is sameas false %}
+    {{ t('Raw D2 observation: did not fire', '原始 D2 观察：未触发') }}
+  {% else %}
+    {{ t('Raw D2 observation: unavailable', '原始 D2 观察：不可用') }}
+  {% endif %}<br>
+  {% if journey.trigger_evidence %}
+    {{ t('DVOL range z-score: ' ~ ('%.2f'|format(journey.trigger_evidence.current_z)), 'DVOL 振幅 z 分数：' ~ ('%.2f'|format(journey.trigger_evidence.current_z))) }}
+    {% if journey.trigger_evidence.previous_z is not none %}
+      · {{ t('prior: ' ~ ('%.2f'|format(journey.trigger_evidence.previous_z)), '前值：' ~ ('%.2f'|format(journey.trigger_evidence.previous_z))) }}
+    {% endif %}<br>
+    {% if journey.trigger_evidence.mode == 'single_z_ge_2' %}
+      {{ t('Trigger path: current z ≥ 2.0', '触发路径：当前 z ≥ 2.0') }}
+    {% elif journey.trigger_evidence.mode == 'confirmed_z_ge_1_5' %}
+      {{ t('Trigger path: second consecutive z ≥ 1.5', '触发路径：连续第二次 z ≥ 1.5') }}
+    {% else %}
+      {{ t('Trigger path: threshold not met', '触发路径：未达到阈值') }}
+    {% endif %}<br>
+    {{ t('Rule: z ≥ 2.0, or two consecutive z ≥ 1.5', '规则：z ≥ 2.0，或连续两次 z ≥ 1.5') }}<br>
+    {{ t('Frozen replay: trailing ' ~ journey.trigger_evidence.window ~ ' prior DVOL ranges · sample σ · current excluded', '冻结重放：此前 ' ~ journey.trigger_evidence.window ~ ' 个 DVOL 振幅 · 样本 σ · 不含当前值') }}<br>
+  {% endif %}
+  {% if journey.status == 'matured' and journey.outcome %}
+    {% if journey.fired is not sameas true %}
+      {{ t('Matured · no signal fired', '已成熟 · 未触发信号') }}
+    {% elif journey.outcome.down_hit %}
+      {{ t('Matured · down target hit', '已成熟 · 下行目标命中') }}
+    {% else %}
+      {{ t('Matured · down target missed', '已成熟 · 下行目标未命中') }}
+    {% endif %}
+    · {{ journey.outcome.fwd_min_pct }}% / {{ journey.outcome.fwd_max_pct }}%
+    {% if journey.outcome_evidence %}
+      <details class="d2-evidence">
+        <summary>{{ t('Frozen outcome close path', '冻结结果收盘路径') }}</summary>
+        <div>{{ t('Down target: ≤ ' ~ ('%.2f'|format(journey.outcome_evidence.threshold_pct)) ~ '%', '下行目标：≤ ' ~ ('%.2f'|format(journey.outcome_evidence.threshold_pct)) ~ '%') }}</div>
+        {% for close_row in journey.outcome_evidence.close_rows %}
+          <div>{{ close_row.asof }} · BTC {{ '%.2f'|format(close_row.close) }}</div>
+        {% endfor %}
+      </details>
+    {% endif %}
+  {% elif journey.status == 'pending' %}
+    {{ t('Pending outcome after three future closes', '等待未来三个收盘后的结果') }}
+  {% else %}
+    {% set label = reason_labels.get(journey.reason, ('Research input unavailable', '研究输入不可用')) %}
+    {{ t(label[0], label[1]) }}
+  {% endif %}<br>
+  {{ t('Research only — no trading authority', '仅供研究 — 无交易权限') }}
+  {% if journey.corrected %}
+    <div><strong>{{ t('Restated ' ~ journey.corrections|length ~ ' times', '已修订 ' ~ journey.corrections|length ~ ' 次') }}</strong></div>
+    <details class="d2-evidence">
+      <summary>{{ t('Correction history', '修订历史') }}</summary>
+      {% for correction in journey.corrections %}
+        {% set label = reason_labels.get(correction.reason, ('Research evidence restated', '研究证据已重述')) %}
+        <div>{{ t(label[0], label[1]) }}</div>
+        {% if correction.target_kind == 'source' %}
+          <div>{{ t('Correction scope: source evidence', '修订范围：来源证据') }}</div>
+        {% else %}
+          <div>{{ t('Correction scope: outcome evidence', '修订范围：结果证据') }}</div>
+        {% endif %}
+        <div>{{ t('Recorded: ', '记录时间：') }}{{ correction.recorded_at or '—' }}</div>
+        <div>{{ t('Supersedes: ', '取代：') }}<code>{{ correction.supersedes_generation_id }}</code></div>
+        <div>{{ t('Correction: ', '修订：') }}<code>{{ correction.generation_id }}</code></div>
+      {% endfor %}
+    </details>
+  {% endif %}
+  <details class="d2-evidence">
+    <summary>{{ t('Recorded evidence', '已记录证据') }}</summary>
+    <div>{{ t('Source recorded: ', '来源记录时间：') }}{{ journey.source_recorded_at or '—' }}</div>
+    <div>{{ t('Source generation: ', '来源代次：') }}<code>{{ journey.source_generation_id or '—' }}</code></div>
+    <div>{{ t('Outcome recorded: ', '结果记录时间：') }}{{ journey.outcome_recorded_at or '—' }}</div>
+    <div>{{ t('Outcome generation: ', '结果代次：') }}<code>{{ journey.outcome_generation_id or '—' }}</code></div>
+  </details>
+</div>
+{% endmacro %}
+{{ observation(r.research_journey, 'Prospective research journey', '前瞻研究轨迹') }}
+{% if r.research_journey.prospective_summary %}
+<details class="extra d2-study-accrual">
+  <summary>{{ t('Prospective study accrual', '前瞻研究积累') }} · {{ r.research_journey.prospective_summary.n_observations }}</summary>
+  {% if r.research_journey.prospective_summary.first_entry_asof %}
+    <div>{{ t('Observed span: ', '观察区间：') }}{{ r.research_journey.prospective_summary.first_entry_asof }} → {{ r.research_journey.prospective_summary.latest_entry_asof }}</div>
+  {% endif %}
+  <div>{{ t('Raw source fire: ', '原始来源触发：') }}{{ r.research_journey.prospective_summary.n_fired }} · {{ t('Raw source no-fire: ', '原始来源未触发：') }}{{ r.research_journey.prospective_summary.n_no_fire }} · {{ t('Source unavailable: ', '来源不可用：') }}{{ r.research_journey.prospective_summary.n_source_unavailable }}</div>
+  <div>{{ t('Matured: ', '已成熟：') }}{{ r.research_journey.prospective_summary.n_matured }} · {{ t('Pending: ', '待评估：') }}{{ r.research_journey.prospective_summary.n_pending }} · {{ t('Lifecycle unavailable: ', '生命周期不可用：') }}{{ r.research_journey.prospective_summary.n_unavailable }} · {{ t('Restated observations: ', '已修订观察：') }}{{ r.research_journey.prospective_summary.n_corrected }}</div>
+  {% if r.research_journey.prospective_summary.n_matured_fired %}
+    <div>{{ t('Matured fired observations meeting the frozen down target: ', '已成熟且触发的观察中达到冻结下行目标：') }}{{ r.research_journey.prospective_summary.n_target_hits }} / {{ r.research_journey.prospective_summary.n_matured_fired }}</div>
+  {% else %}
+    <div>{{ t('No fired observation has matured yet.', '尚无已成熟的触发观察。') }}</div>
+  {% endif %}
+  <div>{{ t('Research accrual only — this does not change the current validation gate or alert permission.', '仅为研究积累 — 不改变当前验证门槛或告警权限。') }}</div>
+</details>
+{% endif %}
+{% if r.research_journey.last_matured %}
+<details class="extra d2-history">
+  <summary>{{ t('Most recent completed observation', '最近完成的观察') }}</summary>
+  {{ observation(r.research_journey.last_matured, 'Historical research outcome', '历史研究结果') }}
+</details>
+{% endif %}
+{% if r.research_journey.recent_history %}
+<details class="extra d2-history">
+  <summary>{{ t('Recent prospective observations (' ~ r.research_journey.recent_history|length ~ ')', '近期前瞻观察（' ~ r.research_journey.recent_history|length ~ '）') }}</summary>
+  {% for history in r.research_journey.recent_history %}
+    <details class="d2-history-row" data-d2-history-entry="{{ history.entry_asof or '' }}">
+      <summary>
+        <strong>{{ history.entry_asof or '—' }}</strong> ·
+        {% if history.fired is sameas true %}
+          {{ t('fired', '已触发') }}
+        {% elif history.fired is sameas false %}
+          {{ t('no fire', '未触发') }}
+        {% else %}
+          {{ t('unavailable', '不可用') }}
+        {% endif %} ·
+        {% if history.status == 'matured' and history.outcome %}
+          {% if history.fired is not sameas true %}
+            {{ t('matured — no signal', '已成熟 — 未触发信号') }}
+          {% elif history.outcome.down_hit %}
+            {{ t('matured — target hit', '已成熟 — 目标命中') }}
+          {% else %}
+            {{ t('matured — target missed', '已成熟 — 目标未命中') }}
+          {% endif %}
+          · {{ history.outcome.fwd_min_pct }}% / {{ history.outcome.fwd_max_pct }}%
+        {% elif history.status == 'pending' %}
+          {{ t('pending', '待评估') }}
+        {% else %}
+          {% set history_label = reason_labels.get(history.reason, ('unavailable', '不可用')) %}
+          {{ t(history_label[0], history_label[1]) }}
+        {% endif %}
+        {% if history.corrected %}
+          · {{ t('restated ' ~ history.corrections|length ~ '×', '已修订 ' ~ history.corrections|length ~ ' 次') }}
+        {% endif %}
+      </summary>
+      {{ observation(history, 'Prospective history detail', '前瞻历史详情') }}
+    </details>
+  {% endfor %}
+  <div>{{ t('Prospective rows only; legacy history is never reconstructed.', '仅显示前瞻记录；不会重建历史旧记录。') }}</div>
+</details>
+{% endif %}

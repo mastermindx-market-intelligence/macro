@@ -1,0 +1,45 @@
+...........................................s..................F..F...... [ 37%]
+......FF...............................................F................ [ 74%]
+.................................................                        [100%]
+=================================== FAILURES ===================================
+__________________ test_board_read_is_bounded_and_descriptive __________________
+tests/test_alert_triage.py:267: in test_board_read_is_bounded_and_descriptive
+    assert 0 <= br["score"] <= 100
+           ^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: '<=' not supported between instances of 'int' and 'NoneType'
+------------------------------ Captured log call -------------------------------
+WARNING  engine.alert_triage:alert_triage.py:509 triage: regime backdrop unavailable ([Errno 2] No such file or directory: '/private/tmp/signal-lab-7173-integration-72ddc034/data/regime/latest.json')
+WARNING  engine.alert_triage:alert_triage.py:1343 triage: PARTIAL coverage — unavailable: [] (backdrop_missing=True)
+__________________ test_severity_is_no_longer_a_monotone_wall __________________
+tests/test_alert_triage.py:304: in test_severity_is_no_longer_a_monotone_wall
+    assert len(bands) >= 2
+E   assert 0 >= 2
+E    +  where 0 = len(set())
+------------------------------ Captured log call -------------------------------
+WARNING  engine.alert_triage:alert_triage.py:509 triage: regime backdrop unavailable ([Errno 2] No such file or directory: '/private/tmp/signal-lab-7173-integration-72ddc034/data/regime/latest.json')
+WARNING  engine.alert_triage:alert_triage.py:1343 triage: PARTIAL coverage — unavailable: [] (backdrop_missing=True)
+_________ test_a_successful_empty_read_is_zero_events_not_unavailable __________
+tests/test_alert_coverage_recurrence.py:60: in test_a_successful_empty_read_is_zero_events_not_unavailable
+    assert r["state"] == at.READ_OK_ZERO
+E   AssertionError: assert 'no_coverage' == 'ok_zero_events'
+E
+E     - ok_zero_events
+E     + no_coverage
+____________ test_events_all_outside_the_window_still_read_ok_zero _____________
+tests/test_alert_coverage_recurrence.py:70: in test_events_all_outside_the_window_still_read_ok_zero
+    assert r["state"] == at.READ_OK_ZERO
+E   AssertionError: assert 'no_coverage' == 'ok_zero_events'
+E
+E     - ok_zero_events
+E     + no_coverage
+__ test_emitter_loads_one_gate_snapshot_and_keeps_raw_ids_and_original_claim ___
+tests/test_alert_trust_projection.py:62: in test_emitter_loads_one_gate_snapshot_and_keeps_raw_ids_and_original_claim
+    assert calls["n"] == 1
+E   assert 0 == 1
+=========================== short test summary info ============================
+FAILED tests/test_alert_triage.py::test_board_read_is_bounded_and_descriptive
+FAILED tests/test_alert_triage.py::test_severity_is_no_longer_a_monotone_wall
+FAILED tests/test_alert_coverage_recurrence.py::test_a_successful_empty_read_is_zero_events_not_unavailable
+FAILED tests/test_alert_coverage_recurrence.py::test_events_all_outside_the_window_still_read_ok_zero
+FAILED tests/test_alert_trust_projection.py::test_emitter_loads_one_gate_snapshot_and_keeps_raw_ids_and_original_claim
+5 failed, 187 passed, 1 skipped in 6.10s

@@ -1,0 +1,28 @@
+{
+  "kind": "real",
+  "fixture": false,
+  "installed_production": false,
+  "observed_at": "2026-09-17T09:35:46.689945+00:00",
+  "projection": {
+    "schema": "btc_d2_forward.v1",
+    "status": "pending",
+    "entry_asof": "2026-09-16",
+    "source_asof": "2026-09-15",
+    "check_after": "2026-09-19",
+    "fired": false,
+    "trading_authority": false,
+    "source_generation_id": "sha256:17c900b2e17d655b18a1774b7867de18a87d73cfc1a6c0a8532cfc8740d8131e",
+    "outcome_generation_id": null,
+    "generation_count": 1,
+    "outcome": null,
+    "reason": null,
+    "corrected": false,
+    "corrections": [],
+    "source_recorded_at": "2026-09-17T09:20:44.835215+00:00",
+    "outcome_recorded_at": null,
+    "last_matured": null
+  },
+  "current_permitted": false,
+  "html_sha256": "d5aa65cd4a90f4cf265e1778b8a34d1504a8ec82e362c3a0ae1a21204d71668d",
+  "machine_payload_sha256": "d568b29ecd91f80b86a21208f5bc048472fcf796a9f9881517d4f3035e9f6b08"
+}

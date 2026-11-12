@@ -1,0 +1,57 @@
+{
+  "kind": "rollover",
+  "fixture": true,
+  "installed_production": false,
+  "observed_at": "2026-09-17T09:35:46.689945+00:00",
+  "projection": {
+    "schema": "btc_d2_forward.v1",
+    "status": "pending",
+    "entry_asof": "2024-03-07",
+    "source_asof": "2024-03-06",
+    "check_after": "2024-03-10",
+    "fired": true,
+    "trading_authority": false,
+    "source_generation_id": "sha256:b479a8e2daf367191281d25630d87300fde329853c839235602dfa6e57dd1b91",
+    "outcome_generation_id": null,
+    "generation_count": 2,
+    "outcome": null,
+    "reason": null,
+    "corrected": true,
+    "corrections": [
+      {
+        "generation_id": "sha256:b479a8e2daf367191281d25630d87300fde329853c839235602dfa6e57dd1b91",
+        "target_kind": "source",
+        "reason": "source_restatement",
+        "supersedes_generation_id": "sha256:c45784988e7f3b3490dc7fa320ef3fbf5d2043ae34cb85618fa215de78a79e6a"
+      }
+    ],
+    "source_recorded_at": "2026-09-17T09:20:46.891445Z",
+    "outcome_recorded_at": null,
+    "last_matured": {
+      "schema": "btc_d2_forward.v1",
+      "status": "matured",
+      "entry_asof": "2024-03-03",
+      "source_asof": "2024-03-02",
+      "check_after": "2024-03-06",
+      "fired": true,
+      "trading_authority": false,
+      "source_generation_id": "sha256:d385b4598b032d1a3f4625956455ab41c4194682695d8a1af3f62e074cbde91a",
+      "outcome_generation_id": "sha256:0ee94e6cf19c90d65855652dde65f99eedf7f1815ce976495eb6d57ed5361c9c",
+      "generation_count": 2,
+      "outcome": {
+        "matured": true,
+        "fwd_min_pct": -7.0,
+        "fwd_max_pct": -2.0,
+        "down_hit": true
+      },
+      "reason": null,
+      "corrected": false,
+      "corrections": [],
+      "source_recorded_at": "2026-09-17T05:00:00Z",
+      "outcome_recorded_at": "2026-09-17T09:20:46.881154Z"
+    }
+  },
+  "current_permitted": false,
+  "html_sha256": "a1af530a1fd2b0538ccc7b17e245d8b88aa27356a5965f25ce350bb98af7e4bb",
+  "machine_payload_sha256": "3f8618dca4251c1ed64ea32e0fdaff95f3f13a4a3d8cb0fe7d0ae79bf3ce03b4"
+}
