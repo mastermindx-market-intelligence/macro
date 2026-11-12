@@ -73,12 +73,12 @@ code on every head.
     yield `.md` (`research/winners/cases/*.md`, `research/` via
     `rglob("*.md")`), and the directory of a computed `<dir> / f"{x}.md"`;
   - the subtree of every Python file that itself lives under a root.
-  Measured on the base this PR targets: of 6,706 narrative `.md` files, 163
+  Measured at base `cbdc7c6`: of 6,705 narrative `.md` files, 162
   (all under `docs/`) remain eligible; `research/` and `agentos/` are
   enumerated by code and therefore always refuse. An over-claim costs a docs PR
   its fast lane; an under-claim would let a suite go unrun, so the scan errs
   wide. The scan only runs after every cheap check passes (~45 s on a full
-  base).
+  base; every git call is bounded at 600 s, and a timeout refuses the tier).
 - Plus the curated `CONSUMED_MARKDOWN` and any literal `.md` path a job
   declares in the base manifest's `paths`/`scope` rows.
 - Consumer scan failure (unparseable base module, unreadable blob, git error).

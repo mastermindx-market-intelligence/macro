@@ -179,6 +179,9 @@ _PATTERN_SUFFIX_RE = re.compile(r"\.([A-Za-z0-9_]{1,8})$")
 _ENV_FANOUT = 8
 _RESOLVE_DEPTH = 6
 SCAN_BLOB_BYTES_LIMIT = 512 * 1024 * 1024
+# Every git call is bounded so a slow lazy blob fetch fails the tier closed
+# well inside the ci-plan job timeout instead of hanging it.
+GIT_TIMEOUT_SECONDS = 600
 
 
 @dataclass
@@ -518,6 +521,7 @@ def _prefetch_missing(workspace: Path, oids: list[str]) -> None:
         text=True,
         env=env,
         check=False,
+        timeout=GIT_TIMEOUT_SECONDS,
     )
     missing = [line.split()[0] for line in check.stdout.splitlines() if line.endswith(" missing")]
     if not missing:
@@ -549,6 +553,7 @@ def derive_consumed_markdown(workspace: Path, tree: str) -> ConsumedMarkdown:
         input=b"".join(oid.encode() + b"\n" for oid, _ in blobs),
         capture_output=True,
         check=True,
+        timeout=GIT_TIMEOUT_SECONDS,
     ).stdout
     if len(batch) > SCAN_BLOB_BYTES_LIMIT:
         raise ValueError("base Python estate exceeds the scan byte limit")
@@ -610,6 +615,7 @@ def _git(workspace: Path, *args: str) -> str:
         capture_output=True,
         text=True,
         check=True,
+        timeout=GIT_TIMEOUT_SECONDS,
     )
     return result.stdout
 

@@ -350,6 +350,37 @@ def test_any_scan_exception_fails_closed(tmp_path: Path, monkeypatch: pytest.Mon
     assert "consumer scan failed" in str(verdict["reason"])
 
 
+def test_hung_base_blob_read_times_out_and_fails_closed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A lazy blob:none fetch that stalls must refuse the tier, not hang ci-plan."""
+    repo = _repository(tmp_path / "repo")
+    base = _base_of(repo)
+    _write(repo, "docs/ZZ_UNREFERENCED_NOTE_2099.md")
+    merge = _commit_all(repo, "narrative")
+    real_run = TIER.subprocess.run
+    seen: list[object] = []
+
+    def stalled(argv, *args, **kwargs):
+        if "--batch" in argv:
+            seen.append(kwargs.get("timeout"))
+            raise subprocess.TimeoutExpired(argv, kwargs.get("timeout") or 0)
+        return real_run(argv, *args, **kwargs)
+
+    monkeypatch.setattr(TIER.subprocess, "run", stalled)
+    verdict = _verdict(repo, base, merge)
+    assert seen == [TIER.GIT_TIMEOUT_SECONDS]
+    assert verdict["docs_tier"] is False
+    assert "consumer scan failed" in str(verdict["reason"])
+
+
+def test_every_git_call_in_the_classifier_is_bounded() -> None:
+    source = Path(TIER.__file__).read_text(encoding="utf-8")
+    assert 0 < TIER.GIT_TIMEOUT_SECONDS <= 900
+    runs = source.count("subprocess.run(")
+    assert runs == source.count("timeout=GIT_TIMEOUT_SECONDS") + source.count("timeout=300")
+
+
 @pytest.mark.parametrize(
     ("source", "path", "claimed"),
     [
