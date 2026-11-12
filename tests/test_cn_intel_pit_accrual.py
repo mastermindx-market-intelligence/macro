@@ -7,11 +7,13 @@ anything or read outcomes.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import json
 
 import pandas as pd
 import pytest
 
 from collectors import _first_seen_store as fss
+from engine import china_extras as ce
 
 
 # --------------------------------------------------------------------------- #
@@ -438,3 +440,141 @@ def test_display_consumers_still_read_snapshots_not_hist(monkeypatch, tmp_path):
     assert "600519.SS" in buys
     assert blocks["600519.SS"]["avg_premium_pct"] == 3.0
     assert buys["600519.SS"]["in_progress"] is True
+
+
+# Stopped-buyback snapshot/consumer qualification belongs with the existing
+# collector first-seen/history tests below the retained native contract.
+def _buyback_point(monkeypatch, tmp_path):
+    monkeypatch.setattr(ce.config, "data_dir", lambda: tmp_path)
+
+
+def _buyback_write(tmp_path, group, name, df):
+    d = tmp_path / group
+    d.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(d / name, index=False)
+
+
+# Canonical stopped-program status is not an active confirmer. Keep the raw
+# plan, execution amounts and immutable first-seen history available as context.
+@pytest.mark.parametrize("progress", ["停止实施", " 停止实施 ", "\t停止实施\n", "\u3000停止实施\u3000"])
+@pytest.mark.parametrize("pct,done", [(0.0, 0.0), (1.5, 1.0), (3.0, 10.0)])
+def test_stopped_buyback_is_not_active_in_snapshot_readers(monkeypatch, tmp_path, progress, pct, done):
+    from engine import china_discovery as cd
+
+    _buyback_point(monkeypatch, tmp_path)
+    _buyback_write(tmp_path, "china_buyback", "buyback.parquet", pd.DataFrame([{
+        "ticker": "600001.SS", "progress": progress, "pct_shares": pct,
+        "done_amt_yi": done, "buyback_score": 0.4,
+    }]))
+    assert cd.buyback() == {}  # Even a precomputed score cannot override status.
+    assert ce.buyback()["600001.SS"] == {
+        "progress": progress, "pct_shares": pct, "done_amt_yi": done,
+        "in_progress": False, "buyback_score": 0.0,
+    }
+
+
+@pytest.mark.parametrize("progress,active", [
+    ("实施中", True), ("完成实施", True), ("已完成", True),
+    (" 完成实施 ", True), ("董事会预案", False), ("股东大会通过", False),
+    ("股东大会否决", False), ("", False),
+])
+def test_nonstopped_buyback_reader_contract_is_preserved(monkeypatch, tmp_path, progress, active):
+    from engine import china_discovery as cd
+
+    _buyback_point(monkeypatch, tmp_path)
+    _buyback_write(tmp_path, "china_buyback", "buyback.parquet", pd.DataFrame([{
+        "ticker": "600001.SS", "progress": progress,
+        "pct_shares": 3.0, "done_amt_yi": 10.0,
+    }]))
+    block = ce.buyback()["600001.SS"]
+    assert block["progress"] == progress
+    assert block["in_progress"] is active
+    assert block["buyback_score"] == (0.4 if active else 0.0)
+    discovery = cd.buyback()
+    assert ("600001.SS" in discovery) is active
+    if active:
+        assert discovery["600001.SS"]["buyback_score"] == 0.4
+
+
+def _buyback_discovery_context(monkeypatch, cd):
+    # Isolate unrelated membership, ETF-price and display-name dependencies.
+    # The collector, Parquet readers, positive legs, cap and composite stay native.
+    monkeypatch.setattr(cd, "_bundle_universe", lambda: frozenset())
+    monkeypatch.setattr(cd, "_runup_haircut", lambda ticker: 1.0)
+    monkeypatch.setattr(cd, "_name_for", lambda ticker: None)
+
+
+@pytest.mark.parametrize("progress", ["停止实施", " 停止实施 "])
+@pytest.mark.parametrize("pct,done", [(0.0, 0.0), (1.5, 1.0), (3.0, 10.0)])
+def test_collector_active_to_stopped_removes_only_buyback_evidence(
+    monkeypatch, tmp_path, progress, pct, done,
+):
+    from datetime import date
+    from collectors import china_buyback as cb
+    from engine import china_discovery as cd
+
+    _buyback_point(monkeypatch, tmp_path)
+    _buyback_discovery_context(monkeypatch, cd)
+    snapshot = tmp_path / "china_buyback" / "buyback.parquet"
+    history = tmp_path / "china_buyback" / "buyback_hist.parquet"
+    monkeypatch.setattr(cb, "OUT", snapshot)
+    monkeypatch.setattr(cb, "OUT_HIST", history)
+    raw = pd.DataFrame([{
+        "股票代码": "600001", "股票简称": "Synthetic issuer",
+        "进度": "实施中", "计划回购金额上限": 1e9,
+        "已回购金额": done * 1e8, "占总股本比例上限": pct,
+        "最新公告日期": "2026-11-10",
+    }])
+    monkeypatch.setattr(cb, "fetch_table", lambda: raw)
+    _buyback_write(tmp_path, "china_comment", "detail.parquet", pd.DataFrame([
+        {"ticker": "600001.SS", "rank_delta": 10.0},
+    ]))
+    assert cb.refresh() == 1
+    before = cd.build(date(2026, 11, 12))
+    assert before["by_ticker"]["600001.SS"]["legs"] == ["attention_rising", "buyback"]
+    original_history = pd.read_parquet(history)
+
+    # Make only the collection stamp stale so the real refresh path executes.
+    old = pd.read_parquet(snapshot)
+    old["asof"] = "2000-01-01"
+    old.to_parquet(snapshot, index=False)
+    raw.loc[0, "进度"] = progress
+    assert cb.refresh() == 1
+    assert pd.read_parquet(snapshot).iloc[0]["progress"] == progress
+    pd.testing.assert_frame_equal(pd.read_parquet(history), original_history)
+    block = ce.buyback()["600001.SS"]
+    assert block == {"progress": progress, "pct_shares": pct,
+                     "done_amt_yi": done, "in_progress": False, "buyback_score": 0.0}
+    after = cd.build(date(2026, 11, 12))
+    assert after["n"] == 0 and after["by_ticker"] == {}
+    assert after["sources"]["buyback"] == 0
+    assert after["sources"]["attention"] == 1
+    assert after["is_context_only"] is True
+    json.dumps(after, allow_nan=False)
+
+    # Two independent real leading legs still qualify; no buyback reason/score.
+    _buyback_write(tmp_path, "china_lhb", "detail.parquet", pd.DataFrame([
+        {"ticker": "600001.SS", "inst_net_buy_yi": 1.0, "n_inst_buy": 2,
+         "inst_accum_score": 0.5, "asof": "2026-11-12"},
+    ]))
+    independent = cd.build(date(2026, 11, 12))["by_ticker"]["600001.SS"]
+    assert independent["legs"] == ["attention_rising", "inst_accum"]
+    assert independent["buyback_score"] is None
+    assert "buyback in progress" not in independent["reason"]
+    assert independent["disc_score"] == 0.643
+
+
+def test_stopped_buyback_does_not_remove_other_ticker_context(monkeypatch, tmp_path):
+    from engine import china_discovery as cd
+
+    _buyback_point(monkeypatch, tmp_path)
+    _buyback_write(tmp_path, "china_buyback", "buyback.parquet", pd.DataFrame([
+        {"ticker": "600001.SS", "progress": "停止实施", "pct_shares": 3.0, "done_amt_yi": 10.0},
+        {"ticker": "600002.SS", "progress": "实施中", "pct_shares": 3.0, "done_amt_yi": 10.0},
+    ]))
+    assert list(cd.buyback()) == ["600002.SS"]
+    extra = ce.buyback()
+    assert extra["600001.SS"]["in_progress"] is False
+    assert extra["600002.SS"]["in_progress"] is True
+    assert extra["600002.SS"]["buyback_score"] == 0.4
+

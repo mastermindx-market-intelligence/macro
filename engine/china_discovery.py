@@ -202,6 +202,9 @@ def buyback() -> dict[str, dict]:
     for t, r in _index_by_ticker(df).items():
         prog = r.get(pcol) if pcol else None
         prog_s = str(prog) if prog is not None else ""
+        # The canonical stopped status contains 实施 but is no longer active.
+        if prog_s.strip() == "停止实施":
+            continue
         if not ("实施" in prog_s or "完成" in prog_s or "in" in prog_s.lower()):  # in-progress only
             continue
         sc = _f(r.get(score)) if score else None
