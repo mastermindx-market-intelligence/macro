@@ -159,8 +159,10 @@
     {% set qe = tg.quarter_end %}
     {% if qe and qe.chg_since_bn is not none %}
     <div class="wh-stat">
-      <div class="lab">{{ t('Δ since quarter-end', '较季末') }}{% if qe.date %} ({{ qe.date[5:] }}){% endif %}</div>
+      {% set observed = qe.observed_date|default(none) %}
+      <div class="lab">{% if observed and observed == qe.date %}{{ t('Δ since quarter-end', '较季末') }} ({{ qe.date[5:] }}){% elif observed %}{{ t('Δ since observation', '较观测日') }} ({{ observed[5:] }}){% else %}{{ t('Δ from stored reference', '较存储参考值') }}{% endif %}</div>
       <div class="val {{ 'up' if qe.chg_since_bn >= 0 else 'dn' }}">{{ '%+.0f'|format(qe.chg_since_bn) }}<span class="u">bn</span></div>
+      {% if not observed or observed != qe.date %}<div class="lab">{% if qe.date %}{{ t('Quarter-end', '季末') }} {{ qe.date }} · {% endif %}{% if observed %}{{ t('Observation', '观测日') }} {{ observed }}{% else %}{{ t('Observation date unavailable', '观测日期不可用') }}{% endif %}</div>{% endif %}
     </div>
     {% elif tg.chg_5d_bn is not none %}
     <div class="wh-stat">

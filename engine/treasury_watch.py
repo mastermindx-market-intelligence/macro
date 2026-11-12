@@ -305,10 +305,9 @@ def _episode(series: pd.Series, cfg: dict[str, Any]) -> dict[str, Any] | None:
         days = int(len(series.loc[pd.Timestamp(anchor_ts):series.index[-1]]) - 1)
     except Exception:  # noqa: BLE001
         days = max(0, _busdays_between(anchor_d, latest_d))
-    if source == "quarter_end":
-        qe_adj, qe_date = True, anchor_d.isoformat()
-    else:
-        qe_adj, qe_date = _quarter_end_adjacent(anchor_d)
+    # Selection from the pre-quarter-end branch does not make the actual
+    # observation a quarter-end. Classify its date using the existing rule.
+    qe_adj, qe_date = _quarter_end_adjacent(anchor_d)
     return {
         "kind": kind,
         "anchor": anchor_d,
@@ -330,10 +329,13 @@ def _impulse_summary(ep: dict[str, Any]) -> tuple[str, str]:
     days = ep["elapsed_calendar_days"]
     since = _pretty(ep["anchor_str"])
     qe = ep["quarter_end_adjacent"]
+    exact_qe = qe and ep["anchor_str"] == ep["quarter_end_date"]
+    en_qualifier = " (quarter-end)" if exact_qe else " (near quarter-end)" if qe else ""
+    zh_qualifier = "（季末）" if exact_qe else "（季末附近）" if qe else ""
     if ep["kind"] == "tga_release":
         en = (f"TGA drawdown of ${mag:.1f}bn over {days} calendar day(s) since "
-              f"{since}{' (quarter-end)' if qe else ''} — cash released into bank reserves.")
-        zh = (f"自{since}{'（季末）' if qe else ''}以来，TGA在{days}个日历日内减少约{mag * 10:.0f}亿美元"
+              f"{since}{en_qualifier} — cash released into bank reserves.")
+        zh = (f"自{since}{zh_qualifier}以来，TGA在{days}个日历日内减少约{mag * 10:.0f}亿美元"
               f"——现金释放至银行准备金。")
     else:
         en = (f"TGA rebuild of ${mag:.1f}bn over {days} calendar day(s) since "
@@ -416,8 +418,11 @@ def snapshot(root: str | Path | None = None, _tga: Any = None, _netliq: Any = No
                 at_or_before = tga[tga.index <= pd.Timestamp(cand)]
                 if not at_or_before.empty:
                     qe_level = float(at_or_before.iloc[-1])
+                    observed_date = pd.Timestamp(at_or_before.index[-1]).date()
                     qe_block = {
                         "date": cand.isoformat(),
+                        "observed_date": observed_date.isoformat(),
+                        "observation_lag_calendar_days": (cand - observed_date).days,
                         "level_bn": round(qe_level, 3),
                         "chg_since_bn": round(level - qe_level, 3),
                     }
@@ -549,17 +554,19 @@ def detect_events(root: str | Path | None = None, _tga: Any = None, _plumbing: A
         kind = ep["kind"]
         anchor = ep["anchor_str"]
         qe = ep["quarter_end_adjacent"]
+        exact_qe = qe and anchor == ep["quarter_end_date"]
+        qualifier = " (quarter-end)" if exact_qe else " (near quarter-end)" if qe else ""
 
         ev_id = f"tw-{anchor}-{'tga-release' if kind == 'tga_release' else 'tga-build'}"
 
         if kind == "tga_release":
             title = (f"Treasury released ~${abs(mag):.0f}bn of TGA cash into the banking "
                      f"system since {_pretty(anchor)}"
-                     f"{' (quarter-end)' if qe else ''}")
+                     f"{qualifier}")
         else:
             title = (f"Treasury rebuilt the TGA by ~${abs(mag):.0f}bn since {_pretty(anchor)}, "
                      f"draining bank reserves"
-                     f"{' (quarter-end)' if qe else ''}")
+                     f"{qualifier}")
 
         # deterministic day-by-day path from anchor → latest
         try:
@@ -615,7 +622,9 @@ def detect_events(root: str | Path | None = None, _tga: Any = None, _plumbing: A
             *path_lines,
             "",
             f"Episode magnitude: {mag:+.1f}bn over {ep['elapsed_calendar_days']} calendar day(s)"
-            + (" — anchored on a calendar quarter-end." if qe else ".")
+            + (" — anchored on a calendar quarter-end." if exact_qe else
+               f" — observation near calendar quarter-end {ep['quarter_end_date']}"
+               " (weekday-distance convention; holidays not modeled)." if qe else ".")
             + f" Latest TGA level: ${latest_level:.1f}bn.",
             "",
             "Context at the time of this move:",

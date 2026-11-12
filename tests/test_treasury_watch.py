@@ -233,3 +233,97 @@ def test_accepts_bn_series_seam():
     # the injectable seam also accepts a Series already in $bn
     evs = tw.detect_events(_tga=_bn_series(_ACCEPT))
     assert evs and evs[0]["id"] == "tw-2026-06-30-tga-release"
+
+
+@pytest.mark.parametrize("anchor,quarter_end,latest", [
+    ("2026-05-12", "2026-06-30", "2026-07-09"),
+    ("2026-02-02", "2026-03-31", "2026-04-09"),
+    ("2026-08-03", "2026-09-30", "2026-10-09"),
+    ("2025-11-03", "2025-12-31", "2026-01-09"),
+])
+@pytest.mark.parametrize("missing", [False, True])
+def test_old_reference_preserves_observation_identity(anchor, quarter_end, latest, missing):
+    pairs = [(anchor, 950.0), (latest, 800.0)]
+    if missing:
+        pairs.insert(1, (quarter_end, float("nan")))
+    frame = _mn_frame(pairs)
+    snap = tw.snapshot(_tga=frame, _plumbing={}, _regime={})
+    qe = snap["tga"]["quarter_end"]
+    assert qe["date"] == quarter_end  # retained nominal-reference field
+    assert qe["observed_date"] == anchor
+    assert qe["observation_lag_calendar_days"] == (pd.Timestamp(quarter_end) - pd.Timestamp(anchor)).days
+    assert qe["level_bn"] == 950.0 and qe["chg_since_bn"] == -150.0
+    imp = snap["tga_impulse"]
+    assert imp["since"] == anchor and imp["magnitude_bn"] == -150.0
+    assert imp["quarter_end_adjacent"] is False
+    assert "quarter-end" not in imp["summary_en"] and "季末" not in imp["summary_zh"]
+    event, = tw.detect_events(_tga=frame, _plumbing={}, _regime={})
+    assert event["id"] == f"tw-{anchor}-tga-release"
+    assert "quarter-end" not in event["title"] + event["body"]
+    assert f"{anchor}: $950.0bn" in event["body"]
+
+
+@pytest.mark.parametrize("anchor,quarter_end,latest", [
+    ("2026-06-30", "2026-06-30", "2026-07-09"),
+    ("2023-09-29", "2023-09-30", "2023-10-09"),
+    ("2024-03-28", "2024-03-31", "2024-04-08"),
+    ("2026-06-26", "2026-06-30", "2026-07-09"),
+    ("2025-12-31", "2025-12-31", "2026-01-09"),
+])
+def test_quarter_end_date_is_calendar_reference_not_observation(anchor, quarter_end, latest):
+    frame = _mn_frame([(anchor, 950.0), (latest, 800.0)])
+    ep = tw._episode(tw._load_tga_bn(frame), tw._cfg())
+    assert ep["quarter_end_adjacent"] is True
+    assert ep["quarter_end_date"] == quarter_end
+    snap = tw.snapshot(_tga=frame, _plumbing={}, _regime={})
+    qe = snap["tga"]["quarter_end"]
+    assert qe["observed_date"] == anchor and qe["date"] == quarter_end
+    event, = tw.detect_events(_tga=frame, _plumbing={}, _regime={})
+    if anchor == quarter_end:
+        assert " (quarter-end)" in snap["tga_impulse"]["summary_en"]
+        assert "（季末）" in snap["tga_impulse"]["summary_zh"]
+        assert "anchored on a calendar quarter-end" in event["body"]
+    else:
+        assert " (near quarter-end)" in snap["tga_impulse"]["summary_en"]
+        assert "（季末附近）" in snap["tga_impulse"]["summary_zh"]
+        assert "anchored on a calendar quarter-end" not in event["body"]
+        assert f"near calendar quarter-end {quarter_end}" in event["body"]
+        assert "holidays not modeled" in event["body"]
+
+
+def _render_treasury_for_reference(snap, lang):
+    from jinja2 import Environment, StrictUndefined
+    source = (Path(__file__).resolve().parents[1] / "templates/whitehouse.html.j2").read_text()
+    start = source.index("{% if treasury %}")
+    end = source.index("</section>\n{% endif %}", start) + len("</section>\n{% endif %}")
+    template = Environment(autoescape=True, undefined=StrictUndefined).from_string(source[start:end])
+    return template.render(treasury=snap, t=lambda en, zh: zh if lang == "zh" else en)
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("anchor", ["2026-05-12", "2026-06-26", "2026-06-30"])
+def test_reference_fragment_uses_actual_date(anchor, lang):
+    snap = tw.snapshot(_tga=_mn_frame([(anchor, 950.0), ("2026-07-09", 800.0)]),
+                       _plumbing={}, _regime={})
+    html = _render_treasury_for_reference(snap, lang)
+    if anchor == "2026-06-30":
+        assert ("Δ since quarter-end" if lang == "en" else "较季末") + " (06-30)" in html
+    else:
+        assert ("Δ since observation" if lang == "en" else "较观测日") + f" ({anchor[5:]})" in html
+        assert "2026-06-30" in html and anchor in html
+        assert ("Δ since quarter-end" if lang == "en" else "较季末") not in html
+    assert '-150<span class="u">bn</span>' in html
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("nominal", ["2026-06-30", None])
+def test_legacy_reference_does_not_invent_observation_date(lang, nominal):
+    snap = tw.snapshot(_tga=_mn_frame(_ACCEPT), _plumbing={}, _regime={})
+    qe = snap["tga"]["quarter_end"]
+    qe.pop("observed_date", None)
+    qe.pop("observation_lag_calendar_days", None)
+    qe["date"] = nominal
+    html = _render_treasury_for_reference(snap, lang)
+    assert ("Δ from stored reference" if lang == "en" else "较存储参考值") in html
+    assert ("Observation date unavailable" if lang == "en" else "观测日期不可用") in html
+    assert ("Δ since quarter-end" if lang == "en" else "较季末") not in html
