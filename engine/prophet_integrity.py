@@ -454,8 +454,121 @@ def _validated_sequence(
     return rows
 
 
+# Optional evidence on NEW reversed T2/section-7 records. This is a structural
+# projection of the frozen source row, not an attestation or another identity plane.
+# It is intentionally NOT a correctable field: historical records cannot gain this
+# exception through an annotation, and bound clock corrections require separate law.
+T2_SECTION7_LINEAGE_SCHEMA = "prophet.t2_section7_lineage/v1"
+_T2_LINEAGE_DATES = (
+    "hold_anchor", "marker_date", "marker_known_date", "tier_event_date",
+    "observed_date", "price_basis_date",
+)
+_T2_LINEAGE_KEYS = frozenset((
+    "schema", "asset", "hold_anchor_src", "hold_provisional", "marker_type",
+    *_T2_LINEAGE_DATES,
+))
+
+
+def _lineage_date(value: Any, *, label: str) -> date:
+    if not isinstance(value, str) or len(value) != 10:
+        raise PlanCorrectionError(f"{label}: lineage date must be canonical YYYY-MM-DD")
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError as exc:
+        raise PlanCorrectionError(f"{label}: invalid lineage date") from exc
+    if parsed.isoformat() != value:
+        raise PlanCorrectionError(f"{label}: noncanonical lineage date")
+    return parsed
+
+
+def _lineage_dates(evidence: Any, *, label: str) -> dict[str, date]:
+    from lib.nyse_calendar import is_session  # existing US calendar; stdlib only
+
+    if not isinstance(evidence, Mapping) or set(evidence) != _T2_LINEAGE_KEYS:
+        raise PlanCorrectionError(f"{label}: incomplete or unknown temporal lineage shape")
+    if evidence["schema"] != T2_SECTION7_LINEAGE_SCHEMA:
+        raise PlanCorrectionError(f"{label}: unknown temporal lineage schema")
+    if not isinstance(evidence["asset"], str) or not evidence["asset"].strip():
+        raise PlanCorrectionError(f"{label}: lineage asset is required")
+    if (evidence["hold_anchor_src"] != "take" or evidence["hold_provisional"] is not False
+            or evidence["marker_type"] not in ("buy", "rebuy")):
+        raise PlanCorrectionError(f"{label}: lineage must be an actual nonprovisional section-7 hold")
+    dates = {key: _lineage_date(evidence[key], label=label) for key in _T2_LINEAGE_DATES}
+    if not all(is_session(d) for d in dates.values()):
+        raise PlanCorrectionError(f"{label}: lineage contains a non-NYSE session")
+    if not (
+        dates["tier_event_date"] < dates["hold_anchor"] == dates["marker_date"]
+        <= dates["marker_known_date"] <= dates["observed_date"] == dates["price_basis_date"]
+    ):
+        raise PlanCorrectionError(f"{label}: contradictory independent-event lineage")
+    return dates
+
+
+def derive_t2_temporal_lineage(
+    candidate: Mapping[str, Any], *, formation_date: str, price_basis_date: str | None,
+) -> dict[str, Any]:
+    """Derive evidence from producer fields, ignoring any caller-supplied envelope."""
+    signal, hold = candidate.get("signal"), candidate.get("hold")
+    if not isinstance(signal, Mapping) or not isinstance(hold, Mapping):
+        raise PlanCorrectionError("lineage: missing signal/hold producer fields")
+    marker = signal.get("last")
+    if (signal.get("tier_cascade") != "T2"
+            or signal.get("tier_observation_provisional") is not False
+            or not isinstance(marker, Mapping)):
+        raise PlanCorrectionError("lineage: only a positively bound fired T2 is independent")
+    evidence = {
+        "schema": T2_SECTION7_LINEAGE_SCHEMA,
+        "asset": candidate.get("ticker"),
+        "hold_anchor": hold.get("anchor"), "hold_anchor_src": hold.get("anchor_src"),
+        "hold_provisional": hold.get("provisional"),
+        "marker_type": marker.get("type"), "marker_date": marker.get("date"),
+        "marker_known_date": marker.get("signal_date"),
+        "tier_event_date": signal.get("tier_event_date"),
+        "observed_date": signal.get("tier_observed_date"), "price_basis_date": price_basis_date,
+    }
+    _lineage_dates(evidence, label="source candidate")
+    if evidence["hold_anchor"] != formation_date:
+        raise PlanCorrectionError("lineage: formation is not the hold's source marker")
+    return evidence
+
+
+def validate_temporal_lineage(row: Mapping[str, Any], *, label: str = "plan") -> None:
+    """One relation shared by origination and immutable-plan/ledger consumers.
+
+    No lineage means no new privilege: the existing conservative checks still
+    apply. Present but null/malformed evidence is never treated as a legacy row.
+    """
+    if "temporal_lineage" not in row:
+        return
+    evidence = row["temporal_lineage"]
+    dates = _lineage_dates(evidence, label=label)
+    if (row.get("signal_tier") != "T2" or row.get("signal_date_basis") != "tier_event_date"
+            or row.get("signal_provisional") is not False or row.get("confirmed_date") is not None
+            or row.get("asset") != evidence["asset"]):
+        raise PlanCorrectionError(f"{label}: lineage does not belong to this fired T2 record")
+    bindings = {
+        "formation_date": "hold_anchor", "source_marker_date": "marker_date",
+        "signal_date": "tier_event_date", "observed_date": "observed_date",
+        "price_basis_date": "price_basis_date", "entry_date": "price_basis_date",
+    }
+    for published, source in bindings.items():
+        if row.get(published) != evidence[source]:
+            raise PlanCorrectionError(f"{label}: {published} contradicts immutable lineage")
+    recorded = _lineage_date(row.get("recorded_at"), label=label)
+    if recorded < dates["price_basis_date"]:
+        raise PlanCorrectionError(f"{label}: lineage is later than publication")
+
+
+def temporal_lineage_projection(row: Mapping[str, Any]) -> dict[str, Any]:
+    """Retain new-record evidence in existing projections, leaving old bytes alone."""
+    validate_temporal_lineage(row)
+    return ({"temporal_lineage": deepcopy(row["temporal_lineage"])}
+            if "temporal_lineage" in row else {})
+
+
 def _validate_effective_chronology(row: Mapping[str, Any], *, label: str) -> None:
     """Reject a correction projection that creates impossible temporal ordering."""
+    validate_temporal_lineage(row, label=label)
     parsed: dict[str, date] = {}
     for field in DATE_FIELDS:
         value = row.get(field)
@@ -475,7 +588,7 @@ def _validate_effective_chronology(row: Mapping[str, Any], *, label: str) -> Non
         raise PlanCorrectionError(f"{label}: price_basis_date postdates recorded_at")
     if entry and price_basis and entry != price_basis:
         raise PlanCorrectionError(f"{label}: entry_date must equal price_basis_date")
-    if formation and signal and formation > signal:
+    if formation and signal and formation > signal and "temporal_lineage" not in row:
         raise PlanCorrectionError(f"{label}: formation_date postdates signal_date")
     if signal and confirmed and signal > confirmed:
         raise PlanCorrectionError(f"{label}: signal_date postdates confirmed_date")
@@ -499,6 +612,8 @@ def apply_plan_corrections(
     """
     raw = {str(plan_id): dict(plan) for plan_id, plan in plans.items()}
     effective = {plan_id: deepcopy(plan) for plan_id, plan in raw.items()}
+    for plan_id, plan in raw.items():
+        validate_temporal_lineage(plan, label=f"plan {plan_id}")
     applied: dict[str, list[str]] = {}
 
     correction_rows = _validated_sequence(
@@ -546,6 +661,7 @@ def apply_ledger_corrections(
     raw_rows = [dict(row) for row in rows]
     positions: dict[str, int] = {}
     for index, row in enumerate(raw_rows):
+        validate_temporal_lineage(row, label=f"ledger row {index}")
         plan_id = str(row.get("id") or "")
         if not plan_id:
             continue
