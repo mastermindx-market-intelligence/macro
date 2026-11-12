@@ -5997,19 +5997,19 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
-    2026-11-11 (PR #9610, preserve the current free-content allowance):
-    Receiving main dce366ad retains the complete prophet-lab preimage from
-    incorporated base7e85f62c. Preserve all 401 owners, the original 19-owner
-    WM/KO path closure and all receiving changes in the three shared owners.
-    The unchanged estimator counts 12 commands, 27->30 test references and
-    1433->1553 joined characters in bucket 1: prophet-lab weight 67->73.
-    Add only the original +6 to current 5966/5989/5724: 5972/5995/5730.
-    Main's separately landed free-content +2 and both full histories remain.
-    Keep jobs 137/138/131, ten packs and all selection/runtime/admission limits.
-    All 51 feature/test/receipt blobs and their original modes stay exact H.
-    This is static source accounting, not a new planner or installed run;
-    natural successor CI must qualify the combined tree. Frozen scientific
-    and runtime receipts retain their original inputs, dates and scope.
+#    2026-11-11 (PR #9610, preserve the current free-content allowance):
+#    Receiving main dce366ad retains the complete prophet-lab preimage from
+#    incorporated base7e85f62c. Preserve all 401 owners, the original 19-owner
+#    WM/KO path closure and all receiving changes in the three shared owners.
+#    The unchanged estimator counts 12 commands, 27->30 test references and
+#    1433->1553 joined characters in bucket 1: prophet-lab weight 67->73.
+#    Add only the original +6 to current 5966/5989/5724: 5972/5995/5730.
+#    Main's separately landed free-content +2 and both full histories remain.
+#    Keep jobs 137/138/131, ten packs and all selection/runtime/admission limits.
+#    All 51 feature/test/receipt blobs and their original modes stay exact H.
+#    This is static source accounting, not a new planner or installed run;
+#    natural successor CI must qualify the combined tree. Frozen scientific
+#    and runtime receipts retain their original inputs, dates and scope.
 
 # Prophet #9610 composed with main 0a0e48e4: the original three WM/KO suites
 # add six estimator units to prophet-lab (67 -> 73), selected by every probe.
