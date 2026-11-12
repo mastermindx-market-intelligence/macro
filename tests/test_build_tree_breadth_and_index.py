@@ -130,6 +130,7 @@ def test_meta_labels(world):
     for k in ("dividend_sentence", "group_size_sentence", "source_sentence"):
         assert meta[k]
     assert "turns" in meta["index"]["dividend_effect"]
+    assert "overstated" in meta["index"]["survivors_only_effect"]
     assert "rebalance" in meta["index"]["rebalance_rule"]
     assert meta["first_valid_breadth"] and meta["first_valid_index"]
     assert meta["floors"]["index"] == 5 and meta["floors"]["share_change_rank_state"] == 10

@@ -59,6 +59,7 @@ The sidecar also carries the table year by year.
   - The index needs 5 priced members. Below that the level is missing with reason `below_index_member_floor`, that session carries no return, and the chain resumes from the last valid level.
   - Ranks are taken among valid groups of the same family only.
 - **Index rule:** the existing `engine.baskets._ew_level`. Each session's return is the plain mean of the daily total returns of the members priced that session, so the index rebalances to equal weight daily, and it is chained from 1.0. A difference in dividend method shifts the long-run level of a total-return index, not the timing of its turns.
+- **Survivors only:** the index holds only names alive today, so its past returns are overstated, more so the further back and in themes with high failure rates. Relative turns between groups are less affected than levels, and that is not tested here.
 
 Groups valid for breadth (13-week fixed-set change):
 

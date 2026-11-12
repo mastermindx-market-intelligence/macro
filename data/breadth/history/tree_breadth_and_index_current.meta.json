@@ -413,6 +413,7 @@
   "return": "total return (auto_adjust closes)",
   "floor_gap": "On a session with fewer than 5 priced members the level is missing (reason below_index_member_floor) and that session carries no return; the chain resumes from the last valid level.",
   "dividend_effect": "A difference in dividend method shifts the long-run level of a total-return index, not the timing of its turns.",
+  "survivors_only_effect": "The index holds only names alive today, so its past returns are overstated, more so the further back and in themes with high failure rates; relative turns between groups are less affected than levels, and that is not tested here.",
   "daily_committed": true
  },
  "members": {

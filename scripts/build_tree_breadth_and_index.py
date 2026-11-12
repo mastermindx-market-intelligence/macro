@@ -67,6 +67,10 @@ DIVIDEND_SENTENCE = ("Before about 2000 the two price vendors (this download and
 GROUP_SIZE_SENTENCE = ("In a 10-name group one name moves the share by 10 points, and a 13-week "
                        "change differences two such shares; a large group-level gap between "
                        "vendors can come from one name.")
+SURVIVOR_INDEX_SENTENCE = ("The index holds only names alive today, so its past returns are "
+                           "overstated, more so the further back and in themes with high failure "
+                           "rates; relative turns between groups are less affected than levels, "
+                           "and that is not tested here.")
 INDEX_SENTENCE = ("A difference in dividend method shifts the long-run level of a total-return "
                   "index, not the timing of its turns.")
 SOURCE_SENTENCE = ("These series sit on a different price source from the sector breadth "
@@ -286,6 +290,7 @@ def build(closes_path: Path, download_meta: Path, disagreement: Path, start: str
                    "counts": "any size", "rank": "among valid groups of the same family"},
         "index": {"rebalance_rule": REBALANCE_RULE, "return": "total return (auto_adjust closes)",
                   "floor_gap": FLOOR_GAP_NOTE, "dividend_effect": INDEX_SENTENCE,
+                  "survivors_only_effect": SURVIVOR_INDEX_SENTENCE,
                   "daily_committed": bool(daily)},
         "members": members,
         "valid_last_week": {f: int(lw[(lw.family == f)][gbh.HEADLINE].notna().sum())
