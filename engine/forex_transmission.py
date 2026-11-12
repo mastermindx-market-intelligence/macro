@@ -143,10 +143,17 @@ def _regime_split(da: pd.Series, du: pd.Series, risk_off: pd.Series) -> dict | N
     stress = j[j["r"] > 0]
     calm = j[j["r"] <= 0]
     out = {}
-    if len(calm) >= 60:
-        out["calm"] = round(float(calm["a"].corr(calm["u"])), 2)
-    if len(stress) >= 60:
-        out["stress"] = round(float(stress["a"].corr(stress["u"])), 2)
+    for name, sample in (("calm", calm), ("stress", stress)):
+        if len(sample) < 60:
+            continue
+        values = sample[["a", "u"]]
+        # A constant bucket has no Pearson correlation, even when floating-point
+        # residue makes a nonzero constant appear to have tiny variance.
+        if not np.isfinite(values.to_numpy()).all() or (values.nunique() < 2).any():
+            continue
+        corr = float(sample["a"].corr(sample["u"]))
+        if np.isfinite(corr):
+            out[name] = round(corr, 2)
     return out or None
 
 
