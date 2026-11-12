@@ -166,6 +166,13 @@ cannot qualify. The plan therefore proposes **Radar-P**: the same legs and state
 - It is then *handed* to the desk as a candidate. This programme never computes Radar-P's relation
   to 2020+ outcomes itself; the desk tests 2020–2023 under its own ledger, and 2024-01-02 onward
   stays sealed for everyone.
+- **Known leak, declared up front:** the *set of legs* was itself chosen with 2020+ evidence (legs
+  were kept or killed against a 2020+ holdout; e.g. VIX-term ROC, SKEW and VVIX were dropped that
+  way, `engine/risk_radar.py:8-10`). Re-fitting constants does not remove that. Radar-P therefore
+  ships in two variants: **P-legs-v2** (current leg set, constants clean, selection not) and
+  **P-declared** (a leg set declared from economic rationale before any fit, including legs v2
+  dropped, with constants fit ≤ 2019). Only P-declared may be described as clean of 2020+ outcomes;
+  the desk is told which is which.
 - Expected result, stated in advance: several 2020+-only legs (`bubble_ext`: lift 2.34 in 2020+,
   1.00 full history) will get small weights or drop. That is the honest cost of a clean test.
 
