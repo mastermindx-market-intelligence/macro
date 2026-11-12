@@ -845,3 +845,29 @@ def test_cross_state_carries_file_level_asof_and_generated_at(tmp_path, monkeypa
     # INPUTS but always present on OUTPUT) at the same run date
     assert bare["asof"] == keyed["asof"]
     assert "generated_at" in bare
+
+
+def test_cross_state_asof_fallback_uses_pair_common_date(tmp_path, monkeypatch):
+    """Empty-night fallback: a series one session ahead of the pair (here the bench
+    "spy") must not stamp cross_state.json's ``asof`` past the pair's last common
+    date — the fallback uses the same donor ∩ receiver rule step_cross_pairs
+    stamps, not the max over every series' own last index."""
+    # no cross events tonight: evaluate_cross never fires
+    monkeypatch.setattr(re_, "evaluate_cross", lambda *args, **kwargs: None)
+
+    a, b = _aligned_pair()
+    sectors = _sectors(a, b)
+    universe, closes = _cross_universe(a, b)
+    # bench runs one session past the pair's last common date
+    extra = pd.bdate_range(a.index[-1] + pd.Timedelta(days=1), periods=1)
+    closes["spy"] = pd.concat([closes["spy"], pd.Series([100.0], index=extra)])
+
+    re_.run_nightly(sectors, tmp_path, generated_utc="2026-10-01 05:00 UTC",
+                    universe=universe, closes=closes)
+
+    written = json.loads((tmp_path / "rotation_events" / "cross_state.json").read_text())
+    pair_last = str(a.index[-1].date())
+    later = str(closes["spy"].index[-1].date())
+    assert later > pair_last, "fixture must put the bench one session ahead"
+    assert written["asof"] == pair_last, (
+        f"fallback stamped {written['asof']!r}, expected the pair-common {pair_last!r}")
