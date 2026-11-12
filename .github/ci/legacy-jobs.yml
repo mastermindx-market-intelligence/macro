@@ -5405,6 +5405,11 @@ jobs:
         run: python -m pytest tests/test_admin_inline_handler_attrs.py -q
       - name: admin navigation and copy UX guardrails
         run: python -m pytest tests/test_admin_navigation_ux.py -q
+      # #11154 added this suite with no run: step; the zero-run census failed
+      # every PR on a base at or after it. Same pytest-only lane as the nav test,
+      # which already imports admin.capacity_router.
+      - name: capacity observatory overflow/peak/Claude-lane extension contract
+        run: python -m pytest tests/test_capacity_observatory_extension.py -q
 
   path-prune-lint:
     if: ${{ false }}
