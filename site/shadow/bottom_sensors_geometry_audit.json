@@ -1,12 +1,12 @@
 {
   "schema": "bottom_sensors_geometry_audit.v1",
-  "n_booked": 155147,
+  "n_booked": 156845,
   "booked_dates": [
     "2026-07-06",
-    "2026-11-10"
+    "2026-11-11"
   ],
-  "asof": "2026-11-10",
-  "n_matured": 34514,
+  "asof": "2026-11-11",
+  "n_matured": 35003,
   "by_horizon": {
     "h21": {
       "n_obs": 25229,
@@ -46,45 +46,45 @@
       }
     },
     "h63": {
-      "n_obs": 9285,
+      "n_obs": 9774,
       "decline_geometry": {
         "buckets": {
           "flush": {
-            "mean_fwd_ret": -4.792225638596927e-05,
-            "n": 1396
+            "mean_fwd_ret": -0.0005740240352445787,
+            "n": 1472
           },
           "grind": {
-            "mean_fwd_ret": -0.010739075721963217,
-            "n": 1432
+            "mean_fwd_ret": -0.010614311798148266,
+            "n": 1510
           },
           "mixed": {
-            "mean_fwd_ret": -0.012880887486127673,
-            "n": 1416
+            "mean_fwd_ret": -0.013041919299246018,
+            "n": 1495
           }
         },
-        "flush_minus_grind": 0.010691153465577249
+        "flush_minus_grind": 0.010040287762903687
       },
       "underwater_state": {
         "buckets": {
           "long": {
-            "mean_fwd_ret": -0.002175117235672287,
-            "n": 1374
+            "mean_fwd_ret": -0.0015251312874240807,
+            "n": 1451
           },
           "mid": {
-            "mean_fwd_ret": -0.004861726388112705,
-            "n": 1432
+            "mean_fwd_ret": -0.006189807763704027,
+            "n": 1508
           },
           "short": {
-            "mean_fwd_ret": -0.016504860441259952,
-            "n": 1438
+            "mean_fwd_ret": -0.016352468999827854,
+            "n": 1518
           }
         },
-        "long_minus_short": 0.014329743205587664
+        "long_minus_short": 0.014827337712403774
       }
     }
   },
   "interpretation": "Realized forward-return gaps of the FROZEN structural descriptors per horizon: decline_geometry flush\u2212grind (family E, DISPLAY-CANDIDATE) and underwater_state long\u2212short (family F, ADVERSE-CONTEXT). Descriptive only; empty/thin until horizons elapse.",
   "authority": "DISPLAY-ONLY \u2014 no ranking/gating/allocation surface is touched; a positive gap does NOT promote either descriptor. CHIP promotion is blocked until the true eq_band cache lands (RUL-28).",
   "survivorship": "OPTIMISTIC bound \u2014 free prices serve currently-listed names only.",
-  "generated_utc": "2026-11-11T12:32:05+00:00"
+  "generated_utc": "2026-11-12T11:48:47+00:00"
 }

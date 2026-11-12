@@ -1,6 +1,6 @@
 {
   "schema": "commodity.china_gold_premium_quality.v1",
-  "checked_at": "2026-11-12T11:25:49+00:00",
+  "checked_at": "2026-11-12T11:58:29+00:00",
   "status": "render_mismatch",
   "render_consistent": false,
   "machine_projection_consistent": false,
