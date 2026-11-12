@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T15:39:00.962769+00:00",
-  "count": 3236,
+  "generated_at": "2026-11-12T15:51:10.507802+00:00",
+  "count": 3237,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -526,6 +526,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-f9zwpelkpnk-abd4d8",
+      "title": "Venture Global (VG) Takeaways from Management Meeting After 3Q26 Strong CP2 News, Clear Funding Bridge, and Solid Power Update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:41:14Z",
+      "summary_points": [
+        "CP2 Production Acceleration: Revised to mid-2027 (vs. 2H2027), driven by Middle East conflict, tight LNG supply, and elevated pricing; implies +28% EBITDA upside to $8.5b by 2027.",
+        "2026 EBITDA Guidance Upgrade: Raised to $10.0-10.3b (+14% midpoint), fueled by $21-22/mmbtu Bal26 spot spread and 509-518 cargos, exceeding consensus.",
+        "Critical Arbitration & Geopolitical Risks: CP1 arbitration and Russia/Ukraine peace agreement (impacting gas prices) are top downside risks, threatening pricing tailwinds.",
+        "Capacity Buildout Execution: 85-100 mtpa confirmed with early 2024 FIDs; bolt-on financing via project debt and pre-FID contracts reduces 2029 footprint uncertainty."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
