@@ -1,0 +1,209 @@
+[
+  {
+    "path": "engine/risk_radar.py",
+    "blob": "94222d44ec102e728da5443e2082da73ad29f17f",
+    "local_git_blob": "94222d44ec102e728da5443e2082da73ad29f17f",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 94997,
+    "sha256": "31668c7fe097cdf631edb6cca6e77990b40afdb3d4cb37d27596336689afe70d"
+  },
+  {
+    "path": "engine/risk_radar_scorecard.py",
+    "blob": "1d9d694104d26971d24642cadb6f793ec0d44fd8",
+    "local_git_blob": "1d9d694104d26971d24642cadb6f793ec0d44fd8",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 45336,
+    "sha256": "122025b98da098d1da8dc7f9a980fa2d31d5e4e29b128c1481725b9e73583634"
+  },
+  {
+    "path": "engine/risk_radar_backtest.py",
+    "blob": "918327cb330504cd0e15112fbecdb5c47b0cd04a",
+    "local_git_blob": "918327cb330504cd0e15112fbecdb5c47b0cd04a",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 22119,
+    "sha256": "f61a2d2fbc406eae6f9410d5a966801169a15607b61fddfea8531fa7b047bda4"
+  },
+  {
+    "path": "engine/regime.py",
+    "blob": "aede18b357e940d19fc26572f513f2f58a9bde58",
+    "local_git_blob": "aede18b357e940d19fc26572f513f2f58a9bde58",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 18125,
+    "sha256": "9a1ad0d2857584cf3c807292759a1741493a0501fa19da036d4136fee7a4cd54"
+  },
+  {
+    "path": "engine/axes.py",
+    "blob": "03dfda74c835c8c10c6a4140ac1fc72843593fa3",
+    "local_git_blob": "03dfda74c835c8c10c6a4140ac1fc72843593fa3",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 4082,
+    "sha256": "4138dafc4dd08180b4bacca50a196118201321d3e71052e22abe157aab3eb536"
+  },
+  {
+    "path": "engine/fed_path.py",
+    "blob": "fd72de0b80418aee5de9cf7236251fde70c38528",
+    "local_git_blob": "fd72de0b80418aee5de9cf7236251fde70c38528",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 56415,
+    "sha256": "bea2996929482d81ce8abbc3d61bdf795e540121a3668d684dad266820593e84"
+  },
+  {
+    "path": "engine/fed_stance.py",
+    "blob": "20b84b95484a782edae89929d7b5f63a18e0e579",
+    "local_git_blob": "20b84b95484a782edae89929d7b5f63a18e0e579",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 7253,
+    "sha256": "5750e729cf4f760fdab9d16f3fee75e5701d12cfec041f8893c7247938ea01df"
+  },
+  {
+    "path": "engine/conditions.py",
+    "blob": "d5c657d300d9d3a19d28bbb1ccf9fb5a2101f898",
+    "local_git_blob": "d5c657d300d9d3a19d28bbb1ccf9fb5a2101f898",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 64372,
+    "sha256": "2a19896a56cef3a8e3e128db2d806dd2be67b59633890784a963e32579e4797b"
+  },
+  {
+    "path": "engine/equity_alloc.py",
+    "blob": "ced9b9e0610e550fb9841c423dabc1045c9196a4",
+    "local_git_blob": "ced9b9e0610e550fb9841c423dabc1045c9196a4",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 23931,
+    "sha256": "1034757fb48a40b37fe686cae8ad52ff38f0ef8fa3be8009301b364c8c46542a"
+  },
+  {
+    "path": "engine/run.py",
+    "blob": "2311ec6af7fd9c089cb8c1898ec8286f28086c06",
+    "local_git_blob": "2311ec6af7fd9c089cb8c1898ec8286f28086c06",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 62566,
+    "sha256": "5775f7cdab8b96953e1536fab7496c502ffbfce020b67b47d8251e1b4b7b3df6"
+  },
+  {
+    "path": "data/risk_radar/probability_evidence.json",
+    "blob": "3fd3b0a514e9531e1586f221aba371abc960c7cd",
+    "local_git_blob": "3fd3b0a514e9531e1586f221aba371abc960c7cd",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 17900,
+    "sha256": "cdc8fe875225a4aa69a345e38ad8b179e9e970ab5380a5d4d2eec25021476381"
+  },
+  {
+    "path": "data/risk_radar/scorecard.json",
+    "blob": "a8efb6aa0ef6279495f6c0a5ef3af32620c420d7",
+    "local_git_blob": "a8efb6aa0ef6279495f6c0a5ef3af32620c420d7",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 29778,
+    "sha256": "68380e0322c31e150b17aef5d41266abe63690fdfa54ae7d2a821785809ba0f9"
+  },
+  {
+    "path": "data/regime/latest.json",
+    "blob": "a41126475397740e36b9a5395bf44f82abf089c0",
+    "local_git_blob": "a41126475397740e36b9a5395bf44f82abf089c0",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 972540,
+    "sha256": "6cd0d2efcb3b4b280ee7faac9a4380193dd62e31cc22f6deb211807867279647"
+  },
+  {
+    "path": "data/rates_command/latest.json",
+    "blob": "d973ed9a92ada1949ff39155a187b56fcef24939",
+    "local_git_blob": "d973ed9a92ada1949ff39155a187b56fcef24939",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 152517,
+    "sha256": "c5f79c2360a5ca4f211f737964c26e171cdb0e184c4157a51d8329ef24d0d634"
+  },
+  {
+    "path": "engine/rates_command_outlook.py",
+    "blob": "7cbc8c2e7f3b4b6756d9553488010318c8d81173",
+    "local_git_blob": "7cbc8c2e7f3b4b6756d9553488010318c8d81173",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 41900,
+    "sha256": "fcce1fd5e1b44ea75248b4a7ed22a676ca609ee4e363cae179aa9ab5c302ed4c"
+  },
+  {
+    "path": "engine/rates_command_outlook_compose.py",
+    "blob": "3c55ca8c0733285fb0429a918b25d56260a6ca80",
+    "local_git_blob": "3c55ca8c0733285fb0429a918b25d56260a6ca80",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 42836,
+    "sha256": "ddd7eae932566e7b6f2bc61c0c1417c7cd95ed706fa2c37a29f99bd0f0ca67cc"
+  },
+  {
+    "path": "engine/rates_command_basis.py",
+    "blob": "1345e4b4f1bc2121b0ce947e4d95c14243d922f2",
+    "local_git_blob": "1345e4b4f1bc2121b0ce947e4d95c14243d922f2",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 53517,
+    "sha256": "0ab26693c004b202683b6637c99961cb4dd641036d6776cf0959c9e14efde3f5"
+  },
+  {
+    "path": "engine/rates_inflation_command.py",
+    "blob": "80615675441075bce874b96ed3c82393c32728c9",
+    "local_git_blob": "80615675441075bce874b96ed3c82393c32728c9",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 111455,
+    "sha256": "e6ce7ab274295944acb9c9713d54ab50f4dc6741398f1725998a891d75c88e63"
+  },
+  {
+    "path": "scripts/build_rates_command.py",
+    "blob": "c5a915e1998ffd5a56d2fd9f2ff3bf920e49dbe1",
+    "local_git_blob": "c5a915e1998ffd5a56d2fd9f2ff3bf920e49dbe1",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 9684,
+    "sha256": "81bf9747e273c6fb42f7dc4897ae52534e313c4c286f3e3107f35b4ef1895e1f"
+  },
+  {
+    "path": "engine/regime_hmm.py",
+    "blob": "9d3f1d3a2a7453eb9d55494108908ff6faf16d2f",
+    "local_git_blob": "9d3f1d3a2a7453eb9d55494108908ff6faf16d2f",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 8750,
+    "sha256": "243082a2d762465e88e30d59de884384517220ad5619f8e243c59fcac87c3dd9"
+  },
+  {
+    "path": "engine/anticipation.py",
+    "blob": "83a614a41248cabae87517455d61bba213183d20",
+    "local_git_blob": "83a614a41248cabae87517455d61bba213183d20",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 20609,
+    "sha256": "ca263c513b504f17d110b4dd47e602fda202c382b87e1567c2adfb6a1f23921d"
+  },
+  {
+    "path": "engine/odds_lab.py",
+    "blob": "38303fe8dea8b079b66c7e9feed539c520550f02",
+    "local_git_blob": "38303fe8dea8b079b66c7e9feed539c520550f02",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 23768,
+    "sha256": "3c2c9eaf1dc67f254d6363d664947407b8f0fef4ee5f05f3872ae180a1042aef"
+  },
+  {
+    "path": "data/regime/anticipation_gate.json",
+    "blob": "606f22fbd654851c7d5409ac5dae904d1d8902c8",
+    "local_git_blob": "606f22fbd654851c7d5409ac5dae904d1d8902c8",
+    "exact": true,
+    "transport_normalization": "removed_patch_transport_extra_newline",
+    "bytes": 1141,
+    "sha256": "6b2893a5ab29f67c8c18aeb35cf29f75628dfff20c7bf9e9d9f87580adc0df7c"
+  }
+]

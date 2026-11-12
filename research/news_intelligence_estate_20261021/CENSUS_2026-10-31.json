@@ -1,0 +1,3817 @@
+{
+  "schema": "news_intelligence_research_census.v1",
+  "purpose": "Read-only evidence index, not a lifecycle registry or authority grant",
+  "observed_date": "2026-10-31",
+  "pins": {
+    "Mastermind": "bb85b429f2ffffd38408080ce4df7d6378c34100",
+    "macro": "6e721225979bc786e3a756cb41fdf71665e4efbe",
+    "mastermind-terminal": "69e8e9f0eaad94180a83b108d05f16ad48c48950"
+  },
+  "prs": [
+    {
+      "repo": "macro",
+      "number": 9974,
+      "title": "docs: audit news estate and plan Fable end-to-end completion",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9974",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-21T11:47:54Z",
+      "updated_at": "2026-10-21T11:47:57Z",
+      "head_sha": "13a3408bae6695bc51e2dfdb07c670bb01d3d27f",
+      "head_branch": "sol/web-news-intelligence-estate-plan-20261021-sol-001",
+      "base_sha": "5c6fdb2ed1f013ffc008fde904e3be72b4524873",
+      "base_branch": "main",
+      "changed_files": 2,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [
+        "merge-on-green"
+      ],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 10039,
+      "title": "agentos: open WS-NEWS-INTELLIGENCE-ESTATE-CONVERGENCE + wave-1 handoff (records only)",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10039",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-22T07:44:27Z",
+      "updated_at": "2026-10-22T07:44:29Z",
+      "head_sha": "4b300489be9fcaeec3dab3b256bbe60d9ff47998",
+      "head_branch": "claude/ssd-nice-chandrasekhar-ceabb5-f1507dc6ef152620",
+      "base_sha": "af327136d673cfdba1b34b61bd0f89d0ecadeac5",
+      "base_branch": "main",
+      "changed_files": 2,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [
+        "merge-on-green"
+      ],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 10043,
+      "title": "[news-estate P1D] news_llm fails closed when enabled is absent",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10043",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T07:58:09Z",
+      "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+      "head_branch": "lane/ne-p1d-newsllm-20261022-r1",
+      "base_sha": "04fd203a4bccabce6982473428f1b4e8323e1b6f",
+      "base_branch": "main",
+      "changed_files": 2,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": [],
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119728266559"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710227376"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226984"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226982"
+        },
+        {
+          "name": "ci-pack-6",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226888"
+        },
+        {
+          "name": "ci-pack-9",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226865"
+        },
+        {
+          "name": "ci-pack-11",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226857"
+        },
+        {
+          "name": "ci-pack-7",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226774"
+        },
+        {
+          "name": "ci-pack-8",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226754"
+        },
+        {
+          "name": "ci-pack-10",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226725"
+        },
+        {
+          "name": "ci-pack-5",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226718"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226706"
+        },
+        {
+          "name": "ci-pack-4",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226670"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226645"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119709315987"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119709312430"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119709309081"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119708820192"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119708817204"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744272965/job/119708762025"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744272965/job/119708761759"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744272965/job/119708761577"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744272668/job/119708761446"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119708760698"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119708760328"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744272965/job/119708759676"
+        }
+      ],
+      "review_count": 0
+    },
+    {
+      "repo": "macro",
+      "number": 10044,
+      "title": "[news-estate A3] correction/removal/rights propagation across qbus read models",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10044",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T08:07:52Z",
+      "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+      "head_branch": "lane/ne-a3-prop-20261022-r1",
+      "base_sha": "2d6558b357bce8fc4c0554beb42529d20922a637",
+      "base_branch": "main",
+      "changed_files": 1,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": [],
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119718339203"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119714208090"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119714205783"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119714205721"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119713102819"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119713099504"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119713092232"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119712785531"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119712781587"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472411/job/119712704334"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472411/job/119712704286"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472278/job/119712703861"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472411/job/119712703722"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119712702905"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119712702554"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472411/job/119712702075"
+        }
+      ],
+      "review_count": 0
+    },
+    {
+      "repo": "macro",
+      "number": 10046,
+      "title": "[news-estate A1] source/endpoint/publisher delivery matrix",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10046",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T08:23:49Z",
+      "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+      "head_branch": "lane/ne-a1-matrix-20261022-r1",
+      "base_sha": "9b48e798a3eba4b76d0bd04a25293f647fea06c2",
+      "base_branch": "main",
+      "changed_files": 1,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": [],
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119723618263"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119720770549"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119720768640"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119720768635"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119720768618"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119720768590"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119719845295"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119719841457"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119719837039"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119719355265"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119719351255"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747420695/job/119719272159"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421348/job/119719258622"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421348/job/119719258401"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421348/job/119719258041"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421348/job/119719256416"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119719256316"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119719255556"
+        }
+      ],
+      "review_count": 0
+    },
+    {
+      "repo": "macro",
+      "number": 10048,
+      "title": "[news-estate NE-D1] D1 trace of news inputs into engines and consumers",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10048",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T08:30:08Z",
+      "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+      "head_branch": "lane/ne-d1-trace-20261022-r1",
+      "base_sha": "9b48e798a3eba4b76d0bd04a25293f647fea06c2",
+      "base_branch": "main",
+      "changed_files": 1,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": [],
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119726081537"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119723092905"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119723090811"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119723090799"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119723090778"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119723090716"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119722482373"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119722479720"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119722475763"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119721962094"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119721956418"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206291/job/119721881623"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206291/job/119721881314"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206291/job/119721881077"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748205837/job/119721880058"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119721879888"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119721879463"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206291/job/119721879135"
+        }
+      ],
+      "review_count": 0
+    },
+    {
+      "repo": "macro",
+      "number": 10049,
+      "title": "[news-estate NE-B1] B1 schema inventory of the news object families",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10049",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T09:09:32Z",
+      "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+      "head_branch": "lane/ne-b1-inventory-20261022-r1",
+      "base_sha": "9b48e798a3eba4b76d0bd04a25293f647fea06c2",
+      "base_branch": "main",
+      "changed_files": 1,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": [],
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119755509213"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119740923264"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119740922646"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119740922608"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119740922551"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119740922538"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739519754"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739516237"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739512774"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739127975"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739124195"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250482/job/119738768906"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250482/job/119738768813"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250482/job/119738768789"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119738767725"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119738767467"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250482/job/119738766701"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753244867/job/119738751326"
+        }
+      ],
+      "review_count": 0
+    },
+    {
+      "repo": "macro",
+      "number": 10056,
+      "title": "[news-estate A5] transport/coverage observability gaps",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10056",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T08:49:38Z",
+      "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+      "head_branch": "lane/ne-a5-obs-20261022-r1",
+      "base_sha": "6a4c0079d1aec13b08cb554f6f7424b775165d09",
+      "base_branch": "main",
+      "changed_files": 1,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": [],
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119739605723"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119731705237"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119731704554"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119731704231"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119731704198"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119731704093"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119730697609"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119730694295"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119730685971"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673058/job/119730238137"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119730232244"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119730229088"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673058/job/119730225744"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673058/job/119730169200"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119730168427"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119730168122"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750672729/job/119730168095"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673058/job/119730167854"
+        }
+      ],
+      "review_count": 0
+    },
+    {
+      "repo": "macro",
+      "number": 10063,
+      "title": "[news-estate NE-B4] gated_v3 draw as registered (issuer fallback, ni-edgar-body-2, gates-2) + census verdict",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10063",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T09:05:36Z",
+      "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+      "head_branch": "lane/ne-b4-gated-v3-20261022-r3",
+      "base_sha": "2e10d8a8f984d9dc8a7cb46b05823378c5f2248d",
+      "base_branch": "main",
+      "changed_files": 9,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": [],
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119750050787"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740128235"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740127266"
+        },
+        {
+          "name": "ci-pack-11",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126857"
+        },
+        {
+          "name": "ci-pack-9",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126801"
+        },
+        {
+          "name": "ci-pack-10",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126760"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126755"
+        },
+        {
+          "name": "ci-pack-8",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126749"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126726"
+        },
+        {
+          "name": "ci-pack-6",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126712"
+        },
+        {
+          "name": "ci-pack-4",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126697"
+        },
+        {
+          "name": "ci-pack-7",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126694"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126681"
+        },
+        {
+          "name": "ci-pack-5",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126661"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739123230"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739117912"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119738958691"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119738955128"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119738950549"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752740984/job/119737062742"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752740984/job/119737062530"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752740984/job/119737062491"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119737060810"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119737060493"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752740984/job/119737060086"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752739261/job/119737057187"
+        }
+      ],
+      "review_count": 0
+    },
+    {
+      "repo": "macro",
+      "number": 9612,
+      "title": "Rebuild News intelligence cockpit and live delivery",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9612",
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-30T19:43:19Z",
+      "head_sha": "2141bb12d38557c1c42ae6c8e41e7c5f53b840fc",
+      "head_branch": "sol/web-news-cockpit-rebuild-20261018-astra-01",
+      "base_sha": "0feedfc5e722b3d7f86b53ca91b511cbad052886",
+      "base_branch": "main",
+      "changed_files": 100,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [
+        "merge-blocked"
+      ],
+      "requested_reviewers": [],
+      "review_count": 0
+    },
+    {
+      "repo": "macro",
+      "number": 9963,
+      "title": "fix(news): close live editorial gaps in curated ticker feeds",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9963",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-21T11:33:25Z",
+      "updated_at": "2026-10-21T12:25:10Z",
+      "head_sha": "d19374c3dc8d599d92ec7c42259ec5ed22ec00e6",
+      "head_branch": "sol/web-ticker-news-editorial-live-gap-20261021-c3",
+      "base_sha": "ca7edbcf50df21bd321bffa3433e5f105d3335da",
+      "base_branch": "main",
+      "changed_files": 8,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 9990,
+      "title": "Add versioned editorial views to curated ticker news",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9990",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-21T16:23:25Z",
+      "updated_at": "2026-10-22T06:14:38Z",
+      "head_sha": "60b07d7c8ad66ad5afe412c4cb6e4f3cf15006a4",
+      "head_branch": "sol/web-ticker-news-editorial-relevance-20261021-c3",
+      "base_sha": "13b0bab82abfdb59d60664bd3e85a104ab8678f2",
+      "base_branch": "main",
+      "changed_files": 13,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [
+        "merge-on-green"
+      ],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 10034,
+      "title": "fix(news): reject session previews and classify portfolio commentary",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10034",
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T18:58:13Z",
+      "head_sha": "5a4b0f9265674718fe5cd636fb01153ba6de6fbc",
+      "head_branch": "sol/news-premium-format-20261022-c3",
+      "base_sha": "af0ba2d50a32c7a422508b442f35010dcdf154a2",
+      "base_branch": "main",
+      "changed_files": 5,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 10023,
+      "title": "feat(news): add original Chinese CN/HK ticker news, disabled by default",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10023",
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-30T21:29:02Z",
+      "head_sha": "30672c5d9ac54f2d287e00af6fcb25f94646e086",
+      "head_branch": "sol/web-terminal-cn-hk-news-20261021",
+      "base_sha": "64ef5131a5f50fb65f0ad25a049a457e18258495",
+      "base_branch": "main",
+      "changed_files": 26,
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "labels": [
+        "merge-on-green",
+        "merge-blocked"
+      ],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 10136,
+      "title": "[DRAFT/HOLD] Tiingo News qbus rights-gated integration — supersedes #8697",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10136",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-24T21:21:31Z",
+      "head_sha": "221e1b8284b78466e5dc02173b06290cf77d9e43",
+      "head_branch": "sol/web-tiingo-news-intelligence-20261009-chairman-001",
+      "base_sha": "6347176ec3842915d63c66a55e0aa52b3dd01f78",
+      "base_branch": "main",
+      "changed_files": 23,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": [
+        "chriswong6031-creator"
+      ]
+    },
+    {
+      "repo": "macro",
+      "number": 8697,
+      "title": "[DRAFT/HOLD] Add rights-gated Tiingo news to News Intelligence with PIT quality audit",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8697",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-24T07:19:44Z",
+      "head_sha": "1028d37615e023b58925d530512c3a7bd3d96575",
+      "head_branch": "sol/tiingo-news-quality-20261009",
+      "base_sha": "200c72cdc69b93c494e2615076c03f0f3c8313fd",
+      "base_branch": "main",
+      "changed_files": 11,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 10119,
+      "title": "Press: qualify separately retained SEC issuer releases",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10119",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-23T19:35:28Z",
+      "updated_at": "2026-10-23T19:35:31Z",
+      "head_sha": "df12775397e0b82c200c41c1666ba4d4bc0d6060",
+      "head_branch": "claude/ssd-press-retained-issuer-source-20261023-727aa3b40592a764",
+      "base_sha": "1fb691452717e8c371339e185458a6a5e9938a83",
+      "base_branch": "main",
+      "changed_files": 6,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [
+        "merge-on-green"
+      ],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 9732,
+      "title": "fix(news-impact): preserve proposition-local material changes",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9732",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-22T18:06:07Z",
+      "updated_at": "2026-10-22T18:32:10Z",
+      "head_sha": "6f2c0e35671c046e61b1d444ab6b10007e6ce94c",
+      "head_branch": "sol/web-catalyst-news-delta-r4-20261019",
+      "base_sha": "7a8f690d35693976b2854575833eb2041618a005",
+      "base_branch": "main",
+      "changed_files": 26,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [
+        "merge-on-green"
+      ],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 9639,
+      "title": "feat(ontology): connect Macro research paths to native company and theme evidence",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9639",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-23T12:35:01Z",
+      "updated_at": "2026-10-23T12:35:04Z",
+      "head_sha": "819d1f357a99228d45fa4196582ac77aa0999c92",
+      "head_branch": "claude/ssd-marketontology-macro-consumer-171133002144a7d2",
+      "base_sha": "0955f19c8e474b0f65da479c42a02ac91824cd21",
+      "base_branch": "main",
+      "changed_files": 512,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [
+        "merge-blocked"
+      ],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 9507,
+      "title": "Sector/theme allocation intelligence — R8 native review repairs",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9507",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-18T08:57:07Z",
+      "head_sha": "d86fbab2269cbf1c5f73003322bc4a7ab2ee29a7",
+      "head_branch": "sol/rotation-intelligence-architecture-20261016-c1",
+      "base_sha": "dfdd93a75da34417deb1ad328c79f0bc795cf458",
+      "base_branch": "main",
+      "changed_files": 44,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": [
+        "mastermindx-3"
+      ]
+    },
+    {
+      "repo": "macro",
+      "number": 9616,
+      "title": "[HOLD-FOR-SOL] Catalyst stock context: peer, news and entry research consumer",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9616",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T17:40:52Z",
+      "head_sha": "d6b5f51bd9bb60decf5d2a51e375217bfba9f6ac",
+      "head_branch": "sol/web-catalyst-stock-context-r1-20261019",
+      "base_sha": "270537f66abaf4e584ddbeafb8ea12c84af06270",
+      "base_branch": "main",
+      "changed_files": 0,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 9552,
+      "title": "feat(catalyst): source-bound opportunity attention and entitled read API",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9552",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-23T06:49:56Z",
+      "updated_at": "2026-10-23T06:56:10Z",
+      "head_sha": "b44f9fbbb7f451ea0c05bb3075bfad1689c6a6b5",
+      "head_branch": "sol/web-catalyst-opportunity-macro-e2e-20261017",
+      "base_sha": "afcedb87dd6c6ccaccf53ed14261c69d9333a89e",
+      "base_branch": "main",
+      "changed_files": 28,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [
+        "merge-on-green"
+      ],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 10088,
+      "title": "fix(research): truthfully report MarketDesk outages and bound recovery backlog",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10088",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-29T21:34:55Z",
+      "head_sha": "821a60e2499c3dc938d8c00e7d86a94caea4f633",
+      "head_branch": "sol/web-rd-integration-review-20261022",
+      "base_sha": "fc6ba5d55e3fb44f34e6e74407e95bd222cb6217",
+      "base_branch": "main",
+      "changed_files": 35,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "labels": [
+        "merge-blocked"
+      ],
+      "requested_reviewers": [
+        "mastermindx-2",
+        "mastermindxgroksecretary"
+      ]
+    },
+    {
+      "repo": "macro",
+      "number": 7982,
+      "title": "feat(news): project owner-bound guidance changes to ticker context",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7982",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-15T23:27:02Z",
+      "head_sha": "19437a4ac30087acb6335fed958f1c4f38704ac1",
+      "head_branch": "claude/news-guidance-comparison-20260924-sol-001",
+      "base_sha": "d3a4bee82462556c899645a59a5ea22b5f3af950",
+      "base_branch": "main",
+      "changed_files": 85,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 9422,
+      "title": "fix(prophet): protect news-impact producer output integrity and case paths",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9422",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-15T03:10:24Z",
+      "head_sha": "43c7fc62fca8ab8cdf6205c924e69c59fea5c15d",
+      "head_branch": "sol/prophet-producer-io-hardening-20261014",
+      "base_sha": "f4da7548b6ddfcc3e41794f1a040c184e9ddcdc0",
+      "base_branch": "main",
+      "changed_files": 2,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 9533,
+      "title": "research: Catalyst-to-Opportunity CEO architecture and complete Fable build plan",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9533",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-23T07:12:46Z",
+      "head_sha": "bb0f626bbaa316aeae466e6ae2a39e491b638549",
+      "head_branch": "research/catalyst-opportunity-ceo-20261017",
+      "base_sha": "8c1c2fe9c2d70bc1a0a1dbc6ae5667d4eaa31f8c",
+      "base_branch": "main",
+      "changed_files": 11,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 8775,
+      "title": "Add bounded event-family consequence views to News",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8775",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-11T08:09:22Z",
+      "updated_at": "2026-10-11T08:09:25Z",
+      "head_sha": "c40a856e04b3fcaf21497597eb9a8122cf77d0f6",
+      "head_branch": "claude/ssd-mo-a-f05-family-consequences-93b199036e248116",
+      "base_sha": "cd06b9ae010c17a0d8cb60989730fa766c89a724",
+      "base_branch": "main",
+      "changed_files": 25,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 8468,
+      "title": "Catalyst P5: accrue post-clock Bio source outcomes",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8468",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-23T11:24:09Z",
+      "head_sha": "e19130adff6236a959ca445befd35bea6ef455db",
+      "head_branch": "claude/catalyst-p5-outcome-accrual-20261005",
+      "base_sha": "0955f19c8e474b0f65da479c42a02ac91824cd21",
+      "base_branch": "main",
+      "changed_files": 2,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 8258,
+      "title": "fix(catalysts): exclude event-overlapping pre-event controls",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8258",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-23T11:57:56Z",
+      "head_sha": "2f2d4dcebfc8ad6482ef90ada9ef7b067a3c082c",
+      "head_branch": "claude/catalyst-pre-event-boundary-20261002",
+      "base_sha": "0955f19c8e474b0f65da479c42a02ac91824cd21",
+      "base_branch": "main",
+      "changed_files": 3,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 6514,
+      "title": "contracts(k3d): source-qualified economic propagation hypotheses",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6514",
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-31T04:31:25Z",
+      "head_sha": "5623fe34098f50b0b6dd36cf3c190f2acffeb7e3",
+      "head_branch": "claude/k3d-economic-propagation",
+      "base_sha": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+      "base_branch": "main",
+      "changed_files": 48,
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "labels": [
+        "merge-on-green",
+        "merge-blocked"
+      ],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 8698,
+      "title": "Tiingo: preserve receipt identity and qualify bounded BOATS delivery",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8698",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-11T23:05:16Z",
+      "updated_at": "2026-10-18T02:03:44Z",
+      "head_sha": "2a08250fe61aa59ad3e1581149f0b93e9d5a17cf",
+      "head_branch": "sol/tiingo-data-archive-20261009",
+      "base_sha": "3a92cf50888d5348e3f957846e489a088d8b82e3",
+      "base_branch": "main",
+      "changed_files": 158,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 9846,
+      "title": "Integrate source-qualified news across company consumers",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9846",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-20T17:06:32Z",
+      "updated_at": "2026-10-20T20:00:38Z",
+      "head_sha": "b82af8dae3b05e7eaea198cfe49d61fb9b8ce595",
+      "head_branch": "sol/web-news-shared-integration-20261020-c3",
+      "base_sha": "d59b99b9afbe99ef528ce80db0ff66f0d9846abc",
+      "base_branch": "main",
+      "changed_files": 110,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 9942,
+      "title": "Curate ticker news before pagination, grouping and live projection",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9942",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-21T08:34:00Z",
+      "updated_at": "2026-10-21T12:25:21Z",
+      "head_sha": "08e538a8f51feac8ac7d7d62a5e9a2d9ad876ca4",
+      "head_branch": "sol/web-ticker-news-provider-quality-20261020-c3",
+      "base_sha": "5f82b33a6e6bbb674a51871741d2e871f48b7753",
+      "base_branch": "main",
+      "changed_files": 13,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "macro",
+      "number": 10030,
+      "title": "company-intelligence: M2 precision — blind stratified sample, decoys, Wilson scorer (GMI ORCH-REL M2)",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10030",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T05:31:26Z",
+      "head_sha": "31807b6448947d238bdc9341935c26441ab81923",
+      "head_branch": "lane/gmi-rel-m2-prec-build-20261022-r1",
+      "base_sha": "54b7b588905b05ddd3b5fa13e98651f3e0782e1c",
+      "base_branch": "main",
+      "changed_files": 34,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1081,
+      "title": "Give News a full-height reading sidebar and plan shared briefs",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1081",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-24T11:18:01Z",
+      "head_sha": "a10657ee8eaa0aa12c98e2ba5563a8680bfb9c9b",
+      "head_branch": "sol/web-terminal-news-sidebar-20261018-c4",
+      "base_sha": "d943b0c12221b8e640145eca0d63d0971217849f",
+      "base_branch": "master",
+      "changed_files": 48,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [
+        "merge-blocked"
+      ],
+      "requested_reviewers": [],
+      "review_count": 0
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1094,
+      "title": "Label curated ticker news and invalidate corrected story details",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1094",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-21T07:59:53Z",
+      "updated_at": "2026-10-21T12:25:22Z",
+      "head_sha": "a26c7c63c415064ab385a15405e7bebf1e73879a",
+      "head_branch": "sol/web-ticker-news-provider-quality-20261020-c3",
+      "base_sha": "ea7b20286ffeda9194597245b147719d6ed515fd",
+      "base_branch": "master",
+      "changed_files": 26,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1101,
+      "title": "Add explicit editorial views to ticker News",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1101",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-21T16:27:50Z",
+      "updated_at": "2026-10-22T01:11:26Z",
+      "head_sha": "d2c4c64ea2c7e10cfe9fbe8f1c57d57cb1b9f2d3",
+      "head_branch": "sol/web-ticker-news-editorial-relevance-20261021-c3",
+      "base_sha": "b02b86d3c7684ac863a9144433384e3018a25528",
+      "base_branch": "master",
+      "changed_files": 62,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1105,
+      "title": "fix(news): let unavailable ticker feeds retry in place",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1105",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-21T22:44:30Z",
+      "updated_at": "2026-10-22T00:51:42Z",
+      "head_sha": "8a420d7f28c826029640d318c1cb93ff0218a261",
+      "head_branch": "sol/web-ticker-news-retry-control-20261021-c3",
+      "base_sha": "8196744cd837cbfd5924338439bd9a3f1f264c5c",
+      "base_branch": "master",
+      "changed_files": 42,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [
+        "merge-on-green"
+      ],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1110,
+      "title": "feat(news): R2 evidence-ladder lexicon and row contract delta (publisher, annotation)",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1110",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-22T07:24:56Z",
+      "updated_at": "2026-10-22T07:25:00Z",
+      "head_sha": "ca8347f8230cb6ed93b080073fdd28a39bade51d",
+      "head_branch": "claude/news-r2-l1",
+      "base_sha": "4615f80dc8a6855041103c404e4457a6597445f0",
+      "base_branch": "master",
+      "changed_files": 5,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1111,
+      "title": "feat(news): R2 evidence ladder, evidence view and NEXT CHECK in the ticker news rail (L2)",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1111",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-22T15:57:52Z",
+      "updated_at": "2026-10-22T15:57:55Z",
+      "head_sha": "58c44ed9d6c10dd5b1692666a51805715e0c0792",
+      "head_branch": "claude/news-r2-l2",
+      "base_sha": "9c92767f415ef4ef69e8f80b946a1064c9b1fd74",
+      "base_branch": "master",
+      "changed_files": 5,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1128,
+      "title": "test(news): R2 evidence-ladder e2e cells and committed crops (spec §7 R1–R7) (L3)",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1128",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-22T17:43:58Z",
+      "updated_at": "2026-10-22T17:44:02Z",
+      "head_sha": "c78b705d56e80c578999b22780e44254d54f00ec",
+      "head_branch": "claude/news-r2-l3",
+      "base_sha": "443b3fc0491418bfbcb46653a139c8bdee7db3e7",
+      "base_branch": "master",
+      "changed_files": 24,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1113,
+      "title": "feat(news): render original Chinese publishers for CN and HK tickers",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1113",
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-24T11:17:59Z",
+      "head_sha": "3b2f69ae1a3b6d774473b4b7e7f6226e98b30685",
+      "head_branch": "sol/web-terminal-cn-hk-news-ui-20261021",
+      "base_sha": "0aecf8e95dd7888b3453834d75f3e072e464bb6e",
+      "base_branch": "master",
+      "changed_files": 28,
+      "mergeable": true,
+      "mergeable_state": "behind",
+      "labels": [
+        "merge-blocked"
+      ],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1129,
+      "title": "fix(news): the evidence ladder owns its line so Mark reviewed never runs into it (R2 L4)",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1129",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T16:48:32Z",
+      "head_sha": "e46d354d4cc68c148671ee4c4c16d21e0edec91a",
+      "head_branch": "claude/news-r2-l4",
+      "base_sha": "32b6ba43704a5a87db2582b2b9617271382358b5",
+      "base_branch": "master",
+      "changed_files": 25,
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "labels": [],
+      "requested_reviewers": [],
+      "review_count": 0
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1130,
+      "title": "design(news): R3 exploration — three mechanism-distinct rail directions, boards, crops, proposals",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1130",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-22T16:45:27Z",
+      "head_sha": "080a61bc7908ab79d69063a6487c059eadf4684f",
+      "head_branch": "claude/news-r3-design",
+      "base_sha": "32b6ba43704a5a87db2582b2b9617271382358b5",
+      "base_branch": "master",
+      "changed_files": 43,
+      "mergeable": true,
+      "mergeable_state": "behind",
+      "labels": [],
+      "requested_reviewers": [],
+      "review_count": 0
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1141,
+      "title": "test(terminal): CI proof for the authenticated ticker-news proxy auth boundary",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1141",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-24T07:19:11Z",
+      "head_sha": "cad1f0d7fb4c466018f7feea08d395ee4e1e2f17",
+      "head_branch": "claude/ticker-news-proxy-auth-boundary-tests",
+      "base_sha": "61c504a472120935458874db04757f6064b91e6f",
+      "base_branch": "master",
+      "changed_files": 1,
+      "mergeable": true,
+      "mergeable_state": "behind",
+      "labels": [],
+      "requested_reviewers": [
+        "mastermindx-3"
+      ]
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1038,
+      "title": "feat(catalyst): integrate evidence-first opportunity discovery into Terminal",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1038",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-24T06:31:11Z",
+      "head_sha": "976e3f7178075521bc587c4c9291dea0aef99587",
+      "head_branch": "sol/web-catalyst-opportunity-terminal-e2e-20261017",
+      "base_sha": "4f0e533a8ca6438470c51ef256f83b52a6302b05",
+      "base_branch": "master",
+      "changed_files": 47,
+      "mergeable": true,
+      "mergeable_state": "behind",
+      "labels": [],
+      "requested_reviewers": [
+        "mastermindx-2",
+        "mastermindx-3"
+      ]
+    },
+    {
+      "repo": "Mastermind",
+      "number": 1661,
+      "title": "[FABRIC][SOURCE ONLY] Reuse the original private review packet safely",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1661",
+      "state": "closed",
+      "draft": false,
+      "merged": true,
+      "merged_at": "2026-10-21T09:29:50Z",
+      "updated_at": "2026-10-21T09:57:10Z",
+      "head_sha": "9188c6ab706656697c56840f31750afbcc7278c9",
+      "head_branch": "sol/web-news-review-packet-retention-20261021",
+      "base_sha": "b66e64ad57b50f77253eeacf62ac72dc165a50aa",
+      "base_branch": "master",
+      "changed_files": 6,
+      "mergeable": null,
+      "mergeable_state": "unknown",
+      "labels": [],
+      "requested_reviewers": []
+    },
+    {
+      "repo": "Mastermind",
+      "number": 1838,
+      "title": "fix(studio-direct): fence C2 Business merge-publisher migration by exact manifest [DRAFT/HOLD]",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/1838",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "updated_at": "2026-10-24T15:31:55Z",
+      "head_sha": "721f117d20d9826210eefcebcc26d4be30ac4240",
+      "head_branch": "claude/ssd-tiingo-c2-merge-migration-20261024-132152de71818cb9",
+      "base_sha": "b1a457e10946c5f9147c9580417f64a97df6d0ad",
+      "base_branch": "master",
+      "changed_files": 3,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "labels": [],
+      "requested_reviewers": []
+    }
+  ],
+  "important_limits": [
+    "GitHub branch protected flag is true for Mastermind/master and Terminal/master, false for Macro/main at first census.",
+    "PR merge, installed generation, live behavior and accepted evidence are independent states.",
+    "A1 contains 36 grouped source/transport rows, not 36 independent publishers; footer says 35. Row states are historical evidence classifications.",
+    "No new product deployment or Fable commission occurs in this planning operation.",
+    "Selected check/review snapshots are scoped to the named carriers; null means not present in this snapshot, not zero reviews or passing checks.",
+    "A1 mixed table shapes are normalized with an explicitly unspecified clock for eleven rows; source field descriptions remain candidate claims."
+  ],
+  "source_matrix": {
+    "candidate_pr": 10046,
+    "candidate_head": "a3964f812d48db844ea7cb362632ed26a652a145",
+    "counts": {
+      "configured": 30,
+      "delivering": 2,
+      "excluded": 4
+    },
+    "row_unit": "grouped source/transport; not independent publisher or active feed",
+    "rows": [
+      {
+        "index": 1,
+        "family": "A",
+        "source_transport": "Benzinga direct — `benzinga` / `benzinga_rest` + `benzinga_ws` / publisher `benzinga.com`",
+        "writer": "same sole writer, provider `benzinga` (code default): scripts/run_qbus_news.py:52,488; REST+WS client collectors/benzinga_news.py:29-31",
+        "cadence": "REST catch-up every 30 s (scripts/run_qbus_news.py:143); WS recv timeout 0.1 s (scripts/run_qbus_news.py:711); reconnect backoff 1→60 s (scripts/run_qbus_news.py:145-146)",
+        "recorded_rights_basis": "receipt schema `qbus.news_rights_receipt.v1` required at `/etc/macro-ticker-news-rights.json` (docs/ops/ticker-news.md:68-97); the repo-committed receipt is for the Alpaca provider, so a direct run needs its own root-owned receipt — none found committed",
+        "clocks": "payload `published` → `published_at`, `last_updated` → `updated_at` (engine/qbus_news_contract.py:415,418); WS `timestamp` → `source_event_at` (engine/qbus_news_contract.py:302); `received_at` stamped at fetch (collectors/benzinga_news.py:181,228); `available_at` absent from this contract",
+        "curation": "universe routing to qualified S&P alias bindings (collectors/benzinga_news.py:359-378 `route_revision`); removal endpoint honored (collectors/benzinga_news.py:30)",
+        "health": "runner health receipt `qbus.news_health.v1`: state/counters/`gap_unresolved` (scripts/run_qbus_news.py:196-221); inventory report scripts/ticker_news_inventory.py (docs/ops/ticker-news.md:265-358)",
+        "candidate_state": "configured (default transport; no retained receipt of direct-transport delivery found)",
+        "candidate_evidence": "source tree; contract engine/qbus_news_contract.py:20-26"
+      },
+      {
+        "index": 2,
+        "family": "A",
+        "source_transport": "Benzinga content via Alpaca — `alpaca` / `alpaca_rest` + `alpaca_ws` / publisher `benzinga.com` (source stays `benzinga`)",
+        "writer": "same sole writer, provider `alpaca` via `QBUS_NEWS_PROVIDER=alpaca` (scripts/run_qbus_news.py:487-489; docs/ops/ticker-news.md:229-241); unit app/deploy/macro-ticker-news.service:21",
+        "cadence": "same runner loop: 30 s REST catch-up, 0.1 s WS recv (scripts/run_qbus_news.py:143,711); REST page backoff 60–900 s (collectors/alpaca_news.py:36-37)",
+        "recorded_rights_basis": "RETAINED committed receipt config/ticker_news_rights_alpaca_benzinga.json:4-11 — source `benzinga`, provider `alpaca`, audiences `site_full`, effective 2026-10-11, expires 2027-10-11; capabilities incl. `teaser_display` + `derivative_processing`, `body_display`/`image_display` false (config/ticker_news_rights_alpaca_benzinga.json:12-21); basis recorded in `owner_ref` (config/ticker_news_rights_alpaca_benzinga.json:11)",
+        "clocks": "payload `created_at` → `published_at`, `updated_at` → `updated_at` (engine/qbus_news_contract.py:386-389); `received_at` at fetch (collectors/alpaca_news.py:243); cursor namespaces `alpaca-rest` vs `benzinga-rest` (scripts/run_qbus_news.py:693); **no removal feed on Alpaca** (docs/ops/ticker-news.md:245-247)",
+        "curation": "non-Benzinga `source` items skipped (collectors/alpaca_news.py:248,362 `CONTENT_SOURCE` collectors/alpaca_news.py:33); universe routing via shared `route_revision`; curated display policy §2.1 note",
+        "health": "same `qbus.news_health.v1` receipt; RETAINED production readback: writer active, health live (RETAINED 2026-10-20 #9846: one writer PID 3227108, zero disconnects/failed catch-ups)",
+        "candidate_state": "delivering (RETAINED 2026-10-21 #9942: Benzinga 7,015 raw / 6,922 editorially admitted)",
+        "candidate_evidence": "RETAINED 2026-10-20 #9846 + 2026-10-21 #9942; docs/ops/shared-news-intelligence.md:607"
+      },
+      {
+        "index": 3,
+        "family": "A",
+        "source_transport": "Benzinga-on-Massive — `massive_benzinga_v2` / publisher `benzinga.com` (one originating family with direct Benzinga)",
+        "writer": "module only: collectors/massive_benzinga_news.py:15-19 (`https://api.massive.com/benzinga/v2/news`); **no wired runner/caller found at BASE**",
+        "cadence": "n/a (not wired)",
+        "recorded_rights_basis": "none found committed for a `massive_benzinga_v2` transport grant; module is explicitly \"supplemental and correction-incomplete\" (collectors/massive_benzinga_news.py:2-9)",
+        "clocks": "payload `published` → `published_at`, `last_updated` → `updated_at`, clock domain `massive_benzinga_system_updated` (engine/qbus_news_contract.py:415-418,431)",
+        "curation": "transport admitted in SUPPORTED_TRANSPORTS (engine/qbus_news_contract.py:23); mirror clock domain reserved in reducer (engine/qbus_news_reducer.py:23)",
+        "health": "none found (no runner writes a health receipt for it)",
+        "candidate_state": "configured (transport contract + module + tests only; no wired writer at BASE)",
+        "candidate_evidence": "grep of scripts/engine/collectors for `massive_benzinga` callers: none outside tests"
+      },
+      {
+        "index": 4,
+        "family": "A",
+        "source_transport": "Massive general multi-publisher — `massive_news_v2` / `massive:zacks.com`",
+        "writer": "sole writer's supplemental intake: engine/qbus_news_intake.py `SupplementalNewsIntake` pumped by scripts/run_qbus_news.py:382,411-412,679-692",
+        "cadence": "poll every 60 s with 24 h overlap (engine/qbus_news_intake.py:23; docs/ops/shared-news-intelligence.md:45-46); endpoint fixed `https://api.massive.com/v2/reference/news` (engine/massive_news.py:12)",
+        "recorded_rights_basis": "per-publisher receipt required: `provider: massive`, source `massive:<domain>`; path-only env `MM_TICKER_NEWS_ADDITIONAL_RIGHTS` (≤64 paths), duplicate/revoked/malformed receipts deny (docs/ops/shared-news-intelligence.md:31-36,77-87); flag `MM_TICKER_NEWS_MASSIVE_ENABLED` / `--massive-news` (scripts/run_qbus_news.py:482-484); token env `POLYGON_API_KEY` (scripts/run_qbus_news.py:485)",
+        "clocks": "vendor `published_utc` → `published_at` required (engine/qbus_news_contract.py:472); `updated_at=None`, `source_event_at=None` (engine/qbus_news_contract.py:478-481) — same-clock changed payloads stay conflicts, never corrections (docs/ops/shared-news-intelligence.md:41-43); `received_at` at poll (engine/massive_news.py:287)",
+        "curation": "publisher admission before normalization and again pre-commit (docs/ops/shared-news-intelligence.md:52-53); field allowlist title/url/description/tickers/keywords only (engine/massive_news.py:320; docs/ops/shared-news-intelligence.md:38-39)",
+        "health": "per-source health in `additional_sources` of the health receipt (scripts/run_qbus_news.py:220); RETAINED: last poll 19:15:02 UTC 2026-10-20, no current error (RETAINED 2026-10-20 #9846)",
+        "candidate_state": "intentionally excluded (display; RETAINED 2026-10-21 #9942: Zacks 419 raw retained / 0 admitted; raw ingestion continues per RETAINED 2026-10-20 #9846: 286 active at 19:15)",
+        "candidate_evidence": "RETAINED 2026-10-20 #9846 + 2026-10-21 #9942"
+      },
+      {
+        "index": 5,
+        "family": "A",
+        "source_transport": "Massive general — `massive:fool.com` (The Motley Fool)",
+        "writer": "same supplemental intake (as above)",
+        "cadence": "same 60 s poll (engine/qbus_news_intake.py:23)",
+        "recorded_rights_basis": "same per-publisher Massive receipt law; no repo-committed receipt (docs/ops/shared-news-intelligence.md:62 says none installed during implementation; activation receipts were operator-installed)",
+        "clocks": "same `published_utc`/`received_at` clocks (engine/qbus_news_contract.py:472; engine/massive_news.py:287)",
+        "curation": "**intentionally excluded from the curated ticker view**: `fool.com` in qkernel BLOCKED_TOKENS (engine/qkernel.py:86-87); `curated_source` requires category ∈ {reporting, press_release} (engine/qbus_news_quality.py:117-123)",
+        "health": "same `additional_sources` health; RETAINED counts at both checkpoints (below)",
+        "candidate_state": "intentionally excluded (display; RETAINED 2026-10-21 #9942: Fool 189 raw retained / 0 admitted; ingestion continues)",
+        "candidate_evidence": "RETAINED 2026-10-21 #9942; docs/ops/ticker-news-editorial-quality.md:36-45"
+      },
+      {
+        "index": 6,
+        "family": "A",
+        "source_transport": "Massive general — `massive:globenewswire.com` (GlobeNewswire)",
+        "writer": "same supplemental intake (as above)",
+        "cadence": "same 60 s poll (engine/qbus_news_intake.py:23)",
+        "recorded_rights_basis": "same per-publisher Massive receipt law (docs/ops/shared-news-intelligence.md:547-550: receipts prepared for `site_full`/`internal_research`/`blog_draft`/`marketing_draft`, metadata-only, body/image denied)",
+        "clocks": "same `published_utc`/`received_at` clocks (engine/qbus_news_contract.py:472)",
+        "curation": "admitted as `press_release` category: `globenewswire.com` in PRESS_RELEASE_DOMAINS (engine/qkernel.py:90-92); article-level screening via `ticker_editorial_reason` (engine/news_common.py:969-997)",
+        "health": "same `additional_sources` health (scripts/run_qbus_news.py:220)",
+        "candidate_state": "delivering (RETAINED 2026-10-21 #9942: GlobeNewswire 154 raw / 144 admitted)",
+        "candidate_evidence": "RETAINED 2026-10-21 #9942; docs/ops/ticker-news-editorial-quality.md:36-45"
+      },
+      {
+        "index": 7,
+        "family": "A",
+        "source_transport": "Massive general — other publishers (`massive:<any other domain>`)",
+        "writer": "same supplemental intake would carry them",
+        "cadence": "same 60 s poll",
+        "recorded_rights_basis": "none found — no provider-wide wildcard; each publisher needs its own qualified receipt (docs/ops/shared-news-intelligence.md:34-36)",
+        "clocks": "same contract clocks (engine/qbus_news_contract.py:472)",
+        "curation": "unknown publishers fail closed in `publisher_category` (engine/qkernel.py:124-131)",
+        "health": "same `additional_sources` health",
+        "candidate_state": "configured (mechanism admitted; no publisher receipt found → no specific publisher)",
+        "candidate_evidence": "docs/ops/shared-news-intelligence.md:34-36"
+      },
+      {
+        "index": 8,
+        "family": "B",
+        "source_transport": "Polygon `v2/reference/news` — per-ticker sentiment roll-up (publisher content NOT re-stored; bullish-ratio daily snapshot)",
+        "writer": "adapter `PolygonNewsAdapter` in scripts/collect.py:227 → data/polygon/news_sentiment.parquet",
+        "cadence": "nightly collect lane (scripts/collect.py registry); per-ticker pacing `PACE_S` sleeps (collectors/polygon_news.py:174,227)",
+        "recorded_rights_basis": "gated on existing `POLYGON_API_KEY` → \"blocked\" without it (collectors/polygon_news.py:14-15); no repo-committed receipt",
+        "clocks": "article clocks not persisted — per-ticker daily snapshot only (collectors/polygon_news.py:6-11); `available_at` absent",
+        "curation": "tier widening T0=120→T1=500 names behind runtime budget check (collectors/polygon_news.py:9-13); feeds low-weight `news_sentiment` channel, \"context, never a standalone signal\" (collectors/polygon_news.py:6-8)",
+        "health": "adapter reports `blocked` when key absent (collectors/polygon_news.py:14-15)",
+        "candidate_state": "configured (key-gated; no retained delivery receipt)",
+        "candidate_evidence": "collectors/polygon_news.py:1-16; scripts/collect.py:227"
+      },
+      {
+        "index": 9,
+        "family": "C",
+        "source_transport": "Tiingo REST `/tiingo/news`, `/tiingo/news/bulk_download` + BOATS websocket — raw L0 archive",
+        "writer": "collectors/tiingo_archive.py (Archive runner; driven by scripts/run_boats_session.py:267,407,477); token via `TIINGO_API_KEY` or external key file (collectors/tiingo_archive.py:217-227)",
+        "cadence": "manual/session-driven; external-drive-only storage under `/Volumes/Mastermind` (collectors/tiingo_archive.py:30-33)",
+        "recorded_rights_basis": "\"No token in URLs...; External-drive-only storage. No implicit publication or redistribution\" (collectors/tiingo_archive.py:5-8); no repo-committed display receipt",
+        "clocks": "REST responses kept byte-for-byte; `received_at` on decoded BOATS events (collectors/tiingo_archive.py:230); `available_at` absent",
+        "curation": "L0 archive only — \"NOT a second Data OS price or identity authority\" (collectors/tiingo_archive.py:2-3); normalized views explanatory until a Data OS contract enrolls receipts",
+        "health": "receipt identity/validation per response (collectors/tiingo_archive.py:180-187)",
+        "candidate_state": "configured (held/archive posture; shared-news-intelligence.md:279 preserves held Tiingo work; no retained delivery receipt)",
+        "candidate_evidence": "collectors/tiingo_archive.py:1-33,69-70"
+      },
+      {
+        "index": 10,
+        "family": "D",
+        "source_transport": "Bloomberg / CNBC / Fox Business / MarketWatch / Axios / Economist / Guardian / Yahoo Finance / Seeking Alpha / Nasdaq direct RSS (publisher own feeds)",
+        "writer": "engine/news_rss.py `DIRECT_FEEDS` (engine/news_rss.py:50-79), consumed by build_news→financial_news/macro_news",
+        "cadence": "fetch per build; `_TIMEOUT` 12 s, 8 workers (engine/news_rss.py:42-43)",
+        "recorded_rights_basis": "none found — keyless public RSS, UA \"macro-dashboard/1.0 (+research)\" (engine/news_rss.py:41); no receipt file",
+        "clocks": "Not separately specified in candidate row",
+        "curation": "blocklist + low-value screens at parse (engine/news_rss.py:201-209); source-tier ranking (engine/news_common.py:74-102); recency filter `max_age_days` (engine/news_rss.py:274-285)",
+        "health": "silent degrade — failed fetch logged debug, never raises (engine/news_rss.py:110-118); no per-source health artifact",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "engine/news_rss.py:50-79"
+      },
+      {
+        "index": 11,
+        "family": "D",
+        "source_transport": "Google-News RSS aggregation (Reuters/AP/WSJ/FT et al. via queries)",
+        "writer": "engine/news_rss.py:102 `_GNEWS` + queries engine/news_rss.py:83-100",
+        "cadence": "per build, per query",
+        "recorded_rights_basis": "none found — keyless public aggregator",
+        "clocks": "Not separately specified in candidate row",
+        "curation": "tier ≤ 2 allowlist filter (engine/news_rss.py:233-236); pinned-source queries re-gated for relevance (engine/news_rss.py:225-231)",
+        "health": "silent degrade (engine/news_rss.py:110-118)",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "engine/news_rss.py:83-102,218-237"
+      },
+      {
+        "index": 12,
+        "family": "D",
+        "source_transport": "Official agency RSS via macro_news `OFFICIAL_FEEDS` (BEA, BLS ×5, Census, Federal Reserve ×5, TreasuryDirect ×2, SEC, CNBC/MarketWatch/WSJ/NPR/Economist/Yahoo/SeekingAlpha/Benzinga public feed)",
+        "writer": "engine/macro_news.py:181-228; policy_watch reuses the list (engine/policy_watch_current.py:17)",
+        "cadence": "nightly build",
+        "recorded_rights_basis": "none found — official keyless feeds; no receipt file",
+        "clocks": "Not separately specified in candidate row",
+        "curation": "theme buckets + quality screens (engine/macro_news.py:69+,340-354)",
+        "health": "degrade-safe per feed; no health artifact found",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "engine/macro_news.py:181-228"
+      },
+      {
+        "index": 13,
+        "family": "D",
+        "source_transport": "financial_news per-name/ETF/sector feeds",
+        "writer": "engine/financial_news.py:470-536 (news_rss market + per-name batch)",
+        "cadence": "nightly build",
+        "recorded_rights_basis": "none found",
+        "clocks": "Not separately specified in candidate row",
+        "curation": "`_DROP_DOMAINS` = fool.com, investing.com, benzinga.com for this feed (engine/financial_news.py:608); title-relevance mirror gate (engine/financial_news.py:85)",
+        "health": "degrade-safe; no health artifact found",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "engine/financial_news.py:470-536,608"
+      },
+      {
+        "index": 14,
+        "family": "D",
+        "source_transport": "special-situations RSS (per-category queries; UK RNS + Canada TSX gated OFF)",
+        "writer": "collectors/special_news.py:120 (`news_rss.query`); collectors/special_intl.py:71-72,146 (GlobeNewswire public RSS + queries)",
+        "cadence": "nightly build; per-market config flags default OFF (collectors/special_intl.py:6-9)",
+        "recorded_rights_basis": "none found — keyless public RSS",
+        "clocks": "Not separately specified in candidate row",
+        "curation": "exchange-tagged-ticker-only + deterministic intl classifier (collectors/special_intl.py:7-11)",
+        "health": "degrade-safe; no health artifact found",
+        "candidate_state": "configured (intl lanes intentionally gated OFF)",
+        "candidate_evidence": "collectors/special_news.py:120; collectors/special_intl.py:1-15"
+      },
+      {
+        "index": 15,
+        "family": "D",
+        "source_transport": "GDELT artlist — macro wire (engine/macro_news), financial/sector supplement (engine/financial_news), commodities (engine/commodity_news), narrative PIT slice (engine/news_vector), china news (engine/china_news), catalyst stock/tone, news_common",
+        "writer": "single shared funnel engine/gdelt_client.py:75 (`https://api.gdeltproject.org/api/v2/doc/doc`); nine caller modules listed at engine/gdelt_client.py:12-16",
+        "cadence": "≥5 s per-IP pacing via cross-process stamp (engine/gdelt_client.py:5-8,161-193); per nightly build",
+        "recorded_rights_basis": "none found — free keyless API; display-tier, `is_context_only=True` (engine/gdelt_client.py:3)",
+        "clocks": "Not separately specified in candidate row",
+        "curation": "query OR-clause + macro-theme gate (engine/macro_news.py:12,69); title-relevance precision gate (engine/financial_news.py:85,108-111); source-allowlist keep rule (engine/macro_news.py:340-354)",
+        "health": "429 retry ladder 30 s/75 s + cross-process breaker `data/gdelt/rate_limit_until`, default 900 s cooldown (engine/gdelt_client.py:33-58); code records the runner IP \"has returned 429 on every request since 2026-06-20\" (engine/gdelt_client.py:8-10) — per STATE law this remains `configured`, degradation is not receipt-proven here",
+        "candidate_state": "configured (no retained delivery receipt; in-code penalty-box record noted)",
+        "candidate_evidence": "engine/gdelt_client.py:1-75,161-193"
+      },
+      {
+        "index": 16,
+        "family": "D",
+        "source_transport": "GDELT timeline — HK platform-tech bellwether vol+tone",
+        "writer": "collectors/hk_gdelt.py:1-12 (timelinevol/timelinetone), adapter registered scripts/collect.py:298, group `gdelt` scripts/collect.py:103",
+        "cadence": "nightly collect; 1 req/5 s self-paced (collectors/hk_gdelt.py:12)",
+        "recorded_rights_basis": "none found — keyless public API",
+        "clocks": "Not separately specified in candidate row",
+        "curation": "entity-name queries, no entity resolution (collectors/hk_gdelt.py:14-19)",
+        "health": "degrade-safe; cached in-process per session",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "collectors/hk_gdelt.py:1-19; scripts/collect.py:103,298"
+      },
+      {
+        "index": 17,
+        "family": "D",
+        "source_transport": "GDELT timelinetone — China onshore/offshore tone divergence (Leg B)",
+        "writer": "engine/missing_tape_gdelt.py:1-9",
+        "cadence": "n/a — **no wired caller found at BASE** (grep: only config mentions of the different module `engine/missing_tape.py`, config/synapse.yml:506)",
+        "recorded_rights_basis": "none found",
+        "clocks": "Not separately specified in candidate row",
+        "curation": "sourcelang/sourcecountry query split (engine/missing_tape_gdelt.py:8-12)",
+        "health": "none found",
+        "candidate_state": "configured (module present, unwired at BASE)",
+        "candidate_evidence": "engine/missing_tape_gdelt.py:1-12; config/synapse.yml:506"
+      },
+      {
+        "index": 18,
+        "family": "E",
+        "source_transport": "Wire RSS ×11: Federal Reserve, BLS, BEA, White House (official) + CNBC, MarketWatch, ZeroHedge, ForexLive, Investing.com, CoinDesk, Cointelegraph (wire)",
+        "writer": "`marketing-press-feeds.service` → `scripts.marketing_fastlane_daemon --lane press --interval 75` (app/deploy/marketing-press-feeds.service:33); canonical source list config/marketing.yml:3045-3230 `breaking.sources`; register of record config/press_sources.yml:28-40",
+        "cadence": "daemon tick 75 s; `breaking.poll_interval_s: 300` (config/marketing.yml:3046); per-source floors",
+        "recorded_rights_basis": "\"NO first-party scraping. Providers consume ONLY the documented published endpoints\" (config/press_sources.yml:11-13); verified live from VPS 2026-08-03 per config/marketing.yml:3162-3165 (repo-recorded, not re-probed); no receipt file",
+        "clocks": "Not separately specified in candidate row",
+        "curation": "salience threshold 60 (config/marketing.yml:3048); corroboration classes §3 (config/press_sources.yml:14-16); garbage gate; citation tiers primary/marquee/unnamed (config/press_sources.yml:494-503)",
+        "health": "outbox kill-switches `MARKETING_FASTLANE_ENABLED` + outbox switch (config/press_sources.yml:6-10; service env at app/deploy/marketing-press-feeds.service:13-14)",
+        "candidate_state": "configured (DARK BY DEFAULT — ships disabled; app/deploy/marketing-press-feeds.service:6-11)",
+        "candidate_evidence": "app/deploy/marketing-press-feeds.service:1-33; config/marketing.yml:3045-3230"
+      },
+      {
+        "index": 19,
+        "family": "E",
+        "source_transport": "Truth Social mirrors — trumpstruth RSS + CNN truth archive JSON",
+        "writer": "same press daemon via engine/marketing/press_providers.py (`poll_interval_s` per source, press_providers.py:208-214,314-320)",
+        "cadence": "trumpstruth 75 s; CNN archive 21,600 s (6 h, \"never hot\") (config/press_sources.yml:51,63)",
+        "recorded_rights_basis": "published mirror feeds only; wire-relay posture (config/press_sources.yml:42-45)",
+        "clocks": "conditional GET mandatory for CNN (config/press_sources.yml:57-59)",
+        "curation": "same outbox gates",
+        "health": "same daemon gates",
+        "candidate_state": "configured (dark by default)",
+        "candidate_evidence": "config/press_sources.yml:42-64"
+      },
+      {
+        "index": 20,
+        "family": "E",
+        "source_transport": "X/Twitter via twitterapi.io — x_follow poll + x_stream websocket",
+        "writer": "same press daemon (`XFollowProvider` press_providers.py:416-431); stream rules engine/marketing/wire_routing.py per config/press_sources.yml:199-215",
+        "cadence": "tier rule intervals fast 5 s / mid 30 s / slow 120 s (config/press_sources.yml:206-210); actions_wire intervals config/press_sources.yml:366-400",
+        "recorded_rights_basis": "paid read API, spend caps in config (config/press_sources.yml:329+); key env `TWITTERAPI_IO_KEY` (config/press_sources.yml:204)",
+        "clocks": "Not separately specified in candidate row",
+        "curation": "satire blocklist (config/press_sources.yml:322); corroboration law: single-wire uncorroborated political/geopolitical never instant-publishes (config/press_sources.yml:16)",
+        "health": "spend counters + outbox gates",
+        "candidate_state": "configured (dark by default)",
+        "candidate_evidence": "config/press_sources.yml:70-215,322-400"
+      },
+      {
+        "index": 21,
+        "family": "E",
+        "source_transport": "Alpaca news lane (marketing press; separate from the qbus writer)",
+        "writer": "press daemon providers (engine/marketing/press_providers.py:72-75 `_ALPACA_REST_URL`)",
+        "cadence": "`min_interval_s: 60`, limit 50/page (config/press_sources.yml:464-473)",
+        "recorded_rights_basis": "same Alpaca key env pair; snippet capped 400 chars (config/press_sources.yml:474-475)",
+        "clocks": "Not separately specified in candidate row",
+        "curation": "headline-only ingest; body over snippet cap excluded (config/press_sources.yml:474-475)",
+        "health": "daemon kill-switches",
+        "candidate_state": "configured (dark by default; key-gated)",
+        "candidate_evidence": "config/press_sources.yml:456-475"
+      },
+      {
+        "index": 22,
+        "family": "F",
+        "source_transport": "Substack public RSS (SemiAnalysis, Doomberg, Geopolitical Futures, Clouded Judgment, Banking on AI)",
+        "writer": "collectors/narrative_sources.py `SubstackRssAdapter` → data/narrative/substack_posts.parquet (collect lane)",
+        "cadence": "nightly collect lane",
+        "recorded_rights_basis": "public-tier only; \"no auth, no paywall circumvention\"; additions/removals via PR gate (config/narrative_sources.yml:2-5)",
+        "clocks": "`published/observed` per row, PIT contract (collectors/narrative_sources.py:6-7)",
+        "curation": "feed registry PR gate (config/narrative_sources.yml:4-5)",
+        "health": "adapter failure tracked by collect circuit breaker",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "collectors/narrative_sources.py:1-9; config/narrative_sources.yml:9-28"
+      },
+      {
+        "index": 23,
+        "family": "F",
+        "source_transport": "Hacker News (Algolia) ticker mentions",
+        "writer": "collectors/narrative_sources.py `HnAlgoliaAdapter`",
+        "cadence": "nightly collect lane",
+        "recorded_rights_basis": "keyless public API",
+        "clocks": "same PIT row clocks",
+        "curation": "ticker keyword map (config/narrative_sources.yml:31+)",
+        "health": "circuit breaker",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "collectors/narrative_sources.py:3-5"
+      },
+      {
+        "index": 24,
+        "family": "F",
+        "source_transport": "EDGAR 8-K velocity",
+        "writer": "collectors/narrative_sources.py `Edgar8kVelocityAdapter`",
+        "cadence": "nightly collect lane",
+        "recorded_rights_basis": "SEC public filings",
+        "clocks": "filing-date PIT",
+        "curation": "per-CIK counts only",
+        "health": "circuit breaker",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "collectors/narrative_sources.py:4-8"
+      },
+      {
+        "index": 25,
+        "family": "G",
+        "source_transport": "Federal Register API (`https://www.federalregister.gov/api/v1`) — RULE/PRORULE/NOTICE/PRESDOCU documents",
+        "writer": "`FederalRegisterAdapter` via scripts/collect.py:234 (END-appended, `_SLOW` set)",
+        "cadence": "nightly collect; 0.5 s inter-request pace (collectors/federal_register.py:15)",
+        "recorded_rights_basis": "keyless, no auth (collectors/federal_register.py:1); US-government public domain; no receipt file",
+        "clocks": "document_number PK + `_first_seen` stored AS-FIRST-SEEN (collectors/federal_register.py:10-12)",
+        "curation": "two-stage AGENCY-SLUG × TERM filter (collectors/federal_register.py:6-12)",
+        "health": "adapter degrade → theme_event leg silently absent; circuit breaker",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "collectors/federal_register.py:1-15; scripts/collect.py:234"
+      },
+      {
+        "index": 26,
+        "family": "G",
+        "source_transport": "White House WordPress RSS (`/news/feed/`, `presidential-actions`, `fact-sheets`) — full announcement body",
+        "writer": "engine/whitehouse_feed.py + `whitehouse-sentinel` workflow (.github/workflows/whitehouse-sentinel.yml:9-11)",
+        "cadence": "hourly cron `12 * * * *`",
+        "recorded_rights_basis": "keyless public RSS (engine/whitehouse_feed.py:1-3)",
+        "clocks": "full `content:encoded` body; dedupe state data/whitehouse/processed.json (engine/whitehouse_feed.py:7-9)",
+        "curation": "new-items-only LLM evaluation gate (engine/whitehouse_feed.py:7-11)",
+        "health": "hourly sentinel no-ops when unchanged",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "engine/whitehouse_feed.py:1-12; .github/workflows/whitehouse-sentinel.yml:9-11"
+      },
+      {
+        "index": 27,
+        "family": "G",
+        "source_transport": "China official corpora — five organs' discrete policy documents (gov.cn et al.)",
+        "writer": "collectors/china_official_corpora.py → raw text + body_sha256 (W4 B1)",
+        "cadence": "paced/cached/checkpointed collect lane",
+        "recorded_rights_basis": "keyless, browser-UA; gov.cn IP-reputation-sensitive (collectors/china_official_corpora.py:4-6)",
+        "clocks": "document date + fetch metadata",
+        "curation": "discrete dated documents only",
+        "health": "circuit breaker",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "collectors/china_official_corpora.py:1-6"
+      },
+      {
+        "index": 28,
+        "family": "G",
+        "source_transport": "SF Fed Daily News Sentiment Index (news-derived indicator, NOT articles)",
+        "writer": "collectors/frbsf.py (`.xlsx` → engine/conditions.py read)",
+        "cadence": "nightly collect",
+        "recorded_rights_basis": "official Fed publication (collectors/frbsf.py:1-6)",
+        "clocks": "daily index dates 1980→",
+        "curation": "none (indicator series)",
+        "health": "stale-after tracking",
+        "candidate_state": "configured (indicator consumer of newspaper sentiment; not an article source)",
+        "candidate_evidence": "collectors/frbsf.py:1-9"
+      },
+      {
+        "index": 29,
+        "family": "H",
+        "source_transport": "华尔街见闻 wallstreetcn / 金十数据 jin10 / 格隆汇 gelonghui / 富途 futu / 同花顺 ths flash wires (public keyless JSON)",
+        "writer": "engine/cn_newswires.py (direct fetchers), consumed by engine/china_news.py:1252 and engine/china_news_intel.py (PIT bus via scripts/build_china_news.py:52)",
+        "cadence": "one cached fetch per TTL window per build",
+        "recorded_rights_basis": "keyless public endpoints; THS requires `Referer` header (engine/cn_newswires.py:16-19); live-probe dates recorded in comments (engine/cn_newswires.py:8-14; no probe performed for this census)",
+        "clocks": "ISO-8601 item `time` with tz (engine/cn_newswires.py:27-29)",
+        "curation": "per-source registry with `wire_important` flag (engine/cn_newswires.py:27-29); known-dead alternatives excluded with reasons (engine/cn_newswires.py:21-25)",
+        "health": "degrade to [], never raises (engine/cn_newswires.py:31)",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "engine/cn_newswires.py:1-31"
+      },
+      {
+        "index": 30,
+        "family": "H",
+        "source_transport": "CCTV 新闻联播 broadcast (akshare `news_cctv`)",
+        "writer": "collectors/china_news.py → cctv_tone parquet; engine/china_news.py z-scores for china.html panel",
+        "cadence": "incremental daily walk (collectors/china_news.py:8-11)",
+        "recorded_rights_basis": "keyless via akshare/cctv.com archive (collectors/china_news.py:7)",
+        "clocks": "per-day broadcast; append-only upsert",
+        "curation": "crude signed lexicon tone (collectors/china_news.py:22-26)",
+        "health": "circuit breaker",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "collectors/china_news.py:1-26"
+      },
+      {
+        "index": 31,
+        "family": "H",
+        "source_transport": "Eastmoney/Sina/THS/Futu flash-wire numeric tone",
+        "writer": "collectors/china_news_wire.py → wire_tone.parquet",
+        "cadence": "one snapshot per run",
+        "recorded_rights_basis": "keyless (collectors/china_news_wire.py:5-7)",
+        "clocks": "per-run daily series",
+        "curation": "keyword tone only; raw headlines fetched separately by the engine",
+        "health": "circuit breaker",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "collectors/china_news_wire.py:1-9"
+      },
+      {
+        "index": 32,
+        "family": "I",
+        "source_transport": "European Commission press corner (`ec_presscorner`)",
+        "writer": "engine/europe_news_intel.py ingest, called from scripts/collect.py:1205-1222 and scripts/build_international_macro.py:135",
+        "cadence": "daily ingest step (scripts/collect.py:1205)",
+        "recorded_rights_basis": "CC BY 4.0 / Commission Decision 2011/833/EU — \"reuse is allowed, provided appropriate credit is given\" (engine/europe_news_intel.py:31-32)",
+        "clocks": "caller-passed `asof`/`crawled_at` (PIT discipline) (engine/europe_news_intel.py:5-7)",
+        "curation": "tier-1 reachability + rights-quote requirement at preflight (engine/europe_news_intel.py:28-30)",
+        "health": "degraded-coverage warning logged per run (scripts/collect.py:1215)",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "engine/europe_news_intel.py:1-44; scripts/collect.py:1205-1222"
+      },
+      {
+        "index": 33,
+        "family": "I",
+        "source_transport": "Bank of England news (`boe_news`)",
+        "writer": "same module/ingest",
+        "cadence": "same daily step",
+        "recorded_rights_basis": "Open Government Licence v3.0 — \"commercial re-use of the Resources\" explicitly named (engine/europe_news_intel.py:33-34)",
+        "clocks": "same PIT clocks",
+        "curation": "same preflight law",
+        "health": "same",
+        "candidate_state": "configured (no retained delivery receipt)",
+        "candidate_evidence": "engine/europe_news_intel.py:25-26"
+      },
+      {
+        "index": 34,
+        "family": "I",
+        "source_transport": "ECB press (`ecb_press`)",
+        "writer": "excluded candidate — recorded as printed null, never silently dropped (engine/europe_news_intel.py:37-40)",
+        "cadence": "n/a",
+        "recorded_rights_basis": "rights_state UNVERIFIED_EXCLUDED — disclaimer lacks a commercial-use grant (engine/europe_news_intel.py:28-31)",
+        "clocks": "n/a",
+        "curation": "hard exclusion at preflight",
+        "health": "n/a",
+        "candidate_state": "intentionally excluded (rights-unverified)",
+        "candidate_evidence": "engine/europe_news_intel.py:27-31"
+      },
+      {
+        "index": 35,
+        "family": "J",
+        "source_transport": "HKEXnews company filings (buybacks, results, general mandate, shareholder changes)",
+        "writer": "collectors/hk_hkexnews.py (H-FBus) → per-name catalyst event tape",
+        "cadence": "nightly collect lane",
+        "recorded_rights_basis": "public exchange filings; no receipt file found",
+        "clocks": "headline-category + filing timestamps",
+        "curation": "four headline categories, deterministic t2code map (collectors/hk_hkexnews.py:9-22)",
+        "health": "circuit breaker",
+        "candidate_state": "configured (filings, not wire news; no retained delivery receipt)",
+        "candidate_evidence": "collectors/hk_hkexnews.py:1-22"
+      },
+      {
+        "index": 36,
+        "family": "K",
+        "source_transport": "Finlight POST `/v2/articles` (vendor AI sentiment/importance fields)",
+        "writer": "engine/news_ai_feed.py, wired into the news suite consumers (engine/financial_news.py import surface)",
+        "cadence": "per build when enabled",
+        "recorded_rights_basis": "key-gated: `news_ai_feed.enabled: true` + env `FINLIGHT_KEY`; entity enrichment \"requires the appropriate vendor entitlement; this module never activates or buys it\" (engine/news_ai_feed.py:9-15)",
+        "clocks": "\"Missing publication times stay missing\" (engine/news_ai_feed.py:14)",
+        "curation": "display-only; ai fields reshape display order only, never the news→score firewall (engine/news_ai_feed.py:7-9)",
+        "health": "returns [] when disabled (degrade-safe)",
+        "candidate_state": "intentionally excluded (default OFF; no key found committed)",
+        "candidate_evidence": "engine/news_ai_feed.py:1-16"
+      }
+    ]
+  },
+  "continuation_notes": [
+    {
+      "repo": "macro",
+      "number": 9974,
+      "next_obligation": "Original programme masterplan; preserve history."
+    },
+    {
+      "repo": "macro",
+      "number": 10039,
+      "next_obligation": "Existing convergence workstream and commissioning continuity."
+    },
+    {
+      "repo": "macro",
+      "number": 10043,
+      "next_obligation": "P1D absent-config fail-closed candidate; review current tests."
+    },
+    {
+      "repo": "macro",
+      "number": 10044,
+      "next_obligation": "A3 owning-job registration required; contract-delta failed."
+    },
+    {
+      "repo": "macro",
+      "number": 10046,
+      "next_obligation": "A1 matrix; correct 36-row denominator and stale delivery interpretation."
+    },
+    {
+      "repo": "macro",
+      "number": 10048,
+      "next_obligation": "D1 computational influence trace; consume parent consumer delta."
+    },
+    {
+      "repo": "macro",
+      "number": 10049,
+      "next_obligation": "B1 inventory; actual owner semantic ruling remains needed."
+    },
+    {
+      "repo": "macro",
+      "number": 10056,
+      "next_obligation": "A5 inventory; qualify existing writer/health ownership."
+    },
+    {
+      "repo": "macro",
+      "number": 10063,
+      "next_obligation": "B4 v3 candidate corpus; labels/provenance/limits need adjudication."
+    },
+    {
+      "repo": "macro",
+      "number": 9612,
+      "next_obligation": "Original cockpit carrier; CI canceled in pack 0; Calendar proposals unapplied."
+    },
+    {
+      "repo": "macro",
+      "number": 9963,
+      "next_obligation": "Editorial article-class repair merged; preserve accepted scope."
+    },
+    {
+      "repo": "macro",
+      "number": 9990,
+      "next_obligation": "Editorial view source merged; no blanket live completion claim."
+    },
+    {
+      "repo": "macro",
+      "number": 10034,
+      "next_obligation": "Session-preview exclusion follow-up; review exact carrier."
+    },
+    {
+      "repo": "macro",
+      "number": 10023,
+      "next_obligation": "Chinese source work; reconcile dirty merge/ownership."
+    },
+    {
+      "repo": "macro",
+      "number": 10136,
+      "next_obligation": "Active Tiingo successor; technical publisher/admission recovery."
+    },
+    {
+      "repo": "macro",
+      "number": 8697,
+      "next_obligation": "Older Tiingo carrier; superseded by #10136, do not duplicate."
+    },
+    {
+      "repo": "macro",
+      "number": 10119,
+      "next_obligation": "SEC issuer-release source merged; reconcile into source coverage."
+    },
+    {
+      "repo": "macro",
+      "number": 9732,
+      "next_obligation": "Correction/version work merged; join frozen benchmark semantics."
+    },
+    {
+      "repo": "macro",
+      "number": 9639,
+      "next_obligation": "F04 consumer integration merged; installation/native proof distinct."
+    },
+    {
+      "repo": "macro",
+      "number": 9507,
+      "next_obligation": "Rotation owner; preserve relevant graph/quant holds."
+    },
+    {
+      "repo": "macro",
+      "number": 9616,
+      "next_obligation": "Catalyst owner; existing discovery/action boundaries."
+    },
+    {
+      "repo": "macro",
+      "number": 9552,
+      "next_obligation": "Entitled Catalyst API source merged."
+    },
+    {
+      "repo": "macro",
+      "number": 10088,
+      "next_obligation": "MarketDesk adjacent research carrier; respect ownership."
+    },
+    {
+      "repo": "macro",
+      "number": 7982,
+      "next_obligation": "Guidance owner; conditional economic bridge remains separate."
+    },
+    {
+      "repo": "macro",
+      "number": 9422,
+      "next_obligation": "Producer output integrity candidate; pair-reader qualification."
+    },
+    {
+      "repo": "macro",
+      "number": 9533,
+      "next_obligation": "Catalyst architecture candidate; reuse existing owners."
+    },
+    {
+      "repo": "macro",
+      "number": 8775,
+      "next_obligation": "F05 per-family projection merged; served proof remains separate."
+    },
+    {
+      "repo": "macro",
+      "number": 8468,
+      "next_obligation": "Bio outcomes candidate; governed outcome qualification."
+    },
+    {
+      "repo": "macro",
+      "number": 8258,
+      "next_obligation": "Pre-event controls; preserve scientific/temporal boundary."
+    },
+    {
+      "repo": "macro",
+      "number": 6514,
+      "next_obligation": "K3D merge-blocked/dirty dependency; no automatic promotion."
+    },
+    {
+      "repo": "macro",
+      "number": 8698,
+      "next_obligation": "Tiingo Data OS source merged; distinct from current News integration."
+    },
+    {
+      "repo": "macro",
+      "number": 9846,
+      "next_obligation": "Shared ticker source/transport foundation merged."
+    },
+    {
+      "repo": "macro",
+      "number": 9942,
+      "next_obligation": "Curation source and retained narrow delivery receipts."
+    },
+    {
+      "repo": "macro",
+      "number": 10030,
+      "next_obligation": "Company relationship precision candidate; dated/role-safe joins."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1081,
+      "next_obligation": "Sidebar plus Brief design; reconcile with merged R2 and open R3."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1094,
+      "next_obligation": "Retain narrow 21 Oct 09:42 authenticated acceptance."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1101,
+      "next_obligation": "Editorial view compatibility merged."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1105,
+      "next_obligation": "Retry behavior repair merged; do not recreate."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1110,
+      "next_obligation": "R2 lexicon merged; shared-file boundary changed."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1111,
+      "next_obligation": "R2 ladder merged; old wait-for-master note stale."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1128,
+      "next_obligation": "R2 E2E/crops source/evidence merged; retain scope."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1113,
+      "next_obligation": "CN/HK work remains separate open carrier."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1129,
+      "next_obligation": "Layout candidate; dirty shared-file composition needs owner."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1130,
+      "next_obligation": "R3 design options; do not impose one without evaluation."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1141,
+      "next_obligation": "Proxy/auth candidate; actual admission remains scoped."
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1038,
+      "next_obligation": "Catalyst Terminal candidate; preserve API/owner boundaries."
+    },
+    {
+      "repo": "Mastermind",
+      "number": 1661,
+      "next_obligation": "Reviewer recovery source merged; installed proof separate."
+    },
+    {
+      "repo": "Mastermind",
+      "number": 1838,
+      "next_obligation": "Narrow C2 publisher migration already built; Draft, not installed acceptance."
+    }
+  ],
+  "documentation_publication_base": "3a55fbf8a3338b82423660d13693a5b7c3e4b27e",
+  "check_and_review_snapshots": [
+    {
+      "repo": "macro",
+      "number": 10043,
+      "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119728266559",
+          "completed_at": "2026-10-22T08:45:38Z"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710227376",
+          "completed_at": "2026-10-22T08:01:52Z"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226984",
+          "completed_at": "2026-10-22T08:13:24Z"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226982",
+          "completed_at": "2026-10-22T08:08:42Z"
+        },
+        {
+          "name": "ci-pack-6",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226888",
+          "completed_at": "2026-10-22T08:09:25Z"
+        },
+        {
+          "name": "ci-pack-9",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226865",
+          "completed_at": "2026-10-22T08:16:42Z"
+        },
+        {
+          "name": "ci-pack-11",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226857",
+          "completed_at": "2026-10-22T08:16:48Z"
+        },
+        {
+          "name": "ci-pack-7",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226774",
+          "completed_at": "2026-10-22T08:11:05Z"
+        },
+        {
+          "name": "ci-pack-8",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226754",
+          "completed_at": "2026-10-22T08:20:34Z"
+        },
+        {
+          "name": "ci-pack-10",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226725",
+          "completed_at": "2026-10-22T08:11:49Z"
+        },
+        {
+          "name": "ci-pack-5",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226718",
+          "completed_at": "2026-10-22T08:13:26Z"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226706",
+          "completed_at": "2026-10-22T08:45:18Z"
+        },
+        {
+          "name": "ci-pack-4",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226670",
+          "completed_at": "2026-10-22T08:14:40Z"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119710226645",
+          "completed_at": "2026-10-22T08:13:30Z"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119709315987",
+          "completed_at": "2026-10-22T07:59:40Z"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119709312430",
+          "completed_at": "2026-10-22T07:59:39Z"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119709309081",
+          "completed_at": "2026-10-22T07:59:39Z"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119708820192",
+          "completed_at": "2026-10-22T07:58:24Z"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119708817204",
+          "completed_at": "2026-10-22T07:58:23Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744272965/job/119708762025",
+          "completed_at": "2026-10-22T07:58:14Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744272965/job/119708761759",
+          "completed_at": "2026-10-22T07:58:14Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744272965/job/119708761577",
+          "completed_at": "2026-10-22T07:58:14Z"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744272668/job/119708761446",
+          "completed_at": "2026-10-22T07:58:26Z"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119708760698",
+          "completed_at": "2026-10-22T08:11:06Z"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744273068/job/119708760328",
+          "completed_at": "2026-10-22T08:01:51Z"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5ee5b596be4645609581515dbf40ecdd01cfed62",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39744272965/job/119708759676",
+          "completed_at": "2026-10-22T07:59:44Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "repo": "macro",
+      "number": 10044,
+      "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119718339203",
+          "completed_at": "2026-10-22T08:21:49Z"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119714208090",
+          "completed_at": "2026-10-22T08:11:34Z"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119714205783",
+          "completed_at": "2026-10-22T08:18:39Z"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119714205721",
+          "completed_at": "2026-10-22T08:16:43Z"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119713102819",
+          "completed_at": "2026-10-22T08:08:54Z"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119713099504",
+          "completed_at": "2026-10-22T08:08:54Z"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119713092232",
+          "completed_at": "2026-10-22T08:08:53Z"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119712785531",
+          "completed_at": "2026-10-22T08:08:08Z"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119712781587",
+          "completed_at": "2026-10-22T08:08:07Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472411/job/119712704334",
+          "completed_at": "2026-10-22T08:07:55Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472411/job/119712704286",
+          "completed_at": "2026-10-22T08:07:55Z"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472278/job/119712703861",
+          "completed_at": "2026-10-22T08:08:10Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472411/job/119712703722",
+          "completed_at": "2026-10-22T08:07:55Z"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119712702905",
+          "completed_at": "2026-10-22T08:11:34Z"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472431/job/119712702554",
+          "completed_at": "2026-10-22T08:21:39Z"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "03760b03293c85a1b1eee74f40fcc19c8df3d432",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39745472411/job/119712702075",
+          "completed_at": "2026-10-22T08:08:57Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "repo": "macro",
+      "number": 10046,
+      "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119723618263",
+          "completed_at": "2026-10-22T08:34:44Z"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119720770549",
+          "completed_at": "2026-10-22T08:27:31Z"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119720768640",
+          "completed_at": "2026-10-22T08:33:40Z"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119720768635",
+          "completed_at": "2026-10-22T08:32:09Z"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119720768618",
+          "completed_at": "2026-10-22T08:32:37Z"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119720768590",
+          "completed_at": "2026-10-22T08:32:37Z"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119719845295",
+          "completed_at": "2026-10-22T08:25:18Z"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119719841457",
+          "completed_at": "2026-10-22T08:25:17Z"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119719837039",
+          "completed_at": "2026-10-22T08:25:17Z"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119719355265",
+          "completed_at": "2026-10-22T08:24:08Z"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119719351255",
+          "completed_at": "2026-10-22T08:24:07Z"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747420695/job/119719272159",
+          "completed_at": "2026-10-22T08:24:10Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421348/job/119719258622",
+          "completed_at": "2026-10-22T08:23:54Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421348/job/119719258401",
+          "completed_at": "2026-10-22T08:23:54Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421348/job/119719258041",
+          "completed_at": "2026-10-22T08:23:54Z"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421348/job/119719256416",
+          "completed_at": "2026-10-22T08:25:20Z"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119719256316",
+          "completed_at": "2026-10-22T08:27:31Z"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a3964f812d48db844ea7cb362632ed26a652a145",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39747421195/job/119719255556",
+          "completed_at": "2026-10-22T08:34:18Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "repo": "macro",
+      "number": 10048,
+      "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119726081537",
+          "completed_at": "2026-10-22T08:40:31Z"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119723092905",
+          "completed_at": "2026-10-22T08:33:04Z"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119723090811",
+          "completed_at": "2026-10-22T08:37:47Z"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119723090799",
+          "completed_at": "2026-10-22T08:38:12Z"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119723090778",
+          "completed_at": "2026-10-22T08:38:36Z"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119723090716",
+          "completed_at": "2026-10-22T08:39:10Z"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119722482373",
+          "completed_at": "2026-10-22T08:31:38Z"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119722479720",
+          "completed_at": "2026-10-22T08:31:37Z"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119722475763",
+          "completed_at": "2026-10-22T08:31:37Z"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119721962094",
+          "completed_at": "2026-10-22T08:30:24Z"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119721956418",
+          "completed_at": "2026-10-22T08:30:23Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206291/job/119721881623",
+          "completed_at": "2026-10-22T08:30:13Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206291/job/119721881314",
+          "completed_at": "2026-10-22T08:30:13Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206291/job/119721881077",
+          "completed_at": "2026-10-22T08:30:13Z"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748205837/job/119721880058",
+          "completed_at": "2026-10-22T08:30:27Z"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119721879888",
+          "completed_at": "2026-10-22T08:40:13Z"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206299/job/119721879463",
+          "completed_at": "2026-10-22T08:33:04Z"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "434bd17a00c8bd96e1b6c3c743847f15403a2fa5",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39748206291/job/119721879135",
+          "completed_at": "2026-10-22T08:31:42Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "repo": "macro",
+      "number": 10049,
+      "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119755509213",
+          "completed_at": "2026-10-22T09:48:23Z"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119740923264",
+          "completed_at": "2026-10-22T09:14:35Z"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119740922646",
+          "completed_at": "2026-10-22T09:20:20Z"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119740922608",
+          "completed_at": "2026-10-22T09:48:07Z"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119740922551",
+          "completed_at": "2026-10-22T09:21:32Z"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119740922538",
+          "completed_at": "2026-10-22T09:23:37Z"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739519754",
+          "completed_at": "2026-10-22T09:11:21Z"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739516237",
+          "completed_at": "2026-10-22T09:11:21Z"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739512774",
+          "completed_at": "2026-10-22T09:11:20Z"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739127975",
+          "completed_at": "2026-10-22T09:10:27Z"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739124195",
+          "completed_at": "2026-10-22T09:10:26Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250482/job/119738768906",
+          "completed_at": "2026-10-22T09:09:37Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250482/job/119738768813",
+          "completed_at": "2026-10-22T09:09:37Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250482/job/119738768789",
+          "completed_at": "2026-10-22T09:09:37Z"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119738767725",
+          "completed_at": "2026-10-22T09:21:23Z"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250683/job/119738767467",
+          "completed_at": "2026-10-22T09:14:34Z"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753250482/job/119738766701",
+          "completed_at": "2026-10-22T09:11:24Z"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "dabf5c9130d9a952909afdf28aa3545efbe65a9c",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39753244867/job/119738751326",
+          "completed_at": "2026-10-22T09:10:29Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "repo": "macro",
+      "number": 10056,
+      "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119739605723",
+          "completed_at": "2026-10-22T09:12:01Z"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119731705237",
+          "completed_at": "2026-10-22T08:53:18Z"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119731704554",
+          "completed_at": "2026-10-22T09:03:01Z"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119731704231",
+          "completed_at": "2026-10-22T08:58:33Z"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119731704198",
+          "completed_at": "2026-10-22T08:59:29Z"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119731704093",
+          "completed_at": "2026-10-22T08:58:43Z"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119730697609",
+          "completed_at": "2026-10-22T08:50:58Z"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119730694295",
+          "completed_at": "2026-10-22T08:50:58Z"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119730685971",
+          "completed_at": "2026-10-22T08:50:56Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673058/job/119730238137",
+          "completed_at": "2026-10-22T08:49:44Z"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119730232244",
+          "completed_at": "2026-10-22T08:49:53Z"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119730229088",
+          "completed_at": "2026-10-22T08:49:53Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673058/job/119730225744",
+          "completed_at": "2026-10-22T08:49:44Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673058/job/119730169200",
+          "completed_at": "2026-10-22T08:49:44Z"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119730168427",
+          "completed_at": "2026-10-22T09:11:33Z"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673165/job/119730168122",
+          "completed_at": "2026-10-22T08:53:18Z"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750672729/job/119730168095",
+          "completed_at": "2026-10-22T08:49:55Z"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "358feea93a91145c97b1f832b80289c6071fec0b",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39750673058/job/119730167854",
+          "completed_at": "2026-10-22T08:51:02Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "repo": "macro",
+      "number": 10063,
+      "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+      "checks": [
+        {
+          "name": "ci-gate",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119750050787",
+          "completed_at": "2026-10-22T09:35:42Z"
+        },
+        {
+          "name": "trusted-ci",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740128235",
+          "completed_at": "2026-10-22T09:12:45Z"
+        },
+        {
+          "name": "ci-pack-2",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740127266",
+          "completed_at": "2026-10-22T09:26:58Z"
+        },
+        {
+          "name": "ci-pack-11",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126857",
+          "completed_at": "2026-10-22T09:31:25Z"
+        },
+        {
+          "name": "ci-pack-9",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126801",
+          "completed_at": "2026-10-22T09:35:27Z"
+        },
+        {
+          "name": "ci-pack-10",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126760",
+          "completed_at": "2026-10-22T09:31:01Z"
+        },
+        {
+          "name": "ci-pack-3",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126755",
+          "completed_at": "2026-10-22T09:25:18Z"
+        },
+        {
+          "name": "ci-pack-8",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126749",
+          "completed_at": "2026-10-22T09:27:38Z"
+        },
+        {
+          "name": "ci-pack-1",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126726",
+          "completed_at": "2026-10-22T09:22:45Z"
+        },
+        {
+          "name": "ci-pack-6",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126712",
+          "completed_at": "2026-10-22T09:25:05Z"
+        },
+        {
+          "name": "ci-pack-4",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126697",
+          "completed_at": "2026-10-22T09:29:18Z"
+        },
+        {
+          "name": "ci-pack-7",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126694",
+          "completed_at": "2026-10-22T09:25:44Z"
+        },
+        {
+          "name": "ci-pack-0",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126681",
+          "completed_at": "2026-10-22T09:25:27Z"
+        },
+        {
+          "name": "ci-pack-5",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119740126661",
+          "completed_at": "2026-10-22T09:23:39Z"
+        },
+        {
+          "name": "ci-authority/main",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739123230",
+          "completed_at": "2026-10-22T09:10:26Z"
+        },
+        {
+          "name": "ci-authority/codex/merge-queue-pilot",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119739117912",
+          "completed_at": "2026-10-22T09:10:25Z"
+        },
+        {
+          "name": "grader-manifest",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119738958691",
+          "completed_at": "2026-10-22T09:10:04Z"
+        },
+        {
+          "name": "capability-broker",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119738955128",
+          "completed_at": "2026-10-22T09:10:03Z"
+        },
+        {
+          "name": "self-mod-fence",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/runs/119738950549",
+          "completed_at": "2026-10-22T09:10:03Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752740984/job/119737062742",
+          "completed_at": "2026-10-22T09:05:40Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752740984/job/119737062530",
+          "completed_at": "2026-10-22T09:05:40Z"
+        },
+        {
+          "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752740984/job/119737062491",
+          "completed_at": "2026-10-22T09:05:40Z"
+        },
+        {
+          "name": "ci-plan",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119737060810",
+          "completed_at": "2026-10-22T09:12:45Z"
+        },
+        {
+          "name": "contract-delta",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752741052/job/119737060493",
+          "completed_at": "2026-10-22T09:22:35Z"
+        },
+        {
+          "name": "fence-pack",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752740984/job/119737060086",
+          "completed_at": "2026-10-22T09:10:08Z"
+        },
+        {
+          "name": "ci-authority",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "01f9e0a50f17879f5a13a5fe10eff14c52fb4cc2",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39752739261/job/119737057187",
+          "completed_at": "2026-10-22T09:10:28Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "repo": "macro",
+      "number": 9612,
+      "head_sha": "2141bb12d38557c1c42ae6c8e41e7c5f53b840fc",
+      "checks": null,
+      "reviews": []
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1081,
+      "head_sha": "a10657ee8eaa0aa12c98e2ba5563a8680bfb9c9b",
+      "checks": null,
+      "reviews": []
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1129,
+      "head_sha": "e46d354d4cc68c148671ee4c4c16d21e0edec91a",
+      "checks": null,
+      "reviews": []
+    },
+    {
+      "repo": "mastermind-terminal",
+      "number": 1130,
+      "head_sha": "080a61bc7908ab79d69063a6487c059eadf4684f",
+      "checks": null,
+      "reviews": []
+    }
+  ],
+  "research_completed_utc": "2026-10-31T06:15:00Z"
+}
