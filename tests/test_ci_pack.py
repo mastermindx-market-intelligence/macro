@@ -5997,10 +5997,12 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Actual composed compiler: index135/5878, free135/5874, Prophet128/5628;
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
+# The Start-page regression adds one test file to the existing builder step.
+# All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_970),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_993),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_728),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6008,6 +6010,40 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #7217, current-main bridge coverage conservation):
+    Receiver 27bdebdbdc973398c0caa509498c568816871bf5 preserves landed
+    Start coverage and #11051 browser fallback/tests and accounting, plus
+    #11064 native acquisition recovery and the complete current render.
+    Add only this carrier's 11 original bridge-path declarations and the
+    mandatory financial-bridge suite in existing unrun-brain-gateway.
+    Preserve all 401 owner positions and 389 other whole blocks, including
+    the current catalyst browser fallback under its new bridge declaration.
+    Brain command accounting stays 6->7 runs, 51->52 test references,
+    2353->2410 raw joined characters and source-formula weight 110->114.
+    Receiving 5969/5993/5727 therefore projects to 5973/5997/5731.
+    These are source-derived expectations, not newly executed measurements.
+    Actual own-head paired contract and integrated CI must qualify them.
+    Keep 137/138/131 job ceilings, ten packs, all assertions and controls.
+    Retain every original history block below. Source claim #7217
+    comment6812867198; provider/private/live acceptance remains separate.
+
+    2026-11-11 (playwright apt-outage fallback): the seven shell-executed
+    ``playwright install --with-deps chromium`` steps each gained a bounded
+    240s first attempt plus a 60s browser-only fallback (GitHub-hosted
+    runners intermittently cannot resolve any Ubuntu archive and the apt
+    stage was killing whole packs before a test ran; terminal PR #1469
+    precedent). The three ``acquisition: native_parallel`` contract installs
+    stay byte-identical (run_ci_pack validates their exact run token).
+    Four owners crossed an 800-character estimator bucket, +1 each:
+    catalyst-loop-integrated 27->28, international-dislocation-explorer
+    7->8, international-workspace-browser 58->59, prophet-lab 67->68
+    (engine-render-guards keeps its pinned observed 875). Measured probes:
+    index 137 jobs 5966->5967, free-content 138 jobs 5987->5989, Prophet
+    131 jobs 5724->5725; ten packs, every selected job and every job-count
+    ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
+    is measured planner accounting, not an execution-time estimate; natural
+    successor CI must qualify the repaired source.
 
     2026-11-11 (PR #7217, exact current-main bridge composition):
     Paired native measurements on M18de8ef0 and candidatead1d8877 preserve

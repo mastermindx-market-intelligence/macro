@@ -117,6 +117,77 @@ class Pending:
     eof: bool = False
 
 
+# The exact browser-only vendor command of the incumbent bounded fallback: the
+# hosted image's preinstalled Chromium system libraries replace the apt stage.
+BROWSER_ONLY_INSTALL_COMMAND = "python -m playwright install chromium"
+
+
+# Only these stages are provably package-free: update refreshes indexes and
+# resolve is --print-uris. Never extend this to a stage that can run dpkg.
+PACKAGE_FREE_STAGES = frozenset({"update", "resolve"})
+
+
+def stage_settled_failure(stage_result: dict, mode: str) -> bool:
+    """A native apt stage child that exited nonzero by itself, reaped with a
+    returncode, is SETTLED: ``update``/``resolve`` apply no packages, so the
+    failure proves nothing was installed and the browser-only fallback is
+    safe. Unreaped children, lost responses and deadline kills raise before
+    this point and keep their unknown settlement."""
+    return (mode in PACKAGE_FREE_STAGES
+            and type(stage_result) is dict and stage_result.get("outcome") == "failed"
+            and stage_result.get("settlement") == "settled")
+
+
+def acquisition_settled_failure_without_applied_packages(result) -> bool:
+    """Require positive settlement of every launched stage before fallback."""
+    if result.installation != "never_started" or result.pending or not result.observations:
+        return False
+    if any(outcome not in {"passed", "failed"} or settlement != "settled"
+           for _index, outcome, settlement in result.observations):
+        return False
+
+    completion = result.completion
+    if completion is None:
+        return result.settlement == "settled" and result.initial_download_failure is None
+    if completion.settlement != "settled" or completion.outcome not in {"passed", "failed"}:
+        return False
+    # The acquisition core marks an unsuccessful completion unproven even when
+    # its process returned a settled nonzero exit. Only that positive receipt
+    # distinguishes this case from a lost response to the completion stage.
+    return result.settlement == "settled" or (
+        result.reason == "NATIVE_COMPLETION_UNPROVEN"
+        and result.initial_download_failure == "NATIVE_DOWNLOAD_FAILED"
+        and completion.outcome == "failed"
+    )
+
+
+def _browser_only_after_settled_failure(*, reason: str, evidence: str, deadline: float,
+                                        command_env: dict, browser_stream) -> dict:
+    """After a SETTLED apt failure with no packages applied, attempt the same
+    bounded browser-only install as the incumbent fallback path.
+
+    The remaining original setup deadline bounds this single attempt. A failed
+    fallback is a settled job-local failure (siblings in the pack keep
+    running); a genuinely unsettled fallback observation keeps its unknown
+    settlement and never degrades the fail-closed contract.
+    """
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        return {"outcome": "timed_out", "returncode": None, "failure_signature": None,
+                "timeout_settlement": "not_started",
+                "detail": f"native cold acquisition settled failure ({reason}); {evidence}; "
+                          "original total exhausted before the browser-only fallback could start"}
+    print(f"::warning title=native-browser-setup::{reason}; no packages applied; "
+          "attempting browser-only chromium install", flush=True)
+    observation = browser_stream(BROWSER_ONLY_INSTALL_COMMAND, env=command_env, timeout_seconds=remaining)
+    return {"outcome": observation.outcome, "returncode": observation.returncode,
+            "failure_signature": observation.failure_signature,
+            "timeout_settlement": observation.timeout_settlement,
+            "detail": f"native cold acquisition settled failure ({reason}); {evidence}; "
+                      f"browser-only fallback {observation.outcome}; "
+                      + (observation.detail or f"browser acquisition {observation.outcome}")}
+
+
 class NativeAptBackend:
     def __init__(self, root: str, command_env: dict, plan):
         if not re.fullmatch(r"/tmp/ci-apt-[A-Za-z0-9_-]+", root):
@@ -315,29 +386,45 @@ def run_native_setup(*, deadline: float, command_env: dict, expected_sources: di
         root = bootstrap_root(packet, command_env, deadline)
         backend = NativeAptBackend(root, command_env, None)
         backend.deadline = deadline
+        settled_failure = None
         update = backend.stage("update", deadline)
-        if update["outcome"] != "passed" or update["settlement"] != "settled":
+        if stage_settled_failure(update, "update"):
+            settled_failure = f"apt update exited {update.get('returncode')} settled with no packages applied"
+        elif update["outcome"] != "passed" or update["settlement"] != "settled":
             raise NativeUnknown("UPDATE_UNPROVEN", update.get("child_pid"), update["outcome"])
-        resolved = backend.stage("resolve", deadline)
-        if resolved["outcome"] != "passed" or resolved["settlement"] != "settled":
-            raise NativeUnknown("RESOLUTION_UNPROVEN", resolved.get("child_pid"), resolved["outcome"])
-        backend.plan = make_download_plan(tuple(Archive(**row) for row in resolved["archives"]))
-        result = acquire_and_install(backend.plan, backend, deadline=deadline)
-        installation = result.installation
-        if result.initial_download_failure is not None:
-            completion = result.completion
-            original_detail = (f"; initial_download_failure={result.initial_download_failure}; "
-                               f"completion={completion.outcome if completion else 'unknown'}/{completion.settlement if completion else 'unknown'}")
-            original_attempt_detail = original_detail + f"; original_downloads={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; retained {root}"
-        if result.outcome != "passed":
-            return {"outcome": result.outcome, "returncode": None if result.settlement == "unknown" or result.outcome == "timed_out" else 1, "failure_signature": None,
-                    "timeout_settlement": "unknown" if result.settlement == "unknown" else None,
-                    "detail": f"native cold acquisition {result.reason}{original_detail}; downloads[index,returncode,reported_errors]={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; installation={result.installation}; retained {root}; pending={result.pending}; handles={backend.handles}; native_children={[(i, r.get('child_pid')) for i, r in backend.records.items() if type(r.get('child_pid')) is int and 0 < r['child_pid'] <= 2147483647]}"}
+        if settled_failure is None:
+            resolved = backend.stage("resolve", deadline)
+            if stage_settled_failure(resolved, "resolve"):
+                settled_failure = f"apt resolve exited {resolved.get('returncode')} settled with no packages applied"
+            elif resolved["outcome"] != "passed" or resolved["settlement"] != "settled":
+                raise NativeUnknown("RESOLUTION_UNPROVEN", resolved.get("child_pid"), resolved["outcome"])
+            else:
+                backend.plan = make_download_plan(tuple(Archive(**row) for row in resolved["archives"]))
+                result = acquire_and_install(backend.plan, backend, deadline=deadline)
+                installation = result.installation
+                if result.initial_download_failure is not None:
+                    completion = result.completion
+                    original_detail = (f"; initial_download_failure={result.initial_download_failure}; "
+                                       f"completion={completion.outcome if completion else 'unknown'}/{completion.settlement if completion else 'unknown'}")
+                    original_attempt_detail = original_detail + f"; original_downloads={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; retained {root}"
+                if result.outcome != "passed":
+                    if acquisition_settled_failure_without_applied_packages(result):
+                        settled_failure = f"native acquisition {result.reason} with every native child settled and no packages applied"
+                    else:
+                        return {"outcome": result.outcome, "returncode": None if result.settlement == "unknown" or result.outcome == "timed_out" else 1, "failure_signature": None,
+                                "timeout_settlement": "unknown" if result.settlement == "unknown" else None,
+                                "detail": f"native cold acquisition {result.reason}{original_detail}; downloads[index,returncode,reported_errors]={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}; installation={result.installation}; retained {root}; pending={result.pending}; handles={backend.handles}; native_children={[(i, r.get('child_pid')) for i, r in backend.records.items() if type(r.get('child_pid')) is int and 0 < r['child_pid'] <= 2147483647]}"}
+        if settled_failure is not None:
+            evidence = original_attempt_detail.lstrip("; ") or f"installation={installation}; retained {root}"
+            evidence += f"; downloads[index,returncode,reported_errors]={json.dumps(failed_download_summaries(backend.records), separators=(',', ':'))}"
+            return _browser_only_after_settled_failure(
+                reason=settled_failure, evidence=evidence, deadline=deadline,
+                command_env=command_env, browser_stream=browser_stream)
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             return {"outcome": "timed_out", "returncode": None, "failure_signature": None,
                     "timeout_settlement": "not_started", "detail": "native packages applied; original total exhausted before browser acquisition" + original_attempt_detail}
-        observation = browser_stream("python -m playwright install chromium", env=command_env, timeout_seconds=remaining)
+        observation = browser_stream(BROWSER_ONLY_INSTALL_COMMAND, env=command_env, timeout_seconds=remaining)
         browser_outcome = observation.outcome
         if observation.outcome == "passed" and observation.timeout_settlement != "unknown" and result.initial_download_failure is None:
             cleaned = backend.stage("cleanup", deadline)
