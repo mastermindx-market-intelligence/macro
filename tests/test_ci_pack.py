@@ -6001,7 +6001,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_729),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6010,6 +6010,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #7387, compose accepted runtime-adapter baseline):
+    Receiver e7f8565c preserves all six landed sibling-owner changes,
+    including #11101, and all 401 owners. Carry only the existing
+    research-vault contribution and three exact feature objects.
+    Actual predecessor CI43148399390 passed 107 owners / 309 semantic
+    proofs with contract 0 introduced / 0 inherited at its own B/H/T.
+    The original owner remains 3 commands, 44 -> 45 test references,
+    2095 -> 2146 characters and weight 93 -> 95. Its free-content +2
+    composes receiving 5971/5995/5729 to 5971/5997/5729; the equal old
+    H/main free-content numbers represent distinct contributions.
+    Preserve all 64 H-only history lines and the complete main history,
+    137/138/131 job ceilings, ten packs, assertions and runtime controls.
+    These totals are source-derived composition, not a new planner run.
+    Natural successor CI must qualify the new exact combined source.
 
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
@@ -6023,6 +6038,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and admission limits unchanged. The wider selection is intended
     (closure-required); natural successor CI must qualify the
     repaired source.
+
+    2026-11-12 (PR #7387, preserve landed native acquisition recovery):
+    Receiver 27bdebdb retains Start and the landed #11051/#11064 recovery.
+    Preserve all 401 current owners, 400 whole sibling definitions and
+    the three original evidence-delta feature objects. Carry only the
+    original research-vault paths and complete mandatory test argument.
+    Raw source accounting is 3 commands, 44 -> 45 test references,
+    2095 -> 2146 joined characters and weight 93 -> 95. Its original
+    free-content-only +2 composes 5969/5993/5727 to 5969/5995/5727.
+    Keep 137/138/131 job ceilings, ten packs, every assertion, selector,
+    dependency, runtime and admission control. Preserve all current-main
+    provenance and all 49 original H-only historical lines verbatim.
+    These are static source/inverse/AST checks, not newly executed
+    project tests, paired planner measurements or hosted CI proof.
+    Natural exact-head successor CI must qualify this composition.
 
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
@@ -6040,6 +6070,55 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
     is measured planner accounting, not an execution-time estimate; natural
     successor CI must qualify the repaired source.
+
+    2026-11-11 (PR #7387, current-main source composition):
+    Base catalog b68f93a812c85ddaea5dad71c295c51659b7d371 and packing
+    89c9d99733f7c7559646401e2dbf06dfe8595097 retain all current-main history.
+    Preserve all 401 owner positions and the other 400 owner blocks.
+    The current research-vault block equals the original base; use this
+    carrier's exact head block: 3 commands, 44->45 test references,
+    2095->2146 joined characters; _job_weight is 93->95 without an override.
+    Carry only free-content 5989->5991; keep index 5966 and Prophet 5724,
+    137/138/131 job bounds, ten packs and every other control unchanged.
+    Retain the exact original #7387 history; import no sibling contribution.
+    This is declaration-derived arithmetic, not a new planner/runtime result.
+    Natural exact-head CI is still owed; existing product/UNKNOWN limits remain.
+
+    2026-11-09 (PR #7387, actual shared-CI conflict reconciliation):
+    preserve current main 536ab7d78c2fbcab8a7c8a3cdc8d09fbe2bff136,
+    its landed benchmark, theme-graph path declarations and all existing
+    source-accounting history. Restore only this carrier's three literal
+    paths and full evidence-delta suite in the same research-vault owner.
+    The owner retains three commands and its dependencies; test references
+    44->45 and command characters 2095->2146 remain in bucket two, so its
+    source-estimated weight is 93->95. The three new literal paths match
+    none of the standard probes. This exclusive owner is selected only
+    by free-content among those probes: own contribution 0/+2/0.
+    Compose that contribution only onto current 5943/5964/5701:
+    index5943, free-content5966, Prophet5701. No allowance from unmerged
+    #7350 or #7385 is included. Preserve all 400 owner IDs, 399 other owner
+    blocks, job ceilings137/138/131, ten packs, selectors, tests, runtime
+    and global admission/concurrency controls. This is source arithmetic,
+    not a new paired planner measurement or runtime result. Natural
+    successor CI must prove the exact combined closure and execution.
+    The original dated composition record is retained below.
+
+    2026-11-08 (PR #7387, normalized evidence-delta correction):
+    compose the bounded source/CLI/negative-case fixes onto actual main067c320,
+    preserving landed #7352 benchmark, #10685, #10735 split and #8240.
+    Add only three source/test paths and one complete suite to the existing
+    exclusive research-vault CODE owner. Its three commands retain the same
+    dependencies;44->45 test tokens and2095->2146 characters keep bucket2,
+    so the unchanged estimator is93->95. This owner selects free-content,
+    not index or plan-book; the three new paths select none of those probes.
+    Source-static contribution is0/+2/0: free5941->5943, index5920 and
+    Prophet5678 unchanged. Preserve all395 owners,394 other blocks, job
+    ceilings137/138/131, ten packs, runtime limits and all prior provenance.
+    No unmerged #7385/#10192 allowance is imported. This is not an executed
+    paired measurement, closure check or test result. Natural exact-head CI
+    must qualify actual combined closure, selection/packing and this suite
+    before source release; any additional delta requires diagnosis.
+    Original314PASS/2UNKNOWN and private/product/rights boundaries remain.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
