@@ -71,12 +71,21 @@ def membership_current(breadth_dir: Path) -> pd.DataFrame:
     return cons.rename(columns={sym: "ticker", "sector": "group"})[["ticker", "group"]]
 
 
+SIC_FILL = "sp1500_pit_sectors_sic_fill.parquet"
+
+
 def membership_dated(breadth_dir: Path, src: str) -> pd.DataFrame:
+    """Dated members with as-of-now labels; the free SIC fill overlay (when
+    present) labels only tickers the substrate leaves unlabeled."""
     m = pd.read_parquet(breadth_dir / "sp1500_pit_membership.parquet")
     if src != "all":
         m = m[m["src"] == src]
     lab = pd.read_parquet(breadth_dir / "sp1500_pit_sectors.parquet")[["ticker", "sector"]]
     lab = lab.dropna().drop_duplicates("ticker")
+    fill_path = breadth_dir / SIC_FILL
+    if fill_path.exists():
+        fill = pd.read_parquet(fill_path)[["ticker", "sector"]].dropna()
+        lab = pd.concat([lab, fill[~fill["ticker"].isin(lab["ticker"])]], ignore_index=True)
     out = m.merge(lab, on="ticker", how="left").rename(columns={"sector": "group"})
     return out[["ticker", "group", "start_date", "end_date"]]
 
@@ -126,7 +135,7 @@ def missing_sentence(closes: pd.DataFrame, mem: pd.DataFrame, basis: str) -> tup
              f"window and are absent (of these, {stats['rows_unpriced_in_own_window_ticker_present']} "
              f"tickers exist in the store only outside the window, a likely ticker reuse); "
              f"{unlabeled} membership rows carry no sector label and are absent from every sector; "
-             f"labels are as of now, not era-correct.")
+             f"labels are as of now, not era-correct (current GICS, current SEC SIC, and the free SIC fill overlay marked sic_derived_fill).")
     return s, stats
 
 
@@ -234,7 +243,8 @@ def build(closes_path: Path, breadth_dir: Path, basis: str, out: Path, src: str 
     valid = daily.dropna(subset=["pct_above_200"])
     inputs = [closes_path] + ([breadth_dir / "constituents.parquet"] if basis == "current" else
                               [breadth_dir / "sp1500_pit_membership.parquet",
-                               breadth_dir / "sp1500_pit_sectors.parquet"])
+                               breadth_dir / "sp1500_pit_sectors.parquet"]
+                              + ([breadth_dir / SIC_FILL] if (breadth_dir / SIC_FILL).exists() else []))
     meta = {
         "basis": BASIS[basis],
         "price_note": ("Adjusted closes are today's restated values (split and dividend "
