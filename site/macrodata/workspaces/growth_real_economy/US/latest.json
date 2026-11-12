@@ -514,9 +514,9 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-11T08:19:20Z",
+    "built_at": "2026-11-11T09:12:14Z",
     "calculation_as_of": "2026-11-10",
-    "code_version": "2fdf62a703f1b263c53ffa46229d51e36e85b4d9",
+    "code_version": "497d83de7c83f5139ea76bdb0a151506aebcbede",
     "content_sha256": "619495400a00a8fd90b8595fc455d719db077faed619473fdccf99514c4196bb",
     "generation_id": "growth_real_economy-US-619495400a00a8fd",
     "producer": "engine.market_os.macro_workspaces.growth",

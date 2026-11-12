@@ -9457,7 +9457,7 @@
   },
   "fed_path": {
     "asof": "2026-11-10",
-    "built": "2026-11-11T07:52:07.629696+00:00",
+    "built": "2026-11-11T08:49:04.018325+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -19581,7 +19581,7 @@
           "freshness": {
             "capture_qualified": true,
             "capture_finished_at": "2026-11-09T08:55:47.793982+00:00",
-            "capture_age_s": 168997.254754,
+            "capture_age_s": 172401.651483,
             "source_generation": "2026-11-06",
             "source_generation_age_days": 5,
             "stale": null,
@@ -21917,77 +21917,120 @@
     "note": "W4a rebuild: HEAT = n_lit_sources / n_available_sources [\u00d7 earliness when measured \u2014 dropped, not filled, when absent].  5 distinct data feeds (physical \u00b7 demand \u00b7 guidance \u00b7 altdata \u00b7 edgar_scarcity \u2014 the old subsector_scarcity + discovery_echo were one EDGAR parquet, now counted once). Dark sources leave the denominator \u2014 no outage penalty.  Earliness from engine/foresight_earliness.py (attention-based, Q3); absent below 2 usable legs \u2192 factor DROPPED (not laundered as neutral 0.5).  Physical numeric bonus \u00d71.15 when genuinely TIGHT/SOLD_OUT.  Threshold 0.40 PROVISIONAL.  Meta-driver cards emit for \u22653 co-heating same-cluster themes.  Cross-theme heats reflect agreement among AVAILABLE surfaces only \u2014 themes with different data coverage are not on a fully comparable scale."
   },
   "foresight_analyst": {
-    "regime_read": "Convergence is selective: data-center power shows the clearest early alignment across physical tightening, accelerating demand, and raising guidance. Defense also shows a pre-revision scarcity pattern, but its physical constraint remains text-derived and therefore less reliable.",
-    "regime_read_zh": "\u5f53\u524d\u7684\u6536\u655b\u4fe1\u53f7\u8f83\u4e3a\u96c6\u4e2d\uff1a\u6570\u636e\u4e2d\u5fc3\u7535\u529b\u5728\u5b9e\u4f53\u4f9b\u7ed9\u8d8b\u7d27\u3001\u9700\u6c42\u52a0\u901f\u548c\u7ba1\u7406\u5c42\u4e0a\u8c03\u6307\u5f15\u4e4b\u95f4\u5448\u73b0\u6700\u6e05\u6670\u7684\u65e9\u671f\u5171\u632f\u3002\u56fd\u9632\u9886\u57df\u4e5f\u51fa\u73b0\u4e86\u5206\u6790\u5e08\u4fee\u6b63\u524d\u7684\u7a00\u7f3a\u6027\u7ec4\u5408\u4fe1\u53f7\uff0c\u4f46\u5176\u5b9e\u4f53\u7ea6\u675f\u4ecd\u6765\u81ea\u6587\u672c\u8bc1\u636e\uff0c\u56e0\u6b64\u53ef\u9760\u6027\u8f83\u4f4e\u3002",
+    "regime_read": "The clearest early convergence is in power infrastructure, where tightening physical conditions, accelerating customer demand, and raising guidance align before revisions fully absorb the signal. Defense also shows a weaker pre-revision pattern, but its scarcity evidence remains text-based and lacks physical confirmation.",
+    "regime_read_zh": "\u5f53\u524d\u6700\u6e05\u6670\u7684\u65e9\u671f\u5171\u632f\u96c6\u4e2d\u5728\u7535\u529b\u57fa\u7840\u8bbe\u65bd\uff1a\u5b9e\u4f53\u4f9b\u7ed9\u8d8b\u7d27\u3001\u5ba2\u6237\u9700\u6c42\u52a0\u901f\u4e0e\u7ba1\u7406\u5c42\u4e0a\u8c03\u6307\u5f15\u540c\u6b65\u51fa\u73b0\uff0c\u800c\u5206\u6790\u5e08\u4fee\u6b63\u5c1a\u672a\u5b8c\u5168\u5438\u6536\u8fd9\u4e00\u4fe1\u53f7\u3002\u56fd\u9632\u9886\u57df\u4e5f\u5448\u73b0\u8f83\u5f31\u7684\u4fee\u6b63\u524d\u5171\u632f\uff0c\u4f46\u7a00\u7f3a\u6027\u8bc1\u636e\u4ecd\u6765\u81ea\u6587\u672c\uff0c\u4e14\u7f3a\u5c11\u5b9e\u4f53\u6570\u636e\u786e\u8ba4\u3002",
     "theses": [
       {
         "theme": "data_center_power",
-        "mechanism": "Accelerating customer demand is meeting a tightening physical bottleneck, while management teams are raising guidance rather than treating the pressure as temporary [demand] [physical] [guidance]. This combination suggests that capacity constraints and order momentum are reaching company outlooks before analyst revisions have fully absorbed them.",
-        "non_obvious": "The important pattern is not demand strength alone; it is physical tightening and guidance upgrades occurring together while revision breadth remains incomplete. That is the signature of an operating constraint beginning to propagate into expectations rather than a fully recognized consensus cycle [physical] [guidance].",
+        "mechanism": "Accelerating customer demand is pressing against tightening power-and-cooling capacity, while management guidance is being raised in response to the same operating conditions [demand] [physical] [guidance]. The still-early revision backdrop suggests these linked constraints and spending intentions are not yet fully reflected by analysts [revision_breadth].",
+        "non_obvious": "The important pattern is not demand acceleration alone, but its simultaneous appearance with a physical tightening signal and multiple guidance raisers while revisions remain incomplete\u2014a potential infrastructure constraint becoming visible operationally before broad analyst recognition [physical] [demand] [guidance] [revision_breadth].",
         "kill_criteria": [
-          "The physical bottleneck loosens to NEUTRAL.",
-          "Customer demand falls from ACCELERATING to NEUTRAL or weaker.",
-          "Management guidance turns from RAISING to NEUTRAL or cuts.",
-          "Revision breadth broadens and subsequently rolls over while the physical and demand legs fail to strengthen."
+          "The physical bottleneck band loosens to NEUTRAL.",
+          "The demand band ceases to be ACCELERATING.",
+          "The guidance band falls from RAISING to NEUTRAL or cutting.",
+          "Revision breadth rolls over while physical, demand, or guidance confirmation weakens."
         ],
         "evidence": [
           {
-            "text": "physical: bottleneck_band is TIGHTENING and physical_confirmed is true",
+            "text": "physical: bottleneck band TIGHTENING",
             "ungrounded": true
           },
           {
-            "text": "demand: demand_band is ACCELERATING",
+            "text": "demand: demand band ACCELERATING",
             "ungrounded": true
           },
           {
-            "text": "guidance: guidance_band is RAISING",
+            "text": "guidance: guidance band RAISING",
+            "ungrounded": true
+          },
+          {
+            "text": "revision_breadth: analyst revisions are not yet fully broad",
             "ungrounded": true
           }
         ],
         "evidence_display": [],
-        "dissent": "The board's own rationale says supply is not yet tight and the stage remains WATCH, so the observed tightening may fail to become a durable scarcity regime.",
+        "dissent": "The board's own rationale says supply is not yet tight and the stage remains WATCH, so tightening may represent an emerging condition rather than a durable bottleneck.",
         "confidence": "medium",
         "n_grounded": 0,
-        "n_total_evidence": 3,
+        "n_total_evidence": 4,
         "_forecast_clamped": null
       },
       {
-        "theme": "defense_aerospace",
-        "mechanism": "Government-award acceleration and patent activity are appearing alongside filing-derived subsector scarcity while analyst revisions remain narrow [altdata] [edgar_scarcity]. The mechanism is procurement and capability investment tightening specialized capacity before the effect is broadly reflected in estimates.",
-        "non_obvious": "The hard-to-see pattern is award acceleration plus subsector-scarcity language with limited revision participation: operating demand may be reaching scarce suppliers before the Street recognizes a broad cycle [altdata] [edgar_scarcity].",
+        "theme": "grid_electrification",
+        "mechanism": "Accelerating customer demand is meeting tightening grid-related physical capacity, and management teams are raising guidance alongside that pressure [demand] [physical] [guidance]. Relatively incomplete revision breadth makes the alignment potentially early, although the board still classifies it as WATCH [revision_breadth].",
+        "non_obvious": "The cross-surface signal is that physical tightening and management optimism are moving together even though analyst participation remains comparatively narrow; this can indicate that order and capacity conditions are changing faster than consensus models [physical] [guidance] [revision_breadth].",
         "kill_criteria": [
-          "Government-award acceleration disappears or reverses.",
-          "The edgar_scarcity surface turns off.",
-          "Numeric physical evidence fails to confirm the text-derived tightness when it becomes available.",
-          "Guidance turns to cuts while revision breadth remains weak or rolls over."
+          "The physical bottleneck band loosens to NEUTRAL.",
+          "The demand band ceases to be ACCELERATING.",
+          "The guidance band turns NEUTRAL or moves to cuts.",
+          "Revision breadth weakens further while either demand or guidance confirmation disappears."
         ],
         "evidence": [
           {
-            "text": "altdata: government-award acceleration and a patent cluster are present",
+            "text": "physical: bottleneck band TIGHTENING",
             "ungrounded": true
           },
           {
-            "text": "edgar_scarcity: filing-derived scarcity is lit",
+            "text": "demand: demand band ACCELERATING",
             "ungrounded": true
           },
           {
-            "text": "guidance: guidance_band is NEUTRAL",
+            "text": "guidance: guidance band RAISING",
             "ungrounded": true
           },
           {
-            "text": "physical: physical_confirmed is false",
+            "text": "revision_breadth: revisions remain comparatively narrow",
             "ungrounded": true
           }
         ],
         "evidence_display": [],
-        "dissent": "The scarcity signal is text-only, management guidance is neutral, and there is no numeric physical confirmation; the pattern could reflect filing language and episodic awards rather than a durable bottleneck.",
+        "dissent": "The low heat and WATCH stage, together with the board's statement that supply is not yet tight, make this a nascent alignment rather than evidence of established scarcity.",
         "confidence": "low",
         "n_grounded": 0,
         "n_total_evidence": 4,
         "_forecast_clamped": null
+      },
+      {
+        "theme": "defense_aerospace",
+        "mechanism": "Government-award acceleration and patent activity are appearing alongside filing-based subsector scarcity while revisions remain narrow [altdata] [edgar_scarcity] [revision_breadth]. This suggests procurement and capability investment may be tightening specialized capacity before management guidance or numeric physical data confirm it.",
+        "non_obvious": "The hard-to-see pattern is an award-and-patent pulse coinciding with scarcity language and limited analyst revision breadth: operational commitments may be emerging before either management guidance or real-time physical measurements validate the constraint [altdata] [edgar_scarcity] [guidance] [physical].",
+        "kill_criteria": [
+          "Government-award acceleration disappears or reverses.",
+          "The EDGAR scarcity surface turns off.",
+          "Numeric physical confirmation arrives as NEUTRAL rather than tight or tightening.",
+          "Guidance turns to cuts before revision breadth begins to broaden."
+        ],
+        "evidence": [
+          {
+            "text": "altdata: government-award acceleration and a patent cluster",
+            "ungrounded": true
+          },
+          {
+            "text": "edgar_scarcity: filing-language scarcity signal",
+            "ungrounded": true
+          },
+          {
+            "text": "revision_breadth: revisions remain narrow",
+            "ungrounded": true
+          },
+          {
+            "text": "physical: numeric confirmation is absent",
+            "ungrounded": true
+          },
+          {
+            "text": "guidance: guidance remains NEUTRAL",
+            "ungrounded": true
+          }
+        ],
+        "evidence_display": [],
+        "dissent": "The scarcity reading is text-only, guidance is neutral, and no numeric physical confirmation exists, so the apparent convergence could be filing-language noise rather than a real capacity constraint.",
+        "confidence": "low",
+        "n_grounded": 0,
+        "n_total_evidence": 5,
+        "_forecast_clamped": null
       }
     ],
-    "confidence": "medium",
+    "confidence": "low",
     "asof": "2026-11-10",
     "n_theses": 2,
     "disclaimer": "An AI reading of the desk's OWN deterministic convergence \u2014 checkable and forward-graded, never a price forecast."
@@ -22049,10 +22092,10 @@
         "llm_heat_now": 0.487,
         "llm_opened_asof": "2026-11-10",
         "llm_kill_criteria": [
-          "The physical bottleneck loosens to NEUTRAL.",
-          "Customer demand falls from ACCELERATING to NEUTRAL or weaker.",
-          "Management guidance turns from RAISING to NEUTRAL or cuts.",
-          "Revision breadth broadens and subsequently rolls over while the physical and demand legs fail to strengthen."
+          "The physical bottleneck band loosens to NEUTRAL.",
+          "The demand band ceases to be ACCELERATING.",
+          "The guidance band falls from RAISING to NEUTRAL or cutting.",
+          "Revision breadth rolls over while physical, demand, or guidance confirmation weakens."
         ],
         "llm_broken_reasons": []
       },
@@ -22081,12 +22124,12 @@
         "llm_status": "INTACT",
         "llm_heat_at_open": 0.223,
         "llm_heat_now": 0.223,
-        "llm_opened_asof": "2026-11-09",
+        "llm_opened_asof": "2026-11-10",
         "llm_kill_criteria": [
-          "The bottleneck band returns to NEUTRAL [physical].",
-          "The demand band ceases to be ACCELERATING [demand].",
-          "The guidance band falls to NEUTRAL or turns to cuts [guidance].",
-          "Revision breadth rolls over without further physical tightening [physical] [guidance]."
+          "The physical bottleneck band loosens to NEUTRAL.",
+          "The demand band ceases to be ACCELERATING.",
+          "The guidance band turns NEUTRAL or moves to cuts.",
+          "Revision breadth weakens further while either demand or guidance confirmation disappears."
         ],
         "llm_broken_reasons": []
       },
@@ -22324,9 +22367,9 @@
         "llm_opened_asof": "2026-11-10",
         "llm_kill_criteria": [
           "Government-award acceleration disappears or reverses.",
-          "The edgar_scarcity surface turns off.",
-          "Numeric physical evidence fails to confirm the text-derived tightness when it becomes available.",
-          "Guidance turns to cuts while revision breadth remains weak or rolls over."
+          "The EDGAR scarcity surface turns off.",
+          "Numeric physical confirmation arrives as NEUTRAL rather than tight or tightening.",
+          "Guidance turns to cuts before revision breadth begins to broaden."
         ],
         "llm_broken_reasons": []
       },
@@ -22568,7 +22611,7 @@
     "state": "caution",
     "label_en": "Caution",
     "label_zh": "\u7559\u610f",
-    "headline_en": "Caution: fragility building (51/100). Drivers: SPX: dealers short gamma; net GEX -58.8bn; spot below gamma flip, complacency=watch (steep contango, HY widening), HY OAS +23bp/21d; HYG/TLT -3.0%/20d.",
+    "headline_en": "Caution: fragility building (51/100). Drivers: SPX: dealers short gamma; net GEX -58.3bn; spot below gamma flip, complacency=watch (steep contango, HY widening), HY OAS +23bp/21d; HYG/TLT -3.0%/20d.",
     "headline_zh": "\u7559\u610f\uff1a\u8106\u5f31\u6027\u4e0a\u5347\uff0851/100\uff09\u3002",
     "drivers": [
       {
@@ -22576,7 +22619,7 @@
         "intensity": 1.0,
         "weight": 0.9,
         "contribution": 0.9,
-        "detail_en": "SPX: dealers short gamma; net GEX -58.8bn; spot below gamma flip",
+        "detail_en": "SPX: dealers short gamma; net GEX -58.3bn; spot below gamma flip",
         "detail_zh": "\u505a\u5e02\u5546Gamma"
       },
       {
@@ -22658,7 +22701,7 @@
         "intensity": 1.0,
         "weight": 0.9,
         "contribution": 0.9,
-        "detail_en": "SPX: dealers short gamma; net GEX -58.8bn; spot below gamma flip",
+        "detail_en": "SPX: dealers short gamma; net GEX -58.3bn; spot below gamma flip",
         "detail_zh": "\u505a\u5e02\u5546Gamma"
       },
       "technical": {
@@ -24043,7 +24086,7 @@
       "phase": null
     },
     "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-    "_timing_s": 19.57,
+    "_timing_s": 7.78,
     "forward_log": {
       "market": "us",
       "n_graded": 37,
@@ -24287,7 +24330,7 @@
         }
       }
     },
-    "_timing_s": 0.86
+    "_timing_s": 0.21
   },
   "mag7_washout": {
     "schema": "mag7_washout.v1",
@@ -25915,7 +25958,7 @@
       ]
     },
     "n_roster": 13,
-    "_timing_s": 10.6
+    "_timing_s": 3.69
   },
   "vol_shock": {
     "score": 45.6,
@@ -28767,7 +28810,7 @@
   },
   "freshness": {
     "asof": "2026-11-10",
-    "built_at": "2026-11-11T08:00:30Z",
+    "built_at": "2026-11-11T08:52:35Z",
     "age_days": 1,
     "age_sessions": 1,
     "max_age_sessions": 1,
