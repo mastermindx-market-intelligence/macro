@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T21:22:05.057500+00:00",
-  "count": 3253,
+  "generated_at": "2026-11-12T21:56:57.745013+00:00",
+  "count": 3254,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -539,6 +539,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 66,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-i2ctbuz60sw-65f975",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T09:33:00Z",
+      "summary_points": [
+        "Tech Rally vs.",
+        "Nvidia Risk: CoreWeave earnings drove S&P 500 tech rally (+1.31%), but Nvidia CEO ousting triggered Nasdaq (-1.09%) and Asian tech sell-off (Kospi -1.04%, Hang Seng -0.86%), highlighting concentrated tech volatility risk.",
+        "Fed/ECB Rate Shifts: Fed hike pricing down to 24bp (vs. 28bp), ECB pricing 28bp hikes by 2026; 10yr Treasury yield at 4.99% and dollar index at April 2025 highs signal hawkish monetary policy persistence.",
+        "Dollar & Euro Dynamics: Dollar index at highest since April 2025, euro at 18-month low ($1.109), reflecting Fed hawkishness and ECB's tightening bias (1yr Euro swaps +3.3bps)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
