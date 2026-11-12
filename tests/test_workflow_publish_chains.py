@@ -101,6 +101,58 @@ def test_sector_publish_step_runs_externalize_chain_before_staging_site_pages() 
     assert "git add site/" not in step, "targeted lane must never stage the whole site"
 
 
+def test_sector_preflight_includes_the_fast_lens_but_revalidate_does_not() -> None:
+    """Ruling 28: lens staleness counts as NOT fresh for the scheduled preflight
+    decision only. The revalidate step (and the chain's own final check, which
+    calls the checker without the flag) must stay without it, so a failed lens
+    build can never block publication."""
+    src = SECTOR_WORKFLOW.read_text(encoding="utf-8")
+    preflight = _step(src, name="scheduled semantic preflight")
+    assert (
+        "python -m scripts.check_sector_intelligence_freshness --quiet --include-fast-lens"
+        in preflight
+    )
+    revalidate = _step(src, name="revalidate before publication")
+    assert "python -m scripts.check_sector_intelligence_freshness" in revalidate
+    assert "--include-fast-lens" not in revalidate
+    assert src.count("--include-fast-lens") == 1, "the flag is preflight-only"
+
+
+def test_sector_publish_stages_the_lens_file_but_never_the_ledger() -> None:
+    """Ruling 28: the publish step stages data/us_sector_rotation/latest.json (the
+    FILE, tracked on main, refreshed by the chain's non-fatal XSR step) so the
+    committed file and the page agree — never the directory, so the nightly
+    ledger forward_log.jsonl is never staged from this lane."""
+    src = SECTOR_WORKFLOW.read_text(encoding="utf-8")
+    step = _step(src, name="publish scoped generation to main")
+    block = step[step.index("git add -- \\"):]
+    specs: list[str] = []
+    for ln in block.splitlines()[1:]:
+        specs.append(ln.strip().rstrip("\\").strip())
+        if not ln.rstrip().endswith("\\"):
+            break
+    assert "data/us_sector_rotation/latest.json" in specs
+    assert "data/us_sector_rotation/forward_log.jsonl" not in specs
+    assert "forward_log.jsonl" not in step
+    for spec in specs:
+        assert spec not in ("data/us_sector_rotation", "data/us_sector_rotation/"), (
+            "the lens directory must never be a pathspec — forward_log.jsonl is the nightly ledger's alone"
+        )
+
+
+def test_sector_push_trigger_names_the_lens_file_like_other_producer_outputs() -> None:
+    """The paths trigger already names other producers' data files the same way
+    (data/regime/latest.json), so the lens file joins them: when the nightly
+    engine job finally writes a fresh lens, the page rebuilds to agree with it.
+    The lane's own publish commits are excluded by the job's head-message guard,
+    so this cannot self-trigger."""
+    src = SECTOR_WORKFLOW.read_text(encoding="utf-8")
+    trigger = src[src.index("on:"):src.index("permissions:")]
+    assert '- "data/regime/latest.json"' in trigger
+    assert '- "data/us_sector_rotation/latest.json"' in trigger
+    assert "forward_log.jsonl" not in trigger
+
+
 def test_whitehouse_sentinel_keeps_the_canonical_externalize_chain() -> None:
     """The sector heal copies whitehouse-sentinel's chain; if the original ever loses
     it, the copy's rationale is gone too. Pin the source of truth in the same job."""

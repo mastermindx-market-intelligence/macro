@@ -571,3 +571,113 @@ def test_write_latest_wall_clock_fallback_is_not_a_settled_session(tmp_path):
     out = write_latest([], root=tmp_path)
     payload = json.loads(Path(out).read_text(encoding="utf-8"))
     assert payload["session"] is None and payload["clock"] == "settled_daily_session"
+
+
+# ---------------------------------------------------------------------------
+# Ruling 28: cycle_states_asof — the cycle-state input's own vintage
+# ---------------------------------------------------------------------------
+
+class TestCycleStatesAsof:
+    """latest.json must name the forward_log max date actually used (after any
+    asof slice), and null when that input is unreadable or empty. Small synthetic
+    inputs in tmp dirs only — never the real data/ tree, never a real builder run."""
+
+    _ETFS = ["SPY", "XLK", "XLV", "XLP", "XLU", "XLF", "XLE", "XLI", "XLY", "XLB", "XLRE", "XLC"]
+
+    def _patch_inputs(self, monkeypatch, tmp_path, fwd_rows):
+        """Point config.data_dir at a tmp data tree and stub the close loaders.
+
+        fwd_rows: (date, id, timing_state) rows for forward_log.parquet, or None
+        to leave the file absent. The ledger lane stays disarmed so this never
+        appends forward_log.jsonl.
+        """
+        import engine.us_sector_rotation as usr
+        from engine import inputs as engine_inputs
+        from engine import equity_factors
+
+        data_dir = tmp_path / "data"
+        (data_dir / "sector_cycles").mkdir(parents=True, exist_ok=True)
+        if fwd_rows is not None:
+            fwd = pd.DataFrame(fwd_rows, columns=["date", "id", "timing_state"])
+            fwd.to_parquet(data_dir / "sector_cycles" / "forward_log.parquet")
+        monkeypatch.setattr(usr.config, "data_dir", lambda: data_dir)
+        monkeypatch.setattr(engine_inputs, "yahoo_closes", lambda: _make_close_df(self._ETFS))
+
+        def _no_stocks(_universe):
+            raise RuntimeError("synthetic: no stock closes")
+
+        monkeypatch.setattr(equity_factors, "_closes", _no_stocks)
+        monkeypatch.delenv("COLLECT_LANE", raising=False)
+        monkeypatch.delenv("US_LANE", raising=False)
+        return data_dir
+
+    def test_compute_and_write_names_the_cycle_state_input_date(self, monkeypatch, tmp_path):
+        from engine.us_sector_rotation import compute_and_write
+
+        data_dir = self._patch_inputs(monkeypatch, tmp_path, [
+            ("2026-11-04", "xlk", "early"),
+            ("2026-11-06", "xlk", "late"),
+            ("2026-11-05", "xlv", "mid"),
+        ])
+        scored = compute_and_write()
+        assert scored, "synthetic lens should still score instruments"
+        payload = json.loads((data_dir / "us_sector_rotation" / "latest.json").read_text(encoding="utf-8"))
+        assert payload["cycle_states_asof"] == "2026-11-06"
+        # the lane never appends the nightly ledger
+        assert not (data_dir / "us_sector_rotation" / "forward_log.jsonl").exists()
+
+    def test_compute_and_write_null_when_forward_log_missing(self, monkeypatch, tmp_path):
+        from engine.us_sector_rotation import compute_and_write
+
+        data_dir = self._patch_inputs(monkeypatch, tmp_path, None)
+        compute_and_write()
+        payload = json.loads((data_dir / "us_sector_rotation" / "latest.json").read_text(encoding="utf-8"))
+        assert payload["cycle_states_asof"] is None
+
+    def test_compute_and_write_null_when_forward_log_empty(self, monkeypatch, tmp_path):
+        from engine.us_sector_rotation import compute_and_write
+
+        data_dir = self._patch_inputs(monkeypatch, tmp_path, [])
+        compute_and_write()
+        payload = json.loads((data_dir / "us_sector_rotation" / "latest.json").read_text(encoding="utf-8"))
+        assert payload["cycle_states_asof"] is None
+
+    def test_load_inputs_slices_the_cycle_state_date_to_asof(self, monkeypatch, tmp_path):
+        import engine.us_sector_rotation as usr
+
+        self._patch_inputs(monkeypatch, tmp_path, [
+            ("2026-11-04", "xlk", "early"),
+            ("2026-11-06", "xlk", "late"),
+        ])
+        _, _, _, timing_states, _, _ = usr.load_inputs(asof="2026-11-05")
+        assert usr._cycle_states_asof == "2026-11-04"
+        # the latest-row-per-id timing rule is unchanged by the date capture
+        assert timing_states == {"xlk": "early"}
+        usr.load_inputs()
+        assert usr._cycle_states_asof == "2026-11-06"
+
+    def test_load_inputs_resets_a_stale_vintage_when_the_read_fails(self, monkeypatch, tmp_path):
+        import engine.us_sector_rotation as usr
+
+        data_dir = self._patch_inputs(monkeypatch, tmp_path, [
+            ("2026-11-06", "xlk", "late"),
+        ])
+        usr.load_inputs()
+        assert usr._cycle_states_asof == "2026-11-06"
+        (data_dir / "sector_cycles" / "forward_log.parquet").unlink()
+        usr.load_inputs()
+        assert usr._cycle_states_asof is None
+
+    def test_write_latest_carries_the_key_and_defaults_to_null(self, tmp_path):
+        from engine.us_sector_rotation import write_latest
+
+        out = write_latest(
+            [{"ticker": "XLK", "asof": "2026-10-20"}],
+            root=tmp_path,
+            cycle_states_asof="2026-11-06",
+        )
+        payload = json.loads(Path(out).read_text(encoding="utf-8"))
+        assert payload["cycle_states_asof"] == "2026-11-06"
+        out = write_latest([{"ticker": "XLK", "asof": "2026-10-20"}], root=tmp_path)
+        payload = json.loads(Path(out).read_text(encoding="utf-8"))
+        assert payload["cycle_states_asof"] is None

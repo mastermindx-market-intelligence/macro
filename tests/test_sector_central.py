@@ -319,6 +319,29 @@ def test_fast_lens_status_never_passes_a_hostile_date_through(monkeypatch, tmp_p
     assert _status(monkeypatch, tmp_path, body) == {"state": "stale", "asof": ts[:10]}
 
 
+def test_fast_lens_status_passes_cycle_states_asof_through_when_fresh(monkeypatch, tmp_path):
+    # Ruling 28: the lens is fresh but its cycle-state input is older — carry that date.
+    body = {"asof": "2026-10-30", "ts": _ts(2), "instruments": _INST,
+            "cycle_states_asof": "2026-10-28"}
+    assert _status(monkeypatch, tmp_path, body) == {
+        "state": "fresh", "asof": "2026-10-30", "cycle_states_asof": "2026-10-28",
+    }
+
+
+def test_fast_lens_status_passes_cycle_states_asof_through_when_stale(monkeypatch, tmp_path):
+    body = {"asof": "2026-10-16", "ts": _ts(49), "instruments": _INST,
+            "cycle_states_asof": "2026-10-14"}
+    assert _status(monkeypatch, tmp_path, body) == {
+        "state": "stale", "asof": "2026-10-16", "cycle_states_asof": "2026-10-14",
+    }
+
+
+def test_fast_lens_status_never_passes_a_hostile_cycle_date_through(monkeypatch, tmp_path):
+    body = {"asof": "2026-10-30", "ts": _ts(2), "instruments": _INST,
+            "cycle_states_asof": "<img src=x onerror=alert(1)>"}
+    assert _status(monkeypatch, tmp_path, body) == {"state": "fresh", "asof": "2026-10-30"}
+
+
 def test_compute_block_publishes_the_status_beside_the_board_order():
     # Slice compute(): the status must be derived from the same armed flag as the order.
     assert 'mkt["fast_lens"] = _fast_lens_status(rotation_armed, rotation_raw)' in (
@@ -384,6 +407,34 @@ def test_rail_stale_names_the_date_in_both_languages():
 def test_rail_fresh_says_this_row_is_not_covered():
     # A proxy basket has no rank even on a fresh lens. It will not get one tonight either.
     assert _rail_copy({"state": "fresh", "asof": "2026-10-30"}) == "not ranked on this lens|不在此视角排名内"
+
+
+@_needs_node
+def test_rail_fresh_names_a_stale_cycle_state_input():
+    # Ruling 28: fresh lens, older cycle-state input — the line names that input's date.
+    fl = {"state": "fresh", "asof": "2026-10-30", "cycle_states_asof": "2026-10-28"}
+    assert _rail_copy(fl) == (
+        "not ranked on this lens · cycle states as of 2026-10-28"
+        "|不在此视角排名内 · 周期状态截至 2026-10-28"
+    )
+
+
+@_needs_node
+@pytest.mark.parametrize("cycle_asof", [None, "2026-10-30", "2026-11-02"])
+def test_rail_fresh_adds_no_clause_unless_the_input_is_older(cycle_asof):
+    fl = {"state": "fresh", "asof": "2026-10-30"}
+    if cycle_asof is not None:
+        fl["cycle_states_asof"] = cycle_asof
+    assert _rail_copy(fl) == "not ranked on this lens|不在此视角排名内"
+
+
+@_needs_node
+def test_rail_escapes_the_cycle_state_date():
+    # A date-shaped prefix that still carries markup must be escaped, not trusted.
+    fl = {"state": "fresh", "asof": "2026-10-30", "cycle_states_asof": "2026-10-28<img src=x>"}
+    out = _rail_copy(fl)
+    assert "<img" not in out
+    assert "cycle states as of 2026-10-28&lt;img" in out
 
 
 @_needs_node

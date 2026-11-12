@@ -3249,7 +3249,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   /* a card with no fast-lens rank says why, and promises nothing */
   function fastLensNoRankCopy(fl){
     if(fl.state==='stale'&&fl.asof) return L('no ranks since '+esc(fl.asof),esc(fl.asof)+' 后无排名');
-    if(fl.state==='fresh') return L('not ranked on this lens','不在此视角排名内');
+    if(fl.state==='fresh'){var cs=fl.cycle_states_asof&&fl.asof&&fl.cycle_states_asof<fl.asof?' · cycle states as of '+esc(fl.cycle_states_asof):'';return L('not ranked on this lens'+cs,'不在此视角排名内'+(cs?' · 周期状态截至 '+esc(fl.cycle_states_asof):''));}
     return L('no ranks published','尚未发布排名');
     }
 
