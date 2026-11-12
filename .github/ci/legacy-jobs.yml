@@ -27834,6 +27834,7 @@ jobs:
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/benchmark.py"
       - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/longitudinal.py"
       - "engine/research_intelligence/projection.py"
       - "engine/research_intelligence/schema.py"
       - "engine/research_intelligence/selection.py"
