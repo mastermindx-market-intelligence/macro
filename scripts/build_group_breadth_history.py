@@ -29,12 +29,16 @@ import argparse
 import hashlib
 import json
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-import pandas as pd
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
-from engine import group_breadth_history as gbh
+import pandas as pd  # noqa: E402
+
+from engine import group_breadth_history as gbh  # noqa: E402
 
 BASIS = {
     "current": "reconstructed_current_membership",
