@@ -1641,3 +1641,13 @@ def test_macro_mobile_chat_launcher_only_suppresses_decoration_not_interaction()
     assert '<body class="page-macro mx4-grid">' in macro
     assert '<body class="page-stocks">' in stocks
     assert "body.page-macro #mmb-launch::before" in macro
+
+
+def test_dashboard_mount_and_builder_use_existing_publication_without_stock_scope():
+    root = Path(__file__).resolve().parents[1]
+    template = (root / "templates/dashboard.html.j2").read_text()
+    assert template.count("economic.economic_backdrop(") == 1
+    assert "{% if mode != 'stocks' %}{{ economic.economic_backdrop(economic_backdrop|default([])) }}{% endif %}" in template
+    assert template.index('id="sx-markets-v2"') < template.index("economic.economic_backdrop(")
+    source = (root / "scripts/build_site.py").read_text()
+    assert source.count('build_economic_backdrop(site / "macrodata", page_built_at=generated)') == 1

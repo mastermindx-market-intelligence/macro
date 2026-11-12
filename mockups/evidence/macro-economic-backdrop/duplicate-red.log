@@ -1,0 +1,75 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_duplicate_metric_identity_never_silently_selects_a_fact[growth_real_economy] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-434/test_duplicate_metric_identity0')
+wid = 'growth_real_economy'
+
+    @pytest.mark.parametrize("wid", IDS)
+    def test_duplicate_metric_identity_never_silently_selects_a_fact(tmp_path, wid):
+        snapshots = _snapshots()
+        selected = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        original = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == selected[wid])
+        duplicate = copy.deepcopy(original)
+        duplicate["value"] = 0.0
+        snapshots[wid]["metrics"]["items"].append(duplicate)
+        cards = _read(tmp_path, snapshots)
+        disputed = next(c for c in cards if c["id"] == wid)
+>       assert disputed["tone"] == "unavailable"
+E       AssertionError: assert 'warn' == 'unavailable'
+E
+E         - unavailable
+E         + warn
+
+tests/test_macro_economic_backdrop.py:192: AssertionError
+_ test_duplicate_metric_identity_never_silently_selects_a_fact[inflation_system] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-434/test_duplicate_metric_identity1')
+wid = 'inflation_system'
+
+    @pytest.mark.parametrize("wid", IDS)
+    def test_duplicate_metric_identity_never_silently_selects_a_fact(tmp_path, wid):
+        snapshots = _snapshots()
+        selected = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        original = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == selected[wid])
+        duplicate = copy.deepcopy(original)
+        duplicate["value"] = 0.0
+        snapshots[wid]["metrics"]["items"].append(duplicate)
+        cards = _read(tmp_path, snapshots)
+        disputed = next(c for c in cards if c["id"] == wid)
+>       assert disputed["tone"] == "unavailable"
+E       AssertionError: assert 'neutral' == 'unavailable'
+E
+E         - unavailable
+E         + neutral
+
+tests/test_macro_economic_backdrop.py:192: AssertionError
+_ test_duplicate_metric_identity_never_silently_selects_a_fact[financial_conditions] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-434/test_duplicate_metric_identity2')
+wid = 'financial_conditions'
+
+    @pytest.mark.parametrize("wid", IDS)
+    def test_duplicate_metric_identity_never_silently_selects_a_fact(tmp_path, wid):
+        snapshots = _snapshots()
+        selected = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        original = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == selected[wid])
+        duplicate = copy.deepcopy(original)
+        duplicate["value"] = 0.0
+        snapshots[wid]["metrics"]["items"].append(duplicate)
+        cards = _read(tmp_path, snapshots)
+        disputed = next(c for c in cards if c["id"] == wid)
+>       assert disputed["tone"] == "unavailable"
+E       AssertionError: assert 'neutral' == 'unavailable'
+E
+E         - unavailable
+E         + neutral
+
+tests/test_macro_economic_backdrop.py:192: AssertionError
+
+NOTE: sparse worktree — mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_macro_economic_backdrop.py::test_duplicate_metric_identity_never_silently_selects_a_fact[growth_real_economy]
+FAILED tests/test_macro_economic_backdrop.py::test_duplicate_metric_identity_never_silently_selects_a_fact[inflation_system]
+FAILED tests/test_macro_economic_backdrop.py::test_duplicate_metric_identity_never_silently_selects_a_fact[financial_conditions]
+3 failed, 27 deselected in 4.86s

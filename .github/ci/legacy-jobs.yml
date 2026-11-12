@@ -7267,7 +7267,7 @@ jobs:
         # pyarrow: second-order once those land — the same gate tests reach
         # scripts/build_stock_library.py:1563 → engine/us_candidate_episode.py:19,
         # which does `import pyarrow` at module scope.
-        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow
+        run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas beautifulsoup4 plotly pyarrow jsonschema==4.26.0
       - name: tier-preview split contract (no paid row in the free shell)
         run: python -m pytest tests/test_special_situations_gate.py tests/test_china_special_situations_gate.py tests/test_etfs_gate.py tests/test_us_board_gate.py -q
       # The split's OTHER half: how the page puts the two sides back together.
@@ -14989,6 +14989,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/macro_economic_backdrop.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -19611,6 +19612,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "lib/macro_economic_backdrop.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -24526,6 +24528,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/macro_economic_backdrop.py"
       - "engine/us_board_snapshots.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -33063,7 +33066,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema==4.26.0
       # P1 unrun backfill 2026-08-14: two more scripts/grade_us_board.py guards join the
       # step that already owns the grader's outcome ledgers.  Both were named by no
       # `run:` step in any workflow, so the ENTRY-STATUS stamp and the PRICE-BASIS era
@@ -35151,7 +35154,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn rjsmin==1.2.5
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn rjsmin==1.2.5 jsonschema==4.26.0
       # Shared All tools adoption (PR #7949, 2026-10-01): keep the production
       # controller/template/site contract under the incumbent product-chrome /
       # navigation owner. The suite executes the controller's 97-case Node
@@ -35183,7 +35186,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema==4.26.0
       # The Massive Advanced tick-plane entitlement probe (TP-0, #5005). Named by NO
       # run: step when it merged, so the one thing standing between the program and a
       # private R2 bucket full of bytes we are not licensed to hold — the probe that
@@ -35331,7 +35334,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema==4.26.0
       # P1 unrun backfill 2026-08-14: tests/test_inflation_units.py joins the step that
       # already owns scripts/build_site.py's panels.  It was named by no `run:` step in
       # any workflow, so the UNITS contract on the inflation panel — percent vs
@@ -36105,6 +36108,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/macro_economic_backdrop.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -37318,7 +37322,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema==4.26.0
       - name: anticipation intake (status-class admission, era stamps, entry zones, shadow-ledger lane gate)
         run: python -m pytest tests/test_prophet_anticipation_intake.py -q
       # UNION ADMISSION (bake-off §A2) — registered in the job that already owns the
@@ -37537,7 +37541,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema==4.26.0
       - name: macro desk surface, typography, glance + action-board hover cards
         run: python -m pytest tests/test_macro_desk_surface.py tests/test_macro_primary_typography.py tests/test_macro_what_to_do_glance.py tests/test_action_board_hover_cards.py tests/test_board_copy_and_controls_guard.py -q
       # Canonical — and deliberately ONLY — home of the shared light-mode odometer
@@ -39998,7 +40002,7 @@ jobs:
       - name: install minimal deps
         # pandas.read_html is exercised by the ETF sponsor-registry parser;
         # pandas alone does not provide an HTML parser on a clean runner.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn lxml
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn lxml jsonschema==4.26.0
       - name: spotlight tilt — W9-B US demotion is display-only + the tilt still moves weighted markets
         run: python -m pytest tests/test_spotlight.py -q
       - name: etf_pulse sector leg + analyst delta channel — each pins the data branch it exercises
@@ -47420,6 +47424,13 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "lib/macro_economic_backdrop.py"
+      - "templates/_macro_economic_backdrop.html.j2"
+      - "templates/_macro_economic_backdrop.css.j2"
+      - "tests/test_macro_economic_backdrop.py"
+      - "tests/test_macro_workspace_growth.py"
+      - "tests/test_macro_workspace_inflation.py"
+      - "tests/test_macro_workspace_financial_conditions.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
@@ -47557,7 +47568,7 @@ jobs:
       - name: Market OS rates & curves — curve-shape hero, ceiling, byte preservation
         run: python -m pytest tests/test_macro_rates_curves_route.py -q
       - name: Market OS macro suite pages — shell, labels, view model, builder
-        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py tests/test_macro_command_p4_copy.py tests/test_macro_command_capture_guards.py -q -m "not data_gate"
+        run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_economic_backdrop.py tests/test_macro_workspace_prior_publication.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py tests/test_macro_command_p4_copy.py tests/test_macro_command_capture_guards.py -q -m "not data_gate"
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
 
@@ -47595,6 +47606,13 @@ jobs:
     # an uncovered import by file.
     scope: exclusive
     paths:
+      - "lib/macro_economic_backdrop.py"
+      - "templates/_macro_economic_backdrop.html.j2"
+      - "templates/_macro_economic_backdrop.css.j2"
+      - "tests/test_macro_economic_backdrop.py"
+      - "tests/test_macro_workspace_growth.py"
+      - "tests/test_macro_workspace_inflation.py"
+      - "tests/test_macro_workspace_financial_conditions.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
@@ -47832,6 +47850,8 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "templates/_macro_economic_backdrop.html.j2"
+      - "templates/_macro_economic_backdrop.css.j2"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -47907,6 +47927,7 @@ jobs:
       - "templates/si_workspace.js"
       # The receipt test binds the committed shots to their render inputs.
       - "research/evidence/ew_p4_descriptive_ui_20261031/**"
+      - "research/evidence/ew_p4_descriptive_ui_pr6974_20261111/**"
       - "tests/probe_ew_p4_descriptive_ui_browser.py"
       # The site-copy test reads the published byte copy of the shared glance source.
       - "site/rotation_events.js"
@@ -48104,7 +48125,7 @@ jobs:
       # persisted-view fixture). markupsafe arrives with jinja2, numpy with
       # pandas. Never importorskip.
       - name: install dashboard render-contract test dependencies
-        run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests
+        run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests jsonschema==4.26.0
       - name: dashboard.html.j2 rendered-HTML contract + volatility detail + UD-B2-W2 spine bindings
         run: >-
           python -m pytest
@@ -48200,6 +48221,7 @@ jobs:
       - "templates/rotation_glance.css"
       - "templates/si_workspace.js"
       - "research/evidence/ew_p4_descriptive_ui_20261031/**"
+      - "research/evidence/ew_p4_descriptive_ui_pr6974_20261111/**"
       - "tests/probe_ew_p4_descriptive_ui_browser.py"
       - "site/rotation_events.js"
       - "templates/_macro_sector_desk.html.j2"
@@ -48390,7 +48412,7 @@ jobs:
       # Same fresh-venv set as dashboard-render-contract: the suite imports its
       # render helper and therefore scripts/build_site.py's import chain.
       - name: install EW-P4 descriptive UI test dependencies
-        run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests
+        run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests jsonschema==4.26.0
       - name: EW-P4 descriptive observation UI — Radar band, Sector Central glance mirror, shot receipt
         run: python -m pytest tests/test_ew_p4_descriptive_ui.py -q
 
@@ -51395,6 +51417,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "lib/macro_economic_backdrop.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"

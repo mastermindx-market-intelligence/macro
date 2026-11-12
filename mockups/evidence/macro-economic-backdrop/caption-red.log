@@ -1,0 +1,18 @@
+........................F.                                               [100%]
+=================================== FAILURES ===================================
+____ test_success_keeps_one_quiet_clock_without_a_redundant_status_caption _____
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-420/test_success_keeps_one_quiet_c0')
+
+    def test_success_keeps_one_quiet_clock_without_a_redundant_status_caption(tmp_path):
+        cards = _read(tmp_path)
+>       assert all(c["availability"] is None for c in cards)
+E       assert False
+E        +  where False = all(<generator object test_success_keeps_one_quiet_clock_without_a_redundant_status_caption.<locals>.<genexpr> at 0x10d497c60>)
+
+tests/test_macro_economic_backdrop.py:152: AssertionError
+
+NOTE: sparse worktree — mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_macro_economic_backdrop.py::test_success_keeps_one_quiet_clock_without_a_redundant_status_caption
+1 failed, 25 passed in 33.74s

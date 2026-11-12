@@ -1,0 +1,38 @@
+{
+  "schema": "macro.economic_backdrop.recovery_provenance.v1",
+  "operation": "macro-oldest-first-healing-20261111-c2b-66845762",
+  "source_commit": "514ae9a5a00621ed581371774ef1558b84fa762d",
+  "source_tree": "f9bf88a9e955a127782d3848ca985e51e8729754",
+  "merge_base": "71405417a0ff9dfc615654deea6ea44a5305f735",
+  "utc": "2026-11-11T11:13:35.979257+00:00",
+  "normal_builder": "scripts/build_site.py:main",
+  "target_receipt": "canonical-target.json",
+  "target_observer": "research/macro_html_refresh/economic_backdrop_2026-09-07/build_macro_target.py",
+  "observer_adaptation": "observer-adaptation.json",
+  "full_site_build": false,
+  "production_authenticated": false,
+  "data_basis": "Frozen S1 tracked workspace manifest and three actual published topic artifacts; hashes in workspace-inputs.json. Later main data refreshes are not claimed as this capture input.",
+  "journeys_receipt": "journeys/receipt.json",
+  "capture_manifest": "manifest.json",
+  "capture_tool_blob": "78ba651d2996a64231c738a133ed465d73dd8caf",
+  "capture_integrity": "40/40 captured; file SHA256/byte counts and actual theme/locale verified",
+  "capture_observations": [
+    {
+      "page": "macro:macro",
+      "horizontal_overflow": false,
+      "console_errors": 43,
+      "failed_responses": 42
+    }
+  ],
+  "static_server_limitations": [
+    "Live release publications and risk envelope HTTP endpoints, Brain session endpoint and live tape WebSocket are unavailable on this static preview. Canonical manifest retains these real errors.",
+    "Authenticated access tiers and synthetic loading/empty/stale/error states are not claimed by this 40-cell normal-target matrix.",
+    "The original semantic verifier independently passed 12 layout/keyboard cases and three real destination journeys; its no-pageerror result does not mean the canonical capture has zero console errors."
+  ],
+  "historical_evidence": "Existing economic-backdrop archives and EW-P4 20261031 archive retained unchanged.",
+  "ew_fresh_directory": "research/evidence/ew_p4_descriptive_ui_pr6974_20261111",
+  "ew_validator_result": {
+    "passed": 164,
+    "skipped": 0
+  }
+}

@@ -1,0 +1,133 @@
+{# =============================================================================
+   ECONOMIC BACKDROP ROW — design prototype, 2026-09-07
+   Macro: economic_backdrop(cards)
+
+   WHAT THIS IS
+   One compact three-card row for the US Macro homepage that answers "what is the
+   economic backdrop right now" — growth, inflation, financing conditions — without
+   the reader opening three dialogs. Archetype D (regime dashboard) support module;
+   Tier-1 GLANCE copy only (docs/DESIGN_DOCTRINE.md §1), receipts on Tier 2.
+
+   PLACEMENT (owned by the parent, not by this file)
+   After the market ticker, before "What to do" / Events. It is a canvas-level
+   section: an H2 section header on the page canvas plus three E1 panels
+   (research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md §3 — one panel = one answer).
+
+   CONTRACT — presentation only. This macro computes NO state, selects NO date,
+   formats NO number, and fabricates NO null. It renders exactly what it is given.
+   `cards` = list of up to 3 dicts, rendered in the order supplied. Order is
+   Growth / Inflation / Financial conditions and NEVER varies with tone or score.
+
+     id           stable internal string (used only for element ids)
+     title        {en, zh}            <= 4 words
+     state        {en, zh}            owner-supplied state label; may wrap; never elided
+     note         {en, zh} | None     one sentence, supplied tension/explanation copy
+     facts        [ {label:{en,zh}, value:{en,zh}, period: str|None}, ... ]  max 2
+     asof         str | None          calculation cut, NOT observation time
+     availability {en, zh} | None     data-status caption
+     tone         'neutral' | 'warn' | 'unavailable'   attention grade, not a direction
+     href         str                 prevalidated root-relative workspace path
+     link         {en, zh}            action label ("Investigate" / 查看详情)
+     receipt      {en, zh} | None     <= 80 words, source/mechanics explanation
+
+   The only logic below is (a) an enum guard on `tone` so a bad value cannot inject
+   a class name, (b) a defensive `[:3]` / `[:2]` cap that matches the contract's own
+   maxima, and (c) presence checks so absent optional fields render nothing rather
+   than a naked dash. None of these invent, reorder or reinterpret data.
+
+   REQUIRES: section.css.j2 (raw CSS, include inside an existing <style> block).
+   Autoescape assumed ON. No translated text in title= (house law); the ZH twin
+   rides a .l-zh span, and the only tooltip-grade copy is the <details> receipt.
+   No JS: <details> is native, the row is fully readable and operable without it.
+============================================================================= #}
+{%- macro economic_backdrop(cards) -%}
+{%- set _cards = cards or [] -%}
+{%- if _cards %}
+<section class="ebd" aria-labelledby="ebd-title">
+  <div class="ebd-head">
+    <h2 class="ebd-h" id="ebd-title"><span class="l-en">Economic backdrop</span><span class="l-zh">经济背景</span></h2>
+    <p class="ebd-sub">
+      <span class="l-en">Read the economy. Follow the evidence.</span>
+      <span class="l-zh">读懂经济，追踪依据。</span>
+    </p>
+  </div>
+
+  <div class="ebd-row">
+    {%- for c in _cards[:3] %}
+    {%- set _tone = c.tone if c.tone in ('neutral', 'warn', 'unavailable') else 'neutral' %}
+    {%- set _cid = c.id or ('c' ~ loop.index) %}
+    <article class="panel ebd-card ebd-card--{{ _tone }}" aria-labelledby="ebd-t-{{ _cid }}">
+
+      {# topic label — the card's NAME, deliberately quiet: the state sentence is
+         the headline, not the category (design system §9.3, answer outweighs support) #}
+      <h3 class="ebd-label" id="ebd-t-{{ _cid }}"><span class="l-en">{{ c.title.en }}</span><span class="l-zh">{{ c.title.zh }}</span>{% if c.basis|default(none) %}<span class="ebd-basis"> · <span class="l-en">{{ c.basis.en }}</span><span class="l-zh">{{ c.basis.zh }}</span></span>{% endif %}</h3>
+
+      {# THE ANSWER — owner-supplied state label, passed through verbatim. Wraps
+         freely; never truncated, never ellipsised, never recoloured by direction. #}
+      <p class="ebd-state"><span class="l-en">{{ c.state.en }}</span><span class="l-zh">{{ c.state.zh }}</span></p>
+
+      {%- if c.note %}
+      {# the supplied caveat / tension in plain words — beside the answer, not hidden
+         (doctrine Law 5 + design system §9.8: demotion is for mechanics, never honesty) #}
+      <p class="ebd-note"><span class="l-en">{{ c.note.en }}</span><span class="l-zh">{{ c.note.zh }}</span></p>
+      {%- endif %}
+
+      {%- if c.facts %}
+      <div class="ebd-facts">
+        {%- for f in c.facts[:2] %}
+        <div class="ebd-fact">
+          <span class="ebd-fact-l"><span class="l-en">{{ f.label.en }}</span><span class="l-zh">{{ f.label.zh }}</span>
+            {%- if f.period %}<span class="ebd-fact-p"> · {{ f.period }}</span>{% elif f.date_note|default(none) %}<span class="ebd-fact-p"> · <span class="l-en">{{ f.date_note.en }}</span><span class="l-zh">{{ f.date_note.zh }}</span></span>{% endif -%}
+          </span>
+          <span class="ebd-fact-v"><span class="l-en">{{ f.value.en }}</span><span class="l-zh">{{ f.value.zh }}</span></span>
+        </div>
+        {%- endfor %}
+      </div>
+      {%- endif %}
+
+      <div class="ebd-foot">
+        {%- set _meta = c.asof or c.availability %}
+        {%- if c.receipt %}
+        <details class="ebd-rc">
+          <summary>
+            {%- if _meta %}
+            <span class="ebd-meta">
+              {%- if c.asof -%}
+              <span class="l-en">Calculated {{ c.asof }}</span><span class="l-zh">计算截止 {{ c.asof }}</span>
+              {%- endif -%}
+              {%- if c.asof and c.availability %}<span class="ebd-dot" aria-hidden="true">·</span>{% endif -%}
+              {%- if c.availability -%}
+              <span class="l-en">{{ c.availability.en }}</span><span class="l-zh">{{ c.availability.zh }}</span>
+              {%- endif -%}
+            </span>
+            {%- endif %}
+            <span class="ebd-rc-cue"><span class="l-en">Sources</span><span class="l-zh">来源</span></span>
+          </summary>
+          <p class="ebd-rc-body"><span class="l-en">{{ c.receipt.en }}</span><span class="l-zh">{{ c.receipt.zh }}</span></p>
+        </details>
+        {%- elif _meta %}
+        <p class="ebd-meta ebd-meta--plain">
+          {%- if c.asof -%}
+          <span class="l-en">Calculated {{ c.asof }}</span><span class="l-zh">计算截止 {{ c.asof }}</span>
+          {%- endif -%}
+          {%- if c.asof and c.availability %}<span class="ebd-dot" aria-hidden="true">·</span>{% endif -%}
+          {%- if c.availability -%}
+          <span class="l-en">{{ c.availability.en }}</span><span class="l-zh">{{ c.availability.zh }}</span>
+          {%- endif -%}
+        </p>
+        {%- endif %}
+
+        <a class="ebd-go" href="{{ c.href }}">
+          <span class="l-en">{{ c.link.en }}</span><span class="l-zh">{{ c.link.zh }}</span>
+          {# accessible name disambiguation — three identical "Investigate" links in
+             one row are indistinguishable to a screen-reader link list #}
+          <span class="ebd-sr"> — <span class="l-en">{{ c.title.en }}</span><span class="l-zh">{{ c.title.zh }}</span></span>
+        </a>
+      </div>
+
+    </article>
+    {%- endfor %}
+  </div>
+</section>
+{%- endif %}
+{%- endmacro -%}

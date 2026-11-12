@@ -1,0 +1,391 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-07T06:21:35Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762095630",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53406/live/release_publications.json",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53406/live.js",
+          "text": "WebSocket connection to 'ws://127.0.0.1:53406/ws/tape' failed: Error during WebSocket handshake: Unexpected response code: 404"
+        },
+        {
+          "source_url": "http://127.0.0.1:53406/api/brain/me",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762098039",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762100407",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762102926",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762105220",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762107275",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762109289",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762111388",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762095630"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53406/live/release_publications.json"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53406/api/brain/me"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762098039"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762100407"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762102926"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762105220"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762107275"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762109289"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53406/live/risk_envelope.json?t=1788762111388"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2966,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 5870,
+            "elements_wider_than_viewport": 200,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 2966,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 2,
+          "h3": 3,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 33,
+        "payload_bytes_total": 526427,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 39,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 728
+      },
+      "page_id": "macro:macro",
+      "registry_route": "/macro.html",
+      "route": "/macro.html",
+      "route_kind": "page",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 884304,
+          "captured": true,
+          "file": "52af343392176bc7.png",
+          "force_state": null,
+          "height": 2966,
+          "locale": "en",
+          "sha256": "52af343392176bc749d482870cab00cff66de5b979bf9bb6a03e5214767d5e4e",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 693560,
+          "captured": true,
+          "file": "3bb2e091384bd19b.png",
+          "force_state": null,
+          "height": 2974,
+          "locale": "en",
+          "sha256": "3bb2e091384bd19b54e962e13f0c93aaa40073f9049f9ea0f0606d1ae8d2686a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 899306,
+          "captured": true,
+          "file": "57a09623f784a51b.png",
+          "force_state": null,
+          "height": 2915,
+          "locale": "zh",
+          "sha256": "57a09623f784a51b1b2b6f5f27b13f1e0a7a3d1896377f28d04f523e938c20f7",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 699359,
+          "captured": true,
+          "file": "2080fcb7a1cab378.png",
+          "force_state": null,
+          "height": 2923,
+          "locale": "zh",
+          "sha256": "2080fcb7a1cab3786e61a4e455ab02ea08e594a0b3f397e2cca1eef586cf32f9",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 674416,
+          "captured": true,
+          "file": "7b82cb517c99022e.png",
+          "force_state": null,
+          "height": 5870,
+          "locale": "en",
+          "sha256": "7b82cb517c99022e4f55957a98b910661eff60cdeda88f636c22b5c6684b95cb",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 555467,
+          "captured": true,
+          "file": "86d1a002eb175abe.png",
+          "force_state": null,
+          "height": 5894,
+          "locale": "en",
+          "sha256": "86d1a002eb175abe8549420034b3d0ce9eb75fc2ea16586b9e329f5d4e428aeb",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 662085,
+          "captured": true,
+          "file": "190c01d7782c07b3.png",
+          "force_state": null,
+          "height": 5478,
+          "locale": "zh",
+          "sha256": "190c01d7782c07b36a0bdb34eb098f8414917d774ee32cf826d2331214c59e6c",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 552094,
+          "captured": true,
+          "file": "6e99d9d9423bd40b.png",
+          "force_state": null,
+          "height": 5502,
+          "locale": "zh",
+          "sha256": "6e99d9d9423bd40be1aee46bf3dac5e66c3e9c8a797e9dc182d476b48f34479e",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/macro.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 325,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/sol-macro-economic-backdrop-20260907-afc3f1512bdbd93e",
+    "resolved_sha_or_none": "3405309de9adf19c3fc7115a7a06a4b327772c92",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/sol-macro-economic-backdrop-20260907-afc3f1512bdbd93e (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/sol-macro-economic-backdrop-20260907-afc3f1512bdbd93e/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "97b4435815440fde008cd35b73c551cf704ba01ea71f18f04a2b23ebc7a0a6b7",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.2.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

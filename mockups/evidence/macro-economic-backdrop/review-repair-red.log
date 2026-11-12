@@ -1,0 +1,296 @@
+..............................FFFFFFFFFFFF..FF                           [100%]
+=================================== FAILURES ===================================
+_ test_usable_fact_with_unresolved_date_discloses_that_gap[None-growth_real_economy] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_usable_fact_with_unresolv0')
+wid = 'growth_real_economy', period = None
+
+    @pytest.mark.parametrize("wid", IDS)
+    @pytest.mark.parametrize("period", (None, "2026-09-05T13:00:00Z", "2026Q3"))
+    def test_usable_fact_with_unresolved_date_discloses_that_gap(tmp_path, wid, period):
+        snapshots = _snapshots()
+        ids = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        metric = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == ids[wid])
+        metric["reference_period"] = period
+        card = next(c for c in _read(tmp_path, snapshots) if c["id"] == wid)
+        fact = next(f for f in card["facts"] if f["metric_id"] == ids[wid])
+        assert fact["value"]["en"] != "Not provided"
+        assert fact["period"] is None
+>       assert fact.get("date_note") == {"en": "Date unavailable", "zh": "日期不明"}
+E       AssertionError: assert None == {'en': 'Date unavailable', 'zh': '日期不明'}
+E        +  where None = <built-in method get of dict object at 0x107ab8ac0>('date_note')
+E        +    where <built-in method get of dict object at 0x107ab8ac0> = {'metric_id': 'gdpnow_growth', 'label': {'en': 'GDPNow estimate', 'zh': 'GDPNow 预估'}, 'value': {'en': '4.75% annualized', 'zh': '4.75% 年化'}, 'period': None}.get
+
+tests/test_macro_economic_backdrop.py:208: AssertionError
+_ test_usable_fact_with_unresolved_date_discloses_that_gap[None-inflation_system] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_usable_fact_with_unresolv1')
+wid = 'inflation_system', period = None
+
+    @pytest.mark.parametrize("wid", IDS)
+    @pytest.mark.parametrize("period", (None, "2026-09-05T13:00:00Z", "2026Q3"))
+    def test_usable_fact_with_unresolved_date_discloses_that_gap(tmp_path, wid, period):
+        snapshots = _snapshots()
+        ids = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        metric = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == ids[wid])
+        metric["reference_period"] = period
+        card = next(c for c in _read(tmp_path, snapshots) if c["id"] == wid)
+        fact = next(f for f in card["facts"] if f["metric_id"] == ids[wid])
+        assert fact["value"]["en"] != "Not provided"
+        assert fact["period"] is None
+>       assert fact.get("date_note") == {"en": "Date unavailable", "zh": "日期不明"}
+E       AssertionError: assert None == {'en': 'Date unavailable', 'zh': '日期不明'}
+E        +  where None = <built-in method get of dict object at 0x107a3c440>('date_note')
+E        +    where <built-in method get of dict object at 0x107a3c440> = {'metric_id': 'headline_cpi_yoy_pct', 'label': {'en': 'Headline CPI', 'zh': '总体 CPI'}, 'value': {'en': '0.5% year-on-year', 'zh': '0.5% 同比'}, 'period': None}.get
+
+tests/test_macro_economic_backdrop.py:208: AssertionError
+_ test_usable_fact_with_unresolved_date_discloses_that_gap[None-financial_conditions] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_usable_fact_with_unresolv2')
+wid = 'financial_conditions', period = None
+
+    @pytest.mark.parametrize("wid", IDS)
+    @pytest.mark.parametrize("period", (None, "2026-09-05T13:00:00Z", "2026Q3"))
+    def test_usable_fact_with_unresolved_date_discloses_that_gap(tmp_path, wid, period):
+        snapshots = _snapshots()
+        ids = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        metric = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == ids[wid])
+        metric["reference_period"] = period
+        card = next(c for c in _read(tmp_path, snapshots) if c["id"] == wid)
+        fact = next(f for f in card["facts"] if f["metric_id"] == ids[wid])
+        assert fact["value"]["en"] != "Not provided"
+        assert fact["period"] is None
+>       assert fact.get("date_note") == {"en": "Date unavailable", "zh": "日期不明"}
+E       AssertionError: assert None == {'en': 'Date unavailable', 'zh': '日期不明'}
+E        +  where None = <built-in method get of dict object at 0x10dad1b00>('date_note')
+E        +    where <built-in method get of dict object at 0x10dad1b00> = {'metric_id': 'real_10y', 'label': {'en': '10-year real yield', 'zh': '10 年期实际收益率'}, 'value': {'en': '2.45%', 'zh': '2.45%'}, 'period': None}.get
+
+tests/test_macro_economic_backdrop.py:208: AssertionError
+_ test_usable_fact_with_unresolved_date_discloses_that_gap[2026-09-05T13:00:00Z-growth_real_economy] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_usable_fact_with_unresolv3')
+wid = 'growth_real_economy', period = '2026-09-05T13:00:00Z'
+
+    @pytest.mark.parametrize("wid", IDS)
+    @pytest.mark.parametrize("period", (None, "2026-09-05T13:00:00Z", "2026Q3"))
+    def test_usable_fact_with_unresolved_date_discloses_that_gap(tmp_path, wid, period):
+        snapshots = _snapshots()
+        ids = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        metric = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == ids[wid])
+        metric["reference_period"] = period
+        card = next(c for c in _read(tmp_path, snapshots) if c["id"] == wid)
+        fact = next(f for f in card["facts"] if f["metric_id"] == ids[wid])
+        assert fact["value"]["en"] != "Not provided"
+        assert fact["period"] is None
+>       assert fact.get("date_note") == {"en": "Date unavailable", "zh": "日期不明"}
+E       AssertionError: assert None == {'en': 'Date unavailable', 'zh': '日期不明'}
+E        +  where None = <built-in method get of dict object at 0x107a20740>('date_note')
+E        +    where <built-in method get of dict object at 0x107a20740> = {'metric_id': 'gdpnow_growth', 'label': {'en': 'GDPNow estimate', 'zh': 'GDPNow 预估'}, 'value': {'en': '4.75% annualized', 'zh': '4.75% 年化'}, 'period': None}.get
+
+tests/test_macro_economic_backdrop.py:208: AssertionError
+_ test_usable_fact_with_unresolved_date_discloses_that_gap[2026-09-05T13:00:00Z-inflation_system] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_usable_fact_with_unresolv4')
+wid = 'inflation_system', period = '2026-09-05T13:00:00Z'
+
+    @pytest.mark.parametrize("wid", IDS)
+    @pytest.mark.parametrize("period", (None, "2026-09-05T13:00:00Z", "2026Q3"))
+    def test_usable_fact_with_unresolved_date_discloses_that_gap(tmp_path, wid, period):
+        snapshots = _snapshots()
+        ids = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        metric = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == ids[wid])
+        metric["reference_period"] = period
+        card = next(c for c in _read(tmp_path, snapshots) if c["id"] == wid)
+        fact = next(f for f in card["facts"] if f["metric_id"] == ids[wid])
+        assert fact["value"]["en"] != "Not provided"
+        assert fact["period"] is None
+>       assert fact.get("date_note") == {"en": "Date unavailable", "zh": "日期不明"}
+E       AssertionError: assert None == {'en': 'Date unavailable', 'zh': '日期不明'}
+E        +  where None = <built-in method get of dict object at 0x107aa1f40>('date_note')
+E        +    where <built-in method get of dict object at 0x107aa1f40> = {'metric_id': 'headline_cpi_yoy_pct', 'label': {'en': 'Headline CPI', 'zh': '总体 CPI'}, 'value': {'en': '0.5% year-on-year', 'zh': '0.5% 同比'}, 'period': None}.get
+
+tests/test_macro_economic_backdrop.py:208: AssertionError
+_ test_usable_fact_with_unresolved_date_discloses_that_gap[2026-09-05T13:00:00Z-financial_conditions] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_usable_fact_with_unresolv5')
+wid = 'financial_conditions', period = '2026-09-05T13:00:00Z'
+
+    @pytest.mark.parametrize("wid", IDS)
+    @pytest.mark.parametrize("period", (None, "2026-09-05T13:00:00Z", "2026Q3"))
+    def test_usable_fact_with_unresolved_date_discloses_that_gap(tmp_path, wid, period):
+        snapshots = _snapshots()
+        ids = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        metric = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == ids[wid])
+        metric["reference_period"] = period
+        card = next(c for c in _read(tmp_path, snapshots) if c["id"] == wid)
+        fact = next(f for f in card["facts"] if f["metric_id"] == ids[wid])
+        assert fact["value"]["en"] != "Not provided"
+        assert fact["period"] is None
+>       assert fact.get("date_note") == {"en": "Date unavailable", "zh": "日期不明"}
+E       AssertionError: assert None == {'en': 'Date unavailable', 'zh': '日期不明'}
+E        +  where None = <built-in method get of dict object at 0x10db5e680>('date_note')
+E        +    where <built-in method get of dict object at 0x10db5e680> = {'metric_id': 'real_10y', 'label': {'en': '10-year real yield', 'zh': '10 年期实际收益率'}, 'value': {'en': '2.45%', 'zh': '2.45%'}, 'period': None}.get
+
+tests/test_macro_economic_backdrop.py:208: AssertionError
+_ test_usable_fact_with_unresolved_date_discloses_that_gap[2026Q3-growth_real_economy] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_usable_fact_with_unresolv6')
+wid = 'growth_real_economy', period = '2026Q3'
+
+    @pytest.mark.parametrize("wid", IDS)
+    @pytest.mark.parametrize("period", (None, "2026-09-05T13:00:00Z", "2026Q3"))
+    def test_usable_fact_with_unresolved_date_discloses_that_gap(tmp_path, wid, period):
+        snapshots = _snapshots()
+        ids = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        metric = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == ids[wid])
+        metric["reference_period"] = period
+        card = next(c for c in _read(tmp_path, snapshots) if c["id"] == wid)
+        fact = next(f for f in card["facts"] if f["metric_id"] == ids[wid])
+        assert fact["value"]["en"] != "Not provided"
+        assert fact["period"] is None
+>       assert fact.get("date_note") == {"en": "Date unavailable", "zh": "日期不明"}
+E       AssertionError: assert None == {'en': 'Date unavailable', 'zh': '日期不明'}
+E        +  where None = <built-in method get of dict object at 0x10db25680>('date_note')
+E        +    where <built-in method get of dict object at 0x10db25680> = {'metric_id': 'gdpnow_growth', 'label': {'en': 'GDPNow estimate', 'zh': 'GDPNow 预估'}, 'value': {'en': '4.75% annualized', 'zh': '4.75% 年化'}, 'period': None}.get
+
+tests/test_macro_economic_backdrop.py:208: AssertionError
+_ test_usable_fact_with_unresolved_date_discloses_that_gap[2026Q3-inflation_system] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_usable_fact_with_unresolv7')
+wid = 'inflation_system', period = '2026Q3'
+
+    @pytest.mark.parametrize("wid", IDS)
+    @pytest.mark.parametrize("period", (None, "2026-09-05T13:00:00Z", "2026Q3"))
+    def test_usable_fact_with_unresolved_date_discloses_that_gap(tmp_path, wid, period):
+        snapshots = _snapshots()
+        ids = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        metric = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == ids[wid])
+        metric["reference_period"] = period
+        card = next(c for c in _read(tmp_path, snapshots) if c["id"] == wid)
+        fact = next(f for f in card["facts"] if f["metric_id"] == ids[wid])
+        assert fact["value"]["en"] != "Not provided"
+        assert fact["period"] is None
+>       assert fact.get("date_note") == {"en": "Date unavailable", "zh": "日期不明"}
+E       AssertionError: assert None == {'en': 'Date unavailable', 'zh': '日期不明'}
+E        +  where None = <built-in method get of dict object at 0x10dac5340>('date_note')
+E        +    where <built-in method get of dict object at 0x10dac5340> = {'metric_id': 'headline_cpi_yoy_pct', 'label': {'en': 'Headline CPI', 'zh': '总体 CPI'}, 'value': {'en': '0.5% year-on-year', 'zh': '0.5% 同比'}, 'period': None}.get
+
+tests/test_macro_economic_backdrop.py:208: AssertionError
+_ test_usable_fact_with_unresolved_date_discloses_that_gap[2026Q3-financial_conditions] _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_usable_fact_with_unresolv8')
+wid = 'financial_conditions', period = '2026Q3'
+
+    @pytest.mark.parametrize("wid", IDS)
+    @pytest.mark.parametrize("period", (None, "2026-09-05T13:00:00Z", "2026Q3"))
+    def test_usable_fact_with_unresolved_date_discloses_that_gap(tmp_path, wid, period):
+        snapshots = _snapshots()
+        ids = {"growth_real_economy": "gdpnow_growth", "inflation_system": "headline_cpi_yoy_pct", "financial_conditions": "real_10y"}
+        metric = next(m for m in snapshots[wid]["metrics"]["items"] if m["metric_id"] == ids[wid])
+        metric["reference_period"] = period
+        card = next(c for c in _read(tmp_path, snapshots) if c["id"] == wid)
+        fact = next(f for f in card["facts"] if f["metric_id"] == ids[wid])
+        assert fact["value"]["en"] != "Not provided"
+        assert fact["period"] is None
+>       assert fact.get("date_note") == {"en": "Date unavailable", "zh": "日期不明"}
+E       AssertionError: assert None == {'en': 'Date unavailable', 'zh': '日期不明'}
+E        +  where None = <built-in method get of dict object at 0x10707ca80>('date_note')
+E        +    where <built-in method get of dict object at 0x10707ca80> = {'metric_id': 'real_10y', 'label': {'en': '10-year real yield', 'zh': '10 年期实际收益率'}, 'value': {'en': '2.45%', 'zh': '2.45%'}, 'period': None}.get
+
+tests/test_macro_economic_backdrop.py:208: AssertionError
+____ test_receipt_does_not_turn_source_asof_into_economic_reference_period _____
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_receipt_does_not_turn_sou0')
+
+    def test_receipt_does_not_turn_source_asof_into_economic_reference_period(tmp_path):
+        for card in _read(tmp_path):
+>           assert "reference month" in card["receipt"]["en"]
+E           AssertionError: assert 'reference month' in 'This is the existing workspace reading. Fact dates identify their reference periods; the footer is the calculation cut. A page build does not make inputs fresh. Estimates are labeled; no trade instruction is generated.'
+
+tests/test_macro_economic_backdrop.py:213: AssertionError
+________ test_absent_required_leg_cannot_have_current_as_refusal_reason ________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_absent_required_leg_canno0')
+
+    def test_absent_required_leg_cannot_have_current_as_refusal_reason(tmp_path):
+        snapshots = _snapshots()
+        snapshots[IDS[0]]["availability"]["required"][0]["status"] = "ABSENT"
+        card = _read(tmp_path, snapshots)[0]
+        assert card["tone"] == "unavailable"
+>       assert card["source"]["reason"] == "SOURCE_FAILED"
+E       AssertionError: assert 'CURRENT' == 'SOURCE_FAILED'
+E
+E         - SOURCE_FAILED
+E         + CURRENT
+
+tests/test_macro_economic_backdrop.py:224: AssertionError
+____ test_optional_nowcast_in_headline_is_labelled_without_reclassification ____
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_optional_nowcast_in_headl0')
+
+    def test_optional_nowcast_in_headline_is_labelled_without_reclassification(tmp_path):
+        source = inflation_owner()
+        source["current_month_proxy_pressure"]["core_model_pressure"] = {
+            "available": True, "period": "2026-09", "release_radar_projection": {"point": 0.2}}
+        snapshot = contract.finalize(inflation.compose(source, built_at=BUILT))
+        assert snapshot["availability"]["state"] == "LATE_WITHIN_TOLERANCE"
+        assert any(c["freshness"] == "SIMULATED" and c["standardized_value"] is not None
+                   for a in snapshot["axes"]["items"] for c in a["components"])
+        snapshots = _snapshots()
+        snapshots["inflation_system"] = snapshot
+        card = _read(tmp_path, snapshots)[1]
+        assert card["state"] == snapshot["headline"]["state_label"]
+>       assert card.get("basis") == {"en": "Includes estimates", "zh": "含预估"}
+E       AssertionError: assert None == {'en': 'Includes estimates', 'zh': '含预估'}
+E        +  where None = <built-in method get of dict object at 0x10db3b300>('basis')
+E        +    where <built-in method get of dict object at 0x10db3b300> = {'id': 'inflation_system', 'title': {'en': 'Inflation', 'zh': '通胀'}, 'state': {'en': 'Disinflating, narrow and transitory', 'zh': '降温，狭窄且短暂'}, 'note': {'en': 'Read the drivers behind this state.', 'zh': '查看这一状态背后的驱动因素。'}, ...}.get
+
+tests/test_macro_economic_backdrop.py:239: AssertionError
+_________ test_model_basis_and_missing_date_are_visible_before_receipt _________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-500/test_model_basis_and_missing_d0')
+
+    def test_model_basis_and_missing_date_are_visible_before_receipt(tmp_path):
+        from jinja2 import Environment, FileSystemLoader, StrictUndefined
+        root = Path(__file__).resolve().parents[1]
+        cards = _read(tmp_path)
+        cards[0]["basis"] = {"en": "Includes estimates", "zh": "含预估"}
+        cards[0]["facts"][0]["period"] = None
+        cards[0]["facts"][0]["date_note"] = {"en": "Date unavailable", "zh": "日期不明"}
+        env = Environment(loader=FileSystemLoader(root / "templates"), autoescape=True, undefined=StrictUndefined)
+        html = env.from_string('{% import "_macro_economic_backdrop.html.j2" as row %}{{ row.economic_backdrop(cards) }}').render(cards=cards)
+>       assert "Includes estimates" in html and "含预估" in html
+E       assert ('Includes estimates' in '\n<section class="ebd" aria-labelledby="ebd-title">\n  <div class="ebd-head">\n    <h2 class="ebd-h" id="ebd-title"><...itions</span><span class="l-zh">金融条件</span></span>\n        </a>\n      </div>\n\n    </article>\n  </div>\n</section>')
+
+tests/test_macro_economic_backdrop.py:265: AssertionError
+________ test_receipt_control_has_same_minimum_target_as_investigation _________
+
+    def test_receipt_control_has_same_minimum_target_as_investigation():
+        import re
+        root = Path(__file__).resolve().parents[1]
+        css = (root / "templates/_macro_economic_backdrop.css.j2").read_text()
+        block = re.search(r"html body \.ebd-rc > summary\s*\{([^}]*)\}", css, re.S)
+>       assert block and "min-height: 44px" in block.group(1)
+E       AssertionError: assert (<re.Match object; span=(8795, 8934), match='html body .ebd-rc > summary { list-style: none; c> and 'min-height: 44px' in ' list-style: none; cursor: pointer;\n    display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 7px; ')
+E        +  where ' list-style: none; cursor: pointer;\n    display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 7px; ' = <built-in method group of re.Match object at 0x107a8dab0>(1)
+E        +    where <built-in method group of re.Match object at 0x107a8dab0> = <re.Match object; span=(8795, 8934), match='html body .ebd-rc > summary { list-style: none; c>.group
+
+tests/test_macro_economic_backdrop.py:276: AssertionError
+
+NOTE: sparse worktree — verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_macro_economic_backdrop.py::test_usable_fact_with_unresolved_date_discloses_that_gap[None-growth_real_economy]
+FAILED tests/test_macro_economic_backdrop.py::test_usable_fact_with_unresolved_date_discloses_that_gap[None-inflation_system]
+FAILED tests/test_macro_economic_backdrop.py::test_usable_fact_with_unresolved_date_discloses_that_gap[None-financial_conditions]
+FAILED tests/test_macro_economic_backdrop.py::test_usable_fact_with_unresolved_date_discloses_that_gap[2026-09-05T13:00:00Z-growth_real_economy]
+FAILED tests/test_macro_economic_backdrop.py::test_usable_fact_with_unresolved_date_discloses_that_gap[2026-09-05T13:00:00Z-inflation_system]
+FAILED tests/test_macro_economic_backdrop.py::test_usable_fact_with_unresolved_date_discloses_that_gap[2026-09-05T13:00:00Z-financial_conditions]
+FAILED tests/test_macro_economic_backdrop.py::test_usable_fact_with_unresolved_date_discloses_that_gap[2026Q3-growth_real_economy]
+FAILED tests/test_macro_economic_backdrop.py::test_usable_fact_with_unresolved_date_discloses_that_gap[2026Q3-inflation_system]
+FAILED tests/test_macro_economic_backdrop.py::test_usable_fact_with_unresolved_date_discloses_that_gap[2026Q3-financial_conditions]
+FAILED tests/test_macro_economic_backdrop.py::test_receipt_does_not_turn_source_asof_into_economic_reference_period
+FAILED tests/test_macro_economic_backdrop.py::test_absent_required_leg_cannot_have_current_as_refusal_reason
+FAILED tests/test_macro_economic_backdrop.py::test_optional_nowcast_in_headline_is_labelled_without_reclassification
+FAILED tests/test_macro_economic_backdrop.py::test_model_basis_and_missing_date_are_visible_before_receipt
+FAILED tests/test_macro_economic_backdrop.py::test_receipt_control_has_same_minimum_target_as_investigation
+14 failed, 32 passed in 4.67s

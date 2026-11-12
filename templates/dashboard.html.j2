@@ -2345,6 +2345,7 @@
 </style>
 <style id="risk-envelope-band-css">
 {% include "_risk_envelope_band.css.j2" %}
+{% include "_macro_economic_backdrop.css.j2" %}
 </style>
 {% endif %}
 </head>
@@ -12144,6 +12145,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       <div id="heatmap-scorecard" style="min-height:120px"></div>
     </div>
   </div>{# /sx-markets-v2 #}
+
+  {% import "_macro_economic_backdrop.html.j2" as economic %}
+  {% if mode != 'stocks' %}{{ economic.economic_backdrop(economic_backdrop|default([])) }}{% endif %}
 
   {# ── 4. RISK row + tray (Stage B) ── #}
   {# R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy

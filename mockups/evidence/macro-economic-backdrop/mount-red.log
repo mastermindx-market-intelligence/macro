@@ -1,0 +1,35 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_______ test_production_partial_preserves_content_and_escapes_owner_text _______
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-424/test_production_partial_preser0')
+
+    def test_production_partial_preserves_content_and_escapes_owner_text(tmp_path):
+        from jinja2 import Environment, FileSystemLoader, StrictUndefined
+        from html import unescape
+        root = Path(__file__).resolve().parents[1]
+        partial = root / "templates/_macro_economic_backdrop.html.j2"
+>       assert partial.exists(), "Production economic-backdrop partial is not installed"
+E       AssertionError: Production economic-backdrop partial is not installed
+E       assert False
+E        +  where False = exists()
+E        +    where exists = PosixPath('/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/sol-macro-economic-backdrop-20260907-afc3f1512bdbd93e/templates/_macro_economic_backdrop.html.j2').exists
+
+tests/test_macro_economic_backdrop.py:169: AssertionError
+_ test_dashboard_mount_and_builder_use_existing_publication_without_stock_scope _
+
+    def test_dashboard_mount_and_builder_use_existing_publication_without_stock_scope():
+        root = Path(__file__).resolve().parents[1]
+        template = (root / "templates/dashboard.html.j2").read_text()
+>       assert template.count("economic.economic_backdrop(") == 1
+E       assert 0 == 1
+E        +  where 0 = <built-in method count of str object at 0x431800000>('economic.economic_backdrop(')
+E        +    where <built-in method count of str object at 0x431800000> = '{#- `pgate` is the adjacent-panel tier gate (docs/TIER_PREVIEW_PATTERN.md), set only\n    by build_site\'s stocks-mod...dif %}\n<footer class="site-footer">\n  <span class="made">© 2026 Mastermind Inc</span>\n</footer>\n</body>\n</html>\n'.count
+
+tests/test_macro_economic_backdrop.py:184: AssertionError
+
+NOTE: sparse worktree — mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_macro_economic_backdrop.py::test_production_partial_preserves_content_and_escapes_owner_text
+FAILED tests/test_macro_economic_backdrop.py::test_dashboard_mount_and_builder_use_existing_publication_without_stock_scope
+2 failed, 26 deselected in 2.66s
