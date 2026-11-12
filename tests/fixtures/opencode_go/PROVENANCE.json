@@ -1,0 +1,17 @@
+{
+  "kind": "factual_transcription_not_raw_http_capture",
+  "observed_on": "2026-09-14",
+  "inventory_source": "https://opencode.ai/zen/go/v1/models",
+  "terms_source": "https://opencode.ai/docs/go/",
+  "source_repository": "anomalyco/opencode",
+  "source_commit": "228e9095ba3988a02664c3816cb51f98584e86c2",
+  "source_path": "packages/web/src/content/docs/go.mdx",
+  "inventory_items": 37,
+  "document_endpoint_models": 28,
+  "document_rate_variants": 36,
+  "notes": [
+    "Table data transcribed from official published documentation; irrelevant prose and request estimates omitted.",
+    "No credential, account entitlement, availability canary or full HTML capture is represented.",
+    "The 37 API IDs include entries absent from current endpoint/rate tables; none is promoted automatically."
+  ]
+}
