@@ -877,6 +877,50 @@ def test_regime_dated_fixed_change_matches_engine():
             assert (ns[s].to_numpy() == ref[nf].reindex(ns[s].index).to_numpy()).all()
 
 
+def test_regime_dated_fixchg_start_window_blanked(tmp_path):
+    """The dated build produces no fix_chg / n_fixed row before k sessions of
+    dated membership lie before the end date: the start session t-k must not
+    read closes from before the first dated-membership session. The removal
+    lives in build_dated; universe_fixed_change itself is unchanged."""
+    closes, root, etf_dir, cp, dm = _regime_synth_root(tmp_path, n=8, periods=400)
+    idx = closes.index
+    t = list(closes.columns)
+    pit = tmp_path / "pit"; pit.mkdir()
+    mem_start = idx[100]                     # archive closes predate membership
+    rows = [{"ticker": tk, "start_date": mem_start,
+             "end_date": idx[350] if i == 7 else pd.NaT, "src": "sp500"}
+            for i, tk in enumerate(t)]
+    # A dated member with no stored close: exercises the unpriced-in-window
+    # path of the dated build (same as _regime_dated_synth's T99).
+    rows.append({"ticker": "T99", "start_date": mem_start,
+                 "end_date": idx[350], "src": "sp500"})
+    pd.DataFrame(rows).to_parquet(pit / "sp1500_pit_membership.parquet")
+    pd.DataFrame({"ticker": t + ["T99"], "sector": ["S1"] * 4 + ["S2"] * 5}).to_parquet(
+        pit / "sp1500_pit_sectors.parquet")
+    out = tmp_path / "out"
+    rg.build_dated(cp, pit, out, root=root, etf_dir=etf_dir, start=str(mem_start.date()))
+    df = pd.read_parquet(out / "regime_inputs_dated_sp500_daily.parquet")
+    for w in rg.WINDOWS:
+        for k in rg.CHANGE_HORIZONS:
+            cut = idx[100 + k]               # k membership sessions must lie before t
+            fc = df[df.series == f"fix_chg_pct_above_{w}_{k}"]
+            nf = df[df.series == f"n_fixed_{w}_{k}"]
+            diff = df[df.series == f"diff_pct_above_{w}_{k}d"]
+            assert not fc.empty and not nf.empty and not diff.empty
+            assert (fc.date >= cut).all() and (nf.date >= cut).all()
+            assert fc.date.min() == diff.date.min()      # aligned with the diff series
+            assert list(nf.date) == list(fc.date)
+    # the 50-day lines are the ones the blanking actually cuts: without it they
+    # would start at the first membership session (the archive has closes there)
+    assert df[df.series == "fix_chg_pct_above_50_21"].date.min() == idx[121]
+    assert df[df.series == "fix_chg_pct_above_50_63"].date.min() == idx[163]
+    # universe_fixed_change itself still produces the start-window rows
+    mem = gb.membership_dated(pit, "sp500")
+    mem["group"] = "universe"
+    raw, _ = rg.universe_fixed_change(closes, pd.Timestamp(mem_start), membership=mem)
+    assert raw["fix_chg_pct_above_50_21"].index.min() == idx[100]
+
+
 def test_regime_dated_dispersion_both_ends():
     rng = np.random.default_rng(5)
     idx = pd.bdate_range("2020-01-01", periods=120)

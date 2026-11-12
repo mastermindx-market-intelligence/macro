@@ -704,6 +704,23 @@ def build_dated(closes_path: Path, pit_dir: Path, out: Path, root: Path = _ROOT,
     for s, v in ub.items():
         L.add(s, UNIVERSE, v, ub_n[s], "house")
     fc, fc_n = universe_fixed_change(closes_u, start_ts, membership=mem_u)
+    # Blank the fixed-set start window (dated basis only): an end date t keeps
+    # its fix_chg / n_fixed row for horizon k only when at least k sessions of
+    # dated membership lie before it, so the start session t-k never reads
+    # closes from before the first dated-membership session. The diff series
+    # already start there; this aligns the fixed-set lines with them. Rows are
+    # removed, not set null; universe_fixed_change itself is unchanged.
+    first_mem = pd.Timestamp(mem["start_date"].min())
+    mem_pos = int(idx.searchsorted(first_mem))
+    for s in fc:
+        k = int(s.rsplit("_", 1)[-1])
+        if mem_pos + k >= len(idx):
+            fc[s] = fc[s].iloc[:0]
+            fc_n[s] = fc_n[s].iloc[:0]
+        else:
+            cut = idx[mem_pos + k]
+            fc[s] = fc[s][fc[s].index >= cut]
+            fc_n[s] = fc_n[s][fc_n[s].index >= cut]
     for s, v in fc.items():
         L.add(s, UNIVERSE, v, fc_n[s], "house")
 
@@ -770,9 +787,15 @@ def _dated_meta(df: pd.DataFrame, pq: Path, closes_path: Path, pit_dir: Path,
             take(f"diff_pct_above_{w}_{k}d",
                  "Tiingo archive member closes via engine.group_breadth_history.level_change",
                  gaps=COUNTED_GAP + "; " + ARCHIVE_GAP)
+    first_mem = pd.Timestamp(mem["start_date"].min())
+    fixchg_clause = (
+        "the fixed set is the dated members at t with a defined average at both t and t-k; "
+        "it is not membership at both ends. Rows whose start session precedes the first "
+        f"dated-membership session ({first_mem.date()}) are not produced.")
     for s, entry in fix.items():
         take(s, entry["source"] + " on Tiingo archive closes",
-             gaps=entry["gaps"] + "; " + ARCHIVE_GAP)
+             gaps=entry["gaps"] + "; " + ARCHIVE_GAP,
+             definition=entry["definition"] + "; " + fixchg_clause)
     for s in ("new_highs_252", "new_lows_252", "nh_nl_252", "n_counted_nh"):
         take(s, "Tiingo archive member closes; house high52w_new/low52w_new convention",
              gaps=WINDOW_GAP + "; " + ARCHIVE_GAP,
