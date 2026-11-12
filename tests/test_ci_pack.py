@@ -5999,9 +5999,11 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
+# The consent migration suite adds two units to free-content only (5,991 to
+# 5,993). The other two probes do not select catalyst-loop-integrated.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_968),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_993),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_726),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6010,6 +6012,37 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-11 (PR #10538, current-owner conflict recovery):
+    Preserve all 401 current owners and all ten accepted consent feature
+    objects. The existing catalyst-loop-integrated owner gains its original
+    thirteenth test suite and two literal test/review-SQL closure rows.
+    Retain both newer main closure rows and all 400 other owner blocks.
+    Native fallback weight is 27 -> 29; the owner selects only free-content
+    among these probes and the added literals select none of the probes.
+    Carry only the remaining +2: free-content 5989 -> 5991. Index5966,
+    plan-book5724, job ceilings137/138/131 and ten packs stay unchanged.
+    Preserve every earlier history, assertion, runtime and selection rule.
+    The original dated paragraph below describes its prior static proof;
+    this successor requires fresh native packing attribution and own-head CI.
+    No database, migration applier, grant, mail or activation effect occurs.
+
+    2026-11-08 (PR #10538, original consent-migration suite conservation):
+    Preserve all current accepted source and the landed #10180 allowance.
+    The existing exclusive CODE catalyst-loop-integrated owner retains
+    its twelve suites and gains the original thirteenth suite plus the
+    two exact literal test/review-SQL closure rows. Its three folded
+    commands contain 12 -> 13 test paths and 632 -> 679 joined characters:
+    fallback weight 27 -> 29. No observed override applies to this owner.
+    Its literal paths select scripts/build_free_content.py only among
+    the three canonical probes; none contains a wildcard. The two new
+    literals match none of those probes, so selected jobs do not change.
+    Account for precisely +2 on free-content: 5944 -> 5946. Index5923,
+    plan-book5681, job caps137/138/131 and ten packs stay unchanged.
+    This is exact static enrollment arithmetic, not a new whole-tree
+    planner or runtime measurement. Natural own-head contract/CI must
+    still qualify transitive candidate effects. Preserve all earlier
+    history, commands, selection rules, runtime caps and assertions.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,

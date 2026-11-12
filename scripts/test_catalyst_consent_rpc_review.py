@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Review-only Catalyst consent RPC v2 smoke test against a *new local PostgreSQL*.
+"""Catalyst consent RPC v2 (0009) proof against a *new local PostgreSQL*.
 
-Run manually: python -m scripts.test_catalyst_consent_rpc_review
+Run manually: python3 scripts/test_catalyst_consent_rpc_review.py
 Creates a brand-new temporary PG cluster, Unix-socket only (NO TCP), builds
-mock auth/email-owner tables, applies the held SQL twice and asserts security,
-signed-intent persistence, positive consent, suppression and revocation.
+mock auth/email-owner tables with Supabase-like default privileges, applies
+scripts/deploy/0009_catalyst_consent_rpc_v2.sql twice and asserts security,
+signed-intent persistence, positive consent, suppression, revocation, NULL
+refusals, replay, clock windows, grant immutability, the rollback file and
+the incumbent writes after rollback.
 It does not connect to Supabase, the public internet or any existing database.
 This is a TEST HARNESS, not a migration runner or product control plane.
 """
@@ -27,13 +30,27 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine.marketing.catalyst_lifecycle import _email_tag, _sign
-SQL = ROOT / "research/marketing_dockets/MKT_CATALYST_CONSENT_RPC_V2_REVIEW_ONLY.sql"
+SQL = ROOT / "scripts/deploy/0009_catalyst_consent_rpc_v2.sql"
+ROLLBACK = ROOT / "scripts/deploy/0009_catalyst_consent_rpc_v2_rollback.sql"
 USER = "9507e687-116a-4d30-9c30-fdf45c9d91b2"
+OTHER_USER = "00000000-0000-4000-8000-000000000404"   # synthetic; same intent, second user
+WINDOW_USER = "00000000-0000-4000-8000-000000000505"  # synthetic; grant held across a rollback
+WINDOW2_USER = "00000000-0000-4000-8000-000000000606"  # synthetic; suppressed inside the window
+WINDOW2_EMAIL = "window2+user@example.invalid"
 EMAIL = "fixture+updates@example.invalid"
 SECRET = "synthetic_hmac_only_no_real_user_or_token_0123456789"
 EVENT = "synthetic-event-20261009"
 SCOPE = "catalyst_event_updates/v1"
 PORT = "55462"
+RPCS = (
+    "catalyst_consent_contract()",
+    "catalyst_consent_begin(text,text,text)",
+    "catalyst_consent_resolve(text,text)",
+    "catalyst_consent_confirm(uuid,text,text,text[],text,text,jsonb)",
+    "catalyst_consent_current(uuid,text)",
+    "catalyst_consent_interested(text,integer)",
+    "catalyst_consent_revoke(uuid,text,text)",
+)
 
 
 def _quote(value: str) -> str:
@@ -90,8 +107,8 @@ class TestPostgres:
         rows = output.splitlines()
         return rows[-1] if rows and denied is None else ""
 
-    def apply(self, *, denied: str | None = None) -> None:
-        self.run(self.args + ["-f", str(SQL)],
+    def apply(self, *, denied: str | None = None, path: Path = SQL) -> None:
+        self.run(self.args + ["-f", str(path)],
                  ok=denied is None, contains=denied)
 
 
@@ -109,37 +126,69 @@ def _new_intent(now: datetime, nonce: str, tickers: list[str],
         now + timedelta(minutes=20)).isoformat()
 
 
-def _verify(db: TestPostgres) -> None:
+def _iso(delta: timedelta = timedelta()) -> str:
+    return (datetime.now(timezone.utc) + delta).isoformat()
+
+
+def _fixture(db: TestPostgres) -> None:
     db.sql("create role anon nologin")
     db.sql("create role authenticated nologin")
     db.sql("create role service_role nologin")
     db.sql("grant usage on schema public to anon, authenticated, service_role")
-    # Real Supabase publicly scoped function defaults include DIRECT client
-    # EXECUTE grants, not merely PUBLIC. The seven explicit REVOKEs must hold.
+    # Real Supabase defaults grant DIRECT client privileges on new functions, tables
+    # and sequences (not merely PUBLIC). The explicit REVOKEs in 0009 must hold
+    # against all three, service_role included for the two tables.
     db.sql("alter default privileges in schema public grant execute on functions to anon, authenticated, service_role")
+    db.sql("alter default privileges in schema public grant all on tables to anon, authenticated, service_role")
+    db.sql("alter default privileges in schema public grant all on sequences to anon, authenticated, service_role")
     db.sql("create schema auth")
     db.sql("create table auth.users(id uuid primary key, email text, email_confirmed_at timestamptz)")
-    db.sql("create table public.email_suppression(email text primary key, reason text)")
-    db.sql("create table public.email_prefs(user_id uuid primary key,marketing_opt_out boolean not null default false)")
-    db.apply()
-    contract = json.loads(db.sql("select public.catalyst_consent_contract()"))
-    assert contract == {"owner": "email_consent", "version": 2}
-    permissions = json.loads(db.sql("""select pg_catalog.jsonb_build_object(
+    # Shapes follow 0007_support_email.sql (reason check, created_at, lang, updated_at).
+    db.sql("create table public.email_suppression(email text primary key, "
+           "reason text not null check (reason in ('unsubscribe','bounce','complaint','manual')), "
+           "created_at timestamptz not null default now())")
+    db.sql("create table public.email_prefs(user_id uuid primary key, lang text, "
+           "marketing_opt_out boolean not null default false, updated_at timestamptz not null default now())")
+
+
+def _privileges(db: TestPostgres) -> dict:
+    return json.loads(db.sql("""select pg_catalog.jsonb_build_object(
       'anon',pg_catalog.has_function_privilege('anon','public.catalyst_consent_begin(text,text,text)','EXECUTE'),
       'authenticated',pg_catalog.has_function_privilege('authenticated','public.catalyst_consent_begin(text,text,text)','EXECUTE'),
       'service',pg_catalog.has_function_privilege('service_role','public.catalyst_consent_begin(text,text,text)','EXECUTE'),
-      'table',pg_catalog.has_table_privilege('anon','public.catalyst_consent_grants','SELECT'),
+      'table_anon',pg_catalog.has_table_privilege('anon','public.catalyst_consent_grants','SELECT'),
+      'table_service_select',pg_catalog.has_table_privilege('service_role','public.catalyst_consent_grants','SELECT'),
+      'table_service_insert',pg_catalog.has_table_privilege('service_role','public.catalyst_consent_pending','INSERT'),
+      'seq_service',pg_catalog.has_sequence_privilege('service_role','public.catalyst_consent_grants_grant_id_seq','USAGE'),
       'policies',(select pg_catalog.count(*) from pg_catalog.pg_policies
         where schemaname='public' and tablename in ('catalyst_consent_pending','catalyst_consent_grants'))
     )"""))
+
+
+def _verify(db: TestPostgres) -> None:
+    _fixture(db)
+    db.apply()
+    contract = json.loads(db.sql("select public.catalyst_consent_contract()"))
+    assert contract == {"owner": "email_consent", "version": 2}
+    permissions = _privileges(db)
     assert permissions == {"anon": False, "authenticated": False, "service": True,
-                           "table": False, "policies": 0}, permissions
+                           "table_anon": False, "table_service_select": False,
+                           "table_service_insert": False, "seq_service": False,
+                           "policies": 0}, permissions
     db.sql("select public.catalyst_consent_contract()", role="anon",
            denied="permission denied")
     db.sql("select public.catalyst_consent_contract()", role="authenticated",
            denied="permission denied")
     db.sql("select * from public.catalyst_consent_grants", role="anon",
            denied="permission denied")
+    # service_role may CALL the RPCs but can never read or write the ledger directly.
+    db.sql("select * from public.catalyst_consent_grants", role="service_role",
+           denied="permission denied")
+    db.sql("insert into public.catalyst_consent_pending default values", role="service_role",
+           denied="permission denied")
+    assert json.loads(db.sql("select public.catalyst_consent_contract()",
+                             role="service_role")) == contract
+    print("SERVICE_ROLE_TABLE_DENY=PASS")
 
     now = datetime.now(timezone.utc)
     db.sql("insert into auth.users values (" + _quote(USER) + "::uuid," +
@@ -148,32 +197,115 @@ def _verify(db: TestPostgres) -> None:
              "utm_campaign": "catalyst_scan", "utm_content": "cp_synthetic"}
     nonce = "synthetic_intent_nonce_abcdefghijklmnop"
     signed, tag, expiration = _new_intent(now, nonce, ["NVDA", "AMD"], touch)
-    future = _quote(expiration)
     pending = json.loads(db.sql("select public.catalyst_consent_begin(" +
-                                ",".join(map(_quote, (signed, tag, expiration))) + ")"))
+                                ",".join(map(_quote, (signed, tag, expiration))) + ")",
+                                role="service_role"))
     opaque = pending["public_ref"]
     assert re.fullmatch(r"[A-Za-z0-9_-]{32,128}", opaque)
+    # The same signed nonce can begin exactly once.
+    db.sql("select public.catalyst_consent_begin(" +
+           ",".join(map(_quote, (signed, tag, expiration))) + ")",
+           denied="PENDING_INTENT_REPLAY")
+    print("PENDING_INTENT_REPLAY=PASS")
     assert json.loads(db.sql("select public.catalyst_consent_resolve(" +
                              _quote(opaque) + "," + _quote(tag) + ")"))["intent"] == signed
     db.sql("select public.catalyst_consent_resolve(" + _quote(opaque) +
            "," + _quote("0" * 64) + ")", denied="PENDING_REF_UNAVAILABLE")
-    def confirm(tickers: str = "ARRAY['NVDA','AMD']::text[]",
-                first_touch: dict[str, str] = touch) -> str:
+
+    # NULL inputs are named refusals on every RPC, never a constraint error.
+    db.sql("select public.catalyst_consent_begin(null," + _quote(tag) + "," +
+           _quote(expiration) + ")", denied="INVALID_PENDING_INTENT")
+    db.sql("select public.catalyst_consent_begin(" + _quote(signed) + ",null," +
+           _quote(expiration) + ")", denied="INVALID_PENDING_INTENT")
+    db.sql("select public.catalyst_consent_begin(" + _quote(signed) + "," +
+           _quote(tag) + ",null)", denied="INVALID_PENDING_INTENT")
+    db.sql("select public.catalyst_consent_resolve(null," + _quote(tag) + ")",
+           denied="INVALID_PENDING_REF")
+    db.sql("select public.catalyst_consent_resolve(" + _quote(opaque) + ",null)",
+           denied="INVALID_PENDING_REF")
+    db.sql("select public.catalyst_consent_confirm(null," + _quote(EVENT) + "," +
+           _quote(SCOPE) + ",ARRAY['NVDA','AMD']::text[]," + _quote(nonce) + "," +
+           _quote(_iso()) + ",'{}'::jsonb)", denied="CONSENT_PURPOSE_INVALID")
+    db.sql("select public.catalyst_consent_confirm(" + _quote(USER) + "::uuid," +
+           _quote(EVENT) + ",null,ARRAY['NVDA','AMD']::text[]," + _quote(nonce) + "," +
+           _quote(_iso()) + ",'{}'::jsonb)", denied="CONSENT_PURPOSE_INVALID")
+    db.sql("select public.catalyst_consent_confirm(" + _quote(USER) + "::uuid," +
+           _quote(EVENT) + "," + _quote(SCOPE) + ",null," + _quote(nonce) + "," +
+           _quote(_iso()) + ",'{}'::jsonb)", denied="CONSENT_PURPOSE_INVALID")
+    db.sql("select public.catalyst_consent_confirm(" + _quote(USER) + "::uuid," +
+           _quote(EVENT) + "," + _quote(SCOPE) + ",ARRAY['NVDA','AMD']::text[],null," +
+           _quote(_iso()) + ",'{}'::jsonb)", denied="CONSENT_PURPOSE_INVALID")
+    db.sql("select public.catalyst_consent_confirm(" + _quote(USER) + "::uuid," +
+           _quote(EVENT) + "," + _quote(SCOPE) + ",ARRAY['NVDA','AMD']::text[]," +
+           _quote(nonce) + ",null,'{}'::jsonb)", denied="CONSENT_PURPOSE_INVALID")
+    db.sql("select public.catalyst_consent_confirm(" + _quote(USER) + "::uuid," +
+           _quote(EVENT) + "," + _quote(SCOPE) + ",ARRAY['NVDA','AMD']::text[]," +
+           _quote(nonce) + "," + _quote(_iso()) + ",null)", denied="CONSENT_PURPOSE_INVALID")
+    db.sql("select public.catalyst_consent_interested(null,10)",
+           denied="CONSENT_INTEREST_QUERY_INVALID")
+    db.sql("select public.catalyst_consent_interested(" + _quote(EVENT) + ",null)",
+           denied="CONSENT_INTEREST_QUERY_INVALID")
+    db.sql("select public.catalyst_consent_interested(" + _quote(EVENT) + ",0)",
+           denied="CONSENT_INTEREST_QUERY_INVALID")
+    db.sql("select public.catalyst_consent_revoke(null," + _quote(EVENT) + "," +
+           _quote(_iso()) + ")", denied="CONSENT_REVOKE_INVALID")
+    db.sql("select public.catalyst_consent_revoke(" + _quote(USER) + "::uuid,null," +
+           _quote(_iso()) + ")", denied="CONSENT_REVOKE_INVALID")
+    db.sql("select public.catalyst_consent_revoke(" + _quote(USER) + "::uuid," +
+           _quote(EVENT) + ",null)", denied="CONSENT_REVOKE_INVALID")
+    assert db.sql("select public.catalyst_consent_current(null," + _quote(EVENT) + ") is null") == "t"
+    print("NULL_INPUTS_NAMED_REFUSALS=PASS")
+    # A signed body missing any required field is refused by name (round 2, F4): the
+    # checks are NULL-safe comparisons, not `<>` tests that a missing key slips past.
+    for missing in ("v", "scope", "nonce", "event_id", "tickers", "email_tag", "issued_at", "first_touch"):
+        body = {"v": 1, "scope": SCOPE, "nonce": "synthetic_intent_nonce_missing_" + missing,
+                "event_id": EVENT, "tickers": ["NVDA"], "email_tag": tag, "first_touch": {},
+                "issued_at": datetime.now(timezone.utc).isoformat(), "scan_receipt": "synthetic.scan"}
+        del body[missing]
+        db.sql("select public.catalyst_consent_begin(" + ",".join(map(_quote, (
+            _sign(SECRET, body), tag, _iso(timedelta(minutes=20))))) + ")",
+               denied="INVALID_PENDING_INTENT")
+    print("BEGIN_MISSING_FIELDS_NAMED_REFUSALS=PASS")
+
+    def confirm(tickers: str = "ARRAY['AMD','NVDA']::text[]",
+                first_touch: dict[str, str] = touch, when: str | None = None,
+                user: str = USER, intent: str = nonce) -> str:
         return ("select public.catalyst_consent_confirm(" +
-                _quote(USER) + "::uuid," + _quote(EVENT) + "," +
-                _quote(SCOPE) + "," + tickers + "," + _quote(nonce) + "," +
-                _quote(datetime.now(timezone.utc).isoformat()) + "," +
+                _quote(user) + "::uuid," + _quote(EVENT) + "," +
+                _quote(SCOPE) + "," + tickers + "," + _quote(intent) + "," +
+                _quote(when or _iso()) + "," +
                 _quote(json.dumps(first_touch)) + "::jsonb)")
-    first = json.loads(db.sql(confirm()))
+    # Clock window: a verification older than five minutes is refused before any write.
+    db.sql(confirm(when=_iso(timedelta(minutes=-10))), denied="CONSENT_VERIFIED_CLOCK_INVALID")
+    db.sql(confirm(when=_iso(timedelta(minutes=+2))), denied="CONSENT_VERIFIED_CLOCK_INVALID")
+    db.sql(confirm(when="not-a-clock"), denied="CONSENT_VERIFIED_CLOCK_INVALID")
+    # Ticker order is irrelevant (reversed here); the stored order is the signed one.
+    first = json.loads(db.sql(confirm(), role="service_role"))
     assert first["created"] is True
     assert first["record"]["email"] == EMAIL
     assert first["record"]["first_touch"] == touch
-    assert json.loads(db.sql(confirm()))["created"] is False
+    assert first["record"]["tickers"] == ["NVDA", "AMD"]
+    # One signed intent confirms one user only (round 2, F3): a second GoTrue user
+    # presenting the same intent gets a named refusal, not a raw unique_violation.
+    db.sql("insert into auth.users values (" + _quote(OTHER_USER) +
+           "::uuid,'other+intent@example.invalid',now()) on conflict do nothing")
+    db.sql(confirm(user=OTHER_USER), denied="CONSENT_INTENT_ALREADY_USED")
+    print("INTENT_SINGLE_USER=PASS")
+    assert json.loads(db.sql(confirm("ARRAY['NVDA','AMD']::text[]")))["created"] is False
     db.sql(confirm("ARRAY['NVDA']::text[]"), denied="CONSENT_INTENT_MISMATCH")
     db.sql(confirm(first_touch={"utm_source": "forged"}),
            denied="CONSENT_INTENT_MISMATCH")
     assert len(json.loads(db.sql("select public.catalyst_consent_interested(" +
                                  _quote(EVENT) + ",10)"))) == 1
+    current = json.loads(db.sql("select public.catalyst_consent_current(" +
+                                _quote(USER) + "::uuid," + _quote(EVENT) + ")"))
+    assert current["intent_id"] == nonce and current["revoked_at_utc"] is None
+
+    # Grant ledger rows are immutable, even for the owner through a direct UPDATE.
+    db.sql("update public.catalyst_consent_grants set tickers=ARRAY['X']::text[] where intent_id=" +
+           _quote(nonce), denied="CATALYST_CONSENT_GRANT_IMMUTABLE")
+    db.sql("update public.catalyst_consent_grants set intent_id='forged_nonce_abcdefghijklmnopqrstu' where intent_id=" +
+           _quote(nonce), denied="CATALYST_CONSENT_GRANT_IMMUTABLE")
 
     # Cleanup of the expired private signed body must not delete or unlink the
     # confirmed grant's immutable intent/nonce audit reference.
@@ -192,29 +324,134 @@ def _verify(db: TestPostgres) -> None:
     assert json.loads(db.sql("select public.catalyst_consent_interested(" +
                               _quote(EVENT) + ",10)")) == []
     assert db.sql("select count(*) from public.catalyst_consent_grants where revoked_at_utc is not null") == "1"
-    db.sql("insert into public.email_prefs values (" + _quote(USER) + "::uuid,true)")
+    # A revocation can never be cleared, not even by the owner.
+    db.sql("update public.catalyst_consent_grants set revoked_at_utc=null where intent_id=" +
+           _quote(nonce), denied="CATALYST_CONSENT_GRANT_IMMUTABLE")
+    print("GRANT_IMMUTABILITY=PASS")
+    db.sql("insert into public.email_prefs(user_id,marketing_opt_out) values (" + _quote(USER) + "::uuid,true)")
     assert json.loads(db.sql("select public.catalyst_consent_interested(" +
                               _quote(EVENT) + ",10)")) == []
     db.sql("delete from public.email_prefs")
     revoked = json.loads(db.sql("select public.catalyst_consent_revoke(" +
                                 _quote(USER) + "::uuid," + _quote(EVENT) + "," +
-                                _quote(datetime.now(timezone.utc).isoformat()) + ")"))
+                                _quote(_iso()) + ")"))
     assert revoked == {"changed": False}  # global suppression already revoked permanently
     assert json.loads(db.sql("select public.catalyst_consent_interested(" +
                               _quote(EVENT) + ",10)")) == []
-    assert json.loads(db.sql("select public.catalyst_consent_revoke(" +
-                              _quote(USER) + "::uuid," + _quote(EVENT) + "," +
-                              _quote(datetime.now(timezone.utc).isoformat()) + ")")) == {"changed": False}
+    db.sql("select public.catalyst_consent_revoke(" + _quote(USER) + "::uuid," +
+           _quote(EVENT) + "," + _quote(_iso(timedelta(minutes=-10))) + ")",
+           denied="CONSENT_REVOKE_TIME_INVALID")
     db.sql(confirm(), denied="CONSENT_PENDING_NOT_CURRENT")  # expired body cannot be replayed
+
+    # Revoke positive path: a live grant, revoked by the owner RPC, then refused forever.
+    user_four = "4d0a2a6c-62ef-4f1c-9a0e-3a4a6a2b6c01"
+    email_four = "fixture+four@example.invalid"
+    db.sql("insert into auth.users values (" + _quote(user_four) + "::uuid," +
+           _quote(email_four) + ",pg_catalog.now()-interval '1 minute')")
+    nonce_four = "synthetic_intent_nonce_four_abcdefghijk"
+    body_tag_four = _email_tag(SECRET, email_four)
+    body = {"v": 1, "scope": SCOPE, "nonce": nonce_four, "event_id": EVENT,
+            "tickers": ["TSLA"], "email_tag": body_tag_four, "first_touch": {},
+            "issued_at": _iso(), "scan_receipt": "synthetic.scan"}
+    signed_four = _sign(SECRET, body)
+    db.sql("select public.catalyst_consent_begin(" + ",".join(map(_quote, (
+        signed_four, body_tag_four, _iso(timedelta(minutes=20))))) + ")")
+    granted = json.loads(db.sql(confirm("ARRAY['TSLA']::text[]", {}, user=user_four, intent=nonce_four)))
+    assert granted["created"] is True
+    assert len(json.loads(db.sql("select public.catalyst_consent_interested(" +
+                                 _quote(EVENT) + ",10)"))) == 1
+    assert json.loads(db.sql("select public.catalyst_consent_revoke(" + _quote(user_four) +
+                             "::uuid," + _quote(EVENT) + "," + _quote(_iso()) + ")")) == {"changed": True}
+    assert json.loads(db.sql("select public.catalyst_consent_interested(" +
+                              _quote(EVENT) + ",10)")) == []
+    assert json.loads(db.sql("select public.catalyst_consent_revoke(" + _quote(user_four) +
+                             "::uuid," + _quote(EVENT) + "," + _quote(_iso()) + ")")) == {"changed": False}
+    assert json.loads(db.sql("select public.catalyst_consent_current(" + _quote(user_four) +
+                             "::uuid," + _quote(EVENT) + ")"))["revoked_at_utc"] is not None
+    # Re-consent after revoke for the same event is refused by design (documented).
+    nonce_again = "synthetic_intent_nonce_four_again_abcde"
+    body["nonce"] = nonce_again
+    body["issued_at"] = _iso()
+    db.sql("select public.catalyst_consent_begin(" + ",".join(map(_quote, (
+        _sign(SECRET, body), body_tag_four, _iso(timedelta(minutes=20))))) + ")")
+    db.sql(confirm("ARRAY['TSLA']::text[]", {}, user=user_four, intent=nonce_again),
+           denied="CONSENT_ALREADY_REVOKED_OR_MISMATCHED")
+    print("REVOKE_POSITIVE_PATH=PASS")
+
+    # Clock windows on begin/resolve and the expired-body sweep.
+    stale = _new_intent(datetime.now(timezone.utc) - timedelta(minutes=25),
+                        "synthetic_intent_nonce_stale_abcdefghijk", ["NVDA"])
+    db.sql("select public.catalyst_consent_begin(" + ",".join(map(_quote, stale)) + ")",
+           denied="INVALID_PENDING_INTENT")
+    fresh = _new_intent(datetime.now(timezone.utc), "synthetic_intent_nonce_fresh_abcdefghijk", ["NVDA"])
+    ref_fresh = json.loads(db.sql("select public.catalyst_consent_begin(" +
+                                  ",".join(map(_quote, fresh)) + ")"))["public_ref"]
+    db.sql("update public.catalyst_consent_pending set expires_at_utc=pg_catalog.now()-interval '1 second' "
+           "where public_ref=" + _quote(ref_fresh))
+    db.sql("select public.catalyst_consent_resolve(" + _quote(ref_fresh) + "," +
+           _quote(fresh[1]) + ")", denied="PENDING_REF_UNAVAILABLE")
+    db.sql(confirm("ARRAY['NVDA']::text[]", {}, intent="synthetic_intent_nonce_fresh_abcdefghijk"),
+           denied="CONSENT_PENDING_NOT_CURRENT")
+    print("CLOCK_EXPIRY=PASS")
+    # Expired by one second: survives the next begin() (one-hour grace, round 2, F5).
+    grace = _new_intent(datetime.now(timezone.utc), "synthetic_intent_nonce_grace_abcdefghijk", ["NVDA"])
+    db.sql("select public.catalyst_consent_begin(" + ",".join(map(_quote, grace)) + ")")
+    assert db.sql("select count(*) from public.catalyst_consent_pending where public_ref=" +
+                  _quote(ref_fresh)) == "1"
+    # A body expired for over an hour is swept by the next begin(); a recently expired one stays.
+    db.sql("update public.catalyst_consent_pending set expires_at_utc=pg_catalog.now()-interval '2 hours' "
+           "where public_ref=" + _quote(ref_fresh))
+    sweep = _new_intent(datetime.now(timezone.utc), "synthetic_intent_nonce_sweep_abcdefghijk", ["NVDA"])
+    db.sql("select public.catalyst_consent_begin(" + ",".join(map(_quote, sweep)) + ")")
+    assert db.sql("select count(*) from public.catalyst_consent_pending where public_ref=" +
+                  _quote(ref_fresh)) == "0"
+    assert db.sql("select count(*) from public.catalyst_consent_pending where intent_id=" +
+                  _quote("synthetic_intent_nonce_sweep_abcdefghijk")) == "1"
+    print("EXPIRED_PENDING_SWEEP=PASS")
 
     # A later, existing RLS policy is an install BLOCK, not tacit acceptance.
     db.sql("create policy fixture_unsafe on public.catalyst_consent_pending for select to anon using (true)")
     db.apply(denied="CATALYST_CONSENT_EXISTING_CLIENT_POLICY_BLOCK")
     db.sql("drop policy fixture_unsafe on public.catalyst_consent_pending")
     db.apply()  # Idempotent re-run preserves irrevocably revoked grants.
+    # The install fence itself fires (round 2, F7): the apply revokes before fencing, so
+    # run the fence block alone after a stray client grant or an unreadable incumbent.
+    fence = re.search(r"do \$consent_install_fence\$.*?\$consent_install_fence\$;",
+                      SQL.read_text(), re.S).group(0)
+    db.sql(fence)
+    db.sql("grant select on public.catalyst_consent_grants to service_role")
+    db.sql(fence, denied="CATALYST_CONSENT_CLIENT_TABLE_GRANT_BLOCK")
+    db.sql("revoke select on public.catalyst_consent_grants from service_role")
+    db.sql("grant usage on sequence public.catalyst_consent_grants_grant_id_seq to authenticated")
+    db.sql(fence, denied="CATALYST_CONSENT_CLIENT_SEQUENCE_GRANT_BLOCK")
+    db.sql("revoke usage on sequence public.catalyst_consent_grants_grant_id_seq from authenticated")
+    # The owner-shaped branches, proven with a NOBYPASSRLS owner (round 3): the bootstrap
+    # superuser bypasses RLS, so hand the consent tables to a plain role and walk every
+    # refusal in fence order, then give them back.
+    db.sql("create role fence_probe nosuperuser nobypassrls nologin")
+    db.sql("alter table public.catalyst_consent_grants owner to fence_probe")
+    db.sql(fence, denied="CATALYST_CONSENT_TABLE_OWNER_BLOCK: pending")
+    db.sql("alter table public.catalyst_consent_pending owner to fence_probe")
+    db.sql(fence, denied="CATALYST_CONSENT_INCUMBENT_TABLE_ACCESS_BLOCK")  # foreign-owned email tables
+    db.sql("alter table public.email_prefs owner to fence_probe")
+    db.sql("alter table public.email_suppression owner to fence_probe")
+    db.sql("alter table public.email_prefs force row level security")
+    db.sql(fence, denied="CATALYST_CONSENT_INCUMBENT_TABLE_ACCESS_BLOCK: email_prefs")
+    db.sql("alter table public.email_prefs no force row level security")
+    db.sql(fence, denied="CATALYST_CONSENT_AUTH_USERS_READ_BLOCK")
+    db.sql("grant select on auth.users to fence_probe")
+    db.sql(fence, denied="CATALYST_CONSENT_RPC_OWNER_BLOCK")  # the RPCs still belong to the superuser
+    db.sql("revoke select on auth.users from fence_probe")
+    for tbl in ("catalyst_consent_grants", "catalyst_consent_pending", "email_prefs", "email_suppression"):
+        db.sql("alter table public." + tbl + " owner to current_user")
+    db.sql("drop role fence_probe")
+    db.sql(fence)
+    print("INSTALL_FENCE_FIRES=PASS")
     assert json.loads(db.sql("select public.catalyst_consent_contract()")) == contract
     assert json.loads(db.sql("select public.catalyst_consent_interested(" +
                               _quote(EVENT) + ",10)")) == []
+    assert db.sql("select count(*) from public.catalyst_consent_grants where revoked_at_utc is not null") == "2"
+    assert _privileges(db)["table_service_select"] is False
 
 
 def _verify_concurrent_unsubscribe(db: TestPostgres) -> None:
@@ -291,20 +528,83 @@ def _verify_concurrent_unsubscribe(db: TestPostgres) -> None:
     user_three = "df268bb2-d13f-467b-a64b-6609db5ca17a"
     sql_three = pending(user_three, "synthetic_race_c_nonce_abcdefghijklmnop")
     run_parallel(
-        "begin; insert into public.email_prefs values (" + quote(user_three) +
+        "begin; insert into public.email_prefs(user_id,marketing_opt_out) values (" + quote(user_three) +
         "::uuid,true); select pg_sleep(2); commit;",
         sql_three, expected_error="CONSENT_ADDRESS_SUPPRESSED")
     assert db.sql("select count(*) from public.catalyst_consent_grants where user_id=" +
                   quote(user_three) + "::uuid") == "0"
+    db.sql("delete from public.email_prefs")
     print("LOCAL_CONCURRENT_UNSUBSCRIBE_LOCK_ORDER=PASS")
+
+
+def _verify_rollback(db: TestPostgres) -> None:
+    """The rollback file removes every hook and RPC, keeps the ledger, and leaves the
+    incumbent unsubscribe / preference writes working; a re-apply restores service."""
+    # An active grant held across the rollback window (round 2, F1).
+    db.sql("insert into auth.users values (" + _quote(WINDOW_USER) +
+           "::uuid,'window+user@example.invalid',now()) on conflict do nothing")
+    window_nonce = "synthetic_intent_nonce_window_abcdefghijk"
+    window = _new_intent(datetime.now(timezone.utc), window_nonce, ["NVDA"])
+    db.sql("select public.catalyst_consent_begin(" + ",".join(map(_quote, window)) + ")")
+    held = json.loads(db.sql("select public.catalyst_consent_confirm(" + _quote(WINDOW_USER) +
+                             "::uuid," + _quote(EVENT) + "," + _quote(SCOPE) + ",ARRAY['NVDA']::text[]," +
+                             _quote(window_nonce) + "," + _quote(_iso()) + ",'{}'::jsonb)"))
+    assert held["created"] is True
+    # A second grant whose address gets suppressed inside the window (round 3, N4).
+    db.sql("insert into auth.users values (" + _quote(WINDOW2_USER) + "::uuid," + _quote(WINDOW2_EMAIL) +
+           ",now()) on conflict do nothing")
+    window2_nonce = "synthetic_intent_nonce_window2_abcdefghij"
+    window2 = _new_intent(datetime.now(timezone.utc), window2_nonce, ["NVDA"])
+    db.sql("select public.catalyst_consent_begin(" + ",".join(map(_quote, window2)) + ")")
+    held2 = json.loads(db.sql("select public.catalyst_consent_confirm(" + _quote(WINDOW2_USER) +
+                              "::uuid," + _quote(EVENT) + "," + _quote(SCOPE) + ",ARRAY['NVDA']::text[]," +
+                              _quote(window2_nonce) + "," + _quote(_iso()) + ",'{}'::jsonb)"))
+    assert held2["created"] is True
+    grants_before = db.sql("select count(*) from public.catalyst_consent_grants")
+    revoked_before = db.sql("select count(*) from public.catalyst_consent_grants where revoked_at_utc is not null")
+    db.apply(path=ROLLBACK)
+    assert db.sql("select count(*) from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid=p.pronamespace "
+                  "where n.nspname='public' and p.proname like 'catalyst_consent_%'") == "0"
+    assert db.sql("select count(*) from pg_catalog.pg_trigger where tgname like 'catalyst_consent_%'") == "0"
+    db.sql("select public.catalyst_consent_contract()", denied="does not exist")
+    # Ledger retained, nothing lost.
+    assert db.sql("select count(*) from public.catalyst_consent_grants") == grants_before
+    assert db.sql("select count(*) from public.catalyst_consent_grants where revoked_at_utc is not null") == revoked_before
+    # Incumbent writes still work with no trigger in the way.
+    db.sql("insert into public.email_suppression values ('rollback+probe@example.invalid','manual')")
+    db.sql("insert into public.email_prefs(user_id,marketing_opt_out) values (" + _quote(USER) + "::uuid,true) "
+           "on conflict (user_id) do update set marketing_opt_out=excluded.marketing_opt_out, updated_at=now()")
+    db.sql("update public.email_prefs set marketing_opt_out=false where user_id=" + _quote(USER) + "::uuid")
+    db.sql("delete from public.email_suppression where email='rollback+probe@example.invalid'")
+    db.sql("delete from public.email_prefs where user_id=" + _quote(USER) + "::uuid")
+    # An opt-out or a suppression made while the triggers were absent must still revoke on re-apply.
+    db.sql("insert into public.email_prefs(user_id,marketing_opt_out) values (" + _quote(WINDOW_USER) + "::uuid,true)")
+    db.sql("insert into public.email_suppression values (" + _quote(WINDOW2_EMAIL.upper()) + ",'unsubscribe')")
+    # Re-apply after rollback: service restored, ledger intact, revocations permanent.
+    db.apply()
+    assert json.loads(db.sql("select public.catalyst_consent_contract()")) == {"owner": "email_consent", "version": 2}
+    assert db.sql("select count(*) from public.catalyst_consent_grants where revoked_at_utc is not null") == str(int(revoked_before) + 2)
+    assert db.sql("select count(*) from public.catalyst_consent_grants where user_id in (" + _quote(WINDOW_USER) +
+                  "::uuid," + _quote(WINDOW2_USER) + "::uuid) and revoked_at_utc is not null") == "2"
+    db.sql("delete from public.email_suppression where email=" + _quote(WINDOW2_EMAIL.upper()))
+    # Clearing the opt-out afterwards does not bring the grant back.
+    db.sql("update public.email_prefs set marketing_opt_out=false where user_id=" + _quote(WINDOW_USER) + "::uuid")
+    assert all(r["user_id"] != WINDOW_USER for r in json.loads(db.sql(
+        "select public.catalyst_consent_interested(" + _quote(EVENT) + ",10)")))
+    assert db.sql("select count(*) from public.catalyst_consent_grants") == grants_before
+    print("REAPPLY_RECONCILES_WINDOW_OPTOUT=PASS")
+    assert db.sql("select count(*) from pg_catalog.pg_trigger where tgname like 'catalyst_consent_%'") == "3"
+    db.sql("update public.catalyst_consent_grants set revoked_at_utc=null where revoked_at_utc is not null",
+           denied="CATALYST_CONSENT_GRANT_IMMUTABLE")
+    print("ROLLBACK_RESTORES_INCUMBENT_WRITES=PASS")
 
 
 def main() -> None:
     required = ("initdb", "pg_ctl", "psql")
     if any(not shutil.which(exe) for exe in required):
         raise SystemExit("PostgreSQL binaries required for optional local consent smoke test")
-    if not SQL.is_file():
-        raise SystemExit("Cannot locate owner-review-only SQL")
+    if not SQL.is_file() or not ROLLBACK.is_file():
+        raise SystemExit("Cannot locate 0009 migration or its rollback")
     with tempfile.TemporaryDirectory(prefix="mmx-catalyst-consent-local-") as home:
         root = Path(home)
         db = TestPostgres(root)
@@ -312,6 +612,7 @@ def main() -> None:
             db.start()
             _verify(db)
             _verify_concurrent_unsubscribe(db)
+            _verify_rollback(db)
         finally:
             db.stop()
     print("LOCAL_POSTGRES_CONSENT_RPC_V2=PASS")

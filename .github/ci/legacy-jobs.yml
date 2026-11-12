@@ -45989,6 +45989,7 @@ jobs:
       - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "research/DO_NOT_REBUILD.md"
+      - "research/marketing_dockets/MKT_CATALYST_CONSENT_RPC_V2_REVIEW_ONLY.sql"
       - "research/MARKETING_X_CATALYST_CONTINUATION_HANDOFF_20261101.md"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
@@ -46744,6 +46745,7 @@ jobs:
       - "tests/catalyst_scan_browser.js"
       - "tests/fixtures/catalyst_scan_contract_v1.json"
       - "tests/test_catalyst_admission.py"
+      - "tests/test_catalyst_consent_migration_files.py"
       - "tests/test_catalyst_integration.py"
       - "tests/test_catalyst_lifecycle.py"
       - "tests/test_catalyst_optin.py"
@@ -47122,6 +47124,7 @@ jobs:
           tests/test_catalyst_source_cycle.py
           tests/test_catalyst_source_deploy.py
           tests/test_catalyst_source_adapter.py
+          tests/test_catalyst_consent_migration_files.py
           -q -rs
 
   no-client-supplied-identity:
