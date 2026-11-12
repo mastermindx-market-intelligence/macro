@@ -1,3 +1,5 @@
+> **Superseded 2026-11-12 by PREREG_WALKFORWARD_v1.md.**
+
 # Risk Radar fitting procedure — DRAFT (not frozen)
 
 Status: working draft. Freezing (hash-pinned prereg) waits for the PRO-RUN D adjudication of the

@@ -179,3 +179,18 @@ def test_pivot_off_flicker_is_not_an_all_clear():
                        outcomes_through=idx[-1], pre=21, post=10, sealed_from=None)
     assert r["bottom"]["delays"] == [6]               # off at idx 45, trough idx 39
     assert r["premature_all_clear"] == 1 and r["n_calls"]["off_flickers"] == 1
+
+
+def test_pivot_clusters_and_per_asset_alerts():
+    px, idx, eps, alert = _pivot_setup(33, 42)
+    t = P.turns_from_episodes(eps)
+    turns = ([P.Turn(x.kind, x.date, x.depth, asset="A", cluster_id=f"c{x.kind}") for x in t]
+             + [P.Turn(x.kind, x.date, x.depth, asset="B", cluster_id=f"c{x.kind}") for x in t]
+             + [P.Turn("top", idx[29], asset="C")])
+    quiet = pd.Series(False, index=idx)
+    r = P.score_pivots_multi(turns, {"A": alert, "B": quiet}, {"A": eps, "B": eps},
+                             outcomes_through=idx[-1], posts=(10,), sealed_from=None)
+    top = r["by_post"]["post10"]["top"]
+    assert top["n_turns"] == 2 and top["flagged"] == 1          # A flagged, B not
+    assert top["n_clusters"] == 1 and top["clusters_flagged"] == 1
+    assert r["no_alert"] == ["C"]

@@ -64,6 +64,7 @@ class Turn:
     depth: float | None = None
     asset: str = "SPY"
     episode_onset: pd.Timestamp | None = None   # links a top and its bottom
+    cluster_id: str | None = None               # turns sharing a date cluster (honest N)
 
 
 def turns_from_episodes(episodes: list[L.Episode]) -> list[Turn]:
@@ -75,6 +76,30 @@ def turns_from_episodes(episodes: list[L.Episode]) -> list[Turn]:
         if e.recovery is not None:
             out.append(Turn("bottom", e.trough, e.depth, episode_onset=e.onset))
     return out
+
+
+def summarise(rows: list[dict], kind: str) -> dict:
+    """Flagged share over turns and over date clusters (a cluster is flagged if any of its scored
+    turns is flagged; a turn without cluster_id is its own cluster)."""
+    sc = [r for r in rows if r["kind"] == kind and r["status"] == "scored"]
+    k = sum(r["flagged"] for r in sc)
+    d = [int(r["delay"]) for r in sc if r["flagged"]]
+    lo, hi = _cp(k, len(sc)) if sc else (None, None)
+    cl: dict = {}
+    for i, r in enumerate(sc):
+        key = r.get("cluster_id") or f"__{r.get('asset')}_{r['date']}_{i}"
+        cl[key] = cl.get(key, False) or bool(r["flagged"])
+    kc = sum(cl.values())
+    clo, chi = _cp(kc, len(cl)) if cl else (None, None)
+    return {"n_turns": len(sc), "flagged": int(k),
+            "share_flagged": _r(k / len(sc)) if sc else None,
+            "share_ci90": [_r(lo), _r(hi)] if sc else None,
+            "n_clusters": len(cl), "clusters_flagged": int(kc),
+            "cluster_share_flagged": _r(kc / len(cl)) if cl else None,
+            "cluster_share_ci90": [_r(clo), _r(chi)] if cl else None,
+            "median_delay": None if not d else float(np.median(d)),
+            "delays": d,
+            "censored": sum(1 for r in rows if r["kind"] == kind and r["status"] != "scored")}
 
 
 def _calls(alert: pd.Series, min_off: int):
@@ -116,7 +141,7 @@ def score_pivots(alert: pd.Series, *, turns: list[Turn], episodes: list[L.Episod
     for t in sorted(turns, key=lambda t: t.date):
         p = pos(t.date)
         row = {"kind": t.kind, "date": pd.Timestamp(t.date).date().isoformat(), "depth": t.depth,
-               "asset": t.asset,
+               "asset": t.asset, "cluster_id": t.cluster_id,
                "regime": None if regime is None else regime.reindex([pd.Timestamp(t.date)]).iloc[0]}
         if p is None:
             row["status"] = "outside_window"
@@ -162,17 +187,7 @@ def score_pivots(alert: pd.Series, *, turns: list[Turn], episodes: list[L.Episod
     years = n / SESSIONS_PER_YEAR
 
     def summ(kind, subset=None):
-        sc = [r for r in (subset if subset is not None else rows)
-              if r["kind"] == kind and r["status"] == "scored"]
-        k = sum(r["flagged"] for r in sc)
-        d = [int(r["delay"]) for r in sc if r["flagged"]]
-        lo, hi = _cp(k, len(sc)) if sc else (None, None)
-        return {"n_turns": len(sc), "flagged": int(k),
-                "share_flagged": _r(k / len(sc)) if sc else None,
-                "share_ci90": [_r(lo), _r(hi)] if sc else None,
-                "median_delay": None if not d else float(np.median(d)),
-                "delays": d,
-                "censored": sum(1 for r in rows if r["kind"] == kind and r["status"] != "scored")}
+        return summarise(rows if subset is None else subset, kind)
 
     by_regime = {}
     if regime is not None:
@@ -195,3 +210,44 @@ def score_pivots(alert: pd.Series, *, turns: list[Turn], episodes: list[L.Episod
         "by_regime": by_regime,
         "turns": rows,
     }
+
+
+def score_pivots_multi(turns: list[Turn], alerts: dict[str, pd.Series],
+                       episodes: dict[str, list], *, outcomes_through, posts=(5, 10, 21),
+                       pre: int = DEFAULT_PRE, min_off: int = DEFAULT_MIN_OFF,
+                       sealed_from=L.SEALED_FROM, seen_history_ok: bool = False,
+                       name: str = "") -> dict:
+    """Score each asset's turns against that asset's own alert, at several post windows.
+
+    `episodes[asset]` is any list of objects with onset / trough / recovery dates (e.g.
+    `labels.Episode`, or swing legs peak->trough->next peak built as Episode). Turns whose asset has
+    no alert are reported as `no_alert`, never as misses. Pooled summaries are over turns and over
+    date clusters across assets; false/premature rates are summed over assets and divided by
+    summed asset-years.
+    """
+    out = {"name": name, "pre": pre, "min_off": min_off, "by_post": {}}
+    by_asset: dict[str, list[Turn]] = {}
+    for t in turns:
+        by_asset.setdefault(t.asset, []).append(t)
+    out["no_alert"] = sorted(a for a in by_asset if a not in alerts)
+    for post in posts:
+        per, rows, fro, prem, yrs = {}, [], 0, 0, 0.0
+        for asset, ts in sorted(by_asset.items()):
+            if asset not in alerts:
+                continue
+            r = score_pivots(alerts[asset], turns=ts, episodes=episodes.get(asset, []),
+                             outcomes_through=outcomes_through, pre=pre, post=post,
+                             min_off=min_off, sealed_from=sealed_from,
+                             seen_history_ok=seen_history_ok, name=asset)
+            per[asset] = r
+            rows += r["turns"]
+            fro += r["false_risk_off"]
+            prem += r["premature_all_clear"]
+            yrs += len(alerts[asset]) / SESSIONS_PER_YEAR
+        out["by_post"][f"post{post}"] = {
+            "top": summarise(rows, "top"), "bottom": summarise(rows, "bottom"),
+            "false_risk_off_per_asset_year": _r(fro / yrs) if yrs else None,
+            "premature_all_clear_per_asset_year": _r(prem / yrs) if yrs else None,
+            "by_asset": per,
+        }
+    return out

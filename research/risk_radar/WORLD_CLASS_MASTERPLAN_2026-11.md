@@ -521,3 +521,106 @@ The rebuilds run in this order:
 3. AI-breadth split from point-in-time constituents and the AI tag
 
 Each rebuild records its source and its first point-in-time date.
+
+## 14. Pro adjudication and the pivot steer (2026-11-12, fourth)
+
+Returns on macro#11104:
+- **PRO-RUN A** (independent plan, 03:06Z).
+- **PRO-RUN D** (walk-forward attack, 03:14Z, pinned to 558638d05e).
+- **PRO-RUN B** (critique, 03:17Z; it reviewed v1, v2 and §13).
+- **PRO-RUN C** (optional Extra High implementation plan) was **not sent**: the operator failed on
+  model capacity while setting effort, with no send attempted. It is dropped, not resent.
+
+### 14.1 Chairman steer: pivots are the goal
+
+The primary read is now the pivot scorecard (`engine/risk_radar_eval/pivots.py`;
+`walkforward/PIVOT_SCORECARD_INSAMPLE_2026-11-12.md`). For every turn into risk-off (top) and back
+to risk-on (bottom) it records:
+- whether the turn was flagged, and the delay in sessions;
+- the share flagged within [−21, +10];
+- false risk-off calls per year;
+- premature all-clears per year;
+- the same figures by era.
+
+A reliable call a few sessions after the turn counts. The loud state's confirmation job is scored
+on its delay, and the all-clear is scored the same way. Paper economics move to a secondary
+column. The window and hold length go to the research desk for reconciliation with its swing-rule
+catalogue (one label set, one scorecard).
+
+In-sample (≥5%, post 10):
+
+| Series | Tops flagged | Bottoms flagged (clean all-clear) | Premature all-clears per year |
+|---|---|---|---|
+| Loud Radar | 1/9 | 1/8 | 1.75 |
+| HY OAS velocity (11% of days) | 3/9 (early) | 4/8 | 2.9 |
+
+### 14.2 PRO-RUN D, point by point (all accepted unless noted)
+
+| # | Finding | Ruling |
+|---|---|---|
+| 1 | "3 of 5 folds" is not a superiority test on 7 clusters | **Accepted.** One primary endpoint and one comparator. Practical effect declared (±2 turns). "Inconclusive" is valid. The fold table is descriptive. |
+| 2 | Literal 21-session post-fit embargo discards stress tests | **Accepted.** Label maturity at T replaces the score embargo. Score from the next session; January events are kept. |
+| 3 | Trailing percentiles ≠ point-in-time | **Accepted.** A prefix-invariance proof is required before the first fit. Leg availability is recorded by date. |
+| 4 | Net objective ≠ its labels | **Accepted.** Separate endpoints; net is secondary and renamed (remaining decline after first alert; retrospective arithmetic attribution). The §13.3 net objective is **withdrawn**; the fit objective is the pivot objective (prereg §3). |
+| 5 | Eleven coordinates are too flexible | **Accepted.** One outcome-fitted quantity (gate cut, 4 candidates) plus an outcome-free budget offset. Retain-default rule. |
+| 6 | Design selection sits outside the firewall | **Accepted.** Claim class "retrospectively designed, chronological refit reconstruction"; frozen components are listed as hindsight-informed. |
+| 7 | Budget matching must be time-respecting | **Accepted.** Natural-share baselines plus fit-window-calibrated analogues; realized budgets reported. |
+| 8 | Proofs could certify the wrong implementation | **Accepted.** Label maturity, prefix invariance, parameter intervention (the harness injects the gate; the module constant is not consumed), calendar, censoring, effective-state hash. Persistence is dropped (not consumed by the resolver). |
+| 9 | Synchronise documents | **Accepted.** The prereg supersedes §3.2, §13.3 and the draft. |
+
+"Is walk-forward with this little history informative?" D's answer, adopted: as a **development
+audit**, yes. It can expose leakage, unstable fits, alarm burden and failure against simple
+baselines. It cannot establish modest superiority. More information comes from:
+1. The paired episode table with influence (leave-one-crisis-out) checks.
+2. Multi-market replication, which is the desk's job.
+3. Prospective tracking of the one frozen procedure.
+
+Quarterly or monthly refits add drift information, not episodes.
+
+### 14.3 PRO-RUN B (REWORK), judged against v2 + §13
+
+- **Accepted:**
+  - The seal is enforced on every label-support observation, not only on the origin.
+  - Production replacement (slice 3) runs as a shadow path under its own identity; it needs a
+    consumer inventory and separate authority before any live swap.
+  - The probability target is named for what it is (≥5% loss within 21 observations), and
+    onset/breach targets get separate IDs.
+  - As-of joins on `consumer_available_at`.
+  - Same-close recognition is kept apart from advance warning (delay ≤ −1).
+  - Full-path parity including the gate.
+  - Unavailable/stale outranks the badge, and the gate is shown as a qualifier.
+  - Slice 2 ships observed duration only; no new sticky step-down rule.
+  - Issued, receipt-bearing and admissible counts are reported separately.
+  - NOT_ESTIMABLE never counts as PASS.
+  - Configured values are separated from observed rates.
+- **PR dispositions corrected:**
+  - #8721 keeps its tested precedence for observed damage.
+  - #7040's publication-relative "what changed" is preserved.
+  - #10489 needs proof of writer custody, not elapsed time.
+  - #9137 and #9198 are absorbed only as the union of their surfaces.
+- **Slice order:** the truthfulness repairs in slice 2 no longer wait for a fit.
+- **Rejected:**
+  - "No 2024+ grading at all". Direction ruling point 6 allows the incumbent's walk-forward scoring
+    of 2024+, labelled as seen history; challengers stay sealed.
+  - Removing the walk-forward from the work packet, for the same reason.
+
+### 14.4 PRO-RUN A
+
+- **Accepted:**
+  - The evidence-lane table, with 2024+ handled as in 14.3.
+  - Freezing one champion with its selection history.
+  - Version and correction rules.
+  - **Close the back door.** `risk_radar_review` can write the calibration overlay that the engine
+    reads at runtime. All 22 proposals were refused, but the write path exists. This is added to
+    slice 3 as a first item, coordinated with #10740.
+- **Deferred:** A's broader three-state measured-account redesign. It overlaps §2 and is weighed
+  in slice 2 copy.
+
+### 14.5 Prereg
+
+Frozen as `walkforward/PREREG_WALKFORWARD_v1.md` (hash in `PREREG_WALKFORWARD_v1.sha256`).
+
+### 14.6 Worker routing (steer)
+
+- Raw testing, data rebuilds, reruns and sweeps go to `deepseek-v4.1-flash` workers in parallel.
+- The principal directs, reviews and adjudicates.
