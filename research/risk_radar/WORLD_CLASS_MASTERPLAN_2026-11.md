@@ -1,9 +1,9 @@
 # Risk Radar — world-class risk-state master plan (2026-11)
 
-Status: **DRAFT for ruling** by the Prophet programme CEO. Project lead: Risk Radar upgrade lead
+Status: **DRAFT v2 for ruling** by the Prophet programme CEO. Project lead: Risk Radar upgrade lead
 (Claude session, commissioned 2026-11-12). Built on `research/risk_radar/CENSUS_2026-11-12.md`
-(Macro `main` `aed66e338d`). Pro inputs: PRO-RUN A (independent plan) and PRO-RUN B (critique of
-this draft) return to issue #11104 and are folded in under §11 when they land.
+(Macro `main` `aed66e338d`) and the **direction ruling of 2026-11-12** (Chairman, via the Prophet
+CEO), recorded in §0.1. Pro inputs return to issue #11104 and are adjudicated in §11.
 
 Phase 1 changes nothing in the engine. This document proposes; nothing in it is installed.
 
@@ -11,24 +11,41 @@ Phase 1 changes nothing in the engine. This document proposes; nothing in it is 
 
 ## 0. Verdict
 
-Risk Radar already has the right skeleton: typed scare legs, a context gate, a forward log with
-issue receipts, and an envelope that keeps state, hazard and policy apart. Three things stop it
-from being world class:
+Risk Radar is kept and upgraded, not replaced. It already has the right skeleton: typed scare
+legs, a context gate, a forward log with issue receipts, and an envelope that keeps state, hazard
+and policy apart. Being fitted to the modern regime (2020 onward: pandemic, a rate-hike risk-off
+cycle, tariffs, wars, QE) is the design. What it lacks is **proof that its fitting procedure
+works**, and **an origin for every number it ships**.
 
-1. **It has no clean definition to test.** Every load-bearing threshold was chosen on data that
-   includes 2020 onward (census §2: 14 tuned-in-window groups, 19 unknown, 11 convention). The
-   test bed and the tuning window are the same years.
-2. **It shows the wrong thing first.** The badge is `CAUTION · 74.6/100`, and the workspace opens on
-   a pullback percentage that its own audit calls a gradient, not odds. Caution measures *below*
-   base rate (0.90×), yet it is the state shown on 54 of 79 logged days.
-3. **It has no series a consumer can join.** Rotation research, Prophet and the Shared Shell each
-   have to read `latest.json` or the forward log and re-derive what the state was on a date.
+Three gaps, three fixes:
 
-The plan: **freeze one versioned definition, publish it as a dated point-in-time series, and let
-the forward record from the freeze date be its test.** Fix the four-second read first. Add a
-second, clean candidate fitted only on pre-2020 outcomes so the rotation desk has something it can
-legitimately test on 2020–2023. Defer every new input until it has a point-in-time history and a
-preregistration.
+1. **The fitting procedure is unwritten and unproven.** 14 parameter groups were tuned on modern
+   data by ad-hoc sweeps; 19 have no recorded origin; the shipped bands 55/68/78/88 match neither
+   documented sweep (census §2). Fix: write the procedure down, then **refit it walk-forward inside
+   the modern regime** (fit to end-2021, score 2022; to end-2022, score 2023; … to today) and
+   report out-of-sample hit rate, lead time and false alarms beside the in-sample figures, against
+   simple baselines. Every production number then comes from that procedure. → **Slice 1.**
+2. **It shows the wrong thing first.** The badge is `CAUTION · 74.6/100`; caution measures below
+   base (0.90×) yet is the state on 54 of 79 logged days; the workspace leads with a pullback
+   percentage its own audit calls a gradient. Fix: a four-second read in words. → **Slice 2.**
+3. **It has no series a consumer can join.** Fix: publish the dated walk-forward state series
+   (Slice 1) and the live, versioned state series on a stated refit schedule. → **Slice 3.**
+
+### 0.1 Direction ruling (2026-11-12), as applied here
+
+1. Fitted to the modern regime is the design. Production Radar is fitted on all modern data
+   available, on a stated schedule. In-window tuning is not disqualifying.
+2. What needs proof is the **fitting procedure**, by rolling walk-forward refit inside the modern
+   regime, compared with simple baselines (SPY under its 200-session average, VIX level, credit
+   spread change). Out-of-sample and in-sample are reported side by side, never mixed.
+3. The 19 unknown groups and the band literals get values from the written procedure.
+4. A dated walk-forward state series (each date's state from parameters fitted before it) is a
+   Macro artifact the research desk may use as a feature and regime label. The current fitted
+   composite is still not used as a feature on 2020–2023.
+5. Stress reads beyond the sample (2008, 2018) are descriptive only and gate nothing.
+6. Walk-forward scoring on 2024 onward is allowed for this purpose: it is the Radar's own,
+   already-seen history, labelled as such, and is not the research desk's sealed confirmation.
+7. Existing limits stand (§8). Phase 1 remains plan-only.
 
 ---
 
@@ -38,29 +55,25 @@ preregistration.
 
 > **RISK STATE: GUARDED** · since 3 Nov · tape not confirming — *what would change it: SPY below its 200-day average with breadth in its bottom 40%*
 
-- **Badge** = one of four public states (§2), worded for action, not a score.
-- **Since** = date the current state began (from the series, §4). Users act on changes, so the
-  age of the state is the second most useful fact.
-- **Tape** = whether the broad market confirms (the context gate, today's single most measured
-  lever: 2020+ gated H21 precision 42.0% vs 24.5% raw, census §3).
+- **Badge** = one of four public states (§2.1), worded for action, not a score.
+- **Since** = date the current state began. Users act on changes, so the age of the state is the
+  second most useful fact.
+- **Tape** = whether the broad market confirms (the context gate; 2020+ gated H21 precision 42.0%
+  vs 24.5% raw, census §3 — in-sample).
 - **What would change it** = the nearest named trigger in each direction (§2.3), in plain words.
 
-No number appears in the first read. The 0–100 score, the leg percentiles and the pullback
-percentage move to the second layer.
+No number other than the date appears in the first read.
 
-### The depth (second and third layers, unchanged data, re-ordered)
+### The depth (second and third layers)
 
-1. **Why**: the hot scare types in words (e.g. "growth scare: defensives leading, 94th
-   percentile"), each marked *validated* / *watching* / *accruing*.
-2. **Track record of this state**: how often a ≥5% pullback followed within 21 sessions when this
-   state was shown, with its sample size and window (e.g. "risk-off, 2020–2026: 43.8%, n=224, vs
-   17.6% base"). Thin cells say "thin". This replaces the bare probability.
-3. **Forward record since freeze**: rows, alerts, outcomes graded, readiness progress
-   (`n / 252 sessions`).
+1. **Why**: the hot scare types in words, each marked *validated* / *watching* / *accruing*.
+2. **Track record of this state**, two columns never merged: *walk-forward (out-of-sample)* and
+   *in-sample*, each with n and window; thin cells say "thin". Replaces the bare probability.
+3. **Forward record since the current version's freeze**: rows, loud states, graded outcomes.
 4. **Full evidence**: today's workspace inspector, unchanged.
 
-Chinese and English copy are written together; the four public state words get fixed
-translations in the shared glossary, not per-page wording.
+Chinese and English copy are written together; the four state words get fixed translations in the
+shared glossary.
 
 ---
 
@@ -68,213 +81,206 @@ translations in the shared glossary, not per-page wording.
 
 ### 2.1 Public states (four, mapped from today's five)
 
-| Public state | Means for the user | Mapped from current engine | Why |
+| Public state | Means for the user | Engine state | Why |
 |---|---|---|---|
-| **CLEAR** | No scare type is hot. Normal risk appetite is supported. | calm, watch | Watch carries no measured lift; it is an internal early flag |
-| **GUARDED** | One or more scare types are hot, but the broad tape does not confirm. Watch for confirmation; do not add new risk on the scare's axis. | caution | Caution is below base rate alone (0.90×). It is context, not a warning |
-| **RISK-OFF WARNING** | Hot scare *and* the broad tape confirms (context gate met). | elevated | Gated; 2020+ H21 30.3% (thin, n=33) |
-| **RISK-OFF** | Confirmed and broad. | risk-off | 2020+ H21 43.8% (n=224) |
+| **CLEAR** | No scare type is hot. | calm, watch | Watch has no measured lift; it stays an internal flag |
+| **GUARDED** | Scare(s) hot, broad tape not confirming. Watch; do not add risk on the scare's axis. | caution | Caution alone measures below base (0.90×) |
+| **RISK-OFF WARNING** | Hot scare and the tape confirms (gate met). | elevated | Gated |
+| **RISK-OFF** | Confirmed and broad. | risk-off | Gated, highest measured rate |
 
-Watch stays in the internal series for research. Collapsing it publicly removes a state with no
-measured edge and halves the badge churn users see (watch↔calm↔caution flips are most of the 20
-state changes in the log).
+The mapping is display; the five-step engine state stays in every series. Whether the four-state
+read reduces flips is measured, not assumed (Slice 1 reports flip rates for both).
 
-### 2.2 Transition hazard (separate output, not part of the state)
+### 2.2 Transition hazard (separate output)
 
-- **What**: probability of a ≥5% SPY drawdown *onset* within 21 sessions (the target the record
-  already grades), shown as a **band** (`below base / near base / above base / well above base`)
-  with the state's own measured rate and sample size beside it.
-- **Not**: a precise percentage. The displayed-probability audit (cell calibration error 6.1 pp)
-  and the failed walk-forward refit (worse Brier at all horizons) both say the current table is a
-  gradient. The band is honest about that; the number stays in the evidence layer.
-- Hazard never changes the state, and the state never sizes anything (DEC:RISK-STATE-HAZARD-POLICY-SEPARATION).
+Probability of a ≥5% SPY drawdown onset within 21 sessions, shown as a **band** (below base / near
+base / above base / well above base) with the state's walk-forward rate and n beside it. The
+current table is a gradient (cell calibration error 6.1 pp; the earlier walk-forward refit of the
+probability failed 4 of 6 checks), so a precise number stays in the evidence layer until the new
+walk-forward shows calibration. Hazard never changes the state; the state never sizes anything.
 
-### 2.3 What would change the call (named triggers, both directions)
+### 2.3 What would change the call
 
-Every state publishes its triggers as data, computed from the same row that produced the state:
-
-- **Up** (escalate): context gate becoming met (SPY < 200dma *and* %>200dma breadth ≤ 40th
-  percentile); a second Tier-A scare reaching watch while a validated leg is armed; a hot Tier-B
-  scare with a non-display-only leg firing.
-- **Down** (de-escalate): the dominant scare's sub-score falling below the caution band; the gate
-  lapsing; the existing trajectory phase turning `receding`.
-- Each trigger shows its distance (e.g. "SPY 3.1% above its 200-day average").
-
-No new model is needed: these are the existing `_resolve_state_row` conditions, exposed.
+Each state publishes its triggers, computed from the same row that produced it (the existing
+`_resolve_state_row` conditions, exposed with distances): **up** — gate becoming met; a second
+Tier-A scare reaching watch with a validated leg armed; an eligible Tier-B escalation. **Down** —
+dominant scare below the caution band; gate lapsing; trajectory `receding`.
 
 ### 2.4 Repair and re-entry
 
-The existing recovery engine (`engine/risk_radar_recovery.py`, recovery log 67 rows) and its
-rebound ruler (first significance read 2027-01-15) own this. The plan adds one rule for the
-public state: **a step down from RISK-OFF to GUARDED requires the down-trigger to hold for 5
-sessions**, matching the persistence window already frozen before outcome inspection
-(`RISK_RADAR_CAUTION_PERSISTENCE_RESULTS_2026-09-21.md:34`). This avoids flip-flopping and is
-the knife-catching guard. Its effect on re-entry timing is graded by the forward record, not
-tuned.
+Owned by the existing recovery engine (`engine/risk_radar_recovery.py`) and its rebound ruler. A
+step down from RISK-OFF needs the down-trigger to hold for a persistence window. That window is a
+**parameter of the fitting procedure** (§3.2), not a hand-set constant, and its walk-forward effect
+on re-entry timing (sessions from trough; re-entries followed by a new low) is reported.
 
 ---
 
-## 3. Evidence standard
+## 3. Fitting procedure and evidence standard
 
-### 3.1 Every element graded
+### 3.1 Every number has an origin
 
-Each constant and rule in the frozen definition carries one of four grades in the definition file
-itself (machine-readable, rendered in the evidence layer):
+Each constant in production carries one origin in a machine-readable definition file:
 
-| Grade | Meaning | Current count (census §2) |
-|---|---|---:|
-| `convention` | Textbook choice, never searched | 11 |
-| `tuned_in_window` | Chosen on data that includes 2020 onward | 14 |
-| `tuned_pre2020` | Chosen only on data ending ≤ 2019-12-31 | 0 |
-| `unknown` | No evidence either way. Never rounded up | 19 |
+| Origin | Meaning |
+|---|---|
+| `fitted` | Output of the written procedure on a stated fit window (with the fit's commit and SHA) |
+| `convention` | Textbook choice, deliberately not fitted (e.g. 200-session average), listed as such in the procedure |
+| `structural` | A rule, not a number (e.g. "Tier B can only escalate"), fixed by design and listed |
 
-### 3.2 The Chairman's ruling, applied
+`unknown` is not an allowed origin after Slice 1. Census today: 14 tuned-in-window, 19 unknown, 11
+convention. Slice 1 assigns each of the 44 groups to `fitted`, `convention` or `structural` and
+writes the reason; the band literals 55/68/78/88 become `fitted`.
 
-- **2020 onward is the product's test bed.** For the *current* definition (Radar v2), 2020+ is
-  in-sample. Its 2020+ numbers are reported as *development evidence*, never as validation.
-- **Long history is a secondary stability read.** 1993/2006–2019 numbers are shown as "does the
-  rule behave the same way in older markets", never as the main claim.
-- **The forward record from the freeze date is the test.** The definition is frozen by content
-  hash. Every issued row carries the hash. Grading uses only rows issued under that hash.
+### 3.2 The written procedure (to be preregistered in Slice 1 before any refit runs)
 
-### 3.3 Freeze and versioning
+- **Tuned**: bands (watch/caution/elevated/risk-off), Tier-A leg thresholds, Tier-A and Tier-B
+  weight pairs, context-gate breadth percentile, step-down persistence window, hazard-band table.
+  Everything else is `convention` or `structural` with a written reason.
+- **Objective** (one, declared): maximise H21 loud-state precision for ≥5% SPY drawdown onsets,
+  subject to recall ≥ a stated floor and loud-state share ≤ a stated ceiling; ties broken toward
+  the simpler / convention value. Alternative objectives are reported, never selected post hoc.
+- **Search**: a small declared grid per parameter (coarse steps, e.g. bands in 5-point steps),
+  coordinate-wise with a fixed order, with shrinkage toward the current or convention value
+  (a parameter moves only if the gain clears a stated margin). The grid, order and margin are
+  frozen in the preregistration.
+- **Data**: modern regime from 2020-01-02 (inputs may use earlier history for trailing
+  percentiles — a 504-session window needs it). Expanding fit window.
+- **Leg set**: the current 16 legs, fixed. Adding or removing a leg is not part of the procedure;
+  it is a new version with its own walk-forward.
 
-- `definition_id` = `rr-state-v2.0-<freeze date>`, with a SHA-256 of the canonical definition
-  (bands, weights, thresholds, gate, rules). The envelope already has a `definition_id` field
-  (`grey-deer-v1-2026-08-19` today); the radar series gets its own.
-- **Any change to a graded constant = a new version.** The old version's forward record stops at
-  that date; the new one starts at zero. Both stay published. This makes back-door re-tuning
-  visible and expensive, which is the point.
-- **The self-retuning review loop** (`engine/risk_radar_review.py`, 22 proposals, 0 applied) stays
-  propose-only. Its proposals become candidate versions for a dated, preregistered review; it can
-  never write `calibration.json` for the frozen version.
-- Readiness bar (already frozen, `DEC-RISK-RADAR-PROSPECTIVE-VALIDATION-READINESS-BAR`): ≥252
-  receipt-bearing same-version sessions, ≥300 days, per-horizon event and cluster minimums, paired
-  Brier CI < 0. Passing it makes the version *eligible for a promotion review*, nothing more.
+### 3.3 Walk-forward refit inside the modern regime
 
-### 3.4 A clean candidate for 2020–2023 testing: Radar-P (pre-2020 fit)
+| Fold | Fit outcomes through | Score (out-of-sample) |
+|---|---|---|
+| 1 | 2021-12-31 | 2022 |
+| 2 | 2022-12-30 | 2023 |
+| 3 | 2023-12-29 | 2024 |
+| 4 | 2024-12-31 | 2025 |
+| 5 | 2025-12-31 | 2026 to date |
 
-The rotation desk can only test a state whose fitting used no 2020–2023 outcomes. Radar v2
-cannot qualify. The plan therefore proposes **Radar-P**: the same legs and state machine, with every
-`tuned_in_window` constant re-derived by a preregistered procedure using **outcomes dated ≤
-2019-12-31 only** (inputs and their percentiles may extend later; outcome labels may not).
+- An embargo of 21 sessions between fit end and score start, so H21 labels cannot overlap.
+- Each fold's parameters are frozen and hashed; each scored date's state comes only from the
+  parameters of the fold fitted before it.
+- **Reported per fold and pooled, out-of-sample beside in-sample, never mixed**: loud-state hit
+  rate (precision) at H5/H10/H21; recall of ≥5%, ≥8%, ≥10% drawdowns; median lead from first
+  loud state to onset; false-alarm episodes per year; loud-state share; flip rate; parameter drift
+  between folds; hazard-band calibration.
+- **Baselines**, scored on the same dates and labels: SPY < 200-session average; VIX ≥ 20 and ≥ 25
+  (convention levels); HY OAS 21-session change in its top decile (trailing 504-session percentile);
+  and the current v2 constants frozen as of today (to show what refitting adds over "keep v2").
+- **Labelling**: folds 3–5 (2024 onward) are labelled "Radar's own seen history — walk-forward
+  scoring, not sealed confirmation" (ruling point 6). The whole table is labelled
+  development evidence of the procedure; the confirmation of any production version remains its
+  forward record from its freeze date.
+- **Honest limits stated in advance**: fold 1 fits on two years with few drawdown episodes; five
+  folds give few independent episodes per year; results carry block-bootstrap intervals and an
+  episode count, and a fold with fewer than 3 onset episodes is marked thin. PRO-RUN B/D is asked
+  to attack exactly this (§11).
 
-- Fitting window, procedure, search space and selection metric are preregistered and hash-pinned
-  before any fit runs.
-- Output is a dated series under its own `definition_id` with `fit_outcome_window_end:
-  2019-12-31` in the definition file.
-- It is then *handed* to the desk as a candidate. This programme never computes Radar-P's relation
-  to 2020+ outcomes itself; the desk tests 2020–2023 under its own ledger, and 2024-01-02 onward
-  stays sealed for everyone.
-- **Known leak, declared up front:** the *set of legs* was itself chosen with 2020+ evidence (legs
-  were kept or killed against a 2020+ holdout; e.g. VIX-term ROC, SKEW and VVIX were dropped that
-  way, `engine/risk_radar.py:8-10`). Re-fitting constants does not remove that. Radar-P therefore
-  ships in two variants: **P-legs-v2** (current leg set, constants clean, selection not) and
-  **P-declared** (a leg set declared from economic rationale before any fit, including legs v2
-  dropped, with constants fit ≤ 2019). Only P-declared may be described as clean of 2020+ outcomes;
-  the desk is told which is which.
-- **How the rotation desk treats them (Research Director, 2026-11-12):** P-legs-v2 is a *touched
-  family*: its 2020–2023 result is reported as "replication on a seen period", never discovery
-  evidence, and it is not eligible for the sealed-block read; its confirmation is the forward
-  record. P-declared is a testable candidate only if its leg set is declared before the fit from
-  pre-2020 information only (literature or pre-2020 data), even if smaller. Slice 3 therefore
-  commits the P-declared leg set and its basis in the preregistration, before any fit, and the
-  hand-off carries: path, commit, declared fitting window, leg set and its basis. The desk writes
-  its own ledger rows; this programme never touches its ledger.
-- Expected result, stated in advance: several 2020+-only legs (`bubble_ext`: lift 2.34 in 2020+,
-  1.00 full history) will get small weights or drop. That is the honest cost of a clean test.
+### 3.4 Stress beyond the sample (descriptive only)
 
-### 3.5 World class, in measurable terms
+The final-fold parameters, applied unchanged to 2007–2009 and 2018: a table of states by month,
+lead to the 2008 and Q4-2018 onsets, and time in loud states. It gates nothing.
 
-Bars graded on the forward record of a frozen version (and, for Radar-P, by the desk on
-2020–2023). Numbers marked † are proposals for the CEO's ruling.
+### 3.5 Production fitting schedule and versioning
+
+- Production parameters = the procedure run on all modern data to date, **refit annually** on the
+  first session after year-end close (and on an explicit dated rule change). Each refit is a new
+  `definition_id` + SHA; every forward-log row carries both.
+- The forward record of each version runs from its freeze date to the next refit; all stay
+  published.
+- The self-retuning review loop (`engine/risk_radar_review.py`, 22 proposals, 0 applied) stays
+  propose-only; its proposals feed the next scheduled refit as recorded notes, never
+  `calibration.json` mid-version.
+- The frozen readiness bar (≥252 receipt-bearing same-version sessions, etc.) still governs any
+  *promotion* claim. With annual refits a version gets ~252 sessions, so readiness is assessed per
+  version at its end, and pooled across versions of the same procedure as a second read.
+
+### 3.6 World class, in measurable terms
+
+Graded first on the walk-forward folds (out-of-sample columns), then on each version's forward
+record. † = proposal for ruling.
 
 | Dimension | Metric | Bar |
 |---|---|---|
-| Point-in-time integrity | issued rows with a receipt; rows revised after issue | 100%; 0 |
-| Freshness | sessions published by 06:00 ET next morning | ≥ 98%† |
-| Loud-state selectivity | share of sessions in RISK-OFF WARNING or RISK-OFF | ≤ 20%† (2020+ gated today: 15.4%) |
-| False alarms | loud episodes per year with no ≥5% drawdown onset within 21 sessions | ≤ 2†|
-| Lead | median sessions from first loud state to ≥8% drawdown onset | ≥ 3 (today's gate median latency is 3)† |
-| Recall | share of ≥10% drawdowns preceded by a loud state by onset | ≥ 60%† |
+| Point-in-time integrity | issued rows with receipt; rows revised after issue | 100%; 0 |
+| Provenance | production constants with origin `fitted`/`convention`/`structural` | 100% |
+| Beats baselines | walk-forward H21 loud precision vs best baseline at matched loud share | higher in ≥ 3 of 5 folds and pooled† |
+| Selectivity | loud-state share of sessions | ≤ 20%† |
+| False alarms | loud episodes/year without a ≥5% onset within 21 sessions | ≤ 2† |
+| Lead | median sessions, first loud state → ≥8% onset | ≥ 3† |
+| Recall | ≥10% drawdowns preceded by a loud state by onset | ≥ 60%† |
 | Stability | public-state changes per year | ≤ 12† |
-| Hazard skill | paired Brier vs base, 90% block-CI upper < 0 | the frozen readiness bar |
-| Hazard honesty | band claims match observed rate band | ≥ 80% of graded cells† |
-| Re-entry | median sessions from SPY trough to step-down from RISK-OFF | ≤ 15†, and no step-down that is followed by a new low within 10 sessions more than once a year† |
-| Explanation | every loud state names its dominant scare, its triggers and the record of that state | 100% |
+| Procedure stability | parameter drift between adjacent folds | within one grid step for ≥ 80% of parameters† |
+| Re-entry | median sessions trough → step-down from RISK-OFF | ≤ 15†; ≤ 1 premature step-down/year† |
+| Explanation | loud states naming scare, triggers, record | 100% |
 
 ---
 
-## 4. Consumer contract: the dated risk-state series
+## 4. Consumer contracts
 
-### 4.1 Artifact
+### 4.1 Walk-forward state series (Slice 1 artifact)
 
-`site/riskdata/risk_state_series.json` (and a mirror in the envelope's sources). One row per NYSE
-session, append-only, **published from the existing nightly path that already writes the forward
-log**. It is a projection of the forward log, not a new event store: the forward log stays the
-system of record and the series is regenerated from it deterministically.
+`data/risk_radar/walkforward_state_series.json` (+ site mirror). One row per NYSE session
+2022-01-03 onward: `session`, `fold`, `fold_fit_through`, `definition_sha256` of that fold,
+`engine_state`, `public_state`, `gate_met`, `dominant_scare`, `label`
+(`walkforward_oos` / `walkforward_seen_2024plus`). Computed only from parameters fitted before the
+session. The research desk may use it as a feature and regime label (ruling point 4); the current
+fitted composite may not be used as a feature on 2020–2023.
 
-### 4.2 Row fields
+### 4.2 Live risk-state series (Slice 3)
+
+`site/riskdata/risk_state_series.json`, one row per session, projected deterministically from the
+existing forward log (the forward log stays the system of record — this is not a new event store):
 
 | Field | Meaning |
 |---|---|
-| `session` | NYSE session date the state describes (data through that close) |
-| `issued_at` | UTC time the row was first written (from the forward-log issue receipt) |
+| `session` / `issued_at` | session described (data through that close) / UTC first-write time |
 | `definition_id`, `definition_sha256` | version that produced it |
-| `pit_class` | `prospective` (receipt-bearing) / `historical_replay` (computed later from stored inputs) / `pre_receipt` (logged before 2026-09-23) |
-| `state` | public state (§2.1) |
-| `engine_state`, `engine_state_ungated` | the five-step internal state, before/after gate |
-| `gate_met` | context gate |
-| `dominant_scare`, `hot_scares` | names only |
-| `state_since` | first session of the current public state |
-| `hazard_band` | §2.2 band |
-| `triggers_up`, `triggers_down` | §2.3, with distances |
-| `data_state` | `complete` / `partial` / `degraded` and the missing inputs. Null means unavailable, never calm |
+| `pit_class` | `prospective` (receipt-bearing) / `pre_receipt` (before 2026-09-23) |
+| `public_state`, `engine_state`, `engine_state_ungated`, `gate_met` | the state |
+| `state_since`, `dominant_scare`, `hot_scares` | context |
+| `hazard_band` | §2.2 |
+| `triggers_up`, `triggers_down` | §2.3 with distances |
+| `data_state` | complete / partial / degraded + missing inputs; null never means calm |
 
-### 4.3 Revision rules
+Revision rules: a prospective row is never edited; corrections are new rows with `supersedes`;
+late data shows in the next session.
 
-- A prospective row is **never** edited. A correction is a new row with `supersedes` and a reason.
-- Replay rows are labelled and are never mixed into the prospective grade.
-- Late data: if an input arrives after issue, the row stays; the next session reflects it.
-
-### 4.4 What each consumer may do
+### 4.3 What each consumer may do
 
 | Consumer | May | May not |
 |---|---|---|
-| Rotation research desk | Use `state`/`engine_state` as a dated feature, joined by `session`, filtered by `definition_id` and `pit_class`; test Radar-P on 2020–2023 under its own ledger | Treat Radar v2 2020+ rows as out-of-sample; join any signal to outcomes on 2024-01-02 onward |
-| Prophet | Read `state` as an **eligibility sidecar** (display/flag beside the rank) | Change rank, population, size or order (DEC:PROPHET-RANK-PRESERVED-MARKET-ELIGIBILITY-SIDECAR) |
-| Shared Shell beta | Render the four-second read and depth directly from the series + envelope | Recompute state, re-band, or show a probability as odds |
-| Macro dashboard | Same as Shell | Same |
-| Any LLM explainer | Explain and de-escalate wording | Produce or alter a state, band or probability |
+| Rotation research desk | Use the walk-forward series as a feature/regime label; use the live series from each version's freeze | Use the current fitted composite as a feature on 2020–2023; treat 2024+ walk-forward rows as its sealed confirmation |
+| Prophet | Read `public_state` as an eligibility sidecar | Change rank, population, size or order |
+| Shared Shell beta / Macro dashboard | Render the four-second read and depth from the series + envelope | Recompute or re-band state; show probability as odds |
+| LLM explainers | Explain and de-escalate wording | Produce or alter a state, band or probability |
 
-Nothing in the series grants execution, sizing, gating or exit authority. The envelope's
-`envelope_may_*` flags stay false.
+No series grants execution, sizing, gating or exit authority; `envelope_may_*` stay false.
 
 ---
 
 ## 5. Inputs: what carries information beyond sector and index prices
 
-Current Tier-A legs that are **not** just prices: HY OAS velocity (credit), MOVE (rate vol), real
-yields. Legs built only from ETF price ratios (bubble extension, SMH/SPY, XLU/SPY, XLY/XLP) are the
-ones rotation research already sees directly, so they add least to a rotation desk. They stay in
-the frozen v2 definition (changing them is a new version), but Radar-P and any v3 should prefer
-non-price inputs.
+Non-price legs today: HY OAS velocity (the only era-robust leg), MOVE, real-yield change. Price-
+ratio legs (bubble extension, SMH/SPY, XLU/SPY, XLY/XLP) overlap what a rotation desk already sees.
+The leg set is fixed for this procedure; new inputs enter only as a new version with its own
+walk-forward:
 
-| Input | Beyond prices? | PIT history | Status / rule before it may move a state |
+| Input | Beyond prices? | PIT history | Path |
 |---|---|---|---|
-| HY OAS 21d velocity | yes (credit) | FRED, deep | keep; only era-robust leg |
-| MOVE level | yes (rate vol) | deep | keep |
-| 10y real-yield change | yes | FRED, deep | keep (weak) |
-| VIX term structure | partly | deep | Tier-B (lift 0.44 in 2020+) |
-| Put/call, dealer GEX | yes (positioning) | forward only, gaps unbackfillable | accruing; preregister when ≥252 rows |
-| COR1M implied correlation | yes | collector exists | confirmer only, display-only |
-| Funding/dollar liquidity (e.g. FRA-OIS, cross-currency basis, broad dollar) | yes | partial, licence-dependent | **candidate for v3**; needs PIT source + prereg |
-| Breadth (%>200dma, new highs) | partly | store exists | gate input; NH-contraction null at phase-0 |
-| Country-ETF breadth, JPY carry | partly | yes | Tier-B accruing |
-| Macro surprise | yes | vintage issues | not before a vintage-correct source exists |
+| HY OAS velocity, MOVE, real yields | yes | deep | keep |
+| VIX term structure | partly | deep | Tier-B |
+| Put/call, dealer GEX | yes (positioning) | forward only, gaps | accruing until ≥252 rows |
+| COR1M | yes | collector exists | confirmer, display-only |
+| Funding / dollar liquidity (FRA-OIS, cross-currency basis, broad dollar) | yes | partial, licence-dependent | **first v-next candidate** |
+| Breadth (%>200dma, new highs) | partly | yes | gate input |
+| Country-ETF breadth, JPY carry | partly | yes | Tier-B |
+| Macro surprise | yes | vintage issues | not before a vintage-correct source |
 
-Rule for any new input: point-in-time history, a preregistration naming its window and bar, and
-entry as Tier-B (display/escalator-only) until it passes on a window that is not the tuning window.
+A pre-2020-declared leg set ("P-declared", fitted on pre-2020 outcomes) remains available as an
+optional later candidate for the research desk's discovery block; it is no longer on the critical
+path (the desk's treatment of touched families is recorded in its own charter).
 
 ---
 
@@ -282,100 +288,101 @@ entry as Tier-B (display/escalator-only) until it passes on a window that is not
 
 | PR | Recommendation | Reason |
 |---|---|---|
-| #8721 measured "Pullback underway" in dialogs | **Keep** (owner ships) | Active writer (11-11); adds measured depth, fits the depth layer; slice 1 must rebase over it, not duplicate it |
-| #10795 display-only multi-asset context | **Keep**, then absorb as a depth-layer section | Display-only, within the envelope contract; useful "why" context; merge-blocked by its owner |
-| #7872 episode-aware international authority | **Keep**, separate lane | International authority, not the US state series; CI failing is the owner's |
-| #7897 China probability/hazard revalidation | **Keep** (research HOLD) | Same evidence discipline this plan asks for; feeds the international version later |
-| #10489 rotation freshness/coverage in workspace | **Absorb** into slice 1 if dormant 14 days, else keep | Overlaps the depth layer; conflicting and failing CI |
-| #7040 score velocity + regime-change explanation | **Supersede** by slice 1 + §2.3 triggers | Dormant since 09-14; triggers-with-distance replace score velocity as the "what changed" explanation |
-| #9137, #9198 escape strings in dialogs | **Absorb** (one combined escaping fix, credited) | Small, correct security hygiene; both conflicting and dormant |
-| Also touching Radar files: #9548, #10389, #10740, #7875 | Keep; coordinate file order | Live writers on workspace JS/template; slice 1 lands after or rebases |
+| #8721 "Pullback underway" in dialogs | **Keep** | Active writer (11-11); measured depth fits the depth layer; Slice 2 rebases over it |
+| #10795 display-only multi-asset context | **Keep**, then absorb as a depth section | Display-only, within the envelope contract |
+| #7872 episode-aware international authority | **Keep**, separate lane | International authority, not the US series |
+| #7897 China probability/hazard revalidation | **Keep** (research HOLD) | Same evidence discipline; later model for an international walk-forward |
+| #10489 workspace freshness/coverage | **Absorb** into Slice 2 if dormant 14 days, else keep | Overlaps the depth layer; conflicting, CI failing |
+| #7040 score velocity explanation | **Supersede** by Slice 2 triggers | Dormant since 09-14 |
+| #9137, #9198 dialog string escaping | **Absorb** as one credited fix | Small, correct, dormant, conflicting |
+| #9548, #10389, #10740, #7875 | Keep; coordinate file order | Live writers on workspace JS/templates/review |
 
 ---
 
-## 7. First three slices (ordered by user value; one PR each)
+## 7. First three slices (one PR each)
 
-### Slice 1 — The four-second read (display only)
+### Slice 1 — Written fitting procedure + walk-forward refit + dated walk-forward series
 
-- **Change**: card and workspace lead with the public state word, `since` date, tape
-  confirmation and the nearest trigger each way (§1, §2.1, §2.3). Score and probability move to
-  the second layer; probability rendered as a band plus the state's own record and n. Bilingual
-  glossary entries for the four states. No engine math changes: the mapping and triggers are
-  computed from fields `compute()` already returns (state, state_ungated, context_gate, scare
-  scores, bands).
-- **Proof**: (a) unit tests that the mapping is total over the five engine states and that
-  triggers equal the `_resolve_state_row` conditions on fixture rows; (b) a byte check that
-  `forward_log.jsonl` rows and `_PROB_CAL` are unchanged by the PR; (c) dual-theme desktop + mobile
-  screenshots of US and China cards in the PR; (d) existing Radar template tests pass; (e) a
-  reader test: the first visible line contains no number other than the date.
-- **Value**: fixes what every user sees today, and stops presenting caution as a warning.
+- **Change**: (a) preregistration of the procedure (§3.2) and the fold plan (§3.3), committed and
+  hash-pinned before any refit; (b) a research script that runs the procedure per fold, reusing
+  `engine/risk_radar_backtest.state_series` → `_resolve_state_row` (the parity-fixed owner) so
+  replay and live cannot drift; (c) results report: per-fold and pooled out-of-sample beside
+  in-sample, baselines, intervals, episode counts, provenance table for all 44 groups, 2008/2018
+  descriptive stress table; (d) `data/risk_radar/walkforward_state_series.json`. No change to the
+  live engine, live state or forward log.
+- **Proof**: prereg commit precedes results commit; a test that each fold's fitter refuses outcome
+  labels after its fit-through date (feeds a later label, expects failure); a test that every
+  series row's parameters come from a fold whose `fit_through` + embargo < `session`; replay parity
+  test (fold parameters run through `compute()` and the backtest give identical states on fixture
+  rows); report states which numbers are out-of-sample in every table header; byte check that
+  `engine/risk_radar.py` and `forward_log.jsonl` are unchanged.
+- **Size risk**: if over one reviewable PR, split 1a prereg + harness + tests, 1b results + series.
+- **Value**: the first evidence of how the Radar would really have run through 2022, and an origin
+  for every number.
 
-### Slice 2 — Freeze v2 and publish the dated risk-state series
+### Slice 2 — The four-second read (display only)
 
-- **Change**: canonical definition file with grades (§3.1) and SHA; `definition_id` +
-  `definition_sha256` written into each new forward-log row; deterministic projection to
-  `site/riskdata/risk_state_series.json` (§4) from the existing nightly writer; review loop held
-  propose-only for the frozen version; envelope source entry.
-- **Proof**: (a) the series regenerates byte-identically from the forward log; (b) every row since
-  2026-09-23 has `pit_class: prospective` and a receipt, older rows `pre_receipt`; (c) a test that
-  changing any graded constant changes the SHA and fails a "frozen version" check; (d) contract
-  schema in `contracts/` with a consumer read test that needs no engine import; (e) first nightly
-  run on main shows the new artifact, verified from `origin/main`.
-- **Value**: the rotation desk, Prophet sidecar and Shell get a joinable state; the forward record
-  of a fixed definition starts counting from its freeze date.
+- **Change**: card and workspace lead with public state, `since`, tape confirmation and nearest
+  triggers (§1, §2); score and probability move to the depth layer; track record shows
+  walk-forward and in-sample columns from Slice 1; bilingual glossary entries. No engine math.
+- **Proof**: mapping is total over the five engine states; triggers equal `_resolve_state_row`
+  conditions on fixture rows; `forward_log.jsonl` and `_PROB_CAL` unchanged; dual-theme desktop +
+  mobile screenshots for US and China cards; existing Radar template tests pass; first visible line
+  contains no number other than the date.
+- **Value**: fixes what every user sees today and stops presenting caution as a warning.
 
-### Slice 3 — Radar-P preregistration and fit (pre-2020 outcomes only)
+### Slice 3 — Production refit on schedule + versioned live series
 
-- **Change**: preregistration (the P-declared leg set and its pre-2020 basis, window, outcome definition, search space, selection metric, stop
-  rule) committed and hash-pinned first; then a research script that fits the `tuned_in_window`
-  constants using outcomes dated ≤ 2019-12-31 only, and emits a Radar-P definition file and its
-  replay series labelled `historical_replay`. No change to the live engine or live state.
-- **Proof**: (a) prereg commit precedes the results commit; (b) a guard test that the fitter
-  rejects any outcome label dated after 2019-12-31 (fails if a later date is fed); (c) results
-  report pre-2020 in-sample fit only, with no 2020+ outcome number computed anywhere; (d)
-  path + commit sent to the rotation desk's Research Director as a candidate.
-- **Value**: the first risk state the desk can legitimately test on 2020–2023.
-
-Later (not sized here): hazard-band honesty grading on the forward record; repair/re-entry
-persistence rule live; funding/liquidity input preregistration; Shared Shell move.
+- **Change**: production constants replaced by the procedure's all-modern-data fit, each with its
+  origin in the definition file; `definition_id` + `definition_sha256` written into every new
+  forward-log row; deterministic projection to `site/riskdata/risk_state_series.json` (§4.2);
+  review loop held propose-only; annual refit schedule documented; envelope source entry.
+- **Proof**: zero constants with origin `unknown`; series regenerates byte-identically from the
+  forward log; changing any fitted constant changes the SHA and fails a frozen-version check;
+  contract schema in `contracts/` with a consumer read test that needs no engine import; scorecard
+  tolerates the new fields; first nightly run on main shows the new artifact, verified from
+  `origin/main`; the forward record of the new version starts at zero.
+- **Value**: a production Radar whose every number has an origin, and a joinable live state.
 
 ---
 
 ## 8. What stays out
 
 - **do_not_redo (binding)**: no universal fused risk score in authority paths; no new event store
-  or forward ledger for risk episodes (the series is a projection of the existing forward log);
-  no Prophet rank or population mutation; no posture_decider arming and no LLM probability in any
-  authoritative consumer; no automatic exits; no re-runs of pullback stage-1/1b; no edits to frozen
-  preregistrations (corrections ship as dated addenda).
+  or forward ledger for risk episodes (both series are projections/research artifacts, the forward
+  log stays the record); no Prophet rank or population mutation; no posture_decider arming and no
+  LLM probability in any authoritative consumer; no automatic exits; no re-runs of pullback
+  stage-1/1b; no edits to frozen preregistrations (corrections as dated addenda).
 - No trading permission, sizing or execution from any state. Paper-only.
-- No re-tuning of v2 on any window. Any change is a new version with a fresh forward record.
-- No displayed probability as calibrated odds.
-- No new leg into Tier A without PIT history and a preregistered out-of-window pass.
-- No computation of any signal–outcome relation dated 2024-01-02 onward, by anyone in this
-  programme. No 2020+ outcome evaluation of Radar-P by this programme; that is the desk's test.
+- No production change outside the scheduled, versioned refit.
+- No displayed probability as calibrated odds until walk-forward calibration supports it.
+- No leg added to or removed from the procedure without a new version and its own walk-forward.
+- The current fitted composite is not a feature on 2020–2023 for the research desk; 2024+
+  walk-forward rows are not its sealed confirmation.
 - No QLedger-dependent slice while `data/qledger/claims.jsonl` sits at the GitHub size limit.
-- No edits to the open PRs listed in §6.
-
----
+- No edits to the open PRs in §6.
 
 ## 9. Dependencies and risks
 
-- Slice 1 touches templates also touched by #8721, #9548, #10389: land after them or rebase.
-- Slice 2 adds a field to forward-log rows; the scorecard reader must tolerate it (test).
-- Radar-P may underperform v2 on 2020+ when the desk tests it. That is information, not failure.
-- The readiness bar cannot be met before late 2027 at one row per session; the four-second read
-  must say "record: n sessions since freeze" rather than imply validation.
+- Slice 1 depends on the stored input history (yahoo/fred/cboe/breadth stores) back to ~2018 for
+  504-session percentiles; sparse checkouts must materialise them first.
+- Little history: fold 1 fits on two years; few onset episodes per fold. Results may be too thin
+  to rank the procedure against baselines; that outcome is reported, not tuned away.
+- Slice 2 touches templates also touched by #8721, #9548, #10389: land after them or rebase.
+- Slice 3 adds forward-log fields; the scorecard reader must tolerate them (test).
 
 ## 10. Not verified
 
-Provenance of the shipped band literals 55/68/78/88; the leg-lift study scripts (not in repo);
-why the contagion log stopped on 2026-10-16; whether the public four-state mapping reduces flips
-as much as expected (to be measured on the forward record, not tuned).
+Provenance of the shipped band literals (to be replaced by Slice 1); the leg-lift study scripts
+(lived in `/tmp`, not in repo); why the contagion log stopped on 2026-10-16; whether the stored
+input history reaches far enough back for fold 1 without gaps.
 
-## 11. Pro inputs
+## 11. Pro inputs and adjudication
 
-- PRO-RUN A (independent plan, chatgpt4): pending — issue #11104.
-- PRO-RUN B (adversarial critique of this draft): pending — issue #11104.
-- Adjudication of their points will be recorded here, each as accepted / rejected / deferred with
-  the reason.
+- PRO-RUN A (independent plan, chatgpt4): pending, issue #11104.
+- PRO-RUN B (critique of draft v1): pending, issue #11104 — written before the ruling; points on
+  the old Radar-P framing will be adjudicated against v2.
+- PRO-RUN C (Extra High implementation plan, slices of v1): pending.
+- PRO-RUN D (critique of v2's walk-forward design: is walk-forward refit with this little history
+  informative, and what would make it more so): to be sent.
+- Each point will be recorded here as accepted / rejected / deferred with the reason.
