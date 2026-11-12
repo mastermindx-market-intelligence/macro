@@ -296,8 +296,13 @@ def test_action_board_lane_hint_wins(tmp_path):
     assert any(x["ticker"] == "XLK" for x in board["on_the_run"]), "lane_hint=on_the_run"
     assert any(x["ticker"] == "XLU" for x in board["take_profits"]), "lane_hint=take_profits"
     assert any(x["ticker"] == "XLY" for x in board["avoid"]), "lane_hint=avoid"
-    # no double-listing
-    all_tickers = [x["ticker"] for lane in board.values() for x in lane]
+    # no double-listing across the six urgency lanes. The board also carries
+    # non-lane keys — "more" (dict), "notable" and the scalar "total" added by
+    # P-MP1-SHELL §8 (#10593) — so iterate the lanes by name, not board.values().
+    lanes = ("buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid")
+    assert isinstance(board["total"], int)
+    assert board["total"] == sum(len(board[lane]) for lane in lanes)
+    all_tickers = [x["ticker"] for lane in lanes for x in board[lane]]
     assert len(all_tickers) == len(set(all_tickers))
 
 

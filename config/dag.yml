@@ -4837,6 +4837,7 @@ modules:
       - site/marketdata/subsector_confluence_nasdaq.json
       - site/marketdata/subsector_confluence_russell.json
       - site/marketdata/subsector_confluence_china.board.json
+      - site/marketdata/basket_confluence.json
       - data/baskets/membership.json
       - data/flows/XL*.parquet
     writes:

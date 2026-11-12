@@ -21,6 +21,7 @@ FIXTURE (a) the two Supabase identity seams (``gates`` fixture - the same local
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import copy
 import json
 from pathlib import Path
 import re
@@ -48,17 +49,55 @@ def _real(name: str) -> bytes:
     return (REPO / "site" / name).read_bytes()
 
 
+from functools import lru_cache  # noqa: E402
+
+
+@lru_cache(maxsize=1)
+def _cached_real_carry() -> dict:
+    """The real-input `carried` dict, built ONCE per process (same real quadruple
+    every caller uses; the two PIT blocks each cost one owner store read).
+
+    MUST NOT be called under a point-in-time monkeypatch (a patched PIT store,
+    membership path or history path): the cache is process-wide and is never
+    invalidated, so one patched call would poison every later caller in the same
+    process with the patched store's answers. Under any such monkeypatch, build a
+    fresh carry directly instead of using this cache (N6)."""
+    from lib.sector_central_carry import build_carry
+    from collectors.sponsors import sector_flow_periods
+    central = json.loads(_real("sectordata/sector_central.json"))
+    roster = json.loads((REPO / "data/baskets/membership.json").read_text())
+    return build_carry(REPO / "site", central, roster, sector_flow_periods())
+
+
+def _real_carry_blocks() -> dict:
+    """A deep copy of the cached real carry, so no caller can poison another."""
+    return copy.deepcopy(_cached_real_carry())
+
+
 def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
-                 carried: bool = True, refuse_group: str | None = None):
+                 carried: bool = True, refuse_group: str | None = None,
+                 vanish_group: str | None = None, effective_as_of: str | None = None):
     """Real bytes -> (member bytes, identity); optionally derive an advanced generation.
 
     ``refuse_group`` (FIXTURE derivation of real bytes) moves one real basket out of
     ``baskets[]`` into ``observation_refusals`` exactly as ``engine/baskets.py:217-228``
-    does when a basket falls below the owner's coverage floor.
+    does when a basket falls below the owner's coverage floor. ``vanish_group`` (R3-S1)
+    removes the basket from ``baskets[]`` with NO refusal entry - the producer's
+    ``lvl.dropna().empty`` exit or any other unexplained drop - while the carried
+    owner roster still names it, exactly as a nightly divergence would leave it.
+    ``effective_as_of`` (R4-N4) rewrites every observation's effective session in the
+    derived capture while the carried roster block stays cut at the real 2026-11-06 -
+    a capture whose own clock disagrees with the roster that must vouch for it.
     """
     baskets_raw = _real("basketdata/baskets.json")
-    if drop_member is not None or refuse_group is not None:
+    if (drop_member is not None or refuse_group is not None or vanish_group is not None
+            or effective_as_of is not None):
         baskets = json.loads(baskets_raw)
+        if effective_as_of is not None:
+            for group in baskets["baskets"]:
+                group["observation"]["effective_as_of"] = effective_as_of
+            for refusal in baskets["observation_refusals"]:
+                refusal["observation"]["effective_as_of"] = effective_as_of
         if drop_member is not None:
             group = next(g for g in baskets["baskets"] if g["id"] == drop_member[0])
             group["members"] = [m for m in group["members"] if m["symbol"] != drop_member[1]]
@@ -68,6 +107,8 @@ def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
             baskets["baskets"] = [g for g in baskets["baskets"] if g["id"] != refuse_group]
             baskets["observation_refusals"].append(
                 {"basket_id": refuse_group, "observation": group["observation"]})
+        if vanish_group is not None:
+            baskets["baskets"] = [g for g in baskets["baskets"] if g["id"] != vanish_group]
         baskets_raw = json.dumps(baskets, separators=(",", ":"), ensure_ascii=False).encode()
     committed = json.loads(_real("basketdata/action_board.json"), parse_constant=float)
     baskets_path = tmp / "baskets.json"
@@ -81,10 +122,7 @@ def _real_bundle(*, drop_member: tuple[str, str] | None = None, tmp: Path,
         # The committed sector_central.json predates the carry step; produce the
         # `carried` key with the NEW builder function over the real committed
         # artifacts (REAL inputs, new code) exactly as build_sector_central does.
-        from lib.sector_central_carry import build_carry
-        from collectors.sponsors import sector_flow_periods
-        roster = json.loads((REPO / "data/baskets/membership.json").read_text())
-        central["carried"] = build_carry(REPO / "site", central, roster, sector_flow_periods())
+        central["carried"] = _real_carry_blocks()
     raw = {
         MEMBERS[0]: json.dumps(central, separators=(",", ":"), ensure_ascii=False).encode(),
         MEMBERS[1]: _real("sectordata/sector_cycles.json"),
@@ -226,8 +264,13 @@ def test_industry_is_current_basis_not_point_in_time_and_never_relabelled(real_s
     assert "key" not in app_row["industry"]  # never merged into the sub-industry shape
     assert all(r["industry"] == {"status": "unavailable", "reason": "not_in_current_classification"}
                for r in rows if r["symbol"] not in gics_symbols)
-    # Point-in-time identity is NOT satisfied and stays recorded as unavailable.
-    assert identity["membership_first_known"]["status"] == "unavailable"
+    # ONE taxonomy stamp (Part B 3): the labels are current-basis and the historical
+    # revision is unavailable because no point-in-time classification source exists.
+    assert identity["taxonomy_revision"] == {
+        "status": "unavailable", "reason": "no_point_in_time_classification_source",
+        "labels_basis": "current_not_point_in_time",
+        "labels": ["industry", "sub_industry"]}
+    # Original affiliation stays honestly unproduced (no source on this base).
     assert identity["original_affiliation_set"]["status"] == "unavailable"
 
 
@@ -446,16 +489,35 @@ def _synthetic(*, observation=None, members=("AAA", "BBB"), removed_roster=None)
     return {"baskets": [group], "observation_refusals": []}
 
 
-def _obs(configured, *, observed=None, panel_missing=(), asof_missing=()):
+def _obs(configured, *, observed=None, panel_missing=(), asof_missing=(),
+         effective_as_of=SESSION):
+    """A captured observation. The effective session is stated (R4-N4): the real
+    producer stamps it on every observation, live and refused alike."""
     return {"configured_members": list(configured),
             "observed_members": list(configured if observed is None else observed),
-            "missing_columns": list(panel_missing), "missing_at_asof": list(asof_missing)}
+            "missing_columns": list(panel_missing), "missing_at_asof": list(asof_missing),
+            "effective_as_of": effective_as_of}
+
+
+def _roster_central(baskets: dict[str, list[str]], **carried_extra) -> dict:
+    """FIXTURE central carrying the owner's roster block (R3-S1) - the document the
+    central builder carries from ``data/baskets/membership.json``."""
+    return {"carried": {"roster_baskets": {
+        "source": "data/baskets/membership.json", "version": "t",
+        "as_of": "2026-11-06", "baskets": baskets}, **carried_extra}}
 
 
 def test_f1_completeness_is_computed_from_the_configured_roster(tmp_path):
     """FIXTURE: complete only when served + explicitly accounted == configured current."""
-    build = lambda baskets: population.build_population(
-        baskets=baskets, handoff={}, action_board={}, central={})
+    def build(baskets, roster=None, central=None):
+        if central is None:
+            roster = ({g["id"]: list(g["observation"]["configured_members"])
+                       for g in baskets["baskets"]
+                       if isinstance(g.get("observation"), dict)}
+                      if roster is None else roster)
+            central = _roster_central(roster)
+        return population.build_population(baskets=baskets, handoff={}, action_board={},
+                                           central=central)
     # served == configured: complete
     ok = build(_synthetic(observation=_obs(["AAA", "BBB"])))
     assert (ok.configured_current, ok.served, len(ok.unserved), ok.complete) == (2, 2, 0, True)
@@ -482,6 +544,26 @@ def test_f1_completeness_is_computed_from_the_configured_roster(tmp_path):
     # no captured roster at all: completeness is UNKNOWN (None), never True
     unknown = build(_synthetic(observation=None))
     assert (unknown.configured_current, unknown.complete) == (None, None)
+    # R3-S1: a roster basket absent from BOTH the live list and the refusals - its
+    # members are unaccounted and complete is False, never silently out of the denominator
+    vanished = build(_synthetic(observation=_obs(["AAA", "BBB"])),
+                     roster={"g1": ["AAA", "BBB"], "gone": ["XXX", "YYY"]})
+    assert (vanished.configured_current, vanished.served, vanished.unaccounted,
+            vanished.complete) == (4, 2, 2, False)
+    assert {(u["group_id"], u["symbol"], u["reason"]) for u in vanished.unserved
+            if u["group_id"] == "gone"} == {("gone", s, "unaccounted_by_owner")
+                                            for s in ("XXX", "YYY")}
+    # R3-S1: a capture with NO roster block, or a malformed one, is UNKNOWN - the
+    # roster is what makes `complete` verifiable, so it can never verify a `true`
+    assert build(_synthetic(observation=_obs(["AAA", "BBB"])), central={}).complete is None
+    for bad in ("x", 5, {}, {"as_of": "2026-11-06"}, {"as_of": "2026-11-06", "baskets": {}},
+                {"as_of": "2026-11-06", "baskets": {"g1": ["AAA", "AAA"]}},
+                {"as_of": "2026-11-06", "baskets": {"G 1": ["AAA"]}},
+                {"as_of": "2026-11-06", "baskets": {"gone": [7]}},
+                {"as_of": None, "baskets": {"gone": ["AAA"]}}):
+        broken = build(_synthetic(observation=_obs(["AAA", "BBB"])),
+                       central={"carried": {"roster_baskets": bad}})
+        assert broken.complete is None and broken.configured_current is None, bad
 
 
 def _store_from(tmp_path, **bundle):
@@ -527,6 +609,124 @@ def test_r2_b2_real_route_a_refused_basket_stays_in_the_denominator(tmp_path):
     index = client.get(URL, params={"audience": "entitled", "limit": "1"},
                        cookies=COOKIE).json()["page"]["group_index"]
     assert next(g for g in index if g["group_id"] == "housing")["n_unserved"] == 18
+
+
+def test_r3_n6_group_index_states_refused_by_owner(real_store, tmp_path):
+    """R3-N6: every group_index entry carries refused_by_owner (true or false), so a
+    refusal is visible on the unfiltered first page, not only via a group filter."""
+    client = _client(real_store["reader"])
+    index = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                       cookies=COOKIE).json()["page"]["group_index"]
+    assert len(index) == 49  # real capture: every basket live, none refused
+    assert all(g["refused_by_owner"] is False for g in index)
+    refused_dir = tmp_path / "refused"  # a second publish needs its own isolated store
+    refused_dir.mkdir()
+    refused = _store_from(refused_dir, refuse_group="housing")
+    index = refused.get(URL, params={"audience": "entitled", "limit": "1"},
+                        cookies=COOKIE).json()["page"]["group_index"]
+    housing = next(g for g in index if g["group_id"] == "housing")
+    assert housing["refused_by_owner"] is True and housing["n_members_listed"] == 0
+    assert all(isinstance(g["refused_by_owner"], bool) for g in index)
+
+
+def test_v11_group_index_serves_name_zh_and_changes_nothing_else(real_store, tmp_path,
+                                                                 monkeypatch):
+    """V1.1 wire §5 (REAL): every group_index entry carries ``name_zh`` - tonight a
+    non-null string within 160 on all 49 real groups - and nothing else about the
+    capture moves: the cursor grammar, ``BASIS_VERSION`` and the consumer content
+    hash (equal to a fresh ``build_population`` over the same real docs) are exact."""
+    client = _client(real_store["reader"])
+    first = client.get(URL, params={"audience": "entitled", "limit": "10"},
+                       cookies=COOKIE).json()["page"]
+    index = first["group_index"]
+    assert len(index) == 49
+    assert all("name_zh" in g for g in index)  # the key is always present
+    assert all(isinstance(g["name_zh"], str) and 0 < len(g["name_zh"]) <= 160
+               for g in index)
+    memory = next(g for g in index if g["group_id"] == "memory_storage")
+    assert memory["name_zh"] == "内存、HBM 与存储"  # the real captured Chinese name
+    # the cursor grammar is unchanged: page 1's cursor still validates page 2
+    # (the index itself rides only the unfiltered first page - page 2 has no key)
+    second = client.get(URL, params={"audience": "entitled", "limit": "10",
+                                     "cursor": first["next_cursor"]},
+                        cookies=COOKIE).json()["page"]
+    assert "group_index" not in second and second["rows"]
+    # the capture itself is untouched by the serve-time projection
+    capture = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                         cookies=COOKIE).json()["page"]["capture"]
+    assert capture["owner_ref"]["basis_version"] == population.BASIS_VERSION \
+        == "sector_population.basis/v1:baskets.members"
+    central = json.loads(_real("sectordata/sector_central.json"))
+    central["carried"] = _real_carry_blocks()
+    rebuilt = population.build_population(
+        baskets=json.loads(_real("basketdata/baskets.json")),
+        handoff=json.loads(_real("basketdata/si_handoff.json")),
+        action_board=json.loads((real_store["tmp"] / "action_board.json").read_bytes()),
+        central=central)
+    assert capture["owner_ref"]["consumer_content_sha256"] == rebuilt.content_sha256
+
+
+def test_v11_group_index_name_zh_serves_null_for_hostile_shapes(tmp_path, monkeypatch):
+    """V1.1 wire §5 (FIXTURE over real bytes): a 161-char, empty, non-string or absent
+    ``name_zh`` serves null - the key stays present, the group still serves, and the
+    serve-side bound is exactly 1..160 characters (unit-pinned below)."""
+    from app.sector_generation import _group_index_name_zh
+    assert _group_index_name_zh("内存、HBM 与存储") == "内存、HBM 与存储"
+    assert _group_index_name_zh("x" * 160) == "x" * 160
+    for hostile in ("x" * 161, "", None, 17, ["x"]):
+        assert _group_index_name_zh(hostile) is None, hostile
+
+    original = _real
+
+    def patched(name):
+        raw = original(name)
+        if name != "basketdata/baskets.json":
+            return raw
+        document = json.loads(raw)
+        by_id = {b["id"]: b for b in document["baskets"]}
+        by_id["big_pharma"]["name_zh"] = "长" * 161   # over the bound
+        by_id["us_sector_health"]["name_zh"] = ""     # empty
+        by_id["defensives"]["name_zh"] = 17           # not a string
+        by_id["energy_complex"].pop("name_zh", None)  # absent
+        return json.dumps(document, separators=(",", ":"),
+                          ensure_ascii=False).encode()
+
+    monkeypatch.setattr(f"{__name__}._real", patched)
+    mutated_dir = tmp_path / "namezh"
+    mutated_dir.mkdir()
+    _, published, root = _publish(mutated_dir, _real_bundle(tmp=mutated_dir),
+                                  generation_id="namezh", now=PUBLISHED)
+    assert published.status == "published", published.detail
+    mutated = _client(SectorGenerationReader(generations_root=root,
+                                             clock=lambda: PUBLISHED))
+    index = mutated.get(URL, params={"audience": "entitled", "limit": "1"},
+                        cookies=COOKIE).json()["page"]["group_index"]
+    zh = {g["group_id"]: g["name_zh"] for g in index}
+    assert len(index) == 49 and all("name_zh" in g for g in index)
+    assert zh["big_pharma"] is None and zh["us_sector_health"] is None
+    assert zh["defensives"] is None and zh["energy_complex"] is None
+    assert zh["memory_storage"] == "内存、HBM 与存储"  # untouched groups keep theirs
+    # the group still serves rows: the null costs nothing but the name
+    # (the index itself rides only the unfiltered first page)
+    page = mutated.get(URL, params={"audience": "entitled", "limit": "5",
+                                    "group": "big_pharma"},
+                       cookies=COOKIE).json()["page"]
+    assert page["rows"] and "group_index" not in page
+
+
+def test_r3_s1_real_route_a_basket_absent_from_both_lists_is_not_complete(tmp_path):
+    """R3-S1: a real basket (housing, 18 configured) removed from the live list with
+    NO refusal entry - the producer's ``lvl.dropna().empty`` exit or any other
+    unexplained drop. The owner's carried roster still names it, so its members stay
+    in the denominator as unaccounted and the route must NEVER answer complete."""
+    client = _store_from(tmp_path, vanish_group="housing")
+    pop = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                     cookies=COOKIE).json()["page"]["capture"]["population"]
+    assert (pop["configured_current"], pop["served"], pop["accounted_unserved"]) == (1020, 997, 5)
+    vanished = [u for u in pop["unserved_members"] if u["group_id"] == "housing"]
+    assert len(vanished) == 18
+    assert {u["reason"] for u in vanished} == {"unaccounted_by_owner"}
+    assert (pop["unaccounted"], pop["complete"]) == (18, False)
 
 
 def test_sp18_same_context_refresh_emits_no_duplicate_generation(real_store):
@@ -588,7 +788,9 @@ def test_r2_b2_owner_refused_baskets_stay_in_the_denominator():
         "min_coverage": 0.6, "effective_as_of": "2026-11-06", "aggregate_eligible": False}}
     baskets = _synthetic(observation=_obs(["AAA", "BBB"]))
     baskets["observation_refusals"] = [refused]
-    pop = population.build_population(baskets=baskets, handoff={}, action_board={}, central={})
+    pop = population.build_population(baskets=baskets, handoff={}, action_board={},
+                                      central=_roster_central(
+                                          {"g1": ["AAA", "BBB"], "g2": ["XXX", "YYY", "ZZZ"]}))
     assert (pop.configured_current, pop.served, pop.accounted_unserved, pop.unaccounted) == (5, 2, 3, 0)
     assert {(u["group_id"], u["symbol"], u["reason"]) for u in pop.unserved} == {
         ("g2", s, "group_refused_by_owner_observation") for s in ("XXX", "YYY", "ZZZ")}
@@ -613,12 +815,31 @@ def test_r2_b2_owner_refused_baskets_stay_in_the_denominator():
                                            central={}).complete is None
 
 
+def test_r3_n1_owner_observation_refusal_strings_are_bounded():
+    """FIXTURE: R3-N1 - refusal strings take the same ``_text`` bound the live groups
+    use; a 200k-char status and a boolean coverage are dropped, numbers pass."""
+    refused = {"basket_id": "g2", "observation": {
+        "configured_members": ["XXX"], "status": "s" * 200_000, "coverage": True,
+        "observed_n": 1.0, "configured_n": 1, "min_members": 3, "min_coverage": 0.6,
+        "effective_as_of": "2026-11-06"}}
+    baskets = _synthetic(observation=_obs(["AAA", "BBB"]))
+    baskets["observation_refusals"] = [refused]
+    pop = population.build_population(
+        baskets=baskets, handoff={}, action_board={},
+        central=_roster_central({"g1": ["AAA", "BBB"], "g2": ["XXX"]}))
+    refusal = next(g for g in pop.groups if g["group_id"] == "g2")["owner_observation_refusal"]
+    assert refusal == {"observed_n": 1.0, "configured_n": 1, "min_members": 3,
+                       "min_coverage": 0.6, "effective_as_of": "2026-11-06"}
+
+
 def test_removed_member_that_is_also_configured_is_a_contradiction():
     """FIXTURE: owner roster says removed while the capture still configures it."""
     baskets = _synthetic(observation=_obs(["AAA", "BBB"]))
-    pop = population.build_population(baskets=baskets, handoff={}, action_board={}, central={
-        "carried": {"removed_members": {"source": "r", "removed": [
-            {"group_id": "g1", "symbol": "AAA", "removed_on": "2025-01-01"}]}}})
+    pop = population.build_population(
+        baskets=baskets, handoff={}, action_board={},
+        central=_roster_central({"g1": ["AAA", "BBB"]}, removed_members={
+            "source": "r", "as_of": "2026-11-06", "removed": [
+                {"group_id": "g1", "symbol": "AAA", "removed_on": "2025-01-01"}]}))
     assert pop.unaccounted == 1 and pop.complete is False
 
 
@@ -741,3 +962,407 @@ def test_producer_emits_finite_json_without_post_hoc_repair(tmp_path):
         elif path.split("/")[-1] != "generated_utc":
             assert a == b, path
     walk(original["action_board"], decoded["action_board"])
+
+
+def test_r4_n3_an_undated_carried_block_reads_unavailable_never_available():
+    """R4-N3 (read side): every carried DATED block that arrives without a string
+    ``as_of`` is served as unavailable/``carried_block_undated`` - never available
+    with an unstated or null clock, and never silently dropped either."""
+    carried = {
+        "member_industry": {"symbols": {"AAA": "Media"}, "point_in_time": False},
+        "member_sub_industry": {"symbols": {"AAA": "software-application"},
+                                "subsectors": {"software-application": "Software - Application"},
+                                "point_in_time": False},
+        "removed_members": {"source": "r", "removed": [
+            {"group_id": "g1", "symbol": "AAA", "removed_on": "2025-01-01"}]},
+        "membership_first_known": {"basis": "lower_bound_from_stored_snapshots",
+                                   "first_known": {"g1": {"AAA": "2026-08-13"}}},
+        "membership_snapshots": {"suite": "baskets", "groups": {"g1": {
+            "status": "available", "snapshot_date": "2026-10-14", "members_sha": None,
+            "member_count": 1, "equals_current_roster": True}}}}
+    pop = population.build_population(
+        baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+        central={"carried": carried})
+    undated = {"status": "unavailable", "reason": "carried_block_undated"}
+    assert pop.industry_classification == dict(undated)
+    assert pop.sub_industry_classification == dict(undated)
+    assert pop.removed == dict(undated)
+    assert pop.first_known == dict(undated)
+    assert pop.membership_snapshot == dict(undated)
+    # rows degrade to the honest not_produced class, never to an unlabelled value
+    assert {r["industry"]["reason"] for r in pop.rows} == {"not_produced"}
+    assert {r["sub_industry"]["reason"] for r in pop.rows} == {"not_produced"}
+    assert pop.removed.get("members") is None  # an undated removal list is not served
+    # the same blocks WITH their as_of string stay available (dated is the rule, not ban)
+    for block in carried.values():
+        block["as_of"] = "2026-11-06"
+    dated = population.build_population(
+        baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+        central={"carried": carried})
+    assert dated.industry_classification["status"] == "available"
+    assert dated.removed["status"] == "available" and dated.removed["n"] == 1
+    assert dated.first_known["status"] == "available"
+    assert dated.membership_snapshot["status"] == "available"
+
+
+def test_r4_n4_the_carried_roster_must_agree_with_the_capture_clock(real_store, tmp_path):
+    """R4-N4: completeness is only verifiable when the carried roster's ``as_of``
+    equals the capture's single ``observation.effective_as_of``; any disagreement
+    nulls ``configured_current``/``complete`` and is disclosed with closed reasons."""
+    client = _client(real_store["reader"])
+    capture = client.get(URL, params={"audience": "entitled", "limit": "1"},
+                         cookies=COOKIE).json()["page"]["capture"]
+    pop = capture["population"]
+    assert pop["roster_clock"] == {"status": "agree", "roster_as_of": "2026-11-06",
+                                   "capture_effective_as_of": "2026-11-06"}
+    assert (pop["configured_current"], pop["complete"]) == (1020, True)
+    # REAL bytes, derived capture: every observation restated one session earlier while
+    # the carried roster block stays cut at 2026-11-06 - the roster can no longer vouch.
+    # (its own isolated store: the fixture's store already owns tmp_path's selection)
+    skewed_dir = tmp_path / "skewed"
+    skewed_dir.mkdir()
+    skewed = _store_from(skewed_dir, effective_as_of="2026-11-05")
+    pop = skewed.get(URL, params={"audience": "entitled", "limit": "1"},
+                     cookies=COOKIE).json()["page"]["capture"]["population"]
+    assert pop["roster_clock"] == {"status": "mismatch", "reason": "roster_as_of_mismatch",
+                                   "roster_as_of": "2026-11-06",
+                                   "capture_effective_as_of": "2026-11-05"}
+    assert pop["configured_current"] is None and pop["complete"] is None
+    # S1: a roster that cannot vouch for the capture contributes NOTHING - no
+    # ``unaccounted_by_owner`` entries from it, and ``unaccounted`` itself is served
+    # as null, never a guessed 0
+    assert pop["unaccounted"] is None
+    assert all(u["reason"] != "unaccounted_by_owner" for u in pop["unserved_members"])
+    # FIXTURE: the closed reasons around the capture's own clock
+    def build(doc, roster):
+        return population.build_population(baskets=doc, handoff={}, action_board={},
+                                           central=_roster_central(roster))
+    two_sessions = {"baskets": [
+        {"id": "g1", "name": "G", "n_members": 1,
+         "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+         "observation": _obs(["AAA"], effective_as_of="2026-11-06")},
+        {"id": "g2", "name": "H", "n_members": 1,
+         "members": [{"symbol": "XXX", "name": "X", "added": "2024-01-01"}],
+         "observation": _obs(["XXX"], effective_as_of="2026-11-05")}],
+        "observation_refusals": []}
+    not_single = build(two_sessions, {"g1": ["AAA"]})
+    assert not_single.roster_clock == {
+        "status": "mismatch", "reason": "capture_effective_as_of_not_single",
+        "roster_as_of": "2026-11-06", "capture_effective_as_of": ["2026-11-05", "2026-11-06"]}
+    assert not_single.complete is None and not_single.configured_current is None
+    # S1, the reviewer's realistic trigger: the owner's REFUSALS stamped at a different
+    # session than the live groups - two stamps, so the roster cannot vouch. The
+    # roster's own unexplained basket (gone) must contribute NOTHING and unaccounted
+    # reads null, while the refusal's owner-explained evidence is still served.
+    refused_skew = {"baskets": [
+        {"id": "g1", "name": "G", "n_members": 1,
+         "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+         "observation": _obs(["AAA"], effective_as_of="2026-11-06")}],
+        "observation_refusals": [
+            {"basket_id": "g2", "observation": _obs(["YYY"], effective_as_of="2026-11-05")}]}
+    skewed = build(refused_skew, {"g1": ["AAA"], "g2": ["YYY"], "gone": ["XXX"]})
+    assert skewed.roster_clock["reason"] == "capture_effective_as_of_not_single"
+    assert skewed.unaccounted is None and skewed.complete is None
+    assert not [u for u in skewed.unserved
+                if u["reason"] == population.REASON_UNACCOUNTED]
+    assert [(u["group_id"], u["symbol"]) for u in skewed.unserved
+            if u["group_id"] == "g2"] == [("g2", "YYY")]
+    # control: the SAME capture with the refusal stamped at the SAME session - one
+    # agreeing clock - DOES account both the refusal and ``gone`` (the clock gate,
+    # not the fixture, is what suppresses it above)
+    agreeing_doc = {"baskets": [
+        {"id": "g1", "name": "G", "n_members": 1,
+         "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+         "observation": _obs(["AAA"], effective_as_of="2026-11-06")}],
+        "observation_refusals": [
+            {"basket_id": "g2", "observation": _obs(["YYY"], effective_as_of="2026-11-06")}]}
+    agreeing = build(agreeing_doc, {"g1": ["AAA"], "g2": ["YYY"], "gone": ["XXX"]})
+    assert agreeing.roster_clock["status"] == "agree"
+    assert agreeing.unaccounted == 1 and agreeing.complete is False
+    assert [(u["group_id"], u["symbol"], u["reason"]) for u in agreeing.unserved
+            if u["group_id"] == "gone"] == [("gone", "XXX", population.REASON_UNACCOUNTED)]
+    # the clock comparison is EXACT STRING EQUALITY: a form-only difference (the same
+    # session with an ISO time suffix) still reads mismatch, never a normalized agree
+    form_only = population.build_population(
+        baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+        central={"carried": {"roster_baskets": {
+            "as_of": "2026-11-06T00:00:00", "baskets": {"g1": ["AAA", "BBB"]}}}})
+    assert form_only.roster_clock == {"status": "mismatch", "reason": "roster_as_of_mismatch",
+                                      "roster_as_of": "2026-11-06T00:00:00",
+                                      "capture_effective_as_of": "2026-11-06"}
+    assert form_only.unaccounted is None and form_only.complete is None
+    # N1: a null effective_as_of is the producer's legitimate "no clock" value
+    # (population_observation stamps _date_text(when), which is None when the
+    # producer has no clock) - unavailable, NOT malformed (see the dedicated N1 test)
+    unstated = _synthetic(observation=_obs(["AAA", "BBB"], effective_as_of=None))
+    unclocked = build(unstated, {"g1": ["AAA", "BBB"]})
+    assert unclocked.roster_clock == {
+        "status": "unavailable", "reason": "capture_effective_as_of_unavailable",
+        "roster_as_of": "2026-11-06"}
+    assert unclocked.complete is None and unclocked.configured_current is None
+    # no observation mapping AT ALL states no clock the same way: unavailable
+    no_observation = build(_synthetic(observation=None), {"g1": ["AAA", "BBB"]})
+    assert no_observation.roster_clock == {
+        "status": "unavailable", "reason": "capture_effective_as_of_unavailable",
+        "roster_as_of": "2026-11-06"}
+    # no roster block at all / a malformed one: the clock is unavailable for that reason
+    absent = population.build_population(
+        baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+        central={})
+    assert absent.roster_clock == {"status": "unavailable", "reason": "roster_block_absent"}
+    malformed = population.build_population(
+        baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+        central={"carried": {"roster_baskets": {"as_of": "2026-11-06", "baskets": {"gone": [7]}}}})
+    assert malformed.roster_clock == {"status": "unavailable", "reason": "roster_block_malformed"}
+    assert absent.complete is None and malformed.complete is None
+
+
+def test_s2_a_malformed_capture_effective_as_of_makes_the_clock_indeterminate():
+    """S2: an observation mapping present but whose ``effective_as_of`` is a value of
+    the wrong type or shape - a list, a number, an empty string, a nested object -
+    makes the capture clock INDETERMINATE even beside one good stamp: the roster
+    cannot vouch, ``configured_current``/``complete`` read null (never true in any
+    shape), the roster contributes nothing, and the disagreement is disclosed with
+    the closed ``capture_effective_as_of_malformed`` reason. A null or absent stamp
+    is NOT one of these shapes (N1: it is the producer's "no clock" value and reads
+    ``capture_effective_as_of_unavailable`` instead)."""
+    good_stamp = "2026-11-06"
+    roster = {"g1": ["AAA"], "gone": ["XXX"]}
+    for bad in ([], 20261106, "", {"session": "2026-11-06"}):
+        doc = {"baskets": [
+            {"id": "g1", "name": "G", "n_members": 1,
+             "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+             "observation": {**_obs(["AAA"]), "effective_as_of": good_stamp}},
+            {"id": "g2", "name": "H", "n_members": 1,
+             "members": [{"symbol": "BBB", "name": "B", "added": "2024-01-01"}],
+             "observation": {**_obs(["BBB"]), "effective_as_of": bad}}],
+            "observation_refusals": []}
+        pop = population.build_population(
+            baskets=doc, handoff={}, action_board={}, central=_roster_central(roster))
+        assert pop.roster_clock == {"status": "unavailable",
+                                    "reason": "capture_effective_as_of_malformed",
+                                    "roster_as_of": "2026-11-06"}, bad
+        assert pop.configured_current is None and pop.complete is None, bad
+        assert pop.unaccounted is None, bad
+        assert not [u for u in pop.unserved
+                    if u["reason"] == population.REASON_UNACCOUNTED], bad
+
+
+def test_n1_a_null_or_absent_effective_as_of_is_the_producers_no_clock_value():
+    """N1: an ``effective_as_of`` that is null - or whose key is absent - is the
+    producer's legitimate "no clock" value (``population_observation`` stamps
+    ``_date_text(when)``, which is None when the producer has no clock to state), so
+    the capture clock reads unavailable/``capture_effective_as_of_unavailable`` - the
+    reason it carried before S2 - never ``capture_effective_as_of_malformed``, which
+    stays for a PRESENT value of the wrong type or shape. Both outcomes are
+    fail-closed alike: the roster vouches for nothing, ``configured_current``/
+    ``complete``/``unaccounted`` read null, never true, never a guessed 0."""
+    roster = {"g1": ["AAA"], "gone": ["XXX"]}
+    for how in ("null", "absent key", "null beside a good stamp"):
+        obs = _obs(["AAA"])
+        doc = {"baskets": [
+            {"id": "g1", "name": "G", "n_members": 1,
+             "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+             "observation": obs}],
+            "observation_refusals": []}
+        if how == "null":
+            obs["effective_as_of"] = None
+        elif how == "absent key":
+            obs.pop("effective_as_of")
+        else:  # one group states a session; the other states no clock
+            doc["baskets"].append(
+                {"id": "g2", "name": "H", "n_members": 1,
+                 "members": [{"symbol": "BBB", "name": "B", "added": "2024-01-01"}],
+                 "observation": _obs(["BBB"], effective_as_of="2026-11-06")})
+            doc["baskets"][0]["observation"]["effective_as_of"] = None
+        pop = population.build_population(
+            baskets=doc, handoff={}, action_board={}, central=_roster_central(roster))
+        assert pop.roster_clock == {"status": "unavailable",
+                                    "reason": "capture_effective_as_of_unavailable",
+                                    "roster_as_of": "2026-11-06"}, how
+        assert pop.configured_current is None and pop.complete is None, how
+        assert pop.unaccounted is None, how
+        assert not [u for u in pop.unserved
+                    if u["reason"] == population.REASON_UNACCOUNTED], how
+    # control: a PRESENT wrong-typed value is still malformed (S2), fail-closed alike
+    malformed = {"baskets": [
+        {"id": "g1", "name": "G", "n_members": 1,
+         "members": [{"symbol": "AAA", "name": "A", "added": "2024-01-01"}],
+         "observation": {**_obs(["AAA"]), "effective_as_of": ["2026-11-06"]}}],
+        "observation_refusals": []}
+    pop = population.build_population(
+        baskets=malformed, handoff={}, action_board={}, central=_roster_central(roster))
+    assert pop.roster_clock["reason"] == "capture_effective_as_of_malformed"
+    assert pop.complete is None and pop.unaccounted is None
+
+
+def test_n6_a_pattern_matching_non_calendar_day_reads_like_a_pattern_mismatch():
+    """N6: a string that matches the day PATTERN but is not a real calendar date
+    (``2026-02-30``, ``2026-13-01``) is treated exactly as a pattern mismatch is
+    treated today at every site that day-checks a carried fact: the SAME closed
+    reason, no new reason code. A ``first_known`` pair value or a group's
+    ``snapshot_date`` in that shape degrades the WHOLE fact to
+    unavailable/``not_produced``; ``store_first``/``store_last`` read null."""
+    def first_known(doc):
+        return population.build_population(
+            baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+            central={"carried": {"membership_first_known": doc}}).first_known
+
+    def snapshots(doc):
+        return population.build_population(
+            baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+            central={"carried": {"membership_snapshots": doc}}).membership_snapshot
+
+    not_produced = {"status": "unavailable", "reason": "not_produced"}
+    good_fk = {"as_of": "2026-11-06", "basis": "lower_bound_from_stored_snapshots",
+               "first_known": {"g1": {"AAA": "2026-08-13", "BBB": None}}}
+    assert first_known(good_fk)["status"] == "available"  # control: real dates pass
+    for bogus in ("2026-02-30", "2026-13-01"):
+        value = {**good_fk, "first_known": {"g1": {"AAA": bogus, "BBB": None}}}
+        assert first_known(value) == dict(not_produced), bogus  # same as a mismatch
+    assert first_known({**good_fk, "first_known": {"g1": {"AAA": "not-a-date",
+                                                          "BBB": None}}}) == dict(not_produced)
+    span = first_known({**good_fk, "store_first": "2026-02-30",
+                        "store_last": "2026-13-01"})
+    assert span["store_first"] is None and span["store_last"] is None
+    good_snap = {"as_of": "2026-11-06", "suite": "baskets",
+                 "groups": {"g1": {"status": "available", "snapshot_date": "2026-10-14",
+                                   "members_sha": None, "member_count": 1,
+                                   "equals_current_roster": True}}}
+    assert snapshots(good_snap)["status"] == "available"  # control
+    for bogus in ("2026-02-30", "2026-13-01"):
+        bad = {**good_snap, "groups": {"g1": {**good_snap["groups"]["g1"],
+                                              "snapshot_date": bogus}}}
+        assert snapshots(bad) == dict(not_produced), bogus  # same as a mismatch
+    assert snapshots({**good_snap, "groups": {"g1": {**good_snap["groups"]["g1"],
+                                                     "snapshot_date": "not-a-date"}}}
+                     ) == dict(not_produced)
+
+
+def test_s3_the_carried_snapshot_fact_enforces_suite_and_members_sha():
+    """S3: the carried ``membership_snapshots`` fact is only readable when it states
+    the owner's own suite (the literal ``baskets``) and every available group's
+    ``members_sha`` is null or a lowercase 64-hex digest; failing either degrades the
+    WHOLE fact with the closed ``carried_fact_malformed`` reason, never a partially
+    trusted group set. The owner's own per-group unavailable reasons - including
+    ``pit_answer_unreadable`` - pass through verbatim."""
+    dated = {"as_of": "2026-11-06", "suite": "baskets", "groups": {
+        "g1": {"status": "available", "snapshot_date": "2026-10-14",
+               "members_sha": "e21bee3f132251844940e3c114aaca993bca628883b8877b1248a34c8e4245aa",
+               "member_count": 8, "equals_current_roster": True},
+        "g2": {"status": "unavailable", "reason": "pit_answer_unreadable"}}}
+
+    def fact(doc):
+        return population.build_population(
+            baskets=_synthetic(observation=_obs(["AAA", "BBB"])), handoff={}, action_board={},
+            central={"carried": {"membership_snapshots": doc}}).membership_snapshot
+
+    good = fact(dated)
+    assert good["status"] == "available" and good["suite"] == "baskets"
+    assert good["groups"]["g2"] == {"status": "unavailable", "reason": "pit_answer_unreadable"}
+    malformed = {"status": "unavailable", "reason": "carried_fact_malformed"}
+    for suite in ("sector", "BASKETS", None, ""):
+        assert fact({**dated, "suite": suite}) == dict(malformed), suite
+    for sha in ("not-a-sha", "E21BEE3F132251844940E3C114AACA993BCA628883B8877B1248A34C8E4245AA",
+                "e21bee3f132251844940e3c114aaca993bca628883b8877b1248a34c8e4245", 123):
+        bad = {**dated, "groups": {**dated["groups"], "g1": {
+            **dated["groups"]["g1"], "members_sha": sha}}}
+        assert fact(bad) == dict(malformed), sha
+    null_sha = {**dated, "groups": {**dated["groups"], "g1": {
+        **dated["groups"]["g1"], "members_sha": None}}}
+    assert fact(null_sha)["status"] == "available"  # a null sha stays legal
+
+
+def test_r4_n6_non_finite_refusal_fields_are_dropped_and_the_page_stays_finite():
+    """R4-N6: a NaN/inf in an owner refusal field is dropped by ``_refusal_field``;
+    the population still encodes to a strictly finite, normal response.
+
+    Seam note: this is the DECODED-document seam, not published bytes - the strict
+    member decoder (``parse_constant``) rejects any byte stream carrying NaN or
+    Infinity before the population builder runs, so a non-finite float can only
+    reach ``_refusal_field`` via a decoded mapping (the same route the committed
+    action_board's legacy NaN takes through ``parse_constant=float``). Injecting
+    them there proves the real guarantee: the field is dropped, never repaired,
+    and the response passes ``allow_nan=False`` end to end."""
+    refusal = {"basket_id": "g2", "observation": {
+        "configured_members": ["XXX"], "status": float("nan"), "coverage": float("inf"),
+        "configured_n": 1, "min_members": 3, "effective_as_of": "2026-11-06"}}
+    baskets = _synthetic(observation=_obs(["AAA", "BBB"]))
+    baskets["observation_refusals"] = [refusal]
+    pop = population.build_population(
+        baskets=baskets, handoff={}, action_board={},
+        central=_roster_central({"g1": ["AAA", "BBB"], "g2": ["XXX"]}))
+    served = next(g for g in pop.groups if g["group_id"] == "g2")
+    assert served["owner_observation_refusal"] == {"configured_n": 1, "min_members": 3,
+                                                  "effective_as_of": "2026-11-06"}
+    assert pop.complete is True  # the refusal still accounts its member normally
+    capture = population.compatibility_tuple(
+        generation_id="g", content_id="c", published_at=PUBLISHED.isoformat(),
+        source_session=SESSION, qualification="accepted",
+        read_captured_at=PUBLISHED.isoformat(), member_sha256={}, population=pop,
+        ref="ref", currentness="current")
+    encoded = wire.encode_sector_population(
+        audience="entitled", source_session=SESSION, published_at=PUBLISHED.isoformat(),
+        qualification="accepted", page={"capture": capture, "rows": [dict(r) for r in pop.rows]})
+    assert b"NaN" not in encoded and b"Infinity" not in encoded  # finite, normal response
+
+
+def test_part_b_pit_membership_facts_travel_in_the_capture_not_on_rows(real_store):
+    """Part B, REAL route: the three carried point-in-time facts surface in the
+    entitled capture with the committed store's own values, and never on rows."""
+    client = _client(real_store["reader"])
+    pages = _all_pages(client)
+    identity, pop = pages[0][1]["capture"]["identity"], pages[0][1]["capture"]["population"]
+    fk = identity["membership_first_known"]
+    assert (fk["status"], fk["basis"], fk["as_of"]) == (
+        "available", "lower_bound_from_stored_snapshots", SESSION)
+    assert fk["source"] == "engine/basket_membership_pit.py:data/baskets/membership_history.parquet"
+    assert fk["basis_note"] and (fk["store_first"], fk["store_last"]) == ("2026-08-13", "2026-10-14")
+    assert fk["absent_pair_reason"] == "no_stored_snapshot"
+    pairs = {(g, s): d for g, bucket in fk["groups"].items() for s, d in bucket.items()}
+    assert len(pairs) == 1020 and all(d is not None for d in pairs.values())
+    assert set(pairs.values()) == {"2026-08-13", "2026-08-18", "2026-09-04", "2026-10-14"}
+    assert pairs[("silver_miners", "PAAS")] == "2026-08-13"  # a real early-store member
+    snap = identity["membership_snapshot"]
+    assert (snap["status"], snap["suite"], snap["as_of"]) == ("available", "baskets", SESSION)
+    assert len(snap["groups"]) == 49
+    assert all(e["status"] == "available" and e["snapshot_date"] == "2026-10-14"
+               and e["equals_current_roster"] is True
+               for e in snap["groups"].values())
+    silver = snap["groups"]["silver_miners"]
+    assert (silver["member_count"], silver["members_sha"]) == (
+        8, "e21bee3f132251844940e3c114aaca993bca628883b8877b1248a34c8e4245aa")
+    assert pop["roster_clock"]["status"] == "agree"  # the third fact (R4-N4)
+    # the facts live ONLY in the capture: no row carries a PIT field
+    rows = [r for _, page in pages for r in page["rows"]]
+    rows_json = json.dumps(rows)
+    for needle in ("first_known", "membership_snapshot", "roster_clock",
+                   "equals_current_roster", "members_sha"):
+        assert needle not in rows_json
+    # every page still fits the unchanged 4 MiB encoded bound (largest page measured
+    # on the real capture with all three new facts: 97,237 bytes - 2.3% of the bound)
+    largest = max(len(response.content) for response, _ in pages)
+    assert largest <= wire.MAX_ENCODED_BYTES == 4 * 1024 * 1024
+
+
+def test_nothing_new_appears_in_the_legacy_projection_or_typed_blocks(tmp_path):
+    """Frozen constraint: the legacy projection and ``typed_blocks`` (closed at twelve
+    sources - the seven incumbent plus the five lane-1 v1.1 row blocks) gain NOTHING
+    from the Part B facts, even when the carry carries them."""
+    from engine.sector_native_view import project_sector_view, typed_blocks_of
+    raw, identity = _real_bundle(tmp=tmp_path)  # real bytes + NEW carry (PIT blocks in)
+    assert set(_real_carry_blocks()) >= {"membership_first_known", "membership_snapshots"}
+    inputs, receipt = contract._capture_view(
+        member_bytes=raw, input_identity=identity, generation_id="carry",
+        published_at=PUBLISHED.isoformat(), now=PUBLISHED)
+    for audience in ("entitled", "preview"):
+        projection = project_sector_view(inputs, receipt, audience=audience)
+        assert set(typed_blocks_of(projection["data"])) == {
+            "r1_rising_priced_share", "r2_display_order", "r2_hazard_qualification",
+            "etf_flows", "confluence", "bottoming_watch", "theme_table",
+            "confluence_universe_sp500", "confluence_universe_nasdaq",
+            "confluence_universe_russell", "confluence_universe_baskets", "theme_rows"}
+        text = json.dumps(projection)
+        for needle in ("roster_clock", "first_known", "membership_snapshot",
+                       "taxonomy_revision", "equals_current_roster", "members_sha"):
+            assert needle not in text, (audience, needle)

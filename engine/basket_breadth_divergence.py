@@ -21,6 +21,7 @@ a "hidden top". Pure functions, never-raise, no network.
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 import logging
 
 import numpy as np
@@ -53,20 +54,25 @@ BAND_ELEV, BAND_HIGH = 0.35, 0.60   # same display bands as basket_score.rollove
 _BD_HAND = (0.50, 0.30, 0.20)
 
 
+def calibration_from_document(document) -> dict:
+    """The existing Phase-0 block from an explicit captured document."""
+    bf = document.get("breadth_divergence_fit") if isinstance(document, dict) else None
+    return deepcopy(bf) if isinstance(bf, dict) else {}
+
+
 def _calibration() -> dict:
     """The Phase-0 verdict block (additive enrichment; {} when absent)."""
     try:
         p = config.data_dir() / "strategies" / "baskets_calibration.json"
         d = json.loads(p.read_text()) if p.exists() else {}
-        bf = d.get("breadth_divergence_fit") if isinstance(d, dict) else None
-        return bf if isinstance(bf, dict) else {}
+        return calibration_from_document(d)
     except Exception:  # noqa: BLE001 — calibration is enrichment, never fatal
         return {}
 
 
-def _bd_weights() -> tuple:
+def _bd_weights(*, calibration: dict | None = None) -> tuple:
     """Leg weights: OOS-calibrated only when the Phase-0 verdict earned it, else hand."""
-    bf = _calibration()
+    bf = _calibration() if calibration is None else calibration
     w = bf.get("wired_weights")
     if bf.get("verdict") == "ship_sizing_leg" and isinstance(w, list) and len(w) == 3:
         try:
@@ -91,7 +97,8 @@ _GRADE_DEFAULT = ("descriptive",
                   "the proxy; a narrowing lens, never a forecast.")
 
 
-def series(mc_closes: pd.DataFrame, lvl: pd.Series) -> dict | None:
+def series(mc_closes: pd.DataFrame, lvl: pd.Series, *,
+           calibration: dict | None = None) -> dict | None:
     """Per-bar SERIES of the divergence legs + composite (vectorized rolling; this is the
     raw accessor the Phase-0 kill-test consumes). All reads are causal (trailing windows
     only). Returns None when the inputs can't support a read. Never raises."""
@@ -135,7 +142,7 @@ def series(mc_closes: pd.DataFrame, lvl: pd.Series) -> dict | None:
         leg_st = ((pinned & ((rising & (share_below >= STEALTH_MIN))
                              | (share_below >= STEALTH_SAT)))).astype(float).where(v3)
 
-        W = _bd_weights()
+        W = _bd_weights(calibration=calibration)
         legs = pd.DataFrame({"gap": leg_gap, "participation": leg_part, "stealth": leg_st})
         wts = pd.Series({"gap": W[0], "participation": W[1], "stealth": W[2]})
         wmass = legs.notna().mul(wts, axis=1).sum(axis=1).replace(0, np.nan)
@@ -149,15 +156,17 @@ def series(mc_closes: pd.DataFrame, lvl: pd.Series) -> dict | None:
         return None
 
 
-def breadth_divergence(mc_closes: pd.DataFrame, lvl: pd.Series) -> dict:
+def breadth_divergence(mc_closes: pd.DataFrame, lvl: pd.Series, *,
+                       calibration: dict | None = None) -> dict:
     """Snapshot texture (mirrors basket_score.rollover_risk's dict shape) + the raw fields
     the forward log stamps. Degrades to a None-risk read on any shortfall; never raises."""
-    grade, note = _GRADES.get(_calibration().get("verdict"), _GRADE_DEFAULT)
+    effective = _calibration() if calibration is None else calibration
+    grade, note = _GRADES.get(effective.get("verdict"), _GRADE_DEFAULT)
     out = {"risk": None, "band": None, "band_zh": None, "reasons": [], "directional": False,
            "basket_off_high": None, "member_dd_med": None, "pct_above_50": None,
            "share_below_50": None, "pinned": None, "grade": grade, "grade_note": note}
     try:
-        S = series(mc_closes, lvl)
+        S = series(mc_closes, lvl, calibration=effective)
         if S is None or not np.isfinite(S["risk"].iloc[-1]):
             return out
         r = float(S["risk"].iloc[-1])

@@ -1045,7 +1045,12 @@ def conditions_snapshot(f: pd.DataFrame) -> dict:
 # See research/MACRO_RISK_INTEGRATION.md.
 
 def _mrs_weights() -> dict:
-    w = (config.load()["engine"].get("macro_overlay") or {}).get("mrs_weights") or {}
+    return mrs_weights_from_inputs(config.load()["engine"].get("macro_overlay"))
+
+
+def mrs_weights_from_inputs(macro_overlay: dict | None) -> dict:
+    """Existing defaults from one captured macro-overlay configuration."""
+    w = (macro_overlay or {}).get("mrs_weights") or {}
     # The `liquidity` leg (contracting half only) is KEPT deliberately: net-liquidity
     # withdrawal is the single mechanism that most differentially hurts cyclicals,
     # and the B-1 sign-check (scripts/research_macro_sector.py) only clears the
@@ -1111,7 +1116,11 @@ def macro_risk_score(latest: dict) -> dict:
     regime), NOT this function, because `latest` can mix legs across release dates
     on a cadence-lag day (quad stale while conditions update). This helper is exact
     for a date-coherent `latest` and is retained for dict-only consumers + tests."""
-    w = _mrs_weights()
+    return _macro_risk_score_values(latest, _mrs_weights(), _mrs_transition_val)
+
+
+def _macro_risk_score_values(latest: dict, w: dict, transition_value) -> dict:
+    """Shared original dict arithmetic; legacy acquisition stays a late callback."""
     cond = (latest or {}).get("conditions") or {}
     legs: dict[str, tuple[float | None, bool]] = {}
     rec = (cond.get("recession") or {}).get("score")
@@ -1130,12 +1139,28 @@ def macro_risk_score(latest: dict) -> dict:
     liq = (latest or {}).get("liquidity_overlay")
     legs["liquidity"] = (1.0 if liq == "contracting" else 0.0, liq is not None)
     tr = (latest or {}).get("transition_state")
-    legs["transition"] = (_mrs_transition_val(tr), tr is not None)
+    legs["transition"] = (transition_value(tr), tr is not None)
 
     score = _combine_legs(legs, w)
     comps = {n: (None if v is None else round(float(v), 3)) for n, (v, _a) in legs.items()}
     return {"score": None if score is None else round(float(score), 4),
             "label": _mrs_label(score), "components": comps}
+
+
+def macro_risk_score_from_inputs(latest: dict, *, macro_overlay: dict | None) -> dict:
+    """Existing dict-MRS arithmetic with captured weights and transition setting.
+
+    This remains the dict consumer, not the separately owned causal snapshot /
+    historical-series implementation. Transition conversion is still conditional.
+    """
+    from copy import deepcopy
+    latest, overlay = deepcopy((latest, macro_overlay))
+    weights = mrs_weights_from_inputs(overlay)
+    def transition_value(state):
+        return (float((overlay or {}).get("transition_high", 1.0))
+                if state in ("TRANSITIONING", "NEW_REGIME")
+                else 0.5 if state == "WEAKENING" else 0.0)
+    return _macro_risk_score_values(latest, weights, transition_value)
 
 
 def _macro_risk_legs(f: pd.DataFrame, regime: pd.DataFrame):
@@ -1204,7 +1229,14 @@ def sector_macro_beta(key) -> float:
     case-insensitive on names so spelling variants still resolve."""
     if not key:
         return 0.0
-    tbl = config.load()["engine"]["confluence"].get("sector_macro_beta") or {}
+    return sector_macro_beta_from_inputs(key, table=config.load()["engine"]["confluence"].get("sector_macro_beta"))
+
+
+def sector_macro_beta_from_inputs(key, *, table: dict | None) -> float:
+    """Existing case-insensitive lookup over a captured sensitivity table."""
+    if not key:
+        return 0.0
+    tbl = table or {}
     if key in tbl:
         return float(tbl[key])
     lk = str(key).strip().lower()

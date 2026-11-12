@@ -1878,11 +1878,17 @@ def _history(cycles: dict, source: str, core_ids: dict[str, str]) -> dict:
 
 
 _TYPED_BLOCK_MAX_BYTES = 64 * 1024
+#: The five lane-1 v1.1 row blocks (wire §1) carry full group rows and members, so
+#: they are measured against their own cap, above the 60 KiB carry / 64 KiB serve
+#: caps of the seven incumbent blocks.
+_TYPED_ROW_BLOCK_MAX_BYTES = 516 * 1024
 _CONFLUENCE_UNIVERSES = 4
 #: name -> (owning document, closed key). Lane 7 blocks are entitled-only depth.
 #: ``carried`` is ``sector_central.json["carried"]``, written by the central builder
 #: (lib.sector_central_carry) from existing producer artifacts. ``hazard_qualification``
 #: has no producer on this base (``hazard_score.qualify_current_model`` is not here).
+#: The last five (wire v1.1 §1) are the confluence-universe row blocks and the theme
+#: row array: carried key equal to the block name, entitled-only.
 _TYPED_BLOCK_SOURCES = (
     ("r1_rising_priced_share", "carried", "sector_central_r1", False),
     ("r2_display_order", "carried", "display_order", False),
@@ -1891,7 +1897,21 @@ _TYPED_BLOCK_SOURCES = (
     ("confluence", "carried", "confluence", True),
     ("bottoming_watch", "carried", "bottoming_watch", True),
     ("theme_table", "carried", "theme_table", True),
+    ("confluence_universe_sp500", "carried", "confluence_universe_sp500", True),
+    ("confluence_universe_nasdaq", "carried", "confluence_universe_nasdaq", True),
+    ("confluence_universe_russell", "carried", "confluence_universe_russell", True),
+    ("confluence_universe_baskets", "carried", "confluence_universe_baskets", True),
+    ("theme_rows", "carried", "theme_rows", True),
 )
+#: Serving rules of the universe row blocks (wire v1.1 §1/§4): the required owner
+#: word and the exact ``group_arrays`` list of section 1.
+_TYPED_ROW_BLOCK_UNIVERSES = {
+    "confluence_universe_sp500": ("sp500_subsectors", ("subsectors", "sectors")),
+    "confluence_universe_nasdaq": ("nasdaq_subsectors", ("subsectors", "sectors")),
+    "confluence_universe_russell": ("russell_subsectors", ("subsectors", "sectors")),
+    "confluence_universe_baskets": ("curated_baskets", ("baskets",)),
+}
+_TYPED_ROW_BLOCK_NAMES = frozenset(_TYPED_ROW_BLOCK_UNIVERSES) | {"theme_rows"}
 
 
 def _typed_block(value: Any, *, name: str) -> dict:
@@ -1906,6 +1926,48 @@ def _typed_block(value: Any, *, name: str) -> dict:
         ok = isinstance(value, dict) and len(encoded) <= _TYPED_BLOCK_MAX_BYTES
         if ok and name == "confluence":
             ok = len(value) == _CONFLUENCE_UNIVERSES
+    except (TypeError, ValueError, OverflowError, RecursionError):
+        ok = False
+    if not ok:
+        return {"status": "unavailable", "reason": "invalid_shape", "value": None}
+    return {"status": "available", "reason": None, "value": json.loads(encoded)}
+
+
+def _typed_row_block(value: Any, *, name: str) -> dict:
+    """One lane-1 v1.1 row block (wire §4), in this order:
+
+    1. a carried mapping with ``status`` ``unavailable`` and reason
+       ``block_too_large`` reads ``unavailable / block_too_large`` with a null
+       value; any other reason reads ``unavailable / invalid_shape``;
+    2. otherwise ``available`` only when the value is a mapping, finite JSON, at
+       most ``_TYPED_ROW_BLOCK_MAX_BYTES`` encoded, dated (a non-empty string
+       ``as_of``), and for a universe block ``data`` is a mapping whose
+       ``universe`` is the required owner word with exactly the section-1
+       ``group_arrays`` list, every named array a list; for ``theme_rows``
+       ``rows`` is a list.
+
+    Never repaired, never raised, never changes another part of the projection.
+    The closed reason set for these five is ``audience_not_entitled``,
+    ``not_produced``, ``invalid_shape``, ``block_too_large``.
+    """
+    if isinstance(value, dict) and value.get("status") == "unavailable":
+        if value.get("reason") == "block_too_large":
+            return {"status": "unavailable", "reason": "block_too_large", "value": None}
+        return {"status": "unavailable", "reason": "invalid_shape", "value": None}
+    try:
+        encoded = json.dumps(value, ensure_ascii=False, allow_nan=False,
+                             sort_keys=True, separators=(",", ":")).encode("utf-8")
+        as_of = value.get("as_of") if isinstance(value, dict) else None
+        ok = (isinstance(value, dict) and len(encoded) <= _TYPED_ROW_BLOCK_MAX_BYTES
+              and isinstance(as_of, str) and bool(as_of))
+        if ok and name in _TYPED_ROW_BLOCK_UNIVERSES:
+            owner_word, group_arrays = _TYPED_ROW_BLOCK_UNIVERSES[name]
+            data = value.get("data")
+            ok = (isinstance(data, dict) and data.get("universe") == owner_word
+                  and value.get("group_arrays") == list(group_arrays)
+                  and all(isinstance(data.get(array), list) for array in group_arrays))
+        elif ok:  # theme_rows
+            ok = isinstance(value.get("rows"), list)
     except (TypeError, ValueError, OverflowError, RecursionError):
         ok = False
     if not ok:
@@ -1932,15 +1994,16 @@ def _typed_blocks(inputs: SectorViewInputs, audience: str) -> dict:
         elif key not in documents[owner]:
             blocks[name] = {"status": "unavailable", "reason": "not_produced", "value": None}
         else:
-            blocks[name] = _typed_block(documents[owner][key], name=name)
+            reader = _typed_row_block if name in _TYPED_ROW_BLOCK_NAMES else _typed_block
+            blocks[name] = reader(documents[owner][key], name=name)
     return blocks
 
 
 def typed_blocks_of(data: dict) -> dict:
-    """The seven blocks of a projected ``data`` object, absent key included.
+    """The twelve blocks of a projected ``data`` object, absent key included.
 
     An absent ``typed_blocks`` means no producer emitted any block: every block
-    reads ``unavailable/not_produced`` (the entitled-only four read
+    reads ``unavailable/not_produced`` (the entitled-only nine read
     ``audience_not_entitled`` for a preview projection). Nothing is invented.
     """
     present = data.get("typed_blocks")
@@ -2065,7 +2128,7 @@ def project_sector_view(
     # unproduced optional input leaves the hashed projection untouched, so the key
     # is ABSENT while no block is produced or malformed. Consumers read an absent
     # key through ``typed_blocks_of`` (every block unavailable/not_produced). Once
-    # any block is produced or malformed the full seven-block object is emitted.
+    # any block is produced or malformed the full twelve-block object is emitted.
     typed = _typed_blocks(inputs, audience)
     if any(b["reason"] not in ("not_produced", "audience_not_entitled")
            for b in typed.values()):

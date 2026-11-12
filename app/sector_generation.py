@@ -94,6 +94,15 @@ log = logging.getLogger("macro.sector_generation")
 #: Response schema of every failure.
 ERROR_SCHEMA = "sector_generation.error/v1"
 
+
+def _group_index_name_zh(value: Any) -> str | None:
+    """The captured group descriptor's ``name_zh`` when it is a string of 1 to 160
+    characters, else ``None`` (wire v1.1 §5). The key is always present on the
+    index entry; this is a serve-time projection of an already captured field, so
+    the cursor grammar, ``BASIS_VERSION`` and ``consumer_content_sha256`` do not
+    move."""
+    return value if isinstance(value, str) and 1 <= len(value) <= 160 else None
+
 #: The two audiences this route serves. The set is closed: a caller picks one
 #: or gets a 400. There is no third audience and no default-but-hidden mode.
 AUDIENCE_PREVIEW = "preview"
@@ -624,11 +633,15 @@ def create_router(reader: SelectedGenerationReader | None = None) -> APIRouter:
                 "context_ref": context_ref,
             }
             if offset == 0 and flt["group"] is None and not flt["q"]:
+                # R3-N6: the index states per group whether the OWNER refused it, so a
+                # refusal is visible on the unfiltered first page, not only per group.
                 body["group_index"] = [
                     {"group_id": g["group_id"], "name": g["name"],
+                     "name_zh": _group_index_name_zh(g.get("name_zh")),
                      "n_members_listed": g["n_members_listed"],
                      "n_configured_current": g["n_configured_current"],
-                     "n_unserved": g["n_unserved"]}
+                     "n_unserved": g["n_unserved"],
+                     "refused_by_owner": g["refused_by_owner"]}
                     for g in result.population.groups]
             encoded = encode_sector_population(
                 audience=AUDIENCE_ENTITLED, source_session=result.source_session,

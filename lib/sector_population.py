@@ -30,9 +30,11 @@ capture named inside a token is a server-issued fact, not a caller selector.
 from __future__ import annotations
 
 import base64
+import datetime
 import hashlib
 import hmac
 import json
+import math
 import os
 import re
 from collections import Counter
@@ -56,10 +58,18 @@ MAX_TOKEN = 1024
 
 _GROUP_ID = re.compile(r"[a-z][a-z0-9_-]{0,79}\Z")
 _SYMBOL = re.compile(r"[A-Za-z0-9][A-Za-z0-9.\-]{0,15}\Z")
+#: The owner's own content-digest shape, as stamped on stored PIT rows (S3): a
+#: carried ``members_sha`` that is not null and not exactly this is malformed.
+_SNAPSHOT_SHA = re.compile(r"[0-9a-f]{64}\Z")
 _QUERY = re.compile(r"[\w .&'\-]{1,64}\Z")
 _TOKEN = re.compile(r"[A-Za-z0-9_\-]+\.[0-9a-f]{64}\Z")
 _ACTION_LANES = ("buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid")
 UNAVAILABLE_NOT_PRODUCED = {"status": "unavailable", "reason": "not_produced"}
+#: A carried DATED block that arrives without a non-empty string ``as_of`` (R4-N3).
+#: The builder's dated-block filter already refuses to carry such a block, so a
+#: block reaching this reader undated is malformed; it is served as unavailable
+#: with this closed reason, never as ``available`` with ``as_of: None``.
+REASON_UNDATED = "carried_block_undated"
 
 
 class PopulationError(ValueError):
@@ -89,17 +99,34 @@ class Population:
     content_sha256: str
     #: Owner's configured CURRENT roster (configured minus removed), summed over groups
     #: from each group's captured ``observation.configured_members``; ``None`` when any
-    #: group's roster is not in the capture (then completeness is unknown, not true).
+    #: group's roster is not in the capture OR the carried owner-roster block
+    #: (``roster_baskets``, R3-S1) is missing/malformed (then completeness is unknown,
+    #: never true).
     configured_current: int | None
     served: int
     #: Configured current members with no row, each identified with a closed reason.
     unserved: tuple[Mapping[str, str], ...]
     #: ``unaccounted_by_owner`` entries, served-but-unconfigured rows and removed members
     #: that also appear as configured or served. Any of these makes ``complete`` false.
-    unaccounted: int
+    #: ``None`` when the roster clock does not agree (S1): the roster then contributes
+    #: nothing, so no count is guessed - null, never a zero that would read as checked.
+    unaccounted: int | None
     removed: Mapping[str, Any]
     industry_classification: Mapping[str, Any]
     sub_industry_classification: Mapping[str, Any]
+    #: The roster-clock check (R4-N4): whether the carried roster's ``as_of`` equals
+    #: the capture's own single ``observation.effective_as_of``. Any disagreement or
+    #: indeterminacy makes ``configured_current``/``complete`` null (never true) and
+    #: is disclosed here with a closed status/reason.
+    roster_clock: Mapping[str, Any]
+    #: Point-in-time first-known membership per roster pair (Part B), read from the
+    #: carried ``membership_first_known`` block; unavailable with a closed reason
+    #: when the block is absent, malformed or states its own failure.
+    first_known: Mapping[str, Any]
+    #: The stored PIT snapshot each group held at/before the effective session
+    #: (Part B), from the carried ``membership_snapshots`` block - same fail-closed
+    #: read rule as ``first_known``.
+    membership_snapshot: Mapping[str, Any]
 
     @property
     def accounted_unserved(self) -> int:
@@ -121,6 +148,21 @@ def _text(value: Any, limit: int = 160) -> str | None:
     return None
 
 
+def _refusal_field(value: Any) -> Any:
+    """One ``owner_observation_refusal`` field: numbers pass, strings take the same
+    ``_text`` bound the live groups use (R3-N1 - a 200,000-char ``status`` is not
+    carried verbatim), booleans and anything else are dropped. A NaN or infinite
+    float is dropped like any other inadmissible value (R4-N6): it is not a number
+    the finite wire can carry, and it is never a refusal fact."""
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, str):
+        return _text(value)
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value if isinstance(value, (int, float)) else None
+
+
 def _action_lookup(action_board: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
     board = action_board.get("action_board") if isinstance(action_board, Mapping) else None
     found: dict[str, dict[str, Any]] = {}
@@ -138,6 +180,123 @@ def _action_lookup(action_board: Mapping[str, Any]) -> dict[str, dict[str, Any]]
                                "score": row.get("score") if isinstance(row.get("score"), (int, float))
                                and not isinstance(row.get("score"), bool) else None}
     return found
+
+
+_DAY = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
+
+
+def _day_or_none(value: Any) -> str | None:
+    """A day string that is also a REAL calendar date. ``2026-02-30`` matches the
+    ``_DAY`` pattern but is not a date: it reads exactly like a pattern mismatch at
+    every site that day-checks a carried fact (N6) - the same closed reason, never
+    a new one."""
+    if not (isinstance(value, str) and _DAY.fullmatch(value)):
+        return None
+    try:
+        datetime.date.fromisoformat(value)
+    except ValueError:
+        return None
+    return value
+
+
+def _carried_status_fact(doc: Any) -> dict[str, Any] | None:
+    """A carried block that states its own ``unavailable`` status and reason."""
+    if (isinstance(doc, Mapping) and doc.get("status") == "unavailable"
+            and isinstance(doc.get("reason"), str) and doc.get("reason")):
+        return {"status": "unavailable", "reason": _text(doc["reason"], 64)}
+    return None
+
+
+def _first_known_fact(doc: Any) -> dict[str, Any]:
+    """Closed-shape read of the carried ``membership_first_known`` block (Part B 1).
+
+    Every malformation degrades to unavailable/``not_produced``; an undated block to
+    unavailable/``carried_block_undated`` (R4-N3's rule reads here too). Nothing is
+    repaired: a pair the block does not cover simply stays outside ``groups``.
+    """
+    stated = _carried_status_fact(doc)
+    if stated is not None:
+        return stated
+    if not isinstance(doc, Mapping):
+        return dict(UNAVAILABLE_NOT_PRODUCED)
+    if not (isinstance(doc.get("as_of"), str) and doc["as_of"]):
+        return {"status": "unavailable", "reason": REASON_UNDATED}
+    basis, first = _text(doc.get("basis"), 80), doc.get("first_known")
+    if not basis or not isinstance(first, Mapping) or not first:
+        return dict(UNAVAILABLE_NOT_PRODUCED)
+    groups: dict[str, dict[str, str | None]] = {}
+    for gid, bucket in first.items():
+        if not isinstance(gid, str) or not _GROUP_ID.fullmatch(gid) \
+                or not isinstance(bucket, Mapping):
+            return dict(UNAVAILABLE_NOT_PRODUCED)
+        out: dict[str, str | None] = {}
+        for symbol, day in bucket.items():
+            if not isinstance(symbol, str) or not _SYMBOL.fullmatch(symbol):
+                return dict(UNAVAILABLE_NOT_PRODUCED)
+            if day is not None and _day_or_none(day) is None:
+                return dict(UNAVAILABLE_NOT_PRODUCED)
+            out[symbol] = day
+        groups[gid] = out
+    return {"status": "available", "source": _text(doc.get("source"), 120),
+            "as_of": _text(doc.get("as_of"), 40), "basis": basis,
+            "basis_note": _text(doc.get("basis_note"), 200),
+            "store_first": _day_or_none(doc.get("store_first")),
+            "store_last": _day_or_none(doc.get("store_last")),
+            "absent_pair_reason": _text(doc.get("absent_pair_reason"), 64),
+            "groups": groups}
+
+
+def _snapshot_fact(doc: Any) -> dict[str, Any]:
+    """Closed-shape read of the carried ``membership_snapshots`` block (Part B 2).
+
+    Per group: an available entry (stored snapshot date, the owner's stamped
+    ``members_sha``, member count, ``equals_current_roster`` bool-or-null) or the
+    owner's own unavailable basis. Any malformation degrades the WHOLE fact - never
+    a partially repaired group set.
+    """
+    stated = _carried_status_fact(doc)
+    if stated is not None:
+        return stated
+    if not isinstance(doc, Mapping):
+        return dict(UNAVAILABLE_NOT_PRODUCED)
+    if not (isinstance(doc.get("as_of"), str) and doc["as_of"]):
+        return {"status": "unavailable", "reason": REASON_UNDATED}
+    # S3: the fact is only readable when it states the owner's own suite (the literal
+    # ``baskets``) - anything else is malformed as a WHOLE, never partially trusted.
+    if doc.get("suite") != "baskets":
+        return {"status": "unavailable", "reason": "carried_fact_malformed"}
+    groups_in = doc.get("groups")
+    if not isinstance(groups_in, Mapping) or not groups_in:
+        return dict(UNAVAILABLE_NOT_PRODUCED)
+    groups: dict[str, dict[str, Any]] = {}
+    for gid, entry in groups_in.items():
+        if not isinstance(gid, str) or not _GROUP_ID.fullmatch(gid) \
+                or not isinstance(entry, Mapping):
+            return dict(UNAVAILABLE_NOT_PRODUCED)
+        if entry.get("status") == "unavailable":
+            if not isinstance(entry.get("reason"), str) or not entry["reason"]:
+                return dict(UNAVAILABLE_NOT_PRODUCED)
+            groups[gid] = {"status": "unavailable", "reason": _text(entry["reason"], 64)}
+            continue
+        if entry.get("status") != "available":
+            return dict(UNAVAILABLE_NOT_PRODUCED)
+        day, count, equals = entry.get("snapshot_date"), entry.get("member_count"), \
+            entry.get("equals_current_roster")
+        sha = entry.get("members_sha")
+        # S3: a stamped sha that is not null and not the owner's own 64-hex lowercase
+        # digest shape degrades the WHOLE fact with the closed malformed reason.
+        if not (sha is None or (isinstance(sha, str) and _SNAPSHOT_SHA.fullmatch(sha))):
+            return {"status": "unavailable", "reason": "carried_fact_malformed"}
+        if (_day_or_none(day) is None
+                or not isinstance(count, int) or isinstance(count, bool) or count < 0
+                or not (equals is None or isinstance(equals, bool))):
+            return dict(UNAVAILABLE_NOT_PRODUCED)
+        groups[gid] = {"status": "available", "snapshot_date": day,
+                       "members_sha": sha, "member_count": count,
+                       "equals_current_roster": equals}
+    return {"status": "available", "source": _text(doc.get("source"), 120),
+            "as_of": _text(doc.get("as_of"), 40), "suite": _text(doc.get("suite"), 40),
+            "groups": groups}
 
 
 def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
@@ -169,10 +328,14 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
         """(symbols, labels, meta) for one CURRENT-basis taxonomy, never point-in-time."""
         doc = carried.get(name)
         meta: dict[str, Any] = dict(UNAVAILABLE_NOT_PRODUCED)
+        # R4-N3: the dated rule is enforced on the READ side too - a block with no
+        # string ``as_of`` is served as unavailable (below), never available undated.
         if not (isinstance(doc, Mapping) and isinstance(doc.get("symbols"), Mapping)
                 and doc.get("point_in_time") is False
                 and (not labelled or isinstance(doc.get("subsectors"), Mapping))):
             return None, None, meta
+        if not (isinstance(doc.get("as_of"), str) and doc["as_of"]):
+            return None, None, {"status": "unavailable", "reason": REASON_UNDATED}
         meta = {"status": "available", "taxonomy": _text(doc.get("taxonomy"), 40),
                 "basis": _text(doc.get("basis"), 80), "point_in_time": False,
                 "source": _text(doc.get("source"), 120), "as_of": _text(doc.get("as_of"), 40),
@@ -184,12 +347,15 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
     removed_doc = carried.get("removed_members")
     removed_meta: dict[str, Any] = dict(UNAVAILABLE_NOT_PRODUCED)
     if isinstance(removed_doc, Mapping) and isinstance(removed_doc.get("removed"), list):
-        removed_meta = {"status": "available", "n": len(removed_doc["removed"]),
-                        "source": _text(removed_doc.get("source"), 120),
-                        "version": _text(removed_doc.get("version"), 40),
-                        "as_of": _text(removed_doc.get("as_of"), 40),
-                        "members": [dict(r) for r in removed_doc["removed"]
-                                    if isinstance(r, Mapping)]}
+        if not (isinstance(removed_doc.get("as_of"), str) and removed_doc["as_of"]):
+            removed_meta = {"status": "unavailable", "reason": REASON_UNDATED}  # R4-N3
+        else:
+            removed_meta = {"status": "available", "n": len(removed_doc["removed"]),
+                            "source": _text(removed_doc.get("source"), 120),
+                            "version": _text(removed_doc.get("version"), 40),
+                            "as_of": _text(removed_doc.get("as_of"), 40),
+                            "members": [dict(r) for r in removed_doc["removed"]
+                                        if isinstance(r, Mapping)]}
     symbol_groups: Counter[str] = Counter()
     for group in groups_in:
         for member in (group.get("members") if isinstance(group, Mapping) else None) or ():
@@ -322,13 +488,111 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
             "n_configured_current": len(configured), "n_members_listed": 0,
             "n_unserved": len(configured), "refused_by_owner": True,
             "owner_observation_refusal": {
-                k: obs.get(k) for k in ("status", "coverage", "observed_n", "configured_n",
-                                        "min_members", "min_coverage", "effective_as_of")
-                if isinstance(obs.get(k), (str, int, float)) and not isinstance(obs.get(k), bool)},
+                k: v for k, v in ((k, _refusal_field(obs.get(k))) for k in (
+                    "status", "coverage", "observed_n", "configured_n",
+                    "min_members", "min_coverage", "effective_as_of")) if v is not None},
             "membership_coverage": dict(UNAVAILABLE_NOT_PRODUCED),
             "action": {"status": "unavailable", "reason": "no_action_row"},
             "native_sector_ref": dict(UNAVAILABLE_NOT_PRODUCED),
         })
+    # R3-S1: the owner's ROSTER (carried by the central builder from
+    # data/baskets/membership.json, cut at the owner's effective session) names every
+    # basket that owes members to this capture. A roster basket in NEITHER the live
+    # ``baskets`` list NOR ``observation_refusals`` left by an unexplained producer
+    # exit; its configured members are UNACCOUNTED - never silently absent from the
+    # denominator - so ``complete`` cannot be true over the hole. A capture with no
+    # readable roster block cannot be verified complete at all (null, never true).
+    roster_doc = carried.get("roster_baskets")
+    roster: dict[str, list[str]] | None = None
+    roster_malformed = False
+    entries = roster_doc.get("baskets") if isinstance(roster_doc, Mapping) else None
+    roster_as_of = roster_doc.get("as_of") if isinstance(roster_doc, Mapping) else None
+    roster_as_of = roster_as_of if isinstance(roster_as_of, str) and roster_as_of else None
+    if isinstance(entries, Mapping) and entries and roster_as_of:
+        if all(isinstance(gid, str) and _GROUP_ID.fullmatch(gid)
+               and isinstance(syms, list)
+               and all(isinstance(s, str) and _SYMBOL.fullmatch(s) for s in syms)
+               and len(set(syms)) == len(syms)
+               for gid, syms in entries.items()):
+            roster = dict(entries)
+        else:
+            roster_malformed = True
+            roster_unknown = True
+    else:
+        roster_unknown = True
+    # R4-N4: the capture's OWN clock - the single ``observation.effective_as_of``
+    # stated across the capture's observations, live groups and owner refusals alike
+    # (the same stamp ``owner_effective_as_of`` cuts the roster at). The carried
+    # roster must agree with it: a roster cut at a different session cannot vouch
+    # for this capture's membership, so completeness reads null - never true - and
+    # the disagreement is disclosed below with a closed status/reason.
+    # S2/N1: an observation mapping PRESENT with an ``effective_as_of`` that is a
+    # value of the wrong type or shape (a list, a number, an empty string, a nested
+    # object) makes the clock INDETERMINATE even beside good stamps - it is
+    # malformed, never silently treated as unstated. A NULL or absent stamp is
+    # different: it is the producer's legitimate "no clock" value
+    # (``population_observation`` stamps ``_date_text(when)``, which is None when the
+    # producer has no clock) and reads the clock UNAVAILABLE - fail-closed alike,
+    # but labelled unavailable, never malformed (N1).
+    stamps: set[str] = set()
+    capture_malformed = False
+    capture_unstated = False
+    for source in (groups_in, refusals):
+        for entry in source:
+            obs = entry.get("observation") if isinstance(entry, Mapping) else None
+            if not isinstance(obs, Mapping):
+                continue
+            stamp = obs.get("effective_as_of")
+            if isinstance(stamp, str) and stamp:
+                stamps.add(stamp)
+            elif stamp is None:
+                capture_unstated = True
+            else:
+                capture_malformed = True
+    capture_effective = next(iter(stamps)) if len(stamps) == 1 else None
+    if roster is None:
+        roster_clock = {"status": "unavailable",
+                        "reason": "roster_block_malformed" if roster_malformed or entries
+                        else "roster_block_absent"}
+    elif capture_malformed:
+        roster_unknown = True  # an unreadable stamp: the clock cannot be verified at all
+        roster_clock = {"status": "unavailable",
+                        "reason": "capture_effective_as_of_malformed",
+                        "roster_as_of": roster_as_of}
+    elif capture_unstated or not stamps:
+        roster_unknown = True  # no verifiable single stated session (N1: a null or
+        # absent stamp states no clock, even beside a stated one): cannot be verified
+        roster_clock = {"status": "unavailable",
+                        "reason": "capture_effective_as_of_unavailable",
+                        "roster_as_of": roster_as_of}
+    elif capture_effective is None:
+        roster_unknown = True  # more than one stated session: the clock cannot be verified
+        roster_clock = {"status": "mismatch", "reason": "capture_effective_as_of_not_single",
+                        "roster_as_of": roster_as_of,
+                        "capture_effective_as_of": sorted(stamps)}
+    elif roster_as_of != capture_effective:
+        # exact STRING equality: a form-only difference (the same session with an ISO
+        # time suffix) is a mismatch, never a normalized agreement
+        roster_unknown = True  # the roster was cut at a different session than the capture
+        roster_clock = {"status": "mismatch", "reason": "roster_as_of_mismatch",
+                        "roster_as_of": roster_as_of,
+                        "capture_effective_as_of": capture_effective}
+    else:
+        roster_clock = {"status": "agree", "roster_as_of": roster_as_of,
+                        "capture_effective_as_of": capture_effective}
+    # S1: a roster whose clock does not agree with the capture vouches for NOTHING -
+    # its unexplained baskets contribute no ``unaccounted_by_owner`` entries, and the
+    # served ``unaccounted`` is null (below), never a guessed 0. Owner-explained
+    # evidence from the capture itself (live-group and refusal observations) is
+    # unaffected: it never came from the roster.
+    if roster is not None and roster_clock.get("status") == "agree":
+        for rid, syms in sorted(roster.items()):
+            if rid in seen_groups:  # live baskets and valid refusals are already accounted
+                continue
+            for symbol in syms:
+                unserved.append({"group_id": rid, "symbol": symbol, "reason": REASON_UNACCOUNTED})
+                unaccounted += 1
+            configured_total = (configured_total or 0) + len(syms)
     # A removed member must never also be configured, served or unserved: that is a
     # contradiction between the owner's roster and its captured observation.
     if removed_meta.get("status") == "available":
@@ -338,13 +602,17 @@ def build_population(*, baskets: Mapping[str, Any], handoff: Mapping[str, Any],
         unaccounted += len(removed_pairs & present)
     if len(unserved) > MAX_UNSERVED:
         raise PopulationError("population_unserved_too_large")  # refuse, never truncate
+    first_known = _first_known_fact(carried.get("membership_first_known"))
+    membership_snapshot = _snapshot_fact(carried.get("membership_snapshots"))
     canonical = json.dumps({"groups": groups, "rows": rows, "unserved": unserved,
                             "removed": removed_meta}, allow_nan=False, sort_keys=True,
                            separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     return Population(
         tuple(groups), tuple(rows), hashlib.sha256(canonical).hexdigest(),
         None if roster_unknown else configured_total, len(rows), tuple(unserved),
-        unaccounted, removed_meta, industry_meta, sub_meta)
+        unaccounted if roster_clock.get("status") == "agree" else None,
+        removed_meta, industry_meta, sub_meta, roster_clock, first_known,
+        membership_snapshot)
 
 
 def normalize_filter(group: str | None, query: str | None) -> dict[str, str | None]:
@@ -507,13 +775,25 @@ def compatibility_tuple(*, generation_id: str, content_id: str, published_at: st
         },
         "identity": {
             "market_profile": "us", "group_kind": "basket",
-            "taxonomy_revision": dict(UNAVAILABLE_NOT_PRODUCED),
+            # ONE taxonomy stamp for the whole response (Part B 3): the carried
+            # industry/sub-industry labels are CURRENT-basis, and the historical
+            # revision is unavailable because no point-in-time classification
+            # source exists on this base - stated, never guessed.
+            "taxonomy_revision": {
+                "status": "unavailable",
+                "reason": "no_point_in_time_classification_source",
+                "labels_basis": "current_not_point_in_time",
+                "labels": ["industry", "sub_industry"],
+            },
             # Current-basis only: a label from today's classification, NEVER the
             # member's point-in-time or original classification.
             "industry_classification": dict(population.industry_classification),
             "sub_industry_classification": dict(population.sub_industry_classification),
             "membership_effective_time": "per_row_effective_on",
-            "membership_first_known": dict(UNAVAILABLE_NOT_PRODUCED),
+            # Point-in-time membership facts (Part B), captured in the generation
+            # from the owner's PIT store - never read at request time.
+            "membership_first_known": dict(population.first_known),
+            "membership_snapshot": dict(population.membership_snapshot),
             "original_affiliation_set": dict(UNAVAILABLE_NOT_PRODUCED),
         },
         "basis": {"benchmark": "SPY", "price_basis": "not_declared_by_generation",
@@ -539,6 +819,9 @@ def compatibility_tuple(*, generation_id: str, content_id: str, published_at: st
             "removed_members": dict(population.removed),
             "complete": population.complete,
             "complete_rule": "served + accounted_unserved == configured_current and unaccounted == 0",
+            # R4-N4: whether the carried roster's as_of equals the capture's own
+            # single effective session; any disagreement also nulls complete above.
+            "roster_clock": dict(population.roster_clock),
             "eligible": dict(UNAVAILABLE_NOT_PRODUCED),
             "measured": dict(UNAVAILABLE_NOT_PRODUCED),
             "entitled_visibility_scope": "entitled_full", "groups": len(population.groups),
