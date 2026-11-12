@@ -1710,9 +1710,15 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
         if type(profit_driver) is not bool:
             raise ActivityAdmissionRefusal("EXPOSURE_PROFIT_DRIVER_INVALID", repr(profit_driver))
         revenue, revenue_denominator = fact.get("revenue"), fact.get("revenue_denominator")
+        profit, profit_denominator = fact.get("profit"), fact.get("profit_denominator")
+        # A non-positive denominator is a typed refusal, never a ZeroDivisionError.
+        for label, denominator in (("revenue_denominator", revenue_denominator),
+                                   ("profit_denominator", profit_denominator)):
+            if denominator is not None and denominator <= 0:
+                raise ActivityAdmissionRefusal(
+                    "EXPOSURE_DENOMINATOR_INVALID", f"{label}={denominator!r}")
         revenue_share = (revenue / revenue_denominator
                          if revenue is not None and revenue_denominator is not None else None)
-        profit, profit_denominator = fact.get("profit"), fact.get("profit_denominator")
         profit_share = (profit / profit_denominator
                         if profit is not None and profit_denominator is not None else None)
         share_scope = fact["share_scope"]

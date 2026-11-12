@@ -25,7 +25,6 @@ import copy
 import hashlib
 import importlib.util
 import json
-import subprocess
 import types
 from pathlib import Path
 from types import SimpleNamespace
@@ -45,7 +44,8 @@ from tests.test_company_pinned_relationship_candidates import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE_COMMIT = "7387e1f829b54c51de316a7ea74c066abdfcd24c"
+# The base writer (7387e1f8) is pinned as a fixture so the suite needs no git history.
+BASE_WRITER_FIXTURE = ROOT / "tests/fixtures/gmi_activity_base_membership_evidence_7387e1f8.py.txt"
 CODE_VERSION = "0" * 40
 C01_PROPOSAL_ID = "actprop:287edbf7e04b8aba873b7493"
 TARGET = "theme:hbm_packaging"
@@ -68,9 +68,8 @@ def canon(value) -> bytes:
     return n._canonical(value)
 
 
-def _git_show(path: str) -> bytes:
-    return subprocess.run(["git", "show", f"origin/main:{path}"], cwd=ROOT,
-                          capture_output=True, check=True).stdout
+def _committed_bytes(path: str) -> bytes:
+    return (ROOT / path).read_bytes()
 
 
 # ---------------------------------------------------------------------------
@@ -208,9 +207,7 @@ def _segment_fixture_ruling(tmp_path, case, proposed_row):
 # ---------------------------------------------------------------------------
 
 def _base_writer_module():
-    raw = subprocess.run(
-        ["git", "show", f"{BASE_COMMIT}:engine/theme_graph/membership_evidence.py"],
-        cwd=ROOT, capture_output=True, check=True).stdout
+    raw = BASE_WRITER_FIXTURE.read_bytes()
     path = ROOT / "engine/theme_graph/membership_evidence.py"
     mod = types.ModuleType("base_membership_evidence")
     mod.__file__ = str(path)
@@ -249,19 +246,22 @@ def test_ppi_evidence_and_proposal_byte_identical_to_base_commit_writer():
     assert probation._activity_canonical(base_row) == probation._activity_canonical(current_row)
 
 
+@pytest.mark.needs_full_checkout("data")
 def test_committed_activity_rows_validate_and_bridge_reloads_them(tmp_path):
     rows = [json.loads(line) for line in
-            _git_show("data/theme_graph/probation/activity_proposals.jsonl").decode().splitlines()
+            _committed_bytes("data/theme_graph/probation/activity_proposals.jsonl").decode().splitlines()
             if line.strip()]
     assert [r["status"] for r in rows if r["proposal_id"] == C01_PROPOSAL_ID] == ["PROPOSED", "RATIFIED"]
     for row in rows:
         assert probation.validate_activity_membership_proposal(row) == []
-        assert "exposure" not in row["evidence"]
+        # Only PPI rows are exposure-free; a real PBA member may carry exposure.
+        if row["evidence"]["species"] == "planned_product_integration":
+            assert "exposure" not in row["evidence"]
     # Re-run the bridge's load/validate over the committed event + receipt files.
     events_path = tmp_path / "activity_history_events.jsonl"
     receipts_path = tmp_path / "activity_history_bridge_receipts.jsonl"
-    events_path.write_bytes(_git_show("data/theme_graph/probation/activity_history_events.jsonl"))
-    receipts_path.write_bytes(_git_show("data/theme_graph/probation/activity_history_bridge_receipts.jsonl"))
+    events_path.write_bytes(_committed_bytes("data/theme_graph/probation/activity_history_events.jsonl"))
+    receipts_path.write_bytes(_committed_bytes("data/theme_graph/probation/activity_history_bridge_receipts.jsonl"))
     tiers = bridge.activity_target_tiers_from_crosswalk_path(ROOT / bridge.DEFAULT_CROSSWALK_PATH)
     loaded = bridge.load_bound_activity_events(
         events_path=events_path, bridge_receipts_path=receipts_path,
@@ -317,6 +317,17 @@ def test_segment_fact_validates_and_carries_the_annual_report_form(tmp_path):
     assert fact["fact_id"].startswith("activity:")
 
 
+def test_span_disagreeing_with_pinned_receipt_refused_at_replay(tmp_path):
+    # A fact whose span offsets no longer match the pinned receipt (the edition's
+    # sec_source) is refused at replay: the source policy is bound to the exact span.
+    case = _segment_case(tmp_path)
+    spec = copy.deepcopy(case.spec)
+    spec["fact"]["span"]["start_byte"] += 1
+    with pytest.raises(n.DisclosureError, match="POLICY_SOURCE_MISMATCH"):
+        o.qualify_records("a" * 40, canon(spec), canon(case.policy), case.registry,
+                          case.identities, theme_sources_raw=case.theme)
+
+
 # ---------------------------------------------------------------------------
 # Test 3 — the closed exposure block
 # ---------------------------------------------------------------------------
@@ -345,9 +356,10 @@ def test_unknown_exposure_key_fails_the_contract(tmp_path):
         probation.make_activity_membership_proposal(evidence, created=CREATED)
 
 
+@pytest.mark.needs_full_checkout("data")
 def test_exposure_on_planned_product_integration_fails_the_contract():
     rows = [json.loads(line) for line in
-            _git_show("data/theme_graph/probation/activity_proposals.jsonl").decode().splitlines()
+            _committed_bytes("data/theme_graph/probation/activity_proposals.jsonl").decode().splitlines()
             if line.strip()]
     ppi = next(r for r in rows if r["status"] == "PROPOSED")
     assert ppi["evidence"]["species"] == "planned_product_integration"
@@ -482,6 +494,24 @@ def test_undisclosed_revenue_product_line_below_house_rule_refused(tmp_path):
     assert caught.value.code == "EXPOSURE_BELOW_HOUSE_RULE"
 
 
+def test_zero_revenue_denominator_refused_with_typed_code(tmp_path):
+    # The public builder must refuse a non-positive denominator with a typed code,
+    # never a ZeroDivisionError. The owner lane only yields denominators > 0, so the
+    # zero is injected straight into the fact the builder reads.
+    case = _segment_case(tmp_path, share_scope="segment")
+    spec = copy.deepcopy(case.snapshot.spec)
+    spec["fact"]["revenue_denominator"] = 0.0
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    with pytest.raises(me.ActivityAdmissionRefusal) as caught:
+        me.build_activity_membership_evidence(
+            issuer_node_id=SEG_NODE, target_theme_id=TARGET, role="operator",
+            knowledge_cutoff=KNOWLEDGE_CUTOFF, code_version=CODE_VERSION,
+            identity_reader=_segment_identity_reader,
+            disclosure_reader=lambda root, cv: snapshot,
+            exposure_role="primary", profit_driver=True)
+    assert caught.value.code == "EXPOSURE_DENOMINATOR_INVALID"
+
+
 def _segment_proposed(tmp_path):
     case = _segment_case(tmp_path)
     return probation.make_activity_membership_proposal(_segment_evidence(case), created=CREATED)
@@ -523,9 +553,10 @@ def test_matching_exposure_restatement_accepts(tmp_path):
     assert probation.validate_activity_membership_proposal(terminal) == []
 
 
+@pytest.mark.needs_full_checkout("data")
 def test_receipt_exposure_on_a_proposal_without_one_refused():
     rows = [json.loads(line) for line in
-            _git_show("data/theme_graph/probation/activity_proposals.jsonl").decode().splitlines()
+            _committed_bytes("data/theme_graph/probation/activity_proposals.jsonl").decode().splitlines()
             if line.strip()]
     ppi = next(r for r in rows if r["status"] == "PROPOSED")
     receipt = canon({"schema": "gmi.activity_curation_receipt/v1", "proposal_id": ppi["proposal_id"],
