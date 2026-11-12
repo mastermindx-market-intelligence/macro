@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_998),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_732),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,28 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #10277, fixed-main conflict composition):
+    Receiver e7f8565ca26b74b9ae0d637b336e9985d513ff9d retains #11108's
+    five DATA dependency corrections and #11101's independent marketing
+    owner +2. Preserve all 401 current owner positions and 400 sibling
+    blocks. The current prophet-lab owner still equals incorporated 9d8a0c8b:
+    add only the original five W1 lines (415 characters, 417 UTF-8 bytes),
+    retaining the landed browser fallback and every incumbent command.
+    Declarations give 12->13 commands, 27->28 test references, 1662->1734
+    joined characters, length bucket two, and weight 68->71; no override.
+    Carry only W1's +3 onto 5971/5995/5729, yielding 5974/5998/5732.
+    Keep 137/138/131 job ceilings, ten packs, assertions, selectors,
+    dependencies, timeouts, admission limits and native browser contracts.
+    Preserve all published W1 provenance and every current-main paragraph.
+    The sole historical-text correction moves the 13-character date prefix
+    from the duplicated fallback header to the incomplete Start-page header;
+    no historical date, fact or paragraph is removed or remeasured.
+    This is declaration-derived source
+    accounting, not a new planner measurement or execution-time result.
+    Original run43143658505's exact-head proof remains accepted; new-source
+    paired packing and natural successor proof are separate obligations.
+    Private/UNKNOWN resources, November19 W2 and product limits stay closed.
 
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
@@ -6023,6 +6045,90 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and admission limits unchanged. The wider selection is intended
     (closure-required); natural successor CI must qualify the
     repaired source.
+
+    2026-11-12 (PR #10277, preserve landed browser recovery):
+    Receiver 9d8a0c8be5bbac0073b99762e46ae092235acf4f includes #11051's
+    bounded browser-install fallback. Keep every current owner definition
+    and every current provenance paragraph; do not roll back or count the
+    independently landed +1/+2/+1 a second time. The retained prophet-lab
+    contribution adds only +3 per probe to current5969/5993/5727,
+    yielding5972/5996/5730. Retain job ceilings137/138/131, ten packs,
+    all assertions, selectors, runtime, admission and browser controls.
+    Preserve the accepted five-line W1 enrollment and every prior W1
+    provenance paragraph. Retain the new browser fallback in this same
+    owner; no W2 freeze/outcome, private runtime or production effect.
+    This note records source composition; actual native current-tree
+    packing and natural successor proof remain separately accountable.
+
+    2026-11-12 (PR #10277, independent Start-page composition):
+    main e752cc8a (#11019) adds its own data-base-shim +2; retain its
+    current 5968/5991/5726 accounting and the complete original W1 history.
+    Add only W1's accepted prophet-lab +3 -> 5971/5994/5729.
+    Keep job caps 137/138/131, ten packs, selection and runtime unchanged.
+    This additive source accounting is not a fresh full-tree measurement.
+    Current-tree attribution/packing and natural own-head CI remain owed;
+    no sibling funding, original-process replay or W2 unfreeze.
+
+    2026-11-11 (PR #10277, current-owner conflict recovery):
+    preserve all 401 current owners and the independently landed B17 suite.
+    The unchanged canonical estimator gives current prophet-lab weight 67;
+    its original W1 selectors and full-suite step give combined weight 70.
+    Carry only that remaining +3: 5966/5989/5724 -> 5969/5992/5727.
+    Keep job ceilings 137/138/131, ten packs, every current test and history,
+    and the stronger current basket successor. The three same-carrier W1
+    paragraphs below retain their original dates, source identities and
+    numbers. No sibling allowance, source outcome replay or W2 unfreeze.
+    Fresh canonical probe attribution and own-head CI qualify this successor.
+
+    2026-11-08 (PR #10277, second shared-CI conflict composition):
+    current main8251e41 has independently landed #10180 B17 recovery and
+    its complete measured +3 accounting. Preserve that entire current owner,
+    all394 other owners and all accepted current source. Reapply only W1
+    two selectors/comment and its existing full-suite step. The common owner
+    baseline is11 commands/26 test tokens/1365 characters, weight64; W1
+    alone is12/27/1437, weight67, while current B17 alone is12/27/1433,
+    also weight67. BOTH accepted additions are13/28/1505, weight70.
+    Equal old W1/B17 ceiling literals therefore do not fund the same work.
+    Add only W1 remaining +3 to5923/5944/5681 ->5926/5947/5684.
+    Keep jobs137/138/131, ten packs, all selectors/timeouts/runtime limits,
+    the stronger current basket guards and current replay/compactor source.
+    Both complete same-carrier historical paragraphs and the landed B17
+    paragraph remain below, with their original dates, bases and numbers.
+    Old own CLEAR322 jobs/698 semantic proof steps describes H1bb0e582,
+    not this combination. This is static source arithmetic, not a new
+    planner/timing measurement; natural new-head CI must qualify the result.
+    No unmerged10226/10192 or other sibling allowance is imported. W2
+    November19 science freeze and every original process/product hold remain.
+
+    2026-11-08 (PR #10277, current-main shared-CI conflict repair):
+    preserve the three accepted W1 intake-waterfall source/test/research blobs
+    and the original full-suite step in the existing prophet-lab owner.
+    Current main543cfe59 retains the exact incorporated-base owner preimage.
+    Carry only W1's measured +3 from run41594018398/job125777037355:
+    current5920/5941/5678 -> 5923/5944/5681; job ceilings137/138/131 and ten
+    packs remain unchanged. Source counters agree:11 ->12 run commands,
+    26 ->27 test-path occurrences,1365 ->1437 joined characters,64 ->67
+    estimated weight. Preserve current395-owner catalog, #10735 split,
+    #10745 replay-environment fix, and every current test/provenance note.
+    This is exact conservation of the completed paired measurement, not a
+    new full-tree planner run or funding for unmerged sibling contributions.
+    The original measured paragraph follows unchanged; keep current stronger
+    basket inherited-seam/strict-introduction guards rather than the old
+    whole-file basket test postimage. W2 frozen science is not unfrozen.
+
+    Entry Timing W1 exact integration (2026-11-03, PR #10277, CI
+    41594018398, tested base 135e371359aa612f6218ef319fedf42a1535473b):
+    adding the waterfall suite as a step of the existing prophet-lab job
+    increases planning weights on the three probes by exactly three units,
+    without selecting another job or pack. Hosted contract-delta measured:
+
+        templates/index.html          137 jobs, 5,909 -> 5,912 weight
+        scripts/build_free_content.py 137 jobs, 5,924 -> 5,927 weight
+        engine/prophet/plan_book.py   131 jobs, 5,665 -> 5,668 weight
+
+    Fund only the observed +3 for each weight ceiling, not a new job,
+    pack, exclusion, changed selection or runtime allowance. Preserve
+    all existing semantic test coverage and the 10-pack bound.
 
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
