@@ -9,6 +9,8 @@ Two responsibilities:
      (keep-first per date) so market_state can become a model feature once n_days >= 250.
      The keep-FIRST discipline ensures build reruns on the same day do not overwrite
      the morning snapshot with an afternoon value.
+    Only rows whose four contributing sources have qualified fresh dates are admitted.
+    Their original source dates/statuses are retained; old rows are never repaired here.
 
 Called from:
   • scripts/build_cycle.main()
@@ -104,6 +106,11 @@ def _append_pit(data_dir: Path, prior: dict) -> None:
         bc_phase      str | None
         status        fresh/stale/partial/unavailable
         built_at      ISO-8601 UTC datetime
+        source_provenance  JSON containing original per-component dates/statuses
+
+    Admission uses the existing five-calendar-day grace period for each of the four
+    contributing sources. Commodity complex is a separate display-only cross-check,
+    deliberately excluded from this row's admission. This is not model promotion.
     """
     try:
         import pandas as pd
@@ -111,7 +118,30 @@ def _append_pit(data_dir: Path, prior: dict) -> None:
         log.warning("build_regime_prior: pandas not available — skipping PIT accrual")
         return
     try:
-        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        now = datetime.now(timezone.utc)
+        today = now.strftime("%Y-%m-%d")
+        # Qualify BEFORE the irreversible keep-first append. The row combines four
+        # components: a fresh build date or aggregate label cannot date their values.
+        # Use the composer's existing grace rule, not a second freshness threshold.
+        from engine.regime_prior import _STALE_DAYS
+        sources = prior.get("sources")
+        if not isinstance(sources, dict):
+            log.warning("build_regime_prior: missing PIT source provenance; skipping")
+            return
+        for name in ("regime", "market_state", "vol_regime", "business_cycle"):
+            source = sources.get(name)
+            stamp = source.get("asof") if isinstance(source, dict) else None
+            try:
+                observed = datetime.strptime(stamp, "%Y-%m-%d").date()
+                valid = observed.isoformat() == stamp
+            except (TypeError, ValueError):
+                valid = False
+            if not valid or not 0 <= (now.date() - observed).days <= _STALE_DAYS:
+                log.warning("build_regime_prior: unqualified PIT source %s; skipping", name)
+                return
+            if source.get("status") != "fresh":
+                log.warning("build_regime_prior: non-fresh PIT source %s; skipping", name)
+                return
         ms = prior.get("market_state") or {}
         row = {
             "date": today,
@@ -122,7 +152,8 @@ def _append_pit(data_dir: Path, prior: dict) -> None:
             "vol_regime": prior.get("vol_regime"),
             "bc_phase": prior.get("bc_phase"),
             "status": prior.get("status"),
-            "built_at": datetime.now(timezone.utc).isoformat(),
+            "built_at": now.isoformat(),
+            "source_provenance": json.dumps(sources, ensure_ascii=False, sort_keys=True),
         }
         out_path = data_dir / "regime" / "market_state_history.parquet"
 
@@ -167,3 +198,4 @@ def main() -> int:
 if __name__ == "__main__":
     import sys
     sys.exit(main())
+
