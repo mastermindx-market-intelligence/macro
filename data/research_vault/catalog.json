@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T18:06:24.873390+00:00",
-  "count": 3243,
+  "generated_at": "2026-11-12T18:28:13.975481+00:00",
+  "count": 3244,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -277,6 +277,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yehki0mdi2n-efad97",
+      "title": "GS Warren Equity Index Vol Update 11Nov26 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:11:19Z",
+      "summary_points": [
+        "Nvidia CEO Risk: SPX/NDX surge on AI optimism offset by NVDIA -9% on CEO meeting rumors (NDX -80bps), creating volatility despite VIX decline; key risk: 1m call spreads for breakout amid pending CEO replacement.",
+        "Options Flow & Volatility Shift: Strong short-dated SPY call spread flows (27Nov 775/800) with straddle spreads at 66bps/88bps; declining Vol ATMF and Skew (e.g., 18Dec26: Vol ATMF Chg -1.65, Skew Chg -0.0264) signal reduced market stress.",
+        "US CPI & Fed Policy: Strong CPI print indicates Fed \"behind the curve,\" with December as critical inflection point for policy timing; data release Friday drives near-term rate expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
