@@ -2,11 +2,11 @@
 
 # Agent OS state
 
-Generated: 2026-11-12T05:53:52Z  |  115 workstreams (92 active · 5 blocked · 14 done · 4 parked)
+Generated: 2026-11-12T07:53:18Z  |  115 workstreams (92 active · 5 blocked · 14 done · 4 parked)
 
 | Input | Value |
 |---|---|
-| active_builds | data/governance/active_builds.json@2026-11-12T05:53:51.922910+00:00 |
+| active_builds | data/governance/active_builds.json@2026-11-12T07:53:18.290594+00:00 |
 | active_builds age | 0.0h |
 | worktrees | 1 |
 | records | 115 WS · 610 DEC · 671 DSC · 933 handoffs |
@@ -373,6 +373,7 @@ Generated: 2026-11-12T05:53:52Z  |  115 workstreams (92 active · 5 blocked · 1
 - agentos/decisions/DEC-K3E-EVAL1-CUSTODY-UNDER-CHAIRMAN-DIRECTIVE-2026-10-07.md: [review-overdue] review_by 2026-11-07 has passed
 - agentos/decisions/DEC-MARKETONTOLOGY-SOL-RESEARCH-DELIVERY-2026-09-24.md: [review-overdue] review_by 2026-10-01 has passed
 - agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md: [review-overdue] review_by 2026-09-13 has passed
+- agentos/decisions/DEC-PRODUCTION-RECORDS-ROW-BOUND-STAYS-FAIL-CLOSED-UNTIL-PREREG-V2.md: [review-overdue] review_by 2026-11-11 has passed
 - agentos/decisions/DEC-PROPHET-US-PERMANENCE-NET.md: [review-overdue] review_by 2026-09-10 has passed
 - agentos/decisions/DEC-PROPHET-V4-THEIA-SOURCE-RIGHTS.md: [review-overdue] review_by 2026-10-01 has passed
 - agentos/decisions/DEC-RIC-PCE-RELEASE-BRIDGE.md: [review-overdue] review_by 2026-09-30 has passed
@@ -382,3 +383,4 @@ Generated: 2026-11-12T05:53:52Z  |  115 workstreams (92 active · 5 blocked · 1
 - agentos/decisions/DEC-W2C-M0C-V2-REST-SINGLE-TICKER-DAILY.md: [review-overdue] review_by 2026-08-21 has passed
 - agentos/decisions/DEC-W2C-M0D0-0400Z-SOURCE-SEAL-GO.md: [review-overdue] review_by 2026-08-25 has passed
 - agentos/decisions/DEC-WORKSPACE-SUPERVISION-EXTENDS-EXISTING-AUTONOMY.md: [review-overdue] review_by 2026-09-20 has passed
+- agentos/discoveries/DSC-TERMINAL-GREY-DOT-IDENTITY.md: [uncited-discovery] no citations and 91d old — GC candidate (flagged, not deleted)
