@@ -249,7 +249,8 @@ def _episode(series: pd.Series, cfg: dict[str, Any]) -> dict[str, Any] | None:
       2. Raw trailing-window extremum (peak→latest release / trough→latest build).
       3. Single-day |ΔTGA| trigger (anchored on the prior day).
 
-    Returns {kind, anchor(date), anchor_str, magnitude_bn, chg_1d_bn, days, direction,
+    Returns {kind, anchor(date), anchor_str, magnitude_bn, chg_1d_bn, days,
+    elapsed_calendar_days, direction,
     quarter_end_adjacent, quarter_end_date, source} or None when nothing clears threshold.
     """
     n = len(series)
@@ -298,7 +299,8 @@ def _episode(series: pd.Series, cfg: dict[str, Any]) -> dict[str, Any] | None:
                                     else max(cands, key=lambda c: abs(c[2])))
     anchor_d = pd.Timestamp(anchor_ts).date()
     latest_d = pd.Timestamp(series.index[-1]).date()
-    # business days elapsed from anchor to latest (# observations in the span − 1)
+    # Retain the legacy observation-step count for compatibility and path slicing.
+    # Missing releases mean this is not an elapsed business-day duration.
     try:
         days = int(len(series.loc[pd.Timestamp(anchor_ts):series.index[-1]]) - 1)
     except Exception:  # noqa: BLE001
@@ -314,6 +316,7 @@ def _episode(series: pd.Series, cfg: dict[str, Any]) -> dict[str, Any] | None:
         "magnitude_bn": round(mag, 3),
         "chg_1d_bn": round(chg_1d, 3),
         "days": days,
+        "elapsed_calendar_days": (latest_d - anchor_d).days,
         "direction": "drawdown" if kind == "tga_release" else "build",
         "quarter_end_adjacent": qe_adj,
         "quarter_end_date": qe_date,
@@ -324,18 +327,18 @@ def _episode(series: pd.Series, cfg: dict[str, Any]) -> dict[str, Any] | None:
 def _impulse_summary(ep: dict[str, Any]) -> tuple[str, str]:
     """Deterministic EN/zh one-liner for the episode (numbers-only, no market claim)."""
     mag = abs(ep["magnitude_bn"])
-    days = ep["days"]
+    days = ep["elapsed_calendar_days"]
     since = _pretty(ep["anchor_str"])
     qe = ep["quarter_end_adjacent"]
     if ep["kind"] == "tga_release":
-        en = (f"TGA drawdown of ${mag:.1f}bn over {days} business day(s) since "
+        en = (f"TGA drawdown of ${mag:.1f}bn over {days} calendar day(s) since "
               f"{since}{' (quarter-end)' if qe else ''} — cash released into bank reserves.")
-        zh = (f"自{since}{'（季末）' if qe else ''}以来，TGA在{days}个交易日内减少约{mag * 10:.0f}亿美元"
+        zh = (f"自{since}{'（季末）' if qe else ''}以来，TGA在{days}个日历日内减少约{mag * 10:.0f}亿美元"
               f"——现金释放至银行准备金。")
     else:
-        en = (f"TGA rebuild of ${mag:.1f}bn over {days} business day(s) since "
+        en = (f"TGA rebuild of ${mag:.1f}bn over {days} calendar day(s) since "
               f"{since} — cash drained from bank reserves.")
-        zh = (f"自{since}以来，TGA在{days}个交易日内回补约{mag * 10:.0f}亿美元"
+        zh = (f"自{since}以来，TGA在{days}个日历日内回补约{mag * 10:.0f}亿美元"
               f"——现金从银行准备金抽离。")
     return en, zh
 
@@ -445,6 +448,7 @@ def snapshot(root: str | Path | None = None, _tga: Any = None, _netliq: Any = No
                 "direction": ep["direction"],
                 "magnitude_bn": ep["magnitude_bn"],
                 "days": ep["days"],
+                "elapsed_calendar_days": ep["elapsed_calendar_days"],
                 "since": ep["anchor_str"],
                 "quarter_end_adjacent": ep["quarter_end_adjacent"],
                 "summary_en": en,
@@ -610,7 +614,7 @@ def detect_events(root: str | Path | None = None, _tga: Any = None, _plumbing: A
             f"→ {_pretty(latest_d.isoformat())}):",
             *path_lines,
             "",
-            f"Episode magnitude: {mag:+.1f}bn over {ep['days']} business day(s)"
+            f"Episode magnitude: {mag:+.1f}bn over {ep['elapsed_calendar_days']} calendar day(s)"
             + (" — anchored on a calendar quarter-end." if qe else ".")
             + f" Latest TGA level: ${latest_level:.1f}bn.",
             "",

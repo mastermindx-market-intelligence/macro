@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -78,6 +79,65 @@ def test_id_is_stable_as_the_episode_extends():
         assert evs, f"no event at cut {cut}"
         ids.add(evs[0]["id"])
     assert ids == {"tw-2026-06-30-tga-release"}
+
+
+@pytest.mark.parametrize("anchor,latest,elapsed", [
+    ("2026-08-07", "2026-08-10", 3),  # weekend
+    ("2026-11-25", "2026-11-30", 5),  # holiday + weekend
+    ("2024-02-28", "2024-03-01", 2),  # leap day
+    ("2025-12-31", "2026-01-02", 2),  # year boundary
+    ("2026-05-12", "2026-07-09", 58),  # sparse acceptance shape
+])
+@pytest.mark.parametrize("levels,kind", [((950.0, 800.0), "tga_release"),
+                                        ((800.0, 950.0), "tga_build")])
+def test_episode_elapsed_time_uses_dates_not_observation_count(anchor, latest, elapsed,
+                                                              levels, kind):
+    pairs = [(anchor, levels[0]), (latest, levels[1])]
+    ep = tw._episode(_bn_series(pairs), tw._cfg())
+    assert ep["kind"] == kind
+    assert ep["days"] == 1  # existing observation-step/path-slicing contract
+    assert ep["elapsed_calendar_days"] == elapsed
+    snapshot = tw.snapshot(_tga=_mn_frame(pairs), _plumbing={}, _regime={})
+    impulse = snapshot["tga_impulse"]
+    assert impulse["days"] == 1
+    assert impulse["elapsed_calendar_days"] == elapsed
+    assert f"over {elapsed} calendar day(s)" in impulse["summary_en"]
+    assert f"在{elapsed}个日历日内" in impulse["summary_zh"]
+    assert "business day" not in impulse["summary_en"]
+    assert "交易日" not in impulse["summary_zh"]
+    event, = tw.detect_events(_tga=_mn_frame(pairs), _plumbing={}, _regime={})
+    assert event["id"] == f"tw-{anchor}-{kind.replace('_', '-')}"
+    assert f"over {elapsed} calendar day(s)" in event["body"]
+    assert "business day" not in event["body"]
+    assert f"{anchor}: ${levels[0]:.1f}bn" in event["body"]
+    assert f"{latest}: ${levels[1]:.1f}bn" in event["body"]
+
+
+@pytest.mark.parametrize("direction", [-1, 1])
+def test_elapsed_duration_is_invariant_to_interior_observation_gaps(direction):
+    dates = pd.bdate_range("2026-08-03", "2026-08-20")
+    pairs = [(day.strftime("%Y-%m-%d"), 800.0 + direction * 150.0 * i / (len(dates)-1))
+             for i, day in enumerate(dates)]
+    full = tw.snapshot(_tga=_mn_frame(pairs), _plumbing={}, _regime={})["tga_impulse"]
+    sparse = tw.snapshot(_tga=_mn_frame([pairs[0], pairs[-1]]),
+                         _plumbing={}, _regime={})["tga_impulse"]
+    assert full["days"] == len(dates)-1
+    assert sparse["days"] == 1
+    assert full["elapsed_calendar_days"] == sparse["elapsed_calendar_days"] == 17
+    assert full["summary_en"] == sparse["summary_en"]
+    assert full["summary_zh"] == sparse["summary_zh"]
+
+
+def test_quarter_end_duration_preserves_original_episode_and_path():
+    ep = tw._episode(_bn_series(_ACCEPT), tw._cfg())
+    assert ep["days"] == 7
+    assert ep["elapsed_calendar_days"] == 9
+    assert ep["source"] == "quarter_end"
+    event, = tw.detect_events(_tga=_mn_frame(_ACCEPT), _plumbing={}, _regime={})
+    assert event["id"] == "tw-2026-06-30-tga-release"
+    assert "over 9 calendar day(s)" in event["body"]
+    assert "anchored on a calendar quarter-end" in event["body"]
+    assert all(f"{day}: ${level:.1f}bn" in event["body"] for day, level in _ACCEPT[-8:])
 
 
 # --------------------------------------------------------------------------- #
