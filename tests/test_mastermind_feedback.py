@@ -770,6 +770,48 @@ class TestUnknownSchema:
 # 8. build_and_write integration test
 # ---------------------------------------------------------------------------
 
+class TestRejectedMetadataPrivacy:
+    @pytest.mark.parametrize("schema", [
+        [], {}, ["PRIVATE_SENTINEL"], {"private": "PRIVATE_SENTINEL"},
+        "PRIVATE_SENTINEL", "mastermind_nw_feedback.v99 PRIVATE_SENTINEL",
+        None, 42, True,
+    ])
+    def test_invalid_schema_is_absent_without_raw_metadata(self, tmp_path, schema):
+        obj = _v1_fixture()
+        obj["schema"] = schema
+        _write_feedback(tmp_path, obj)
+        summary = build_summary(root=tmp_path)
+        assert summary["state"] == "absent"
+        assert summary["totals"] is None
+        assert summary["source_schema"] is None
+        assert "PRIVATE_SENTINEL" not in json.dumps(summary)
+        assert all(value is False for key, value in summary["authority"].items()
+                   if key.startswith("can_"))
+
+    def test_invalid_timestamp_diagnostic_does_not_copy_source(self, tmp_path):
+        obj = _v1_fixture(generated_at="PRIVATE_SENTINEL")
+        _write_feedback(tmp_path, obj)
+        summary = build_summary(root=tmp_path)
+        assert summary["state"] == "absent"
+        assert summary["totals"] is None
+        assert "PRIVATE_SENTINEL" not in json.dumps(summary)
+
+    def test_read_error_diagnostic_does_not_copy_exception(self, tmp_path, monkeypatch):
+        source = _write_feedback(tmp_path, _v1_fixture())
+        original = Path.read_text
+
+        def fail_source(path, *args, **kwargs):
+            if path == source:
+                raise OSError("PRIVATE_SENTINEL")
+            return original(path, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "read_text", fail_source)
+        summary = build_summary(root=tmp_path)
+        assert summary["state"] == "absent"
+        assert summary["totals"] is None
+        assert "PRIVATE_SENTINEL" not in json.dumps(summary)
+
+
 class TestBuildAndWrite:
     def test_writes_artifact(self, tmp_path):
         _write_feedback(tmp_path, _v1_fixture())
@@ -1442,3 +1484,40 @@ class TestIngestSwitchFailsOpen:
         _write_config(tmp_path, "orchestrator:\n  ingest_bot_feedback: false\n")
         result = read_feedback(root=tmp_path)
         assert result["state"] == "disabled"
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+@pytest.mark.parametrize("field", ["window_days", "theses_open"])
+def test_nonfinite_count_metadata_degrades_without_crashing(tmp_path, value, field):
+    raw = _v1_fixture()
+    if field == "window_days":
+        raw["window_days"] = value
+    else:
+        raw["thesis_counts"]["open"] = value
+    _write_feedback(tmp_path, raw)
+    result = build_summary(root=tmp_path)
+    assert result["state"] == "present"
+    target = result["window_days"] if field == "window_days" else result["totals"]["theses_open"]
+    assert target is None
+    assert result["totals"]["theses_total"] == 2
+    assert result["is_context_only"] is True
+    assert all(v is False for k, v in result["authority"].items() if k != "notes")
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+def test_nonfinite_count_labels_are_dropped(value):
+    from engine.neuralweb.mastermind_feedback import _sanitize_label_dict
+    notes = []
+    result = _sanitize_label_dict({"invalid": value, "valid": 3.0}, "synthetic", notes)
+    assert result == {"valid": 3}
+    assert len(notes) == 1
+    assert "dropped 1 label(s)" in notes[0]
+
+
+@pytest.mark.parametrize("value, expected", [
+    (0, 0), (3, 3), (3.0, 3), (-2, -2), (10**100, 10**100),
+    (1.5, None), (True, None), (False, None), (None, None), ("3", None),
+])
+def test_nonfinite_count_repair_preserves_integer_contract(value, expected):
+    from engine.neuralweb.mastermind_feedback import _int_or_none
+    assert _int_or_none(value) == expected

@@ -14810,7 +14810,7 @@ jobs:
       - name: factor boundary selftest (guard fires on planted violations)
         run: python3 scripts/check_factor_boundaries.py --selftest
       - name: synapse owning contracts in one pytest session
-        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q
+        run: python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_rotation_risk_envelope.py tests/test_rotation_risk_consumers.py tests/test_factor_deescalation_shadow.py tests/test_edgar_8k_items.py tests/test_edgar_8k_counterparty.py tests/test_edgar_quarterly_tags.py tests/test_edgar_quarterly_period_start.py tests/test_edgar_universe_widening.py tests/test_edgar_fts_confirmed_absent_first_request.py tests/test_sp1500_pit_sectors.py tests/test_winner_autopsy.py -q tests/test_mastermind_feedback.py --deselect tests/test_mastermind_feedback.py::TestRealArtifactSmoke
       # Share one pytest session across the five existing offline EDGAR suites.
       # Test inventory, dependencies and ordinary scope inference are unchanged.
       # GR3b: 8-K counterparty extraction unlock. GR3 (#5008) measured the column
@@ -34813,37 +34813,6 @@ jobs:
     gate: code
     timeout-minutes: 8
     runs-on: ubuntu-latest
-    # MR2 shares the existing look-ahead step; declared inputs union with inference.
-    paths:
-      - "tests/test_register_factor_hypotheses.py"
-      - "tests/test_factor_intelligence_state.py"
-      - "tests/test_build_measurement_evidence_gap.py"
-      - "tests/test_research_implication_card.py"
-      - "tests/test_measurement_research_implications.py"
-      - "tests/test_measurement_verdict_preservation.py"
-      - "tests/test_verdict_preservation_edge_matrix.py"
-      - "tests/test_no_lookahead.py"
-      - "tests/test_a2_oos_analysis.py"
-      - "tests/test_construction_divergence_study.py"
-      - "tests/test_expect_drift_panel.py"
-      - "tests/test_f_hz1_study.py"
-      - "tests/test_falsosc_trial_v1.py"
-      - "tests/test_grade_breadth_divergence.py"
-      - "tests/test_intraday_large_cap_tech_leader_study.py"
-      - "tests/test_long_hold_gap_guard.py"
-      - "tests/test_macro_fire_context.py"
-      - "tests/test_options_history_gauntlet.py"
-      - "tests/test_options_history_retrospective.py"
-      - "tests/test_per_fire_sector_benchmark.py"
-      - "tests/test_run_w1_sev.py"
-      - "tests/test_run_w2_slq.py"
-      - "tests/test_thesis_funnel_history.py"
-      - "tests/test_w3_fingerprint_stats.py"
-      - "tests/test_pick_forward_dist.py"
-      - "tests/test_pick_forward_dist_phase1.py"
-      - "engine/market_tide_event_response.py"
-      - "scripts/market_tide_event_response.py"
-      - "tests/test_market_tide_event_response.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -34858,7 +34827,7 @@ jobs:
       - name: factor registry + measurement evidence and research implications
         run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py tests/test_research_implication_card.py tests/test_measurement_research_implications.py tests/test_measurement_verdict_preservation.py tests/test_verdict_preservation_edge_matrix.py -q
       - name: look-ahead tripwire over engine/ + collectors/ (feature-leak guard)
-        run: python -m pytest tests/test_no_lookahead.py tests/test_market_tide_event_response.py -q
+        run: python -m pytest tests/test_no_lookahead.py -q
       - name: study + trial lanes (OOS, divergence, drift, fingerprints, gauntlets)
         run: python -m pytest tests/test_a2_oos_analysis.py tests/test_construction_divergence_study.py tests/test_expect_drift_panel.py tests/test_f_hz1_study.py tests/test_falsosc_trial_v1.py tests/test_grade_breadth_divergence.py tests/test_intraday_large_cap_tech_leader_study.py tests/test_long_hold_gap_guard.py tests/test_macro_fire_context.py tests/test_options_history_gauntlet.py tests/test_options_history_retrospective.py tests/test_per_fire_sector_benchmark.py tests/test_run_w1_sev.py tests/test_run_w2_slq.py tests/test_thesis_funnel_history.py tests/test_w3_fingerprint_stats.py -q
       # Pick-conditional forward distributions, waves 1 + 1.5 (wired 2026-08-06).
@@ -49553,6 +49522,13 @@ jobs:
       - lib/exchange_holidays.py
       - lib/hk_calendar.py
       - lib/nyse_calendar.py
+      # Market Tide shares this historical event-response test job.
+      - engine/__init__.py
+      - scripts/__init__.py
+      - tests/__init__.py
+      - engine/market_tide_event_response.py
+      - scripts/market_tide_event_response.py
+      - tests/test_market_tide_event_response.py
       - tests/test_sni_s2_ledger_order.py
       - tests/test_sni_s2_mirror.py
       - tests/test_sni_s2_clock.py
@@ -49576,7 +49552,7 @@ jobs:
       - name: install minimal S2 dependencies
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: S2 event response contracts (P04-P06, historical-descriptive)
-        run: python -m pytest tests/test_sni_s2_ledger_order.py tests/test_sni_s2_mirror.py tests/test_sni_s2_clock.py tests/test_sni_s2_selection.py tests/test_sni_s2_collapse.py tests/test_sni_s2_abstain.py tests/test_sni_s2_stats.py tests/test_sni_s2_info_leak.py tests/test_sni_s2_report_order.py tests/test_sni_s2_cli.py tests/test_sni_s2_seal_integrity.py tests/test_sni_s2_language.py tests/test_sni_s2_property.py tests/test_sni_s2_v1_1_hardening.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_sni_s2_ledger_order.py tests/test_sni_s2_mirror.py tests/test_sni_s2_clock.py tests/test_sni_s2_selection.py tests/test_sni_s2_collapse.py tests/test_sni_s2_abstain.py tests/test_sni_s2_stats.py tests/test_sni_s2_info_leak.py tests/test_sni_s2_report_order.py tests/test_sni_s2_cli.py tests/test_sni_s2_seal_integrity.py tests/test_sni_s2_language.py tests/test_sni_s2_property.py tests/test_sni_s2_v1_1_hardening.py tests/test_market_tide_event_response.py -q -p no:cacheprovider
 
   single-name-coverage-profiles:
     if: ${{ false }}
