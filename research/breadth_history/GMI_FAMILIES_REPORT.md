@@ -126,8 +126,10 @@ same floors.
 The links are split by rights class, like the series:
 - house rows go to `group_links_current.parquet` (1,383 rows);
 - every row touching a vendor family (subsector, theme) goes to
-  `internal_only/vendor_internal_only_group_links_current.parquet` (13,982 rows), with the
-  vendor rights fields in its sidecar.
+  `vendor_internal_only_group_links_current.parquet` (13,982 rows), with the
+  vendor rights fields in its sidecar. The repository is public, so this vendor file is kept
+  off git, in scratch (the exporter's `--vendor-out`, default `/tmp/si_plan/quant/vendor_out/`),
+  never committed or pushed (COO ruling 38 §2b).
 
 One row per link between two groups. There is no ticker column and no prices. Columns:
 - child family and id; parent family and id; link type;
@@ -194,7 +196,7 @@ python scripts/build_tree_breadth_and_index.py --closes <scratch, first download
   --download-meta <scratch> --disagreement <yearly csv> --start 2000-01-01 --daily house
 python scripts/export_gmi_history_registry.py --root <same> --commit <sha> --index \
   data/breadth/history/house_ew_index_weekly_current.parquet \
-  data/breadth/history/internal_only/vendor_internal_only_ew_index_weekly_current.parquet
+  /tmp/si_plan/quant/vendor_out/vendor_internal_only_ew_index_weekly_current.parquet
 ```
 
 ## Files and sizes
@@ -206,15 +208,16 @@ python scripts/export_gmi_history_registry.py --root <same> --commit <sha> --ind
 | `house_ew_index_daily_current.parquet` | 5,376,121 |
 | `house_breadth_and_index_current.meta.json` | 19,855 |
 | `group_links_current.parquet` + sidecar | 24,936 + 11,030 |
-| `internal_only/vendor_internal_only_breadth_weekly_current.parquet` | 3,824,814 |
-| `internal_only/vendor_internal_only_ew_index_weekly_current.parquet` | 3,780,804 |
-| `internal_only/vendor_internal_only_breadth_and_index_current.meta.json` | 39,923 |
-| `internal_only/vendor_internal_only_group_links_current.parquet` + sidecar | 41,145 + 9,663 |
+| `vendor_internal_only_breadth_weekly_current.parquet` (scratch, off git) | 3,824,814 |
+| `vendor_internal_only_ew_index_weekly_current.parquet` (scratch, off git) | 3,780,804 |
+| `vendor_internal_only_breadth_and_index_current.meta.json` (scratch, off git) | 39,923 |
+| `vendor_internal_only_group_links_current.parquet` + sidecar (scratch, off git) | 41,145 + 9,663 |
 | `registry/*.csv` (four files) | 15,144 |
 | **Total** | **14.6 MB** |
 
-The vendor daily index is no longer committed. With size class and the small groups it
-measures 18.2 MB at the repository's compression, or 14.4 MB at maximum zstd. Either way the
-total would be over 25 MB (a working size figure, not a repository rule). It rebuilds from the scratch download with `--daily`. The house
-daily index is committed. #11107's committed files are unchanged at their checked head. This
-draft regenerates them on top of it.
+No vendor file is committed: the repository is public, so the whole vendor set (breadth,
+weekly index, sidecar and links) is kept off git, in scratch (COO ruling 38 §2b). The vendor
+daily index is not built by default either; with size class and the small groups it measures
+18.2 MB at the repository's compression, or 14.4 MB at maximum zstd. It rebuilds from the
+scratch download with `--daily`. The house daily index is committed. #11107's committed house
+files are unchanged at their checked head. This draft regenerates them on top of it.
