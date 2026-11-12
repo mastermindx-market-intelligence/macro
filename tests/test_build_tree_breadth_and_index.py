@@ -436,6 +436,10 @@ def test_vendor_links_stay_with_vendor_files():
     assert ((vend.child_family.isin(ex.VENDOR_FAMILIES)) | (vend.parent_family.isin(ex.VENDOR_FAMILIES))).all()
     meta = json.loads(LINK_FILES["internal_only"][0].with_suffix(".meta.json").read_text())
     assert meta["source_family"] == "finviz_themes"
+    # no subsector -> house theme rows without an exact key; the cause is stated in one sentence
+    if meta["subsectors_matched_to_local_theme"] == 0:
+        assert meta["subsector_to_theme_cause"] == ex.SUBSECTOR_THEME_CAUSE
+        assert not ((vend.child_family == "subsector") & (vend.parent_family == "gmi_theme")).any()
 
 
 @_needs

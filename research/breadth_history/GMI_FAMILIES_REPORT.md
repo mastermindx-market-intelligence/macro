@@ -162,6 +162,15 @@ vendor subsectors as `ltheme:finviz:*` nodes, but only as company → local them
 subsector-to-theme link today, and the table carries none. The exporter writes such rows
 automatically if the graph gains them.
 
+The cause was checked by an independent read at the pinned commit. The keys are not the
+problem: each subsector key equals its node id suffix, `external_ids.subtheme_key` and
+`source_meta.source_local_id`, 268 of 268. The graph withholds the edge by design.
+`engine/theme_graph/materialize.py:1385-1390` says no concept-grain curation exists for the
+vendor subthemes and a mechanical mapping would smear them onto the wrong themes. The
+crosswalk's `subsector_keys` hold the 40 vendor theme names (14 of 14 match a theme key, 0 a
+subsector key). So there is no exact documented key, no rows are added, and the vendor links
+sidecar states the cause as `subsector_to_theme_cause`.
+
 **Baskets.** Only 18 of the 49 US baskets express a house theme in the graph. The other 31
 are the crosswalk's `unmapped_baskets`.
 

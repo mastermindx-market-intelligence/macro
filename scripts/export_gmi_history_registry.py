@@ -65,6 +65,14 @@ RELS = "data/company_intelligence/relationships/relationship_edges.json"
 REL_SPECIES = ("supplier_customer", "contract_manufacturing", "component_dependency")
 HUB_MIN = 5
 VENDOR_FAMILIES = ("subsector", "theme")
+# COO ruling on #11146 (2026-11-12): the 0-of-268 subsector -> house theme match needs a stated cause.
+SUBSECTOR_THEME_CAUSE = (
+    "Each vendor subsector key equals its graph node id exactly (ltheme:finviz:<key>, 268 of 268), "
+    "but the graph by design mints no EXPRESSES edge from a finviz local theme to a house theme "
+    "(engine/theme_graph/materialize.py:1385-1390: no concept-grain curation exists for its "
+    "subthemes, and a mechanical mapping would smear application-tier subthemes onto "
+    "infrastructure-tier themes), and config/theme_crosswalk.yml keys only the 40 vendor theme "
+    "names, so no exact documented subsector-to-theme key exists and no such rows are written.")
 LINK_COLUMNS = ["child_family", "child_id", "parent_family", "parent_id", "link_type",
                 "pathway_node", "node_type", "source_file", "source_commit",
                 "child_has_series", "parent_has_series", "n_shared", "child_n", "parent_n",
@@ -319,6 +327,7 @@ def main() -> None:
         if rc == "internal_only":
             from scripts.build_tree_breadth_and_index import VENDOR_RIGHTS
             meta.update(VENDOR_RIGHTS)
+            meta["subsector_to_theme_cause"] = SUBSECTOR_THEME_CAUSE
         (d / f"{stem}.meta.json").write_text(json.dumps(meta, indent=1, default=str) + "\n")
         summary[rc] = int(len(part))
     print(json.dumps({"rows": summary, "subsectors_matched": m["subsectors_matched_to_local_theme"],

@@ -413,5 +413,6 @@
  "source_family": "finviz_themes",
  "rights_source": "config/theme_sources.yml:33",
  "rights_sentence": "retained internal-only. NO public/customer display or redistribution rights granted",
- "use": "internal research data: no name or number from these families goes to any site page, site data file, Terminal surface, member page or public bucket (COO ruling 32)"
+ "use": "internal research data: no name or number from these families goes to any site page, site data file, Terminal surface, member page or public bucket (COO ruling 32)",
+ "subsector_to_theme_cause": "Each vendor subsector key equals its graph node id exactly (ltheme:finviz:<key>, 268 of 268), but the graph by design mints no EXPRESSES edge from a finviz local theme to a house theme (engine/theme_graph/materialize.py:1385-1390: no concept-grain curation exists for its subthemes, and a mechanical mapping would smear application-tier subthemes onto infrastructure-tier themes), and config/theme_crosswalk.yml keys only the 40 vendor theme names, so no exact documented subsector-to-theme key exists and no such rows are written."
 }
