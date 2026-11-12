@@ -2457,14 +2457,48 @@ def _build_financials(blob: dict | None) -> dict | None:
     shares_yoy = ca.get("shares_yoy_change_pct")
     bby = ca.get("buyback_yield")
     cap_rows = []
+    def annual_label(period):
+        # Older payloads lack selected-period metadata. Never infer an interval
+        # from the current date or the other operand's fiscal year.
+        if not isinstance(period, dict):
+            return None
+        fy, end = period.get("fy"), period.get("period_end")
+        if (isinstance(fy, bool) or not isinstance(fy, int)
+                or not isinstance(end, str)
+                or len(end) != 10 or not end[:4].isdigit()
+                or end[4] != "-" or end[7] != "-"
+                or not end[5:7].isdigit() or not end[8:].isdigit()):
+            return None
+        try:
+            date.fromisoformat(end)
+        except ValueError:
+            return None
+        return f"FY{fy} / {end}"
+
     if repurch is not None:
+        coverage = ca.get("repurch_coverage")
+        labels = {
+            "full": ("Buybacks (TTM)", "回购（TTM）"),
+            "annual_fallback": ("Buybacks (annual fallback)", "回购（年度回退）"),
+            "partial": ("Buybacks (partial quarters)", "回购（部分季度）"),
+        }
+        label_en, label_zh = labels.get(
+            coverage, ("Buybacks (period unqualified)", "回购（期间未确认）")
+        )
+        period = annual_label(ca.get("repurch_annual_period"))
+        if coverage == "annual_fallback":
+            suffix = period or "period unknown"
+            label_en += f" — {suffix}"
+            label_zh += f" — {period or '期间未知'}"
         cap_rows.append({
-            "label_en": "Buybacks (TTM)", "label_zh": "回购（TTM）",
+            "label_en": label_en, "label_zh": label_zh,
             "value": _humanize_number(repurch),
         })
     if sbc is not None:
+        period = annual_label(ca.get("sbc_annual_period"))
         cap_rows.append({
-            "label_en": "Stock-based comp", "label_zh": "股权薪酬",
+            "label_en": f"Stock-based comp (annual) — {period or 'period unknown'}",
+            "label_zh": f"股权薪酬（年度） — {period or '期间未知'}",
             "value": _humanize_number(sbc),
         })
     if shares_yoy is not None:
