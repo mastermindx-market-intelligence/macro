@@ -1,0 +1,408 @@
+{
+  "asof": "2026-09-18",
+  "benchmark": {
+    "bytes": 244060,
+    "git_blob_sha1": "085734fce75572291ae05e7059df182c7140ab40",
+    "path": "data/yahoo/SPY.parquet",
+    "sha256": "cb67cebc79518e6c8de3c558c5a0c18ec252389054b2f8394b354e88a7af0ea0",
+    "status": "PRESENT",
+    "ticker": "SPY"
+  },
+  "measurement_module": {
+    "git_blob_sha1": "325da0e5928aa0f6f281fb0d410bf9b3ba8843eb",
+    "path": "engine/subsector_rotation.py"
+  },
+  "members": [
+    {
+      "bytes": 198674,
+      "git_blob_sha1": "833117f21a8dae741ef8cfc4ee01262f605e31c6",
+      "path": "data/yahoo/NVDA.parquet",
+      "sha256": "d479f74c86c7a0521e8a15d057ba94e76f98885b8c1a918f5d7e26893ce1c438",
+      "status": "PRESENT",
+      "ticker": "NVDA"
+    },
+    {
+      "bytes": 261246,
+      "git_blob_sha1": "ded561c8341c0c99de454bf9f1e272f123bc4980",
+      "path": "data/yahoo/AMD.parquet",
+      "sha256": "4315536aee0260e1c6a7673184f7422bdc1b951839825c660faeb863170559f9",
+      "status": "PRESENT",
+      "ticker": "AMD"
+    },
+    {
+      "bytes": 294253,
+      "git_blob_sha1": "6427c104a25b7f431e6c39548a8d03ba4fa0096a",
+      "path": "data/yahoo/INTC.parquet",
+      "sha256": "7e649c0ec714a05147a7590d8125aed2ab391a8a02bf803b2c1875ea47b55c54",
+      "status": "PRESENT",
+      "ticker": "INTC"
+    },
+    {
+      "bytes": 24192,
+      "git_blob_sha1": "363d8288ca0d45251b948d3145331eaf4cfb5e3c",
+      "path": "data/yahoo/ARM.parquet",
+      "sha256": "65383da19ae375503f3ae9be9a92538620aab52ff7aeb45613e399b86e05ebb8",
+      "status": "PRESENT",
+      "ticker": "ARM"
+    },
+    {
+      "bytes": 175186,
+      "git_blob_sha1": "e7ff0adf77bb8e200a837e7723db3bff99757e63",
+      "path": "data/yahoo/MRVL.parquet",
+      "sha256": "ec1cb3aadf856aeaefd6265d4549e9b9a224613994a488d313f6505baaf17cdc",
+      "status": "PRESENT",
+      "ticker": "MRVL"
+    },
+    {
+      "bytes": 237709,
+      "git_blob_sha1": "add49c01cd709136774f3a00e0f775ffaadf0acc",
+      "path": "data/yahoo/QCOM.parquet",
+      "sha256": "fe484e63783a37a1ce4ce4bdeecceba2f3857c69b09ff308c16ba57fa2651f41",
+      "status": "PRESENT",
+      "ticker": "QCOM"
+    },
+    {
+      "bytes": 127391,
+      "git_blob_sha1": "e5db6de0778814b5a77f8728e569c7b78eb5d706",
+      "path": "data/yahoo/AVGO.parquet",
+      "sha256": "a589b29dad2571d683eabf3ac7678f0f0f3eac886ef7982056e131c735fec1c1",
+      "status": "PRESENT",
+      "ticker": "AVGO"
+    },
+    {
+      "bytes": 199604,
+      "git_blob_sha1": "69fb29a2c96c34dad119842acf10820f9047f2f4",
+      "path": "data/yahoo/TSM.parquet",
+      "sha256": "1cb2a83d22c8ac8a63f777f38edf03b7d9fd13f1909044e0b4789f4461b98895",
+      "status": "PRESENT",
+      "ticker": "TSM"
+    },
+    {
+      "bytes": 257021,
+      "git_blob_sha1": "9e094920a06eb9bcf42022ddb3ae1a47c3222bf8",
+      "path": "data/yahoo/MU.parquet",
+      "sha256": "600cfb91f9d85915a25077610c80c92c60c770ac9f71e84a84de30d34a90536f",
+      "status": "PRESENT",
+      "ticker": "MU"
+    },
+    {
+      "bytes": 14466,
+      "git_blob_sha1": "a637a5eccfeb836a743001b83d28267a75f0731a",
+      "path": "data/yahoo/SNDK.parquet",
+      "sha256": "11c2426fa7cef63590e6fd07e2697e469f2415d84287b66661c1afe753ab5912",
+      "status": "PRESENT",
+      "ticker": "SNDK"
+    },
+    {
+      "bytes": 275229,
+      "git_blob_sha1": "b32baeb60c31e087b79c21c05b8283a45d39e58f",
+      "path": "data/yahoo/WDC.parquet",
+      "sha256": "473904e90cbf702c6adca303be938bcd1bb93e3c15ae98b95c748bcfbe6bcb8a",
+      "status": "PRESENT",
+      "ticker": "WDC"
+    },
+    {
+      "bytes": 165917,
+      "git_blob_sha1": "ca5cf07cf7a23f661aaf0c8a91e4092eeaf82476",
+      "path": "data/yahoo/STX.parquet",
+      "sha256": "076af82d9e6703d49f680446215600ce5c9534a5fb437aa527037c69bcccae17",
+      "status": "PRESENT",
+      "ticker": "STX"
+    },
+    {
+      "bytes": 167283,
+      "git_blob_sha1": "a2ec8ec9769f7ea10527c22b2a974e6fa5cf160f",
+      "path": "data/yahoo/RMBS.parquet",
+      "sha256": "d405104f936271856629a8aa78163b9e31ec86696bc4fec5727afe528e753516",
+      "status": "PRESENT",
+      "ticker": "RMBS"
+    },
+    {
+      "bytes": 335572,
+      "git_blob_sha1": "8dcfbac5ab5e579342937c697eb314bdeaa8ff49",
+      "path": "data/yahoo/TXN.parquet",
+      "sha256": "5b9bbd96f868f882a328b982dae8dcb84f286a75a2763db566eb1d9997832166",
+      "status": "PRESENT",
+      "ticker": "TXN"
+    },
+    {
+      "bytes": 278280,
+      "git_blob_sha1": "73f12257cb44a0df57c7bdce60f26b1186e6d510",
+      "path": "data/yahoo/ADI.parquet",
+      "sha256": "0c5068f8ebd9c2a7a76db70111bd9b7d09e3928fe837312e26299699374ecb22",
+      "status": "PRESENT",
+      "ticker": "ADI"
+    },
+    {
+      "bytes": 155145,
+      "git_blob_sha1": "90bfb7b3aef1dd7328b7399076bd26dd1465c4ec",
+      "path": "data/yahoo/ON.parquet",
+      "sha256": "24b7fe4ef5a39aa18d2405ca50b4e93723dde2e360437f91b313fcda5dce5b5a",
+      "status": "PRESENT",
+      "ticker": "ON"
+    },
+    {
+      "bytes": 143678,
+      "git_blob_sha1": "83a081ead3ce4db4777571b0001677860eb4bc18",
+      "path": "data/yahoo/MPWR.parquet",
+      "sha256": "64b18ad87f82b38098f37cd5e620b48d89d00bfc08ce4ace29acf79c3210cdcc",
+      "status": "PRESENT",
+      "ticker": "MPWR"
+    },
+    {
+      "bytes": 114826,
+      "git_blob_sha1": "891bd3f84119edfe22b8f3082f0505ea3229d668",
+      "path": "data/yahoo/NXPI.parquet",
+      "sha256": "61a42cd60b0360bd8cb00ec910f0314889ab333ee918337f9f63f98d7658c3fe",
+      "status": "PRESENT",
+      "ticker": "NXPI"
+    },
+    {
+      "bytes": 225327,
+      "git_blob_sha1": "8f1a38ce66f9299ebe99524729566a887d37f600",
+      "path": "data/yahoo/MCHP.parquet",
+      "sha256": "61de3f8b8d738ad97d156a91755bbe282d53d75b3232e470776176e3fcec19de",
+      "status": "PRESENT",
+      "ticker": "MCHP"
+    },
+    {
+      "bytes": 200771,
+      "git_blob_sha1": "87f09efeb58f4cd1be46b326378ed66275cd67b9",
+      "path": "data/yahoo/STM.parquet",
+      "sha256": "b208224c0b361b4b3172062dadd5b018d8ad9c7f21de03e85a9cf327574ea5dc",
+      "status": "PRESENT",
+      "ticker": "STM"
+    },
+    {
+      "bytes": 233845,
+      "git_blob_sha1": "ab88c5bd282f318ac8bbac78bfb04958d78b248e",
+      "path": "data/yahoo/SWKS.parquet",
+      "sha256": "8fd13cb85439fcde1bcc03f900c5d09aa1fba3f9d2f4bcf9e583f92e11482f54",
+      "status": "PRESENT",
+      "ticker": "SWKS"
+    },
+    {
+      "bytes": 81794,
+      "git_blob_sha1": "f1acaabc083d58bd90eb889716cb6061f3d26589",
+      "path": "data/yahoo/QRVO.parquet",
+      "sha256": "f957a741b9b68a70235b935116ef07a679f26ca96b9f46729629a875b40e31a7",
+      "status": "PRESENT",
+      "ticker": "QRVO"
+    },
+    {
+      "bytes": 36040,
+      "git_blob_sha1": "e4d23766397b3a254daaf229805af021f9e3b4f7",
+      "path": "data/yahoo/GFS.parquet",
+      "sha256": "e9683f39560eeec29453a0dc03be57815e20a759656fa6e8a32cfebaadf55d0e",
+      "status": "PRESENT",
+      "ticker": "GFS"
+    },
+    {
+      "bytes": 144476,
+      "git_blob_sha1": "730a3ca90139938885028e459d0baa4cfed2e445",
+      "path": "data/yahoo/UMC.parquet",
+      "sha256": "a2d4c82b7f65b0b8a3dec5915483170d904cbc4ebf78a84a99fc92db3da406fa",
+      "status": "PRESENT",
+      "ticker": "UMC"
+    },
+    {
+      "bytes": 208426,
+      "git_blob_sha1": "14c3f8242d5c996bba680ce06852f4e618936826",
+      "path": "data/yahoo/SNPS.parquet",
+      "sha256": "d769714fff2ac4cd79839f7ab85e4dc4e89f7208ce7f48d055de53d4a2d790fe",
+      "status": "PRESENT",
+      "ticker": "SNPS"
+    },
+    {
+      "bytes": 226492,
+      "git_blob_sha1": "1a47b41021ca7f69e3e88374f1534edc1dbe7b7d",
+      "path": "data/yahoo/CDNS.parquet",
+      "sha256": "70d406455c189bd11e11cc24be07e7b358c22110284a7be90c48b87ac460c745",
+      "status": "PRESENT",
+      "ticker": "CDNS"
+    },
+    {
+      "bytes": 125871,
+      "git_blob_sha1": "336db3170ac8fded5f672ad9d18c4ff07d1fd9df",
+      "path": "data/yahoo/PDFS.parquet",
+      "sha256": "b7748de1c1a2b286c9cea4c9655dcb11bfecd410296599c76b21acb3f425f618",
+      "status": "PRESENT",
+      "ticker": "PDFS"
+    },
+    {
+      "bytes": 84079,
+      "git_blob_sha1": "6ddd16a2be0d7fa9c8304934c584215cfc23eea3",
+      "path": "data/yahoo/KEYS.parquet",
+      "sha256": "d997dbebad3c24067f1d00ce24c852ce733036bcd4315ca0ad992d72293e4def",
+      "status": "PRESENT",
+      "ticker": "KEYS"
+    },
+    {
+      "bytes": 217864,
+      "git_blob_sha1": "6e218abfad04eb691affa51161877a3c18a0fa29",
+      "path": "data/yahoo/ASML.parquet",
+      "sha256": "a88ab4d9d8d0663a693333ae3d12b3180d76b7edd6d4f5fc4e0c11f4433f33f5",
+      "status": "PRESENT",
+      "ticker": "ASML"
+    },
+    {
+      "bytes": 281346,
+      "git_blob_sha1": "d880e0d5e195cf3f1ec5b39be29da5d364307c94",
+      "path": "data/yahoo/AMAT.parquet",
+      "sha256": "4a0a08d177246f0a3deb45203b7514abc494147daf665043b922b604bf23ece4",
+      "status": "PRESENT",
+      "ticker": "AMAT"
+    },
+    {
+      "bytes": 262492,
+      "git_blob_sha1": "3e4a1cd490083a21606c15e714f6fcf1e330b24c",
+      "path": "data/yahoo/LRCX.parquet",
+      "sha256": "94805e0016150d7ef702f67a1223d5f0784be30308032c5b3a4f490af38eab2d",
+      "status": "PRESENT",
+      "ticker": "LRCX"
+    },
+    {
+      "bytes": 279764,
+      "git_blob_sha1": "5a6e9601602d7265d324c46954001077b2e46c2f",
+      "path": "data/yahoo/KLAC.parquet",
+      "sha256": "c1dcc3f964d5a2ee3b6ab86c199dddb4d9a20cc249fb2158463480d19db4e1e8",
+      "status": "PRESENT",
+      "ticker": "KLAC"
+    },
+    {
+      "bytes": 148021,
+      "git_blob_sha1": "7dba3a6f7fabc006dd85f037f5c5ee6f327ffef0",
+      "path": "data/yahoo/ACLS.parquet",
+      "sha256": "7171393be651a3886199ac6212b27d3e11b163968d3142c3b6d24749216ab561",
+      "status": "PRESENT",
+      "ticker": "ACLS"
+    },
+    {
+      "bytes": 283915,
+      "git_blob_sha1": "1fd1686cbc6124ec104609acb39b90c38d671de7",
+      "path": "data/yahoo/TER.parquet",
+      "sha256": "07c8fc96c1cbc0ef2d95d791c10ad54416e7056718acbd8aa7d84eb2bd289845",
+      "status": "PRESENT",
+      "ticker": "TER"
+    },
+    {
+      "bytes": 157764,
+      "git_blob_sha1": "b7eaa0d12d891305babcc23dcaa586b59a2d247d",
+      "path": "data/yahoo/AMKR.parquet",
+      "sha256": "6608c99c5fa550773ec6574722533a8b6ebdb0f81fecb67d19ebbc600ba632f4",
+      "status": "PRESENT",
+      "ticker": "AMKR"
+    },
+    {
+      "bytes": 225851,
+      "git_blob_sha1": "19f327d115d1617c307d76e98a0193faf00762f1",
+      "path": "data/yahoo/COHU.parquet",
+      "sha256": "b0bef47f0c68ac1517ceb9acaf5a939136bb91564201188ed897ce0188851611",
+      "status": "PRESENT",
+      "ticker": "COHU"
+    },
+    {
+      "bytes": 133400,
+      "git_blob_sha1": "a06ebe59227d695911f1ff93c6a49c1c7ada0ddc",
+      "path": "data/yahoo/FORM.parquet",
+      "sha256": "1c3a46578d2bf22aa395842acd698688290abd2de84caf45367461edf313039d",
+      "status": "PRESENT",
+      "ticker": "FORM"
+    },
+    {
+      "bytes": 151068,
+      "git_blob_sha1": "51d3306488aa0d0d949698dc242c3e69cb095337",
+      "path": "data/yahoo/ASX.parquet",
+      "sha256": "bc277808fc8db0f24a42a9064bc63c5df5b2b0c728db0d0c3a2c84613df9d801",
+      "status": "PRESENT",
+      "ticker": "ASX"
+    },
+    {
+      "bytes": 127288,
+      "git_blob_sha1": "32624ffe6ff490ca9deb0b2581fc07af82206642",
+      "path": "data/yahoo/CAMT.parquet",
+      "sha256": "c9973e31333d5c09b0f108ce0754c6321e69d0d92f25703c5e69dc9b6a08ea88",
+      "status": "PRESENT",
+      "ticker": "CAMT"
+    },
+    {
+      "bytes": 9811,
+      "git_blob_sha1": "6efaf97b76239d5454b44548e66818a180626371",
+      "path": "data/yahoo/WOLF.parquet",
+      "sha256": "c9ef7c1616961f51e836803a7f2ab024697e2047f310770c3587f17e615500cd",
+      "status": "PRESENT",
+      "ticker": "WOLF"
+    },
+    {
+      "bytes": 197587,
+      "git_blob_sha1": "3aa43041027fd6b2187f218c51c2b7c82297d2c1",
+      "path": "data/yahoo/LSCC.parquet",
+      "sha256": "f702354c995908830f7b21651728e37edefdbda5e0f32ae02b05ca69d917100a",
+      "status": "PRESENT",
+      "ticker": "LSCC"
+    },
+    {
+      "bytes": 32943,
+      "git_blob_sha1": "97f86675a95f6bdcdd85d86b74c4642f0d72aacd",
+      "path": "data/yahoo/NVTS.parquet",
+      "sha256": "4047ecc3001107ecf5ad852f7a71671c84187aab56a35257df3739c153ca478d",
+      "status": "PRESENT",
+      "ticker": "NVTS"
+    },
+    {
+      "bytes": 178348,
+      "git_blob_sha1": "55045fdb7a37c0af4415cf86241067b06af424b3",
+      "path": "data/yahoo/POWI.parquet",
+      "sha256": "02b52290ea9f54b701eb7714eb795be197b56eddd84d7ee63132049f8976efb1",
+      "status": "PRESENT",
+      "ticker": "POWI"
+    },
+    {
+      "bytes": 40709,
+      "git_blob_sha1": "9cf0d8133459234492784bb5ceb90eb4e19a0bd9",
+      "path": "data/yahoo/IONQ.parquet",
+      "sha256": "6eb8e5c6ec774fb71b7d2060a997bcbf85ac0d1c893588a2324b9651b386b6e2",
+      "status": "PRESENT",
+      "ticker": "IONQ"
+    },
+    {
+      "bytes": null,
+      "git_blob_sha1": null,
+      "path": "data/yahoo/NVEC.parquet",
+      "sha256": null,
+      "status": "MISSING",
+      "ticker": "NVEC"
+    },
+    {
+      "bytes": 50863,
+      "git_blob_sha1": "7b150fa45915ed4726de7823e45755f37697a756",
+      "path": "data/yahoo/MRAM.parquet",
+      "sha256": "b801f5e1e3fbaa1465c34a8a7fce8c56009a351b3a5fec7690e810d5d1a28feb",
+      "status": "PRESENT",
+      "ticker": "MRAM"
+    },
+    {
+      "bytes": 136239,
+      "git_blob_sha1": "70535e3faaa26ee6ab7023fc926abc17c6c1e7d8",
+      "path": "data/yahoo/SIMO.parquet",
+      "sha256": "edfa2b0f58ef28196a2902498a6219526466b10d1ddf1b7da22a3fd784332835",
+      "status": "PRESENT",
+      "ticker": "SIMO"
+    }
+  ],
+  "missing_members": [
+    "NVEC"
+  ],
+  "present_member_count": 46,
+  "requested_member_count": 47,
+  "schema": "theme_intelligence.lane_c_price_manifest.v1",
+  "source_family": "data/yahoo",
+  "subject_commit": "2208fe40039d356929fac0f96b626edc33d42288",
+  "theme": "Semiconductors",
+  "theme_tree": {
+    "bytes": 89489,
+    "git_blob_sha1": "65b0e9e3f5f938aaf224130f0af14cd6922aafed",
+    "path": "data/themes_heatmap/themes_tree.json",
+    "sha256": "73cbe24731a6c410c899cc71f430268091037ccb660f26c47ca5f8371a902704"
+  }
+}
