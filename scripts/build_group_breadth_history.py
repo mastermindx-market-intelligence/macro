@@ -50,10 +50,17 @@ def _sha(path: Path) -> str:
     return h.hexdigest()[:16]
 
 
+_CODE = ["engine/group_breadth_history.py", "scripts/build_group_breadth_history.py"]
+
+
 def _code_version() -> str:
+    """HEAD, suffixed ``+dirty`` when the engine or this builder differ from HEAD."""
     try:
-        return subprocess.run(["git", "rev-parse", "--short=12", "HEAD"],
+        head = subprocess.run(["git", "rev-parse", "--short=12", "HEAD"],
                               capture_output=True, text=True, check=True).stdout.strip()
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", *_CODE],
+                               capture_output=True, text=True, check=True).stdout.strip()
+        return head + ("+dirty" if dirty else "")
     except Exception:  # noqa: BLE001
         return "unknown"
 
@@ -123,15 +130,30 @@ def missing_sentence(closes: pd.DataFrame, mem: pd.DataFrame, basis: str) -> tup
     return s, stats
 
 
-def build(closes_path: Path, breadth_dir: Path, basis: str, out: Path, src: str = "sp500") -> dict:
-    closes = pd.read_parquet(closes_path).sort_index()
+def drop_partial_rows(closes: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
+    """Drop rows priced for fewer than half the names priced on neighbouring rows.
+
+    Data cleaning, not a signal rule: a vendor row on a market holiday or a
+    partial last capture otherwise becomes a 'session' and shifts every
+    session-count horizon by one. The local reference is the centred 21-row
+    median of the priced-name count. Dropped dates are listed in the sidecar.
+    """
+    n = closes.notna().sum(axis=1)
+    ref = n.rolling(21, center=True, min_periods=1).median()
+    bad = n < 0.5 * ref
+    return closes[~bad], [str(d.date()) for d in closes.index[bad]]
+
+
+def build(closes_path: Path, breadth_dir: Path, basis: str, out: Path, src: str = "sp500",
+          closes_label: str | None = None) -> dict:
+    closes, dropped_rows = drop_partial_rows(pd.read_parquet(closes_path).sort_index())
     mem = membership_current(breadth_dir) if basis == "current" else membership_dated(breadth_dir, src)
     daily = gbh.daily_group_breadth(closes, mem)
     weekly = gbh.weekly_fixed_set(closes, mem, include_last_partial_week=False)
     tag = basis if basis == "current" else f"dated_{src}"
     out.mkdir(parents=True, exist_ok=True)
-    daily.to_parquet(out / f"group_breadth_daily_{tag}.parquet", index=False)
-    weekly.to_parquet(out / f"group_breadth_weekly_{tag}.parquet", index=False)
+    daily.to_parquet(out / f"group_breadth_daily_{tag}.parquet", index=False, compression="zstd")
+    weekly.to_parquet(out / f"group_breadth_weekly_{tag}.parquet", index=False, compression="zstd")
     sentence, stats = missing_sentence(closes, mem, basis)
     valid = daily.dropna(subset=["pct_above_200"])
     inputs = [closes_path] + ([breadth_dir / "constituents.parquet"] if basis == "current" else
@@ -154,8 +176,10 @@ def build(closes_path: Path, breadth_dir: Path, basis: str, out: Path, src: str 
         "code_version": _code_version(),
         "engine": "engine/group_breadth_history.py",
         "inputs": [{"path": str(p), "sha256_16": _sha(p)} for p in inputs],
+        "closes_store": closes_label or str(closes_path),
         "missing": sentence,
         "coverage": stats,
+        "dropped_partial_rows": dropped_rows,
         "rules": {"windows": list(gbh.WINDOWS), "horizons_sessions": list(gbh.HORIZONS),
                   "horizons_weeks": list(gbh.WEEKLY_HORIZONS), "min_members": gbh.MIN_MEMBERS,
                   "headline": gbh.HEADLINE},
@@ -173,8 +197,10 @@ def main() -> None:
     ap.add_argument("--basis", choices=sorted(BASIS), required=True)
     ap.add_argument("--src", default="sp500", help="dated basis: sp500|sp400|sp600|all")
     ap.add_argument("--out", type=Path, default=Path("data/breadth/history"))
+    ap.add_argument("--closes-label", default=None,
+                    help="how to name the closes store in the sidecar (e.g. the Tiingo archive and builder)")
     a = ap.parse_args()
-    meta = build(a.closes, a.breadth_dir, a.basis, a.out, a.src)
+    meta = build(a.closes, a.breadth_dir, a.basis, a.out, a.src, a.closes_label)
     print(json.dumps({k: meta[k] for k in ("basis", "span", "rows", "missing")}, indent=2))
 
 

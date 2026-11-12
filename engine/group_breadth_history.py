@@ -75,8 +75,15 @@ def member_flags(closes: pd.DataFrame, window: int) -> tuple[np.ndarray, np.ndar
     ``has_history[t, i]`` — ticker i has a defined ``window``-session average at t.
     ``above[t, i]``       — its close at t is strictly above that average.
     Causal: row t uses closes on rows <= t only.
+
+    The average is taken over the ticker's OWN last ``window`` closes, so a row
+    where it has no close (a halt, a stray vendor row) does not erase its average
+    for the next ``window`` rows. On a matrix without interior gaps this equals
+    ``closes.rolling(window, min_periods=window).mean()`` exactly (the collector's
+    form). A ticker has no flag on a row where it has no close.
     """
-    ma = closes.rolling(window, min_periods=window).mean()
+    ma = closes.apply(lambda s: s.dropna().rolling(window, min_periods=window).mean()
+                      .reindex(s.index))
     has = ma.notna().to_numpy()
     above = (closes > ma).to_numpy() & has
     return has, above
@@ -233,7 +240,10 @@ def _long(index: pd.DatetimeIndex, groups: Sequence[str],
         "group": np.tile(np.asarray(groups, dtype=object), T),
     })
     for name, mat in cols.items():
-        base[name] = mat.reshape(T * G)
+        flat = mat.reshape(T * G)
+        # state columns: one fixed dtype whatever the values (all-missing or not),
+        # so a prefix run and a full run produce the same schema
+        base[name] = pd.Series(flat, dtype=object) if flat.dtype == object else flat
     return base
 
 
