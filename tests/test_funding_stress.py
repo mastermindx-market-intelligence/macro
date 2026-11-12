@@ -91,3 +91,62 @@ def test_funding_tile_unavailable_and_zero_score():
             out = template.render(funding={'score': score, 'state': state, 'spread_bp': 1, 'note': ''}, t=lambda en, zh: (en, zh)[lang])
             assert word[lang] in out
             assert ('Unavailable', '暂无评估')[lang] not in out
+
+
+import json
+import pytest
+
+@pytest.mark.parametrize("key", ["sofr", "effr", "sofr_p99"])
+@pytest.mark.parametrize("value", [float("inf"),float("-inf"),1e307])
+@pytest.mark.parametrize("position", [-1,-20])
+def test_nonfinite_operand_or_arithmetic_withholds_assessment(key,value,position):
+    d={"sofr":_flat(3),"effr":_flat(2.99),"sofr_p99":_flat(3.02)}
+    d[key].iloc[position]=value
+    out=fs.compute(d,{"pctile_lookback_d":252})
+    assert out["score"] is None and out["state"] is None
+    assert out["asof"]==str(_IDX[-1].date())  # never backfill invalid latest
+    if key in ("sofr","effr"):
+        assert out["spark"]==[]
+    if key=="sofr_p99":
+        assert out["spread_bp"]==1.0 and out["rows"][0]["pctile"]==100
+    if key=="effr":
+        assert out["dispersion_bp"]==2.0 and out["rows"][1]["pctile"]==100
+    json.dumps(out,allow_nan=False)
+
+def test_invalid_obfr_withholds_only_its_level():
+    d={"sofr":_flat(3),"effr":_flat(3),"obfr":_flat(3)}
+    expected=fs.compute(d,{})
+    d["obfr"].iloc[-1]=float("inf")
+    out=fs.compute(d,{})
+    assert out["score"]==expected["score"]
+    assert next(x for x in out["levels"] if x["key"]=="obfr")["value"] is None
+    json.dumps(out,allow_nan=False)
+
+def test_invalid_outside_rank_and_spark_windows_does_not_poison_current():
+    d={"sofr":_flat(3),"effr":_flat(3)}
+    d["sofr"].iloc[0]=float("inf")
+    out=fs.compute(d,{"pctile_lookback_d":252})
+    assert out["score"]==100 and out["state"]=="stressed"
+    assert out["spark"]==[0.]*252
+    json.dumps(out,allow_nan=False)
+
+def test_finite_extreme_spark_range_is_withheld():
+    d={"sofr":_flat(0),"effr":_flat(0)}
+    d["sofr"].iloc[-2:]=[-1e306,1e306]
+    out=fs.compute(d,{})
+    assert out["spark"]==[]
+    assert out["score"]==100
+    json.dumps(out,allow_nan=False)
+
+@pytest.mark.parametrize("key", ["sofr","effr","sofr_p99","obfr"])
+def test_native_snapshot_reads_invalid_parquet_without_backfill(tmp_path,monkeypatch,key):
+    monkeypatch.setattr(fs.config,"data_dir",lambda:tmp_path)
+    d={"sofr":_flat(3),"effr":_flat(2.99),"sofr_p99":_flat(3.02),"obfr":_flat(3)}
+    d[key].iloc[-1]=float("inf")
+    (tmp_path/"ofr").mkdir()
+    for name,series in d.items():
+        series.to_frame("value").to_parquet(tmp_path/"ofr"/(fs.SERIES[name]+".parquet"))
+    out=fs.snapshot({"pctile_lookback_d":252})
+    assert out["asof"]==str(_IDX[-1].date())
+    assert out["score"] is None if key!="obfr" else out["score"]==100
+    json.dumps(out,allow_nan=False)

@@ -48,6 +48,8 @@ def _pctile(s: pd.Series, lookback: int) -> float | None:
     if len(s) < 60:
         return None
     win = s.tail(lookback)
+    if not np.isfinite(win).all():
+        return None
     return float((win <= win.iloc[-1]).mean() * 100.0)
 
 
@@ -60,9 +62,19 @@ def compute(d: dict[str, pd.Series], cfg: dict | None = None) -> dict | None:
     if sofr is None or effr is None or sofr.empty:
         return None
     idx = sofr.index.intersection(effr.index)
-    spread = ((sofr.reindex(idx) - effr.reindex(idx)) * 100.0).dropna()        # bp
+    def difference_bp(left: pd.Series, right: pd.Series) -> pd.Series:
+        # Preserve normal missing-data behavior, but retain an invalid observed
+        # cell at its date. Dropping it would resurrect an older observation.
+        with np.errstate(over="ignore", invalid="ignore"):
+            result = (left - right) * 100.0
+        observed = left.notna() & right.notna()
+        invalid = observed & (~np.isfinite(left) | ~np.isfinite(right)
+                              | ~np.isfinite(result))
+        return result.mask(invalid, np.inf).dropna()
+
+    spread = difference_bp(sofr.reindex(idx), effr.reindex(idx))
     p99 = d.get("sofr_p99")
-    disp = (((p99.reindex(sofr.index) - sofr) * 100.0).dropna()                # bp, right tail
+    disp = (difference_bp(p99.reindex(sofr.index), sofr)
             if p99 is not None else pd.Series(dtype=float))
     if spread.empty:
         return None
@@ -70,16 +82,18 @@ def compute(d: dict[str, pd.Series], cfg: dict | None = None) -> dict | None:
     spread_pct = _pctile(spread, lb)
     disp_pct = _pctile(disp, lb) if not disp.empty else None
     parts = [p for p in (spread_pct, disp_pct) if p is not None]
-    score = round(float(np.mean(parts)), 0) if parts else None
+    invalid_window = (not np.isfinite(spread.tail(lb)).all()
+                      or (not disp.empty and not np.isfinite(disp.tail(lb)).all()))
+    score = round(float(np.mean(parts)), 0) if parts and not invalid_window else None
     state = (None if score is None else "stressed" if score >= 90
              else "watch" if score >= 70 else "calm")
 
     rows = [{"key": "sofr_effr", "label_en": "SOFR − EFFR spread", "label_zh": "SOFR − 联邦基金利率",
-             "value": round(float(spread.iloc[-1]), 1), "unit": "bp", "pctile": _r(spread_pct),
+             "value": _r(spread.iloc[-1], 1), "unit": "bp", "pctile": _r(spread_pct),
              "note": "SOFR above the Fed's administered rate = reserves scarce / repo stress."}]
     if not disp.empty:
         rows.append({"key": "sofr_disp", "label_en": "SOFR dispersion (99th − SOFR)",
-                     "label_zh": "SOFR 离散度 (99分位 − SOFR)", "value": round(float(disp.iloc[-1]), 1),
+                     "label_zh": "SOFR 离散度 (99分位 − SOFR)", "value": _r(disp.iloc[-1], 1),
                      "unit": "bp", "pctile": _r(disp_pct),
                      "note": "A fat right tail = some borrowers paying well above the median."})
     levels = []
@@ -87,17 +101,23 @@ def compute(d: dict[str, pd.Series], cfg: dict | None = None) -> dict | None:
                    ("bgcr", "Broad GC repo"), ("tgcr", "Tri-party GC repo")):
         s = d.get(k)
         if s is not None and not s.empty:
-            levels.append({"key": k, "label": lab, "value": round(float(s.iloc[-1]), 3)})
+            levels.append({"key": k, "label": lab, "value": _r(s.iloc[-1], 3)})
 
-    spark = [round(float(v), 1) for v in spread.tail(252).tolist()]
+    spark_window = spread.tail(252)
+    with np.errstate(over="ignore", invalid="ignore"):
+        spark_safe = (np.isfinite(spark_window).all()
+                      and np.isfinite(spark_window.max() - spark_window.min()))
+    spark = ([round(float(v), 1) for v in spark_window.tolist()]
+             if spark_safe else [])
     return {
         "asof": str(spread.index[-1].date()),
         "built": datetime.now(timezone.utc).isoformat(),
         "score": score, "state": state,
-        "spread_bp": round(float(spread.iloc[-1]), 1),
-        "dispersion_bp": None if disp.empty else round(float(disp.iloc[-1]), 1),
+        "spread_bp": _r(spread.iloc[-1], 1),
+        "dispersion_bp": None if disp.empty else _r(disp.iloc[-1], 1),
         "rows": rows, "levels": levels, "spark": spark,
-        "note": ("Funding/repo plumbing from the OFR FRBNY reference rates (keyless). SOFR "
+        "note": (("Assessment unavailable: nonfinite rate operands or arithmetic. " if invalid_window else "")
+                 + "Funding/repo plumbing from the OFR FRBNY reference rates (keyless). SOFR "
                  "above EFFR and a widening SOFR distribution flag reserve scarcity / repo "
                  "stress (the Sep-2019 tell). Each scored vs its trailing ~2y range. Context, "
                  "not a signal — never wired into any score."),
@@ -114,4 +134,5 @@ def snapshot(cfg: dict | None = None) -> dict | None:
 
 def _r(v, nd: int = 0):
     return None if v is None or not np.isfinite(v) else round(float(v), nd)
+
 
