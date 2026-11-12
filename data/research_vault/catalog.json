@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T14:51:13.249152+00:00",
-  "count": 3234,
+  "generated_at": "2026-11-12T15:23:22.664311+00:00",
+  "count": 3235,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -198,6 +198,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-crdq4kxv4ho-f7d42d",
+      "title": "DeskTalk The US consumer splits in two",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:46:53Z",
+      "summary_points": [
+        "K-shaped consumer fragmentation: NY Fed data shows widening income-based gap (delinquencies falling but sentiment split: poorer 33% expect collapse vs. rising confidence for lower/middle-income); critical risk factor for portfolio allocation.",
+        "Fed policy & holiday dynamics: Cooling demand may raise rate hike bar; holiday sales forecast (5.5% YoY) overshadowed by persistent inflation/gas prices; key flows: holiday relief vs. inflation pressures.",
+        "Retail Sector Flows & Fundamentals: Consensus longs on retailers (Home Depot, TJX, Target, Walmart, Costco) recently shorted by hedge funds; wealth effect from asset prices driving spending."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
