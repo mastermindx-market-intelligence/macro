@@ -858,3 +858,110 @@ class TestSnapshotSchema:
             assert isinstance(result, dict), f"Must return dict for {bad!r}"
             assert "weight_coverage" in result
             assert "model_maturity" in result
+
+
+# ===========================================================================
+# 8. FRESHNESS SET WIRING — the producer's freshness contract as the native
+#    builder attaches it to a public row.
+# ===========================================================================
+
+_FRESH_MISSING = object()
+
+
+class TestFreshnessSetWiring:
+    """_attach_provenance publishes the producer's freshness-set contract.
+
+    This drives the REAL ``scripts.build_release_forecast._attach_provenance``
+    through its normal module closure — no AST extraction, no stubs — with
+    synthetic rows in ``dry_run=True`` mode against ledger/snapshot locations
+    that do not exist. It asserts the public ``coverage_flags`` value, that
+    dry-run wrote nothing, and that every pre-existing field of the item is
+    unchanged.
+
+    The rows are synthetic and the coverage values are display-only metadata;
+    nothing here asserts anything about a real release or a real month.
+    """
+
+    @staticmethod
+    def _item(fresh=_FRESH_MISSING, absent=(), release_type="cpi_headline"):
+        pit = {
+            "revision_optimistic_legs": [],
+            "unrevised_legs": [],
+            "absent_legs": list(absent),
+            "vintaged_legs": [],
+            "display_only": True,
+            "authority": False,
+        }
+        if fresh is not _FRESH_MISSING:
+            pit["fresh_legs"] = fresh
+        item = _minimal_upcoming_item(release_type, pit_provenance=pit)
+        # Two declared inputs; neither is absent unless the case says so.
+        item["input_manifest"] = {"a": 0.1, "b": 0.2}
+        return item
+
+    @staticmethod
+    def _run(item, tmp_path):
+        """Attach provenance to one synthetic row in dry-run mode."""
+        import copy
+        from scripts.build_release_forecast import _attach_provenance
+
+        ledger_path = tmp_path / "absent" / "forward_ledger.jsonl"
+        snapshots_dir = tmp_path / "absent" / "input_snapshots"
+        before = copy.deepcopy(item)
+        _attach_provenance([item], ledger_path, snapshots_dir, dry_run=True)
+        return item, before
+
+    def _assert_wired(self, item, before, expected_fresh):
+        flags = item.get("coverage_flags")
+        assert isinstance(flags, dict), "coverage_flags must be attached to the item"
+        assert flags["fresh_proxy_coverage"] == pytest.approx(expected_fresh), (
+            f"fresh_proxy_coverage={flags['fresh_proxy_coverage']} expected {expected_fresh}"
+        )
+        assert 0.0 <= flags["fresh_proxy_coverage"] <= 1.0
+        assert flags["weight_coverage"] >= flags["fresh_proxy_coverage"]
+        # dry-run writes nothing and leaves the snapshot ref unset
+        assert item.get("input_snapshot_ref") is None
+        # every pre-existing field is untouched
+        for key, value in before.items():
+            if key in ("coverage_flags", "input_snapshot_ref"):
+                continue
+            assert item[key] == value, f"attach_provenance changed pre-existing field {key!r}"
+
+    def test_attach_provenance_empty_fresh_legs_is_zero(self, tmp_path: Path):
+        """An explicitly empty fresh_legs list reaches the public row as zero."""
+        item = self._item(fresh=[])
+        item, before = self._run(item, tmp_path)
+        self._assert_wired(item, before, 0.0)
+        assert not list(tmp_path.rglob("*")), "dry-run must not write any file"
+
+    def test_attach_provenance_duplicate_fresh_legs_count_once(self, tmp_path: Path):
+        """A repeated leg reaches the public row counted once."""
+        item = self._item(fresh=["a", "a", "a"])
+        item, before = self._run(item, tmp_path)
+        self._assert_wired(item, before, 0.5)
+        assert not list(tmp_path.rglob("*")), "dry-run must not write any file"
+
+    def test_attach_provenance_absent_leg_is_not_fresh(self, tmp_path: Path):
+        """An absent leg does not become fresh on the public row."""
+        item = self._item(fresh=["a"], absent=["a"])
+        item, before = self._run(item, tmp_path)
+        self._assert_wired(item, before, 0.0)
+        assert not list(tmp_path.rglob("*")), "dry-run must not write any file"
+
+    def test_attach_provenance_healthy_fresh_leg(self, tmp_path: Path):
+        """The ordinary single-fresh-leg row keeps its plain fraction."""
+        item = self._item(fresh=["a"])
+        item, before = self._run(item, tmp_path)
+        self._assert_wired(item, before, 0.5)
+        assert not list(tmp_path.rglob("*")), "dry-run must not write any file"
+
+    def test_attach_provenance_preserves_projection_fields(self, tmp_path: Path):
+        """Coverage metadata never reads back into the projection block."""
+        item = self._item(fresh=["a"])
+        projection_before = dict(item["projection"])
+        confidence_before = item["confidence"]
+        item, _ = self._run(item, tmp_path)
+        assert item["projection"] == projection_before
+        assert item["confidence"] == confidence_before
+        assert item["pit"]["authority"] is False
+        assert item["pit"]["display_only"] is True
