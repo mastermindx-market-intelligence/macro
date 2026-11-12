@@ -6953,6 +6953,9 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14570,6 +14573,10 @@ jobs:
       - "tests/test_china_universe_extras.py"
       - "tests/test_china_universe_index_constituents.py"
       - "tests/test_ths_collection_receipts.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/ledger_lane.py"
+      - "engine/member_breadth_ledger.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25679,6 +25686,9 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32966,6 +32976,9 @@ jobs:
       - "tests/test_crypto_t15_transition_scaffold.py"
       - "tests/test_vector_scorecard_gap_semantics.py"
       - "scripts/calibrate_rate_inflation.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -35970,6 +35983,9 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -38567,6 +38583,9 @@ jobs:
       - "engine/theme_graph/materialize.py"
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
