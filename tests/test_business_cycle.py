@@ -232,3 +232,39 @@ def test_override_guard_falls_back_on_stale_and_missing_timestamp() -> None:
     # empty cal -> config default, no crash
     c3, meta3 = bc._resolve_signal_cfg(_cfg_full(), {})
     assert meta3["threshold_source"] == "config_default"
+
+# Current availability and historical signal fields must share a qualified clock.
+def test_snapshot_ragged_edge_preserves_dated_signal_without_current_claim():
+    for missing in (1, 6, 8, 12):
+        for surviving in (0, 1):
+            frame = _synthetic_frame(lead_mom=-2.0, lead_diff=20.0)
+            frame.loc[frame.index[-missing:], "leading_n_legs"] = surviving
+            frame.loc[frame.index[-missing:], "leading_mom6"] = 0.0
+            frame.loc[frame.index[-missing:], "leading_diffusion"] = 70.0
+            snapshot = bc.business_cycle_snapshot(frame=frame, cfg=_cfg())
+            asof = frame.index[-missing-1]
+            signal = bc.recession_signal(frame.loc[:asof], _cfg())
+            assert snapshot["asof"] == str(asof.date())
+            current = snapshot["recession_signal"]
+            assert current["available"] is False
+            assert current["state"] == "on"
+            assert current["conditions"]["depth"] == bool(signal["depth"].iloc[-1])
+            assert current["conditions"]["breadth"] == bool(signal["breadth"].iloc[-1])
+            assert current["months_active"] == int(signal["signal"][::-1].cumprod().sum())
+
+
+def test_snapshot_current_leading_evidence_required_for_signal_availability():
+    for column in ("leading_n_legs", "leading_mom6", "leading_diffusion"):
+        frame = _synthetic_frame()
+        frame.loc[frame.index[-1], column] = float("nan")
+        snapshot = bc.business_cycle_snapshot(frame=frame, cfg=_cfg())
+        assert snapshot["recession_signal"]["available"] is False
+
+
+def test_snapshot_two_leg_current_control_keeps_existing_signal():
+    frame = _synthetic_frame(lead_mom=-2.0, lead_diff=20.0)
+    frame["leading_n_legs"] = 2
+    snapshot = bc.business_cycle_snapshot(frame=frame, cfg=_cfg())
+    assert snapshot["recession_signal"]["available"] is True
+    assert snapshot["recession_signal"]["state"] == "on"
+    assert snapshot["asof"] == str(frame.index[-1].date())

@@ -498,9 +498,21 @@ def business_cycle_snapshot(frame: pd.DataFrame | None = None, cfg: dict | None 
         }
     asof = tiers_out.get("leading", {}).get("asof", str(frame.index[-1].date()))
 
-    # recession-signal state + how long it has been in force
-    sig_state: dict = {"available": sig is not None}
+    # Historical tier context and the signal must describe the same row. A
+    # ragged current edge cannot turn missing leading evidence into an OFF
+    # reading, even when an older trustworthy tier remains displayable.
+    current = frame.iloc[-1]
+    current_covered = (
+        _f(current.get("leading_n_legs")) is not None
+        and current["leading_n_legs"] >= 2
+        and _f(current.get("leading_mom6")) is not None
+        and _f(current.get("leading_diffusion")) is not None
+        and asof == str(frame.index[-1].date())
+    )
     if sig is not None:
+        sig = sig.loc[:asof]
+    sig_state: dict = {"available": bool(sig is not None and not sig.empty and current_covered)}
+    if sig is not None and not sig.empty:
         on = bool(sig["signal"].iloc[-1])
         run = sig["signal"][::-1]
         months_active = int((run.cumprod() if on else (~run).cumprod()).sum())
