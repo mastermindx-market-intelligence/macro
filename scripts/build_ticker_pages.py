@@ -2477,6 +2477,8 @@ def _build_financials(blob: dict | None) -> dict | None:
 
     if repurch is not None:
         coverage = ca.get("repurch_coverage")
+        if not isinstance(coverage, str):
+            coverage = None
         labels = {
             "full": ("Buybacks (TTM)", "回购（TTM）"),
             "annual_fallback": ("Buybacks (annual fallback)", "回购（年度回退）"),

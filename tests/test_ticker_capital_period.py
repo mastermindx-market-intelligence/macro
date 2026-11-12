@@ -30,6 +30,8 @@ fragment = Environment(autoescape=True, undefined=StrictUndefined).from_string(t
     ("missing", "Buybacks (period unqualified)"),
     (None, "Buybacks (period unqualified)"),
     ("bogus", "Buybacks (period unqualified)"),
+    ([], "Buybacks (period unqualified)"),
+    ({"source": "legacy"}, "Buybacks (period unqualified)"),
 ])
 @pytest.mark.parametrize("amount", [0, 100_000_000])
 def test_coverage_and_values(coverage, expected, amount):
