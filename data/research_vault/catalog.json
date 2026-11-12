@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T14:36:46.578942+00:00",
-  "count": 3233,
+  "generated_at": "2026-11-12T14:51:13.249152+00:00",
+  "count": 3234,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -177,6 +177,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sjykpyfqsqi-f17dc2",
+      "title": "Europe Open Hold that thought",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:47:27Z",
+      "summary_points": [
+        "Argentina CPI: Critical inflation data (19:00 GMT) to assess real wage recovery and policy expectations; persistent 33.4% YoY inflation drives portfolio risk.",
+        "Peru Rate Hold: Central bank holds rates since Sept 2025 despite above-target inflation (23:00 GMT), signaling no near-term policy shift impacting currency/bond markets.",
+        "Geopolitical Tensions: US-Iran talks stalled, US-Putin meetings, China’s Xi reunification comments heighten risk; JPY strength limits intervention.",
+        "US Data & FedSpeak: PPI (0.3% MoM) and core PCE (0.33% MoM) key; Fed speakers (Hammack, Barr, Goolsbee) amid tech sentiment weakening.",
+        "Commodities & FX: Oil near $92, gold breaks $4000; USDJPY near 160, EURUSD breaks 1.11, reflecting FX flows and risk sentiment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
