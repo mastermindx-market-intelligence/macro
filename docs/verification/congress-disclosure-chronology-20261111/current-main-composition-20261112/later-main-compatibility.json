@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-12T01:47:24.999622+00:00",
+  "changedPaths": [
+    "data/marketing/outbox/activity.jsonl",
+    "data/marketing/outbox/status_ledger.jsonl",
+    "data/marketing/publications.jsonl",
+    "site/stocks/earnings/route-catalog.json"
+  ],
+  "commits": [
+    "4869c78575b9b9521154daec47f69c09fb6077b7",
+    "ad3756799c8ba6a8cf6addad6064d7049c19579b"
+  ],
+  "composedMain": "89bf0c038ac7b92afed48cb5889b6a7074fa1fe4",
+  "conclusion": "Two automatic data/publication commits; no code, CI manifest, planning owner, test or declared chronology visual input changed. Original exact-composition qualification remains scoped to its recorded source.",
+  "laterMain": "ad3756799c8ba6a8cf6addad6064d7049c19579b",
+  "source": "complete GitHub compare 89bf0c0...ad37567"
+}
