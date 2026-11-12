@@ -342,7 +342,10 @@ def refresh_cache_for_cik(
             invalid_payload = True
             continue
         units = payload.get("units") if isinstance(payload, dict) else None
-        if not isinstance(units, dict) or not units:
+        if (not isinstance(units, dict) or not units
+                or any(not isinstance(entries, list)
+                       or any(not isinstance(entry, dict) for entry in entries)
+                       for entries in units.values())):
             invalid_payload = True
             continue
         merged["facts"]["us-gaap"][tag] = {"units": units}
@@ -399,3 +402,4 @@ def load_debt_maturity_facts(ticker: str) -> tuple[str | None, dict[str, Any] | 
     if cached.get("confirmed_no_filings"):
         return cik, None, "confirmed_no_filings"
     return cik, cached, "loaded"
+

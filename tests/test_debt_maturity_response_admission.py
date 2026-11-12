@@ -20,6 +20,11 @@ class Response:
             raise ValueError("invalid body")
         return {"list": [], "missing_units": {}, "empty_units": {"units":{}},
                 "string_units": {"units":"invalid"},
+                "scalar_entries": {"units":{"USD":123}},
+                "object_entries": {"units":{"USD":{"val":123}}},
+                "string_entries": {"units":{"USD":"invalid"}},
+                "null_entry": {"units":{"USD":[None]}},
+                "mixed_entries": {"units":{"USD":[copy.deepcopy(ENTRY), 123]}},
                 "valid": {"units":{"USD":[copy.deepcopy(ENTRY)]}}}[self.shape]
 
 class Session:
@@ -31,7 +36,7 @@ class Session:
         self.calls.append(tag)
         return Response(self.specs[tag])
 
-@pytest.mark.parametrize("shape", ["bad_json", "list", "missing_units", "empty_units", "string_units"])
+@pytest.mark.parametrize("shape", ["bad_json", "list", "missing_units", "empty_units", "string_units", "scalar_entries", "object_entries", "string_entries", "null_entry", "mixed_entries"])
 @pytest.mark.parametrize("position", range(9))
 @pytest.mark.parametrize("sibling", [404, 429, "valid"])
 @pytest.mark.parametrize("seeded", [False, True])
@@ -59,3 +64,13 @@ def test_existing_decodable_response_contract_remains(tmp_path, monkeypatch, sib
     assert bdm.refresh_cache_for_cik(CIK, session=session)
     cached = bdm.load_cached_facts(CIK)
     assert bool(cached.get("confirmed_no_filings")) is (sibling == 404)
+
+
+
+def test_valid_empty_unit_array_retains_existing_contract(tmp_path, monkeypatch):
+    monkeypatch.setattr(bdm, "_cache_dir", lambda: tmp_path)
+    monkeypatch.setattr(Response, "json", lambda self: {"units":{"USD":[]}})
+    assert bdm.refresh_cache_for_cik(CIK, session=Session(dict.fromkeys(bdm._ALL_TAGS, "valid")))
+    cached = bdm.load_cached_facts(CIK)
+    assert not cached.get("confirmed_no_filings")
+    assert all(row["units"] == {"USD":[]} for row in cached["facts"]["us-gaap"].values())
