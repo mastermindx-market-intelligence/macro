@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_972),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_730),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6011,7 +6011,21 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
-    2026-11-12 (PR #10211, preserving landed Start and Intraday coverage):
+    2026-11-12 (PR #10211, preserve landed browser recovery):
+    Receiver 9d8a0c8be5bbac0073b99762e46ae092235acf4f includes #11051's
+    bounded browser-install fallback. Keep every current owner definition
+    and every current provenance paragraph; do not roll back or count the
+    independently landed +1/+2/+1 a second time. The retained synapse-read-gate
+    contribution adds only +4 per probe to current5969/5993/5727,
+    yielding5973/5997/5731. Retain job ceilings137/138/131, ten packs,
+    all assertions, selectors, runtime, admission and browser controls.
+    Preserve the accepted finite-feedback enrollment, all original feedback
+    history and the earlier frozen-M89 composition; source-only/private
+    Brain and replay UNKNOWN boundaries remain unchanged.
+    This note records source composition; actual native current-tree
+    packing and natural successor proof remain separately accountable.
+
+2 (PR #10211, preserving landed Start and Intraday coverage):
     Native DIRTY at e4f684137f69 establishes a new original-source conflict.
     Receiving main 89bf0c038ac7 retains all 401 owners, the accepted Start
     data-base-shim +2 and ticker-news-qbus free-content +2 contributions.
@@ -6073,6 +6087,23 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     not a new full-tree planning or execution-time measurement. Natural
     successor CI must qualify the composed source. The old run's separate
     private exact-base descendant UNKNOWN is neither retried nor settled.
+
+    2026-11-1    2026-11-11 (playwright apt-outage fallback): the seven shell-executed
+    ``playwright install --with-deps chromium`` steps each gained a bounded
+    240s first attempt plus a 60s browser-only fallback (GitHub-hosted
+    runners intermittently cannot resolve any Ubuntu archive and the apt
+    stage was killing whole packs before a test ran; terminal PR #1469
+    precedent). The three ``acquisition: native_parallel`` contract installs
+    stay byte-identical (run_ci_pack validates their exact run token).
+    Four owners crossed an 800-character estimator bucket, +1 each:
+    catalyst-loop-integrated 27->28, international-dislocation-explorer
+    7->8, international-workspace-browser 58->59, prophet-lab 67->68
+    (engine-render-guards keeps its pinned observed 875). Measured probes:
+    index 137 jobs 5966->5967, free-content 138 jobs 5987->5989, Prophet
+    131 jobs 5724->5725; ten packs, every selected job and every job-count
+    ceiling unchanged. Fund exactly the measured +1/+2/+1 per probe. This
+    is measured planner accounting, not an execution-time estimate; natural
+    successor CI must qualify the repaired source.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
