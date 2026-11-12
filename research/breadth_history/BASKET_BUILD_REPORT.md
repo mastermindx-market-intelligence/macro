@@ -8,8 +8,9 @@ sample: names that left a basket or stopped trading are absent throughout. 16 of
 49 baskets never reach 10 counted members and are missing on every date; of the
 33 that do, the median first valid date is 1994 and six themes only begin after
 2010. The companion sector history carries its own line: on its dated basis only
-46.5% of members carry a sector label at the end of 1996, and all 11 sectors are
-valid only from about 2010.
+46.5% of members carry a sector label at the end of 1996. After the SIC label
+fill, the first sector is valid on 2007-01-10 and all 11 are continuously valid
+from 2009-03-27.
 
 **Rights.** The Tiingo archive's member rows stay on the SSD and never enter git.
 What is committed is basket-level aggregates (shares and counts per basket), the

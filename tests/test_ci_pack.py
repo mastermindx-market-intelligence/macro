@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_731),
+    ("templates/index.html", 137, 5_975),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_999),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_733),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -8139,6 +8139,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,969 -> 5,973, 5,993 -> 5,997, 5,727 -> 5,731; job-count ceilings,
     selectors and the ten-pack bound stay unchanged. Planning weights are not
     measured execution times.
+
+    2026-11-12 (Sector Intelligence theme-tree breadth and equal-weight
+    indexes, #11107): tests/test_build_tree_breadth_and_index.py joins the
+    same unrun-site-surfaces breadth pytest command. Measured on this branch:
+    5,975 / 5,999 / 5,733, job counts 137 / 137 / 131, ten packs each (no job
+    enters or leaves). Fund exactly the measured +2 per probe: 5,973 -> 5,975,
+    5,997 -> 5,999, 5,731 -> 5,733; job-count ceilings, selectors and the
+    ten-pack bound stay unchanged. Re-measured again when this branch merges
+    main.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
