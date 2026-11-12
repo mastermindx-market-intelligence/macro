@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T15:51:10.507802+00:00",
-  "count": 3237,
+  "generated_at": "2026-11-12T16:21:39.873550+00:00",
+  "count": 3238,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -278,6 +278,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-5s5t7zkjrah-504445",
+      "title": "GS Khong GS Asia China Consumer and Healthcare, Trading desk color 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:11:05Z",
+      "summary_points": [
+        "Market Sentiment & Technicals: NDX rebounds above pre-election levels (+225bps, 200-dma); AI/Semi cycle bear/bull debate and \"blank slate\" positioning for 2027 signal high volatility and strategic uncertainty.",
+        "China Banks Policy: Potential 25% income tax on government-bond coupon income requires urgent earnings/valuation reassessment amid regulatory shifts.",
+        "Biotech Fundamentals: WuXi AppTec raises FY26 revenue guidance to 40-42% (vs 35-39%), with bullish stance on WuXi/Pharmaron/Mindray vs cautious on Topchoice/CR Pharm due to volume/pricing pressures.",
+        "Semiconductor Supply Chain: Semiconductor substrate innovation (Resonac, Zhen Ding, Korea/Japan players) amid geopolitical tensions (Korea-Japan, US-China) threatens supply chains and drives sector volatility.",
+        "SHEIN Regulatory Exposure: Critical for assessing China's regulatory environment (data laws, antitrust), US-China trade risks, and SHEIN's e-commerce market position."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
