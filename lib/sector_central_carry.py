@@ -75,6 +75,37 @@ INDUSTRY_GICS_SOURCE = "stagedata/screener.json"
 INDUSTRY_GICS_BASIS = "current_gics_industry_not_point_in_time"
 _LIMIT_IDS = 200
 
+#: L1-FO1 (COO ruling 26): the Brief breadth-change fields and the member's own
+#: above_200 flag, re-expressed from #11094's ALREADY-COMPUTED weekly fixed-set
+#: history and nightly member ledger. Nothing is recomputed here: the producer
+#: (``engine.group_breadth_history.weekly_fixed_set`` / ``member_rows``) applies the
+#: MIN_MEMBERS=10 floors, and this carry copies its floored values verbatim. The
+#: full daily/weekly history stays in ``data/breadth/history/`` (ruling 26); the
+#: generation carries only the current weekly frame plus the per-member flag.
+BREADTH_WEEKLY_SOURCE = "data/breadth/history/group_breadth_weekly_current.parquet"
+BREADTH_META_SOURCE = "data/breadth/history/group_breadth_current.meta.json"
+BREADTH_LEDGER_SOURCE = "data/breadth/member_breadth_ledger.parquet"
+BREADTH_BASIS = "reconstructed_current_membership"
+BREADTH_HEADLINE = "fix_chg_pct_above_200_13w"
+BREADTH_WINDOW_SESSIONS = 200
+BREADTH_HORIZON_WEEKS = 13
+BREADTH_MIN_MEMBERS = 10
+#: The current weekly frame fields carried per sector — exactly the columns
+#: Terminal #1483's ``SectorBreadthChangeRow`` type maps (snake_case wire names).
+#: ``pct_above_200`` is null only when fewer than 10 members are counted today;
+#: the change/rank/state/run are null when ``n_fixed_200_13w`` < 10. Both floors
+#: are the producer's own (MIN_MEMBERS); the carry never re-applies or relaxes them.
+_BREADTH_SECTOR_FIELDS = (
+    "n_members", "n_has_200", "pct_above_200",
+    "fix_chg_pct_above_200_13w",
+    "rank_fix_chg_pct_above_200_13w",
+    "n_ranked_fix_chg_pct_above_200_13w",
+    "state_fix_chg_pct_above_200_13w",
+    "run_fix_chg_pct_above_200_13w",
+    "n_fixed_200_13w",
+    "lvl_diff_pct_above_200_13w",
+)
+
 
 def _encoded(value: Any) -> bytes | None:
     try:
@@ -880,6 +911,133 @@ def owner_effective_as_of(site: Path) -> str | None:
     return next(iter(dates)) if len(dates) == 1 and isinstance(next(iter(dates)), str) else None
 
 
+def _breadth_scalar(value: Any, kind: str) -> Any:
+    """One producer scalar as finite native JSON: NaN/NaT/None -> null, never a float
+    nan. ``kind`` is the producer's column dtype, so a rank stays an integer and a
+    share stays a float. The carry never rounds, rescales or re-floors a value."""
+    import pandas as pd  # lazy: the carry already holds pandas for the roster cut
+    if value is None:
+        return None
+    try:
+        if pd.isna(value):
+            return None
+    except (TypeError, ValueError):
+        return None
+    if kind == "int":
+        return int(value)
+    if kind == "float":
+        return float(value)
+    if kind == "bool":
+        return bool(value)
+    return str(value)
+
+
+_BREADTH_INT_FIELDS = frozenset((
+    "n_members", "n_has_200", "n_fixed_200_13w",
+    "rank_fix_chg_pct_above_200_13w", "n_ranked_fix_chg_pct_above_200_13w",
+    "run_fix_chg_pct_above_200_13w",
+))
+_BREADTH_FLOAT_FIELDS = frozenset((
+    "pct_above_200", "fix_chg_pct_above_200_13w", "lvl_diff_pct_above_200_13w",
+))
+
+
+def sector_breadth(breadth_dir: Path | None) -> dict | None:
+    """The Brief breadth-change frame + the member's own above_200 flag (ruling 26).
+
+    Re-expresses #11094's already-computed current weekly fixed-set frame
+    (``group_breadth_weekly_current.parquet`` + its meta sidecar) and the nightly
+    member ledger's latest session. PURE carry: the producer's MIN_MEMBERS=10
+    floors are copied verbatim (``pct_above_200`` null only when fewer than 10 are
+    counted today; change/rank/state/run null when ``n_fixed_200_13w`` < 10), the
+    basis is the producer's #11095 label, and the first-valid date is the meta's.
+    No signal is recomputed, no value is invented, repaired or defaulted. An absent
+    or unreadable source yields ``None`` (the generation reads ``not_produced``);
+    the full history stays in ``data/breadth/history/``. Only the current basis is
+    carried — a dated-basis artifact is a different measurement and is not copied.
+    """
+    if breadth_dir is None:
+        return None
+    import pandas as pd  # lazy: parquet readers only
+    breadth_dir = Path(breadth_dir)
+    meta = _read(breadth_dir / "history", "group_breadth_current.meta.json")
+    if not isinstance(meta, Mapping):
+        return None
+    basis = meta.get("basis")
+    if basis != BREADTH_BASIS:
+        return None  # only the reconstructed-current-membership frame is carried
+    span = meta.get("span") if isinstance(meta.get("span"), Mapping) else {}
+    first_valid = span.get("first_valid_pct_above_200")
+    first_valid = first_valid if isinstance(first_valid, str) and first_valid else None
+    try:
+        weekly = pd.read_parquet(breadth_dir / "history" / "group_breadth_weekly_current.parquet")
+    except (OSError, ValueError, KeyError, ImportError, RecursionError):
+        return None
+    if weekly.empty or "date" not in weekly.columns or "group" not in weekly.columns:
+        return None
+    latest = weekly["date"].max()
+    current = weekly[weekly["date"] == latest]
+    sectors = []
+    for row in current.to_dict("records"):
+        group = row.get("group")
+        if not isinstance(group, str) or not group:
+            continue
+        sector = {"group": group}
+        for field in _BREADTH_SECTOR_FIELDS:
+            kind = ("int" if field in _BREADTH_INT_FIELDS
+                    else "float" if field in _BREADTH_FLOAT_FIELDS else "str")
+            sector[field] = _breadth_scalar(row.get(field), kind)
+        sectors.append(sector)
+    if not sectors:
+        return None
+    sectors.sort(key=lambda s: s["group"])
+    as_of = pd.Timestamp(latest).date().isoformat()
+    # The member's own above_200 flag: the ledger's latest session, one row per
+    # member. Absent ledger -> no members key (the flag is then not carried).
+    members = None
+    try:
+        ledger = pd.read_parquet(breadth_dir / "member_breadth_ledger.parquet")
+    except (OSError, ValueError, KeyError, ImportError, RecursionError):
+        ledger = None
+    if ledger is not None and not ledger.empty and "date" in ledger.columns:
+        last_day = ledger["date"].max()
+        latest_rows = ledger[ledger["date"] == last_day]
+        carried_members = []
+        for row in latest_rows.to_dict("records"):
+            ticker = row.get("ticker")
+            if not isinstance(ticker, str) or not ticker:
+                continue
+            carried_members.append({
+                "ticker": ticker,
+                "group": _breadth_scalar(row.get("group"), "str"),
+                "has_200_sessions": _breadth_scalar(row.get("has_200_sessions"), "bool"),
+                "above_200": _breadth_scalar(row.get("above_200"), "bool"),
+                "source_asof": _breadth_scalar(row.get("source_asof"), "str"),
+            })
+        carried_members.sort(key=lambda m: m["ticker"])
+        if carried_members:
+            members = carried_members
+    block = {
+        "source": BREADTH_WEEKLY_SOURCE, "as_of": as_of, "basis": basis,
+        "first_valid_date": first_valid, "min_members": BREADTH_MIN_MEMBERS,
+        "headline": BREADTH_HEADLINE, "window_sessions": BREADTH_WINDOW_SESSIONS,
+        "horizon_weeks": BREADTH_HORIZON_WEEKS,
+        "member_flag_source": BREADTH_LEDGER_SOURCE,
+        "sectors": sectors,
+    }
+    if members is not None:
+        block["members"] = members
+    raw = _encoded(block)
+    if raw is None:
+        return None
+    if len(raw) <= MAX_ROW_BLOCK_BYTES:
+        return block
+    # Over the row cap the block is not allowed to vanish silently: a small stub
+    # served as unavailable (the date lives in the frame we did carry).
+    return _bounded({"source": BREADTH_WEEKLY_SOURCE, "as_of": as_of, "basis": basis,
+                     "status": "unavailable", "reason": "block_too_large"})
+
+
 #: Blocks that must carry their own string ``as_of`` (``confluence`` is dated per universe
 #: instead). A block whose source has no date is NOT carried. R3-N5: the two
 #: current-basis taxonomy blocks are dated blocks too - an undated classification is
@@ -889,17 +1047,20 @@ _DATED_BLOCKS = ("sector_central_r1", "display_order", "etf_flows", "bottoming_w
                  "member_sub_industry", "membership_first_known", "membership_snapshots",
                  "confluence_universe_sp500", "confluence_universe_nasdaq",
                  "confluence_universe_russell", "confluence_universe_baskets",
-                 "theme_rows")
+                 "theme_rows", "sector_breadth")
 
 
 def build_carry(site: Path, central: Mapping[str, Any],
                 membership: Mapping[str, Any] | None = None,
-                flows: Mapping[str, Any] | None = None) -> dict[str, Any]:
+                flows: Mapping[str, Any] | None = None,
+                breadth_dir: Path | None = None) -> dict[str, Any]:
     """Every block its source provides; absent keys mean ``not_produced``.
 
-    ``membership`` is the owner's roster document (``engine.baskets._membership()``) and
-    ``flows`` the output of ``collectors.sponsors.sector_flow_periods()``; both are
-    supplied by the central builder. ``None`` carries no such block.
+    ``membership`` is the owner's roster document (``engine.baskets._membership()``),
+    ``flows`` the output of ``collectors.sponsors.sector_flow_periods()`` and
+    ``breadth_dir`` the repo ``data/breadth`` directory holding #11094's history and
+    nightly member ledger; all are supplied by the central builder. ``None`` carries
+    no such block.
     """
     effective = owner_effective_as_of(site)
     roster = roster_baskets(membership, effective)
@@ -938,6 +1099,7 @@ def build_carry(site: Path, central: Mapping[str, Any],
         "theme_table": theme_table(site),
         "member_industry": member_industry(site),
         "member_sub_industry": member_sub_industry(site),
+        "sector_breadth": sector_breadth(breadth_dir),
     }
     # The five lane-1 row blocks (wire v1.1 §1-3): the four closed universe entries
     # plus the theme row array, each independent of every other carried block.

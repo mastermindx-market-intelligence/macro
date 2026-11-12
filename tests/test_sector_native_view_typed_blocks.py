@@ -1,14 +1,18 @@
 """Optional typed blocks (lane 8 R1/R2, lane 7 depth, lane 1 v1.1 rows) read `unavailable` unless produced.
 
 REAL    The committed `site/` member bytes (session 2026-11-06) carry none of the
-        twelve blocks, so every block reads `unavailable/not_produced`: that is
+        thirteen blocks, so every block reads `unavailable/not_produced`: that is
         what the real producers emit today and nothing is invented. With the
         carry step run over the same committed artifacts (the builder the nightly
         pipeline uses), the five v1.1 row blocks are `available` with values
-        equal to the carry, in the wire's order after the untouched seven.
+        equal to the carry, in the wire's order after the untouched seven. The
+        L1-FO1 `sector_breadth` row block reads `not_produced` on these committed
+        artifacts: #11094's breadth history lives off-git in `data/breadth/`, so
+        the real carry has no source for it here (it is carried nightly when the
+        producer artifact is present; see tests/test_sector_breadth_carry.py).
 FIXTURE Synthetic documents (labelled per test) prove the `available` path, shape
         refusal (`invalid_shape`), NaN refusal, the 64 KiB cap (516 KiB for the
-        five row blocks), the `block_too_large` stub reason, the entitled-only
+        six row blocks), the `block_too_large` stub reason, the entitled-only
         gate and that a bad block never changes another part of the projection.
 """
 from __future__ import annotations
@@ -29,9 +33,13 @@ from tests.test_sector_population import PUBLISHED, SESSION, _real_bundle
 NAMES = ("r1_rising_priced_share", "r2_display_order", "r2_hazard_qualification",
          "etf_flows", "confluence", "bottoming_watch", "theme_table",
          "confluence_universe_sp500", "confluence_universe_nasdaq",
-         "confluence_universe_russell", "confluence_universe_baskets", "theme_rows")
-#: the five lane-1 v1.1 row blocks (wire §1) - the last five of the wire order
+         "confluence_universe_russell", "confluence_universe_baskets", "theme_rows",
+         "sector_breadth")
+#: the six lane-1 row blocks (wire §1 plus the L1-FO1 breadth frame) - the last six
+#: of the wire order. The first five are produced by the committed real carry; the
+#: breadth frame is not (its source is off-git), so real-carry tests treat it apart.
 ROW_NAMES = NAMES[7:]
+COMMITTED_ROW_NAMES = ROW_NAMES[:-1]
 CONFLUENCE = {"us": {"n": 1}, "hk": {"n": 2}, "cn": {"n": 3}, "ca": {"n": 4}}
 
 
@@ -51,6 +59,23 @@ ROW_BLOCKS = {
     "confluence_universe_baskets": _universe_block("curated_baskets", ("baskets",)),
     "theme_rows": {"source": "basketdata/si_handoff.json#theme_context.themes",
                    "as_of": "2026-11-06", "rows": [{"id": "memory_storage"}]},
+    "sector_breadth": {"source": "data/breadth/history/group_breadth_weekly_current.parquet",
+                       "as_of": "2026-11-06", "basis": "reconstructed_current_membership",
+                       "first_valid_date": "2010-01-08", "min_members": 10,
+                       "headline": "fix_chg_pct_above_200_13w", "window_sessions": 200,
+                       "horizon_weeks": 13,
+                       "sectors": [{"group": "Information Technology", "n_members": 70,
+                                    "n_has_200": 68, "pct_above_200": 61.8,
+                                    "fix_chg_pct_above_200_13w": 4.4,
+                                    "rank_fix_chg_pct_above_200_13w": 2,
+                                    "n_ranked_fix_chg_pct_above_200_13w": 11,
+                                    "state_fix_chg_pct_above_200_13w": "improving",
+                                    "run_fix_chg_pct_above_200_13w": 3,
+                                    "n_fixed_200_13w": 65,
+                                    "lvl_diff_pct_above_200_13w": 5.1}],
+                       "members": [{"ticker": "AAPL", "group": "Information Technology",
+                                    "has_200_sessions": True, "above_200": True,
+                                    "source_asof": "2026-11-06"}]},
 }
 
 
@@ -203,31 +228,38 @@ def test_fixture_row_block_cap_boundary_available_at_cap_invalid_one_byte_over(t
     assert over == {"status": "unavailable", "reason": "invalid_shape", "value": None}
 
 
-def test_real_carry_serves_twelve_blocks_in_wire_order_five_row_blocks_available(tmp_path):
+def test_real_carry_serves_thirteen_blocks_in_wire_order_five_row_blocks_available(tmp_path):
     """REAL: with the carry step run over the committed artifacts (exactly what
-    ``build_sector_central`` does nightly), the projection serves twelve typed
-    blocks in the wire §4 order - the first seven unchanged, the five row blocks
-    ``available`` with values equal to the carry - and a preview projection gates
-    all nine entitled-only blocks."""
+    ``build_sector_central`` does nightly), the projection serves thirteen typed
+    blocks in the wire §4 order - the first seven unchanged, the five committed row
+    blocks ``available`` with values equal to the carry - and a preview projection
+    gates all ten entitled-only blocks. The L1-FO1 ``sector_breadth`` row block reads
+    ``not_produced``: #11094's breadth history is off-git, so the real carry over the
+    committed artifacts has no source for it (never invented)."""
     inputs, receipt = _inputs(tmp_path, carried=True)
     data = _project(inputs, receipt)["data"]
     blocks = data["typed_blocks"]
     assert tuple(blocks) == NAMES
     carried = inputs.central["carried"]
-    for name in ROW_NAMES:
+    assert "sector_breadth" not in carried  # off-git source: the real carry has none
+    for name in COMMITTED_ROW_NAMES:
         assert blocks[name] == {"status": "available", "reason": None,
                                 "value": carried[name]}, name
+    assert blocks["sector_breadth"] == {"status": "unavailable", "reason": "not_produced",
+                                        "value": None}
     assert blocks["confluence"]["value"] == carried["confluence"]  # incumbent too
     preview = _project(inputs, receipt, "preview")["data"]["typed_blocks"]
     assert all(preview[n] == {"status": "unavailable", "reason": "audience_not_entitled",
                               "value": None} for n in NAMES[3:])
 
 
-def test_real_generation_envelope_keeps_room_for_five_row_blocks(tmp_path):
+def test_real_generation_envelope_keeps_room_for_six_row_blocks(tmp_path):
     """REAL (wire §1): B - the entitled legacy projection of a real generation
-    WITHOUT the five row blocks - plus five times the 512 KiB carry cap stays
-    inside the 4 MiB encode budget minus 256 KiB of headroom; with the five the
-    encoded generation is under the same budget and the capture hash moves."""
+    WITHOUT the six row blocks - plus six times the 512 KiB carry cap stays
+    inside the 4 MiB encode budget minus 256 KiB of headroom; with the row blocks
+    the encoded generation is under the same budget and the capture hash moves.
+    The sixth row block (``sector_breadth``) is not produced by the committed real
+    carry, but its 512 KiB cap is reserved here exactly like the other five."""
     def serve(tag, carried):
         (tmp_path / tag).mkdir(parents=True, exist_ok=True)
         raw, identity = _real_bundle(tmp=tmp_path / tag, carried=False)
@@ -247,7 +279,7 @@ def test_real_generation_envelope_keeps_room_for_five_row_blocks(tmp_path):
     out_b, body_b = serve("b", legacy)
     out_a, body_a = serve("a", full)
     B, A = len(body_b), len(body_a)
-    assert B + 5 * (512 * 1024) <= 4 * 1024 * 1024 - 256 * 1024
+    assert B + 6 * (512 * 1024) <= 4 * 1024 * 1024 - 256 * 1024
     assert A < 4 * 1024 * 1024 and A > B
     assert out_a["receipt"]["content_sha256"] != out_b["receipt"]["content_sha256"]
     assert tuple(out_a["data"]["typed_blocks"]) == NAMES

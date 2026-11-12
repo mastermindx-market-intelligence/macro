@@ -1887,8 +1887,9 @@ _CONFLUENCE_UNIVERSES = 4
 #: ``carried`` is ``sector_central.json["carried"]``, written by the central builder
 #: (lib.sector_central_carry) from existing producer artifacts. ``hazard_qualification``
 #: has no producer on this base (``hazard_score.qualify_current_model`` is not here).
-#: The last five (wire v1.1 §1) are the confluence-universe row blocks and the theme
-#: row array: carried key equal to the block name, entitled-only.
+#: The last six (wire v1.1 §1 plus the L1-FO1 breadth frame) are the confluence-universe
+#: row blocks, the theme row array and the sector breadth frame: carried key equal to
+#: the block name, entitled-only.
 _TYPED_BLOCK_SOURCES = (
     ("r1_rising_priced_share", "carried", "sector_central_r1", False),
     ("r2_display_order", "carried", "display_order", False),
@@ -1902,6 +1903,7 @@ _TYPED_BLOCK_SOURCES = (
     ("confluence_universe_russell", "carried", "confluence_universe_russell", True),
     ("confluence_universe_baskets", "carried", "confluence_universe_baskets", True),
     ("theme_rows", "carried", "theme_rows", True),
+    ("sector_breadth", "carried", "sector_breadth", True),
 )
 #: Serving rules of the universe row blocks (wire v1.1 §1/§4): the required owner
 #: word and the exact ``group_arrays`` list of section 1.
@@ -1911,7 +1913,7 @@ _TYPED_ROW_BLOCK_UNIVERSES = {
     "confluence_universe_russell": ("russell_subsectors", ("subsectors", "sectors")),
     "confluence_universe_baskets": ("curated_baskets", ("baskets",)),
 }
-_TYPED_ROW_BLOCK_NAMES = frozenset(_TYPED_ROW_BLOCK_UNIVERSES) | {"theme_rows"}
+_TYPED_ROW_BLOCK_NAMES = frozenset(_TYPED_ROW_BLOCK_UNIVERSES) | {"theme_rows", "sector_breadth"}
 
 
 def _typed_block(value: Any, *, name: str) -> dict:
@@ -1947,7 +1949,7 @@ def _typed_row_block(value: Any, *, name: str) -> dict:
        ``rows`` is a list.
 
     Never repaired, never raised, never changes another part of the projection.
-    The closed reason set for these five is ``audience_not_entitled``,
+    The closed reason set for these row blocks is ``audience_not_entitled``,
     ``not_produced``, ``invalid_shape``, ``block_too_large``.
     """
     if isinstance(value, dict) and value.get("status") == "unavailable":
@@ -1966,6 +1968,13 @@ def _typed_row_block(value: Any, *, name: str) -> dict:
             ok = (isinstance(data, dict) and data.get("universe") == owner_word
                   and value.get("group_arrays") == list(group_arrays)
                   and all(isinstance(data.get(array), list) for array in group_arrays))
+        elif ok and name == "sector_breadth":
+            # The Brief breadth-change frame: a dated, basis-labelled sector row
+            # array, plus an optional per-member above_200 flag array. The producer's
+            # MIN_MEMBERS floors live inside the values; the shape check never floors.
+            ok = (isinstance(value.get("sectors"), list)
+                  and isinstance(value.get("basis"), str) and bool(value.get("basis"))
+                  and ("members" not in value or isinstance(value["members"], list)))
         elif ok:  # theme_rows
             ok = isinstance(value.get("rows"), list)
     except (TypeError, ValueError, OverflowError, RecursionError):
@@ -2000,10 +2009,10 @@ def _typed_blocks(inputs: SectorViewInputs, audience: str) -> dict:
 
 
 def typed_blocks_of(data: dict) -> dict:
-    """The twelve blocks of a projected ``data`` object, absent key included.
+    """The thirteen blocks of a projected ``data`` object, absent key included.
 
     An absent ``typed_blocks`` means no producer emitted any block: every block
-    reads ``unavailable/not_produced`` (the entitled-only nine read
+    reads ``unavailable/not_produced`` (the entitled-only ten read
     ``audience_not_entitled`` for a preview projection). Nothing is invented.
     """
     present = data.get("typed_blocks")
