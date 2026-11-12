@@ -229,6 +229,40 @@ def test_unexpected_value_shape_is_never_cached(monkeypatch, cache):
     assert "excl_link" in a._excluded_cte().split("excluded as (", 1)[1]
 
 
+@pytest.mark.parametrize("rows", [
+    {}, "v1", [None], [{}], [{"visitor_id": None}],
+    [{"visitor_id": False}], [{"visitor_id": 42}], [{"visitor_id": "v1\n"}],
+    [{"visitor_id": "v1"}, {"wrong_column": "v2"}],
+])
+def test_malformed_refresh_discards_only_the_affected_set(monkeypatch, cache, rows):
+    _refresh(monkeypatch)
+    peer = cache["farm"]
+    key = cache["excluded"]["key"]
+    monkeypatch.setattr(a, "_query", lambda sql: rows)
+    a._refresh_set("excluded", key, "query", "visitor_id")
+    assert "excluded" not in cache
+    assert cache["farm"] is peer
+    assert "excl_link" in a._excluded_cte().split("excluded as (", 1)[1]
+
+
+def test_malformed_old_refresh_keeps_a_newer_configuration(monkeypatch, cache):
+    _refresh(monkeypatch)
+    current = cache["excluded"]
+    monkeypatch.setattr(a, "_query", lambda sql: [{"visitor_id": None}])
+    a._refresh_set("excluded", "previous-config", "query", "visitor_id")
+    assert cache["excluded"] is current
+
+
+def test_refresh_caps_distinct_values_and_accepts_an_empty_result(monkeypatch, cache):
+    monkeypatch.setattr(a, "_CLASSIFIER_MAX_VALUES", 1)
+    _refresh(monkeypatch, excluded=("v1", "v1"))
+    assert cache["excluded"]["values"] == ("v1",)
+    _refresh(monkeypatch, excluded=("v1", "v2"))
+    assert "excluded" not in cache
+    _refresh(monkeypatch, excluded=())
+    assert cache["excluded"]["values"] == ()
+
+
 def test_one_failing_refresh_leaves_the_other(monkeypatch, cache):
     def fake_query(sql, *args, **kwargs):
         if sql.startswith("with "):

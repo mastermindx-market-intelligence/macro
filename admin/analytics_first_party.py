@@ -220,18 +220,32 @@ def _cached_set(name: str, key: str):
     return c["values"]
 
 
+def _classifier_values(rows, col: str) -> tuple[str, ...] | None:
+    """Accept a complete classifier result, including a genuine empty list."""
+    if not isinstance(rows, list):
+        return None
+    values: set[str] = set()
+    for row in rows:
+        value = row.get(col) if isinstance(row, dict) else None
+        if not isinstance(value, str) or not _SET_VALUE_RE.fullmatch(value):
+            return None
+        values.add(value)
+        if len(values) > _CLASSIFIER_MAX_VALUES:
+            return None
+    return tuple(sorted(values))
+
+
 def _refresh_set(name: str, key: str, sql: str, col: str) -> None:
     rows = _query(sql)
     if rows is None:
         return
-    values = tuple(sorted({str(r.get(col)) for r in rows if r.get(col) is not None}))
-    # Never cache a set that is not row-identical to the live CTE: an unexpected value shape
-    # or an oversized literal leaves the live-CTE fallback in place (drop any old entry).
-    if len(values) > _CLASSIFIER_MAX_VALUES or not all(_SET_VALUE_RE.match(v) for v in values):
-        with _CLASSIFIER_LOCK:
-            _CLASSIFIER_CACHE.pop(name, None)
-        return
+    values = _classifier_values(rows, col)
     with _CLASSIFIER_LOCK:
+        if values is None:
+            entry = _CLASSIFIER_CACHE.get(name)
+            if entry and entry["key"] == key:
+                del _CLASSIFIER_CACHE[name]
+            return
         _CLASSIFIER_CACHE[name] = {"key": key, "values": values, "at": time.monotonic()}
 
 
