@@ -1,0 +1,111 @@
+{
+  "schema": "prophet.beta_evaluation.protocol_header/v1",
+  "protocol_id": "prophet-beta-first-evaluation-v1",
+  "frozen_on": "2026-11-11",
+  "frozen_by": "Lead C (scientific evaluation lead), Prophet x Sector Intelligence programme",
+  "governing_law": "SECTOR_QUANT_PROTOCOL.md sections 3.2, 5.1-5.5 (scientific rules binding)",
+  "data_pin": {
+    "macro_commit": "b5a5c846f8b597d4c041e11c624b7fbf74684ffe",
+    "plans": "site/prophet/index.json (asof 2026-11-09, source_asof 2026-11-06)",
+    "ledger": "data/prophet/ledger.jsonl",
+    "prices": "data/yahoo/<TICKER>.parquet column 'close' (dividend/split adjusted total-return close); column 'close_price' (raw) only for comparing to published raw plan levels",
+    "membership": "data/breadth/sp1500_pit_membership.parquet (start_date/end_date)",
+    "sector_labels": "data/breadth/sp1500_pit_sectors.parquet (current-basis GICS, era_correct=false) then plan board_read.fields.sector.value",
+    "unused_noted": "macro#10965 claude/si-lane1-pit-fields-20261110 @ a089d2f9b4 (US theme-basket PIT store, snapshots from 2026-08-13; NOT used; theme baskets are outside this protocol)"
+  },
+  "market": {
+    "market": "US",
+    "currency": "USD",
+    "benchmark": "SPY",
+    "return_basis": "total_return_adjusted_close",
+    "cash_instrument": "BIL",
+    "calendar": "SPY trading sessions in data/yahoo/SPY.parquet"
+  },
+  "window": {
+    "first_return_close": "2026-08-10",
+    "last_close": "2026-11-06",
+    "sessions_inclusive": 64,
+    "daily_returns": 63,
+    "warmup_from": "2025-01-02",
+    "stability_halves": "split at the 32nd daily return; descriptive only",
+    "reason_start": "incumbent selection era anticipation-v1-2026-08-08; earliest era recorded_at 2026-08-09; first possible fill 2026-08-10 close",
+    "reason_end": "index.json source_asof 2026-11-06"
+  },
+  "execution": {
+    "signal_clock": "close of decision session t, using data with date <= t only",
+    "rule_execution": "close of session t+1 (one-session lag); returns accrue from t+1 close",
+    "rebalance_every_sessions": 21,
+    "first_rule_decision": "2026-08-07 close, executed 2026-08-10 close",
+    "drift": "buy-and-hold drift between rebalances; C6/C7/C6A re-equalised daily",
+    "fill_model": "close-only; no intraday prices; no fill at a price not printed as a close",
+    "no_fill": "a position whose fill session has no valid close is a no-fill (counted, not held)",
+    "cost_bps_per_side": {"etf": 3.0, "stock": 10.0},
+    "cost_stress_multiplier": 2.0,
+    "cash": "uninvested weight earns BIL total return",
+    "leverage": "none; long-only; weights sum <= 1"
+  },
+  "comparators": {
+    "C1_passive_market": "100% SPY held through the window",
+    "C2_simple_participation": "100% SPY if SPY adjusted close(t) > its 200-session simple moving average(t) else 100% BIL; evaluated daily; executed t+1",
+    "C3_sector_allocation_only": "equal weight (1/3) in the top 3 of XLB XLC XLE XLF XLI XLK XLP XLRE XLU XLV XLY by RS63 = 63-session total return minus SPY 63-session total return; rebalance every 21 sessions",
+    "C4_member_selection_only": "S&P 1500 PIT members at t (start_date<=t<end_date or open), sector label present, >=126 valid closes, raw close>=5; score = 63-session total return minus own sector SPDR 63-session total return; per sector take top k=max(3,ceil(0.10*n_s)) equal weight; sector weights fixed = non-negative least squares style weights of SPY daily returns on the 11 SPDRs over the 252 sessions ending 2026-08-07, normalised to 1; rebalance every 21 sessions",
+    "C5_joint_sector_and_name": "C3's top-3 sectors (1/3 each); within each, C4's top-k members by C4 score, equal weight; rebalance every 21 sessions",
+    "C6_exact_incumbent_prophet": "index.json plans with selection_era == anticipation-v1-2026-08-08; publication session P = first session s with s > price_basis_date and s >= recorded_at; entered iff entry_zone_state.state in {filled, converted} and ledger outcome != NO_ENTRY; entry session E = first session >= max(P, filled_date if present); exit X = ledger close_date (last session <= close_date) when the plan is in the ledger, else first session after E with raw close <= invalidation or raw close >= targets[0] or date >= price_basis_date + horizon_days calendar days, else censored at window end; if X <= E the position is excluded (resolved_at_or_before_follower_fill); book = equal weight across open positions, re-equalised daily, 100% BIL when none",
+    "C7_independent_emergence": "C6 restricted to plans whose sector SPDR is NOT in C3-rule top-3 computed at the close of price_basis_date",
+    "C6A_context_aligned_prophet": "C6 restricted to plans whose sector SPDR IS in that top-3 (diagnostic counterpart to C7)",
+    "X6_exposure_matched_reference": "daily weight w(t-1) in SPY and 1-w(t-1) in BIL where w is C6's risky weight at the previous close"
+  },
+  "sector_map": {
+    "Communication Services": "XLC", "Consumer Discretionary": "XLY", "Consumer Staples": "XLP",
+    "Energy": "XLE", "Financials": "XLF", "Health Care": "XLV", "Industrials": "XLI",
+    "Information Technology": "XLK", "Technology": "XLK", "Materials": "XLB", "Basic Materials": "XLB",
+    "Real Estate": "XLRE", "Utilities": "XLU"
+  },
+  "metrics": [
+    "total_net_return", "ann_return", "excess_total_vs_spy", "ann_excess_vs_spy",
+    "beta_vs_market (OLS of daily strategy minus BIL on SPY minus BIL)", "intercept_ann (252 x OLS intercept; NOT labelled alpha)",
+    "tracking_error_ann", "upside_capture (geometric mean daily return on SPY-up days / SPY's)",
+    "downside_capture (same on SPY-down days)", "max_drawdown", "annual_turnover (one-way, sum |dw|/2 x 252/n)",
+    "mean_invested", "time_in_market", "costs_paid_total", "no_entry_count", "no_fill_count",
+    "hit_rate_vs_spy (positions; holding-window total return beats SPY over same window; Wilson 95% CI)",
+    "attribution_bridge (C6/C7/C6A only; daily arithmetic accounting identity: market = sum w_i x r_SPY, sector = sum w_i x (r_ETF(i) - r_SPY), selection = sum w_i x (r_i - r_ETF(i)), cash = w_cash x r_BIL, costs; legs sum to the arithmetic sum of daily net returns; compounding residual reported separately)",
+    "event_study (all C6-era published plans, policy-free, engine.grading.forward_metrics next-bar fill from the session before P; H = 10, 21, 42, 63 sessions; excess vs SPY, sector ETF minus SPY, stock minus sector ETF; matured horizons only)"
+  ],
+  "statistics": {
+    "bootstrap": "stationary bootstrap (Politis-Romano) of the daily series, mean block length 10 sessions, B = 10000, seed 20261110; paired (strategy, reference, SPY, BIL) rows resampled together",
+    "block_length_sensitivity": 21,
+    "ci_level": 0.95,
+    "p_value": "one-sided, H0: mean daily net differential <= 0; p = share of centred bootstrap means >= observed mean",
+    "event_study_ci": "cluster bootstrap over publication dates, B = 10000, same seed",
+    "confirmatory_family_holm_alpha_0.05": {
+      "K1": "C6 - C1", "K2": "C6 - X6", "K3": "C3 - C1", "K4": "C4 - C1",
+      "K5": "C5 - C4", "K6": "C5 - C3", "K7": "C6A - C7", "K8": "C2 - C1"
+    },
+    "secondary_family_holm_alpha_0.05": "C6 restricted to each admission_class stratum (patience, confirmation, early_turn_starter) minus C1; the eight catalog sleeves carry no plan link and are NOT evaluable",
+    "capture_ratio_guard": "capture unavailable when |SPY geometric mean on the relevant days x days| < 0.01"
+  },
+  "acceptance": {
+    "global_minimum_for_L1": {"window_sessions_min": 252, "spy_peak_to_trough_drawdown_present_min": 0.08, "resolved_positions_min": 150},
+    "L0_descriptive": "source-correct: >= 90% of era plans classified (evaluated or excluded with a closed reason) and >= 95% of entered positions priced; numbers shown as descriptive with CIs, no performance claim",
+    "L1_accepted_historical": {
+      "job_A_market_participation_C6": "all of: beta point in [0.8,1.3] and CI lower >= 0.6; upside_capture point >= 0.90 and CI lower >= 0.75; mean_invested >= 0.80; ann_excess_vs_spy CI lower > -0.03 (non-inferiority margin -3.0 pp/yr); non-inferiority point holds at 2x costs",
+      "job_B_sector_context_K3_K5_K7": "Holm-adjusted one-sided p < 0.05; point ann differential >= +0.02; holds at 2x costs; K3 additionally C3 - exposure-matched SPY/BIL CI lower > 0",
+      "job_C_member_selection_K2_K4_K6": "Holm-adjusted one-sided p < 0.05; point ann differential >= +0.02; holds at 2x costs"
+    },
+    "L2_prospective_shadow": "L1 met, then >= 126 sessions after 2026-11-11 evaluated under this unchanged header hash and code with the same job criteria holding",
+    "L3_approved_product_prediction": "L2 plus independent non-author review and acceptance through the existing Evaluation owner; never assignable by this harness",
+    "below_global_minimum": "release level for every performance job is capped at L0_descriptive regardless of point estimates"
+  },
+  "biases": {
+    "membership_survivorship": "C4/C5 use S&P 1500 PIT start/end dates; the PIT file's last recorded change is 2026-06-02 so later index changes are unrecorded (counted); PIT members without a price file are excluded and counted; theme-basket rosters (current, back-dated added) are not used",
+    "sector_labels_current_basis": "GICS labels are current, not era-correct; disagreements between the two label sources are counted",
+    "plan_selection_backfill": "publication clock recorded_at governs entry; legacy-era plans excluded from C6; entry_date before recorded_at shifted to P; resolved-before-fill excluded and counted; sensitivity excluding plans with a plan_corrections.jsonl row",
+    "short_sample": "64 sessions, one regime; capped at L0 by the global minimum",
+    "overlapping_horizons": "portfolio series use block bootstrap; event-study uses date-cluster bootstrap",
+    "lookahead": "all rule signals use closes <= t and execute at t+1; tests assert truncation invariance",
+    "close_only_fills": "no intraday data; zone fills at the filled_date close, never at the zone price",
+    "snapshot_not_vintage": "index.json is the 2026-11-09 snapshot of plans, not each plan's as-published bytes"
+  },
+  "contamination_disclosure": "Before freezing, Lead C saw: ledger field names and the outcome label vocabulary (EXPIRED, INVALIDATED, NO_ENTRY, T1_HIT, T2_HIT) without category counts or any stock_result_pct value; index lifecycle_counts (resolved 529, entered 275, ready 64, invalidated 25); outcome labels and days_held of 6 printed ledger rows; one plan (GPCR-BULL-20260604) shown closed/stopped out with last_price 20.35 vs entry 53.14; SPY adjusted close levels on 1993-01-29, 1993-02-01, 2026-11-06 (735.29) and 2026-11-09 (752.69), no window return; the brief's statement that lane 8's sector-rotation comparator did not beat passive SPY after costs on its own window. No strategy, comparator or plan-population return over the window was computed or seen. Lead C's model knowledge ends June 2026 and contains no August-November 2026 market path. C3/C4/C5 rule parameters (RS63, top-3, 21-session rebalance, top-10% per sector) are conventional defaults chosen without tuning.",
+  "deviation_rule": "any departure from this header is logged in RESULTS_v1.md and in the artifact's deviations[] with reason; thresholds never change after outcome access"
+}

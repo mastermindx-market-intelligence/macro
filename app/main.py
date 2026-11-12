@@ -2661,6 +2661,10 @@ app.include_router(prophet_observations_router)
 from app.prophet_daily_brief import router as prophet_daily_brief_router  # noqa: E402
 app.include_router(prophet_daily_brief_router)
 
+# Frozen beta-first evaluation artifact, served as stored after site_full auth.
+from app.prophet_beta_evaluation import router as prophet_beta_evaluation_router  # noqa: E402
+app.include_router(prophet_beta_evaluation_router)
+
 # Current research attention reuses the paid site-full owner boundary.
 from app.catalyst_opportunity import router as catalyst_opportunity_router  # noqa: E402
 app.include_router(catalyst_opportunity_router)

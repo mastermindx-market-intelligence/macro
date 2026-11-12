@@ -1,0 +1,2572 @@
+{
+ "schema": "prophet.beta_evaluation/v1",
+ "view": "STRATEGY_EVALUATION_VIEW",
+ "protocol_ref": "research/prophet_v4/beta_first_evaluation/protocol_header_v1.json",
+ "protocol": {
+  "id": "prophet-beta-first-evaluation-v1",
+  "header_sha256": "3be32166c7be5170c5153f7c6e66af02e988e88dda52167140e7ac12f30b2ada",
+  "header_commit": "07f1c9cd8c0779934ae89e4da25ea97a5413e700",
+  "frozen_on": "2026-11-11"
+ },
+ "code": {
+  "commit": "f1314c9a4966192f651d8a2c392f562367ba01d9",
+  "harness_dirty": false,
+  "module": "engine/prophet_beta_evaluation.py",
+  "runner": "scripts/run_prophet_beta_evaluation.py",
+  "bootstrap": {
+   "B": 10000,
+   "seed": 20261110,
+   "mean_block": 10,
+   "sensitivity_block": 21
+  }
+ },
+ "data_clocks": {
+  "macro_data_commit": "b5a5c846f8b597d4c041e11c624b7fbf74684ffe",
+  "plans_index": {
+   "path": "site/prophet/index.json",
+   "sha256": "3956748aa58e9a1d4850e3429082f2a4d795da32b1a12667f5b1ce75f3fe2e28",
+   "asof": "2026-11-09",
+   "source_asof": "2026-11-06",
+   "computed_at": "2026-11-09T09:02:55Z"
+  },
+  "resolution_log": {
+   "path": "data/prophet/ledger.jsonl",
+   "sha256": "b2033a72f893225ead4a5fb604fc5b7783dba97b49843e14f427e8442b11bc90",
+   "rows": 540,
+   "malformed_lines_skipped": 0,
+   "max_asof": "2026-11-07",
+   "close_date_corrections_applied": 0,
+   "quarantined_ids_removed": 11
+  },
+  "pit_membership": {
+   "path": "data/breadth/sp1500_pit_membership.parquet",
+   "sha256": "7b34316c0561619ba052f02036ec1fbe7fff3d00dcda3e7acb7dffda10582eca",
+   "last_recorded_change": "2026-06-02"
+  },
+  "prices": {
+   "source": "data/yahoo per-ticker parquet (adjusted close)",
+   "tickers_loaded": 1522,
+   "digest_sha256": "1ca89f60226d9969d377a3d9c30a8a09eb8e9efc8e739b0cbdbc4e7936a4703a",
+   "missing_files": 36,
+   "last_close_used": "2026-11-06"
+  }
+ },
+ "market": "US",
+ "benchmark": "SPY",
+ "currency": "USD",
+ "return_basis": "total_return_adjusted_close",
+ "cash_instrument": "BIL",
+ "costs_bp_per_side": {
+  "etf": 3.0,
+  "stock": 10.0
+ },
+ "window": {
+  "first_return_close": "2026-08-10",
+  "last_close": "2026-11-06",
+  "sessions": 64,
+  "daily_returns": 63,
+  "spy_total_return": -0.04645894,
+  "spy_max_drawdown": -0.05915879
+ },
+ "release": {
+  "levels_defined": [
+   "L0_descriptive",
+   "L1_accepted_historical",
+   "L2_prospective_shadow",
+   "L3_approved_product_prediction"
+  ],
+  "l0_source_checks": [
+   {
+    "criterion": "era_plans_classified_share",
+    "required": ">= 0.90",
+    "observed": 1.0,
+    "met": true
+   },
+   {
+    "criterion": "entered_positions_priced_share",
+    "required": ">= 0.95",
+    "observed": 0.996,
+    "met": true
+   }
+  ],
+  "l0_met": true,
+  "global_minimum_for_L1": [
+   {
+    "criterion": "window_sessions",
+    "required": ">= 252",
+    "observed": 64,
+    "met": false
+   },
+   {
+    "criterion": "spy_drawdown_present",
+    "required": "<= -0.08",
+    "observed": -0.05915879,
+    "met": false
+   },
+   {
+    "criterion": "resolved_positions",
+    "required": ">= 150",
+    "observed": 308,
+    "met": true
+   }
+  ],
+  "global_minimum_met": false,
+  "jobs": {
+   "A_market_participation": {
+    "level": "L0_descriptive",
+    "criteria": [
+     {
+      "criterion": "beta_point_in",
+      "required": "[0.8, 1.3]",
+      "observed": 0.79254625,
+      "met": false
+     },
+     {
+      "criterion": "beta_ci_lower",
+      "required": ">= 0.6",
+      "observed": 0.62694379,
+      "met": true
+     },
+     {
+      "criterion": "upside_capture_point",
+      "required": ">= 0.90",
+      "observed": 0.93468976,
+      "met": true
+     },
+     {
+      "criterion": "upside_capture_ci_lower",
+      "required": ">= 0.75",
+      "observed": 0.53025056,
+      "met": false
+     },
+     {
+      "criterion": "mean_invested",
+      "required": ">= 0.80",
+      "observed": 0.98409274,
+      "met": true
+     },
+     {
+      "criterion": "ann_excess_ci_lower_noninferior",
+      "required": "> -0.03",
+      "observed": -0.43559811,
+      "met": false
+     },
+     {
+      "criterion": "noninferior_at_2x_costs_point",
+      "required": "> -0.03",
+      "observed": 0.01707695,
+      "met": true
+     }
+    ]
+   },
+   "B_sector_context": {
+    "level": "L0_descriptive",
+    "criteria": [
+     {
+      "criterion": "K3_holm_p",
+      "required": "< 0.05",
+      "observed": 1.0,
+      "met": false
+     },
+     {
+      "criterion": "K3_ann_diff_point",
+      "required": ">= 0.02",
+      "observed": -0.03877908,
+      "met": false
+     },
+     {
+      "criterion": "K3_holds_at_2x_costs",
+      "required": "> 0",
+      "observed": -0.04039316,
+      "met": false
+     },
+     {
+      "criterion": "K5_holm_p",
+      "required": "< 0.05",
+      "observed": 1.0,
+      "met": false
+     },
+     {
+      "criterion": "K5_ann_diff_point",
+      "required": ">= 0.02",
+      "observed": -0.07599696,
+      "met": false
+     },
+     {
+      "criterion": "K5_holds_at_2x_costs",
+      "required": "> 0",
+      "observed": -0.07705284,
+      "met": false
+     },
+     {
+      "criterion": "K7_holm_p",
+      "required": "< 0.05",
+      "observed": 1.0,
+      "met": false
+     },
+     {
+      "criterion": "K7_ann_diff_point",
+      "required": ">= 0.02",
+      "observed": 0.11723586,
+      "met": true
+     },
+     {
+      "criterion": "K7_holds_at_2x_costs",
+      "required": "> 0",
+      "observed": 0.12308924,
+      "met": true
+     },
+     {
+      "criterion": "K3_vs_exposure_matched_ci_lower",
+      "required": "> 0",
+      "observed": -0.43263955,
+      "met": false
+     }
+    ]
+   },
+   "C_member_selection": {
+    "level": "L0_descriptive",
+    "criteria": [
+     {
+      "criterion": "K2_holm_p",
+      "required": "< 0.05",
+      "observed": 1.0,
+      "met": false
+     },
+     {
+      "criterion": "K2_ann_diff_point",
+      "required": ">= 0.02",
+      "observed": 0.05117288,
+      "met": true
+     },
+     {
+      "criterion": "K2_holds_at_2x_costs",
+      "required": "> 0",
+      "observed": 0.00386769,
+      "met": true
+     },
+     {
+      "criterion": "K4_holm_p",
+      "required": "< 0.05",
+      "observed": 1.0,
+      "met": false
+     },
+     {
+      "criterion": "K4_ann_diff_point",
+      "required": ">= 0.02",
+      "observed": -0.03810018,
+      "met": false
+     },
+     {
+      "criterion": "K4_holds_at_2x_costs",
+      "required": "> 0",
+      "observed": -0.05035499,
+      "met": false
+     },
+     {
+      "criterion": "K6_holm_p",
+      "required": "< 0.05",
+      "observed": 1.0,
+      "met": false
+     },
+     {
+      "criterion": "K6_ann_diff_point",
+      "required": ">= 0.02",
+      "observed": -0.07531806,
+      "met": false
+     },
+     {
+      "criterion": "K6_holds_at_2x_costs",
+      "required": "> 0",
+      "observed": -0.08701467,
+      "met": false
+     }
+    ]
+   }
+  },
+  "cap_rule": "below the global minimum every performance job is capped at L0_descriptive regardless of point estimates (header section 6)",
+  "l2_l3_note": "L2 needs L1 plus >= 126 post-2026-11-11 sessions under this header hash; L3 is never assignable by this harness",
+  "overall_level": "L0_descriptive"
+ },
+ "comparators": [
+  {
+   "id": "C1_passive_market",
+   "label": "Passive market (SPY)",
+   "status": "evaluated",
+   "reason": null,
+   "definition": "100% SPY held through the window",
+   "total_net_return": -0.046745,
+   "ann_return": -0.17427324,
+   "excess_total_vs_spy": -0.00028606,
+   "ann_excess_vs_spy": -0.00119617,
+   "beta_vs_market": 1.00016522,
+   "intercept_ann": -0.00116248,
+   "tracking_error": 0.00059808,
+   "upside_capture": 1.0,
+   "downside_capture": 1.00141473,
+   "max_drawdown": -0.05915879,
+   "ann_excess_over_cash": -0.2050975,
+   "vs_passive_market": {
+    "ann_diff": -0.00119617,
+    "ann_diff_ci95": [
+     -0.0035885,
+     0.0
+    ],
+    "total_diff": -0.00028606,
+    "total_diff_ci95": [
+     -0.00081373,
+     0.0
+    ],
+    "p_one_sided": 0.9505
+   },
+   "beta_ci95": [
+    1.0,
+    1.00048216
+   ],
+   "upside_capture_ci95": [
+    1.0,
+    1.0
+   ],
+   "downside_capture_ci95": [
+    1.0,
+    1.00361383
+   ],
+   "window": {
+    "first_return_close": "2026-08-10",
+    "last_close": "2026-11-06",
+    "daily_returns": 63
+   },
+   "mean_invested": 1.0,
+   "time_in_market": 1.0,
+   "annual_turnover": 2.0,
+   "costs_paid_total": 0.00029904,
+   "no_fill_signals": 0,
+   "stale_asset_days": 0,
+   "no_entry_periods": 0,
+   "at_2x_costs": {
+    "total_net_return": -0.04703107,
+    "ann_excess_vs_spy": -0.00239233
+   }
+  },
+  {
+   "id": "C2_simple_participation",
+   "label": "Simple participation (SPY above 200-day average, else cash)",
+   "status": "evaluated",
+   "reason": null,
+   "definition": "100% SPY if SPY adjusted close(t) > its 200-session simple moving average(t) else 100% BIL; evaluated daily; executed t+1",
+   "total_net_return": -0.046745,
+   "ann_return": -0.17427324,
+   "excess_total_vs_spy": -0.00028606,
+   "ann_excess_vs_spy": -0.00119617,
+   "beta_vs_market": 1.00016522,
+   "intercept_ann": -0.00116248,
+   "tracking_error": 0.00059808,
+   "upside_capture": 1.0,
+   "downside_capture": 1.00141473,
+   "max_drawdown": -0.05915879,
+   "ann_excess_over_cash": -0.2050975,
+   "vs_passive_market": {
+    "ann_diff": -0.00119617,
+    "ann_diff_ci95": [
+     -0.0035885,
+     0.0
+    ],
+    "total_diff": -0.00028606,
+    "total_diff_ci95": [
+     -0.00081373,
+     0.0
+    ],
+    "p_one_sided": 0.9505
+   },
+   "beta_ci95": [
+    1.0,
+    1.00048216
+   ],
+   "upside_capture_ci95": [
+    1.0,
+    1.0
+   ],
+   "downside_capture_ci95": [
+    1.0,
+    1.00361383
+   ],
+   "window": {
+    "first_return_close": "2026-08-10",
+    "last_close": "2026-11-06",
+    "daily_returns": 63
+   },
+   "mean_invested": 1.0,
+   "time_in_market": 1.0,
+   "annual_turnover": 2.0,
+   "costs_paid_total": 0.00029904,
+   "no_fill_signals": 0,
+   "stale_asset_days": 0,
+   "no_entry_periods": 0,
+   "at_2x_costs": {
+    "total_net_return": -0.04703107,
+    "ann_excess_vs_spy": -0.00239233
+   }
+  },
+  {
+   "id": "C3_sector_allocation_only",
+   "label": "Sector allocation only (top-3 sector ETFs)",
+   "status": "evaluated",
+   "reason": null,
+   "definition": "equal weight (1/3) in the top 3 of XLB XLC XLE XLF XLI XLK XLP XLRE XLU XLV XLY by RS63 = 63-session total return minus SPY 63-session total return; rebalance every 21 sessions",
+   "total_net_return": -0.05578486,
+   "ann_return": -0.20515246,
+   "excess_total_vs_spy": -0.00932592,
+   "ann_excess_vs_spy": -0.03997524,
+   "beta_vs_market": 0.62452185,
+   "intercept_ann": -0.11653574,
+   "tracking_error": 0.10882888,
+   "upside_capture": 0.53452804,
+   "downside_capture": 0.68696364,
+   "max_drawdown": -0.07628451,
+   "ann_excess_over_cash": -0.24387658,
+   "vs_passive_market": {
+    "ann_diff": -0.03997524,
+    "ann_diff_ci95": [
+     -0.43263955,
+     0.35590224
+    ],
+    "total_diff": -0.00932592,
+    "total_diff_ci95": [
+     -0.10020584,
+     0.08830269
+    ],
+    "p_one_sided": 0.5872
+   },
+   "beta_ci95": [
+    0.25932749,
+    0.8027401
+   ],
+   "upside_capture_ci95": [
+    0.27434988,
+    0.86676905
+   ],
+   "downside_capture_ci95": [
+    0.23608815,
+    0.99819572
+   ],
+   "window": {
+    "first_return_close": "2026-08-10",
+    "last_close": "2026-11-06",
+    "daily_returns": 63
+   },
+   "mean_invested": 1.0,
+   "time_in_market": 1.0,
+   "annual_turnover": 6.03803727,
+   "costs_paid_total": 0.00070256,
+   "no_fill_signals": 0,
+   "stale_asset_days": 0,
+   "no_entry_periods": 0,
+   "at_2x_costs": {
+    "total_net_return": -0.0564484,
+    "ann_excess_vs_spy": -0.04278549
+   }
+  },
+  {
+   "id": "C4_member_selection_only",
+   "label": "Member selection only (sector-neutral S&P 1500 names)",
+   "status": "evaluated",
+   "reason": null,
+   "definition": "S&P 1500 PIT members at t (start_date<=t<end_date or open), sector label present, >=126 valid closes, raw close>=5; score = 63-session total return minus own sector SPDR 63-session total return; per sector take top k=max(3,ceil(0.10*n_s)) equal weight; sector weights fixed = non-negative least squares style weights of SPY daily returns on the 11 SPDRs over the 252 sessions ending 2026-08-07, normalised to 1; rebalance every 21 sessions",
+   "total_net_return": -0.05644281,
+   "ann_return": -0.20736562,
+   "excess_total_vs_spy": -0.00998387,
+   "ann_excess_vs_spy": -0.03929634,
+   "beta_vs_market": 0.82762649,
+   "intercept_ann": -0.07444353,
+   "tracking_error": 0.10932673,
+   "upside_capture": 0.84385021,
+   "downside_capture": 0.92926157,
+   "max_drawdown": -0.06810912,
+   "ann_excess_over_cash": -0.24319768,
+   "vs_passive_market": {
+    "ann_diff": -0.03929634,
+    "ann_diff_ci95": [
+     -0.37432257,
+     0.31938786
+    ],
+    "total_diff": -0.00998387,
+    "total_diff_ci95": [
+     -0.08730243,
+     0.07681182
+    ],
+    "p_one_sided": 0.5882
+   },
+   "beta_ci95": [
+    0.60948989,
+    1.06323591
+   ],
+   "upside_capture_ci95": [
+    0.46507834,
+    1.28843478
+   ],
+   "downside_capture_ci95": [
+    0.54815021,
+    1.31195956
+   ],
+   "window": {
+    "first_return_close": "2026-08-10",
+    "last_close": "2026-11-06",
+    "daily_returns": 63
+   },
+   "mean_invested": 1.0,
+   "time_in_market": 1.0,
+   "annual_turnover": 9.44918781,
+   "costs_paid_total": 0.00336274,
+   "no_fill_signals": 0,
+   "stale_asset_days": 0,
+   "no_entry_periods": 0,
+   "at_2x_costs": {
+    "total_net_return": -0.05962721,
+    "ann_excess_vs_spy": -0.05274732
+   }
+  },
+  {
+   "id": "C5_joint_sector_and_name",
+   "label": "Joint sector + member (top-3 sectors x top names)",
+   "status": "evaluated",
+   "reason": null,
+   "definition": "C3's top-3 sectors (1/3 each); within each, C4's top-k members by C4 score, equal weight; rebalance every 21 sessions",
+   "total_net_return": -0.07611155,
+   "ann_return": -0.27141849,
+   "excess_total_vs_spy": -0.02965261,
+   "ann_excess_vs_spy": -0.1152933,
+   "beta_vs_market": 0.88530039,
+   "intercept_ann": -0.1386807,
+   "tracking_error": 0.1603009,
+   "upside_capture": 0.93268601,
+   "downside_capture": 1.09705691,
+   "max_drawdown": -0.11750256,
+   "ann_excess_over_cash": -0.31919464,
+   "vs_passive_market": {
+    "ann_diff": -0.1152933,
+    "ann_diff_ci95": [
+     -0.66527507,
+     0.40464643
+    ],
+    "total_diff": -0.02965261,
+    "total_diff_ci95": [
+     -0.14122594,
+     0.10274543
+    ],
+    "p_one_sided": 0.6738
+   },
+   "beta_ci95": [
+    0.59071504,
+    1.29845788
+   ],
+   "upside_capture_ci95": [
+    0.44438589,
+    1.50764222
+   ],
+   "downside_capture_ci95": [
+    0.54864311,
+    1.46945951
+   ],
+   "window": {
+    "first_return_close": "2026-08-10",
+    "last_close": "2026-11-06",
+    "daily_returns": 63
+   },
+   "mean_invested": 1.0,
+   "time_in_market": 1.0,
+   "annual_turnover": 9.84370717,
+   "costs_paid_total": 0.00362671,
+   "no_fill_signals": 0,
+   "stale_asset_days": 0,
+   "no_entry_periods": 0,
+   "at_2x_costs": {
+    "total_net_return": -0.07946863,
+    "ann_excess_vs_spy": -0.12980016
+   }
+  },
+  {
+   "id": "C6_exact_incumbent_prophet",
+   "label": "Incumbent Prophet book, as built",
+   "status": "evaluated",
+   "reason": null,
+   "definition": "index.json plans with selection_era == anticipation-v1-2026-08-08; publication session P = first session s with s > price_basis_date and s >= recorded_at; entered iff entry_zone_state.state in {filled, converted} and ledger outcome != NO_ENTRY; entry session E = first session >= max(P, filled_date if present); exit X = ledger close_date (last session <= close_date) when the plan is in the ledger, else first session after E with raw close <= invalidation or raw close >= targets[0] or date >= price_basis_date + horizon_days calendar days, else censored at window end; if X <= E the position is excluded (resolved_at_or_before_follower_fill); book = equal weight across open positions, re-equalised daily, 100% BIL when none",
+   "total_net_return": -0.03138238,
+   "ann_return": -0.11974306,
+   "excess_total_vs_spy": 0.01507656,
+   "ann_excess_vs_spy": 0.06438214,
+   "beta_vs_market": 0.79254625,
+   "intercept_ann": 0.02208204,
+   "tracking_error": 0.10706706,
+   "upside_capture": 0.93468976,
+   "downside_capture": 0.87565948,
+   "max_drawdown": -0.06608915,
+   "ann_excess_over_cash": -0.1395192,
+   "vs_passive_market": {
+    "ann_diff": 0.06438214,
+    "ann_diff_ci95": [
+     -0.43559811,
+     0.56100233
+    ],
+    "total_diff": 0.01507656,
+    "total_diff_ci95": [
+     -0.10493855,
+     0.13386062
+    ],
+    "p_one_sided": 0.4095
+   },
+   "beta_ci95": [
+    0.62694379,
+    1.08453673
+   ],
+   "upside_capture_ci95": [
+    0.53025056,
+    1.55473474
+   ],
+   "downside_capture_ci95": [
+    0.43384922,
+    1.51625269
+   ],
+   "window": {
+    "first_return_close": "2026-08-10",
+    "last_close": "2026-11-06",
+    "daily_returns": 63
+   },
+   "mean_invested": 0.98409274,
+   "time_in_market": 0.98412698,
+   "annual_turnover": 25.61053945,
+   "costs_paid_total": 0.0118263,
+   "no_fill_signals": 0,
+   "stale_asset_days": 31,
+   "no_entry_periods": 1,
+   "at_2x_costs": {
+    "total_net_return": -0.0427562,
+    "ann_excess_vs_spy": 0.01707695
+   },
+   "sample": {
+    "positions": 498,
+    "distinct_assets": 454,
+    "censored_open_at_window_end": 190,
+    "resolved": 308
+   },
+   "hit_rate_vs_spy": {
+    "n": 498,
+    "beat_spy": 265,
+    "rate": 0.53212851,
+    "ci95_wilson": [
+     0.48822665,
+     0.57553851
+    ]
+   }
+  },
+  {
+   "id": "C7_independent_emergence",
+   "label": "Prophet plans outside leading sectors",
+   "status": "evaluated",
+   "reason": null,
+   "definition": "C6 restricted to plans whose sector SPDR is NOT in C3-rule top-3 computed at the close of price_basis_date",
+   "total_net_return": -0.04830545,
+   "ann_return": -0.17966674,
+   "excess_total_vs_spy": -0.00184651,
+   "ann_excess_vs_spy": -0.00520926,
+   "beta_vs_market": 0.77394068,
+   "intercept_ann": -0.05130306,
+   "tracking_error": 0.11909981,
+   "upside_capture": 0.76527596,
+   "downside_capture": 0.82809508,
+   "max_drawdown": -0.08259489,
+   "ann_excess_over_cash": -0.2091106,
+   "vs_passive_market": {
+    "ann_diff": -0.00520926,
+    "ann_diff_ci95": [
+     -0.57195276,
+     0.57077779
+    ],
+    "total_diff": -0.00184651,
+    "total_diff_ci95": [
+     -0.13531304,
+     0.13557424
+    ],
+    "p_one_sided": 0.511
+   },
+   "beta_ci95": [
+    0.59213137,
+    1.01158825
+   ],
+   "upside_capture_ci95": [
+    0.43043807,
+    1.21200958
+   ],
+   "downside_capture_ci95": [
+    0.31642453,
+    1.54823092
+   ],
+   "window": {
+    "first_return_close": "2026-08-10",
+    "last_close": "2026-11-06",
+    "daily_returns": 63
+   },
+   "mean_invested": 0.98412698,
+   "time_in_market": 0.98412698,
+   "annual_turnover": 27.54078375,
+   "costs_paid_total": 0.01278537,
+   "no_fill_signals": 0,
+   "stale_asset_days": 10,
+   "no_entry_periods": 1,
+   "at_2x_costs": {
+    "total_net_return": -0.06038919,
+    "ann_excess_vs_spy": -0.05635074
+   },
+   "sample": {
+    "positions": 332,
+    "distinct_assets": 307,
+    "censored_open_at_window_end": 127,
+    "resolved": 205
+   },
+   "hit_rate_vs_spy": {
+    "n": 332,
+    "beat_spy": 183,
+    "rate": 0.55120482,
+    "ci95_wilson": [
+     0.49742203,
+     0.60381621
+    ]
+   }
+  },
+  {
+   "id": "C6A_context_aligned_prophet",
+   "label": "Prophet plans inside leading sectors (diagnostic)",
+   "status": "evaluated",
+   "reason": null,
+   "definition": "C6 restricted to plans whose sector SPDR IS in that top-3 (diagnostic counterpart to C7)",
+   "total_net_return": -0.02069033,
+   "ann_return": -0.08022803,
+   "excess_total_vs_spy": 0.02576861,
+   "ann_excess_vs_spy": 0.11202659,
+   "beta_vs_market": 0.82568073,
+   "intercept_ann": 0.07648266,
+   "tracking_error": 0.13166072,
+   "upside_capture": 1.18181415,
+   "downside_capture": 1.01426835,
+   "max_drawdown": -0.08112564,
+   "ann_excess_over_cash": -0.09187474,
+   "vs_passive_market": {
+    "ann_diff": 0.11202659,
+    "ann_diff_ci95": [
+     -0.3654999,
+     0.635064
+    ],
+    "total_diff": 0.02576861,
+    "total_diff_ci95": [
+     -0.08773834,
+     0.1554619
+    ],
+    "p_one_sided": 0.3264
+   },
+   "beta_ci95": [
+    0.6624875,
+    1.23630947
+   ],
+   "upside_capture_ci95": [
+    0.6331248,
+    2.08627841
+   ],
+   "downside_capture_ci95": [
+    0.63313196,
+    1.57536092
+   ],
+   "window": {
+    "first_return_close": "2026-08-10",
+    "last_close": "2026-11-06",
+    "daily_returns": 63
+   },
+   "mean_invested": 0.98386165,
+   "time_in_market": 0.98412698,
+   "annual_turnover": 24.59016165,
+   "costs_paid_total": 0.01132202,
+   "no_fill_signals": 0,
+   "stale_asset_days": 21,
+   "no_entry_periods": 1,
+   "at_2x_costs": {
+    "total_net_return": -0.03169546,
+    "ann_excess_vs_spy": 0.06673851
+   },
+   "sample": {
+    "positions": 166,
+    "distinct_assets": 158,
+    "censored_open_at_window_end": 63,
+    "resolved": 103
+   },
+   "hit_rate_vs_spy": {
+    "n": 166,
+    "beat_spy": 82,
+    "rate": 0.4939759,
+    "ci95_wilson": [
+     0.41892123,
+     0.56930308
+    ]
+   }
+  },
+  {
+   "id": "X6_exposure_matched_reference",
+   "label": "Exposure-weight arithmetic reference only (SPY/BIL at the book's invested weight)",
+   "status": "evaluated",
+   "reason": null,
+   "definition": "daily weight w(t-1) in SPY and 1-w(t-1) in BIL where w is C6's risky weight at the previous close",
+   "total_net_return": -0.04329989,
+   "ann_return": -0.1622715,
+   "excess_total_vs_spy": 0.00315905,
+   "ann_excess_vs_spy": 0.01320925,
+   "beta_vs_market": 0.99815948,
+   "intercept_ann": 0.01283397,
+   "tracking_error": 0.00660894,
+   "upside_capture": 0.99996359,
+   "downside_capture": 0.98437607,
+   "max_drawdown": -0.05916073,
+   "ann_excess_over_cash": -0.19069208,
+   "vs_passive_market": {
+    "ann_diff": 0.01320925,
+    "ann_diff_ci95": [
+     -3.088e-05,
+     0.03964949
+    ],
+    "total_diff": 0.00315905,
+    "total_diff_ci95": [
+     -7.35e-06,
+     0.00902301
+    ],
+    "p_one_sided": 0.1923
+   },
+   "beta_ci95": [
+    0.99464892,
+    1.0
+   ],
+   "upside_capture_ci95": [
+    0.99989671,
+    1.0
+   ],
+   "downside_capture_ci95": [
+    0.96013107,
+    1.0
+   ],
+   "window": {
+    "first_return_close": "2026-08-10",
+    "last_close": "2026-11-06",
+    "daily_returns": 63
+   },
+   "mean_invested": 0.98409274,
+   "time_in_market": 0.98412698,
+   "annual_turnover": null,
+   "costs_paid_total": 0.0,
+   "no_fill_signals": 0,
+   "no_entry_periods": 1,
+   "note": "reference series, no costs charged"
+  }
+ ],
+ "contrasts": {
+  "family": "confirmatory K1-K8, Holm alpha 0.05, one-sided (a beats b)",
+  "rows": [
+   {
+    "id": "K1",
+    "a": "C6_exact_incumbent_prophet",
+    "b": "C1_passive_market",
+    "header_definition": "C6 - C1",
+    "ann_diff": 0.0655783,
+    "ann_diff_ci95": [
+     -0.43518078,
+     0.56296995
+    ],
+    "total_diff": 0.01536262,
+    "total_diff_ci95": [
+     -0.10484703,
+     0.13457166
+    ],
+    "p_raw": 0.4076,
+    "p_holm": 1.0,
+    "reject_h0": false,
+    "block21": {
+     "ann_diff_ci95": [
+      -0.42432234,
+      0.54152113
+     ],
+     "p_raw": 0.3741,
+     "p_holm": 1.0,
+     "reject_h0": false
+    },
+    "at_2x_costs": {
+     "ann_diff": 0.01946928,
+     "ann_diff_ci95": [
+      -0.46984975,
+      0.50676462
+     ]
+    }
+   },
+   {
+    "id": "K2",
+    "a": "C6_exact_incumbent_prophet",
+    "b": "X6_exposure_matched_reference",
+    "header_definition": "C6 - X6",
+    "ann_diff": 0.05117288,
+    "ann_diff_ci95": [
+     -0.43767999,
+     0.53726304
+    ],
+    "total_diff": 0.01191751,
+    "total_diff_ci95": [
+     -0.10573773,
+     0.1284692
+    ],
+    "p_raw": 0.4276,
+    "p_holm": 1.0,
+    "reject_h0": false,
+    "block21": {
+     "ann_diff_ci95": [
+      -0.42752392,
+      0.51292759
+     ],
+     "p_raw": 0.3934,
+     "p_holm": 1.0,
+     "reject_h0": false
+    },
+    "at_2x_costs": {
+     "ann_diff": 0.00386769,
+     "ann_diff_ci95": [
+      -0.4751936,
+      0.47807065
+     ]
+    }
+   },
+   {
+    "id": "K3",
+    "a": "C3_sector_allocation_only",
+    "b": "C1_passive_market",
+    "header_definition": "C3 - C1",
+    "ann_diff": -0.03877908,
+    "ann_diff_ci95": [
+     -0.43067537,
+     0.35699056
+    ],
+    "total_diff": -0.00903986,
+    "total_diff_ci95": [
+     -0.09979432,
+     0.08859434
+    ],
+    "p_raw": 0.5846,
+    "p_holm": 1.0,
+    "reject_h0": false,
+    "block21": {
+     "ann_diff_ci95": [
+      -0.37469686,
+      0.30025603
+     ],
+     "p_raw": 0.612,
+     "p_holm": 1.0,
+     "reject_h0": false
+    },
+    "at_2x_costs": {
+     "ann_diff": -0.04039316,
+     "ann_diff_ci95": [
+      -0.43216708,
+      0.35499744
+     ]
+    }
+   },
+   {
+    "id": "K4",
+    "a": "C4_member_selection_only",
+    "b": "C1_passive_market",
+    "header_definition": "C4 - C1",
+    "ann_diff": -0.03810018,
+    "ann_diff_ci95": [
+     -0.37312729,
+     0.32005024
+    ],
+    "total_diff": -0.00969781,
+    "total_diff_ci95": [
+     -0.08704136,
+     0.07695428
+    ],
+    "p_raw": 0.5851,
+    "p_holm": 1.0,
+    "reject_h0": false,
+    "block21": {
+     "ann_diff_ci95": [
+      -0.33501205,
+      0.2708894
+     ],
+     "p_raw": 0.6214,
+     "p_holm": 1.0,
+     "reject_h0": false
+    },
+    "at_2x_costs": {
+     "ann_diff": -0.05035499,
+     "ann_diff_ci95": [
+      -0.38232205,
+      0.30743933
+     ]
+    }
+   },
+   {
+    "id": "K5",
+    "a": "C5_joint_sector_and_name",
+    "b": "C4_member_selection_only",
+    "header_definition": "C5 - C4",
+    "ann_diff": -0.07599696,
+    "ann_diff_ci95": [
+     -0.56827601,
+     0.34876927
+    ],
+    "total_diff": -0.01966874,
+    "total_diff_ci95": [
+     -0.12161469,
+     0.08775641
+    ],
+    "p_raw": 0.6442,
+    "p_holm": 1.0,
+    "reject_h0": false,
+    "block21": {
+     "ann_diff_ci95": [
+      -0.50314702,
+      0.3112787
+     ],
+     "p_raw": 0.6689,
+     "p_holm": 1.0,
+     "reject_h0": false
+    },
+    "at_2x_costs": {
+     "ann_diff": -0.07705284,
+     "ann_diff_ci95": [
+      -0.56827701,
+      0.34746666
+     ]
+    }
+   },
+   {
+    "id": "K6",
+    "a": "C5_joint_sector_and_name",
+    "b": "C3_sector_allocation_only",
+    "header_definition": "C5 - C3",
+    "ann_diff": -0.07531806,
+    "ann_diff_ci95": [
+     -0.53784889,
+     0.39232879
+    ],
+    "total_diff": -0.02032669,
+    "total_diff_ci95": [
+     -0.11567038,
+     0.09763635
+    ],
+    "p_raw": 0.621,
+    "p_holm": 1.0,
+    "reject_h0": false,
+    "block21": {
+     "ann_diff_ci95": [
+      -0.50134296,
+      0.35376783
+     ],
+     "p_raw": 0.6489,
+     "p_holm": 1.0,
+     "reject_h0": false
+    },
+    "at_2x_costs": {
+     "ann_diff": -0.08701467,
+     "ann_diff_ci95": [
+      -0.54628067,
+      0.3806904
+     ]
+    }
+   },
+   {
+    "id": "K7",
+    "a": "C6A_context_aligned_prophet",
+    "b": "C7_independent_emergence",
+    "header_definition": "C6A - C7",
+    "ann_diff": 0.11723586,
+    "ann_diff_ci95": [
+     -0.40543424,
+     0.6131129
+    ],
+    "total_diff": 0.02761512,
+    "total_diff_ci95": [
+     -0.09661181,
+     0.15016795
+    ],
+    "p_raw": 0.3297,
+    "p_holm": 1.0,
+    "reject_h0": false,
+    "block21": {
+     "ann_diff_ci95": [
+      -0.35944128,
+      0.57082902
+     ],
+     "p_raw": 0.2864,
+     "p_holm": 1.0,
+     "reject_h0": false
+    },
+    "at_2x_costs": {
+     "ann_diff": 0.12308924,
+     "ann_diff_ci95": [
+      -0.40283559,
+      0.62352667
+     ]
+    }
+   },
+   {
+    "id": "K8",
+    "a": "C2_simple_participation",
+    "b": "C1_passive_market",
+    "header_definition": "C2 - C1",
+    "ann_diff": 0.0,
+    "ann_diff_ci95": [
+     0.0,
+     0.0
+    ],
+    "total_diff": 0.0,
+    "total_diff_ci95": [
+     0.0,
+     0.0
+    ],
+    "p_raw": 1.0,
+    "p_holm": 1.0,
+    "reject_h0": false,
+    "block21": {
+     "ann_diff_ci95": [
+      0.0,
+      0.0
+     ],
+     "p_raw": 1.0,
+     "p_holm": 1.0,
+     "reject_h0": false
+    },
+    "at_2x_costs": {
+     "ann_diff": 0.0,
+     "ann_diff_ci95": [
+      0.0,
+      0.0
+     ]
+    }
+   }
+  ]
+ },
+ "secondary_contrasts": {
+  "family": "admission_class strata vs SPY, Holm alpha 0.05",
+  "rows": {
+   "S_patience": {
+    "stratum": "patience",
+    "positions": 331,
+    "ann_diff_vs_spy": 0.08721748,
+    "ann_diff_ci95": [
+     -0.46591402,
+     0.66009135
+    ],
+    "beta_vs_market": 0.80990256,
+    "mean_invested": 0.98398096,
+    "p_raw": 0.3863,
+    "p_holm": 0.9798,
+    "reject_h0": false
+   },
+   "S_confirmation": {
+    "stratum": "confirmation",
+    "positions": 151,
+    "ann_diff_vs_spy": 0.12707949,
+    "ann_diff_ci95": [
+     -0.39491527,
+     0.62952621
+    ],
+    "beta_vs_market": 0.71563453,
+    "mean_invested": 0.98412698,
+    "p_raw": 0.3266,
+    "p_holm": 0.9798,
+    "reject_h0": false
+   },
+   "S_early_turn_starter": {
+    "stratum": "early_turn_starter",
+    "positions": 16,
+    "ann_diff_vs_spy": -0.70162521,
+    "ann_diff_ci95": [
+     -1.82142612,
+     0.43550339
+    ],
+    "beta_vs_market": 1.0232947,
+    "mean_invested": 0.85714286,
+    "p_raw": 0.891,
+    "p_holm": 0.9798,
+    "reject_h0": false
+   }
+  }
+ },
+ "exposure_matched_reference": {
+  "definition": "daily weight w(t-1) in SPY and 1-w(t-1) in BIL where w is C6's risky weight at the previous close",
+  "invested_fraction": 0.98409274,
+  "c6_minus_reference": {
+   "id": "K2",
+   "a": "C6_exact_incumbent_prophet",
+   "b": "X6_exposure_matched_reference",
+   "header_definition": "C6 - X6",
+   "ann_diff": 0.05117288,
+   "ann_diff_ci95": [
+    -0.43767999,
+    0.53726304
+   ],
+   "total_diff": 0.01191751,
+   "total_diff_ci95": [
+    -0.10573773,
+    0.1284692
+   ],
+   "p_raw": 0.4276,
+   "p_holm": 1.0,
+   "reject_h0": false,
+   "block21": {
+    "ann_diff_ci95": [
+     -0.42752392,
+     0.51292759
+    ],
+    "p_raw": 0.3934,
+    "p_holm": 1.0,
+    "reject_h0": false
+   },
+   "at_2x_costs": {
+    "ann_diff": 0.00386769,
+    "ann_diff_ci95": [
+     -0.4751936,
+     0.47807065
+    ]
+   }
+  },
+  "c3_minus_reference": {
+   "ann_diff": -0.03997524,
+   "ann_diff_ci95": [
+    -0.43263955,
+    0.35590224
+   ],
+   "p_one_sided": 0.5872
+  }
+ },
+ "attribution": {
+  "C6_exact_incumbent_prophet": {
+   "method": "daily_arithmetic_accounting_identity_sector_etf_segments",
+   "linking": "unlinked arithmetic sum of daily contributions; compounding residual shown",
+   "legs": {
+    "market_participation": -0.04206165,
+    "sector_allocation": 0.03988477,
+    "selection_within_sector": -0.01526525,
+    "cash": 0.00010952,
+    "costs": -0.0118263
+   },
+   "sum_of_daily_net_returns": -0.02915891,
+   "identity_error": -0.0,
+   "compounded_total_net_return": -0.03138238,
+   "compounding_residual": -0.00222347,
+   "benchmark_sum_of_daily_returns": -0.04525445,
+   "gap_vs_benchmark_bridge": {
+    "benchmark": -0.04525445,
+    "uninvested_market_shortfall": 0.0031928,
+    "sector_allocation": 0.03988477,
+    "selection_within_sector": -0.01526525,
+    "cash": 0.00010952,
+    "costs": -0.0118263,
+    "strategy": -0.02915891
+   },
+   "unmapped_sector_weight_days": 0.0,
+   "unit": "fraction (0.01 = 1 percentage point)"
+  },
+  "C7_independent_emergence": {
+   "method": "daily_arithmetic_accounting_identity_sector_etf_segments",
+   "linking": "unlinked arithmetic sum of daily contributions; compounding residual shown",
+   "legs": {
+    "market_participation": -0.04205925,
+    "sector_allocation": 0.05880447,
+    "selection_within_sector": -0.05062585,
+    "cash": 0.00010923,
+    "costs": -0.01278537
+   },
+   "sum_of_daily_net_returns": -0.04655676,
+   "identity_error": 0.0,
+   "compounded_total_net_return": -0.04830545,
+   "compounding_residual": -0.00174869,
+   "benchmark_sum_of_daily_returns": -0.04525445,
+   "gap_vs_benchmark_bridge": {
+    "benchmark": -0.04525445,
+    "uninvested_market_shortfall": 0.0031952,
+    "sector_allocation": 0.05880447,
+    "selection_within_sector": -0.05062585,
+    "cash": 0.00010923,
+    "costs": -0.01278537,
+    "strategy": -0.04655676
+   },
+   "unmapped_sector_weight_days": 0.0,
+   "unit": "fraction (0.01 = 1 percentage point)"
+  },
+  "C6A_context_aligned_prophet": {
+   "method": "daily_arithmetic_accounting_identity_sector_etf_segments",
+   "linking": "unlinked arithmetic sum of daily contributions; compounding residual shown",
+   "legs": {
+    "market_participation": -0.04205739,
+    "sector_allocation": 0.00277515,
+    "selection_within_sector": 0.03324465,
+    "cash": 0.00011182,
+    "costs": -0.01132202
+   },
+   "sum_of_daily_net_returns": -0.0172478,
+   "identity_error": 0.0,
+   "compounded_total_net_return": -0.02069033,
+   "compounding_residual": -0.00344253,
+   "benchmark_sum_of_daily_returns": -0.04525445,
+   "gap_vs_benchmark_bridge": {
+    "benchmark": -0.04525445,
+    "uninvested_market_shortfall": 0.00319706,
+    "sector_allocation": 0.00277515,
+    "selection_within_sector": 0.03324465,
+    "cash": 0.00011182,
+    "costs": -0.01132202,
+    "strategy": -0.0172478
+   },
+   "unmapped_sector_weight_days": 0.0,
+   "unit": "fraction (0.01 = 1 percentage point)"
+  }
+ },
+ "event_study": {
+  "ruler": "engine.grading.forward_metrics next-bar fill; fixed horizons in sessions; policy-free",
+  "population": "all LIVE-PUBLISHED incumbent-era plans with a publication session in the window (entered or not); outage-reconstructed plans excluded (deviation D5)",
+  "plans": 732,
+  "excluded_backfilled_plans": 16,
+  "horizons": {
+   "10": {
+    "n": 609,
+    "n_dates": 28,
+    "status": "matured_subset",
+    "excess_vs_spy": {
+     "mean": 0.00426434,
+     "median": 0.00603466,
+     "n": 609,
+     "ci95_date_cluster": [
+      -0.0104034,
+      0.01743189
+     ]
+    },
+    "sector_etf_minus_spy": {
+     "mean": 0.00747945,
+     "median": 0.00341602,
+     "n": 609,
+     "ci95_date_cluster": [
+      -0.00118285,
+      0.01515053
+     ]
+    },
+    "stock_minus_sector_etf": {
+     "mean": -0.00321512,
+     "median": -0.0022982,
+     "n": 609,
+     "ci95_date_cluster": [
+      -0.01258673,
+      0.00515146
+     ]
+    },
+    "share_beating_spy": {
+     "k": 320,
+     "n": 609,
+     "rate": 0.52545156,
+     "ci95_wilson_naive": [
+      0.4857568,
+      0.56482724
+     ]
+    }
+   },
+   "21": {
+    "n": 414,
+    "n_dates": 22,
+    "status": "matured_subset",
+    "excess_vs_spy": {
+     "mean": -0.03024059,
+     "median": -0.04212809,
+     "n": 414,
+     "ci95_date_cluster": [
+      -0.05114054,
+      -0.00903705
+     ]
+    },
+    "sector_etf_minus_spy": {
+     "mean": 0.00012266,
+     "median": -0.0129382,
+     "n": 414,
+     "ci95_date_cluster": [
+      -0.01596438,
+      0.01624598
+     ]
+    },
+    "stock_minus_sector_etf": {
+     "mean": -0.03036325,
+     "median": -0.02560962,
+     "n": 414,
+     "ci95_date_cluster": [
+      -0.04217394,
+      -0.01869526
+     ]
+    },
+    "share_beating_spy": {
+     "k": 143,
+     "n": 414,
+     "rate": 0.34541063,
+     "ci95_wilson_naive": [
+      0.30121708,
+      0.39244663
+     ]
+    }
+   },
+   "42": {
+    "n": 242,
+    "n_dates": 14,
+    "status": "matured_subset",
+    "excess_vs_spy": {
+     "mean": -0.06597762,
+     "median": -0.05280544,
+     "n": 242,
+     "ci95_date_cluster": [
+      -0.09755058,
+      -0.03171184
+     ]
+    },
+    "sector_etf_minus_spy": {
+     "mean": -0.01172618,
+     "median": -0.02203202,
+     "n": 242,
+     "ci95_date_cluster": [
+      -0.02439142,
+      0.00301336
+     ]
+    },
+    "stock_minus_sector_etf": {
+     "mean": -0.05425144,
+     "median": -0.04100604,
+     "n": 242,
+     "ci95_date_cluster": [
+      -0.0819318,
+      -0.02437172
+     ]
+    },
+    "share_beating_spy": {
+     "k": 81,
+     "n": 242,
+     "rate": 0.33471074,
+     "ci95_wilson_naive": [
+      0.27824941,
+      0.39633761
+     ]
+    }
+   },
+   "63": {
+    "n": 0,
+    "status": "unmatured"
+   }
+  }
+ },
+ "stability_halves": {
+  "C1_passive_market": {
+   "first": {
+    "total_net_return": -0.0054017,
+    "ann_return": -0.04175684,
+    "excess_total_vs_spy": -0.00029847,
+    "ann_excess_vs_spy": -0.00235495,
+    "beta_vs_market": 1.00080395,
+    "intercept_ann": -0.00229987,
+    "tracking_error": 0.00083918,
+    "upside_capture": 1.0,
+    "downside_capture": 1.0036525,
+    "max_drawdown": -0.03063458,
+    "ann_excess_over_cash": -0.07087055
+   },
+   "second": {
+    "total_net_return": -0.04156784,
+    "ann_return": -0.29187187,
+    "excess_total_vs_spy": 0.0,
+    "ann_excess_vs_spy": 0.0,
+    "beta_vs_market": 1.0,
+    "intercept_ann": 0.0,
+    "tracking_error": 0.0,
+    "upside_capture": 1.0,
+    "downside_capture": 1.0,
+    "max_drawdown": -0.05915879,
+    "ann_excess_over_cash": -0.34365435
+   }
+  },
+  "C2_simple_participation": {
+   "first": {
+    "total_net_return": -0.0054017,
+    "ann_return": -0.04175684,
+    "excess_total_vs_spy": -0.00029847,
+    "ann_excess_vs_spy": -0.00235495,
+    "beta_vs_market": 1.00080395,
+    "intercept_ann": -0.00229987,
+    "tracking_error": 0.00083918,
+    "upside_capture": 1.0,
+    "downside_capture": 1.0036525,
+    "max_drawdown": -0.03063458,
+    "ann_excess_over_cash": -0.07087055
+   },
+   "second": {
+    "total_net_return": -0.04156784,
+    "ann_return": -0.29187187,
+    "excess_total_vs_spy": 0.0,
+    "ann_excess_vs_spy": 0.0,
+    "beta_vs_market": 1.0,
+    "intercept_ann": 0.0,
+    "tracking_error": 0.0,
+    "upside_capture": 1.0,
+    "downside_capture": 1.0,
+    "max_drawdown": -0.05915879,
+    "ann_excess_over_cash": -0.34365435
+   }
+  },
+  "C3_sector_allocation_only": {
+   "first": {
+    "total_net_return": -0.02333135,
+    "ann_return": -0.16965308,
+    "excess_total_vs_spy": -0.01822811,
+    "ann_excess_vs_spy": -0.14572105,
+    "beta_vs_market": 0.5464709,
+    "intercept_ann": -0.17679487,
+    "tracking_error": 0.08917679,
+    "upside_capture": 0.6394052,
+    "downside_capture": 0.88835359,
+    "max_drawdown": -0.03901241,
+    "ann_excess_over_cash": -0.21423665
+   },
+   "second": {
+    "total_net_return": -0.03322879,
+    "ann_return": -0.24020581,
+    "excess_total_vs_spy": 0.00833905,
+    "ann_excess_vs_spy": 0.06918172,
+    "beta_vs_market": 0.65290954,
+    "intercept_ann": -0.05009742,
+    "tracking_error": 0.12713481,
+    "upside_capture": 0.44193252,
+    "downside_capture": 0.55955221,
+    "max_drawdown": -0.07628451,
+    "ann_excess_over_cash": -0.27447263
+   }
+  },
+  "C4_member_selection_only": {
+   "first": {
+    "total_net_return": -0.04564255,
+    "ann_return": -0.30781104,
+    "excess_total_vs_spy": -0.04053932,
+    "ann_excess_vs_spy": -0.32209172,
+    "beta_vs_market": 0.94381271,
+    "intercept_ann": -0.32594143,
+    "tracking_error": 0.10914942,
+    "upside_capture": 0.87019929,
+    "downside_capture": 1.38497042,
+    "max_drawdown": -0.05947862,
+    "ann_excess_over_cash": -0.39060732
+   },
+   "second": {
+    "total_net_return": -0.01131679,
+    "ann_return": -0.08836818,
+    "excess_total_vs_spy": 0.03025105,
+    "ann_excess_vs_spy": 0.25262147,
+    "beta_vs_market": 0.79940757,
+    "intercept_ann": 0.18368701,
+    "tracking_error": 0.10817964,
+    "upside_capture": 0.82057973,
+    "downside_capture": 0.64064108,
+    "max_drawdown": -0.05425574,
+    "ann_excess_over_cash": -0.09103288
+   }
+  },
+  "C5_joint_sector_and_name": {
+   "first": {
+    "total_net_return": -0.02771624,
+    "ann_return": -0.19856162,
+    "excess_total_vs_spy": -0.022613,
+    "ann_excess_vs_spy": -0.17445139,
+    "beta_vs_market": 0.84918095,
+    "intercept_ann": -0.18478485,
+    "tracking_error": 0.12765326,
+    "upside_capture": 1.02877899,
+    "downside_capture": 1.30651831,
+    "max_drawdown": -0.05322195,
+    "ann_excess_over_cash": -0.24296699
+   },
+   "second": {
+    "total_net_return": -0.04977489,
+    "ann_return": -0.33968536,
+    "excess_total_vs_spy": -0.00820705,
+    "ann_excess_vs_spy": -0.05422688,
+    "beta_vs_market": 0.89918689,
+    "intercept_ann": -0.08887175,
+    "tracking_error": 0.19036074,
+    "upside_capture": 0.84785943,
+    "downside_capture": 0.96456968,
+    "max_drawdown": -0.11750256,
+    "ann_excess_over_cash": -0.39788124
+   }
+  },
+  "C6_exact_incumbent_prophet": {
+   "first": {
+    "total_net_return": -0.02338359,
+    "ann_return": -0.17000278,
+    "excess_total_vs_spy": -0.01828036,
+    "ann_excess_vs_spy": -0.1400941,
+    "beta_vs_market": 1.03581336,
+    "intercept_ann": -0.13764033,
+    "tracking_error": 0.10739845,
+    "upside_capture": 1.17826602,
+    "downside_capture": 1.39162111,
+    "max_drawdown": -0.05482536,
+    "ann_excess_over_cash": -0.2086097
+   },
+   "second": {
+    "total_net_return": -0.00819031,
+    "ann_return": -0.06466774,
+    "excess_total_vs_spy": 0.03337753,
+    "ann_excess_vs_spy": 0.27545439,
+    "beta_vs_market": 0.71836786,
+    "intercept_ann": 0.17867028,
+    "tracking_error": 0.10682868,
+    "upside_capture": 0.71984189,
+    "downside_capture": 0.54872658,
+    "max_drawdown": -0.03853718,
+    "ann_excess_over_cash": -0.06819997
+   }
+  },
+  "C7_independent_emergence": {
+   "first": {
+    "total_net_return": -0.05676781,
+    "ann_return": -0.36886601,
+    "excess_total_vs_spy": -0.05166458,
+    "ann_excess_vs_spy": -0.41492218,
+    "beta_vs_market": 0.99341318,
+    "intercept_ann": -0.41537348,
+    "tracking_error": 0.09797639,
+    "upside_capture": 0.83700557,
+    "downside_capture": 1.49650891,
+    "max_drawdown": -0.07465305,
+    "ann_excess_over_cash": -0.48343778
+   },
+   "second": {
+    "total_net_return": 0.00897166,
+    "ann_return": 0.07530646,
+    "excess_total_vs_spy": 0.0505395,
+    "ann_excess_vs_spy": 0.4177202,
+    "beta_vs_market": 0.7160687,
+    "intercept_ann": 0.32014597,
+    "tracking_error": 0.13398444,
+    "upside_capture": 0.70194181,
+    "downside_capture": 0.40415913,
+    "max_drawdown": -0.03872878,
+    "ann_excess_over_cash": 0.07406584
+   }
+  },
+  "C6A_context_aligned_prophet": {
+   "first": {
+    "total_net_return": 0.02831043,
+    "ann_return": 0.24588626,
+    "excess_total_vs_spy": 0.03341366,
+    "ann_excess_vs_spy": 0.27232688,
+    "beta_vs_market": 1.10095469,
+    "intercept_ann": 0.27924385,
+    "tracking_error": 0.15264888,
+    "upside_capture": 1.6712204,
+    "downside_capture": 1.22264943,
+    "max_drawdown": -0.0404479,
+    "ann_excess_over_cash": 0.20381128
+   },
+   "second": {
+    "total_net_return": -0.04765172,
+    "ann_return": -0.32759585,
+    "excess_total_vs_spy": -0.00608388,
+    "ann_excess_vs_spy": -0.05344467,
+    "beta_vs_market": 0.72596336,
+    "intercept_ann": -0.14761855,
+    "tracking_error": 0.10735586,
+    "upside_capture": 0.75074772,
+    "downside_capture": 0.88247313,
+    "max_drawdown": -0.05422162,
+    "ann_excess_over_cash": -0.39709902
+   }
+  },
+  "X6_exposure_matched_reference": {
+   "first": {
+    "total_net_return": -0.00180513,
+    "ann_return": -0.01412747,
+    "excess_total_vs_spy": 0.00329811,
+    "ann_excess_vs_spy": 0.02602241,
+    "beta_vs_market": 0.99111631,
+    "intercept_ann": 0.02541373,
+    "tracking_error": 0.00927304,
+    "upside_capture": 1.0,
+    "downside_capture": 0.95970858,
+    "max_drawdown": -0.03063458,
+    "ann_excess_over_cash": -0.04249319
+   },
+   "second": {
+    "total_net_return": -0.04156981,
+    "ann_return": -0.29188368,
+    "excess_total_vs_spy": -1.97e-06,
+    "ann_excess_vs_spy": -1.722e-05,
+    "beta_vs_market": 0.99997979,
+    "intercept_ann": -2.417e-05,
+    "tracking_error": 1.382e-05,
+    "upside_capture": 0.99993144,
+    "downside_capture": 0.99997004,
+    "max_drawdown": -0.05916073,
+    "ann_excess_over_cash": -0.34367158
+   }
+  }
+ },
+ "post_hoc_diagnostics": {
+  "label": "POST_HOC_DESCRIPTIVE_DIAGNOSTIC (not in the frozen header; cannot change any release level)",
+  "C6_exact_incumbent_prophet": {
+   "concurrent_positions": {
+    "min": 0,
+    "median": 126.0,
+    "max": 217,
+    "first_5_sessions": [
+     0,
+     13,
+     13,
+     25,
+     34
+    ]
+   },
+   "top_contributors": [
+    {
+     "asset": "AMR",
+     "gross_contribution": 0.0076665
+    },
+    {
+     "asset": "CRCL",
+     "gross_contribution": 0.00589202
+    },
+    {
+     "asset": "TEM",
+     "gross_contribution": 0.00541833
+    },
+    {
+     "asset": "GLXY",
+     "gross_contribution": 0.00401236
+    },
+    {
+     "asset": "BIIB",
+     "gross_contribution": 0.0036418
+    }
+   ],
+   "bottom_contributors": [
+    {
+     "asset": "SGML",
+     "gross_contribution": -0.00472007
+    },
+    {
+     "asset": "CAVA",
+     "gross_contribution": -0.00345904
+    },
+    {
+     "asset": "FSLR",
+     "gross_contribution": -0.00291048
+    },
+    {
+     "asset": "LRCX",
+     "gross_contribution": -0.00281785
+    },
+    {
+     "asset": "CRDO",
+     "gross_contribution": -0.00258745
+    }
+   ],
+   "top5_share_of_positive_contribution": 0.19541508,
+   "without_top_contributor": {
+    "dropped_asset": "AMR",
+    "total_net_return": -0.03841203,
+    "excess_total_vs_spy": 0.00804691,
+    "excess_total_ci95": [
+     -0.10656118,
+     0.12069061
+    ],
+    "ann_excess_vs_spy": 0.03493144,
+    "ann_excess_ci95": [
+     -0.44080021,
+     0.50611192
+    ],
+    "beta_vs_market": 0.79210652
+   }
+  },
+  "C7_independent_emergence": {
+   "concurrent_positions": {
+    "min": 0,
+    "median": 79.0,
+    "max": 147,
+    "first_5_sessions": [
+     0,
+     5,
+     5,
+     12,
+     18
+    ]
+   },
+   "top_contributors": [
+    {
+     "asset": "AMR",
+     "gross_contribution": 0.01478326
+    },
+    {
+     "asset": "WBD",
+     "gross_contribution": 0.0077605
+    },
+    {
+     "asset": "FBRT",
+     "gross_contribution": 0.00529984
+    },
+    {
+     "asset": "PPC",
+     "gross_contribution": 0.00474971
+    },
+    {
+     "asset": "STZ",
+     "gross_contribution": 0.00310339
+    }
+   ],
+   "bottom_contributors": [
+    {
+     "asset": "SGML",
+     "gross_contribution": -0.00774435
+    },
+    {
+     "asset": "FSLR",
+     "gross_contribution": -0.00699881
+    },
+    {
+     "asset": "CAVA",
+     "gross_contribution": -0.00606564
+    },
+    {
+     "asset": "EIX",
+     "gross_contribution": -0.00409398
+    },
+    {
+     "asset": "CENX",
+     "gross_contribution": -0.00391948
+    }
+   ],
+   "top5_share_of_positive_contribution": 0.27259731,
+   "without_top_contributor": {
+    "dropped_asset": "AMR",
+    "total_net_return": -0.06243497,
+    "excess_total_vs_spy": -0.01597603,
+    "excess_total_ci95": [
+     -0.14135047,
+     0.11577491
+    ],
+    "ann_excess_vs_spy": -0.06544523,
+    "ann_excess_ci95": [
+     -0.59799752,
+     0.49197718
+    ],
+    "beta_vs_market": 0.77329114
+   }
+  },
+  "C6A_context_aligned_prophet": {
+   "concurrent_positions": {
+    "min": 0,
+    "median": 43.0,
+    "max": 70,
+    "first_5_sessions": [
+     0,
+     8,
+     8,
+     13,
+     16
+    ]
+   },
+   "top_contributors": [
+    {
+     "asset": "TEM",
+     "gross_contribution": 0.01295889
+    },
+    {
+     "asset": "CRCL",
+     "gross_contribution": 0.01079226
+    },
+    {
+     "asset": "GLXY",
+     "gross_contribution": 0.00916535
+    },
+    {
+     "asset": "BIIB",
+     "gross_contribution": 0.00675438
+    },
+    {
+     "asset": "MRK",
+     "gross_contribution": 0.00547644
+    }
+   ],
+   "bottom_contributors": [
+    {
+     "asset": "LRCX",
+     "gross_contribution": -0.0098195
+    },
+    {
+     "asset": "CRDO",
+     "gross_contribution": -0.00908626
+    },
+    {
+     "asset": "PDFS",
+     "gross_contribution": -0.00583266
+    },
+    {
+     "asset": "ACMR",
+     "gross_contribution": -0.00539863
+    },
+    {
+     "asset": "ICHR",
+     "gross_contribution": -0.00483007
+    }
+   ],
+   "top5_share_of_positive_contribution": 0.31094594,
+   "without_top_contributor": {
+    "dropped_asset": "TEM",
+    "total_net_return": -0.0316536,
+    "excess_total_vs_spy": 0.01480534,
+    "excess_total_ci95": [
+     -0.09524923,
+     0.13428051
+    ],
+    "ann_excess_vs_spy": 0.06528796,
+    "ann_excess_ci95": [
+     -0.39964523,
+     0.55252645
+    ],
+    "beta_vs_market": 0.80839045
+   }
+  }
+ },
+ "population": {
+  "primary": "live-published incumbent-era plans only (deviation D5): every C6/C7/C6A position, event-study plan, attribution leg, coverage count and contrast in this artifact uses this population",
+  "excluded_cohort": {
+   "reason": "not_live_origination: outage-reconstructed plans are not live historical publications and may never be presented as live historical calls (research/PROPHET_OUTAGE_BACKFILL_2026_08.md)",
+   "detection": "plan rows' origination_mode startswith outage_backfill, each carrying a backfill_executed_at receipt, cross-checked in both directions against the minted sets in data/prophet/backfill_disclosures.json; the run refuses on any disagreement; no hard-coded id list",
+   "era_plans_excluded": 16,
+   "of_which_replayed_receipted_bake": 13,
+   "of_which_synthetic_board_reconstructions": 3,
+   "origination_mode_counts": {
+    "outage_backfill_2026_08_09": 13,
+    "outage_backfill_2026_08_11": 3
+   },
+   "backfill_executed_at_by_kind": {
+    "replay": [
+     "2026-08-11T05:32:28.853265+00:00"
+    ],
+    "reconstruction": [
+     "2026-08-13T13:31:33.990596+00:00"
+    ]
+   },
+   "plan_ids": [
+    "APG-BULL-20260731",
+    "DAN-BULL-20260731",
+    "DRI-BULL-20260731",
+    "FN-BULL-20260805",
+    "HASI-BULL-20260805",
+    "HAYW-BULL-20260731",
+    "HCC-BULL-20260805",
+    "HP-BULL-20260731",
+    "ISRG-BULL-20260731",
+    "LECO-BULL-20260731",
+    "LNG-BULL-20260707",
+    "MRNA-BULL-20260616",
+    "NXPI-BULL-20260811",
+    "RGTI-BULL-20260805",
+    "SBAC-BULL-20260731",
+    "WFRD-BULL-20260731"
+   ],
+   "would_have_entered_positions_as_run": 12,
+   "would_have_entered_ids_as_run": [
+    "APG-BULL-20260731",
+    "DRI-BULL-20260731",
+    "FN-BULL-20260805",
+    "HASI-BULL-20260805",
+    "HP-BULL-20260731",
+    "ISRG-BULL-20260731",
+    "LECO-BULL-20260731",
+    "MRNA-BULL-20260616",
+    "NXPI-BULL-20260811",
+    "RGTI-BULL-20260805",
+    "SBAC-BULL-20260731",
+    "WFRD-BULL-20260731"
+   ]
+  },
+  "mrna": {
+   "note": "MRNA-BULL-20260616 (origination_mode outage_backfill_2026_08_09, instantiated 2026-08-11T05:32:28Z) is NOT in the primary book: as run it entered at the 2026-08-10 close, a session before it existed for any user.",
+   "as_run_entry": "2026-08-10",
+   "in_sensitivity_a": true,
+   "sensitivity_a_entry": "2026-08-11",
+   "price_authentication": "the 2026-08-19 one-day close move of +177% (62.96 -> 174.38; raw and adjusted closes agree; volume 199,252,300) is present only in the single price cache used by this runner and is not authenticated by any second source"
+  },
+  "review": {
+   "file": "REVIEW_beta_evaluation.md (independent scientific review, 2026-11-10)",
+   "sha256": "6296bf4cb77d09e47f1311dbd46cd915a794e050ce7460a228ad821e7b13541a"
+  }
+ },
+ "sensitivity": {
+  "label": "SENSITIVITY — separately labelled, never the headline; descriptive only (L0)",
+  "backfill_replays_admitted_after_availability": {
+   "definition": "the 13 receipted replays of the 2026-08-09 bake admitted from the first session at/after their actual backfill_executed_at (2026-08-11T05:32:28.853265+00:00); the 3 synthetic-board reconstructions (HCC-BULL-20260805, LNG-BULL-20260707, NXPI-BULL-20260811) never admitted",
+   "excluded_from_this_variant": {
+    "recorded_no_entry": 76,
+    "not_entered_zone_expired": 20,
+    "not_live_origination": 3,
+    "not_entered_zone_live": 104,
+    "resolved_at_or_before_follower_fill": 34,
+    "published_after_window": 12,
+    "no_fill_no_close_at_entry": 2
+   },
+   "positions": 509,
+   "total_net_return": 0.0009061,
+   "excess_total_vs_spy": 0.04736504,
+   "excess_total_ci95": [
+    -0.10197918,
+    0.21430662
+   ],
+   "ann_excess_vs_spy": 0.20024048,
+   "ann_excess_ci95": [
+    -0.42170858,
+    0.86493043
+   ],
+   "beta_vs_market": 0.81568789,
+   "mean_invested": 0.98409274,
+   "hit_rate_vs_spy": {
+    "n": 509,
+    "beat_spy": 268,
+    "rate": 0.52652259,
+    "ci95_wilson": [
+     0.48311044,
+     0.56953741
+    ]
+   }
+  },
+  "superseded_as_run": {
+   "reason": "v1 as-run population included the 16 outage-reconstructed plans as if historically published; superseded by the deviation-D5 primary correction, which lowers the headline. Retained verbatim so nothing is hidden; never render as the current result.",
+   "same_engine_seed_prices_costs": true,
+   "C6_exact_incumbent_prophet": {
+    "positions": 510,
+    "total_net_return": 0.00983635,
+    "excess_total_vs_spy": 0.05629529,
+    "excess_total_ci95": [
+     -0.09869975,
+     0.22966964
+    ],
+    "ann_excess_vs_spy": 0.23574831,
+    "ann_excess_ci95": [
+     -0.40852597,
+     0.92327276
+    ],
+    "beta_vs_market": 0.8092886,
+    "hit_rate_vs_spy": {
+     "n": 510,
+     "beat_spy": 269,
+     "rate": 0.52745098,
+     "ci95_wilson": [
+      0.48407865,
+      0.57041286
+     ]
+    }
+   },
+   "C7_independent_emergence": {
+    "positions": 339,
+    "total_net_return": -0.03925908,
+    "excess_total_vs_spy": 0.00719986,
+    "excess_total_ci95": [
+     -0.13349192,
+     0.15550444
+    ],
+    "ann_excess_vs_spy": 0.03241026,
+    "ann_excess_ci95": [
+     -0.56313836,
+     0.65212066
+    ],
+    "beta_vs_market": 0.7608212,
+    "hit_rate_vs_spy": {
+     "n": 339,
+     "beat_spy": 184,
+     "rate": 0.54277286,
+     "ci95_wilson": [
+      0.48955915,
+      0.59502805
+     ]
+    }
+   },
+   "C6A_context_aligned_prophet": {
+    "positions": 171,
+    "total_net_return": 0.06072742,
+    "excess_total_vs_spy": 0.10718636,
+    "excess_total_ci95": [
+     -0.0791687,
+     0.39675289
+    ],
+    "ann_excess_vs_spy": 0.45010205,
+    "ann_excess_ci95": [
+     -0.32597336,
+     1.49427562
+    ],
+    "beta_vs_market": 0.87847327,
+    "hit_rate_vs_spy": {
+     "n": 171,
+     "beat_spy": 85,
+     "rate": 0.49707602,
+     "ci95_wilson": [
+      0.42302825,
+      0.57125228
+     ]
+    }
+   },
+   "contrasts": {
+    "K1_C6_minus_C1": {
+     "mean_daily_diff": 0.00094026,
+     "ann_diff": 0.23694447,
+     "ann_diff_ci95": [
+      -0.40852597,
+      0.92683135
+     ],
+     "total_diff": 0.05658135,
+     "total_diff_ci95": [
+      -0.09865388,
+      0.23018001
+     ],
+     "p_one_sided": 0.2471,
+     "beta_ci95": [
+      0.63179769,
+      1.14194839
+     ],
+     "upside_capture_ci95": [
+      0.56175331,
+      2.11666242
+     ],
+     "downside_capture_ci95": [
+      0.36791773,
+      1.52620944
+     ]
+    },
+    "K2_C6_minus_X6": {
+     "mean_daily_diff": 0.00093554,
+     "ann_diff": 0.23575678,
+     "ann_diff_ci95": [
+      -0.40852638,
+      0.92327321
+     ],
+     "total_diff": 0.05629725,
+     "total_diff_ci95": [
+      -0.09869985,
+      0.22967144
+     ],
+     "p_one_sided": 0.2477,
+     "beta_ci95": [
+      0.63179769,
+      1.14194839
+     ],
+     "upside_capture_ci95": [
+      0.56175331,
+      2.11666242
+     ],
+     "downside_capture_ci95": [
+      0.36791773,
+      1.52620944
+     ]
+    },
+    "K7_C6A_minus_C7": {
+     "mean_daily_diff": 0.00165751,
+     "ann_diff": 0.41769179,
+     "ann_diff_ci95": [
+      -0.33443641,
+      1.30639836
+     ],
+     "total_diff": 0.0999865,
+     "total_diff_ci95": [
+      -0.0801888,
+      0.35259488
+     ],
+     "p_one_sided": 0.1629,
+     "beta_ci95": [
+      0.67703271,
+      1.39788843
+     ],
+     "upside_capture_ci95": [
+      0.68699725,
+      3.43778002
+     ],
+     "downside_capture_ci95": [
+      0.57345591,
+      1.61599815
+     ]
+    }
+   },
+   "attribution_C6": {
+    "method": "daily_arithmetic_accounting_identity_sector_etf_segments",
+    "linking": "unlinked arithmetic sum of daily contributions; compounding residual shown",
+    "legs": {
+     "market_participation": -0.04525685,
+     "sector_allocation": 0.04437762,
+     "selection_within_sector": 0.02766562,
+     "cash": 2.9e-07,
+     "costs": -0.01310405
+    },
+    "sum_of_daily_net_returns": 0.01368263,
+    "identity_error": -0.0,
+    "compounded_total_net_return": 0.00983635,
+    "compounding_residual": -0.00384628,
+    "benchmark_sum_of_daily_returns": -0.04525445,
+    "gap_vs_benchmark_bridge": {
+     "benchmark": -0.04525445,
+     "uninvested_market_shortfall": -2.4e-06,
+     "sector_allocation": 0.04437762,
+     "selection_within_sector": 0.02766562,
+     "cash": 2.9e-07,
+     "costs": -0.01310405,
+     "strategy": 0.01368263
+    },
+    "unmapped_sector_weight_days": 0.0
+   },
+   "event_study_h21": {
+    "n": 430,
+    "n_dates": 24,
+    "status": "matured_subset",
+    "excess_vs_spy": {
+     "mean": -0.02710595,
+     "median": -0.0400838,
+     "n": 430,
+     "ci95_date_cluster": [
+      -0.04757688,
+      -0.00603431
+     ]
+    },
+    "sector_etf_minus_spy": {
+     "mean": 0.00021517,
+     "median": -0.0129382,
+     "n": 430,
+     "ci95_date_cluster": [
+      -0.0152494,
+      0.01595781
+     ]
+    },
+    "stock_minus_sector_etf": {
+     "mean": -0.02732112,
+     "median": -0.02560962,
+     "n": 430,
+     "ci95_date_cluster": [
+      -0.0398712,
+      -0.01449374
+     ]
+    },
+    "share_beating_spy": {
+     "k": 151,
+     "n": 430,
+     "rate": 0.35116279,
+     "ci95_wilson_naive": [
+      0.30754497,
+      0.39741638
+     ]
+    }
+   },
+   "event_study_h42": {
+    "n": 258,
+    "n_dates": 16,
+    "status": "matured_subset",
+    "excess_vs_spy": {
+     "mean": -0.05741971,
+     "median": -0.05380501,
+     "n": 258,
+     "ci95_date_cluster": [
+      -0.09114144,
+      -0.02079923
+     ]
+    },
+    "sector_etf_minus_spy": {
+     "mean": -0.01180509,
+     "median": -0.02203202,
+     "n": 258,
+     "ci95_date_cluster": [
+      -0.02374786,
+      0.00196205
+     ]
+    },
+    "stock_minus_sector_etf": {
+     "mean": -0.04561461,
+     "median": -0.03960607,
+     "n": 258,
+     "ci95_date_cluster": [
+      -0.0751382,
+      -0.01225493
+     ]
+    },
+    "share_beating_spy": {
+     "k": 84,
+     "n": 258,
+     "rate": 0.3255814,
+     "ci95_wilson_naive": [
+      0.2713251,
+      0.38495546
+     ]
+    }
+   }
+  }
+ },
+ "failed_leaders": {
+  "c3_sector_picks": 12,
+  "lagged_spy_over_hold": 5
+ },
+ "rebounds": {
+  "status": "not_evaluable",
+  "reason": "window holds no SPY drawdown deep enough for a rebound test (see window.spy_max_drawdown)"
+ },
+ "coverage": {
+  "era_plans": 760,
+  "evaluated_positions": 498,
+  "excluded": {
+   "recorded_no_entry": 75,
+   "not_live_origination": 16,
+   "not_entered_zone_expired": 19,
+   "not_entered_zone_live": 104,
+   "resolved_at_or_before_follower_fill": 34,
+   "published_after_window": 12,
+   "no_fill_no_close_at_entry": 2
+  },
+  "entry_shifted_to_publication": 0,
+  "exit_basis": {
+   "recorded_close_date": 277,
+   "mechanical_published_levels": 31,
+   "censored_open_at_window_end": 190
+  },
+  "classified_share": 1.0,
+  "priced_share": 0.996,
+  "sector": {
+   "unmapped_plans": 0,
+   "label_source_disagreements": 0,
+   "labels_basis": "current-basis GICS (not era-correct)"
+  },
+  "c7_c6a_split": {
+   "outside_leading": 332,
+   "inside_leading": 166,
+   "unmapped": 0
+  },
+  "member_universe_by_rebalance": [
+   {
+    "decision": "2026-08-07",
+    "execution": "2026-08-10",
+    "pit_active": 1506,
+    "no_price_file": 36,
+    "no_sector": 1,
+    "short_history": 9,
+    "price_below_min": 12,
+    "eligible": 1448,
+    "c4_names": 131,
+    "c5_names": 61,
+    "c5_sectors": [
+     "XLV",
+     "XLF",
+     "XLK"
+    ]
+   },
+   {
+    "decision": "2026-09-08",
+    "execution": "2026-09-09",
+    "pit_active": 1506,
+    "no_price_file": 36,
+    "no_sector": 1,
+    "short_history": 14,
+    "price_below_min": 13,
+    "eligible": 1442,
+    "c4_names": 131,
+    "c5_names": 49,
+    "c5_sectors": [
+     "XLE",
+     "XLF",
+     "XLV"
+    ]
+   },
+   {
+    "decision": "2026-10-07",
+    "execution": "2026-10-08",
+    "pit_active": 1506,
+    "no_price_file": 36,
+    "no_sector": 1,
+    "short_history": 16,
+    "price_below_min": 16,
+    "eligible": 1437,
+    "c4_names": 131,
+    "c5_names": 43,
+    "c5_sectors": [
+     "XLE",
+     "XLK",
+     "XLV"
+    ]
+   },
+   {
+    "decision": "2026-11-05",
+    "execution": "2026-11-06",
+    "pit_active": 1506,
+    "no_price_file": 36,
+    "no_sector": 1,
+    "short_history": 26,
+    "price_below_min": 17,
+    "eligible": 1426,
+    "c4_names": 131,
+    "c5_names": 32,
+    "c5_sectors": [
+     "XLV",
+     "XLP",
+     "XLE"
+    ]
+   }
+  ],
+  "member_universe_missing_price_files": [
+   "AAMI",
+   "ABG",
+   "ADEA",
+   "AGO",
+   "BHE",
+   "BLKB",
+   "CALY",
+   "CCK",
+   "CNXN",
+   "CRVL",
+   "CWEN-A",
+   "DXPE",
+   "FDP",
+   "HIW",
+   "JHG",
+   "KW",
+   "MASI",
+   "MATX",
+   "MBIN",
+   "MRTN",
+   "NEU",
+   "NPK",
+   "NSA",
+   "PMT",
+   "PRA",
+   "PRLB",
+   "SAFE",
+   "SATS",
+   "SEM",
+   "SLM",
+   "SLVM",
+   "STEL",
+   "UE",
+   "UPBD",
+   "WSR",
+   "ZWS"
+  ],
+  "c4_sector_weights": {
+   "XLB": 0.0,
+   "XLC": 0.15795365,
+   "XLE": 0.02316741,
+   "XLF": 0.11550304,
+   "XLI": 0.07553236,
+   "XLK": 0.35126599,
+   "XLP": 0.04090576,
+   "XLRE": 0.0,
+   "XLU": 0.03396977,
+   "XLV": 0.07481415,
+   "XLY": 0.12688786
+  },
+  "issuer_excluded_peers": {
+   "status": "unavailable",
+   "reason": "listing-ticker identity only; no issuer master join in this harness, so issuer-excluded peer counts are not supportable"
+  },
+  "drop_corrected_sensitivity": {
+   "positions": 498,
+   "excluded": {
+    "recorded_no_entry": 75,
+    "not_live_origination": 16,
+    "not_entered_zone_expired": 19,
+    "not_entered_zone_live": 104,
+    "resolved_at_or_before_follower_fill": 34,
+    "published_after_window": 12,
+    "no_fill_no_close_at_entry": 2
+   }
+  }
+ },
+ "claims": {
+  "observed_relative_performance": {
+   "status": "descriptive",
+   "basis": "realised window returns with bootstrap CIs; L0 only"
+  },
+  "estimated_exposure_residual": {
+   "status": "descriptive",
+   "basis": "OLS beta/intercept on 63 daily returns; not a validated factor model"
+  },
+  "participation_attribution": {
+   "status": "model_book_accounting",
+   "basis": "equal-weight model book of published plans; not actual holdings or user portfolios"
+  },
+  "incremental_selection_value": {
+   "status": "not_established",
+   "basis": "sample below the predeclared L1 minimum"
+  }
+ },
+ "limitations": [
+  "Short sample: one 64-session window (SPY -4.6 pp); no rebound or crash regime was observed.",
+  "Annualised differentials from 63 daily returns are very noisy; read total-window differences and their intervals.",
+  "Population (deviation D5): 16 outage-reconstructed plans (13 receipted replays, 3 synthetic-board reconstructions) are excluded because their earliest auditable availability is after their nominal publication session; the correction was made after outcomes were seen, follows a rule that predates the evaluation, and lowers the headline.",
+  "X6 is an exposure-weight arithmetic reference, not a selection-matched comparator: it matches only risky weight, so K2 nearly repeats K1. A comparator matched on eligible cohort, concentration, sector/factor exposure, timing and costs requires a new pre-declared protocol; X6 is not replaced retrospectively.",
+  "the 2026-08-19 one-day close move of +177% (62.96 -> 174.38; raw and adjusted closes agree; volume 199,252,300) is present only in the single price cache used by this runner and is not authenticated by any second source; it affects any population that admits the replayed plans.",
+  "S&P 1500 point-in-time membership has no recorded change after 2026-06-02; 36 point-in-time members had no price file and were excluded.",
+  "Sector labels are current-basis GICS, not the classification in force at each date.",
+  "Prophet plans are read from the 2026-11-09 plan snapshot, not each plan's as-published bytes; entries use the publication clock and close-only fills, so results differ from the plan record's own same-bar outcomes.",
+  "Model book: equal weight across open positions (per position, not per distinct ticker; no same-ticker overlaps occur in this sample, so the two coincide here). It is not user holdings, a portfolio recommendation or sizing advice.",
+  "The event-study date-cluster intervals treat publication dates as independent although nearby dates share overlapping market paths, so those intervals are likely too narrow.",
+  "Issuer-excluded peer counts are unavailable: identity is the listing ticker only.",
+  "The eight catalog sleeves cannot be evaluated: plans carry no sleeve link. admission_class strata are reported instead."
+ ],
+ "deviations": [
+  {
+   "id": "D1",
+   "kind": "naming",
+   "when": "before outcome access",
+   "what": "reason/key names derived from 'ledger' renamed to 'recorded_*' / 'resolution_log'",
+   "why": "lane-8 validator forbids key substrings incl. 'edge' (contained in 'ledger'); no method change"
+  },
+  {
+   "id": "D2",
+   "kind": "added_diagnostic",
+   "when": "after outcome access",
+   "what": "post_hoc_diagnostics: per-asset contribution concentration, concurrent position counts, Prophet books re-run without their single largest contributor",
+   "why": "the C6 book's result was visibly driven by one name; disclosed as descriptive only, cannot change any release level or threshold"
+  },
+  {
+   "id": "D3",
+   "kind": "implementation_note",
+   "when": "after outcome access",
+   "what": "the last scheduled rule rebalance (decision 2026-11-05) executes at the final close 2026-11-06; its trading cost has no following return day and is not charged",
+   "why": "header schedule executes while t+1 <= last close; omitted cost is at most one rebalance (< 0.1 pp for C3-C5)"
+  },
+  {
+   "id": "D4",
+   "kind": "presentation",
+   "when": "after outcome access",
+   "what": "event-study horizons with fewer than 5 distinct publication dates are marked status=too_few_dates",
+   "why": "H=63 matured for a single publication date; a one-cluster bootstrap interval is degenerate and must not be displayed as uncertainty"
+  },
+  {
+   "id": "D5",
+   "kind": "population_correction",
+   "when": "after outcome access (2026-11-10)",
+   "what": "primary population corrected to live-published plans only: 16 outage-reconstructed incumbent-era plans (13 receipted replays of the 2026-08-09 bake instantiated 2026-08-11T05:32:28Z; 3 synthetic-board reconstructions of the never-published 2026-08-11 board executed 2026-08-13T13:31:33Z) excluded from C6/C7/C6A, the all-published-plans event study, attribution, coverage counts and every contrast using them (reason not_live_origination, detected from origination_mode/backfill_executed_at and the disclosure receipts, never a hard-coded id list). Before -> after: C6 total +0.9836% -> -3.1382%; C6 vs SPY +5.6295 pp -> +1.5077 pp (CI [-9.870, +22.967] -> [-10.494, +13.386] pp); C6 positions 510 -> 498; K1 +23.6944 pp -> +6.5578 pp/yr; K2 +23.5757 pp -> +5.1173 pp/yr; K7 +41.7692 pp -> +11.7236 pp/yr; event study H=21 -2.7106 pp -> -3.0241 pp (n 430 -> 414, dates 24 -> 22). The superseded population is retained verbatim under sensitivity.superseded_as_run; sensitivity (a) admits the 13 replays only from their auditable availability and admits the synthetic-board reconstructions never.",
+   "why": "the runner had treated backfilled plans as if historically published although their earliest auditable availability is their backfill receipt, after their nominal publication session (e.g. MRNA-BULL-20260616 entered at the 2026-08-10 close although instantiated 2026-08-11T05:32Z). research/PROPHET_OUTAGE_BACKFILL_2026_08.md forbids presenting reconstructed picks as live historical calls; that rule predates this evaluation. Correction made after outcomes were seen and it lowers the headline. Source: independent review REVIEW_beta_evaluation.md (sha256 6296bf4cb77d09e47f1311dbd46cd915a794e050ce7460a228ad821e7b13541a), BLOCKER finding, accepted by the programme CEO."
+  }
+ ],
+ "may_rank": false,
+ "may_gate": false,
+ "may_size": false,
+ "may_trade": false,
+ "may_escalate": false,
+ "headline": [
+  "Release level: descriptive only (L0). The window is 64 sessions; the predeclared minimum for any accepted historical claim is 252 sessions including an 8% market drawdown.",
+  "Market over the window: SPY -4.6% total return, deepest drawdown -5.9%.",
+  "Population: live-published plans only. 16 outage-reconstructed plans that no user could see on their nominal publication dates are excluded from every headline number (deviation D5); the superseded as-run numbers are retained under sensitivity.superseded_as_run.",
+  "Incumbent Prophet book (as built, 498 positions): -3.1% net, +1.5 pp versus SPY, 95% CI [-10.5, +13.4] pp. The interval includes zero: this is not evidence of outperformance, and the sample is far too short.",
+  "Beta capture: beta 0.79 (95% CI 0.63 to 1.08), mean invested weight 98%; upside capture 0.93, downside capture 0.88.",
+  "Without its largest single contributor (AMR) the book is +0.8 pp versus SPY (CI [-10.7, +12.1] pp).",
+  "Live-published plans held for a fixed 21 sessions without Prophet's exits differed from SPY by -3.0 pp on average (date-cluster CI [-5.1, -0.9] pp); most of that gap was the stock versus its own sector ETF, not the sector choice.",
+  "Sector rotation alone, sector-neutral member selection alone and their combination did not beat SPY on this window (K3 -3.9 pp/yr, K4 -3.8 pp/yr, K5 -7.6 pp/yr annualised; none significant after Holm). Insignificant results mean value is not shown, not that there is none.",
+  "The exposure-matched reference (X6) is an exposure-weight arithmetic reference only: it matches risky weight alone, and because the book is essentially fully invested, K2 nearly repeats the SPY comparison (K1) and cannot identify member-selection value.",
+  "Prophet plans inside leading sectors did better than plans outside them in this window (K7 +11.7 pp/yr annualised, Holm p 1.00); this is not significant.",
+  "Nothing here shows that sector context or member selection adds value beyond market participation."
+ ]
+}
