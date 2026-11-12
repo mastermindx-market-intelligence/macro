@@ -336,3 +336,90 @@ def test_snapshot_date_and_clock_are_captured():
     assert stamp == "07:17:12"
     assert df.iloc[0]["date"] == pd.Timestamp("2026-08-05")
     assert df.iloc[0]["snapshot_et"] == "07:17:12"
+
+
+# Missing comparative evidence must abstain, not vote negative.
+def _missing_measurement_axes(**updates):
+    row=dict(days_to_cover=None,dtc_pctile=None,dtc_change=None,si_change_pct=None,
+             borrow_fee_pct=None,avail_shares=None,avail_unlimited=False,
+             thin_adv=False,dtc_capped=False,settlement_date='2026-10-30')
+    row.update(updates)
+    return sp.axes('SYN',xs=pd.DataFrame([row],index=['SYN']))
+
+@pytest.mark.parametrize('missing',[None,float('nan'),pd.NA])
+def test_missing_changes_do_not_establish_coverage(missing):
+    r=_missing_measurement_axes(dtc_change=missing,si_change_pct=missing)
+    assert r['measured_count']==0
+    assert not r['coverage_ok']
+    assert r['state']=='not enough short-side data to describe'
+
+@pytest.mark.parametrize('key',['dtc_change','si_change_pct'])
+@pytest.mark.parametrize('value',[-1.0,0.0,1.0])
+def test_one_observation_is_not_two_measurements(key,value):
+    r=_missing_measurement_axes(**{key:value})
+    assert r['measured_count']==1
+    assert not r['coverage_ok']
+    assert r['agree_count']==int(value>0)
+
+@pytest.mark.parametrize('value',[-1.0,0.0,1.0])
+def test_observed_zero_and_negative_changes_remain_measured(value):
+    r=_missing_measurement_axes(dtc_change=value,si_change_pct=value)
+    assert r['measured_count']==2
+    assert r['coverage_ok']
+    assert r['agree_count']==2*int(value>0)
+
+@pytest.mark.parametrize('missing',[None,float('nan'),pd.NA])
+def test_raw_cover_burden_without_comparator_is_not_negative_evidence(missing):
+    r=_missing_measurement_axes(days_to_cover=3.0,dtc_pctile=missing)
+    leg=next(x for x in r['legs'] if x['axis']=='days_to_cover')
+    assert leg['value']==3.0
+    assert leg['reading']=='3.0 days of average volume to buy back'
+    assert leg['elevated'] is None
+    assert r['measured_count']==0
+
+@pytest.mark.parametrize('pct',[0.0,30.0,79.9,80.0,100.0])
+def test_observed_comparator_is_measured_without_invented_change_axes(pct):
+    r=_missing_measurement_axes(days_to_cover=3.0,dtc_pctile=pct)
+    assert r['measured_count']==1
+    assert r['agree_count']==int(pct>=80)
+
+@pytest.mark.parametrize('fee',[0.0,0.5,1.0,5.0])
+def test_borrow_only_does_not_inherit_two_phantom_measurements(fee):
+    r=_missing_measurement_axes(borrow_fee_pct=fee)
+    assert r['measured_count']==1
+    assert not r['coverage_ok']
+    assert r['agree_count']==int(fee>=1)
+
+@pytest.mark.parametrize('av,unlimited',[(None,False),(0.0,False),(450000.0,False),(None,True)])
+def test_availability_does_not_substitute_for_missing_directional_measures(av,unlimited):
+    r=_missing_measurement_axes(avail_shares=av,avail_unlimited=unlimited)
+    assert r['measured_count']==0
+    assert not r['coverage_ok']
+
+def test_complete_comparison_and_threshold_contract_unchanged():
+    r=_missing_measurement_axes(days_to_cover=3.0,dtc_pctile=90.0,dtc_change=1.0,
+           si_change_pct=0.0,borrow_fee_pct=0.5)
+    assert (r['measured_count'],r['agree_count'],r['coverage_ok'])==(4,2,True)
+    assert r['state']=='2 short-side readings stand out together'
+    assert not any(r['authority'][k] for k in ['may_rank','may_size','may_gate'])
+
+
+
+
+def test_absent_short_evidence_abstains_through_native_parquet_loaders(monkeypatch, tmp_path):
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    (tmp_path / "finra").mkdir()
+    pd.DataFrame([{
+        "ticker": "SYN", "settlement_date": pd.Timestamp("2026-10-30"),
+        "knowable_date": pd.Timestamp("2026-11-11"), "days_to_cover": None,
+        "dtc_capped": False, "is_listed": True, "avg_daily_vol": 500000,
+        "si_change_pct": None, "short_shares": 1000000,
+    }]).to_parquet(tmp_path / "finra/short_interest_panel.parquet", index=False)
+    result = sp.axes("SYN", xs=sp.cross_section(asof="2026-11-12"))
+    assert all(leg["value"] is None for leg in result["legs"])
+    assert result["measured_count"] == result["agree_count"] == 0
+    assert not result["coverage_ok"]
+    assert result["state"] == "not enough short-side data to describe"
+    assert not any(result["authority"][k] for k in ("may_rank", "may_size", "may_gate"))

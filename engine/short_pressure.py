@@ -303,20 +303,20 @@ def axes(ticker: str, asof=None, xs: pd.DataFrame | None = None) -> dict | None:
             # under %.0f, and "higher than 100% of names" is never true of a name
             # that is itself in the comparison set.
             + (f", higher than {min(pct, 99.0):.0f}% of comparable names" if pct is not None else ""),
-            pct is not None and pct >= 80)
+            (pct >= 80) if pct is not None else None)
 
     chg = _f(r.get("dtc_change"))
     add("dtc_change", None if chg is None else round(chg, 2),
         "no prior settlement to compare" if chg is None else
         (f"cover burden up {chg:+.1f} days since the last report" if chg > 0
          else f"cover burden down {chg:+.1f} days since the last report"),
-        chg is not None and chg > 0)
+        (chg > 0) if chg is not None else None)
 
     sic = _f(r.get("si_change_pct"))
     add("si_change_pct", None if sic is None else round(sic, 2),
         "not reported" if sic is None else
         f"shares short {'up' if sic > 0 else 'down'} {abs(sic):.1f}% since the last report",
-        sic is not None and sic > 0)
+        (sic > 0) if sic is not None else None)
 
     fee = _f(r.get("borrow_fee_pct"))
     if fee is None:
