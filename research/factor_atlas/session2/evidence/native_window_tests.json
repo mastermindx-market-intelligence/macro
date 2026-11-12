@@ -1,0 +1,77 @@
+{
+  "customer_publication_authorized": false,
+  "data": "CONTROLLED_FIXTURES_ONLY",
+  "files": {
+    "evidence/window_mutations.json": {
+      "bytes": 2258,
+      "sha256": "f5c017aa773eec021fff1cac50910870682cfa8d7980c85a2a187380c5004449"
+    },
+    "evidence/window_pipeline.json": {
+      "bytes": 1964,
+      "sha256": "9234d008af2724849ad70a61cd01327ef93202eb35199d353dd570b43cc5db07"
+    },
+    "prototype/test_window_pipeline.py": {
+      "bytes": 5835,
+      "sha256": "59db4ad98cafd2108f7e1ef4d79605f1cc3c5c49b0c122dbba85350bd6904540"
+    },
+    "prototype/test_window_pressure.py": {
+      "bytes": 9050,
+      "sha256": "38093ec3ac17ca93ad5e3640d294756b96d2ea50f465eead0d7f06024cdf37eb"
+    },
+    "prototype/window_pipeline_witness.py": {
+      "bytes": 5391,
+      "sha256": "2c0ee1f993ddd7a939fbad585a324467a24ee28aedb84f8faad0ab2bff02f4a1"
+    },
+    "prototype/window_pressure.py": {
+      "bytes": 10989,
+      "sha256": "b9da3360090d5765fdc2802ec9f609144c73f096d9ccc16764b23f33aa0160b5"
+    }
+  },
+  "market_pilot_admitted": false,
+  "native_logs": {
+    "pipeline-green.txt": {
+      "bytes": 180,
+      "sha256": "4b4843c2e6ae30253d20b19acb306056803e5e13f93baa452b61442f5fcf6d0f"
+    },
+    "pipeline-red.txt": {
+      "bytes": 2125,
+      "sha256": "d403d83d29ed2273befd23ce83ba6a576447791d260b5cce6ffd454bf1e68166"
+    },
+    "window-final.txt": {
+      "bytes": 180,
+      "sha256": "985187843fe9c4b5c4748c994fe02c60f86e5a472b055a2078cbb4145a6c0c21"
+    },
+    "window-green.txt": {
+      "bytes": 180,
+      "sha256": "8ba278a61b2cde046769a8367861d0d3bd4a8e292b815eba81711dc48b7c4df7"
+    },
+    "window-red.txt": {
+      "bytes": 56185,
+      "sha256": "0583a61f38284d58ca18a081c4ac3f598b3e03a1d2839ef1b069a17aacc30ad2"
+    }
+  },
+  "observed_at_utc": "2026-10-09T04:22:01.905767+00:00",
+  "parent_commit": "28a59ff16e59da6af4f8b0389935d4800f4b2ed1",
+  "runtime": {
+    "host": "m2studio",
+    "numpy": "2.5.2",
+    "pytest": "9.1.1",
+    "python": "3.14.7",
+    "scipy": "1.18.0"
+  },
+  "schema": "factor_atlas.native_window_fixture_receipt.v1",
+  "tests": {
+    "final_prototype_passed": 116,
+    "first_combined_green": 103,
+    "new_window_mutants_killed": 5,
+    "pipeline_red_failed": 1,
+    "pipeline_red_passed": 9,
+    "window_red_failed": 24
+  },
+  "unchanged_prior_source_sha256": {
+    "prototype/mutation_check.py": "7e5adecdfb8cd1e89f8eb91c29d97618ecb3a53036dcca19fe99ba8f07f03fda",
+    "prototype/pressure.py": "34cf424cdb33ac7edc2b1af83334f2117692b8b3569de93b6c632c6729a75edb",
+    "prototype/test_witnesses.py": "5f428647df39eceb2668d67ddc11f844bfd5d261efa3c8ab599f1ad963334f74",
+    "prototype/witnesses.py": "7078a1ba586f566a7e7b3c588fed45ee61b4c93ca50ccf761ced9e94da70a647"
+  }
+}

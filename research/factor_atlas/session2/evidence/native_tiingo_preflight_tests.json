@@ -1,0 +1,84 @@
+{
+  "actual_market_source_reads_or_network_calls_in_native_tests": false,
+  "ci_named_suites": [
+    "research/factor_atlas/session2/prototype/test_cross_session_contract.py",
+    "research/factor_atlas/session2/prototype/test_disclosed_profile.py",
+    "research/factor_atlas/session2/prototype/test_intake_bridge.py",
+    "research/factor_atlas/session2/prototype/test_owner_reader_abi.py",
+    "research/factor_atlas/session2/prototype/test_pressure.py",
+    "research/factor_atlas/session2/prototype/test_pressure_oos.py",
+    "research/factor_atlas/session2/prototype/test_quote_calibration.py",
+    "research/factor_atlas/session2/prototype/test_quote_reference.py",
+    "research/factor_atlas/session2/prototype/test_quote_study.py",
+    "research/factor_atlas/session2/prototype/test_read_contract_schema.py",
+    "research/factor_atlas/session2/prototype/test_source_preflight.py",
+    "research/factor_atlas/session2/prototype/test_tiingo_pit_alias.py",
+    "research/factor_atlas/session2/prototype/test_tiingo_preflight_bridge.py",
+    "research/factor_atlas/session2/prototype/test_tiingo_source_fitness.py",
+    "research/factor_atlas/session2/prototype/test_window_pipeline.py",
+    "research/factor_atlas/session2/prototype/test_window_pressure.py",
+    "research/factor_atlas/session2/prototype/test_witnesses.py"
+  ],
+  "consumer_method": "PURE_EXISTING_TiingoView_TO_EXISTING_S2_Preflight_METADATA_ONLY",
+  "customer_publication_allowed": false,
+  "local_test_logs": {
+    "focused_21_green": {
+      "bytes": 99,
+      "sha256": "3a2162d2d9fe978768269bd9417dedb42db99980a582bf2f7a395f16c4f559e4"
+    },
+    "full_17_suite_557_green": {
+      "bytes": 660,
+      "sha256": "fa9d1cbc067b6b005cf20881a4e1dcf5d5f8567078dbeef10b012f4803f6ac2f"
+    },
+    "missing_module_red": {
+      "bytes": 1360,
+      "sha256": "625448efca398312dc216a4f05af494f3c3eb7a0cbf289b1d38fcf2f80c63f7b"
+    },
+    "source_context_alias_red": {
+      "bytes": 1138,
+      "sha256": "88a374159e34b4f2a909e907d9891f1ec0b1ad6f63e1bccb9c74681e0c9e601f"
+    }
+  },
+  "native_17_suite_local_passed": 557,
+  "native_new_tests": 21,
+  "native_source_and_synthetic_fixture_files": {
+    "session2/TIINGO_PREFLIGHT_BRIDGE.md": {
+      "bytes": 7414,
+      "sha256": "3b65e6cbe7d29a74b2543cf4875d935a0772e4d699233df0ccafad39f8df03fe"
+    },
+    "session2/evidence/tiingo_preflight_synthetic.json": {
+      "bytes": 5888,
+      "sha256": "4bec49d4a746c5189d442ede9e3f2b8ccf48675edbb7bef5711cfb3d0127da3f"
+    },
+    "session2/prototype/test_tiingo_preflight_bridge.py": {
+      "bytes": 10692,
+      "sha256": "cb1c58ea8cf59397661a84ddd56776011ab5a7f71988075e00e6d223416b2408"
+    },
+    "session2/prototype/tiingo_preflight_bridge.py": {
+      "bytes": 9215,
+      "sha256": "09c32ea0f37c866f15c306ac092586a8c77154f971ad7bf1afcf720079fdb9c0"
+    }
+  },
+  "new_source_fitness_or_source_selection_authority": false,
+  "original_PIT_identity_admitted": false,
+  "original_calendar_exchange_attested": false,
+  "original_dataset_rights_admitted": false,
+  "original_factor_atlas_head": "872854be94a4bba1d67af5ff6c0105f5ddf09bbd",
+  "original_factor_atlas_pr": 8677,
+  "original_market_source_reader_modified": false,
+  "original_merged_tiingo_producer_head": "2a08250fe61aa59ad3e1581149f0b93e9d5a17cf",
+  "original_signed_trades_or_BVC_calculated": false,
+  "original_source_rth_census_observed_independently_readonly": true,
+  "prepared_at_utc": "2026-10-12T00:37:22.389802+00:00",
+  "previous_platform_denied_BOATS_source_packaging_unchanged": true,
+  "previous_platform_denied_S2_P4_and_S2_P6_edits_unchanged": true,
+  "protected_mastermind": "85807cf48e29e2fe5df19534d6b181fc25b9746f",
+  "real_vendor_price_rows_in_PR": false,
+  "registered_ci_workflow_sha256": "68b9933111dcfa337e9801251c580ffb069eeaea26a86733e5384fa3d0474133",
+  "schema": "factor_atlas.native_tiingo_source_preflight_receipt.v1",
+  "selected_revision_reader_receipt_admitted": false,
+  "sol_skillpack": "mastermind.sol_skillpack.v1/1.0.1/bootstrap1",
+  "source_capture_after_historical_decision_refused": true,
+  "source_rows_not_duplicated_in_receipt": true,
+  "uncertain_scientific_reviewer_effect_unchanged": true
+}

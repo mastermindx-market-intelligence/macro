@@ -1,0 +1,227 @@
+{
+  "PIT_selection_authenticated": false,
+  "actual_s1_native_current_roster_fixture_rejected": {
+    "allow_joint_numeric_arithmetic": false,
+    "allow_use_s1_prices_for_s2_notional": false,
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "compared_member_count": null,
+    "customer_publishable": false,
+    "data_use_rights_proven": false,
+    "input_digest": "9a492d31e8b8053cfed45a4c4877f187d8be537f54f76ef693fd944045cafd15",
+    "market_pilot_admitted": false,
+    "member_id_sets_match": null,
+    "pit_roster_verified": false,
+    "reasons": [
+      "FACTOR_ID_MISMATCH",
+      "NO_SAME_SESSION_COHORT_OBSERVATION",
+      "REAL_SOURCE_BASIS_RIGHTS_NOT_ADMITTED",
+      "S1_CURRENT_ROSTER_NOT_PIT",
+      "S1_MEASUREMENT_STALE_FOR_S2_SESSION",
+      "S1_PIT_SELECTION_RECEIPT_NOT_EXPOSED",
+      "S2_RAW_BASIS_NOT_ATTESTED_BY_WINDOW_PROJECTION",
+      "TRADJ_RETURN_VS_UNADJUSTED_NOTIONAL",
+      "UNVERIFIED_S1_SOURCE_CUSTODY"
+    ],
+    "s1_factor_ref": "mag7",
+    "s1_mode": "CURRENT_ROSTER",
+    "s1_observation_date": "2026-01-30",
+    "s1_return_basis": "tradj",
+    "s2_factor_ref": "F1",
+    "s2_required_source_basis": "unadjusted/USD",
+    "s2_session": "2026-06-01",
+    "schema": "factor_atlas.s1_s2_boundary_review.v1",
+    "source_measurement_basis_compatible": false,
+    "source_receipts_authenticated": false,
+    "source_s1_head": "ddf1f07f2059caebb4bfa6b1db6c4008dd97859c",
+    "status": "HOLD_SEPARATE_READ_MODELS"
+  },
+  "customer_publication_authorized": false,
+  "different_selected_member_set": {
+    "allow_joint_numeric_arithmetic": false,
+    "allow_use_s1_prices_for_s2_notional": false,
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "compared_member_count": 2,
+    "customer_publishable": false,
+    "data_use_rights_proven": false,
+    "input_digest": "7313105d2c0871c465eac11cf3681677cf7f40aa4e29babff4de0bb6170bbd98",
+    "market_pilot_admitted": false,
+    "member_id_sets_match": false,
+    "pit_roster_verified": false,
+    "reasons": [
+      "REAL_SOURCE_BASIS_RIGHTS_NOT_ADMITTED",
+      "S1_PIT_SELECTION_RECEIPT_NOT_EXPOSED",
+      "S2_RAW_BASIS_NOT_ATTESTED_BY_WINDOW_PROJECTION",
+      "SELECTED_MEMBER_SET_MISMATCH",
+      "TRADJ_RETURN_VS_UNADJUSTED_NOTIONAL",
+      "UNVERIFIED_S1_SOURCE_CUSTODY"
+    ],
+    "s1_factor_ref": "F1",
+    "s1_mode": "PIT_AS_KNOWN",
+    "s1_observation_date": "2026-06-01",
+    "s1_return_basis": "tradj",
+    "s2_factor_ref": "F1",
+    "s2_required_source_basis": "unadjusted/USD",
+    "s2_session": "2026-06-01",
+    "schema": "factor_atlas.s1_s2_boundary_review.v1",
+    "source_measurement_basis_compatible": false,
+    "source_receipts_authenticated": false,
+    "source_s1_head": "ddf1f07f2059caebb4bfa6b1db6c4008dd97859c",
+    "status": "HOLD_SEPARATE_READ_MODELS"
+  },
+  "input_kind": "SYNTHETIC_SOURCE_OWNER_CANDIDATE_ONLY",
+  "no_raw_source_bytes_copied_into_research_package": true,
+  "s1_current_roster_unusable_as_pit": {
+    "allow_joint_numeric_arithmetic": false,
+    "allow_use_s1_prices_for_s2_notional": false,
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "compared_member_count": null,
+    "customer_publishable": false,
+    "data_use_rights_proven": false,
+    "input_digest": "f292a43411e9c76486842a6f53544d1c48c86afacb5a1b46ea78d1298108c9a4",
+    "market_pilot_admitted": false,
+    "member_id_sets_match": null,
+    "pit_roster_verified": false,
+    "reasons": [
+      "REAL_SOURCE_BASIS_RIGHTS_NOT_ADMITTED",
+      "S1_CURRENT_ROSTER_NOT_PIT",
+      "S1_PIT_SELECTION_RECEIPT_NOT_EXPOSED",
+      "S2_RAW_BASIS_NOT_ATTESTED_BY_WINDOW_PROJECTION",
+      "TRADJ_RETURN_VS_UNADJUSTED_NOTIONAL",
+      "UNVERIFIED_S1_SOURCE_CUSTODY"
+    ],
+    "s1_factor_ref": "F1",
+    "s1_mode": "CURRENT_ROSTER",
+    "s1_observation_date": "2026-06-01",
+    "s1_return_basis": "tradj",
+    "s2_factor_ref": "F1",
+    "s2_required_source_basis": "unadjusted/USD",
+    "s2_session": "2026-06-01",
+    "schema": "factor_atlas.s1_s2_boundary_review.v1",
+    "source_measurement_basis_compatible": false,
+    "source_receipts_authenticated": false,
+    "source_s1_head": "ddf1f07f2059caebb4bfa6b1db6c4008dd97859c",
+    "status": "HOLD_SEPARATE_READ_MODELS"
+  },
+  "s1_native_fixture_git_blob": "3590dc40e3116834b79ae17628b399d4be01a18f",
+  "s1_owned_pr": "macro#8680",
+  "s1_source_head": "ddf1f07f2059caebb4bfa6b1db6c4008dd97859c",
+  "s1_synthetic_fixture_sha256": "6860786ee663c394e0d33b18e241592879501a6bc5335a09faed6d66b0b42626",
+  "s2_parent_head": "d4b18bbc8b41e208209b06be41922077a35af033",
+  "same_roster_unattested": {
+    "allow_joint_numeric_arithmetic": false,
+    "allow_use_s1_prices_for_s2_notional": false,
+    "authority": [
+      [
+        "may_rank",
+        false
+      ],
+      [
+        "may_alert",
+        false
+      ],
+      [
+        "may_size",
+        false
+      ],
+      [
+        "may_trade",
+        false
+      ],
+      [
+        "may_publish",
+        false
+      ]
+    ],
+    "compared_member_count": 2,
+    "customer_publishable": false,
+    "data_use_rights_proven": false,
+    "input_digest": "9046fad92b350b2ad211515553196305fe41e7c9a3e53d5e6050d9a746a8e646",
+    "market_pilot_admitted": false,
+    "member_id_sets_match": true,
+    "pit_roster_verified": false,
+    "reasons": [
+      "REAL_SOURCE_BASIS_RIGHTS_NOT_ADMITTED",
+      "S1_PIT_SELECTION_RECEIPT_NOT_EXPOSED",
+      "S2_RAW_BASIS_NOT_ATTESTED_BY_WINDOW_PROJECTION",
+      "TRADJ_RETURN_VS_UNADJUSTED_NOTIONAL",
+      "UNVERIFIED_S1_SOURCE_CUSTODY"
+    ],
+    "s1_factor_ref": "F1",
+    "s1_mode": "PIT_AS_KNOWN",
+    "s1_observation_date": "2026-06-01",
+    "s1_return_basis": "tradj",
+    "s2_factor_ref": "F1",
+    "s2_required_source_basis": "unadjusted/USD",
+    "s2_session": "2026-06-01",
+    "schema": "factor_atlas.s1_s2_boundary_review.v1",
+    "source_measurement_basis_compatible": false,
+    "source_receipts_authenticated": false,
+    "source_s1_head": "ddf1f07f2059caebb4bfa6b1db6c4008dd97859c",
+    "status": "HOLD_SEPARATE_READ_MODELS"
+  },
+  "schema": "factor_atlas.s1_s2_cross_owner_candidate_refusal.v1",
+  "unadjusted_price_x_volume_source_admitted": false
+}

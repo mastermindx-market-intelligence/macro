@@ -1,0 +1,50 @@
+{
+  "customer_publishable": false,
+  "documented_fact": "Tiingo offers optional force-filled intraday bars for charting; exact default was NOT established",
+  "fail_first": "one new consolidated-request negative test failed (DID NOT RAISE ValueError), 73 deselected",
+  "historical_pit_admitted": false,
+  "hosted_actions_lookup": "PRE_DISPATCH_SAFETY_REFUSED; EFFECT_NONE; DO_NOT_RETRY",
+  "market_pilot_admitted": false,
+  "may_trade": false,
+  "new_test_functions": 2,
+  "old_positive_fixture_updated_to_explicit_false": true,
+  "original_scientific_reviewer_operation": "EFFECT_UNKNOWN",
+  "prepared_at_utc": "2026-10-12T03:52:58.328001+00:00",
+  "problem": "Consolidated beta historical source accepted no forceFill parameter as if explicit unfilled minute observations; default vendor behavior was not qualified",
+  "protected_mastermind_pin": "85807cf48e29e2fe5df19534d6b181fc25b9746f",
+  "real_vendor_source_reread": false,
+  "rule": "Consolidated equity-intraday-bars requires source request forceFill=false explicitly before minute coverage is counted; BOATS/IEX retain distinct research-only contracts",
+  "schema": "factor_atlas.session2.native_tiingo_forcefill_tests.v1",
+  "source_files": {
+    "session2/prototype/test_tiingo_source_fitness.py": {
+      "bytes": 37088,
+      "sha256": "2ffde7cebd6353c91abb52dc00e97e4786cbc539177772e8adc9892e21400ab3"
+    },
+    "session2/prototype/tiingo_source_fitness.py": {
+      "bytes": 28038,
+      "sha256": "7f326dbfca3ec9d46f14f955f57ff37f2cd5e19ba539f4b82e3a097ba7329f13"
+    }
+  },
+  "source_parent": "8e1fa7888afde56c0d98c8acb71a4e1789414904",
+  "source_pr": "mastermindx-market-intelligence/macro#8677",
+  "source_rights_admitted": false,
+  "test_logs": {
+    "focused-fill": {
+      "bytes": 180,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 101,
+      "path": ".session2-proof/focused-fill-20261012.log",
+      "sha256": "9ca1c3e598b07691d4ee56c8b1310e6c980f3356f1e45e9d031b7160a2d2108b"
+    },
+    "full-fill": {
+      "bytes": 660,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 575,
+      "path": ".session2-proof/full-fill-20261012.log",
+      "sha256": "106f111876972b401fb8e95dd133e15f76f5f61a87cfa2287f3c634b001bebbe"
+    }
+  },
+  "upstream_documentation_url": "https://www.tiingo.com/documentation/equity-realtime-stock-data"
+}
