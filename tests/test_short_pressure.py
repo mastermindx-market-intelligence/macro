@@ -423,3 +423,40 @@ def test_absent_short_evidence_abstains_through_native_parquet_loaders(monkeypat
     assert not result["coverage_ok"]
     assert result["state"] == "not enough short-side data to describe"
     assert not any(result["authority"][k] for k in ("may_rank", "may_size", "may_gate"))
+
+@pytest.mark.parametrize('prior', [False, True])
+@pytest.mark.parametrize('dtc', [0., .1, 3., 8., 20.])
+@pytest.mark.parametrize('sic', [None, -2., 0., 2.])
+def test_retained_ticker_cannot_compare_its_settlement_to_itself(prior, dtc, sic):
+    rows = [dict(ticker='SYN',settlement_date='2026-10-15',days_to_cover=dtc,si_change_pct=sic),
+            dict(ticker='LIVE',settlement_date='2026-10-30',days_to_cover=4.,si_change_pct=0.)]
+    if prior:
+        rows.append(dict(ticker='SYN',settlement_date='2026-09-30',days_to_cover=dtc+7.,si_change_pct=sic))
+    xs=sp.cross_section(asof='2026-11-12', si_panel=_panel(rows), borrow=pd.DataFrame())
+    result=sp.axes('SYN',xs=xs)
+    leg=next(x for x in result['legs'] if x['axis']=='dtc_change')
+    assert pd.isna(xs.loc['SYN','dtc_change'])
+    assert leg['value'] is None and leg['elevated'] is None
+    assert result['measured_count']==int(sic is not None)
+    assert not result['coverage_ok']
+    assert result['state']=='not enough short-side data to describe'
+
+
+def test_distinct_global_endpoints_preserve_real_zero_and_pit_transition(monkeypatch,tmp_path):
+    from lib import config
+    monkeypatch.setattr(config,'data_dir',lambda:tmp_path)
+    (tmp_path/'finra').mkdir()
+    panel=_panel([
+        dict(ticker='SYN',settlement_date='2026-09-30',days_to_cover=8.,si_change_pct=0.),
+        dict(ticker='SYN',settlement_date='2026-10-15',days_to_cover=8.,si_change_pct=0.),
+        dict(ticker='LIVE',settlement_date='2026-10-30',days_to_cover=4.,si_change_pct=0.)])
+    panel.loc[panel.ticker=='LIVE','knowable_date']=pd.Timestamp('2026-11-11')
+    panel.to_parquet(tmp_path/'finra/short_interest_panel.parquet',index=False)
+    early=sp.axes('SYN',xs=sp.cross_section(asof='2026-11-10'))
+    late=sp.axes('SYN',xs=sp.cross_section(asof='2026-11-11'))
+    leg=lambda x:next(y for y in x['legs'] if y['axis']=='dtc_change')
+    assert leg(early)['value']==0. and leg(early)['elevated'] is False
+    assert early['measured_count']==2 and early['coverage_ok']
+    assert leg(late)['value'] is None and leg(late)['elevated'] is None
+    assert late['measured_count']==1 and not late['coverage_ok']
+    assert late['settlement_date']==early['settlement_date']

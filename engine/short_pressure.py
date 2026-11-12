@@ -247,7 +247,10 @@ def _dtc_change(full: pd.DataFrame | None, snap: pd.DataFrame, asof) -> pd.Serie
     prev = df[df["settlement_date"] == dates[-2]].set_index("ticker")
     cur_dtc = snap["days_to_cover"].where(~snap.get("dtc_capped", False).fillna(False))
     prev_dtc = prev["days_to_cover"].where(~prev.get("dtc_capped", False).fillna(False))
-    return (cur_dtc - prev_dtc.reindex(snap.index)).astype(float)
+    # A retained ticker may have missed the newest settlement. Its current
+    # row must not be subtracted from itself and counted as measured change.
+    aligned = snap["settlement_date"] > dates[-2]
+    return (cur_dtc - prev_dtc.reindex(snap.index)).where(aligned).astype(float)
 
 
 def _latest_borrow(bp: pd.DataFrame | None, asof) -> pd.DataFrame | None:
