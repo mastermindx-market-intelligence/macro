@@ -1,0 +1,46 @@
+{
+  "base": "a4d33f32dad140acdfa081b21f55ad6d8dcb94d4",
+  "protected_procedure": "f3f2d9155796876009f2d427bfdecc7ee7b63e74",
+  "focused_tests": {
+    "passed": 85,
+    "seconds": 3.19
+  },
+  "actual_existing_code_step": {
+    "passed": 247,
+    "seconds": 10.91,
+    "scope": "local pytest step, not hosted job"
+  },
+  "contract_delta": {
+    "base": "448ecf73c6916291a06d53e764b54c059bdf961d",
+    "introduced": 0,
+    "inherited": 0,
+    "seconds": 164.56
+  },
+  "canonical_browser": {
+    "schema": "mastermind.p0_evidence.v2",
+    "pages": 2,
+    "rest_cells": 16,
+    "console_errors": 0,
+    "failed_responses": 0,
+    "settle_ms": 1200,
+    "production_adoption": false
+  },
+  "design_ratchet": {
+    "blocking": 0,
+    "preexisting_nonblocking": 19015
+  },
+  "agent_os": {
+    "errors": 0,
+    "warnings": 142
+  },
+  "code_manifest_jobs": 139,
+  "review_status": "independent exact-head review owed",
+  "interactive_tooltip_proof": "keyboard focusability is structurally tested; actual touch interaction remains unverified",
+  "source_hashes": {
+    "engine/master_brain.py": "079a1c76cc53a756d9d2ca422ee2ecc582b390588718d2598dac6189c0576e0d",
+    "templates/_aibrief_body.html.j2": "2dd54b556d87f6df03b488a049a47b0610ec612e4db2520da1a173309fff7462",
+    "tests/test_master_brain.py": "52addda53a0ec529ed145694dce58aabc2debea509072a894857eeead1112605",
+    "tests/test_regime_label_honesty.py": "fbf6ca134e1b23bccfa4e86e0f67b675083ffb2c0080a55a460c8adbb031a289",
+    ".github/ci/legacy-jobs.yml": "9407c0550093a8bbcd2f6c0bf0314d7946fd76b127703c65058eafc8d05a48bd"
+  }
+}

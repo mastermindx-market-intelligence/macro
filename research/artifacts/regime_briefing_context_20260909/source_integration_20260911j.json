@@ -1,0 +1,71 @@
+{
+  "checkpoint": "regime-w1-source-integration-20260911j-001",
+  "pr": 7024,
+  "operation": "regime-hmm-w1-briefing-context-20260909-sol-001",
+  "protected_procedure": "e61f2951136bdc03a7ec2f5f12f960af26656a4c",
+  "preimage_head": "66f9e5d0be33e2f6c1a6d4e749536d2f3e956cc5",
+  "source": {
+    "checkpoint": "regime-w1-source-integration-20260911j-001",
+    "same_branch": true,
+    "applied": true,
+    "changed_by_this_step": [
+      ".github/ci/legacy-jobs.yml"
+    ],
+    "added_lines": 6,
+    "deleted_lines": 0,
+    "recovered_source_and_tests_unchanged": true,
+    "hashes": {
+      "engine/master_brain.py": "fdfb30b52b18d81c72f6c56bd383ec1ef84fc3d40744ac545d0a10ee9d6e0537",
+      "tests/test_regime_label_honesty.py": "a32d5ed22115b65a2b0dabef627283a3c15db45e8fccd3e804aea2ad11e13b25",
+      ".github/ci/legacy-jobs.yml": "97832e2ff228994a68daee95a6e67b6d00b65f26210350439c6406a3e20ff3a1"
+    },
+    "commit_or_push_performed": false
+  },
+  "owner_tests": {
+    "source_head": "66f9e5d0be33e2f6c1a6d4e749536d2f3e956cc5",
+    "source_worktree": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/hmm-briefing-context-20260909",
+    "same_incumbent_branch": true,
+    "source_hashes": {
+      "engine/master_brain.py": "fdfb30b52b18d81c72f6c56bd383ec1ef84fc3d40744ac545d0a10ee9d6e0537",
+      "tests/test_regime_label_honesty.py": "a32d5ed22115b65a2b0dabef627283a3c15db45e8fccd3e804aea2ad11e13b25",
+      ".github/ci/legacy-jobs.yml": "97832e2ff228994a68daee95a6e67b6d00b65f26210350439c6406a3e20ff3a1"
+    },
+    "command": "python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_master_brain.py tests/test_regime_label_honesty.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q",
+    "exit_code": 0,
+    "counts": {
+      "tests": 252,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "seconds": 13.34,
+    "fixture_blob": "460fcca4ebedbfc0f590a4429f4cd19156dcbff0",
+    "fixture_sha256": "7ea17850e5f344913deb248c84c79ccd2ef1c813f84afa1d0711e096f70f9451",
+    "restored_identical_fixture": false,
+    "fixture_unchanged": true,
+    "whole_job_executed": false,
+    "hosted": false,
+    "production_generation": false,
+    "network_egress_independently_instrumented": false
+  },
+  "head_side_contract_check": {
+    "findings": {
+      "closure": {},
+      "suites": []
+    },
+    "code_job_definitions": 139,
+    "seconds": 159.61,
+    "head_only": true,
+    "current_base_differential": false,
+    "hosted": false
+  },
+  "red_regression": "one missing-scope test failed before the six additions; red.xml/log in native evidence home",
+  "source_integration_notice": 5639515848,
+  "provider_native_conversation_id": "not exposed; no original-provider identity claimed",
+  "release_hold": true,
+  "production_adoption_proven": false,
+  "new_review_owed": true,
+  "current_base_differential_owed": true,
+  "lens_full_page_acceptance_owed": true,
+  "source_note": "UTC source and tests are preserved original bytes; this integration applies six manifest additions and records evidence. No model or numerical regime behavior changes."
+}

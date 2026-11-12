@@ -1,0 +1,30 @@
+{
+  "source_hashes": {
+    "engine/master_brain.py": "079a1c76cc53a756d9d2ca422ee2ecc582b390588718d2598dac6189c0576e0d",
+    "templates/_aibrief_body.html.j2": "2dd54b556d87f6df03b488a049a47b0610ec612e4db2520da1a173309fff7462"
+  },
+  "cases": [
+    {
+      "case": "real_committed_input",
+      "rendered_html_unchanged": true,
+      "html_sha256": "367e1280b55e57fd566d492093a8b50fe1738bb95acc3766860c415bc63a6597"
+    },
+    {
+      "case": "fixture_disagreement",
+      "rendered_html_unchanged": true,
+      "html_sha256": "12e4cb0ed9711b09434d366d781d94038783726e063e4dc47e25a1b80e3d5d1a"
+    },
+    {
+      "case": "fixture_invalid",
+      "rendered_html_unchanged": true,
+      "html_sha256": "fe0e345a42a0fd41297f03e1c898ff0be3efecd8fd914e62856fc7137b561a94"
+    },
+    {
+      "case": "fixture_missing",
+      "rendered_html_unchanged": true,
+      "html_sha256": "fe0e345a42a0fd41297f03e1c898ff0be3efecd8fd914e62856fc7137b561a94"
+    }
+  ],
+  "scope": "Final source renders byte-identical HTML to the two canonical capture targets and two negative examples. Tie-only repair is covered by its discriminating unit test.",
+  "production_adoption": false
+}
