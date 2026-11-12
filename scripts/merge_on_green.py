@@ -359,18 +359,19 @@ MAX_PULL_CAP = 128
 # Extra commit-file pagination reads shared by every PR and commit in one sweep.
 # Exhaustion keeps the affected inventory incomplete; it never clears a proof.
 COMMIT_FILE_PAGE_READ_CAP = 100
-# 87 measured + 5 for the adaptive hosted-pool census (one queued-run read, one
-# mature-run list and up to ADAPTIVE_CENSUS_SAMPLE_RUNS job lists), charged even on
-# the sweeps that skip it so the shrink formula stays pessimistic.
-FULL_SWEEP_FIXED_REQUESTS = 92
+# 87 measured + 58 for the job census: one queued-run list, up to
+# PHANTOM_QUEUED_READ_CAP phantom job reads, one in-progress-run list, and up to
+# JOB_CENSUS_RUN_CAP job lists. Charge even on sweeps that skip it so the shrink
+# formula stays pessimistic.
+FULL_SWEEP_FIXED_REQUESTS = 145
 AUTHORITY_RUN_LOOKUP_CAP = 8
 MAX_REQUESTS_PER_PULL = 19 + AUTHORITY_RUN_LOOKUP_CAP
-# A 25-pull reference pass now models 92 fixed + 25 x up-to-27 + 8 refresh
-# attempts = 775 calls. The floor retains the reference 90-percent bound while
+# A 25-pull reference pass now models 145 fixed + 25 x up-to-27 + 8 refresh
+# attempts = 828 calls. The floor retains the reference 90-percent bound while
 # room for other lanes in the ordinary cheaper shape. Larger buckets do
 # not need a proportionally larger dead zone: `pull_cap` shrinks to what the
 # remaining requests can actually afford.
-RATE_LIMIT_FLOOR = 700
+RATE_LIMIT_FLOOR = 750
 # A mark-only failure wake-up costs ~4-8 calls and protects a correctness marker,
 # so it has a separate small floor instead of inheriting the full-sweep floor.
 MARK_ONLY_RATE_LIMIT_FLOOR = 20
@@ -471,16 +472,17 @@ ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
 # consume a runner, yet `in_flight_pr_proofs` counts them through `total_count`,
 # and the census's queued-run read reads them as pool refusal.  A `queued` run
 # older than PHANTOM_QUEUED_MIN_AGE_SECONDS whose job list is EMPTY is therefore
-# neither workload nor refusal evidence.  The age bound keeps a genuinely fresh
-# run (whose first job GitHub may not have created yet) counted as real; a young
-# queued run is never excluded.  The classification is one bounded pass over the
+# neither workload nor refusal evidence.  The bound equals ci.yml's 180-minute
+# run timeout: a genuine run superseded behind its per-PR concurrency group can
+# have zero jobs for that entire period and must remain real workload.
+# The classification is one bounded pass over the
 # queued list — at most PHANTOM_QUEUED_READ_CAP runs plus one job read each — and
 # ANY unclean read (HTTP error, malformed payload, a queued population larger
 # than the cap, a failed job read) returns None, which every caller reads as
 # "count every queued run", exactly the pre-2026-11-11 behaviour.  The cap is
 # itself saturation evidence: a healthy pool admits ci.yml runs within minutes,
 # so more than 16 queued ci.yml runs means the pool is refusing, not phantoms.
-PHANTOM_QUEUED_MIN_AGE_SECONDS = 15 * 60
+PHANTOM_QUEUED_MIN_AGE_SECONDS = 180 * 60
 PHANTOM_QUEUED_READ_CAP = 16
 # Job-level admission (2026-11-11).  Run counts proved to be the wrong load
 # metric twice in one day: the phantom runs above inflated them from 28 to 36,
@@ -488,19 +490,19 @@ PHANTOM_QUEUED_READ_CAP = 16
 # a run-level cap of 8-16 hides up to ~240 real jobs behind "16" and the census
 # was not even read above 16 runs, leaving the S9 floor frozen at "census not
 # read" for hours while every armed proof went stale.  When the run-level
-# allowance is zero, the census's JOB evidence now admits refreshes directly:
-# with no refusal anywhere (no real queued run, no waiting hosted job in the
-# sampled mature runs, no slow pickup) and the repository's ACTIVE hosted jobs
-# under HOSTED_JOB_BUDGET, the sweep may launch up to MAX_REFRESHES_PER_SWEEP
-# refreshes, each sized at HOSTED_JOBS_PER_PROOF jobs against the remaining
-# budget.  HOSTED_JOB_BUDGET is the same arithmetic the adaptive cap already
-# uses (16 proofs x 15 hosted jobs = 240): half of the Enterprise plan's
-# 500-standard-hosted-job ceiling, leaving equal headroom for the sibling
-# repositories a repo-scoped READ_TOKEN cannot observe.  The run-level cap and
-# the census's JOB_CENSUS_RUN_CAP bound remain the circuit breaker: above 40
-# concurrent ci.yml runs (~520 hosted jobs, over the whole account ceiling) the
-# census is unreadable and admission collapses to today's behaviour.  The
-# per-sweep cap, the durable lease and every correctness gate are unchanged.
+# allowance is zero, the census's JOB evidence may admit ONE lease-backed
+# refresh: with no refusal anywhere, no slow pickup, and sufficient job budget.
+# An immature run with no later-wave job reserves HOSTED_JOBS_PER_PROOF jobs,
+# and queued/waiting hosted jobs are active workload too, across every run.
+# JOB_LEVEL_PROOF_CEILING is 16 steady-state proofs (240/15) plus the old
+# eight-slot in-flight allowance.  Every grant takes the durable lease, whose
+# changed-head reservation covers the update -> Actions indexing gap; one grant
+# per lease generation prevents back-to-back sweeps from repeatedly treating a
+# newly admitted proof as one cheap ci-plan job.  HOSTED_JOB_BUDGET = 240 is
+# half of the 500-job account ceiling, leaving room for sibling repositories
+# this repo-scoped READ_TOKEN cannot see.  The 40-run census cap remains a
+# fail-closed circuit breaker.  Every correctness gate stays unchanged.
+JOB_LEVEL_PROOF_CEILING = ADAPTIVE_PROOF_CAP_MAX + MAX_REFRESHES_PER_SWEEP
 HOSTED_JOBS_PER_PROOF = 15
 HOSTED_JOB_BUDGET = ADAPTIVE_PROOF_CAP_MAX * HOSTED_JOBS_PER_PROOF
 JOB_CENSUS_RUN_CAP = 40
@@ -3168,7 +3170,8 @@ class QueuedRunCensus:
     queued run must be counted, exactly the pre-2026-11-11 behaviour.
     """
 
-    #: Queued runs that are real workload (young, or with jobs already created).
+    #: Queued runs that are real workload: within the full run-timeout age bound,
+    #: or older with jobs already created.
     real_queued: int
     #: Old queued runs GitHub never created a single job for (incident phantoms).
     phantoms: int
@@ -3188,7 +3191,7 @@ def classify_queued_ci_runs(
     that fails to answer a clean ``total_count`` — returns ``None`` so callers
     keep counting every queued run (today's behaviour).  A queued run younger
     than ``PHANTOM_QUEUED_MIN_AGE_SECONDS`` is never verified and always counted:
-    GitHub may not have created its first job row yet.
+    ci.yml's per-PR concurrency group may leave it jobless up to the run timeout.
     """
     base = f"{GITHUB_API}/repos/{repo}/actions"
     query = urllib.parse.urlencode(
@@ -3218,7 +3221,7 @@ def classify_queued_ci_runs(
         ):
             return None
         if created >= cutoff:
-            real += 1  # young queued run: never excluded
+            real += 1  # within the run-timeout bound: never excluded
             continue
         query = urllib.parse.urlencode({"filter": "latest", "per_page": "1"})
         status, payload = _request(
@@ -3244,15 +3247,15 @@ class HostedPoolCensus:
     queued_runs: int
     #: Mature in-progress ci.yml runs whose job lists were read.
     sampled_runs: int
-    #: Non-self-hosted jobs in those runs neither running nor completed.
+    #: Non-self-hosted jobs across EVERY run neither running nor completed.
     refused_jobs: int
     #: Sampled runs with a later-wave GitHub-hosted job running and no refusal.
     served_runs: int
     #: Non-self-hosted jobs the pool took longer than the pickup grace to start.
     slow_jobs: int = 0
-    #: Running non-self-hosted jobs across EVERY enumerated in-progress ci.yml
-    #: run.  ``None`` means the count was not taken (a census constructed without
-    #: one) and is never "an idle pool": job-level admission stays closed.
+    #: Hosted jobs running, queued, or otherwise waiting across EVERY run, plus
+    #: HOSTED_JOBS_PER_PROOF reserved for each run with no later-wave job yet.
+    #: ``None`` means the count was not taken and is never "an idle pool".
     active_hosted_jobs: int | None = None
 
 
@@ -3326,26 +3329,39 @@ def _run_job_evidence(jobs: list[Any]) -> tuple[int, int, bool] | None:
     return refused, slow, served and refused == 0 and slow == 0
 
 
-def _running_hosted_jobs(jobs: list[Any]) -> int | None:
-    """Running non-self-hosted jobs in one run's job list; ``None`` if unclean.
+def _active_hosted_jobs(jobs: list[Any]) -> int | None:
+    """Effective hosted occupancy for one run; ``None`` on any unclean shape.
 
-    Timestamps are irrelevant to a count, so unlike :func:`_run_job_evidence`
-    only the job shape matters: each job must be a dict with a clean label list
-    and a string status.  Self-hosted jobs (ci.yml has none today) are skipped.
+    Before a later-wave ``ci-pack-*``/``ci-gate`` job exists, the run exposes
+    only its cheap early jobs.  Reserve the full proof cost rather than treating
+    those one or two jobs as the run's eventual footprint.  Once a later-wave
+    job exists, count every non-self-hosted job that is running, queued, or
+    otherwise waiting.  A waiting job both occupies capacity and is refusal
+    evidence, so admission cannot use it as apparent free headroom.
     """
-    running = 0
+    active = 0
+    later_wave = False
     for job in jobs:
         if not isinstance(job, dict):
             return None
         labels = _job_labels(job)
         status = job.get("status")
-        if labels is None or not isinstance(status, str):
+        name = job.get("name")
+        if (
+            labels is None
+            or not isinstance(status, str)
+            or not isinstance(name, str)
+        ):
             return None
+        if name.startswith(ADAPTIVE_LATER_WAVE_JOB_PREFIXES):
+            later_wave = True
         if "self-hosted" in labels:
             continue
-        if status == "in_progress":
-            running += 1
-    return running
+        if status != "completed":
+            active += 1
+    if not later_wave:
+        return HOSTED_JOBS_PER_PROOF
+    return active
 
 
 def hosted_pool_census(
@@ -3363,10 +3379,12 @@ def hosted_pool_census(
     ``None``.  The in-progress side enumerates every in-progress ci.yml run (one
     page, ``JOB_CENSUS_RUN_CAP`` at most — more than that is saturation, not a
     census, and reads ``None``) and one job list per run, so the census carries
-    both the sampled-mature refusal/served evidence (the newest
+    both the sampled-mature served/slow-pickup evidence (the newest
     ``ADAPTIVE_CENSUS_SAMPLE_RUNS`` runs at least ``ADAPTIVE_CENSUS_MATURITY_SECONDS``
-    old, exactly the pre-2026-11-11 sample) and the exact count of running
-    non-self-hosted jobs across ALL runs.  ``None`` on any read that is not
+    old, exactly the pre-2026-11-11 sample) and the conservative count of active
+    non-self-hosted jobs across ALL runs, with full proof reservations for
+    immature runs.  Waiting/refusal evidence is also counted across all runs.
+    ``None`` on any read that is not
     clean — an HTTP error, a malformed payload, a job list longer than one page
     or shorter than its own ``total_count``, a job without a usable timestamp in
     a sampled run — so the caller falls back to the flat cap rather than reading
@@ -3422,18 +3440,16 @@ def hosted_pool_census(
             or total != len(jobs)
         ):
             return None
-        running = _running_hosted_jobs(jobs)
-        if running is None:
-            return None
-        active_hosted += running
-        if run_id not in sampled_ids:
-            continue
+        active = _active_hosted_jobs(jobs)
         evidence = _run_job_evidence(jobs)
-        if evidence is None:
+        if active is None or evidence is None:
             return None
         run_refused, run_slow, run_served = evidence
-        sampled += 1
+        active_hosted += active
         refused += run_refused
+        if run_id not in sampled_ids:
+            continue
+        sampled += 1
         slow += run_slow
         if run_served:
             served += 1
@@ -3506,21 +3522,15 @@ def refresh_floor_allowance(
 
 
 def job_level_refresh_allowance(
-    census: HostedPoolCensus | None, wanted: int
+    census: HostedPoolCensus | None, wanted: int, effective_proofs: int
 ) -> tuple[int, str]:
     """``(slots, detail)`` admitted on JOB evidence when the run-level cap binds.
 
-    The run count is a proxy; jobs are the resource.  With a census that (a)
-    actually counted the repository's active hosted jobs, (b) shows no refusal
-    anywhere — no real queued run, no waiting hosted job in the sampled mature
-    runs — and (c) no slow pickup (pressure evidence; the S9 floor above owns
-    that shape with its single lease-serialized slot), admit up to ``wanted``
-    refreshes, each reserved ``HOSTED_JOBS_PER_PROOF`` jobs against the remaining
-    ``HOSTED_JOB_BUDGET``.  A slow-but-serving pool, a refused job, an exhausted
-    job budget, or a census without a job count is zero: unreadable evidence
-    collapses to today's run-level behaviour, never to a grant.  The per-sweep
-    cap and the durable lease are unchanged — ``wanted`` is already bounded by
-    ``MAX_REFRESHES_PER_SWEEP`` and the lease still serialises a one-slot grant.
+    At most one slot: every positive answer requires the durable lease in
+    ``main()``, whose one-claim latch and next-sweep head reservation serialize
+    bursts.  Both the full-run proof ceiling and conservative hosted-job budget
+    must remain open.  Waiting jobs from any run, real queued runs, slow pickup,
+    missing evidence, and a zero caller allowance all withhold admission.
     """
     if census is None or census.active_hosted_jobs is None:
         return 0, "job-level admission withheld: hosted job count not read"
@@ -3535,6 +3545,11 @@ def job_level_refresh_allowance(
             f"job-level admission withheld: {census.slow_jobs} slow pickup(s) in "
             f"{census.sampled_runs} mature run(s)"
         )
+    if effective_proofs >= JOB_LEVEL_PROOF_CEILING:
+        return 0, (
+            f"job-level admission withheld: {effective_proofs} effective proof(s) "
+            f"at or above the absolute ceiling {JOB_LEVEL_PROOF_CEILING}"
+        )
     headroom = (
         HOSTED_JOB_BUDGET - census.active_hosted_jobs
     ) // HOSTED_JOBS_PER_PROOF
@@ -3543,11 +3558,15 @@ def job_level_refresh_allowance(
             f"job-level admission withheld: {census.active_hosted_jobs} active "
             f"hosted job(s) at or above the job budget {HOSTED_JOB_BUDGET}"
         )
-    slots = max(0, min(wanted, headroom))
+    slots = max(0, min(wanted, 1, headroom))
+    if slots == 0:
+        return 0, "job-level admission withheld: no refresh slot requested"
     return slots, (
-        f"job-level: {slots} refresh(es) admitted on job evidence "
+        f"job-level: {slots} lease-backed refresh(es) admitted on job evidence "
         f"({census.active_hosted_jobs} active hosted job(s), headroom for "
-        f"{headroom} proof(s) under budget {HOSTED_JOB_BUDGET})"
+        f"{headroom} proof(s) under budget {HOSTED_JOB_BUDGET}, "
+        f"{effective_proofs} effective proof(s) below ceiling "
+        f"{JOB_LEVEL_PROOF_CEILING})"
     )
 
 
@@ -8791,7 +8810,7 @@ def main() -> int:
         repo, read_token, refresh_lease, pulls
     )
     effective_active_proofs = (
-        active_pr_proofs + reservation_count - phantom_pr_runs
+        max(0, active_pr_proofs + reservation_count - phantom_pr_runs)
         if active_pr_proofs is not None
         else None
     )
@@ -8805,6 +8824,7 @@ def main() -> int:
     proof_cap, adaptive_detail = MAX_IN_FLIGHT_PR_PROOFS, "census skipped: flat cap"
     pool_census: HostedPoolCensus | None = None
     effective_proofs = int(effective_active_proofs or 0)
+    job_level_path = False
     if (
         active_pr_proofs is not None
         and refresh_lease.readable
@@ -8823,9 +8843,7 @@ def main() -> int:
         budget.max_refreshes = 0
         refresh_load_detail = refresh_load_detail or "census/lease unreadable; new refreshes paused"
     else:
-        available_refreshes = max(
-            0, proof_cap - int(effective_active_proofs or 0)
-        )
+        available_refreshes = max(0, proof_cap - effective_proofs)
         floor_detail = ""
         job_detail = ""
         if available_refreshes == 0 and budget.max_refreshes > 0:
@@ -8835,17 +8853,20 @@ def main() -> int:
                 pool_census, effective_proofs
             )
             if available_refreshes == 0:
-                # Job-level admission (2026-11-11): with a census that counted
-                # the repo's active hosted jobs and shows no refusal and no
-                # slow pickup, the JOB budget — not the run count — bounds new
-                # refreshes.  Unreadable evidence stays zero (today's
-                # behaviour); a slow-but-serving pool keeps the one-slot floor.
+                # Job evidence may reopen admission only below both its absolute
+                # proof ceiling and the conservative hosted-job budget.
                 available_refreshes, job_detail = job_level_refresh_allowance(
-                    pool_census, budget.max_refreshes
+                    pool_census, budget.max_refreshes, effective_proofs
                 )
+                if available_refreshes > 0:
+                    # Every grant on this path takes the durable lease.  Its
+                    # changed-head reservation makes the next sweep account for
+                    # the admitted proof before Actions exposes its full pack
+                    # matrix; one lease claim also fences concurrent sweeps.
+                    job_level_path = True
         budget.max_refreshes = min(budget.max_refreshes, available_refreshes)
-        budget.requires_refresh_lease = (
-            0 < budget.max_refreshes <= HIGH_LOAD_LEASE_THRESHOLD
+        budget.requires_refresh_lease = 0 < budget.max_refreshes and (
+            job_level_path or budget.max_refreshes <= HIGH_LOAD_LEASE_THRESHOLD
         )
         if pool_census is not None and pool_census.active_hosted_jobs is not None:
             job_census_detail = (
@@ -8859,7 +8880,8 @@ def main() -> int:
         refresh_load_detail = (
             f"{active_pr_proofs} indexed pull-request ci run(s)"
             + (
-                f" ({phantom_pr_runs} phantom queued run(s) excluded)"
+                f" ({phantom_pr_runs} phantom queued run(s) excluded, "
+                f"{effective_proofs} effective proof(s))"
                 if queued_census is not None
                 else ""
             )

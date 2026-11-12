@@ -5382,22 +5382,27 @@ def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch
             _census_job("render-light", "queued", created=216, started=None, labels=("self-hosted", "macstudio-light")),
         )
     )
-    # A young in-progress run: enumerated for its running jobs, never sampled.
+    # A young in-progress run is outside the mature sample. Its waiting pack is
+    # still global refusal evidence, just as its running plan consumes capacity.
     young = _census_jobs(
         _census_job("ci-plan", "in_progress"),
-        _census_job("ci-pack-0", "in_progress", created=216),
+        _census_job("ci-pack-0", "waiting", created=216, started=None),
     )
 
     def fake_request(method, url, token, payload=None):
         seen.append(url)
         assert method == "GET" and token == "read"
         if "/workflows/ci.yml/runs?" in url and "status=queued" in url:
-            # One incident phantom (3 h old, zero jobs) and one young queued run.
+            # One incident phantom older than the run timeout, one young queued run.
             assert "per_page=16" in url
             return 200, {
                 "total_count": 2,
                 "workflow_runs": [
-                    {"id": 21, "created_at": _at(-3600), "event": "pull_request"},
+                    {
+                        "id": 21,
+                        "created_at": _at(-MOG.PHANTOM_QUEUED_MIN_AGE_SECONDS - 60),
+                        "event": "pull_request",
+                    },
                     {"id": 22, "created_at": _at(-60), "event": "pull_request"},
                 ],
             }
@@ -5431,19 +5436,21 @@ def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch
     # this test exercises the census's OWN queued classification, so restore it.
     monkeypatch.setattr(MOG, "classify_queued_ci_runs", REAL_CLASSIFY_QUEUED_CI_RUNS)
     census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now)
-    # Run 11 is served; run 12 has two hosted jobs the pool refused; run 13's only
-    # waiting jobs are self-hosted render jobs, which say nothing about the hosted
-    # pool, and its first wave alone is not served evidence.  Run 14 is too young
-    # to sample but its two running hosted jobs still count.  The incident phantom
+    # Run 11 is served; run 12 has two waiting hosted jobs.  Run 13 waits only on
+    # self-hosted jobs (zero active/reserving cost here), so its early jobs alone
+    # are not served evidence.  Run 14 is too young to sample but its one waiting
+    # pack still counts globally.  The incident phantom
     # is excluded from queued_runs (one real queued run remains); the young queued
     # run is counted without a job read.
     assert census == MOG.HostedPoolCensus(
         queued_runs=1,
         sampled_runs=3,
-        refused_jobs=2,
+        refused_jobs=3,
         served_runs=1,
         slow_jobs=0,
-        active_hosted_jobs=13 + 11 + 1 + 2,
+        # First two mature runs: 13 + 13 active. Run 13 has only self-hosted
+        # waiting jobs and no later wave, so reserves a full-15 proof. Young run: 2.
+        active_hosted_jobs=13 + 13 + MOG.HOSTED_JOBS_PER_PROOF + 2,
     )
     assert len(seen) == 7
 
@@ -5488,6 +5495,45 @@ def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch
             step,
             answer,
         )
+
+
+def test_immature_runs_reserve_full_proofs_and_waiting_jobs_are_active(monkeypatch):
+    """A fresh run is not one cheap ci-plan job; even unsampled waiting counts."""
+    immature = [
+        _census_job("ci-plan", "in_progress"),
+        _census_job("contract-delta", "queued", started=None),
+    ]
+    served = _census_jobs(*_first_wave(*_packs()))
+    assert MOG._active_hosted_jobs(immature) == MOG.HOSTED_JOBS_PER_PROOF
+
+    def fake_request(method, url, token, payload=None):
+        assert method == "GET" and token == "read" and payload is None
+        if "status=queued" in url:
+            return 200, {"total_count": 0, "workflow_runs": []}
+        if "status=in_progress" in url:
+            return 200, {
+                "total_count": 4,
+                "workflow_runs": [
+                    {"id": run_id, "created_at": _at(-600 - run_id)}
+                    for run_id in (1, 2, 3)
+                ] + [{"id": 4, "created_at": _at(-1)}],
+            }
+        if "/runs/4/jobs?" in url:
+            return _census_jobs(*immature)
+        return served
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    monkeypatch.setattr(MOG, "classify_queued_ci_runs", REAL_CLASSIFY_QUEUED_CI_RUNS)
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=_T0)
+    assert census == MOG.HostedPoolCensus(
+        queued_runs=0,
+        sampled_runs=3,
+        refused_jobs=1,  # from run 4, beyond the newest-three mature sample
+        served_runs=3,
+        slow_jobs=0,
+        active_hosted_jobs=3 * 13 + MOG.HOSTED_JOBS_PER_PROOF,
+    )
+    assert MOG.job_level_refresh_allowance(census, 8, 16)[0] == 0
 
 
 def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
@@ -5757,13 +5803,26 @@ def _classify_harness(monkeypatch, answer_for):
         # the pull-request proof count.
         (
             [
-                _queued_run(21, age_seconds=3600),
-                _queued_run(22, age_seconds=3600, event="push"),
+                _queued_run(
+                    21, age_seconds=MOG.PHANTOM_QUEUED_MIN_AGE_SECONDS + 1
+                ),
+                _queued_run(
+                    22,
+                    age_seconds=MOG.PHANTOM_QUEUED_MIN_AGE_SECONDS + 1,
+                    event="push",
+                ),
             ],
             MOG.QueuedRunCensus(real_queued=0, phantoms=2, pull_request_phantoms=1),
         ),
-        # Old queued runs with jobs are real workload (the pool really is
-        # refusing them a runner); young queued runs are counted without a read.
+        # A zero-job run behind ci.yml's concurrency group stays real through the
+        # full 180-minute timeout; 15-179 minutes is NOT the phantom threshold.
+        (
+            [
+                _queued_run(100 + rank, age_seconds=15 * 60 + rank * 60)
+                for rank in range(8)
+            ],
+            MOG.QueuedRunCensus(real_queued=8, phantoms=0, pull_request_phantoms=0),
+        ),
         (
             [_queued_run(23, age_seconds=3600), _queued_run(24, age_seconds=60)],
             MOG.QueuedRunCensus(real_queued=2, phantoms=0, pull_request_phantoms=0),
@@ -5777,6 +5836,7 @@ def _classify_harness(monkeypatch, answer_for):
     ],
     ids=(
         "incident-phantoms-excluded",
+        "sub-timeout-zero-job-runs-real",
         "real-and-young-queued-counted",
         "at-the-bound-is-young",
         "empty",
@@ -5798,8 +5858,8 @@ def test_classify_queued_ci_runs_splits_phantoms_from_real_workload(
     seen = _classify_harness(monkeypatch, answer_for)
     now = _T0
     assert REAL_CLASSIFY_QUEUED_CI_RUNS("acme/widgets", "read", now=now) == expected
-    # The young queued run (24) never triggers a job read.
-    assert "/runs/24/jobs?" not in "".join(seen)
+    # Young queued runs never trigger a job read.
+    assert all(f"/runs/{run_id}/jobs?" not in "".join(seen) for run_id in (24, 25))
 
 
 @pytest.mark.parametrize(
@@ -5812,12 +5872,16 @@ def test_classify_queued_ci_runs_splits_phantoms_from_real_workload(
         else None,
         lambda url: (200, {"total_count": 1, "workflow_runs": [{"id": 21}]}),  # run without an age
         lambda url: (
-            (200, {"total_count": 1, "workflow_runs": [_queued_run(21, age_seconds=3600)]})
+                (200, {"total_count": 1, "workflow_runs": [
+                    _queued_run(21, age_seconds=MOG.PHANTOM_QUEUED_MIN_AGE_SECONDS + 60)
+                ]})
             if "status=queued" in url
             else (403, {"message": "rate limited"})
         ),
         lambda url: (
-            (200, {"total_count": 1, "workflow_runs": [_queued_run(21, age_seconds=3600)]})
+                (200, {"total_count": 1, "workflow_runs": [
+                    _queued_run(21, age_seconds=MOG.PHANTOM_QUEUED_MIN_AGE_SECONDS + 60)
+                ]})
             if "status=queued" in url
             else (200, {"jobs": []})
         ),
@@ -5848,18 +5912,20 @@ def _job_census(active=89, queued=0, refused=0, served=3, slow=0, sampled=3):
 
 
 @pytest.mark.parametrize(
-    "census,wanted,expected,needle",
+    "census,wanted,effective_proofs,expected,needle",
     [
-        (None, 8, 0, "hosted job count not read"),
-        (_census(served_runs=3), 8, 0, "hosted job count not read"),
-        (_job_census(queued=1), 8, 0, "refused 1 queued run(s)"),
-        (_job_census(refused=2), 8, 0, "2 waiting hosted job(s)"),
-        (_job_census(slow=1), 8, 0, "1 slow pickup(s)"),
-        (_job_census(active=89), 8, 8, "headroom for 10 proof(s) under budget 240"),
-        (_job_census(active=89), 3, 3, "3 refresh(es) admitted"),
-        (_job_census(active=225), 8, 1, "headroom for 1 proof(s) under budget 240"),
-        (_job_census(active=226), 8, 0, "at or above the job budget 240"),
-        (_job_census(active=300), 8, 0, "at or above the job budget 240"),
+        (None, 8, 16, 0, "hosted job count not read"),
+        (_census(served_runs=3), 8, 16, 0, "hosted job count not read"),
+        (_job_census(queued=1), 8, 16, 0, "refused 1 queued run(s)"),
+        (_job_census(refused=2), 8, 16, 0, "2 waiting hosted job(s)"),
+        (_job_census(slow=1), 8, 16, 0, "1 slow pickup(s)"),
+        (_job_census(active=89), 8, 16, 1, "1 lease-backed refresh(es)"),
+        (_job_census(active=89), 3, 16, 1, "headroom for 10 proof(s)"),
+        (_job_census(active=225), 8, 23, 1, "23 effective proof(s) below ceiling 24"),
+        (_job_census(active=89), 8, 24, 0, "at or above the absolute ceiling 24"),
+        (_job_census(active=226), 8, 16, 0, "at or above the job budget 240"),
+        (_job_census(active=300), 8, 16, 0, "at or above the job budget 240"),
+        (_job_census(active=0), 0, 0, 0, "no refresh slot requested"),
     ],
     ids=(
         "census-unreadable",
@@ -5867,17 +5933,21 @@ def _job_census(active=89, queued=0, refused=0, served=3, slow=0, sampled=3):
         "real-queued-run",
         "waiting-hosted-job",
         "slow-pickup",
-        "idle-job-pool-full-grant",
-        "wanted-caps-the-grant",
-        "one-proof-of-headroom",
+        "idle-job-pool-single-lease-grant",
+        "wanted-does-not-multiply-grant",
+        "last-proof-before-ceiling",
+        "absolute-proof-ceiling",
         "budget-exhausted",
         "budget-far-exceeded",
+        "nothing-wanted",
     ),
 )
 def test_job_level_admission_grants_only_on_clean_job_evidence(
-    census, wanted, expected, needle
+    census, wanted, effective_proofs, expected, needle
 ):
-    slots, detail = MOG.job_level_refresh_allowance(census, wanted)
+    slots, detail = MOG.job_level_refresh_allowance(
+        census, wanted, effective_proofs
+    )
     assert slots == expected, detail
     assert needle in detail
     assert MOG.HOSTED_JOB_BUDGET == 240
@@ -5890,11 +5960,9 @@ def test_job_level_admission_grants_only_on_clean_job_evidence(
 def test_job_level_admission_reopens_a_stale_sweep_when_the_pool_is_idle(
     monkeypatch, capsys
 ):
-    """The 2026-11-11 freeze, measured: 36 indexed runs (8 of them incident
-    phantoms), 89 hosted jobs actually running, 0 refused, 0 slow.  The run-level
-    caps all say zero; the job evidence admits a full per-sweep grant."""
+    """Clean evidence finally escapes the old "census not read" bind, once safely."""
     _main_harness(monkeypatch, [_pull(1)])
-    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 36)
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 31)
     monkeypatch.setattr(
         MOG, "classify_queued_ci_runs", lambda *_a, **_k: MOG.QueuedRunCensus(0, 8, 8)
     )
@@ -5911,12 +5979,13 @@ def test_job_level_admission_reopens_a_stale_sweep_when_the_pool_is_idle(
 
     monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
     assert MOG.main() == 0
-    assert seen == [(MOG.MAX_REFRESHES_PER_SWEEP, False)]
+    assert seen == [(1, True)]
     out = capsys.readouterr().out
-    assert "36 indexed pull-request ci run(s) (8 phantom queued run(s) excluded)" in out
+    assert "31 indexed pull-request ci run(s)" in out
+    assert "8 phantom queued run(s) excluded, 23 effective proof(s)" in out
     assert "89 active hosted job(s) against budget 240" in out
-    assert "[job-level: 8 refresh(es) admitted on job evidence" in out
-    assert "durable lease required" not in out
+    assert "[job-level: 1 lease-backed refresh(es) admitted on job evidence" in out
+    assert "durable lease required" in out
 
 
 @pytest.mark.parametrize(
@@ -5931,7 +6000,7 @@ def test_job_level_admission_stays_closed_on_refusal_or_a_full_job_budget(
     monkeypatch, capsys, census, expected, needle
 ):
     _main_harness(monkeypatch, [_pull(1)])
-    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 36)
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 31)
     monkeypatch.setattr(
         MOG, "classify_queued_ci_runs", lambda *_a, **_k: MOG.QueuedRunCensus(0, 8, 8)
     )
@@ -5986,7 +6055,7 @@ def test_an_unreadable_census_at_high_run_counts_collapses_to_todays_behaviour(
 
 def test_a_one_slot_job_level_grant_stays_lease_serialized(monkeypatch, capsys):
     _main_harness(monkeypatch, [_pull(1)])
-    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 36)
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 31)
     monkeypatch.setattr(
         MOG, "classify_queued_ci_runs", lambda *_a, **_k: MOG.QueuedRunCensus(0, 8, 8)
     )
@@ -6005,7 +6074,7 @@ def test_a_one_slot_job_level_grant_stays_lease_serialized(monkeypatch, capsys):
     assert MOG.main() == 0
     assert seen == [(1, True)]
     out = capsys.readouterr().out
-    assert "[job-level: 1 refresh(es) admitted on job evidence" in out
+    assert "[job-level: 1 lease-backed refresh(es) admitted on job evidence" in out
     assert "(durable lease required)" in out
 
 
@@ -6031,11 +6100,145 @@ def test_an_unclean_phantom_read_subtracts_nothing_but_never_pauses_a_clean_pool
 
     monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
     assert MOG.main() == 0
-    assert seen == [MOG.MAX_REFRESHES_PER_SWEEP]
+    assert seen == [0]
     out = capsys.readouterr().out
     assert "36 indexed pull-request ci run(s) plus" in out
     assert "phantom queued run(s) excluded" not in out
-    assert "[job-level: 8 refresh(es) admitted on job evidence" in out
+    assert "36 effective proof(s) at or above the absolute ceiling 24" in out
+
+
+def test_sub_timeout_zero_job_runs_stay_real_and_close_tonights_sweep(
+    monkeypatch, capsys
+):
+    """28 real plus eight 15-179-minute zero-job runs means 36 effective proofs."""
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 36)
+    monkeypatch.setattr(
+        MOG, "classify_queued_ci_runs", lambda *_a, **_k: MOG.QueuedRunCensus(8, 0, 0)
+    )
+    monkeypatch.setattr(
+        MOG,
+        "hosted_pool_census",
+        lambda *_a, **_k: _job_census(active=89, queued=8, refused=0),
+    )
+    seen: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        seen.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert seen == [0]
+    out = capsys.readouterr().out
+    assert "36 indexed pull-request ci run(s)" in out
+    assert "0 phantom queued run(s) excluded, 36 effective proof(s)" in out
+    assert "89 active hosted job(s) against budget 240, 8 real queued run(s)" in out
+    assert "0 waiting hosted job(s)" in out
+    assert "job-level admission withheld: hosted pool refused 8 queued run(s)" in out
+
+
+def test_effective_proofs_clamp_to_zero_when_phantom_counts_overlap(
+    monkeypatch, capsys
+):
+    """An index/classifier race must never create negative additional headroom."""
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 1)
+    monkeypatch.setattr(
+        MOG, "classify_queued_ci_runs", lambda *_a, **_k: MOG.QueuedRunCensus(0, 8, 8)
+    )
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: _job_census(active=0))
+    seen: list[int] = []
+
+    def inspect_budget(_repo, _pull, _read, _write, _fresh, _proof, budget, _blocked):
+        seen.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert seen == [MOG.MAX_IN_FLIGHT_PR_PROOFS]  # 0 effective, never 9 extra slots
+    assert "8 phantom queued run(s) excluded, 0 effective proof(s)" in capsys.readouterr().out
+
+
+def test_consecutive_sweeps_reserve_the_one_job_level_refresh(
+    monkeypatch, capsys
+):
+    """An immediate successor cannot repeat the old eight-slot admission burst."""
+    _main_harness(monkeypatch, [_pull(1)])
+    pull = _pull(1)
+    old_head = str(pull["head"]["sha"])
+    new_head = "b" * 40
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+
+    def prepare(_repo, _read, _write, _pulls):
+        return lease, [pull]
+
+    def claim_generation(claimed_lease, owner):
+        # Keep SweepBudget.take_refresh and its counters real.  The exact network
+        # write/read-back is covered by the durable-lease integration tests; this
+        # deterministic owner models its one-admission generation latch.
+        if claimed_lease.owner_number is not None:
+            return False
+        claimed_lease.owner_number = owner["number"]
+        claimed_lease.owner_updated_at = "2026-11-11T00:00:00Z"
+        claimed_lease.generation_head_sha = old_head
+        claimed_lease.generation_id = "generation"
+        return True
+
+    def indexed_run_gap(method, url, token, payload=None):
+        assert method == "GET" and token == "read" and payload is None
+        assert "actions/workflows/ci.yml/runs?" in url
+        assert "head_sha=" + new_head in url
+        return 200, {"total_count": 0, "workflow_runs": []}
+
+    monkeypatch.setattr(MOG, "prepare_refresh_lease", prepare)
+    monkeypatch.setattr(MOG, "labeled_pulls", lambda *_a: [pull])
+    monkeypatch.setattr(MOG.RefreshLease, "claim", claim_generation)
+    monkeypatch.setattr(
+        MOG,
+        "refresh_lease_reservation_count",
+        REAL_REFRESH_LEASE_RESERVATION_COUNT,
+    )
+    monkeypatch.setattr(MOG, "_request", indexed_run_gap)
+    # Keep the REAL reservation counter: the changed head must retain one proof
+    # until GitHub indexes an exact-current-head run.
+    monkeypatch.setattr(
+        MOG,
+        "classify_queued_ci_runs",
+        lambda *_a, **_k: MOG.QueuedRunCensus(0, 0, 0),
+    )
+    monkeypatch.setattr(
+        MOG, "hosted_pool_census", lambda *_a, **_k: _job_census(active=89)
+    )
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 16)
+    budgets: list[MOG.SweepBudget] = []
+    admitted: list[int] = []
+
+    def sweep(_repo, pull_payload, _read, _write, _fresh, _proof, budget, _blocked):
+        budgets.append(budget)
+        if len(budgets) == 1:
+            assert budget.max_refreshes == 1 and budget.requires_refresh_lease
+            assert budget.take_refresh(pull_payload)
+            admitted.append(budget.refreshes_used)
+            pull_payload["head"]["sha"] = new_head
+        else:
+            # Even if job headroom remains, the old generation may not re-admit.
+            if budget.take_refresh(pull_payload):
+                admitted.append(budget.refreshes_used)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", sweep)
+    for _sweep in range(10):  # no clock advance, no completed CI completions
+        assert MOG.main() == 0
+    assert sum(admitted) == 1
+    assert all(budget.refreshes_used == (1 if index == 0 else 0)
+               for index, budget in enumerate(budgets))
+    effective_after_first = 16 + 1  # indexed load + real durable reservation
+    assert effective_after_first + sum(admitted[1:]) <= MOG.JOB_LEVEL_PROOF_CEILING
+    out = capsys.readouterr().out
+    assert "plus 1 unindexed durable reservation(s)" in out
 
 
 def test_s9_floor_stays_closed_when_the_census_read_itself_failed(monkeypatch, capsys):
@@ -7314,7 +7517,7 @@ def test_the_per_sweep_cap_bounds_the_work_and_names_what_it_deferred(
     seen = _main_harness(monkeypatch, armed)
     assert MOG.main() == 0
 
-    funded_cap = 23  # (1000 - 92 fixed - 8 attempts - 260 reserve) // 27
+    funded_cap = 21  # (1000 - 145 fixed - 8 attempts - 260 reserve) // 27
     assert len(seen) == funded_cap, (
         f"expected exactly {funded_cap} pull requests per sweep, "
         f"got {len(seen)}"
@@ -7651,12 +7854,12 @@ def test_the_dynamic_cap_preserves_the_proven_budget_share():
     assert MOG.RATE_LIMIT_RESERVE < MOG.RATE_LIMIT_FLOOR
 
     assert MOG.pull_cap_for_budget(14_904, 15_000) == MOG.MAX_PULL_CAP
-    # (600 - 260 reserve - 92 fixed - 8 attempts) // 27 = 8; the fixed overhead
-    # now carries the up-to-five adaptive hosted-pool census reads.
-    assert MOG.pull_cap_for_budget(600, 15_000) == 8
+    # (600 - 260 reserve - 145 fixed - 8 attempts) // 27 = 6; the fixed overhead
+    # carries the bounded 58-request queued/in-progress job-census worst case.
+    assert MOG.pull_cap_for_budget(600, 15_000) == 6
     affordable_cost = (
         MOG.FULL_SWEEP_FIXED_REQUESTS
-        + 8 * MOG.MAX_REQUESTS_PER_PULL
+        + 6 * MOG.MAX_REQUESTS_PER_PULL
         + MOG.MAX_REFRESHES_PER_SWEEP
         + MOG.RATE_LIMIT_RESERVE
     )
