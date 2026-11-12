@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 11_406),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 11_452),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 10_944),
+    ("templates/index.html", 137, 11_414),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 11_460),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 10_952),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6012,9 +6012,9 @@ PACKING_PROBE_MAX_PACKS = 10
 # job-count ceilings and PACKING_PROBE_MAX_PACKS are not weight-denominated and
 # did not move.
 LEGACY_PACKING_PROBE_WEIGHT_CEILINGS = {
-    "templates/index.html": 5_971,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    "scripts/build_free_content.py": 5_995,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    "engine/prophet/plan_book.py": 5_729,
+    "templates/index.html": 5_975,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    "scripts/build_free_content.py": 5_999,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    "engine/prophet/plan_book.py": 5_733,
 }
 
 
@@ -6052,6 +6052,83 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     and admission limits unchanged. The wider selection is intended
     (closure-required); natural successor CI must qualify the
     repaired source.
+
+    2026-11-12 (PR #10211, preserve landed browser recovery):
+    Receiver 9d8a0c8be5bbac0073b99762e46ae092235acf4f includes #11051's
+    bounded browser-install fallback. Keep every current owner definition
+    and every current provenance paragraph; do not roll back or count the
+    independently landed +1/+2/+1 a second time. The retained synapse-read-gate
+    contribution adds only +4 per probe to current5969/5993/5727,
+    yielding5973/5997/5731. Retain job ceilings137/138/131, ten packs,
+    all assertions, selectors, runtime, admission and browser controls.
+    Preserve the accepted finite-feedback enrollment, all original feedback
+    history and the earlier frozen-M89 composition; source-only/private
+    Brain and replay UNKNOWN boundaries remain unchanged.
+    This note records source composition; actual native current-tree
+    packing and natural successor proof remain separately accountable.
+
+2 (PR #10211, preserving landed Start and Intraday coverage):
+    Native DIRTY at e4f684137f69 establishes a new original-source conflict.
+    Receiving main 89bf0c038ac7 retains all 401 owners, the accepted Start
+    data-base-shim +2 and ticker-news-qbus free-content +2 contributions.
+    Keep those complete histories and all three disjoint current owner edits.
+    The whole synapse-read-gate preimage still equals the incorporated base:
+    seven commands, 19 -> 21 test-path tokens, 981 -> 1083 joined characters,
+    the same 800-character bucket and no observed override; weight 46 -> 50.
+    Carry only the original feedback +4 onto 5968/5991/5726, yielding
+    5972/5995/5730. Preserve 137/138/131 jobs, ten packs, the real-artifact
+    smoke deselection, all commands/selectors and every runtime/admission limit.
+    Both feedback feature objects and all prior provenance remain unchanged.
+    This is source-derived accounting, not a new planner or timing result;
+    the new source still needs its own natural required CI and scoped release.
+    Original CI43039999692 pack4 browser completion and pack5 exact-base
+    replay UNKNOWN, plus the older private descendant, remain separate.
+    No original replay, restoration, relocation or settlement is implied.
+
+    2026-11-11 (PR #10211, current-source conflict composition):
+    Preserve all 401 owners and every accepted sibling command. The native
+    estimator at fdd099b87cf72e8221372ef55de95efa2b7d284e still measures
+    synapse-read-gate 46 -> 50 for its original feedback-suite enrollment.
+    Carry only that established +4 onto current 5966/5987/5724, yielding
+    5970/5991/5728. Keep 137/138/131 jobs and ten packs unchanged.
+    Full inverse recovers main bbe1bcbd7b1b07ea039d3211b75cce9a3504c7dd.
+    This is owner-estimator execution and source conservation, not a new
+    full-tree planner result. Natural successor CI remains required.
+    The old private validation descendant remains separately fenced.
+
+    2026-11-09 (PR #10211, real conflict on main 95724d5579aa):
+    Preserve all 399 accepted owners, including the landed XGuerrilla
+    admission owner/tests, and both exact feedback product postimages.
+    The estimator remains 471640444ecdda2496a14ffa38f66e4d0b9c5202;
+    this owner's same seven commands still give weight 46 to 50.
+    Recompose only that established +4 onto 5943/5964/5701, retaining
+    137/138/131 jobs and ten packs. Full inverse restores current main.
+    Static contribution checks are not a new full-tree planner execution;
+    this successor requires its own natural CI. The original private
+    descendant uncertainty remains separately fenced and untouched.
+
+    2026-11-08 (PR #10211, current feedback-summary enrollment integration):
+    Completed paired contract run 42333824338 / job 128286126761 measured
+    only this owner's accepted full feedback-suite enrollment: +4 estimator
+    units in each existing probe, no new selected jobs, all ten packs.
+    The canonical public-source ruling and completed successor proof are:
+    https://github.com/mastermindx-market-intelligence/macro/pull/10211#issuecomment-6718173321
+
+    Current main 73efd50fd01a2cc1ca39ab196d8c051e391a8bf2 retains the
+    same seven owning commands before enrollment: 19 to 21 test-path
+    occurrences, joined text 981 to 1083 characters, one 800-character
+    bucket, owner weight 46 to 50. The current estimator has no observed
+    override for this owner. Preserve all incumbent EDGAR and symbol
+    suites; add only the full feedback suite and its original two
+    real-artifact smoke deselections to the existing pytest command.
+
+    Compose that accepted +4 onto current 5943/5964/5701:
+    5947/5968/5705. Retain job caps 137/138/131, ten packs, every prior
+    provenance paragraph, all selectors, commands, dependencies, deadlines
+    and runtime/admission controls. This is exact contribution accounting,
+    not a new full-tree planning or execution-time measurement. Natural
+    successor CI must qualify the composed source. The old run's separate
+    private exact-base descendant UNKNOWN is neither retried nor settled.
 
     2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
