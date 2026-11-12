@@ -8,9 +8,11 @@ vendor theme tree, the basket roster and ``config/theme_pathways.yml``. Writes:
   data/breadth/history/registry/rel_customers_of.csv    (ticker, group)  customers of 4 supplier hubs
   data/breadth/history/registry/rel_suppliers_of.csv    (ticker, group)  suppliers of 3 customer hubs
   data/breadth/history/group_links_current.parquet      house links (one row per link)
-  data/breadth/history/internal_only/vendor_internal_only_group_links_current.parquet
+  <--vendor-out>/vendor_internal_only_group_links_current.parquet
                                                         links touching a vendor family
-  and a sidecar beside each links file (pinned commit, counts).
+  and a sidecar beside each links file (pinned commit, counts). The vendor links file is
+  kept off git, in scratch (``--vendor-out``, default /tmp/si_plan/quant/vendor_out),
+  because the repository is public (COO ruling 38 §2b); it is never committed or pushed.
 
 Link types: EXPRESSES / PARENT_OF / PATHWAY_* from the graph and the pathways file;
 ``overlap`` (COO ruling 34 s3) for every pair of groups in the history build that
@@ -42,6 +44,7 @@ Membership rule (ruling 31 2a), using the store's own read views
 Usage:
   python scripts/export_gmi_history_registry.py --root <tree with the pinned inputs> \
       --commit <pinned sha> [--out data/breadth/history]
+      [--vendor-out /tmp/si_plan/quant/vendor_out]
 """
 from __future__ import annotations
 
@@ -272,10 +275,13 @@ def links(root: Path, g: dict, commit: str, series: dict[str, set[str]],
 
 
 def main() -> None:
+    from scripts import build_tree_breadth_and_index as bt
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--root", type=Path, required=True, help="tree with the pinned graph inputs")
     ap.add_argument("--commit", required=True)
     ap.add_argument("--out", type=Path, default=_ROOT / "data/breadth/history")
+    ap.add_argument("--vendor-out", type=Path, default=bt.VENDOR_OUT_DEFAULT,
+                    help="scratch directory for the internal_only links (off git; public repository)")
     ap.add_argument("--build-root", type=Path, default=_ROOT,
                     help="tree with the registries the history build reads (overlap rows)")
     ap.add_argument("--index", type=Path, nargs="*", default=[],
@@ -295,7 +301,6 @@ def main() -> None:
         print(json.dumps({"gmi_theme": len(th), "gmi_macro_category": len(mc),
                           "rel_customers_of": len(cu), "rel_suppliers_of": len(su), **rmeta}))
         return
-    from scripts import build_tree_breadth_and_index as bt
     mems = {f: m for f, (_, m) in bt.load_families(a.build_root).items()}
     series: dict[str, set[str]] = {}
     for p in a.index:
@@ -304,7 +309,7 @@ def main() -> None:
             series.setdefault(f, set()).update(s_)
     lk, m = links(a.root, g, a.commit, series, mems)
     sets = {"house": (a.out, "group_links_current"),
-            "internal_only": (a.out / "internal_only", "vendor_internal_only_group_links_current")}
+            "internal_only": (a.vendor_out, "vendor_internal_only_group_links_current")}
     summary = {}
     for rc, (d, stem) in sets.items():
         part = lk[lk["rights_class"] == rc].reset_index(drop=True)
