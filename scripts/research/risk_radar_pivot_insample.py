@@ -10,10 +10,14 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import sys
 
 import pandas as pd
 
-from engine.risk_radar_eval import inputs as I, labels as L, pivots as P
+_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_ROOT))
+
+from engine.risk_radar_eval import inputs as I, labels as L, pivots as P  # noqa: E402
 
 START = pd.Timestamp("2020-01-02")
 OUT = Path("research/risk_radar/walkforward/PIVOT_INSAMPLE_v2_2020-2026.json")
