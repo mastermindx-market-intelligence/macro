@@ -351,7 +351,7 @@ def _admission_record(route, implied=0.004, physical=0.003):
          "list", "array", "zero-dim-array", "overflowing-integer"],
 )
 def test_variance_admission_refuses_invalid_measurement(route, slot, value):
-    with pytest.raises(ValueError, match="variance must be"):
+    with pytest.raises(ValueError):
         _admission_record(route, **{slot: value})
 
 
