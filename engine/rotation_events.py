@@ -2148,6 +2148,21 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
                 fh.write(json.dumps({"ts": now, "event": "closed", **c},
                                     ensure_ascii=False) + "\n")
 
+    # File-level as-of for the forward recorder (into_strength reads cross_state.json
+    # and needs a date on the file itself). Same value the per-entry ``asof`` fields
+    # carry this run; on a night with no emitted event, fall back to the closes this
+    # same step consumed. Readers use only active/candidates/closed, so the two
+    # extra top-level keys are inert downstream.
+    cross_asof = max((e["asof"] for e in cross_events), default=None)
+    if cross_asof is None:
+        cross_asof = max(
+            (str(s.index[-1].date()) if hasattr(s.index[-1], "date") else str(s.index[-1])
+             for s in list(closes.values()) + [bench_close]
+             if s is not None and len(s)),
+            default=None,
+        )
+    new_cross_state["asof"] = cross_asof
+    new_cross_state["generated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     cross_state_p.write_text(json.dumps(new_cross_state, ensure_ascii=False, indent=1))
 
     # contagion detection
