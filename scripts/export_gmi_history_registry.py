@@ -315,6 +315,11 @@ def main() -> None:
         part = lk[lk["rights_class"] == rc].reset_index(drop=True)
         d.mkdir(parents=True, exist_ok=True)
         part.to_parquet(d / f"{stem}.parquet", index=False, compression="zstd")
+        # COO ruling 21:07Z: the house sidecar carries counts only. The vendor-family
+        # name list (subsectors_unmatched) stays in the off-tree vendor sidecar; the
+        # house sidecar records its length as an integer beside the other counts.
+        side = m if rc == "internal_only" else {
+            **m, "subsectors_unmatched": len(m["subsectors_unmatched"])}
         meta = {"rights_class": rc, "source_commit": a.commit,
                 "edges_open_latest_belief": g["n_edges"],
                 "dropped_lifecycle_nodes": g["dead"], "dated_membership_note": DATED_SENTENCE,
@@ -328,7 +333,7 @@ def main() -> None:
                 "member_counts": "child_n / parent_n count registry members (any price state)",
                 "overlap": "one row per unordered pair of groups sharing at least one member; "
                            "n_shared is the shared member count; no tickers",
-                "no_tickers_no_prices": True, **m}
+                "no_tickers_no_prices": True, **side}
         if rc == "internal_only":
             from scripts.build_tree_breadth_and_index import VENDOR_RIGHTS
             meta.update(VENDOR_RIGHTS)
