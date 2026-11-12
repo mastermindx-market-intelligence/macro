@@ -250,12 +250,51 @@ def _compute_gates_hash(gates: dict) -> str:
     return hashlib.sha1(canon.encode("utf-8")).hexdigest()[:16]
 
 
-def construction_hash(spec: dict) -> str:
-    """Stable dedup hash over {market, feature.pipeline, target(path,kind,horizon_d), universe}.
+CONSTRUCTION_HASH_VERSION = 2
 
-    Used for SF-R8 dedup against prior specs and REGISTRY/CANDIDATES.
-    Changing any of these four dimensions produces a different hash; renaming
-    a signal ('name' field) does not.
+
+def construction_hash(spec: dict) -> str:
+    """Versioned identity of declared computational inputs, never prose or gates.
+
+    Ordered source declarations, feature/target definitions and the baseline are
+    material. Defaults match the evaluator. This is NOT a data-vintage digest or
+    a claim that two differing definitions represent independent economic ideas.
+    """
+    if not isinstance(spec, dict):
+        raise TypeError("construction must be a mapping")
+    target = spec.get("target", {})
+    feature = spec.get("feature", {})
+    data = spec.get("data", [])
+    if not isinstance(target, dict) or not isinstance(feature, dict) or not isinstance(data, list):
+        raise TypeError("construction requires mapping target/feature and ordered data list")
+    canonical = {
+        "version": CONSTRUCTION_HASH_VERSION,
+        "market": spec.get("market", ""),
+        "data": data,
+        "feature": feature,
+        "target": {"column": "Close", **target},
+        "universe": spec.get("universe", "single_series"),
+        "baseline": spec.get("baseline", "buy_and_hold"),
+    }
+    # JSON must not silently stringify objects, NaN/Infinity or non-string keys.
+    def require_json_keys(value: Any) -> None:
+        if isinstance(value, dict):
+            if any(not isinstance(k, str) for k in value):
+                raise TypeError("construction mapping keys must be strings")
+            for child in value.values():
+                require_json_keys(child)
+        elif isinstance(value, (list, tuple)):
+            for child in value:
+                require_json_keys(child)
+    require_json_keys(canonical)
+    payload = json.dumps(canonical, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:20]
+
+
+def _legacy_construction_hash(spec: dict) -> str:
+    """Frozen v1 coarse fingerprint, only for resolving incomplete old evidence.
+
+    Never use this value to file new candidates or establish v2 novelty.
     """
     target = spec.get("target", {})
     canonical = {
