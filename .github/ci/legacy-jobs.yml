@@ -16061,6 +16061,7 @@ jobs:
       - "tests/test_ci_browser_setup.py"
       - "tests/test_ci_docs_tier.py"
       - "tests/test_ci_pack_docs_tier.py"
+      - "scripts/build_ruling_index.py"
       - "config/intl_global_universe_v1.json"
       - "config/intl_source_rights_matrix_v1.json"
       - "config/theme_crosswalk.yml"
