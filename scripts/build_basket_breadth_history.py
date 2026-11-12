@@ -27,14 +27,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-import pandas as pd
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
-from engine import group_breadth_history as gbh
-from scripts.build_group_breadth_history import (_code_version, _sha, count_duplicates_once,
-                                                 drop_partial_rows, duplicate_series_pairs)
+import pandas as pd  # noqa: E402
+
+from engine import group_breadth_history as gbh  # noqa: E402
+from scripts.build_group_breadth_history import (_code_version, _sha,  # noqa: E402
+                                                 count_duplicates_once, drop_partial_rows,
+                                                 duplicate_series_pairs)
 
 BASIS = "reconstructed_current_membership"
 _SEP = "@"
