@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_971),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_995),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_729),
+    ("templates/index.html", 137, 5_973),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_997),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_731),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,35 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #7374, preserve landed marketing and DATA repairs):
+    Receiver e7f8565c retains the five DATA dependency repairs and
+    #11101's marketing-social-publisher enrollment. Its 5971/5995/5729
+    ceilings already fund that owner's independent +2; equal old-H
+    numbers do not fund the still-absent public-research suite.
+    The whole unrun-brain-gateway preimage remains unchanged. Restore
+    only its original full-suite token, weight 110 -> 112, and add only
+    its +2 to current main: 5973/5997/5731. Keep job ceilings 137/138/131,
+    ten packs, all 401 owner identities, selectors and runtime limits.
+    Preserve all five accepted feature objects, current main history
+    and every original research passage. The split historical date
+    header is rejoined by moving its existing prefix, not replacing facts.
+    This is source accounting, not a new planner or timing measurement.
+    New natural proof is owed; controller61575 and all provider/private,
+    rights/budget, live-canary, Brain, production and trading holds remain.
+
+    2026-11-12 (PR #11101, runtime-adapter closure): wiring
+    tools/xguerrilla/tests/test_runtime_adapter.py into
+    marketing-social-publisher satisfies the closure doctrine —
+    contract-delta had flagged the suite as named by no run: step
+    (run 43143064165, job 130934421614). The join adds its run token
+    to that step with no new job selected ("newly selected: none");
+    the estimator measures +2 on the shared owner for all three
+    probes: index 5969->5971, free-content 5993->5995, Prophet
+    5727->5729. Jobs 137/138/131, ten packs, selectors, commands
+    and admission limits unchanged. The wider selection is intended
+    (closure-required); natural successor CI must qualify the
+    repaired source.
 
     2026-11-12 (PR #7374, preserve landed browser recovery):
     Receiver 9d8a0c8be5bbac0073b99762e46ae092235acf4f includes #11051's
@@ -6025,7 +6054,7 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     This note records source composition; actual native current-tree
     packing and natural successor proof remain separately accountable.
 
-10 (PR #7374, current-main conflict composition):
+    2026-11-10 (PR #7374, current-main conflict composition):
     Receiver cfd3834d retains the landed lifecycle/ownership-ledger
     enrollment and qualified Playwright pin. Preserve that complete
     source and both provenance histories. The unchanged owner
@@ -6067,7 +6096,7 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     itself still requires natural exact-head successor proof. They are
     planner weights, not elapsed-time measurements or provider acceptance.
 
-    2026-11-    2026-11-11 (playwright apt-outage fallback): the seven shell-executed
+    2026-11-11 (playwright apt-outage fallback): the seven shell-executed
     ``playwright install --with-deps chromium`` steps each gained a bounded
     240s first attempt plus a 60s browser-only fallback (GitHub-hosted
     runners intermittently cannot resolve any Ubuntu archive and the apt
