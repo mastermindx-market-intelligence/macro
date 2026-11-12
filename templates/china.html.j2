@@ -1028,6 +1028,8 @@
   /* tiles rack */
   body.page-china .cnx-secbar{display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 12px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
   body.page-china .cnx-secbar b{color:var(--text);font-weight:700}
+  body.page-china .cnx-page-heading{margin:0;font:inherit;color:var(--text);font-weight:700}
+  body.page-china .cnx-zone-heading{font-weight:650}
   body.page-china .cnx-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 16px}
   @media(max-width:1100px){body.page-china .cnx-tiles{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:560px){body.page-china .cnx-tiles{grid-template-columns:1fr}}
@@ -1058,9 +1060,20 @@
   body.page-china .cnx-links.cnx-mobile-index{display:none}
   .cnx-wrap [id^="cnx-focus-"]{scroll-margin-top:84px}
   @media (max-width:760px){
-    body.page-china .cnx-links.cnx-mobile-index{display:flex;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;margin:0 0 10px;padding-bottom:2px}
+    body.page-china .cnx-links.cnx-mobile-index{display:flex;position:sticky;top:8px;z-index:30;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;margin:0 0 10px;padding:6px 0;background:var(--panel);border-bottom:1px solid var(--line)}
     body.page-china .cnx-links.cnx-mobile-index a{flex:0 0 auto;scroll-snap-align:start}
+    body.page-china .cnx-links.cnx-mobile-index a[aria-current="location"]{color:var(--link);border-color:var(--link);background:var(--panel2)}
     body.page-china .cnx-links.cnx-mobile-index::-webkit-scrollbar{display:none}
+    /* Preserve the full deep dashboard on mobile, but remove desktop-sized air
+       between repeated cards/rows so users scan more intelligence per viewport. */
+    body.page-china .cnx-rack2,
+    body.page-china .cnx-rack3{gap:10px;margin-bottom:10px}
+    body.page-china .cnx-card{padding:12px 14px}
+    body.page-china .cnx-row,
+    body.page-china .cnx-kv{padding:6px 0}
+    body.page-china .cnx-links{gap:7px;margin:5px 0 10px}
+    body.page-china .cnx-links a{padding:6px 12px}
+    body.page-china .cnx-secbar{margin:16px 2px 9px}
   }
   .cnx-wrap .cnx-reason-row{position:relative}
   .cnx-wrap .cnx-lens{flex:none;width:26px;height:26px;margin-left:auto;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:help;line-height:1;position:relative}
@@ -1135,6 +1148,18 @@
   body.page-china .cnx-dh{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);padding:12px 20px;background:rgba(16,22,30,.55);border:1px solid rgba(255,255,255,.12);border-radius:18px;backdrop-filter:blur(20px);margin-top:8px}
   body.page-china .cnx-dh b{color:var(--text);font-weight:650}
   body.page-china .cnx-dh .d{width:8px;height:8px;border-radius:50%;background:var(--ok,var(--up))}
+  body.page-china details.cnx-dh{display:block}
+  body.page-china .cnx-dh summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
+  body.page-china .cnx-dh summary::-webkit-details-marker{display:none}
+  body.page-china .cnx-dh .cnx-dh-chev{margin-left:auto;opacity:.6;transition:transform .15s}
+  body.page-china .cnx-dh[open] .cnx-dh-chev{transform:rotate(180deg)}
+  body.page-china .cnx-dh-rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px 12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+  body.page-china .cnx-dh-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;align-items:center}
+  body.page-china .cnx-dh-src{color:var(--text);font-weight:600}
+  body.page-china .cnx-dh-state{font-size:10px}
+  body.page-china .cnx-dh-state.ok{color:var(--ok,var(--up))}
+  body.page-china .cnx-dh-state.warn{color:var(--warn)}
+  body.page-china .cnx-dh-date{grid-column:1/-1;font-size:10px;color:var(--muted)}
   /* dialogs */
   /* z-index 200, not 60 (2026-08-11): the site nav sits at z-150
      (templates/navigation-refresh.css, theme.css .site-nav) and was painting straight over
@@ -1818,7 +1843,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           {% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}<span style="opacity:.75"> · <span class="l-en">watch → {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}</span><span class="l-zh">预警 → {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}</span></span>{% endif %}</span>
         <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
           <span class="l-en">LIVE</span><span class="l-zh">实时</span>
-          <span id="ms-date" style="margin-left:4px">{{ latest.date }}</span>
+          <span id="ms-date" style="margin-left:4px"><span class="l-en">As of </span><span class="l-zh">截至 </span><time datetime="{{ latest.date }}">{{ latest.date }}</time></span>
           {% if _health_n and _health_ok < _health_n %}<span class="cnx-live-freshness"><span class="l-en">· {{ _health_ok }}/{{ _health_n }} feeds</span><span class="l-zh">· {{ _health_ok }}/{{ _health_n }} 数据源</span></span>{% endif %}
         </span>
       </div>
@@ -2078,7 +2103,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {# /hero #}
 
   <!-- =============== MARKET TILES (C · US mx5 combined index face: SSE / CSI300 / ChiNext / HSI) =============== -->
-  <div class="cnx-secbar"><b>{{ t('CHINA DASHBOARD','中国看板') }}</b><span>{{ latest.date }}</span></div>
+  <div class="cnx-secbar"><h1 class="cnx-page-heading">{{ t('CHINA DASHBOARD','中国看板') }}</h1><span>{{ latest.date }}</span></div>
   {# ── C · One glass face → markets dialog (ported from dashboard.html.j2 9959–10042).
      All four tiles are live-wired (nb-px price + nb-chg delta, patched by live.js).
      SSE + HSI additionally bake the nightly store level/pct as initial content; CSI 300
@@ -2166,9 +2191,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <a href="#cnx-focus-research">{{ t('Research','研究') }}</a>
   </nav>
 
-  <div class="cnx-lbl" id="cnx-focus-action">{{ t('Action & calendar','操作与日历') }}</div>
+  <h2 class="cnx-lbl cnx-zone-heading" id="cnx-focus-action">{{ t('Action & calendar','操作与日历') }}</h2>
   <!-- =============== ROW 1: What To Do + Upcoming Events =============== -->
-  <div class="cnx-rack2">
+  <div class="cnx-rack2" role="region" aria-labelledby="cnx-focus-action">
     {# What To Do card — keep the deep-card interaction, but use the retired
        experiment's much clearer stance/reason faces at glance level. #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-playbook')">
@@ -2215,9 +2240,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </div>
 
-  <div class="cnx-lbl" id="cnx-focus-markets">{{ t('Markets & risk','市场与风险') }}</div>
+  <h2 class="cnx-lbl cnx-zone-heading" id="cnx-focus-markets">{{ t('Markets & risk','市场与风险') }}</h2>
   <!-- =============== ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-markets">
     {# Pullback Risk vs Top Stocks conditional #}
     {% set _risk_state = (latest.risk_radar.state if latest.risk_radar else 'calm') %}
     {% set _show_risk = _risk_state in ('caution', 'elevated', 'risk-off') %}
@@ -2376,9 +2401,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </div>
 
-  <div class="cnx-lbl" id="cnx-focus-drivers">{{ t('Drivers & news','驱动与新闻') }}</div>
+  <h2 class="cnx-lbl cnx-zone-heading" id="cnx-focus-drivers">{{ t('Drivers & news','驱动与新闻') }}</h2>
   <!-- =============== ROW 3: Policy Monitor + Connect Flows + Macro News =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-drivers">
     {# Policy Monitor card #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-policy')">
       <div class="cnx-ctitle">{{ t('Policy Monitor','政策监控') }}</div>
@@ -2443,9 +2468,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </div>
 
-  <div class="cnx-lbl" id="cnx-focus-deep">{{ t('Deep context','深层背景') }}</div>
+  <h2 class="cnx-lbl cnx-zone-heading" id="cnx-focus-deep">{{ t('Deep context','深层背景') }}</h2>
   <!-- =============== ROW 4: Property + AI Brief + Alerts Centre =============== -->
-  <div class="cnx-rack3">
+  <div class="cnx-rack3" role="region" aria-labelledby="cnx-focus-deep">
     {# Property card #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-property')">
       <div class="cnx-ctitle">{{ t('Property','房地产') }}</div>
@@ -2518,8 +2543,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   </div>
 
   <!-- =============== FOOTER: Links pill row + Data health strip =============== -->
-  <div class="cnx-lbl" id="cnx-focus-research">{{ t('Go deeper','深入研究') }}</div>
-  <div class="cnx-links">
+  <h2 class="cnx-lbl cnx-zone-heading" id="cnx-focus-research">{{ t('Go deeper','深入研究') }}</h2>
+  <nav class="cnx-links" aria-labelledby="cnx-focus-research">
     <a href="china_stocks.html">{{ t('A-Share Stocks','A股个股') }}</a>
     <a href="china_heatmap.html">{{ t('Market Heatmap','市场热力图') }}</a>
     <a href="china_intel.html">{{ t('China Intel','中国情报') }}</a>
@@ -2528,16 +2553,27 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <a href="china_allocation.html">{{ t('Allocation','仓位策略') }}</a>
     <a href="china_history.html">{{ t('Regime History','周期历史') }}</a>
     <a href="aibrief.html">{{ t('AI Brief','AI简报') }}</a>
-  </div>
+  </nav>
   {% if health %}
-  <div class="cnx-dh">
-    <span class="d"></span>
-    <b>{{ t('Data health','数据健康度') }}</b> ·
-    <span class="l-en">{{ health | selectattr('status','equalto','ok') | list | length }} of {{ health | length }} feeds fresh</span>
-    <span class="l-zh">{{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} 数据新鲜</span>
-    · {{ t('updated','更新于') }} {{ latest.date }}
-    <span style="margin-left:auto;opacity:.6">▾</span>
-  </div>
+  <details class="cnx-dh">
+    <summary>
+      <span class="d"></span>
+      <b>{{ t('Sources & data health','数据来源与健康度') }}</b> ·
+      <span class="l-en">{{ health | selectattr('status','equalto','ok') | list | length }} of {{ health | length }} feeds fresh</span>
+      <span class="l-zh">{{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} 数据新鲜</span>
+      · {{ t('updated','更新于') }} {{ latest.date }}
+      <span class="cnx-dh-chev" aria-hidden="true">▾</span>
+    </summary>
+    <div class="cnx-dh-rows">
+      {% for h in health %}
+      <div class="cnx-dh-row">
+        <span class="cnx-dh-src">{{ t(h.en, h.zh) }}</span>
+        <span class="cnx-dh-state {{ 'ok' if h.status == 'ok' else 'warn' }}">{{ t('Current','当前') if h.status == 'ok' else t('Check freshness','检查新鲜度') }}</span>
+        <span class="cnx-dh-date">{{ t('Last date','最近日期') }} · {% if h.last and h.last != '—' %}<time datetime="{{ h.last }}">{{ h.last }}</time>{% else %}—{% endif %}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </details>
   {% endif %}
 
   </div>{# /cnx-wrap #}
@@ -4726,6 +4762,31 @@ window.__CHART_SWAP__ = {
     if(el&&el.classList.contains('cnx-dlg'))cnxOpenDlg(h);
     else if(el)el.scrollIntoView({behavior:'smooth'});
   }
+  function cnxInitMobileIndex(){
+    var nav=document.querySelector('.cnx-mobile-index');
+    if(!nav)return;
+    var links=Array.prototype.slice.call(nav.querySelectorAll('a[href^="#cnx-focus-"]'));
+    if(!links.length)return;
+    function setActive(id){
+      links.forEach(function(a){
+        if(a.getAttribute('href')==='#'+id)a.setAttribute('aria-current','location');
+        else a.removeAttribute('aria-current');
+      });
+    }
+    links.forEach(function(a){
+      a.addEventListener('click',function(){setActive((a.getAttribute('href')||'').slice(1));});
+    });
+    if(!('IntersectionObserver' in window))return;
+    var io=new IntersectionObserver(function(entries){
+      var hits=entries.filter(function(e){return e.isIntersecting;})
+        .sort(function(a,b){return a.boundingClientRect.top-b.boundingClientRect.top;});
+      if(hits.length)setActive(hits[0].target.id);
+    },{rootMargin:'-12% 0px -70% 0px',threshold:[0,.01]});
+    links.forEach(function(a){
+      var target=document.getElementById((a.getAttribute('href')||'').slice(1));
+      if(target)io.observe(target);
+    });
+  }
   /* Existing clickable cards are div[role=button]; make their keyboard contract real
      without rewriting the established card markup. Nested links/buttons keep their own behavior. */
   document.addEventListener('keydown',function(e){
@@ -4752,6 +4813,7 @@ window.__CHART_SWAP__ = {
   window.cnxClosePops=cnxClosePops;
   window.cnxToggleHm=cnxToggleHm;
   cnxResolveHash();
+  cnxInitMobileIndex();
   window.addEventListener('hashchange',cnxResolveHash);
 })();
 </script>

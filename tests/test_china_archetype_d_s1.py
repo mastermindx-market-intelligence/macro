@@ -188,6 +188,67 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
+def test_data_health_affordance_discloses_source_identity_and_dates() -> None:
+    assert '<details class="cnx-dh">' in TPL
+    assert "<summary>" in TPL
+    assert "{{ t('Sources & data health','数据来源与健康度') }}" in TPL
+    assert 'class="cnx-dh-rows"' in TPL
+    assert "{{ t(h.en, h.zh) }}" in TPL
+    assert "{{ t('Last date','最近日期') }}" in TPL
+    assert '<time datetime="{{ h.last }}">{{ h.last }}</time>' in TPL
+    assert "{{ t('Current','当前') if h.status == 'ok' else t('Check freshness','检查新鲜度') }}" in TPL
+
+
+def test_hero_exposes_explicit_as_of_semantics() -> None:
+    assert '<span class="l-en">As of </span>' in TPL
+    assert '<span class="l-zh">截至 </span>' in TPL
+    assert '<time datetime="{{ latest.date }}">{{ latest.date }}</time>' in TPL
+
+
+def test_deep_dashboard_has_real_document_structure_without_visual_wipe() -> None:
+    assert '<h1 class="cnx-page-heading">' in TPL
+    assert TPL.count('class="cnx-lbl cnx-zone-heading"') >= 5
+    for target in (
+        "cnx-focus-action",
+        "cnx-focus-markets",
+        "cnx-focus-drivers",
+        "cnx-focus-deep",
+    ):
+        assert f'role="region" aria-labelledby="{target}"' in TPL
+    assert '<nav class="cnx-links" aria-labelledby="cnx-focus-research">' in TPL
+    assert "ROW 4: Property + AI Brief + Alerts Centre" in TPL
+
+
+def test_mobile_section_index_tracks_current_deep_zone() -> None:
+    assert 'a[aria-current="location"]' in TPL
+    assert "function cnxInitMobileIndex()" in TPL
+    assert "new IntersectionObserver" in TPL
+    assert "setAttribute('aria-current','location')" in TPL
+    assert "removeAttribute('aria-current')" in TPL
+    assert "cnxInitMobileIndex();" in TPL
+
+
+def test_mobile_section_index_stays_available_during_long_scrolls() -> None:
+    assert "body.page-china .cnx-links.cnx-mobile-index{display:flex;position:sticky;top:8px;z-index:30" in TPL
+    assert "background:var(--panel)" in TPL
+    assert "border-bottom:1px solid var(--line)" in TPL
+    assert '.cnx-wrap [id^="cnx-focus-"]{scroll-margin-top:84px}' in TPL
+
+
+def test_mobile_density_tightens_spacing_without_hiding_cards() -> None:
+    assert "body.page-china .cnx-rack2," in TPL
+    assert "body.page-china .cnx-rack3{gap:10px;margin-bottom:10px}" in TPL
+    assert "body.page-china .cnx-card{padding:12px 14px}" in TPL
+    assert "body.page-china .cnx-row," in TPL
+    assert "body.page-china .cnx-kv{padding:6px 0}" in TPL
+    assert "body.page-china .cnx-links{gap:7px;margin:5px 0 10px}" in TPL
+
+    # Density is spacing-only: it does not remove the accepted card/rack structure.
+    assert "ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature" in TPL
+    assert "ROW 3: Policy Monitor + Connect Flows + Macro News" in TPL
+    assert "ROW 4: Property + AI Brief + Alerts Centre" in TPL
+
+
 def test_mobile_section_index_improves_scanability_without_collapsing_depth() -> None:
     assert 'class="cnx-links cnx-mobile-index"' in TPL
     assert 'aria-label="China dashboard sections / 中国看板分区"' in TPL
