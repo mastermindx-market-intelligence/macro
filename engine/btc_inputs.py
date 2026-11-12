@@ -51,6 +51,13 @@ def _funding() -> pd.Series | None:
     return s[~s.index.duplicated(keep="last")].sort_index()
 
 
+def _numeric_parent(s: pd.Series) -> pd.Series:
+    """Boolean/nonfinite observations cannot supply numeric identities."""
+    boolean = s.map(lambda value: isinstance(value, (bool, np.bool_)))
+    numeric = pd.to_numeric(s, errors="coerce").astype(float)
+    return numeric.where(~boolean & np.isfinite(numeric))
+
+
 def load_price() -> pd.DataFrame:
     """Daily OHLCV: Coinbase quality where available, Yahoo for the 2014-15 tail."""
     cb = store.read("coinbase", "btc_daily")
@@ -185,21 +192,24 @@ def load_all() -> dict[str, pd.Series | pd.DataFrame | None]:
     # unavailable (NaN). They must not become inf, and a supply share must
     # not be clipped into a plausible 0 or 1.
     if mvrv is not None and mcap is not None:
-        mv = pd.to_numeric(mvrv, errors="coerce")
-        mc = pd.to_numeric(mcap, errors="coerce")
+        mv = _numeric_parent(mvrv)
+        mc = _numeric_parent(mcap)
         ok = np.isfinite(mv) & np.isfinite(mc) & (mv > 0) & (mc > 0)
-        d["realized_cap"] = (mc / mv).where(ok).rename("realized_cap")
-        d["nupl"] = (1 - 1 / mv).where(ok).rename("nupl")
+        derived = (mc / mv).where(ok)
+        d["realized_cap"] = derived.where(np.isfinite(derived)).rename("realized_cap")
+        derived = (1 - 1 / mv).where(ok)
+        d["nupl"] = derived.where(np.isfinite(derived)).rename("nupl")
     if mcap is not None and stables is not None:
-        mc = pd.to_numeric(mcap, errors="coerce")
-        den = pd.to_numeric(stables, errors="coerce").reindex(mc.index).ffill()
+        mc = _numeric_parent(mcap)
+        den = _numeric_parent(stables).reindex(mc.index).ffill()
         ok = np.isfinite(mc) & np.isfinite(den) & (mc > 0) & (den > 0)
-        d["ssr"] = (mc / den).where(ok).rename("ssr")
+        derived = (mc / den).where(ok)
+        d["ssr"] = derived.where(np.isfinite(derived)).rename("ssr")
     # supply-in-profit as a FRACTION (bgeo gives it in BTC; CM supply normalizes).
     sip, sup = d.get("supply_in_profit"), d.get("supply")
     if sip is not None and sup is not None:
-        num = pd.to_numeric(sip, errors="coerce")
-        den = pd.to_numeric(sup, errors="coerce").reindex(num.index).ffill()
+        num = _numeric_parent(sip)
+        den = _numeric_parent(sup).reindex(num.index).ffill()
         ok = np.isfinite(num) & np.isfinite(den) & (den > 0)
         frac = (num / den).where(ok)
         frac = frac.where((frac >= 0) & (frac <= 1))

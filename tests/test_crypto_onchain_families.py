@@ -605,3 +605,100 @@ def test_compute_all_preserves_optional_family_unknown_and_real_neutral():
     neutral = S.compute_all(inputs)
     assert neutral.iloc[-1]["market_extreme"] == "normal"
     assert neutral.iloc[-1]["extreme_score"] == 0.
+
+# Numeric validity is a measurement boundary, not a threshold change.
+@pytest.mark.parametrize('family,bad', [(f,b) for f in ['nupl','mvrv_z','supply_in_profit_pct','fear_greed'] for b in [np.inf,-np.inf,True,False]])
+def test_invalid_numeric_family_after_valid_history_abstains(family,bad):
+    from lib import config
+    from engine import btc_signals as s
+    idx=pd.date_range('2026-01-01',periods=8)
+    raw=pd.Series([0.5]*6+[bad,None],index=idx,dtype=object)
+    inp={'price':pd.DataFrame({'close':100.},index=idx)}
+    val=pd.DataFrame(index=idx)
+    if family=='mvrv_z': val[family]=raw
+    else: inp[family]=raw
+    out=s.market_extreme(inp,val,{**config.load()['vector']['valuation'], **config.load()['vector']['extreme']})
+    assert out.market_extreme.iloc[-2:].isna().all()
+    assert out.extreme_score.iloc[-2:].isna().all()
+
+@pytest.mark.parametrize('family,bad', [('fear_greed',-1),('fear_greed',101),('supply_in_profit_pct',-0.01),('supply_in_profit_pct',1.01),('nupl',1.01)])
+def test_out_of_domain_family_abstains(family,bad):
+    from lib import config
+    from engine import btc_signals as s
+    idx=pd.date_range('2026-01-01',periods=3)
+    inp={'price':pd.DataFrame({'close':100.},index=idx),family:pd.Series(bad,index=idx)}
+    out=s.market_extreme(inp,pd.DataFrame(index=idx),{**config.load()['vector']['valuation'], **config.load()['vector']['extreme']})
+    assert out.extreme_score.isna().all()
+
+@pytest.mark.parametrize('token', ['Infinity','-Infinity','101','-1',True,False])
+def test_feargreed_rejects_invalid_current_response_before_storage(monkeypatch,token):
+    from collectors.crypto_misc import FearGreedAdapter
+    class Response:
+        def json(self):return {'data':[{'timestamp':'1767225600','value':'50'},{'timestamp':'1767312000','value':token}]}
+    adapter=FearGreedAdapter()
+    monkeypatch.setattr(adapter,'http_get',lambda *a,**k:Response())
+    with pytest.raises(ValueError,match='observation outside'):
+        adapter.fetch()
+
+@pytest.mark.parametrize('token,value', [('0',0.),('50',50.),('100',100.)])
+def test_feargreed_retains_numeric_string_boundaries(monkeypatch,token,value):
+    from collectors.crypto_misc import FearGreedAdapter
+    class Response:
+        def json(self):return {'data':[{'timestamp':'1767225600','value':token}]}
+    adapter=FearGreedAdapter()
+    monkeypatch.setattr(adapter,'http_get',lambda *a,**k:Response())
+    assert adapter.fetch()['fear_greed'].iloc[0,0]==value
+
+@pytest.mark.parametrize('denominator', ['mvrv','stablecoins'])
+def test_finite_positive_derived_overflow_is_unavailable(root, denominator):
+    days=_days('2024-01-01')
+    _put(root,'coinmetrics','mcap_usd',[100.],days)
+    _put(root,'coinmetrics','mvrv',[np.nextafter(0.,1.) if denominator=='mvrv' else 2.],days)
+    _put(root,'defillama','stablecoins',[np.nextafter(0.,1.) if denominator=='stablecoins' else 10.],days)
+    inp=btc_inputs.load_all()
+    for key in (['realized_cap','nupl'] if denominator=='mvrv' else ['ssr']):
+        _assert_unavailable(inp[key])
+
+def test_native_overflow_pipeline_matches_withheld_derived_evidence(root):
+    idx=pd.date_range('2025-03-23',periods=600)
+    px=pd.DataFrame({'open':100.,'high':102.,'low':98.,'close':100.+np.sin(np.arange(600)/10),'volume':1000.},index=idx)
+    px.to_parquet(root/'coinbase/btc_daily.parquet')
+    _put(root,'coinmetrics','mcap_usd',list(100.+np.arange(600)),idx)
+    _put(root,'coinmetrics','mvrv',[np.nextafter(0.,1.)]*600,idx)
+    _put(root,'coinmetrics','supply',[100.]*600,idx)
+    _put(root,'bgeo','supply_in_profit',[20.]*600,idx)
+    _put(root,'sentiment_crypto','fear_greed',[50.]*600,idx)
+    inp=btc_inputs.load_all()
+    assert inp['nupl'].isna().all() and inp['realized_cap'].isna().all()
+    out=S.compute_all(inp)
+    withheld={**inp,'nupl':pd.Series(np.nan,index=idx),'realized_cap':pd.Series(np.nan,index=idx)}
+    pd.testing.assert_frame_equal(out,S.compute_all(withheld))
+    assert out.market_extreme.iloc[-1]=='normal'
+    assert out.composite_state.iloc[-1]=='RISK-OFF'
+    assert out.alloc_optimal.iloc[-1]==out.alloc_optimal_raw.iloc[-1]==0.
+
+@pytest.mark.parametrize('bad',[np.inf,-np.inf,True,False])
+def test_valuation_independent_invalid_inputs_abstain(bad):
+    from lib import config
+    idx=pd.date_range('2025-01-01',periods=600)
+    inputs={'price':pd.DataFrame({'close':100.},index=idx),'mcap':pd.Series(100.+np.arange(600),index=idx),'realized_cap':pd.Series(bad,index=idx),'nupl':pd.Series(bad,index=idx)}
+    out=S.valuation(inputs,config.load()['vector']['valuation'])
+    assert out.mvrv_z.isna().all() and out.nupl.isna().all()
+
+@pytest.mark.parametrize('bad',[True,False])
+def test_boolean_identity_parents_cannot_manufacture_measurement(root,bad):
+    days=_days('2024-01-01')
+    _put(root,'coinmetrics','mcap_usd',[100.],days)
+    _put(root,'coinmetrics','mvrv',[bad],days)
+    inp=btc_inputs.load_all()
+    _assert_unavailable(inp['nupl'])
+    _assert_unavailable(inp['realized_cap'])
+
+@pytest.mark.parametrize('family,limit',[('fear_greed',3),('supply_in_profit_pct',5)])
+def test_genuine_missing_observations_keep_existing_fill_limit(family,limit):
+    from lib import config
+    idx=pd.date_range('2026-01-01',periods=8)
+    inputs={'price':pd.DataFrame({'close':100.},index=idx),family:pd.Series([0.5]+[np.nan]*7,index=idx)}
+    out=S.market_extreme(inputs,pd.DataFrame(index=idx),{**config.load()['vector']['valuation'],**config.load()['vector']['extreme']})
+    assert out.extreme_score.iloc[:limit+1].notna().all()
+    assert out.extreme_score.iloc[limit+1:].isna().all()
