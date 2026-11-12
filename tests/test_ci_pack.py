@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_972),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_996),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_730),
+    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_998),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_732),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6010,6 +6010,34 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #8301, compose accepted runtime-adapter baseline):
+    Receiver e7f8565c preserves all six landed sibling-owner changes,
+    including #11101, and all 401 owners. Carry only the existing
+    unrun-scoring-engine regime step and eight exact feature objects.
+    Actual predecessor CI43148402672 passed 127 owners / 393 semantic
+    proofs with contract 0 introduced / 0 inherited at its own B/H/T.
+    The original owner remains 17 -> 18 commands, 21 -> 22 references,
+    1188 -> 1251 characters and weight 60 -> 63. Its +3 contribution
+    composes receiving 5971/5995/5729 to 5974/5998/5732.
+    Preserve all 97 H-only history lines and the complete main history,
+    137/138/131 job ceilings, ten packs, assertions and runtime controls.
+    Frozen reports remain exact objects; no research is regenerated.
+    These totals are source-derived composition, not a new planner run.
+    Natural successor CI must qualify the new exact combined source.
+
+    2026-11-12 (PR #11101, runtime-adapter closure): wiring
+    tools/xguerrilla/tests/test_runtime_adapter.py into
+    marketing-social-publisher satisfies the closure doctrine —
+    contract-delta had flagged the suite as named by no run: step
+    (run 43143064165, job 130934421614). The join adds its run token
+    to that step with no new job selected ("newly selected: none");
+    the estimator measures +2 on the shared owner for all three
+    probes: index 5969->5971, free-content 5993->5995, Prophet
+    5727->5729. Jobs 137/138/131, ten packs, selectors, commands
+    and admission limits unchanged. The wider selection is intended
+    (closure-required); natural successor CI must qualify the
+    repaired source.
 
     2026-11-12 (PR #8301, preserve landed native acquisition recovery):
     Receiver 27bdebdb retains Start and the landed #11051/#11064 recovery.
