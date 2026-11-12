@@ -450,10 +450,7 @@ def test_committed_links_have_no_tickers_and_match_index():
 @_needs
 @_needs_vendor
 def test_vendor_links_stay_with_vendor_files():
-    house = pd.read_parquet(LINK_FILES["house"][0])
     vend = pd.read_parquet(LINK_FILES["internal_only"][0])
-    fam = lambda d: set(d.child_family) | set(d.parent_family)  # noqa: E731
-    assert not fam(house) & set(ex.VENDOR_FAMILIES)
     assert ((vend.child_family.isin(ex.VENDOR_FAMILIES)) | (vend.parent_family.isin(ex.VENDOR_FAMILIES))).all()
     meta = json.loads(LINK_FILES["internal_only"][0].with_suffix(".meta.json").read_text())
     assert meta["source_family"] == "finviz_themes"
@@ -461,6 +458,40 @@ def test_vendor_links_stay_with_vendor_files():
     if meta["subsectors_matched_to_local_theme"] == 0:
         assert meta["subsector_to_theme_cause"] == ex.SUBSECTOR_THEME_CAUSE
         assert not ((vend.child_family == "subsector") & (vend.parent_family == "gmi_theme")).any()
+
+
+@_needs
+def test_house_links_contain_no_vendor_families():
+    # House-side containment half of test_vendor_links_stay_with_vendor_files, moved out so it
+    # runs without the off-tree vendor files (COO ruling 21:07Z). No new skip; nothing loosened.
+    house = pd.read_parquet(LINK_FILES["house"][0])
+    fam = set(house.child_family) | set(house.parent_family)
+    assert not fam & set(ex.VENDOR_FAMILIES)
+
+
+# A house sidecar carries vendor-fed fields as counts (integers), never as name lists: the
+# vendor-family name list stays in the off-tree vendor sidecar (COO ruling 21:07Z).
+VENDOR_COUNT_FIELDS = ("subsectors_total", "subsectors_matched_to_local_theme", "subsectors_unmatched")
+
+
+@_needs
+def test_house_sidecars_carry_vendor_counts_not_names():
+    sidecars = [p for p in sorted(HIST.rglob("*.meta.json"))
+                if "internal_only" not in p.parts and "vendor" not in p.name]
+    assert sidecars
+    checked = 0
+    for p in sidecars:
+        meta = json.loads(p.read_text())
+        if meta.get("rights_class") == "internal_only":
+            continue
+        for k in VENDOR_COUNT_FIELDS:
+            if k in meta:
+                assert isinstance(meta[k], int) and not isinstance(meta[k], bool), (p.name, k)
+                checked += 1
+        for k, v in meta.items():
+            if k.startswith("subsectors_"):
+                assert not isinstance(v, list), (p.name, k)
+    assert checked
 
 
 @_needs
