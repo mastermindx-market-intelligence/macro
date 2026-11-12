@@ -871,3 +871,27 @@ def test_cross_state_asof_fallback_uses_pair_common_date(tmp_path, monkeypatch):
     assert later > pair_last, "fixture must put the bench one session ahead"
     assert written["asof"] == pair_last, (
         f"fallback stamped {written['asof']!r}, expected the pair-common {pair_last!r}")
+
+
+def test_cross_state_asof_null_when_no_evaluable_pair(tmp_path):
+    """ADDENDUM (COO): a night with NO evaluable pair (fewer than 60 common dates)
+    and no cross events writes cross_state.json's ``asof`` as JSON null — never a
+    guessed date — while ``generated_at`` is still stamped."""
+    a, b = _aligned_pair()
+    sectors = _sectors(a, b)
+    universe, closes = _cross_universe(a, b)
+    # shrink both legs under the 60-session floor → no evaluable pair tonight
+    # (step_cross_pairs skips it before evaluate_cross is ever called), while the
+    # bench keeps full history — a guessed-date fallback would stamp the bench's
+    # last date, the null rule must not
+    n = 40
+    closes["don"] = a.iloc[-n:]
+    closes["rec"] = b.iloc[-n:]
+
+    re_.run_nightly(sectors, tmp_path, generated_utc="2026-10-01 05:00 UTC",
+                    universe=universe, closes=closes)
+
+    written = json.loads((tmp_path / "rotation_events" / "cross_state.json").read_text())
+    assert "asof" in written
+    assert written["asof"] is None
+    assert "generated_at" in written
