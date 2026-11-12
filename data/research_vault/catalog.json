@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T23:16:07.108405+00:00",
-  "count": 3258,
+  "generated_at": "2026-11-12T23:43:44.354286+00:00",
+  "count": 3260,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -121,6 +121,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-fmdyhq5r3wx-4c1261",
+      "title": "JPM US Market Intell Macro Week Ahead",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T23:05:47Z",
+      "summary_points": [
+        "Retail Sales Data Gap: Nov 17 Retail Sales report omits YoY numbers due to Oct 2025 gov't shutdown, creating consumer spending uncertainty and potential mispricing of retail exposure.",
+        "Earnings Concentration: Nov 17-20 earnings window features NVDA, HD, LOW, TSN, DIS, P; NVDA on Nov 17 drives high volatility risk for tech/industrial sectors.",
+        "Sector Rotation Opportunity: SPX TECH, FIN, DISCR, TELS, RE show strong % RPTG (green highlights) during 26-Oct–30-Oct, signaling actionable sector rotation.",
+        "US-China Trade Truce Extension: US-China agreement extends trade truce through Jan 20, 2027 (NBC), critical for trade flows, market sentiment, and geopolitical risk mitigation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-dfnvf28sjr9-991fb6",
       "title": "GS Chryssafis 10 Charts We're Talking About 12 Nov 2026",
@@ -680,6 +700,25 @@
         "EBITDA revised lower due to 3Q miss and 4Q outlook; reparable claims down 7.0% YoY (2024-2025), increasing sales/margin risk.",
         "Capital Allocation at Discount: Share repurchases (C$13.6m, 167k shares) viewed as compelling at depressed valuation, with NCIB allowing 2.6m shares remaining and net debt/EBITDA at 2.9x.",
         "Key Upside Catalysts: Potential for improved repair claims, margin expansion (operating leverage), and M&A pace; downside risk from elevated loss rates and inflationary pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qgitaquirtu-b855a2",
+      "title": "Global Economics Comment Should We Expect More Upside Inflation Surprises",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:45:09Z",
+      "summary_points": [
+        "Upstream Inflation Lag & Core Impact: 1% rise in producer/import prices drives core inflation by 0.1-0.2pp after 6-12 months; peak cumulative upstream pressures imply 0.8pp core inflation boost vs. pre-war baseline, sustaining inflation into 2027 H1.",
+        "Geopolitical Shock Driver: Iran war primary catalyst for upstream inflation (e.g., 10% shock causes 5-10bp monthly CPI surprise in 3-9 months), with cross-country exposure showing peak inflation surprises of 22.5bps (Canada), 17.5bps (Germany), and 12.5bps (US/UK).",
+        "AI Mismeasurement & Policy Risk: AI-related products drive ~0.1-0.2pp peak global core CPI boost in early 2027 (0.5pp US core PCE spike in Dec 2026); consensus underestimates inflation by 0.1-0.2pp over 9 months, skewing risks toward upside surprises and potential central bank tightening in early 2027."
       ],
       "tags": [],
       "tickers": [],
