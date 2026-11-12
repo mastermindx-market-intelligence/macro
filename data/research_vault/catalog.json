@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T18:43:14.863610+00:00",
-  "count": 3245,
+  "generated_at": "2026-11-12T19:45:59.227852+00:00",
+  "count": 3248,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -321,6 +321,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-h7mgh0mz2xq-aa4b10",
+      "title": "GS Privorotsky GS Basics Retail Favorites. Vol Curve Un Inverts. European Consumer 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:11:09Z",
+      "summary_points": [
+        "Geopolitical Risks & Market Resilience: Iran's 2-week military window and US carrier deployment; market absorbs Nvidia pressure (Retail Favorites +495bps, SPX vol un-inverted, 3rd best day in 3 years).",
+        "AI Infrastructure Overhangs: Monetization velocity concerns and LT supply absorption risks outweigh capital cost/permitting issues.",
+        "Market Outlook: Durable breakout requires lower rates, energy stabilization, and broader leadership; current choppy market driven by high oil prices and aggressive rate hikes.",
+        "European Consumer Data: Declining retail sales (Headline, ex.",
+        "Fuels & Food) amid winter bills, signaling weak demand with Aug-25 to Aug-26 trends negative."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-5s5t7zkjrah-504445",
       "title": "GS Khong GS Asia China Consumer and Healthcare, Trading desk color 12 Nov 2026",
       "institution": "S&T",
@@ -630,6 +651,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-ikgdfqoebnb-fbaad2",
+      "title": "TAG Immobilien AG (TEGG.DE) Polish engine remains resilient with balance sheet headroom, maintain Buy",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:42:07Z",
+      "summary_points": [
+        "<Polish Growth & Balance Sheet Strength>: Polish development sales target >2,077 units by FY30 with >20% EBITDA margins; robust balance sheet (42.6% LTV, 5.8x ICR) supports growth despite 20bp debt cost rise.",
+        "<Valuation & Buy Rating>: Maintained Buy with 20% upside; trades at 12.7% 12m forward earnings yield (vs. 9% avg) and 48% discount to 1-year NTA.",
+        "<Polish Credit Downgrade Risk>: Moody’s downgrade of Poland to A3 (Sept 2026) signals higher deficit/debt-to-GDP, risking negative impact on earnings.",
+        "<German Portfolio Stability>: German rental portfolio stable with 6.6% gross yield, 3.1% growth (9M26), 3.9% vacancy, and limited Berlin exposure (150 units) insulating from nationalization risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-0dndhzivezw-c692b9",
       "title": "Inventec (2356)",
       "institution": "Goldman Sachs",
@@ -748,6 +789,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ecq7yerhp9t-32a28d",
+      "title": "invesco nasdaq 100 Index commentary october 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-12T02:29:27Z",
+      "summary_points": [
+        "Geopolitical Inflation Catalyst: U.S.-Iran conflict drove oil to $117.64/bbl, intensifying inflation concerns amid Fed's hold, directly impacting monetary policy trajectory.",
+        "Sector Divergence: Tech/telecom underperformed (-7.83%) vs. consumer staples/healthcare outperformance, with basic materials key to relative S&P 500 performance.",
+        "AI Earnings Volatility: Alphabet/Amazon capex worries and NDX earnings growth (42% Oct 2026) signal heightened sector-specific volatility risk.",
+        "Tech Growth-Risk Paradox: NASDAQ-100 outperforms S&P 500 long-term (26.25% 3Y vs 23.38%) but faces sharp short-term swings (-27.6% Oct 21-Oct 22), demanding dynamic risk management."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
