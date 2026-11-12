@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T16:21:39.873550+00:00",
-  "count": 3238,
+  "generated_at": "2026-11-12T18:43:14.863610+00:00",
+  "count": 3245,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -120,6 +120,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-77nfnifsn3h-c81235",
+      "title": "GS Blekos Europe Macro Outlook AI Cycle Durable Siemens Energy PGHN & TKO (dg) Luxury Fieldtrip takes Reckitt Ceres Carbonomics 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:30:36Z",
+      "summary_points": [
+        "Consumption Stagnation: Real consumption growth stalls at 0% qoq winter, below trend 2027, signaling weak macro momentum in Europe.",
+        "Stock Selection Catalyst: Siemens Energy (Buy, €200 target) favored over PGNH/TKO (Sell) due to unfavorable fundraising/fee dynamics for the latter.",
+        "Luxury Sector Allocation: Prada/Moncler (Buy) highlighted for strong gross inflows/fee economics; Zegna (Neutral) reflects mixed sector dynamics.",
+        "Fee Economics Risk: PGNH/TKO's sell rating driven by structural fee dynamics and fundraising challenges impacting portfolio flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-asqmebngn99-1c1da3",
       "title": "GS Novak GS U.S. Industrials & Materials today + factors + AI EPS tomorrow 11 Nov 2026",
@@ -257,6 +277,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yehki0mdi2n-efad97",
+      "title": "GS Warren Equity Index Vol Update 11Nov26 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:11:19Z",
+      "summary_points": [
+        "Nvidia CEO Risk: SPX/NDX surge on AI optimism offset by NVDIA -9% on CEO meeting rumors (NDX -80bps), creating volatility despite VIX decline; key risk: 1m call spreads for breakout amid pending CEO replacement.",
+        "Options Flow & Volatility Shift: Strong short-dated SPY call spread flows (27Nov 775/800) with straddle spreads at 66bps/88bps; declining Vol ATMF and Skew (e.g., 18Dec26: Vol ATMF Chg -1.65, Skew Chg -0.0264) signal reduced market stress.",
+        "US CPI & Fed Policy: Strong CPI print indicates Fed \"behind the curve,\" with December as critical inflection point for policy timing; data release Friday drives near-term rate expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
@@ -447,6 +486,67 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-lddjgx2eivt-36104c",
+      "title": "AVC (3017)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:44:46Z",
+      "summary_points": [
+        "Growth Driver & Capacity Expansion: Liquid cooling penetration to drive 44% YoY revenue growth in 2027, supported by 50% capacity expansion in Vietnam and next-gen GPU/ASIC server adoption.",
+        "Earnings Revision & Margin Expansion: Revised GPM up by 1.2/0.3/0.4ppt in 2026/27/28E, accelerated by product mix shift toward servers/liquid cooling, offsetting 1% 2026 revenue downgrade.",
+        "Buy Rating & Target Price: Goldman Sachs maintains Buy with 12-month target NT$4,820 (30.6x 2027E P/E), reflecting 72.8% upside from current price and stronger margins.",
+        "Key Downside Risks: Slower liquid cooling adoption, reduced AI server demand, intensified competition, and delayed general server recovery."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-9jtrijasq21-90388a",
+      "title": "Nippon Express Holdings (9147.T) First Take Earnings Review Results slightly above expectations, full year guidance raised...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:44:31Z",
+      "summary_points": [
+        "Earnings Beat & Guidance: Q3 2026 profits (¥31.1bn) beat estimates (¥27.8bn); full-year guidance raised to ¥105.0bn (vs. prior ¥95.0bn), driven by forwarding performance and asset reallocation.",
+        "Strategic Targets: FY2028 goals of ¥150bn profits and 10%+ ROE via pricing optimization, cost cuts (\"Japan Business Cost Reduction Project\"), and foundation strengthening.",
+        "Price Target Decline: Goldman Sachs’ target for Nippon Express (9147.T) fell to 3,400 JPY (below current 3,772 JPY), signaling strong bearish sentiment despite recent rating upgrade.",
+        "Rating vs Target Divergence: Shift from \"Not Recommended\" to \"Strong\" rating contrasts with declining price targets, indicating institutional disconnect between qualitative outlook and quantitative price expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-uhgifxlrori-b4da37",
+      "title": "Europe Healthcare Biotechnology 3Q26 updates for AUTL, BCYC, DBV, GUBRA and IMCR",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:44:18Z",
+      "summary_points": [
+        "AUTL Earnings Beat & Guidance: Q3 2026 revenue $41.2m (+95% YoY) and gross margin 57% beat consensus; FY26 revenue guidance raised to $150m+ (vs $140-150m), targeting 66% gross margin by 2028.",
+        "DBV Viaskin Regulatory Catalyst: FDA priority review decision for 4-7y age group expected Q4 2026; rolling BLA submission for 1-3y age group planned 2027, critical for market access and Viaskin Peanut revenue.",
+        "Bicycle Therapeutics Execution: Q3 2026 collaboration revenue $34.1m (291% vs consensus), operating expenses down 40%, cash $469.9m; pipeline advances (BT5528 Phase 2, BT1702 Phase 1) drive near-term valuation.",
+        "BT5528 PoS Sensitivity: 100% clinical success (PoS) could lift BT5528 valuation from $9 (bear) to $97 (bull), dominating price action; critical for European biotech holdings.",
+        "AUTL Critical Risks: Downside risks include negative trial outcomes (BOBCAT/ALICARIC), weaker commercial performance, clinical delays, and higher cash burn impacting profitability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 28,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-2qvner8elel-8e7621",
       "title": "GS EUROPEAN EXPRESS Infineon Siemens Energy Zalando ON IMCD Macro Global Corporate Access",
       "institution": "Goldman Sachs",
@@ -485,6 +585,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-a0teuk3evbd-f0e828",
+      "title": "StubHub Holdings (STUB) Q3'26 Earnings Review Events Backup Produces Positive Mix of Growth and Margins",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:43:16Z",
+      "summary_points": [
+        "Q3 Earnings Highlights: Solid GMS/Adj.",
+        "EBITDA beat driven by live events demand and market share; debt leverage declining to 2.5x (vs 4.5x FY25) with $100mm debt repayment, TTM FCF at $192mm.",
+        "Q3 Revenue Miss & Downward Estimates: Q3 revenue missed due to World Cup lower take rates; revised Q4 GMS ($2.45bn vs $2.56bn), revenue ($483mm vs $504mm), and FY26 GMS ($10.38bn vs $10.52bn) with key risks: World Cup impact, MLB volatility.",
+        "Enhanced Liquidity & Capital Allocation: Net debt/EBITDA declining to 1.9x (12/26E) from 4.4x (12/25); operating cash flow surging to $402.5m (12/26E), enabling strategic investment capacity.",
+        "Key Downside Risks: World Cup impact, MLB volatility, 2027 concert visibility uncertainty, regulatory environment, and execution risk limiting near-term upside despite improved leverage."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rjxupxovvtl-3efd12",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update(123)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:42:50Z",
+      "summary_points": [
+        "MXAPJ Undervaluation & Upside Target: Forward P/E 9.0x (3.2 s.d. below mean), 607bp equity/bond yield gap (1.3 s.d.), targets 1040 (+27%) by 12M, signaling strong growth expectations and significant undervaluation vs historical averages and bonds.",
+        "FII Capital Flight in EM Asia ex-China: Persistent negative net foreign inflows (India: -148.7B USD 2026 YTD; Taiwan: -89.57B USD), highlighting structural fragility and necessitating defensive positioning in EM Asia ex-China markets.",
+        "Taiwan vs Korea Divergence: Taiwan’s explosive Mtd return (11.9%) vs Korea’s severe underperformance (-7.5%), driven by geopolitical tensions (ex-KR/TW* rebasing) and sector leadership (Info Tech), revealing stark regional risk asymmetry.",
+        "AI/Semiconductor Momentum: AEJ AIGC Semiconductor (3.1% 1-day) and Taiwan Apple Suppliers (14.9% week-to-date) signal robust investor interest in AI-driven tech, aligning with fundamental trends and strategic flows toward high-growth baskets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
