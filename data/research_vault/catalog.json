@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T17:39:12.802327+00:00",
-  "count": 3310,
+  "generated_at": "2026-11-13T17:54:25.585760+00:00",
+  "count": 3311,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -183,6 +183,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3dxdy8bmiuu-b39f6c",
+      "title": "Research Unplugged 2027 Global Commodities Outlook",
+      "institution": "2027 Outlook",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:50:54Z",
+      "summary_points": [
+        "Commodities Structural Value: Structural drivers sustain commodities' hedging/diversification value despite sharp risk premia declines, with sector-specific analysis for oil, gas, agriculture, and metals.",
+        "US Macro Data Focus: AI capex and housing affordability are critical US economic data points for 2027 positioning, alongside supply-driven commodity pricing.",
+        "China Policy Risk: China's stretched budgets and \"more uncertainty\" represent top geopolitical/policy risk factor, amplifying trade/tariff impacts on emerging markets and consumer sectors."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
