@@ -1,0 +1,58 @@
+{
+  "schema": "subtheme_logged_call_hit_bounds_evidence.v1",
+  "source_base": "6cc23aeb9848daf75af2884fc000d8bb5c0ebe27",
+  "procedure_pin": "bdf2a972e68a70270c24d4b5d61a4d60edc4f288",
+  "generated_at": "2026-10-03T05:48:51.220523+00:00",
+  "scope": "AUTHOR_REAL_IMPORT_SYNTHETIC_IO_NODE_RENDERER_NOT_MARKET_OR_BROWSER_PROOF",
+  "files": {
+    "engine/subsector_track_record.py": {
+      "bytes": 44036,
+      "sha256": "c3add69a963e862682bca0653267150e09f3dff934ea7559e491a061a2da693b",
+      "git_blob": "1be4071f9758c1bfe7c1fd4cb3853699c50f2b22"
+    },
+    "tests/test_subsector_track_record.py": {
+      "bytes": 64703,
+      "sha256": "e9804473ff3e3e4f21864a5a6c84288656d231a55371671a7ea4c13760e3a7db",
+      "git_blob": "3bff6b0ed957ab1ae0b1a730392ecb3f4cf2184a"
+    },
+    "templates/subsector_rotation.js": {
+      "bytes": 99426,
+      "sha256": "3380c846d3b32c6e8c758f6b0209e4d0fa064f81f9cface738d96e7ccc64e486",
+      "git_blob": "059f2d3ada9f885dde985322af2d105f38442d92"
+    },
+    "research/sector_intelligence/subtheme_qualification_2026_10_02/README.md": {
+      "bytes": 11497,
+      "sha256": "6187dca4e9977e3bd6ffc032f39e854675f8cd36e1b4a00ebd52532f657d2e94",
+      "git_blob": "53bcef2fdfda97da613857661c33323ca5804d18"
+    }
+  },
+  "tests": {
+    "final_passed": 260,
+    "new_cases": 36,
+    "backend_red_failed": 17,
+    "renderer_red_failed": 16,
+    "count_type_red_failed": 2,
+    "count_type_red_passed": 1,
+    "prior_test_prefix_preserved": true,
+    "log": {
+      "bytes": 340,
+      "sha256": "4b905b658af6bc202468a0ebc6e02be99ef7698d4be729722b1c1e1aac45bcf3",
+      "git_blob": "d68c30d1d8c35ed9ac6aa8c570650bb83d1a0603"
+    },
+    "exhaustive_due_max": 25,
+    "aggregate_outcome_completions": 23750
+  },
+  "population": "parsed_due_directional_calls",
+  "formula": "[H/N, (H+N-M)/N]",
+  "is_confidence_interval": false,
+  "selection_bias_corrected": false,
+  "live_rank_changed": false,
+  "promotion_threshold_changed": false,
+  "deployed": false,
+  "held": [
+    "independent review",
+    "historical data qualification and original denied inspection",
+    "original public result inspection",
+    "original administrator-blocked browser file navigation"
+  ]
+}

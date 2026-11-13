@@ -1,0 +1,133 @@
+{
+  "artifact_kind": "attended_development_house_adjudication_source_observation",
+  "artifact_version": 1,
+  "vintage": "DEVELOPMENT",
+  "scope": "Complete current house-adjudicated decision stratum, copied as source observations; no new semantic judgment or correctness grade.",
+  "capture_clocks": {
+    "source_read_verified_at_utc": "2026-10-04T06:15:02.312128+00:00",
+    "observer_capture_known_at_utc": "2026-10-04T06:15:02.312128+00:00",
+    "clock_basis": "actual C3 Personal PID1698 observer instant after immutable source and registry bytes were read and verified; equal instants describe one observation, not runtime latency",
+    "canonical_owner_append_at_utc": null,
+    "canonical_owner_append_null_reason": "NOT_APPENDED_BY_THIS_CANDIDATE",
+    "runtime_consumer_received_at_utc": null,
+    "runtime_consumer_received_null_reason": "OUTSIDE_ATTENDED_SOURCE_OBSERVATION"
+  },
+  "input_ancestry": {
+    "repo": "mastermindx-market-intelligence/macro",
+    "source_commit": "94e5865e13fc42063f9c7d1e9b485958ccaee5b1",
+    "source_path": "data/theme_graph/probation/proposals.jsonl",
+    "source_git_blob": "58d8d8722d7834f30df55dd8b1e571ee20f7b773",
+    "input_raw_sha256": "fb7a55fb7abb27261e8541742d9e79c143a7d52d21bb26962ca1150e77e59c7e",
+    "input_raw_bytes": 219615,
+    "scope": "Digest/reference to immutable existing owner input; no raw proposal payload is copied into this artifact",
+    "source_admission_receipt_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/admission.json",
+    "source_review_receipt_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md",
+    "source_reader_witness_path": "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/reader-witness.json",
+    "accepted_source_receipt_hashes": {
+      "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/REVIEW.md": {
+        "sha256": "e0751b12e9790f8d2f6c5aa6d9970b3d2d241b9da05d8754f6c0c0179f8f6eb8",
+        "bytes": 6890,
+        "git_blob": "a594cfedd73ad53b5dad4cc83e8f1e0e86796e80"
+      },
+      "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/admission.json": {
+        "sha256": "26ed6630277d7c47e95ef96954b22d95e9a3b34c8bc5797fa80227a8746ca626",
+        "bytes": 11324,
+        "git_blob": "97969a24e8d31afe3206f5c57f34185a962b29f0"
+      },
+      "research/prophet_v4/d2/curation/lithium-storage-2026-10-04/reader-witness.json": {
+        "sha256": "8921e0672414979a5b69f81b1cc0173373fb54ad1d7bb31e2970d0064d231f95",
+        "bytes": 126031,
+        "git_blob": "48a773f8c577d6bb63d7ba9f91ddb3ac7c48c257"
+      }
+    }
+  },
+  "population": {
+    "source_denominator_rows": 236,
+    "proposed_outside_frozen_adjudicated_stratum": 234,
+    "frozen_adjudicated_stratum_rows": 2,
+    "observed_stratum_rows": 2,
+    "missing_stratum_rows": 0,
+    "rule": "Every non-proposed decision in the exact committed source input; includes both rejected decisions. No quality/performance selection. The other234 rows are outside this decision stratum, not missing or converted to zero.",
+    "identity_grain": "house decision/proposal ID only; no vendor member, security or issuer identity population"
+  },
+  "observations": [
+    {
+      "house_decision_id": "prop:a1b11d839c5d789d",
+      "status": "rejected",
+      "original_source_admission_at": "2026-10-04T00:51:55.181207Z",
+      "original_applied_decision_at": "2026-10-04T00:51:55.181207Z",
+      "house_authored_reason": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+      "house_reason_utf8_sha256": "191a0852b61bffe819ba13a122d34c15c0d0a33930cf49ba107cd5e0b5f9e447",
+      "ratified_by": null
+    },
+    {
+      "house_decision_id": "prop:de400c2bb566c04c",
+      "status": "rejected",
+      "original_source_admission_at": "2026-10-04T00:51:55.181207Z",
+      "original_applied_decision_at": "2026-10-04T00:51:55.181207Z",
+      "house_authored_reason": "Independent reviewer /root/d2d_curation under parent GMI v3, review concluded 2026-10-04T00:33:06Z. Applied curator /root/evaluation_capture under Astra parent commission gmi-d2d-curation-decisions-20261004-astra-001; parent decision https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698. Reject the offered local-to-canonical mapping: contracts/theme_graph/README.md:103-107 and engine/theme_graph/materialize.py:1099-1120 define EXPRESSES local-to-canonical as vocabulary resolution. Recorded nonexclusive grid applications do not establish vocabulary identity or basket-wide issuer grid exposure. Preserve local identity and application facts; remain unmapped. No public rights or predictive authority established.",
+      "house_reason_utf8_sha256": "191a0852b61bffe819ba13a122d34c15c0d0a33930cf49ba107cd5e0b5f9e447",
+      "ratified_by": null
+    }
+  ],
+  "authorship": {
+    "independent_reviewer": "/root/d2d_curation",
+    "independent_review_concluded_at_utc": "2026-10-04T00:33:06Z",
+    "applied_curator": "/root/evaluation_capture",
+    "applied_curator_commission": "gmi-d2d-curation-decisions-20261004-astra-001",
+    "accepted_parent_receipt": "https://github.com/mastermindx-market-intelligence/macro/pull/8324#issuecomment-5975054698",
+    "accepted_parent_receipt_author": "mastermindx-3",
+    "accepted_parent_decision_created_at_utc": "2026-10-04T00:38:00Z",
+    "source_binding": "These identities/rights apply to the original house-authored adjudication notes and actual accepted parent receipt, not provider material in underlying proposals."
+  },
+  "rights_scope": {
+    "family": "mastermind_curated",
+    "auth_class": "house",
+    "rights_class": "direct_display_ok",
+    "current_use": "internal retention of own decision IDs/status/event clocks/house-authored reason and accepted authority receipts for attended DEVELOPMENT source evidence",
+    "registry_source_commit": "94e5865e13fc42063f9c7d1e9b485958ccaee5b1",
+    "registry_path": "config/theme_sources.yml",
+    "registry_version": 1,
+    "registry_updated_date": "2026-08-14",
+    "registry_raw_sha256": "8bb48fb9117043f6ee45ab156a773aedda6bfaed688fc38a9c1ada7d881cd97e",
+    "registry_scope": "Current exact committed registry revision; no assertion of deployed consumer entitlement",
+    "third_party_membership_copied": false,
+    "prices_copied": false,
+    "raw_proposal_evidence_copied": false,
+    "underlying_vendor_rights_promoted": false,
+    "later_use_rule": "Recheck the current registry and proposed use before reuse. This artifact does not grant underlying provider/public/model permissions or overwrite earlier curation/rights history."
+  },
+  "evidence_limits": {
+    "adaptive_previously_reviewed_history": true,
+    "semantic_accuracy_measured": false,
+    "power_or_information_target_claimed": false,
+    "confirmation_sample": false,
+    "predictive_grade": null,
+    "natural_runtime_accrual": false,
+    "qledger_registration": false,
+    "operational_shadow_consumer_proof": false,
+    "canonical_security_or_pit_membership": false,
+    "provider_origin_unknowns_resolved": false
+  },
+  "permissions": {
+    "E1_influence": false,
+    "E2_influence": false,
+    "E3_influence": false,
+    "E4_influence": false,
+    "E5_influence": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_originate": false,
+    "may_escalate": false,
+    "may_trade": false,
+    "may_publish": false
+  },
+  "record_discipline": {
+    "proposed_owner_carrier": "existing #8299 attended research/evidence convention under parent GMI/Eval-OS admission",
+    "append_only": "NEW-only versioned artifact; do not overwrite snapshot_clock.json, earlier source receipts or historical decisions",
+    "correction": "A later correction must be a separate linked version with actual new clocks; never retroactively make these adaptive rows confirmatory",
+    "canonical_persistence_status": "CANDIDATE_PENDING_ROOT_ADMISSION_AND_READBACK",
+    "no_new_runtime_api_scheduler_grader_publisher": true
+  }
+}

@@ -39,7 +39,7 @@ import pandas as pd
 
 from engine import bottom_radar as _br
 from engine import cycles as _cyc
-from engine.subsector_rotation import _rotation_metrics, _zscore
+from engine.subsector_rotation import _rotation_metrics, _zscore, _rotation_number
 
 # trading-day windows for the rolling horizons (match subsector_rotation's MOM set).
 _HZ_BARS = {"1W": 5, "1M": 21, "3M": 63, "6M": 126, "1Y": 252}
@@ -154,13 +154,17 @@ def within_tab_rotation(groups: Mapping[str, Mapping]) -> dict:
     coiling = sorted((_entry(k) for k in keys if _coiling_ok(k)),
                      key=lambda e: e["emerging_score"], reverse=True)
 
-    improving = [k for k in keys if met[k]["rs_mom"] > 0 and (met[k]["accel"] is None or met[k]["accel"] >= 0)]
-    emerging_vals = [met[k]["emerging_score"] for k in keys]
+    measured = [k for k in keys if met[k]['rotation_status'] == 'MEASURED']
+    improving = [k for k in measured if met[k]['rs_mom'] > 0 and met[k]['accel'] >= 0]
+    emerging_vals = [met[k]['emerging_score'] for k in measured]
+    complete = len(measured) == len(keys)
     partic = {
-        "frac_improving": round(len(improving) / len(keys), 3) if keys else None,
-        "mean_emerging": round(float(np.mean(emerging_vals)), 3) if emerging_vals else None,
-        "n": len(keys),
+        'frac_improving': round(len(improving) / len(keys), 3) if complete and keys else None,
+        'mean_emerging': round(float(np.mean(emerging_vals)), 3) if complete and emerging_vals else None,
+        'n': len(keys), 'n_measured': len(measured), 'n_unavailable': len(keys) - len(measured),
+        'population_basis': 'all_expected_groups_required',
     }
+
     return {"metrics": met, "rising": rising, "coiling": coiling, "participation": partic}
 
 
@@ -172,37 +176,37 @@ def cross_tab_leadership(
     tab_partic: Mapping[str, float | None],
     *, weights: tuple[float, float, float] = (0.40, 0.30, 0.30),
 ) -> dict:
-    """Rank the tabs by a Leadership Acceleration Score (LAS).
-
-    tab_reps    : {tab: {horizon: pct}} — the tab's representative index return.
-    tab_breadth : {tab: breadth_thrust} — Δ share above 50-DMA.
-    tab_partic  : {tab: frac_improving} — share of the tab's subsectors improving.
-
-    LAS = w1·z(return_accel) + w2·z(breadth_thrust) + w3·z(participation), z-scored
-    ACROSS the tabs. rising_star = argmax(LAS); leader_now = argmax(rs_ratio level).
-    """
+    """Existing three-leg composite on a shared complete cohort, without zero imputation."""
     tabs = list(tab_reps)
     rot = _rotation_metrics(dict(tab_reps)) if tabs else {}
-    z_ret = _zscore({t: (rot.get(t, {}).get("z_accel")) for t in tabs})
-    z_brd = _zscore({t: tab_breadth.get(t) for t in tabs})
-    z_par = _zscore({t: tab_partic.get(t) for t in tabs})
-    w1, w2, w3 = weights
-
-    out: dict[str, dict] = {}
+    raw = [{t: _rotation_number(rot.get(t, {}).get('z_accel')) for t in tabs},
+           {t: _rotation_number(tab_breadth.get(t)) for t in tabs},
+           {t: _rotation_number(tab_partic.get(t)) for t in tabs}]
+    w1, w2, w3 = weights  # preserve the existing three-weight input contract
+    comparable = [t for t in tabs if all(leg[t] is not None for leg in raw)]
+    zs = [_zscore({t: leg[t] if t in comparable else None for t in tabs}) for leg in raw]
+    out = {}
     for t in tabs:
         m = rot.get(t, {})
-        las = w1 * z_ret.get(t, 0.0) + w2 * z_brd.get(t, 0.0) + w3 * z_par.get(t, 0.0)
+        values = [z[t] for z in zs]
+        las = (_rotation_number(sum(w * value for w, value in zip((w1, w2, w3), values)))
+               if all(value is not None for value in values) else None)
+        def rounded(value):
+            return round(value, 3) if value is not None else None
         out[t] = {
-            "rs_ratio": m.get("rs_ratio"), "rs_mom": m.get("rs_mom"),
-            "accel": m.get("accel"), "quadrant": m.get("quadrant"),
-            "breadth_thrust": tab_breadth.get(t), "participation": tab_partic.get(t),
-            "z_return": round(z_ret.get(t, 0.0), 3), "z_breadth": round(z_brd.get(t, 0.0), 3),
-            "z_participation": round(z_par.get(t, 0.0), 3), "las": round(float(las), 3),
+            'rs_ratio': m.get('rs_ratio'), 'rs_mom': m.get('rs_mom'),
+            'accel': m.get('accel'), 'quadrant': m.get('quadrant'),
+            'breadth_thrust': raw[1][t], 'participation': raw[2][t],
+            'z_return': rounded(values[0]), 'z_breadth': rounded(values[1]),
+            'z_participation': rounded(values[2]), 'las': rounded(las),
+            'leadership_status': 'MEASURED' if las is not None else 'UNAVAILABLE',
+            'leadership_comparison_tabs': len(comparable),
         }
-
-    rising_star = max(tabs, key=lambda t: out[t]["las"]) if tabs else None
-    leader_now = max(tabs, key=lambda t: (out[t]["rs_ratio"] if out[t]["rs_ratio"] is not None else -9e9)) if tabs else None
-    return {"tabs": out, "rising_star": rising_star, "leader_now": leader_now}
+    stars = [t for t in tabs if out[t]['las'] is not None and out[t]['las'] > 0]
+    leaders = [t for t in tabs if out[t]['rs_ratio'] is not None and out[t]['rs_ratio'] > 0]
+    return {'tabs': out,
+            'rising_star': max(stars, key=lambda t: out[t]['las']) if stars else None,
+            'leader_now': max(leaders, key=lambda t: out[t]['rs_ratio']) if leaders else None}
 
 
 # ----------------------------------------------------------- driver ratios ----
