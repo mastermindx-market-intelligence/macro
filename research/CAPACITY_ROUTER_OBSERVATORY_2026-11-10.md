@@ -131,3 +131,33 @@ VPS SSH identity and the existing macro-update/admin service owners were verifie
 The complete 99-case composition subsequently passed in 7.971 seconds in an isolated Linux fixture using the incumbent VPS application dependencies, with ResourceWarning enabled and no warnings. The served checkout and running services were untouched. This resolves source/API composition qualification; the two local Mac failures remain preserved as diagnostic evidence, without an invented root-cause claim.
 
 Explicit Homebrew Python 3.14.7 also passed the full 99-case composition in 36.084 seconds with ResourceWarning enabled and no warnings, and the current Chromium proof passed again. The shell default had selected a separate Conda/Python/Playwright environment; that explains the missing browser executable but is not claimed as the proven crash cause. Screenshot capture now resets to the page top before full-page capture so sticky headers are not presented midway down the artifact.
+
+### Native and control qualification — 2026-11-13 continuation
+
+The current API/control/runtime composition passes 104 tests with ResourceWarning
+enabled and no warnings (Homebrew Python 3.14.7, 7.830 seconds). The 12 closed
+transport protocol cases pass for the exact installed gateway and translators:
+Anthropic, OpenAI and Responses; stream/nonstream; reported/absent usage. Nonces
+and native admission-clock inputs are equal across comparisons; no response
+headers or bytes are removed. The outdated OAuth fixture now explicitly supplies
+the installed ownership-hold field; no production account or provider was used.
+
+The disposable launchd proof passed with the actual native signal handler: an
+active stream completed after one ordinary SIGTERM, the automatic old-generation
+restart was held before listening, and the same job then loaded the intended
+next generation. The test job was removed. A separate stale-marker fixture
+qualifies the existing reload/watchdog maintenance brakes. These receipts do not
+claim production activation. The exact attended sequence and recovery boundaries
+are in `admin/deploy/CAPACITY_ATTENDED_ACTIVATION.md`.
+
+The real SSH pipe proof passed using the native observer and ConfigRefresh owner,
+with isolated configuration and VPS ingress files. Exactly one pipe delivered
+one validation and one apply; native and VPS effective revisions matched, and
+the ingress exited at cleanup. Native startup and shutdown both completed while
+the shared configuration lock was held. A durable marker fence now also keeps
+configuration writers held after an activation process loses its flock.
+
+The published recovery head's contract-delta and authority checks passed. Final
+head CI, permitted controller release, existing-owner VPS deployment, serial
+native activation and authenticated production acceptance remain separate next
+steps. The original workspace and branch remain in custody.

@@ -34,6 +34,18 @@ def acquire_writer(path, *, operation_id=None):
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
             raise WriterBusy("configuration writer is active") from exc
+        # The incumbent attended reload journal survives a lost process/flock.
+        # Its owner removes it only after runtime reconciliation; phase names do
+        # not let configuration writers resume independently of that owner.
+        maintenance = path.parent / "state/reload.lock/maintenance.json"
+        try:
+            maintenance.lstat()
+        except FileNotFoundError:
+            pass
+        except OSError as exc:
+            raise WriterBusy("native maintenance requires reconciliation") from exc
+        else:
+            raise WriterBusy("native maintenance requires reconciliation")
         journal = path.with_name(path.name + ".admin-receipts.json")
         try:
             jfd = os.open(journal, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)

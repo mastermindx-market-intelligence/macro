@@ -165,13 +165,19 @@ configuration and source manifest, and writes `CAPACITY_OBSERVER_SOURCE.json`.
 writers without installing or running them. The candidate preserves each
 writer's existing policy transform and adds locking before its document read.
 Control capability is gated by exact installed adapter fingerprints.
+The shared writer also honors the existing attended-maintenance journal after
+a lost process releases its flock. `--prepare-maintenance` prepares exact-job
+startup and reload/watchdog fences; it does not activate them. Follow the
+[attended activation procedure](deploy/CAPACITY_ATTENDED_ACTIVATION.md).
 
 Staging does not activate a service, install a native writer or change routes.
 Run `admin/tests/prove_capacity_runtime.py <staged-release>` using the incumbent
 venv. Its 12 closed-transport cases exercise the exact gateway/translators without
 production credentials or provider calls and compare status, headers and bytes.
 Inspect the real native writer diffs and qualify the existing configuration owner
-before enabling controls.
+before enabling controls. `prove_capacity_launchd.py` exercises the actual native
+signal handler in a disposable job; `prove_capacity_control_pipe.py` exercises
+the real SSH observation/control pipe against isolated native and VPS files.
 
 Publish the qualified branch and use the repository's existing release controls.
 Deploy the accepted admin revision through the incumbent VPS owner. Native

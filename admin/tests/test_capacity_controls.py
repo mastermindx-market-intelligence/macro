@@ -155,6 +155,27 @@ class OwnerControls(unittest.TestCase):
         self.assertEqual(r['state'],'NOT_APPLIED');self.assertEqual(r['code'],'CONTROL_OWNER_BUSY')
         self.assertEqual(self.path.read_bytes(),before)
         self.assertFalse(self.path.with_name('routes.json.admin-receipts.json').exists())
+    def test_maintenance_marker_fences_after_process_lock_is_released(self):
+        marker=self.path.parent/'state/reload.lock/maintenance.json'
+        marker.parent.mkdir(parents=True)
+        with configuration_writer(self.path):
+            marker.write_text('{"phase":"DRAINING_OLD"}')
+        before=self.path.read_bytes()
+        r=self.handle(self.intent({'interval_s':.5}))
+        self.assertEqual((r['state'],r['code']),('NOT_APPLIED','CONTROL_OWNER_BUSY'))
+        self.assertEqual(self.path.read_bytes(),before)
+        marker.unlink()
+        with configuration_writer(self.path):pass
+    def test_maintenance_marker_never_infers_owner_completion(self):
+        marker=self.path.parent/'state/reload.lock/maintenance.json'
+        marker.parent.mkdir(parents=True)
+        for value in ('invalid','{"phase":"COMPLETED"}','{"phase":"ROLLED_BACK"}'):
+            marker.write_text(value)
+            with self.assertRaises(WriterBusy):
+                with configuration_writer(self.path):pass
+        marker.unlink();marker.symlink_to(marker.parent/'absent')
+        with self.assertRaises(WriterBusy):
+            with configuration_writer(self.path):pass
     def test_shared_writer_cannot_enter_after_final_revision_check(self):
         request=self.intent({'interval_s':.5});actual=owner.atomic_private;blocked=[]
         def competing(path,body):

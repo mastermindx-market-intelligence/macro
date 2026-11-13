@@ -74,8 +74,9 @@ def ingest(raw, path=SNAPSHOT_PATH, *, now=None, recorder=None, _decoded=None):
         os.close(lock_fd)
 
 
-def main():
-    recorder = capacity_history.Recorder(capacity_history.database_path(SNAPSHOT_PATH))
+def main(path=SNAPSHOT_PATH):
+    path = Path(path)
+    recorder = capacity_history.Recorder(capacity_history.database_path(path))
     delivered = set()
     try:
         while True:
@@ -87,11 +88,11 @@ def main():
             try:
                 decoded = json.loads(raw)
                 if isinstance(decoded, dict) and set(decoded) == {"control_result"}:
-                    capacity_control_transport.accept_result(decoded["control_result"])
+                    capacity_control_transport.accept_result(decoded["control_result"], path=path)
                     continue
-                accepted = ingest(raw, recorder=recorder, _decoded=decoded)
+                accepted = ingest(raw, path=path, recorder=recorder, _decoded=decoded)
                 if accepted:
-                    request = capacity_control_transport.next_request(decoded["epoch"])
+                    request = capacity_control_transport.next_request(decoded["epoch"], path=path)
                     identity = (request.get("request_id") or request["operation_id"]) if request else None
                     if request and identity not in delivered:
                         print(json.dumps({"control_request": request}, separators=(",", ":")), flush=True)

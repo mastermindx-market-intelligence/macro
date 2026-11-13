@@ -9,6 +9,8 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import time
+import uuid
 from types import SimpleNamespace
 
 import httpx
@@ -74,9 +76,19 @@ async def main(release):
     gateway = importlib.import_module("ops.native_fabric.unified_router.gateway")
     observer = importlib.import_module("ops.native_fabric.unified_router.capacity_fabric_observer")
     routes_module = importlib.import_module("ops.native_fabric.unified_router.routes")
+    policy_module = importlib.import_module("ops.native_fabric.unified_router.model_policy")
+    # Equal request identities are controlled inputs; response fields are not removed.
+    fixed_uuid = SimpleNamespace(uuid4=lambda: uuid.UUID("11111111111111111111111111111111"))
+    gateway.uuid = policy_module.uuid = fixed_uuid
+    class AdmissionClock:
+        def monotonic(self): return 1000000.0
+        def __getattr__(self, name): return getattr(time, name)
+    # Only native admission measurements are fixed; asyncio and observer clocks remain real.
+    gateway.time = policy_module.time = AdmissionClock()
     # Closed credential fixtures exist only in this proof process.
     gateway._route_authorization = lambda *args: "fixture-upstream-token"
-    account = SimpleNamespace(id="fixture-account", exhausted=False, access_token="fixture-token", account_id="fixture-account")
+    account = SimpleNamespace(id="fixture-account", owner_held=False, exhausted=False,
+                              access_token="fixture-token", account_id="fixture-account")
     gateway.codex_oauth.read_accounts = lambda *args: [account]
     gateway._oauth_headers = lambda selected: {"authorization": "Bearer fixture-upstream-token"}
     wires = {"anthropic": routes_module.WIRE_ANTHROPIC, "openai": routes_module.WIRE_OPENAI,
@@ -109,7 +121,7 @@ async def main(release):
                                 response = await client.post("/v1/messages", json=request_body,
                                     headers={"authorization": "Bearer " + TOKEN, "x-fabric-agent-id": "runtime-proof-agent"})
                                 outputs.append((response.status_code, response.content, dict(response.headers)))
-                    assert outputs[0] == outputs[1], (kind, streaming, with_usage, "wire output changed")
+                    assert outputs[0] == outputs[1], (kind, streaming, with_usage, "wire output changed", {k: (outputs[0][2].get(k), outputs[1][2].get(k)) for k in set(outputs[0][2]) | set(outputs[1][2]) if outputs[0][2].get(k) != outputs[1][2].get(k)}, outputs[0][1] == outputs[1][1])
                     assert outputs[1][0] == 200, (kind, streaming, outputs[1][0])
                     snap = app.state.capacity_observer.snapshot(app)
                     record = snap["recent"][0]
@@ -124,7 +136,7 @@ async def main(release):
                     assert "fixture input" not in json.dumps(snap) and "fixture output" not in json.dumps(snap)
                     checks.append({"wire": kind, "stream": streaming, "usage_reported": with_usage, "result": "PASS"})
     print(json.dumps({"result": "PASS", "release": str(release), "cases": checks,
-                      "proof": "Exact gateway and translators; identical response status, headers and bytes; real provider usage or unknown; no network"}))
+                      "proof": "Exact gateway and translators with equal nonce/admission-clock inputs; identical response status, headers and bytes; real provider usage or unknown; no network"}))
 
 
 if __name__ == "__main__":

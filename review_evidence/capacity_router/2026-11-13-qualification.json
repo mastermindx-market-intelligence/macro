@@ -1,7 +1,7 @@
 {
   "schema": "mastermind.capacity_router.qualification.v1",
-  "recorded_at": "2026-11-13T02:57:51.910910+00:00",
-  "status": "SOURCE_QUALIFICATION_IN_PROGRESS",
+  "recorded_at": "2026-11-13T03:26:26.956598+00:00",
+  "status": "LOCAL_QUALIFICATION_PASSED_HOSTED_RELEASE_PENDING",
   "mission_complete": false,
   "recovered_head": "f77fc850b38491207043bc100fde253c84f6a528",
   "branch": "sol/web-capacity-router-upgrade-20261113-pro",
@@ -9,24 +9,27 @@
   "source_law_pin": "c0b30b422d2310e614f91faed49a4adbce4291f0",
   "source_sha256": {
     ".github/ci/legacy-jobs.yml": "bfa5954b09d3a65283418fd2becbe8de0958229026c719334bef4890b1fbffa4",
-    "admin/CAPACITY_ROUTER.md": "48d4d698e792f516422c06274bd7b3129da430d0b9a43333a97dbc017f393278",
+    "admin/CAPACITY_ROUTER.md": "833d4bbb763b3d16d3ea6d160fefcaff4a20c161dd68f8991664f4165303d1ce",
+    "admin/capacity_config_transaction.py": "fcd8f3976e77aa6a9c74dc9fc928ca790d07813c3db6bac30e969755d045baca",
     "admin/capacity_control_owner.py": "393d95d2a384de5dbb946522920960b39d04f71911695bb23ff76e463a0fab21",
     "admin/capacity_control_transport.py": "5d88dbb8d3e50a09973aee7ed6512eed4b8ca64bd0f5621d9c8f51146a39e30d",
     "admin/capacity_fabric_observer.py": "e6b6ff5f50a4c1cc6dd1cab6f336f634d1f23704df7204fef84839ac5628871a",
-    "admin/capacity_ingest.py": "a392ccce54d1dd055a22a4286d329369f697bde69fca94273c1a4abe789b5d7b",
-    "admin/deploy/stage_capacity_observer.py": "69eeb53a4e44f7bf56451d2854b846a41e05c27faeb4cf3659681f8e1e615e08",
+    "admin/capacity_ingest.py": "376c4153a1f4f66a358514a980d6f07d3b36a23744cc6dd2fd9503a212916672",
+    "admin/deploy/CAPACITY_ATTENDED_ACTIVATION.md": "70f36a54492db827c34d9bbf0d0106a7595313c2c9aba3aaeff9fe96ebee3de1",
+    "admin/deploy/stage_capacity_observer.py": "a2fef59e1ee54025eba7609996af2bba93a148a66e782781228a7b8a6839645a",
     "admin/server.py": "0d115596f4ce7760c072fec19e34b37cd8966486c28ba50adbe40b0646d51e84",
     "admin/static/capacity-router.js": "277f8aa9698890e09ba85ed05732733f823d504b429642fee2d69537a4d239fc",
+    "admin/tests/prove_capacity_control_pipe.py": "3287ca82a14d2810c364030cb598a3862a276cb290639b58d6a202aae5401fd6",
+    "admin/tests/prove_capacity_launchd.py": "6314272df61d4fe51d58319f00e41f7de2ddbcc067aebec83517e3795012eaf7",
     "admin/tests/prove_capacity_router_ui.py": "c759ed9edcfe4077fd04c272a7d69dde552ac85a5ea0feac76ac64cbf4f46483",
-    "admin/tests/test_capacity_controls.py": "61b87adf75d9f0ec555d336387562935a67e72dd8dd8b46d1dc1e7f88bc66d88",
-    "admin/tests/test_capacity_history.py": "16639444c47277a26cd5a8c43b84587b14622e1c6a91a1bb38bea77df66b5a52",
-    "admin/capacity_config_transaction.py": "a829a0cfa7b3157ea7b8db3ea10bdf1159d39dedd40da4e5eb83e4ba0546d292",
+    "admin/tests/prove_capacity_runtime.py": "a6e210e7962b6e2c6cfbcb9cb8ba245f4a5ecd6dc2b1d4c92fff2cd51150098f",
     "admin/tests/test_capacity_api.py": "cf0a8a5f733a58e6ca5cf052f7189c3c984c27ea509ac64f7f1db257455778dd",
-    "admin/tests/test_capacity_staging.py": "a19a406d8cde710df77a610c7a2669a99a61339208e36bd10275f409236d84e4",
-    "research/CAPACITY_ROUTER_OBSERVATORY_2026-11-10.md": "8bc4df119079253ef5407236a0ba19cce3f16122e9fa4aa8454faa2fc2474af8",
-    "admin/tests/prove_capacity_launchd.py": "ec7e3914dbfeb0804934b5e40ceceb4f67aeaa96d83c8002fc36729178649329"
+    "admin/tests/test_capacity_controls.py": "92edaab20658e596e3de766b9b435ceff8380e46a876b131a38f3f921b1b7e9f",
+    "admin/tests/test_capacity_history.py": "16639444c47277a26cd5a8c43b84587b14622e1c6a91a1bb38bea77df66b5a52",
+    "admin/tests/test_capacity_staging.py": "58aab7efecdfda2414237175b9fb748ad72ae5e690e2aa6d411193b5b164c864",
+    "agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md": "08132190885e456e74f2a0b71a4999ec602a4130b507b8e6a12d4855abbc563a",
+    "research/CAPACITY_ROUTER_OBSERVATORY_2026-11-10.md": "511617a07277640ea9119261bdabddf04c5d18f4bef8df5c2ae2a46803d99fbe"
   },
-  "source_diff_sha256": "ad881b102ed9bceee8c0171637ae07e19ce325a3c82e8f2bf9dac331742e6357",
   "changes": [
     "Closed the warning-producing test SQLite connection explicitly.",
     "Shared native configuration writer lock and unresolved-receipt fence.",
@@ -35,7 +38,11 @@
     "Complete runtime overlay dependencies and preservation of incumbent export/source manifests.",
     "Real HTTP auth, CSRF, SSE/reconnect, controls and persisted-history restart proof.",
     "Rejected POST connections close before unread bytes can be reused.",
-    "Existing CI owner enrolled with complete dependency closure."
+    "Existing CI owner enrolled with complete dependency closure.",
+    "Actual native protocol and real isolated SSH control-pipe qualification.",
+    "Exact-job/path/service-digest startup fence qualified under real launchd.",
+    "Existing reload/watchdog marker holds survive ordinary stale thresholds.",
+    "Configuration writers remain held by the existing maintenance journal after a process loses its flock."
   ],
   "local_proof": {
     "history": {
@@ -44,7 +51,7 @@
       "resource_warning_after_fix": false
     },
     "controls": {
-      "cases": 34,
+      "cases": 36,
       "result": "PASS"
     },
     "api_isolated": {
@@ -52,7 +59,7 @@
       "result": "PASS"
     },
     "staging": {
-      "cases": 4,
+      "cases": 7,
       "result": "PASS"
     },
     "ui": {
@@ -117,7 +124,181 @@
       "log_sha256": "caa4b482fd9e5b717e6108626ad5412c4ce6315fab0c0665269e1db92f161972"
     },
     "ui_capture_note": "Capture returns to the page top before full-page screenshots, so the sticky header is shown at its real initial position.",
-    "mac_environment_diagnosis": "The login shell resolved python3 to Conda 3.12 with a different Playwright build. Explicit Homebrew 3.14.7 runs the entire composition and current browser proof successfully. This does not establish the root cause of the earlier Conda interpreter crash."
+    "mac_environment_diagnosis": "The login shell resolved python3 to Conda 3.12 with a different Playwright build. Explicit Homebrew 3.14.7 runs the entire composition and current browser proof successfully. This does not establish the root cause of the earlier Conda interpreter crash.",
+    "final_composition": {
+      "cases": 104,
+      "result": "PASS",
+      "seconds": 7.83,
+      "resource_warning": false,
+      "python": "Homebrew 3.14.7",
+      "log_sha256": "620d330186077e5caffc5b0bec8c91de4f8bfdd15c6dfb70b7791d4be7048def"
+    },
+    "native_protocol": {
+      "result": "PASS",
+      "release": "/Users/chriswong/.local/share/mastermind/fabric-router/releases/model-tier-20261111-peak-d3bd87514e4ca129-obs-d4ee4ad515d4-obs-a471372dcb47",
+      "cases": [
+        {
+          "wire": "anthropic",
+          "stream": false,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "anthropic",
+          "stream": false,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "anthropic",
+          "stream": true,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "anthropic",
+          "stream": true,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": false,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": false,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": true,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": true,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": false,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": false,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": true,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": true,
+          "usage_reported": true,
+          "result": "PASS"
+        }
+      ],
+      "proof": "Exact gateway and translators with equal nonce/admission-clock inputs; identical response status, headers and bytes; real provider usage or unknown; no network"
+    },
+    "launchd": {
+      "schema": "mastermind.capacity_router.launchd_qualification.v1",
+      "production_effects": false,
+      "service_sha256": "d4bfdadf5eb2229ca0f7404f4b50040d2035a88576b1c2716d2ea96f325c9006",
+      "signal_handler_sha256": "2ebc1f33c577a341efbe6274d8b8cf437987f082c9dd3d86d16653be645b9290",
+      "label": "ai.mastermind.capacity-proof-11194-86623",
+      "prepared_startup_guard_sha256": "8e97a123a0c8352ebc65e9dafe640236c400d159e88a80cc754b5328c7688305",
+      "launchd_job_identity_verified": true,
+      "loaded_original_timeout_s": 1,
+      "original_pid": 86627,
+      "stream_completed_after_signal_s": 3.831,
+      "complete_stream_bytes": true,
+      "keepalive_child_fenced_before_listener": true,
+      "successful_fence_exit_stops_keepalive": true,
+      "new_pid": 92199,
+      "loaded_new_timeout_s": 19,
+      "serial_bootstrap_new_definition": true,
+      "result": "PASS",
+      "fixture_job_removed": true
+    },
+    "control_pipe": {
+      "schema": "mastermind.capacity_router.control_pipe_qualification.v1",
+      "release": "/Users/chriswong/.local/share/mastermind/fabric-router/releases/model-tier-20261111-peak-d3bd87514e4ca129-obs-d4ee4ad515d4-obs-a471372dcb47",
+      "remote_source_sha256": {
+        "ingress_sha256": "376c4153a1f4f66a358514a980d6f07d3b36a23744cc6dd2fd9503a212916672"
+      },
+      "native_config_path": "/private/tmp/capacity-control-native-11194-xq6zc5b3/routes.json",
+      "production_effects": false,
+      "native_startup_with_configuration_lock_held": true,
+      "receipts": [
+        {
+          "operation_id": "d2f1956c157d4a55b927567a73e4082f",
+          "state": "VALIDATED",
+          "before_revision": "6596722fed83e46a0cfd630088e0b9d4906d801ab039018edc915f36e578cb4e",
+          "after_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+          "effective_revision": "6596722fed83e46a0cfd630088e0b9d4906d801ab039018edc915f36e578cb4e",
+          "epoch": "8a7139eb4b0f439f902799a19db2eb65",
+          "origin_epoch": null,
+          "request_id": "d2f1956c157d4a55b927567a73e4082f",
+          "code": "VALIDATED",
+          "at": 1794539689.7700129,
+          "retry_allowed": false,
+          "ok": true
+        },
+        {
+          "operation_id": "1bb02d2ee4224839b5d819078a9a01da",
+          "state": "APPLIED",
+          "before_revision": "6596722fed83e46a0cfd630088e0b9d4906d801ab039018edc915f36e578cb4e",
+          "after_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+          "effective_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+          "epoch": "8a7139eb4b0f439f902799a19db2eb65",
+          "origin_epoch": null,
+          "request_id": "1bb02d2ee4224839b5d819078a9a01da",
+          "code": "EFFECTIVE_REVISION_VERIFIED",
+          "at": 1794539695.030015,
+          "retry_allowed": false,
+          "ok": true
+        }
+      ],
+      "native_effective_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+      "configuration_writes": 1,
+      "real_ssh_bidirectional_pipe": true,
+      "vps_effective_readback": {
+        "writable": true,
+        "revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+        "epoch": "8a7139eb4b0f439f902799a19db2eb65",
+        "interval_s": 0.5
+      },
+      "native_shutdown_with_configuration_lock_held": true,
+      "cleanup": {
+        "ingress_exited": true
+      },
+      "result": "PASS",
+      "pipe_connections": 1
+    },
+    "maintenance_owners": {
+      "result": "PASS",
+      "existing_owner_marker_age_s": 400,
+      "reload_stale_reclaim_held": true,
+      "watchdog_stale_restart_held": true,
+      "launchctl_invoked": false,
+      "production_effects": false,
+      "source_sha256": {
+        "reload.sh": "ab8c6b0c0f3627054f585c9d81983596e7fa6d356d6a745972392a24d8323a86",
+        "watchdog.sh": "bc9e887a2e006469af934ff815bb890763d589ef96592e7cce7eee36a3202291"
+      }
+    }
   },
   "logs": {
     "sqlite-before": {
@@ -155,13 +336,35 @@
     "composed-timed": {
       "sha256": "1725cf34a04b8cfb5eafabda42d9d3327cd3b0bf0e6934abecc16f23287f76b8",
       "bytes": 27317
+    },
+    "final-composition": {
+      "sha256": "620d330186077e5caffc5b0bec8c91de4f8bfdd15c6dfb70b7791d4be7048def",
+      "bytes": 651
+    },
+    "native-protocol": {
+      "sha256": "e125db42c50187d644c1a74548c2ffc52d144125a0907a0992e71635d19a60f0",
+      "bytes": 1328
+    },
+    "launchd-final": {
+      "sha256": "a987fee10a0a18a387ce54914da11ca5377eb0944aee6b6f2a85b946d9be1449",
+      "bytes": 862
+    },
+    "control-pipe": {
+      "sha256": "b3c03fb0da4d36e20ade5cf7ffafb9c4089f6ad1829fdf30bafe18c824591e38",
+      "bytes": 2334
+    },
+    "maintenance-owners": {
+      "sha256": "48a8a8c9d936020800d53cb7379f7041d7d9e53fb8a454307719a26444084263",
+      "bytes": 395
     }
   },
   "ci_repair": {
     "failed_job": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/43351141062/job/131642215095",
     "introduced_missing_paths": 5,
     "repaired_declared_paths": 6,
-    "hosted_final_head_proof_pending": true
+    "hosted_final_head_proof_pending": true,
+    "recovery_head": "ebc62ce548f445337d7d402c518bdc29f1693a18",
+    "recovery_head_contract_delta": "SUCCESS"
   },
   "production_effects": {
     "vps_deployed": false,
@@ -175,14 +378,16 @@
     "loaded_launchd_exit_timeout_s": 60,
     "disk_plist_exit_timeout_s": 1860,
     "application_graceful_timeout_s": 960,
-    "existing_forced_reload_not_qualified": true
+    "existing_forced_reload_not_qualified": true,
+    "staged_candidate": "model-tier-20261111-peak-d3bd87514e4ca129-obs-d4ee4ad515d4-obs-a471372dcb47",
+    "staged_candidate_state": "STAGED_NOT_ACTIVE; final maintenance-aware helper requires a new exact-source stage before activation"
   },
   "pending": [
-    "Qualify exact installed runtime overlay and native control owner.",
-    "Publish exact same branch, consume binding CI, Ready and merge-on-green through existing controller.",
-    "Deploy exact accepted source through incumbent VPS owner.",
-    "Qualified native activation with active-work preservation.",
-    "Live browser, SSE/history restart, effective settings and reversible observation-cadence proof.",
-    "Update existing Agent OS continuity and production receipts with readback."
+    "Final source commit/push and binding hosted CI",
+    "Permitted Ready/merge-on-green controller release",
+    "Existing-owner VPS admin deployment",
+    "Exact-source native staging and attended serial activation",
+    "Authenticated production dashboard, durable history, SSE reconnect, reversible cadence control and consumer proof",
+    "Production receipts and Agent OS closeout"
   ]
 }
