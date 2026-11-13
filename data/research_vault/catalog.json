@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T20:09:43.097827+00:00",
-  "count": 3317,
+  "generated_at": "2026-11-13T20:24:30.189066+00:00",
+  "count": 3318,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -224,6 +224,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pxjimzanoh2-1d7269",
+      "title": "UBS S&T Fed's Williams Nvidia Impacts Japan's Katayama Microsoft Outage Wayne Gouro 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:22:29Z",
+      "summary_points": [
+        "Fed's Williams Policy Shift: Williams signals inflation persistence, reversing prior \"no further hikes\" stance; senior role change may alter Fed direction toward data-driven rate adjustments.",
+        "Australia CPI Surges to 4.7%: Headline CPI hits 4.7% y/y (new cycle high), signaling peak inflation and shifting RBA policy toward prolonged restrictive rates with earlier/larger easing risks.",
+        "Iran Nuclear Proliferation Risk: IAEA loses track of Iran’s uranium stocks, escalating proliferation concerns and heightening geopolitical tensions threatening market stability.",
+        "U.S.-China AI Chip Controls: OpenAI backs proposals restricting China’s access to AI chips and ASML machinery, targeting Nvidia sales and blocking chipmaking equipment access."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
