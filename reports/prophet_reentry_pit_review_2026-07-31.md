@@ -46,7 +46,7 @@ or independent out-of-sample forecasting.
 A blanket repeat veto is not supported: the observed repeat-minus-other
 mean is only **-0.43pp**. A separate exploratory date-cluster bootstrap
 (12,000 same-board-date resamples across 18 matured dates, review seed
-1711) gave an approximate interval of **[-1.73,+0.90]pp**. Zero is inside;
+1711) gave an approximate interval of **[-1.74,+0.89]pp** (committed study, seed 1711; two-decimal quantiles). Zero is inside;
 this was an exploratory check, **not** confirmatory promotion proof.
 
 ### A useful adversarial check
