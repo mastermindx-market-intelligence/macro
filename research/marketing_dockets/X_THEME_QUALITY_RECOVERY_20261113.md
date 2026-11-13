@@ -1,12 +1,14 @@
 # Measured mover and theme copy recovery
 
-Operation: `marketing-x-editorial-upgrade-20261112-c2`, phase P7.
+Operation: `marketing-x-editorial-upgrade-20261112-c2`, phases P7, P9 and P12.
 Parent: [X editorial upgrade, PR #11196](https://github.com/mastermindx-market-intelligence/macro/pull/11196).
 Parent source receipt: [891ff3ba](https://github.com/mastermindx-market-intelligence/macro/blob/891ff3ba6cdc24211d2c1ffad2f402fea2bf89b5/research/marketing_dockets/X_EDITORIAL_UPGRADE_20261112.md).
 Original source carrier: [compiler PR #7493](https://github.com/mastermindx-market-intelligence/macro/pull/7493), branch `claude/mx-x-recovery-20260919-b`.
 Observed preimage: `b38d3f8c5b73ef92510c8585d6e0f2e54fe3ae66`.
 Governing Mastermind pin: `c0b30b422d2310e614f91faed49a4adbce4291f0`.
 Owner: current Chairman-assigned session, original public source carrier, expected-head publication.
+
+Latest source qualification is P12 below. Earlier verification counts, browser boundaries and next-action notes describe the phases in which they were recorded; they are not current release admission.
 
 ## Why this phase belongs here
 
@@ -91,3 +93,63 @@ The actual `content_plan()` regression uses an eligible, date-qualified theme, t
 The unchanged exact compiler code-owner command passed **862 tests, 2 skipped**. After adding an explicit nonempty eligible-caption assertion, the two all-disabled cases passed again. Source and whitespace self-checks precede expected-head publication. Existing provider/B2/B3/publication and genuine review holds remain; these tests do not settle the original private uncertain effect.
 
 Next: publish/read back this P9 source on the original branch, reconcile its fresh binding CI without retrying the protected private workspace, and preserve `merge-blocked` until the existing release/review authority resolves it. Continue the independent #11196 release lane and production acceptance work where its own gates permit.
+
+## P12 — natural prose without invented analysis
+
+The Chairman's continuation explicitly asks for posts that read naturally and provide useful interpretation. This phase starts from the canonical original compiler head `eeafeffb442f948b0c127e890abbf7a64c6bdf8e`. Source custody, existing reviews and private-effect fences remain on that carrier. The changed paths are the existing copywriter, marketing configuration, Kelly's existing persona card, their current tests, the outbox fixture and this docket. No parallel writer, gate, queue, persona store or provider route is introduced.
+
+### Causes addressed in the actual writer request
+
+The model was receiving contradictory instructions. It was told to offer a reaction that “costs you something,” add a falsifiable consequence to every post, compress chart text even when a longer shape was assigned, omit reference nouns supposedly visible in an assumed attachment, and imitate examples with canned punchlines. Kelly's separate loaded cognitive card independently required a confirming variable and failure condition for every claim. Fixing only the main system prompt would leave those instructions active.
+
+The assembled v2 request now asks for connected sentences with a clear subject and action, natural contractions, and rhythm determined by the material. A useful second sentence explains a supplied comparison, change or condition; it must add information. It must not invent a cause, market consensus, motive, forecast, personal experience or trade condition. Significant breaking news can finish on the verified event. Routine data should explain a useful relationship when the evidence supports one. Specific uncertainty remains valid; a generic closing caveat or slogan is not required.
+
+The same change reaches the active configuration laws, shape contracts, chart instructions, Kelly's loaded worldview/restraint, and existing repair feedback. Her evidence-based falsification franchise remains available for appropriate inputs; a failure condition is no longer compulsory for every observation. Persona examples are explicitly writing samples, never evidence for the new item or authenticated personal history.
+
+The calibrated examples replace unsupported “priced in,” soft-landing certainty, investor mind-reading, selected-winner claims about a whole group, forced jokes and trading slogans. For example, a hypothetical measured breadth packet can support: “Software finished higher, but just 4 of 24 stocks rose. A positive average hides how few names joined the gain.” This is a teaching sample, not a current market claim. Receipt examples state documented plan outcomes without inferring a net return, entry price or remaining-position giveback.
+
+The editorial brief revision is `marketing.editorial_brief.v2`. The existing projection, evidence, digest and writer result remain the owners. This does not claim that the outbox stores a new contract identity; its existing stored shape and copy mode are verified below.
+
+### Shapes and media stay coherent
+
+The actual nightly v2 path does not supply `has_media` or a media context, so its existing ten-word media validator was not the cause of the screenshot's short posts. The contradictory prompt still assumed an image and pushed short captions. The correction uses the observed editorial media state (`image_present`, `text_only` or `unknown`) and preserves the reference noun and any supplied horizon needed to understand the claim: a 50-day average and a 50-day high are different facts.
+
+The assigned limits and allocator are unchanged: caption is at most 90 characters; chart-family single-line text retains its existing cap; stack and two_part retain their existing larger budgets. Longer shapes are explanations, not short captions. No new media flag is injected into nightly generation, no shape quota is changed and no unseen attachment is claimed. When an image is observed, existing in-frame number support still binds. Deterministic mover/theme production remains a separate, already repaired P7 consumer; a v2 prompt change is not evidence of improved output from that other writer.
+
+The two complained-of disclaimers, “research context only” and “not a trading recommendation,” now join the existing machine-language gate used by both generation and the queue screen. Tests prove they cannot return through those paths. This source change does not silently edit or resend stored posts.
+
+### Numeric meaning: a duration cannot supply a price target
+
+A real v2 validation regression exposed a semantic hole: source facts containing only 50-day and 200-day averages allowed “The next target is 200.” The number existed in the whitelist but not as a price. The narrow repair excludes a no-plan fallback value only when its selected source occurrences are all explicit durations. Bare or ambiguous uses, currency references, typed observed levels, pack values and count fields preserve the incumbent fallback. Typed price display forms are respected, including a raw 199.6 displayed as 200.
+
+The existing strict forward-plan level set remains unchanged. An observed price cannot expand it. The shared target regex used by `approval_desk` remains unchanged; an additional local “target is N” check applies only to the demonstrated duration confusion. Compact values such as 200k and comma-grouped 200,000 are not misread as the 200 prefix. Duration phrases and existing count/volume exceptions, including “target is 200 million shares,” retain their existing treatment. Other grounding checks still own whether those counts are supported. Unknown or mixed numeric roles retain the old fallback, so this phase does not claim a universal semantic target validator.
+
+### Executed proof
+
+The unchanged existing code-gated compiler owner completed with **903 passed, 2 skipped**, one dependency deprecation warning, in 26.28 seconds:
+
+```text
+python -m pytest tests/test_marketing_ad_plane_o.py tests/test_marketing_persona_model.py tests/test_marketing_reply_arming.py tests/test_marketing_copy_v2.py tests/test_marketing_mover_stance.py tests/test_marketing_publish_time_content.py tests/test_copywriter.py -q
+```
+
+The final affected publisher owner completed with **805 passed, zero skipped**, the same dependency warning, in 16.81 seconds:
+
+```text
+python -m pytest tests/test_marketing_social_publisher.py tests/test_marketing_outbox.py tests/test_marketing_outbox_single_composition.py tests/test_marketing_publisher_autoapprove.py tests/test_marketing_live_verify.py tests/test_marketing_publish_time_content.py tests/test_marketing_publish_time_read.py tests/test_marketing_outbox_garbage.py tests/test_marketing_metrics_poll.py tests/test_marketing_metrics_poll_quota.py tests/test_marketing_weekend_levels.py tests/test_marketing_market_clock.py -q
+```
+
+The new regressions execute `build_context`, the actual configured `write_posts_llm_v2` request, parsing, validators, `emit_from_content_plan`, persisted outbox readback and the real queued voice gate. Both longer shapes are checked across all three media states. The image-present case stores a synthetic SVG and its fixture media identity; text-only/unknown cases store no attachment. This proves attachment composition, not a hosted image or visual-quality result. Kelly's actual loaded cognitive card is captured in the request, so the separate persona file cannot quietly restore its old universal condition.
+
+Provider output is an explicit fixture and the critic is disabled in these tests; there is no fake-model quality verdict. Lawful explanation uses one provider turn without repair. Unsupported numbers, duration-as-price, invented personal ownership and boilerplate use the existing single repair opportunity and then fail validation. Additional cases cover typed level displays, analyst targets through the real approval number check, explicit plan levels, numeric prefixes, and count/duration compatibility. A bounded read-only reasoning review caught the typed-float, numeric-prefix and copular-count edges; the root implementation includes those repairs and the final test commands above.
+
+The old compiler CI pack 9 failure at the preimage was a fixture session defect: `_write_heatmaps` supplied a themes packet with no `asof`, which P7 correctly refuses. The positive fixture now carries its already declared `_AS_OF`; production freshness and missing-session rejection are unchanged. Four initial local owner failures were missing sparse-checkout dependencies. Only the exact committed `site/adtest.js`, `site/index.html` and `data/marketing/ad_central/arenas.jsonl` blobs were materialized and hash-verified; they are not authored changes. No CI owner, timeout, packing ceiling or runtime weight is changed.
+
+### Current acceptance and next action
+
+These checks prove source behavior and actual local consumer wiring. They do not measure generated-model quality, engagement lift, production installation or X delivery. No model/provider call, media upload, live queue edit, post approval or send occurred.
+
+The browser is now connected. The two existing admin control-room tabs are owned by other ChatGPT browser sessions. This session's available tab, “✍️ Marketing voice and admin,” shows the admin sign-in form. No credentials were read and no alternate control route was used to take the other tabs. Live review and browser acceptance require an authenticated tab available to this session; this supersedes the older extension-UI blocker recorded above.
+
+At the last read, independent primary PR #11196 is on `f23648f4ed863f2fd41412da5e9d1387ef2113f5`: its contract checks pass and its four natural CI packs are still executing. Its P11 admin-restart dependency repair separately passed 514 tests with 3 skips. It has no release opt-in yet. Only concluded clean binding exact-head CI and the incumbent `merge-on-green` admission can release that lane.
+
+Next: publish and read back this P12 source on #7493 using expected-head CAS; consume its natural exact-head CI; preserve `merge-blocked` and the genuine prior CHANGES_REQUESTED review until the existing authority resolves them. The original private replay's SETTLEMENT_UNKNOWN state, controller refusal and provider/B2/B3/publication holds remain untouched. Continue the independent primary release and live admin proof where their own gates permit. No source or test result is treated as permission to clear those holds.

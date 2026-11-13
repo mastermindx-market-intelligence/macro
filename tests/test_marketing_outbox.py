@@ -1754,6 +1754,7 @@ def _write_heatmaps(root: Path) -> None:
         ],
     }), encoding="utf-8")
     (md / "themes_heatmap.json").write_text(json.dumps({
+        "asof": _AS_OF,
         "tiles": [
             {"t": "aicompute", "name": "Compute",
              "sector": "Artificial Intelligence", "perf": {"1D": -3.0},

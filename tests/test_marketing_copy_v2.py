@@ -4249,3 +4249,262 @@ class TestEditorialBriefProjection:
 
         src = inspect.getsource(cw.write_posts_llm_v2)
         assert "_attach_editorial_contract(" in src
+
+
+class TestNaturalEditorialConsumer:
+    """The actual configured writer and outbox preserve a useful explanation.
+
+    Provider text is a fixture, not a claim of live model quality. The real
+    parser, copy gates, contract projection and queue composition all execute.
+    """
+
+    @staticmethod
+    def _context(shape="two_part", media_state="unknown"):
+        cfg = TestPromptDoesNotFightItself._shipped_copywriter_cfg()
+        ctx = cw.build_context(
+            {"ticker": "CALM", "type": "chart", "account": "flagship"},
+            persona=cfg["personas"]["flagship"],
+            facts={
+                "facts": [
+                    {"id": "sma50_rejection", "salience": 8,
+                     "text": "CALM fell back from its 50-day average again.",
+                     "numbers": ["50"]},
+                    {"id": "sma200_below", "salience": 7,
+                     "text": "CALM is also below its 200-day average.",
+                     "numbers": ["200"]},
+                ],
+                "numbers_whitelist": ["50", "200"],
+            },
+        )
+        ctx.update(type="chart", shape=shape, angle="level_watch",
+                   as_of="2026-11-13", source_as_of="2026-11-13")
+        if media_state != "unknown":
+            ctx["media_context"] = {"state": media_state, "kind": "chart"}
+        if media_state == "image_present":
+            ctx["has_media"] = True
+        # Preserve real laws and persona cards; only the provider is a local
+        # stand-in. This test is not a quality verdict from a fake critic.
+        cfg["llm"] = dict(CRITIC_OFF_CFG["llm"])
+        return ctx, cfg
+
+    @staticmethod
+    def _text(shape="two_part"):
+        separator = "\n\n" if shape == "two_part" else "\n"
+        return ("$CALM fell back from its 50-day average again." + separator
+                + "It remains below the 200-day average as well, leaving both "
+                "averages above the current price.")
+
+    @pytest.mark.parametrize("shape", ["two_part", "stack"])
+    @pytest.mark.parametrize("media_state", ["unknown", "text_only", "image_present"])
+    def test_actual_request_and_outbox_keep_the_supported_explanation(
+        self, monkeypatch, tmp_path, shape, media_state,
+    ):
+        from datetime import datetime, timezone
+        from engine.marketing.outbox import emit_from_content_plan, read_items
+
+        ctx, cfg = self._context(shape, media_state)
+        text = self._text(shape)
+        requests = []
+
+        def handler(system, user, max_tokens):
+            requests.append((system, user))
+            return json.dumps({"text": text})
+
+        _arm(monkeypatch, handler)
+        [result] = cw.write_posts_llm_v2([ctx], cfg, root=tmp_path)
+        assert result["mode"] == "llm", result
+        assert result["text"] == text
+        assert len(requests) == 1, "lawful prose must not spend a repair turn"
+        system, user = requests[0]
+        assert "OTHER LAWS (from config, obey exactly)" in system
+        assert "Significant breaking news may end on the verified event" in system
+        assert "Stack and two_part are explanations" in system
+        assert "Never assume a chart is attached" in system
+        assert "suggested leading observation, not a separate proven thesis" in system
+        for retired in (
+            "every post is a FACT plus a falsifiable consequence",
+            "down movers name the level that has to hold",
+            "one number with a reaction that costs you",
+            "Lines this person has actually written",
+            "A picture is attached and it is doing the talking",
+        ):
+            assert retired not in system
+        assert f'"state": "{media_state}"' in user
+        assert result["editorial_contract"]["revision"] == cw.EDITORIAL_BRIEF_REVISION
+
+        now = datetime(2026, 11, 13, 15, tzinfo=timezone.utc)
+        chart_id = "natural-calm" if media_state == "image_present" else None
+        fixture_svg = ('<svg xmlns="http://www.w3.org/2000/svg" width="240" '
+                       'height="80"><text x="8" y="24">CALM: 50-day and '
+                       '200-day averages</text></svg>')
+        fixture_media_url = "https://images.example.invalid/natural-calm.png"
+        plan = {
+            "as_of": "2026-11-13",
+            "content": {"copy": {"mode": "llm"}},
+            "featured_charts": ([{"id": chart_id, "ticker": "CALM",
+                                  "svg": fixture_svg, "media_url": fixture_media_url}]
+                                if chart_id else []),
+            "accounts": [{"id": "flagship", "queue": [{
+                "id": "natural-calm", "account": "flagship", "type": "chart",
+                "ticker": "CALM", "cashtag": "$CALM", "slot": "D1-S1",
+                "chart_id": chart_id,
+                "provenance": "content_studio", "status": "drafted",
+                "shape": shape, "angle": "level_watch", "_copy_mode": "llm",
+                "headline": result["headline"], "body": result["body"],
+            }]}],
+        }
+        emit_from_content_plan(
+            plan, root=tmp_path, now=now, day_prefix="D1",
+            cfg={"copywriter": {"llm": {"required": True}},
+                 "sentinel": {"max_posts_per_account_per_day": 20}},
+        )
+        [stored] = read_items(tmp_path)
+        assert stored["text"] == text
+        assert stored["source"]["shape"] == shape
+        assert stored["source"]["copy_mode"] == "llm"
+        assert cw.queued_voice_violations(text, "chart", shape) == []
+        if chart_id:
+            assert stored["source"]["chart_id"] == chart_id
+            assert stored["source"]["media_url"] == fixture_media_url
+            [media] = stored["media"]
+            assert media["chart_id"] == chart_id
+            assert media["media_url"] == fixture_media_url
+            assert (tmp_path / media["path"]).read_text() == fixture_svg
+        else:
+            assert stored["media"] == []
+
+    @pytest.mark.parametrize("tail", [
+        "A move to 999 would finish the recovery.",
+        "The next target: 200.",
+        "The next target is 200.",
+        "I bought the shares before the rebound.",
+        "Research context only, not a trading recommendation.",
+    ])
+    def test_natural_voice_keeps_fact_identity_and_boilerplate_gates(
+        self, monkeypatch, tmp_path, tail,
+    ):
+        ctx, cfg = self._context()
+        text = "$CALM fell back from its 50-day average again.\n\n" + tail
+        calls = []
+
+        def handler(system, user, max_tokens):
+            calls.append(user)
+            return json.dumps({"text": text})
+
+        _arm(monkeypatch, handler)
+        [result] = cw.write_posts_llm_v2([ctx], cfg, root=tmp_path)
+        assert result["mode"] == "dropped", result
+        assert result["stage"] == "validate", result
+        assert len(calls) == 2, "retain the existing single repair opportunity"
+
+    @pytest.mark.parametrize("text", [
+        "Research context only, not a trading recommendation.",
+        "For research context only.",
+        "This is not a trading recommendation.",
+    ])
+    def test_retired_disclaimers_cannot_return_through_the_queue(self, text):
+        assert cw.machine_risk_violations(text)
+        assert cw.queued_voice_violations(text, "chart", "two_part")
+
+    def test_specific_uncertainty_is_not_boilerplate(self):
+        text = ("The filing gives the purchase amount, but does not explain "
+                "the director's reason.")
+        assert cw.machine_risk_violations(text) == []
+        assert cw.queued_voice_violations(text, "insider_buy", "one_liner") == []
+
+    def test_kelly_actual_request_does_not_restore_a_compulsory_condition(
+        self, monkeypatch, tmp_path,
+    ):
+        ctx, cfg = self._context()
+        ctx["account"] = "kelly"
+        text = self._text().replace("It remains", "it remains")
+        requests = []
+
+        def handler(system, user, max_tokens):
+            requests.append((system, user))
+            return json.dumps({"text": text})
+
+        _arm(monkeypatch, handler)
+        [result] = cw.write_posts_llm_v2([ctx], cfg, root=tmp_path)
+        assert result["mode"] == "llm", result
+        assert len(requests) == 1
+        system, user = requests[0]
+        payload = cw._first_json_object(user, key="account")
+        assert payload["account"] == "kelly"
+        codex = payload["codex"]
+        assert codex, "the actual cognitive card must reach the model"
+        assert "supplied comparison" in codex["worldview"]
+        assert "only when the supplied evidence supports it" in codex["restraint"]
+        assert "or it does not ship" not in user
+        assert "every claim carries" not in user
+        assert "use only as many lines" in system.lower()
+
+
+class TestDurationCannotBecomePriceTarget:
+    @staticmethod
+    def _context(**over):
+        ctx, _cfg = TestNaturalEditorialConsumer._context()
+        ctx.update(over)
+        return ctx
+
+    @pytest.mark.parametrize("text", ["target 200", "The next target is 200.",
+                                      "toward 200"])
+    def test_source_duration_does_not_license_a_price(self, text):
+        violations = cw.invented_level_violations(text, self._context())
+        assert any("time window, not a price" in v for v in violations), violations
+
+    @pytest.mark.parametrize("text", ["toward 200-day average", "toward 200 days",
+                                      "targeting 200 sessions", "up to 3 million shares",
+                                      "target 200 million shares", "target 200 shares",
+                                      "The target is 200 million shares.",
+                                      "The target is 200 shares."])
+    def test_time_and_count_descriptions_stay_legal(self, text):
+        assert cw.invented_level_violations(text, self._context()) == []
+
+    @pytest.mark.parametrize("fact", [
+        {"text": "The price was 200."},
+        {"text": "The shares previously reached $200."},
+        {"text": "The shares previously reached USD 200."},
+        {"text": "JPMorgan's target is 200."},
+        {"text": "The 200-day average is the reference.", "level": 200},
+        {"text": "The 200-day average is the reference.", "level": 200.0},
+        {"text": "The 200-day average is the reference.", "level": 199.6},
+    ])
+    def test_competing_source_role_preserves_the_incumbent_fallback(self, fact):
+        ctx = self._context()
+        ctx["top_facts"].append(fact)
+        for text in ("target 200", "JPMorgan's target is 200.", "It ran up to 200."):
+            assert cw.invented_level_violations(text, ctx) == [], (fact, text)
+
+    def test_unclassified_pack_role_and_missing_source_are_not_guessed(self):
+        assert cw.invented_level_violations(
+            "target 200", self._context(pack={"prior_reference": 200})) == []
+        assert cw.invented_level_violations(
+            "target 45", _ctx(numbers_whitelist=["45"])) == []
+        ctx = self._context()
+        ctx["top_facts"][0]["count"] = {"numerator": 200, "denominator": 500}
+        assert cw.invented_level_violations("target 200", ctx) == []
+
+    @pytest.mark.parametrize("text", ["target is 200k", "target 200k",
+                                      "toward 200k", "target is 200,000"])
+    def test_a_duration_value_cannot_match_a_prefix_of_a_different_number(self, text):
+        ctx = self._context()
+        ctx["numbers_whitelist"].extend(["200k", "200,000"])
+        assert cw.invented_level_violations(text, ctx) == []
+
+    def test_reported_target_does_not_become_the_approvals_swing_objective(self):
+        from engine.marketing import approval_desk
+
+        ctx = self._context()
+        ctx["top_facts"].append({"text": "JPMorgan's target is 200."})
+        ctx.update(has_evidence=True, quoted_price=100)
+        result = approval_desk.check_number_sanity(
+            {"text": "JPMorgan's target is 200.", "source": {}}, ctx)
+        assert result.status == approval_desk.PASS, result
+
+    def test_plan_role_wins_and_an_observed_level_cannot_expand_it(self):
+        ctx = self._context(t1_str="200")
+        assert cw.invented_level_violations("target 200", ctx) == []
+        ctx["t1_str"] = "150"
+        ctx["top_facts"].append({"text": "200-day average", "level": 200})
+        assert cw.invented_level_violations("target 200", ctx)
