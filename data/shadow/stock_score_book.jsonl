@@ -8583,3 +8583,4 @@
 {"date": "2026-11-11", "ticker": "DUOL", "score": 51.0, "percentile": 0.8622047244094488, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-11-11", "ticker": "VNT", "score": 2.0, "percentile": 0.06692913385826772, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-11-11", "ticker": "PCOR", "score": 3.0, "percentile": 0.08267716535433071, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-11-11", "ticker": "HCC", "score": 12.0, "percentile": 0.42857142857142855, "regime": "mixed", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}

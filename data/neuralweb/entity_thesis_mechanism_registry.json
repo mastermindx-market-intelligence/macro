@@ -672,12 +672,12 @@
   "counts": {
     "edges_by_kind": {
       "governed_by": 10,
-      "member_of_thesis": 6,
+      "member_of_thesis": 7,
       "mirrored_experiment": 27,
       "rf_candidate_of_mechanism": 7
     },
     "rows_by_type": {
-      "entity": 6,
+      "entity": 7,
       "mechanism": 8,
       "species_link": 27,
       "thesis": 2
@@ -685,13 +685,31 @@
   },
   "edges": [
     {
-      "dst": "thesis:shared-membership",
+      "dst": "thesis:financials",
       "kind": "member_of_thesis",
       "source": {
         "detail": "same_thesis_groups.members",
         "path": "site/factordata/reflexivity_overlay.json"
       },
-      "src": "entity:US:AVA"
+      "src": "entity:US:AAMI"
+    },
+    {
+      "dst": "thesis:financials",
+      "kind": "member_of_thesis",
+      "source": {
+        "detail": "same_thesis_groups.members",
+        "path": "site/factordata/reflexivity_overlay.json"
+      },
+      "src": "entity:US:AAPL"
+    },
+    {
+      "dst": "thesis:financials",
+      "kind": "member_of_thesis",
+      "source": {
+        "detail": "same_thesis_groups.members",
+        "path": "site/factordata/reflexivity_overlay.json"
+      },
+      "src": "entity:US:AMG"
     },
     {
       "dst": "thesis:ai_infrastructure_capex_complex",
@@ -712,22 +730,13 @@
       "src": "entity:US:NVDA"
     },
     {
-      "dst": "thesis:shared-membership",
+      "dst": "thesis:financials",
       "kind": "member_of_thesis",
       "source": {
         "detail": "same_thesis_groups.members",
         "path": "site/factordata/reflexivity_overlay.json"
       },
-      "src": "entity:US:PFG"
-    },
-    {
-      "dst": "thesis:shared-membership",
-      "kind": "member_of_thesis",
-      "source": {
-        "detail": "same_thesis_groups.members",
-        "path": "site/factordata/reflexivity_overlay.json"
-      },
-      "src": "entity:US:REXR"
+      "src": "entity:US:TKR"
     },
     {
       "dst": "thesis:ai_infrastructure_capex_complex",
@@ -1135,7 +1144,7 @@
       "src": "species:T1-T4@1.0"
     }
   ],
-  "generated_utc": "2026-11-12T11:55:25.247839+00:00",
+  "generated_utc": "2026-11-12T14:02:04.146124+00:00",
   "is_context_only": true,
   "notes": "Crosswalk only; local systems remain authoritative. No invented links; unknowns stay null.",
   "possible_duplicates": [
@@ -1438,18 +1447,44 @@
     }
   ],
   "rows": {
-    "entity:US:AVA": {
+    "entity:US:AAMI": {
       "authority": "display_only",
       "funnel_as_of": "2026-11-12",
       "funnel_state": "not_eligible",
       "market": "US",
-      "registry_id": "entity:US:AVA",
+      "registry_id": "entity:US:AAMI",
       "registry_type": "entity",
       "source_paths": [],
       "thesis_ids": [
-        "thesis:shared-membership"
+        "thesis:financials"
       ],
-      "ticker": "AVA"
+      "ticker": "AAMI"
+    },
+    "entity:US:AAPL": {
+      "authority": "display_only",
+      "funnel_as_of": "2026-11-12",
+      "funnel_state": "not_eligible",
+      "market": "US",
+      "registry_id": "entity:US:AAPL",
+      "registry_type": "entity",
+      "source_paths": [],
+      "thesis_ids": [
+        "thesis:financials"
+      ],
+      "ticker": "AAPL"
+    },
+    "entity:US:AMG": {
+      "authority": "display_only",
+      "funnel_as_of": "2026-11-12",
+      "funnel_state": "not_eligible",
+      "market": "US",
+      "registry_id": "entity:US:AMG",
+      "registry_type": "entity",
+      "source_paths": [],
+      "thesis_ids": [
+        "thesis:financials"
+      ],
+      "ticker": "AMG"
     },
     "entity:US:AVGO": {
       "authority": "display_only",
@@ -1477,31 +1512,18 @@
       ],
       "ticker": "NVDA"
     },
-    "entity:US:PFG": {
+    "entity:US:TKR": {
       "authority": "display_only",
       "funnel_as_of": "2026-11-12",
-      "funnel_state": "not_eligible",
+      "funnel_state": "watch_for_thesis",
       "market": "US",
-      "registry_id": "entity:US:PFG",
+      "registry_id": "entity:US:TKR",
       "registry_type": "entity",
       "source_paths": [],
       "thesis_ids": [
-        "thesis:shared-membership"
+        "thesis:financials"
       ],
-      "ticker": "PFG"
-    },
-    "entity:US:REXR": {
-      "authority": "display_only",
-      "funnel_as_of": "2026-11-12",
-      "funnel_state": "not_eligible",
-      "market": "US",
-      "registry_id": "entity:US:REXR",
-      "registry_type": "entity",
-      "source_paths": [],
-      "thesis_ids": [
-        "thesis:shared-membership"
-      ],
-      "ticker": "REXR"
+      "ticker": "TKR"
     },
     "entity:US:VRT": {
       "authority": "display_only",
@@ -3397,18 +3419,19 @@
         "VRT"
       ]
     },
-    "thesis:shared-membership": {
+    "thesis:financials": {
       "authority": "display_only",
-      "basis": "factor-cosine",
-      "label": "shared-membership",
+      "basis": "membership-jaccard",
+      "label": "Financials",
       "members": [
-        "AVA",
-        "PFG",
-        "REXR"
+        "AAMI",
+        "AAPL",
+        "AMG",
+        "TKR"
       ],
-      "registry_id": "thesis:shared-membership",
+      "registry_id": "thesis:financials",
       "registry_type": "thesis",
-      "size": 3,
+      "size": 4,
       "source": "reflexivity_overlay.same_thesis_groups",
       "source_paths": [
         "site/factordata/reflexivity_overlay.json"

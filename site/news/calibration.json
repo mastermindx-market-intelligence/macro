@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-11-12",
-  "n_events_logged": 1933,
+  "n_events_logged": 1932,
   "n_events_graded": 1569,
   "classes": [
     {
@@ -86,7 +86,7 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 888,
+      "n": 889,
       "n_graded": 836,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -112,7 +112,7 @@
     {
       "event_type": "guidance_cut",
       "direction": "bearish",
-      "n": 49,
+      "n": 48,
       "n_graded": 35,
       "hit_5d": 0.42857142857142855,
       "hit_21d": 0.3235294117647059,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 2356,
+    "n_sampled": 2357,
     "n_graded": 0,
     "classes": []
   }
