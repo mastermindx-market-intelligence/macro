@@ -238,7 +238,9 @@ def test_served_error_degrades_without_retry(monkeypatch):
 
     monkeypatch.setattr(fc, "is_configured", lambda: True)
     monkeypatch.setattr(fc, "complete", boom)
-    monkeypatch.setitem(sys.modules, "anthropic", None)  # legacy must not run
+    # A served failure must degrade HERE, never fall through to the legacy path.
+    monkeypatch.setattr(cn, "_llm_ready",
+                        lambda cfg: pytest.fail("legacy path must not run"))
     monkeypatch.delenv("MACRO_CHINA_NEWS_FABRIC", raising=False)
 
     assert cn.news_brief(_HEADLINES, "") is None
