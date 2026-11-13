@@ -99,6 +99,18 @@ _FABRIC_PROJECT_ID = "macro-dashboard"
 _FABRIC_SESSION_ID = "macro-commodity-news"
 _FABRIC_MAX_TOKENS = 256          # same budget the legacy _call_fn sends
 
+# The legacy rung constrains the reply with an Anthropic ``output_config``
+# json_schema. The frozen fabric adapter has NO structured-output parameter
+# (messages + system + max_tokens only), and CLASSIFY_SYSTEM never asks for
+# JSON — so on the fabric path the schema has to be stated in the prompt or
+# every reply would be prose and every annotation would silently lose its
+# cause. CLASSIFY_SYSTEM itself stays byte-identical for the legacy ladder.
+_FABRIC_SYSTEM = (
+    CLASSIFY_SYSTEM
+    + "\n\nRespond with ONLY a JSON object and no other text, matching this schema:\n"
+    + json.dumps(CLASSIFY_SCHEMA, indent=2)
+)
+
 
 def _fabric_enabled() -> bool:
     """Router configured AND the kill-switch is not "0". Never raises."""
@@ -141,7 +153,7 @@ def _fabric_call(asset: str, move_desc: str, headlines: list[dict],
     user = f"Commodity: {asset}\nDetected move: {move_desc}\nHeadlines:\n{lines}"
     comp = fabric_client.complete(          # <- the single attempt
         [{"role": "user", "content": user}],
-        system=CLASSIFY_SYSTEM,
+        system=_FABRIC_SYSTEM,
         lane=_FABRIC_LANE,
         max_tokens=_FABRIC_MAX_TOKENS,
         client="Python client",

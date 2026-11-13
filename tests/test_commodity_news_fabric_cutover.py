@@ -114,10 +114,18 @@ def test_configured_classifier_routes_to_fabric_fast(fabric_on):
     assert call["client"] == "Python client"
     assert call["project_id"] == "macro-dashboard"
     assert call["session_id"] == "macro-commodity-news"
-    assert call["system"] == cn.CLASSIFY_SYSTEM
+    assert call["system"].startswith(cn.CLASSIFY_SYSTEM)
+    assert "JSON" in call["system"]          # schema stated in-prompt (no output_config)
+    assert "ofac_opec_or_cartel_action" in call["system"]
     assert call["max_tokens"] == 256
     assert call["messages"][0]["role"] == "user"
     assert "OPEC agrees output cut" in call["messages"][0]["content"]
+
+
+def test_legacy_system_prompt_is_unchanged(fabric_on):
+    """The fabric schema hint must NOT leak into the legacy ladder's prompt."""
+    assert "JSON" not in cn.CLASSIFY_SYSTEM
+    assert cn._FABRIC_SYSTEM.startswith(cn.CLASSIFY_SYSTEM)
 
 
 def test_fabric_reply_records_served_model(fabric_on):
