@@ -440,8 +440,8 @@ def _fuse(rec: dict, mkt: dict, n_peers: int, trend: dict | None = None,
           calibration: tuple[float, float] | None = None) -> dict:
     """The gated-confluence conviction for one sector/basket + the reasoning trace.
 
-    Legacy helper callers may omit calibration. The explicit-input entry point
-    always supplies it, including valid zero values, and never enters a loader.
+    Legacy helper callers may omit calibration. compute_from_inputs always
+    supplies it, including valid zero values, and never enters a loader.
     """
     if calibration is None:
         calibration = _resolve_fusion_calibration(rec)
