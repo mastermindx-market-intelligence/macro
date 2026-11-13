@@ -609,6 +609,8 @@ def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
             completed_census[tool["name"]] = completed_census.get(tool["name"], 0) + 1
     if run["census"] != completed_census:
         raise _CortexFabricHold("cortex_fabric_census_invalid")
+    acceptance_hold = (run["phase"] == "held"
+                       and run["failure"] == "cortex_fabric_memo_not_submitted")
     # Reconstruct only legitimate history prefixes, including a crash between
     # an acknowledged tool and publication of its whole batch's user message.
     cursor = 1
@@ -634,7 +636,7 @@ def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
             if run["messages"][cursor] != {"role": "user", "content": results}:
                 raise _CortexFabricHold("cortex_fabric_tool_history_invalid")
             cursor += 1
-        elif batch and (index != len(run["steps"]) - 1 or run["phase"] == "complete"):
+        elif batch and (index != len(run["steps"]) - 1 or run["phase"] == "complete" or acceptance_hold):
             raise _CortexFabricHold("cortex_fabric_tool_history_incomplete")
     if cursor != len(run["messages"]) or len(run["steps"]) > request["max_tool_calls"]:
         raise _CortexFabricHold("cortex_fabric_history_invalid")
@@ -678,8 +680,6 @@ def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
                 or close["disposition"] not in {"local_only", "refused", "pending", "effect_unknown", "closed"}
                 or any(type(close[k]) is not bool for k in ("closed", "effect_unknown", "attempted"))):
             raise _CortexFabricHold("cortex_fabric_close_receipt_invalid")
-    acceptance_hold = (run["phase"] == "held"
-                       and run["failure"] == "cortex_fabric_memo_not_submitted")
     if run["phase"] == "complete" or acceptance_hold:
         receipt = run["receipt"] or {}
         if (run["business_complete"] is not (not acceptance_hold)
@@ -819,7 +819,12 @@ def _fabric_commit(root: Path, prior: Any, run: dict) -> dict:
             previous = prior["fabric"]
             # Historical complete records remain immutable evidence even when
             # their settled transport never produced an accepted Brain memo.
+            # A newly closed acceptance hold is equally terminal for this
+            # original operation, including identical-body revision bumps.
+            acceptance_hold = (previous["phase"] == "held"
+                               and previous["failure"] == "cortex_fabric_memo_not_submitted")
             if (previous["phase"] == "complete" and not _fabric_business_accepted(previous)
+                    or acceptance_hold
                     or previous["operation_id"] != run["operation_id"] and _fabric_original_held(prior)):
                 raise _CortexFabricHold("cortex_fabric_original_held")
         if run.get("schema") == _FABRIC_AUTO_RUN_SCHEMA:

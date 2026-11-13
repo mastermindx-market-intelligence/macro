@@ -290,9 +290,14 @@ def test_auto_closed_without_memo_does_not_become_completed(cortex_auto, monkeyp
 @pytest.mark.parametrize("entrypoint", [
     "public", "selected", "native_save", "successor", "same_operation", "noop_commit"])
 def test_auto_historical_unaccepted_completion_preserves_custody(cortex_auto, monkeypatch, entrypoint):
-    fixed.assert_historical_unaccepted_record_stays_fenced(cortex_auto, monkeypatch, entrypoint)
+    fixed.assert_unaccepted_record_stays_fenced(cortex_auto, monkeypatch, entrypoint)
 
 
-@pytest.mark.parametrize("corruption", ["memo_clock", "projection_clock", "business_flag", "memo_digest"])
+@pytest.mark.parametrize("corruption", ["memo_clock", "projection_clock", "business_flag", "memo_digest", "final_tool_message"])
 def test_auto_acceptance_hold_validates_its_final_receipts(cortex_auto, monkeypatch, corruption):
     fixed.assert_acceptance_hold_keeps_final_receipt_validation(cortex_auto, monkeypatch, corruption)
+
+
+@pytest.mark.parametrize("entrypoint", ["same_operation", "noop_commit"])
+def test_auto_fresh_acceptance_hold_is_immutable(cortex_auto, monkeypatch, entrypoint):
+    fixed.assert_unaccepted_record_stays_fenced(cortex_auto, monkeypatch, entrypoint, historical=False)

@@ -659,14 +659,18 @@ def test_closed_without_memo_does_not_become_a_completed_brain_run(cortex, monke
     assert_closed_without_memo_stays_held(cortex, monkeypatch)
 
 
-def assert_historical_unaccepted_record_stays_fenced(state, monkeypatch, entrypoint):
+def assert_unaccepted_record_stays_fenced(state, monkeypatch, entrypoint, *, historical=True):
     state.cfg["max_tool_calls"] = 1
     call(state)
     # Reproduce the prior writer's exact accepted schema: settled transport and
     # a degraded fallback were historically marked business-complete. This is
     # retained evidence to classify, never a migration/rewrite request.
     value = json.loads(state.path.read_text())
-    value["fabric"].update(phase="complete", business_complete=True, failure=None)
+    if historical:
+        value["fabric"].update(phase="complete", business_complete=True, failure=None)
+    else:
+        assert value["fabric"]["phase"] == "held"
+        assert value["fabric"]["business_complete"] is False
     value["sha256"] = cx._fabric_digest({k: v for k, v in value.items() if k != "sha256"})
     state.path.write_text(json.dumps(value))
     original = state.path.read_bytes()
@@ -709,7 +713,7 @@ def assert_historical_unaccepted_record_stays_fenced(state, monkeypatch, entrypo
 @pytest.mark.parametrize("entrypoint", [
     "public", "selected", "native_save", "successor", "same_operation", "noop_commit"])
 def test_historical_unaccepted_completion_preserves_original_custody(cortex, monkeypatch, entrypoint):
-    assert_historical_unaccepted_record_stays_fenced(cortex, monkeypatch, entrypoint)
+    assert_unaccepted_record_stays_fenced(cortex, monkeypatch, entrypoint)
 
 
 def assert_acceptance_hold_keeps_final_receipt_validation(state, monkeypatch, corruption):
@@ -727,6 +731,9 @@ def assert_acceptance_hold_keeps_final_receipt_validation(state, monkeypatch, co
         run["business_complete"] = True
     elif corruption == "memo_digest":
         run["memo"]["document_sha256"] = "f" * 64
+    elif corruption == "final_tool_message":
+        assert run["messages"][-1]["role"] == "user"
+        run["messages"].pop()
     value["sha256"] = cx._fabric_digest({k: v for k, v in value.items() if k != "sha256"})
     state.path.write_text(json.dumps(value))
     original = state.path.read_bytes()
@@ -739,6 +746,11 @@ def assert_acceptance_hold_keeps_final_receipt_validation(state, monkeypatch, co
     no_native(state)
 
 
-@pytest.mark.parametrize("corruption", ["memo_clock", "projection_clock", "business_flag", "memo_digest"])
+@pytest.mark.parametrize("corruption", ["memo_clock", "projection_clock", "business_flag", "memo_digest", "final_tool_message"])
 def test_closed_acceptance_hold_validates_its_final_receipts(cortex, monkeypatch, corruption):
     assert_acceptance_hold_keeps_final_receipt_validation(cortex, monkeypatch, corruption)
+
+
+@pytest.mark.parametrize("entrypoint", ["same_operation", "noop_commit"])
+def test_fresh_acceptance_hold_is_immutable(cortex, monkeypatch, entrypoint):
+    assert_unaccepted_record_stays_fenced(cortex, monkeypatch, entrypoint, historical=False)
