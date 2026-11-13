@@ -308,10 +308,18 @@ class PinnedSegmentSource:
             maximum_stored_bytes=gzip_stored_byte_ceiling(e['source_byte_length']))
         n._require(read.receipt_sidecar_verified is True, 'NATIVE_SOURCE_REPLAY_REQUIRED')
         # Replay re-verifies every figure span against the pinned bytes, exactly as
-        # the activity span is checked: literal text, hash and declared sign marker.
+        # the activity span is checked: whole-token text, hash and declared sign
+        # marker, then value == sign x digits x scale (not only at prepare).
         for name in n.SEGMENT_FIGURE_NAMES:
             span = self.fact['figure_spans'][name]
             if span is not None:
                 n._verify_figure_span(name, span, self.fact[f'{name}_text'],
                                       self.fact[f'{name}_sign'], read.content)
+                text, sign, scale = (self.fact[f'{name}_text'], self.fact[f'{name}_sign'],
+                                     self.fact[f'{name}_scale'])
+                n._require(type(text) is str and n._FIGURE_TEXT.fullmatch(text) is not None
+                           and sign in n.SEGMENT_FIGURE_SIGNS and scale in n.SEGMENT_FIGURE_SCALES,
+                           'FIGURE_TEXT_MISMATCH')
+                derived = (-1 if sign == '-' else 1) * int(text.replace(',', '')) * n.SEGMENT_FIGURE_SCALES[scale]
+                n._require(self.fact[name] == derived, 'FIGURE_TEXT_MISMATCH')
         return read.content

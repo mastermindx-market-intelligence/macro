@@ -286,27 +286,109 @@ def _segment_figure_span(value: object) -> dict:
     return span
 
 
+_FIGURE_TOKEN_BOUNDARY = frozenset("0123456789,.")
+_FIGURE_SKIP_ENTITIES = ("&#160;", "&nbsp;")
+
+
+def _whole_figure_match(fig_text: str, text: str) -> int | None:
+    """The first occurrence of ``text`` as a whole printed number, else ``None``.
+
+    At the match position the character immediately before and the character
+    immediately after must not be a digit, a comma or a decimal point. A span edge
+    (no character on that side) is a valid boundary, and a tag delimiter such as
+    ``>`` or ``<`` is not a boundary character, so ``>54,602<`` still matches.
+    """
+    start = 0
+    while True:
+        idx = fig_text.find(text, start)
+        if idx < 0:
+            return None
+        after_pos = idx + len(text)
+        before_ok = idx == 0 or fig_text[idx - 1] not in _FIGURE_TOKEN_BOUNDARY
+        after_ok = after_pos == len(fig_text) or fig_text[after_pos] not in _FIGURE_TOKEN_BOUNDARY
+        if before_ok and after_ok:
+            return idx
+        start = idx + 1
+
+
+def _nearest_non_tag(fig_text: str, pos: int, direction: int) -> str | None:
+    """The nearest non-tag character walking outward from ``pos`` (direction ±1).
+
+    Skips whole HTML/XML tags (``<...>``), whitespace, ``&#160;`` and ``&nbsp;``
+    entities, and a single currency symbol ``$``; the first other character is the
+    nearest non-tag character. Returns ``None`` at the span edge. A ``<`` or ``>``
+    without its matching partner is not a whole tag and is returned literally.
+    """
+    i = pos
+    while 0 <= i < len(fig_text):
+        ch = fig_text[i]
+        if ch.isspace() or ch == "$":
+            i += direction
+            continue
+        if direction < 0:
+            if ch == ">":
+                open_idx = fig_text.rfind("<", 0, i)
+                if open_idx >= 0:
+                    i = open_idx - 1
+                    continue
+                return ch
+            if ch == ";":
+                entity = next((e for e in _FIGURE_SKIP_ENTITIES
+                               if i - len(e) + 1 >= 0 and fig_text[i - len(e) + 1:i + 1] == e), None)
+                if entity is not None:
+                    i -= len(entity)
+                    continue
+                return ch
+            return ch
+        if ch == "<":
+            close_idx = fig_text.find(">", i + 1)
+            if close_idx >= 0:
+                i = close_idx + 1
+                continue
+            return ch
+        if ch == "&":
+            entity = next((e for e in _FIGURE_SKIP_ENTITIES if fig_text[i:i + len(e)] == e), None)
+            if entity is not None:
+                i += len(entity)
+                continue
+            return ch
+        return ch
+    return None
+
+
 def _verify_figure_span(name: str, span: dict, text: str, sign: str, raw: bytes) -> None:
-    """Replay one figure span against pinned bytes: hash, literal text, sign marker.
+    """Replay one figure span against pinned bytes: hash, whole-token text, sign marker.
 
     The match is literal, never numeric: the span bytes must contain ``text`` (the
-    digits as printed, separators included, no sign) as an exact substring. A
-    declared ``-`` needs a ``(`` before the digit text and a ``)`` after it, or a
-    ``-`` immediately before it, checked by byte position inside the span — the
-    inline-XBRL loss shape ``(<ix:nonFraction sign="-">54,602</ix:nonFraction>)``
-    keeps its parentheses outside the tag, so ``(54,602)`` is never contiguous.
+    digits as printed, separators included, no sign) as a WHOLE token — at the match
+    position the character immediately before and immediately after must not be a
+    digit, a comma or a decimal point, so a leading/trailing fragment ("3" or "0" in
+    "30") or a fragment inside a comma group ("602" in "54,602") is refused. A number
+    inside an ix tag (``>54,602<``) still matches.
+
+    "Nearest non-tag character": walk outward from the matched digits, skipping whole
+    HTML/XML tags (``<...>``), whitespace, ``&#160;`` and ``&nbsp;`` entities, and a
+    single currency symbol ``$``; the first other character on each side is the
+    nearest non-tag character (``None`` at the span edge). A declared ``-`` is
+    admitted only if the nearest left is ``(`` AND the nearest right is ``)``, or the
+    nearest left is ``-`` or ``−`` (U+2212). A declared ``+`` is refused if the nearest
+    left is ``(``, ``-`` or ``−``, or the nearest right is ``)``. The inline-XBRL loss
+    shape ``(<ix:nonFraction sign="-">54,602</ix:nonFraction>)`` keeps its parentheses
+    outside the tag, so ``(54,602)`` is never contiguous.
     """
     start, end = span["start_byte"], span["end_byte"]
     _require(0 <= start < end <= len(raw), "FIGURE_SPAN_MISMATCH")
     fig_bytes = raw[start:end]
     _require(hashlib.sha256(fig_bytes).hexdigest() == span["text_sha256"], "FIGURE_SPAN_MISMATCH")
     fig_text = fig_bytes.decode("utf-8")
-    _require(text in fig_text, "FIGURE_SPAN_MISMATCH")
+    idx = _whole_figure_match(fig_text, text)
+    _require(idx is not None, "FIGURE_SPAN_MISMATCH")
+    left = _nearest_non_tag(fig_text, idx - 1, -1)
+    right = _nearest_non_tag(fig_text, idx + len(text), 1)
     if sign == "-":
-        idx = fig_text.index(text)
-        paren = fig_text.rfind("(", 0, idx) >= 0 and fig_text.find(")", idx + len(text)) >= 0
-        minus = idx > 0 and fig_text[idx - 1] == "-"
-        _require(paren or minus, "FIGURE_SIGN_UNSUPPORTED")
+        _require((left == "(" and right == ")") or left in ("-", "−"), "FIGURE_SIGN_UNSUPPORTED")
+    else:
+        _require(left not in ("(", "-", "−") and right != ")", "FIGURE_SIGN_UNSUPPORTED")
 
 
 def _segment_figure_number(value: object, code: str) -> None:
@@ -395,6 +477,11 @@ def _validate_segment_fact(value: dict) -> Reference:
             _require(type(text) is str and _FIGURE_TEXT.fullmatch(text) is not None, "SEGMENT_EXPOSURE_INVALID")
             _require(value[f"{name}_sign"] in SEGMENT_FIGURE_SIGNS, "SEGMENT_EXPOSURE_INVALID")
             _require(value[f"{name}_scale"] in SEGMENT_FIGURE_SCALES, "SEGMENT_EXPOSURE_INVALID")
+            # The value must equal sign x digits x scale at EVERY read-back, not only
+            # at prepare: an altered magnitude with an unchanged printed text is refused.
+            derived = ((-1 if value[f"{name}_sign"] == "-" else 1)
+                       * int(text.replace(",", "")) * SEGMENT_FIGURE_SCALES[value[f"{name}_scale"]])
+            _require(value[name] == derived, "FIGURE_TEXT_MISMATCH")
     _instant(value["known_at"])
     return _ref(value)
 

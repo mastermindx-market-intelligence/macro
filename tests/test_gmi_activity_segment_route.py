@@ -744,3 +744,197 @@ def test_operator_role_refused_for_planned_product_integration():
             knowledge_cutoff="2026-10-19T00:00:00Z", code_version=CODE_VERSION,
             identity_reader=_mu_identity_reader, disclosure_reader=lambda root, cv: snapshot)
     assert caught.value.code == "ROLE_NOT_ADMITTED"
+
+
+# ---------------------------------------------------------------------------
+# Test 7 — fix round 2: whole-token match (B1), two-direction sign (B2),
+# value==text at every read-back (B3), manifest form at replay (N2)
+# ---------------------------------------------------------------------------
+
+def _profit_expression_case(tmp_path, expression, *, profit, sign, text="54,602", scale="units"):
+    """A case whose profit figure is pinned to a custom printed expression."""
+    body = (SEG_BODY_BASE + " [revenue:30] [revenue_denominator:100] "
+            + expression + " [profit_denominator:100]").encode("utf-8")
+    source = body.decode("utf-8")
+    pos = source.index(expression)
+    start = len(source[:pos].encode("utf-8"))
+    end = len(source[:pos + len(expression)].encode("utf-8"))
+    profit_span = {"start_byte": start, "end_byte": end,
+                   "text_sha256": hashlib.sha256(body[start:end]).hexdigest()}
+    figure_specs = {
+        "revenue": {"text": "30", "sign": "+", "scale": "units"},
+        "revenue_denominator": {"text": "100", "sign": "+", "scale": "units"},
+        "profit": {"text": text, "sign": sign, "scale": scale},
+        "profit_denominator": {"text": "100", "sign": "+", "scale": "units"}}
+    figure_spans = {
+        "revenue": _figure_span_for(body, "revenue", "30"),
+        "revenue_denominator": _figure_span_for(body, "revenue_denominator", "100"),
+        "profit": profit_span,
+        "profit_denominator": _figure_span_for(body, "profit_denominator", "100")}
+    return _segment_case(tmp_path, profit=profit, body=body,
+                         figure_specs=figure_specs, figure_spans=figure_spans)
+
+
+def _read_source(source, edition):
+    return source.read_source(disclosure_id=edition["disclosure_id"],
+                              edition_reference=n.validate_edition(edition),
+                              source_sha256=edition["source_sha256"],
+                              expected_byte_length=edition["source_byte_length"],
+                              max_byte_length=n.MAX_SEC_SOURCE_BYTES)
+
+
+# --- B1: the printed number must match as a whole token ---------------------
+
+def test_figure_leading_fragment_refused(tmp_path):
+    # Reviewer probe 1: span prints "30", text "3" was admitted as 0.03; a leading
+    # fragment is not a whole token and is now refused.
+    def mutate(a):
+        a["revenue"] = 3.0
+        a["revenue_text"] = "3"
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
+        _segment_case(tmp_path, revenue=30.0, mutate_assertion=mutate)
+
+
+def test_figure_trailing_fragment_refused(tmp_path):
+    # A trailing fragment ("0" in "30") is not a whole token.
+    def mutate(a):
+        a["revenue"] = 0.0
+        a["revenue_text"] = "0"
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
+        _segment_case(tmp_path, revenue=30.0, mutate_assertion=mutate)
+
+
+def test_figure_comma_group_fragment_refused(tmp_path):
+    # A fragment inside a comma group ("602" in "54,602") is not a whole token.
+    body = (SEG_BODY_BASE + " [revenue:54,602] [revenue_denominator:100] "
+            "[profit:10] [profit_denominator:100]").encode("utf-8")
+    figure_specs = {
+        "revenue": {"text": "54,602", "sign": "+", "scale": "units"},
+        "revenue_denominator": {"text": "100", "sign": "+", "scale": "units"},
+        "profit": {"text": "10", "sign": "+", "scale": "units"},
+        "profit_denominator": {"text": "100", "sign": "+", "scale": "units"}}
+    figure_spans = {name: _figure_span_for(body, name, figure_specs[name]["text"])
+                    for name in n.SEGMENT_FIGURE_NAMES}
+
+    def mutate(a):
+        a["revenue"] = 602.0
+        a["revenue_text"] = "602"
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
+        _segment_case(tmp_path, revenue=54602.0, body=body, figure_specs=figure_specs,
+                      figure_spans=figure_spans, mutate_assertion=mutate)
+
+
+def test_whole_token_inside_ix_tag_still_matches(tmp_path):
+    # B1: the whole-token rule must still find a number sitting inside an ix tag
+    # (">54,602<"). A "+" figure needs no loss marker, isolating the match itself.
+    case = _profit_expression_case(
+        tmp_path, '<ix:nonFraction>54,602</ix:nonFraction>',
+        profit=54602.0, sign="+")
+    assert case.spec["fact"]["profit"] == 54602.0
+
+
+# --- B2: the sign is decided in BOTH directions -----------------------------
+
+def test_loss_ix_full_attributes_admits_negative(tmp_path):
+    ix = ('(<ix:nonFraction id="c1" contextRef="d" unitRef="USD" '
+          'name="us-gaap:OperatingIncomeLoss" scale="3" decimals="-3" sign="-">'
+          '54,602</ix:nonFraction>)')
+    case = _profit_expression_case(tmp_path, ix, profit=-54602.0, sign="-")
+    assert case.spec["fact"]["profit"] == -54602.0
+    assert case.spec["fact"]["profit_sign"] == "-"
+
+
+def test_loss_ix_td_cells_around_parentheses_admits_negative(tmp_path):
+    # The definition skips whole tags, so </td><td> cell boundaries around the
+    # parentheses do not hide the loss shape.
+    td = '<td>(</td><td><ix:nonFraction sign="-">54,602</ix:nonFraction></td><td>)</td>'
+    case = _profit_expression_case(tmp_path, td, profit=-54602.0, sign="-")
+    assert case.spec["fact"]["profit"] == -54602.0
+
+
+def test_loss_unicode_minus_admits_negative(tmp_path):
+    case = _profit_expression_case(tmp_path, "−54,602", profit=-54602.0, sign="-")
+    assert case.spec["fact"]["profit"] == -54602.0
+
+
+def test_loss_currency_and_whitespace_skipped(tmp_path):
+    case = _profit_expression_case(tmp_path, "( $ 54,602 )", profit=-54602.0, sign="-")
+    assert case.spec["fact"]["profit"] == -54602.0
+
+
+def test_loss_nbsp_entities_skipped(tmp_path):
+    case = _profit_expression_case(tmp_path, "(&nbsp;$54,602&#160;)", profit=-54602.0, sign="-")
+    assert case.spec["fact"]["profit"] == -54602.0
+
+
+def test_parentheses_declared_plus_refused(tmp_path):
+    # Reviewer probe 2: "(54,602)" with sign "+" was 546.02; now refused.
+    with pytest.raises(n.DisclosureError, match="FIGURE_SIGN_UNSUPPORTED"):
+        _profit_expression_case(tmp_path, "(54,602)", profit=54602.0, sign="+")
+
+
+def test_note_parentheses_declared_minus_refused(tmp_path):
+    # Reviewer probe 3: "(Note 5) 54,602 (a)" with sign "-" was -54602; the nearest
+    # non-tag characters are ")" and "(", not a loss shape, so it is now refused.
+    with pytest.raises(n.DisclosureError, match="FIGURE_SIGN_UNSUPPORTED"):
+        _profit_expression_case(tmp_path, "(Note 5) 54,602 (a)", profit=-54602.0, sign="-")
+
+
+def test_minus_declared_plus_refused(tmp_path):
+    with pytest.raises(n.DisclosureError, match="FIGURE_SIGN_UNSUPPORTED"):
+        _profit_expression_case(tmp_path, "-54,602", profit=54602.0, sign="+")
+
+
+def test_trailing_paren_declared_plus_refused(tmp_path):
+    with pytest.raises(n.DisclosureError, match="FIGURE_SIGN_UNSUPPORTED"):
+        _profit_expression_case(tmp_path, "54,602)", profit=54602.0, sign="+")
+
+
+# --- B3: value == text at EVERY read-back (adopt, qualify, replay) ----------
+
+def test_altered_value_refused_at_adopt_qualify_and_replay(tmp_path):
+    # Reviewer probe 4: prepare a valid fact, then alter revenue to 90.0 while
+    # revenue_text stays "30". It must be refused at each read-back, separately.
+    case = _segment_case(tmp_path)
+
+    prepared = copy.deepcopy(case.prepared)
+    prepared["proposed_fact"]["revenue"] = 90.0
+    with pytest.raises(n.DisclosureError, match="FIGURE_TEXT_MISMATCH"):
+        segment.adopt_segment_input(prepared, adopted_at="2024-03-05T10:00:00Z",
+                                    ruling_raw=canon(case.policy), theme_sources_raw=case.theme,
+                                    identity_observed_at="2024-03-03T10:00:00Z")
+
+    spec = copy.deepcopy(case.spec)
+    spec["fact"]["revenue"] = 90.0
+    with pytest.raises(n.DisclosureError, match="FIGURE_TEXT_MISMATCH"):
+        o.qualify_records("a" * 40, canon(spec), canon(case.policy), case.registry,
+                          case.identities, theme_sources_raw=case.theme)
+
+    spec = copy.deepcopy(case.snapshot.spec)
+    spec["fact"]["revenue"] = 90.0
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    source = segment.PinnedSegmentSource(snapshot, case.pinned.authority)
+    with pytest.raises(n.DisclosureError, match="FIGURE_TEXT_MISMATCH"):
+        _read_source(source, spec["edition"])
+
+
+def test_altered_value_refused_by_fact_validation(tmp_path):
+    # The same invariant holds for any direct validate_fact read-back (publication
+    # and the manifest both re-validate the adopted fact).
+    case = _segment_case(tmp_path)
+    fact = copy.deepcopy(case.spec["fact"])
+    fact["revenue"] = 90.0
+    with pytest.raises(n.DisclosureError, match="FIGURE_TEXT_MISMATCH"):
+        n.validate_fact(fact)
+
+
+# --- N2: the pinned manifest's form must equal the fact's form_type ---------
+
+def test_manifest_form_not_equal_to_fact_form_refused_at_replay(tmp_path):
+    case = _segment_case(tmp_path)  # manifest and fact both 10-K
+    spec = copy.deepcopy(case.snapshot.spec)
+    spec["fact"]["form_type"] = "20-F"  # admitted, but not the manifest's 10-K
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    source = segment.PinnedSegmentSource(snapshot, case.pinned.authority)
+    with pytest.raises(n.DisclosureError, match="SEGMENT_FORM_NOT_ADMITTED"):
+        _read_source(source, spec["edition"])
