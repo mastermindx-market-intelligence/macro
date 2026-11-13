@@ -14,6 +14,8 @@
   var canvas = document.getElementById('sky-stars');
   if (!canvas || window.__skyDeckInit) return;
   window.__skyDeckInit = true;
+  // Home puts its atmosphere inside the globe; no full-page celestial renderer.
+  if (sky.getAttribute("data-sky-mode") === "quiet") return;
   var cx = canvas.getContext('2d');
   var sunEl = document.getElementById('sky-sun');
   var moonEl = document.getElementById('sky-moon');
@@ -303,3 +305,4 @@
   void sky.offsetWidth;
   apply(true);
 })();
+

@@ -44,8 +44,7 @@ def test_mobile_globe_is_touchless_and_scroll_safe():
     assert ".gd-stage{pointer-events:none}" in css_source
     assert ".gd-canvas{touch-action:pan-y;cursor:default}" in css_source
     assert 'if (e.pointerType === "touch") return;' in globe_js
-    assert "if (touchlessMobile) return;" in globe_js
-    assert 'matchMedia("(hover: none) and (pointer: coarse)").matches' in globe_js
+    assert 'if (e.pointerType === "touch" || !ready) return;' in globe_js
 
 
 def test_country_tooltip_uses_the_same_live_quote_as_its_pebble():
@@ -60,3 +59,4 @@ def test_country_tooltip_uses_the_same_live_quote_as_its_pebble():
     assert "' + idx.price + '" in globe_js
     assert "' + idx.change + '" in globe_js
     assert '<b>\' + (m.index_price || "—") + \'</b>' not in globe_js
+
