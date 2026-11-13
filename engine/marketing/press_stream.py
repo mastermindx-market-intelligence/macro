@@ -22,10 +22,12 @@ Three parts, each independently fail-soft:
   (same ids, same corroboration flags from the register) and appended to a
   JSONL spool under data/marketing/press/. Reconnects with capped backoff;
   a dead stream degrades to the free RSS estate, never to a crash.
-* ``drain_spool`` — called by the press tick. Returns the spooled items and
-  truncates the file. The tick feeds them through the SAME pipeline (garbage
-  gate -> relevance -> corroboration -> desk/rail): push changes the
-  TRANSPORT, never the laws.
+* ``drain_spool`` — incumbent press-tick path; still destructively consumes
+  rows. The same pipeline/gates still apply and no runtime switch is implied.
+* ``peek_spool`` / ``ack_spool`` — opt-in pending-prefix read and conditional
+  acknowledgement over the SAME file/lock. Not wired into the live daemon:
+  callers must first prove durable desk acceptance and preserve outbound
+  publication idempotency before switching consumption over.
 
 The ``websockets`` import (sync client, v12+) is lazy and guarded — CI packs
 and dev hosts without the lib lose the listener, not the tick. The VPS venv
@@ -38,11 +40,14 @@ second writer would race.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
+import tempfile
 import threading
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -383,18 +388,8 @@ def append_spool(root: Path | str, items: list[dict]) -> int:
             return 0
 
 
-def drain_spool(root: Path | str) -> list[dict]:
-    """Read + truncate the spool; dedupe by id preserving arrival order."""
-    path = _press_dir(root) / _SPOOL_NAME
-    if not path.exists():
-        return []
-    with _spool_lock(path):
-        try:
-            raw = path.read_text(encoding="utf-8")
-            path.write_text("", encoding="utf-8")
-        except OSError as exc:
-            log.warning("press_stream spool drain failed: %s", exc)
-            return []
+def _decode_spool(raw: str) -> list[dict]:
+    """Keep legacy first-id wins/invalid-row behavior across both read modes."""
     items: list[dict] = []
     seen: set[str] = set()
     for line in raw.splitlines():
@@ -413,6 +408,143 @@ def drain_spool(root: Path | str) -> list[dict]:
         seen.add(iid)
         items.append(row)
     return items
+
+
+def drain_spool(root: Path | str) -> list[dict]:
+    """Legacy read + truncate; retained for existing consumers.
+
+    This is NOT an acceptance receipt. A new crash-safe consumer must use
+    peek_spool / ack_spool only after its durable downstream acceptance.
+    """
+    path = _press_dir(root) / _SPOOL_NAME
+    if not path.exists():
+        return []
+    with _spool_lock(path):
+        try:
+            raw = path.read_text(encoding="utf-8")
+            path.write_text("", encoding="utf-8")
+        except OSError as exc:
+            log.warning("press_stream spool drain failed: %s", exc)
+            return []
+    return _decode_spool(raw)
+
+
+@dataclass(frozen=True, slots=True)
+class SpoolSnapshot:
+    """Read-only snapshot token; owns no lifecycle, queue or persisted cursor."""
+
+    items: tuple[dict[str, Any], ...]
+    byte_count: int
+    prefix_sha256: str
+    device: int | None
+    inode: int | None
+    blocked_reason: str | None = None
+
+
+def _qualified_prefix(raw: bytes) -> tuple[bytes, tuple[dict[str, Any], ...], str | None]:
+    """Admit only newline-terminated, parseable rows into the ack range.
+
+    A torn writer line or corrupt complete record is NEVER silently removed
+    by a downstream batch that did not actually accept it. Preserve the entire
+    unqualified suffix for explicit same-source recovery.
+    """
+    count = 0
+    items: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    chunks = raw.split(bytes((10,)))
+    for chunk in chunks[:-1]:
+        try:
+            record = json.loads(chunk.decode("utf-8"))
+        except (UnicodeError, ValueError):
+            return raw[:count], tuple(items), "malformed_complete_row"
+        if not isinstance(record, dict):
+            return raw[:count], tuple(items), "malformed_complete_row"
+        iid = str(record.get("id") or "")
+        if not iid:
+            return raw[:count], tuple(items), "malformed_complete_row"
+        count += len(chunk) + 1
+        if iid not in seen:
+            seen.add(iid)
+            items.append(record)
+    if chunks[-1]:
+        return raw[:count], tuple(items), "partial_trailing_row"
+    return raw[:count], tuple(items), None
+
+
+def peek_spool(root: Path | str) -> SpoolSnapshot:
+    """Read the SAME spool without consuming it, binding even malformed bytes.
+
+    The token binds exact prefix bytes and file identity. A crash before ack
+    permits fresh inspection of the untouched original source file.
+    """
+    path = _press_dir(root) / _SPOOL_NAME
+    with _spool_lock(path):
+        try:
+            stat = path.stat()
+            raw = path.read_bytes()
+        except FileNotFoundError:
+            raw, stat = b"", None
+    qualified, items, blocked_reason = _qualified_prefix(raw)
+    return SpoolSnapshot(
+        items=items,
+        byte_count=len(qualified),
+        prefix_sha256=hashlib.sha256(qualified).hexdigest(),
+        device=stat.st_dev if stat is not None else None,
+        inode=stat.st_ino if stat is not None else None,
+        blocked_reason=blocked_reason,
+    )
+
+
+def ack_spool(root: Path | str, snapshot: SpoolSnapshot) -> bool:
+    """Remove ONLY a prefix already accepted by the existing downstream owner.
+
+    Concurrent appended bytes survive. A replaced/changed prefix refuses
+    mutation. Failure preserves the original spool for same-owner reconciliation.
+    Neither this helper nor a successful return proves downstream acceptance.
+    """
+    if not isinstance(snapshot, SpoolSnapshot) or snapshot.byte_count < 0:
+        return False
+    if snapshot.byte_count == 0:
+        # An unqualified row is still pending even when no safe prefix exists.
+        return snapshot.blocked_reason is None
+    path = _press_dir(root) / _SPOOL_NAME
+    with _spool_lock(path):
+        try:
+            stat = path.stat()
+            raw = path.read_bytes()
+        except OSError:
+            return False
+        if (stat.st_dev != snapshot.device or stat.st_ino != snapshot.inode
+                or len(raw) < snapshot.byte_count
+                or hashlib.sha256(raw[:snapshot.byte_count]).hexdigest()
+                != snapshot.prefix_sha256):
+            return False
+
+        # Atomically replace ONLY after writing/fsyncing the retained suffix.
+        # Do not truncate the source file in place on a failed write.
+        replacement: str | None = None
+        try:
+            fd, replacement = tempfile.mkstemp(
+                dir=path.parent, prefix=".stream-spool-ack-", suffix=".tmp"
+            )
+            with os.fdopen(fd, "wb") as output:
+                os.fchmod(output.fileno(), stat.st_mode & 0o777)
+                output.write(raw[snapshot.byte_count:])
+                output.flush()
+                os.fsync(output.fileno())
+            os.replace(replacement, path)
+            return True
+        except OSError as exc:
+            log.warning("press_stream acknowledged-prefix replace failed: %s", exc)
+            return False
+        finally:
+            if replacement is not None:
+                try:
+                    os.unlink(replacement)
+                except FileNotFoundError:
+                    pass
+                except OSError:
+                    log.warning("press_stream orphaned temporary snapshot: %s", replacement)
 
 
 def _bump_stats(root: Path | str, n_delivered: int, *, connected: bool) -> None:
