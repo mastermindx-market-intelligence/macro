@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T18:39:17.295590+00:00",
-  "count": 3313,
+  "generated_at": "2026-11-13T18:54:21.774392+00:00",
+  "count": 3314,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-gsqtn17sojj-2e5b71",
+      "title": "BofA Global FX weekly Greenback Mountain",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:35:41Z",
+      "summary_points": [
+        "USD Strength from CPI: Hot US CPI fuels USD strength, pushing EURUSD toward YTD lows (1.10/1.0882, 1.06); bearish bias amid USD/JPY intervention risk at 160.",
+        "Fed Terminal Rate Forecast: FOMC minutes reveal terminal rate forecast (4.25-4.50%) and March hike risk; hot CPI suggests Fed may lag inflation.",
+        "Structural USD Bearishness: IMF Q2 COFER shows EUR gaining $220bn in reserves vs.",
+        "USD $8bn outflow, confirming long-term USD diversification into EUR/AUD.",
+        "USD/JPY Intervention Risk: USD/JPY bullish at 152 (BoJ hikes, tech stocks); 160 level critical but intervention less certain due to yen not main driver."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-6vchuar8n9p-c9e78c",
       "title": "UBS S&T UBS Macro Equity Navigator Favorable AI Asymmetry Justinus Steinhorst 2026 11 13",
