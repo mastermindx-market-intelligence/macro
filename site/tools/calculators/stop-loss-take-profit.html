@@ -444,6 +444,36 @@
 
     function numFrom(el){ var v=parseFloat((el.value||"").replace(/,/g,"").trim()); return isFinite(v)?v:NaN; }
     function money(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+    // Model prices are not instrument ticks. Use 15 significant digits for
+    // readable prices, but retain native Number precision if that would merge
+    // distinct entry/stop/target levels (or round a finite value to infinity).
+    function priceTexts(entry, stop, target){
+      var raw=[entry,stop,target];
+      var shown=raw.map(function(n){return Number(n.toPrecision(15));});
+      var fallback=shown.some(function(n){return !isFinite(n);});
+      for(var i=0;i<raw.length;i++){
+        for(var j=i+1;j<raw.length;j++){
+          if(raw[i]!==raw[j] && shown[i]===shown[j]) fallback=true;
+        }
+      }
+      if(fallback) shown=raw;
+      return shown.map(function(n){
+        if(!isFinite(n)) return money(n); // preserve the existing range behavior
+        var s=String(n);
+        // Scientific notation keeps very small/large finite levels readable.
+        if(/[eE]/.test(s)) return "$"+s;
+        var parts=s.split(".");
+        parts[0]=parts[0].replace(/\B(?=(\d{3})+(?!\d))/g,",");
+        parts[1]=(parts[1]||"");
+        while(parts[1].length<2) parts[1]+="0";
+        return "$"+parts.join(".");
+      });
+    }
+    function priceNote(){
+      return document.documentElement.getAttribute("data-lang")==="zh"
+        ? "价格为近似模型值，未按交易最小变动单位取整；不保证成交。"
+        : "Approximate model prices, not tick-rounded; fills are not guaranteed.";
+    }
     function dash(){ outMain.textContent="—";
       [outStop,outTarget,outRR,outDRisk,outDReward].forEach(function(e){e.textContent="—"; e.className="";}); }
 
@@ -457,12 +487,13 @@
         outPlain.textContent = "That distance would price the stop or target at or below zero — trim the percent.";
         outPlain.className="co-plain warn"; last=null; return;
       }
+      last.priceTexts=priceTexts(inp.E,res.stopPrice,res.targetPrice);
       // co-main = the target price (the outcome you're aiming for)
-      outMain.textContent = money(res.targetPrice);
+      outMain.textContent = last.priceTexts[2];
       outUnit.textContent = side==="long" ? "target" : "target";
-      outStop.textContent   = money(res.stopPrice);
+      outStop.textContent   = last.priceTexts[1];
       outStop.className     = "neg";
-      outTarget.textContent = money(res.targetPrice);
+      outTarget.textContent = last.priceTexts[2];
       outTarget.className   = "pos";
       outRR.textContent     = res.rr.toFixed(res.rr < 10 ? 2 : 1).replace(/\.0+$/,"").replace(/(\.\d*[1-9])0+$/,"$1") + " : 1";
       if(res.hasQ){
@@ -475,23 +506,23 @@
       // Law 3: plain-word interpretation under the number
       var rrTxt = res.rr.toFixed(2).replace(/\.?0+$/,"");
       var lead = side==="long"
-        ? "Going long at " + money(numFrom(els.entry)) + ": stop at " + money(res.stopPrice) + ", target at " + money(res.targetPrice)
-        : "Going short at " + money(numFrom(els.entry)) + ": stop at " + money(res.stopPrice) + ", target at " + money(res.targetPrice);
+        ? "Going long at " + last.priceTexts[0] + ": stop at " + last.priceTexts[1] + ", target at " + last.priceTexts[2]
+        : "Going short at " + last.priceTexts[0] + ": stop at " + last.priceTexts[1] + ", target at " + last.priceTexts[2];
       var plain = lead + " — a reward-to-risk of " + rrTxt + " to 1";
       if(res.hasQ){
         plain += ", risking " + money(res.dollarRisk) + " to make " + money(res.dollarReward);
       }
-      plain += ".";
+      plain += ". " + priceNote();
       outPlain.textContent = plain; outPlain.className="co-plain";
     }
 
     function copyLine(){
       if(!last || !last.ok) return "";
       var rrTxt = last.rr.toFixed(2).replace(/\.?0+$/,"");
-      var line = "Stop/target (" + last.side + "): stop " + money(last.stopPrice) +
-        " · target " + money(last.targetPrice) + " · reward:risk " + rrTxt + ":1";
+      var line = "Stop/target (" + last.side + "): stop " + last.priceTexts[1] +
+        " · target " + last.priceTexts[2] + " · reward:risk " + rrTxt + ":1";
       if(last.hasQ){ line += " · risk " + money(last.dollarRisk) + " · reward " + money(last.dollarReward); }
-      return line + " — mastermind-x.com";
+      return line + " · " + priceNote() + " — mastermind-x.com";
     }
     copyBtn.addEventListener("click", function(){
       var line=copyLine(); if(!line) return;
@@ -515,6 +546,7 @@
     ["entry","stoppct","targetpct","shares"].forEach(function(id){
       els[id].addEventListener("input", render);
     });
+    document.addEventListener("langchange",render);
     render();
   });
 })();
