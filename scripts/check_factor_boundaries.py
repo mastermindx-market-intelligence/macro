@@ -74,13 +74,16 @@ Pattern note
 ------------
 Checks (a) and (c) are literal scans. Check (b) uses a narrow AST exception for
 fixed all-false authority-mirror emissions in two named inflation producers;
-all other paths retain the literal scan. Dynamic path construction without the
+the STSI warrant subtracts only two keys from an exact reviewed AST seal.
+All other paths retain the literal scan. Dynamic path construction without the
 matching literal is NOT detected.
 """
 from __future__ import annotations
 
 import argparse
 import ast
+import hashlib
+import json
 import re
 import sys
 import textwrap
@@ -210,6 +213,13 @@ _ALLOWED_ACTIONS_FIXED_DICT_EMITTERS = {
         }
     ),
 }
+
+# STSI controlled Technology composer: a reviewed AST seal permits only its
+# two existing fixed observe/explain dictionary-key emissions. This is not a
+# path allowlist or a general producer grant. Any meaningful source change
+# fails closed until the policy owner independently reviews a new postimage.
+_STSI_EMISSION_PATH = "engine/neuralweb/sector_federation.py"
+_STSI_EMISSION_AST_SHA256 = "429a5ced9d38931adf95fd2146830bf14d07e51db6a4b304753e70551fd456e3"
 
 # These constructs can replace a validated producer or its executable body
 # without creating an ``ast.Name(Store)`` binding. Fixed-emission modules do
@@ -741,6 +751,68 @@ def _protected_emitter_mutation_lines(
     return sorted(lines)
 
 
+def _stsi_ast_fingerprint(node: ast.AST) -> str:
+    """Hash meaningful syntax; normalize only absent/empty type_params drift.
+
+    Native/hosted Python 3.11/3.12+ differ on the empty FunctionDef/ClassDef
+    type_params field. Nonempty generic syntax is retained. AST location
+    attributes are excluded; literals, operators, annotations and type comments
+    remain present. This is a reviewed postimage seal, not arbitrary dataflow
+    analysis or a runtime integrity guarantee.
+    """
+    def normalize(value):
+        if isinstance(value, ast.AST):
+            return {"node": type(value).__name__, "fields": {
+                name: normalize(field) for name, field in ast.iter_fields(value)
+                if not (name == "type_params" and field == [])}}
+        if isinstance(value, list):
+            return [normalize(item) for item in value]
+        if value is Ellipsis:
+            return {"constant": "ellipsis"}
+        if isinstance(value, bytes):
+            return {"constant": "bytes", "hex": value.hex()}
+        if isinstance(value, complex):
+            return {"constant": "complex", "real": value.real, "imag": value.imag}
+        return value
+    payload = json.dumps(normalize(node), sort_keys=True, ensure_ascii=False,
+                         separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _stsi_emission_seal_matches(source: str) -> bool:
+    """Require the reviewed postimage even if it contains no authority token."""
+    try:
+        return (_stsi_ast_fingerprint(ast.parse(source, type_comments=True))
+                == _STSI_EMISSION_AST_SHA256)
+    except (SyntaxError, TypeError, ValueError):
+        return False
+
+
+def _stsi_emission_keys(rel_path: str, source: str, tree: ast.Module) -> frozenset[int]:
+    """Return only the two warranted key identities in the exact STSI AST."""
+    if rel_path != _STSI_EMISSION_PATH:
+        return frozenset()
+    if not _stsi_emission_seal_matches(source):
+        return frozenset()
+    functions = [node for node in tree.body
+                 if isinstance(node, ast.FunctionDef) and node.name == "_governance"]
+    if len(functions) != 1 or functions[0].decorator_list:
+        return frozenset()
+    keys = []
+    for node in ast.walk(functions[0]):
+        if not isinstance(node, ast.Dict):
+            continue
+        for key, value in zip(node.keys, node.values):
+            if (isinstance(key, ast.Constant) and key.value == "allowed_actions"
+                    and isinstance(value, ast.List)
+                    and len(value.elts) == 2
+                    and all(isinstance(item, ast.Constant) and type(item.value) is str
+                            for item in value.elts)
+                    and [item.value for item in value.elts] == ["observe", "explain"]):
+                keys.append(id(key))
+    return frozenset(keys) if len(keys) == 2 else frozenset()
+
+
 def _non_emission_allowed_actions_lines(rel_path: str, source: str) -> list[int]:
     """Return semantic allowed_actions references other than fixed emissions.
 
@@ -786,6 +858,11 @@ def _non_emission_allowed_actions_lines(rel_path: str, source: str) -> list[int]
                 (key.lineno, token_start, token_start + len("allowed_actions"))
             )
             permitted_key_ids.add(id(key))
+
+    stsi_keys = _stsi_emission_keys(rel_path, source, tree)
+    for node in ast.walk(tree):
+        if id(node) in stsi_keys:
+            permit_literal_key(node)
 
     for node in ast.walk(tree):
         if isinstance(node, ast.Dict):
@@ -914,6 +991,14 @@ def _check_b(root: Path, extra_files: dict[str, str] | None = None) -> list[Viol
                 continue
 
     for rel_path, source in file_iter:
+        if rel_path == _STSI_EMISSION_PATH and not _stsi_emission_seal_matches(source):
+            violations.append(Violation(
+                check="b", module=rel_path, line_no=1,
+                pattern="STSI reviewed AST mismatch",
+                message=(f"FACTOR BOUNDARY VIOLATION (b): {rel_path}:1 — "
+                         "named STSI facts-only producer differs from its reviewed AST. "
+                         "No emission exception applies; a new meaningful postimage "
+                         "requires explicit policy-owner review. RUL-NW9.")))
         for line_no in _protected_emitter_mutation_lines(rel_path, source):
             violations.append(Violation(
                 check="b",
@@ -927,11 +1012,13 @@ def _check_b(root: Path, extra_files: dict[str, str] | None = None) -> list[Viol
                     "may only be invoked, never replaced. RUL-NW9."
                 ),
             ))
-        if rel_path in _ALLOWED_ACTIONS_FIXED_EMISSION_PATHS:
+        if (rel_path in _ALLOWED_ACTIONS_FIXED_EMISSION_PATHS
+                or rel_path == _STSI_EMISSION_PATH):
             violation_lines = _non_emission_allowed_actions_lines(rel_path, source)
         elif _TOKEN not in source:
             continue
-        if rel_path in _ALLOWED_ACTIONS_FIXED_EMISSION_PATHS:
+        if (rel_path in _ALLOWED_ACTIONS_FIXED_EMISSION_PATHS
+                or rel_path == _STSI_EMISSION_PATH):
             violation_lines = _non_emission_allowed_actions_lines(rel_path, source)
         elif _is_allowlisted_for_allowed_actions(rel_path):
             continue
