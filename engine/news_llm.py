@@ -300,7 +300,7 @@ def _record_fabric_usage(comp) -> None:
         log.debug("news_llm: fabric usage record failed (%s)", e)
 
 
-def _fabric_call(items: list[dict], cfg: dict):
+def _fabric_call(items: list[dict]):
     """ONE router call for up to len(items) headlines.
 
     Returns ``(results_dict, Completion)``; the results dict has the same shape
@@ -410,7 +410,7 @@ def annotate(headlines: list[dict], batch_size: int | None = None,
             # ONE router call. The router owns provider selection, cooldown and
             # fallback, so there is no local retry and no second provider here.
             try:
-                raw_res, comp = _fabric_call(items, cfg)
+                raw_res, comp = _fabric_call(items)
             except fabric_client.FabricUnavailable as e:
                 # Nothing left this host (no token after all, or the SDK will not
                 # import): run the unchanged legacy ladder rather than blanking
