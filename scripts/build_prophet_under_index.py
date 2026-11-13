@@ -3,14 +3,18 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_REPO_ROOT))
 
-from engine.prophet_under_index import ELEVEN, LIMIT, METHOD, SECTORS, daily_fields, member_counts
-from lib.nyse_calendar import expected_last_session, is_session
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+
+from engine.prophet_under_index import ELEVEN, LIMIT, METHOD, SECTORS, daily_fields, member_counts  # noqa: E402
+from lib.nyse_calendar import expected_last_session, is_session  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 

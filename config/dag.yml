@@ -900,6 +900,14 @@ lanes:
           build_prophet's early band is fragile publication machinery. engine/seasonality/
           program_watch.py reads this token as the decision record; deleting it re-opens the
           daily-order tripwire, which is the intended behaviour if the decision is ever revisited.
+      - id: build_prophet_under_index
+        module: scripts.build_prophet_under_index
+        note: >
+          Prophet under-the-index daily feed. Runs inside the Prophet nightly step
+          (scripts/ci/daily_engine_prophet_nightly.sh) only after build_prophet succeeds,
+          from the same completed-session stores; writes site/prophet/under_index.json,
+          published through the existing guarded Prophet checkpoint. Description only;
+          a failed build withholds the checkpoint and never republishes a stale readout.
       - id: prophet_board_acceptance
         module: scripts.prophet_board_acceptance
         note: >
