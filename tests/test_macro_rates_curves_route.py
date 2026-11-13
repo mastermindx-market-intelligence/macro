@@ -142,13 +142,13 @@ _SUITE_BUILT_AT_RE = re.compile(
 T11_SITE_PAGES = (
     "site/macro_liquidity_regime.html",
     "site/macro_growth_real_economy.html",
+    "site/macro_capital_structure.html",
     "site/macro_business_activity.html",
     "site/macro_labor_markets.html",
     "site/macro_inflation_system.html",
     "site/macro_monetary_policy.html",
     "site/macro_financial_conditions.html",
     "site/macro_liquidity_central_banks.html",
-    "site/macro_capital_structure.html",
     "site/macro_housing_real_estate.html",
     "site/macro_consumer_payments.html",
     "site/macro_national_debt_liabilities.html",
@@ -862,6 +862,115 @@ def _t11_registered_collapses() -> list[tuple[str, str]]:
 _T11_REGISTERED_COLLAPSE = _t11_registered_collapses()
 
 
+# #7255 changes the closed-registry order, not the frozen T11 publication.
+# Collapse only that exact raw <li> relocation and the resulting fifth hub row.
+# The paired input/golden hashes, all other rows, clocks, labels and bytes stay
+# under the existing comparisons. No candidate renderer generates a golden.
+_T11_FROZEN_NAV = (
+    "liquidity_regime",
+    "growth_real_economy",
+    "business_activity",
+    "labor_markets",
+    "inflation_system",
+    "monetary_policy",
+    "financial_conditions",
+    "liquidity_central_banks",
+    "capital_structure",
+    "housing_real_estate",
+    "consumer_payments",
+    "national_debt_liabilities",
+    "rates_curves",
+    "trade_flows",
+)
+_T11_REGISTRY_NAV = (
+    "liquidity_regime",
+    "growth_real_economy",
+    "capital_structure",
+    "business_activity",
+    "labor_markets",
+    "inflation_system",
+    "monetary_policy",
+    "financial_conditions",
+    "liquidity_central_banks",
+    "housing_real_estate",
+    "consumer_payments",
+    "national_debt_liabilities",
+    "rates_curves",
+    "trade_flows",
+)
+_T11_HUB_BUSINESS_ROW = """    <li class="mx-chg-row mc-move-row">
+      <a class="mx-chg-name mc-move-name" href="macro_business_activity.html"><span class="l-en">Leading-activity momentum (6-month)</span><span class="l-zh">领先活动动能（6个月）</span></a><span class="mc-move-source"><span class="l-en">Business Activity</span><span class="l-zh">商业活动</span></span>
+      <span class="mx-chg-what mc-move-what">
+        <strong class="mc-move-current"><span class="l-en">0.75 index reading</span><span class="l-zh">0.75 指数读数</span></strong><span class="mc-move-words mq-delta-down"><span class="l-en">down 0.18 index reading since the last reading</span><span class="l-zh">较上次读数下降 0.18 指数读数</span></span>
+      </span>
+    </li>"""
+_T11_HUB_CAPITAL_ROW = """    <li class="mx-chg-row mc-move-row">
+      <a class="mx-chg-name mc-move-name" href="macro_capital_structure.html"><span class="l-en">How many issuers came to market</span><span class="l-zh">来市场发债的主体数量</span></a><span class="mc-move-source"><span class="l-en">Capital Structure</span><span class="l-zh">资本结构</span></span>
+      <span class="mx-chg-what mc-move-what">
+        <strong class="mc-move-current"><span class="l-en">3,010.0 index reading</span><span class="l-zh">3,010.0 指数读数</span></strong><span class="mc-move-words mq-delta-up"><span class="l-en">up 41.00 index reading since the last reading</span><span class="l-zh">较上次读数上升 41.00 指数读数</span></span>
+      </span>
+    </li>"""
+
+_T11_NAV_RAIL_RE = re.compile(
+    r'(<ul class="mq-suitenav-rail" aria-labelledby="mq-suitenav-label">)'
+    r"(.*?)(</ul>)", re.S)
+
+
+def _t11_suite_nav_parts(html: str):
+    rails = list(_T11_NAV_RAIL_RE.finditer(html))
+    if len(rails) != 1:
+        return None
+    rail = rails[0]
+    inner = rail.group(2)
+    items = re.findall(r"\s*<li(?:\s[^>]*)?>.*?</li>", inner, re.S)
+    joined = "".join(items)
+    if len(items) != 15 or not inner.startswith(joined):
+        return None
+    tail = inner[len(joined):]
+    if tail.strip():
+        return None
+    ids = [re.findall(r'data-mq-workspace="([^"]+)"', item) for item in items]
+    if any(len(found) != 1 for found in ids[:14]) or ids[14]:
+        return None
+    if not re.match(r'\s*<li class="mq-suitenav-analyst">', items[14]):
+        return None
+    return rail, items, tail, tuple(found[0] for found in ids[:14])
+
+
+def _t11_collapse_registry_order(html: str) -> str:
+    parts = _t11_suite_nav_parts(html)
+    if parts is not None:
+        rail, items, tail, ids = parts
+        if ids == _T11_REGISTRY_NAV:
+            # Move the unchanged Capital node back behind central banks.
+            # Hrefs, current/ARIA attributes, bilingual text and analyst tail
+            # are never normalized or reserialized.
+            frozen = items[:2] + items[3:9] + [items[2]] + items[9:]
+            html = (html[:rail.start(2)] + "".join(frozen) + tail
+                    + html[rail.end(2):])
+
+    if html.count(_HUB_REGION[0]) != 1:
+        return html
+    start = html.find('<ul class="mc-move-list">', html.index(_HUB_REGION[0]))
+    if start < 0:
+        return html
+    end = html.find("</ul>", start)
+    if end < 0:
+        return html
+    overview = html[start:end]
+    rows = re.findall(
+        r'    <li class="mx-chg-row mc-move-row">.*?</li>', overview, re.S)
+    if len(rows) != 5 or rows[-1] != _T11_HUB_CAPITAL_ROW:
+        return html
+    # The immutable fixture has 3010/2969/+41, not today's published values.
+    # A changed number, label, href, tone, count, other row or other panel
+    # therefore remains a mismatch. Only this exact fifth row collapses.
+    if overview.count(_T11_HUB_CAPITAL_ROW) != 1:
+        return html
+    overview = overview.replace(_T11_HUB_CAPITAL_ROW, _T11_HUB_BUSINESS_ROW, 1)
+    return html[:start] + overview + html[end:]
+
+
 def _t11_collapse_t21_labels(html: str) -> str:
     """Collapse the reviewed T21 label strings back to BASE's fallback.
 
@@ -872,6 +981,7 @@ def _t11_collapse_t21_labels(html: str) -> str:
     fails on any other edit. The goldens are never regenerated from
     the candidate renderer (tests/fixtures/macro_suite_t11/README).
     """
+    html = _t11_collapse_registry_order(html)
     for _refs, _new, _old in _T21_LABEL_COLLAPSE:
         html = html.replace(_new, _old)
     # The registered collapses run here because every comparison already
@@ -1020,6 +1130,113 @@ def _assert_same_macro_suite_region(before_html: str, after_html: str, name: str
     )
 
 
+@pytest.mark.parametrize("page", builder.SUITE_PAGES,
+                         ids=lambda page: page.workspace_id)
+def test_11_registry_nav_collapse_keeps_attributes_and_other_bytes(page) -> None:
+    name = page.output
+    golden = (T11_PAGES / name).read_text(encoding="utf-8")
+    parts = _t11_suite_nav_parts(golden)
+    assert parts is not None
+    rail, items, tail, ids = parts
+    assert ids == _T11_FROZEN_NAV
+    ordered = items[:2] + [items[8]] + items[2:8] + items[9:]
+
+    def with_items(nodes: list[str]) -> str:
+        return (golden[:rail.start(2)] + "".join(nodes) + tail
+                + golden[rail.end(2):])
+
+    candidate = with_items(ordered)
+    assert candidate != golden
+    assert _t11_collapse_registry_order(candidate) == golden
+    _assert_same_macro_suite_region(golden, candidate, name)
+
+    # The old frozen order is intentionally accepted by T11. The real-render
+    # assertion below separately refuses a producer/navigation order revert.
+    # This third order, duplicate/missing node, and extra node are not allowed.
+    wrong_order = ordered[:]
+    wrong_order[2], wrong_order[3] = wrong_order[3], wrong_order[2]
+    altered_label = ordered[:]
+    altered_label[2] = altered_label[2].replace("Capital Structure", "Capital StructureX", 1)
+    altered_href = ordered[:]
+    altered_href[2] = altered_href[2].replace(
+        'href="macro_capital_structure.html"', 'href="wrong.html"', 1)
+    altered_attr = ordered[:]
+    altered_attr[2] = altered_attr[2].replace(
+        '<a class="mq-suitenav-pill', '<a data-stray="1" class="mq-suitenav-pill', 1)
+    if page.workspace_id == "capital_structure":
+        assert 'aria-current="page"' in ordered[2]
+        lost_current = ordered[:]
+        lost_current[2] = lost_current[2].replace(' aria-current="page"', "", 1)
+        assert lost_current[2] != ordered[2]
+        with pytest.raises(AssertionError):
+            _assert_same_macro_suite_region(golden, with_items(lost_current), name)
+    for nodes in (wrong_order, altered_label, altered_href, altered_attr,
+                  ordered[:2] + ordered[3:],
+                  ordered[:3] + [ordered[2]] + ordered[3:]):
+        changed = with_items(nodes)
+        assert changed != candidate
+        with pytest.raises(AssertionError):
+            _assert_same_macro_suite_region(golden, changed, name)
+    marker = _SUITE_REGION[0]
+    idx = candidate.index(marker) + len(marker)
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(
+            golden, candidate[:idx] + "X" + candidate[idx:], name)
+
+
+def test_11_registry_hub_row_is_bound_to_the_paired_input() -> None:
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "capital_structure")
+    snapshot, _artifact = builder.read_workspace(T11_DATA, page)
+    raw = snapshot["changes"]["deltas"][0]
+    assert raw["metric_id"] == "cs_issuer_count"
+    assert (raw["current_value"], raw["prior_value"], raw["delta"]) == (3010, 2969, 41)
+    assert snapshot["changes"]["prior_effective_date"] == "2026-09-16"
+    assert snapshot["headline"]["effective_date"] == "2026-09-17"
+    assert snapshot["availability"]["state"] == "STALE_SOURCE"
+    change = macro_suite_view._changes(snapshot)
+    row = change["deltas"][0]
+    assert change["prior_is_earlier"] and row["comparable"]
+    assert (row["current"], row["delta_raw"], row["unit"]) == ("3,010.0", 41, "issuers")
+    # Retain the existing formatter's fallback; an unrelated scale-label repair
+    # must earn its own expectation change instead of hiding in this reorder.
+    assert macro_suite_view.L.figure_scale(row["unit"]) == {
+        "en": "index reading", "zh": "指数读数"}
+    assert macro_suite_view.L.fmt_move_words(41, "up", "issuers") == {
+        "en": "up 41.00 index reading since the last reading",
+        "zh": "较上次读数上升 41.00 指数读数",
+    }
+
+
+def test_11_registry_hub_row_collapse_does_not_mask_other_edits() -> None:
+    name = "macro_monetary.html"
+    golden = (T11_PAGES / name).read_text(encoding="utf-8")
+    assert golden.count(_T11_HUB_BUSINESS_ROW) == 1
+    candidate = golden.replace(_T11_HUB_BUSINESS_ROW, _T11_HUB_CAPITAL_ROW, 1)
+    assert _t11_collapse_registry_order(candidate) == golden
+    _assert_same_macro_suite_region(golden, candidate, name)
+    for before, after in (
+        ("3,010.0", "3,011.0"),
+        ("up 41.00", "up 40.00"),
+        ("mq-delta-up", "mq-delta-down"),
+        ("macro_capital_structure.html", "wrong.html"),
+        ("How many issuers came to market", "How many issuers came to marketX"),
+    ):
+        wrong_row = _T11_HUB_CAPITAL_ROW.replace(before, after, 1)
+        assert wrong_row != _T11_HUB_CAPITAL_ROW
+        changed = candidate.replace(_T11_HUB_CAPITAL_ROW, wrong_row, 1)
+        with pytest.raises(AssertionError):
+            _assert_same_macro_suite_region(golden, changed, name)
+    for before, after in (
+        ("5 of 45 compared readings", "5 of 44 compared readings"),
+        ("48.24 pts", "48.25 pts"),
+        ('id="mc-shell"', 'id="mc-shell" data-stray="1"'),
+    ):
+        changed = candidate.replace(before, after, 1)
+        assert changed != candidate
+        with pytest.raises(AssertionError):
+            _assert_same_macro_suite_region(golden, changed, name)
+
+
 def test_11_registered_collapses_are_exact_and_explained() -> None:
     """Each file says why. Each pair starts at a tag boundary, so a collapse
     cannot fold a loose word out of the middle of a sentence."""
@@ -1103,6 +1320,10 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
             page_built_at=stamp,
         )
         entries.append(entry)
+        rendered_nav = _t11_suite_nav_parts(_path.read_text(encoding="utf-8"))
+        assert rendered_nav is not None, page.output
+        assert rendered_nav[3] == _T11_REGISTRY_NAV, page.output
+    assert tuple(p.workspace_id for p in builder.SUITE_PAGES) == _T11_REGISTRY_NAV
     hub_committed = T11_PAGES / "macro_monetary.html"
     assert hub_committed.exists()
     hub_stamp = _page_built_stamp(hub_committed.read_text(encoding="utf-8")) or BUILT_AT

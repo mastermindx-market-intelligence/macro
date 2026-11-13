@@ -206,9 +206,10 @@ def test_the_hub_uses_the_closed_registry_membership_and_never_reorders_by_magni
                  for section_id in EXPECTED_SECTION_ORDER]
     assert positions == sorted(positions)
 
-    # MEMBERSHIP is the closed producer registry's; ORDER is the Macro Command
-    # reading order (SECTIONS), not the registry declaration order.
-    assert {p.workspace_id for p in builder.SUITE_PAGES} == set(producer_registry.WORKSPACE_IDS)
+    # Workspace membership and suite navigation follow the closed registry.
+    # The Macro Command rail keeps its separate frozen question order above.
+    suite_ids = tuple(p.workspace_id for p in builder.SUITE_PAGES)
+    assert suite_ids == producer_registry.built_ids()
     section_workspace_ids: list[str] = []
     for section in builder.SECTIONS:
         if section.subtabs:

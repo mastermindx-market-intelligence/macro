@@ -102,6 +102,18 @@ SUITE_PAGES: tuple[SuitePage, ...] = (
         ),
     ),
     SuitePage(
+        workspace_id="capital_structure",
+        region="US",
+        template="macro_capital_structure.html.j2",
+        output="macro_capital_structure.html",
+        seo_title="US Capital Structure — Macro & Monetary | MastermindX",
+        seo_desc=(
+            "A read-only census of the US corporate capital-structure event "
+            "projection — coverage, classification and review backlog, with "
+            "everything the owner does not publish typed honestly."
+        ),
+    ),
+    SuitePage(
         workspace_id="business_activity",
         region="US",
         template="macro_business_activity.html.j2",
@@ -167,18 +179,6 @@ SUITE_PAGES: tuple[SuitePage, ...] = (
         seo_desc=(
             "Global monetary impulse against Fed, ECB and BoJ balance-sheet stance, "
             "with the weekly grid clock, warmup windows and typed gaps shown."
-        ),
-    ),
-    SuitePage(
-        workspace_id="capital_structure",
-        region="US",
-        template="macro_capital_structure.html.j2",
-        output="macro_capital_structure.html",
-        seo_title="US Capital Structure — Macro & Monetary | MastermindX",
-        seo_desc=(
-            "A read-only census of the US corporate capital-structure event "
-            "projection — coverage, classification and review backlog, with "
-            "everything the owner does not publish typed honestly."
         ),
     ),
     SuitePage(
