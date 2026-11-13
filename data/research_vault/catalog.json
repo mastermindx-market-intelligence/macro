@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T20:24:30.189066+00:00",
-  "count": 3318,
+  "generated_at": "2026-11-13T20:40:06.280382+00:00",
+  "count": 3319,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1106,6 +1106,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-oh9q2smdy3m-c5c295",
+      "title": "GS Arruda What Matters Today Capex Outlook How Much of an AI Boost, Should We Expect More Upside Inflation Surprises, US Vol Views 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T19:36:13Z",
+      "summary_points": [
+        "2027 Capex AI Boost: AI-related hardware/IP spending to exceed $900bn annually by end-2026 ($1.4tn by 2027), ~4% of US GDP, with Q4 2026 capex growth at 8.4%.",
+        "AI GDP Growth Impact: AI investment to boost true GDP growth by 0.6pp in 2026/2027 (Goldman Sachs analysis), factoring direct/indirect effects and spillovers.",
+        "Geopolitical/Capex Risks: Iran war-driven oil prices (0.5pp GDP impact in 2024) offset by declining manufacturing capex from IRA/CHIPS Act subsidies, critical for GDP forecasts.",
+        "AI Sector Volatility Risk: AI data center basket (GSTMTDAT) volatility at 80v (vs 44v SPX), VIX realized vol at ATHs, and Vol of Vol 2nd largest single-day increase—key technical/flow risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
