@@ -7,6 +7,8 @@ it cannot conjure an alert from a calm tape.
 from __future__ import annotations
 
 import pandas as pd
+import numpy as np
+import pytest
 
 from engine import election_cycle as ec
 from engine import risk_radar as rr
@@ -107,3 +109,51 @@ def test_non_midterm_year_is_passthrough():
     assert cyc is not None and not cyc["is_midterm"] and not cyc["show"]
     assert cyc["modulation"]["active"] is False
     assert out["gross_factor"] == rr._gross_for(out["state"])   # untouched
+
+
+
+@pytest.mark.parametrize('invalid', ['2024-02-30', '', 'garbage', float('nan'), pd.NaT, np.datetime64('NaT')])
+def test_invalid_explicit_dates_never_become_today(invalid, monkeypatch):
+    import datetime
+    import types
+    from engine.intl_recovery_quality import macro_backdrop
+    for clock in (datetime.date(2025, 7, 1), datetime.date(2026, 7, 1)):
+        class FrozenDate(datetime.date):
+            @classmethod
+            def today(cls):
+                return cls(clock.year, clock.month, clock.day)
+        monkeypatch.setattr(ec, '_dt', types.SimpleNamespace(date=FrozenDate, datetime=datetime.datetime))
+        assert ec.context(invalid) is None
+        assert ec.sector_bias(invalid) is None
+        mod = ec.modulation(invalid, spy_risk_on=True)
+        assert mod['gross_mult'] == 1.0 and mod['band_delta'] == 0.0
+        assert not mod['active'] and not mod['risk_on_slice']
+        # Nonempty invalid strings reach the real display consumer unchanged.
+        if isinstance(invalid, str) and invalid:
+            assert macro_backdrop({}, as_of=invalid) == {}
+        assert ec.context()['year'] == clock.year
+
+
+def test_unavailable_overlay_native_radar_preserves_measured_band(monkeypatch):
+    # Radar owns its own cutoff parser. Qualify its existing neutral-overlay
+    # contract separately from that parser using actual unavailable results.
+    context = ec.context('not-a-date')
+    modulation = ec.modulation('not-a-date', spy_risk_on=True)
+    monkeypatch.setattr(ec, 'context', lambda **kwargs: context)
+    monkeypatch.setattr(ec, 'modulation', lambda **kwargs: modulation)
+    out = rr.compute(sigs=_sigs(credit_oas_roc=.96), asof='2026-08-15', gate=_RISK_OFF)
+    assert out['cycle_context'] is None
+    assert out['state'] in ('elevated', 'risk-off')
+    assert out['gross_factor'] == rr._gross_for(out['state'])
+
+
+def test_native_date_like_sentinels_and_valid_types():
+    import datetime
+    for invalid in (pd.NaT, np.datetime64('NaT')):
+        assert ec.context(invalid) is None
+        assert ec.sector_bias(invalid) is None
+        assert ec.modulation(invalid)['gross_mult'] == 1.0
+    expected = ec.context('2026-08-15')
+    for value in (datetime.date(2026, 8, 15), datetime.datetime(2026, 8, 15, 23, 59),
+                  pd.Timestamp('2026-08-15T23:59:00Z'), np.datetime64('2026-08-15')):
+        assert ec.context(value) == expected
