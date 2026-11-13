@@ -952,6 +952,7 @@ class TestPriorEpisodeScan:
         assert prior["selected_by"] == pm.READMIT_LEG_OPEN_DRAWDOWN
         assert prior["entry_date"] == "2026-06-18"
         assert prior["mark_at_readmit_pct"] == pytest.approx(-12.0)
+        assert prior["mark_observation_date"] == "2026-06-22"
 
     def test_an_unpriceable_prior_makes_the_row_UNDECIDABLE_not_clean(self):
         # The prior run has no series at all, so nobody can say what it did. Reporting
