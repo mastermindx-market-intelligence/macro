@@ -8,7 +8,7 @@
 | briefing (Phase-5 priority queue) | 2026-11-12 | 25 | 25 | ok |
 | radar (divergence radar) | 2026-11-12 | 255 | 255 | ok |
 | altdata (alt-data desk) | 2026-11-13 | 30 | 30 | ok |
-| news (news flow) | 2026-11-13 | 210 | 210 | ok |
+| news (news flow) | 2026-11-13 | 223 | 223 | ok |
 | intel_hub (5-desk command) | 2026-11-12 | 30 | 30 | ok |
 
 _Invariants: coverage floor · score-column degeneracy · content-freeze (as_of advanced but values identical) · staleness · distribution drift. Ground-truth-free — see engine/signal_sanity.py._

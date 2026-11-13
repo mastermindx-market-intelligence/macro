@@ -1,7 +1,7 @@
 {
   "schema": "rates_command.v1",
   "asof": "2026-11-12",
-  "built": "2026-11-13T11:04:30.230991+00:00",
+  "built": "2026-11-13T14:35:18.285452+00:00",
   "display_only": true,
   "authority": false,
   "board": {
@@ -9,9 +9,9 @@
       "asof": "2026-11-12",
       "policy_rate": 3.88,
       "implied_path": {
-        "m1": 3.98,
-        "m3": 4.26,
-        "m6": 4.57,
+        "m1": null,
+        "m3": null,
+        "m6": null,
         "m12": 4.76
       },
       "implied_bp_12m": 88,
@@ -42,15 +42,15 @@
         "horizon_label": "end-2026",
         "horizon_months": 1,
         "fed_dot": 4.1,
-        "market": 3.98,
-        "gap_bp": -12,
-        "lean_en": "market ≈ the Fed",
-        "lean_zh": "市场与美联储基本一致"
+        "market": 4.76,
+        "gap_bp": 66,
+        "lean_en": "market more hawkish than the Fed",
+        "lean_zh": "市场比美联储更鹰派"
       },
       "headline_en": "Market prices ~4 hikes over the next 12m (funds 3.88% → 4.76%)",
       "headline_zh": "市场为未来12个月定价约加息4次（基金利率 3.88% → 4.76%）",
-      "read_en": "At end-2026 the market implies 3.98% vs the Fed's 4.10% median dot (-12bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.64pp).",
-      "read_zh": "在end-2026，市场隐含 3.98% 对比美联储 4.10% 的中位点（-12基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+0.64个百分点）。",
+      "read_en": "At end-2026 the market implies 4.76% vs the Fed's 4.10% median dot (+66bp — market more hawkish than the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.64pp).",
+      "read_zh": "在end-2026，市场隐含 4.76% 对比美联储 4.10% 的中位点（+66基点 — 市场比美联储更鹰派）。近端远期利差为正——近端未为降息定价（+0.64个百分点）。",
       "source_en": "ZQ fed-funds futures",
       "source_zh": "ZQ 联邦基金期货",
       "basis": {
@@ -240,8 +240,8 @@
         "active": true,
         "weight": 1,
         "value": "up",
-        "detail_en": "Oil trending up (-9.9% 20d) with shock/oil-driven breakeven pressure.",
-        "detail_zh": "原油趋势up（20天涨跌-9.9%），叠加冲击/油价驱动的盈亏平衡压力。",
+        "detail_en": "Oil trending up (-13.0% 20d) with shock/oil-driven breakeven pressure. (shock_state stale >7d — judged on trend+cause_badge only)",
+        "detail_zh": "原油趋势up（20天涨跌-13.0%），叠加冲击/油价驱动的盈亏平衡压力。（shock_state超过7天未更新——仅依据趋势和原因标识判断）",
         "null_reason": null
       },
       {
@@ -328,10 +328,10 @@
   "divergence": [
     {
       "key": "D1_dots_vs_market",
-      "active": false,
-      "value_bp": -12.0,
-      "detail_en": "Market vs dot gap: -12bp — within normal range (threshold: ±50bp).",
-      "detail_zh": "市场与点阵图利差：-12个基点——在正常范围内。"
+      "active": true,
+      "value_bp": 66.0,
+      "detail_en": "Significant divergence: market vs dot gap = +66bp (market more hawkish than the Fed).",
+      "detail_zh": "显著背离：市场与点阵图利差+66个基点（市场比美联储更鹰派）。"
     },
     {
       "key": "D2_projection_vs_breakeven",
@@ -350,8 +350,8 @@
     {
       "key": "H3_oil_impulse",
       "direction": "hawkish",
-      "en": "Oil trending up (-9.9% 20d) with shock/oil-driven breakeven pressure.",
-      "zh": "原油趋势up（20天涨跌-9.9%），叠加冲击/油价驱动的盈亏平衡压力。",
+      "en": "Oil trending up (-13.0% 20d) with shock/oil-driven breakeven pressure. (shock_state stale >7d — judged on trend+cause_badge only)",
+      "zh": "原油趋势up（20天涨跌-13.0%），叠加冲击/油价驱动的盈亏平衡压力。（shock_state超过7天未更新——仅依据趋势和原因标识判断）",
       "watch_en": "If this pressure persists, upward rate repricing stays at risk; a deepening equity correction historically pulls the other way.",
       "watch_zh": "若该压力持续，利率上调风险上升；股市进一步下跌历史上会起到反向对冲作用。"
     },
@@ -366,9 +366,9 @@
   ],
   "market_check": {
     "futures": {
-      "m1": 3.98,
-      "m3": 4.26,
-      "m6": 4.57,
+      "m1": null,
+      "m3": null,
+      "m6": null,
       "m12": 4.76,
       "implied_bp_12m": 88,
       "plain_read_en": "Market prices ~4 hikes over the next 12m (funds 3.88% → 4.76%)",
@@ -1186,6 +1186,7 @@
   "caveats": [
     "futures-implied path reflects risk premium not stripped — not a forecast",
     "All legs are display-tier context only; no scoring or authority.",
+    "commodity/shock_state.json oil entry is 8d old (>7d threshold) — H3 leg judged on trend+cause_badge only",
     "policy/intel.json is 123d old — policy row quotes as-of 2026-07-13",
     "policy/intel.json th_iran theater is 123d old (>7d threshold) — suppressed from conditions; quote intel.as_of='2026-07-13'"
   ],
@@ -1632,7 +1633,7 @@
     "components": {
       "d1": {
         "input_id": "data/bonds/bond_health.json#/fed_path/effr_meeting_path",
-        "content_ref": "490d57f37fdb79a8c47f0616dc0cfb295d243af5afac9a181fb7f01cf743c34a",
+        "content_ref": "2ddb3cf8c984dcacc511cb1b99d3ae057d148845aa3c46085bc43838df3f5848",
         "cutoff": null,
         "state": "missing"
       },
@@ -1644,7 +1645,7 @@
       },
       "t0_rate_path": {
         "input_id": "data/bonds/bond_health.json#/fed_path/effr_meeting_path",
-        "content_ref": "490d57f37fdb79a8c47f0616dc0cfb295d243af5afac9a181fb7f01cf743c34a",
+        "content_ref": "2ddb3cf8c984dcacc511cb1b99d3ae057d148845aa3c46085bc43838df3f5848",
         "cutoff": "2026-11-13",
         "state": "present"
       }
@@ -1660,7 +1661,7 @@
   },
   "policy_path_repricing": {
     "schema": "rate_futures.repricing.v1",
-    "evaluated_at": "2026-11-13T11:04:30.053554+00:00",
+    "evaluated_at": "2026-11-13T14:35:18.147936+00:00",
     "asof": "2026-11-12",
     "historical_availability_qualified": false,
     "display_only": true,
@@ -1777,19 +1778,19 @@
   "regime_outlook": {
     "schema_version": "regime_outlook.v1",
     "scope": "US",
-    "analysis_cutoff": "2026-11-13T11:04:30.219948+00:00",
-    "built_at": "2026-11-13T11:04:30.221343+00:00",
+    "analysis_cutoff": "2026-11-13T14:35:18.276138+00:00",
+    "built_at": "2026-11-13T14:35:18.277455+00:00",
     "mapping_version": "VERDICT_MAPPING_V2",
     "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
     "inputs": {
       "T": {
         "path": "data/transmission/latest.json",
-        "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+        "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
         "read_status": "available"
       },
       "R": {
         "path": "data/regime/latest.json",
-        "sha256": "1ee07f8d6e13eb8eee831eb0d577cdbc50b4f018ac50cdb35cc751b1acb734db",
+        "sha256": "3621a2e6088f1ae4f2c5e00ac6a9be7498d48bc0f622d7bcb703605b40b17371",
         "read_status": "available"
       },
       "M": {
@@ -1809,12 +1810,12 @@
       },
       "B": {
         "path": "data/bonds/bond_health.json",
-        "sha256": "490d57f37fdb79a8c47f0616dc0cfb295d243af5afac9a181fb7f01cf743c34a",
+        "sha256": "2ddb3cf8c984dcacc511cb1b99d3ae057d148845aa3c46085bc43838df3f5848",
         "read_status": "available"
       },
       "C": {
         "path": "data/commodity/latest.json",
-        "sha256": "6128e1b338166adfdb184a0c063d2f51e52abd72f7f12d573c87e482e2d47728",
+        "sha256": "d0cc444b44eb7276b40b751187433b04ed0361e0e3f18c4d664dd828ae5949f9",
         "read_status": "available"
       }
     },
@@ -1951,7 +1952,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/inflation/direction",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -1988,7 +1989,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/inflation/regime",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2025,7 +2026,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/expectations/anchoring",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2062,7 +2063,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/rates/direction",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2099,7 +2100,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/rates/regime",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2136,7 +2137,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/breakeven_decomp/direction",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2173,7 +2174,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/breakeven_decomp/trend",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2210,7 +2211,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_curve/regime/term_premium_dir",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2247,7 +2248,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/2y/turn_watch",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-10",
           "precision": "date",
@@ -2284,7 +2285,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/5y/turn_watch",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-10",
           "precision": "date",
@@ -2321,7 +2322,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/10y/turn_watch",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-10",
           "precision": "date",
@@ -2358,7 +2359,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/20y/turn_watch",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-10",
           "precision": "date",
@@ -2395,7 +2396,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_momentum/series/30y/turn_watch",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-10",
           "precision": "date",
@@ -2432,7 +2433,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/labor_nowcast/read",
-          "sha256": "1ee07f8d6e13eb8eee831eb0d577cdbc50b4f018ac50cdb35cc751b1acb734db",
+          "sha256": "3621a2e6088f1ae4f2c5e00ac6a9be7498d48bc0f622d7bcb703605b40b17371",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2469,7 +2470,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/state",
-          "sha256": "1ee07f8d6e13eb8eee831eb0d577cdbc50b4f018ac50cdb35cc751b1acb734db",
+          "sha256": "3621a2e6088f1ae4f2c5e00ac6a9be7498d48bc0f622d7bcb703605b40b17371",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-06",
           "precision": "date",
@@ -2506,7 +2507,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/complacency/breadth_div",
-          "sha256": "1ee07f8d6e13eb8eee831eb0d577cdbc50b4f018ac50cdb35cc751b1acb734db",
+          "sha256": "3621a2e6088f1ae4f2c5e00ac6a9be7498d48bc0f622d7bcb703605b40b17371",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2543,7 +2544,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/label",
-          "sha256": "1ee07f8d6e13eb8eee831eb0d577cdbc50b4f018ac50cdb35cc751b1acb734db",
+          "sha256": "3621a2e6088f1ae4f2c5e00ac6a9be7498d48bc0f622d7bcb703605b40b17371",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2580,7 +2581,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-          "sha256": "1ee07f8d6e13eb8eee831eb0d577cdbc50b4f018ac50cdb35cc751b1acb734db",
+          "sha256": "3621a2e6088f1ae4f2c5e00ac6a9be7498d48bc0f622d7bcb703605b40b17371",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2691,7 +2692,7 @@
         "source": {
           "artifact": "B",
           "pointer": "/fed_path/implied_cuts_12m",
-          "sha256": "490d57f37fdb79a8c47f0616dc0cfb295d243af5afac9a181fb7f01cf743c34a",
+          "sha256": "2ddb3cf8c984dcacc511cb1b99d3ae057d148845aa3c46085bc43838df3f5848",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2723,7 +2724,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/dollar_channel/usd_dir",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "unknown",
           "as_of": null,
           "precision": null,
@@ -2760,7 +2761,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-          "sha256": "1ee07f8d6e13eb8eee831eb0d577cdbc50b4f018ac50cdb35cc751b1acb734db",
+          "sha256": "3621a2e6088f1ae4f2c5e00ac6a9be7498d48bc0f622d7bcb703605b40b17371",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2797,7 +2798,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/state/inflation/eci_comp_yoy",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2834,16 +2835,16 @@
         "source": {
           "artifact": "C",
           "pointer": "/assets/oil/trend",
-          "sha256": "6128e1b338166adfdb184a0c063d2f51e52abd72f7f12d573c87e482e2d47728",
+          "sha256": "d0cc444b44eb7276b40b751187433b04ed0361e0e3f18c4d664dd828ae5949f9",
           "clock_semantics": "owner_snapshot_date",
-          "as_of": "2026-11-12",
+          "as_of": "2026-11-13",
           "precision": "date",
-          "age_calendar_days": 1,
+          "age_calendar_days": 0,
           "future_dated": false,
           "known_at": null,
           "available_at": null,
           "expected_us_session": "2026-11-12",
-          "session_relation": "same_completed_session",
+          "session_relation": "after_completed_session",
           "reference_period": null
         }
       },
@@ -2871,7 +2872,7 @@
         "source": {
           "artifact": "T",
           "pointer": "/yield_curve/regime/key",
-          "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+          "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -2982,7 +2983,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/trend",
-          "sha256": "1ee07f8d6e13eb8eee831eb0d577cdbc50b4f018ac50cdb35cc751b1acb734db",
+          "sha256": "3621a2e6088f1ae4f2c5e00ac6a9be7498d48bc0f622d7bcb703605b40b17371",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-06",
           "precision": "date",
@@ -3019,7 +3020,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-          "sha256": "1ee07f8d6e13eb8eee831eb0d577cdbc50b4f018ac50cdb35cc751b1acb734db",
+          "sha256": "3621a2e6088f1ae4f2c5e00ac6a9be7498d48bc0f622d7bcb703605b40b17371",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-12",
           "precision": "date",
@@ -4724,7 +4725,7 @@
           },
           "owner_verdict": null,
           "status": "partial",
-          "as_of": "2026-11-12"
+          "as_of": "2026-11-13"
         }
       },
       {
