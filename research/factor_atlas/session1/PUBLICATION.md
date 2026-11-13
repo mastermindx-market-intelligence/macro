@@ -1,0 +1,7 @@
+# Publication of the original Session 1 research
+
+The three numbered research documents, candidate contracts, synthetic conformance source and typed evidence are copied byte-for-byte from the delivered conversation package. `PUBLICATION_RECEIPT.json` records each verified digest. The original `MANIFEST.sha256` is retained unchanged as a manifest of the complete conversation archive; six raw test logs are intentionally not committed here. Their names/digests and omission reason are recorded in the publication receipt.
+
+**Historical status is not current status.** Statements such as `NOT_CANONICALLY_PERSISTED` and `NOT_STARTED_GATED` in the original research describe its initial delivery. The current Chairman subsequently instructed publication and native implementation. Issue [#8676](https://github.com/mastermindx-market-intelligence/macro/issues/8676), PR [#8680](https://github.com/mastermindx-market-intelligence/macro/pull/8680), and [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) carry that implementation, without rewriting the original observations or their source pins.
+
+The `contracts/` and `conformance/` directories here remain research candidates and synthetic mathematical evidence. They are not native production contracts, a second state store, source admission or independent review. The native implementation lives in `engine/factor_atlas_read.py`; its new source/evidence and tests are qualified separately.

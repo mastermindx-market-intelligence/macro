@@ -1,0 +1,969 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mastermind:research:factor-atlas:read-model:v0",
+  "title": "Factor Atlas read model v0 — proposed research contract",
+  "description": "NOT an accepted native interface or authority record. Validation proves shape only; owner receipt authenticity, temporal meaning, rights and actual consumer compatibility require separate gates. Nonfinite numbers must be rejected by strict JSON decoding/encoding.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "factor_atlas_read.v0"
+    },
+    "contract_status": {
+      "const": "PROPOSED"
+    },
+    "status": {
+      "enum": [
+        "READY",
+        "PARTIAL",
+        "UNAVAILABLE",
+        "SEMANTIC_ONLY",
+        "RETIRED"
+      ]
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "descriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "semantic_ref": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 2048,
+          "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+        },
+        "cohort_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 2048,
+              "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "factor_class": {
+          "enum": [
+            "economic_theme",
+            "house_basket",
+            "microtheme",
+            "gics_group",
+            "quantitative_style",
+            "etf_proxy",
+            "screened_cohort",
+            "relative_value_spread",
+            "leveraged_inverse_product",
+            "user_snapshot",
+            "academic_factor"
+          ]
+        },
+        "relationship": {
+          "enum": [
+            "DIRECT",
+            "PROXY",
+            "ECONOMIC_EXPOSURE",
+            "SEMANTIC_ONLY"
+          ]
+        }
+      },
+      "required": [
+        "semantic_ref",
+        "cohort_ref",
+        "factor_class",
+        "relationship"
+      ]
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "history_mode": {
+          "enum": [
+            "CURRENT_ROSTER",
+            "PIT_AS_KNOWN",
+            "PIT_LATEST_CORRECTED"
+          ]
+        },
+        "window": {
+          "$ref": "#/$defs/window"
+        },
+        "measurement_cutoff": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        },
+        "current_roster_snapshot_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 2048,
+              "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "history_mode",
+        "window",
+        "measurement_cutoff",
+        "current_roster_snapshot_ref"
+      ]
+    },
+    "series_spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method_ref": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 2048,
+          "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+        },
+        "measurement_kind": {
+          "enum": [
+            "portfolio_index",
+            "instrument_return",
+            "aggregate_snapshot",
+            "academic_spread",
+            "economic_observation"
+          ]
+        },
+        "return_kind": {
+          "enum": [
+            "PRICE",
+            "TOTAL",
+            "GROSS_UNFUNDED_SPREAD",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "price_basis": {
+          "enum": [
+            "raw",
+            "sadj",
+            "tradj",
+            null
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Z]{3}$"
+        },
+        "calendar_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 2048,
+              "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "session_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 2048,
+              "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "venue_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 2048,
+              "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "weighting": {
+          "enum": [
+            "equal",
+            "market_cap",
+            "float",
+            "inverse_volatility",
+            "explicit",
+            "provider_defined",
+            "none"
+          ]
+        },
+        "rebalance": {
+          "enum": [
+            "monthly",
+            "daily",
+            "event",
+            "none",
+            "provider_defined"
+          ]
+        },
+        "between_rebalances": {
+          "enum": [
+            "drift",
+            "constant_target",
+            "provider_defined",
+            "not_applicable"
+          ]
+        },
+        "dividend_reinvestment": {
+          "enum": [
+            "constituent_total_return",
+            "index_level_reinvestment",
+            "none",
+            "provider_defined"
+          ]
+        },
+        "costs_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 2048,
+              "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gross_leverage": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "base_level": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "method_ref",
+        "measurement_kind",
+        "return_kind",
+        "price_basis",
+        "currency",
+        "calendar_ref",
+        "session_ref",
+        "venue_ref",
+        "weighting",
+        "rebalance",
+        "between_rebalances",
+        "dividend_reinvestment",
+        "costs_ref",
+        "gross_leverage",
+        "base_level"
+      ]
+    },
+    "owner_receipt_refs": {
+      "$ref": "#/$defs/receipt_groups"
+    },
+    "calculation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "input_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "result_core_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "code_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "dependency_lock_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "metrics_policy_ref": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 2048,
+          "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+        },
+        "revision_ref": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 2048,
+          "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+        },
+        "supersedes_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 2048,
+              "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "correction_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "materialized_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        }
+      },
+      "required": [
+        "input_manifest_sha256",
+        "result_core_sha256",
+        "code_commit",
+        "dependency_lock_sha256",
+        "metrics_policy_ref",
+        "revision_ref",
+        "supersedes_ref",
+        "correction_reason",
+        "materialized_at"
+      ]
+    },
+    "observations": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "$ref": "#/$defs/point"
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]{0,79}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/metric"
+      }
+    },
+    "authority": {
+      "$ref": "#/$defs/authority"
+    }
+  },
+  "required": [
+    "schema",
+    "contract_status",
+    "status",
+    "reasons",
+    "descriptor",
+    "request",
+    "series_spec",
+    "owner_receipt_refs",
+    "calculation",
+    "observations",
+    "metrics",
+    "authority"
+  ],
+  "$defs": {
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "end": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reference_sessions": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "alignment": {
+          "enum": [
+            "EXACT",
+            "CALENDAR_PRECEDING_SESSION",
+            "NOT_APPLICABLE"
+          ]
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "reference_sessions",
+        "alignment"
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eligible_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "observed_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "count_fraction": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "weight_fraction": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "eligible_count",
+        "observed_count",
+        "count_fraction",
+        "weight_fraction"
+      ]
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "unit": {
+          "enum": [
+            "return_fraction",
+            "fraction",
+            "index_level",
+            "effective_count",
+            "count",
+            "annualized_return_fraction",
+            "return_difference_fraction",
+            "log_return_per_session",
+            "sessions",
+            "calendar_days"
+          ]
+        },
+        "status": {
+          "enum": [
+            "READY",
+            "PARTIAL",
+            "UNAVAILABLE"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "n_observations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requested_window": {
+          "$ref": "#/$defs/window"
+        },
+        "actual_window": {
+          "$ref": "#/$defs/window"
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        },
+        "method_ref": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 2048,
+          "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2048,
+            "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "status",
+        "reasons",
+        "n_observations",
+        "requested_window",
+        "actual_window",
+        "coverage",
+        "method_ref",
+        "source_refs"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "UNAVAILABLE"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "null"
+              },
+              "reasons": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": {
+                "type": "number"
+              },
+              "source_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "PARTIAL"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reasons": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "interval_start": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        },
+        "interval_end": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+        },
+        "selection_cutoff": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "membership_revision_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 2048,
+              "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "return": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/metric"
+            },
+            {
+              "properties": {
+                "unit": {
+                  "const": "return_fraction"
+                },
+                "value": {
+                  "minimum": -1
+                }
+              }
+            }
+          ]
+        },
+        "index_level": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/metric"
+            },
+            {
+              "properties": {
+                "unit": {
+                  "const": "index_level"
+                },
+                "value": {
+                  "minimum": 0
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "interval_start",
+        "interval_end",
+        "selection_cutoff",
+        "membership_revision_ref",
+        "return",
+        "index_level"
+      ]
+    },
+    "receipt_groups": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "membership": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2048,
+            "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+          },
+          "uniqueItems": true
+        },
+        "identity": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2048,
+            "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+          },
+          "uniqueItems": true
+        },
+        "prices": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2048,
+            "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+          },
+          "uniqueItems": true
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2048,
+            "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+          },
+          "uniqueItems": true
+        },
+        "rights": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2048,
+            "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+          },
+          "uniqueItems": true
+        },
+        "calendar": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2048,
+            "description": "Existing owner-qualified reference; syntax alone does not authenticate it."
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "membership",
+        "identity",
+        "prices",
+        "actions",
+        "rights",
+        "calendar"
+      ]
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "may_rank": {
+          "const": false
+        },
+        "may_gate": {
+          "const": false
+        },
+        "may_size": {
+          "const": false
+        },
+        "may_escalate": {
+          "const": false
+        },
+        "may_write_portfolio": {
+          "const": false
+        },
+        "may_write_theme_state": {
+          "const": false
+        }
+      },
+      "required": [
+        "may_rank",
+        "may_gate",
+        "may_size",
+        "may_escalate",
+        "may_write_portfolio",
+        "may_write_theme_state"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "UNAVAILABLE",
+              "SEMANTIC_ONLY",
+              "RETIRED"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reasons": {
+            "minItems": 1
+          },
+          "observations": {
+            "maxItems": 0
+          },
+          "metrics": {
+            "additionalProperties": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/metric"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "const": "UNAVAILABLE"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "SEMANTIC_ONLY"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "descriptor": {
+            "properties": {
+              "cohort_ref": {
+                "type": "null"
+              },
+              "relationship": {
+                "const": "SEMANTIC_ONLY"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PARTIAL"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reasons": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "READY",
+              "PARTIAL"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "owner_receipt_refs": {
+            "properties": {
+              "identity": {
+                "minItems": 1
+              },
+              "rights": {
+                "minItems": 1
+              },
+              "calendar": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "request": {
+            "properties": {
+              "history_mode": {
+                "const": "CURRENT_ROSTER"
+              }
+            }
+          },
+          "status": {
+            "enum": [
+              "READY",
+              "PARTIAL"
+            ]
+          }
+        },
+        "required": [
+          "request",
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "request": {
+            "properties": {
+              "current_roster_snapshot_ref": {
+                "type": "string",
+                "minLength": 3
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

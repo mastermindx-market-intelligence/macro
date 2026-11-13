@@ -1,0 +1,726 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/factor_atlas_read.v1.schema.json",
+  "title": "Factor Atlas Session 1 native read-only candidate",
+  "description": "Necessary structural checks only. Never source admission, entitlement, authenticated receipt or production acceptance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "release_state",
+    "input_admission",
+    "evidence_kind",
+    "basket_id",
+    "history_mode",
+    "as_of",
+    "request",
+    "method",
+    "status",
+    "reasons",
+    "points",
+    "analytics",
+    "units",
+    "cohort_digest",
+    "input_digest",
+    "input_revision",
+    "correction_of",
+    "source_refs",
+    "authority",
+    "result_digest",
+    "anchor"
+  ],
+  "properties": {
+    "schema": {
+      "const": "factor_atlas_read.v1"
+    },
+    "release_state": {
+      "const": "CANDIDATE_NOT_ADMITTED"
+    },
+    "input_admission": {
+      "const": "REFERENCE_CHECKS_ONLY_NOT_RECEIPT_AUTHENTICATION"
+    },
+    "evidence_kind": {
+      "enum": [
+        "SYNTHETIC_FIXTURE",
+        "RETAINED_OWNER_INPUT"
+      ]
+    },
+    "basket_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "history_mode": {
+      "enum": [
+        "CURRENT_ROSTER",
+        "PIT_AS_KNOWN"
+      ]
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "request": {
+      "$ref": "#/$defs/request"
+    },
+    "method": {
+      "$ref": "#/$defs/method"
+    },
+    "status": {
+      "enum": [
+        "READY",
+        "PARTIAL",
+        "UNAVAILABLE"
+      ]
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z0-9_]+$"
+      }
+    },
+    "points": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1261,
+      "items": {
+        "$ref": "#/$defs/point"
+      }
+    },
+    "analytics": {
+      "$ref": "#/$defs/analytics"
+    },
+    "units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "returns",
+        "volatility",
+        "coverage"
+      ],
+      "properties": {
+        "returns": {
+          "const": "fraction"
+        },
+        "volatility": {
+          "const": "annualized_fraction"
+        },
+        "coverage": {
+          "const": "fraction"
+        }
+      }
+    },
+    "cohort_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "input_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "input_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "correction_of": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      ]
+    },
+    "source_refs": {
+      "$ref": "#/$defs/sources"
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_rank",
+        "may_gate",
+        "may_size",
+        "may_trade",
+        "may_publish",
+        "may_escalate"
+      ],
+      "properties": {
+        "may_rank": {
+          "const": false,
+          "type": "boolean"
+        },
+        "may_gate": {
+          "const": false,
+          "type": "boolean"
+        },
+        "may_size": {
+          "const": false,
+          "type": "boolean"
+        },
+        "may_trade": {
+          "const": false,
+          "type": "boolean"
+        },
+        "may_publish": {
+          "const": false,
+          "type": "boolean"
+        },
+        "may_escalate": {
+          "const": false,
+          "type": "boolean"
+        }
+      }
+    },
+    "result_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "index_level"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "index_level": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "READY"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "points": {
+            "items": {
+              "properties": {
+                "return": {
+                  "type": "number"
+                },
+                "index_level": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basket_id",
+        "history_mode",
+        "start",
+        "end",
+        "measurement_cutoff",
+        "purpose",
+        "weighting",
+        "rebalance"
+      ],
+      "properties": {
+        "basket_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "history_mode": {
+          "enum": [
+            "CURRENT_ROSTER",
+            "PIT_AS_KNOWN"
+          ]
+        },
+        "start": {
+          "type": "string",
+          "format": "date"
+        },
+        "end": {
+          "type": "string",
+          "format": "date"
+        },
+        "measurement_cutoff": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "purpose": {
+          "const": "internal_research"
+        },
+        "weighting": {
+          "const": "equal"
+        },
+        "rebalance": {
+          "const": "monthly"
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eligible_count",
+        "valid_count",
+        "count",
+        "weight",
+        "weight_basis"
+      ],
+      "properties": {
+        "eligible_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "valid_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "count": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1.000000000001
+        },
+        "weight": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1.000000000001
+        },
+        "weight_basis": {
+          "const": "declared_start_weights"
+        }
+      }
+    },
+    "breadth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "advance_fraction",
+        "eligible_count",
+        "valid_count",
+        "status"
+      ],
+      "properties": {
+        "advance_fraction": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1.000000000001
+        },
+        "eligible_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "valid_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "status": {
+          "enum": [
+            "READY",
+            "PARTIAL",
+            "UNAVAILABLE"
+          ]
+        }
+      }
+    },
+    "concentration": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hhi",
+            "effective_n",
+            "largest_weight",
+            "top5_weight",
+            "basis",
+            "security_count"
+          ],
+          "properties": {
+            "hhi": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1.000000000001
+            },
+            "effective_n": {
+              "type": "number",
+              "minimum": 1
+            },
+            "largest_weight": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1.000000000001
+            },
+            "top5_weight": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1.000000000001
+            },
+            "basis": {
+              "const": "end_of_interval_security_weights"
+            },
+            "security_count": {
+              "type": "integer",
+              "minimum": 3
+            }
+          }
+        }
+      ]
+    },
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "interval_start",
+        "interval_end",
+        "return",
+        "index_level",
+        "segment_id",
+        "cohort_ref",
+        "coverage",
+        "breadth",
+        "concentration",
+        "contributions",
+        "reasons"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "interval_start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "interval_end": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "return": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "index_level": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "segment_id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cohort_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "coverage": {
+          "$ref": "#/$defs/coverage"
+        },
+        "breadth": {
+          "$ref": "#/$defs/breadth"
+        },
+        "concentration": {
+          "$ref": "#/$defs/concentration"
+        },
+        "contributions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]+$"
+          }
+        }
+      }
+    },
+    "analytics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "return_1",
+        "return_5",
+        "return_10",
+        "return_20",
+        "return_60",
+        "window_return",
+        "max_drawdown",
+        "realized_volatility_20",
+        "downside_volatility_20",
+        "annualization_sessions",
+        "volatility_definition"
+      ],
+      "properties": {
+        "return_1": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "return_5": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "return_10": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "return_20": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "return_60": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "window_return": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "max_drawdown": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "realized_volatility_20": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "downside_volatility_20": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "annualization_sessions": {
+          "const": 252
+        },
+        "volatility_definition": {
+          "const": "sample_sd; downside=root_mean_square_negative_returns"
+        }
+      }
+    },
+    "method": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "weighting",
+        "rebalance",
+        "between_rebalances",
+        "return_basis",
+        "currency",
+        "session",
+        "venue_scope",
+        "dividends",
+        "costs",
+        "base_index",
+        "minimum_held_weight_coverage",
+        "series_inception",
+        "window_semantics"
+      ],
+      "properties": {
+        "weighting": {
+          "const": "equal"
+        },
+        "rebalance": {
+          "const": "monthly"
+        },
+        "between_rebalances": {
+          "const": "drift"
+        },
+        "return_basis": {
+          "const": "tradj"
+        },
+        "currency": {
+          "const": "USD"
+        },
+        "session": {
+          "const": "regular"
+        },
+        "venue_scope": {
+          "const": "consolidated"
+        },
+        "dividends": {
+          "const": "constituent_total_return_reinvestment"
+        },
+        "costs": {
+          "const": "gross_zero_cost"
+        },
+        "base_index": {
+          "const": 100.0
+        },
+        "minimum_held_weight_coverage": {
+          "const": 1.0
+        },
+        "series_inception": {
+          "type": "string",
+          "format": "date"
+        },
+        "window_semantics": {
+          "const": "DISPLAY_WINDOW_NOT_RECONSTRUCTION"
+        }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "calendar",
+        "rights",
+        "cohorts",
+        "identity",
+        "identity_by_date",
+        "prices",
+        "construction"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "calendar": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rights": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cohorts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "effective_close",
+              "members",
+              "snapshot_ref"
+            ],
+            "properties": {
+              "effective_close": {
+                "type": "string",
+                "format": "date"
+              },
+              "members": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "snapshot_ref": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "identity": {
+          "type": "object"
+        },
+        "identity_by_date": {
+          "type": "object"
+        },
+        "prices": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        },
+        "construction": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

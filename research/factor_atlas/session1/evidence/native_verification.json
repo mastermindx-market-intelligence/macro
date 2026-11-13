@@ -1,0 +1,62 @@
+{
+  "schema": "factor_atlas_native_verification.v1",
+  "issue": 8676,
+  "pr": 8680,
+  "evidence_kind": "SYNTHETIC_AND_NATIVE_FIXTURE_INTEGRATION",
+  "head_binding": "source-file digests; confirm exact commit head separately after commit",
+  "source_file_sha256": {
+    "engine/factor_atlas_read.py": "1edfeecce8a18acaf1bbe31e2c1ffc6458c3c1d5c3c2955a89d0c7199d649005",
+    "engine/factor_atlas_sources.py": "68ec1bf61b82962e820f1a42dddbd08fcfcffcca3d0df9bd43a54a288bcabcb1",
+    "contracts/factor_atlas_read.v1.schema.json": "a0dae132fb62f319f59bef6b9369ad8d86096590f85a2af9a8496a5f137086f0",
+    "scripts/factor_atlas_read.py": "0b0c875ade2fd4873c830882631780caadafda6242e0cc5c0e7043c62bf9e25d",
+    "tests/test_factor_atlas_read.py": "b0128efa26a349f04c2fa27241ccfeb8693c7d52f9c56e9a83f8cf21fce64b2e",
+    "tests/test_factor_atlas_sources.py": "a4b303a2400007ba0ed336624f64b04da1cb749f07d076868d88ebc527bb4476",
+    "tests/test_factor_atlas_contract.py": "ece5dcc336ec81254bdb5521ee1060b3962a878d417c92e62bc4819d7a1d06b9",
+    "tests/fixtures/factor_atlas/monthly_round_trip.json": "053584cd9076fc91428beb001d88dbf4511b1882883d75aef542af630f870278",
+    "tests/fixtures/factor_atlas/pit_fallback_refusal.json": "35e765f5e0b6995e9ff6e5273b52641d4c52695edc43f2da15d29354cf796de0",
+    "engine/basket_membership_pit.py": "1e90fd29222cd4f87749be35bb8087b326a0136e1e2f1be7d28d6cde011189db",
+    "engine/price_ladder.py": "b38c3012c9c443b0919d7441c52487b4a60138c88cec4e7d958b87baba22c2d0",
+    "lib/dataos/identity.py": "8baefdf03e29afb59b4bc70805327e88e0e4e96e0a720727ffa695ba1775ad6f",
+    "lib/dataos/price.py": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15",
+    "lib/dataos/temporal.py": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+    "lib/us_cash_calendar.py": "a20142031eceec2fdcb5a648dd004face080ad0bb302c02d45f97c6190725922",
+    "lib/market_session.py": "adc56cf8af267ba9eeaaa8a4297846786637746b00498a34f52b4d59350baa1e",
+    "lib/exchange_holidays.py": "1da4d79c1b603432c4b994aef671d60020a0df119d6b7f1420b2a7a35ffc9e2e"
+  },
+  "environment": {
+    "python": "3.14.7",
+    "pytest": "9.1.1",
+    "pandas": "3.0.5",
+    "jsonschema": "4.26.0"
+  },
+  "tests": {
+    "native": 99,
+    "incumbent_passed": 52,
+    "incumbent_skipped": 4,
+    "combined_passed": 151,
+    "combined_skipped": 4,
+    "command": "python3 -m pytest tests/test_factor_atlas_read.py tests/test_factor_atlas_sources.py tests/test_factor_atlas_contract.py tests/test_price_ladder.py tests/test_us_basket_membership_pit.py -q --tb=short --basetemp=.factor-atlas-evidence/native-regression",
+    "log_sha256": "a87536cd5b5409ffd54840c8e5760b6186bbe81b4875ebf061eee1a63121606b"
+  },
+  "agentos_record_validation": {
+    "api": "engine.agentos.validate.validate_file",
+    "path": "agentos/workstreams/WS-FACTOR-ATLAS-S1.md",
+    "errors": 0
+  },
+  "determinism": {
+    "hash_seeds": [
+      "1",
+      "777"
+    ],
+    "byte_identical": true,
+    "output_sha256": "6860786ee663c394e0d33b18e241592879501a6bc5335a09faed6d66b0b42626",
+    "result_digest": "b3b88a98b87b40daa85b44a521864b253c7544eb0e8cf0c52f88563cc8d5c819"
+  },
+  "real_house_data_qualified": false,
+  "independent_review": null,
+  "required_ci": null,
+  "consumer_interface_accepted": false,
+  "merged": false,
+  "deployed": false,
+  "production_proven": false
+}
