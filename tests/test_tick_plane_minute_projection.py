@@ -1,0 +1,783 @@
+"""Minute projection preserves provisional and point-in-time source semantics."""
+import copy
+import unittest
+from decimal import Decimal
+
+from engine.tick_plane.minute_projection import (
+    MINUTE_NS, MinuteProjectionRefusal, project_provisional_minute,
+)
+from engine.tick_plane.private_minute_artifact import (
+    project_private_minute, verify_private_minute_bytes,
+    PrivateMinuteRefusal, SCHEMA as PRIVATE_MINUTE_SCHEMA,
+)
+from engine.tick_plane.pilot_diagnostics import (
+    cohort_row_from_source_minutes, summarize_tp1_soak_evidence,
+    PilotEvidenceRefusal,
+)
+
+M=1_791_417_600_000_000_000
+M-=M%MINUTE_NS
+CUT=M+90_000_000_000
+WM="combined-tq:proven-by-owner"
+RULE="a"*64
+
+def row(key="t1", *,t=None,state="MEASURED_SOURCE_PROXY",side="buy",
+        gross="100.50",venue="LIT",reason=None,available=None):
+    value={"schema":"equity.tick_plane.provisional_print_observation/v0",
+           "state":state,"reason":reason,"ticker":"SPY","session":"2026-10-08:RTH",
+           "trade_id":key,"dedup_key":key,
+           "original_available_ns":M+31_000_000_000 if available is None else available,
+           "trade_sip_timestamp_ns":M+30_000_000_000 if t is None else t,
+           "decision_ns":CUT,"source_watermark_receipt":WM,
+           "trade_conditions_rules_ref":RULE,
+           "trade_condition_policy_reason":"CONSERVATIVE_PRICE_FORMING_CANDIDATE",
+           "quote_conditions_rules_ref":"c"*64,
+           "quote_source_receipt_id":"quote-ref","matched_quote_id":"Q1",
+           "quote_age_ns":500_000,"quote_age_limit_ns":50_000_000,
+           "source_trade_conditions":[0],
+           "venue_class":venue,
+           "venue_reference_sha256":"b"*64,
+           "venue_admission_reason":"SOURCE_REFERENCE_EXCHANGE_CANDIDATE",
+           "correction_status":"STREAM_PROVISIONAL_UNRECONCILED",
+           "gross_observed_notional_usd":gross,
+           "gross_source_shares":"1.00", "trade_volume_eligible":True,
+           "side_proxy":side,
+           "signed_notional_usd":gross if side=="buy" else
+                                 "-"+gross if side=="sell" else None,
+           "authority":"OBSERVATIONAL_PROVISIONAL_ONLY",
+           "forward_response_label":None,"absorption_signal":None}
+    if state!="MEASURED_SOURCE_PROXY":
+        value["side_proxy"]="unclassified"
+        value["signed_notional_usd"]=None
+        value["reason"]=reason or "SOURCE_UNKNOWN"
+    return value
+
+def kwargs(observations=None,**rest):
+    d=dict(ticker="SPY",session="2026-10-08:RTH",start_ns=M,
+           decision_ns=CUT,source_complete_through_ns=M+MINUTE_NS,
+           watermark_available_ns=M+75_000_000_000,
+           watermark_receipt_id=WM,source_completeness_attested=True,
+           observations=[row()] if observations is None else observations)
+    d.update(rest)
+    return d
+
+def run(observations=None,**rest):
+    return project_provisional_minute(**kwargs(observations,**rest))
+
+class ProjectionTests(unittest.TestCase):
+    def test_minute_totals_never_round_away_a_small_real_print(self):
+        big = "1000000000000000000000000000000"
+        minute = run([row("big", gross=big), row("small", gross="1")])
+        expected = str(int(big) + 1)
+        self.assertEqual(minute["gross_sampled_notional_usd"], expected)
+        self.assertEqual(minute["buy_proxy_notional_usd"], expected)
+        self.assertEqual(minute["n_sampled_prints"], 2)
+
+    def test_forged_oversized_source_amount_refuses_before_format(self):
+        with self.assertRaisesRegex(MinuteProjectionRefusal, "bounded source decimal width"):
+            run([row(gross="1e+999999999")])
+
+    def test_qualified_buy_sell_mid_and_unknown_are_separate(self):
+        rows=[row("buy",gross="100.50"),row("sell",side="sell",gross="30.25"),
+              row("mid",side="mid",gross="20.00"),
+              row("unknown",state="UNKNOWN",reason="INVALID_OR_ONE_SIDED_NBBO",gross="5.00"),
+              row("off",state="UNKNOWN",reason="TRF_OR_VENUE_CLOCK_UNQUALIFIED",
+                  venue="TRF",gross="1000.00"),
+              row("excluded",state="INELIGIBLE",reason="TRADE_CONDITION_EXCLUDED",
+                  gross="200.00")]
+        result=run(rows)
+        self.assertEqual(result["state"],"PROVISIONAL_MEASURED_CONTEXT")
+        self.assertEqual(result["n_sampled_prints"],6)
+        self.assertEqual(result["n_trf"],1)
+        self.assertEqual(result["buy_proxy_notional_usd"],"100.50")
+        self.assertEqual(result["sell_proxy_notional_usd"],"30.25")
+        self.assertEqual(result["midpoint_notional_usd"],"20.00")
+        self.assertEqual(result["unknown_notional_usd"],"1005.00")
+        self.assertEqual(result["ineligible_notional_usd"],"200.00")
+        self.assertEqual(result["trf_gross_notional_usd"],"1000.00")
+        self.assertEqual(Decimal(result["lit_quoted_notional_coverage"]),
+                         Decimal("150.75") / Decimal("155.75"))
+        self.assertIsNone(result["absorption_signal"])
+        self.assertIsNone(result["market_capture_coverage"])
+        self.assertNotIn("trade_id",result)
+
+    def test_unattested_source_makes_no_zero_activity_claim(self):
+        v=run(source_completeness_attested=False)
+        self.assertEqual(v["state"],"SOURCE_NOT_QUALIFIED")
+        self.assertNotIn("gross_sampled_notional_usd",v)
+
+    def test_unmatured_window_does_not_emit_finalized_notional(self):
+        v=run(source_complete_through_ns=M+MINUTE_NS-1)
+        self.assertEqual(v["state"],"NOT_MATURE")
+        self.assertNotIn("n_sampled_prints",v)
+
+    def test_empty_source_sample_is_not_zero_market_volume(self):
+        v=run([])
+        self.assertEqual(v["state"],"NO_SAMPLED_PRINTS")
+        self.assertNotIn("gross_sampled_notional_usd",v)
+
+    def test_event_beyond_minute_is_rejected(self):
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"outside minute"):
+            run([row(t=M+MINUTE_NS)])
+
+    def test_future_receipt_cannot_be_backfilled(self):
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"unavailable"):
+            run([row(available=CUT+1)])
+
+    def test_native_source_identity_cannot_change_between_records(self):
+        bad=row("other")
+        bad["session"]="2026-10-07:RTH"
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"identity"):
+            run([bad])
+
+    def test_source_watermark_receipt_mismatch_is_refused(self):
+        bad=row()
+        bad["source_watermark_receipt"]="replacement"
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"cutoff"):
+            run([bad])
+
+    def test_duplicate_observed_print_is_idempotent(self):
+        obs=row()
+        a=run([obs])
+        b=run([copy.deepcopy(obs),obs])
+        self.assertEqual(a["source_observation_sha256"],b["source_observation_sha256"])
+        self.assertEqual(b["n_sampled_prints"],1)
+
+    def test_conflicting_duplicate_print_never_collapses_to_mean(self):
+        a=row()
+        b=row(gross="200.00")
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"conflicting duplicate"):
+            run([a,b])
+
+    def test_off_exchange_qualifying_signed_print_is_rejected(self):
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"off-exchange"):
+            run([row(venue="TRF")])
+
+    def test_tampered_sign_notional_is_rejected(self):
+        bad=row()
+        bad["signed_notional_usd"]="1000000000"
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"disagrees"):
+            run([bad])
+
+    def test_fractional_notional_exact(self):
+        obs=row(gross="37.5750")
+        x=run([obs])
+        self.assertEqual(x["gross_sampled_notional_usd"],"37.5750")
+
+    def test_raw_trade_and_quote_additions_rejected(self):
+        x=row()
+        x["raw_websocket_payload"]="UNLICENSED"
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"exact incumbent"):
+            run([x])
+
+    def test_premature_decision_or_watermark_is_null(self):
+        self.assertEqual(run(decision_ns=M+MINUTE_NS-1)["state"],"NOT_MATURE")
+        self.assertEqual(run(watermark_available_ns=CUT+1)["state"],"NOT_MATURE")
+
+    def test_retroactively_final_correction_state_refused(self):
+        r=row()
+        r["correction_status"]="FINAL"
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"correction"):
+            run([r])
+
+    def test_mixed_condition_generations_refused(self):
+        bad=row("second")
+        bad["trade_conditions_rules_ref"]="b"*64
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"mixed condition"):
+            run([row(),bad])
+
+    def test_source_observation_digest_order_invariant(self):
+        a=row("a",t=M+1_000_000_000)
+        b=row("b",t=M+2_000_000_000)
+        self.assertEqual(run([a,b])["source_observation_sha256"],
+                         run([b,a])["source_observation_sha256"])
+
+    def test_midpoint_signed_notional_must_stay_null(self):
+        r=row(side="mid")
+        r["signed_notional_usd"]="2"
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"midpoint"):
+            run([r])
+
+    def test_absolute_ns_minute_alignment_required(self):
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"align"):
+            run(start_ns=M+1)
+
+
+    def test_malformed_signed_print_is_a_typed_refusal(self):
+        record=row()
+        record["signed_notional_usd"]="not-a-number"
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"malformed signed"):
+            run([record])
+
+    def test_infinite_signed_notional_is_not_accepted(self):
+        record=row()
+        record["signed_notional_usd"]="Infinity"
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"disagrees"):
+            run([record])
+
+
+    def test_mixed_exchange_reference_generations_refused(self):
+        other=row("other")
+        other["venue_reference_sha256"]="c"*64
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"mixed exchange"):
+            run([row(),other])
+
+    def test_exchange_reference_receipt_retained_in_minute_projection(self):
+        output=run()
+        self.assertEqual(output["exchange_reference_sha256"],"b"*64)
+
+
+    def test_quote_policy_generation_is_required_for_signed_print(self):
+        r=row()
+        r["quote_conditions_rules_ref"]=None
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"measured print missing"):
+            run([r])
+
+    def test_mixed_quote_condition_policy_generations_refused(self):
+        a=row("a")
+        b=row("b")
+        b["quote_conditions_rules_ref"]="d"*64
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"mixed quote condition"):
+            run([a,b])
+
+    def test_quote_policy_digest_is_preserved_in_minute(self):
+        result=run()
+        self.assertEqual(result["quote_condition_rules_sha256"],"c"*64)
+
+    def test_unknown_print_without_qualified_quote_policy_stays_unknown(self):
+        value=row(state="UNKNOWN",reason="QUOTE_CONDITION_POLICY_UNQUALIFIED")
+        value["quote_conditions_rules_ref"]=None
+        result=run([value])
+        self.assertEqual(result["state"],"PROVISIONAL_MEASURED_CONTEXT")
+        self.assertIsNone(result["quote_condition_rules_sha256"])
+        self.assertEqual(result["unknown_notional_usd"],"100.50")
+
+
+    def test_minute_retains_actual_source_quote_age_policy(self):
+        result=run()
+        self.assertEqual(result["max_quote_age_ns"],50_000_000)
+
+    def test_two_prints_with_mixed_quote_age_policy_fail_closed(self):
+        first=row("first")
+        second=row("second")
+        second["quote_age_limit_ns"]=1_000_000_000
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"mixed quote-age"):
+            run([first,second])
+
+    def test_unqualified_quote_age_policy_never_promotes_signed_print(self):
+        first=row()
+        first["quote_age_limit_ns"]=None
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"nonnegative integer"):
+            run([first])
+
+
+    def test_lit_eligible_5s_coverage_uses_observed_quote_age_not_policy_limit(self):
+        actual=run()
+        self.assertEqual(actual["n_lit_eligible_prints"],1)
+        self.assertEqual(actual["n_lit_classified_quote_le5s_prints"],1)
+        self.assertEqual(actual["n_lit_classified_quote_gt5s_prints"],0)
+        self.assertEqual(actual["n_lit_unclassified_prints"],0)
+        self.assertEqual(actual["lit_unknown_reason_counts"],{})
+
+    def test_exact_5s_quote_age_is_on_eligible_side_of_boundary(self):
+        value=row()
+        value["quote_age_ns"]=5_000_000_000
+        value["quote_age_limit_ns"]=6_000_000_000
+        outcome=run([value])
+        self.assertEqual(outcome["n_lit_classified_quote_le5s_prints"],1)
+        self.assertEqual(outcome["n_lit_classified_quote_gt5s_prints"],0)
+
+    def test_above_5s_classified_quote_does_not_count_for_soak_floor(self):
+        value=row()
+        value["quote_age_ns"]=5_000_000_001
+        value["quote_age_limit_ns"]=6_000_000_000
+        outcome=run([value])
+        self.assertEqual(outcome["n_lit_classified_quote_le5s_prints"],0)
+        self.assertEqual(outcome["n_lit_classified_quote_gt5s_prints"],1)
+
+    def test_abstained_lit_quote_is_in_unknown_denominator(self):
+        value=row(state="UNKNOWN",reason="QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT")
+        outcome=run([value])
+        self.assertEqual(outcome["n_lit_eligible_prints"],1)
+        self.assertEqual(outcome["n_lit_unclassified_prints"],1)
+        self.assertEqual(outcome["n_lit_classified_quote_le5s_prints"],0)
+        self.assertEqual(outcome["lit_unknown_reason_counts"],
+                         {"QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT":1})
+
+    def test_unknown_sale_condition_not_silent_eligible_lit_trade(self):
+        value=row(state="UNKNOWN",reason="TRADE_CONDITION_POLICY_UNQUALIFIED")
+        value["trade_condition_policy_reason"]="UNKNOWN_OR_INVALID_CONDITION_CODE"
+        outcome=run([value])
+        self.assertEqual(outcome["n_lit_eligible_prints"],0)
+        self.assertEqual(outcome["n_lit_source_unqualified_prints"],1)
+
+    def test_measured_print_must_have_source_sale_and_venue_admission(self):
+        for key in ("trade_condition_policy_reason","venue_admission_reason"):
+            with self.subTest(field=key):
+                value=row()
+                value[key]="UNQUALIFIED_SOURCE"
+                with self.assertRaisesRegex(MinuteProjectionRefusal,"sale/venue admission"):
+                    run([value])
+
+    def test_quote_age_exceeding_source_policy_is_a_integrity_failure(self):
+        value=row()
+        value["quote_age_limit_ns"]=20
+        value["quote_age_ns"]=21
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"exceeds its declared limit"):
+            run([value])
+
+    def test_lit_quote_age_requires_native_integer_clock(self):
+        value=row()
+        value["quote_age_ns"]=5_000_000_000.0
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"qualified quote age"):
+            run([value])
+
+    def test_trf_volume_not_folded_into_lit_quote_coverage(self):
+        lit=row("lit")
+        trf=row("off",state="UNKNOWN",reason="TRF_OR_VENUE_CLOCK_UNQUALIFIED",venue="TRF")
+        result=run([lit,trf])
+        self.assertEqual(result["n_trf"],1)
+        self.assertEqual(result["n_lit_eligible_prints"],1)
+        self.assertEqual(result["n_lit_classified_quote_le5s_prints"],1)
+
+
+    def test_exact_fractional_source_share_volume_is_separate_from_dollar_flow(self):
+        sample=row(gross="3750.00")
+        sample["gross_source_shares"]="0.375"
+        result=run([sample])
+        self.assertEqual(result["gross_sampled_notional_usd"],"3750.00")
+        self.assertEqual(result["source_volume_included_shares"],"0.375")
+        self.assertEqual(result["source_all_printed_shares"],"0.375")
+
+    def test_volume_only_print_is_excluded_from_pressure_but_included_in_share_reconciliation(self):
+        volume_only=row("special",state="INELIGIBLE",
+                        reason="VOLUME_ONLY_OR_NON_PRICE_FORMING",gross="400.00")
+        volume_only["gross_source_shares"]="12.375"
+        volume_only["trade_volume_eligible"]=True
+        reported=run([row("regular"),volume_only])
+        self.assertEqual(reported["source_volume_included_shares"],"13.375")
+        self.assertEqual(reported["ineligible_notional_usd"],"400.00")
+        self.assertEqual(reported["n_source_volume_included_prints"],2)
+        self.assertEqual(reported["n_buy_proxy"],1)
+
+    def test_trade_excluded_from_consolidated_volume_does_not_enter_volume_reconciliation(self):
+        excluded=row(state="INELIGIBLE",reason="CONSOLIDATED_VOLUME_NOT_ELIGIBLE")
+        excluded["gross_source_shares"]="8"
+        excluded["trade_volume_eligible"]=False
+        report=run([excluded])
+        self.assertEqual(Decimal(report["source_volume_included_shares"]),Decimal(0))
+        self.assertEqual(report["source_volume_excluded_shares"],"8")
+        self.assertEqual(report["n_source_volume_excluded_prints"],1)
+
+    def test_unknown_trade_conditions_remain_unknown_share_volume(self):
+        unknown=row(state="UNKNOWN",reason="TRADE_CONDITION_POLICY_UNQUALIFIED")
+        unknown["trade_volume_eligible"]=None
+        unknown["gross_source_shares"]="2.5"
+        summary=run([unknown])
+        self.assertEqual(summary["source_volume_unknown_shares"],"2.5")
+        self.assertEqual(Decimal(summary["source_volume_included_shares"]),Decimal(0))
+        self.assertEqual(summary["n_source_volume_unknown_prints"],1)
+
+    def test_unknown_quote_condition_does_not_remove_trade_from_known_volume(self):
+        unknown=row(state="UNKNOWN",reason="QUOTE_CONDITION_NOT_FIRM_OR_UNKNOWN")
+        unknown["gross_source_shares"]="6.75"
+        summary=run([unknown])
+        self.assertEqual(summary["unknown_notional_usd"],"100.50")
+        self.assertEqual(summary["source_volume_included_shares"],"6.75")
+
+    def test_classified_trade_must_have_volume_source_policy(self):
+        sample=row()
+        sample["trade_volume_eligible"]=False
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"lacks volume-eligible"):
+            run([sample])
+
+    def test_malformed_or_nonfinite_share_volume_fails_closed(self):
+        for bad in (None,"NaN","Infinity","-2","garbage"):
+            with self.subTest(value=bad):
+                sample=row()
+                sample["gross_source_shares"]=bad
+                with self.assertRaises(MinuteProjectionRefusal):
+                    run([sample])
+
+    def test_boolean_source_volume_eligibility_must_be_exact(self):
+        sample=row()
+        sample["trade_volume_eligible"]="yes"
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"boolean or unknown"):
+            run([sample])
+
+    def test_missing_native_share_field_fails_exact_source_contract(self):
+        sample=row()
+        del sample["gross_source_shares"]
+        with self.assertRaisesRegex(MinuteProjectionRefusal,"exact incumbent"):
+            run([sample])
+
+
+def native_pilot_row(minute=None, *, expected_minutes=1, **options):
+    chosen=run() if minute is None else minute
+    d=dict(ticker="SPY",session="2026-10-08:RTH",
+           minute_observations=[chosen] if isinstance(chosen,dict) else chosen,
+           expected_session_minutes=expected_minutes,
+           reference_volume_shares="1.00",reference_scope="RTH",
+           reference_receipt="source:grouped:matched-rth")
+    d.update(options)
+    return cohort_row_from_source_minutes(**d)
+
+
+class NativeVolumePilotIntegrationTests(unittest.TestCase):
+    def test_real_tp1_minute_fields_feed_source_soak_ratios(self):
+        row=native_pilot_row()
+        self.assertEqual(row["state"],"ELIGIBLE")
+        self.assertEqual(row["source_volume_shares"],"1.00")
+        self.assertEqual(row["lit_classified_quote_le5s_prints"],1)
+        self.assertEqual(row["lit_eligible_prints"],1)
+        self.assertTrue(row["source_receipt"].startswith("tp1-minute-cohort:"))
+        result=summarize_tp1_soak_evidence(
+            session="2026-10-08:RTH",expected_session_seconds=60,
+            connected_seconds=60,measurement_cutoff_ns=CUT+1,
+            source_manifest_sha256="d"*64,source_manifest_known_ns=CUT,
+            cohort=[row])
+        self.assertEqual(result["provisional_numeric_state"],"NUMERIC_THRESHOLDS_MET")
+        self.assertIsNone(result["production_source_acceptance"])
+
+    def test_partial_minute_coverage_cannot_prove_full_pilot_session(self):
+        row=native_pilot_row(expected_minutes=2)
+        self.assertEqual(row["state"],"SOURCE_UNQUALIFIED")
+        self.assertIn("PARTIAL_MINUTE_COVERAGE",row["carveout_reason"])
+        diag=summarize_tp1_soak_evidence(
+            session="2026-10-08:RTH",expected_session_seconds=120,
+            connected_seconds=120,measurement_cutoff_ns=CUT+1,
+            source_manifest_sha256="d"*64,source_manifest_known_ns=CUT,
+            cohort=[row])
+        self.assertEqual(diag["provisional_numeric_state"],
+                         "INSUFFICIENT_COMPARABLE_EVIDENCE")
+
+    def test_source_volume_unknown_from_conditions_blocks_reconciliation(self):
+        value=row(state="UNKNOWN",reason="TRADE_CONDITION_POLICY_UNQUALIFIED")
+        value["trade_volume_eligible"]=None
+        minute=run([value])
+        pilot=native_pilot_row(minute=minute)
+        self.assertEqual(pilot["state"],"SOURCE_UNQUALIFIED")
+        self.assertIn("UNKNOWN_SOURCE_VOLUME_CONDITION",pilot["carveout_reason"])
+        self.assertEqual(Decimal(pilot["source_volume_shares"]),Decimal(0))
+
+    def test_session_scope_mismatch_reaches_report_as_uncomparable(self):
+        selected=native_pilot_row(reference_scope="FULL_DAY")
+        diag=summarize_tp1_soak_evidence(
+            session="2026-10-08:RTH",expected_session_seconds=60,
+            connected_seconds=60,measurement_cutoff_ns=CUT+1,
+            source_manifest_sha256="d"*64,source_manifest_known_ns=CUT,
+            cohort=[selected])
+        self.assertEqual(diag["n_mismatched_reference_scope"],1)
+        self.assertEqual(diag["n_volume_comparable_symbols"],0)
+
+    def test_two_contiguous_minute_packets_aggregate_original_share_volume(self):
+        a=run()
+        b=copy.deepcopy(a)
+        b["start_ns"]=a["end_ns"]
+        b["end_ns"]+=MINUTE_NS
+        b["decision_ns"]+=MINUTE_NS
+        b["source_complete_through_ns"]+=MINUTE_NS
+        b["watermark_available_ns"]+=MINUTE_NS
+        b["source_observation_sha256"]="e"*64
+        cohort=native_pilot_row(minute=[a,b],expected_minutes=2,
+                                reference_volume_shares="2.00")
+        self.assertEqual(cohort["state"],"ELIGIBLE")
+        self.assertEqual(cohort["source_volume_shares"],"2.00")
+        self.assertEqual(cohort["lit_eligible_prints"],2)
+
+    def test_missing_or_duplicated_minute_rejected_by_source_composer(self):
+        a=run()
+        b=copy.deepcopy(a)
+        with self.assertRaisesRegex(PilotEvidenceRefusal,"duplicate source minute"):
+            native_pilot_row(minute=[a,b],expected_minutes=2)
+
+    def test_mixed_original_quote_policy_generations_mark_source_unqualified(self):
+        a=run()
+        b=copy.deepcopy(a)
+        b["start_ns"]=a["end_ns"]
+        b["end_ns"]+=MINUTE_NS
+        b["decision_ns"]+=MINUTE_NS
+        b["source_complete_through_ns"]+=MINUTE_NS
+        b["watermark_available_ns"]+=MINUTE_NS
+        b["quote_condition_rules_sha256"]="e"*64
+        rowout=native_pilot_row(minute=[a,b],expected_minutes=2,
+                                reference_volume_shares="2.00")
+        self.assertEqual(rowout["state"],"SOURCE_UNQUALIFIED")
+        self.assertIn("MIXED_OR_MISSING_SOURCE_POLICY_GENERATION",
+                      rowout["carveout_reason"])
+
+    def test_source_trade_conditions_volume_only_participates_in_daily_volume(self):
+        regular=row("reg")
+        special=row("special",state="INELIGIBLE",
+                    reason="VOLUME_ONLY_OR_NON_PRICE_FORMING")
+        special["gross_source_shares"]="12.375"
+        special["trade_volume_eligible"]=True
+        m=run([regular,special])
+        out=native_pilot_row(minute=m,reference_volume_shares="13.375")
+        self.assertEqual(out["source_volume_shares"],"13.375")
+        self.assertEqual(out["lit_classified_quote_le5s_prints"],1)
+
+    def test_forged_source_minute_classification_counters_rejected(self):
+        candidate=run()
+        candidate["n_lit_classified_quote_le5s_prints"]+=1
+        with self.assertRaisesRegex(PilotEvidenceRefusal,"signed-print age bands inconsistent"):
+            native_pilot_row(minute=candidate)
+
+    def test_grouped_reference_missing_preserves_partial_evidence(self):
+        candidate=native_pilot_row(reference_volume_shares=None,
+                                   reference_receipt=None,reference_scope=None)
+        self.assertEqual(candidate["state"],"ELIGIBLE")
+        self.assertIsNone(candidate["reference_volume_shares"])
+
+    def test_halt_reason_cannot_promote_numeric_gate(self):
+        candidate=native_pilot_row(halt_reopen_reason="HALT_CARVEOUT_REQUIRED")
+        self.assertEqual(candidate["state"],"HALT_REOPEN_CARVEOUT")
+        self.assertEqual(candidate["carveout_reason"],"HALT_CARVEOUT_REQUIRED")
+
+    def test_minute_receipt_digest_changes_when_original_source_digest_changes(self):
+        a=run()
+        b=copy.deepcopy(a)
+        b["source_observation_sha256"]="f"*64
+        first=native_pilot_row(minute=a)
+        second=native_pilot_row(minute=b)
+        self.assertNotEqual(first["source_receipt"],second["source_receipt"])
+
+
+class PrivateServiceMinuteHandoffTests(unittest.TestCase):
+    def sealed(self, original=None):
+        return project_private_minute(
+            source_minute=run() if original is None else original,
+            source_manifest_sha256="e"*64)
+
+    def test_canonical_minute_can_render_private_service_bytes(self):
+        receipt=self.sealed()
+        self.assertEqual(receipt["state"],"NOT_PUBLISHED")
+        self.assertEqual(receipt["authority"],"PRIVATE_DERIVED_HANDOFF_ONLY")
+        self.assertFalse(receipt["is_public_delivery_authorized"])
+        self.assertFalse(receipt["source_custody_proven"])
+        body=verify_private_minute_bytes(
+            expected_sha256=receipt["sha256"],
+            expected_byte_length=receipt["byte_length"],
+            blob=receipt["bytes_private_only"])
+        self.assertEqual(body["schema"],PRIVATE_MINUTE_SCHEMA)
+        self.assertEqual(body["distribution_class"],
+                         "PRIVATE_SERVICE_HOLD_PENDING_LICENSE_AND_CONSUMER_REVIEW")
+        self.assertEqual(body["counts"]["n_sampled_prints"],1)
+        self.assertEqual(body["volume_shares"]["source_volume_included_shares"],"1.00")
+        self.assertIsNone(body["absorption_signal"])
+
+    def test_private_projection_never_contains_original_vendor_or_source_receipt(self):
+        record=run()
+        record["source_watermark_receipt"]="SENSITIVE_ORIGINAL_SOURCE_RECEIPT_DO_NOT_COPY"
+        receipt=self.sealed(record)
+        payload=receipt["bytes_private_only"]
+        self.assertNotIn(b"SENSITIVE_ORIGINAL_SOURCE",payload)
+        self.assertNotIn(b"raw_frame_bytes",payload)
+        self.assertNotIn(b"source_quote",payload)
+        self.assertNotIn(b"trade_id",payload)
+        self.assertNotIn(b"api_key",payload)
+        self.assertNotIn(b"public_url",payload)
+        self.assertNotIn(b"source_watermark_receipt\":\"SENSITIVE",payload)
+
+    def test_repeat_render_is_byte_stable(self):
+        a=self.sealed()
+        b=self.sealed(copy.deepcopy(run()))
+        self.assertEqual(a["sha256"],b["sha256"])
+        self.assertEqual(a["bytes_private_only"],b["bytes_private_only"])
+
+    def test_source_generation_changes_private_artifact_identity(self):
+        record=run()
+        record["source_observation_sha256"]="f"*64
+        a=self.sealed()
+        b=self.sealed(record)
+        self.assertNotEqual(a["sha256"],b["sha256"])
+
+    def test_unknown_quote_flow_remains_unknown_and_not_actionable(self):
+        m=run([row(state="UNKNOWN",reason="QUOTE_NOT_AVAILABLE_AT_TRADE_RECEIPT")])
+        sealed=self.sealed(m)
+        decoded=verify_private_minute_bytes(
+            expected_sha256=sealed["sha256"],
+            expected_byte_length=sealed["byte_length"],
+            blob=sealed["bytes_private_only"])
+        self.assertEqual(decoded["counts"]["n_unclassified"],1)
+        self.assertEqual(decoded["notional_usd"]["unknown_notional_usd"],"100.50")
+        self.assertFalse(decoded["rank_trade_alert_authority"])
+        self.assertIsNone(decoded["price_response_bps"])
+
+    def test_mutated_source_shape_may_not_smuggle_raw_tape(self):
+        m=run()
+        m["raw_vendor_quote"]={"secret":"payload"}
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"strict source contract"):
+            self.sealed(m)
+
+    def test_empty_or_not_matured_minute_not_exportable(self):
+        for record in (
+            run([]),
+            run(source_completeness_attested=False),
+            run(source_complete_through_ns=M+MINUTE_NS-1),
+        ):
+            with self.subTest(state=record["state"]):
+                with self.assertRaises(PrivateMinuteRefusal):
+                    self.sealed(record)
+
+    def test_source_replay_cannot_claim_final_correction(self):
+        m=run()
+        m["correction_status"]="FINAL"
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"source state"):
+            self.sealed(m)
+
+    def test_future_labels_and_signals_refused(self):
+        for label in ("absorption_signal","forward_return_label",
+                      "price_response_label","market_capture_coverage"):
+            with self.subTest(field=label):
+                m=run()
+                m[label]="FAKE_ACTIONABLE"
+                with self.assertRaisesRegex(PrivateMinuteRefusal,"future"):
+                    self.sealed(m)
+
+    def test_rank_gate_permission_cannot_be_upgraded_in_private_view(self):
+        m=run()
+        m["rank_or_trade_authority"]=True
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"authority"):
+            self.sealed(m)
+
+    def test_invalid_source_manifest_digest_refused(self):
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"source_manifest_sha256"):
+            project_private_minute(source_minute=run(),source_manifest_sha256="short")
+
+    def test_unqualified_original_availability_rejected(self):
+        m=run()
+        m["original_latest_available_ns"]=m["decision_ns"]+1
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"time/receipt"):
+            self.sealed(m)
+
+    def test_notional_conservation_cannot_lose_small_leg_to_decimal_rounding(self):
+        m = run()
+        m["gross_sampled_notional_usd"] = "1e30"
+        m["buy_proxy_notional_usd"] = "1e30"
+        m["unknown_notional_usd"] = "1"
+        with self.assertRaisesRegex(PrivateMinuteRefusal, "conservation"):
+            self.sealed(m)
+
+    def test_share_conservation_cannot_lose_small_leg_to_decimal_rounding(self):
+        m = run()
+        m["source_all_printed_shares"] = "1e30"
+        m["source_volume_included_shares"] = "1e30"
+        m["source_volume_unknown_shares"] = "1"
+        with self.assertRaisesRegex(PrivateMinuteRefusal, "conservation"):
+            self.sealed(m)
+
+    def test_private_projection_refuses_extreme_amount_exponents(self):
+        for exponent in ("1e+999999999", "1e-999999999"):
+            with self.subTest(exponent=exponent):
+                m = run()
+                m["gross_sampled_notional_usd"] = exponent
+                with self.assertRaisesRegex(PrivateMinuteRefusal, "bounded source decimal width"):
+                    self.sealed(m)
+
+    def test_notional_and_share_conservation_tested_before_serialization(self):
+        for field in ("gross_sampled_notional_usd","source_volume_included_shares"):
+            with self.subTest(field=field):
+                m=run()
+                m[field]="999999"
+                with self.assertRaisesRegex(PrivateMinuteRefusal,"conservation"):
+                    self.sealed(m)
+
+    def test_tampered_lit_or_volume_counters_refused(self):
+        for field in ("n_lit","n_source_volume_included_prints",
+                      "n_lit_classified_quote_le5s_prints"):
+            with self.subTest(field=field):
+                m=run()
+                m[field]+=1
+                with self.assertRaisesRegex(PrivateMinuteRefusal,"denominators"):
+                    self.sealed(m)
+
+    def test_untyped_reason_key_cannot_contain_secret_or_raw_path(self):
+        m=run([row(state="UNKNOWN",reason="SOURCE_UNQUALIFIED")])
+        m["reason_counts"]={"SENSITIVE /home/secret":1}
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"free text"):
+            self.sealed(m)
+
+    def test_nonfinite_notional_never_serialized(self):
+        for bad in ("NaN","Infinity","-1"):
+            with self.subTest(value=bad):
+                m=run()
+                m["buy_proxy_notional_usd"]=bad
+                with self.assertRaises(PrivateMinuteRefusal):
+                    self.sealed(m)
+
+    def test_wrong_readback_bytes_length_refused(self):
+        a=self.sealed()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"byte length"):
+            verify_private_minute_bytes(expected_sha256=a["sha256"],
+                expected_byte_length=a["byte_length"]-1,
+                blob=a["bytes_private_only"])
+
+    def test_wrong_readback_sha_refused(self):
+        a=self.sealed()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"digest mismatch"):
+            verify_private_minute_bytes(expected_sha256="f"*64,
+                expected_byte_length=a["byte_length"],
+                blob=a["bytes_private_only"])
+
+    def test_readback_rejects_forged_distribution_even_with_matching_sha(self):
+        import json,hashlib
+        a=self.sealed()
+        parsed=json.loads(a["bytes_private_only"])
+        parsed["public_delivery_allowed"]=True
+        raw=(json.dumps(parsed,sort_keys=True,separators=(",",":"))+"\n").encode()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"distribution/authority"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                expected_byte_length=len(raw),blob=raw)
+
+    def test_readback_noncanonical_extra_whitespace_rejected(self):
+        import hashlib
+        a=self.sealed()
+        raw=a["bytes_private_only"].replace(b'":"',b'": "')
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"canonical bytes"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                expected_byte_length=len(raw),blob=raw)
+
+
+    def test_strict_readback_rejects_recomputed_hash_with_raw_quote_extra_field(self):
+        import hashlib,json
+        result=self.sealed()
+        document=json.loads(result["bytes_private_only"])
+        document["raw_quote_events"]=[{"vendor_key":"forbidden"}]
+        raw=(json.dumps(document,sort_keys=True,separators=(",",":"))+"\n").encode()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"distribution/authority"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                                        expected_byte_length=len(raw),blob=raw)
+
+    def test_strict_readback_rejects_extra_nested_native_trade_id(self):
+        import hashlib,json
+        result=self.sealed()
+        document=json.loads(result["bytes_private_only"])
+        document["counts"]["native_trade_ids"]=["private-print-id"]
+        raw=(json.dumps(document,sort_keys=True,separators=(",",":"))+"\n").encode()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"nested fields outside allowlist"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                                        expected_byte_length=len(raw),blob=raw)
+
+    def test_strict_readback_rejects_forged_final_market_tape_vintage(self):
+        import hashlib,json
+        result=self.sealed()
+        document=json.loads(result["bytes_private_only"])
+        document["correction_status"]="FINAL_VINTAGE"
+        raw=(json.dumps(document,sort_keys=True,separators=(",",":"))+"\n").encode()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"distribution/authority"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                                        expected_byte_length=len(raw),blob=raw)
+
+    def test_strict_readback_rejects_broken_native_digest_with_recomputed_hash(self):
+        import hashlib,json
+        result=self.sealed()
+        document=json.loads(result["bytes_private_only"])
+        document["source_manifest_sha256"]="unqualified-original-source"
+        raw=(json.dumps(document,sort_keys=True,separators=(",",":"))+"\n").encode()
+        with self.assertRaisesRegex(PrivateMinuteRefusal,"source_manifest_sha256"):
+            verify_private_minute_bytes(expected_sha256=hashlib.sha256(raw).hexdigest(),
+                                        expected_byte_length=len(raw),blob=raw)
+
+if __name__=="__main__":
+    unittest.main()
