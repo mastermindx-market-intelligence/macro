@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import logging
 import re
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from html import unescape
 
@@ -55,17 +56,28 @@ def _date_iso(x) -> str | None:
 
 def parse_rss(text: str) -> list[dict]:
     """'Set to Join' items → [{url, announce_date}] from the press RSS. PURE."""
+    # Decode XML character references and CDATA exactly once, before matching
+    # titles or constructing requests. Reject malformed feeds as a whole; the
+    # existing fetch boundary logs the failure and preserves the cache.
+    if re.search(r"<!DOCTYPE", text, re.I):
+        raise ValueError("RSS document types are not supported")
+    root = ET.fromstring(text)
+    namespace = root.tag.rpartition("}")[0] + "}" if root.tag.startswith("{") else ""
+    if root.tag != namespace + "rss":
+        raise ValueError("Expected an RSS document")
+    channel = root.find(namespace + "channel")
+    if channel is None:
+        raise ValueError("RSS channel missing")
     out = []
-    for item in re.findall(r"<item>(.*?)</item>", text, re.S):
-        title = re.search(r"<title>(.*?)</title>", item, re.S)
-        if not title or not _JOIN_RE.search(title.group(1)):
+    for item in channel.findall(namespace + "item"):
+        title = item.findtext(namespace + "title") or ""
+        link = item.findtext(namespace + "link") or ""
+        pub = item.findtext(namespace + "pubDate")
+        if not _JOIN_RE.search(title) or not link.strip():
             continue
-        link = re.search(r"<link>(.*?)</link>", item, re.S)
-        pub = re.search(r"<pubDate>(.*?)</pubDate>", item, re.S)
-        if link:
-            out.append({"url": link.group(1).strip(),
-                        "announce_date": _date_iso(pub.group(1)) if pub else None,
-                        "title": title.group(1).strip()})
+        out.append({"url": link.strip(),
+                    "announce_date": _date_iso(pub) if pub else None,
+                    "title": title.strip()})
     return out
 
 
