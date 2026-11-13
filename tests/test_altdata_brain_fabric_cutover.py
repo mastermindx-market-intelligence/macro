@@ -402,6 +402,39 @@ def test_ledger_row_is_booked_even_when_reply_is_dropped(fabric_on, monkeypatch,
     assert len(usage_rows) == 1 and usage_rows[0]["provider"] == "fabric"
 
 
+def test_transport_error_records_no_ledger_row(monkeypatch, usage_rows):
+    """Nothing was served, so nothing is billed — even though the router may
+    have attempted a provider."""
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+
+    def boom(messages, **kwargs):
+        raise RuntimeError("502 from router")
+
+    monkeypatch.setattr(fc, "complete", boom)
+    monkeypatch.setattr(llm_auth_mod, "build_providers", lambda *a, **kw: [])
+    monkeypatch.delenv("MACRO_ALTDATA_BRAIN_FABRIC", raising=False)
+
+    fn = ab._make_call(dict(_CFG))
+    text, reason = fn("SYS", "USER")
+
+    assert text is None and reason == "llm_error"
+    assert usage_rows == []
+
+
+def test_legacy_path_books_no_fabric_row(monkeypatch, legacy_ladder, usage_rows):
+    """The ledger must never name fabric for a call the fabric did not serve."""
+    monkeypatch.setattr(fc, "is_configured", lambda: False)
+    monkeypatch.setattr(fc, "complete",
+                        lambda messages, **kw: pytest.fail("fabric must stay off"))
+    monkeypatch.delenv("MACRO_ALTDATA_BRAIN_FABRIC", raising=False)
+
+    fn = ab._make_call(dict(_CFG))
+    text, reason = fn("SYS", "USER")
+
+    assert (text, reason) == ("legacy reply", None)
+    assert [r for r in usage_rows if r.get("provider") == "fabric"] == []
+
+
 def test_unavailable_records_no_ledger_row(monkeypatch, usage_rows):
     monkeypatch.setattr(fc, "is_configured", lambda: True)
     monkeypatch.setattr(
