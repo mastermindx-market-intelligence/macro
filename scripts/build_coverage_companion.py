@@ -22,6 +22,8 @@ sidecar's static ``house_registry_sizes`` only.
 
 No threshold, no "usable"/"thin" flag, no floor.
 
+The parquet and the sidecar are each replaced atomically, but not as one atomic pair: a concurrent reader may see a new parquet beside the old sidecar for a moment.
+
 Usage:
   python -m scripts.build_coverage_companion \
       --breadth-dir data/breadth \
@@ -37,7 +39,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -119,6 +123,24 @@ def _family_sizes(registry_dir: Path) -> tuple[dict, list]:
     return sizes, blobs
 
 
+def _atomic_write(target: Path, writer) -> None:
+    """Replace ``target`` atomically: write a temp file in the same directory,
+    then ``os.replace`` it onto the target. ``writer`` receives the temp Path and
+    writes the full content. On any failure the temp file is removed and any
+    existing target is left byte-for-byte untouched.
+    """
+    fd, tmp = tempfile.mkstemp(dir=str(target.parent), prefix="." + target.name + ".", suffix=".tmp")
+    os.close(fd)
+    try:
+        writer(Path(tmp))
+        os.chmod(tmp, 0o644)
+        os.replace(tmp, target)
+    except BaseException:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+        raise
+
+
 def build(breadth_dir, dated_breadth, registry_json, registry_dir, out,
           map_commit: str, baskets_commit: str, families_commit: str,
           calendar_commit: str) -> dict:
@@ -138,16 +160,17 @@ def build(breadth_dir, dated_breadth, registry_json, registry_dir, out,
         if mem.empty:
             excluded[src] = "no dated membership rows"
             continue
-        if not mem["group"].notna().any():
-            excluded[src] = "the sector map labels none of this src's members"
-            continue
+        # A source whose members are ALL unlabelled is still counted, entirely
+        # under 'unmapped' (ruling 60 gap a): never excluded, never guessed into
+        # a group. srcs_excluded is reserved for a source with NO dated rows.
         frames.append(coverage_frame(mem, calendar, groups, src))
         srcs.append(src)
     cov = pd.concat(frames, ignore_index=True)
 
-    out.mkdir(parents=True, exist_ok=True)
-    cov.to_parquet(out / "coverage_listed_dated.parquet", index=False, compression="zstd")
-
+    # Validate and build EVERYTHING in memory before touching published files
+    # (ruling 60 gap b): a malformed basket JSON or a family CSV without a
+    # 'group' column fails here, leaving any existing parquet and sidecar
+    # byte-for-byte untouched.
     baskets = json.loads(registry_json.read_text())["baskets"]
     basket_sizes = _basket_sizes(baskets)
     family_sizes, family_blobs = _family_sizes(registry_dir)
@@ -190,7 +213,13 @@ def build(breadth_dir, dated_breadth, registry_json, registry_dir, out,
         "build_time_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "not_an_outcome_claim": "Data only. No forward return, hit rate or backtest is attached.",
     }
-    (out / "coverage_listed.meta.json").write_text(json.dumps(meta, indent=2) + "\n")
+    # Publish only after the whole build passes: the parquet first, then the
+    # sidecar, each through a temp file in the same directory + os.replace.
+    out.mkdir(parents=True, exist_ok=True)
+    _atomic_write(out / "coverage_listed_dated.parquet",
+                  lambda p: cov.to_parquet(p, index=False, compression="zstd"))
+    _atomic_write(out / "coverage_listed.meta.json",
+                  lambda p: p.write_text(json.dumps(meta, indent=2) + "\n"))
     return meta
 
 

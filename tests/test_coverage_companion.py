@@ -147,3 +147,125 @@ def test_build_end_to_end_fixture(tmp_path):
     assert side["house_registry_sizes"]["families"]["sizes"]["fam.csv"] == {"g1": 2, "g2": 1}
     # blob SHAs are present for the data inputs
     assert all(len(i["blob_sha"]) == 40 for i in side["inputs"])
+
+
+# ── ruling 60: all-unlabelled conservation + failed-rebuild publication ──────
+# Made-up A/B/C/EXTRA members only; no vendor rows, no network, no skip.
+
+DATES60 = pd.bdate_range("2025-01-02", periods=4)
+
+
+def _ruling60_args(tmp_path: Path, mode="partial", source="sp400", second=False):
+    """Build inputs for the ruling-60 contracts and return the build() args.
+
+    A (sp500) and C (sp600) are always listed; B (sp400) is listed on the
+    half-open spell [DATES60[1], DATES60[3]) -> present on sessions 1 and 2 only.
+    ``second`` adds an EXTRA sp500 member so a write-before-validate builder
+    would visibly change the published counts.
+    """
+    breadth = tmp_path / "breadth"
+    breadth.mkdir(exist_ok=True)
+    regs = tmp_path / "registry"
+    regs.mkdir(exist_ok=True)
+    rows = [
+        {"ticker": "A", "start_date": pd.NaT, "end_date": pd.NaT, "src": "sp500"},
+        {"ticker": "B", "start_date": DATES60[1], "end_date": DATES60[3], "src": "sp400"},
+        {"ticker": "C", "start_date": pd.NaT, "end_date": pd.NaT, "src": "sp600"},
+    ]
+    if second:
+        rows.append({"ticker": "EXTRA", "start_date": pd.NaT, "end_date": pd.NaT, "src": "sp500"})
+    pd.DataFrame(rows).to_parquet(breadth / "sp1500_pit_membership.parquet", index=False)
+    labels = {"A": "Alpha", "B": "Beta", "C": "Alpha", "EXTRA": "Alpha"}
+    if mode == "one_unmapped":
+        labels[{"sp500": "A", "sp400": "B", "sp600": "C"}[source]] = None
+    if mode == "all_unmapped":
+        labels = {k: None for k in labels}
+    pd.DataFrame([{"ticker": k, "sector": v} for k, v in labels.items()]).to_parquet(
+        breadth / "sp1500_pit_sectors.parquet", index=False)
+    dated = tmp_path / "dated.parquet"
+    pd.DataFrame({"date": DATES60}).to_parquet(dated, index=False)
+    baskets = tmp_path / "membership.json"
+    baskets.write_text(json.dumps(
+        {"baskets": {"fake": {"members": [{"ticker": "A", "removed": None}]}}}))
+    pd.DataFrame({"ticker": ["A", "C"], "group": ["g", "g"]}).to_csv(regs / "fake.csv", index=False)
+    return [breadth, dated, baskets, regs, tmp_path / "out"]
+
+
+def _ruling60_build(args):
+    return build(*args, "m" * 40, "b" * 40, "f" * 40, "c" * 40)
+
+
+def _unmapped_counts(frame: pd.DataFrame, src: str):
+    rows = frame[(frame["src"] == src) & (frame["group_key"] == UNMAPPED)]
+    return [int(v) for v in rows.sort_values("session_date")["n_listed"]]
+
+
+def test_ruling60_sp500_all_unlabelled_is_unmapped(tmp_path):
+    args = _ruling60_args(tmp_path, mode="one_unmapped", source="sp500")
+    meta = _ruling60_build(args)
+    frame = pd.read_parquet(args[-1] / "coverage_listed_dated.parquet")
+    assert "sp500" in set(frame["src"])
+    assert "sp500" not in meta["srcs_excluded"]
+    assert _unmapped_counts(frame, "sp500") == [1, 1, 1, 1]
+
+
+def test_ruling60_sp600_all_unlabelled_is_unmapped(tmp_path):
+    args = _ruling60_args(tmp_path, mode="one_unmapped", source="sp600")
+    meta = _ruling60_build(args)
+    frame = pd.read_parquet(args[-1] / "coverage_listed_dated.parquet")
+    assert "sp600" in set(frame["src"])
+    assert "sp600" not in meta["srcs_excluded"]
+    assert _unmapped_counts(frame, "sp600") == [1, 1, 1, 1]
+
+
+def test_ruling60_sp400_all_unlabelled_half_open(tmp_path):
+    args = _ruling60_args(tmp_path, mode="one_unmapped", source="sp400")
+    meta = _ruling60_build(args)
+    frame = pd.read_parquet(args[-1] / "coverage_listed_dated.parquet")
+    assert "sp400" in set(frame["src"])
+    assert "sp400" not in meta["srcs_excluded"]
+    # B is listed only on the half-open spell [DATES60[1], DATES60[3]).
+    assert _unmapped_counts(frame, "sp400") == [0, 1, 1, 0]
+
+
+def test_ruling60_all_sources_unlabelled_no_valueerror(tmp_path):
+    args = _ruling60_args(tmp_path, mode="all_unmapped")
+    meta = _ruling60_build(args)  # must not raise "No objects to concatenate"
+    frame = pd.read_parquet(args[-1] / "coverage_listed_dated.parquet")
+    assert meta["srcs_excluded"] == {}
+    assert set(meta["srcs_included"]) == {"sp500", "sp400", "sp600"}
+    assert _unmapped_counts(frame, "sp500") == [1, 1, 1, 1]
+    assert _unmapped_counts(frame, "sp400") == [0, 1, 1, 0]
+    assert _unmapped_counts(frame, "sp600") == [1, 1, 1, 1]
+
+
+def test_ruling60_malformed_basket_json_keeps_old_bytes(tmp_path):
+    args = _ruling60_args(tmp_path)
+    _ruling60_build(args)  # valid baseline generation
+    out = args[-1]
+    pq = out / "coverage_listed_dated.parquet"
+    sj = out / "coverage_listed.meta.json"
+    before = (pq.read_bytes(), sj.read_bytes())
+    # Add a synthetic member, then break the basket JSON: the build must raise
+    # before publishing, leaving both old files byte-for-byte unchanged.
+    args = _ruling60_args(tmp_path, second=True)
+    args[2].write_text("{broken")
+    with pytest.raises((ValueError, KeyError)):
+        _ruling60_build(args)
+    assert (pq.read_bytes(), sj.read_bytes()) == before
+
+
+def test_ruling60_family_csv_without_group_keeps_old_bytes(tmp_path):
+    args = _ruling60_args(tmp_path)
+    _ruling60_build(args)  # valid baseline generation
+    out = args[-1]
+    pq = out / "coverage_listed_dated.parquet"
+    sj = out / "coverage_listed.meta.json"
+    before = (pq.read_bytes(), sj.read_bytes())
+    # Add a synthetic member, then drop the 'group' column: the build must raise
+    # before publishing, leaving both old files byte-for-byte unchanged.
+    args = _ruling60_args(tmp_path, second=True)
+    (args[3] / "fake.csv").write_text("ticker\nA\n")
+    with pytest.raises((ValueError, KeyError)):
+        _ruling60_build(args)
+    assert (pq.read_bytes(), sj.read_bytes()) == before
