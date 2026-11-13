@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T18:54:21.774392+00:00",
-  "count": 3314,
+  "generated_at": "2026-11-13T19:24:26.024889+00:00",
+  "count": 3315,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-zsgvsit12vf-323bb3",
+      "title": "BofA US Economic Weekly Fed call change: Adding a hike in Jan ’27",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:35:57Z",
+      "summary_points": [
+        "Fed rate hike path: 3 hikes (Dec '26, Jan '27, Mar '27) to terminal rate 4.5-4.75%, driven by persistent core CPI (goods-led) and stable labor market (unemployment at 4.1% through Q2 '27).",
+        "Inflation persistence: Core CPI +0.3% m/m (Oct), revised core PCE at 3.3% y/y; structural forces (tariffs, energy, AI) keep underlying inflation at 2.5% above target through 2028.",
+        "Key rate triggers: Wage inflation (0.4% Nov) and price resets risk pushing terminal rate above 5%; Fed may delay final hike if soft data or financial tightening emerges.",
+        "Near-term data catalysts: Nov 17 Retail Sales (0.4% vs 0.3% consensus), Nov 18 FOMC Minutes, and Housing Starts critical for portfolio adjustments.",
+        "Geopolitical inflation drivers: Middle East supply shocks (Musalem) and AI build-out (Goolsbee/Williams) complicate policy path amid tariff/oil pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-gsqtn17sojj-2e5b71",
       "title": "BofA Global FX weekly Greenback Mountain",
