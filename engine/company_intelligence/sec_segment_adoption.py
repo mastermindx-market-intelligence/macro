@@ -346,4 +346,12 @@ def replay_segment_source(snapshot, authority):
     span = f['span']
     n._require(sha256(body[span['start_byte']:span['end_byte']]).hexdigest() == f['span']['text_sha256'],
                'SOURCE_SPAN_MISMATCH')
+    # Prepare's containment check, repeated: every figure span lies inside the
+    # activity span (relative to its start, within the hash-verified span bytes).
+    main_len = len(body[span['start_byte']:span['end_byte']])
+    for name in n.SEGMENT_FIGURE_NAMES:
+        figure = f['figure_spans'][name]
+        if figure is not None:
+            n._require(0 <= figure['start_byte'] - span['start_byte']
+                       < figure['end_byte'] - span['start_byte'] <= main_len, 'SOURCE_SPAN_MISMATCH')
     return None

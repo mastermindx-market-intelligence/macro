@@ -326,6 +326,17 @@ _FIGURE_NEG_SIGN = re.compile(r"sign\s*=\s*[\"']?\s*[-−]")
 _FIGURE_NBSP_REFS = frozenset((b"&#160;", b"&nbsp;", b"&#xa0;", b"&#XA0;"))
 _FIGURE_BIDI = frozenset("\u202a\u202b\u202c\u202d\u202e\u2066\u2067\u2068\u2069")
 _FIGURE_TAG_KIND, _FIGURE_BLOCK_KIND, _FIGURE_DEAD_KIND, _FIGURE_REF_KIND = 1, 2, 3, 4
+# Fix 6 (ruling 61): the check admits only markup it knows. An element open at
+# the figure and every tag inside the window must carry one of these names (an
+# inline-XBRL name needs a prefix and a colon); anything else is refused.
+_FIGURE_KNOWN_NAMES = frozenset(
+    b"html body div p span font b i u em strong small a br hr table thead tbody tfoot"
+    b" tr td th caption col colgroup sup sub ul ol li h1 h2 h3 h4 h5 h6 center nobr"
+    b" blockquote img".split())
+_FIGURE_KNOWN_XBRL = frozenset((b"nonfraction", b"nonnumeric", b"continuation"))
+_FIGURE_ATTR = re.compile(
+    rb"(?:\s+|(?<=[\"']))([^\s<>/\"'=]+)(?:\s*=\s*(\"[^\"]*\"|'[^']*'|[^\s<>\"'`]+))?")
+_FIGURE_DISPLAY = re.compile(r"(?:^|;)\s*display\s*:", re.IGNORECASE)
 
 
 def _figure_blank(ch: str) -> bool:
@@ -345,6 +356,38 @@ def _figure_tag_hidden(local: bytes, tok: bytes) -> bool:
     return _FIGURE_HIDDEN_ATTR.search(_FIGURE_QUOTED.sub('""', text)) is not None
 
 
+def _figure_name_known(name: bytes) -> bool:
+    """R6-2: a name this check knows: the fixed list, or an inline-XBRL
+    ``nonFraction``/``nonNumeric``/``continuation`` with exactly one prefix."""
+    if b":" not in name:
+        return name in _FIGURE_KNOWN_NAMES
+    prefix, _, local = name.partition(b":")
+    return bool(prefix) and b":" not in local and local in _FIGURE_KNOWN_XBRL
+
+
+def _figure_tag_style(tok: bytes) -> tuple[bool, bool]:
+    """R6-3 and R6-4 on one opening tag: ``(unreadable, display)``. Unreadable is
+    a ``style`` value holding a backslash, ``/*`` or ``&``, or any ``dir``
+    attribute; display is a ``display`` declaration in the style value."""
+    nm = _FIGURE_TAG_NAME.match(tok)
+    unreadable = display = False
+    if nm is None:
+        return False, False
+    for m in _FIGURE_ATTR.finditer(tok, nm.end()):
+        attr = m.group(1).lower()
+        value = (m.group(2) or b"")
+        if value[:1] in (b'"', b"'"):
+            value = value[1:-1]
+        if attr == b"dir":
+            unreadable = True
+        elif attr == b"style":
+            if b"\\" in value or b"/*" in value or b"&" in value:
+                unreadable = True
+            if _FIGURE_DISPLAY.search(value.decode("utf-8", errors="ignore")):
+                display = True
+    return unreadable, display
+
+
 def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
     """Tokenise ``raw`` from byte 0 to just past the right-hand window.
 
@@ -359,13 +402,29 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
     negative ``sign`` attribute (any prefix or none, any quoting, entity-decoded).
     A ``/>`` ending is never honoured: an element counts as open until its own
     closing tag, which can only add refusals.
+
+    Fix 6 (ruling 61), refusals only. R6-1: inside a hidden region the elements
+    opened there are kept on a stack (a self-closed non-void tag opens one); a
+    closing tag that is not the innermost open element, or the region's own
+    element once the stack is empty, makes the region last to the end of the
+    document. A prefixed tag ending ``/>`` (``ix:hidden/``) is not pushed: a
+    prefixed element is empty in the XML reading and is closed with its parent in
+    the HTML reading, so both readings agree it does not hold the region open.
+    R6-2/R6-3: every element open at the span start, and every shown
+    tag within the window of the span, needs a known name and no unreadable
+    ``style`` value or ``dir`` attribute, else FIGURE_SPAN_MISMATCH (a tag that
+    only opens or continues a hidden region is not checked). R6-4: a block-level
+    tag whose own ``style`` holds a ``display`` declaration, and its closing tag,
+    is an ordinary inline tag, not a separator.
     """
     tokens: list = []
     stack: list = []      # open nonFraction elements, True when flagged negative
     enclosing = None      # any(stack) frozen at the span start
     inner = False
-    hidden = None         # (name, depth, start) inside a not-shown element
+    hidden = None         # (name, inner names, start, permanent) in a not-shown element
+    shown_open: list = []  # open shown elements: (name, unknown or unreadable, display)
     limit = end + _FIGURE_WINDOW_BYTES
+    window_lo = start - _FIGURE_WINDOW_BYTES
     pos = 0
     while True:
         m = _FIGURE_TOKEN.search(raw, pos)
@@ -376,6 +435,7 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
         pos = e
         if enclosing is None and s >= start:
             enclosing = any(stack)
+            _require(not any(item[1] for item in shown_open), "FIGURE_SPAN_MISMATCH")
         if tok[:1] == b"&":
             text = tok.decode("ascii")
             shown = html.unescape(text)
@@ -385,7 +445,7 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
                 tokens.append((s, e, _FIGURE_REF_KIND, shown))
             continue
         if tok == b"<":            # a tag opener that never closes
-            hidden = (b"", 1, hidden[2] if hidden is not None else s)
+            hidden = (b"", [], hidden[2] if hidden is not None else s, True)
             break
         if tok.startswith(b"<![CDATA["):
             # XHTML prints a CDATA section, HTML reads it as a comment that ends
@@ -401,7 +461,12 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
         closing = nm is not None and bool(nm.group(1))
         name = nm.group(2).lower() if nm is not None else b""
         local = name.rsplit(b":", 1)[-1]
+        decl = tok[1:2] in (b"!", b"?")
         if not closing and local in _FIGURE_RAWTEXT_NAMES:
+            if hidden is None:
+                unreadable, _display = _figure_tag_style(tok)
+                _require(not (e > window_lo and (not _figure_name_known(name) or unreadable)),
+                         "FIGURE_SPAN_MISMATCH")
             close = re.compile(rb"</" + re.escape(name) + rb"(?=[\s/>])[^>]*>",
                                re.IGNORECASE).search(raw, e)
             stop = close.end() if close is not None else len(raw)
@@ -410,18 +475,34 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
             pos = stop
             continue
         if hidden is not None:
-            hname, depth, hstart = hidden
-            if name == hname:
-                depth += -1 if closing else 1
-            if depth == 0:
-                tokens.append((hstart, e, _FIGURE_DEAD_KIND, ""))
-                hidden = None
-            else:
-                hidden = (hname, depth, hstart)
+            hname, names, hstart, permanent = hidden
+            if permanent or decl:
+                continue
+            if closing:
+                if name != (names[-1] if names else hname):
+                    hidden = (hname, names, hstart, True)   # R6-1: stays hidden to the end
+                elif names:
+                    names.pop()
+                else:
+                    tokens.append((hstart, e, _FIGURE_DEAD_KIND, ""))
+                    hidden = None
+            elif name not in _FIGURE_VOID_NAMES and not (tok.endswith(b"/>") and b":" in name):
+                names.append(name)    # a self-closed unprefixed non-void tag counts as opening
             continue
         if not closing and name not in _FIGURE_VOID_NAMES and _figure_tag_hidden(local, tok):
-            hidden = (name, 1, s)
+            hidden = (name, [], s, False)
             continue
+        display = False
+        if not decl:
+            unreadable, display = _figure_tag_style(tok)
+            bad = unreadable or not _figure_name_known(name)
+            _require(not (e > window_lo and bad), "FIGURE_SPAN_MISMATCH")
+            if closing:
+                display = False
+                if shown_open and shown_open[-1][0] == name:
+                    display = shown_open.pop()[2]
+            elif name not in _FIGURE_VOID_NAMES:
+                shown_open.append((name, bad, display))
         if local == b"nonfraction":
             if closing:
                 if stack:
@@ -432,12 +513,14 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
                 stack.append(negative)
                 if negative and start <= s < end:
                     inner = True
-        tokens.append((s, e, _FIGURE_BLOCK_KIND if name in _FIGURE_BLOCK_NAMES
-                       else _FIGURE_TAG_KIND, ""))
+        block = (name in _FIGURE_BLOCK_NAMES and not display
+                 and (closing or not _figure_tag_hidden(local, tok)))
+        tokens.append((s, e, _FIGURE_BLOCK_KIND if block else _FIGURE_TAG_KIND, ""))
     if hidden is not None:
         tokens.append((hidden[2], len(raw), _FIGURE_DEAD_KIND, ""))
     if enclosing is None:
         enclosing = any(stack)
+        _require(not any(item[1] for item in shown_open), "FIGURE_SPAN_MISMATCH")
     return tokens, bool(enclosing or inner)
 
 
@@ -653,6 +736,14 @@ def _verify_figure_span(name: str, span: dict, text: str, sign: str, raw: bytes,
        span start or opened inside the span is never read as plus: with a
        declared '+' it is FIGURE_SIGN_UNSUPPORTED. This rule only refuses; the
        printed shape in rule 2 still decides the sign.
+
+    Fix 6 (ruling 61) only adds refusals; the check admits markup it knows. R6-1:
+    a hidden region whose nesting is broken stays hidden to the end of the
+    document. R6-2: every element open at the span and every tag in the window
+    needs a known name. R6-3: a ``style`` value holding a backslash, ``/*`` or
+    ``&``, or any ``dir`` attribute, is refused there. R6-4: a block tag that is
+    hidden or carries a ``display`` declaration is not a separator in rules 3 and
+    4. Pre-2001 SGML text filings are refused (accepted limit).
 
     Known limits, left to the ratifier who reads the rendered excerpt: the
     meaning of nearby words ("loss", "credit"), the stated scale, and invisibility

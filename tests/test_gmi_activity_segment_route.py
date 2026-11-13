@@ -1619,3 +1619,129 @@ def test_r5_store_path_does_not_admit_a_segment_fact_so_it_never_reads_the_sourc
     assert caught.value.code == "ADMISSION_REFERENCE_INVALID"
     assert reader.calls == []
     assert store.objects == {} and store.writes == 0
+
+
+# ---------------------------------------------------------------------------
+# Sixth review (ruling 61): the figure check admits only markup it knows. Every
+# case below is the exact input of the fifth reviewer's probe (~ stands for a
+# double quote; [[ ]] marks the figure span).
+# ---------------------------------------------------------------------------
+
+_R6_NX = "<p>Next line</p>"
+
+
+def _r6_verify(doc: str, text="1,234", sign="+"):
+    doc = doc.replace("~", chr(34))
+    i, j = doc.index("[["), doc.index("]]")
+    raw = (doc[:i] + doc[i + 2:j] + doc[j + 2:]).encode("utf-8")
+    start = len(doc[:i].encode("utf-8"))
+    end = start + len(doc[i + 2:j].encode("utf-8"))
+    span = {"start_byte": start, "end_byte": end, "text_sha256": hashlib.sha256(raw[start:end]).hexdigest()}
+    n._verify_figure_span("revenue", span, text, sign, raw)
+
+
+def _r6_refused(doc: str, text="1,234", sign="+"):
+    with pytest.raises(n.DisclosureError) as caught:
+        _r6_verify(doc, text, sign)
+    assert caught.value.code == "FIGURE_SPAN_MISMATCH"
+
+
+@pytest.mark.parametrize("doc", [
+    "<p>Intro</p><span style=~display:none~><p></span>Revenue [[1,234]]</p>" + _R6_NX,
+    "<p>Intro</p><div hidden><table><tr><td></div>Revenue [[1,234]]</td></tr></table></div>" + _R6_NX,
+], ids=["A1_span_close_ignored_by_p", "A2_div_close_ignored_in_td"])
+def test_r6_1_hidden_region_with_broken_nesting_stays_hidden(doc):
+    _r6_refused(doc)
+
+
+def test_r6_1_a_self_closed_tag_inside_a_hidden_region_opens_an_element():
+    # <b/> reads as an opening <b> in HTML: the </div> then no longer closes the region.
+    _r6_refused("<p>Intro</p><div hidden><b/></div>Revenue [[1,234]] total</p>" + _R6_NX)
+
+
+@pytest.mark.parametrize("doc", [
+    "<p>Intro</p><dialog>Revenue [[1,234]] total</dialog>" + _R6_NX,
+    "<p>Intro</p><ruby>x<rp>Revenue [[1,234]] total</rp></ruby>" + _R6_NX,
+    "<p>Intro</p><plaintext></plaintext>Revenue [[1,234]] total",
+    "<p>Intro</p><audio>Revenue [[1,234]] total</audio>" + _R6_NX,
+    "<p>Intro</p><canvas>Revenue [[1,234]] total</canvas>" + _R6_NX,
+    "<details><summary>Note</summary>Revenue [[1,234]] total</details>" + _R6_NX,
+], ids=["A3_dialog", "A6_rp_in_ruby", "A16_plaintext_close", "A4_audio", "A5_canvas", "A10_details"])
+def test_r6_2_unknown_element_names_are_refused(doc):
+    _r6_refused(doc)
+
+
+def test_r6_2_an_unknown_prefixed_name_is_refused():
+    _r6_refused("<p>Revenue <foo:bar>[[1,234]]</foo:bar> total</p>" + _R6_NX)
+
+
+@pytest.mark.parametrize("doc", [
+    "<p>Intro</p><span style=~display:/**/none~>Revenue [[1,234]] total</span>" + _R6_NX,
+    "<p>Intro</p><span style=~display:\\6e one~>Revenue [[1,234]] total</span>" + _R6_NX,
+    "<p>Intro</p><span style=~display&#58;block~>Revenue [[1,234]] total</span>" + _R6_NX,
+    "<p>Segment</p><p dir=~rtl~>[[1,234]] abc -</p>" + _R6_NX,
+], ids=["A7_css_comment", "A8_css_escape", "ampersand_in_style", "A15_dir_attribute"])
+def test_r6_3_style_that_cannot_be_read_plainly_and_dir_are_refused(doc):
+    _r6_refused(doc)
+
+
+@pytest.mark.parametrize("doc,text", [
+    ("<p>Revenue 5<br style=~display:none~>[[1,234]] total</p>" + _R6_NX, "1,234"),
+    ("<p>Revenue 5.<br style=~display:none~>[[234]] total</p>" + _R6_NX, "234"),
+    ("<p>Revenue</p><p style=~display:inline~>5</p><p style=~display:inline~>[[1,234]]</p>" + _R6_NX, "1,234"),
+], ids=["A13_hidden_br_joins_digits", "A14_hidden_br_joins_decimal", "A12_inline_p_digit_fragment"])
+def test_r6_4_a_styled_block_tag_is_not_a_separator(doc, text):
+    _r6_refused(doc, text)
+
+
+def test_r6_honest_shapes_stay_admitted():
+    ix = ("<tr><td><span>Cloud</span></td><td>$</td><td style=~text-align:right~><ix:nonFraction"
+          " name=~us-gaap:Revenues~ contextRef=~c1~ unitRef=~usd~ decimals=~-6~ scale=~6~"
+          " format=~ixt:num-dot-decimal~>[[54,602]]</ix:nonFraction></td><td>&#160;</td><td>$</td>"
+          "<td>48,000</td></tr>")
+    _r6_verify(ix + _R6_NX, "54,602")                                                   # H1
+    _r6_verify("<tr><td>Operating loss</td><td>$</td><td>[[(</td><td><ix:nonFraction sign=~-~"
+               " name=~x~>1,234</ix:nonFraction></td><td>)]]</td></tr>" + _R6_NX, "1,234", "-")  # H2
+
+
+def test_r6_honest_shape_h3_xhtml_head_ixheader_stays_admitted():
+    _r6_verify("<?xml version=~1.0~?><!DOCTYPE html><html><head><title>10-K</title></head><body>"
+               "<div style=~display:none~><ix:header><ix:hidden/></ix:header></div>"
+               "<p>Cloud revenue $[[54,602]] million</p>" + _R6_NX, "54,602")
+
+
+def test_r6_1a_a_prefixed_self_closed_tag_in_a_hidden_region_is_an_empty_element():
+    _r6_verify("<?xml version=~1.0~?><html><body><div hidden><link:schemaRef xlink:href=~x~/></div>"
+               "<p>Cloud revenue $[[54,602]] million</p>" + _R6_NX, "54,602")
+
+
+def test_r6_1a_a_prefixed_tag_not_self_closed_still_opens_an_element():
+    _r6_refused("<p>Intro</p><div hidden><ix:hidden></div>Revenue [[1,234]] total</p>" + _R6_NX)
+
+
+def test_r6_h10_sgml_text_table_is_refused():
+    # accepted limit, ruling 61: pre-2001 SGML text filings are refused
+    _r6_refused("<TABLE>\n<S> <C>\nCloud ........ $ [[54,602]] $ 48,000\n</TABLE>" + _R6_NX, "54,602")
+
+
+def _r6_outside_span_snapshot(case):
+    """The honest snapshot with the activity span cut to the first sentence, so the
+    (still correct, whole-document) figure spans lie outside it."""
+    spec = copy.deepcopy(case.snapshot.spec)
+    first = SEG_BODY_BASE.encode("utf-8")[:24]
+    assert spec["fact"]["figure_spans"]["revenue"]["start_byte"] >= len(first)
+    spec["fact"]["span"] = {"start_byte": 0, "end_byte": len(first),
+                            "text_sha256": hashlib.sha256(first).hexdigest()}
+    return SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+
+
+def test_r6_5_replay_refuses_a_figure_span_outside_the_activity_span(tmp_path):
+    case = _segment_case(tmp_path)
+    assert segment.replay_segment_source(case.snapshot, case.pinned.authority) is None
+    with pytest.raises(n.DisclosureError) as caught:
+        segment.replay_segment_source(_r6_outside_span_snapshot(case), case.pinned.authority)
+    assert caught.value.code == "SOURCE_SPAN_MISMATCH"
+
+
+def test_r6_5_replay_honest_source_still_returns_none(tmp_path):
+    test_r5_replay_honest_segment_source_returns_none(tmp_path)
