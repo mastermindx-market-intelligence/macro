@@ -14061,6 +14061,7 @@ jobs:
       - "lib/__init__.py"
       - "lib/ai_costs.py"
       - "lib/config.py"
+      - "lib/fabric_client.py"
       - "mockups/evidence/b-f09-13-covenant-headroom/payloads/computed.json"
       - "templates/capital_structure.html.j2"
       - "tests/test_covenant_headroom.py"
