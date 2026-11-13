@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T23:43:44.354286+00:00",
-  "count": 3260,
+  "generated_at": "2026-11-13T00:20:40.634604+00:00",
+  "count": 3261,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -889,6 +889,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-j2asn1omv3t-9b585b",
+      "title": "Global Economics Comment Should We Expect More Upside Inflation Surprises",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:42:33Z",
+      "summary_points": [
+        "Upstream Inflation Lag & Core Impact: 1% rise in producer/import prices drives core inflation by 0.1-0.2pp after 6-12 months; peak cumulative upstream pressures imply 0.8pp core inflation boost vs. pre-war baseline, sustaining inflation into 2027 H1.",
+        "Geopolitical Shock Driver: Iran war primary catalyst for upstream inflation (e.g., 10% shock causes 5-10bp monthly CPI surprise in 3-9 months), with cross-country exposure showing peak inflation surprises of 22.5bps (Canada), 17.5bps (Germany), and 12.5bps (US/UK).",
+        "AI Mismeasurement & Policy Risk: AI-related products drive ~0.1-0.2pp peak global core CPI boost in early 2027 (0.5pp US core PCE spike in Dec 2026); consensus underestimates inflation by 0.1-0.2pp over 9 months, skewing risks toward upside surprises and potential central bank tightening in early 2027."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
