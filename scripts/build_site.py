@@ -2559,11 +2559,10 @@ def _flip_confirmation_view() -> dict | None:
 
 
 def _sector_heat_view() -> dict | None:
-    """Compact sector-heat strip for the macro.html dashboard: up to 4 producer-declared
-    heating themes and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
-    rotation lane for the risk dialog; each links straight to basket/<id>.html.
-    DISPLAY-ONLY — data comes from engine.sector_pulse.build_pulse('us') at build time.
-    Returns None (never raises) so the strip is simply hidden when pulse is unavailable."""
+    """Display-only Macro sector-temperature projection from the existing US Sector Pulse.
+    Preserve distinct established-hot, accelerating, and cooling/broken theme lanes.
+    A hot incumbent is not evidence of 5-session acceleration, and neither is a
+    stock-entry signal. Null comparison history stays null. No scoring writes."""
     try:
         from engine.sector_pulse import build_pulse as _sp_build
         from lib.sector_desk_view import opportunity_desk
@@ -2585,7 +2584,14 @@ def _sector_heat_view() -> dict | None:
                        if isinstance(theme_id, str) and theme_id in by_id]
         else:
             heating = [t for t in themes if t.get("heat") == "heating"]
+        # The 'heating' roster describes acceleration, NOT established leaders.
+        # Keep producer-owned 'hot' themes visible independently, even when the
+        # 5-session archive has a gap and the heating roster is correctly empty.
+        leaders = [t for t in themes if t.get("heat") == "hot"]
         cooling = [t for t in themes if t.get("heat") in ("cooling", "broken")][:4]
+        # Theme recommendations are secondary source context, not stock entries.
+        positive_hot = next((t for t in leaders
+                             if t.get("reco") in ("enter", "accumulate")), None)
         def _row(t):
             return {
                 "id": t.get("id"),
@@ -2594,6 +2600,7 @@ def _sector_heat_view() -> dict | None:
                 "heat": t.get("heat"),
                 "rank": t.get("rank"),
                 "rank_delta_5d": t.get("rank_delta_5d"),
+                "score_delta_5d": t.get("score_delta_5d"),
                 "label": t.get("label"),
                 "reco": t.get("reco"),
                 "score": t.get("score"),
@@ -2622,12 +2629,28 @@ def _sector_heat_view() -> dict | None:
             row = _row(t)
             row["short_name"], row["short_name_zh"] = rotation_short[theme_id]
             rotation.append(row)
-        if not heating and not cooling and not rotation:
+        if not leaders and not heating and not cooling and not rotation:
             return None
+        # Reuse the established NYSE-completed-session freshness clock. A dated
+        # historical snapshot remains inspectable, but must not claim live
+        # leadership or an actionable current theme rating after the buffer.
+        desk = opportunity_desk(heating, pulse.get("as_of"), history=pulse.get("history"))
+        sessions_behind = desk.get("sessions_behind")
+        if desk.get("as_of") is None:
+            snapshot_state = "invalid"  # future/malformed/non-session observation date
+        else:
+            snapshot_state = ("current" if isinstance(sessions_behind, int)
+                              and sessions_behind <= 1 else "stale")
         return {
             "as_of": pulse.get("as_of"),
+            "snapshot_state": snapshot_state,
+            "sessions_behind": sessions_behind,
+            "leaders": [_row(t) for t in leaders],
+            "n_leaders": len(leaders),
+            "positive_hot": _row(positive_hot) if positive_hot else None,
+            "history": pulse.get("history") or {},
             "heating": [_row(t) for t in heating[:4]],
-            "desk": opportunity_desk(heating, pulse.get("as_of"), history=pulse.get("history")),
+            "desk": desk,
             "cooling": [_row(t) for t in cooling],
             "rotation": rotation,
         }
