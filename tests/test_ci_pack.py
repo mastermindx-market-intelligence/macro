@@ -8543,11 +8543,13 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     union line. Re-measured on the final train tree (main 2ca0e09e01af,
     carrying 797b4ad55048, included) with packing_probe_measurements over its
     .github/ci/legacy-jobs.yml: index 137 jobs / 10,954, free-content 138
-    jobs / 11,458, plan-book 132 jobs / 10,927, ten packs each, all within
-    main's ceilings 11,469 / 11,542 / 11,022, which stay pinned to
-    rescale_legacy_weight of the legacy ceilings. No ceiling, job-count
-    ceiling, selector or ten-pack bound is changed by this train. Planning
-    weights are not measured execution times.
+    jobs / 11,458, plan-book 132 jobs / 10,927, ten packs each. All three
+    are within the carried ceilings 11,469 / 11,542 / 11,022 (main's
+    11,465 / 11,538 / 11,018 plus #11024's own recorded +2 legacy suite
+    token, rescaled by rescale_legacy_weight; #11024's paragraphs above are
+    kept verbatim) and also within main's own ceilings. This train adds no
+    ceiling, job-count ceiling, selector or ten-pack change of its own.
+    Planning weights are not measured execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
