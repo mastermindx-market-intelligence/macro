@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T07:09:57.111681+00:00",
-  "count": 3281,
+  "generated_at": "2026-11-13T07:23:11.844706+00:00",
+  "count": 3282,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -695,6 +695,25 @@
         "K-shaped consumer fragmentation: NY Fed data shows widening income-based gap (delinquencies falling but sentiment split: poorer 33% expect collapse vs. rising confidence for lower/middle-income); critical risk factor for portfolio allocation.",
         "Fed policy & holiday dynamics: Cooling demand may raise rate hike bar; holiday sales forecast (5.5% YoY) overshadowed by persistent inflation/gas prices; key flows: holiday relief vs. inflation pressures.",
         "Retail Sector Flows & Fundamentals: Consensus longs on retailers (Home Depot, TJX, Target, Walmart, Costco) recently shorted by hedge funds; wealth effect from asset prices driving spending."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0krkrkspe3m-f40be4",
+      "title": "DeskTalk Dollar rally, dose of reluctance",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:46:45Z",
+      "summary_points": [
+        "Dollar Rally Drivers: Hawkish Fed repricing and energy prices push DXY to 18m highs, countered by negative USD seasonals, falling oil, and SNB/JPY intervention risks (options imply higher intervention threshold than current USDJPY).",
+        "Flow & Technicals: Net leveraged USD buying (London/NY) with interbank volumes at 70% of 30d avg; EUR downside to 1.10, USDJPY above 159.60 (broken 200d MA), CTA max long USD but USD CFI not extreme.",
+        "Positioning Divergence: Leveraged positions surge post-October 2026 (aggressive speculation), while Real Money recovery lags, signaling stark sentiment split between speculative and institutional players."
       ],
       "tags": [],
       "tickers": [],
