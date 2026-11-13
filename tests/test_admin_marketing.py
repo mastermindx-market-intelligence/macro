@@ -4827,3 +4827,211 @@ class TestIntelligenceApproveMedia:
             seen['uploads'][0]['svg']).itertext()).split())
         assert fit['headline_drawn'] in drawn_text
         assert len(seen['uploads']) == 1
+
+    @pytest.mark.parametrize('arrival', ['preexisting', 'racing'])
+    @pytest.mark.parametrize('withheld', [False, True])
+    @pytest.mark.parametrize('cited', [False, True])
+    def test_reconciled_native_winner_gets_current_value_policy(
+            self, media_root, monkeypatch, arrival, withheld, cited):
+        """A shadow-created row cannot borrow the losing candidate's proof."""
+        from engine.marketing import outbox
+
+        snapshot = json.loads((media_root / 'data/marketing/press/intelligence.json').read_text())
+        draft = snapshot['stories'][0]['drafts'][0]
+        if not cited:
+            draft['source_url'] = ''
+        winner_root = _write_intel_root(media_root / 'winner-source', snapshot,
+            _INTEL_CFG + 'publish:\n  media_enabled: true\nvalue_gate:\n  enforce: false\n')
+        self._wire(monkeypatch, drawn=draft['text'] if withheld else 'The buyer must sell its European cloud unit.')
+        made = marketing.intelligence_approve('story-alpha', 'draft-wire-1',
+                                              root=winner_root, now=self._now())
+        assert made['ok'], made
+        [winner] = _intel_items(winner_root)
+        assert outbox.validate_item(winner) == []
+        if withheld and not cited:
+            assert winner['source']['value_gate']['verdict'] == 'abstain'
+            assert winner['source']['value_gate']['enforced'] is False
+
+        # The current draft has a citation and prepares a hosted card. Neither
+        # can be credited to a different persisted row that owns delivery.
+        cfg = _INTEL_CFG + 'publish:\n  media_enabled: true\nvalue_gate:\n  enforce: true\n'
+        (media_root / 'config/marketing.yml').write_text(cfg)
+        armed = marketing._read_yaml(media_root / 'config/marketing.yml')
+        seen = self._wire(monkeypatch)
+        enqueue = outbox.enqueue
+        if arrival == 'preexisting':
+            assert enqueue(winner, media_root, cfg=armed) == 'queued'
+        else:
+            def racing_enqueue(item, root, *, cfg):
+                assert enqueue(winner, root, cfg=cfg) == 'queued'
+                return enqueue(item, root, cfg=cfg)
+            monkeypatch.setattr(outbox, 'enqueue', racing_enqueue)
+
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        accepted = not withheld or cited
+        assert result['ok'] is accepted, result
+        if not accepted:
+            assert result['reason'] == 'value_gate'
+            assert 'proof:below_hard' in result['violations']
+        assert _intel_items(media_root) == [winner]
+        assert seen['deliveries'] == ([winner] if accepted else [])
+
+
+class TestIntelligenceApproveCurrentEvidence:
+    """Native public snapshots must be safe even when their producer stops."""
+
+    @staticmethod
+    def _setup(tmp_path, monkeypatch, *, ttl=30, market=True):
+        from datetime import datetime, timezone
+        from engine.marketing import intelligence_desk as desk, intelligence_llm as llm
+
+        now = datetime(2026, 11, 13, 2, 53, tzinfo=timezone.utc)
+        text = ('SPY is up 0.8% this session, while the policy committee held '
+                'its benchmark rate unchanged.') if market else (
+                'The committee kept its benchmark rate unchanged. Balance-sheet '
+                'runoff will drop to $25 billion a month from $60 billion next month.')
+        packet = desk.build_story_packet({
+            'id': 'synthetic-policy-1', 'headline': 'Policy committee holds its rate',
+            'brief': 'The policy committee kept its benchmark rate unchanged.',
+            'event_class': 'policy', 'corroboration_class': 'direct-quote',
+            'source_name': 'Synthetic official source', 'url': 'https://example.com/policy',
+            'published_at': now.isoformat(), 'matched': {'tickers': ['SPY']},
+        }, story={'first_seen': now.isoformat()}, now=now)
+        if market:
+            packet['market'] = {'label': 'SPY +0.8%', 'basis': 'session vs prior close',
+                                'as_of': now.isoformat()}
+        else:
+            packet['brief'] += (' Monthly balance-sheet runoff will fall to '
+                                '$25 billion from $60 billion next month.')
+        packet['drafts'] = [llm._analysis_draft(text, packet, now=now)]
+        root = _write_intel_root(tmp_path,
+            cfg=_INTEL_CFG + 'value_gate:\n  enforce: true\n')
+        (root / 'config/press_sources.yml').write_text(
+            f'wire:\n  intelligence:\n    market_stale_min: {ttl}\n')
+        sink = root / 'data/marketing/press/intelligence.json'
+        db = root / 'intelligence.db'
+        payload = desk.update_intelligence_desk([packet], root=root, now=now,
+            cfg={'market_stale_min': ttl}, db_path=db, snapshot_path=sink)
+        [story] = payload['stories']
+        [draft] = story['drafts']
+        assert draft['origin'] == 'llm' and draft['status'] == 'review'
+        assert '_basis_sha256' not in sink.read_text()
+        monkeypatch.setattr(marketing, '_default_root', lambda: root)
+        monkeypatch.setattr(marketing, '_INTELLIGENCE_LIVE', root / 'no-live-snapshot')
+        seen = TestIntelligenceApproveMedia._wire(monkeypatch)
+        prepare = marketing._intel_prepare_media
+        seen['media_checks'] = []
+
+        def checked_media(*args, **kwargs):
+            seen['media_checks'].append(True)
+            return prepare(*args, **kwargs)
+
+        monkeypatch.setattr(marketing, '_intel_prepare_media', checked_media)
+        return root, now, story, draft, sink, db, seen
+
+    @pytest.mark.parametrize('seconds,accepted', [
+        pytest.param(29 * 60, True, id='fresh-29m'),
+        pytest.param(30 * 60, True, id='boundary-30m'),
+        pytest.param(30 * 60 + 1, False, id='expired-30m01s'),
+        pytest.param(3 * 3600, False, id='expired-3h'),
+        pytest.param(24 * 3600, False, id='expired-24h'),
+        pytest.param(49 * 3600, False, id='expired-49h'),
+    ])
+    def test_frozen_market_snapshot_is_rechecked(self, tmp_path, monkeypatch, seconds, accepted):
+        from datetime import timedelta
+
+        root, now, story, draft, sink, _db, seen = self._setup(tmp_path, monkeypatch)
+        original = sink.read_bytes()
+        then = now + timedelta(seconds=seconds)
+        result = marketing.intelligence_approve(story['id'], draft['id'], now=then)
+        assert result['ok'] is accepted, result
+        assert sink.read_bytes() == original
+        items = _intel_items(root)
+        assert len(items) == int(accepted)
+        assert seen['media_checks'] == ([True] if accepted else [])
+        assert seen['renders'] == seen['uploads'] == []
+        assert seen['deliveries'] == items
+        if accepted:
+            [item] = items
+            assert item['created_at'] != story['market']['as_of']
+            assert item['as_of'] == then.date().isoformat()
+            source = item['source']
+            assert source['market_as_of'] == story['market']['as_of']
+            assert source['draft_updated_at'] == draft['updated_at']
+            assert source['story_first_seen'] == story['first_seen']
+            assert source['story_updated_at'] == story['updated_at']
+            assert source['evidence_published_at'] == story['evidence'][0]['published_at']
+            assert source['source_headline'] == story['headline']
+
+    @pytest.mark.parametrize('seconds,accepted', [(600, True), (601, False)])
+    def test_approval_uses_the_producers_configured_market_budget(
+            self, tmp_path, monkeypatch, seconds, accepted):
+        from datetime import timedelta
+
+        root, now, story, draft, sink, _db, seen = self._setup(tmp_path, monkeypatch, ttl=10)
+        original = sink.read_bytes()
+        result = marketing.intelligence_approve(story['id'], draft['id'],
+                                                 now=now + timedelta(seconds=seconds))
+        assert result['ok'] is accepted, result
+        assert len(_intel_items(root)) == int(accepted)
+        assert sink.read_bytes() == original
+        assert seen['media_checks'] == ([True] if accepted else [])
+
+    @pytest.mark.parametrize('stamp', [None, 'not-a-time'])
+    def test_a_missing_or_bad_market_stamp_does_not_survive_approval(
+            self, tmp_path, monkeypatch, stamp):
+        root, now, story, draft, sink, _db, seen = self._setup(tmp_path, monkeypatch)
+        payload = json.loads(sink.read_text())
+        payload['stories'][0]['market']['as_of'] = stamp
+        sink.write_text(json.dumps(payload))
+        original = sink.read_bytes()
+        result = marketing.intelligence_approve(story['id'], draft['id'], now=now)
+        assert result['ok'] is False, result
+        assert _intel_items(root) == []
+        assert sink.read_bytes() == original
+        assert seen['media_checks'] == seen['deliveries'] == []
+
+    def test_regenerated_snapshot_and_frozen_snapshot_have_the_same_refusal(self, tmp_path, monkeypatch):
+        from datetime import timedelta
+        from engine.marketing import intelligence_desk as desk
+
+        root, now, story, draft, sink, db, seen = self._setup(tmp_path, monkeypatch)
+        then = now + timedelta(hours=3)
+        frozen = marketing.intelligence_approve(story['id'], draft['id'], now=then)
+        desk.update_intelligence_desk([], root=root, now=then, db_path=db, snapshot_path=sink)
+        regenerated = marketing.intelligence_approve(story['id'], draft['id'], now=then)
+        assert frozen['ok'] is regenerated['ok'] is False
+        assert _intel_items(root) == [] and seen['deliveries'] == []
+
+    def test_non_market_analysis_is_not_given_an_unrelated_market_ttl(self, tmp_path, monkeypatch):
+        from datetime import timedelta
+
+        root, now, story, draft, _sink, _db, seen = self._setup(tmp_path, monkeypatch, market=False)
+        result = marketing.intelligence_approve(story['id'], draft['id'], now=now + timedelta(hours=3))
+        assert result['ok'], result
+        [item] = _intel_items(root)
+        assert item['source']['market_as_of'] is None
+        assert seen['deliveries'] == [item]
+
+    def test_absent_wire_evidence_times_are_not_filled_with_the_approval_clock(self, intel_root):
+        result = marketing.intelligence_approve('story-beta', 'draft-beta-1', root=intel_root)
+        assert result['ok'], result
+        [item] = _intel_items(intel_root)
+        for field in ('market_as_of', 'draft_updated_at', 'story_first_seen',
+                      'story_updated_at', 'evidence_published_at'):
+            assert item['source'][field] is None
+
+    def test_unavailable_freshness_policy_refuses_before_any_effect(self, tmp_path, monkeypatch):
+        from engine.marketing import intelligence_desk as desk
+
+        root, now, story, draft, sink, _db, seen = self._setup(tmp_path, monkeypatch)
+        original = sink.read_bytes()
+
+        def unavailable(*args, **kwargs):
+            raise RuntimeError('synthetic policy outage')
+
+        monkeypatch.setattr(desk, '_served_packet', unavailable)
+        result = marketing.intelligence_approve(story['id'], draft['id'], now=now)
+        assert result['ok'] is False and result['reason'] == 'gate_unavailable'
+        assert _intel_items(root) == [] and sink.read_bytes() == original
+        assert seen['media_checks'] == seen['deliveries'] == []

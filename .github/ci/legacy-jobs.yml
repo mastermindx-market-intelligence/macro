@@ -51583,6 +51583,12 @@ jobs:
       - "admin/press_audience.py"
       - "admin/marketing_evidence.py"
       - "engine/marketing/telemetry.py"
+      # Approval reuses the producer's current evidence projection. Its static
+      # closure includes the existing tape stamp's exact quote input.
+      - "engine/marketing/intelligence_desk.py"
+      - "engine/marketing/intelligence_llm.py"
+      - "engine/marketing/tape_stamp.py"
+      - "site/live/quotes.json"
       - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"

@@ -1216,6 +1216,10 @@ ADMIN_MUST_RESTART = [
     "engine/marketing/breaking_summary.py",
     "engine/marketing/chart_render.py",
     "engine/marketing/telemetry.py",
+    # Approval now reuses the story producer's serve-time freshness policy;
+    # its coherence check imports the phrasing fingerprint on that request.
+    "engine/marketing/intelligence_desk.py",
+    "engine/marketing/intelligence_llm.py",
     "scripts/marketing_media_backfill.py",
     # ...and the substrate `from engine.marketing import outbox` executes on the
     # way in (package __init__ -> state -> these ten)

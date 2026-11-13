@@ -6,6 +6,8 @@ Initial source: `54465f90b32b39f704ece828638eccb5f079c397`.
 Protected procedure: `Mastermind@c0b30b422d2310e614f91faed49a4adbce4291f0`, skillpack 1.0.1 / bootstrap 1.
 Owner: current Chairman-assigned ChatGPT2 session; source authoring through this isolated GitHub branch. This document is a delivery companion to the existing marketing suite/content-studio plans, not another runtime or workstream registry.
 
+Latest qualification is P13 below. Earlier next-action notes and CI/browser snapshots describe their recorded phase, not current release admission.
+
 ## Outcome and completion standard
 
 Upgrade the existing X marketing system so its output is useful, coherent, evidence-grounded and naturally written; its visuals are readable in a phone feed; its admin suite makes editorial decisions and delivery evidence clear. Preserve the existing source, outbox, provider, approval, cadence and publication owners.
@@ -192,3 +194,64 @@ The original compiler's separate pack-9 failure is a theme fixture missing its m
 Browser access has materially changed from P10: the connected Chrome API is now reachable. The tab bound to this conversation shows the admin sign-in form. Two other open control-room tabs are explicitly owned by other browser sessions, so they were not taken over or accessed through an alternate surface. The Chairman was told that sign-in in the available marketing tab would enable live inspection. No current queue read, approval, X send, account activation, or new inference spending resulted. The user-provided post screenshots remain examples of the writing defect, not fresh production receipts.
 
 Next: publish/read back this restart repair, consume its fresh binding CI, and use the incumbent release controller only when qualified. In parallel, align the original writer's contradictory consequence/caption instructions and active persona examples on the compiler carrier. Full model-output, admin, release and prospective engagement acceptance remains open.
+
+## P12 — natural-writing source published on the original compiler
+
+The strengthened writing assignment is published and exactly read back on original [compiler PR #7493](https://github.com/mastermindx-market-intelligence/macro/pull/7493) at `e70cb16b2f5d9188c2de75cae6d6d90719f39495`, tree `178c1ea42663363bae65e595792a6f7334d80840`. Its [complete source/consumer brief](https://github.com/mastermindx-market-intelligence/macro/blob/e70cb16b2f5d9188c2de75cae6d6d90719f39495/research/marketing_dockets/X_THEME_QUALITY_RECOVERY_20261113.md) records the active prompt, configuration, shape/media, persona-example and Kelly cognitive-card alignment; explicit machine-disclaimer rejection; narrow duration-as-price protection; and the original pack-9 session-fixture repair.
+
+The unchanged compiler code owner passed **903 tests, 2 existing skips**. The affected publisher owner passed **805 tests, zero skips**. Actual configured writer requests, parser/validators, outbox composition/readback, shape preservation and real queue voice gates execute, with explicit provider-output fixtures. Longer shapes are exercised across unknown, text-only and image-present states; the image case actually persists its synthetic attachment. This is source/consumer proof, not a live generated-post or engagement verdict. The genuine prior CHANGES_REQUESTED review, `merge-blocked` and every original private/provider/publication fence remain on #7493. Its natural exact-head CI is running, without a duplicate dispatch.
+
+## P13 — revalidate evidence and the final approval representation
+
+### Material acceptance findings before release
+
+P11 head `f23648f4ed863f2fd41412da5e9d1387ef2113f5` completed natural [CI run 43390020954](https://github.com/mastermindx-market-intelligence/macro/actions/runs/43390020954) successfully: all four packs, contract-delta and ci-gate passed. During the required release qualification, two existing consumer-acceptance comments exposed material gaps still present on that exact head:
+
+- [Frozen snapshot expiry, comment 6842615994](https://github.com/mastermindx-market-intelligence/macro/pull/11196#issuecomment-6842615994): producer-side serve-time expiry did not protect an approval click reading an old JSON file after the producer stopped.
+- [Reconciled winner's value check, comment 6843482084](https://github.com/mastermindx-market-intelligence/macro/pull/11196#issuecomment-6843482084): the winning persisted row could replace the checked candidate after enqueue without receiving its own current value check.
+
+Both were reproduced against the unchanged production preimage by the new real-consumer regressions: the 30m01s frozen analysis and the uncited, measured-withheld race winner each returned `ok: true` when the required result was refusal (**2 failed**). These are not a claim that either race or stale approval occurred in production. The PR was returned to Draft and remained unarmed while this session repaired its original source. No release label was added or cleared.
+
+### Reuse the existing policy at the approval boundary
+
+`intelligence_approve` now resolves the current UTC approval clock and the existing `config/press_sources.yml → wire.intelligence` configuration, then reprojects the selected story with the producer's `_served_packet` before selecting its draft. The canonical strict `age > market_stale_min` rule, missing/bad market-stamp behavior and editorial coherence check remain the sole policy. There is no second TTL, cache or stale-data registry.
+
+A draft removed by that projection is refused before media preparation, enqueue or delivery. A policy/import/configuration evaluation error refuses rather than passing. The stored public snapshot is unchanged. Non-market analysis is not assigned an unrelated market TTL; its ordinary language, value, source and publishing gates still apply.
+
+New outbox rows preserve `market_as_of`, `draft_updated_at`, `story_first_seen`, `story_updated_at` and matched `evidence_published_at` in their existing source metadata. They also retain the source headline used for value comparison. `created_at` and `as_of` continue to describe queue creation. Missing source timestamps remain null, never filled with the click time. This is provenance retention, not a new freshness gate for every already queued item.
+
+The existing value evaluation is factored into `_intel_check_value`. It evaluates the row's exact text, kind, own citation, source headline and currently resolvable media. A legacy row can retain the existing selected-story headline comparison, but a current candidate's citation or hosted card cannot give proof credit to another persisted row. The canonical outbox value policy and its enforced/shadow behavior are unchanged.
+
+After duplicate reconciliation, a changed winning representation or changed media resolution gets the same current evaluation before delivery. An identical already checked representation reuses its result. The winner's original source, stored verdict and media bytes remain untouched; the new check is transient. The endpoint does not replace, delete, repair or re-enqueue the winner to force it through. A refusal can therefore leave the existing row on disk while withholding delivery, which is the intended preservation of its original effect.
+
+### Executed source and consumer proof
+
+The existing primary code-owner command completed with **608 passed, zero skipped**, one dependency deprecation, in 13.35 seconds:
+
+```text
+python -m pytest tests/test_marketing_earnings_call_lane.py tests/test_marketing_copy_auditor.py tests/test_admin_marketing.py tests/test_admin_marketing_floor.py tests/test_market_facts.py::test_credit_comparison_uses_source_precision_and_real_copy_gates tests/test_market_facts.py::test_missing_credit_comparison_does_not_claim_flat tests/test_market_facts.py::test_observed_zero_credit_change_is_distinct_from_missing tests/test_market_facts.py::test_curve_comparison_keeps_signed_spread_units tests/test_market_facts.py::test_missing_curve_change_keeps_only_the_level tests/test_marketing_anchor_law.py tests/test_marketing_intelligence_desk.py tests/test_chart_director.py -q --tb=short
+```
+
+The new tests use native story packets, canonical analysis-draft binding, SQLite storage, public JSON export, the actual approval endpoint and persisted outbox readback. Frozen snapshots are tested at 29m, exactly 30m, 30m01s, 3h, 24h and 49h. They cover a configured 10-minute boundary, missing/bad market stamps, comparison with regenerated snapshots, original clock readback, missing-clock wire compatibility and an unavailable freshness policy. Expired cases perform no media preparation or delivery and write no new row; snapshot bytes remain unchanged. A separate non-market quantified-news control passes its ordinary armed value gate without inheriting the market clock.
+
+The eight-case winner matrix crosses pre-existing/racing arrival, hosted/measured-withheld media and citation present/absent. Winners are created through the native approval path under shadow enforcement, then encountered under armed enforcement. The losing current draft has stronger evidence, which ensures neither its citation nor its hosted card can be borrowed. Insufficient winners receive the same refusal in either timing; hosted winners and cited withheld winners remain accepted. Every case preserves the canonical winning row, and permitted delivery contains exactly that row. Rendering/hosting receipts and the final delivery boundary are isolated fixtures; no live media upload or X action is qualified.
+
+A bounded read-only source review found no additional material stale-data, identity or compatibility regression in these repairs. Its assessment is not formal GitHub approval and ran no tests or effects; the root session owns the executed commands and publication.
+
+### Deployment and CI dependency closure
+
+The approval path now caches the existing Intelligence Desk and phrasing-fingerprint modules during requests. Both are added to the current admin restart expression and its explicit positive cases. The existing deployment integration command passed **516 tests, 3 existing skips**, one dependency warning, in 34.09 seconds:
+
+```text
+python -m pytest tests/test_deploy_update_self_heal.py tests/test_caddy_autosave_driver.py tests/test_macro_caddy_overlay.py tests/test_macro_caddy_publication.py -q --tb=short
+```
+
+The incumbent bounded tracked-inventory/static analyzer derives **386 named dependencies** from the changed admin module. Four exact declarations are added to the existing exclusive `eval-os-a1` owner: `intelligence_desk.py`, `intelligence_llm.py`, `tape_stamp.py` and the tracked `site/live/quotes.json` input reached through that module's static closure. The recheck reports **zero uncovered named paths**. Its **115 opaque annotations** remain limitations, not proof of complete dynamic coverage. Semantic manifest comparison confirms all **401 owners**, commands, budgets, ordering and other definitions remain identical; only those four paths change. No broad glob, new CI job, timeout increase or packing-headroom change is introduced. Fresh hosted contract-delta remains the broader exact-head proof.
+
+### Current frontier and production return path
+
+Publish/read back this P13 source on the same #11196 branch with expected-head CAS, restore Ready after qualification, and consume the new natural binding CI before any incumbent release opt-in. The earlier green f236 run does not qualify a changed head. The source-writing and compiler review/private-effect fences remain separate.
+
+The incumbent post-merge path is `vps-main-sync-wake.yml` job `wake`, with the existing three-minute VPS updater as fallback. A successful wake is not served proof: it can return while the existing updater lock is held. Owed read-only production evidence is the actual merge SHA, installed descendant, current runtime snapshot/service state, served admin JS/CSS bytes matching the accepted source, and the real outbox's delivery-evidence payload. The admin runtime SHA is not inferred from the separate macro-api SHA. These source-traced interfaces do not themselves establish that a deployment occurred.
+
+The available browser tab still requires sign-in; other open admin tabs retain their existing browser-session custody. Authenticated desktop/mobile and dark/light review, actual generated-model/media quality and prospective engagement outcomes remain unproven. No live post, queue approval, provider activation, model call or manual deployment is authorized by these test results. Parent completion remains false; continue qualified source/release and genuine consumer proof on the original carriers.

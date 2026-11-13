@@ -3516,6 +3516,49 @@ def _intel_prepare_media(item: dict, story: dict, draft: dict, *,
     return {"ok": True, "state": "attached"}
 
 
+def _intel_check_value(item: dict, media_ready: dict, *, cfg: dict,
+                       source_headline: str) -> tuple[dict, dict | None]:
+    """Run the existing gate on this representation without rewriting it.
+
+    The returned stamp belongs on a new item only. Persisted duplicates keep
+    their original bytes, while current policy still decides whether they may
+    be delivered. A legacy row can use the selected story's headline for the
+    comparison, but proof credit always comes from the row's own citation and
+    resolved media, never the candidate that lost an enqueue race.
+    """
+    from engine.marketing import outbox as _ob  # noqa: PLC0415
+
+    source = dict(item.get("source") or {})
+    would_block = _ob.stamp_value_gate(
+        source,
+        headline="",  # only item.text ships on this lane
+        body=str(item.get("text") or ""),
+        kind=str(item.get("kind") or "breaking"),
+        has_media=bool(media_ready["urls"]),
+        media_withheld=bool(media_ready["withheld"]),
+        source_headline=str(source.get("source_headline") or source_headline),
+        citation=str(source.get("url") or ""),
+        cfg=cfg,
+    )
+    verdict = source.get("value_gate") or {}
+    if _ob._value_gate_enforced(cfg):
+        # The automated stamp is fail-soft; an armed operator approval cannot
+        # treat an unavailable gate as a passed evaluation.
+        if str(verdict.get("verdict") or "") == "error":
+            return source, _intel_refuse(
+                "gate_unavailable",
+                "the value gate is armed to block but could not evaluate "
+                f"this post ({verdict.get('error')})")
+        if would_block:
+            return source, _intel_refuse(
+                "value_gate",
+                "the value gate abstained: "
+                + (", ".join(str(r) for r in (verdict.get("reasons") or []))
+                   or "no reason recorded"),
+                violations=[str(r) for r in (verdict.get("reasons") or [])])
+    return source, None
+
+
 def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
     """Queue ONE Intelligence Desk draft into the outbox. The click IS the gate.
 
@@ -3529,9 +3572,9 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
     same render/value/hosting seams as the press lane and is reconciled with
     the publisher's actual media predicates before any item is queued:
 
-        language law -> canonical item / queue preflight -> media decision
+        current source evidence -> language law -> canonical item / queue preflight -> media decision
         -> value gate stamp -> validate_item -> one-owner story lock
-        -> enqueue (id / text / near-dup / cap guards)
+        -> enqueue (id / text / near-dup / cap guards) -> reconcile winner / current value
 
     A successful enqueue is then DELIVERED (``_intel_deliver``): the outbox the
     publisher reads is the one on MAIN, not this checkout, so the approve click
@@ -3580,6 +3623,30 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
                 f"story {sid} is no longer in the desk snapshot; it may have "
                 f"aged out since the page loaded")
 
+        # A readable JSON file is not a fresh observation. The producer may
+        # have stopped since writing it. Reuse its current serve-time policy
+        # before selecting the draft or preparing any media, without changing
+        # the stored snapshot or assigning a new evidence time.
+        evidence_story = story
+        cfg = _read_yaml(repo / _CONFIG_REL)
+        ts = now if now is not None else datetime.now(timezone.utc)
+        try:
+            from engine.marketing import intelligence_desk as _desk  # noqa: PLC0415
+
+            press_cfg = _read_yaml(repo / "config" / "press_sources.yml")
+            intel_cfg = (press_cfg.get("wire") or {}).get("intelligence") or {}
+            ts = _desk._utc(ts)
+            story = _desk._served_packet(
+                story, now=ts, pace_cfg=_desk._pace_cfg(intel_cfg.get("pace")),
+                market_stale_min=float(intel_cfg.get(
+                    "market_stale_min", _desk.DEFAULT_MARKET_STALE_MIN)),
+            )
+        except Exception as exc:  # noqa: BLE001 — approval needs a current check
+            log.warning("intelligence_approve: evidence check unavailable: %s", exc)
+            return _intel_refuse(
+                "gate_unavailable",
+                "The draft's evidence could not be checked. Nothing was queued; refresh the desk.")
+
         draft = next(
             (row for row in (story.get("drafts") or [])
              if isinstance(row, dict) and str(row.get("id") or "") == did),
@@ -3587,8 +3654,8 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
         if draft is None:
             return _intel_refuse(
                 "draft_not_found",
-                f"draft {did} is no longer on that story; the desk replaces a "
-                f"draft when the copy changes, so reload the queue")
+                f"draft {did} is no longer current; its copy changed or its "
+                f"market evidence expired, so reload the desk")
 
         # ── 2. Review-only. needs_edit is NOT approvable ──────────────────────
         status = str(draft.get("status") or "").strip()
@@ -3623,8 +3690,6 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
                 + ", ".join(str(v) for v in violations[:4]),
                 violations=[str(v) for v in violations])
 
-        cfg = _read_yaml(repo / _CONFIG_REL)
-
         # ── 4. Which desk owns this emission (XG-W2 config routing) ───────────
         # A story that carries no machine event_class routes to the module's own
         # fallback rather than to the string "none": an unclassified story is not
@@ -3655,7 +3720,6 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
                 "outbox_unavailable",
                 f"the canonical outbox path could not be loaded ({exc})")
 
-        ts = now if now is not None else datetime.now(timezone.utc)
         as_of = ts.astimezone(timezone.utc).strftime("%Y-%m-%d")
 
         # ── 5. Build the item through the canonical path ──────────────────────
@@ -3664,12 +3728,23 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
         # without it locks nothing, and the next desk to draw the same story
         # would be waved through.
         lock_key = _sl.story_key(cluster_key=sid, event_id=did, headline=headline)
+        evidence = next((row for row in (evidence_story.get("evidence") or [])
+                         if isinstance(row, dict) and row.get("url") == source_url), {})
+        market = evidence_story.get("market")
         source: dict = {
             "lane": _INTEL_LANE,
             "story_id": sid,
             "draft_id": did,
             "url": source_url or None,
             "story_key": lock_key,
+            "source_headline": headline,
+            # These are source clocks; as_of/created_at above describe queue
+            # creation. Never fill missing source observations with click time.
+            "market_as_of": market.get("as_of") if isinstance(market, dict) else None,
+            "draft_updated_at": draft.get("updated_at"),
+            "story_first_seen": evidence_story.get("first_seen"),
+            "story_updated_at": evidence_story.get("updated_at"),
+            "evidence_published_at": evidence.get("published_at"),
         }
 
         try:
@@ -3719,46 +3794,10 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
             return _intel_refuse("media_unavailable",
                                 "The media check could not finish. Nothing new was queued; the draft is still available.")
 
-        # Check current value policy without changing a persisted duplicate's
-        # byte-identical delivery representation.
-        gate_source = dict(item.get("source") or {})
-
-        # Gift-Grip-Proof verdict rides on every emission (charter §0). The gate
-        # must score the STRING THAT SHIPS (review N4): make_item posts `text`
-        # alone — there is no headline+body composition on this lane — so
-        # `headline` is empty here or the verdict is measured on copy that never
-        # reaches X. The STORY headline still goes in as `source_headline`, which
-        # is the upstream wire line the informational-surplus test compares
-        # against ("we rewrote the headline" is not an answer).
-        would_block = _ob.stamp_value_gate(
-            gate_source,
-            headline="",
-            body=text,
-            kind="breaking",
-            has_media=bool(media_ready["urls"]),
-            media_withheld=bool(media_ready["withheld"]),
-            source_headline=headline,
-            citation=source_url,
-            cfg=cfg,
-        )
-        verdict = gate_source.get("value_gate") or {}
-        if _ob._value_gate_enforced(cfg):
-            # stamp_value_gate is fail-soft by design (a downed gate must not
-            # silence the automated desks). With enforcement ARMED that softness
-            # is wrong here: an unevaluated gate is not a passed gate.
-            if str(verdict.get("verdict") or "") == "error":
-                return _intel_refuse(
-                    "gate_unavailable",
-                    "the value gate is armed to block but could not evaluate "
-                    f"this post ({verdict.get('error')})")
-            if would_block:
-                return _intel_refuse(
-                    "value_gate",
-                    "the value gate abstained: "
-                    + (", ".join(str(r) for r in (verdict.get("reasons") or []))
-                       or "no reason recorded"),
-                    violations=[str(r) for r in (verdict.get("reasons") or [])])
-
+        gate_source, refusal = _intel_check_value(
+            item, media_ready, cfg=cfg, source_headline=headline)
+        if refusal:
+            return refusal
         if original is None:
             item["source"] = gate_source
 
@@ -3807,6 +3846,7 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
             if persisted is None:
                 return _intel_refuse("duplicate",
                                     "The queue retained another post. No replacement was delivered.")
+            checked_item, checked_media = item, media_ready
             item = persisted
             media_ready = _intel_media_readiness(item, cfg, repo)
             if media_ready["blocked"]:
@@ -3814,6 +3854,14 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
                     "The existing queued item still needs a usable image. Review it in the Outbox.",
                     item_id=item["id"])
             media_state = media_ready["state"]
+            if item != checked_item or media_ready != checked_media:
+                # A different representation (or newly resolved media) needs
+                # its own current verdict. Never write this transient stamp
+                # over the winner's persisted source or borrow the loser's proof.
+                _, refusal = _intel_check_value(
+                    item, media_ready, cfg=cfg, source_headline=headline)
+                if refusal:
+                    return refusal
 
         # The note says what happens NEXT. Naming the item and the desk is the
         # caller's job (the admin card prints both), so this does not repeat it.
