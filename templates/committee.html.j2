@@ -1526,8 +1526,13 @@ html{ scroll-behavior:smooth; }
 
   // Title-case a slug, then repair common acronyms the naive \b\w pass mangles
   // ("ai_agents" → "Ai Agents" → "AI Agents"). Used by every fallback label path.
+  // Wiring ids can carry a market-data store name; labels show the neutral word.
+  function _neutralSource(s) {
+    return String(s).replace(/\b(?:yfinance|yahoo|tushare|polygon|massive)\b/gi, 'market')
+      .replace(/\bquiver\b/gi, 'altdata');
+  }
   function titleCaseFix(s) {
-    s = String(s).replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    s = _neutralSource(s).replace(/\b\w/g, function(c){ return c.toUpperCase(); });
     return s
       .replace(/\bAi\b/g, 'AI').replace(/\bUs\b/g, 'US').replace(/\bIv\b/g, 'IV')
       .replace(/\bDoi\b/g, 'DOI').replace(/\bGex\b/g, 'GEX').replace(/\bIpo\b/g, 'IPO')
@@ -1634,13 +1639,13 @@ html{ scroll-behavior:smooth; }
     var colonIdx = raw.indexOf(':');
     if (colonIdx !== -1) {
       var subkey = raw.slice(colonIdx + 1).replace(/[_\-./<>]/g, ' ').trim();
-      if (subkey.length >= 3) return subkey.replace(/\bslew\b/gi, 'Skew');
+      if (subkey.length >= 3) return _neutralSource(subkey.replace(/\bslew\b/gi, 'Skew'));
     }
     var noExt = raw.replace(/\.(json|parquet|py|csv)$/, '');
     var parts = noExt.split('/');
     var seg = parts[parts.length - 1] || '';
     if (_GENERIC_SEGS.test(seg) || seg.length < 3) seg = parts[parts.length - 2] || seg;
-    return seg.replace(/[_\-./<>]/g, ' ').trim().replace(/\bslew\b/gi, 'Skew');
+    return _neutralSource(seg.replace(/[_\-./<>]/g, ' ').trim().replace(/\bslew\b/gi, 'Skew'));
   }
 
   function friendlyArtifactLabel(id) {
@@ -1682,7 +1687,7 @@ html{ scroll-behavior:smooth; }
     'exposure':'敞口','attention':'注意','importance':'重要度','special':'特殊','breadth':'广度',
     'qual':'质化','overlay':'叠加','push':'推送','rule':'规则','shadow':'影子','health':'健康',
     'healthcheck':'健康检查','backfill':'回填','rotation':'轮动','ruler':'标尺','experiments':'实验',
-    'experiment':'实验','queue':'队列','polygon':'Polygon','demand':'需求','sleeve':'分段',
+    'experiment':'实验','queue':'队列','demand':'需求','sleeve':'分段',
     'trial':'试验','claim':'声明','claims':'声明','accountability':'问责','closure':'闭合',
     'confluence':'汇聚','situations':'情形','situation':'情形','seed':'种子','leadership':'领导力',
     'study':'研究','filter':'过滤','ops':'运维','sanity':'合理性','impulse':'脉冲','calibrate':'校准',
@@ -1743,7 +1748,7 @@ html{ scroll-behavior:smooth; }
     'gov':'政府','eff':'有效','congress':'国会','lockups':'锁定','anticipation':'预期',
     // acronyms / proper nouns kept uppercase (so they don't render as lowercase mush)
     'nfci':'NFCI','ohlcv':'OHLCV','reer':'REER','cnh':'CNH','mtf':'MTF','ui':'UI','doi':'DOI',
-    'gexr':'GEX','gamma':'Gamma','vanna':'Vanna','charm':'Charm','quiver':'Quiver','openfda':'OpenFDA',
+    'gexr':'GEX','gamma':'Gamma','vanna':'Vanna','charm':'Charm','openfda':'OpenFDA',
     'clinicaltrials':'临床试验','r2':'R2','nw':'智脑','placebo':'安慰剂','ipo':'IPO',
     // stray file-extension / noise tokens → drop
     'json':'','parquet':'','csv':'','py':'','md':'','js':'','j2':'','html':'','jsonl':'','yml':'','sql':''

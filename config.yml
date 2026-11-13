@@ -650,8 +650,8 @@ live:
   # it suppresses the green "live" pulse. Set to 0 ONLY when a real-time/websocket plan
   # is live (see research/LIVE_DATA_POLYGON.md). feed_label is the human caption.
   delayed_min: 15
-  feed_label: "≈15-min delayed (Polygon Standard / Yahoo)"
-  feed_label_zh: "≈延迟15分钟（Polygon Standard / Yahoo）"   # zh caption for the same badge (bilingual UI law)
+  feed_label: "≈15-min delayed"
+  feed_label_zh: "≈延迟15分钟"   # zh caption for the same badge (bilingual UI law)
   top_conviction_n: 60         # also include the top-N US names by |conviction| from the search index
   # Symbols not in the GTAA asset lists but referenced by browser live tiles:
   # ES=F / NQ=F (dashboard futures strip) + 000001.SS / ^HSI (china page live tiles).

@@ -207,15 +207,15 @@ def market_read(rows: list[dict[str, Any]], unscored: int = 0, *,
 SOURCE_META: dict[str, dict[str, str]] = {
     "cn_large_order_proxy": {
         "name_en": "A-share large-order flow", "name_zh": "A股主力大单",
-        "tip_en": "Large & super-large order-size proxy — Tushare moneyflow_dc main-force "
-                  "order-size classification, not identified investors.",
-        "tip_zh": "大单+超大单口径——Tushare moneyflow_dc 主力口径分类，非机构身份识别。",
+        "tip_en": "Large & super-large order-size proxy — main-force order-size "
+                  "classification, not identified investors.",
+        "tip_zh": "大单+超大单口径——主力口径分类，非机构身份识别。",
     },
     "sb_aggregate": {
         "name_en": "Southbound aggregate", "name_zh": "南向整体",
-        "tip_en": "Official Stock-Connect southbound aggregate net flow — Eastmoney "
-                  "RPT_MUTUAL_DEAL_HISTORY, whole-channel tape.",
-        "tip_zh": "沪深港通南向整体净流入——东方财富 RPT_MUTUAL_DEAL_HISTORY，整条通道口径。",
+        "tip_en": "Official Stock-Connect southbound aggregate net flow — "
+                  "whole-channel tape.",
+        "tip_zh": "沪深港通南向整体净流入——整条通道口径。",
     },
     "nb_aggregate": {
         "name_en": "Northbound aggregate", "name_zh": "北向整体",
@@ -225,9 +225,9 @@ SOURCE_META: dict[str, dict[str, str]] = {
     },
     "hk_sb_holdings": {
         "name_en": "HK southbound holdings", "name_zh": "南向持仓",
-        "tip_en": "Mainland southbound per-name holdings — Eastmoney "
-                  "RPT_MUTUAL_STOCK_HOLDRANKS, expected one HK session behind.",
-        "tip_zh": "内地南向个股持仓——东方财富 RPT_MUTUAL_STOCK_HOLDRANKS，预期滞后一个港股交易日。",
+        "tip_en": "Mainland southbound per-name holdings — "
+                  "expected one HK session behind.",
+        "tip_zh": "内地南向个股持仓——预期滞后一个港股交易日。",
     },
     "lhb_inst_seats": {
         "name_en": "Dragon-Tiger institutional seats", "name_zh": "龙虎榜机构专用",

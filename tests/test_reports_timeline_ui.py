@@ -508,9 +508,9 @@ def test_price_of_duration_snapshot_and_primary_sources_are_timestamped() -> Non
     assert "No comparable aggregate" in source
     assert "AI debt supply is materially larger" not in source
     assert "no comparable aggregate AI-debt total is presented" in source
-    assert "Yahoo Finance public tape · DX-Y.NYB / ^VIX" in source
-    assert "Yahoo Finance futures tape · GC=F / SI=F" in source
-    assert "Yahoo Finance public spot tape · BTC-USD" in source
+    assert "Public tape · DX-Y.NYB / ^VIX" in source
+    assert "Futures tape · GC=F / SI=F" in source
+    assert "Public spot tape · BTC-USD" in source
     assert "https://www.ice.com/forex/usdx" in source
     assert "https://www.cboe.com/tradable-products/vix" in source
     assert "https://www.cmegroup.com/markets/metals/precious.html" in source

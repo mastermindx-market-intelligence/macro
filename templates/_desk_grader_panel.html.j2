@@ -127,7 +127,7 @@
         {% for f in G.auto_findings %}
         {#- |e is load-bearing: the loader's select_autoescape keys off the file extension,
             and these templates end in `.j2`, so autoescape is OFF. An engine string with
-            angle brackets (a note reads "data/yahoo/<T>.parquet") is otherwise parsed as an
+            angle brackets (a note carrying a "<T>" path placeholder) is otherwise parsed as an
             unknown tag and the placeholder vanishes from the rendered note. -#}
         <li class="dg-find dg-{{ f.get('severity') }}">
           <span class="dg-sev">{{ {'alarm':'⚠','warn':'▲','insight':'●'}.get(f.get('severity'),'·') }}</span>
