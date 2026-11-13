@@ -14,6 +14,11 @@ engine/catalyst_tone.py: it imports nothing from the mechanical core, and every
 public function returns plain data or None and NEVER raises into the pipeline —
 all network / parse / LLM failures degrade to a flagged record or None.
 
+CAPACITY FABRIC: when a router token (FABRIC_ROUTER_TOKEN) is present and
+MACRO_CATALYST_STOCK_FABRIC is not "0", the reasoning call goes to the Capacity
+Fabric unified_router through lib.fabric_client instead of the legacy DeepSeek
+client (Chairman order 2026-11-12). No token → the legacy client runs unchanged.
+
 FIREWALL — what is sent to the (third-party) model:
   ONLY PUBLIC / DERIVED context about the stock itself — price/technical state,
   the deterministic cycle-ladder read, public cross-sectional factor scores, and
@@ -58,7 +63,7 @@ import time
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from lib import config
+from lib import config, fabric_client
 # Reuse the Tier-A digest leaf's primitives — do NOT reinvent them.
 from engine.catalyst_tone import _client, _extract_json  # noqa: F401  (shared leaf utils)
 
@@ -350,9 +355,108 @@ def news_digest(ticker: str, name: str | None, cfg: dict | None = None,
 # --------------------------------------------------------------------------- #
 # the reasoning call (DeepSeek V4 Pro via the Anthropic-compatible endpoint)
 # --------------------------------------------------------------------------- #
+# Capacity Fabric cutover (Chairman order 2026-11-12, estate migration outcome #3):
+# the per-stock catalyst writer routes through the Capacity Fabric unified_router
+# whenever a router token is present; MACRO_CATALYST_STOCK_FABRIC=0 is the operator
+# kill-switch. Without a token this module is byte-identical to the legacy client.
+_FABRIC_KILL_ENV = "MACRO_CATALYST_STOCK_FABRIC"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-catalyst-stock"
+_FABRIC_LANE = "balanced"
+_FABRIC_USAGE_LANE = "catalyst-stock"
+
+
+def _fabric_enabled() -> bool:
+    """True when the catalyst writer should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_CATALYST_STOCK_FABRIC=0
+    is the operator kill-switch. No token -> the legacy client runs unchanged.
+    """
+    if os.environ.get(_FABRIC_KILL_ENV, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _record_fabric_usage(comp: fabric_client.Completion) -> None:
+    """Book one fabric-served call in the AI cost ledger (provider="fabric").
+
+    The row keeps this writer's usage lane so the spend drill-down stays
+    comparable with the legacy rows; the provider is the router and the model is
+    what it actually served. Never raises — a ledger miss must not break a
+    served call.
+    """
+    try:
+        from lib import ai_costs
+
+        u = comp.usage or {}
+        ai_costs.record_usage(
+            lane=_FABRIC_USAGE_LANE,
+            provider="fabric",
+            model=comp.model_served,
+            input_tokens=int(u.get("input_tokens") or 0),
+            output_tokens=int(u.get("output_tokens") or 0),
+            cache_read_tokens=int(u.get("cache_read_input_tokens") or 0),
+            cache_creation_tokens=int(u.get("cache_creation_input_tokens") or 0),
+            stage="catalyst_stock",
+        )
+    except Exception as e:  # noqa: BLE001 — telemetry only
+        log.debug("catalyst_stock: fabric usage ledger failed (%s)", e)
+
+
+def _fabric_call(system: str, user: str, cfg: dict) -> tuple[str | None, str | None]:
+    """ONE catalyst call through the router. Never retries, never fails over.
+
+    The router owns provider selection, cooldown and account pooling, so this
+    makes exactly one request: a raised error degrades exactly as a legacy
+    client failure would, and a second attempt here would double-serve a call
+    the router already resolved. A refusal is a refusal even when the router
+    attached partial text, so it is dropped before any parser sees it.
+
+    FabricUnavailable is the one exception and is re-raised: it means no request
+    ever left this host (no token, or the SDK will not import), so nothing was
+    served and nothing was billed. _call_model catches it and runs the legacy
+    client — blanking a brief a healthy legacy path could still produce would be
+    a regression, not a degradation.
+    """
+    try:
+        comp = fabric_client.complete(
+            [{"role": "user", "content": user}],
+            system=system,
+            lane=_FABRIC_LANE,
+            max_tokens=int(cfg.get("max_tokens", 2000)),
+            client="Python client",
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=_FABRIC_SESSION_ID,
+        )
+    except fabric_client.FabricUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("catalyst_stock fabric model call failed (%s)", e)
+        return None, "llm_error"
+    sr = getattr(comp.raw, "stop_reason", None)
+    if sr == "refusal":
+        return None, "refusal"
+    if not comp.text:
+        return None, "empty_reply"
+    _record_fabric_usage(comp)
+    return comp.text, ("truncated" if sr == "max_tokens" else None)
+
+
 def _call_model(system: str, user: str, cfg: dict) -> tuple[str | None, str | None]:
     """Return (reply_text, degraded_reason). Mirrors master_brain._call_model and
     reuses catalyst_tone._client. Never raises."""
+    # Capacity Fabric cutover (Chairman order 2026-11-12): when the router is
+    # configured the fabric adapter above serves the call; when it is not — no
+    # token, or MACRO_CATALYST_STOCK_FABRIC=0 — the legacy client below runs
+    # unchanged. A router that cannot be reached at all (FabricUnavailable) also
+    # falls through here rather than blanking the brief.
+    if _fabric_enabled():
+        try:
+            return _fabric_call(system, user, cfg)
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "catalyst_stock: fabric router unavailable (%s); using the legacy client", e)
+
     client = _client(cfg)
     if client is None:
         return None, "no_client_or_key"
