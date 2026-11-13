@@ -26002,7 +26002,10 @@ jobs:
         # pandas/numpy/pyyaml: both suites import their producers at collection time
         # (build_dt_contra_state → engine.dannytrades_chip → numpy/pandas;
         # build_subsector_membership → engine.basket_index → lib.config → yaml).
-        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2
+        # requests: tests/test_gmi_activity_segment_route.py imports
+        # tests.test_company_pinned_relationship_candidates → collectors.sec_document_spine
+        # → requests at collection time (COO ruling 99, run 43500986774 ci-pack-4).
+        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2 requests
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
