@@ -82,10 +82,8 @@ def test_shards_preserve_only_exact_route_lookup_fields() -> None:
         assert b"source_manifest_sha256" not in raw
         assert b"forward_selection_floor_date" not in raw
         shard = json.loads(raw)
-        assert set(shard) == {"schema", "source_generation_id", "verified_at", "shard", "routes"}
+        assert set(shard) == {"schema", "shard", "routes"}
         assert shard["schema"] == SHARD_SCHEMA
-        assert shard["source_generation_id"] == catalog["source_generation_id"]
-        assert shard["verified_at"] == catalog["verified_at"]
         assert shard["shard"] == f"{index:02x}"
         if not shard["routes"]:
             empty += 1
@@ -105,6 +103,23 @@ def test_shards_are_deterministic_regardless_of_input_object_order() -> None:
     expected = _project(catalog)
     catalog["routes"] = dict(reversed(list(catalog["routes"].items())))
     assert _project(catalog) == expected
+
+
+def test_unchanged_routes_do_not_change_when_source_clock_advances() -> None:
+    catalog = _catalog()
+    expected = _project(catalog)
+    catalog["verified_at"] = "2026-11-13T00:47:00Z"
+    catalog["source_generation_id"] = "new-source-generation"
+    catalog["source_manifest_sha256"] = "another-original-source-receipt"
+    assert _project(catalog) == expected
+
+
+def test_only_affected_ticker_bucket_changes() -> None:
+    catalog = _catalog()
+    before = _project(catalog)
+    catalog["routes"]["AAPL"]["events"]["2026Q4"]["href"] = "aapl-2026q4-corrected-call-record.html"
+    after = _project(catalog)
+    assert [key for key in sorted(before) if before[key] != after[key]] == [shard_filename("AAPL")]
 
 
 @pytest.mark.parametrize(
