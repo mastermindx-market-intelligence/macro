@@ -92,7 +92,7 @@ def _instant(value: object) -> datetime:
     _require(type(value) is str and _INSTANT.fullmatch(value) is not None, "INSTANT_PRECISION_INVALID")
     try:
         return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
-    except ValueError:
+    except (ValueError, OverflowError):
         raise DisclosureError("INSTANT_INVALID") from None
 
 

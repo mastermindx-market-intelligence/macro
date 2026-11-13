@@ -2439,3 +2439,78 @@ def test_r9b_4_an_ordinary_comment_is_admitted(body):
 
 def test_r9b_4_a_double_hyphen_after_the_scan_limit_is_admitted():
     _r9_admitted("<p>Revenue [[1,234]] total</p><p>" + "A" * 2100 + "</p><!-- a -- b --><!-- c --!>")
+
+
+# ---------------------------------------------------------------------------------------------
+# Fix 9c (ruling 86): an instant at the edge of the date range with an offset is a DisclosureError.
+# ---------------------------------------------------------------------------------------------
+_R9C_EDGES = ["0001-01-01T00:00:00+01:00", "9999-12-31T23:59:59-01:00"]
+# (dotted path in the stored edition, extra edits applied first so the instant is actually read)
+_R9C_INSTANT_FIELDS = [
+    ("known_at", {}),
+    ("published_at", {"publication_precision": "instant"}),
+    ("sec_source.accepted_at", {}),
+    ("sec_source.retrieved_at", {}),
+    ("sec_source.recorded_at", {}),
+    ("sec_source.snapshot_at", {}),
+]
+
+
+def _r9c_edition(case, path, extra, value):
+    spec = copy.deepcopy(case.snapshot.spec)
+    for key, val in extra.items():
+        spec["edition"][key] = val
+    _r9b_set(spec["edition"], path, value)
+    return spec
+
+
+@pytest.mark.parametrize("edge", _R9C_EDGES)
+@pytest.mark.parametrize("path,extra", _R9C_INSTANT_FIELDS, ids=[p for p, _ in _R9C_INSTANT_FIELDS])
+def test_r9c_an_edge_instant_is_a_disclosure_error_at_replay_and_in_validate_edition(tmp_path, path, extra, edge):
+    case = _segment_case(tmp_path)
+    spec = _r9c_edition(case, path, extra, edge)
+    with pytest.raises(n.DisclosureError):
+        n.validate_edition(spec["edition"])
+    with pytest.raises(n.DisclosureError):
+        segment.replay_segment_source(SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings)),
+                                      case.pinned.authority)
+
+
+@pytest.mark.parametrize("edge", _R9C_EDGES)
+def test_r9c_an_edge_instant_has_the_instant_invalid_code(edge):
+    with pytest.raises(n.DisclosureError) as caught:
+        n._instant(edge)
+    assert caught.value.code == "INSTANT_INVALID"
+
+
+def _r9c_paths(obj, prefix=""):
+    out = []
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            path = prefix + ("." if prefix else "") + key
+            out.append(path)
+            out += _r9c_paths(value, path)
+    return out
+
+
+def test_r9c_every_key_path_of_the_real_stored_row_leaves_only_a_disclosure_error_or_a_clean_return(tmp_path):
+    case = _segment_case(tmp_path)
+    base = case.snapshot.spec
+    walked = ([("edition", p) for p in _r9c_paths(base["edition"])]
+              + [("fact", p) for p in _r9c_paths(base["fact"])])
+    values = [v for _, v in _R9B_VALUES] + _R9C_EDGES
+    failures, cases = [], 0
+    for where, path in walked:
+        for value in values:
+            spec = copy.deepcopy(base)
+            _r9b_set(spec[where], path, value)
+            cases += 1
+            try:
+                segment.replay_segment_source(SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings)),
+                                              case.pinned.authority)
+            except n.DisclosureError:
+                pass
+            except Exception as error:
+                failures.append((where, path, repr(value)[:30], type(error).__name__, str(error)[:60]))
+    print("\nr9c walk: paths", len(walked), "cases", cases, "crashes", len(failures))
+    assert not failures, failures[:12]
