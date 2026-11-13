@@ -326,9 +326,56 @@ def test_snapshot_copy_staleness_and_failures(warm_snapshots, monkeypatch):
     assert a.visitors(minutes=43200)["visitors"] == []
     assert len(calls) == 4
     monkeypatch.setattr(a, "_WARM_SNAPSHOT_MAX_AGE_S", -1)
-    a._snapshot_store("sessions", 100, 43200, a._gap(None), {"ok": False, "error": "bad"})
+    a._snapshot_store("sessions", 100, 43200, a._gap(None),
+                      {"ok": False, "error": "bad"},
+                      expected_key=a._snapshot_key("sessions", 100, 43200, a._gap(None)))
     assert a.sessions(minutes=43200)["ok"] is True
     assert len(calls) == 4, "a failed refresh must not overwrite a successful one"
-    a._snapshot_store("sessions", 100, 43200, a._gap(None), {"ok": True, "sessions": []})
+    a._snapshot_store("sessions", 100, 43200, a._gap(None),
+                      {"ok": True, "sessions": []},
+                      expected_key=a._snapshot_key("sessions", 100, 43200, a._gap(None)))
     a.sessions(minutes=43200)
     assert len(calls) == 5, "expired snapshots must fall back to an actual query"
+
+
+
+def test_policy_change_during_sql_never_relabels_warmed_rows(warm_snapshots, monkeypatch):
+    config, calls = warm_snapshots
+    original_query = a._query
+    changed = [False]
+
+    def intervening_query(sql, *args, **kwargs):
+        # First 24h Visitors SQL was authored for the old exclusion population.
+        # The operator changes it while the Management API request is outstanding.
+        if not changed[0]:
+            config["ips"] = ["192.0.2.44"]
+            changed[0] = True
+        return original_query(sql, *args, **kwargs)
+
+    monkeypatch.setattr(a, "_query", intervening_query)
+    a.warm_panels()
+    assert len(calls) == 4
+    assert len(a._WARM_SNAPSHOT_CACHE) == 3
+    a.visitors(minutes=1440)
+    assert len(calls) == 5, "old visitor result must not be cached under the new policy"
+
+
+def test_warmer_global_deadline_cannot_be_reset_by_each_panel(warm_snapshots, monkeypatch):
+    _, calls = warm_snapshots
+    clock = [1000.0]
+    seen_deadlines = []
+    monkeypatch.setattr(a.time, "monotonic", lambda: clock[0])
+    monkeypatch.setattr(a, "_WARM_BUDGET_S", 30.0)
+
+    def advancing_query(sql, *args, **kwargs):
+        seen_deadlines.append(a._DEADLINE.get())
+        calls.append(sql)
+        clock[0] += 20.0
+        return []
+
+    monkeypatch.setattr(a, "_query", advancing_query)
+    a.warm_panels()
+    assert seen_deadlines == [1030.0, 1030.0], (
+        "each panel must inherit the original 30-second warm-pass deadline")
+    assert len(calls) == 2, "do not start expensive 30d work beyond the global deadline"
+    assert a._DEADLINE.get() is None, "the global deadline must not leak into requests"

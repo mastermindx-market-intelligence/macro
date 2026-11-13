@@ -911,7 +911,13 @@ def _guard(fn):
     # ones _parallel runs on worker threads — shares one deadline rather than each
     # getting its own independent 20s.
     budget = _BUDGET_OVERRIDE.get() or _REQUEST_BUDGET_S
-    token = _DEADLINE.set(time.monotonic() + budget)
+    deadline = time.monotonic() + budget
+    # A warmer owns one entire-pass deadline. Nested panels may shorten it,
+    # but must not create four new independent 90-second allowances.
+    inherited = _DEADLINE.get()
+    if inherited is not None:
+        deadline = min(deadline, inherited)
+    token = _DEADLINE.set(deadline)
     try:
         return {"ok": True, **fn()}
     except Exception as e:  # noqa: BLE001
@@ -975,12 +981,17 @@ def _snapshot_read(panel: str, n: int, m: int, gap: int, q: str,
     return None
 
 
-def _snapshot_store(panel: str, n: int, m: int, gap: int, result: dict) -> None:
+def _snapshot_store(panel: str, n: int, m: int, gap: int, result: dict,
+                    *, expected_key: tuple | None) -> None:
     if not isinstance(result, dict) or result.get("ok") is not True:
         return
-    key = _snapshot_key(panel, n, m, gap)
-    if key is None:
+    # The SQL may have been built before an operator changed an exclusion or bot
+    # policy. Never store old-population rows under the *new* policy identity.
+    # Concurrent consumers compute their own current key, so an edit after this
+    # check also makes the old entry unreachable.
+    if expected_key is None or expected_key != _snapshot_key(panel, n, m, gap):
         return
+    key = expected_key
     now = time.monotonic()
     with _WARM_SNAPSHOT_LOCK:
         for old in [k for k, (until, _) in _WARM_SNAPSHOT_CACHE.items() if until <= now]:
@@ -1002,19 +1013,26 @@ def warm_panels() -> None:
     t_budget = _BUDGET_OVERRIDE.set(_WARM_BUDGET_S)
     t_compute = _WARM_COMPUTING.set(True)
     deadline = time.monotonic() + _WARM_BUDGET_S
+    t_deadline = _DEADLINE.set(deadline)
     try:
-        refresh_classifier_cache()   # classifier cache used by subsequent SQL
+        refresh_classifier_cache()   # classifier queries share the same deadline
         for minutes in (1440, 43200):
             for panel, fn, limit in (("visitors", visitors, 250),
                                      ("sessions", sessions, 100)):
                 if time.monotonic() >= deadline:
                     return   # shed background work rather than contend with event writes
                 try:
+                    # Capture the source population identity BEFORE SQL construction;
+                    # a policy edited during its execution must never relabel the result.
+                    gap = _gap(None)
+                    source_key = _snapshot_key(panel, limit, minutes, gap)
                     result = fn(limit=limit, minutes=minutes)
-                    _snapshot_store(panel, limit, minutes, _gap(None), result)
+                    _snapshot_store(panel, limit, minutes, gap, result,
+                                    expected_key=source_key)
                 except Exception:  # noqa: BLE001 — one failed warm pass is not a cached result
                     pass
     finally:
+        _DEADLINE.reset(t_deadline)
         _WARM_COMPUTING.reset(t_compute)
         _BUDGET_OVERRIDE.reset(t_budget)
         _BASE_TIMEOUT.reset(t_base)
