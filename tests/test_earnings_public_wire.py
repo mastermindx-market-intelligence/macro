@@ -1327,8 +1327,8 @@ def test_wire_builder_verifies_immutable_generation_aligns_and_persists_only_red
     assert len(list(shard_dir.glob("part-*.json"))) == SHARD_COUNT
     shard = json.loads((shard_dir / shard_filename("AAPL")).read_text(encoding="utf-8"))
     assert shard["schema"] == SHARD_SCHEMA
-    assert shard["source_generation_id"] == public_routes["source_generation_id"]
-    assert shard["verified_at"] == public_routes["verified_at"]
+    assert set(shard) == {"schema", "shard", "routes"}
+    assert shard["shard"] == shard_filename("AAPL")[5:7]
     assert list(shard["routes"]) == ["AAPL"]
     assert shard["routes"]["AAPL"] == {
         "events": {"2026Q1": {
