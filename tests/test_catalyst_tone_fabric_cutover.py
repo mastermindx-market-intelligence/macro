@@ -373,6 +373,51 @@ def test_failed_fabric_call_writes_no_cache_entry(monkeypatch, cfg):
     assert ct._reply_cache_get(phash, cfg) is None
 
 
+def test_fabric_truncated_reply_is_rejected_like_the_legacy_path(monkeypatch, cfg):
+    """max_tokens means the model ran out of room mid-record. _extract_json
+    deliberately REPAIRS truncated JSON, so accepting the text would grade a
+    partial digest whose evidence array was cut off. Legacy returns
+    "stop_max_tokens" without reading the text; the fabric path must match."""
+    calls: list[dict] = []
+    truncated = ('{"tone_score": 0.4, "guidance_direction": "tightening", '
+                 '"confidence": "high"')
+
+    def cut_short(messages, **kwargs):
+        calls.append(kwargs)
+        return _completion(truncated, stop_reason="max_tokens")
+
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete", cut_short)
+    monkeypatch.delenv("MACRO_CATALYST_TONE_FABRIC", raising=False)
+
+    text, reason = ct._call_model(_DOC, "ctx", cfg)
+    assert text is None
+    assert reason == "stop_max_tokens"     # identical to the legacy reason string
+    assert len(calls) == 1
+
+
+def test_truncated_reply_would_otherwise_have_been_graded(monkeypatch, cfg):
+    """Guards the guard: proves the truncation rule is load-bearing rather than a
+    no-op. The same bytes ARE repaired and graded if they are not flagged."""
+    truncated = ('{"tone_score": 0.4, "guidance_direction": "tightening", '
+                 '"confidence": "high"')
+    assert ct._extract_json(truncated) is not None
+    assert ct._extract_json(truncated)["tone_score"] == 0.4
+
+
+def test_digest_records_the_truncation_reason(monkeypatch, cfg):
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete",
+                        lambda messages, **kw: _completion(
+                            '{"tone_score": 0.4', stop_reason="max_tokens"))
+    monkeypatch.delenv("MACRO_CATALYST_TONE_FABRIC", raising=False)
+    monkeypatch.setattr(ct, "_cfg", lambda: {**cfg, "enabled": True})
+
+    rec = ct.digest_document(_DOC, kind="fomc_statement", context="FOMC")
+    assert rec["degraded_reason"] == "stop_max_tokens"
+    assert rec["tone_score"] == 0.0        # neutral, not the truncated 0.4
+
+
 # --------------------------------------------------------------------------- #
 # no token / kill-switch -> the legacy path is BYTE-IDENTICAL
 #

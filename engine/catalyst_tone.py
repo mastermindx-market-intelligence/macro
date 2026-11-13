@@ -449,8 +449,19 @@ def _fabric_call(source_text: str, context: str, cfg: dict) -> tuple[str | None,
         log.warning("catalyst_tone: fabric call failed (%s)", e)
         return None, "llm_error"
     # Refusal wins over text: a partial/refusing answer is not a digest.
-    if getattr(getattr(comp, "raw", None), "stop_reason", None) == "refusal":
+    raw_stop = getattr(getattr(comp, "raw", None), "stop_reason", None)
+    if raw_stop == "refusal":
         return None, "refusal"
+    # Truncation parity with the legacy ladder. Legacy rejects a max_tokens reply
+    # without ever looking at its text, and that matters here more than anywhere:
+    # _extract_json deliberately REPAIRS a truncated object, so 3 of 4 truncation
+    # shapes parse into a partial record. Grading that would publish a digest
+    # whose evidence array was cut mid-write — against this module's own doctrine
+    # that abstaining is the correct answer when the document was not fully read.
+    # Mirror legacy's reason string exactly so `degraded_reason` is stable across
+    # both paths.
+    if raw_stop == "max_tokens":
+        return None, f"stop_{raw_stop}"
     if not comp.text:
         return None, "empty_reply"
     try:  # cost ledger — never let telemetry break a call that otherwise worked
