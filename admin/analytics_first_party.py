@@ -22,6 +22,7 @@ Surfaces (all return the {ok, …} / {ok:False, reason} envelope the SPA expects
 from __future__ import annotations
 
 import contextvars
+import copy
 import json
 import os
 import re
@@ -934,23 +935,87 @@ _WARM_QUERY_TIMEOUT_S = float(os.environ.get("ANALYTICS_WARM_QUERY_TIMEOUT_S") o
 _WARM_BUDGET_S = float(os.environ.get("ANALYTICS_WARM_BUDGET_S") or 90)
 
 
+# Successful, periodically recomputed operator snapshots. The full 30-day visit fold
+# cannot reliably finish inside an edge-facing 9s request even with indexed SQL.
+# The background warmer owns that work; an interactive request only reads a bounded,
+# config-keyed, deep-copied result. Never cache failures, searched/bot-included views
+# or explicit forced refreshes. The authenticated HTTP handler remains the access gate.
+_WARM_SNAPSHOT_MAX_AGE_S = float(os.environ.get("ANALYTICS_WARM_SNAPSHOT_MAX_AGE_S") or 900)
+_WARM_SNAPSHOT_LOCK = threading.Lock()
+_WARM_SNAPSHOT_CACHE: dict[tuple, tuple[float, dict]] = {}
+_WARM_COMPUTING: contextvars.ContextVar[bool] = contextvars.ContextVar(
+    "fp_warm_computing", default=False)
+
+
+def _snapshot_key(panel: str, n: int, m: int, gap: int, q: str = "",
+                  include_bots: bool = False) -> tuple | None:
+    if q or include_bots or m not in (1440, 43200):
+        return None
+    try:
+        # Exclusion, bot and geo override edits must never serve an old population.
+        policy = json.dumps(_load_exclusions(), sort_keys=True, ensure_ascii=True)
+    except Exception:  # noqa: BLE001 — never fail a live panel over a cache key
+        return None
+    return panel, n, m, gap, policy
+
+
+def _snapshot_read(panel: str, n: int, m: int, gap: int, q: str,
+                   include_bots: bool, force: bool = False) -> dict | None:
+    if force or _WARM_COMPUTING.get():
+        return None
+    key = _snapshot_key(panel, n, m, gap, q, include_bots)
+    if key is None:
+        return None
+    with _WARM_SNAPSHOT_LOCK:
+        entry = _WARM_SNAPSHOT_CACHE.get(key)
+        if entry and entry[0] > time.monotonic():
+            return copy.deepcopy(entry[1])
+        if entry:
+            _WARM_SNAPSHOT_CACHE.pop(key, None)
+    return None
+
+
+def _snapshot_store(panel: str, n: int, m: int, gap: int, result: dict) -> None:
+    if not isinstance(result, dict) or result.get("ok") is not True:
+        return
+    key = _snapshot_key(panel, n, m, gap)
+    if key is None:
+        return
+    now = time.monotonic()
+    with _WARM_SNAPSHOT_LOCK:
+        for old in [k for k, (until, _) in _WARM_SNAPSHOT_CACHE.items() if until <= now]:
+            _WARM_SNAPSHOT_CACHE.pop(old, None)
+        _WARM_SNAPSHOT_CACHE[key] = (now + _WARM_SNAPSHOT_MAX_AGE_S,
+                                     copy.deepcopy(result))
+        # Exactly four default window/panel variants are warmed. Bound retained PII.
+        while len(_WARM_SNAPSHOT_CACHE) > 8:
+            _WARM_SNAPSHOT_CACHE.pop(next(iter(_WARM_SNAPSHOT_CACHE)))
+
 def warm_panels() -> None:
-    """One warm pass over the two heaviest panels. Never raises."""
+    """Rebuild default 24h and 30d snapshots, with a bounded global warm-pass cost."""
     try:
         if not status()["configured"]:
             return
-    except Exception:  # noqa: BLE001 — a warm pass must never take the server down
+    except Exception:  # noqa: BLE001 — never take the HTTP service down
         return
     t_base = _BASE_TIMEOUT.set(_WARM_QUERY_TIMEOUT_S)
     t_budget = _BUDGET_OVERRIDE.set(_WARM_BUDGET_S)
+    t_compute = _WARM_COMPUTING.set(True)
+    deadline = time.monotonic() + _WARM_BUDGET_S
     try:
-        refresh_classifier_cache()   # first, so the panel warms below already use it
-        for fn in (visitors, sessions):
-            try:
-                fn(limit=100, minutes=1440)
-            except Exception:  # noqa: BLE001 — one panel failing must not stop the other
-                pass
+        refresh_classifier_cache()   # classifier cache used by subsequent SQL
+        for minutes in (1440, 43200):
+            for panel, fn, limit in (("visitors", visitors, 250),
+                                     ("sessions", sessions, 100)):
+                if time.monotonic() >= deadline:
+                    return   # shed background work rather than contend with event writes
+                try:
+                    result = fn(limit=limit, minutes=minutes)
+                    _snapshot_store(panel, limit, minutes, _gap(None), result)
+                except Exception:  # noqa: BLE001 — one failed warm pass is not a cached result
+                    pass
     finally:
+        _WARM_COMPUTING.reset(t_compute)
         _BUDGET_OVERRIDE.reset(t_budget)
         _BASE_TIMEOUT.reset(t_base)
 
@@ -1112,7 +1177,7 @@ def geo(days=30, limit=200, minutes=None) -> dict:
     return _guard(run)
 
 
-def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=None) -> dict:
+def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=None, force=False) -> dict:
     """Recent VISITS — one row per continuous sitting, not per raw session_id.
 
     Rows still ship under the `sessions` key and still carry a `session_id` (the FIRST raw
@@ -1139,6 +1204,9 @@ def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=N
         conds.append("s.is_bot = 0")          # crawlers hidden unless explicitly revealed
     where = ("where " + " and ".join(conds) + " ") if conds else ""
     def run():
+        cached = _snapshot_read("sessions", n, m, g, qq, include_bots, force)
+        if cached is not None:
+            return cached
         rows = _query(_cte(include_ident=True, include_candidate=True, candidate_window=m,
                            bot_window=m, focus_excluded=True) +
             # ev: in-window, non-hidden events tagged with their canonical person, so a
@@ -1189,7 +1257,7 @@ def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=N
     return _guard(run)
 
 
-def visitors(limit=250, q="", include_bots=False, minutes=None, days=None, gap=None) -> dict:
+def visitors(limit=250, q="", include_bots=False, minutes=None, days=None, gap=None, force=False) -> dict:
     """One row per PERSON — the 'Frequent Visitors' list.
 
     Identity resolution: any anonymous cookie (mm_aid) that ever appears on a signed-in
@@ -1216,6 +1284,9 @@ def visitors(limit=250, q="", include_bots=False, minutes=None, days=None, gap=N
         conds.append("v.is_bot = 0")           # crawlers hidden unless explicitly revealed
     where = ("where " + " and ".join(conds) + " ") if conds else ""
     def run():
+        cached = _snapshot_read("visitors", n, m, g, qq, include_bots, force)
+        if cached is not None:
+            return cached
         rows = _query(
             # ident: each mm_aid -> the user uuid it belongs to (if ever authenticated).
             # A cookie signed into by 2+ DIFFERENT accounts (shared/kiosk device) is

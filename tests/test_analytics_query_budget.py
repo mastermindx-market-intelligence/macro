@@ -271,3 +271,64 @@ def test_one_failing_refresh_leaves_the_other(monkeypatch, cache):
     monkeypatch.setattr(a, "_query", fake_query)
     a.refresh_classifier_cache()
     assert set(cache) == {"farm"}
+
+
+# ---- Warmed 30-day snapshots: successful-only, population-keyed, force bypass ----
+
+@pytest.fixture
+def warm_snapshots(monkeypatch):
+    monkeypatch.setattr(a.settings, "supabase_pat", lambda: "sbp_test")
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_CACHE", {})
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_MAX_AGE_S", 900.0)
+    config = {"emails": [], "locations": [], "ips": [], "visitor_ids": [],
+              "bots": {}, "geo_overrides": []}
+    monkeypatch.setattr(a, "_load_exclusions", lambda: config)
+    monkeypatch.setattr(a, "refresh_classifier_cache", lambda: None)
+    calls = []
+    def query(sql, *args, **kwargs):
+        calls.append(sql)
+        return []
+    monkeypatch.setattr(a, "_query", query)
+    return config, calls
+
+
+def test_warmer_builds_correct_default_panel_windows(warm_snapshots):
+    _, calls = warm_snapshots
+    a.warm_panels()
+    assert len(calls) == 4  # Visitors/Sessions at 24h and 30d, one query each
+    assert len(a._WARM_SNAPSHOT_CACHE) == 4
+    for m in (1440, 43200):
+        assert a.visitors(limit=250, minutes=m)["ok"] is True
+        assert a.sessions(limit=100, minutes=m)["ok"] is True
+    assert len(calls) == 4, "dashboard defaults must use the warm snapshots"
+    a.sessions(minutes=10080)
+    assert len(calls) == 5, "the 7-day window must remain a live read"
+
+
+def test_snapshots_do_not_override_force_filters_or_policy_changes(warm_snapshots):
+    config, calls = warm_snapshots
+    a.warm_panels()
+    a.sessions(minutes=43200, force=True)
+    a.sessions(minutes=43200, q="search")
+    a.sessions(minutes=43200, include_bots=True)
+    a.sessions(minutes=43200, gap=60)
+    assert len(calls) == 8
+    config["ips"] = ["192.0.2.44"]
+    a.sessions(minutes=43200)
+    assert len(calls) == 9, "an exclusions edit must invalidate the prior snapshot"
+
+
+def test_snapshot_copy_staleness_and_failures(warm_snapshots, monkeypatch):
+    _, calls = warm_snapshots
+    a.warm_panels()
+    first = a.visitors(minutes=43200)
+    first["visitors"].append({"visitor_id": "made-up"})
+    assert a.visitors(minutes=43200)["visitors"] == []
+    assert len(calls) == 4
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_MAX_AGE_S", -1)
+    a._snapshot_store("sessions", 100, 43200, a._gap(None), {"ok": False, "error": "bad"})
+    assert a.sessions(minutes=43200)["ok"] is True
+    assert len(calls) == 4, "a failed refresh must not overwrite a successful one"
+    a._snapshot_store("sessions", 100, 43200, a._gap(None), {"ok": True, "sessions": []})
+    a.sessions(minutes=43200)
+    assert len(calls) == 5, "expired snapshots must fall back to an actual query"
