@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T16:39:24.166867+00:00",
-  "count": 3307,
+  "generated_at": "2026-11-13T16:54:06.906490+00:00",
+  "count": 3308,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -142,6 +142,26 @@
       "tickers": [],
       "top_pick": true,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-viwmxcpsljt-74246a",
+      "title": "GS Callahan GS US TMT quick hits + stocks 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:54:56Z",
+      "summary_points": [
+        "AI Pricing in Negatives: AI revenue reductions (up to 45% worst-case) already priced into APH, KEYS, TEL, BDC; upside potential in negative scenarios due to diversified exposure and long-term AI capex benefits.",
+        "Diversified vs AI-Exposed Rotation: Diversified names (BDC, TEL) outperform in slower growth; AI-exposed (VRT, FLEX, JBL) face higher risk but gain from cycle-to-cycle margin improvements (e.g., APH 55-60% AI revenue exposure).",
+        "Semiconductor Flow Shift: NVDA volume surge (2bn shares, 8% float), AMD/AVGO adding $500bn cap; security sector debate (ZS down 11/13 days vs Cisco firewall orders +30%) amid semicap vs memory complex dynamics.",
+        "Risk-Off Market Rotation: NDX Futures +20 bps amid risk-off (KOSPI, NVDA ~$500bn cap loss, VIX 18-handle, Oil $96/bbl, 10yr yields 5.13%); cleaner positioning in large-cap Tech, Defensives, Low Vol."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
