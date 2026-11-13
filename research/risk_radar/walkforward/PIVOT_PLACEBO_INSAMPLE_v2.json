@@ -1,0 +1,327 @@
+{
+ "label": "IN-SAMPLE 2020-01-02..2026-11-10, >=5% SPY turns, pre 21 post 10 min_off 10, 300 draws seed 0",
+ "radar_loud|None": {
+  "near": null,
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 1.0,
+  "false_risk_off_per_year": {
+   "observed": 0.0,
+   "placebo_mean": 1.1703
+  },
+  "premature_all_clear_per_year": {
+   "observed": 1.7541,
+   "placebo_mean": 0.5126
+  },
+  "top": {
+   "observed": 0.1111,
+   "placebo_mean": 0.3874,
+   "placebo_p90": 0.5556,
+   "share_draws_ge_observed": 0.9833
+  },
+  "bottom": {
+   "observed": 0.125,
+   "placebo_mean": 0.3725,
+   "placebo_p90": 0.625,
+   "share_draws_ge_observed": 0.9633
+  }
+ },
+ "radar_loud|high": {
+  "near": "high",
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 0.3735,
+  "false_risk_off_per_year": {
+   "observed": 0.0,
+   "placebo_mean": 2.2213
+  },
+  "premature_all_clear_per_year": {
+   "observed": 1.7541,
+   "placebo_mean": 0.2076
+  },
+  "top": {
+   "observed": 0.1111,
+   "placebo_mean": 0.6059,
+   "placebo_p90": 0.7778,
+   "share_draws_ge_observed": 1.0
+  },
+  "bottom": {
+   "observed": 0.125,
+   "placebo_mean": 0.3088,
+   "placebo_p90": 0.5,
+   "share_draws_ge_observed": 0.9467
+  }
+ },
+ "radar_loud|low": {
+  "near": "low",
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 0.471,
+  "false_risk_off_per_year": {
+   "observed": 0.0,
+   "placebo_mean": 1.9105
+  },
+  "premature_all_clear_per_year": {
+   "observed": 1.7541,
+   "placebo_mean": 0.4502
+  },
+  "top": {
+   "observed": 0.1111,
+   "placebo_mean": 0.5926,
+   "placebo_p90": 0.7778,
+   "share_draws_ge_observed": 1.0
+  },
+  "bottom": {
+   "observed": 0.125,
+   "placebo_mean": 0.4325,
+   "placebo_p90": 0.625,
+   "share_draws_ge_observed": 0.99
+  }
+ },
+ "hy_oas_top_decile|None": {
+  "near": null,
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 1.0,
+  "false_risk_off_per_year": {
+   "observed": 0.1462,
+   "placebo_mean": 1.6381
+  },
+  "premature_all_clear_per_year": {
+   "observed": 2.9234,
+   "placebo_mean": 0.781
+  },
+  "top": {
+   "observed": 0.3333,
+   "placebo_mean": 0.5315,
+   "placebo_p90": 0.7778,
+   "share_draws_ge_observed": 0.9467
+  },
+  "bottom": {
+   "observed": 0.5,
+   "placebo_mean": 0.4971,
+   "placebo_p90": 0.75,
+   "share_draws_ge_observed": 0.6267
+  }
+ },
+ "hy_oas_top_decile|high": {
+  "near": "high",
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 0.3735,
+  "false_risk_off_per_year": {
+   "observed": 0.1462,
+   "placebo_mean": 3.2372
+  },
+  "premature_all_clear_per_year": {
+   "observed": 2.9234,
+   "placebo_mean": 0.287
+  },
+  "top": {
+   "observed": 0.3333,
+   "placebo_mean": 0.7393,
+   "placebo_p90": 0.8889,
+   "share_draws_ge_observed": 1.0
+  },
+  "bottom": {
+   "observed": 0.5,
+   "placebo_mean": 0.3725,
+   "placebo_p90": 0.5,
+   "share_draws_ge_observed": 0.33
+  }
+ },
+ "hy_oas_top_decile|low": {
+  "near": "low",
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 0.471,
+  "false_risk_off_per_year": {
+   "observed": 0.1462,
+   "placebo_mean": 2.7782
+  },
+  "premature_all_clear_per_year": {
+   "observed": 2.9234,
+   "placebo_mean": 0.6646
+  },
+  "top": {
+   "observed": 0.3333,
+   "placebo_mean": 0.7352,
+   "placebo_p90": 0.8889,
+   "share_draws_ge_observed": 0.9967
+  },
+  "bottom": {
+   "observed": 0.5,
+   "placebo_mean": 0.5813,
+   "placebo_p90": 0.75,
+   "share_draws_ge_observed": 0.8133
+  }
+ },
+ "vix_ge_20|None": {
+  "near": null,
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 1.0,
+  "false_risk_off_per_year": {
+   "observed": 2.7773,
+   "placebo_mean": 2.9731
+  },
+  "premature_all_clear_per_year": {
+   "observed": 2.1926,
+   "placebo_mean": 1.5421
+  },
+  "top": {
+   "observed": 0.6667,
+   "placebo_mean": 0.7489,
+   "placebo_p90": 0.8889,
+   "share_draws_ge_observed": 0.84
+  },
+  "bottom": {
+   "observed": 0.5,
+   "placebo_mean": 0.6412,
+   "placebo_p90": 0.875,
+   "share_draws_ge_observed": 0.9133
+  }
+ },
+ "vix_ge_20|high": {
+  "near": "high",
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 0.3735,
+  "false_risk_off_per_year": {
+   "observed": 2.7773,
+   "placebo_mean": 5.6739
+  },
+  "premature_all_clear_per_year": {
+   "observed": 2.1926,
+   "placebo_mean": 0.4999
+  },
+  "top": {
+   "observed": 0.6667,
+   "placebo_mean": 0.8885,
+   "placebo_p90": 1.0,
+   "share_draws_ge_observed": 0.9933
+  },
+  "bottom": {
+   "observed": 0.5,
+   "placebo_mean": 0.4971,
+   "placebo_p90": 0.6375,
+   "share_draws_ge_observed": 0.6467
+  }
+ },
+ "vix_ge_20|low": {
+  "near": "low",
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 0.471,
+  "false_risk_off_per_year": {
+   "observed": 2.7773,
+   "placebo_mean": 5.0083
+  },
+  "premature_all_clear_per_year": {
+   "observed": 2.1926,
+   "placebo_mean": 1.4174
+  },
+  "top": {
+   "observed": 0.6667,
+   "placebo_mean": 0.88,
+   "placebo_p90": 1.0,
+   "share_draws_ge_observed": 0.9933
+  },
+  "bottom": {
+   "observed": 0.5,
+   "placebo_mean": 0.6658,
+   "placebo_p90": 0.875,
+   "share_draws_ge_observed": 0.9367
+  }
+ },
+ "spy_below_200|None": {
+  "near": null,
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 1.0,
+  "false_risk_off_per_year": {
+   "observed": 0.0,
+   "placebo_mean": 0.8468
+  },
+  "premature_all_clear_per_year": {
+   "observed": 1.1694,
+   "placebo_mean": 0.3591
+  },
+  "top": {
+   "observed": 0.1111,
+   "placebo_mean": 0.2944,
+   "placebo_p90": 0.4555,
+   "share_draws_ge_observed": 0.9733
+  },
+  "bottom": {
+   "observed": 0.125,
+   "placebo_mean": 0.285,
+   "placebo_p90": 0.5,
+   "share_draws_ge_observed": 0.9567
+  }
+ },
+ "spy_below_200|high": {
+  "near": "high",
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 0.3735,
+  "false_risk_off_per_year": {
+   "observed": 0.0,
+   "placebo_mean": 1.5967
+  },
+  "premature_all_clear_per_year": {
+   "observed": 1.1694,
+   "placebo_mean": 0.1813
+  },
+  "top": {
+   "observed": 0.1111,
+   "placebo_mean": 0.497,
+   "placebo_p90": 0.6667,
+   "share_draws_ge_observed": 1.0
+  },
+  "bottom": {
+   "observed": 0.125,
+   "placebo_mean": 0.2646,
+   "placebo_p90": 0.375,
+   "share_draws_ge_observed": 0.9333
+  }
+ },
+ "spy_below_200|low": {
+  "near": "low",
+  "tol": 0.01,
+  "n_draws": 300,
+  "seed": 0,
+  "eligible_share": 0.471,
+  "false_risk_off_per_year": {
+   "observed": 0.0,
+   "placebo_mean": 1.3755
+  },
+  "premature_all_clear_per_year": {
+   "observed": 1.1694,
+   "placebo_mean": 0.3313
+  },
+  "top": {
+   "observed": 0.1111,
+   "placebo_mean": 0.4707,
+   "placebo_p90": 0.6667,
+   "share_draws_ge_observed": 1.0
+  },
+  "bottom": {
+   "observed": 0.125,
+   "placebo_mean": 0.3404,
+   "placebo_p90": 0.5,
+   "share_draws_ge_observed": 0.97
+  }
+ }
+}

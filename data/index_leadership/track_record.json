@@ -1,7 +1,7 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-11-06",
-  "generated_at": "2026-11-11T09:35:59.049113+00:00",
+  "generated_at": "2026-11-13T13:32:26.238730+00:00",
   "is_context_only": true,
   "n_snapshots": 1398,
   "n_days": 49,
@@ -26,7 +26,7 @@
         }
       },
       "running_ic": -0.0181,
-      "running_ic_t_hac": -0.308,
+      "running_ic_t_hac": -0.309,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },

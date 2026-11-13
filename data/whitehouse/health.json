@@ -1,15 +1,15 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-11T21:59:14.748821+00:00",
-  "posts_seen": 19,
-  "seen_total": 346,
+  "as_of": "2026-11-13T16:21:29.833235+00:00",
+  "posts_seen": 25,
+  "seen_total": 355,
   "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-11-11-presidential-message-on-victory-day-for-world-war-i-dd1e",
-      "importance": 5,
+      "id": "wh-2026-11-13-trump-administration-delivers-record-setting-results-through-executive-action",
+      "importance": 20,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     }
