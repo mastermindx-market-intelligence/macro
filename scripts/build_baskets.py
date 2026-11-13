@@ -653,18 +653,22 @@ def main(*, sector_intelligence_only: bool | None = None) -> int:
     # Intelligence at sector_central.html; operator consolidation 2026-08-01). The stub
     # takes ONE piece of context: theme_ids, the id list its #theme-<id> deep-link
     # resolver validates against before sending a visitor to basket/<id>.html. It is the
-    # same list build_detail_pages() writes pages from below, so the resolver can never
-    # aim at a page that was not built; detail pages still consume the full `data`.
+    # same list broad builds use when emitting detail pages below. Focused builds
+    # leave dossier-backed detail pages to that stock-aware owner.
     _theme_ids = [str(b["id"]) for b in data.get("baskets", []) if b.get("id")]
     html = env.get_template("baskets.html.j2").render(theme_ids=_theme_ids)
     write_page(site / "baskets.html", html)
-    # PER-THEME DETAIL PAGES (one site/basket/<id>.html each) — needs `data` (with
-    # theme_intel + members) and the env; chart already split off above. Additive.
-    try:
-        from scripts.build_theme_detail import build_detail_pages
-        build_detail_pages(data, site, env, "us", chart)
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("theme detail pages failed: %s", e)
+    # Stock-detail pages also consume the gitignored per-stock dossier tree.
+    # The focused sector lane does not rebuild/hydrate that tree. Letting it
+    # render these pages erased existing member assessments when the runner was
+    # clean (and consumed arbitrary stale dossiers when it was not). Keep the
+    # complete dated pages under the existing broad stock-aware build owner.
+    if not sector_intelligence_only:
+        try:
+            from scripts.build_theme_detail import build_detail_pages
+            build_detail_pages(data, site, env, "us", chart)
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.error("theme detail pages failed: %s", e)
     # ship the TradingView Lightweight Charts runtime (Apache-2.0) used by the page
     lwc = config.ROOT / "templates" / "lightweight-charts.js"
     if lwc.exists():
