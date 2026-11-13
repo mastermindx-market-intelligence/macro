@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T23:26:05.568728+00:00",
-  "count": 3327,
+  "generated_at": "2026-11-13T23:54:58.238033+00:00",
+  "count": 3328,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -963,6 +963,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cjo36c5d3je-f99d0e",
+      "title": "Asia Open Fed up",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T23:00:24Z",
+      "summary_points": [
+        "Fed Hawkishness & Iran Deal Drive Policy Shift: Hawkish Fed commentary + Trump’s Iran dismissal raised Jan rate hike probability to 73% (from 25%), triggering USD strength (USDJPY >160), oil surge, and equity rotation (Nvidia +6% vs semis drag).",
+        "Geopolitical & Technical Risks: Iran conflict spurs Brent crude +3.5% but gold slumps 3% to 52-week low (100WMA at risk); USD/JPY intervention risks at 155 level if weakness worsens.",
+        "Critical Technicals & Data: USDJPY 160 remains key support/resistance; US jobless claims at 200k (vs 194k est) imply 3.9%-4.0% u/e rate by 2027; Oct PPI (0.4% MoM) unlikely to shift Fed hike expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
