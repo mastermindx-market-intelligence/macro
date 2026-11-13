@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T18:31:01.035696+00:00",
-  "count": 3312,
+  "generated_at": "2026-11-13T18:39:17.295590+00:00",
+  "count": 3313,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-6vchuar8n9p-c9e78c",
+      "title": "UBS S&T UBS Macro Equity Navigator Favorable AI Asymmetry Justinus Steinhorst 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:23:07Z",
+      "summary_points": [
+        "AI Asymmetry Theme: Central trade driver with \"favorable AI asymmetry\" guiding decisions; AI Winners show elevated but manageable crowding (not washed out), supporting near-term positioning despite fragile sentiment.",
+        "China Earnings Divergence: CSI 300 vs S&P 500 earnings revisions breadth at multi-year lows; sustained recovery hinges on policy support and property stabilization, signaling critical valuation pressure.",
+        "Sector Rotation Signals: Hyperscalers (UBXXHYPE) surging vs Neoclouds+ (UBXNEOC) with 50 DMA > 200 DMA crossover; Neoclouds+ underperforming (-19.2%) highlights severe tech/AI sector weakness and rotation risk.",
+        "Stoxx 600 Momentum Shift: Stoxx 600 making new highs (+9pp vs S&P 500 since Oct) driven by fading macro headwinds (rates/energy), with only 11% AI exposure—key for EU equity positioning.",
+        "EU Bank Earnings Risk: Sharp decline in EU Banks EPS revisions (red circle, ~2027) indicates deteriorating fundamentals, a critical risk for Stoxx 600 exposure amid weakening momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-gobxvme2usm-c1b717",
       "title": "GS Codacci Pisanelli Macro Roadmap 13 Nov 2026",
