@@ -1,0 +1,36 @@
+{
+  "source_revision": "fca9114d922d21a3b88e6406b02e2368da66db9c",
+  "test_command": "MACRO_WORKSPACE_SHOTS=<output> python3 -m pytest -q tests/test_macro_workspace_browser.py --tb=short",
+  "result": "31 passed in 31.91s",
+  "runtime_input_blobs": {
+    "templates/dashboard.html.j2": "69f131fbadfeb3ec1ca0f16c2a18ad2661fff8b2",
+    "templates/_macro_workspace.css.j2": "abd384735c3cb11a8811ce55ee68fef71124e789",
+    "templates/_macro_workspace.js.j2": "74cb8f784fd9e4f0bad5106b1ff49e050208ef87",
+    "templates/_macro_history.js.j2": "97d8500ba92ae3b9a5caa12bed055b3bb2365168",
+    "tests/test_macro_workspace_browser.py": "b55fcdee64b53b3dc6c334f179dd9fbed3424274",
+    "tests/macro_workspace_browser_support.py": "d47008a0fbd08dae499e5c5377e8973d8744afeb"
+  },
+  "screenshots": [
+    {
+      "path": "journeys/desktop-briefing-index.png",
+      "sha256": "168f48d1a339b26b23bc4685e0a9d6329b898ad0d1ae29d178eec36815ca259b"
+    },
+    {
+      "path": "journeys/desktop-drivers-index.png",
+      "sha256": "782102ad065b28d74c80f6926b536922ba60fc5da5ba0d17be9cd6e84d054b70"
+    },
+    {
+      "path": "journeys/history-provisional-zh.png",
+      "sha256": "670a6bb1fd163c6b1b7b84a3169c79d5d39ff41b606b26d847ae488b68b189df"
+    },
+    {
+      "path": "journeys/mobile-driver-dialog-return.png",
+      "sha256": "254504b85b8053f4c564291600382cc8a017f0a4f8cbdee37a8080b9a7f950ab"
+    },
+    {
+      "path": "journeys/mobile-history-touch.png",
+      "sha256": "6672f2dafa3c23f55d168a6952b0ea09abf5d56cf4f05d36205130c016e4cf4a"
+    }
+  ],
+  "honesty": "Local synthetic registered-reader fixture, not an authenticated production session. Images are captured inside asserted interaction states; complete fixture provenance is in tests/fixtures/macro_workspace/SOURCE.md."
+}

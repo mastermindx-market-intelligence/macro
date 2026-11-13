@@ -2358,7 +2358,7 @@
 {% endif %}
 {% set all_tools_enabled = (mode != 'stocks') %}
 {% include "_site_nav.html.j2" %}
-<div class="grid">
+<div class="grid"{% if mode == 'macro' %} id="macro-workspace" role="main"{% endif %}>
 
   {% if mode == 'stocks' %}
   <!-- ===================== US STOCK DASHBOARD HEADER ===================== -->
@@ -2642,8 +2642,21 @@
      improves decision speed and information density. See the 2026-09-20
      primary-route override in research/UNIFIED_DASHBOARD_DISPOSITION.md. #}
 
-  <!-- ======================= HEADER ======================= -->
-  <div class="panel span12" id="regime-radar">
+  <header class="macro-workspace-header">
+    <div>
+      <span class="eyebrow"><span class="l-en">United States · Market intelligence</span><span class="l-zh">美国 · 市场情报</span></span>
+      <h1><span class="l-en">Macro outlook</span><span class="l-zh">宏观展望</span></h1>
+    </div>
+  </header>
+    <nav class="macro-section-links" aria-label="On this dashboard · 本页导航">
+      <a href="#regime-radar"><span class="l-en">Overview</span><span class="l-zh">概览</span></a>
+      <a href="#macro-priorities"><span class="l-en">Priorities</span><span class="l-zh">重点</span></a>
+      <a href="#macro-drivers"><span class="l-en">Drivers</span><span class="l-zh">驱动</span></a>
+      <a href="#macro-briefing"><span class="l-en">Briefing</span><span class="l-zh">简报</span></a>
+    </nav>
+
+  <!-- ======================= MARKET OUTLOOK ======================= -->
+  <div class="panel span12" id="regime-radar" role="region" aria-labelledby="macro-outlook-title" tabindex="-1">
   <input type="checkbox" id="ms-alerts-toggle" class="ms-alerts-cb" hidden aria-hidden="true">
   <style id="ms-css">
   /* ===== MARKET STATE — command-center (DISPLAY-ONLY synthesis) =====
@@ -5794,21 +5807,7 @@ body.page-macro.mx4-grid #mx5-score-numeral + text{display:none;} /* hides /100 
    Port from v5_final.html rev2; CSS token aliases → mx5 custom props
    ══════════════════════════════════════════════════════════════════ */
 
-/* ── v5 grid ORDER: resequence cards without changing DOM ───────── */
-/* DOM: sx-evidence(WTD), sx-events-v2, sx-markets-v2, sx-risk-v2(order:-1=row1)
-   then sx-policy-v2, sx-aibrief-v2, sx-news-v2, sx-deep-context
-   Static cards injected after sx-events-v2 in DOM so they fall in row 4 naturally.
-   Visual row order: scorecard(-1), markets(1), wtd+events(2), static(3), alerts+policy+ai(4), deep(5) */
-body.page-macro.mx4-grid #sx-markets-v2{order:1;}
-body.page-macro.mx4-grid #sx-evidence{order:2;}
-body.page-macro.mx4-grid #sx-events-v2{order:2;}
-body.page-macro.mx4-grid #sx-v5-fed{order:3;}
-body.page-macro.mx4-grid #sx-v5-sentiment{order:3;}
-body.page-macro.mx4-grid #sx-v5-sector{order:3;}
-body.page-macro.mx4-grid #sx-news-v2{order:4;}
-body.page-macro.mx4-grid #sx-policy-v2{order:4;}
-body.page-macro.mx4-grid #sx-aibrief-v2{order:4;}
-body.page-macro.mx4-grid #sx-deep-context{order:5;}
+/* Card sequence now follows the semantic workspace sections in the DOM. */
 
 /* ── v5 static card shell (matches .card in v5_final) ─────────── */
 body.page-macro.mx4-grid .mx5-card{
@@ -7552,6 +7551,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   body.page-macro .riskdlg-vw .sg-wx{width:22px;height:22px;}
   body.page-macro .riskdlg-vw .sg-wx svg{width:16px;height:16px;}
 }
+{% include "_macro_workspace.css.j2" %}
 </style>
 {% endif %}
     {% set _ol = {
@@ -7985,6 +7985,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% set _mx5_hist_n = _mx5_hist | length if _mx5_hist else 0 %}
 
     <div class="mx5-sc-left">
+      <h2 class="macro-outlook-title" id="macro-outlook-title"><span class="l-en">Market state</span><span class="l-zh">市场状态</span></h2>
 
       {# ── Gauge cluster ── #}
       <div class="mx5-flipctx-anchor">
@@ -8461,7 +8462,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {# month names are needed by the header stamp below as well as by the axis ticks,
        so they are set before the chart's own {% if %} rather than inside it #}
     {% set _mx5_mos_en = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
-    <div class="mx5-sc-right">
+    <div class="mx5-sc-right" role="group" aria-label="Market history · 市场历史" tabindex="-1">
       <div class="mx5-path-header">
         <span class="mx5-path-title">
           <span class="l-en">{% if _mx5_hist_n > 0 and _mx5_hist_n < 60 %}{{ _mx5_hist_n }}-session path{% else %}60-session path{% endif %}</span>
@@ -8622,7 +8623,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% set _txf = 'translate(0,-50%)' if loop.first else ('translate(-100%,-50%)' if loop.last else 'translate(-50%,-50%)') %}
           {% set _tdate = _mx5_hist[_ti].asof %}
           {% if _tdate and _tdate|length >= 10 %}
-          <span class="mx5-pl-x" style="left:{{ (_tx / 1000 * 100) | round(3) }}%;transform:{{ _txf }}"><span class="l-en">{{ _mx5_mos_en[_tdate[5:7]|int] }} {{ _tdate[8:10]|int }}</span><span class="l-zh">{{ _tdate[5:7]|int }}月{{ _tdate[8:10]|int }}</span></span>
+          <span class="mx5-pl-x{{ ' mx5-pl-x-key' if loop.first or loop.last or loop.index == ((loop.length + 1) // 2) else '' }}" style="left:{{ (_tx / 1000 * 100) | round(3) }}%;transform:{{ _txf }}"><span class="l-en">{{ _mx5_mos_en[_tdate[5:7]|int] }} {{ _tdate[8:10]|int }}</span><span class="l-zh">{{ _tdate[5:7]|int }}月{{ _tdate[8:10]|int }}</span></span>
           {% endif %}
         {% endfor %}
         {# today marker (round dot; JS hover dot overlays on top) #}
@@ -8636,11 +8637,16 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <span class="mx5-path-tip-row"><b class="mx5-path-tip-score"></b><span class="mx5-path-tip-verdict"></span></span>
       </div>
       </div>{# /mx5-path-plot #}
+      <div class="macro-history-control" hidden>
+        <div class="macro-history-heading">
+          <label for="macro-history-range"><span class="l-en">Explore history</span><span class="l-zh">回看走势</span></label>
+          <output class="macro-history-readout" for="macro-history-range" aria-live="off"><span class="l-en">Drag or use arrow keys</span><span class="l-zh">拖动或使用方向键</span></output>
+        </div>
+        <input id="macro-history-range" class="macro-history-range" type="range" min="0" max="{{ _ph_n - 1 }}" step="1" value="{{ _ph_n - 1 }}" aria-label="Explore market history · 回看市场走势">
+      </div>
       {% else %}
       {# Placeholder when ms_history absent or <2 points #}
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;">
-        <span style="font-size:12px;color:var(--ink-3)"><span class="l-en">Path chart — accruing from nightly log.</span><span class="l-zh">走势图 — 每晚积累中。</span></span>
-      </div>
+      <div class="macro-history-empty"><span class="l-en">History is unavailable. A measured path requires at least two settled readings.</span><span class="l-zh">历史数据暂不可用，至少需要两次已结算读数才能显示走势。</span></div>
       {% endif %}
     </div>{# /mx5-sc-right #}
 
@@ -8671,94 +8677,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     })();
     </script>
 
-    {# ── Path-chart hover enhancement (Order 1c) — pure progressive layer.
-       Reads data-points (viewBox x/y baked in) + the SVG's live bounding rect,
-       maps viewBox→screen so the crosshair/dot/tooltip are pixel-crisp regardless
-       of the SVG's non-uniform stretch. Chart is fully legible without this. #}
-    <script>
-    (function(){
-      var svg = document.querySelector('.mx5-sc-right .mx5-path-svg[data-points]');
-      if(!svg) return;
-      var plot = svg.closest('.mx5-path-plot'); if(!plot) return;
-      var cross = plot.querySelector('.mx5-path-cross');
-      var dot   = plot.querySelector('.mx5-path-dot');
-      var tip   = plot.querySelector('.mx5-path-tip');
-      if(!cross || !dot || !tip) return;
-      var tDate = tip.querySelector('.mx5-path-tip-date');
-      var tScore= tip.querySelector('.mx5-path-tip-score');
-      var tVerd = tip.querySelector('.mx5-path-tip-verdict');
-      var pts;
-      try { pts = JSON.parse(svg.getAttribute('data-points') || '[]'); } catch(e){ return; }
-      if(!pts.length) return;
-      /* the live layer (risk_state_live.js patchPath) appends/updates a provisional
-         point and rewrites data-points — re-read so the tooltip includes it */
-      document.addEventListener('mx5pathlive', function(){
-        try { pts = JSON.parse(svg.getAttribute('data-points') || '[]'); } catch(e){}
-      });
-      var VBW = +(svg.getAttribute('data-vbw')||1000);
-      var VBH = +(svg.getAttribute('data-vbh')||224);
-      var COL = { 'Risk-on':'#22d97a', 'Mixed':'#f59e0b', 'Risk-off':'#ef4444' };
-      function isZh(){
-        var el=document.documentElement;
-        return (el.getAttribute('data-lang')||'').slice(0,2)==='zh';
-      }
-      /* nearest point index for a screen-x, using each point's baked viewBox x */
-      function nearest(clientX){
-        var r = svg.getBoundingClientRect();
-        var vx = (clientX - r.left) / r.width * VBW;   // back to viewBox space
-        var best=0, bd=Infinity;
-        for(var i=0;i<pts.length;i++){
-          var d=Math.abs(pts[i].x - vx);
-          if(d<bd){ bd=d; best=i; }
-        }
-        return best;
-      }
-      function show(i){
-        var p = pts[i]; if(!p) return;
-        var r = svg.getBoundingClientRect();
-        var pr = plot.getBoundingClientRect();
-        var sx = (p.x / VBW) * r.width  + (r.left - pr.left);
-        var sy = (p.y / VBH) * r.height + (r.top  - pr.top);
-        cross.style.left = sx + 'px';   cross.style.opacity = '1';
-        dot.style.left = sx + 'px';     dot.style.top = sy + 'px';
-        dot.style.background = COL[p.v] || '#22d97a';
-        dot.style.opacity = '1';
-        tDate.textContent = isZh() ? (p.mz || p.d) : (p.md || p.d);
-        tScore.textContent = p.s;
-        tVerd.textContent = isZh() ? (p.vz||p.v) : p.v;
-        tVerd.style.color = COL[p.v] || '#22d97a';
-        /* clamp tooltip x within the plot so it never overflows the card edge */
-        var half = tip.offsetWidth/2 || 60;
-        var clx = Math.max(half+2, Math.min(pr.width-half-2, sx));
-        tip.style.left = clx + 'px';
-        tip.style.top  = sy + 'px';
-        tip.classList.add('show');
-      }
-      function hide(){
-        cross.style.opacity='0'; dot.style.opacity='0'; tip.classList.remove('show');
-      }
-      var raf=0, lastX=0;
-      function onMove(clientX){
-        lastX=clientX;
-        if(raf) return;
-        raf=requestAnimationFrame(function(){ raf=0; show(nearest(lastX)); });
-      }
-      svg.addEventListener('mousemove', function(e){ onMove(e.clientX); });
-      svg.addEventListener('mouseleave', hide);
-      /* touch: tap/drag shows nearest point; touchend leaves it briefly then hides */
-      svg.addEventListener('touchstart', function(e){
-        if(e.touches && e.touches[0]) show(nearest(e.touches[0].clientX));
-      }, {passive:true});
-      svg.addEventListener('touchmove', function(e){
-        if(e.touches && e.touches[0]) show(nearest(e.touches[0].clientX));
-      }, {passive:true});
-      svg.addEventListener('touchend', function(){ setTimeout(hide, 1400); }, {passive:true});
-      /* keep tooltip language in sync if the user flips EN/ZH while it is open */
-      document.addEventListener('langchange', function(){
-        if(tip.classList.contains('show')) show(nearest(lastX));
-      });
-    })();
-    </script>
+    {# Extend the existing path enhancement; the live owner still supplies all points. #}
+    <script>{% include "_macro_history.js.j2" %}</script>
+    {% elif mode == 'macro' %}
+    <div class="mx5-sc-left">
+      <h2 class="macro-outlook-title" id="macro-outlook-title"><span class="l-en">Market state</span><span class="l-zh">市场状态</span></h2>
+      <p class="macro-card-unavailable"><span class="l-en">The market outlook is unavailable. Explore the latest events and market readings below.</span><span class="l-zh">市场展望暂缺，可先查看下方事件与市场读数。</span></p>
+    </div>
     {% endif %}{# /if market_state — v2 hero #}
   {% if mode != 'stocks' %}
   {# ── MX5 Popover system — mx5TogglePop / mx5CloseAllPopovers ── #}
@@ -8870,13 +8795,85 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {# MX4-RACK — grid-view card rack; 8 .sx sections below; footer outside #}
   <div class="mx4-rack">
 
+  {# 3. MARKETS row + tray #}
+  <div class="sx" id="sx-markets-v2">
+    {# v5 face — MARKETS: the LIVE TAPE (Phase 1, research/LIVE_TAPE_SCOREBOARD_MASTERPLAN.md).
+       Six macro-transmission instruments — index FUTURES (24h overnight read) + the
+       10-year yield + the dollar — that tick over the /ws/tape server-fanout websocket
+       (fallback ladder: ws -> live.js polling -> baked numbers). The old mixed spot/futures
+       strip (SPY/QQQ/DJI/RUT + ES=F/NQ=F) was replaced here per the operator ruling; the
+       spot-index deep-dive dialog (dlg-markets, below) still carries the cash indices.
+       No sparklines — the established futures-tile precedent (no nightly per-name store).
+       data-bare opts out of the "$" prefix so a futures level / index level / yield reads
+       correctly. #}
+    <div class="sxg-face mx5-card-face">
+      <div class="macro-section-heading">
+        <h2><span class="l-en">Market snapshot</span><span class="l-zh">市场速览</span></h2>
+        <button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-markets" onclick="mx5OpenDlg('dlg-markets')"><span class="l-en">Explore markets</span><span class="l-zh">查看市场详情</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button>
+      </div>
+      <div class="mx5-mkt-grid">
+        <div class="mx5-mkt-tile" data-sym="ES=F" data-mkt="us">
+          <div class="mx5-mkt-ticker">ES</div>
+          <div class="mx5-mkt-sub"><span class="l-en">S&amp;P fut</span><span class="l-zh">标普期货</span></div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="ES=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="ES=F" data-mkt="us" aria-busy="true"></div>
+        </div>
+        <div class="mx5-mkt-tile" data-sym="NQ=F" data-mkt="us">
+          <div class="mx5-mkt-ticker">NQ</div>
+          <div class="mx5-mkt-sub"><span class="l-en">Nasdaq fut</span><span class="l-zh">纳指期货</span></div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="NQ=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="NQ=F" data-mkt="us" aria-busy="true"></div>
+        </div>
+        <div class="mx5-mkt-tile" data-sym="YM=F" data-mkt="us">
+          <div class="mx5-mkt-ticker">YM</div>
+          <div class="mx5-mkt-sub"><span class="l-en">Dow fut</span><span class="l-zh">道指期货</span></div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="YM=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="YM=F" data-mkt="us" aria-busy="true"></div>
+        </div>
+        <div class="mx5-mkt-tile" data-sym="RTY=F" data-mkt="us">
+          <div class="mx5-mkt-ticker">RTY</div>
+          <div class="mx5-mkt-sub"><span class="l-en">Russell fut</span><span class="l-zh">罗素期货</span></div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="RTY=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="RTY=F" data-mkt="us" aria-busy="true"></div>
+        </div>
+        {# ^TNX — Yahoo streams the 10-year yield as yield×10 (42.5 => 4.25%); the
+           data-fmt="tnx" price tile divides by 10 + suffixes "%", and its delta renders
+           in basis points (live.js). ^TNX only trades cash hours, so off-hours the tile
+           keeps its stale/baked stamping — never a faked overnight live number. #}
+        <div class="mx5-mkt-tile" data-sym="^TNX" data-mkt="us">
+          <div class="mx5-mkt-ticker">10Y</div>
+          <div class="mx5-mkt-sub"><span class="l-en">10Y yield</span><span class="l-zh">十年期收益率</span></div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" aria-busy="true"></div>
+        </div>
+        <div class="mx5-mkt-tile" data-sym="DX-Y.NYB" data-mkt="us">
+          <div class="mx5-mkt-ticker">DXY</div>
+          <div class="mx5-mkt-sub"><span class="l-en">Dollar DXY</span><span class="l-zh">美元指数</span></div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="DX-Y.NYB" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="DX-Y.NYB" data-mkt="us" aria-busy="true"></div>
+        </div>
+      </div>
+    </div>
+    {# Heatmap staging: this div sits outside any dialog, height-collapsed so it
+       doesn't affect layout. On first open of dlg-markets, mx5OpenDlg adopts the
+       node into #dlg-heatmap-scorecard, then loads heatmap.js on demand. #}
+    <div class="mx5-hm-stage" style="height:0;overflow:hidden;width:min(920px,calc(100vw - 100px))" aria-hidden="true">
+      <div class="isle-heatmap-chrome-head"><span class="l-en">Sector Heatmap</span><span class="l-zh">板块热力图</span></div>
+      <div id="heatmap-scorecard" style="min-height:120px"></div>
+    </div>
+  </div>{# /sx-markets-v2 #}
+
+<section class="macro-workspace-section" id="macro-priorities" aria-labelledby="macro-priorities-title" tabindex="-1">
+<div class="macro-section-heading mx-sec"><h2 id="macro-priorities-title"><span class="l-en">Today’s priorities</span><span class="l-zh">今日重点</span></h2></div>
+<div class="macro-card-grid ">
+
   {# 1. EVIDENCE row + tray #}
   {% set _weakest = MS2.components | sort(attribute='score') | first if (MS2 and MS2.components) else none %}
   <div class="sx" id="sx-evidence" style="--isle-color:var(--isle-evidence)">
     {# Three-priority glance. Details stay in the Evidence dialog opened by the card.
        Priority order: stance, nearest event/weakest leg, active policy/risk radar. #}
-    <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-evidence')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-evidence');}">
-      <div class="mx5-card-title"><span class="l-en">What To Do Now</span><span class="l-zh">现在怎么做</span></div>
+    <div class="sxg-face mx5-card-face">
+      <h3 class="mx5-card-title"><span class="l-en">What To Do Now</span><span class="l-zh">现在怎么做</span></h3>
       <div class="mx5-action-list">
         {# 1. Current stance — deliberately short; the live poller patches this row. #}
         {% if market_state %}
@@ -9070,7 +9067,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </div>
         {% endif %}
 
+        {% if not market_state and not macro_catalysts and not _wtd_dislo and not _wtd_pl_active %}
+        <p class="macro-card-unavailable"><span class="l-en">Priorities are unavailable. Open the evidence for source context.</span><span class="l-zh">当前重点暂不可用。打开依据查看来源背景。</span></p>
+        {% endif %}
       </div>{# /mx5-action-list #}
+      <div class="macro-card-actions"><button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-evidence" onclick="mx5OpenDlg('dlg-evidence')"><span class="l-en">View the evidence</span><span class="l-zh">查看依据</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
     </div>{# /sxg-face WTD #}
   </div>{# /sx-evidence #}
 
@@ -9091,9 +9092,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {% set _ev_stance_en = "Nothing scheduled that should change positioning this week." %}
       {% set _ev_stance_zh = "本周暂无应改变仓位的安排。" %}
     {% endif %}
-    <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-events')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-events');}">
+    <div class="sxg-face mx5-card-face">
       <div class="mx5-card-title-row">
-        <div class="mx5-card-title"><span class="l-en">Upcoming Events</span><span class="l-zh">近期事件</span></div>
+        <h3 class="mx5-card-title"><span class="l-en">Upcoming Events</span><span class="l-zh">近期事件</span></h3>
         <div class="mx5-card-badge"><span class="l-en">This week</span><span class="l-zh">本周</span></div>
       </div>
       <div class="mx5-card-stance">
@@ -9125,8 +9126,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% set _lbl_zh = c.get('label_zh') or c.label %}
           <div class="mx5-tl-item">
             <div class="mx5-tl-nodezone"><div class="mx5-tl-dot {{ _dot_cls }}"></div></div>
-            <div class="mx5-tl-date">{{ _mos2[c.date[5:7]|int] }} {{ c.date[8:10]|int }}</div>
-            <div class="mx5-tl-name"><span class="l-en">{{ c.label[:16] }}{{ '…' if c.label|length > 16 }}</span><span class="l-zh">{{ _lbl_zh[:7] }}{{ '…' if _lbl_zh|length > 7 }}</span></div>
+            <div class="mx5-tl-date"><span class="l-en">{{ _mos2[c.date[5:7]|int] }} {{ c.date[8:10]|int }}</span><span class="l-zh">{{ c.date[5:7]|int }}月{{ c.date[8:10]|int }}日</span></div>
+            <div class="mx5-tl-name"><span class="l-en">{{ c.label }}</span><span class="l-zh">{{ _lbl_zh }}</span></div>
             <div class="mx5-tl-badge {{ _bdg_cls }}">
               <span class="l-en">{{ c.impact | upper }}</span>
               <span class="l-zh">{{ {'high':'高','med':'中','low':'低'}.get(c.impact, c.impact) }}</span>
@@ -9143,6 +9144,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </span>
       </div>
       {% endif %}
+      <div class="macro-card-actions"><button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-events" onclick="mx5OpenDlg('dlg-events')"><span class="l-en">Open event calendar</span><span class="l-zh">打开事件日历</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
     </div>
     {# Release Radar + RR modals live here — outside any sx-tray so they persist in DOM #}
   {% if mode != 'stocks' %}
@@ -11742,6 +11744,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% endif %}
   </div>{# /sx-events-v2 #}
 
+  </div></section>{# /macro-priorities #}
+
+<section class="macro-workspace-section" id="macro-drivers" aria-labelledby="macro-drivers-title" tabindex="-1">
+<div class="macro-section-heading mx-sec"><h2 id="macro-drivers-title"><span class="l-en">Market drivers</span><span class="l-zh">市场驱动</span></h2><span class="macro-section-note"><span class="l-en">Rates, sentiment and sector leadership</span><span class="l-zh">利率、情绪与板块轮动</span></span><span class="macro-section-note macro-driver-hint"><span class="l-en">Swipe to explore →</span><span class="l-zh">滑动查看 →</span></span></div>
+<div class="macro-card-grid macro-driver-grid">
+
   {# ── v5 STATIC CARDS — Fed Probability, Market Sentiment, Sector Temperature ── #}
   {# Grid-only (display:none in ledger view via .sx-v5-static CSS rule) #}
   {% if mode != 'stocks' %}
@@ -11789,8 +11797,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% set _rc_sp_area = 'M' ~ _rc_sp_pts[0] ~ ' L' ~ _rc_sp_pts[1] ~ ' L' ~ _rc_sp_pts[2] ~ ' L' ~ _rc_sp_pts[3] ~ ' L' ~ _rc_sp_pts[4] ~ ' L120,36 L0,36 Z' %}
   {% endif %}
   {% if _rc %}
-  <div class="mx5-card" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-fed')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-fed');}">
-    <div class="mx5-card-title"><span class="l-en">Fed Path</span><span class="l-zh">联储路径</span></div>
+  <div class="mx5-card">
+    <h3 class="mx5-card-title"><span class="l-en">Fed Path</span><span class="l-zh">联储路径</span></h3>
     {# State line #}
     {% if _rc_sl_en %}
     <div class="plf-stance-row" style="margin-bottom:4px">
@@ -11838,7 +11846,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     </div>
     {% endif %}
     {# Quiet open affordance (unified face anatomy) #}
-    <div class="plf-open"><span class="l-en">Open forward board</span><span class="l-zh">打开前瞻看板</span> &rarr;</div>
+    <div class="macro-card-actions"><button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-fed" onclick="mx5OpenDlg('dlg-fed')"><span class="l-en">Open forward board</span><span class="l-zh">打开前瞻看板</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
   </div>
   {% else %}
   {# Graceful absent: show market-implied benchmark when rates_command not yet built #}
@@ -11847,8 +11855,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% set _fedv5_top = _fedv5_ev.outcomes | sort(attribute='prob',reverse=true) | first %}
   {% set _fedv5_pct = _fedv5_top.prob | float %}
   {% set _fedv5_outcome_zh = {'No change':'按兵不动','Rate cut':'降息','Rate hike':'加息','25bps cut':'降息25bp','50bps cut':'降息50bp','25bps hike':'加息25bp'}.get(_fedv5_top.outcome, _fedv5_top.outcome) %}
-  <div class="mx5-card" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-fed')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-fed');}">
-    <div class="mx5-card-title"><span class="l-en">Fed Path</span><span class="l-zh">联储路径</span></div>
+  <div class="mx5-card">
+    <h3 class="mx5-card-title"><span class="l-en">Fed Path</span><span class="l-zh">联储路径</span></h3>
     <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-bottom:4px">
       <span class="l-en">Market-implied benchmark (forward path pending)</span>
       <span class="l-zh">市场隐含基准（路径数据待建）</span>
@@ -11861,23 +11869,27 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       <span class="l-zh">{{ _fedv5_outcome_zh }}</span>
     </div>
     <div style="font-size:10px;color:var(--ink-3,rgba(255,255,255,.36));margin-top:6px">Polymarket</div>
+    <div class="macro-card-actions"><button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-fed" onclick="mx5OpenDlg('dlg-fed')"><span class="l-en">Open forward board</span><span class="l-zh">打开前瞻看板</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
   </div>
   {% else %}
-  <div class="mx5-card" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-fed')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-fed');}">
-    <div class="mx5-card-title"><span class="l-en">Fed Path</span><span class="l-zh">联储路径</span></div>
+  <div class="mx5-card">
+    <h3 class="mx5-card-title"><span class="l-en">Fed Path</span><span class="l-zh">联储路径</span></h3>
     <div style="flex:1;display:flex;align-items:center;justify-content:center">
       <span style="font-size:12px;color:var(--ink-3,rgba(255,255,255,.36))">
         <span class="l-en">Forward path data — accruing from nightly log.</span>
         <span class="l-zh">路径数据 — 每晚积累中。</span>
       </span>
     </div>
+    <div class="macro-card-actions"><button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-fed" onclick="mx5OpenDlg('dlg-fed')"><span class="l-en">Open forward board</span><span class="l-zh">打开前瞻看板</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
   </div>
   {% endif %}
   {% endif %}
   </div>{# /sx-v5-fed #}
 
   {# ── Market Sentiment ── #}
-  {% set _fgv5_dial0 = ((fear_greed.get('dial') if (fear_greed is defined and fear_greed) else 50) or 50) | float %}
+  {% set _fgv5_value = fear_greed.get('dial') if (fear_greed is defined and fear_greed) else none %}
+  {% set _fgv5_known = _fgv5_value is number and _fgv5_value is not boolean and _fgv5_value >= 0 and _fgv5_value <= 100 %}
+  {% set _fgv5_dial0 = (_fgv5_value if _fgv5_known else 50) | float %}
   <style>
   /* zh 红涨绿跌 for the Fear & Greed gauge: Greed=bullish→red, Fear=bearish→green (neutral amber).
      --fg-col routes through --up/--warn/--down so it auto-flips in zh; SVG marks + zone word read it. */
@@ -11893,7 +11905,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   </style>
   <div class="sx-v5-static {{ 'fg-greed' if _fgv5_dial0 > 60 else ('fg-fear' if _fgv5_dial0 < 40 else 'fg-neutral') }}" id="sx-v5-sentiment">
   {% set _fgv5 = fear_greed if (fear_greed is defined and fear_greed) else {} %}
-  {% set _fgv5_dial = (_fgv5.get('dial') or 50) | float %}
+  {% set _fgv5_dial = _fgv5_dial0 %}
   {% set _fgv5_label_en = _fgv5.get('label_en') or ('Neutral' if _fgv5_dial >= 40 and _fgv5_dial <= 60 else ('Greed' if _fgv5_dial > 60 else 'Fear')) %}
   {% set _fgv5_label_zh = _fgv5.get('label_zh') or {'Extreme Fear':'极度恐慌','Fear':'恐慌','Neutral':'中性','Greed':'贪婪','Extreme Greed':'极度贪婪'}.get(_fgv5_label_en, _fgv5_label_en) %}
   {# greed zone = bullish → --up (red in zh), fear zone = bearish → --down (green in zh);
@@ -11904,10 +11916,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {# Needle: SVG rotate transform — angle=dial/100*180, needle points from center (190,185) upward.
      rotate(angle-90, cx, cy) maps 0→left, 100→right; no trig needed in Jinja. #}
   {% set _fg_needle_rot = (_fgv5_dial / 100 * 180 - 90) | round(1) %}
-  <div class="mx5-card" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-sentiment')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-sentiment');}">
-    <div class="mx5-card-title"><span class="l-en">Market Sentiment</span><span class="l-zh">市场情绪</span></div>
+  <div class="mx5-card">
+    <h3 class="mx5-card-title"><span class="l-en">Market Sentiment</span><span class="l-zh">市场情绪</span></h3>
+    {% if _fgv5_known %}
     <div class="mx5-sentiment-dial-wrap">
-      <svg viewBox="0 0 380 212" style="width:100%;max-width:340px;height:190px;display:inline-block;overflow:visible">
+      <svg role="img" aria-label="Sentiment composite {{ _fgv5_dial | int }} out of 100 · 情绪合成 {{ _fgv5_dial | int }}/100" viewBox="0 0 380 212" style="width:100%;max-width:340px;height:190px;display:inline-block;overflow:visible">
         <defs>
           <linearGradient id="sentGrad5" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%"   stop-color="#ef4444"/>
@@ -11940,6 +11953,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <text class="l-en fg-lab-euph" x="354" y="208" fill="#22d97a" font-size="13" font-family="Inter,-apple-system,sans-serif" text-anchor="end" font-weight="700">EUPHORIA</text>
         <text class="l-zh fg-lab-euph" x="354" y="208" fill="#22d97a" font-size="13" font-family="Inter,-apple-system,sans-serif" text-anchor="end" font-weight="700">亢奋</text>
       </svg>
+      <div class="macro-sentiment-scale" aria-hidden="true"><span>{{ t('Panic','恐慌') }}</span><span>{{ t('Euphoria','亢奋') }}</span></div>
     </div>
     <div class="mx5-sentiment-zone-text" style="color:var(--fg-ink, {{ _fgv5_ink }})">
       <span class="l-en">{{ _fgv5_label_en }}</span>
@@ -11985,14 +11999,17 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
        (#vsb-breadth-split-section) with a chip link from the hero breadth
        driver. Do not duplicate the glance-tier caveat here. #}
     {# Quiet open affordance (unified face anatomy) #}
-    <div class="plf-open plf-open-sent"><span class="l-en">Open sentiment detail</span><span class="l-zh">打开情绪详情</span> &rarr;</div>
+    {% else %}
+    <p class="macro-card-unavailable"><span class="l-en">Sentiment is unavailable. The composite will return when its inputs are ready.</span><span class="l-zh">情绪读数暂缺，待数据齐备后恢复显示。</span></p>
+    {% endif %}
+    <div class="macro-card-actions"><button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-sentiment" onclick="mx5OpenDlg('dlg-sentiment')"><span class="l-en">Explore sentiment</span><span class="l-zh">查看情绪详情</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
   </div>
   </div>{# /sx-v5-sentiment #}
 
   {# ── Sector Temperature ── #}
   <div class="sx-v5-static" id="sx-v5-sector">
-  <div class="mx5-card" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-sector')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-sector');}">
-    <div class="mx5-card-title"><span class="l-en">Sector Temperature</span><span class="l-zh">板块温度</span></div>
+  <div class="mx5-card">
+    <h3 class="mx5-card-title"><span class="l-en">Sector Temperature</span><span class="l-zh">板块温度</span></h3>
     {% if sector_heat %}
     {% set _shv5_hot = (sector_heat.get('heating') or [])[:3] %}
     {% set _shv5_cold = (sector_heat.get('cooling') or [])[:3] %}
@@ -12062,7 +12079,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     </div>
     {% endif %}
     {# Quiet open affordance (unified face anatomy) #}
-    <div class="plf-open plf-open-sect"><span class="l-en">Open sector heat</span><span class="l-zh">打开板块热图</span> &rarr;</div>
+
     {% else %}
     <div class="mx5-card-stance">
       <span class="l-en">Watch — this read is being updated.</span>
@@ -12075,75 +12092,14 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       </div>
     </div>
     {% endif %}
+    <div class="macro-card-actions"><button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-sector" onclick="mx5OpenDlg('dlg-sector')"><span class="l-en">Explore sector heat</span><span class="l-zh">查看板块热度</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
   </div>
   </div>{# /sx-v5-sector #}
+  </div></section>{# /macro-drivers #}
 
   {% endif %}{# /mode != stocks #}
 
-  {# 3. MARKETS row + tray #}
-  <div class="sx" id="sx-markets-v2" style="--isle-color:var(--isle-markets)">
-    {# v5 face — MARKETS: the LIVE TAPE (Phase 1, research/LIVE_TAPE_SCOREBOARD_MASTERPLAN.md).
-       Six macro-transmission instruments — index FUTURES (24h overnight read) + the
-       10-year yield + the dollar — that tick over the /ws/tape server-fanout websocket
-       (fallback ladder: ws -> live.js polling -> baked numbers). The old mixed spot/futures
-       strip (SPY/QQQ/DJI/RUT + ES=F/NQ=F) was replaced here per the operator ruling; the
-       spot-index deep-dive dialog (dlg-markets, below) still carries the cash indices.
-       No sparklines — the established futures-tile precedent (no nightly per-name store).
-       data-bare opts out of the "$" prefix so a futures level / index level / yield reads
-       correctly. #}
-    <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Markets" onclick="mx5OpenDlg('dlg-markets')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-markets');}">
-      {# Eyebrow hidden in v5 card face — card-title removed (1.1); aria-label carries accessible name #}
-      <div class="mx5-mkt-grid">
-        <div class="mx5-mkt-tile" data-sym="ES=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">ES</div>
-          <div class="mx5-mkt-sub"><span class="l-en">S&amp;P fut</span><span class="l-zh">标普期货</span></div>
-          <div class="mx5-mkt-price nb-px skel" data-sym="ES=F" data-mkt="us" data-bare aria-busy="true"></div>
-          <div class="mx5-mkt-delta nb-chg skel" data-sym="ES=F" data-mkt="us" aria-busy="true"></div>
-        </div>
-        <div class="mx5-mkt-tile" data-sym="NQ=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">NQ</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Nasdaq fut</span><span class="l-zh">纳指期货</span></div>
-          <div class="mx5-mkt-price nb-px skel" data-sym="NQ=F" data-mkt="us" data-bare aria-busy="true"></div>
-          <div class="mx5-mkt-delta nb-chg skel" data-sym="NQ=F" data-mkt="us" aria-busy="true"></div>
-        </div>
-        <div class="mx5-mkt-tile" data-sym="YM=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">YM</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Dow fut</span><span class="l-zh">道指期货</span></div>
-          <div class="mx5-mkt-price nb-px skel" data-sym="YM=F" data-mkt="us" data-bare aria-busy="true"></div>
-          <div class="mx5-mkt-delta nb-chg skel" data-sym="YM=F" data-mkt="us" aria-busy="true"></div>
-        </div>
-        <div class="mx5-mkt-tile" data-sym="RTY=F" data-mkt="us">
-          <div class="mx5-mkt-ticker">RTY</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Russell fut</span><span class="l-zh">罗素期货</span></div>
-          <div class="mx5-mkt-price nb-px skel" data-sym="RTY=F" data-mkt="us" data-bare aria-busy="true"></div>
-          <div class="mx5-mkt-delta nb-chg skel" data-sym="RTY=F" data-mkt="us" aria-busy="true"></div>
-        </div>
-        {# ^TNX — Yahoo streams the 10-year yield as yield×10 (42.5 => 4.25%); the
-           data-fmt="tnx" price tile divides by 10 + suffixes "%", and its delta renders
-           in basis points (live.js). ^TNX only trades cash hours, so off-hours the tile
-           keeps its stale/baked stamping — never a faked overnight live number. #}
-        <div class="mx5-mkt-tile" data-sym="^TNX" data-mkt="us">
-          <div class="mx5-mkt-ticker">10Y</div>
-          <div class="mx5-mkt-sub"><span class="l-en">10Y yield</span><span class="l-zh">十年期收益率</span></div>
-          <div class="mx5-mkt-price nb-px skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" data-bare aria-busy="true"></div>
-          <div class="mx5-mkt-delta nb-chg skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" aria-busy="true"></div>
-        </div>
-        <div class="mx5-mkt-tile" data-sym="DX-Y.NYB" data-mkt="us">
-          <div class="mx5-mkt-ticker">DXY</div>
-          <div class="mx5-mkt-sub"><span class="l-en">Dollar DXY</span><span class="l-zh">美元指数</span></div>
-          <div class="mx5-mkt-price nb-px skel" data-sym="DX-Y.NYB" data-mkt="us" data-bare aria-busy="true"></div>
-          <div class="mx5-mkt-delta nb-chg skel" data-sym="DX-Y.NYB" data-mkt="us" aria-busy="true"></div>
-        </div>
-      </div>
-    </div>
-    {# Heatmap staging: this div sits outside any dialog, height-collapsed so it
-       doesn't affect layout. On first open of dlg-markets, mx5OpenDlg adopts the
-       node into #dlg-heatmap-scorecard, then loads heatmap.js on demand. #}
-    <div class="mx5-hm-stage" style="height:0;overflow:hidden;width:min(920px,calc(100vw - 100px))" aria-hidden="true">
-      <div class="isle-heatmap-chrome-head"><span class="l-en">Sector Heatmap</span><span class="l-zh">板块热力图</span></div>
-      <div id="heatmap-scorecard" style="min-height:120px"></div>
-    </div>
-  </div>{# /sx-markets-v2 #}
+
 
   {# ── 4. RISK row + tray (Stage B) ── #}
   {# R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy
@@ -12157,6 +12113,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% endif %}{# /market_state #}
 
   {# ── 5. POLICY row + tray (Stage B) ── #}
+<section class="macro-workspace-section" id="macro-briefing" aria-labelledby="macro-briefing-title" tabindex="-1">
+<div class="macro-section-heading mx-sec"><h2 id="macro-briefing-title"><span class="l-en">Briefing & monitoring</span><span class="l-zh">简报与监测</span></h2></div>
+<div class="macro-card-grid macro-briefing-grid">
+
   {% if policy_lever is defined and policy_lever %}
   {% set PL = policy_lever %}
   {% set _pl_state = PL.get('state') or 'QUIET' %}
@@ -12186,8 +12146,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% set _pl_label_zh = (latest.fed_stance.label_zh if (latest.fed_stance is defined and latest.fed_stance and latest.fed_stance.label_zh is defined and latest.fed_stance.label_zh) else (_pl_fsl_zh.get(_pl_fed_st, _pl_fed_st) if _pl_fed_st else none)) %}
     {# evw_snap td_to_fomc for face chip #}
     {% set _pl_td_fomc = (evw_snap.get('td_to_fomc') if (evw_snap is defined and evw_snap and evw_snap.get('available')) else none) %}
-    <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-policy')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-policy');}">
-      <div class="mx5-card-title"><span class="l-en">Policy Monitor</span><span class="l-zh">政策监测</span></div>
+    <div class="sxg-face mx5-card-face">
+      <h3 class="mx5-card-title"><span class="l-en">Policy Monitor</span><span class="l-zh">政策监测</span></h3>
       {# 4a-1: Stance line — colored dot + plain-word state #}
       {% set _pl_dot_col = 'var(--down)' if _pl_state == 'ARMED' else ('var(--warn)' if _pl_state == 'ELEVATED' else 'color-mix(in srgb,var(--up) 70%,transparent)') %}
       <div class="plf-stance-row">
@@ -12261,6 +12221,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </span>
         {% endif %}
       </div>
+      <div class="macro-card-actions"><button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-policy" onclick="mx5OpenDlg('dlg-policy')"><span class="l-en">Explore policy</span><span class="l-zh">查看政策详情</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
     </div>
   </div>{# /sx-policy-v2 #}
   {% endif %}{# /policy_lever #}
@@ -12287,8 +12248,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {% set _abChl = _ch_ns.map.get(_abCh) if _abCh else none %}
     {% set _abDomCh_clean = (_abChl[0] if _abChl else (_abCh | replace('_',' '))) if _abCh else '' %}
     {% set _abDomCh_clean_zh = (_abChl[1] if _abChl else (_abCh | replace('_',' '))) if _abCh else '' %}
-    <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-aibrief')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-aibrief');}">
-      <div class="mx5-card-title"><span class="l-en">AI Brief</span><span class="l-zh">AI简报</span></div>
+    <div class="sxg-face mx5-card-face">
+      <h3 class="mx5-card-title"><span class="l-en">AI Brief</span><span class="l-zh">AI简报</span></h3>
       {# Top ticker pills (VIS-02: wraps freely, no fixed-width clip) #}
       {% if _abSyn.get('top_tickers') %}
       <div class="mx5-ai-ticker-pills">
@@ -12340,6 +12301,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <span class="l-en">A read-through of existing signals &mdash; not a signal source.</span>
         <span class="l-zh">仅为现有信号的汇总解读 &mdash; 非独立信号源。</span>
       </div>
+      <div class="macro-card-actions"><button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-aibrief" onclick="mx5OpenDlg('dlg-aibrief')"><span class="l-en">Read the brief</span><span class="l-zh">阅读简报</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
     </div>
   </div>{# /sx-aibrief-v2 #}
   {% endif %}{# /mode != stocks #}
@@ -12364,9 +12326,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {# Face list: first 2 prio, then hot headline, then pad prio to 3 rows total #}
     {% set _alv5_face_prio_2 = _alv5_prio[:2] %}
     {% set _alv5_prio_rest = _alv5_prio[2:] %}
-    <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-news')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-news');}">
+    <div class="sxg-face mx5-card-face">
       <div class="mx5-card-title-row">
-        <div class="mx5-card-title"><span class="l-en">Alerts Centre</span><span class="l-zh">警报中心</span></div>
+        <h3 class="mx5-card-title"><span class="l-en">Alerts Centre</span><span class="l-zh">警报中心</span></h3>
         {% set _al_need = _alv5_prio | length %}
         {% if _nalerts == 0 %}
         {# N==0 is not an amber alarm. Neutral empty form; news-fallback may sit beneath. #}
@@ -12475,10 +12437,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <span class="l-zh">{{ _al_need }} 条需处理 · 共 {{ _nalerts }} 条</span>
           {% endif %}
         </span>
-        <button type="button" class="gbtn gbtn-sm gbtn-quiet" onclick="event.stopPropagation();mx5OpenDlg('dlg-news')">
-          <span class="l-en">View all &#8594;</span>
-          <span class="l-zh">查看全部 &#8594;</span>
-        </button>
+
       </div>
       {% elif macro_news and macro_news.headlines %}
       {# No alerts — fall back to top 3 headlines #}
@@ -12502,10 +12461,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <span class="l-en">{{ macro_news.headlines|length }} items</span>
           <span class="l-zh">{{ macro_news.headlines|length }} 条</span>
         </span>
-        <button type="button" class="gbtn gbtn-sm gbtn-quiet" onclick="event.stopPropagation();mx5OpenDlg('dlg-news')">
-          <span class="l-en">View all &#8594;</span>
-          <span class="l-zh">查看全部 &#8594;</span>
-        </button>
+
       </div>
       {% else %}
       <div style="flex:1;display:flex;align-items:center">
@@ -12515,9 +12471,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </span>
       </div>
       {% endif %}
+      <div class="macro-card-actions"><button type="button" class="gbtn macro-detail-button" aria-haspopup="dialog" aria-controls="dlg-news" onclick="mx5OpenDlg('dlg-news')"><span class="l-en">Open alerts centre</span><span class="l-zh">打开警报中心</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
     </div>
   </div>{# /sx-news-v2 #}
   {% endif %}{# /mode != stocks #}
+
+  </div></section>{# /macro-briefing #}
 
   {# ── 8. DEEP CONTEXT row (Stage B — link-out chips + health footer) ── #}
   {% if mode != 'stocks' %}
@@ -12538,7 +12497,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {%- set _wnx_rtop = ((_wnx_rdr.get('top_score') or _wnx_rdr.get('top') or 0) | int) if _wnx_rdr else 0 -%}
     {%- set _wnx_risk_elev = (_wnx_rdr and ((_wnx_rstate not in ('calm','quiet','dormant','none','unknown','')) or (_wnx_rtop >= 50))) -%}
     <div class="sxg-face mx5-card-face">
-      <div class="wnx-eyebrow"><span class="l-en">Where next</span><span class="l-zh">接下来</span></div>
+      <h2 class="wnx-eyebrow"><span class="l-en">Continue your research</span><span class="l-zh">继续研究</span></h2>
       <div class="wnx-cards">
 
         {# ── Card A — tonight's biggest print ── #}
@@ -12558,7 +12517,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
             <span class="l-en">Week ahead</span><span class="l-zh">本周日历</span>
           </div>
-          <div class="wnx-state"><span class="l-en">{{ _wnx_ev.label[:22] }}</span><span class="l-zh">{{ (_wnx_ev.get('label_zh') or _wnx_ev.label)[:12] }}</span></div>
+          <div class="wnx-state"><span class="l-en">{{ _wnx_ev.label }}</span><span class="l-zh">{{ _wnx_ev.get('label_zh') or _wnx_ev.label }}</span></div>
           <div class="wnx-line">
             {% if _wnx_ev.impact == 'high' %}
             <span class="l-en">{{ _mos2[_wnx_ev.date[5:7]|int] }} {{ _wnx_ev.date[8:10]|int }} · big print — expect swings</span>
@@ -13856,7 +13815,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {% set fg = fear_greed if fear_greed is defined else none %}
         {% if ff is not none or fe is not none or fg is not none %}
         {% set _fe_sc = (fe.fe_score if (fe is not none and fe.fe_score is defined and fe.fe_score is not none) else none) %}
-        {% set _fg_val = (fg.dial if (fg is not none and fg.dial is defined and fg.dial is not none) else none) %}
+        {% set _fg_val = (fg.dial if (fg is not none and fg.dial is defined and fg.dial is number and fg.dial is not boolean and fg.dial >= 0 and fg.dial <= 100) else none) %}
         {% set _ff_score = ((ff.score if (ff.score is defined and ff.score is not none) else (ff.headline if (ff.headline is defined and ff.headline is not none) else none)) if ff is not none else none) %}
         {% set _fe_band = (fe.band if (fe is not none and fe.band is defined and fe.band) else '') %}
         {% set _fg_label = (fg.label_en if (fg is not none and fg.label_en is defined) else '') %}
@@ -15284,11 +15243,14 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         {# Native template: the baked metrics remain inert until an authorized open. #}
         <template data-sentiment-fold>
         {% set _dlg_fg = fear_greed if (fear_greed is defined and fear_greed) else {} %}
-        {% set _dlg_fg_dial = (_dlg_fg.get('dial') or 50) | float %}
-        {% set _dlg_fg_label_en = _dlg_fg.get('label_en') or 'Neutral' %}
-        {% set _dlg_fg_label_zh = _dlg_fg.get('label_zh') or '中性' %}
+        {% set _dlg_fg_value = _dlg_fg.get('dial') %}
+        {% set _dlg_fg_known = _dlg_fg_value is number and _dlg_fg_value is not boolean and _dlg_fg_value >= 0 and _dlg_fg_value <= 100 %}
+        {% set _dlg_fg_dial = (_dlg_fg_value if _dlg_fg_known else 50) | float %}
+        {% set _dlg_fg_label_en = _dlg_fg.get('label_en') or ('Fear' if _dlg_fg_dial < 40 else ('Greed' if _dlg_fg_dial > 60 else 'Neutral')) %}
+        {% set _dlg_fg_label_zh = _dlg_fg.get('label_zh') or ('恐慌' if _dlg_fg_dial < 40 else ('贪婪' if _dlg_fg_dial > 60 else '中性')) %}
         {% set _dlg_fg_col = '#22d97a' if _dlg_fg_dial > 60 else ('#ef4444' if _dlg_fg_dial < 40 else '#f59e0b') %}
         {# Hero: composite numeral + slim 0-100 zone track (Fear→Greed) #}
+        {% if _dlg_fg_known %}
         <div class="{{ 'fg-greed' if _dlg_fg_dial > 60 else ('fg-fear' if _dlg_fg_dial < 40 else 'fg-neutral') }} sg-hero">
           <div class="sg-hero-num" style="color:var(--fg-col, {{ _dlg_fg_col }})">{{ _dlg_fg_dial | int }}</div>
           <div>
@@ -15305,6 +15267,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <div class="sg-track-axis"><span>0 · {{ t('Fear','恐慌') }}</span><span>{{ t('Neutral','中性') }}</span><span>{{ t('Greed','贪婪') }} · 100</span></div>
         </div>
         <div class="mx5-dlg-sep"></div>
+        {% else %}
+        <p class="macro-card-unavailable"><span class="l-en">Sentiment is unavailable. No composite reading is shown until its inputs are ready.</span><span class="l-zh">情绪读数暂缺，待数据齐备后再显示合成读数。</span></p>
+        {% endif %}
         {# Composite legs — each row opens a hover popover (zone dial + plain
            explainer + receipt) via the shared [data-rpop]/.rp-src engine.
            Plain-word explainer pairs are TEMPLATE copy (Tier 2), keyed by leg.key. #}
@@ -15924,7 +15889,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
      `mode != 'macro'` guard here was unreachable (the surrounding `mode == 'macro'`
      block opens at line 2622 and closes at line 16081 with no else), so the two-axis
      base-effect forward path rendered on no page. The reachable stocks-mode include
-     now sits below, just after `{% endif %}{# /market_state B4 #}`. #}
+     now sits below, immediately after the market_state B4 block. #}
 
 
   {# ==================== RELEASE RADAR (MRI PR-D / W11-H MRI-R39) ====================
@@ -21804,5 +21769,6 @@ if (document.readyState === 'loading') {
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
+{% if mode == 'macro' %}<script>{% include "_macro_workspace.js.j2" %}</script>{% endif %}
 </body>
 </html>

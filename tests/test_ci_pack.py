@@ -4532,6 +4532,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "macro-workspace-browser",
     "sa-w4-improvement-lanes",
     "xguerrilla-identity-registry",
     "public-site-figma-baseline-contracts",

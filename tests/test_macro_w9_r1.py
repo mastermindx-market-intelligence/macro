@@ -61,13 +61,11 @@ def _render(mode="macro", **over) -> str:
 
 
 def _face(html: str, sid: str) -> str:
-    m = re.search(rf'id="{sid}"[\s\S]*?</div>\s*{{# /{sid}', html)
-    if m:
-        return m.group(0)
-    # fallback: slice from id to the next sx-v5 / sx id
-    m = re.search(rf'id="{sid}"[\s\S]{{0,8000}}', html)
-    assert m, f"module {sid} missing"
-    return m.group(0)
+    """Bound assertions to the actual card, independent of presentation order."""
+    from bs4 import BeautifulSoup
+    element = BeautifulSoup(html, "html.parser").find(id=sid)
+    assert element is not None, f"module {sid} missing"
+    return str(element)
 
 
 # --------------------------------------------------------------------------- #
@@ -116,6 +114,9 @@ def test_w9_capital_face_on_radar_integrated_band():
 
 _W9_FACE_TEMPLATES = (
     "templates/dashboard.html.j2",
+    "templates/_macro_workspace.css.j2",
+    "templates/_macro_workspace.js.j2",
+    "templates/_macro_history.js.j2",
     "templates/_risk_envelope_band.html.j2",
     "templates/live.js",
 )
@@ -290,8 +291,9 @@ def test_sentiment_stance_greed_is_euphoria_lane():
 def test_sentiment_stance_unknown():
     html = _render(fear_greed=None)
     sent = html[html.find('id="sx-v5-sentiment"'):html.find('id="sx-v5-sector"')]
-    assert _CAUTIOUS_EN in sent
-    assert _CAUTIOUS_ZH in sent
+    assert "Sentiment is unavailable" in sent
+    assert "情绪读数暂缺" in sent
+    assert 'class="mx5-sentiment-dial-wrap"' not in sent
 
 
 def test_sector_stance_heating():
@@ -311,7 +313,7 @@ def test_sector_stance_all_quiet():
 
 def test_sector_stance_unknown():
     html = _render(sector_heat=None)
-    sect = html[html.find('id="sx-v5-sector"'):html.find('id="sx-markets-v2"')]
+    sect = _face(html, "sx-v5-sector")
     assert _CAUTIOUS_EN in sect
     assert _CAUTIOUS_ZH in sect
 
@@ -373,13 +375,7 @@ def test_events_stance_n_zero():
 def test_markets_is_exempt_from_stance_law():
     """Seat ruling: Markets is a quote tape, not a signal panel."""
     html = _render()
-    start = html.find('id="sx-markets-v2"')
-    # Risk module is gated on market_state; the next always-present sibling is policy
-    # (or aibrief). Bound the face, not the rest of the page.
-    end_candidates = [html.find(s, start + 1) for s in
-                      ('id="sx-risk-v2"', 'id="sx-policy-v2"', 'id="sx-aibrief-v2"')]
-    end = min(i for i in end_candidates if i != -1)
-    mkt = html[start:end]
+    mkt = _face(html, "sx-markets-v2")
     assert 'id="sx-markets-v2"' in mkt
     for banned in (
         "Watch — don't chase",
@@ -398,11 +394,7 @@ def test_markets_is_exempt_from_stance_law():
 
 def test_markets_ssr_is_skeleton_not_dash():
     html = _render()
-    start = html.find('id="sx-markets-v2"')
-    end_candidates = [html.find(s, start + 1) for s in
-                      ('id="sx-risk-v2"', 'id="sx-policy-v2"', 'id="sx-aibrief-v2"')]
-    end = min(i for i in end_candidates if i != -1)
-    mkt = html[start:end]
+    mkt = _face(html, "sx-markets-v2")
     assert "mx5-mkt-price nb-px skel" in mkt
     assert 'aria-busy="true"' in mkt
     # no bare-em-dash price/delta in the strip
@@ -543,7 +535,7 @@ def test_markets_price_geometry_lives_on_the_node():
 
 def test_sector_null_keeps_its_why():
     html = _render(sector_heat=None)
-    sect = html[html.find('id="sx-v5-sector"'):html.find('id="sx-markets-v2"')]
+    sect = _face(html, "sx-v5-sector")
     assert _CAUTIOUS_EN in sect
     assert "Sector data — accruing from nightly log." in sect
     assert "板块数据 — 每晚积累中。" in sect
@@ -800,7 +792,7 @@ def test_load_upcoming_catalysts_docstring_names_builder_exception():
 
 def test_sector_null_why_uses_mx_empty_pair():
     html = _render(sector_heat=None)
-    sect = _slice(html, 'id="sx-v5-sector"', 'id="sx-markets-v2"')
+    sect = _face(html, "sx-v5-sector")
     assert 'class="mx-empty"' in sect
     assert "mx-empty-why" in sect
     assert 'style="font-size:12px;color:var(--ink-3);margin-top:6px"' not in sect
