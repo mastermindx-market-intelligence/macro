@@ -694,6 +694,47 @@ def oi_for_date(date: str, root: str,
     return frame.loc[:, list(_OI_COLUMNS)]
 
 
+def greeks_for_date(
+    date: str,
+    root: str,
+    store: str | Path | None = None,
+) -> pd.DataFrame:
+    """Exact source-session Greeks without caching/reading a whole root-year.
+
+    Extends the incumbent narrow OI reader for opt-in index-family composition.
+    A missing, corrupt or nonmatching source is ABSENT, never synthetic zero.
+    Rows retain original provenance columns and duplicate identities so the
+    family admission gate can reject collisions rather than silently dedup.
+    """
+    if not isinstance(date, str) or _CANONICAL_DATE_RE.fullmatch(date) is None:
+        raise ValueError("date must be canonical YYYY-MM-DD")
+    try:
+        stamp = pd.Timestamp(date)
+    except Exception as exc:  # noqa: BLE001
+        raise ValueError("date must be a real canonical YYYY-MM-DD date") from exc
+    if stamp.date().isoformat() != date:
+        raise ValueError("date must be a real canonical YYYY-MM-DD date")
+    root_key = root.upper()
+    path = store_root(store) / "greeks" / root_key / f"{stamp.year}.parquet"
+    if not path.is_file():
+        return pd.DataFrame()
+    try:
+        frame = pd.read_parquet(
+            path, filters=[("date", "==", stamp), ("root", "==", root_key)],
+        )
+    except Exception as exc:  # noqa: BLE001
+        log.debug("greeks_for_date: unavailable %s: %s", path, exc)
+        return pd.DataFrame()
+    if frame.empty or "date" not in frame.columns or "root" not in frame.columns:
+        return pd.DataFrame()
+    frame = _normalise_date(frame)
+    frame = frame[
+        (frame["date"] == date) &
+        (frame["root"].astype(str).str.upper() == root_key)
+    ].copy()
+    return frame.reset_index(drop=True)
+
+
 def eod_matrix_for_date(
     date: str,
     root: str,

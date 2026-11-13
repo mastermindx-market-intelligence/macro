@@ -696,3 +696,63 @@ def test_load_parquets_cache_hit_no_reread(monkeypatch):
 
     # Clean up
     ts.clear_parquet_cache()
+
+
+# NDX/NDXP source family — narrow Greeks source reader
+def test_greeks_for_date_filters_root_session_and_preserves_duplicate_contracts(monkeypatch, tmp_path):
+    from engine import thetadata_store as ts
+
+    store = tmp_path / "theta"
+    path = store / "greeks" / "NDX" / "2026.parquet"
+    path.parent.mkdir(parents=True)
+    source = pd.DataFrame([
+        {"root": "NDX", "date": pd.Timestamp("2026-10-23"),
+         "expiration": "2026-11-20", "strike": 20000.0, "right": "C",
+         "gamma": 0.003, "underlying_price": 20000.0},
+        {"root": "NDX", "date": pd.Timestamp("2026-10-23"),
+         "expiration": "2026-11-20", "strike": 20000.0, "right": "C",
+         "gamma": 0.003, "underlying_price": 20000.0},
+        {"root": "NDX", "date": pd.Timestamp("2026-10-22"),
+         "expiration": "2026-11-20", "strike": 20000.0, "right": "P",
+         "gamma": 0.002, "underlying_price": 20000.0},
+        {"root": "NDXP", "date": pd.Timestamp("2026-10-23"),
+         "expiration": "2026-10-23", "strike": 20000.0, "right": "C",
+         "gamma": 0.005, "underlying_price": 20000.0},
+    ])
+    source.to_parquet(path, index=False)
+    original = pd.read_parquet
+    calls = []
+
+    def tracked_read(*args, **kwargs):
+        calls.append((args, kwargs))
+        return original(*args, **kwargs)
+
+    before = {key: id(val) for key, val in ts._PARQUET_CACHE.items()}
+    monkeypatch.setattr(pd, "read_parquet", tracked_read)
+    frame = ts.greeks_for_date("2026-10-23", "ndx", store=store)
+    assert len(frame) == 2  # family admission, not the reader, rejects collisions
+    assert frame["root"].tolist() == ["NDX", "NDX"]
+    assert frame["date"].tolist() == ["2026-10-23", "2026-10-23"]
+    assert len(calls) == 1
+    assert Path(calls[0][0][0]) == path
+    assert calls[0][1]["filters"] == [
+        ("date", "==", pd.Timestamp("2026-10-23")), ("root", "==", "NDX"),
+    ]
+    assert {key: id(val) for key, val in ts._PARQUET_CACHE.items()} == before
+
+
+@pytest.mark.parametrize("bad_date", [
+    "20261023", "2026-10-2", "2026-02-30", "2026-10-23T00:00:00", 20261023,
+])
+def test_greeks_for_date_requires_exact_real_source_session(tmp_path, bad_date):
+    from engine.thetadata_store import greeks_for_date
+
+    with pytest.raises(ValueError):
+        greeks_for_date(bad_date, "NDX", store=tmp_path)
+
+
+def test_greeks_for_date_absent_shard_cannot_be_zero(tmp_path):
+    from engine.thetadata_store import greeks_for_date
+
+    missing = greeks_for_date("2026-10-23", "NDXP", store=tmp_path)
+    assert missing.empty
