@@ -883,6 +883,24 @@ def _atomic_write(path: Path, data: bytes) -> None:
         raise
 
 
+def _atomic_write_if_changed(path: Path, data: bytes) -> None:
+    """Preserve the file identity and edge ETag when a derived shard is unchanged.
+
+    Hourly source verification advances the canonical catalog's verified_at
+    even when no routes move. Derived shards have no publication clock, so
+    unchanged route buckets must not churn Git objects, CDN validators or origin
+    sync on every successful freshness check.
+    """
+    try:
+        current = path.read_bytes()
+    except FileNotFoundError:
+        pass
+    else:
+        if current == data:
+            return
+    _atomic_write(path, data)
+
+
 def _route_catalog(
     manifest: Mapping[str, Any], *, alignment: Mapping[str, Mapping[str, Any]], verified_at: str,
     company_generation_id: str | None, forward_selection_floor_date: str | None = None,
@@ -1641,9 +1659,11 @@ def publish_public_wire(
         route_shards = build_route_shards(route_catalog_bytes)
     except EarningsRouteShardError as exc:
         raise PublicWireBuildError("public earnings wire route shards are invalid") from exc
-    _atomic_write(out_dir / ROUTE_CATALOG_FILENAME, route_catalog_bytes)
     for filename, shard_bytes in route_shards.items():
-        _atomic_write(out_dir / SHARD_DIRNAME / filename, shard_bytes)
+        _atomic_write_if_changed(out_dir / SHARD_DIRNAME / filename, shard_bytes)
+    # Publish the original canonical receipt last, after all derived lookup
+    # files are ready. Its recovery contract and byte shape remain unchanged.
+    _atomic_write(out_dir / ROUTE_CATALOG_FILENAME, route_catalog_bytes)
     _remove_legacy_public_state(out_dir)
 
     current_paths = {_route_path(out_dir, route) for route in manifest["routes"]}
