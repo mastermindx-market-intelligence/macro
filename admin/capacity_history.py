@@ -312,7 +312,16 @@ def previous_quota(*, path=None, before=None):
     before = time.time() - 600 if before is None else before
     try:
         with _database(path or database_path()) as db:
-            row = db.execute("SELECT observation FROM quota_samples WHERE at<=? ORDER BY at DESC LIMIT 1", (before,)).fetchone()
-            return json.loads(row[0]) if row else None
-    except (OSError, sqlite3.Error, ValueError):
-        return None
+            # Ingress retains the latest observation per minute. Only the newest
+            # candidate bucket can straddle the cutoff, so two rows are enough.
+            rows = db.execute("SELECT at,observation FROM quota_samples WHERE at<=? ORDER BY at DESC LIMIT 2", (before,))
+            for row in rows:
+                observation = json.loads(row["observation"])
+                observed_at = observation.get("observed_at") if isinstance(observation, dict) else None
+                if (isinstance(observed_at, (int, float)) and not isinstance(observed_at, bool)
+                        and math.isfinite(observed_at) and 0 < observed_at <= before
+                        and int(observed_at // 60) * 60 == row["at"]):
+                    return observation
+    except (OSError, sqlite3.Error, ValueError, TypeError):
+        pass
+    return None

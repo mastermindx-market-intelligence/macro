@@ -1,7 +1,13 @@
 import copy
+from contextlib import closing
+import json
+from pathlib import Path
+import tempfile
 import unittest
-from admin.capacity_intelligence import analyze
-from admin.tests.test_capacity_history import NOW
+from admin import capacity_history
+from admin.capacity_ingest import ingest
+from admin.capacity_intelligence import analyze, panel
+from admin.tests.test_capacity_history import NOW, snapshot
 
 
 def live():
@@ -56,6 +62,79 @@ class Intelligence(unittest.TestCase):
                 if scenario=='budget_change':prior['accounts'][0]['families']['family-a']['budget_weekly']=80
                 d=analyze(s,previous=prior,now=NOW);self.assertIsNone(d['quota_families'][0]['suggested_additional_subscriptions'])
                 self.assertFalse(any(r['kind']=='subscription_scenario' for r in d['recommendations']))
+    def test_persisted_panel_anchors_baseline_to_observation_clock(self):
+        current_at = NOW+10
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td)/'snapshot.json'
+            for sequence, at in enumerate((current_at-3630, current_at-3595, current_at), 1):
+                frame = snapshot(sequence, at=at)
+                frame['claude'] = quota(at, used=50+(at-current_at)*10/3600)
+                self.assertTrue(ingest(json.dumps(frame).encode(), path, now=at))
+            result = panel(path=path, now=current_at+10)
+            family = result['quota_families'][0]
+            self.assertEqual(family['units_per_hour'], 10)
+            self.assertEqual(family['sample_hours'], round(3630/3600, 2))
+            self.assertIsNotNone(family['suggested_additional_subscriptions'])
+
+    def test_persisted_quota_matrix_all_collector_phases_and_fresh_ages(self):
+        # Two hours of real ingress at a 30-second collection cadence. Every
+        # phase and each fresh cached age must compare the same observation pair.
+        for phase in range(30):
+            current_at = NOW+phase
+            with self.subTest(phase=phase), tempfile.TemporaryDirectory() as td:
+                path = Path(td)/'snapshot.json'
+                with closing(capacity_history.Recorder(capacity_history.database_path(path))) as recorder:
+                    sequence = 0
+                    for at in range(current_at-7200, current_at+1, 30):
+                        sequence += 1
+                        frame = snapshot(sequence, at=at, started=NOW-8000)
+                        frame['claude'] = quota(at, used=50+(at-current_at)*10/3600)
+                        self.assertTrue(ingest(json.dumps(frame).encode(), path, now=at, recorder=recorder))
+                    baseline = None
+                    for age in range(91):
+                        sequence += 1
+                        frame = snapshot(sequence, at=current_at+age, started=NOW-8000)
+                        frame['claude'] = quota(current_at, used=50)
+                        self.assertTrue(ingest(json.dumps(frame).encode(), path, now=current_at+age, recorder=recorder))
+                        result = panel(path=path, now=current_at+age)
+                        family = result['quota_families'][0]
+                        self.assertEqual(family['units_per_hour'], 10, (phase, age))
+                        self.assertGreaterEqual(family['sample_hours'], 1, (phase, age))
+                        self.assertIsNotNone(family['suggested_additional_subscriptions'], (phase, age))
+                        measured = {k: family[k] for k in ('units_per_hour', 'sample_hours',
+                            'weekly_budget_units', 'weekly_remaining_units', 'suggested_additional_subscriptions')}
+                        if baseline is None:
+                            baseline = measured
+                        self.assertEqual(measured, baseline, (phase, age))
+
+    def test_persisted_panel_preserves_advice_abstention_gates(self):
+        for kind in ('short_history', 'stale_quota', 'stale_snapshot', 'rolled_window',
+                     'estimated_reset', 'budget_change', 'draining', 'cooldown', 'no_quota',
+                     'future_quota', 'missing_time', 'invalid_time'):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as td:
+                path = Path(td)/'snapshot.json'
+                prior_at = NOW-1800 if kind == 'short_history' else NOW-7200
+                before = snapshot(1, at=prior_at, started=NOW-8000)
+                before['claude'] = quota(prior_at, used=20)
+                current = snapshot(2, at=NOW, started=NOW-8000)
+                current['claude'] = quota(NOW, used=40)
+                if kind == 'stale_quota': current['claude']['observed_at'] = NOW-91
+                if kind == 'stale_snapshot': current['generated_at'] = NOW-16
+                if kind == 'rolled_window': before['claude']['accounts'][0]['families']['family-a']['weekly_resets_at'] = NOW-1
+                if kind == 'estimated_reset': current['claude']['accounts'][0]['families']['family-a']['weekly_reset_source'] = 'estimated'
+                if kind == 'budget_change': before['claude']['accounts'][0]['families']['family-a']['budget_weekly'] = 80
+                if kind == 'draining': current['claude']['accounts'][0]['drain'] = True
+                if kind == 'cooldown': current['claude']['accounts'][0]['cooldown_until'] = NOW+200
+                if kind == 'no_quota': current['claude'] = None
+                if kind == 'future_quota': current['claude']['observed_at'] = NOW+1
+                if kind == 'missing_time': current['claude']['observed_at'] = None
+                if kind == 'invalid_time': current['claude']['observed_at'] = 'invalid'
+                self.assertTrue(ingest(json.dumps(before).encode(), path, now=prior_at))
+                self.assertTrue(ingest(json.dumps(current).encode(), path, now=NOW))
+                result = panel(path=path, now=NOW)
+                self.assertFalse(any(r['kind']=='subscription_scenario' for r in result['recommendations']))
+                self.assertTrue(all(r['suggested_additional_subscriptions'] is None for r in result['quota_families']))
+
     def test_disconnected_explicit(self):self.assertFalse(analyze({'ok':False},now=NOW)['ok'])
 
 if __name__=='__main__':unittest.main()

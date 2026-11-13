@@ -95,7 +95,7 @@ def analyze(snapshot, history=None, previous=None, *, now=None):
                 "detail": f"{failures} of {requests} captured requests failed or were interrupted. Authentication, provider errors, and cancellation are not subscription shortages.",
                 "additional_subscriptions": None, "action": "Inspect request attempts and error categories."})
     claude = snapshot.get("claude") or {}
-    quota_fresh = bool(claude.get("reachable") and now - (claude.get("observed_at") or 0) <= 90 and not stale)
+    quota_fresh = bool(claude.get("reachable") and 0 <= now - (claude.get("observed_at") or 0) <= 90 and not stale)
     accounts = claude.get("accounts", [])
     previous = previous or {}
     prior_accounts = {a["id"]: a for a in previous.get("accounts", [])}
@@ -169,7 +169,14 @@ def analyze(snapshot, history=None, previous=None, *, now=None):
 def panel(minutes=1440, *, path=None, now=None):
     now = time.time() if now is None else now
     live = capacity_router.panel(120, path=path, now=now)
-    # One-hour comparison avoids turning a short burst into a seat purchase.
-    previous = capacity_history.previous_quota(path=capacity_history.database_path(path), before=now-3600)
+    # Compare two quota observations spanning at least an hour. A fresh cached
+    # observation keeps its own clock as the panel refreshes; never use now as
+    # a substitute for missing or invalid observation evidence.
+    observed_at = (live.get("claude") or {}).get("observed_at")
+    previous = None
+    if (isinstance(observed_at, (int, float)) and not isinstance(observed_at, bool)
+            and math.isfinite(observed_at) and 0 < observed_at <= now):
+        previous = capacity_history.previous_quota(
+            path=capacity_history.database_path(path), before=observed_at-3600)
     history = capacity_router.historical(minutes, path=path, now=now)
     return analyze(live, history, previous, now=now)

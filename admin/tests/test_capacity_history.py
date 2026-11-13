@@ -160,6 +160,34 @@ class HistoryTests(unittest.TestCase):
             with self.subTest(kw=kw), self.assertRaises(ValueError):
                 self.query(**kw)
 
+    def test_quota_lookup_uses_observation_time_not_minute_key(self):
+        from admin.tests.test_capacity_intelligence import quota
+        for sequence, at in enumerate((NOW-3620, NOW-3590), 1):
+            frame = snapshot(sequence, at=at)
+            frame['claude'] = quota(at)
+            self.write(frame)
+        # The newest minute key precedes this cutoff but its observation does not.
+        previous = history.previous_quota(path=self.path, before=NOW-3595)
+        self.assertEqual(previous['observed_at'], NOW-3620)
+
+    def test_quota_lookup_inclusive_boundary_and_no_eligible_sample(self):
+        from admin.tests.test_capacity_intelligence import quota
+        frame = snapshot(at=NOW-3600)
+        frame['claude'] = quota(NOW-3600)
+        self.write(frame)
+        self.assertEqual(history.previous_quota(path=self.path, before=NOW-3600)['observed_at'], NOW-3600)
+        self.assertIsNone(history.previous_quota(path=self.path, before=NOW-3601))
+        self.assertIsNone(history.previous_quota(path=self.path.with_name('absent.db'), before=NOW))
+
+    def test_quota_lookup_refuses_invalid_or_inconsistent_timestamps(self):
+        self.write(snapshot())
+        for observed in (None, True, 'old', 0, -1, float('nan'), float('inf'), NOW+1, NOW-61):
+            with self.subTest(observed=observed):
+                with closing(sqlite3.connect(self.path)) as db, db:
+                    db.execute('DELETE FROM quota_samples')
+                    db.execute('INSERT INTO quota_samples VALUES (?,?)', (NOW, json.dumps({'observed_at': observed})))
+                self.assertIsNone(history.previous_quota(path=self.path, before=NOW))
+
     def test_absent_history_is_explicit(self):
         result = self.query()
         self.assertFalse(result['ok'])

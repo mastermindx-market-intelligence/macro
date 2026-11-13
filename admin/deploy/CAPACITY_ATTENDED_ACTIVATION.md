@@ -32,21 +32,23 @@ fixture proved KeepAlive can still respawn it.
 
 ## Exact transaction
 
-1. Acquire the existing shared configuration lock before creating the maintenance
-   journal. Atomically acquire the existing reload directory and write a private,
-   fsynced `maintenance.json` with schema
-   `mastermind.capacity_router.maintenance.v1`, operation ID, target job, source
-   refs, old PID/start identity, base/candidate paths, configuration and file
-   digests, candidate service SHA-256, phase and recovery action. Keep exact
-   rollback preimages in the operation's private evidence directory.
-2. Install the prepared reload/watchdog and configuration-writer adapters only
-   against their recorded preimages. Check their installed hashes. The reload
-   and watchdog fences take precedence over their ordinary 180/120-second stale
-   thresholds. The shared writer refuses while the maintenance marker exists,
-   including after the activating process loses its flock. The model guard's
-   write and subsequent router kickstart are inside that same writer scope.
-   Settle any invocation that began before installation; disk hashes alone do
-   not prove old processes have finished.
+1. Acquire the existing shared configuration lock and incumbent model-guard
+   lock. Create the private evidence directory and record each intended file
+   effect with its rollback preimage before applying it. Install the prepared
+   reload/watchdog and configuration-writer adapters only against their recorded
+   preimages, and verify installed hashes. Enroll all four existing owners before
+   opening the maintenance journal so interruption cannot leave an older writer
+   that ignores the durable marker. No router signal occurs during enrollment.
+2. Settle any invocation that began before installation; disk hashes alone do
+   not prove old processes have finished. Recheck the original PID and config,
+   atomically acquire the existing reload directory, and write a private, fsynced
+   `maintenance.json` with schema `mastermind.capacity_router.maintenance.v1`,
+   operation ID, target job, source refs, old PID/start identity, base/candidate
+   paths, configuration and file digests, candidate service SHA-256, phase and
+   recovery action. The reload/watchdog fences override their ordinary 180/120-
+   second stale thresholds. Shared configuration writers refuse while this marker
+   exists, including after the activating process loses its flock. The model
+   guard's write and subsequent kickstart are inside the same writer scope.
 3. Install the qualified startup guard into the retiring service source by exact
    preimage comparison. The running process keeps its already loaded code; the
    receipt must distinguish that from the guarded disk postimage. The guard
@@ -60,8 +62,12 @@ fixture proved KeepAlive can still respawn it.
    loaded supervisor timeout is shorter. An exceeded bound remains held for
    diagnosis; it does not authorize destructive escalation.
 5. Observe any automatic KeepAlive child exit before opening a listener. Require
-   the original PID gone, no router listener, and the old job stopped. Then
-   unload that stopped job once. Install the candidate working directory in the
+   the original PID gone, no router listener, and the old job stopped. Preserve
+   the retiring epoch's final real VPS snapshot through the existing
+   `capacity_history.record` owner before the new epoch replaces it. Record the
+   snapshot digest, sequence, ledger counts and an actual completed-request key;
+   do not invent observations or replay equal-sequence ingress. Then unload that
+   stopped job once. Install the candidate working directory in the
    same plist against its preimage; retain all other settings. Set
    `STARTING_CANDIDATE` and bootstrap the same label once.
 6. Record `VERIFYING_CANDIDATE`. Verify the actual PID/start identity, canonical
@@ -71,9 +77,10 @@ fixture proved KeepAlive can still respawn it.
    sufficient. Once the listener may have opened, treat traffic as admitted.
 7. After native identity and telemetry are verified, restore the retired source
    only against its recorded guard postimage and only while its old job remains
-   unloaded. Archive/read back the transaction receipt, mark native activation
-   complete, remove only this operation's maintenance marker and empty reload
-   directory, and release locks. Observe the next normal guard/watchdog cycle
+   unloaded. Mark native activation complete, then atomically rename this
+   operation's entire reload directory into its evidence archive and fsync the
+   state directory. This removes the marker and its lock directory together;
+   there is no aged-lock cleanup window. Read back the receipt and release locks. Observe the next normal guard/watchdog cycle
    and confirm no surprise restart or stale configuration write.
 
 The shared writer does not interpret a terminal maintenance phase as permission

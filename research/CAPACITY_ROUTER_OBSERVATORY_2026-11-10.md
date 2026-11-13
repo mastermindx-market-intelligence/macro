@@ -161,3 +161,38 @@ The published recovery head's contract-delta and authority checks passed. Final
 head CI, permitted controller release, existing-owner VPS deployment, serial
 native activation and authenticated production acceptance remain separate next
 steps. The original workspace and branch remain in custody.
+
+### Quota comparison boundary repair before release — 2026-11-13
+
+Final release inspection found the independently reproduced timestamp defect in
+PR comment [6842786427](https://github.com/mastermindx-market-intelligence/macro/pull/11194#issuecomment-6842786427).
+Both affected source files were unchanged from the reported head. Two local
+persisted-path regressions reproduced it before the repair: the minute index
+selected an observation after the requested cutoff, and a fresh cached quota
+observation lost its eligible one-hour baseline when the panel used wall time.
+
+The reader now checks actual observation timestamps and bucket consistency in
+at most two descending minute rows; the existing primary key guarantees one row
+per minute, so only the newest candidate can straddle the cutoff. Corrupt or
+invalid evidence fails closed. The panel anchors the cutoff to the current quota
+observation, with no wall-clock substitute. The 3600-second minimum and reset,
+budget, cooldown, draining-account and freshness gates remain. Future current
+observations cannot produce a numeric subscription scenario.
+
+The focused 29-test history/intelligence suite passes. Its real ingestion/SQLite/
+panel matrix covers all 30 collector-second phases and all 91 fresh cached ages
+(2730 panels, 9960 ingress frames), preserving the observed rate and quota
+quantities. Twelve persisted negative controls still abstain. This is synthetic
+source qualification, not live incidence or a purchase authorization. The native
+overlay, control transport, startup guard and launchd dependencies are unchanged;
+their final 75351592de8e receipts remain attached to their actual tested source.
+
+Head 75351592de8e passed binding hosted CI, but release was deliberately not armed
+after this new finding. The repair head requires its own binding checks. The
+connected browser subsequently lost its originating context, and the separate
+secure sign-in was cancelled; that tab remains logged out. Authenticated live UI
+acceptance remains pending while the authorized release/runtime lanes continue.
+
+The combined API/control/runtime/history composition then passed **110 tests**
+in 30.541 seconds with ResourceWarning enabled and no warnings. The warning
+repair, full quota phase/age matrix and remaining suites passed together.
