@@ -2,11 +2,11 @@
 
 # Agent OS state
 
-Generated: 2026-11-12T07:53:18Z  |  115 workstreams (92 active · 5 blocked · 14 done · 4 parked)
+Generated: 2026-11-13T10:00:22Z  |  115 workstreams (92 active · 5 blocked · 14 done · 4 parked)
 
 | Input | Value |
 |---|---|
-| active_builds | data/governance/active_builds.json@2026-11-12T07:53:18.290594+00:00 |
+| active_builds | data/governance/active_builds.json@2026-11-13T10:00:22.613088+00:00 |
 | active_builds age | 0.0h |
 | worktrees | 1 |
 | records | 115 WS · 610 DEC · 671 DSC · 933 handoffs |
@@ -383,4 +383,7 @@ Generated: 2026-11-12T07:53:18Z  |  115 workstreams (92 active · 5 blocked · 1
 - agentos/decisions/DEC-W2C-M0C-V2-REST-SINGLE-TICKER-DAILY.md: [review-overdue] review_by 2026-08-21 has passed
 - agentos/decisions/DEC-W2C-M0D0-0400Z-SOURCE-SEAL-GO.md: [review-overdue] review_by 2026-08-25 has passed
 - agentos/decisions/DEC-WORKSPACE-SUPERVISION-EXTENDS-EXISTING-AUTONOMY.md: [review-overdue] review_by 2026-09-20 has passed
-- agentos/discoveries/DSC-TERMINAL-GREY-DOT-IDENTITY.md: [uncited-discovery] no citations and 91d old — GC candidate (flagged, not deleted)
+- agentos/discoveries/DSC-COVERAGE-FLOOR-MEASURES-PRESENCE-NOT-VARIANCE.md: [uncited-discovery] no citations and 91d old — GC candidate (flagged, not deleted)
+- agentos/discoveries/DSC-NAME-SCORE-HAS-TWO-DISAGREEING-MEMORIES.md: [uncited-discovery] no citations and 91d old — GC candidate (flagged, not deleted)
+- agentos/discoveries/DSC-TERMINAL-GREY-DOT-IDENTITY.md: [uncited-discovery] no citations and 92d old — GC candidate (flagged, not deleted)
+- agentos/discoveries/DSC-US-CONTEXT-VECTOR-ONLY-ACCRUED-FROM-LATE-BAKES.md: [uncited-discovery] no citations and 91d old — GC candidate (flagged, not deleted)
