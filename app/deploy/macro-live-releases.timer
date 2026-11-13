@@ -1,0 +1,16 @@
+[Unit]
+Description=Wake the Mastermind macro official-release publication lane
+
+[Timer]
+OnBootSec=20s
+# Re-arm after every completed invocation, including slow upstream responses.
+# The source owner enforces its own hot/idle cadence and Retry-After. Healthy
+# source probe gaps target <=5s; upstream runtime is additional, not hidden.
+OnUnitInactiveSec=2s
+AccuracySec=100ms
+RandomizedDelaySec=0
+Persistent=false
+Unit=macro-live-releases.service
+
+[Install]
+WantedBy=timers.target

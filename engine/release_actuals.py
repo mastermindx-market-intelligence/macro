@@ -43,7 +43,8 @@ _SOURCE_CONTRACTS: dict[str, dict[str, Any]] = {
         "host": "bls.gov",
         "publisher": "U.S. Bureau of Labor Statistics",
         "source_id": "bls_cpi",
-        "parser": ("cpi", 1),
+        "parser": ("cpi", 2),
+        "legacy_parser_versions": (1,),
         "raw_unit": "percent",
     },
     "PPI": {
@@ -218,13 +219,14 @@ def _source_compatible(event_type: str, value: dict[str, Any], source_url: Any) 
     contract = _SOURCE_CONTRACTS[event_type]
     parser = value.get("parser") if isinstance(value.get("parser"), dict) else {}
     expected_parser, expected_version = contract["parser"]
+    accepted_versions = (expected_version, *contract.get("legacy_parser_versions", ()))
     return bool(
         _official_url(source_url, str(contract["host"]))
         and value.get("publisher") == contract["publisher"]
         and value.get("source_id") == contract["source_id"]
         and parser.get("name") == expected_parser
         and type(parser.get("version")) is int
-        and parser.get("version") == expected_version
+        and parser.get("version") in accepted_versions
     )
 
 
@@ -529,7 +531,9 @@ def receipt_integrity_errors(
         errors.append("source_id_mismatch")
     if row.get("parser_name") != parser_name:
         errors.append("parser_name_mismatch")
-    if type(row.get("parser_version")) is not int or row.get("parser_version") != parser_version:
+    admitted_parser_versions = (parser_version, *contract.get("legacy_parser_versions", ()))
+    if (type(row.get("parser_version")) is not int
+            or row.get("parser_version") not in admitted_parser_versions):
         errors.append("parser_version_mismatch")
     if not _official_url(row.get("source_url"), str(contract["host"])):
         errors.append("source_agency_mismatch")
