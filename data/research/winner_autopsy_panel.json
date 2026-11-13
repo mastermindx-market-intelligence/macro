@@ -1,6 +1,6 @@
 {
   "schema": "winner_autopsy_panel.v1",
-  "generated_at": "2026-11-12T11:55:20Z",
+  "generated_at": "2026-11-12T14:01:56Z",
   "display_only": true,
   "horizon_role": "hold_thesis",
   "census": {
@@ -8082,7 +8082,7 @@
         }
       },
       {
-        "ticker": "FOXO",
+        "ticker": "FOXOD",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -8102,7 +8102,7 @@
         }
       },
       {
-        "ticker": "FOXOD",
+        "ticker": "FOXO",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
@@ -33735,14 +33735,14 @@
         }
       },
       {
-        "ticker": "SHMP",
+        "ticker": "AMBIQ",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 3.62,
-        "excess_42d_pp": 601.64,
-        "new_high_63d": false,
-        "dollar_vol_z21": -1.19,
+        "excess_42d_pp": 69901.64,
+        "new_high_63d": true,
+        "dollar_vol_z21": 0.0,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -33752,14 +33752,14 @@
         }
       },
       {
-        "ticker": "BPTH",
+        "ticker": "SHMP",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 3.62,
-        "excess_42d_pp": 201.64,
+        "excess_42d_pp": 601.64,
         "new_high_63d": false,
-        "dollar_vol_z21": 0.17,
+        "dollar_vol_z21": -1.19,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -33803,14 +33803,14 @@
         }
       },
       {
-        "ticker": "AMBIQ",
+        "ticker": "BPTH",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 3.62,
-        "excess_42d_pp": 69901.64,
-        "new_high_63d": true,
-        "dollar_vol_z21": 0.0,
+        "excess_42d_pp": 201.64,
+        "new_high_63d": false,
+        "dollar_vol_z21": 0.17,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -41708,7 +41708,7 @@
         }
       },
       {
-        "ticker": "PBR.A",
+        "ticker": "PBR-A",
         "sector": "",
         "benchmark": "SPY",
         "state": "failed",
@@ -41725,7 +41725,7 @@
         }
       },
       {
-        "ticker": "PBR-A",
+        "ticker": "PBR.A",
         "sector": "",
         "benchmark": "SPY",
         "state": "failed",
