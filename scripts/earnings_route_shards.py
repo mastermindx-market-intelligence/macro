@@ -15,7 +15,10 @@ SHARD_COUNT = 64
 SHARD_DIRNAME = "route-shards"
 SHARD_SCHEMA = "earnings.public_wire_route_shard/v1"
 CATALOG_SCHEMA = "earnings.public_wire_routes/v2"
-_TICKER_RE = re.compile(r"[A-Z0-9](?:[A-Z0-9.\-]{0,14}[A-Z0-9])?\Z")
+# Match the canonical public-wire ticker contract, including edge punctuation.
+# wire_slug() normalizes ticker dots, while transcript dots/underscores survive.
+_TICKER_RE = re.compile(r"[A-Z0-9.\-]{1,16}\Z")
+_HREF_RE = re.compile(r"[a-z0-9-][a-z0-9._-]*\.html\Z")
 
 
 class EarningsRouteShardError(ValueError):
@@ -42,7 +45,7 @@ def _client_route(record: object) -> dict[str, str]:
     keys = ("href", "period", "transcript_id")
     if any(not isinstance(record.get(key), str) or not record[key] for key in keys):
         raise EarningsRouteShardError("incomplete public earnings record route")
-    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*\.html", record["href"]):
+    if not _HREF_RE.fullmatch(record["href"]):
         raise EarningsRouteShardError("unsafe public earnings record href")
     return {key: record[key] for key in keys}
 

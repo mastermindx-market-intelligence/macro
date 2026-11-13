@@ -144,3 +144,42 @@ def test_bad_canonical_inputs_fail_closed_without_shards(mutation) -> None:
 def test_invalid_json_fails_closed() -> None:
     with pytest.raises(EarningsRouteShardError):
         build_route_shards(b"{bad")
+
+
+@pytest.mark.parametrize("ticker", ["AAPL", "BRK.B", "BRK.", "-BRK", "BRK-", ".", "1" * 16])
+@pytest.mark.parametrize("transcript", [
+    "2026Q4", "2026_Q4", "2026.Q4", "2026-Q4", "Q4_v2.1",
+    "_Q4", ".Q4", "2026..Q4", "T" * 80,
+])
+def test_canonical_wire_identities_round_trip(ticker: str, transcript: str) -> None:
+    """The derived projector must accept the real producer's filename grammar."""
+    from engine.earnings_narrative.public_wire import wire_slug
+
+    row = _row(f"{wire_slug(ticker, transcript)}.html", transcript=transcript)
+    catalog = _catalog()
+    catalog["routes"] = {ticker: {"latest": row, "events": {transcript: row}}}
+    shards = _project(catalog)
+    projected = json.loads(shards[shard_filename(ticker)])["routes"][ticker]
+    expected = {key: row[key] for key in ("href", "period", "transcript_id")}
+    assert projected == {"latest": expected, "events": {transcript: expected}}
+    assert len(shards) == SHARD_COUNT
+
+
+@pytest.mark.parametrize("href", [
+    "../a.html", "a/b.html", "a\\b.html", "https://example.com/a.html",
+    "//host/a.html", "a%2fb.html", "a?b.html", "a#b.html", "a b.html",
+    "a\nb.html", "a\x00b.html", "é.html", "<a>.html", ".hidden.html", "A.html",
+])
+def test_unsafe_or_noncanonical_href_is_rejected(href: str) -> None:
+    catalog = _catalog()
+    catalog["routes"]["AAPL"]["latest"]["href"] = href
+    with pytest.raises(EarningsRouteShardError, match="unsafe.*href"):
+        _project(catalog)
+
+
+@pytest.mark.parametrize("ticker", [
+    None, "", "A" * 17, "aapl", "A/B", "A\\B", "A B", "A%", "Ä", "A\n",
+])
+def test_invalid_ticker_is_rejected(ticker) -> None:
+    with pytest.raises(EarningsRouteShardError, match="invalid.*ticker"):
+        shard_index(ticker)
