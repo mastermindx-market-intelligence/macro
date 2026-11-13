@@ -2,6 +2,57 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-11-13",
+      "tickers": [
+        "AGNT",
+        "APO",
+        "APP",
+        "ARGX",
+        "ASR",
+        "BKD",
+        "BW",
+        "DTM",
+        "ECG",
+        "FLS",
+        "FMC",
+        "FND",
+        "FSM",
+        "GPK",
+        "GS",
+        "JKHY",
+        "JPM",
+        "LBRT",
+        "LRMR",
+        "LSTR",
+        "MBGL",
+        "MRTN",
+        "MTG",
+        "NB",
+        "RBLX",
+        "SHEN",
+        "STRC",
+        "SUPN",
+        "SW",
+        "UNH",
+        "XLE"
+      ]
+    },
+    {
+      "as_of": "2026-11-12",
+      "tickers": [
+        "ADM",
+        "BC",
+        "CALM",
+        "ENPH",
+        "JLL",
+        "MBGL",
+        "SF",
+        "STRC",
+        "TFIN",
+        "WD"
+      ]
+    },
+    {
       "as_of": "2026-11-11",
       "tickers": [
         "ADM",
@@ -144,47 +195,6 @@
         "RMBS",
         "VRT",
         "VYX"
-      ]
-    },
-    {
-      "as_of": "2026-11-06",
-      "tickers": [
-        "MRP",
-        "MTG",
-        "NB",
-        "NUE",
-        "OSK",
-        "UVV",
-        "XRAY"
-      ]
-    },
-    {
-      "as_of": "2026-11-05",
-      "tickers": [
-        "ARRY",
-        "CACC",
-        "CPK",
-        "DG",
-        "EEFT",
-        "GEHC",
-        "GEN",
-        "GFI",
-        "LECO",
-        "LRN",
-        "MSEX",
-        "NFG",
-        "NFLX",
-        "NXST",
-        "OKE",
-        "OSK",
-        "PEGA",
-        "SBH",
-        "SFM",
-        "SHEN",
-        "SYF",
-        "TREX",
-        "WLK",
-        "XRAY"
       ]
     }
   ]

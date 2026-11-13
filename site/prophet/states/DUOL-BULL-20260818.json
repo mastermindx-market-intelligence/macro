@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DUOL-BULL-20260818",
-  "asof": "2026-11-09",
+  "asof": "2026-11-13",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 37.7,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 16.4,
+    "progress": 13.6,
     "pace": 0.0,
-    "retention": 100.0,
-    "overlay": 39.0
+    "retention": 77.6,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.225,
-    "dist_to_t1_r": 1.275,
-    "dist_to_t2_r": 2.775,
-    "horizon_pct_used": 180.0,
-    "p1": 0.1499,
-    "p2": 0.075,
+    "dist_to_stop_r": 1.175,
+    "dist_to_t1_r": 1.325,
+    "dist_to_t2_r": 2.825,
+    "horizon_pct_used": 188.9,
+    "p1": 0.1164,
+    "p2": 0.0582,
     "p3": null,
-    "move_r": 0.225,
+    "move_r": 0.175,
     "mfe_r": 0.225,
     "mae_r": -0.318
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 81,
-  "tau": 1.8,
+  "days_elapsed": 85,
+  "tau": 1.8889,
   "closed": true,
   "outcome": "EXPIRED"
 }
