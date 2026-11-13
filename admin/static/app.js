@@ -15300,7 +15300,7 @@ RENDER.long_hold = async () => {
         <td>${esc(it.mechanism || "—")}</td>
         <td><span class="statpill ${it.reconcile === "matched" ? "s-ok" : it.reconcile ? "s-warn" : ""}">${esc(it.reconcile || "—")}</span></td>
         <td class="sub" style="max-width:320px">${esc(it.thesis_one_liner || "—")}</td>
-        <td>${it.file ? `<a href="${esc(it.file)}" target="_blank" rel="noopener">case</a>` : "—"}</td>
+        <td>${/^research\/winners\/cases\/[A-Za-z0-9][A-Za-z0-9._-]*\.md$/.test(it.file || "") ? `<a href="https://github.com/mastermindx-market-intelligence/macro/blob/main/${esc(it.file)}" target="_blank" rel="noopener">case</a>` : "—"}</td>
       </tr>`
     ).join("") || `<tr><td colspan="6" class="muted sub">no cases yet</td></tr>`;
     const casesBlock = `

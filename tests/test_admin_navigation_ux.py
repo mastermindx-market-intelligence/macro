@@ -116,6 +116,19 @@ assert.equal(text({}), 'n=2919 · —');
 """)
 
 
+def test_long_hold_case_links_open_committed_markdown():
+    _node_assert("""
+const rows = block('const caseRows = (cases.items || []).map(it =>', 'const casesBlock =');
+const render = new Function('cases', 'esc', rows + '; return caseRows;');
+const row = file => render({items: [{file}]}, String);
+const path = 'research/winners/cases/AFRM_2022.md';
+assert.ok(row(path).includes('href="https://github.com/mastermindx-market-intelligence/macro/blob/main/' + path + '"'));
+for (const file of [null, '../AFRM_2022.md', 'research/winners/cases/../other.md', 'https://example.org/AFRM.md']) {
+  assert.ok(!row(file).includes('<a '));
+}
+""")
+
+
 def test_workspace_keeps_every_route_once_with_capacity_router_primary():
     _node_assert("""
 const groups = new Function(block('const NAV_GROUPS = [', 'const TAB_LABELS = ') + '; return NAV_GROUPS;')();
