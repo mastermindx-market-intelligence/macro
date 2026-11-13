@@ -133,3 +133,60 @@ def test_sourced_bash_lock_substitution_does_not_hang(tmp_path):
         pytest.fail("Bash here-doc lock-identity command substitution stalled")
     assert proc.returncode == 0, err[-700:]
     assert out == "LOCK_ROUNDTRIP_PASS\n"
+
+
+def test_fill_refuses_a_changed_source_fingerprint(tmp_path):
+    lock = tmp_path / "index.lock"
+    identity = helper("acquire", lock).stdout.strip()
+    source = tmp_path / "snapshot"
+    source.write_bytes(b"validated snapshot")
+    expected = helper("fingerprint", source).stdout.strip()
+    source.write_bytes(b"later different snapshot")
+    result = helper("fill", lock, identity, "empty", source, expected)
+    assert result.returncode == 1 and result.stdout == "NOT_APPLIED\n"
+    assert lock.read_bytes() == b""
+    assert source.read_bytes() == b"later different snapshot"
+
+
+def test_partial_descriptor_fill_has_unknown_outcome(tmp_path, monkeypatch, capsys):
+    from scripts.ci import options_index_lock_identity as identity_helper
+
+    lock = tmp_path / "index.lock"
+    identity = helper("acquire", lock).stdout.strip()
+    source = tmp_path / "snapshot"
+    source.write_bytes(b"prepared index bytes")
+    expected = helper("fingerprint", source).stdout.strip()
+    real_write = identity_helper.os.write
+
+    def partial_write(fd, data):
+        real_write(fd, data[:4])
+        raise OSError("injected partial descriptor write")
+
+    monkeypatch.setattr(identity_helper.os, "write", partial_write)
+    assert identity_helper.fill(str(lock), identity, "empty", str(source), expected) == 2
+    assert capsys.readouterr().out == "UNKNOWN\n"
+    assert lock.read_bytes() == b"prep"
+
+
+def test_replacement_error_cannot_claim_non_application(tmp_path, monkeypatch, capsys):
+    from scripts.ci import options_index_lock_identity as identity_helper
+
+    lock = tmp_path / "index.lock"
+    identity = helper("acquire", lock).stdout.strip()
+    source = tmp_path / "snapshot"
+    source.write_bytes(b"prepared index bytes")
+    expected = helper("fingerprint", source).stdout.strip()
+    assert helper("fill", lock, identity, "empty", source, expected).returncode == 0
+    index = tmp_path / "index"
+    index.write_bytes(b"old index")
+    real_replace = identity_helper.os.replace
+
+    def applied_then_error(src, dst):
+        real_replace(src, dst)
+        raise OSError("injected lost replacement acknowledgement")
+
+    monkeypatch.setattr(identity_helper.os, "replace", applied_then_error)
+    assert identity_helper.install(str(lock), identity, expected, str(index)) == 2
+    assert capsys.readouterr().out == "UNKNOWN\n"
+    assert index.read_bytes() == b"prepared index bytes"
+    assert not lock.exists()

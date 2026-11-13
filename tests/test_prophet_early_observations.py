@@ -562,18 +562,27 @@ def test_coherently_readdressed_corruption_cannot_seed_a_new_relation_entry(api,
     assert changed["snapshot_id"] != first["snapshot_id"]
 
 
-def test_runtime_only_republication_preserves_exact_b1_relation(api, tmp_path):
+def test_runtime_only_republication_preserves_exact_b1_relation(api, tmp_path, monkeypatch):
     from engine.us_turn_watch import write_artifact
+    from engine import turn_watch_capture as capture
 
     source, spine, rows, artifact = seed(tmp_path, tuple(f"N{i:03}" for i in range(41)))
     artifact["runtime_seconds"] = 66.58
     public = write_artifact(artifact, tmp_path / "site")
     write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    monkeypatch.setattr(capture, "_now", lambda: "2026-10-08T20:30:00Z")
+    receipt_path = capture.record_producer_capture(source, public)
+    capture_bytes = receipt_path.read_bytes()
     b1_writer.reconcile(repo_root=tmp_path, nightly=True, replay=False, correction_path=None,
                         recorded_at="2026-10-08T21:00:00Z")
     root = tmp_path / "data/us_prophet_rank/episodes"
     before = view(api, source, spine, episode_root=root, public_artifact_path=public)
     assert all(r["episode_relation"]["state"] == "EXACT_EPISODE" for r in before["rows"])
+    assert before["producer_capture"]["producer_captured_at"] == "2026-10-08T20:30:00Z"
+    assert before["producer_capture"]["clock_basis"] == "FIRST_RETAINED_PRODUCER_CAPTURE"
+    assert before["clocks"]["actual_clock_state"] == "NOT_RECORDED"
+    assert all(before["clocks"][k] is None for k in
+               ("first_available_at", "source_available_at", "observed_at", "published_at"))
     assert [before["coverage"][k] for k in ("total", "featured", "beyond_cap")] == [41, 40, 1]
     public_bytes, input_bytes = public.read_bytes(), source.read_bytes()
     b1_bytes = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}
@@ -581,12 +590,165 @@ def test_runtime_only_republication_preserves_exact_b1_relation(api, tmp_path):
     artifact["runtime_seconds"] = 66.66
     write_artifact(artifact, tmp_path / "site")
     write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    monkeypatch.setattr(capture, "_now", lambda: "2026-10-09T22:00:00Z")
+    assert capture.record_producer_capture(source, public) == receipt_path
+    assert receipt_path.read_bytes() == capture_bytes
     assert public.read_bytes() == public_bytes
     assert source.read_bytes() == input_bytes
     after = view(api, source, spine, episode_root=root, public_artifact_path=public)
     assert after == before
     assert artifact["runtime_seconds"] == 66.66
     assert b1_bytes == {str(p.relative_to(root)): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+
+
+def test_new_capture_binds_pagination_without_changing_observations(api, tmp_path, monkeypatch):
+    from engine import turn_watch_capture as capture
+
+    source, spine, _, _ = seed(tmp_path, tuple(f"N{i:03}" for i in range(41)))
+    public = tmp_path / "site/turn_watch/turn_watch.json"
+    before = view(api, source, spine, public_artifact_path=public)
+    assert before["producer_capture"]["reason"] == "PRODUCER_RECEIPT_NOT_FOUND"
+    monkeypatch.setattr(capture, "_now", lambda: "2026-10-09T06:00:00.123456Z")
+    monkeypatch.setenv("GITHUB_RUN_ID", "123456")
+    monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
+    monkeypatch.setenv("GITHUB_JOB", "engine")
+    receipt = capture.record_producer_capture(source, public)
+    after = view(api, source, spine, public_artifact_path=public)
+    assert after["rows"] == before["rows"]
+    assert after["clocks"] == before["clocks"]
+    assert after["source_receipt"] == before["source_receipt"]
+    assert after["producer_capture"]["state"] == "RECORDED"
+    assert after["producer_capture"]["execution"] == {
+        "github_run_id": "123456", "github_run_attempt": "1", "github_job": "engine"}
+    assert after["producer_capture"]["receipt"] == "sha256:" + sha256(receipt.read_bytes()).hexdigest()
+    assert after["snapshot_id"] != before["snapshot_id"]
+    with pytest.raises(api.ObservationQueryError, match="SNAPSHOT_CHANGED"):
+        api.query_observations(after, offset=40, expected_snapshot=before["snapshot_id"])
+    assert api.query_observations(after, offset=40)["counts"] == {
+        "source": 41, "matched": 41, "returned": 1}
+
+
+@pytest.mark.parametrize("field,value", [
+    ("source_receipt", "sha256:" + "0" * 64),
+    ("source_file_receipt", "sha256:" + "0" * 64),
+    ("source_artifact_receipt", "sha256:" + "0" * 64),
+    ("source_session", "2026-10-07"), ("schema", "other/v1"),
+    ("stage", "PUBLISHED"), ("clock_basis", "FIRST_AVAILABLE"),
+    ("producer_captured_at", "2026-10-08T20:30:00"),
+    ("producer_captured_at", "2026-10-07T20:30:00Z"),
+    ("producer_captured_at", "2026-02-30T20:30:00Z"),
+    ("execution", {"github_run_id": "123"}),
+])
+def test_invalid_capture_never_removes_rows_or_supplies_an_actual_clock(
+        api, tmp_path, monkeypatch, field, value):
+    from engine import turn_watch_capture as capture
+
+    source, spine, _, _ = seed(tmp_path)
+    public = tmp_path / "site/turn_watch/turn_watch.json"
+    monkeypatch.setattr(capture, "_now", lambda: "2026-10-08T20:30:00Z")
+    path = capture.record_producer_capture(source, public)
+    record = json.loads(path.read_text())
+    record[field] = value
+    record["content_sha256"] = sha256(api.canonical_json({
+        k: v for k, v in record.items() if k != "content_sha256"}).encode()).hexdigest()
+    path.write_text(api.canonical_json(record) + "\n")
+    bad_bytes = path.read_bytes()
+    projection = view(api, source, spine, public_artifact_path=public)
+    assert projection["status"] == "CURRENT_SESSION"
+    assert len(projection["rows"]) == 1
+    assert projection["producer_capture"]["reason"] == "PRODUCER_RECEIPT_INVALID"
+    assert projection["producer_capture"]["producer_captured_at"] is None
+    assert projection["clocks"]["actual_clock_state"] == "NOT_RECORDED"
+    assert all(v is False for v in projection["rows"][0]["authority"].values())
+    with pytest.raises(ValueError):
+        capture.record_producer_capture(source, public)
+    assert path.read_bytes() == bad_bytes
+
+
+def test_partial_pair_and_unverified_publication_cannot_supply_capture(api, tmp_path):
+    from engine import turn_watch_capture as capture
+
+    source, spine, _, _ = seed(tmp_path)
+    public = tmp_path / "site/turn_watch/turn_watch.json"
+    public.write_text("{}")
+    with pytest.raises(ValueError, match="pair changed"):
+        capture.record_producer_capture(source, public)
+    assert not (source.parent / "producer_captures").exists()
+    projection = view(api, source, spine, public_artifact_path=public)
+    assert len(projection["rows"]) == 1
+    assert projection["producer_capture"]["reason"] == "SOURCE_ARTIFACT_UNVERIFIED"
+
+
+def test_changed_pair_gets_a_distinct_capture_without_restamping_prior_pair(api, tmp_path, monkeypatch):
+    from engine import turn_watch_capture as capture
+    from engine.us_turn_watch import write_artifact
+
+    source, spine, rows, artifact = seed(tmp_path)
+    public = tmp_path / "site/turn_watch/turn_watch.json"
+    monkeypatch.setattr(capture, "_now", lambda: "2026-10-08T20:30:00Z")
+    first = capture.record_producer_capture(source, public)
+    original = first.read_bytes()
+    rows[0]["reset"]["reset_low"] += 1
+    write_artifact(artifact, tmp_path / "site")
+    source = write_candidate_episode_input(artifact, rows, tmp_path / "data")
+    assert view(api, source, spine, public_artifact_path=public)["producer_capture"]["state"] == "UNAVAILABLE"
+    monkeypatch.setattr(capture, "_now", lambda: "2026-10-09T21:00:00Z")
+    second = capture.record_producer_capture(source, public)
+    assert second != first
+    assert first.read_bytes() == original
+    projection = view(api, source, spine, public_artifact_path=public)
+    assert projection["producer_capture"]["producer_captured_at"] == "2026-10-09T21:00:00Z"
+    assert projection["clocks"]["first_available_at"] is None
+
+
+def test_concurrent_capture_publishes_one_complete_immutable_receipt(tmp_path, monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+    from engine import turn_watch_capture as capture
+
+    source, _, _, _ = seed(tmp_path)
+    public = tmp_path / "site/turn_watch/turn_watch.json"
+    monkeypatch.setattr(capture, "_now", lambda: "2026-10-08T20:30:00Z")
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        paths = list(pool.map(lambda _: capture.record_producer_capture(source, public), range(2)))
+    assert paths[0] == paths[1]
+    assert list(paths[0].parent.iterdir()) == [paths[0]]
+    result = capture.load_producer_capture(source, source.read_bytes(), json.loads(source.read_text()))
+    assert result["state"] == "RECORDED"
+
+
+@pytest.mark.parametrize("failure", ["compute", "source_contract", "source_write", "capture_write", None])
+def test_native_builder_captures_only_a_successful_pair(tmp_path, monkeypatch, failure):
+    from scripts import build_turn_watch as builder
+    from engine import turn_watch_capture as capture
+
+    source, _, rows, artifact = seed(tmp_path)
+    source.unlink()
+    public = tmp_path / "site/turn_watch/turn_watch.json"
+    public.unlink()
+    artifact["coverage"].update(source_contract={"pass": failure != "source_contract"},
+                                graded=1, deck_by_trigger={"pre_confluence_2d": 1})
+    monkeypatch.setattr(builder.config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(builder.config, "site_dir", lambda: tmp_path / "site")
+    def compute(*args, **kwargs):
+        if failure == "compute":
+            raise ValueError("fixture compute refusal")
+        return artifact, rows
+    monkeypatch.setattr(builder.turn_watch, "compute_deck_with_candidates", compute)
+    monkeypatch.setattr(capture, "_now", lambda: "2026-10-08T20:30:00Z")
+    def write_failure(*args, **kwargs):
+        raise OSError("fixture write refusal")
+    if failure == "source_write":
+        monkeypatch.setattr(builder, "write_candidate_episode_input", write_failure)
+    elif failure == "capture_write":
+        monkeypatch.setattr(builder, "record_producer_capture", write_failure)
+    assert builder.build([]) == (1 if failure == "source_write" else 0)
+    receipts = list((source.parent / "producer_captures").glob("*.json"))
+    assert len(receipts) == (1 if failure is None else 0)
+    if failure in (None, "capture_write"):
+        assert source.is_file() and public.is_file()
+    if failure is None:
+        result = capture.load_producer_capture(source, source.read_bytes(), json.loads(source.read_text()))
+        assert result["state"] == "RECORDED"
 
 
 @pytest.mark.parametrize("field", ["row", "data_session", "selection_era", "anchor_era",

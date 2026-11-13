@@ -6,13 +6,15 @@ Writes:
       Public capped early-surfacing deck plus its whole disclosure block.
   data/us_prophet_rank/episode_inputs/turn_watch/<session>.json
       Private uncapped B1 intake sidecar built from the same in-memory candidate rows.
+  data/us_prophet_rank/episode_inputs/turn_watch/producer_captures/<source-digest>.json
+      Forward-only completion receipt for the exact pair; no decision rows or authority.
 
   NOT site/prophet/ — that root is exclusive Prophet publisher authority and the nightly
   engine job restores it from HEAD before staging, so a deck written there is reverted on a
   SUCCESSFUL night too. This desk owns its own site root; see engine.us_turn_watch
   .write_artifact.
 
-Reads (all committed, no network; the private sidecar above is the only data/ mutation):
+Reads (all committed, no network; data/ writes stay within the existing input root):
   config/us_turn_watch_universe.v1.json    immutable selection-era membership + provenance
   data/yahoo/*.parquet                     price histories for that population + SPY benchmark
   data/baskets/membership.json             group names (EN/ZH) and member lists
@@ -51,6 +53,7 @@ sys.path.insert(0, str(_ROOT))
 from engine import us_turn_watch as turn_watch  # noqa: E402
 from engine.session_digest import session_window_et  # noqa: E402
 from engine.us_candidate_episode import canonical_json  # noqa: E402
+from engine.turn_watch_capture import record_producer_capture  # noqa: E402
 from lib import config  # noqa: E402
 
 log = logging.getLogger(__name__)
@@ -127,12 +130,21 @@ def build(argv: list[str] | None = None) -> int:
 
     try:
         out = turn_watch.write_artifact(artifact, config.site_dir())
-        write_candidate_episode_input(artifact, rows, config.data_dir())
+        source = write_candidate_episode_input(artifact, rows, config.data_dir())
     except Exception as e:  # noqa: BLE001
         print(f"::error title=turn-watch::could not write the deck artifact ({e})",
               flush=True)
         log.error("build_turn_watch: write failed: %s", e, exc_info=True)
         return 1
+
+    try:
+        capture = record_producer_capture(source, out)
+        log.info("build_turn_watch: producer capture %s", capture)
+    except (OSError, ValueError, TypeError, KeyError) as e:
+        # Missing timing evidence must not destroy an otherwise usable observation
+        # population. The reader reports unknown and never substitutes session close.
+        print(f"::warning title=turn-watch-producer-clock::capture unavailable ({e})", flush=True)
+        log.warning("build_turn_watch: producer capture unavailable: %s", e)
 
     cov = artifact["coverage"]
     elapsed = round(time.time() - t0, 2)
