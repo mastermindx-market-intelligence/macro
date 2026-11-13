@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T15:08:50.052498+00:00",
-  "count": 3303,
+  "generated_at": "2026-11-13T17:39:12.802327+00:00",
+  "count": 3310,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,148 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-gobxvme2usm-c1b717",
+      "title": "GS Codacci Pisanelli Macro Roadmap 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:55:01Z",
+      "summary_points": [
+        "Year-End Squeeze Catalysts: Equity sell-off, re-rated multiples, and lighter positioning enable risk squeeze; MSCI P/E at 35y avg (derated), with quarterly earnings key amid AI sector deleveraging (Nasdaq ~5 sigma move).",
+        "Earnings Revisions Momentum: Consensus EPS revisions (MSCI AC World) show sustained positive momentum since 2022, with 2027-2028 projections significantly above historical averages.",
+        "Inflation Pass-Through Q1 Test: Broad CPI surprise (Sept/Oct), producer/import price acceleration (chemicals, plastics), with Q1 critical for price resets/wage negotiations; labor market may absorb heat if demand weakens.",
+        "EUR 10s30s Technical Signal: EUR 10s30s at multi-year lows vs USD (sustained downtrend 2024–2025), signaling potential value/technical weakness in Eurozone debt.",
+        "Geopolitical Resilience: Middle East re-escalation absorbed amid stronger CPI, hawkish Fed, oil rally, and Nvidia news, indicating supportive market structure for year-end risk squeeze."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-viwmxcpsljt-74246a",
+      "title": "GS Callahan GS US TMT quick hits + stocks 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:54:56Z",
+      "summary_points": [
+        "AI Pricing in Negatives: AI revenue reductions (up to 45% worst-case) already priced into APH, KEYS, TEL, BDC; upside potential in negative scenarios due to diversified exposure and long-term AI capex benefits.",
+        "Diversified vs AI-Exposed Rotation: Diversified names (BDC, TEL) outperform in slower growth; AI-exposed (VRT, FLEX, JBL) face higher risk but gain from cycle-to-cycle margin improvements (e.g., APH 55-60% AI revenue exposure).",
+        "Semiconductor Flow Shift: NVDA volume surge (2bn shares, 8% float), AMD/AVGO adding $500bn cap; security sector debate (ZS down 11/13 days vs Cisco firewall orders +30%) amid semicap vs memory complex dynamics.",
+        "Risk-Off Market Rotation: NDX Futures +20 bps amid risk-off (KOSPI, NVDA ~$500bn cap loss, VIX 18-handle, Oil $96/bbl, 10yr yields 5.13%); cleaner positioning in large-cap Tech, Defensives, Low Vol."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hqypfrldwhv-2ec7d4",
+      "title": "Europe Equity Strategy 2027 Outlook Finding growth",
+      "institution": "2027 Outlook",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:51:03Z",
+      "summary_points": [
+        "Energy Relief as Core Catalyst: Brent oil to $78/bbl and TTF gas to EUR 31/MWh drive earnings recovery; energy prices tightly correlate with STOXX 600 P/E, benefiting cyclical/Consumer Discretionary sectors while Energy underperforms.",
+        "Earnings Growth Deceleration: 2027 earnings growth slows to 7% (vs 18% in 2026) due to energy EPS decline, weaker growth, and higher costs; STOXX 600 EPS forecasted at 7% (2027), above historical average but vulnerable to recessions.",
+        "French Fiscal Risk & Sector Rotation: Sovereign spreads and 3% CAC 40 downside risk (linked to 50% French corporate bonds in OATs) lead Goldman to advise against French domestic stocks; Energy downgraded to Underweight, Defense/Defense overweighted (PEG <1, 20% EPS growth).",
+        "Valuation Gap & Diversification Edge: Europe trades at 14% P/E discount vs.",
+        "US (narrowing from 34%), with European Tech/Defense offering undervaluation (PEG <1 vs US); Tech/Telecom/Oil & Gas sectors show lower intra-sector correlations for risk reduction."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-8ry7l0qskhg-34c260",
+      "title": "Japan Focus of the Week Q3 GDP, October National CPI",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:38:40Z",
+      "summary_points": [
+        "BOJ Rate Hike Timeline Shifted to December: BOJ maintained 1.25% rate, revised hike to December; policy emphasizes monitoring financial conditions over accelerating hikes, directly impacting yen volatility and bond yields.",
+        "Domestic CGPI Surpasses Expectations: CGPI rose +0.7% mom (vs +0.2% exp), largest single-month increase since May, driven by petroleum & coal rebound; signals persistent inflationary pressures beyond core CPI.",
+        "US FOMC Minutes (Nov 18): Critical policy event with potential market impact; Fed’s stance on rates could influence global liquidity, risk assets, and cross-asset correlations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-024xcdlxcoe-4ac8c2",
+      "title": "Americas Business & Information Services Key takeaways, themes and stock picks in Business & Info Services post 3Q results",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:35:00Z",
+      "summary_points": [
+        "AI Monetization vs Disruption: Proprietary data/workflows (VRSK, EFX, MSCI) outperformed LLM disruption (ROL, PXED); AI viewed as revenue driver (monetization) or threat (disruption), critical for sector differentiation.",
+        "Hyperscaler Debt Issuance: $240bn YTD investment grade issuance (50% AI-related) fueled sector growth; SPGI raised revenue outlook to 6.5-8.0%, MCO’s MIS revenue fell 1.0% y/y.",
+        "KLC EPS Cut as Critical Risk: KLC’s 65% EPS reduction (64.8% EPS variance) drove largest revenue cuts (84%+) and margin contraction (64.8%), distorting sector averages.",
+        "CTAS Buy Catalyst: Cintas (CTAS) accelerated organic revenue growth (8.9% y/y), raised F2027 outlook (8.4%), expanded margins (23.6%), and near-completion of UNF acquisition.",
+        "Info Services Margin Expansion: 42.9% CY3Q EBITDA margin (150bps y/y expansion), driven by pricing power (FICO), data center solutions (IRM), and credit activity (EFX/TRU)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 40,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-s07uzd1yoek-59b5e1",
+      "title": "Synspective (290A)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:33:46Z",
+      "summary_points": [
+        "Revenue/EBITDA Surge & Valuation Shift: Projected revenue (2.4B → 32.0B) and EBITDA (1.1B → 19.7B) expansion drives EPS growth; EV/EBITDA collapses from 188.3 to 7.7, signaling exceptional relative value improvement.",
+        "Satellite Fleet & Utilization Recovery: Full-year guidance maintained via satellite utilization recovery and fleet expansion, mitigating 3Q transitory maintenance miss; secured launch slots for 63 satellites prevent supply bottlenecks.",
+        "Defense Growth Catalysts: 4Q revenue +150% qoq driven by fleet expansion; ¥6.2bn subsidy income to net profit; Synspective OMNIA program accelerates sovereign demand from 2029.",
+        "Critical Risk Exposure: Simultaneous satellite failures, intensifying competition, engineering bottlenecks, and delayed defense/international project wins pose material downside risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hn9vqaixlbm-1f8404",
+      "title": "GS Bartlett GS TMT TODAY 11.13.26 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T14:23:55Z",
+      "summary_points": [
+        "MSFT Outage & Security Demand: Global outage drives 3.3%+ gains in security software (PANW, CRWD, OKTA) amid CSCO mixed results (-3% pre) and NVDA float volatility (10% WTD, Jensen departure).",
+        "CSCO Margin Headwinds: Beat on networking/EBIT margins but missed orders; AI revenue growth slowed to 6.8% y/y (vs. 8% prior), signaling potential gross margin pressure from hyperscale revenue mix.",
+        "China Internet Geopolitical Risk: Severe underperformance (YTD -33.55%) amid regulatory tensions and capital flow risks, highlighting critical exposure vulnerability for Chinese tech holdings.",
+        "Datacenter Policy Risk: Midterm elections drive 45% of planned AI/datacenter capacity at risk (Texas 25%), creating downside scenarios via proposed capex/infrastructure restrictions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-qvdyw7yvx20-4b6ba2",
       "title": "GS Mitola GS FINS & REITs Daily 13 Nov 2026",

@@ -1,36 +1,24 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-11-13T12:26:36Z",
+  "produced_at": "2026-11-13T16:45:35Z",
   "as_of": "2026-11-13",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 45,
-    "passed": 42,
-    "quarantined": 3,
-    "quarantined_policy": 3,
+    "items": 39,
+    "passed": 37,
+    "quarantined": 2,
+    "quarantined_policy": 2,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
   "reasons_histogram": {
-    "near_dup": 3
+    "near_dup": 2
   },
   "quarantined": [
-    {
-      "id": "post-sophia-012",
-      "account": "sophia",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-founder-016"
-      ]
-    },
     {
       "id": "post-kelly-012",
       "account": "kelly",
@@ -58,27 +46,19 @@
   ],
   "passed": [
     {
-      "id": "post-flagship-010",
-      "account": "flagship",
-      "slot": "D1-S10",
-      "type": "receipt",
-      "cashtag": "$AGNT",
-      "headline": ""
-    },
-    {
       "id": "post-flagship-014",
       "account": "flagship",
       "slot": "D1-S14",
       "type": "chart",
-      "cashtag": "$GPK",
+      "cashtag": "$SNA",
       "headline": ""
     },
     {
-      "id": "post-flagship-019",
+      "id": "post-flagship-015",
       "account": "flagship",
-      "slot": "D1-S19",
-      "type": "chart",
-      "cashtag": "$RBLX",
+      "slot": "D1-S15",
+      "type": "receipt",
+      "cashtag": "$DAN",
       "headline": ""
     },
     {
@@ -87,55 +67,31 @@
       "slot": "D1-S20",
       "type": "macro",
       "cashtag": "",
-      "headline": "Jobless claims aren't signaling a slowdown"
+      "headline": "Growth is holding up. Inflation isn't out of the way."
     },
     {
-      "id": "post-flagship-028",
+      "id": "post-flagship-022",
       "account": "flagship",
-      "slot": "D1-S28",
+      "slot": "D1-S22",
       "type": "chart",
-      "cashtag": "$MTG",
+      "cashtag": "$MRP",
       "headline": ""
     },
     {
-      "id": "post-flagship-033",
+      "id": "post-flagship-037",
       "account": "flagship",
-      "slot": "D1-S33",
-      "type": "receipt",
-      "cashtag": "$FMC",
-      "headline": "$FMC's quarter erased the rebound case"
-    },
-    {
-      "id": "post-flagship-034",
-      "account": "flagship",
-      "slot": "D1-S34",
-      "type": "receipt",
-      "cashtag": "$ECG",
+      "slot": "D1-S37",
+      "type": "signal",
+      "cashtag": "$TRMK",
       "headline": ""
     },
     {
-      "id": "post-flagship-041",
+      "id": "post-flagship-055",
       "account": "flagship",
-      "slot": "D1-S41",
-      "type": "watchlist",
-      "cashtag": "$XLE",
-      "headline": "Energy is drawing traffic"
-    },
-    {
-      "id": "post-flagship-049",
-      "account": "flagship",
-      "slot": "D1-S49",
+      "slot": "D1-S55",
       "type": "chart",
-      "cashtag": "$DTM",
+      "cashtag": "$CAR",
       "headline": ""
-    },
-    {
-      "id": "post-flagship-050",
-      "account": "flagship",
-      "slot": "D1-S50",
-      "type": "receipt",
-      "cashtag": "$SHEN",
-      "headline": "$SHEN closes the week at a 5-year low"
     },
     {
       "id": "post-conf-flagship-001",
@@ -162,22 +118,6 @@
       "headline": ""
     },
     {
-      "id": "post-insider-008",
-      "account": "flagship",
-      "slot": "D1-S23",
-      "type": "insider",
-      "cashtag": "$BW",
-      "headline": ""
-    },
-    {
-      "id": "post-founder-007",
-      "account": "founder",
-      "slot": "D1-S7",
-      "type": "receipt",
-      "cashtag": "$NB",
-      "headline": ""
-    },
-    {
       "id": "post-founder-016",
       "account": "founder",
       "slot": "D1-S16",
@@ -186,19 +126,19 @@
       "headline": ""
     },
     {
-      "id": "post-founder-031",
+      "id": "post-founder-018",
       "account": "founder",
-      "slot": "D1-S31",
+      "slot": "D1-S18",
       "type": "chart",
-      "cashtag": "$JPM",
+      "cashtag": "$JLL",
       "headline": ""
     },
     {
-      "id": "post-founder-033",
+      "id": "post-founder-028",
       "account": "founder",
-      "slot": "D1-S33",
-      "type": "chart",
-      "cashtag": "$APO",
+      "slot": "D1-S28",
+      "type": "receipt",
+      "cashtag": "$DAN",
       "headline": ""
     },
     {
@@ -210,28 +150,44 @@
       "headline": ""
     },
     {
-      "id": "post-meagan-011",
-      "account": "meagan",
-      "slot": "D1-S11",
-      "type": "chart",
-      "cashtag": "$MRTN",
-      "headline": ""
-    },
-    {
-      "id": "post-meagan-015",
-      "account": "meagan",
-      "slot": "D1-S15",
-      "type": "chart",
-      "cashtag": "$SHEN",
-      "headline": "$SHEN just printed its weakest weekly close in 5 years."
-    },
-    {
-      "id": "post-meagan-022",
-      "account": "meagan",
+      "id": "post-housepick-001",
+      "account": "founder",
       "slot": "D1-S22",
-      "type": "chart",
-      "cashtag": "$FLS",
+      "type": "watchlist",
+      "cashtag": "$PAYO",
       "headline": ""
+    },
+    {
+      "id": "post-meagan-002",
+      "account": "meagan",
+      "slot": "D1-S2",
+      "type": "chart",
+      "cashtag": "$EEFT",
+      "headline": "The $EEFT setup has one line"
+    },
+    {
+      "id": "post-meagan-013",
+      "account": "meagan",
+      "slot": "D1-S13",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
+    },
+    {
+      "id": "post-meagan-028",
+      "account": "meagan",
+      "slot": "D1-S28",
+      "type": "receipt",
+      "cashtag": "$FMC",
+      "headline": ""
+    },
+    {
+      "id": "post-meagan-031",
+      "account": "meagan",
+      "slot": "D1-S31",
+      "type": "chart",
+      "cashtag": "$JLL",
+      "headline": "Another run at $JLL's breakout line"
     },
     {
       "id": "post-meagan-045",
@@ -258,35 +214,35 @@
       "headline": ""
     },
     {
-      "id": "post-sophia-010",
+      "id": "post-sophia-006",
       "account": "sophia",
-      "slot": "D1-S10",
+      "slot": "D1-S6",
       "type": "chart",
-      "cashtag": "$SW",
-      "headline": ""
+      "cashtag": "$BNY",
+      "headline": "$BNY found buyers at trend support again"
     },
     {
-      "id": "post-sophia-026",
+      "id": "post-sophia-012",
       "account": "sophia",
-      "slot": "D1-S26",
-      "type": "receipt",
-      "cashtag": "$SUPN",
-      "headline": ""
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
+      "headline": "Growth is running hot while inflation cools"
+    },
+    {
+      "id": "post-sophia-032",
+      "account": "sophia",
+      "slot": "D1-S32",
+      "type": "chart",
+      "cashtag": "$GE",
+      "headline": "$GE is holding above the six-month most-traded price"
     },
     {
       "id": "post-congress-004",
       "account": "sophia",
-      "slot": "D1-S21",
+      "slot": "D1-S16",
       "type": "congress",
       "cashtag": "$APP",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-006",
-      "account": "kelly",
-      "slot": "D1-S6",
-      "type": "chart",
-      "cashtag": "$FSM",
       "headline": ""
     },
     {
@@ -295,7 +251,7 @@
       "slot": "D1-S27",
       "type": "receipt",
       "cashtag": "$ECG",
-      "headline": ""
+      "headline": "$ECG is closed. no retroactive edits."
     },
     {
       "id": "post-kelly-037",
@@ -311,23 +267,15 @@
       "slot": "D1-S44",
       "type": "receipt",
       "cashtag": "$NB",
-      "headline": "$NB logged another red close, making it 3 straight"
-    },
-    {
-      "id": "post-kelly-047",
-      "account": "kelly",
-      "slot": "D1-S47",
-      "type": "chart",
-      "cashtag": "$FND",
       "headline": ""
     },
     {
-      "id": "post-kelly-052",
+      "id": "post-kelly-045",
       "account": "kelly",
-      "slot": "D1-S52",
+      "slot": "D1-S45",
       "type": "chart",
-      "cashtag": "$GS",
-      "headline": ""
+      "cashtag": "$LECO",
+      "headline": "$LECO breakout setup"
     },
     {
       "id": "post-theme-005",
@@ -346,36 +294,36 @@
       "headline": ""
     },
     {
-      "id": "post-cici-003",
+      "id": "post-cici-010",
       "account": "cici",
-      "slot": "D1-S3",
-      "type": "macro",
-      "cashtag": "",
+      "slot": "D1-S10",
+      "type": "chart",
+      "cashtag": "$TR",
       "headline": ""
     },
     {
-      "id": "post-cici-007",
+      "id": "post-cici-027",
       "account": "cici",
-      "slot": "D1-S7",
-      "type": "chart",
-      "cashtag": "$JKHY",
-      "headline": "Jack Henry, $JKHY, has held the same long-term line every time"
+      "slot": "D1-S27",
+      "type": "watchlist",
+      "cashtag": "$MRVL",
+      "headline": "反弹未反转 (a bounce, not a reversal)"
     },
     {
-      "id": "post-cici-016",
+      "id": "post-cici-028",
       "account": "cici",
-      "slot": "D1-S16",
+      "slot": "D1-S28",
+      "type": "chart",
+      "cashtag": "$LECO",
+      "headline": ""
+    },
+    {
+      "id": "post-cici-047",
+      "account": "cici",
+      "slot": "D1-S47",
       "type": "receipt",
       "cashtag": "$LSTR",
-      "headline": ""
-    },
-    {
-      "id": "post-cici-042",
-      "account": "cici",
-      "slot": "D1-S42",
-      "type": "chart",
-      "cashtag": "$DTM",
-      "headline": ""
+      "headline": "Landstar, $LSTR, never opened the trade"
     },
     {
       "id": "post-theme-006",
@@ -396,8 +344,8 @@
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 773,
-      "hits": 3,
+      "pairs_checked": 610,
+      "hits": 2,
       "shared_media_hits": 0
     },
     "cadence": {
