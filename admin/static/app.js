@@ -10911,7 +10911,7 @@ RENDER.marketing_publish = async () => {
     }).join("");
     postedCard = `<div class="card" id="pub-posted">
       <div class="section">Recent publisher records <span class="cnt">last ${posted.length} · newest first</span></div>
-      <div class="note muted">Provider acceptance and public X confirmation are shown separately. A missing confirmation is not permission to resend.</div>
+      <div class="note muted">${mktCopy("Provider acceptance is not delivery confirmation or permission to resend. Verified X links are shown on each record.", "服务商接受不代表已在 X 发布，也不代表可以重发。已验证的 X 链接会显示在对应记录中。")}</div>
       <div class="table-wrap"><table class="tbl pub-tbl"><thead><tr><th>at</th><th>desk</th><th>post</th>${anyMetrics ? "<th>how it did</th>" : ""}<th>via</th><th>receipt</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
       ${anyMetrics ? `<div class="note muted" style="margin-top:6px">A dash means no measurement is available, not zero. Metrics alone do not establish delivery.</div>` : ""}

@@ -1959,6 +1959,8 @@ def render_chart_v2(
     arcs: list[dict] | None = None,
     measure_box: dict | None = None,
     level_tags: list[dict] | None = None,
+    social_readable: bool = False,
+    editorial_title: str = "",
 ) -> str:
     """Render a TrendSpider-grade candlestick SVG chart.
 
@@ -2079,10 +2081,23 @@ def render_chart_v2(
         eff_pct_from = None
 
     # ── Layout ──────────────────────────────────────────────────────────────
-    HEADER_H = 64          # header band height (taller for logo breathing room)
-    FOOTER_H = 58  # room for the CTA pill + large URL line
-    PAD_L = 14             # left padding (no left axis)
-    PAD_R = 72             # right axis labels
+    # The social profile scales text AND its reserved geometry together. Other
+    # consumers keep the established terminal layout unless they opt in.
+    title_lines = []
+    if social_readable and str(editorial_title).strip():
+        title_lines, title_overflow = _bc_wrap_w(
+            str(editorial_title), 32, width - 56, 3, bold=True)
+        if title_overflow or any(_bc_text_w(line, 32) > width - 56 for line in title_lines):
+            # Keep a complete, true title rather than cutting a factual clause.
+            title_lines = [f"{ticker.upper()} · {timeframe.lower()} price history"]
+    BRAND_H = 82 if social_readable else 64
+    HEADER_H = BRAND_H + (len(title_lines) * 38 + 18 if title_lines else 0)
+    FOOTER_H = 80 if social_readable else 58
+    PAD_L = 28 if social_readable else 14
+    PAD_R = (max(136, max(len(_fmt_thousands(float(price))) for price in h + c[-1:]) * 14 + 26)
+             if social_readable else 72)
+    axis_font = 22 if social_readable else 10
+    date_gap = 34 if social_readable else 8
     PAD_TOP = HEADER_H + 12  # extra padding so logo band breathes
 
     # Subpanel heights
@@ -2106,7 +2121,7 @@ def render_chart_v2(
 
     # Floor the price pane so an adversarial subpanel_h can never invert the
     # layout (negative height flips the y-axis and paints candles into the header).
-    PRICE_H = max(80, height - PAD_TOP - FOOTER_H - total_sub_h - 8)
+    PRICE_H = max(80, height - PAD_TOP - FOOTER_H - total_sub_h - date_gap)
 
     chart_w = width - PAD_L - PAD_R
 
@@ -2299,7 +2314,7 @@ def render_chart_v2(
     pill_color = "#4CAF50" if last_close >= prev_close else "#E23B3B"
     pill_y = py_price(last_close)
     pill_label = _fmt_thousands(last_close)
-    _PILL_HALF_H = 11.0  # pill is 18px tall; +2px so glyphs never kiss
+    _PILL_HALF_H = 22.0 if social_readable else 11.0  # reserve breathing room around the pill
 
     _tick_levels = (_log_axis_levels(y_min, y_max, target=6) if log_ok
                     else _round_axis_levels(y_min, y_max, target=6))
@@ -2308,19 +2323,19 @@ def render_chart_v2(
         if abs(ty - pill_y) < _PILL_HALF_H + 4:
             continue
         axis_parts.append(
-            f'<text x="{axis_x + 2:.1f}" y="{ty + 4:.1f}" '
-            f'fill="#6b7a99" font-size="10" font-family="monospace">'
+            f'<text x="{axis_x + 2:.1f}" y="{ty + (7 if social_readable else 4):.1f}" '
+            f'fill="{"#9baac5" if social_readable else "#6b7a99"}" font-size="{axis_font}" font-family="monospace">'
             f'{_fmt_thousands(round(tick_price, 2))}</text>'
         )
 
     # Last-price pill — rx=2 (rounded corners), bold
-    pill_w = max(58, len(pill_label) * 7 + 12)
+    pill_w = max(112, len(pill_label) * 14 + 18) if social_readable else max(58, len(pill_label) * 7 + 12)
     pill_x = PAD_L + chart_w + 4
     axis_parts.append(
-        f'<rect x="{pill_x:.1f}" y="{pill_y - 10:.1f}" '
-        f'width="{pill_w}" height="18" rx="2" fill="{pill_color}"/>'
-        f'<text x="{pill_x + pill_w / 2:.1f}" y="{pill_y + 3:.1f}" '
-        f'fill="#ffffff" font-size="10" font-weight="bold" '
+        f'<rect x="{pill_x:.1f}" y="{pill_y - (20 if social_readable else 10):.1f}" '
+        f'width="{pill_w}" height="{36 if social_readable else 18}" rx="2" fill="{pill_color}"/>'
+        f'<text x="{pill_x + pill_w / 2:.1f}" y="{pill_y + (7 if social_readable else 3):.1f}" '
+        f'fill="#ffffff" font-size="{axis_font}" font-weight="bold" '
         f'font-family="monospace" text-anchor="middle">{_xesc(pill_label)}</text>'
     )
 
@@ -2330,7 +2345,28 @@ def render_chart_v2(
     # (masterplan §1.1). Dark ink on the coloured plate keeps these visually
     # subordinate to the white-on-colour LAST PRICE pill: one price is the tape,
     # the others are references.
-    _tag_claimed: list[tuple[float, float]] = [(pill_y - 11.0, pill_y + 11.0)]
+    def _free_label_y(preferred: float, half: float,
+                      claimed: list[tuple[float, float]]) -> float | None:
+        """Nearest free in-panel position, including above a boundary obstacle.
+
+        Clamping AFTER a downward nudge can put the label back onto the obstacle.
+        Evaluate bounded candidates before accepting a position instead.
+        """
+        low, high = PAD_TOP + half + 2, PAD_TOP + PRICE_H - half - 2
+        if high < low:
+            return None
+        candidates = [max(low, min(high, preferred)), low, high]
+        for top, bottom in claimed:
+            candidates.extend((top - half - 2, bottom + half + 2))
+        for candidate in sorted(candidates, key=lambda value: abs(value - preferred)):
+            if low <= candidate <= high and all(
+                    candidate + half + 1 <= top or candidate - half - 1 >= bottom
+                    for top, bottom in claimed):
+                return candidate
+        return None
+
+    _tag_half = 19.0 if social_readable else 9.0
+    _tag_claimed: list[tuple[float, float]] = [(pill_y - _PILL_HALF_H, pill_y + _PILL_HALF_H)]
     for _tag in (level_tags or [])[:4]:
         try:
             _tag_price = float(_tag["price"])
@@ -2338,28 +2374,42 @@ def render_chart_v2(
             continue
         if not (y_min <= _tag_price <= y_max):
             continue  # off-panel: the tag would point at nothing
+        if social_readable and _fmt_thousands(_tag_price) == pill_label:
+            continue  # the last-price pill already states this exact value
         _tag_color = str(_tag.get("color") or "#5b9dff")
         _tag_text = str(_tag.get("label") or _fmt_thousands(round(_tag_price, 2)))
         _tag_y = py_price(_tag_price)
-        for _ in range(6):
-            _hit = next((sp for sp in _tag_claimed
-                         if _tag_y - 9 < sp[1] and sp[0] < _tag_y + 9), None)
-            if _hit is None:
-                break
-            _tag_y = _hit[1] + 9.0 + 2.0
-        _tag_y = max(PAD_TOP + 9.0, min(PAD_TOP + PRICE_H - 9.0, _tag_y))
-        _tag_claimed.append((_tag_y - 9.0, _tag_y + 9.0))
-        _tag_w = max(50, len(_tag_text) * 7 + 12)
+        if social_readable:
+            _placed_y = _free_label_y(_tag_y, _tag_half, _tag_claimed)
+            if _placed_y is None:
+                continue
+            _tag_y = _placed_y
+        else:
+            for _ in range(6):
+                _hit = next((sp for sp in _tag_claimed
+                             if _tag_y - _tag_half < sp[1] and sp[0] < _tag_y + _tag_half), None)
+                if _hit is None:
+                    break
+                _tag_y = _hit[1] + _tag_half + 2.0
+            _tag_y = max(PAD_TOP + _tag_half, min(PAD_TOP + PRICE_H - _tag_half, _tag_y))
+        _tag_claimed.append((_tag_y - _tag_half, _tag_y + _tag_half))
+        _tag_w = max(102, len(_tag_text) * 14 + 18) if social_readable else max(50, len(_tag_text) * 7 + 12)
         # A worded tag ("range high") is wider than the 72px axis gutter, so it
         # is pulled LEFT until it fits instead of running off the canvas — the
         # same clipping class as the callout box, one plate over.
         _tag_x = min(float(pill_x), width - _tag_w - 2.0)
+        if social_readable and abs(_tag_y - py_price(_tag_price)) > 4:
+            axis_parts.append(
+                f'<line x1="{_tag_x - 12:.1f}" y1="{py_price(_tag_price):.1f}" '
+                f'x2="{_tag_x:.1f}" y2="{_tag_y:.1f}" '
+                f'stroke="{_tag_color}" stroke-width="1.5"/>'
+            )
         axis_parts.append(
-            f'<rect x="{_tag_x:.1f}" y="{_tag_y - 8:.1f}" '
-            f'width="{_tag_w}" height="16" rx="2" fill="{_tag_color}" '
+            f'<rect x="{_tag_x:.1f}" y="{_tag_y - (17 if social_readable else 8):.1f}" '
+            f'width="{_tag_w}" height="{34 if social_readable else 16}" rx="2" fill="{_tag_color}" '
             f'fill-opacity="0.92"/>'
-            f'<text x="{_tag_x + _tag_w / 2:.1f}" y="{_tag_y + 4:.1f}" '
-            f'fill="#0E1420" font-size="10" font-weight="bold" '
+            f'<text x="{_tag_x + _tag_w / 2:.1f}" y="{_tag_y + (7 if social_readable else 4):.1f}" '
+            f'fill="#0E1420" font-size="{axis_font}" font-weight="bold" '
             f'font-family="monospace" text-anchor="middle">{_xesc(_tag_text)}</text>'
         )
 
@@ -2384,7 +2434,7 @@ def render_chart_v2(
     # so no overlay chip is ever drawn on top of the price pill. Each entry is a
     # (top, bottom) y-span already claimed; a new chip nudges until it clears them.
     _pill_cy = py_price(c[-1])
-    _claimed_spans: list[tuple[float, float]] = [(_pill_cy - 12, _pill_cy + 12)]
+    _claimed_spans: list[tuple[float, float]] = [(_pill_cy - _PILL_HALF_H - 1, _pill_cy + _PILL_HALF_H + 1)]
 
     def _overlay_chip(
         text: str,
@@ -2407,9 +2457,14 @@ def render_chart_v2(
         """
         if not text:
             return ""
-        _cw = int(len(text) * 6.4) + 14      # chip width from glyph count
-        _ch = 17                              # chip height
+        _cw = int(len(text) * (12.8 if social_readable else 6.4)) + (24 if social_readable else 14)      # chip width from glyph count
+        _ch = 34 if social_readable else 17                              # chip height
         _cy = cy
+        if social_readable:
+            _placed_y = _free_label_y(cy, _ch / 2, _claimed_spans)
+            if _placed_y is None:
+                return ""
+            _cy = _placed_y
         # De-conflict: if the chip's band overlaps a claimed span, step it away.
         for _ in range(6):
             _band = (_cy - _ch / 2, _cy + _ch / 2)
@@ -2446,8 +2501,8 @@ def render_chart_v2(
             f'width="{_cw}" height="{_ch}" rx="4" '
             f'fill="#0E1420" fill-opacity="0.82" '
             f'stroke="{color}" stroke-opacity="0.55" stroke-width="1"/>'
-            f'<text x="{_rx - 7:.1f}" y="{_cy + 4:.1f}" '
-            f'fill="{color}" font-size="11" text-anchor="end" '
+            f'<text x="{_rx - 7:.1f}" y="{_cy + (7 if social_readable else 4):.1f}" '
+            f'fill="{color}" font-size="{22 if social_readable else 11}" text-anchor="end" '
             f'font-family="sans-serif">{_xesc(text)}</text>'
         )
 
@@ -3042,7 +3097,7 @@ def render_chart_v2(
 
     # ── Subpanels ────────────────────────────────────────────────────────────
     subpanel_svg_parts: list[str] = []
-    sub_y_start = PAD_TOP + PRICE_H + 8
+    sub_y_start = PAD_TOP + PRICE_H + date_gap
     divider_color = "#232A3D"
 
     for pi, panel_name in enumerate(active_panels):
@@ -3057,13 +3112,13 @@ def render_chart_v2(
         # ~50% zoom of an X timeline (illegible = defect); #6b7a99 matches the axis
         # tick ink and survives the downscale while staying quiet under the tape.
         subpanel_svg_parts.append(
-            f'<text x="{PAD_L + 4}" y="{panel_y + 13}" '
-            f'fill="#6b7a99" font-size="9" font-weight="700" '
+            f'<text x="{PAD_L + 4}" y="{panel_y + (23 if social_readable else 13)}" '
+            f'fill="{"#9baac5" if social_readable else "#6b7a99"}" font-size="{18 if social_readable else 9}" font-weight="700" '
             f'letter-spacing="0.12em">'
             f'{_xesc(panel_name.upper())}</text>'
         )
-        inner_y = panel_y + 18
-        inner_h = SUBPANEL_H - 22
+        inner_y = panel_y + (30 if social_readable else 18)
+        inner_h = SUBPANEL_H - (34 if social_readable else 22)
 
         if panel_name == "volume":
             vol_max = max((volume[i] for i in range(warmup, n) if volume[i] > 0), default=1.0)
@@ -3086,10 +3141,10 @@ def render_chart_v2(
             vol_label = f"{vol_max / 1_000_000:.1f}M" if vol_max >= 1_000_000 else f"{vol_max:.0f}"
             _vol_peak_y = inner_y + inner_h - vol_span
             subpanel_svg_parts.append(
-                f'<text x="{PAD_L + chart_w + 8}" y="{_vol_peak_y + 4:.1f}" '
-                f'fill="#6b7a99" font-size="9" font-family="monospace">{_xesc(vol_label)}</text>'
-                f'<text x="{PAD_L + chart_w + 8}" y="{_vol_peak_y + 15:.1f}" '
-                f'fill="#4a556a" font-size="7" letter-spacing="0.08em">VOL</text>'
+                f'<text x="{PAD_L + chart_w + 8}" y="{_vol_peak_y + (7 if social_readable else 4):.1f}" '
+                f'fill="{"#9baac5" if social_readable else "#6b7a99"}" font-size="{22 if social_readable else 9}" font-family="monospace">{_xesc(vol_label)}</text>'
+                f'<text x="{PAD_L + chart_w + 8}" y="{_vol_peak_y + (29 if social_readable else 15):.1f}" '
+                f'fill="{"#9baac5" if social_readable else "#4a556a"}" font-size="{18 if social_readable else 7}" letter-spacing="0.08em">VOL</text>'
             )
 
         elif panel_name == "macd":
@@ -3222,9 +3277,9 @@ def render_chart_v2(
                 _stk_last = _stk_vis[-1][1]
                 subpanel_svg_parts.append(
                     f'<text x="{PAD_L + chart_w + 8}" '
-                    f'y="{streak_y(_stk_last) + 4:.1f}" '
+                    f'y="{streak_y(_stk_last) + (7 if social_readable else 4):.1f}" '
                     f'fill="{"#4CAF50" if _stk_last > 0 else "#E23B3B"}" '
-                    f'font-size="9" font-family="monospace">{_stk_last:+d}</text>'
+                    f'font-size="{22 if social_readable else 9}" font-family="monospace">{_stk_last:+d}</text>'
                 )
 
         elif panel_name == "squeeze":
@@ -3280,11 +3335,11 @@ def render_chart_v2(
     # Real favicon logomark — gradient tile + M path, uid-suffixed to avoid collisions
     logo_tile_size = 34.0
     logo_cx = 8 + logo_tile_size / 2
-    logo_cy = HEADER_H / 2
+    logo_cy = BRAND_H / 2
     logo_defs, logo_group = _favicon_logomark(logo_cx, logo_cy, size=logo_tile_size, uid=uid)
     # MASTERMIND wordmark — prominent, weight 900
     wordmark_x = logo_cx + logo_tile_size / 2 + 8
-    wordmark_y = HEADER_H / 2 + 7
+    wordmark_y = BRAND_H / 2 + 7
     wordmark_svg = (
         f'<text x="{wordmark_x:.1f}" y="{wordmark_y:.1f}" '
         f'fill="#ffffff" font-size="20" font-weight="900" '
@@ -3294,15 +3349,21 @@ def render_chart_v2(
     # Ticker + timeframe (top-right)
     tf_right_x = width - PAD_R - 4
     ticker_svg = (
-        f'<text x="{tf_right_x:.1f}" y="{HEADER_H / 2 - 2:.1f}" '
-        f'fill="#ffffff" font-size="26" font-weight="bold" '
+        f'<text x="{tf_right_x:.1f}" y="{BRAND_H / 2 - 2:.1f}" '
+        f'fill="#ffffff" font-size="{32 if social_readable else 26}" font-weight="bold" '
         f'text-anchor="end" font-family="sans-serif">'
         f'{_xesc(ticker.upper())}</text>'
-        f'<text x="{tf_right_x:.1f}" y="{HEADER_H / 2 + 16:.1f}" '
-        f'fill="#8899bb" font-size="13" text-anchor="end" '
+        f'<text x="{tf_right_x:.1f}" y="{BRAND_H / 2 + (24 if social_readable else 16):.1f}" '
+        f'fill="#8899bb" font-size="{20 if social_readable else 13}" text-anchor="end" '
         f'letter-spacing="1" font-family="sans-serif">'
         f'{_xesc(timeframe.upper() + (" (LOG)" if log_ok else ""))}</text>'
     )
+
+    if title_lines:
+        ticker_svg += "".join(
+            f'<text x="{PAD_L}" y="{BRAND_H + 36 + i * 38}" fill="#e8edf5" '
+            f'font-size="32" font-weight="700" font-family="sans-serif">{_xesc(line)}</text>'
+            for i, line in enumerate(title_lines))
 
     # ── Footer: brand bar (band + laser hairline + lockup + CTA button) ─────
     # footer_cta=None → full marketing bar; ""=brand-only (brain/admin);
@@ -3322,11 +3383,11 @@ def render_chart_v2(
         )
 
     # ── Date labels (bottom of price panel): 4-6 evenly spaced ─────────────
-    date_y_pos = PAD_TOP + PRICE_H + 6
+    date_y_pos = PAD_TOP + PRICE_H + (24 if social_readable else 6)
     date_svg = ""
     if dates:
         # Choose 4-6 evenly spaced indices across the VISIBLE window only.
-        n_date_labels = min(6, max(4, n_vis // 15))
+        n_date_labels = 3 if social_readable else min(6, max(4, n_vis // 15))
         date_indices = [
             warmup + int(round(i * (n_vis - 1) / (n_date_labels - 1)))
             for i in range(n_date_labels)
@@ -3346,7 +3407,7 @@ def render_chart_v2(
                 anchor = "end"
             date_parts.append(
                 f'<text x="{dx:.1f}" y="{date_y_pos}" '
-                f'fill="#4a556a" font-size="9" text-anchor="{anchor}">'
+                f'fill="{"#9baac5" if social_readable else "#4a556a"}" font-size="{20 if social_readable else 9}" text-anchor="{anchor}">'
                 f'{_xesc(dates[di])}</text>'
             )
         date_svg = "\n  ".join(date_parts)

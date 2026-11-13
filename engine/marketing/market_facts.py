@@ -500,25 +500,29 @@ def _print_umich_infl_exp(regime: dict) -> dict | None:
 def _print_hy_spread(regime: dict) -> dict | None:
     """High-yield option-adjusted spread, in percent (engine/regime.py rounds to 2dp).
 
-    Only the LEVEL carries a digit. ``hy_oas_chg_20d`` is itself rounded to one
-    decimal in the artifact, so converting it to basis points would manufacture
-    precision the source never had; the change ships as a direction word.
+    Both source fields are rounded to two decimal percentage points. Express
+    the change in whole basis points, keeping the observed near-flat band.
+    An absent comparison must never become an assertion that spreads were flat.
     """
     v = _num(_dig(regime, "liquidity_quality", "stress_overlay", "hy_oas_pct"))
     if v is None or v <= 0:
         return None
     s = _pct1(v)
     chg = _num(_dig(regime, "liquidity_quality", "stress_overlay", "hy_oas_chg_20d"))
-    if chg is None or abs(chg) < 0.05:
+    numbers = [s]
+    if chg is None:
+        tail = ""
+    elif abs(chg) < 0.05:
         tail = " and roughly flat over the past month"
-    elif chg > 0:
-        tail = ", wider than a month ago"
     else:
-        tail = ", tighter than a month ago"
+        change = f"{abs(chg) * 100:.0f}"
+        direction = "up" if chg > 0 else "down"
+        tail = f", {direction} {change} basis points over the past month"
+        numbers.append(change)
     return {
         "id": "print_hy_spread",
         "text": f"High-yield credit spreads are at {s}{tail}.",
-        "numbers": [s],
+        "numbers": numbers,
     }
 
 
@@ -571,7 +575,7 @@ def _print_fed_pricing(regime: dict) -> dict | None:
 
 
 def _print_curve_2s10s(regime: dict) -> dict | None:
-    """The 2s10s Treasury spread, in basis points (yield_curve.shape, pp -> bp)."""
+    """Curve level (percentage points) and quarterly change (already basis points)."""
     v = _num(_dig(regime, "yield_curve", "shape", "slope_2s10s", "value"))
     if v is None:
         return None
@@ -580,10 +584,18 @@ def _print_curve_2s10s(regime: dict) -> dict | None:
         return None
     n = f"{abs(bp)}"
     side = "above" if bp > 0 else "below"
+    numbers = [n]
+    change = _num(_dig(regime, "yield_curve", "shape", "slope_2s10s", "chg_63d"))
+    comparison = ""
+    if change is not None and abs(change) >= 1:
+        delta = f"{abs(change):.0f}"
+        direction = "rose" if change > 0 else "fell"
+        comparison = f"; the spread {direction} {delta} basis points over roughly a quarter"
+        numbers.append(delta)
     return {
         "id": "print_curve_2s10s",
-        "text": f"The 10-year Treasury yield sits {n} basis points {side} the 2-year.",
-        "numbers": [n],
+        "text": f"The ten-year Treasury yield sits {n} basis points {side} the two-year{comparison}.",
+        "numbers": numbers,
     }
 
 

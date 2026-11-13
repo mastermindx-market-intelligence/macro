@@ -218,14 +218,14 @@ EXPECTED_PRINTS = {
     "print_umich_infl_exp":
         "The Michigan survey has households expecting 4.6% inflation a year out.",
     "print_hy_spread":
-        "High-yield credit spreads are at 2.8%, wider than a month ago.",
+        "High-yield credit spreads are at 2.8%, up 10 basis points over the past month.",
     "print_10y_move":
         "The 10-year Treasury yield is up 19 basis points over the past month.",
     "print_fed_pricing":
         "Fed funds futures put the policy rate at 4.2% a year out, up from "
         "3.6% today.",
     "print_curve_2s10s":
-        "The 10-year Treasury yield sits 47 basis points above the 2-year.",
+        "The ten-year Treasury yield sits 47 basis points above the two-year.",
 }
 
 

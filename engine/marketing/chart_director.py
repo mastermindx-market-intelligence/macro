@@ -114,9 +114,10 @@ _LOG_SCALE_BARS: dict[str, int] = {"DAILY": 1008, "WEEKLY": 208, "MONTHLY": 48}
 #: keeps the dead space for the volume profile and the tags (§1.1).
 RUNWAY_FRAC = 0.18
 
-#: Card geometry, unchanged from the lanes this replaces.
-_CARD_W, _CARD_H = 1000, 880
-_SUBPANEL_H = 190
+#: Social-card geometry reserves readable claim text and keeps at least 55% of
+#: the frame for price, even with a three-line title and one claim-specific pane.
+_CARD_W, _CARD_H = 1000, 1120
+_SUBPANEL_H = 160
 
 #: Timeframe defaults when no fact and no hint name one.
 _DEFAULT_LOOKBACK: dict[str, int] = {"DAILY": 90, "WEEKLY": 156, "MONTHLY": 120}
@@ -205,11 +206,13 @@ class ChartSpec:
     in_frame_numbers: list[str] = field(default_factory=list)
     rejected: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
+    alt_text: str = ""
 
     def as_meta(self) -> dict:
         """The audit slice for the plan artifact (no bar arrays, no SVG)."""
         return {
             "ticker": self.ticker,
+            "alt_text": self.alt_text,
             "claim_kind": self.claim_kind,
             "fact_id": self.fact_id,
             "timeframe": self.timeframe,
@@ -712,7 +715,7 @@ def build_spec(
         # the way every lane this replaces already draws it) so the one sub-pane
         # budget goes to the indicator whose y-unit is the claim's unit.
         volume_overlay = True
-        indicators: tuple[str, ...] = ("volume", "macd")
+        indicators: tuple[str, ...] = ("volume",)
         if want_pane == "streak":
             indicators = ("volume", "streak")
         elif want_pane == "volume_pane":
@@ -744,8 +747,12 @@ def build_spec(
             if marker_idx is None or marker_idx < warmup:
                 marker_idx = len(c) - 1
 
+        # Volume distribution is useful when it is the subject. A moving-
+        # average touch or streak does not need an unrelated profile panel.
+        profile_for_claim = volume_profile and (fact is None or
+            str(fact.get("claim_kind") or "") in {"volume_event", "stage_read"})
         m2: dict = {}
-        if volume_profile or want_avwap:
+        if profile_for_claim or want_avwap:
             try:
                 m2 = build_m2_overlays(tkr, dates, o, h, l, c, v, root_s) or {}
             except Exception:  # noqa: BLE001
@@ -753,6 +760,8 @@ def build_spec(
 
         kwargs: dict[str, Any] = {
             "ticker": tkr,
+            "social_readable": True,
+            "editorial_title": str((fact or {}).get("text") or ""),
             "dates": list(dates),
             "o": list(o), "h": list(h), "l": list(l), "c": list(c),
             "volume": list(v),
@@ -777,8 +786,8 @@ def build_spec(
             "log_scale": log_scale,
             "runway_frac": RUNWAY_FRAC,
             "cta": cta,
-            # VOLUME PROFILE ON BY DEFAULT for chart-family posts (§3 PR-C.1).
-            "poc_overlay": m2.get("poc_overlay") if volume_profile else None,
+            # Reserve the profile for bare tape and volume-related claims.
+            "poc_overlay": m2.get("poc_overlay") if profile_for_claim else None,
             "avwap_overlay": m2.get("avwap_overlay") if want_avwap else None,
         }
         kwargs.update({k: val for k, val in ann.items() if val})
@@ -823,6 +832,8 @@ def build_spec(
             in_frame_numbers=in_frame,
             rejected=rejected,
             notes=notes,
+            alt_text=(f"{tkr} {tf.lower()} candlestick chart, {plotted[0]} to {plotted[-1]}. "
+                      + (str((fact or {}).get("text") or "Price and trading volume over the displayed period.")))[:1000],
         )
     return None
 

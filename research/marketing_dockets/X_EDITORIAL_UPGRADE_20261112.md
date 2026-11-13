@@ -67,3 +67,32 @@ Next: compose P3/P4 admin delivery evidence, independent stage counts, review vi
 - Existing held PR source/effect boundaries remain intact. No runtime activation, queue approval or X send was requested.
 
 Next: qualify social chart readability and grounded analytical content, then current-head checks and normal release. Parent acceptance remains open.
+
+## P3/P5 — social charts and evidence-grounded interpretation
+
+- The existing chart director now opts into a 1000 × 1120 social layout. A complete evidence title, larger prices/dates and readable volume/streak values share the same original OHLCV. The longest supported title plus the one claim-specific pane preserves the price pane's 55% minimum. Unrelated MACD/profile decoration is omitted for claims that do not need it. Other render consumers retain their legacy default layout.
+- Reference labels use a bounded placement search above and below occupied spans, with a leader back to the actual price when displaced. This fixes bottom-edge clamping that could obscure the last-price pill. Wide prices, title wrapping/escaping and both boundary cases have regressions; legacy SVG goldens remain unchanged.
+- Chart metadata now carries a factual description and exact axis period. This is metadata only: the held media/publisher transport has not been changed, and delivered X alt text is not claimed.
+- Intelligence phrasing asks for a useful supported comparison, tension or implication. It explicitly refuses invented causes, consensus, personal trade history and generic disclaimer endings. It may keep a factual wire update when no useful analytical relationship is supported.
+- Copy and generated explanations are bound to their material source evidence and prompt version. A corrected brief under the same headline invalidates old analysis; repeated timestamps/source-arrival noise do not buy another call. Expired market context is also checked at serve time. The existing provider order, per-tick cap, one-call phrasing path and approval owner remain intact.
+- Dashboard credit-spread facts now include their observed change, and yield-curve facts describe level and change with the correct basis-point units. Missing/nonfinite change data no longer asserts stability. These enrich the existing fact consumers; no desk, source family or publication flag has been enabled.
+
+### Visual evidence
+
+These are **synthetic layout examples**, not market intelligence or generated live posts. They exercise the actual director/renderer with 300 weekday bars and truthful constructed claims. The average example's last close equals its computed 50-day average; the volume example's last volume is the largest in the 90-session displayed window; the streak example has exactly five final sessions closing above their open, following a red session. Native Inkscape rendered the SVGs for visual inspection; no browser rasterizer or live X receipt is implied.
+
+| Claim | Review artifact |
+| --- | --- |
+| Moving-average reference | [Average example](x_editorial_upgrade_20261112/average.svg) |
+| Volume comparison | [Volume example](x_editorial_upgrade_20261112/volume.svg) |
+| Consecutive sessions | [Streak example](x_editorial_upgrade_20261112/streak.svg) |
+
+### Qualification and remaining acceptance
+
+- Dedicated chart/regression suite: **149 passed**. JavaScript scope guard: clean; Node syntax and diff whitespace checks: clean.
+- Final integrated owned-source run: **1,022 passed, 12 skipped**, one existing dependency deprecation. Command: `python -m pytest -q tests/test_marketing_earnings_call_lane.py tests/test_marketing_copy_auditor.py tests/test_marketing_copy_v2.py tests/test_admin_marketing.py tests/test_admin_marketing_floor.py tests/test_market_facts.py tests/test_marketing_anchor_law.py tests/test_marketing_intelligence_desk.py tests/test_chart_director.py tests/test_chart_render_grammar.py tests/test_chart_render_inline.py tests/test_chart_render_m2.py tests/test_admin_api_cache_recovery.py tests/test_admin_inline_handler_attrs.py tests/test_admin_js_no_undef.py tests/test_admin_navigation_ux.py --tb=short`. Skipped live-data fixtures remain unproven; no provider/model call or X send occurred.
+- Expanded integrated run exposed one legacy publisher assertion that still expected raw provider URLs. The UI retains the uncertainty warning; its test now requires the validated confirmed public permalink and rejects the raw provider URL path. This preserves the original protection while checking the stronger consumer contract.
+- Fresh `main` at `23b56149d8adb65328c3c2999c3bbec43a1076ed` has no intervening changes in the owned marketing paths. Current rulesets do not impose a new requirement on this branch; no CODEOWNERS file exists at the standard tracked locations. Normal exact-head CI and `merge-on-green` admission still bind.
+- Shared-file custody readback: [admin workspace #9074](https://github.com/mastermindx-market-intelligence/macro/pull/9074) changes app shell/status and appends navigation tests after the existing suite; this change stays in publishing renderers and the pre-existing publisher test. [Prophet #7174](https://github.com/mastermindx-market-intelligence/macro/pull/7174) changes its separate Prophet region. [Capacity #11194](https://github.com/mastermindx-market-intelligence/macro/pull/11194) does not share these edited paths. None of those carriers, reviews, holds or runtime effects is modified or adopted.
+- The connected Chrome browser exists. Opening the documented `https://admin.mastermind-x.com` verification target was blocked by Chrome because another extension UI was open. No authenticated admin interaction, successful page read, approval, publication or production acceptance resulted. This requires that extension UI to be completed or dismissed in the connected browser; another browser/device is not a workaround for the block.
+- Remaining: qualified source commit and Ready PR, concluded binding CI and normal release, then actual admin desktop/mobile and dark/light interaction proof, live generation/media proof and prospective quality/engagement measurement. No audio/TTS subsystem was found or upgraded. No new generative-illustration provider or spending path was introduced.
