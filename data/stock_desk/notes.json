@@ -1,164 +1,175 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-11-10",
-  "generated_at": "2026-11-11T16:17:20.664641+00:00",
+  "as_of": "2026-11-12",
+  "generated_at": "2026-11-13T16:25:40.763736+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-11-10-AMZN-20261111161720-1",
-      "ticker": "AMZN",
-      "name": "Amazon.Com Inc",
+      "id": "2026-11-12-HUM-20261113162540-1",
+      "ticker": "HUM",
+      "name": "Humana",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The daily turn and positive trend are offset by a mixed weekly regime, left-translated prior cycle and contracting-liquidity risk control. The unvalidated rank supplies no basis for expecting relative outperformance.",
+      "thesis": "The extension brake and cycle block argue against chasing, but intact momentum near the 52-week high makes a directional short unjustified. The weekly cycle has not confirmed the daily turn, leaving the relative outlook balanced.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Daily bottoming; weekly timeframe has not turned",
+        "Verdict: Extended \u2014 wait for a pullback",
+        "Entry blocked; price 40.5% above 200-day average",
+        "Cycle blocked; weekly timeframe has not turned",
+        "Price above both major averages and 0.6% below 52-week high"
+      ],
+      "dissent": "Positive revisions and persistent momentum could carry HUM higher without offering a pullback.",
+      "falsifier": {
+        "text": "The weekly timeframe turns up while HUM remains above its 50-day average and outperforms the S&P 500.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-10",
+      "engine_verdict": "Extended \u2014 wait for a pullback"
+    },
+    {
+      "id": "2026-11-12-TLN-20261113162540-2",
+      "ticker": "TLN",
+      "name": "Talen Energy",
+      "lean": "cautious",
+      "conviction": "medium",
+      "horizon_d": 20,
+      "thesis": "The relative-weakness verdict is reinforced by a left-translated prior cycle and weak selection and quality readings. The fresh daily rebound is the main reason not to escalate this to avoid.",
+      "evidence": [
+        "Verdict: Lagging \u2014 relative weakness",
         "Prior cycle left-translated",
-        "Above 50DMA and 200DMA; MACD positive",
-        "Macro-risk: contracting US net liquidity"
+        "Selection axis at 39th percentile with negative revisions and momentum",
+        "Quality at 35th percentile; accounting watch",
+        "Net margin -8.5% and net-income growth -121.9%"
       ],
-      "dissent": "Strong quality, earnings growth and an intact price trend could sustain leadership despite the macro and cycle cautions.",
+      "dissent": "Price is above both major averages, MACD is positive, and the rejected swing low could develop into a durable recovery.",
       "falsifier": {
-        "text": "A confirmed weekly upturn accompanied by sustained outperformance versus the S&P 500 over the next 20 trading days.",
+        "text": "TLN sustains its daily turn, holds above the 50-day average, and outperforms the S&P 500 over the horizon.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "TLN",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 20
+        }
+      },
+      "check_by": "2026-12-10",
+      "engine_verdict": "Lagging \u2014 relative weakness"
+    },
+    {
+      "id": "2026-11-12-CEG-20261113162540-3",
+      "ticker": "CEG",
+      "name": "Constellation Energy",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The unblocked fresh-buy setup and bullish weekly alignment are offset by the deterministic no-clear-edge verdict and weak selection context. With the board rank not predictive, the evidence does not support a confident relative direction.",
+      "evidence": [
+        "Verdict: Neutral \u2014 no clear edge",
+        "Fresh buy with daily and weekly timeframes aligned",
+        "Entry unblocked at 54th percentile",
+        "Selection at 45th percentile",
+        "Net-income growth -38.1%"
+      ],
+      "dissent": "The with-trend cycle turn, clean accounting and positive quality could produce meaningful relative outperformance from a level well below the 52-week high.",
+      "falsifier": {
+        "text": "CEG maintains the weekly uptrend and decisively outperforms the S&P 500 while staying above both major averages.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-08",
+      "check_by": "2026-12-10",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-11-10-UBER-20261111161720-2",
-      "ticker": "UBER",
-      "name": "Uber Technologies Inc",
-      "lean": "neutral",
+      "id": "2026-11-12-ATEN-20261113162540-4",
+      "ticker": "ATEN",
+      "name": "A10 Networks, Inc.",
+      "lean": "constructive",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The risk controls support watching the daily bottoming attempt, but not assuming relative upside while the weekly picture is mixed and price remains below its 200-day average. Selection is essentially cross-sectionally neutral and is not a forecast.",
+      "thesis": "The residual-alpha selection ordering, unblocked entry and clean quality support a tentative constructive lean as the base develops. Conviction stays low because the weekly trend has not turned, macro risk is elevated and past constructive calls have shown weak directional accuracy.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Entry axis 63rd percentile; not blocked",
-        "Above 50DMA but 3.8% below 200DMA",
-        "Momentum context z-score -1.34",
-        "Macro-risk elevated"
+        "Verdict: Constructive \u2014 building a base",
+        "Selection at 62nd percentile",
+        "Entry unblocked at 52nd percentile",
+        "Quality at 56th percentile with clean accounting",
+        "Weekly timeframe not yet turned; elevated macro risk"
       ],
-      "dissent": "The rejected low, improving 10-day average and strong cash generation could turn this into a durable recovery before the weekly signal confirms.",
+      "dissent": "The move is already 12% above the 50-day average within a mixed larger trend, so the apparent turn could fail as liquidity contracts.",
       "falsifier": {
-        "text": "A weekly trend confirmation with price reclaiming and holding above the 200-day average while outperforming the S&P 500.",
+        "text": "ATEN loses its 50-day average and underperforms the S&P 500 as the weekly timeframe remains unconfirmed.",
         "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
+          "kind": "rel_return",
+          "subject_ticker": "ATEN",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 20
         }
       },
-      "check_by": "2026-12-08",
-      "engine_verdict": "Neutral \u2014 no clear edge"
+      "check_by": "2026-12-10",
+      "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-11-10-TTWO-20261111161720-3",
-      "ticker": "TTWO",
-      "name": "Take Two Interactive Softwre",
+      "id": "2026-11-12-ON-20261113162540-5",
+      "ticker": "ON",
+      "name": "ON Semiconductor",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The daily buy setup is real, but the risk reshape argues against a directional call: the weekly trend is unconfirmed, the prior cycle topped early and its sector basket is below long-term trend. Those bearish checks are not yet enough to short an improving tape.",
+      "thesis": "The constructive base verdict and favorable residual-alpha selection are counterbalanced by an unconfirmed weekly turn, a left-translated prior cycle and deterioration in its industry basket. Those risk controls make the relative direction too conflicted for a constructive call.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Daily bottoming with positive MACD",
-        "Weekly timeframe has not turned",
+        "Verdict: Constructive \u2014 building a base",
+        "Selection at 61st percentile with positive revisions",
+        "Below both 50-day and 200-day averages",
         "Prior cycle left-translated",
-        "Sector basket below long-term trend"
+        "Non-AI Tech & Hardware basket deteriorating"
       ],
-      "dissent": "Holding above both major moving averages with a clean accounting flag could allow the rebound to become sustained leadership.",
+      "dissent": "Positive revisions, MACD and the rejected swing low could mark an early recovery before the longer averages are reclaimed.",
       "falsifier": {
-        "text": "A confirmed weekly uptrend and sustained relative outperformance versus the S&P 500 despite continued sector weakness.",
+        "text": "ON reclaims and holds its 50-day and 200-day averages while outperforming the S&P 500.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-08",
-      "engine_verdict": "Neutral \u2014 no clear edge"
+      "check_by": "2026-12-10",
+      "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-11-10-CNMD-20261111161720-4",
-      "ticker": "CNMD",
-      "name": "CONMED Corporation",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "The short-term turn is offset by a late investor phase, left-translated prior cycle and the entry axis's lottery-spike risk control. With neutral selection and sharply deteriorating earnings, the evidence does not support expecting either relative leadership or failure.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Entry axis includes lottery-spike",
-        "Weekly timeframe has not turned",
-        "Prior cycle left-translated",
-        "Net-income growth -64.4%"
-      ],
-      "dissent": "Price is above both major averages and near its high, so momentum could persist even without supportive fundamentals.",
-      "falsifier": {
-        "text": "A weekly trend confirmation followed by sustained outperformance versus the S&P 500 without another lottery-like price spike.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-12-01",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-11-10-ABNB-20261111161720-5",
-      "ticker": "ABNB",
-      "name": "Airbnb Inc Class A",
-      "lean": "neutral",
-      "conviction": "low",
+      "id": "2026-11-12-CRK-20261113162540-6",
+      "ticker": "CRK",
+      "name": "Comstock Resources, Inc.",
+      "lean": "cautious",
+      "conviction": "medium",
       "horizon_d": 20,
-      "thesis": "This is a bullish, with-trend leader, so extension alone is not grounds for a bearish relative call. The validated risk reshape says not to chase because price is stretched above long-term trend amid contracting liquidity and a crowded sector, while the overall verdict remains neutral.",
+      "thesis": "The relative-weakness verdict is supported by poor residual-alpha selection, sharply negative revisions and an accounting warning. The bullish fresh-buy cycle prevents an avoid call, but it does not erase the weaker cross-sectional and fundamental risk profile.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Fresh buy; bullish weekly agreement",
-        "26.0% above 200DMA and 1.9% below 52-week high",
-        "Entry axis 43rd percentile with extended and over-200DMA flags",
-        "Crowded and stretched sector basket"
+        "Verdict: Lagging \u2014 relative weakness",
+        "Selection at 29th percentile",
+        "Revisions z-score -1.72 and momentum z-score -1.39",
+        "Quality at 42nd percentile with accounting warn",
+        "Price remains below the 200-day average"
       ],
-      "dissent": "High quality, strong cash flow and intact momentum could keep compounding relative gains despite the extension brake.",
+      "dissent": "The daily and weekly cycles agree, the investor phase is early, and positive MACD could turn the fresh-buy setup into sustained relative strength.",
       "falsifier": {
-        "text": "A decisive loss of the 50-day average followed by sustained underperformance versus the S&P 500.",
+        "text": "CRK reclaims its 200-day average and outperforms the S&P 500 while the bullish weekly cycle remains intact.",
         "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
+          "kind": "rel_return",
+          "subject_ticker": "CRK",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 20
         }
       },
-      "check_by": "2026-12-08",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-11-10-JAZZ-20261111161720-6",
-      "ticker": "JAZZ",
-      "name": "Jazz Pharmaceuticals",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 15,
-      "thesis": "The leader designation and intact momentum argue against shorting it merely because the daily cycle is stretched. The accounting warning, negative earnings and unconfirmed weekly turn make a constructive relative call equally difficult, so the risk-controlled stance is neutral pending verification.",
-      "evidence": [
-        "Verdict: Leader \u00b7 accounting warning \u2014 verify before buying",
-        "Daily phase stretched; RSI 67",
-        "Above 50DMA and 200DMA; MACD positive",
-        "Quality flag: accounting warn",
-        "Net margin -8.3% and net-income growth -163.6%"
-      ],
-      "dissent": "Strong revisions and persistent leader momentum could dominate the accounting concern and produce continued relative strength.",
-      "falsifier": {
-        "text": "A weekly uptrend confirmation with sustained S&P 500 outperformance after the accounting warning remains unresolved.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-12-01",
-      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
+      "check_by": "2026-12-10",
+      "engine_verdict": "Lagging \u2014 relative weakness"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."

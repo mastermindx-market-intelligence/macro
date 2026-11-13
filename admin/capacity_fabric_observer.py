@@ -17,6 +17,7 @@ import importlib
 import inspect
 import ipaddress
 import json
+import os
 from pathlib import Path
 import re
 import time
@@ -50,6 +51,46 @@ def _client(value):
     return "Unknown client"
 
 
+def _observe_peak(app):
+    """Read the router's own peak-gate scalars; never recompute the window here."""
+    try:
+        cfg = app.state.settings
+        gateway = importlib.import_module(__package__ + ".gateway")
+        active = bool(gateway._peak_active(cfg))
+        next_at = getattr(gateway, "_PEAK_GATE_NEXT", {}).get("at", 0)
+        return {"active": active, "tz": cfg.peak_tz, "start": cfg.peak_start, "end": cfg.peak_end,
+                "wait_s": cfg.peak_wait_s, "next_send_in_s": max(0.0, next_at - time.time())}
+    except Exception:
+        return None
+
+
+def _observe_overflow(app):
+    """The policy's own overflow snapshot, plus configured ladder targets.
+
+    Read-only: the policy computes state on its own clock; this copies scalars.
+    """
+    try:
+        policy = app.state.model_policy
+        snap = policy.snapshot()
+        overflow = snap.get("overflow")
+        if not isinstance(overflow, dict):
+            return None
+        result = {k: overflow.get(k) for k in ("enabled", "version", "diverted_requests",
+            "diversion_share", "diverted_sessions", "diverted_inflight", "keys", "recent")}
+        families = {}
+        cfg_families = (policy.overflow.config().get("families") if getattr(policy, "overflow", None) else {}) or {}
+        for name, fam in (overflow.get("families") or {}).items():
+            fam = dict(fam) if isinstance(fam, dict) else {}
+            target_cfg = cfg_families.get(name) or {}
+            targets = target_cfg.get("targets") or ([target_cfg["target"]] if target_cfg.get("target") else [])
+            fam["targets"] = list(targets)
+            families[name] = fam
+        result["families"] = families
+        return result
+    except Exception:
+        return None
+
+
 class ObservationStore:
     def __init__(self, known_models=()):
         self.known_models = frozenset(known_models)
@@ -61,6 +102,7 @@ class ObservationStore:
         self.buckets = {}
         self.totals = {k: 0 for k in ("started", "completed", "failed", "cancelled",
             "usage_known", "attributed", "overflow_active", "dropped_requests", "observer_errors", *TOKEN_FIELDS)}
+        self._claude_cache = None
 
     def begin(self, headers):
         self.totals["started"] += 1
@@ -260,7 +302,16 @@ class ObservationStore:
             "started_at": self.started_at, "generated_at": time.time(), "routes": routes,
             "aliases": {key: list(values) for key, values in cfg.aliases},
             "active": list(self.active.values()), "recent": list(self.recent),
-            "series": [dict(at=k, **v) for k, v in sorted(self.buckets.items())], "totals": totals})
+            "series": [dict(at=k, **v) for k, v in sorted(self.buckets.items())], "totals": totals,
+            "peak": _observe_peak(app), "overflow": _observe_overflow(app),
+            "claude": self.claude_view()})
+
+    def claude_view(self):
+        """Latest cached gateway lane observation; never blocks the snapshot path."""
+        view = self._claude_cache
+        if view is None:
+            return None
+        return dict(view, observed_at=view.get("observed_at"))
 
 
 class StreamObserver:
@@ -527,13 +578,15 @@ def instrument_app(app, gateway, *, export_config=None):
     async def lifespan(instance):
         async with original_lifespan(instance):
             task = asyncio.create_task(publish_snapshots(instance, store, export_config)) if export_config else None
+            lanes = asyncio.create_task(poll_claude_lanes(store, export_config)) if export_config else None
             try:
                 yield
             finally:
-                if task:
-                    task.cancel()
-                    with suppress(asyncio.CancelledError, TimeoutError):
-                        await asyncio.wait_for(task, 2)
+                for running in (task, lanes):
+                    if running:
+                        running.cancel()
+                        with suppress(asyncio.CancelledError, TimeoutError):
+                            await asyncio.wait_for(running, 2)
     app.router.lifespan_context = lifespan
     return app
 
@@ -561,6 +614,68 @@ def serialize_snapshot(snapshot):
     if len(body) > MAX_BYTES:
         raise ValueError("observation exceeded compact bound")
     return body
+
+
+_CLAUDE_LANE_FIELDS = ("used_weekly", "budget_weekly", "remaining_weekly", "pressure",
+                       "cooldown_until", "weekly_resets_at", "weekly_reset_source", "expiring_soon")
+_CLAUDE_ACCOUNT_FIELDS = ("id", "label", "used_5h", "budget_5h", "remaining_5h",
+                          "inflight", "last_status", "drain", "cooldown_until")
+
+
+async def poll_claude_lanes(store, config):
+    """Cache the incumbent gateway's lane budgets on a slow loopback read.
+
+    The gateway owns the accounts and tokens; this reads its existing status
+    surface with the operator-configured loopback token and keeps only bounded
+    content-free scalars. A failed read leaves the previous observation in place
+    with its original timestamp; it never invents capacity.
+    """
+    url = (config or {}).get("claude_status_url")
+    token_env = (config or {}).get("claude_token_env")
+    if not isinstance(url, str) or not url.startswith("http://127.0.0.1:"):
+        return
+    token = os.environ.get(token_env) if isinstance(token_env, str) else None
+    if not token:
+        return
+    import urllib.request
+    while True:
+        try:
+            def read():
+                request = urllib.request.Request(url, headers={"x-api-key": token})
+                with urllib.request.urlopen(request, timeout=5) as response:
+                    return json.loads(response.read(512 * 1024))
+            payload = await asyncio.to_thread(read)
+            # The gateway reports accounts plus a flat (account, family) lane
+            # list; join them here into the bounded per-account shape.
+            now = time.time()
+            horizon = payload.get("expiry_horizon_s")
+            lanes_by_account = {}
+            for lane in (payload.get("families") or [])[:128]:
+                if not isinstance(lane, dict):
+                    continue
+                row = {k: lane.get(k) for k in _CLAUDE_LANE_FIELDS}
+                resets = lane.get("weekly_resets_at")
+                row["expiring_soon"] = bool(resets and horizon and (resets - now) <= horizon)
+                lanes_by_account.setdefault(lane.get("account"), {})[lane.get("family")] = row
+            accounts = []
+            for account in (payload.get("accounts") or [])[:16]:
+                if not isinstance(account, dict):
+                    continue
+                row = {k: account.get(k) for k in _CLAUDE_ACCOUNT_FIELDS}
+                row["id"] = account.get("account")
+                row["families"] = lanes_by_account.get(account.get("account"), {})
+                accounts.append(row)
+            store._claude_cache = {
+                "reachable": True, "observed_at": time.time(),
+                "stranded_family": payload.get("stranded_family"),
+                "preferences": payload.get("preferences") or [],
+                "accounts": accounts,
+            }
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            pass  # keep the last good observation; staleness is visible downstream
+        await asyncio.sleep(30)
 
 
 async def publish_snapshots(app, store, config):
