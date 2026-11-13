@@ -35,10 +35,11 @@ waves:
     status: todo
 next_action: >
   CEO-only closeout. Preserve the current runtime; do not toggle or restart the
-  Terminal quote plane merely to repair historical records. Obtain one untouched
-  user-visible dossier proof in an open RTH window and one untouched non-RTH
-  proof when practical, so the real visibility/background-tab path and the
-  rolled-anchor behavior are observed without a headless visibility override.
+  Terminal quote plane merely to repair historical records. Untouched visible
+  RTH repaint and hero/sticky agreement were observed on 2026-11-13; see the
+  dated consumer receipt below. Real background/foreground transition proof and
+  untouched non-RTH rolled-anchor proof remain outstanding. Do not synthesize
+  visibility or market state to finish those legs.
   Historical authority for the 2026-08-28 `HUB_REALTIME_QUOTES=1` mutation stays
   unresolved unless an independent post-DO-NOT-SET Chairman/Executive authority
   receipt is recovered; see
@@ -46,13 +47,13 @@ next_action: >
   Terminal question remains a separate future commission.
 next_actions:
   - >
-    CEO acceptance proof only, no runtime mutation: on an untouched browser tab,
-    verify the served dossier consumes the current Terminal quote plane and uses
-    an honest freshness/session label during one open RTH window; separately
-    observe one non-RTH window and verify the rolled-anchor repair does not
-    regress the displayed move to +0.00% / $0.00. Record the real page state and
-    current quote-plane evidence; do not force `document.hidden` or synthesize a
-    market state.
+    CEO acceptance proof only, no runtime mutation: retain the 2026-11-13
+    untouched visible RTH repaint and hero/sticky agreement proof. Complete a
+    real background/foreground transition, with observed visibility and natural
+    recovery, and separately observe a non-RTH window to verify the rolled-anchor
+    repair does not regress the displayed move to +0.00% / $0.00. Preserve the
+    real page state and current quote-plane evidence; do not force
+    `document.hidden` or synthesize a market state.
   - >
     OPTIONAL, Terminal repo, needs its own commission: the dossier cannot show a
     realtime PRE-MARKET price. Polygon zeroes the whole `day` block before
@@ -63,6 +64,17 @@ next_actions:
     regular-session on purpose, so this is a deliberate design question, not a
     bug to patch in passing.
 resolved_actions:
+  - >
+    PARTIAL CONSUMER ACCEPTANCE 2026-11-13 — the actual NVDA dossier naturally
+    repainted its price, absolute/percent move and DELAYED-to-LIVE label with
+    document.visibilityState=visible and document.hidden=false. At 20:04:59Z,
+    hero and sticky both showed $162.76, with hero -$3.43 / -2.06% and Regular
+    session 2026-11-13. A separately timed same-origin API read reported
+    freshness=live / session=regular and prev_close=166.19. No runtime flag,
+    service, provider, source or visibility override was changed. Background
+    transition, non-RTH and historical authority provenance are NOT proven by
+    this receipt. See research/control_room_completion_20261112/
+    DOSSIER_RTH_PROOF_20261113.md for exact observations and limits.
   - >
     EFFECT RESOLVED / AUTHORITY PROVENANCE UNRESOLVED — On 2026-08-28
     `HUB_REALTIME_QUOTES=1` was set in `/opt/terminal/.env` (backup
@@ -163,3 +175,11 @@ The governing law the successor must preserve: `freshness` describes the FEED,
 `session` describes the MARKET, and "Live" requires both. Every uncertainty
 resolves downward, and an upstream fault is a 503 rather than a 200 carrying a
 plausible price.
+
+## 2026-11-13 consumer-proof continuation
+
+The assigned Control Room Meta-CEO completed the bounded visible RTH proof in
+[the dated receipt](https://github.com/mastermindx-market-intelligence/macro/blob/sol/web-control-room-completion-20261112-c2-6af6825b/research/control_room_completion_20261112/DOSSIER_RTH_PROOF_20261113.md). P0/P0b remain accepted and the workstream
+remains active. Real background/foreground transition, non-RTH rolled-anchor
+behaviour and independent historical authority provenance remain separate
+obligations. No optional P1 or pre-market redesign was commissioned.
