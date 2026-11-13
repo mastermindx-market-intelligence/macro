@@ -1,7 +1,7 @@
 """Regression tests for the date-scoped Release Radar calendar selector.
 
-The selector lives inline in ``dashboard.html.j2`` rather than in a standalone
-asset.  The executable test below therefore evaluates the production function
+The selector lives in the demand-loaded ``release_radar.js`` asset. The
+executable test below evaluates the production function
 definitions themselves with a deliberately small DOM/timer harness.  This
 keeps the test focused on the interaction contract without adding a browser
 dependency to the suite.
@@ -15,10 +15,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "templates" / "dashboard.html.j2"
+RUNTIME = ROOT / "templates" / "release_radar.js"
 SITE = ROOT / "site" / "macro.html"
 
 
-def _selector_source(path: Path = TEMPLATE) -> str:
+def _selector_source(path: Path = RUNTIME) -> str:
     source = path.read_text()
     start = source.index("    function _inlineItemsSignature(")
     end = source.index("    /* Wire every dlg-events calendar card", start)
@@ -202,7 +203,7 @@ assert(bodyWrites === writesBeforeStaleCallback + 1 && bodyHTML.includes("CPI"),
 
 def test_fomc_wiring_stays_outside_grouped_release_radar_selection():
     """Pin the FOMC early return and the selector's rr-select-only boundary."""
-    source = TEMPLATE.read_text()
+    source = RUNTIME.read_text()
 
     sync_start = source.index("    function _syncInlineDateSelection(")
     sync_end = source.index("    function selectInlineDate(", sync_start)
@@ -220,7 +221,7 @@ def test_fomc_wiring_stays_outside_grouped_release_radar_selection():
 
 def test_idempotence_and_timer_token_guards_are_ordered_before_mutation():
     """Static ordering guard makes accidental refactors fail with a useful cause."""
-    source = TEMPLATE.read_text()
+    source = RUNTIME.read_text()
     start = source.index("    function selectInlineDate(")
     end = source.index("    function _prefReducedRR(", start)
     selector = source[start:end]
@@ -237,10 +238,10 @@ def test_idempotence_and_timer_token_guards_are_ordered_before_mutation():
 
 
 def test_rendered_macro_contains_the_same_date_selector_logic():
-    assert _selector_source(SITE) == _selector_source(TEMPLATE)
+    assert _selector_source(SITE) == _selector_source(RUNTIME)
 
 
-SOURCE = TEMPLATE.read_text()
+SOURCE = RUNTIME.read_text()
 
 
 def _extract(start: str, end: str) -> str:
@@ -412,3 +413,19 @@ assert(chip);assert.deepStrictEqual(details,[211,219]);
 """
     _node(driver)
     assert "wireCalendarCards();\n      _rrRefreshOpenDetail();" in SOURCE
+
+
+def test_lazy_release_radar_loader_respects_auth_coalescing_and_explicit_retry():
+    """Execute the real loader and dialog-open prefix; no browser or live IO."""
+    template = TEMPLATE.read_text()
+    marker = template.index("window.mmLoadReleaseRadar = function")
+    start = template.rindex("<script>", 0, marker) + len("<script>")
+    loader = template[start:template.index("</script>", marker)]
+    opener_marker = template.index("window.mx5OpenDlg = function")
+    opener_start = template.rindex("<script>", 0, opener_marker) + len("<script>")
+    opener_end = template.index("    window.mx5CloseDlg = function", opener_marker)
+    opener = template[opener_start:opener_end] + "\n})();"
+    driver = "const loader = " + json.dumps(loader) + ";\n"
+    driver += "const opener = " + json.dumps(opener) + ";\n"
+    driver += "\nconst assert = require('node:assert/strict');\nconst vm = require('node:vm');\nfunction classList(initial) {\n  const values = new Set(initial || []);\n  return {add(...xs){xs.forEach(x=>values.add(x));}, remove(...xs){xs.forEach(x=>values.delete(x));},\n    contains(x){return values.has(x);}};\n}\nfunction environment(anon) {\n  const created = [], requested = [], rr = {innerHTML:''};\n  let signedOut = !!anon, signins = 0;\n  function dialog(id) {\n    return {id, classList:classList(), attrs:{}, querySelectorAll(){return [];},\n      querySelector(){return null;}, setAttribute(k,v){this.attrs[k]=v;},\n      removeAttribute(k){delete this.attrs[k];}, addEventListener(){}, removeEventListener(){}};\n  }\n  const dialogs = {'dlg-events':dialog('dlg-events'), 'dlg-risk':dialog('dlg-risk')};\n  const document = {\n    body:{classList:classList(['page-macro']),style:{}},\n    documentElement:{classList:classList(),scrollTop:0},\n    activeElement:{focus(){}},\n    getElementById(id){return dialogs[id] || (id==='rr-inline-body' ? rr : null);},\n    createElement(tag){assert.equal(tag,'script'); const script={removed:false, remove(){this.removed=true;}};created.push(script);return script;},\n    head:{appendChild(script){requested.push(script.src);}},\n    querySelector(){return null;},querySelectorAll(){return [];},addEventListener(){}\n  };\n  const window = {pageYOffset:0, scrollTo(){}, matchMedia(){return {matches:true};},\n    MMXAccessPreview:{isAnon(){return signedOut;}},\n    MMXSharedShell:{openAuth(mode){assert.equal(mode,'signin');signins++;}}};\n  const context = {window,document,Promise,Error,CSS:{registerProperty(){}},\n    location:{hash:'',href:''},requestAnimationFrame(fn){fn();},setTimeout,clearTimeout};\n  vm.createContext(context);\n  vm.runInContext(loader, context);\n  vm.runInContext(opener, context);\n  return {window,document,created,requested,rr,signins:()=>signins,\n    setAnon(value){signedOut=value;}};\n}\n(async function(){\n  const cold=environment(false);\n  assert.equal(cold.created.length,0);\n  cold.window.mx5OpenDlg('missing-dialog');\n  cold.window.mx5OpenDlg('dlg-risk');\n  assert.equal(cold.created.length,0,'non-Events dialogs keep Release Radar cold');\n\n  const anon=environment(true);\n  anon.window.mx5OpenDlg('dlg-events');\n  assert.equal(anon.signins(),1);\n  assert.equal(anon.created.length,0,'anonymous Events must not load the asset');\n  delete anon.window.MMXAccessPreview;\n  anon.window.mx5OpenDlg('dlg-events');\n  assert.equal(anon.signins(),2);\n  assert.equal(anon.created.length,0,'unresolved access must not load the asset');\n\n  const first=environment(false);\n  first.window.mx5OpenDlg('dlg-events');\n  assert.equal(first.created.length,1);\n  assert.match(first.requested[0],/^release_radar\\.js\\?v=[0-9a-f]{8}$/);\n  assert.equal(first.created[0].async,true);\n  const p1=first.window.mmLoadReleaseRadar(), p2=first.window.mmLoadReleaseRadar();\n  assert.equal(p1,p2,'concurrent demand shares the original promise');\n  first.window.mx5OpenDlg('dlg-events');\n  assert.equal(first.created.length,1,'reopen while loading does not insert again');\n  first.created[0].onload();\n  await p1;\n  first.window.mx5OpenDlg('dlg-events');\n  await first.window.mmLoadReleaseRadar();\n  assert.equal(first.created.length,1,'loaded runtime is not initialized again');\n\n  const retry=environment(false);\n  retry.window.mx5OpenDlg('dlg-events');\n  const failed=retry.window.mmLoadReleaseRadar();\n  retry.created[0].onerror();\n  await assert.rejects(failed,/release-radar-load-failed/);\n  await Promise.resolve();\n  assert.equal(retry.created[0].removed,true);\n  assert.equal(retry.created.length,1,'failure does not start an automatic retry');\n  assert.match(retry.rr.innerHTML,/Release projections unavailable right now/);\n  assert.match(retry.rr.innerHTML,/发布预测暂时不可用/);\n  retry.window.mx5OpenDlg('dlg-events');\n  assert.equal(retry.created.length,2,'the next explicit Events demand can retry');\n  const recovered=retry.window.mmLoadReleaseRadar();\n  retry.created[1].onload();\n  await recovered;\n  retry.window.mx5OpenDlg('dlg-events');\n  assert.equal(retry.created.length,2);\n  console.log('PASS cold, other-dialog, anonymous, unresolved-access, first-open, concurrent, loading-reopen, loaded-reopen, failure, explicit-retry');\n})().catch(error=>{console.error(error.stack);process.exitCode=1;});\n"
+    _node(driver)
