@@ -5350,13 +5350,14 @@ RENDER.prophet = async () => {
   const llCaseRows = Array.isArray(ll && ll.reentry_cases) ? ll.reentry_cases : [];
   const llCaseHtml = llCaseRows.length
     ? `<div class="section" style="margin-top:12px">Historical re-admission examples <span class="cnt">${llCaseRows.length}</span></div>
-       <div class="note muted">The earlier position's mark was observable when the name reappeared; its later resolved result was NOT known then. These are hypothetical board episodes, not executed trades.</div>
+       <div class="note muted">The earlier mark was derived retrospectively from daily closes; its exact observation clock may be unrecorded. The prior resolved loss was NOT known at re-entry. These are hypothetical board episodes, not executed trades.</div>
        <div class="tbl-scroll"><table>
-         <thead><tr><th>Stock</th><th>Board date</th><th>Earlier mark at re-entry</th><th>New 10-session return</th><th>Sector at entry</th><th>Entry status</th></tr></thead><tbody>
+         <thead><tr><th>Stock</th><th>Board date</th><th>Earlier mark at re-entry</th><th>Observed close date</th><th>New 10-session return</th><th>Sector at entry</th><th>Entry status</th></tr></thead><tbody>
          ${llCaseRows.map(c => `<tr>
            <td class="mono"><b>${esc(c.ticker || "—")}</b></td>
            <td class="mono sub">${esc(c.entry_date || "—")}</td>
            <td class="mono">${c.prior_mark_at_readmit_pct == null ? "unknown" : Number(c.prior_mark_at_readmit_pct).toFixed(2) + "%"}</td>
+           <td class="mono sub">${esc(c.prior_mark_observation_date || "not recorded")}</td>
            <td class="mono">${c.outcome_pct == null ? "unknown" : Number(c.outcome_pct).toFixed(2) + "%"}</td>
            <td class="sub">${esc(c.sector_reco_at_entry || "not recorded")}</td>
            <td class="sub mono">${esc(c.entry_status_at_entry || "not recorded")}</td>
