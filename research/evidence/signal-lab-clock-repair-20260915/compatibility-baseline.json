@@ -1,0 +1,53 @@
+{
+  "method": "Re-execute the ten failures with the exact pinned original harness loaded in memory; no checkout files changed. Other current files and configuration retained: this is an evaluator-attribution probe, not a pristine full-checkout baseline.",
+  "original_harness_ref": "9579caf3f950f1a2e7b959a9b3b68d26e42e5d06:engine/signal_foundry/harness.py",
+  "broad_run": {
+    "passed": 234,
+    "failed": 10,
+    "pid": 92690
+  },
+  "original_harness_failures": [
+    {
+      "class": "tests.test_codex_lanes.TestCaseLaneCodexFails",
+      "name": "test_codex_fail_appends_skipped_ledger"
+    },
+    {
+      "class": "tests.test_codex_lanes.TestCaseLaneAuditFailed",
+      "name": "test_audit_failed_parks_file"
+    },
+    {
+      "class": "tests.test_codex_lanes.TestSignalLaneProvenanceAlwaysStamped",
+      "name": "test_admitted_row_provenance_without_brainstorm"
+    },
+    {
+      "class": "tests.test_codex_lanes.TestSignalLaneProvenanceAlwaysStamped",
+      "name": "test_admitted_ids_reflect_only_this_call"
+    },
+    {
+      "class": "tests.test_codex_lanes.TestSignalLaneNamePreDedup",
+      "name": "test_novel_name_passes_through_to_screen"
+    },
+    {
+      "class": "tests.test_codex_lanes.TestQueueFix10",
+      "name": "test_winner_track_excludes_failed_and_unmatured"
+    },
+    {
+      "class": "tests.test_codex_lanes.TestQueueFix10",
+      "name": "test_crypto_excluded_from_both_tracks"
+    },
+    {
+      "class": "tests.test_codex_lanes.TestPrCreateFailed",
+      "name": "test_open_pr_none_writes_pr_create_failed"
+    },
+    {
+      "class": "tests.test_codex_lanes.TestPrCreateFailed",
+      "name": "test_pr_create_failed_is_not_terminal"
+    },
+    {
+      "class": "tests.test_codex_lanes.TestCasePrModeEnvOverride",
+      "name": "test_run_once_uses_env_ready_for_pr_open"
+    }
+  ],
+  "all_ten_reproduced": true,
+  "production_ci_green": false
+}

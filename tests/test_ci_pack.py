@@ -4534,6 +4534,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 CURATED_EXCLUSIVE = {
     "sa-w4-improvement-lanes",
     "xguerrilla-identity-registry",
+    # Foundry retains its complete named closure without opaque provider fallbacks.
+    "signal-foundry-regressions",
     "public-site-figma-baseline-contracts",
     # Preserve V91 coverage while bounding newly enrolled policy regressions.
     "news-v91-vertical-proofs",
@@ -10456,3 +10458,45 @@ def test_fastship_invalid_base_reference_remains_refused(monkeypatch, base):
         PACK.build_plan(jobs, ["engine/example.py"], changed_from=base,
                         scope_mode="active", pack_count=12,
                         event="pull_request", role="pr_head")
+
+
+def test_signal_foundry_clock_regressions_have_selected_code_proof():
+    """The numerical battery must be selected by the same planner used in PR CI."""
+    owners = [
+        job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+        if job.job_id == "signal-foundry-regressions"
+    ]
+    assert len(owners) == 1
+    owner = owners[0]
+    specs = PACK.semantic_step_specs(owner)
+    assert len(specs) == 1
+    command = str(specs[0].raw_step["run"])
+    tokens = shlex.split(command)
+    assert tokens[:3] == ["python", "-m", "pytest"]
+    assert not DEPS.pytest_invocation_ambiguities(command)
+    targets = [token for token in tokens[3:] if not token.startswith("-")]
+    expected = {
+        path.relative_to(ROOT).as_posix()
+        for path in (ROOT / "tests").glob("test_sf_*.py")
+    }
+    assert len(targets) == len(set(targets))
+    assert set(targets) == expected
+    assert "tests/test_sf_clock_repair.py" in targets  # ci-trigger-closure: data
+
+    scoped, _ = PACK.infer_job_scopes([owner])
+    assert len(scoped) == 1 and scoped[0].is_scoped
+    assert scoped[0].exclusive
+    assert scoped[0].fallback_paths == ()
+    for changed_path in (
+        "tests/test_sf_clock_repair.py",  # ci-trigger-closure: data
+        "engine/signal_foundry/harness.py",  # ci-trigger-closure: data
+    ):
+        selected, _ = PACK.select_jobs(scoped, [changed_path])
+        assert [job.job_id for job in selected] == ["signal-foundry-regressions"]
+    for unrelated_path in (
+        "templates/index.html",  # ci-trigger-closure: data
+        "scripts/build_free_content.py",  # ci-trigger-closure: data
+        "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+    ):
+        selected, _ = PACK.select_jobs(scoped, [unrelated_path])
+        assert selected == [], f"Foundry selected an unrelated path: {unrelated_path}"
