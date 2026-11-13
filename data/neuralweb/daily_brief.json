@@ -1,14 +1,14 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-11-13T11:11:18.289968+00:00",
+  "produced_at": "2026-11-13T12:02:05.818785+00:00",
   "as_of": "2026-11-12",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
     "cortex_status": "degraded",
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
-    "context_stale": true,
+    "context_stale": false,
     "summary": "cortex degraded — model_unavailable"
   },
   "what_changed": [
@@ -575,12 +575,6 @@
       "action_type": "ops_fix"
     },
     {
-      "priority": 1,
-      "area": "cortex",
-      "summary": "cortex context was stale at run time — check world_state freshness",
-      "action_type": "inspect"
-    },
-    {
       "priority": 2,
       "area": "confluence-strength",
       "summary": "lobe confluence-strength is warn — age 755.19h vs SLA 30h",
@@ -976,10 +970,10 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-11-12",
+    "as_of": "2026-11-13",
     "counts": {
       "overdue": 213,
-      "due": 4,
+      "due": 5,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
@@ -993,7 +987,7 @@
       "clock_id": "qledger:placebo",
       "due_at": "2026-06-22"
     },
-    "morning_line": "213 overdue, 4 due, 1 missing, 1 stale, 2 blocked, 107 accruing. Top due: qledger:placebo."
+    "morning_line": "213 overdue, 5 due, 1 missing, 1 stale, 2 blocked, 107 accruing. Top due: qledger:placebo."
   },
   "china_market_state": {
     "available": true,
@@ -1022,7 +1016,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-11-12T15:43:53Z",
+    "asof": "2026-11-13T11:57:07Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,
