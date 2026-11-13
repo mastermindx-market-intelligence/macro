@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T22:09:51.842078+00:00",
-  "count": 3323,
+  "generated_at": "2026-11-13T22:24:47.510602+00:00",
+  "count": 3324,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -2134,6 +2134,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ldnqhmivoib-043983",
+      "title": "Harmonic DS (6324)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:42:02Z",
+      "summary_points": [
+        "2Q Results & Supply Chain: Operating profits (¥2.37bn) and sales (¥19.4bn) met estimates; orders (¥26.5bn) beat guidance with no supply chain bottlenecks, confirming cyclical resilience.",
+        "Revenue & EBITDA Acceleration: Revenue growth surged to 31.0% (3/27E) from 7.0% (3/26), EBITDA growth jumped to 80.3% (3/27E), signaling robust operational expansion.",
+        "Valuation Sustainability: Premium valuation (P/E 63.2, P/B 3.8) supported by strong cash flow (free cash flow ¥3.1bn in 3/27E) and low leverage (1.4x), indicating sustainable growth.",
+        "Key Downside Risks: Weaker manufacturer/EMS investment appetite, decline in industrial robots/SPE demand, and increased auto components focus threaten near-term growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
