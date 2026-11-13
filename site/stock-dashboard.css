@@ -361,6 +361,15 @@
 .mx-stockdash--ca .ca-v36-card-grid {
   display: block; padding: 14px;
 }
+/* Sparse-board geometry: the shared Prophet safety rule forces every owner
+   grid through ~246px flexible tracks. On Canada that leaves sparse boards as
+   undersized tiles in a full-width tray. Keep regional cards in a readable
+   280–320px band; owner DOM/order/hidden state remain untouched. */
+.mx-stockdash--ca .ca-v36-card-grid #standouts .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 320px)) !important;
+  justify-content: start;
+}
 .mx-stockdash--ca .ca-v36-card-grid .pvcard {
   min-width: 0; height: 100%; font-family: var(--font-ui, -apple-system, BlinkMacSystemFont, Inter, "Segoe UI", Roboto, sans-serif);
   transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
@@ -761,6 +770,9 @@ html[data-theme=light] .mx-stockdash--ca .ca-v36-modal .ca-v36-modal-x:hover {
   html[data-theme=light] .mx-stockdash--ca .ca-v36-an-lane + .ca-v36-an-lane { border-left: 0; }
   html[data-theme=light] .mx-stockdash--ca .ca-v36-an-lane:nth-child(n+3) { border-top: 0; }
   .mx-stockdash--ca .ca-v36-card-grid { grid-template-columns: 1fr; padding: 10px; gap: 10px; }
+  .mx-stockdash--ca .ca-v36-card-grid #standouts .cards {
+    grid-template-columns: 1fr !important; justify-content: stretch;
+  }
   .mx-stockdash--ca .ca-v36-card-grid .pv-tk { font-size: 16.3px !important; }
   .mx-stockdash--ca .ca-v36-card-grid .nb-px.pv-px { font-size: 15.5px !important; }
   .mx-stockdash--ca .ca-v36-card-grid .nb-chg.pv-chg { font-size: 13.1px !important; }
@@ -849,6 +861,15 @@ html[data-theme=light] .mx-stockdash--ca .ca-v36-modal .ca-v36-modal-x:hover {
 }
 .mx-stockdash--hk .hk-v37-filter.is-on { display: inline-flex; }
 .mx-stockdash--hk .hk-v37-card-grid { display: block; padding: 14px; }
+/* HK's legacy grid bottoms out at 196px, while the shared Prophet safety
+   override settles near 246px on this shell. Give HK a bounded 260–300px
+   regional track so sparse and fuller boards remain readable without changing
+   membership, ordering, or entry state. */
+.mx-stockdash--hk .hk-v37-card-grid #standouts .nbgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 300px)) !important;
+  justify-content: start;
+}
 .mx-stockdash--hk .hk-v37-card-grid .pvcard[hidden] { display: none !important; }
 #hk-v37:not([data-hk-enhanced="true"]) #hk-v37-prophet[data-initial-source="top"] #standouts .pvcard:not(.pv-featured) {
   display: none !important;
@@ -1160,6 +1181,9 @@ html[data-theme=light] .mx-stockdash--hk .hk-v37-modal-sb { background: var(--pa
   .mx-stockdash--hk .hk-v37-an-body:not(.is-enhanced) .hk-v37-an-lane:target { display: block; }
   html[data-theme=light] .mx-stockdash--hk .hk-v37-an-lane + .hk-v37-an-lane { border-left: 0; }
   .mx-stockdash--hk .hk-v37-card-grid { padding: 10px; }
+  .mx-stockdash--hk .hk-v37-card-grid #standouts .nbgrid {
+    grid-template-columns: 1fr !important; justify-content: stretch;
+  }
   .mx-stockdash--hk .hk-v37-lead-row { grid-template-columns: 48px minmax(0, 1fr) auto; }
   .mx-stockdash--hk .hk-v37-count { display: none; }
   .mx-stockdash--hk .hk-v37-modal { padding: 8px; }
