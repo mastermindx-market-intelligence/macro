@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T01:23:19.818027+00:00",
-  "count": 3265,
+  "generated_at": "2026-11-13T02:50:31.491037+00:00",
+  "count": 3269,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -69,6 +69,7 @@
     "Mizuho",
     "Morgan Stanley",
     "NEPC",
+    "NVIDIA",
     "Natixis",
     "Nomura",
     "Nordea",
@@ -283,6 +284,24 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-clkittsfzfl-af2f3c",
+      "title": "GS Wijaya GS SECTOR SPECIALISTS Energy Natural Resources and Utilities Preview Thursday Thoughts 12 Nov 2026",
+      "institution": "NVIDIA",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:58:20Z",
+      "summary_points": [
+        "Oil Flow Drivers: DVN's strategic review closure and buyback acceleration reduce downside risk; COP's buyback trends and single-digit FCF yield drive flow preferences; OXY's crude flush sensitivity and EOR capabilities are key risk factors.",
+        "Uranium Narrative Disconnect: Positioning debates (direct vs miners, commodity vs equity) and narrative misalignment with data center/Al story dominate, overshadowing P/NAV models as primary valuation drivers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
@@ -891,6 +910,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-icj7tkh8u5j-67360e",
+      "title": "US Economics Analyst 2027 Capex Outlook How Much of an AI Boost",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:43:36Z",
+      "summary_points": [
+        "AI Capex True Impact: AI-driven investment to boost true 2027 capex growth by 5.3pp (vs. measured 4.3pp), adding 0.6pp to real GDP, with $1.4tn US AI investment forecast by 2027 (4% of GDP).",
+        "IRA/CHIPS Subsidy Drag: Declining IRA/CHIPS-subsidized manufacturing construction (2026 YTD: -$14bn) will drag 2027 capex growth by 0.4pp, offset partially by data center spending.",
+        "Geopolitical Oil Price Risk: Iran war-driven oil prices ($90/barrel) add 0.5pp to 2027 capex growth; risk of prices falling below $70/barrel negates this boost, impacting energy investment.",
+        "Capex Growth Outperformance: Real business fixed investment growth forecast at 8% Q4/Q4 2027 (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-nzq1lv752oy-70156f",
       "title": "Energy Vault Holdings (NRGV) 2027 visibility builds though 4Q execution remains in focus",
       "institution": "Goldman Sachs",
@@ -1175,6 +1214,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-sbvbuojfdny-3a83af",
+      "title": "Presentation India in the eye of the storm How to read the rupee weakness",
+      "institution": "Natixis",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T02:16:17Z",
+      "summary_points": [
+        "Energy Supply Chain Fragility: India imports 90% crude oil (9-10 days strategic reserves vs.",
+        "IEA’s 90-day buffer), 50% LNG (Qatar/UAE dominate >50%), and 67% LPG, with 90% LPG transiting Strait of Hormuz—severely amplifying geopolitical disruption risks.",
+        "GCC Remittance Dependency: $155bn FY2025-26 remittances (38% from GCC), contributing 1.2% of GDP; Gulf labor market weakness threatens this critical inflow stabilizer.",
+        "Capital Account Deterioration: $5.5bn net capital outflow (Apr-Jun 2026) vs.",
+        "$9.3bn inflow a year earlier, driving external vulnerability despite manageable current account deficit."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 29,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-eaj5yah7ci7-2504d2",
       "title": "Sticky inflation keeps the Fed on a hiking path 2026 11 11",
       "institution": "SEB",
@@ -1210,6 +1270,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-t4l5b6fmzc7-9c0037",
+      "title": "Initiation of coverage Samsung Life Insurance English",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T01:37:47Z",
+      "summary_points": [
+        "Market Leadership & Resilience: South Korea's largest insurer with 20% gross premium market share (1H26), 23% corporate pension share, and 12% CAGR in contractual service margin (CSM) over 5 years; KRW 2.3tr net profit (2025).",
+        "Bond Recommendation: Initiate coverage on 6.875% 2056 Tier 2 bond offering yield pickup (6.2% yield-to-call) vs peers, low extension risk due to regulatory capital amortization.",
+        "Equity Concentration Risk: 8.5% stake in Samsung Electronics (SEC) drives 52% of equity allocation (up from 29% in 2025), creating single-name exposure risk; SEC price reversal could erode metrics.",
+        "Capital Adequacy: K-ICS ratio at 208% (exceeding 130% regulatory threshold) and Tier 1 capital at 177% (surpassing 50% minimum), though K-ICS declined from 218.8% (2023) to 177.2% (1H26).",
+        "Underwriting Profit Decline: Underwriting profit fell 36% y/y in 1H26 due to negative claim variances, partially offset by higher-margin new business mix (protection-type products)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
