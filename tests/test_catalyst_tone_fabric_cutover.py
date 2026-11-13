@@ -460,6 +460,52 @@ def test_legacy_path_produces_the_same_digest_as_before_the_cutover(cfg,
     assert rec["confidence_gated"] is False
 
 
+def test_digest_publishes_the_model_the_router_actually_served(
+        fabric_on, cfg, monkeypatch):
+    """rec["model"] is a published provenance claim on the nightly path. Under the
+    router it is NOT _extraction_model(cfg) — the router picks the served lane
+    member — so reporting the config model would credit a model that never ran."""
+    monkeypatch.setattr(ct, "_cfg",
+                        lambda: {**cfg, "enabled": True,
+                                 "llm_min_confidence": "medium"})
+    refused_model = ct._extraction_model({**cfg, "llm_model": "some-other-model"})
+    rec = ct.digest_document(_DOC, kind="fomc_statement", context="FOMC")
+
+    assert rec["model"] == "deepseek-v4.1-flash"     # what the stub served
+    assert rec["model"] != refused_model
+    assert rec["served_by"] == "fabric"
+
+
+def test_cache_hit_keeps_the_configured_model_as_provenance(fabric_on, cfg,
+                                                            monkeypatch):
+    """On a cache HIT no model is served in that invocation, so `model` must stay
+    the configured extraction model rather than claim a fresh serving."""
+    monkeypatch.setattr(ct, "_cfg",
+                        lambda: {**cfg, "enabled": True,
+                                 "llm_min_confidence": "medium"})
+    ct.digest_document(_DOC, kind="fomc_statement", context="FOMC")
+    rec = ct.digest_document(_DOC, kind="fomc_statement", context="FOMC")
+
+    assert len(fabric_on) == 1                       # second call was a cache HIT
+    assert rec["model"] == ct._extraction_model(cfg)
+    assert "served_by" not in rec
+
+
+def test_legacy_path_keeps_the_configured_model_as_provenance(monkeypatch, cfg):
+    monkeypatch.setattr(fc, "is_configured", lambda: False)
+    monkeypatch.setattr(ct, "_client", lambda _cfg: _FakeSdk())
+    monkeypatch.setattr(llm_auth_mod, "make_call",
+                        lambda *a, **kw: (_FABRIC_REPLY, None, "deepseek"))
+    monkeypatch.delenv("MACRO_CATALYST_TONE_FABRIC", raising=False)
+    monkeypatch.setattr(ct, "_cfg",
+                        lambda: {**cfg, "enabled": True,
+                                 "llm_min_confidence": "medium"})
+
+    rec = ct.digest_document(_DOC, kind="fomc_statement", context="FOMC")
+    assert rec["model"] == ct._extraction_model(cfg)
+    assert "served_by" not in rec
+
+
 # --------------------------------------------------------------------------- #
 # the shared tolerant parser is untouched by this cutover
 # --------------------------------------------------------------------------- #

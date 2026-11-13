@@ -419,7 +419,8 @@ def _user_prompt(source_text: str, context: str) -> str:
             f"Document text follows between <doc> tags.\n<doc>\n{source_text}\n</doc>")
 
 
-def _fabric_call(source_text: str, context: str, cfg: dict) -> tuple[str | None, str | None]:
+def _fabric_call(source_text: str, context: str, cfg: dict,
+                 served: dict | None = None) -> tuple[str | None, str | None]:
     """ONE digest call through the router. Never retries, never fails over.
 
     The router owns provider selection, cooldown and account pooling, so this
@@ -464,6 +465,18 @@ def _fabric_call(source_text: str, context: str, cfg: dict) -> tuple[str | None,
         return None, f"stop_{raw_stop}"
     if not comp.text:
         return None, "empty_reply"
+    if served is not None:
+        # Provenance, not telemetry: digest_document publishes rec["model"], and
+        # under the router that is NOT _extraction_model(cfg) — the router picks
+        # the served member of the lane. Reporting the config model would make
+        # every fabric-produced digest claim a model that did not produce it,
+        # breaking the audit trail the W7 determinism kit exists to protect.
+        try:
+            served["provider"] = "fabric"
+            if comp.model_served:
+                served["model"] = comp.model_served
+        except Exception as e:  # noqa: BLE001 — never break a served call
+            log.debug("catalyst_tone: served-by provenance failed (%s)", e)
     try:  # cost ledger — never let telemetry break a call that otherwise worked
         from lib import ai_costs  # noqa: PLC0415 — lazy, matches llm_auth's idiom
         # LANE is the ledger's attribution key, not the router lane. The legacy
@@ -485,8 +498,16 @@ def _fabric_call(source_text: str, context: str, cfg: dict) -> tuple[str | None,
     return comp.text, "fabric"
 
 
-def _call_model(source_text: str, context: str, cfg: dict) -> tuple[str | None, str | None]:
+def _call_model(source_text: str, context: str, cfg: dict,
+                served: dict | None = None) -> tuple[str | None, str | None]:
     """Return (reply_text, degraded_reason). Never raises.
+
+    served: OPTIONAL out-parameter (master_brain._call_model's idiom, and for the
+    same reason: engine/catalyst_tone.py itself and several tests stub this with a
+    2-tuple lambda, so the RETURN type must not grow). On a fabric-served call
+    this receives {"provider": "fabric", "model": <what the router actually ran>};
+    it is left untouched on a cache hit, on the legacy ladder, and on failure.
+    Population is wrapped so a defect in it can never break a call that worked.
 
     Determinism kit (W7 #33): temperature=0 + seed=0 so the provider samples as
     deterministically as it can. Content-hash cache: the SHA-256 of (model, system,
@@ -509,7 +530,7 @@ def _call_model(source_text: str, context: str, cfg: dict) -> tuple[str | None, 
     # digest.
     if _fabric_enabled():
         try:
-            text, reason = _fabric_call(source_text, context, cfg)
+            text, reason = _fabric_call(source_text, context, cfg, served)
         except fabric_client.FabricUnavailable as e:
             log.warning(
                 "catalyst_tone: fabric router unavailable (%s); using the legacy ladder", e)
@@ -598,7 +619,14 @@ def digest_document(source_text: str, kind: str = "macro", doc_id: str | None = 
         rec["degraded_reason"] = "empty_source"
         return rec
 
-    reply, reason = _call_model(source_text, context, cfg)
+    served: dict = {}
+    reply, reason = _call_model(source_text, context, cfg, served)
+    if served.get("model"):
+        # Honest provenance: name the model the router ACTUALLY served. Left as
+        # the configured extraction model when this digest came from the reply
+        # cache or the legacy ladder, where _extraction_model(cfg) is the truth.
+        rec["model"] = served["model"]
+        rec["served_by"] = served.get("provider")
     if reply is None:
         rec["degraded_reason"] = reason
         return rec
