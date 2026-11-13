@@ -130,3 +130,123 @@ source checks passed locally. Publish this fix on the same original branch,
 read back new head and consume its own hosted gate. No duplicate CI job,
 reviewer, or runtime source authority was created. W3 remains separate,
 source-only and awaits its own normal delivery.
+
+## Consumer integration continuation (2026-10-22)
+
+The attended source W3 writer is
+`/Volumes/Mastermind/agent-workspaces/macro/web/market-navigator-w3-ui-20261022-sol`
+on `sol/web-market-navigator-w3-ui-20261022-sol`, original stacked PR #10076.
+New precise support: completed-bar price confirmation and v2
+request-subject digest with principal/entitlement-scoped no-auto-read
+mount. Full 259-test Navigator suite and 8 Chromium matrices pass
+locally. No live source was bound. Any new endpoint must have an
+actual incumbent owner-approved rights/purpose grant; the legacy
+Market Memory guard admits only its named existing routes and cannot
+be copied into a Navigator route as a license shortcut.
+Original parent #10055 and current Fabric independent review
+`market-navigator-review-e05fbe3-20261022` retain their original
+identities/effect custody. Do not duplicate the review, force-merge
+or retarget W3 prematurely; qualification and signed-in proof are
+distinct.
+
+
+## Resume frontier after Foundation F1/F2 review repair (2026-10-22)
+
+Original parent PR #10055 now carries review-remediation head
+`3b4d33516eae6a72a19446d962c52e1733a7d135`. The existing Fabric
+result against old `e05fbe3` was consumed with disposition
+CHANGES_REQUESTED and accepted **as review artifact only**.
+New independent rereview request `market-navigator-review-3b4d335-20261022`
+was created under the original root, but its worker START/return is
+not yet verified. The foundation was proven to pass 193 focused local
+Navigator + narrow CI contract tests at the repaired head. An
+unrelated sparse-tree CI-control-plane closure test failed; do not
+reinterpret that as fixture-scope passing or reset any ceiling.
+
+W3 PR #10076 remains **DRAFT** on branch
+`sol/web-market-navigator-w3-ui-20261022-sol`. Its immutable UI/consumer
+and read-only bar-confirmation checks passed 259 focused tests and
+eight synthetic Chromium combinations. An additional bilingual
+why-this-status line now exposes confirmed/waiting/unresolved/
+invalidated/expired reasons directly without assigning odds or
+a recommended trade.
+
+The original W3 child's base is still the earlier parent head;
+the source merge of the new parent was blocked *before dispatch*
+by platform safety checks. Do not replay that denied merge using
+an alternate tool, provider, account, session, PR retarget or
+force path. This does not prohibit independent disjoint
+research/UI/test work. Before any later release, reconcile the
+child's exact head and target base through a legitimately available
+source integration/release process and rerun required review and
+checks. If safety restriction persists, preserve the exact
+integration gate; no claim of a clean composed candidate.
+
+Paper Desktop is connected, but the existing `MASTERMIND PAGES`
+design file reports 'file is too large, further changes will
+result in data loss'; do not mutate that file. The separate
+Market Memory Paper page can be studied read-only, but no
+Navigator-native Paper artboard has been created. A new
+approved Paper design file must be bound by its exact ID before
+canvas work can safely resume. No live source-use grant,
+authenticated Navigator HTTP route, signed-in production proof,
+Paper-native visual acceptance or forecast track record is
+present. The user outcome remains incomplete.
+
+
+## W3 evidence-family visibility (2026-10-22)
+On the existing W3 draft PR #10076, the request-bound view has added
+seven deterministic evidence-family lenses, empty-family aggregation,
+bilingual labels and preserved disclosure focus. The code/test suite
+passes 310 focused tests and eight synthetic-browser configurations;
+original source availability/entitlement remains unproven.
+
+The parent Foundation PR #10055 at `3b4d335` is open, not ready:
+its Navigator CI job passes, but the wider repository
+`ci-control-plane-contracts` test job fails two curated-scope assertions
+on paths outside Navigator. This is not clearance to modify unrelated
+protected CI ceilings. The exact-parent review attempt
+`market-navigator-review-3b4d335-20261022` returned rc=1 after a Qwen
+429 and `QWEN_FINAL_RESPONSE_UNCONFIRMED`; no independent review
+finding or acceptance was produced. Do not replay that call unchanged.
+
+Paper Studio inspected `paper-desktop` 0.5.14 but reports current
+write-catalog digest `1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`,
+not accepted expected `ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9`,
+so `accepted_for_write=false`. The old shared Paper document also
+warns further edits risk data loss. No Paper edits were made.
+The legitimate same-carrier write-schema acceptance and new-file
+target grant must be demonstrated before design mutation.
+
+
+## Parent CI closure root cause and current source state (2026-10-22)
+
+The parent Foundation branch was advanced from reviewed-repair
+`3b4d33516eae6a72a19446d962c52e1733a7d135` to
+`60be55b024ccaf7cb3b390ef1847e42ff76defa1` on **the original
+parent PR #10055 and its original source workspace**. Its hosted
+failures were traced precisely to four fixture-probe filenames added
+to `tests/test_ci_pack.py` without the official
+`# ci-trigger-closure: data` marker. Because those paths are names
+passed to a planner, not files the test reads, the closure scanner
+falsely inferred 13 dependencies of the unrelated
+`ci-control-plane-contracts` job. The original parent source
+now has per-line markers and both of the formerly failing
+curated-exclusive tests pass (2 passed, 204.62 seconds) without
+widening any CI paths or ceilings. This **corrects** the earlier
+description of the failure as an unrelated infrastructure regression;
+the prior change in our own F1 test caused it. The new parent-head
+fences check is green, main CI was still in progress at the last
+observation, and independent semantic review is still absent.
+No merge or production admission occurred.
+
+The source-only W3 child PR #10076 now carries a compact
+seven-family evidence view and explicit observed-versus-estimated
+qualifier, with named single unresolved scenario inputs. Source
+version remains response/v2 and there is no additional network,
+entitlement, signal, trade or statistical scoring owner. The W3
+child remains DRAFT on its original stacked PR because the
+earlier parent integration operation was denied pre-dispatch by
+platform safety checks. Do not replay that denied merge. Reconcile
+only through a duly authorized release process that preserves
+its same exact PR/source identity and required proof.

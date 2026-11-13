@@ -117,3 +117,84 @@ Native Paper and independent review remain unproven. Full product is not accepte
 ## Extra High CI scope correction (2026-10-22)
 
 The source release remains OPEN, not user-proven. Contract-delta exposed the Navigator suite selecting unrelated ordinary changes. Its job now has curated exclusive paths covering 85 actual literal imported/read dependencies and both separately detected ancestor init files; three formerly offending pack probes no longer select it. The current head still owes hosted proof. Paper is CONNECTED but write-schema incompatible and the active file is unsafe; no Paper write or live endpoint was performed. The personal prefs writer is not a Navigator hypothesis store. Continue the original PR, normal source release and later separately approved consumer/design integration.
+
+## W3 UI composability (22 October 2026)
+
+Separate managed attended source branch `sol/web-market-navigator-w3-ui-20261022-sol` adds a user-inspectable read-only bilingual evidence region with condition, clock and contradictory-evidence drilldown. It has no source, auth, alert, ranking or trade owner; all dynamic text uses DOM textContent. The prior W1 source PR #10055 remains separately owned, open/merge-blocked. Actual Paper and signed-in production integration still outstanding; no duplicate reviewer or worker was spawned. See research/market_navigator/VIEW_INTEGRATION.md and VIEW_BROWSER_REPORT.json.
+
+## Completed-bar price-rule source increment (22 October 2026)
+
+W3 draft PR #10076 adds a deterministic non-predictive price-rule confirmation
+subengine, integrated as a binary observation into the incumbent scenario
+compositor and displayed through its existing request-bound client. 64 new
+targeted synthetic checks, 257 total focused Navigator tests and eight
+Chromium configurations passed. It accepts only 2-16 completed owner-calendar
+bars with contiguous bar ordinals, a legitimate as-known cutoff, no mixed
+generation or intraday session crossing, verified source receipts and an
+unextended derived receipt; otherwise status stays unresolved. Source owner
+verification is a **test fixture**, not production proof. No dark-pool/gamma
+dealer claims or trading authority were added. The source authorization
+limit on legacy Market Memory original endpoints remains in effect; no new
+endpoint or storage path was created.
+
+Foundation PR #10055 remains a separate open code/review/release gate.
+UI PR #10076 remains draft because current CI authority rejects the
+non-main stack base (`unsupported_base_ref`). Both original carriers are
+preserved; do not bypass, force retarget or conflate this new local proof
+with a completed/approved production capability.
+
+## W3 exact-scope host binding (2026-10-22)
+
+The source-only W3 branch extends the conditional bar engine with a
+request-bound instrument digest (response/v2) and a host-provided
+auth/entitlement-scope mounting interface. New account/instrument selection
+withdraws the previous view; WebCrypto absence, mismatched subject, lost
+scope or unsupported wire remain unavailable, not a cached-looking
+market conclusion. The same original research-only source status and
+no-trade flags survive. 259 focused tests and 8 synthetic Chromium
+configurations passed; 350 CI definitions still validate. **No
+auth/rights owner, live endpoint, saved-state writer or alert plane
+was created.** W3 is not live or production-proven. Parent PR #10055
+and its review/release gate remain separate, and W3 PR #10076 remains
+draft because its stack base is unsupported by current ci-authority.
+
+## W3 scenario diagnosis and release reconciliation (2026-10-22)
+
+Source UI displays one deterministic bilingual reason for each
+validated status without a probability, ranking, sizing or order,
+with expanded exact conditions and source clocks preserved. 259
+focused tests and 8 Chromium cases passed at the W3 continuation
+source candidate. Foundation PR #10055 changed to `3b4d335`
+after F1 fixture-selector/F2 immutable-authority repairs. The
+review was CHANGES_REQUESTED, accepted as review evidence only;
+independent rereview operation `market-navigator-review-3b4d335-20261022`
+is pending verified worker result. W3 still has an older
+stack-base ancestry; a merge attempt was blocked before effect by
+platform safety checks and was not retried/failed-over. The
+existing Paper file warns of destructive oversize and remains
+unchanged. This is an incomplete product.
+
+## Evidence lenses and release status (2026-10-22)
+W3 now groups authenticated-consumer *already admitted* observations
+into seven bilingual evidence families, preserves source-availability
+vs no-record distinctions, and gives easy-to-open observation details
+without ranking or directional votes. 310 focused tests and eight
+synthetic-browser states pass in its current source tree.
+Foundation PR #10055 remains held by repository CI
+`ci-control-plane-contracts` and fresh independent review;
+the earlier Qwen return was 429/unconfirmed, not findings.
+Paper Studio reports `accepted_for_write=false` for its current
+catalog; no paper content mutated.
+
+## Hosted CI closure causal repair and evidence honesty (2026-10-22)
+
+Original Foundation PR #10055 head `60be55b` carries exact
+ci-trigger-closure data annotations correcting our F1 fixture
+regression's false owned-import readings. The formerly failing
+CI tests pass locally; hosted CI/review/merge remain unaccepted.
+W3 draft #10076 preserves its exact source custody, adds
+observed-versus-estimated display and names one unknown
+condition when uniquely determined. 310 Navigator focused tests,
+8 synthetic Chromium browser states pass; no licensed live
+source use, deployment, Paper-native file acceptance or
+trading authority has been claimed.
