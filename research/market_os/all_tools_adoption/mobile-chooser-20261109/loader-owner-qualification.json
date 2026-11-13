@@ -1,0 +1,18 @@
+[
+  {
+    "input": "baseline",
+    "outcome": "PASS",
+    "release_key": "20261101-expectation-surface-nav",
+    "expected_payload_digest": "472f1b07",
+    "actual_payload_digest": "472f1b07",
+    "reason": null
+  },
+  {
+    "input": "candidate",
+    "outcome": "FAIL",
+    "release_key": "20261101-expectation-surface-nav",
+    "expected_payload_digest": "472f1b07",
+    "actual_payload_digest": "1b594114",
+    "reason": "templates/nav_market.js or templates/account.js changed, but they are served `immutable, max-age=31536000` at the fixed key '20261101-expectation-surface-nav' -- returning visitors would keep the year-cached OLD nav menu and never see this change. Bump the key in templates/theme.js, site/theme.js, templates/account.js and site/account.js (and NAV_RELEASE_KEY above), then set NAV_PAYLOAD_DIGEST = '1b594114'. Both constants move together or the bump did not happen."
+  }
+]

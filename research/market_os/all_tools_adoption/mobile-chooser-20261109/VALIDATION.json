@@ -1,0 +1,208 @@
+{
+  "date_utc": "2026-11-09",
+  "repository": "mastermindx-market-intelligence/Macro",
+  "base_commit": "071ed19f5ce87927f078f94f3e126c24d8a0307e",
+  "branch": "design/paper-tools-mobile-chooser-20261109",
+  "paper": {
+    "file": "01M6Y32A3E4XC51FQVJN98YRPH",
+    "page": "p-2-0",
+    "build": "31M-0",
+    "expanded_specs": [
+      "34K-0",
+      "358-0"
+    ]
+  },
+  "source_files": [
+    {
+      "path": "templates/nav_market.js",
+      "bytes": 100936,
+      "characters": 97778,
+      "blob_sha": "1baf92ca4e17a0df6e33e6834047b8c559e30458",
+      "sha256": "bfab19e198890598b4d4b980c20bbf150054ca65288e8155052ff0ef345a899a"
+    },
+    {
+      "path": "site/nav_market.js",
+      "bytes": 100936,
+      "characters": 97778,
+      "blob_sha": "1baf92ca4e17a0df6e33e6834047b8c559e30458",
+      "sha256": "bfab19e198890598b4d4b980c20bbf150054ca65288e8155052ff0ef345a899a"
+    },
+    {
+      "path": "templates/navigation-refresh.css",
+      "bytes": 106407,
+      "characters": 106217,
+      "blob_sha": "e3fe57442f60e1e20279f82516cce68cad668e98",
+      "sha256": "f72066322cbdb127387f9e396a7076b1bfe8625c1029d40e84f167f03af3dd12"
+    },
+    {
+      "path": "site/navigation-refresh.css",
+      "bytes": 106407,
+      "characters": 106217,
+      "blob_sha": "e3fe57442f60e1e20279f82516cce68cad668e98",
+      "sha256": "f72066322cbdb127387f9e396a7076b1bfe8625c1029d40e84f167f03af3dd12"
+    },
+    {
+      "path": "research/market_os/all_tools_adoption/src/all-tools.js",
+      "bytes": 25448,
+      "characters": 24986,
+      "blob_sha": "795e7e7ef092ea477ba89014590a1850c8fc387d",
+      "sha256": "7a8b1d37e7c98b3e7f0a886b30444d8eed4bdedda26d397d3da119aa3088fa77"
+    },
+    {
+      "path": "research/market_os/all_tools_adoption/tests/controller.test.cjs",
+      "bytes": 29194,
+      "characters": 29082,
+      "blob_sha": "222eced972acdc04ec097e5d734d8f9054540ee8",
+      "sha256": "b1a7237e939f193f2eb869dc48a65999022badbcd43c0e4774188d6960ec1e1e"
+    },
+    {
+      "path": "research/market_os/all_tools_adoption/tests/dom.cjs",
+      "bytes": 7528,
+      "characters": 7516,
+      "blob_sha": "a28afe19b17fcd9656fd7109701f0412e3c02ab0",
+      "sha256": "44dfa70d9dbde19b5b8640231ec05e1476d748fb19d2a79033aa4997cf1fa6a6"
+    },
+    {
+      "path": "site/macro.html",
+      "bytes": 598259,
+      "characters": 572801,
+      "blob_sha": "2703c16eec17551ab6d653bbef56fdaa3d2993a6",
+      "sha256": "78d50b23f4895dca853a3635664e9592a981a8e768fdb18370b7f0eb296b1820"
+    },
+    {
+      "path": "site/sector_central.html",
+      "bytes": 410528,
+      "characters": 388614,
+      "blob_sha": "896fbffdf5a3dc600cba75a7187644ff081a25cd",
+      "sha256": "4600d238b1888d8a2fa4bb3ae4a9133ef1bf36e6a7f17127c166f161d3cacb78"
+    },
+    {
+      "path": "site/reports.html",
+      "bytes": 100956,
+      "characters": 92073,
+      "blob_sha": "60788a26cfb62d860d9d49e7daf18f92f8d02663",
+      "sha256": "e3cfa06133659059337745d80269563c8bac7513990f08e37f1bf8bc70ffac57"
+    }
+  ],
+  "production_controller_sha256": "7a8b1d37e7c98b3e7f0a886b30444d8eed4bdedda26d397d3da119aa3088fa77",
+  "checks": [
+    {
+      "name": "Original source behavior suites",
+      "outcome": "PASS",
+      "cases": 107,
+      "scope": "original suites before changes; observed in this session"
+    },
+    {
+      "name": "Missing chooser baseline falsifier",
+      "outcome": "EXPECTED_FAIL",
+      "exit_code": 1,
+      "cases": 1,
+      "artifact": "baseline-chooser-falsifier.tap"
+    },
+    {
+      "name": "Final production-controller behavior suites",
+      "outcome": "PASS",
+      "exit_code": 0,
+      "cases": 138,
+      "node": "v24.22.1",
+      "duration_ms": 213.727794,
+      "artifact": "controller-tests.tap"
+    },
+    {
+      "name": "Existing All Tools integration contracts",
+      "outcome": "PASS",
+      "exit_code": 0,
+      "cases": 11,
+      "duration_seconds": 0.44,
+      "artifact": "all-tools-pytest.txt",
+      "includes": "The existing pytest wrapper extracts the actual production marker block and runs the Node suites; do not double count these as independent browser cases."
+    },
+    {
+      "name": "Full nav_market.js syntax",
+      "outcome": "PASS",
+      "exit_code": 0,
+      "command": "node --check templates/nav_market.js"
+    },
+    {
+      "name": "Existing asset optimizer",
+      "outcome": "PASS",
+      "pages": 3,
+      "baseline_byte_identical": true,
+      "candidate_delta": "Two navigation CSS URL references per page only",
+      "artifact": "asset-reference-qualification.json"
+    },
+    {
+      "name": "Existing loader key gate",
+      "outcome": "FAIL",
+      "baseline": "PASS",
+      "candidate_payload_digest": "1b594114",
+      "unchanged_release_key": "20261101-expectation-surface-nav",
+      "artifact": "loader-owner-qualification.json",
+      "execution": "Exact named function and its dependency/constants extracted by Python AST from unchanged tests/test_nav_hover_bridge.py; actual template nav/account inputs. Not the whole navigation test module."
+    },
+    {
+      "name": "Existing P0B receipt closure gate",
+      "outcome": "FAIL",
+      "exit_code": 1,
+      "findings": 4,
+      "artifact": "p0b-receipt-closure.txt",
+      "execution": "Unchanged scripts/check_p0b_receipt_closure.py --diff-file chooser-changed-paths.json; source receipts read verbatim, no receipt edits or captures."
+    }
+  ],
+  "scope_checks": [
+    {
+      "path": "templates/nav_market.js",
+      "outside_owner_exact": true,
+      "paired_asset_exact": true,
+      "sha256": "bfab19e198890598b4d4b980c20bbf150054ca65288e8155052ff0ef345a899a"
+    },
+    {
+      "path": "templates/navigation-refresh.css",
+      "outside_owner_exact": true,
+      "paired_asset_exact": true,
+      "sha256": "f72066322cbdb127387f9e396a7076b1bfe8625c1029d40e84f167f03af3dd12"
+    }
+  ],
+  "release_qualified": false,
+  "browser_or_capture_executed": false,
+  "release_blocks": [
+    {
+      "owner": "Existing navigation integration",
+      "related_prs": [
+        7601,
+        10261
+      ],
+      "required": "Reconcile current incumbent outer-navigation changes and fixed loader key through existing account/theme owners; emit theme through lib.site_assets.emit_theme_js(); advance the existing payload digest with the actual integrated bytes."
+    },
+    {
+      "owner": "Existing P0B evidence gate",
+      "hold": "https://github.com/mastermindx-market-intelligence/macro/pull/7601#issuecomment-6689771047",
+      "required": "Legitimately authorized same-source measured receipts, or separately authorized canonical evidence/gate-owner change. No alternate host/browser/worker, digest-only receipt patch, validator weakening or denied capture replay."
+    }
+  ],
+  "custody": {
+    "pr7601_head": "6eef673488bb8b643d6cbffb8a4787560729b4aa",
+    "pr10261_head": "1597c6bed44785af03ab489f556e571fc2266f8e",
+    "both_embedded_controllers_match_base": true,
+    "outer_js_css_bytes_preserved": true,
+    "adoption_pr7949_merge": "ccc3242ef52966877e24b5290a5883628664e707"
+  },
+  "evidence_inputs": {
+    "all_tools_pytest_blob": "255f8abe7cf10c17e04e2698ec3d8cc8c2d1cd2b",
+    "optimizer_blob": "62d7daf72add439d4880e1f0533b45524d4f141d",
+    "page_owner_blob": "db175c463a31828263b57a3287afba661439a765",
+    "loader_gate_blob": "c9c706b7ff87d82612694618a130db4e0a7f9d0e",
+    "p0b_gate_blob": "1c9efc6651a5ff5ef93807e9c9312ed9a3e8db4b",
+    "p0b_receipts": [
+      "dece9c59f58f47730e349c4cdc973ad4299fc68a",
+      "ebea51df67f35a906c561a09bb059a88bcc09d51"
+    ],
+    "fixture_receipt_blob": "525300abb8a66058a6b9b89a558003e0d8666ede"
+  },
+  "limits": [
+    "Recording-DOM tests are not browser layout, native dialog/keyboard/OS IME or assistive-technology proof.",
+    "No 320px enlarged-text/runtime capture, full live site/account/access, release or deployment acceptance is claimed.",
+    "Existing source navigation, route admission, query/market/storage semantics, destination checks and three-page pilot remain incumbent-owned.",
+    "No identity, retry, route, inventory, focus-trap, persistence or publication owner was added."
+  ]
+}

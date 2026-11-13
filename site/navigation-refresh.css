@@ -3135,6 +3135,8 @@ html.mmx-tools-open { overflow: hidden; scrollbar-gutter: stable; }
 .mmx-tools-search-box .mmx-tools-icon-button { border: 0; }
 .mmx-tools-icon-button[hidden] { display: none; }
 .mmx-tools-categories { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 28px 14px; border-bottom: 1px solid var(--nr-line); }
+.mmx-tools-categories[hidden], .mmx-tools-category-toggle[hidden] { display: none; }
+.mmx-tools-category-toggle { display: none; }
 .mmx-tools-categories button { min-height: 44px; padding: 8px 12px; border: 1px solid transparent; border-radius: var(--r-ctl,8px); color: var(--muted); background: transparent; font-size: var(--fs-sm); cursor: pointer; }
 .mmx-tools-categories button[aria-pressed="true"] { color: var(--text); background: var(--nr-soft); border-color: var(--nr-line-strong); box-shadow: inset 0 -2px var(--link); }
 .mmx-tools-body { min-height: 100px; flex: 1; display: grid; grid-template-columns: minmax(0,1fr) 205px; gap: 26px; padding: 24px 28px; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
@@ -3189,11 +3191,37 @@ html[data-lang="zh"] .mmx-tools-eyebrow { letter-spacing: .02em; text-transform:
   .mmx-tools-header p { font-size: var(--fs-sm); }.mmx-tools-categories { flex-wrap: nowrap;overflow-x: auto;overscroll-behavior-x: contain;padding: 0 12px 10px;gap: 3px; }
   .mmx-tools-categories button { flex: 0 0 auto;padding: 7px 9px; }.mmx-tools-body { padding: 18px; }.mmx-tools-results { grid-template-columns: minmax(0,1fr);gap: 18px; }
   .mmx-tools-link { min-height: 76px; }.mmx-tools-footer { padding-left: 18px;padding-right: 18px;gap: 6px; }.mmx-tools-status { padding: 0 18px 10px; }
+  /* One scrolling dialog keeps every category reachable at narrow/enlarged sizes.
+     Existing hosts without the enhanced controller retain their original rail. */
+  .mmx-tools[data-tools-chooser-ready] { overflow: auto; overscroll-behavior: contain; }
+  .mmx-tools[data-tools-chooser-ready] .mmx-tools-shell { height: auto; min-height: 100%; }
+  .mmx-tools[data-tools-chooser-ready] .mmx-tools-body { overflow: visible; min-height: 0; flex: 1 0 auto; }
+  .mmx-tools-category-toggle:not([hidden]) {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    min-height: 44px; flex: 0 0 auto; min-width: 0; margin: 0 18px 10px; padding: 10px 12px;
+    border: 1px solid var(--nr-line-strong); border-radius: var(--r-ctl,8px);
+    background: var(--nr-soft); color: var(--text); text-align: left;
+    font: 600 var(--fs-sm)/1.5 var(--font-ui); overflow-wrap: anywhere; cursor: pointer;
+  }
+  .mmx-tools-category-toggle::after {
+    content: ''; flex: 0 0 auto; width: 7px; height: 7px; margin-right: 3px;
+    border: solid currentColor; border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg); transition: transform .12s ease;
+  }
+  .mmx-tools-category-toggle[aria-expanded="true"]::after { transform: rotate(225deg); }
+  .mmx-tools[data-tools-chooser-ready] .mmx-tools-categories {
+    flex-direction: column; flex-wrap: nowrap; flex: 0 0 auto; overflow: visible;
+    padding: 0 18px 14px; gap: 4px;
+  }
+  .mmx-tools[data-tools-chooser-ready] .mmx-tools-categories button {
+    width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px;
+    text-align: left; line-height: 1.5; white-space: normal; overflow-wrap: anywhere;
+  }
 }
 @media (max-height:600px) {
   .mmx-tools { inset: 8px 0 auto;max-height: calc(100vh - 16px);max-height: calc(100dvh - 16px);height: auto;overflow: auto;overscroll-behavior: contain; }
   .mmx-tools-shell { display: block;height: auto; }.mmx-tools-body { overflow: visible; }.mmx-tools-header { padding-top: 16px; }.mmx-tools-header p { display: none; }
 }
-@media (prefers-reduced-motion:reduce) { .mmx-tools-link { transition: none; } }
-@media (forced-colors:active) { .mmx-tools,.mmx-tools-link,.mmx-tools-categories button,.mmx-tools-icon-button { border: 1px solid ButtonText; }.mmx-tools-glyph::before { display: none; } }
+@media (prefers-reduced-motion:reduce) { .mmx-tools-link, .mmx-tools-category-toggle::after { transition: none; } }
+@media (forced-colors:active) { .mmx-tools,.mmx-tools-link,.mmx-tools-categories button,.mmx-tools-category-toggle,.mmx-tools-icon-button { border: 1px solid ButtonText; }.mmx-tools-glyph::before { display: none; } }
 /* ALL_TOOLS_MATERIAL_V1_END */

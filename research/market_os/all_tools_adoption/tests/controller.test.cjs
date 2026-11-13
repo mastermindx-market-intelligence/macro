@@ -77,3 +77,165 @@ test('topic redraw cannot revive a withdrawn destination',()=>{
  assert.equal(p.list.fire('click',{target:link}).prevented,true);
  assert.equal(p.d.defaultView.location.pathname,'/macro.html');
 });
+
+// Mobile chooser contracts use the production owner. This double records
+// state/focus/scroll intent; it does not establish layout or actual OS IME proof.
+function phone(){const p=setup({phone:true});p.trigger.focus();p.instance.open();p.toggle=p.host.querySelector('[data-tools-category-toggle]');return p;}
+function choose(p,key){if(p.categories.hidden)p.toggle.fire('click');const b=p.categories.querySelectorAll('button').find(x=>x.dataset.toolsGroup===key);assert.ok(b,key);p.categories.fire('click',{target:b});}
+test('old pilot hosts gain one collapsed chooser without another category list',()=>{
+ const p=phone();assert.ok(p.toggle);assert.equal(p.categories.contains(p.toggle),false);
+ assert.equal(p.toggle.getAttribute('aria-controls'),p.categories.getAttribute('id'));
+ assert.equal(p.toggle.getAttribute('aria-expanded'),'false');assert.equal(p.categories.hidden,true);
+ assert.equal(p.toggle.textContent,'Start here');assert.equal(p.d.activeElement,p.title);
+ Nav.mount(p.host);assert.equal(p.host.querySelectorAll('[data-tools-category-toggle]').length,1);
+});
+test('global query and Clear retain the prior Research category',()=>{
+ const p=phone();choose(p,'Research');assert.equal(p.toggle.textContent,'Research');
+ p.query.focus();p.query.value='dashboard';p.query.fire('input');assert.equal(p.toggle.textContent,'All categories');
+ assert.match(p.list.textContent,/Market Dashboard/);assert.doesNotMatch(p.list.textContent,/Research Reports/);
+ p.clear.fire('click');assert.equal(p.query.value,'');assert.equal(p.toggle.textContent,'Research');
+ assert.match(p.list.textContent,/Research Reports/);assert.doesNotMatch(p.list.textContent,/Market Dashboard/);assert.equal(p.d.activeElement,p.query);
+});
+test('whitespace query does not mislabel the current category as a global search',()=>{
+ const p=phone();choose(p,'Research');p.query.value=' \u3000 ';p.query.fire('input');
+ assert.equal(p.toggle.textContent,'Research');assert.match(p.list.textContent,/Research Reports/);
+});
+test('choosing a category during search clears only the directory query',()=>{
+ const p=phone(),source=p.root.textContent;choose(p,'Research');p.query.value='research';p.query.fire('input');
+ choose(p,'United States');assert.equal(p.query.value,'');assert.equal(p.toggle.textContent,'United States');
+ assert.equal(p.categories.hidden,true);assert.equal(p.d.activeElement,p.toggle);assert.equal(p.root.textContent,source);
+ assert.equal(p.d.defaultView.location.pathname,'/macro.html');assert.match(p.list.textContent,/Market Dashboard/);
+});
+test('All destinations from a scrolled mobile footer restores visible-control focus',()=>{
+ const p=phone();p.dialog.scrollTop=900;p.all.focus();p.all.fire('click');
+ assert.equal(p.dialog.scrollTop,0);assert.equal(p.toggle.textContent,'All destinations');
+ assert.equal(p.d.activeElement,p.toggle);assert.equal(p.list.querySelectorAll('a').length,2);
+});
+test('empty-state recovery chooses all destinations and focuses search',()=>{
+ const p=phone();choose(p,'Research');p.query.value='no such destination';p.query.fire('input');
+ const reset=p.list.querySelector('[data-tools-reset]');reset.focus();p.list.fire('click',{target:reset});
+ assert.equal(p.toggle.textContent,'All destinations');assert.equal(p.query.value,'');
+ assert.equal(p.d.activeElement,p.query);assert.equal(p.list.querySelectorAll('a').length,2);
+});
+test('first keyboard Escape closes the chooser, next cancel closes the original dialog',()=>{
+ const p=phone();p.toggle.fire('click');p.categories.querySelector('button').focus();
+ const first=p.dialog.fire('keydown',{key:'Escape'});assert.equal(first.prevented,true);assert.equal(first.stopped,true);
+ assert.equal(p.dialog.open,true);assert.equal(p.categories.hidden,true);assert.equal(p.d.activeElement,p.toggle);
+ p.dialog.fire('keyup',{key:'Escape'});p.dialog.fire('cancel');assert.equal(p.dialog.open,false);assert.equal(p.d.activeElement,p.trigger);
+});
+test('native cancel has the same two-level disclosure ownership',()=>{
+ const p=phone();p.toggle.fire('click');const first=p.dialog.fire('cancel');
+ assert.equal(first.prevented,true);assert.equal(first.stopped,true);assert.equal(p.dialog.open,true);assert.equal(p.d.activeElement,p.toggle);
+ p.dialog.fire('cancel');assert.equal(p.dialog.open,false);assert.equal(p.d.activeElement,p.trigger);
+});
+test('toggle collapse repairs category focus even without pointer focus transfer',()=>{
+ const p=phone();p.toggle.fire('click');p.categories.querySelector('button').focus();p.toggle.fire('click');
+ assert.equal(p.categories.hidden,true);assert.equal(p.d.activeElement,p.toggle);assert.equal(p.dialog.open,true);
+});
+test('repeated Escape cannot consume both levels during one physical press',()=>{
+ const p=phone();p.toggle.fire('click');p.dialog.fire('keydown',{key:'Escape'});
+ const repeat=p.dialog.fire('keydown',{key:'Escape',repeat:true});assert.equal(repeat.prevented,true);assert.equal(repeat.stopped,true);
+ p.dialog.fire('cancel');assert.equal(p.dialog.open,true);assert.equal(p.categories.hidden,true);
+ p.dialog.fire('keyup',{key:'Escape'});p.dialog.fire('keydown',{key:'Escape'});p.dialog.fire('cancel');assert.equal(p.dialog.open,false);
+});
+test('expanded locale repaint preserves stable group focus and expansion',()=>{
+ const p=phone();choose(p,'Research');p.toggle.fire('click');
+ p.categories.querySelectorAll('button').find(b=>b.dataset.toolsGroup==='Research').focus();
+ p.d.documentElement.setAttribute('data-lang','zh');p.d.fire('langchange');
+ assert.equal(p.toggle.textContent,'研究');assert.equal(p.toggle.getAttribute('aria-expanded'),'true');assert.equal(p.categories.hidden,false);
+ assert.equal(p.d.activeElement.dataset.toolsGroup,'Research');assert.equal(p.d.activeElement.isConnected,true);
+ assert.equal(p.d.activeElement.getAttribute('aria-pressed'),'true');
+});
+test('global Chinese label leaves the original category available after Clear',()=>{
+ const p=phone();choose(p,'Research');p.query.value='market';p.query.fire('input');p.query.focus();
+ p.d.documentElement.setAttribute('data-lang','zh');p.d.fire('langchange');
+ assert.equal(p.toggle.textContent,'所有分类');assert.equal(p.d.activeElement,p.query);
+ p.clear.fire('click');assert.equal(p.toggle.textContent,'研究');
+});
+test('a locale repaint does not restore focus into a collapsed category region',()=>{
+ const p=phone();const hidden=p.categories.querySelectorAll('button').find(b=>b.dataset.toolsGroup==='Research');hidden.focus();
+ p.d.documentElement.setAttribute('data-lang','zh');p.d.fire('langchange');
+ assert.equal(p.d.activeElement,p.toggle);assert.equal(p.categories.hidden,true);
+});
+test('desktop retains the visible existing categories and footer focus',()=>{
+ const p=setup();p.instance.open();const toggle=p.host.querySelector('[data-tools-category-toggle]');
+ assert.equal(toggle.hidden,true);assert.equal(p.categories.hidden,false);p.all.focus();p.all.fire('click');assert.equal(p.d.activeElement,p.all);
+});
+test('mobile to desktop repairs a hidden toggle to its retained category',()=>{
+ const p=phone();choose(p,'Research');p.query.value='market';p.query.fire('input');p.toggle.focus();p.dialog.scrollTop=700;p.list.scrollTop=80;
+ p.viewport(false);assert.equal(p.toggle.hidden,true);assert.equal(p.categories.hidden,false);
+ assert.equal(p.d.activeElement.dataset.toolsGroup,'Research');assert.equal(p.dialog.scrollTop,0);assert.equal(p.list.scrollTop,0);
+});
+test('desktop to mobile repairs only a newly hidden category focus',()=>{
+ const p=setup();p.instance.open();p.categories.querySelector('button').focus();p.list.scrollTop=400;
+ p.viewport(true);const toggle=p.host.querySelector('[data-tools-category-toggle]');
+ assert.equal(p.categories.hidden,true);assert.equal(p.d.activeElement,toggle);assert.equal(p.list.scrollTop,0);
+});
+test('viewport transition retains result focus and requests nearest visibility',()=>{
+ const p=phone(),a=p.list.querySelector('a');a.focus();const count=a.focusCount;p.dialog.scrollTop=700;
+ p.viewport(false);p.viewport(true);assert.equal(p.d.activeElement,a);assert.equal(a.focusCount,count);
+ assert.deepEqual(a.scrollOptions,{block:'nearest',inline:'nearest'});assert.equal(p.dialog.scrollTop,0);
+});
+test('viewport changes do not steal unrelated or closed-dialog focus',()=>{
+ const p=phone();p.b.focus();const count=p.b.focusCount;p.viewport(false);assert.equal(p.d.activeElement,p.b);assert.equal(p.b.focusCount,count);
+ p.instance.close();p.b.focus();p.viewport(true);assert.equal(p.d.activeElement,p.b);assert.equal(p.toggle.getAttribute('aria-expanded'),'false');
+});
+test('viewport callback uses the current query rather than a queued event value',()=>{
+ const p=phone();p.toggle.focus();p.media.matches=false;p.media.listeners[0]({matches:true});
+ assert.equal(p.toggle.hidden,true);assert.equal(p.categories.hidden,false);assert.equal(p.d.activeElement.dataset.toolsGroup,'start');
+});
+test('an IME-origin Escape survives compositionend before native cancel',()=>{
+ const p=phone();p.toggle.fire('click');p.query.focus();p.query.fire('compositionstart');
+ const key=p.dialog.fire('keydown',{key:'Escape',isComposing:true});assert.equal(key.prevented,false);assert.equal(key.stopped,true);
+ p.query.fire('compositionend');p.query.fire('input');p.dialog.fire('cancel');p.query.fire('input');
+ assert.equal(p.dialog.open,true);assert.equal(p.categories.hidden,false);assert.equal(p.d.activeElement,p.query);
+ p.dialog.fire('keyup',{key:'Escape'});p.dialog.fire('keydown',{key:'Escape'});assert.equal(p.categories.hidden,true);assert.equal(p.dialog.open,true);
+ p.dialog.fire('keyup',{key:'Escape'});p.dialog.fire('keydown',{key:'Escape'});p.dialog.fire('cancel');assert.equal(p.dialog.open,false);
+});
+test('an IME Escape without native cancel cannot swallow the next ordinary Escape',()=>{
+ const p=phone();p.toggle.fire('click');p.dialog.fire('keydown',{key:'Escape',isComposing:true});p.dialog.fire('keyup',{key:'Escape'});
+ p.dialog.fire('keydown',{key:'Escape'});assert.equal(p.categories.hidden,true);assert.equal(p.dialog.open,true);
+});
+test('repeated IME-origin Escape retains its owner after compositionend',()=>{
+ const p=phone();p.toggle.fire('click');p.query.focus();p.query.fire('compositionstart');p.dialog.fire('keydown',{key:'Escape',isComposing:true});
+ p.query.fire('compositionend');p.query.fire('input');const repeat=p.dialog.fire('keydown',{key:'Escape',repeat:true});
+ assert.equal(repeat.prevented,false);assert.equal(repeat.stopped,true);p.dialog.fire('cancel');
+ assert.equal(p.categories.hidden,false);assert.equal(p.dialog.open,true);assert.equal(p.d.activeElement,p.query);
+ p.dialog.fire('keyup',{key:'Escape'});p.dialog.fire('keydown',{key:'Escape'});assert.equal(p.categories.hidden,true);assert.equal(p.dialog.open,true);
+});
+test('an IME Process keyup ends the composition-Escape reservation',()=>{
+ const p=phone();p.toggle.fire('click');p.dialog.fire('keydown',{key:'Escape',isComposing:true});
+ p.dialog.fire('keyup',{key:'Process'});p.dialog.fire('cancel');assert.equal(p.categories.hidden,true);assert.equal(p.dialog.open,true);
+});
+test('another key ends a composition-Escape reservation after a lost keyup',()=>{
+ const p=phone();p.toggle.fire('click');p.dialog.fire('keydown',{key:'Escape',isComposing:true});
+ p.dialog.fire('keydown',{key:'Tab'});p.dialog.fire('cancel');assert.equal(p.categories.hidden,true);assert.equal(p.dialog.open,true);
+});
+test('locale and viewport changes do not render an unfinished composition',()=>{
+ const p=phone();choose(p,'Research');p.query.focus();const before=p.list.textContent;
+ p.query.fire('compositionstart');p.query.value='market';p.query.fire('input');p.d.documentElement.setAttribute('data-lang','zh');p.d.fire('langchange');p.viewport(false);p.viewport(true);
+ assert.equal(p.list.textContent,before);assert.equal(p.toggle.textContent,'Research');assert.equal(p.d.activeElement,p.query);
+ p.query.fire('compositionend');assert.equal(p.toggle.textContent,'所有分类');assert.match(p.list.textContent,/市场看板/);assert.equal(p.d.activeElement,p.query);
+});
+test('the inline chooser does not intercept unrelated pointer actions',()=>{
+ const p=phone();p.toggle.fire('click');p.query.focus();const event=p.dialog.fire('pointerdown',{target:p.query});
+ assert.equal(event.prevented,false);assert.equal(p.categories.hidden,false);assert.equal(p.d.activeElement,p.query);
+});
+for(const event of ['click','auxclick','contextmenu'])test('mobile category and locale redraw cannot revive withdrawal before '+event,()=>{
+ const p=phone();choose(p,'Research');p.b.remove();p.query.value='research';p.query.fire('input');p.clear.fire('click');
+ p.d.documentElement.setAttribute('data-lang','zh');p.d.fire('langchange');p.toggle.fire('click');choose(p,'Research');
+ const a=p.list.querySelector('a');assert.equal(a.hasAttribute('href'),false);assert.equal(p.list.fire(event,{target:a}).prevented,true);
+ assert.equal(p.toggle.textContent,'研究');
+});
+test('real close resets the chooser and explicit reopen refreshes the source once',()=>{
+ const p=phone();p.toggle.fire('click');p.instance.close();assert.equal(p.toggle.getAttribute('aria-expanded'),'false');
+ p.anchor({href:'new.html',en:'New tool',group:'New group'});p.instance.open();
+ assert.equal(p.categories.hidden,true);assert.equal(p.toggle.textContent,'Start here');assert.ok(p.categories.querySelectorAll('button').some(b=>b.dataset.toolsGroup==='New group'));
+ p.toggle.fire('click');p.dialog.fire('close');assert.equal(p.categories.hidden,false);assert.equal(p.dialog.open,true);
+});
+test('every source category remains present in the one expanded chooser',()=>{
+ const p=setup({phone:true});for(const group of ['China','Hong Kong','Crypto','Futures','Learning'])p.anchor({href:group.replace(/ /g,'-')+'.html',en:group+' workspace',group});
+ p.instance.open();const toggle=p.host.querySelector('[data-tools-category-toggle]');toggle.fire('click');
+ const choices=p.categories.querySelectorAll('button');assert.equal(choices.length,9);assert.equal(choices[0].dataset.toolsGroup,'start');assert.equal(choices.at(-1).dataset.toolsGroup,'all');
+ assert.equal(new Set(choices.map(b=>b.dataset.toolsGroup)).size,9);assert.equal(p.host.querySelectorAll('[data-tools-categories]').length,1);
+});

@@ -34,8 +34,9 @@ class Element {
  querySelector(s){return this.querySelectorAll(s)[0]||null;}
  closest(s){for(let n=this;n;n=n.parentElement)if(n.matches(s))return n;return null;}
  addEventListener(k,f){(this.listeners[k] ||= []).push(f);}
- fire(k,props={}){const e={target:this,prevented:false,preventDefault(){this.prevented=true;},...props};(this.listeners[k]||[]).forEach(f=>f(e));return e;}
+ fire(k,props={}){const e={target:this,prevented:false,stopped:false,preventDefault(){this.prevented=true;},stopPropagation(){this.stopped=true;},...props};(this.listeners[k]||[]).forEach(f=>f(e));return e;}
  focus(options){this.ownerDocument.activeElement=this;this.focusCount++;this.focusOptions=options;}
+ scrollIntoView(options){this.scrollOptions=options;}
  showModal(){this.open=true;this.setAttribute('open','');}
  close(){this.open=false;this.removeAttribute('open');this.fire('close');}
  getClientRects(){return this.hidden||(this.tagName==='DIALOG'&&!this.open)?[]:[{}];}
@@ -45,7 +46,9 @@ function createPage({path='/macro.html',phone=false,supported=true}={}){
  d.documentElement=new Element('html',d);d.body=new Element('body',d);d.documentElement.appendChild(d.body);
  d.createElement=t=>new Element(t,d);d.createElementNS=(_,t)=>new Element(t,d);d.querySelectorAll=s=>d.documentElement.querySelectorAll(s);d.querySelector=s=>d.querySelectorAll(s)[0]||null;
  d.addEventListener=(k,f)=>(d.listeners[k] ||= []).push(f);d.fire=k=>(d.listeners[k]||[]).forEach(f=>f());
- d.defaultView={document:d,location:{pathname:path},matchMedia:()=>({matches:phone})};
+ const media={matches:phone,listeners:[],addEventListener(k,f){if(k==='change')this.listeners.push(f);}};
+ d.defaultView={document:d,location:{pathname:path},matchMedia:()=>media};
+ function viewport(next){media.matches=next;media.listeners.forEach(f=>f({matches:next}));}
  const nav=d.createElement('nav');nav.className='site-nav';d.body.appendChild(nav);const root=d.createElement('div');root.className='nav-links';nav.appendChild(root);const controls=d.createElement('div');controls.className='nav-ctrls';nav.appendChild(controls);
  const host=d.createElement('div');host.setAttribute('data-mmx-all-tools','');d.body.appendChild(host);
  const add=(parent,tag,key)=>{const n=d.createElement(tag);if(key)n.setAttribute(key,'');parent.appendChild(n);return n;};
@@ -59,6 +62,6 @@ function createPage({path='/macro.html',phone=false,supported=true}={}){
   const de=add(a,'span');de.className='d';const den=add(de,'span');den.className='l-en';den.textContent=description;
   return a;
  }
- return {d,nav,root,controls,host,trigger,dialog,title,query,close,clear,categories,list,status,count,all,anchor};
+ return {d,nav,root,controls,host,trigger,dialog,title,query,close,clear,categories,list,status,count,all,anchor,media,viewport};
 }
 module.exports={Element,createPage};
