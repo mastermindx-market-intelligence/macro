@@ -1,0 +1,279 @@
+{
+  "as_of": "2026-11-13",
+  "coverage": {
+    "end": "2026-11-13",
+    "note": "daily rollup covers 10 session-date(s) from 2026-11-04 to 2026-11-13; chronicle event store begins 2008-03-25; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-11-04"
+  },
+  "schema": "chronicle.rollup.daily/v1",
+  "sessions": [
+    {
+      "date": "2026-11-13",
+      "events": [
+        {
+          "date": "2026-11-13",
+          "id": "cev-research_vault-ab7b16bb5054",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-nixyupxhrja-fe14cb",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM International Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-11-12",
+      "events": [
+        {
+          "date": "2026-11-12",
+          "id": "cev-regime_flip-c9ca92798766",
+          "kind": "state_flip",
+          "source": "regime_flip",
+          "source_ref": "state_log#2026-11-12#regime_us",
+          "tickers": [],
+          "title": "US regime: Q2 Reflation → Q1 Goldilocks",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-11-12",
+          "id": "cev-research_vault-ba42c478c182",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-2qvner8elel-8e7621",
+          "tickers": [],
+          "title": "Goldman Sachs: GS EUROPEAN EXPRESS Infineon Siemens Energy Zalando ON IMCD Macro Global Corporate Access",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-11-12",
+          "id": "cev-research_vault-e7771cbc8638",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-cev70hehuez-de9c2d",
+          "tickers": [],
+          "title": "S&T: GS Crook GS MORNING 1 FX Trader Call Takeaways, 2 Trading Energy Relief, 3 2027 Capex Outlook, 4 The Upside to Inflation and 5 Equities Update 12 Nov 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-11-11",
+      "events": [
+        {
+          "date": "2026-11-11",
+          "id": "cev-research_vault-c79aa3f9a769",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-yjqcez9agwr-2bea69",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM International Market Intell Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-11-10",
+      "events": [
+        {
+          "date": "2026-11-10",
+          "id": "cev-research_vault-2ecefb99567c",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-2u2bq60nv7p-3be8b2",
+          "tickers": [],
+          "title": "Deutsche Bank: Early Morning Reid Macro Strategy",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-11-10",
+          "id": "cev-research_vault-573ef5a2daef",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-jh3j4bnwoeo-7fccdc",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM US Market Intelligence | Afternoon Briefing",
+          "weight_hint": 3
+        },
+        {
+          "date": "2026-11-10",
+          "id": "cev-research_vault-d6e6832fc805",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-pwf8ndlu604-ac3b9f",
+          "tickers": [],
+          "title": "Bank of America: Viewpoint Conditions Are Building For A Year End Rally",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-11-09",
+      "events": []
+    },
+    {
+      "date": "2026-11-08",
+      "events": []
+    },
+    {
+      "date": "2026-11-07",
+      "events": [
+        {
+          "date": "2026-11-07",
+          "id": "cev-research_vault-993e984619ba",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-zmh2wp9ig0f-4be995",
+          "tickers": [],
+          "title": "Morgan Stanley: MS Savone Global Reflections 7 Nov 2026",
+          "weight_hint": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-11-06",
+      "events": []
+    },
+    {
+      "date": "2026-11-05",
+      "events": []
+    },
+    {
+      "date": "2026-11-04",
+      "events": [
+        {
+          "date": "2026-11-04",
+          "id": "cev-prophet_ledger-3cacbe6f4b00",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "YUM-BULL-20261008",
+          "tickers": [
+            "YUM"
+          ],
+          "title": "Prophet close: YUM BULL → T1_HIT (+16.3% in 27d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-11-04",
+          "id": "cev-prophet_ledger-61de68c0f583",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "OMCL-BULL-20260925",
+          "tickers": [
+            "OMCL"
+          ],
+          "title": "Prophet close: OMCL BULL → T1_HIT (+15.7% in 35d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-11-04",
+          "id": "cev-prophet_ledger-7adf3155d107",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "NEE-BULL-20261013",
+          "tickers": [
+            "NEE"
+          ],
+          "title": "Prophet close: NEE BULL → T1_HIT (+13.2% in 16d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-11-04",
+          "id": "cev-prophet_ledger-988a9ac830a8",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "ECG-BULL-20261029",
+          "tickers": [
+            "ECG"
+          ],
+          "title": "Prophet close: ECG BULL → INVALIDATED (-26.3% in 6d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-11-04",
+          "id": "cev-prophet_ledger-a87d71bf274c",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "KMT-BULL-20260922",
+          "tickers": [
+            "KMT"
+          ],
+          "title": "Prophet close: KMT BULL → INVALIDATED (-15.3% in 40d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-11-04",
+          "id": "cev-prophet_ledger-a89f1141283c",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "CENT-BULL-20260812",
+          "tickers": [
+            "CENT"
+          ],
+          "title": "Prophet close: CENT BULL → T1_HIT (+21.5% in 33d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-11-04",
+          "id": "cev-prophet_ledger-aebc8294eb67",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "PECO-BULL-20261013",
+          "tickers": [
+            "PECO"
+          ],
+          "title": "Prophet close: PECO BULL → T1_HIT (+9.1% in 21d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-11-04",
+          "id": "cev-prophet_ledger-b14b261d3f10",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "BKR-BULL-20260727",
+          "tickers": [
+            "BKR"
+          ],
+          "title": "Prophet close: BKR BULL → INVALIDATED (-13.8% in 40d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-11-04",
+          "id": "cev-prophet_ledger-c28cc8a40633",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "YOU-BULL-20261005",
+          "tickers": [
+            "YOU"
+          ],
+          "title": "Prophet close: YOU BULL → T2_HIT (+42.4% in 29d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-11-04",
+          "id": "cev-prophet_ledger-c5b36379c6b3",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "AGNT-BULL-20261013",
+          "tickers": [
+            "AGNT"
+          ],
+          "title": "Prophet close: AGNT BULL → T1_HIT (+14.8% in 16d)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-11-04",
+          "id": "cev-prophet_ledger-f4783592cedd",
+          "kind": "signal_close",
+          "source": "prophet_ledger",
+          "source_ref": "STZ-BULL-20261008",
+          "tickers": [
+            "STZ"
+          ],
+          "title": "Prophet close: STZ BULL → T1_HIT (+17.7% in 27d)",
+          "weight_hint": 2
+        }
+      ]
+    }
+  ]
+}

@@ -1,10 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-12T11:06:04.680465+00:00",
-  "posts_seen": 19,
-  "seen_total": 347,
-  "evaluated": 0,
+  "as_of": "2026-11-13T07:56:38.513825+00:00",
+  "posts_seen": 24,
+  "seen_total": 354,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-11-12-first-lady-melania-trump-honors-americas-elite-soldiers-and-the-sacrifices-of-mi",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }

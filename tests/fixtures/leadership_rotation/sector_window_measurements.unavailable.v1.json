@@ -1,0 +1,677 @@
+{
+ "authority": {
+  "may_escalate": false,
+  "may_gate": false,
+  "may_rank": false,
+  "may_size": false,
+  "may_trade": false
+ },
+ "benchmark": "SPY",
+ "clocks": {
+  "availability": null,
+  "correction": null,
+  "history": null,
+  "publication": null
+ },
+ "cohort_id": "us_sectors_11",
+ "diagnostics": {
+  "ambiguous_columns": [],
+  "binding_keys": [],
+  "columns": [
+   "SPY",
+   "XLB",
+   "XLC",
+   "XLE",
+   "XLF",
+   "XLI",
+   "XLK",
+   "XLP",
+   "XLRE",
+   "XLU",
+   "XLV",
+   "XLY"
+  ],
+  "complete_cells": 0,
+  "coverage_note": "observed_n counts usable observations inside the window; an interior gap never moves an endpoint",
+  "duplicate_sessions": [],
+  "expected_columns": 12,
+  "future_tail_sessions": [
+   "2026-11-06"
+  ],
+  "malformed_rows": 0,
+  "measured_cells": 0,
+  "panel_rows": 301,
+  "qualification_reasons": [
+   "future_tail"
+  ],
+  "receipt_withheld": false,
+  "total_cells": 33
+ },
+ "end_session": "2026-11-05",
+ "endpoint_definition": "Endpoint return: P(T)/P(S_N) - 1, where T is the explicit end session and S_N is the canonical US session exactly N positions before T, so a 5-session return spans 6 session endpoints. Relative wealth is (1+R_group)/(1+R_benchmark) - 1 -- a wealth ratio, never a return difference. Interior gaps never move an endpoint; they are disclosed as observed coverage. Prices are strictly positive, finite, total-return adjusted closes read at the two endpoints only.",
+ "groups": [
+  {
+   "group_id": "XLB",
+   "name_en": "Materials",
+   "name_zh": "原材料",
+   "windows": {
+    "20": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 21,
+      "observed_n": 21,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "5": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 6,
+      "observed_n": 6,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "63": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 64,
+      "observed_n": 64,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    }
+   }
+  },
+  {
+   "group_id": "XLC",
+   "name_en": "Communication Services",
+   "name_zh": "通讯服务",
+   "windows": {
+    "20": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 21,
+      "observed_n": 21,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "5": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 6,
+      "observed_n": 6,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "63": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 64,
+      "observed_n": 64,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    }
+   }
+  },
+  {
+   "group_id": "XLE",
+   "name_en": "Energy",
+   "name_zh": "能源",
+   "windows": {
+    "20": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 21,
+      "observed_n": 21,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "5": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 6,
+      "observed_n": 6,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "63": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 64,
+      "observed_n": 64,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    }
+   }
+  },
+  {
+   "group_id": "XLF",
+   "name_en": "Financials",
+   "name_zh": "金融",
+   "windows": {
+    "20": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 21,
+      "observed_n": 21,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "5": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 6,
+      "observed_n": 6,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "63": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 64,
+      "observed_n": 64,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    }
+   }
+  },
+  {
+   "group_id": "XLI",
+   "name_en": "Industrials",
+   "name_zh": "工业",
+   "windows": {
+    "20": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 21,
+      "observed_n": 21,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "5": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 6,
+      "observed_n": 6,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "63": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 64,
+      "observed_n": 64,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    }
+   }
+  },
+  {
+   "group_id": "XLK",
+   "name_en": "Technology",
+   "name_zh": "科技",
+   "windows": {
+    "20": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 21,
+      "observed_n": 21,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "5": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 6,
+      "observed_n": 6,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "63": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 64,
+      "observed_n": 64,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    }
+   }
+  },
+  {
+   "group_id": "XLP",
+   "name_en": "Consumer Staples",
+   "name_zh": "必需消费",
+   "windows": {
+    "20": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 21,
+      "observed_n": 21,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "5": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 6,
+      "observed_n": 6,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "63": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 64,
+      "observed_n": 64,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    }
+   }
+  },
+  {
+   "group_id": "XLRE",
+   "name_en": "Real Estate",
+   "name_zh": "房地产",
+   "windows": {
+    "20": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 21,
+      "observed_n": 21,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "5": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 6,
+      "observed_n": 6,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "63": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 64,
+      "observed_n": 64,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    }
+   }
+  },
+  {
+   "group_id": "XLU",
+   "name_en": "Utilities",
+   "name_zh": "公用事业",
+   "windows": {
+    "20": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 21,
+      "observed_n": 21,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "5": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 6,
+      "observed_n": 6,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "63": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 64,
+      "observed_n": 64,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    }
+   }
+  },
+  {
+   "group_id": "XLV",
+   "name_en": "Health Care",
+   "name_zh": "医疗保健",
+   "windows": {
+    "20": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 21,
+      "observed_n": 21,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "5": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 6,
+      "observed_n": 6,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "63": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 64,
+      "observed_n": 64,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    }
+   }
+  },
+  {
+   "group_id": "XLY",
+   "name_en": "Consumer Discretionary",
+   "name_zh": "非必需消费",
+   "windows": {
+    "20": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 21,
+      "observed_n": 21,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "5": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 6,
+      "observed_n": 6,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    },
+    "63": {
+     "absolute_return_pct": null,
+     "coverage": {
+      "expected_n": 64,
+      "observed_n": 64,
+      "ratio": 1.0
+     },
+     "null_reasons": {
+      "absolute_return_pct": "future_tail",
+      "relative_wealth_pct": "future_tail"
+     },
+     "relative_wealth_pct": null,
+     "status": "unavailable"
+    }
+   }
+  }
+ ],
+ "limitations": {
+  "availability": {
+   "reason": "owner_availability_clock_not_supplied",
+   "status": "unknown"
+  },
+  "corrections": {
+   "reason": "native_revision_selection_not_supplied",
+   "status": "unavailable"
+  },
+  "freshness": {
+   "reason": "owner_freshness_receipt_not_supplied",
+   "status": "unverified"
+  },
+  "history": {
+   "reason": "owner_history_clock_not_supplied",
+   "status": "unknown"
+  },
+  "point_in_time": {
+   "reason": "point_in_time_admission_not_supplied",
+   "status": "not_qualified"
+  },
+  "publication": {
+   "reason": "owner_publication_clock_not_supplied",
+   "status": "unknown"
+  }
+ },
+ "population": "eleven_sector_etf_proxies",
+ "price_basis": "total_return",
+ "reason": "future_tail",
+ "receipt": null,
+ "schema": "leadership_rotation_context.sector_window_measurements/v1",
+ "source_roots": [],
+ "source_session": "2026-11-05",
+ "status": "unavailable",
+ "units": "pct",
+ "windows": {
+  "20": {
+   "benchmark_coverage": {
+    "expected_n": 21,
+    "observed_n": 21,
+    "ratio": 1.0
+   },
+   "benchmark_null_reason": "future_tail",
+   "benchmark_return_pct": null,
+   "end_session": "2026-11-05",
+   "null_reason": "future_tail",
+   "start_session": "2026-10-08",
+   "status": "unavailable",
+   "window_sessions": 20
+  },
+  "5": {
+   "benchmark_coverage": {
+    "expected_n": 6,
+    "observed_n": 6,
+    "ratio": 1.0
+   },
+   "benchmark_null_reason": "future_tail",
+   "benchmark_return_pct": null,
+   "end_session": "2026-11-05",
+   "null_reason": "future_tail",
+   "start_session": "2026-10-29",
+   "status": "unavailable",
+   "window_sessions": 5
+  },
+  "63": {
+   "benchmark_coverage": {
+    "expected_n": 64,
+    "observed_n": 64,
+    "ratio": 1.0
+   },
+   "benchmark_null_reason": "future_tail",
+   "benchmark_return_pct": null,
+   "end_session": "2026-11-05",
+   "null_reason": "future_tail",
+   "start_session": "2026-08-07",
+   "status": "unavailable",
+   "window_sessions": 63
+  }
+ },
+ "windows_sessions": [
+  5,
+  20,
+  63
+ ]
+}
