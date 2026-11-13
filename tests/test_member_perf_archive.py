@@ -26,30 +26,32 @@ from scripts.fetch_finviz_themes import write_member_perf_archive
 
 TFS = ["1D", "1W", "1M", "MTD", "3M", "6M", "1Y", "YTD"]
 
-# One theme, two subsectors; DECK appears in BOTH (a ticker may hold multiple
-# memberships — breadth denominators are per-group); GONE is in the tree but not
-# priced by the vendor (absent from member_perf).
+# Two themes, three subsectors; CCC appears in BOTH sub_a and sub_b (a ticker
+# may hold multiple memberships — breadth denominators are per-group); ZQX is
+# in the tree but not priced (absent from MEMBER_PERF). All names, keys,
+# tickers and values below are plainly made up (ruling 14 synthetic fixture).
 TREE = [
-    {"key": "tech", "theme": "Technology", "subsectors": [
-        {"key": "aicompute", "name": "AI Compute", "members": ["NVDA", "AMD", "DECK"]},
-        {"key": "fintech", "name": "Fintech", "members": ["DECK", "GONE"]},
+    {"key": "group_a", "theme": "Group A", "subsectors": [
+        {"key": "sub_a", "name": "Sub A", "members": ["AAA", "BBB", "CCC"]},
+        {"key": "sub_b", "name": "Sub B", "members": ["CCC", "ZQX"]},
     ]},
-    {"key": "energy", "theme": "Energy", "subsectors": [
-        {"key": "oilservices", "name": "Oil Services", "members": ["HAL"]},
+    {"key": "group_b", "theme": "Group B", "subsectors": [
+        {"key": "sub_c", "name": "Sub C", "members": ["EEE"]},
     ]},
 ]
 MEMBER_PERF = {
-    "NVDA": {"1D": -1.27, "1W": 1.38, "1M": 3.82, "MTD": 1.72,
-             "3M": 20.0, "6M": 57.55, "1Y": 21.54, "YTD": 30.73},
-    "AMD": {"1D": 0.5, "1W": -2.0, "1M": 0.0, "MTD": -4.5,
-            "3M": 1.25, "6M": 10.1, "1Y": -3.0, "YTD": 5.0},
-    "DECK": {"1D": 2.2, "1W": 0.4, "1M": 6.6, "MTD": 6.6,
-             "3M": 12.75, "6M": 4.0, "1Y": 44.0, "YTD": 9.99},
-    "HAL": {"1D": -0.1, "1W": 3.3, "1M": -1.0, "MTD": 2.0,
-            "3M": -8.8, "6M": -12.5, "1Y": -20.0, "YTD": -7.7},
+    "AAA": {"1D": 1.0, "1W": 3.0, "1M": 7.0, "MTD": 9.0,
+            "3M": 11.0, "6M": 13.0, "1Y": 15.0, "YTD": 17.0},
+    "BBB": {"1D": -5.0, "1W": -6.0, "1M": -7.0, "MTD": -8.0,
+            "3M": -9.0, "6M": -10.0, "1Y": -11.0, "YTD": -12.0},
+    "CCC": {"1D": 6.0, "1W": 8.0, "1M": 10.0, "MTD": 12.0,
+            "3M": 14.0, "6M": 16.0, "1Y": 18.0, "YTD": 22.0},
+    "EEE": {"1D": -13.0, "1W": -14.0, "1M": -15.0, "MTD": -16.0,
+            "3M": -17.0, "6M": -18.0, "1Y": -19.0, "YTD": -21.0},
 }
 FETCHED_AT = "2026-11-11T22:30:41+00:00"
-#: priced memberships in TREE: aicompute(NVDA, AMD, DECK) + fintech(DECK) + oilservices(HAL)
+#: priced memberships in TREE: sub_a(AAA, BBB, CCC) + sub_b(CCC) + sub_c(EEE)
+#: = 3 + 1 + 1 = 5 (ZQX is in sub_b but unpriced, so it contributes no row)
 EXPECTED_ROWS = 5
 
 
@@ -76,13 +78,15 @@ class TestRowsMatchMemberships:
     def test_multi_membership_ticker_gets_one_row_per_group(self, tmp_path):
         _, p, _ = write_member_perf_archive(
             "2026-11-11", FETCHED_AT, TREE, MEMBER_PERF, dir_path=tmp_path)
-        decks = [r for r in _read(p)[1] if r["ticker"] == "DECK"]
-        assert sorted(r["subsector"] for r in decks) == ["aicompute", "fintech"]
+        overlap_rows = [r for r in _read(p)[1] if r["ticker"] == "CCC"]
+        # CCC is a member of sub_a and sub_b, so it gets one row per group:
+        # sorted subsectors = ["sub_a", "sub_b"] (2 memberships -> 2 rows).
+        assert sorted(r["subsector"] for r in overlap_rows) == ["sub_a", "sub_b"]
 
     def test_unpriced_member_is_absent(self, tmp_path):
         _, p, _ = write_member_perf_archive(
             "2026-11-11", FETCHED_AT, TREE, MEMBER_PERF, dir_path=tmp_path)
-        assert all(r["ticker"] != "GONE" for r in _read(p)[1])
+        assert all(r["ticker"] != "ZQX" for r in _read(p)[1])
 
     def test_every_row_has_all_horizons_unchanged(self, tmp_path):
         _, p, _ = write_member_perf_archive(
@@ -119,7 +123,7 @@ class TestImmutability:
             "2026-11-11", FETCHED_AT, TREE, MEMBER_PERF, dir_path=tmp_path)
         first_bytes = p.read_bytes()
         written2, p2, rows2 = write_member_perf_archive(  # DIFFERENT data, same asof
-            "2026-11-11", "2026-11-12T22:30:00+00:00", TREE, {"NVDA": {"1D": 9.9}},
+            "2026-11-11", "2026-11-12T22:30:00+00:00", TREE, {"AAA": {"1D": 25.0}},
             dir_path=tmp_path)
         assert written2 is False and rows2 == 0 and p2 == p
         assert p.read_bytes() == first_bytes  # not overwritten, not even re-written
@@ -169,7 +173,7 @@ class TestFailureIsolation:
         monkeypatch.setattr(fft, "TREE_HISTORY_PATH", out / "tree_history.jsonl")
         monkeypatch.setattr(fft, "MEMBER_PERF_ARCHIVE_DIR", out / "member_perf_archive")
         monkeypatch.setattr(fft, "fetch_subsector_perf",
-                            lambda: {"aicompute": {"1D": 1.0}, "fintech": {"1D": -2.0}})
+                            lambda: {"sub_a": {"1D": 30.0}, "sub_b": {"1D": -30.0}})
         monkeypatch.setattr(fft, "fetch_member_perf", lambda tickers: MEMBER_PERF)
         monkeypatch.setattr(fft, "_asof_stamp", lambda now_utc=None: "2026-11-11")
         monkeypatch.setattr(fft, "write_member_perf_archive", archive_impl)
