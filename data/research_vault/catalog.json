@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T13:38:38.450212+00:00",
-  "count": 3298,
+  "generated_at": "2026-11-13T13:53:40.878707+00:00",
+  "count": 3299,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-fqf9cgsdzif-4103b6",
+      "title": "GS Blekos GS 2027 Outlooks Global Equity Outlook Global Macro Outlook Nvidia Siemens Semicon Takes Ottobock Zealand Global Transport Europe Banks Tracker 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T13:33:16Z",
+      "summary_points": [
+        "Global Equity Strategy: Equities rising despite slowing regional earnings growth (AI capex peak), driven by attractive valuations, lower bond yields, and reduced inflation/oil prices; prioritize Growth + selective Defensives.",
+        "Macro Outlook: AI investment boom fueling earnings growth exceeding GDP expansion, with credit spreads widening amid positive equity/bond returns; Fed/ECB rate hikes followed by late-2027 cuts.",
+        "Key Risk Factor: Widening credit spreads contradicting positive equity/bond returns, signaling potential hidden market stress.",
+        "Policy Driver: Late-2027 Fed/ECB rate cuts anticipated post-hike cycle, supporting valuation-driven equity momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-iwdogou0urt-6495ac",
       "title": "GS Johnstone GS TMT SPEC SALES MSFT outage; Nvidia investor debate; Wise settles in Belgium; AMAT solid; Cisco beats; CTS Eventim mixed 13 Nov 2026",
