@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import threading
 import time
@@ -36,7 +37,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from lib import config
+from lib import config, fabric_client
 
 log = logging.getLogger(__name__)
 
@@ -563,6 +564,94 @@ def _llm_client(cfg: dict):
     return client, cfg.get("llm_model", "deepseek-chat")
 
 
+# --- Capacity Fabric cutover (Chairman order 2026-11-12, outcome #3) -----------
+# The extraction call routes through the Capacity Fabric unified_router whenever a
+# router token is present; MACRO_SPECIAL_SITUATIONS_FABRIC=0 is the operator
+# kill-switch. Without a token — or with the pre-existing
+# DISABLE_SPECIAL_SITUATIONS_LLM switch set — the legacy direct-SDK path runs
+# byte-identically. Both switches must allow the fabric branch.
+_FABRIC_KILL_ENV = "MACRO_SPECIAL_SITUATIONS_FABRIC"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-special-situations"
+_FABRIC_LANE = "fast"
+_FABRIC_MAX_TOKENS = 420
+
+
+def _fabric_enabled() -> bool:
+    """True when this collector should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present. MACRO_SPECIAL_SITUATIONS_FABRIC=0
+    is the operator kill-switch, and the pre-existing DISABLE_SPECIAL_SITUATIONS_LLM
+    switch keeps its meaning: either one forces the legacy path.
+    """
+    if os.environ.get(_FABRIC_KILL_ENV, "").strip() == "0":
+        return False
+    if os.environ.get("DISABLE_SPECIAL_SITUATIONS_LLM"):
+        return False
+    return fabric_client.is_configured()
+
+
+def _record_fabric_usage(comp) -> None:
+    """Book one fabric-served call in the AI cost ledger (provider="fabric").
+
+    Lane continuity: the row keeps this collector's usage lane
+    ("special-situations") so the spend drill-down stays comparable with the
+    legacy rows; the provider is the router and the model is what it actually
+    served. Never raises — a ledger miss must not break a served call.
+    """
+    try:
+        from lib import ai_costs as _ac  # noqa: PLC0415
+
+        u = comp.usage or {}
+        _ac.record_usage(
+            lane="special-situations",
+            provider="fabric",
+            model=comp.model_served,
+            input_tokens=int(u.get("input_tokens") or 0),
+            output_tokens=int(u.get("output_tokens") or 0),
+            cache_read_tokens=int(u.get("cache_read_input_tokens") or 0),
+            cache_creation_tokens=int(u.get("cache_creation_input_tokens") or 0),
+            stage="special_situations",
+        )
+    except Exception as e:  # noqa: BLE001 — telemetry only
+        log.debug("special_situations: fabric usage ledger failed (%s)", e)
+
+
+def _fabric_llm_call(system: str, prompt: str) -> tuple[str | None, str | None]:
+    """ONE router request -> (text|None, degraded_reason|None).
+
+    The router owns provider selection, cooldown and account pooling, so a raised
+    error degrades exactly as a legacy failure would — no retry, no second
+    provider, no raise. A refusal is a refusal even when the router attached
+    partial text, so it is dropped before the fail-closed parser sees it.
+
+    FabricUnavailable is the one exception and is re-raised: it means no request
+    ever left this host (no token, or the SDK will not import), so nothing was
+    served or billed and the legacy path can still produce a result.
+    """
+    try:
+        comp = fabric_client.complete(
+            [{"role": "user", "content": prompt}],
+            system=system,
+            lane=_FABRIC_LANE,
+            max_tokens=_FABRIC_MAX_TOKENS,
+            client="Python client",
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=_FABRIC_SESSION_ID,
+        )
+    except fabric_client.FabricUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 — degrade, never break the build
+        log.warning("special_situations fabric call failed: %s", e)
+        return None, "llm_error"
+    if getattr(comp.raw, "stop_reason", None) == "refusal":
+        return None, "refusal"
+    if not comp.text:
+        return None, "empty_reply"
+    _record_fabric_usage(comp)
+    return comp.text, None
+
+
 def _parse_llm_json(out: str | None) -> dict:
     """Robustly pull the JSON object out of an LLM reply (tolerates a ```json fence or
     leading prose). Returns {} on any failure — the caller degrades, never breaks."""
@@ -595,7 +684,26 @@ def _llm_prompt(row: pd.Series, text: str | None, *, known_category: bool) -> st
 
 
 def _llm_call(client, model, system: str, prompt: str) -> dict:
-    """One LLM call -> parsed JSON dict ({} on failure)."""
+    """One LLM call -> parsed JSON dict ({} on failure).
+
+    Capacity Fabric branch first (Chairman order 2026-11-12, outcome #3): when the
+    router is configured and neither kill-switch is set, the extraction is served
+    by fabric_client.complete on the "fast" lane and `client`/`model` are unused.
+    When the fabric path is off — unconfigured, killed, or fabric_client raised
+    FabricUnavailable (no request left the host) — the legacy direct-SDK call
+    below runs exactly as it always has.
+    """
+    if _fabric_enabled():
+        try:
+            text, _reason = _fabric_llm_call(system, prompt)
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "special_situations: fabric router unavailable (%s); using the "
+                "legacy client", e)
+        else:
+            # One router request per logical call: a served failure, a refusal or
+            # an empty reply degrades to {} here — never a second provider.
+            return _parse_llm_json(text) if text else {}
     try:
         resp = client.messages.create(model=model, max_tokens=420, system=system,
                                        messages=[{"role": "user", "content": prompt}])
