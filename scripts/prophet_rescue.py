@@ -1078,7 +1078,7 @@ def decide(state: WatchdogState) -> list[Action]:
                 f"reports eligible_after_skips={eligible}"
             )
         if intake_breach:
-            reasons.append(f"intake monitor condition: {intake_breach}")
+            reasons.append(f"intake identity monitor condition: {intake_breach}")
         actions.append(Action(
             ALERT, NO_COHORT,
             f"source_asof is current ({src.isoformat() if src else '?'}) but "
