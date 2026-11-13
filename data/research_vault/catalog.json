@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T10:40:05.897786+00:00",
-  "count": 3285,
+  "generated_at": "2026-11-13T12:38:33.083932+00:00",
+  "count": 3295,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,181 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-iwdogou0urt-6495ac",
+      "title": "GS Johnstone GS TMT SPEC SALES MSFT outage; Nvidia investor debate; Wise settles in Belgium; AMAT solid; Cisco beats; CTS Eventim mixed 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T11:54:28Z",
+      "summary_points": [
+        "Nvidia leadership transition: Jensen Huang's potential resignation raises concerns over sustaining aggressive deployment strategy; MATCH Act revival poses secondary regulatory risk for ASML amid spying allegations.",
+        "NEBIUS capex surge: GPU delays lower FY26 guidance; capex guidance $40-45B (+50% vs consensus), with prepayments covering 75-85% of capex, signaling heightened capital intensity.",
+        "US CPI & Fed policy: Two consecutive strong CPI prints indicate Fed is behind the curve, shifting monetary policy expectations toward December rate cuts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mi2yzyvzqbb-e02811",
+      "title": "GS Blekos ## Marketcolour + Global 2027 Outlooks Nvidia Siemens Richemont Hermes Wise ## 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T11:54:25Z",
+      "summary_points": [
+        "US Macro Growth Revisions: Goldman Sachs forecasts 2027 global GDP at 2.8% (vs. consensus 2.7%) and US at 2.4% (vs. consensus 2.2%), driven by AI capex and lower energy prices, signaling above-potential growth amid tighter financial conditions.",
+        "2027 Strategic Allocation Framework: Prioritizes regional themes: US (Hyperscalers/AI/energy), Japan (AI semiconductors/cybersecurity), Selective Defensives (US Healthcare/buybacks, Japan low AGM), and Lower Inflation (US Transportation/long-duration, Japan long-duration SMID growth).",
+        "High-Conviction Tech/Industrial Catalysts: Nvidia (Buy/USD220/25% upside) with backlog-driven earnings tailwind; Siemens (Buy/EUR308/10% upside) on automation/data center growth; Ottobock (Buy/EUR65/60% upside) post-reimbursement clarity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-prdesoe8odd-1b4a11",
+      "title": "GS Blekos ## GS 2027 Outlooks Global Equity Outlook Global Macro Outlook Nvidia Siemens Semicon Takes Ottobock Zealand Global Transport Europe Banks Tracker ## 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T11:54:22Z",
+      "summary_points": [
+        "Global Equity Strategy: Slowing AI capex-driven earnings growth with equities de-rated; attractive valuations amid slower nominal growth, lower bond yields, and stable inflation/oil → focus on Growth + selective Defensives/beneficiaries of lower yields.",
+        "Macro Outlook: Two Fed/ECB rate hikes followed by cuts late 2027; AI-driven earnings growth outpacing GDP growth amid record GDP-to-earnings share concerns and widening credit spreads.",
+        "OttoBock SE: Reimbursement risk triggers 0-6% cut to FY26/27/28e revenue/EBITDA/EPS; 12-month target lowered to €65 (from €75); Buy rating maintained despite post-Q3 underperformance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qoocdrtw2we-68d72d",
+      "title": "STIRT Weekly Spies, Lies and CPI Highs copy",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T11:44:02Z",
+      "summary_points": [
+        "Fed Policy & Geopolitical Volatility: Waller signals 50bp Dec hike (25bp unlikely due to credibility risk), amplified by China spy affair and Iran tensions; CPI/FOMC Minutes/tariff threats key catalysts.",
+        "ECB Leadership & XCCY Shifts: Pierrakakis' \"move fast\" signals, de Cos vs Knot policy divide, and +0.5bps WoW XCCY basis shift drive EUR flows and near-term policy uncertainty.",
+        "US-Canada Trade & CPI Risk: Canada expands retaliatory tariffs on US aluminum, weak jobs data (Oct -4.7k), and Nov 16 CPI critical for inflation trajectory and trade policy shifts.",
+        "XCCY Basis as USD Floor: USD faces GSE cash + potential 50bp FOMC hike as technical floor; SEK/NOK activity muted with dealer positioning driving two-way flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wkctothg1mu-439463",
+      "title": "DeskTalk High stakes into APEC summit, early thoughts copy",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T11:43:48Z",
+      "summary_points": [
+        "Chip tariff deadline: H200 chip export controls risk 25% tariff under FCC rules; China extends 24% tariff suspension until Jan 9, Japan pushes rare earth easing.",
+        "Geopolitical escalation: Putin’s trilateral US-China-Russia meeting proposal and Taiwan summit participation heighten headline risk amid AI uncertainty.",
+        "Nvidia earnings catalyst: Upcoming Nvidia results pose near-term volatility risk amid chip policy shifts and oil-driven FX/rate movements."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dyzalbepnjz-dc8483",
+      "title": "Citi The Point for North America Friday, 13 November 2026",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T11:43:33Z",
+      "summary_points": [
+        "Cisco FY27 Fundamentals: Raised top-line growth to 18-20% (stronger AI mix), OpMgn guidance up 100bps to 36%, TP cut to $120 (20x PE vs. 25x) on margin pressure.",
+        "TC Energy & Devon Capital Allocation: TC Energy target raised to C$101 on C$15B power opportunities and C$46B backlog; Devon prioritizing $3.5B buybacks (4Q repurchases >$1B) with 60%+ cash return commitment.",
+        "Iran Deal Geopolitical Risk: US Gang of 8 discussions signal elevated risk of Iran breaking \"Iron Gate\" blockade if no deal, increasing market volatility; Houthi escalation (Nov 12) heightens proxy pressure.",
+        "US Housing & Flow Data: Existing home sales (SAAR) fell to 3.75M (below 4M since 2010), median prices slowed to 0.4% YoY; US REITs saw $1.17B net outflows (Oct), pushing 2026 total to ~$2.4B."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gautimvbcdq-9af710",
+      "title": "Citi The Point for Latin America Friday, 13 November 2026",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T11:43:08Z",
+      "summary_points": [
+        "MercadoLibre (MELI.O) Brazil Catalyst: 40% Brazil GMV growth (LC), 8% YoY 3P take rate expansion, 4% YoQ Brazil unit shipping COGS decline; 30% YTD underperformance vs Nasdaq creates entry point with sustainable leverage path mid-2027.",
+        "Brazil Beer Inflation Shift: At-home beer inflation slowed to 3.8% YoY (from 4.8%), out-of-home accelerated to 4.0% YoY; monthly beer prices fell 0.1% vs headline IPCA, signaling volume-driven affordability investments.",
+        "Chile Banks Tax Law Impact: Chilean banks face deferred tax asset revaluation due to Reconstruction Law; Banco Santander ROAE 21.2% (vs Itaú’s 3.8%) driven by one-off tax charge, inflation hedge, and treasury results.",
+        "Bimbo Macro Revisions: Mexico rate cut lowers cost of capital, raising target price to Ps71 (from Ps60); trimmed 2026 EPS to Ps3.08 (+2.6%) amid higher raw material costs.",
+        "dLocal FX Risk: Q3 2026 guidance shows operating leverage lifting profits, but 4Q FX volatility tempers gross profit; key near-term profitability risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-e5jllywjlau-80812f",
+      "title": "Citi The Point for Europe Friday, 13 November 2026",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T11:43:03Z",
+      "summary_points": [
+        "Sanofi EPS Upgrade with Neutral Rating: EPS raised 5-10% for 2026-30E but Neutral due to R&D issues, competitive threats (AZN/PFE/AbbVie/Apogee), and pipeline M&A risks.",
+        "Rheinmetall Forecast Cut & Target Price: 2030 sales/EBIT cut 15%/27% (€30.3bn/€5.6bn), target price €1,099 (42% upside), Buy reiterated despite divergent signals.",
+        "European Electric Utilities – Prosumer Risk: Rising PV+BESS adoption flattens \"duck curve,\" reducing profitable volumes for utilities (RWE/SSE/Verbund) and lowering tariff affordability.",
+        "US-Iran Geopolitical Risk: Houthi escalation and Iran’s potential blockade-breaking actions could trigger conflict within 2-3 months, pressuring oil markets.",
+        "Global Macro & ETF Flows: AI-related warning signs (Momentum/Growth vs Value underperformance, correlation breakdown) signal potential peak; $98.3bn equity ETF inflow (Nov 2026) amid Japan ETF buying."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tzqyjqjfyro-21dc85",
+      "title": "Monetary Policy Expectations Analysis What s Priced In",
+      "institution": "ANZ",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T11:33:22Z",
+      "summary_points": [
+        "Fed Rate Decision: Q3 CPI data confirms persistent inflation, delaying rate cuts until Q1 2025 Ukraine Conflict Escalation: Russian strikes on Kyiv disrupt energy infrastructure, spiking European gas prices 12% China Stimulus Package: New $500B property sector bailout triggers 8% rally in A-shares and property ETFs US Treasury Flows: $22B net outflow from long-duration bonds as yield curve inversion deepens to 110bps"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-nixyupxhrja-fe14cb",
       "title": "JPM International Market Intelligence | Morning Briefing",
@@ -1127,6 +1302,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-utazh2tede3-fbb9f7",
+      "title": "All Ring Tech Co. (6187)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:45:22Z",
+      "summary_points": [
+        "<Oct revenue & GM adjustment>: Oct revenue up 218% YoY (NT$978mn) with Q4 revenue forecast revised 24% higher due to stronger CoWoS demand; gross margin lowered to 50.6% (vs 52.6%) from product mix and new tool shipments.",
+        "<Earnings Revision & Growth Outlook>: 2026-2028 revenue growth revised up to 87% YoY (vs prior 71%) and EPS revised up (+2.7%/0.0%/+1.7%); driven by robust CoWoS expansion and lower opex.",
+        "<Valuation Target>: 12-month target price maintained at NT$1,450 (35x 2027E PE), implying 36% Ni YoY growth (2027-28 avg) with structural tailwinds from CPO-driven earnings expansion.",
+        "<Key Risks>: Slower advanced packaging expansion, delayed adoption of new packaging tech, and intensifying competition pose critical downside threats to growth trajectory.",
+        "<Upside Potential>: 42.9% upside to NT$1,450 target; revenue/earnings projected to grow from NT$5.37B (2025) to NT$17.28B (2028E) and EPS from NT$15.47 to NT$53.25."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
