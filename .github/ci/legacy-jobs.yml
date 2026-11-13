@@ -6498,6 +6498,7 @@ jobs:
       - "tests/test_guidance_source_context.py"
       - "tests/test_guidance_source_evidence.py"
       - "tests/test_china_archetype_d_s1.py"
+      - "tests/test_china_mobile_shell_controls.py"
       - "site/basketdata/fear_greed.json"
       - "site/btc_strategy.html"
       - "site/china_intel/analogs.json"
@@ -7072,7 +7073,8 @@ jobs:
           tests/test_valuation_event_proposal.py
           tests/test_guidance_source_context.py
           tests/test_guidance_source_evidence.py
-          tests/test_china_archetype_d_s1.py -q
+          tests/test_china_archetype_d_s1.py
+          tests/test_china_mobile_shell_controls.py -q
       - name: IPO retained-source identity, conditional terms and native price path
         run: python -m pytest tests/test_ipo_prospectus_terms.py -q
       # Gold China-premium core is a code contract, not merely a render/data
