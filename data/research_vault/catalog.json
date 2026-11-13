@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T07:53:15.730422+00:00",
-  "count": 3283,
+  "generated_at": "2026-11-13T08:08:54.738611+00:00",
+  "count": 3284,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -963,6 +963,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vsxuqrs0x28-858496",
+      "title": "GS Blekos ## Europe Macro Outlook AI Cycle Durable Siemens Energy PGHN & TKO (dg) Luxury Fieldtrip takes Reckitt Ceres Carbonomics ## 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:10:36Z",
+      "summary_points": [
+        "Euro Consumption Stagnation: Real consumption growth stalls at 0%qoq over winter, below trend for most of 2027, signaling persistent economic weakness in the Eurozone.",
+        "Capital Markets Downgrades: PGNH & TKO downgraded to Sell due to fundraising weakness and gross inflow risks, highlighting acute liquidity and structural concerns.",
+        "China Luxury Sector Geopolitical Risk: Social unrest impairs China growth visibility short-term, disrupting travel and travel-related luxury demand amid geopolitical volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
