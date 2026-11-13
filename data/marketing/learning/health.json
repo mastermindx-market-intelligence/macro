@@ -62,9 +62,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 35,
-          "n_recent": 1,
-          "reason": "recent n=1, baseline n=35 — need 5 of each",
+          "n_baseline": 36,
+          "n_recent": 0,
+          "reason": "recent n=0, baseline n=36 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -116,9 +116,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 12,
+          "n_baseline": 11,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=12 — need 5 of each",
+          "reason": "recent n=0, baseline n=11 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -166,9 +166,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 5,
+          "n_baseline": 4,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=5 — need 5 of each",
+          "reason": "recent n=0, baseline n=4 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -216,9 +216,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 68,
-          "n_recent": 6,
-          "reason": "baseline median is zero — a ratio against zero engagement is undefined, not infinite",
+          "n_baseline": 74,
+          "n_recent": 0,
+          "reason": "recent n=0, baseline n=74 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -320,9 +320,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 11,
-          "n_recent": 1,
-          "reason": "recent n=1, baseline n=11 — need 5 of each",
+          "n_baseline": 12,
+          "n_recent": 0,
+          "reason": "recent n=0, baseline n=12 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -360,7 +360,7 @@
     }
   ],
   "apply_halts": true,
-  "as_of": "2026-11-12T15:00:23Z",
+  "as_of": "2026-11-13T12:27:47Z",
   "halted": [],
   "metrics": [
     "approval_rate",

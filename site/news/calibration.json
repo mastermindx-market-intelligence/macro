@@ -1,8 +1,8 @@
 {
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
-  "asof": "2026-11-12",
-  "n_events_logged": 1932,
+  "asof": "2026-11-13",
+  "n_events_logged": 1946,
   "n_events_graded": 1569,
   "classes": [
     {
@@ -24,9 +24,9 @@
       "n": 20,
       "n_graded": 17,
       "hit_5d": 0.4117647058823529,
-      "hit_21d": 0.5,
+      "hit_21d": 0.47058823529411764,
       "avg_rel_5d": 0.001357875846702317,
-      "avg_rel_21d": 0.01485629696969697,
+      "avg_rel_21d": 0.014638455971479501,
       "wilson_low_5d": 0.216108,
       "wilson_high_5d": 0.639949,
       "verdict": "insufficient"
@@ -39,7 +39,7 @@
       "hit_5d": 0.5555555555555556,
       "hit_21d": 0.17647058823529413,
       "avg_rel_5d": 0.011294154761904762,
-      "avg_rel_21d": -0.02973522969187675,
+      "avg_rel_21d": -0.029781347338935574,
       "wilson_low_5d": 0.337161,
       "wilson_high_5d": 0.754408,
       "verdict": "insufficient"
@@ -86,12 +86,12 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 889,
+      "n": 895,
       "n_graded": 836,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": 0.0032791233406835787,
-      "avg_rel_21d": 0.015691809438842335,
+      "avg_rel_21d": 0.01562778027217172,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -112,7 +112,7 @@
     {
       "event_type": "guidance_cut",
       "direction": "bearish",
-      "n": 48,
+      "n": 49,
       "n_graded": 35,
       "hit_5d": 0.42857142857142855,
       "hit_21d": 0.3235294117647059,
@@ -125,7 +125,7 @@
     {
       "event_type": "guidance_raise",
       "direction": "bullish",
-      "n": 66,
+      "n": 68,
       "n_graded": 40,
       "hit_5d": 0.725,
       "hit_21d": 0.5,
@@ -138,12 +138,12 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 389,
+      "n": 392,
       "n_graded": 343,
       "hit_5d": 0.47230320699708456,
-      "hit_21d": 0.5221843003412969,
+      "hit_21d": 0.5218855218855218,
       "avg_rel_5d": 0.006286335082604471,
-      "avg_rel_21d": -0.005441042946530148,
+      "avg_rel_21d": -0.006151636644219976,
       "wilson_low_5d": 0.420069,
       "wilson_high_5d": 0.525151,
       "verdict": "context_only"
@@ -151,12 +151,12 @@
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 149,
+      "n": 150,
       "n_graded": 57,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": -0.0032361461988304092,
-      "avg_rel_21d": -0.008182209941520469,
+      "avg_rel_21d": -0.008196069590643274,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -177,12 +177,12 @@
     {
       "event_type": "mna_confirmed",
       "direction": "bullish",
-      "n": 45,
+      "n": 46,
       "n_graded": 35,
       "hit_5d": 0.5142857142857142,
-      "hit_21d": 0.5588235294117647,
+      "hit_21d": 0.5714285714285714,
       "avg_rel_5d": 0.003870619047619047,
-      "avg_rel_21d": 0.010373482843137256,
+      "avg_rel_21d": 0.010473983333333334,
       "wilson_low_5d": 0.355685,
       "wilson_high_5d": 0.67006,
       "verdict": "context_only"
@@ -190,12 +190,12 @@
     {
       "event_type": "mna_rumor",
       "direction": "bullish",
-      "n": 3,
+      "n": 4,
       "n_graded": 3,
       "hit_5d": 1.0,
       "hit_21d": 1.0,
       "avg_rel_5d": 0.07688099999999999,
-      "avg_rel_21d": 0.077924,
+      "avg_rel_21d": 0.07528566666666667,
       "wilson_low_5d": 0.438494,
       "wilson_high_5d": 1.0,
       "verdict": "insufficient"
@@ -208,7 +208,7 @@
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": -0.004312717978620019,
-      "avg_rel_21d": 0.003145412261094914,
+      "avg_rel_21d": 0.0031443605604146423,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -260,7 +260,7 @@
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": -0.0077753684210526315,
-      "avg_rel_21d": -0.004698042857142858,
+      "avg_rel_21d": -0.01158096052631579,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 2357,
+    "n_sampled": 2384,
     "n_graded": 0,
     "classes": []
   }
