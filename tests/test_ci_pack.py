@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 11_431),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 11_504),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 10_969),
+    ("templates/index.html", 137, 11_465),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 11_538),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 132, 11_018),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6012,9 +6012,9 @@ PACKING_PROBE_MAX_PACKS = 10
 # job-count ceilings and PACKING_PROBE_MAX_PACKS are not weight-denominated and
 # did not move.
 LEGACY_PACKING_PROBE_WEIGHT_CEILINGS = {
-    "templates/index.html": 5_984,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    "scripts/build_free_content.py": 6_022,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    "engine/prophet/plan_book.py": 5_742,
+    "templates/index.html": 6_002,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    "scripts/build_free_content.py": 6_040,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    "engine/prophet/plan_book.py": 5_768,
 }
 
 
@@ -6039,6 +6039,57 @@ def test_probe_weight_ceilings_follow_the_weight_rescale() -> None:
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-12 (PR #11151, merge of main 949420c7 carrying #11094): main's
+    #11041 weight refresh moved planner weights to measured hosted seconds and
+    pins each live ceiling to PACK.rescale_legacy_weight(legacy). This branch's
+    measured legacy ceilings 6,002/6,040/5,768 (lane 1 final pass paragraph
+    below) are carried into LEGACY_PACKING_PROBE_WEIGHT_CEILINGS and rescaled
+    by that function to 11,465/11,538/11,018; no hand-picked number. Re-measured
+    on the merged tree with packing_probe_measurements over the merged
+    .github/ci/legacy-jobs.yml (max_packs=11): index 137/10,929, free-content
+    138/11,433, plan_book 132/10,902, 10 packs each at PACK_TARGET_SECONDS
+    1,146. The pack ceiling stays main's 10; job ceilings 137/138/132 (the
+    plan_book entrant group-read-surface job is lane 1's own). Every selector
+    and every assertion is unchanged; main's #11041 / #10211 / COO-ruling-25
+    provenance chain below is kept verbatim, and the lane 1 / #10929 paragraphs
+    are carried verbatim above it.
+
+    2026-11-12 (lane 1 final pass, stacked draft on #11094): the lane 1
+    stack (#10929 -> #10954 -> #10965 -> #10973, tip 2a1bc1f71fc4) merged
+    #11094's head 52e5ad722ef7 (carrying #10924, merged at 877e4845e1e5
+    and re-measured). The thirteen legacy-jobs conflicts are the union of
+    #10929's contract-delta registration paths and #11094's
+    sector_heads / B12 v1.1 widenings — no overlapping lines. Re-measured
+    on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged
+    .github/ci/legacy-jobs.yml), not summed by hand: index 137/6,002,
+    free-content 138/6,040, plan_book 132/5,768. That is #11094's
+    5,980/6,018/5,738 plus lane 1's measured composed excess +22/+22/+30
+    and the plan_book entrant job (131 -> 132, group-read-surface).
+    Index crosses the 6,000 pack line at 6,002 and free-content stays
+    over it at 6,040: both pack into 11 at PACK_TARGET_SECONDS 600, at
+    the existing parent-approved pack ceiling 11; plan_book packs into
+    10. Job ceilings 137/138/132; every selector and every assertion is
+    unchanged; #10929's paragraph and the #11094 / #10924 / main
+    provenance chain below are kept verbatim.
+
+    2026-11-10 (PR #10929, Sector Intelligence lane 1 carries its own CI
+    registration; COO ruling on the PR): 240 curated-exclusive closure paths
+    widened across 33 jobs, eight new suites wired — six sector-generation
+    serving suites into tier-gate, the factors finite-JSON producer suite into
+    unrun-builders-render, the holdings explicit-inputs suite into
+    healthcare-fda-supply (which also gains openpyxl so its Excel suites stop
+    skip-only). Measured with scripts/run_ci_pack.packing_probe_measurements
+    at head 7fc4679d3d26 after those edits: index 137 jobs / 5,980 w-s
+    (5,958 + 22 from tier-gate's new steps), free 137 jobs / 6,001 w-s / 11
+    packs (5,979 + 22, crossing the 600-second pack bucket), Prophet
+    132 jobs / 5,746 w-s (131 / 5,716 + entrant group-read-surface + 8).
+    Re-based exactly those: 5,958->5,980, 5,979->6,001, 131->132, 5,716->5,746
+    and MAX_PACKS 10->11. Jobs ceilings 137/138, every selector, assertion
+    and admission limit unchanged. Registration-only widening recorded here,
+    not a timing or whole-tree planner claim; the merged tree still requires
+    its own natural CI qualification.
 
     2026-11-12 (PR #11094, merge of main a07e3fe4ce0c / #11041 weight refresh):
     main moved planner weights to measured hosted seconds and pins each live
