@@ -1,0 +1,750 @@
+{
+  "format_notice": "Planning and research-verification manifest only. Task/hold IDs are local document keys, not Executive states, runtime admission, new graph entities or permissions.",
+  "record_date": "2026-09-23",
+  "operation": "gmi-basic-materials-research-20260923-sol-001",
+  "carrier": {
+    "repo": "mastermindx-market-intelligence/macro",
+    "pr": 7796,
+    "branch": "sol/basic-materials-research-20260923",
+    "entry_head": "3d51a28ec44b138943c8e5828df371e17a7e6bc7",
+    "intermediate_checkpoint": "77cfd93f9b76dac7b8e6ab171bd7a7fbcde990fe"
+  },
+  "protected_procedure_commit": "a7d2b3049e5cdc523e91e61a6e9d70a1cb911157",
+  "interface_commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+  "plan": {
+    "path": "docs/superpowers/plans/2026-09-23-basic-materials-economics-v0-implementation.md",
+    "bytes": 46119,
+    "git_blob": "dbd993f57fc636ab2675a2ebba3e1e2296064778",
+    "sha256": "6ad7bfd44e20cd17fccd02211d51e08babc2ee22c41e5783a6af958be133fc99",
+    "status": "PREPARED_FOR_REVIEW_NOT_IMPLEMENTED"
+  },
+  "r8_spec": {
+    "path": "research/basic_materials/BASIC_MATERIALS_R8_INTEGRATED_PRODUCT_AND_OWNER_SPECIFICATION_2026-09-23.md",
+    "git_blob": "354ac7e305d43be8e4fe2b21dab54cbe2cf60736",
+    "sha256": "b7091f6c5605581e8e35dfa24b6dcd2e94466e88fafd66023ca341f48b72bc5b",
+    "acceptance": "PROPOSED_NOT_ACCEPTED"
+  },
+  "r8_manifest": {
+    "path": "research/basic_materials/R8_INTEGRATION_MANIFEST_2026-09-23.json",
+    "git_blob": "7aabc80d34278609e717fcbdfef56c080bfc9dce",
+    "preserves_prior_research_files": 16
+  },
+  "interfaces": [
+    {
+      "id": "I-R9-01",
+      "path": "engine/theme_graph/rights.py",
+      "git_blob": "63ba2b60e9be6615208fab5b53b1fbcb44f4f433",
+      "commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+      "inspection_scope": "Full exact-source local copy; 12 local probe cases",
+      "production_proven": false
+    },
+    {
+      "id": "I-R9-02",
+      "path": "engine/research_vault/r2_store.py",
+      "git_blob": "139fcbe8cf08945a2be1feaa0dca5428c818837b",
+      "commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+      "inspection_scope": "Strict bounded and conditional protocols; partial source read",
+      "production_proven": false
+    },
+    {
+      "id": "I-R9-03",
+      "path": "engine/research_intelligence/store.py",
+      "git_blob": "8e412fd601749bdf27c4a6b96c325055ceebab73",
+      "commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+      "inspection_scope": "RIO-specific receipt contract, not GMI binding; partial source read",
+      "production_proven": false
+    },
+    {
+      "id": "I-R9-04",
+      "path": "app/earnings.py",
+      "git_blob": "3b8251388c8e9ae59b933212a7384faaea61eb27",
+      "commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+      "inspection_scope": "Auth and private-header pattern; partial source read",
+      "production_proven": false
+    },
+    {
+      "id": "I-R9-05",
+      "path": "site/market_memory.js",
+      "git_blob": "2552e862c9b2e3ae6ccfa76725b763851d4e6b66",
+      "commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+      "inspection_scope": "Existing MDXAuth.client/getSession interface; partial source read",
+      "production_proven": false
+    },
+    {
+      "id": "I-R9-06",
+      "path": "templates/state_of_themes.html.j2",
+      "git_blob": "05017554bb9e64951d195b52583cfbd462bd2f05",
+      "commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+      "inspection_scope": "Existing public shell source; partial source read",
+      "production_proven": false
+    },
+    {
+      "id": "I-R9-07",
+      "path": "templates/basket_detail.html.j2",
+      "git_blob": "a3d8846bd27961db2c7877d693e8fd43bf399baa",
+      "commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+      "inspection_scope": "Existing detail source; custody not released",
+      "production_proven": false
+    },
+    {
+      "id": "I-R9-08",
+      "path": "agentos/workstreams/WS-GMI-THEME-GRAPH.md",
+      "git_blob": "cd2067041dc441bf5bc44302ee8c458bdfd42b45",
+      "commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+      "inspection_scope": "Existing parent and owner boundaries",
+      "production_proven": false
+    },
+    {
+      "id": "I-R9-09",
+      "path": "tests/test_theme_graph_contracts.py",
+      "git_blob": "4cb4e6c3881c53928d04e2529ac62f6d1b0d906a",
+      "commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+      "inspection_scope": "Existing regression path verified; suite not run",
+      "production_proven": false
+    },
+    {
+      "id": "I-R9-10",
+      "path": "tests/test_evidence_foundation_contract.py",
+      "git_blob": "e74da1e47d9d78931c97bff9052fba92d62814c5",
+      "commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+      "inspection_scope": "Existing regression path verified; suite not run",
+      "production_proven": false
+    },
+    {
+      "id": "I-R9-11",
+      "path": "tests/test_market_ontology_exposure_map.py",
+      "git_blob": "2d21aacd8b0c0fb2e263e55ca7f11226f7d58d74",
+      "commit": "8183f865e8705e4cd854ed2f696415ece2c3e920",
+      "inspection_scope": "Existing regression path verified; suite not run",
+      "production_proven": false
+    }
+  ],
+  "shared_dependency": {
+    "pr": 7773,
+    "head": "f10211657c6c31df3c9af73cd4b9484e2dd7690a",
+    "implementation_state_from_pr": "No START reported; not a fresh Executive liveness query",
+    "planned_schema_current_path": "contracts/theme_graph/curation_assertion.v1.schema.json",
+    "current_exact_path_result": "404"
+  },
+  "template_disagreement": {
+    "pr": 7669,
+    "body_claimed_head": "79c291a40684869facb160a20341ba7340d96b04",
+    "metadata_head": "2c28d950aa9448fc878bb64d92b228a8f1952bde",
+    "direct_ref_head": "2c28d950aa9448fc878bb64d92b228a8f1952bde",
+    "disposition": "Use observed direct-ref identity; no exact-head acceptance or writer release inferred"
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Shared curation measurement/admission",
+      "owner": "GMI / shared Robotics extension",
+      "depends_on": [],
+      "holds": [
+        "H1",
+        "H2"
+      ],
+      "planned_paths": [
+        "contracts/theme_graph/curation_assertion.v1.schema.json",
+        "engine/theme_graph/curation_assertion.py",
+        "tests/test_theme_graph_curation_assertion.py"
+      ],
+      "readiness": "Design-ready; not assigned; consume one shared carrier",
+      "assigned": false,
+      "started": false,
+      "completed": false
+    },
+    {
+      "id": "T2",
+      "title": "Private owner binding and fresh rights",
+      "owner": "GMI / existing private publication / rights",
+      "depends_on": [
+        "T1"
+      ],
+      "holds": [
+        "H2",
+        "H3"
+      ],
+      "planned_paths": [
+        "engine/theme_graph/store.py",
+        "engine/theme_graph/rights.py",
+        "config/theme_sources.yml",
+        "tests/test_theme_graph_curation_private.py",
+        "tests/test_theme_graph_curation_rights.py"
+      ],
+      "readiness": "Fixture specification ready; actual profile and live enrollment unresolved",
+      "assigned": false,
+      "started": false,
+      "completed": false
+    },
+    {
+      "id": "T3",
+      "title": "Lossless native K1 subtype",
+      "owner": "Evidence Foundation K1",
+      "depends_on": [
+        "T1"
+      ],
+      "holds": [
+        "H1"
+      ],
+      "planned_paths": [
+        "contracts/evidence_foundation/vocabulary.v1.json",
+        "tests/test_evidence_foundation_contract.py"
+      ],
+      "readiness": "Opt-in native subject only; no unified security recipe",
+      "assigned": false,
+      "started": false,
+      "completed": false
+    },
+    {
+      "id": "T4",
+      "title": "Economic explanations and lawful company navigation",
+      "owner": "MarketOntology F04 / Data OS / page route owner",
+      "depends_on": [
+        "T1",
+        "T3"
+      ],
+      "holds": [
+        "H1",
+        "H4"
+      ],
+      "planned_paths": [
+        "contracts/market_ontology/materials_economics.v1.schema.json",
+        "engine/market_ontology/materials_economics.py",
+        "tests/test_market_ontology_materials_economics.py"
+      ],
+      "readiness": "Pure synthetic work after shared signatures freeze; actual link receipts owed",
+      "assigned": false,
+      "started": false,
+      "completed": false
+    },
+    {
+      "id": "T5",
+      "title": "Paid read-only route",
+      "owner": "Macro API",
+      "depends_on": [
+        "T4"
+      ],
+      "holds": [
+        "H3"
+      ],
+      "planned_paths": [
+        "app/materials_economics.py",
+        "app/main.py",
+        "tests/test_materials_economics_api.py"
+      ],
+      "readiness": "Synthetic API work after T4; production needs accepted reader",
+      "assigned": false,
+      "started": false,
+      "completed": false
+    },
+    {
+      "id": "T6",
+      "title": "Existing page consumer",
+      "owner": "Shared STSI / page owners",
+      "depends_on": [
+        "T5"
+      ],
+      "holds": [
+        "H5"
+      ],
+      "planned_paths": [
+        "templates/_materials_economics.html.j2",
+        "templates/state_of_themes.html.j2",
+        "templates/basket_detail.html.j2",
+        "site/assets/js/materials-economics.js",
+        "site/assets/css/materials-economics.css",
+        "tests/test_materials_economics_ui.py"
+      ],
+      "readiness": "No template edit before custody; one shared mount/client",
+      "assigned": false,
+      "started": false,
+      "completed": false
+    },
+    {
+      "id": "T7",
+      "title": "Selected original sources and real rehearsal",
+      "owner": "Native source / curation / identity / publication",
+      "depends_on": [
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6"
+      ],
+      "holds": [
+        "H3",
+        "H4",
+        "H7"
+      ],
+      "planned_paths": [
+        "tests/test_materials_economics_acceptance.py"
+      ],
+      "readiness": "Live admission held; no fabricated native record or private path",
+      "assigned": false,
+      "started": false,
+      "completed": false
+    },
+    {
+      "id": "T8",
+      "title": "Independent release and complete user proof",
+      "owner": "Fable integration / independent reviewer / release owner",
+      "depends_on": [
+        "T7"
+      ],
+      "holds": [
+        "H6"
+      ],
+      "planned_paths": [],
+      "readiness": "Release held; exact-head and full real-browser proof required",
+      "assigned": false,
+      "started": false,
+      "completed": false
+    }
+  ],
+  "holds": [
+    {
+      "id": "H1",
+      "condition": "Shared assertion contract not enrolled",
+      "owner": "GMI / Robotics shared owner",
+      "required_return": "Return accepted native schema/version and compatible shared signatures; no Materials clone",
+      "closed": false
+    },
+    {
+      "id": "H2",
+      "condition": "Shared store source custody",
+      "owner": "Existing #7462 and shared implementation owner",
+      "required_return": "Fresh exact-path writer/lease/effect reconciliation, not historical title or timeout",
+      "closed": false
+    },
+    {
+      "id": "H3",
+      "condition": "Approved private GMI profile missing from proof",
+      "owner": "GMI / existing private publication and rights",
+      "required_return": "Return actual accepted reader/publisher/object/rights binding and source proof; no new store",
+      "closed": false
+    },
+    {
+      "id": "H4",
+      "condition": "Actual four-company bindings and route receipts absent",
+      "owner": "Data OS / GMI / source attribution / page owner",
+      "required_return": "Produce and consume exact dated source/company/security/listing/route receipts",
+      "closed": false
+    },
+    {
+      "id": "H5",
+      "condition": "Shared detail custody and metadata disagreement",
+      "owner": "Incumbent page owner / #7669",
+      "required_return": "Reconcile current branch and accepted template; direct ref observed differs from PR body claim",
+      "closed": false
+    },
+    {
+      "id": "H6",
+      "condition": "Independent review, CI and live acceptance not executed",
+      "owner": "Fable / independent reviewer / release",
+      "required_return": "Exact implemented head, gates and real source-to-browser evidence",
+      "closed": false
+    },
+    {
+      "id": "H7",
+      "condition": "Real source retention/rights/review not performed",
+      "owner": "Native source and curation owners",
+      "required_return": "Retain originals with actual clocks/digests/current rights and reviewed admission",
+      "closed": false
+    }
+  ],
+  "r8_requirement_mapping": [
+    {
+      "id": "BM-R8-01",
+      "tasks": [
+        "T4",
+        "T6"
+      ]
+    },
+    {
+      "id": "BM-R8-02",
+      "tasks": [
+        "T4",
+        "T8"
+      ]
+    },
+    {
+      "id": "BM-R8-03",
+      "tasks": [
+        "T4",
+        "T7"
+      ]
+    },
+    {
+      "id": "BM-R8-04",
+      "tasks": [
+        "T4",
+        "T7"
+      ]
+    },
+    {
+      "id": "BM-R8-05",
+      "tasks": [
+        "T1"
+      ]
+    },
+    {
+      "id": "BM-R8-06",
+      "tasks": [
+        "T1",
+        "T2"
+      ]
+    },
+    {
+      "id": "BM-R8-07",
+      "tasks": [
+        "T1",
+        "T4"
+      ]
+    },
+    {
+      "id": "BM-R8-08",
+      "tasks": [
+        "T3"
+      ]
+    },
+    {
+      "id": "BM-R8-09",
+      "tasks": [
+        "T3",
+        "T4"
+      ]
+    },
+    {
+      "id": "BM-R8-10",
+      "tasks": [
+        "T3",
+        "T4"
+      ]
+    },
+    {
+      "id": "BM-R8-11",
+      "tasks": [
+        "T1",
+        "T4"
+      ]
+    },
+    {
+      "id": "BM-R8-12",
+      "tasks": [
+        "T4"
+      ]
+    },
+    {
+      "id": "BM-R8-13",
+      "tasks": [
+        "T4",
+        "T7"
+      ]
+    },
+    {
+      "id": "BM-R8-14",
+      "tasks": [
+        "T1",
+        "T4",
+        "T7"
+      ]
+    },
+    {
+      "id": "BM-R8-15",
+      "tasks": [
+        "T1",
+        "T4",
+        "T7"
+      ]
+    },
+    {
+      "id": "BM-R8-16",
+      "tasks": [
+        "T4",
+        "T7"
+      ]
+    },
+    {
+      "id": "BM-R8-17",
+      "tasks": [
+        "T4",
+        "T7"
+      ]
+    },
+    {
+      "id": "BM-R8-18",
+      "tasks": [
+        "T1",
+        "T3"
+      ]
+    },
+    {
+      "id": "BM-R8-19",
+      "tasks": [
+        "T1",
+        "T3",
+        "T4"
+      ]
+    },
+    {
+      "id": "BM-R8-20",
+      "tasks": [
+        "T3",
+        "T4"
+      ]
+    },
+    {
+      "id": "BM-R8-21",
+      "tasks": [
+        "T2",
+        "T4",
+        "T5",
+        "T6"
+      ]
+    },
+    {
+      "id": "BM-R8-22",
+      "tasks": [
+        "T4",
+        "T7"
+      ]
+    },
+    {
+      "id": "BM-R8-23",
+      "tasks": [
+        "T2",
+        "T5"
+      ]
+    },
+    {
+      "id": "BM-R8-24",
+      "tasks": [
+        "T2",
+        "T6",
+        "T7"
+      ]
+    },
+    {
+      "id": "BM-R8-25",
+      "tasks": [
+        "T5",
+        "T7"
+      ]
+    },
+    {
+      "id": "BM-R8-26",
+      "tasks": [
+        "T4",
+        "T8"
+      ]
+    },
+    {
+      "id": "BM-R8-27",
+      "tasks": [
+        "T4"
+      ]
+    },
+    {
+      "id": "BM-R8-28",
+      "tasks": [
+        "T3",
+        "T4"
+      ]
+    },
+    {
+      "id": "BM-R8-29",
+      "tasks": [
+        "T8"
+      ]
+    },
+    {
+      "id": "BM-R8-30",
+      "tasks": [
+        "T7",
+        "T8"
+      ]
+    },
+    {
+      "id": "BM-R8-31",
+      "tasks": [
+        "T6",
+        "T8"
+      ]
+    },
+    {
+      "id": "BM-R8-32",
+      "tasks": [
+        "T8"
+      ]
+    }
+  ],
+  "r9_requirements": [
+    {
+      "id": "R9-A01",
+      "requirement": "Financial signs and physical count domains differ",
+      "tasks": [
+        "T1"
+      ],
+      "product_test_executed": false
+    },
+    {
+      "id": "R9-A02",
+      "requirement": "Exact decimal branch excludes dual conflicting values",
+      "tasks": [
+        "T1",
+        "T4"
+      ],
+      "product_test_executed": false
+    },
+    {
+      "id": "R9-A03",
+      "requirement": "Review/canonical IDs in source content do not self-admit",
+      "tasks": [
+        "T1",
+        "T4",
+        "T7"
+      ],
+      "product_test_executed": false
+    },
+    {
+      "id": "R9-A04",
+      "requirement": "Same-process policy revocation affects next authorized read",
+      "tasks": [
+        "T2",
+        "T5"
+      ],
+      "product_test_executed": false
+    },
+    {
+      "id": "R9-A05",
+      "requirement": "House curation cannot launder source/representation restrictions",
+      "tasks": [
+        "T2"
+      ],
+      "product_test_executed": false
+    },
+    {
+      "id": "R9-A06",
+      "requirement": "Strict not-found differs from outage/size/digest failure",
+      "tasks": [
+        "T2",
+        "T5"
+      ],
+      "product_test_executed": false
+    },
+    {
+      "id": "R9-A07",
+      "requirement": "Correction and unrelated newer proposition differ",
+      "tasks": [
+        "T1",
+        "T3",
+        "T4"
+      ],
+      "product_test_executed": false
+    },
+    {
+      "id": "R9-A08",
+      "requirement": "Lawful company identity and published route both required",
+      "tasks": [
+        "T4",
+        "T7"
+      ],
+      "product_test_executed": false
+    },
+    {
+      "id": "R9-A09",
+      "requirement": "Input and rights generations remain coherent during reads",
+      "tasks": [
+        "T2",
+        "T5"
+      ],
+      "product_test_executed": false
+    },
+    {
+      "id": "R9-A10",
+      "requirement": "Old asynchronous response cannot restore content after logout",
+      "tasks": [
+        "T5",
+        "T6"
+      ],
+      "product_test_executed": false
+    },
+    {
+      "id": "R9-A11",
+      "requirement": "No spoofed Earnings/RIO schema or parallel current store",
+      "tasks": [
+        "T2",
+        "T8"
+      ],
+      "product_test_executed": false
+    },
+    {
+      "id": "R9-A12",
+      "requirement": "Source-template output and actual published page both proven",
+      "tasks": [
+        "T6",
+        "T7",
+        "T8"
+      ],
+      "product_test_executed": false
+    }
+  ],
+  "selected_source_cases": {
+    "selected_subject_labels": [
+      "Nutrien",
+      "NOVONIX",
+      "Wheaton",
+      "Weyerhaeuser"
+    ],
+    "selected_public_source_ids": [
+      "E01",
+      "E02",
+      "E03",
+      "E04",
+      "E05"
+    ],
+    "required_positive_cases": [
+      "C01",
+      "C02",
+      "C03",
+      "C04",
+      "C05"
+    ],
+    "required_missingness_cases": [
+      "C06",
+      "C07"
+    ],
+    "no_unified_k1_success_without_actual_bridge": true,
+    "requires_lawful_company_navigation_for_full_acceptance": true,
+    "source_only_degradation_is_not_full_release_acceptance": true,
+    "ranking_enabled": false,
+    "accepted_production_sources": 0
+  },
+  "actual_native_profile": {
+    "schema": null,
+    "reader": null,
+    "publisher": null,
+    "private_generation": null,
+    "rights_version": null,
+    "source_retention_receipts": [],
+    "company_route_receipts": []
+  },
+  "native_probe": {
+    "path": "research/basic_materials/R9_NATIVE_RIGHTS_PROBE_2026-09-23.json",
+    "bytes": 2729,
+    "git_blob": "87f13672a044e37ae44914f817047247bf8f06d8",
+    "sha256": "87b446fa97f2e939732160a03a9f59c4305d99f8afa29e502fed8a52dd261e2e",
+    "native_code_git_blob": "63ba2b60e9be6615208fab5b53b1fbcb44f4f433",
+    "observations": 12,
+    "matching_expected_behavior": 11,
+    "unmet_v0_requirement": 1,
+    "production_leak_proven": false
+  },
+  "native_admission": false,
+  "decision_authority": false,
+  "product_code_written": false,
+  "fable_receiver": null,
+  "runtime_attempt": null,
+  "mission_complete": false,
+  "next_action": "Principal review and explicit shared GMI/private-profile decision against this plan, then lawful Fable handoff and bounded implementation assignment. Do not restart industry archaeology or invent a production binding."
+}

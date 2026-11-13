@@ -1,0 +1,213 @@
+{
+  "format_notice": "Research display examples only; not an accepted native/product schema, source-admission object or parallel evidence authority. Existing owner mapping remains a later design gate.",
+  "research_date": "2026-09-23",
+  "records": [
+    {
+      "case_id": "R6-C01",
+      "subject": "Dow / Performance Materials and Coatings",
+      "proposed_display": "Sales improved while segment operating earnings declined.",
+      "source_ids": [
+        "C01"
+      ],
+      "arithmetic_ids": [
+        "DOW03",
+        "DOW04"
+      ],
+      "measurement_scope": "Q2 2026 versus Q2 2025; named segment, USD million.",
+      "interpretation": "Reported revenue growth is not proof of a durable margin improvement.",
+      "next_evidence": "Separate price, mix, volume, operating disruption and realized costs in subsequent reports.",
+      "forbidden_inference": "Do not generalize one segment to all Dow businesses.",
+      "native_admission": false,
+      "authority": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      }
+    },
+    {
+      "case_id": "R6-C02",
+      "subject": "Olin / chlor alkali and vinyls",
+      "proposed_display": "A source-attributed outage offset improved underlying product economics.",
+      "source_ids": [
+        "C04"
+      ],
+      "arithmetic_ids": [
+        "OLN01"
+      ],
+      "measurement_scope": "Quarterly segment earnings, including management estimate of outage cost/lost profit.",
+      "interpretation": "A one-off adjustment can identify a research hypothesis without establishing a run-rate forecast.",
+      "next_evidence": "Confirm physical recovery, lost-sales recapture and actual margin on the same product perimeter.",
+      "forbidden_inference": "Do not count attributed lost profit and actual replacement sales twice.",
+      "native_admission": false,
+      "authority": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      }
+    },
+    {
+      "case_id": "R6-C03",
+      "subject": "Linde / EMEA and capital measurement",
+      "proposed_display": "Cost reimbursement and capital adjustments alter percentage interpretations.",
+      "source_ids": [
+        "C05",
+        "C06"
+      ],
+      "arithmetic_ids": [
+        "LIN01",
+        "LIN03",
+        "LIN04",
+        "LIN06",
+        "LIN07"
+      ],
+      "measurement_scope": "Q2 regional margin and separately company-wide trailing capital returns.",
+      "interpretation": "Reported and adjusted metrics answer different questions; the two return ratios are not independent evidence.",
+      "next_evidence": "Matched reporting basis for comparison, contract-specific volume/price terms and realized capital conversion.",
+      "forbidden_inference": "Do not rank peers using unharmonized goodwill, numerator or averaging methods.",
+      "native_admission": false,
+      "authority": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      }
+    },
+    {
+      "case_id": "R6-C04",
+      "subject": "Air Liquide / cash conversion and project capital",
+      "proposed_display": "Ending receivables factoring changes cash timing; an investment backlog is not revenue.",
+      "source_ids": [
+        "C07"
+      ],
+      "arithmetic_ids": [
+        "AIR01",
+        "AIR02",
+        "AIR03",
+        "AIR04"
+      ],
+      "measurement_scope": "H1 2026 reported cash and year-end-to-half-year working capital; issuer-defined capex stock.",
+      "interpretation": "The factoring addback is an isolated calculation, not a forecast that cash will recur.",
+      "next_evidence": "Collection evidence, source-defined project startup, remaining capex and funded commitments.",
+      "forbidden_inference": "Do not mix financing-class interest/lease cash with an incompatible FCF definition; no sum of backlog, opportunities and decisions.",
+      "native_admission": false,
+      "authority": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      }
+    },
+    {
+      "case_id": "R6-C05",
+      "subject": "Sherwin-Williams / Paint Stores",
+      "proposed_display": "A list-price announcement is not a realized all-company revenue increase.",
+      "source_ids": [
+        "C08",
+        "C09"
+      ],
+      "arithmetic_ids": [
+        "SHW01",
+        "SHW03",
+        "SHW06"
+      ],
+      "measurement_scope": "Q2 actuals and dated July annual-guidance revision; September effective-date announcement.",
+      "interpretation": "Same-store sales and list pricing need independent volume/mix and realization evidence.",
+      "next_evidence": "Achieved comparable price, customer retention, actual volume and subsequent raw-material costs.",
+      "forbidden_inference": "The guidance midpoint change is company-to-company, not an analyst-consensus surprise.",
+      "native_admission": false,
+      "authority": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      }
+    },
+    {
+      "case_id": "R6-C06",
+      "subject": "Eastman / diversified segments",
+      "proposed_display": "Chemical Intermediates improvement coexists with weaker specialty-segment earnings.",
+      "source_ids": [
+        "C10",
+        "C11"
+      ],
+      "arithmetic_ids": [
+        "EMN01",
+        "EMN02",
+        "EMN03",
+        "EMN04",
+        "EMN05"
+      ],
+      "measurement_scope": "Q2 versus prior Q2 adjusted segment earnings; Q2 and H1 cash separate.",
+      "interpretation": "A temporary spread benefit does not establish durable differentiated-product economics.",
+      "next_evidence": "Persistence after supply normalization, same-business sales evidence and customer-specific commercialization.",
+      "forbidden_inference": "Circular revenue growth without disclosed base, capital and margin does not prove a profitable ramp.",
+      "native_admission": false,
+      "authority": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      }
+    },
+    {
+      "case_id": "R6-C07",
+      "subject": "Entegris / advanced materials and purity",
+      "proposed_display": "Qualification can support repeat business while customer concentration limits pricing power.",
+      "source_ids": [
+        "C12",
+        "C13"
+      ],
+      "arithmetic_ids": [
+        "ENT01",
+        "ENT02",
+        "ENT03",
+        "ENT04",
+        "ENT05"
+      ],
+      "measurement_scope": "Company-reported 2025 business/risk description and Q2 2026 financial actuals.",
+      "interpretation": "Distinguish consumed materials, process content and capital equipment; do not inherit an accepted supplier relationship from a theme label.",
+      "next_evidence": "Customer/application-specific content, recurring purchases, support cost, qualification and margin evidence.",
+      "forbidden_inference": "The numerical examples are issuer arithmetic, not a realized yield improvement or a validated moat score.",
+      "native_admission": false,
+      "authority": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      }
+    },
+    {
+      "case_id": "R6-C08",
+      "subject": "Euro Chlor / measurement vintage",
+      "proposed_display": "The same March 2025 output is paired with different published utilization vintages.",
+      "source_ids": [
+        "C14",
+        "C15"
+      ],
+      "arithmetic_ids": [
+        "VINT01"
+      ],
+      "measurement_scope": "Earlier and later publications for March 2025, not consecutive market observations.",
+      "interpretation": "A later ratio is a revised observation; it is not a new independent production confirmation.",
+      "next_evidence": "Original vintage and denominator explanation when available.",
+      "forbidden_inference": "Do not infer a physical capacity closure or production improvement from the ratio change alone.",
+      "native_admission": false,
+      "authority": {
+        "rank": false,
+        "entry": false,
+        "size": false,
+        "trade": false,
+        "portfolio_write": false
+      }
+    }
+  ]
+}

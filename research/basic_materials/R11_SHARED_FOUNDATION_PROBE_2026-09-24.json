@@ -1,0 +1,231 @@
+{
+  "scope": "Selected-function research compatibility probe; not full schema/module/API/store/browser tests or production acceptance.",
+  "candidate_commit": "45eb37bbf832e007e67ce2594674d6bfeeb3b880",
+  "source_git_blobs": {
+    "engine/theme_graph/curation_assertion.py": "23a25614782b8b1cb76ce7e3f292b64d35bfb4f6",
+    "engine/theme_graph/rights.py": "758937246e9a07ac150ba65123ebfa876bbc66c0"
+  },
+  "execution_mode": "transcribed_computational_excerpts_only",
+  "full_native_file_verification": null,
+  "excerpts_sha256": {
+    "engine/theme_graph/curation_assertion.py": "b24722a2368228802894bf0fc19bff32493432b23b610d5f89601e6f94673909",
+    "engine/theme_graph/rights.py": "dbfe0bb11ec564a86f752f0c2455132a4bbb4307e38c5c75522c844571f04dad"
+  },
+  "checks": [
+    {
+      "id": "M01_positive_number",
+      "expected": "allowed",
+      "observed": "allowed",
+      "matched": true,
+      "scope": "Quantity semantic helper only.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "M02_negative_financial",
+      "expected": "observation_value_invalid",
+      "observed": "observation_value_invalid",
+      "matched": true,
+      "scope": "Financial predicate does not bypass nonnegative quantity rule.",
+      "materials_requirement_met": false
+    },
+    {
+      "id": "M03_exact_decimal_text",
+      "expected": "observation_value_invalid",
+      "observed": "observation_value_invalid",
+      "matched": true,
+      "scope": "Exact decimal-text values have no supported observation branch.",
+      "materials_requirement_met": false
+    },
+    {
+      "id": "M04_zero",
+      "expected": "allowed",
+      "observed": "allowed",
+      "matched": true,
+      "scope": "Measured zero is not absence.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "M05_unknown",
+      "expected": "allowed",
+      "observed": "allowed",
+      "matched": true,
+      "scope": "Helper preserves absence; outer schema still required.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "M06_boolean",
+      "expected": "observation_value_invalid",
+      "observed": "observation_value_invalid",
+      "matched": true,
+      "scope": "Boolean is not a numeric measurement.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "M07_infinity",
+      "expected": "observation_value_invalid",
+      "observed": "observation_value_invalid",
+      "matched": true,
+      "scope": "Non-finite number refused.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "M08_negative_high",
+      "expected": "observation_value_invalid",
+      "observed": "observation_value_invalid",
+      "matched": true,
+      "scope": "Range upper value follows same sign restriction.",
+      "materials_requirement_met": null
+    },
+    {
+      "id": "M09_missing_basis",
+      "expected": "quantity_basis_required",
+      "observed": "quantity_basis_required",
+      "matched": true,
+      "scope": "Known value without basis refused.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "M10_fractional_quantity",
+      "expected": "allowed",
+      "observed": "allowed",
+      "matched": true,
+      "scope": "Continuous physical quantity already fits numeric helper; do not classify all quantities as integer counts.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "A01_all_false",
+      "expected": "allowed",
+      "observed": "allowed",
+      "matched": true,
+      "scope": "Authority helper only.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "A02_rank_true",
+      "expected": "authority_not_all_false",
+      "observed": "authority_not_all_false",
+      "matched": true,
+      "scope": "Research cannot self-grant rank authority.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "A03_rank_zero",
+      "expected": "authority_not_all_false",
+      "observed": "authority_not_all_false",
+      "matched": true,
+      "scope": "Literal false, not numeric zero.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "R01_initial_allow",
+      "expected": "allowed",
+      "observed": "allowed",
+      "matched": true,
+      "scope": "Synthetic registry.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "R02_digest_of_parsed_bytes",
+      "expected": true,
+      "observed": true,
+      "matched": true,
+      "scope": "Revision identifies the bytes loaded by the snapshot.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "R03_reread_observes_revocation",
+      "expected": "public emission refused for source family 'fixture'",
+      "observed": "public emission refused for source family 'fixture'",
+      "matched": true,
+      "scope": "Fresh API, same process/path; no cache clearing.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "R04_revision_changes",
+      "expected": true,
+      "observed": true,
+      "matched": true,
+      "scope": "Two policy contents have different snapshot revisions.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "R05_old_snapshot_still_allows",
+      "expected": "allowed",
+      "observed": "allowed",
+      "matched": true,
+      "scope": "Callers must re-read at response boundary; old snapshot is not a revocation oracle.",
+      "materials_requirement_met": null
+    },
+    {
+      "id": "R06_unknown_family",
+      "expected": "unknown_family",
+      "observed": "unknown_family",
+      "matched": true,
+      "scope": "Unknown source family refused.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "R07_empty_family_control",
+      "expected": "allowed",
+      "observed": "allowed",
+      "matched": true,
+      "scope": "Complete input-to-family derivation is a caller obligation, not proven by empty list.",
+      "materials_requirement_met": null
+    },
+    {
+      "id": "R08_unknown_class",
+      "expected": "public emission refused for source family 'fixture'",
+      "observed": "public emission refused for source family 'fixture'",
+      "matched": true,
+      "scope": "Unknown rights class refused.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "R09_invalid_shape",
+      "expected": "registry_corrupt",
+      "observed": "registry_corrupt",
+      "matched": true,
+      "scope": "Malformed policy does not become empty evidence.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "R10_bad_yaml",
+      "expected": "registry_corrupt",
+      "observed": "registry_corrupt",
+      "matched": true,
+      "scope": "Unparseable YAML refused.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "R11_bad_utf8",
+      "expected": "registry_corrupt",
+      "observed": "registry_corrupt",
+      "matched": true,
+      "scope": "Non-UTF8 input refused.",
+      "materials_requirement_met": true
+    },
+    {
+      "id": "R12_missing_file",
+      "expected": "registry_missing",
+      "observed": "registry_missing",
+      "matched": true,
+      "scope": "Missing registry distinct from successful empty evidence.",
+      "materials_requirement_met": true
+    }
+  ],
+  "matching_observations": 25,
+  "observation_mismatches": 0,
+  "unmet_materials_requirements": [
+    "M02_negative_financial",
+    "M03_exact_decimal_text"
+  ],
+  "native_data_read": false,
+  "native_data_written": false,
+  "product_code_modified": false,
+  "decision_authority": false,
+  "limitations": [
+    "No full native import or complete schema roundtrip in this run.",
+    "No deployed caller, final response recheck, original-source rights coverage or entitlement proof.",
+    "Compatibility gaps remain failures to meet Materials requirements, even when expected observations match."
+  ]
+}
