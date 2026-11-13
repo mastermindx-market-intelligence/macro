@@ -19527,6 +19527,14 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "scripts/build_state_of_themes.py"
+      # SI curation tier guard (#11150): build_state_of_themes now reads the W-C2b
+      # tier rule from ontology.py, whose closure reaches probation.py and its
+      # contract schemas. Widening only.
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
       # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
@@ -25856,6 +25864,10 @@ jobs:
       - "tests/test_basket_membership_pit.py"
       - "tests/test_theme_graph_contracts.py"
       - "tests/test_theme_graph_local_plane.py"
+      - "tests/test_theme_graph_tier_guard_consumers.py"
+      - "tests/test_theme_tree_ticker_lookup.py"
+      - "tests/test_build_theme_tree_page.py"
+      - "templates/theme_tree.html.j2"
       - "tests/test_theme_graph_micro_membership_research.py"
       - "tests/test_theme_graph_micro_member_addendum.py"
       - "tests/test_theme_graph_micro_curator_readiness.py"
@@ -25983,6 +25995,10 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_micro_curator_readiness.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py tests/test_gmi_activity_history_binding.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
+      - name: theme graph — tier guard on state-of-themes research priority and capability (activity members never change either)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_tier_guard_consumers.py -q
+      - name: theme graph — tier guard on the theme-tree ticker lookup (sub/micro members never change a ticker's state)
+        run: TZ=UTC python -m pytest tests/test_theme_tree_ticker_lookup.py -q -k hierarchy_tier
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
         run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_generation_applicability.py tests/test_theme_state_native_capture.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py tests/test_theme_state_divergence_gap.py tests/test_theme_state_bundle_encoding.py tests/test_theme_state_bundle_codec.py tests/test_build_thematic_state_activity_mode.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
