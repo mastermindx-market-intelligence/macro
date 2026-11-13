@@ -522,7 +522,10 @@ def _exact_date_ic_reference(universe, indicator="ema", horizon=_MATURITY_HORIZO
     grid = None
     for tkr, df in universe.items():
         signals[tkr] = lab.INDICATORS[indicator](df)
-        forwards[tkr] = df["close"].pct_change(horizon).shift(-horizon)
+        close = df["close"]
+        future = close.shift(-horizon)
+        observed = np.isfinite(close) & np.isfinite(future) & close.ne(0)
+        forwards[tkr] = future[observed] / close[observed] - 1
         if grid is None:
             grid = signals[tkr].index
 
@@ -679,3 +682,48 @@ def test_characterize_missing_formation_dates_are_not_backfilled(monkeypatch, tm
     assert ref_n == 4, "the missing formation date must remove one eligible cross-section"
     assert persisted["ema"]["base_rate"] == {"n": 4, "insufficient": True}
     assert persisted["ema"]["status"] == "insufficient"
+
+
+@pytest.mark.parametrize("offsets,bad_price", [
+    ([20, 30, 40], np.nan),         # missing formation
+    ([41, 51, 61], np.nan),         # missing outcome
+    ([20, 30, 40], np.inf),         # infinite formation is not a -100% return
+    ([41, 51, 61], -np.inf),        # negative infinity is not an outcome
+])
+def test_characterize_requires_observed_close_endpoints(monkeypatch, tmp_path, offsets, bad_price):
+    import json
+    from engine import lab
+
+    universe = _maturity_universe(n_tickers=30, n_bars=100)
+    for df in list(universe.values())[:21]:
+        df.loc[df.index[offsets], "close"] = bad_price
+    monkeypatch.setattr(lab, "_LAB_DIR", tmp_path)
+    monkeypatch.setattr(lab, "bench", _no_bench)
+
+    produced = lab.characterize(["ema"], universe, horizon=_MATURITY_HORIZON, min_ics=6)
+    assert json.loads((tmp_path / "indicator_characterization.json").read_text()) == produced
+    n, _ = _exact_date_ic_reference(universe)
+    assert n == 4
+    assert produced["ema"]["base_rate"] == {"n": n, "insufficient": True}
+
+
+def test_characterize_preserves_zero_outcomes_and_interior_gaps(monkeypatch):
+    from engine import validation
+
+    universe = _maturity_universe(n_tickers=12, n_bars=100)
+    # Formation row 30 has a real zero on its row-51 outcome for the first
+    # name. The second name only misses an interior close in this window.
+    universe["S00"].iloc[51, universe["S00"].columns.get_loc("close")] = 0.0
+    universe["S01"].iloc[45, universe["S01"].columns.get_loc("close")] = np.nan
+    returns = []
+    native = validation.rank_ic
+
+    def capture(signals, outcomes):
+        returns.append(outcomes.copy())
+        return native(signals, outcomes)
+
+    monkeypatch.setattr(validation, "rank_ic", capture)
+    _run_characterize(universe)
+    row = next(series for series in returns if series.get("S00") == -1.0)
+    close = universe["S01"]["close"]
+    assert row["S01"] == pytest.approx(close.iloc[51] / close.iloc[30] - 1)

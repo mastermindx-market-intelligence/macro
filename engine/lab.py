@@ -848,8 +848,10 @@ def characterize(
                 log.debug("characterize: %s indicator %s failed: %s", tkr, name, exc)
         if sig_map:
             ticker_signals[tkr] = sig_map
-            fwd = df["close"].pct_change(horizon).shift(-horizon)
-            ticker_fwd[tkr] = fwd
+            # A missing or infinite endpoint is not an observed return.
+            # Keep the original row calendar, including any interior gaps.
+            close = df["close"].where(np.isfinite(df["close"]))
+            ticker_fwd[tkr] = close.pct_change(horizon, fill_method=None).shift(-horizon)
 
     # Collect ICs per indicator, split by regime
     ic_records: dict[str, list[tuple]] = {n: [] for n in names if n in INDICATORS}
