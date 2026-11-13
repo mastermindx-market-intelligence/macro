@@ -283,20 +283,26 @@ def test_refresh_uses_accepted_generation_and_restores_rejected_read_without_raw
     harness=r'''
 const vm=require('node:vm');
 const renderer=JSON.parse(process.argv[2]);
-async function run(reject) {
+async function run(reject, navigateAway = false) {
  const v={innerHTML:''},b={disabled:false,textContent:''},status={textContent:'',dataset:{}};
  let cache={ok:true,marker:'old',generated:{observed_at:'fixture-old'},engines:[],census:{}};
  const calls=[],toasts=[];let wrapped=false;
- const c={RENDER:{},IOS:{},Date,$:s=>s==='#view'?v:s==='#ios-refresh'?b:s==='#iosRefreshStatus'?status:null,
- api:async p=>{calls.push(p);if(p.includes('force=1')){if(reject)throw Error('SECRET_CANARY');return{ok:true,marker:'fresh',generated:{observed_at:'fixture-fresh'},engines:[],census:{}}}return cache},
+ let releaseRefresh;
+ const refreshPending = new Promise(resolve => { releaseRefresh = resolve });
+ const c={RENDER:{},IOS:{},ADMIN_RENDER_EPOCH:0,Date,$:s=>s==='#view'?v:s==='#ios-refresh'?b:s==='#iosRefreshStatus'?status:null,
+ api:async p=>{calls.push(p);if(p.includes('force=1')){await refreshPending;if(reject)throw Error('SECRET_CANARY');return{ok:true,marker:'fresh',generated:{observed_at:'fixture-fresh'},engines:[],census:{}}}return cache},
  clearApiCache:()=>{cache=null},apiCacheStore:(p,e)=>{cache=e.value},apiCacheTtl:()=>300000,
  iosText:s=>s,iosCopy:s=>s,iosHero:d=>d.generated.observed_at,iosReasonCard:()=>'',iosCeoView:()=>'',iosTypedFindings:()=>'',
  iosRenderChips:()=>{},iosRenderTable:()=>{},fmtNum:String,nwEmpty:()=>'',toast:s=>toasts.push(s),
  wrapViewTables:()=>{wrapped=true},iosRestoreFocus:()=>{if(!wrapped)throw Error('focus before synchronous table wrapping')},iosLanguageAttributes:()=>{status.textContent='Refresh failed '+status.dataset.assessed},go:()=>{}};
- vm.createContext(c);vm.runInContext(renderer,c);await c.RENDER.intelligence_os();await b.onclick();await Promise.resolve();await Promise.resolve();
+ vm.createContext(c);vm.runInContext(renderer,c);await c.RENDER.intelligence_os();
+ const refresh = b.onclick();
+ if (navigateAway) { c.ADMIN_RENDER_EPOCH++; v.innerHTML = 'Destination view' }
+ releaseRefresh();
+ await refresh;
  return{marker:c.IOS.data.marker,calls,disabled:b.disabled,status:status.textContent,toasts,html:v.innerHTML};
 }
-(async()=>console.log(JSON.stringify({fresh:await run(false),failed:await run(true)})))();
+(async()=>console.log(JSON.stringify({fresh:await run(false),failed:await run(true),navigated:await run(false,true),navigatedFailed:await run(true,true)})))();
 '''
     with tempfile.TemporaryDirectory() as td:
         path=Path(td)/"refresh.cjs";path.write_text(harness)
@@ -307,6 +313,10 @@ async function run(reject) {
     assert "fixture-fresh" in data["fresh"]["html"]
     assert data["failed"]["marker"]=="old" and data["failed"]["disabled"] is False
     assert "fixture-old" in data["failed"]["status"] and "Refresh failed" in data["failed"]["status"]
+    for case in ("navigated", "navigatedFailed"):
+        assert data[case]["html"] == "Destination view"
+        assert data[case]["marker"] == "old"
+        assert data[case]["toasts"] == []
     assert "SECRET_CANARY" not in json.dumps(data)
 
 
