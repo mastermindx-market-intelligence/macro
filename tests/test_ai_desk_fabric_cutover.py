@@ -277,3 +277,73 @@ def test_refusal_is_dropped_before_the_parser(monkeypatch):
     assert brief["degraded_reason"] == "refusal"
     assert brief["theses"] == []
     assert brief["served_by"] is None                # no authorship claim on a refusal
+
+
+# --------------------------------------------------------------------------- #
+# through the REAL adapter (no network): the frozen call shape reaches the SDK
+# --------------------------------------------------------------------------- #
+class _Block:
+    def __init__(self, text):
+        self.text = text
+        self.type = "text"
+
+
+class _Usage:
+    input_tokens = 11
+    output_tokens = 22
+
+    def model_dump(self):
+        return {"input_tokens": self.input_tokens, "output_tokens": self.output_tokens}
+
+
+class _Message:
+    def __init__(self, text, model="deepseek-v4.1-flash", stop_reason="end_turn"):
+        self.content = [_Block(text)]
+        self.model = model
+        self.usage = _Usage()
+        self.stop_reason = stop_reason
+
+
+class _FakeMessages:
+    def __init__(self, recorder, message):
+        self._recorder = recorder
+        self._message = message
+
+    def create(self, **kwargs):
+        self._recorder.append(kwargs)
+        return self._message
+
+
+class _FakeSDK:
+    def __init__(self, recorder, message):
+        self.messages = _FakeMessages(recorder, message)
+
+
+def test_real_adapter_receives_the_frozen_call_shape(monkeypatch):
+    """d._adjudicate -> d._fabric_call -> lib.fabric_client.complete -> SDK kw.
+
+    Patches the adapter's own client seam (as tests/test_fabric_client.py does),
+    so this proves the kwargs the desk passes are accepted and resolved by the
+    real adapter — not that a stubbed complete() was called.
+    """
+    sent: list[dict] = []
+    message = _Message(json.dumps(_FINAL))
+    monkeypatch.setenv(fc.TOKEN_ENV, "test-token")
+    monkeypatch.delenv("MACRO_AI_DESK_FABRIC", raising=False)
+    monkeypatch.setattr(fc, "_make_client",
+                        lambda base_url, timeout: _FakeSDK(sent, message))
+    served: dict = {}
+
+    reply, reason = d._adjudicate(_state(), {"opportunity": {"stance": "x"}},
+                                  CFG, served=served)
+
+    assert reply == json.dumps(_FINAL) and reason is None
+    assert served == {"provider": "fabric", "model": "deepseek-v4.1-flash"}
+    kw = sent[0]
+    assert kw["model"] == "fabric/balanced"          # lane resolved by the adapter
+    assert kw["max_tokens"] == CFG["max_tokens"]
+    assert kw["system"] == d._ADJ_SYSTEM
+    assert kw["extra_headers"]["x-fabric-client"] == "Python client"
+    assert kw["extra_headers"]["x-fabric-session-id"] == "macro-ai-desk-adjudicator"
+    assert kw["extra_headers"]["x-fabric-project-id"] == "macro-dashboard"
+
