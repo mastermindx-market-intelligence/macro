@@ -183,6 +183,25 @@ def test_fabric_brief_reports_served_model(fabric_on):
     assert out["model"] == "deepseek-v4.1-flash"
 
 
+def test_fabric_serves_without_a_legacy_provider_key(fabric_on, monkeypatch):
+    """The cutover moves the PROVIDER, so the fabric path must not require the
+    legacy DEEPSEEK_API_KEY.
+
+    _llm_ready() gates the legacy ladder on that key. If the fabric branch were
+    placed after it, a host with the router configured but no DeepSeek key would
+    silently keep the brief off — the cutover would be dead exactly where it is
+    meant to take over. The feature flags (enabled + llm_brief) still gate both
+    paths; only the key test is skipped on the fabric branch.
+    """
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    assert mn._llm_ready(dict(_CFG)) is False      # legacy path would refuse
+
+    out = mn.macro_brief(_HEADLINES)
+    assert out is not None
+    assert out["text"] == "The macro tape is quiet; inflation is cooling."
+    assert len(fabric_on) == 1
+
+
 # --------------------------------------------------------------------------- #
 # not configured / kill-switch -> legacy, unchanged
 # --------------------------------------------------------------------------- #
