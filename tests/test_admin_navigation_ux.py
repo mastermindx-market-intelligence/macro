@@ -101,6 +101,21 @@ function block(start, end) {
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_context_lobe_renders_distinct_bottom_state_and_trigger_tier_counts():
+    _node_assert("""
+const branch = block('} else if (name === "bottom_sensors") {', '} else if (name === "options_entry") {');
+const render = new Function('lobe', 'esc', 'let detail; ' + branch.slice(branch.indexOf('{') + 1) + '; return detail;');
+const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+const text = counts => render({n_rows: 2919, counts}, escape);
+assert.equal(text({bottom_state: {WATCH: 2850, KNIFE_RISK: 2}, trigger_tier: {T1: 135, T2: 104, T4: 1}}),
+  'n=2919 · bottom_state: WATCH 2850, KNIFE_RISK 2 · trigger_tier: T1 135, T2 104, T4 1');
+assert.equal(text({WATCH: 0}), 'n=2919 · WATCH 0');
+assert.equal(text({'<tier>': {'<T1>': 0}, absent: {}, missing: null}),
+  'n=2919 · &lt;tier&gt;: &lt;T1&gt; 0 · absent: — · missing: —');
+assert.equal(text({}), 'n=2919 · —');
+""")
+
+
 def test_workspace_keeps_every_route_once_with_capacity_router_primary():
     _node_assert("""
 const groups = new Function(block('const NAV_GROUPS = [', 'const TAB_LABELS = ') + '; return NAV_GROUPS;')();

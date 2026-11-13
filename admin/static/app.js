@@ -15438,8 +15438,14 @@ RENDER.context_lobe = async () => {
         detail = `US ${esc(lobe.us_quad || "—")} · CN ${esc(lobe.china_quad || "—")} · HK ${esc(lobe.hk_quad || "—")}`;
       } else if (name === "bottom_sensors") {
         const counts = lobe.counts || {};
-        const countStr = Object.entries(counts).map(([k, n]) => `${esc(k)} ${n}`).join(" · ") || "—";
-        detail = `n=${lobe.n_rows != null ? lobe.n_rows : "—"} · ${countStr}`;
+        const countStr = Object.entries(counts).map(([group, values]) => {
+          if (Number.isInteger(values)) return `${esc(group)} ${values}`;
+          const entries = values && typeof values === "object" && !Array.isArray(values)
+            ? Object.entries(values).filter(([, count]) => Number.isInteger(count)) : [];
+          const breakdown = entries.map(([label, count]) => `${esc(label)} ${count}`).join(", ");
+          return `${esc(group)}: ${breakdown || "—"}`;
+        }).join(" · ") || "—";
+        detail = `n=${lobe.n_rows != null ? esc(lobe.n_rows) : "—"} · ${countStr}`;
       } else if (name === "options_entry") {
         const gate = lobe.gate || {};
         detail = Object.entries(gate).map(([k, v2]) => `${esc(k)}=${esc(String(v2))}`).join(" · ") || "—";
