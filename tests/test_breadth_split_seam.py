@@ -251,3 +251,98 @@ def test_failed_full_vintage_download_preserves_existing_cache(tmp_path):
         a.fetch()
     assert calls == ['4y']
     assert a.cache_path.read_bytes() == original
+
+
+@pytest.mark.parametrize('case', ['short20', 'short60', 'short199', 'short250', 'one_full', 'stale', 'threshold', 'complete', 'early_gaps'])
+@pytest.mark.parametrize('runner', [False, True])
+def test_replacement_window_admission_precedes_all_writes(tmp_path, monkeypatch, case, runner):
+    from collectors import breadth as module, base
+    from lib import config, store
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: {'storage': {'run_status_file': 'run_status.json'}})
+    names = [f'T{i:03}' for i in range(400)]
+    dates = pd.bdate_range(end=pd.Timestamp.now().normalize(), periods=260)
+    values = np.full((260, 400), 99.0); values[-1] = 99.5
+    old = pd.DataFrame(values, index=dates, columns=names)
+    fresh = old.copy()
+    if case.startswith('short'):
+        fresh = fresh.tail(int(case[5:]))
+    elif case == 'one_full':
+        fresh.iloc[:-60, 1:] = np.nan
+    elif case == 'stale':
+        fresh.index = fresh.index - pd.Timedelta(days=28)
+    elif case == 'threshold':
+        fresh = fresh.iloc[:, :320]
+    elif case == 'early_gaps':
+        fresh.iloc[:10, :10] = np.nan
+    a = BreadthAdapter.__new__(BreadthAdapter)
+    a.cfg = {'lookback_days_live':1100, 'ma_windows':[50,200], 'nhnl_window':252}
+    a.ycfg = {'batch_size':80, 'retries':2, 'backoff_base_s':0}
+    a.cache_path = tmp_path/'_closes_cache.parquet'
+    members = pd.DataFrame({'symbol':names, 'name':names, 'sector':['Tech']*400})
+    a.constituents = lambda: members.copy()
+    old.to_parquet(a.cache_path)
+    original = a.cache_path.read_bytes()
+    constituents = tmp_path/'constituents.parquet'
+    constituents.write_bytes(b'previous membership')
+    extras = tmp_path/'_high_cache.parquet'
+    extras.write_bytes(b'previous extras')
+    calls=[]
+    def download(batch, **kw):
+        calls.append(kw['period'])
+        f = fresh[[n for n in batch if n in fresh.columns]]
+        return pd.concat({'Close':f}, axis=1)
+    monkeypatch.setattr(module.yf, 'download', download)
+    monkeypatch.setattr(module.time, 'sleep', lambda _: None)
+    reject = case not in ('threshold', 'complete', 'early_gaps')
+    if runner:
+        for key, frame in {'breadth':a.compute(old), 'sector_breadth':a.compute_sectors(old,members)}.items():
+            store.upsert(a.group,key,frame)
+        aggregate = tmp_path/'breadth/breadth.parquet'
+        aggregate_before=aggregate.read_bytes()
+        receipt=base.run_adapter(a)
+        assert receipt.status == ('failed' if reject else 'ok')
+        if reject: assert aggregate.read_bytes()==aggregate_before
+    elif reject:
+        with pytest.raises(RuntimeError, match='temporal coverage|precedes retained'):
+            a.fetch()
+    else:
+        result=a.fetch()
+        assert result['breadth'].iloc[-1]['pct_above_200']==100
+    assert calls and set(calls)=={'4y'}
+    if reject:
+        assert a.cache_path.read_bytes()==original
+        assert constituents.read_bytes()==b'previous membership'
+        assert extras.read_bytes()==b'previous extras'
+    else:
+        pd.testing.assert_frame_equal(pd.read_parquet(a.cache_path), fresh, check_freq=False)
+
+@pytest.mark.parametrize('full_history, windows, nhnl, should_refuse', [
+    (True, [50,200], 252, False),
+    (False, [50,300], 252, True),
+    (False, [50,200], 300, True),
+])
+def test_window_admission_uses_config_and_preserves_full_history(tmp_path, monkeypatch, full_history, windows, nhnl, should_refuse):
+    from lib import config
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    names=[f'T{i:03}' for i in range(400)]
+    a=BreadthAdapter.__new__(BreadthAdapter)
+    a.cfg={'lookback_days_live':1100, 'ma_windows':windows, 'nhnl_window':nhnl}
+    a.cache_path=tmp_path/'_closes_cache.parquet'
+    a.cache_path.write_bytes(b'original cache')
+    a.constituents=lambda: pd.DataFrame({'symbol':names,'name':names,'sector':['Tech']*400})
+    rows=20 if full_history else 260
+    frame=pd.DataFrame(99.0,index=pd.bdate_range(end=pd.Timestamp.now().normalize(),periods=rows),columns=names)
+    calls=[]
+    def download(tickers, period):
+        calls.append(period)
+        return frame
+    a._download_closes=download
+    if should_refuse:
+        with pytest.raises(RuntimeError,match='temporal coverage'):
+            a.fetch(full_history=full_history)
+    else:
+        assert a.fetch(full_history=True)['breadth'].empty
+    assert a.cache_path.read_bytes()==b'original cache'
+    assert calls==(['max'] if full_history else ['4y'])
