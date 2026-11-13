@@ -1211,6 +1211,12 @@ ADMIN_MUST_RESTART = [
     # panel kept serving the previous module, with no signal.
     "engine/marketing/outbox.py",
     "engine/marketing/rejections.py",
+    # Intelligence approval and publication evidence reuse these helpers in
+    # request handlers; their imports remain cached after the first request.
+    "engine/marketing/breaking_summary.py",
+    "engine/marketing/chart_render.py",
+    "engine/marketing/telemetry.py",
+    "scripts/marketing_media_backfill.py",
     # ...and the substrate `from engine.marketing import outbox` executes on the
     # way in (package __init__ -> state -> these ten)
     "engine/marketing/__init__.py",
@@ -1269,8 +1275,6 @@ ADMIN_MUST_NOT_RESTART = [
     "engine/china_radar.py",
     # nightly-only marketing modules — the package is named, not globbed
     "engine/marketing/breaking_feed.py",
-    # macro-api's chart path, on no panel path
-    "engine/marketing/chart_render.py",
     "engine/marketing/confluence_source.py",
     # the API and site-build lanes
     "app/main.py",
