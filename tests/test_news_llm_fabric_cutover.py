@@ -377,6 +377,71 @@ def test_usage_tokens_read_the_real_usage_dict():
         fc.Completion(text="x", model_served="m", usage={}, raw=None)) == (0, 0)
 
 
+def test_full_annotate_path_serves_through_a_real_completion(monkeypatch):
+    """End-to-end: annotate() -> _fabric_call -> a REAL fc.Completion.
+
+    Every other test here stubs complete() with a hand-built Completion. This one
+    returns the genuine dataclass carrying a raw Anthropic-shaped message, so the
+    whole chain (text extraction, refusal check, JSON parse, row normalisation,
+    usage recording) runs against the production shape rather than a stub.
+    """
+    class _RealMsg:
+        def __init__(self, stop_reason="end_turn"):
+            self.stop_reason = stop_reason
+            self.content = []
+            self.model = "deepseek-v4.1-flash"
+
+    recorded: list[dict] = []
+
+    def real_complete(messages, **kwargs):
+        return fc.Completion(
+            text=json.dumps(_ROWS),
+            model_served="deepseek-v4.1-flash",
+            route_id="r-real",
+            provider="deepseek",
+            usage={"input_tokens": 40, "output_tokens": 12},
+            raw=_RealMsg("end_turn"),
+        )
+
+    monkeypatch.setattr(news_llm, "_cfg", lambda: dict(_CFG))
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete", real_complete)
+    monkeypatch.setattr(ai_costs_mod, "record_usage",
+                        lambda **kw: recorded.append(kw) or True)
+    monkeypatch.delenv("MACRO_NEWS_LLM_FABRIC", raising=False)
+
+    rows = _headlines()
+    news_llm.annotate(rows)
+
+    assert rows[0]["llm_importance"] == 88
+    assert rows[0]["llm_tone"] == "neutral"
+    assert rows[0]["summary"] == "Fed holds rates steady."
+    assert rows[1]["llm_importance"] == 72
+    assert len(recorded) == 1
+    assert recorded[0]["provider"] == "fabric"
+    assert recorded[0]["model"] == "deepseek-v4.1-flash"
+
+
+def test_full_annotate_path_honours_a_real_refusal(monkeypatch):
+    """A real Completion whose raw message says 'refusal' must enrich nothing."""
+    class _RealMsg:
+        def __init__(self):
+            self.stop_reason = "refusal"
+            self.content = []
+            self.model = "deepseek-v4.1-flash"
+
+    monkeypatch.setattr(news_llm, "_cfg", lambda: dict(_CFG))
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete", lambda messages, **kw: fc.Completion(
+        text=json.dumps(_ROWS), model_served="m", raw=_RealMsg()))
+    monkeypatch.delenv("MACRO_NEWS_LLM_FABRIC", raising=False)
+
+    rows = _headlines()
+    news_llm.annotate(rows)
+    for h in rows:
+        assert "llm_importance" not in h, "a refusal must not be parsed as data"
+
+
 # --------------------------------------------------------------------------- #
 # the gate itself
 # --------------------------------------------------------------------------- #
