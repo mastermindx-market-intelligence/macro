@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T13:53:40.878707+00:00",
-  "count": 3299,
+  "generated_at": "2026-11-13T14:08:44.416612+00:00",
+  "count": 3300,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-qvdyw7yvx20-4b6ba2",
+      "title": "GS Mitola GS FINS & REITs Daily 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T13:52:10Z",
+      "summary_points": [
+        "US PPI & Fed Speakers: Upcoming US PPI (8:30am) and Fed speakers (Goolsbee, Collins) drive near-term market positioning; NVDA/AMAT earnings and China Tech EPS (Tencent, BABA) next week signal key catalysts.",
+        "Regulatory Policy Shifts: Trump’s CFTC/SEC appointments signal structural market structure changes, directly impacting exchanges and incumbents (BBG), altering competitive dynamics.",
+        "US Financial Sector Weakness: Broad sector decline (V, MA, GS down) with State Street ETF -0.83% and BRK/B (+0.27%) as rare outperformer; technicals show bearish sentiment (S&P Financial Index -0.72%).",
+        "Geopolitical Headwinds: Iran war exacerbates late-cycle volatility, compounding risks from late-cycle macro (peaking rates, wider credit spreads) and AI impulse slowdown."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-fqf9cgsdzif-4103b6",
       "title": "GS Blekos GS 2027 Outlooks Global Equity Outlook Global Macro Outlook Nvidia Siemens Semicon Takes Ottobock Zealand Global Transport Europe Banks Tracker 13 Nov 2026",
