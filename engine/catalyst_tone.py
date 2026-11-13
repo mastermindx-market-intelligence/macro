@@ -455,11 +455,19 @@ def _fabric_call(source_text: str, context: str, cfg: dict) -> tuple[str | None,
         return None, "empty_reply"
     try:  # cost ledger — never let telemetry break a call that otherwise worked
         from lib import ai_costs  # noqa: PLC0415 — lazy, matches llm_auth's idiom
+        # LANE is the ledger's attribution key, not the router lane. The legacy
+        # path books this writer under usage_lane "catalyst-tone", which
+        # lib/ai_costs.lobe_for_lane maps to the News lobe; recording the ROUTER
+        # lane ("fast") here would fall through to "Other" and silently move
+        # catalyst spend off the News row on the AI Cost page (ai_costs.py:58).
+        # So the existing lane is kept, "fabric" is the stage drill-down inside
+        # it, and the router lane is carried in the note.
         ai_costs.record_usage(
-            lane=_FABRIC_LANE,
+            lane="catalyst-tone",
             provider="fabric",
             model=comp.model_served,
-            stage="catalyst-tone",
+            stage="fabric",
+            note=f"router_lane={_FABRIC_LANE}",
         )
     except Exception as e:  # noqa: BLE001
         log.debug("catalyst_tone: fabric usage telemetry failed (%s)", e)

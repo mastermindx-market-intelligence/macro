@@ -148,8 +148,22 @@ def test_configured_digest_records_fabric_usage(fabric_on, cfg, monkeypatch):
     assert len(rows) == 1
     assert rows[0]["provider"] == "fabric"
     assert rows[0]["model"] == "deepseek-v4.1-flash"
-    assert rows[0]["lane"] == "fast"
-    assert rows[0]["stage"] == "catalyst-tone"
+    # The ledger lane is the ATTRIBUTION key, not the router lane: it must stay
+    # "catalyst-tone" so the spend keeps rolling into the News lobe.
+    assert rows[0]["lane"] == "catalyst-tone"
+    assert rows[0]["stage"] == "fabric"
+    assert "fast" in rows[0]["note"]
+
+
+def test_fabric_usage_lane_rolls_into_the_news_lobe(fabric_on, cfg, monkeypatch):
+    """A lane with no lobe rule silently falls through to "Other" (ai_costs.py:58),
+    which would move catalyst spend off the News row on the AI Cost page."""
+    rows: list[dict] = []
+    monkeypatch.setattr(ai_costs, "record_usage",
+                        lambda **kw: rows.append(kw) or True)
+
+    ct._call_model(_DOC, "ctx", cfg)
+    assert ai_costs.lobe_for_lane(rows[0]["lane"]) == "News"
 
 
 def test_usage_telemetry_failure_does_not_break_the_call(fabric_on, cfg, monkeypatch):
