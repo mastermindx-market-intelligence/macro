@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T06:07:58.614913+00:00",
-  "count": 3278,
+  "generated_at": "2026-11-13T06:22:59.831101+00:00",
+  "count": 3279,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -406,6 +406,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-oyxvpdq7c4u-367d7e",
+      "title": "Outlook 2027 Float like a butterfly, avoid the bees",
+      "institution": "Commerzbank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T21:37:40Z",
+      "summary_points": [
+        "Anthropic IPO Catalyst: Key AI trade test driving near-term volatility; prioritize hedging over base case positioning despite solid growth fundamentals.",
+        "French Elections Impact: Tech-led issuance surge (beyond records) widens spreads despite resilient growth/oil falls; Fed/ECB hold rates post-March 2027 hikes.",
+        "Bear Scenario Probability: 50% base case vs. significant bear probability due to absence of short-term relief; spreads unlikely to reach 2027 lows.",
+        "Portfolio Shifts: \"Protected carry\" strategy: below-benchmark duration, overweight high-quality IG/HY (avoid BBB-), sector rotations (Utilities/Healthcare/Construction over Banks/Autos)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
