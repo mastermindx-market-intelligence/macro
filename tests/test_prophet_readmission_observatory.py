@@ -73,6 +73,7 @@ def test_case_projection_is_hindsight_only_and_matured():
         "ticker": "IPGP", "entry_date": "2026-07-15", "cohort": "loser",
         "outcome_pct": -17.86, "prior_entry_date": "2026-07-10",
         "prior_mark_at_readmit_pct": 3.04,
+        "prior_mark_observation_date": None,
         "prior_resolved_outcome_pct": -14.35,
         "sector_reco_at_entry": "avoid",
         "entry_status_at_entry": "await_confluence",
