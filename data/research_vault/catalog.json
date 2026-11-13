@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T13:08:32.589363+00:00",
-  "count": 3297,
+  "generated_at": "2026-11-13T13:38:38.450212+00:00",
+  "count": 3298,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -620,6 +620,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3ykgqxjyu90-0a513a",
+      "title": "Political headwinds for commodities prices",
+      "institution": "Commerzbank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T21:37:46Z",
+      "summary_points": [
+        "Geopolitical oil price impact: US midterm elections triggered Brent oil's sharpest weekly drop since 2019 (USD 10 decline) as risk premium unwound; Democratic congressional majority may hinder war funding, amplifying downward pressure.",
+        "Commodities flow dynamics: Iraq cuts December oil prices to 6½-year lows, OPEC crude production up 1.4M bpd (Oct), US drilling activity at 463 rigs (highest since May 2025), and elevated Chinese iron ore imports amid supply/demand imbalances.",
+        "Base Metals Demand Crossfire: AI-driven copper/aluminum demand faces headwinds from Democratic data center regulations (Gallup shows voter opposition) and tariff uncertainty, though energy transition tailwinds may offset some pressure.",
+        "German Gas Market Supply Risks: INES warns of winter supply bottlenecks with storage 29% below 5-year average, creating significant upside price risk despite recent TTF declines."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
