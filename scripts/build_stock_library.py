@@ -3888,14 +3888,18 @@ def main(now: datetime | None = None) -> int:
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("stock_conviction_gate.json unreadable (%s)", e)
     _tmark("context_chips")
-    # analyst estimate-REVISION momentum — the fast/early EDGE leg. Drip a capped batch each
-    # build (resumable, never fatal), then read the latest readings into a cross-sectional z.
+    # analyst estimate-REVISION momentum — the fast/early EDGE leg. Nightly, the drip runs in
+    # daily.yml's collect_tail job and this build reads the committed parquet: the engine job
+    # sets MACRO_REVISIONS_DRIP=collect_tail (2026-11-07, #7646 — the drip was 102 of this
+    # builder's 143 minutes on the render path; see collectors/equity_revisions.py "Nightly
+    # drip ownership"). An ad-hoc build with the variable unset still drips a capped batch
+    # here (resumable, never fatal). Then read the latest readings into a cross-sectional z.
     try:
-        from collectors.equity_revisions import fetch_revisions
+        from collectors.equity_revisions import drip_if_owner
         if _no_drip():
             log.info("revision drip skipped (render lane — data/ write discarded)")
         else:
-            fetch_revisions(max_new=int(config.load().get("equity_profile", {}).get("per_build", 200)))
+            drip_if_owner("build_site", max_new=int(config.load().get("equity_profile", {}).get("per_build", 200)))
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("revision drip skipped (%s)", e)
     revision_z: dict[str, float] = {}

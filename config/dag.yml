@@ -599,6 +599,22 @@ lanes:
           and data/corp_bonds/forward_log.jsonl (keep-FIRST ledger).
           Spread velocity-percentile is PRIMARY; oscillator crosses SECONDARY per
           CCW-R15. Display-tier; authority all-false. Non-fatal (CCW-R16).
+      - id: equity_revisions_drip
+        module: collectors.equity_revisions
+        note: >
+          Analyst estimate-revision drip (2026-11-07, macro #7646 root cause).
+          Moved here from scripts/build_stock_library.py, where it ran INSIDE
+          build_site on the engine job's render path: 102 of build_site's 143 min
+          on 2026-11-06 (engine-core band 170 min), the step that carried the
+          engine job past the runner kill six nights running. Bare invocation =
+          the nightly config cap (equity_profile.per_build, 200 stalest names;
+          <6d-fresh names skipped). Checkpoints data/revisions/latest.parquet +
+          history.parquet every 25 names plus the SRC-A1 expectation stores, so a
+          step-timeout-truncated night keeps its progress. The engine job sets
+          MACRO_REVISIONS_DRIP=collect_tail so build_site reads the committed
+          parquet (≤1-run-stale, inside the 6-day freshness window — the
+          factor_series sibling contract above). Last before the commit; 120-min
+          step bound + continue-on-error. Non-fatal.
 
   # ── daily.yml / engine ──────────────────────────────────────────────────
   - workflow: .github/workflows/daily.yml

@@ -2248,6 +2248,28 @@ jobs:
         run: |
           python -m engine.credit_momentum \
             || echo "::warning::credit_momentum engine failed (non-fatal)"
+      - name: timings band — revisions-drip (W2)
+        run: python3 scripts/nightly_timings.py mark --band revisions-drip || echo "::warning::timings band mark failed (non-fatal)"
+      - name: analyst revisions drip (collectors.equity_revisions; non-fatal)
+        # #7646: collect_tail owns accrual; engine renders committed revisions (one-night lag).
+        # Keep the CLI bare for the configured 200-name cap and place it last before commit.
+        # Earlier deadline: job start + 200m - 30m commit reserve, or now + 115m.
+        # The collector flushes atomic checkpoints; the 120m step timeout is a backstop.
+        timeout-minutes: 120
+        continue-on-error: true
+        run: |
+          stamp="${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
+          now=$(date +%s)
+          if [ -r "$stamp" ]; then start=$(cat "$stamp"); else echo "::warning::revisions drip: job-start stamp missing — job-cap deadline measured from now"; start=$now; fi
+          case "$start" in
+            ''|*[!0-9]*) echo "::warning::revisions drip: invalid job-start stamp — job-cap deadline measured from now"; start=$now ;;
+          esac
+          start=$((10#$start))
+          job_deadline=$(( start + (200 - 30) * 60 ))
+          step_deadline=$(( now + 115 * 60 ))
+          export MACRO_REVISIONS_DEADLINE_EPOCH=$(( job_deadline < step_deadline ? job_deadline : step_deadline ))
+          python -m collectors.equity_revisions \
+            || echo "::warning::equity_revisions drip failed (non-fatal)"
       - name: timings band — commit (W2)
         run: python3 scripts/nightly_timings.py mark --band commit || echo "::warning::timings band mark failed (non-fatal)"
       - name: commit tail data
@@ -2326,6 +2348,7 @@ jobs:
                               # build_confluence_strength, archive_signals,
                               # archive_context_snapshots, build_thematic_state,
                               # grade_thematic) can advance their ledgers.
+      MACRO_REVISIONS_DRIP: collect_tail  # #7646: render committed revisions; collect_tail owns accrual.
     steps:
       - name: timings — job start mark (W2)
         run: date +%s > "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
