@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T19:39:25.725753+00:00",
-  "count": 3316,
+  "generated_at": "2026-11-13T20:09:43.097827+00:00",
+  "count": 3317,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -163,6 +163,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-w1gx0qfg6cl-b8d851",
+      "title": "UBS S&T UBS TECH DAILY CURT COMMENT Nvidia, ams, CBRS, AMAT, Wise Darren Curtis 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:23:10Z",
+      "summary_points": [
+        "NVIDIA Leadership Risk: Jensen resignation triggers 20% cut to 2028 targets; sell-side numbers require flawless execution amid 18-month negative product effect timeline.",
+        "MSFT Cloud Deal Catalyst: New cloud-based MSFT deal confirmed; hardware sales offset data center delays driving results above expectations.",
+        "Guidance Resilience: Solid guidance validated as hardware revenue compensates for data center timing issues, signaling operational stability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
