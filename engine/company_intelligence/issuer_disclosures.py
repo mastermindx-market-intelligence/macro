@@ -337,6 +337,21 @@ _FIGURE_KNOWN_XBRL = frozenset((b"nonfraction", b"nonnumeric", b"continuation"))
 _FIGURE_ATTR = re.compile(
     rb"(?:\s+|(?<=[\"']))([^\s<>/\"'=]+)(?:\s*=\s*(\"[^\"]*\"|'[^']*'|[^\s<>\"'`]+))?")
 _FIGURE_DISPLAY = re.compile(r"(?:^|;)\s*display\s*:", re.IGNORECASE)
+# Fix 7 (ruling 67). R7-5: a style that sets text direction cannot be read plainly.
+_FIGURE_DIRECTION = re.compile(r"(?:^|;)\s*(?:direction|unicode-bidi)\s*:", re.IGNORECASE)
+# R7-8: after an empty self-closed hidden cell, only blanks and then a cell opens or a row closes.
+_FIGURE_EMPTY_CELL_NEXT = re.compile(
+    rb"[ \t\r\n\f]*(?:<(?:td|th)(?=[\s/>])|</tr\s*>)", re.IGNORECASE)
+# R7-4: the table content model. A tag whose innermost open element is one of the
+# table parents must be one that belongs there, and holds no text of its own.
+_FIGURE_TABLE_PARENTS = frozenset(b"table thead tbody tfoot tr colgroup".split())
+_FIGURE_TABLE_NEEDS = {
+    b"tr": frozenset(b"table thead tbody tfoot".split()),
+    b"td": frozenset((b"tr",)), b"th": frozenset((b"tr",)),
+    b"thead": frozenset((b"table",)), b"tbody": frozenset((b"table",)),
+    b"tfoot": frozenset((b"table",)), b"caption": frozenset((b"table",)),
+    b"colgroup": frozenset((b"table",)), b"col": frozenset((b"colgroup", b"table")),
+}
 
 
 def _figure_blank(ch: str) -> bool:
@@ -368,11 +383,14 @@ def _figure_name_known(name: bytes) -> bool:
 def _figure_tag_style(tok: bytes) -> tuple[bool, bool]:
     """R6-3 and R6-4 on one opening tag: ``(unreadable, display)``. Unreadable is
     a ``style`` value holding a backslash, ``/*`` or ``&``, or any ``dir``
-    attribute; display is a ``display`` declaration in the style value."""
+    attribute; display is a ``display`` declaration in the style value. Fix 7:
+    a ``direction`` or ``unicode-bidi`` declaration in the style value (R7-5) and
+    an ``img`` ``alt`` value holding an ASCII digit (R7-6) are unreadable too."""
     nm = _FIGURE_TAG_NAME.match(tok)
     unreadable = display = False
     if nm is None:
         return False, False
+    is_img = nm.group(2).lower() == b"img" and not nm.group(1)
     for m in _FIGURE_ATTR.finditer(tok, nm.end()):
         attr = m.group(1).lower()
         value = (m.group(2) or b"")
@@ -380,10 +398,16 @@ def _figure_tag_style(tok: bytes) -> tuple[bool, bool]:
             value = value[1:-1]
         if attr == b"dir":
             unreadable = True
+        elif attr == b"alt" and is_img:
+            if re.search(rb"[0-9]", value):
+                unreadable = True
         elif attr == b"style":
             if b"\\" in value or b"/*" in value or b"&" in value:
                 unreadable = True
-            if _FIGURE_DISPLAY.search(value.decode("utf-8", errors="ignore")):
+            style = value.decode("utf-8", errors="ignore")
+            if _FIGURE_DIRECTION.search(style):
+                unreadable = True
+            if _FIGURE_DISPLAY.search(style):
                 display = True
     return unreadable, display
 
@@ -407,9 +431,17 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
     opened there are kept on a stack (a self-closed non-void tag opens one); a
     closing tag that is not the innermost open element, or the region's own
     element once the stack is empty, makes the region last to the end of the
-    document. A prefixed tag ending ``/>`` (``ix:hidden/``) is not pushed: a
-    prefixed element is empty in the XML reading and is closed with its parent in
-    the HTML reading, so both readings agree it does not hold the region open.
+    document. Fix 7 (ruling 67) R7-1: a prefixed self-closed tag (``ix:hidden/``)
+    is pushed flagged. A closing tag walks down skipping flagged entries of
+    another name; reaching a flagged entry of its own name makes the region
+    permanent, because HTML closes the self-closed element and XML closes an
+    outer one, so the two readings disagree. R7-2: only an unprefixed name is raw
+    text. R7-3: the shown elements keep one HTML-reading stack; a stray or
+    mis-nested closing tag in the window is refused, and an sc tag (a non-void
+    tag ending ``/>``) is closed by the XML reading as well. R7-4: the table
+    content model (``td`` needs ``tr`` and so on; nothing else, and no text or
+    reference, directly inside a table parent). R7-5/R7-6: a ``direction`` or
+    ``unicode-bidi`` style, and an ``img`` ``alt`` holding a digit, are unreadable.
     R6-2/R6-3: every element open at the span start, and every shown
     tag within the window of the span, needs a known name and no unreadable
     ``style`` value or ``dir`` attribute, else FIGURE_SPAN_MISMATCH (a tag that
@@ -422,17 +454,33 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
     enclosing = None      # any(stack) frozen at the span start
     inner = False
     hidden = None         # (name, inner names, start, permanent) in a not-shown element
-    shown_open: list = []  # open shown elements: (name, unknown or unreadable, display)
+    # open shown elements, one HTML-reading stack: (name, refused-if-in-scope, display, sc)
+    shown_open: list = []
     limit = end + _FIGURE_WINDOW_BYTES
     window_lo = start - _FIGURE_WINDOW_BYTES
-    pos = 0
+    pos = prev_end = 0
+
+    def table_text(lo: int, hi: int, *, reference: bool = False) -> None:
+        # R7-4: text, or a character reference, directly inside a table parent.
+        if not shown_open or shown_open[-1][0] not in _FIGURE_TABLE_PARENTS:
+            return
+        if not reference and not raw[lo:hi].strip(b" \t\r\n\f"):
+            return
+        _require(not hi > window_lo, "FIGURE_SPAN_MISMATCH")
+        top = shown_open[-1]
+        shown_open[-1] = (top[0], True, top[2], top[3])
+
     while True:
         m = _FIGURE_TOKEN.search(raw, pos)
         if m is None or m.start() >= limit:
+            if hidden is None:
+                table_text(prev_end, min(len(raw) if m is None else m.start(), limit))
             break
         s, e = m.span()
         tok = m.group(0)
         pos = e
+        if hidden is None and prev_end < s:
+            table_text(prev_end, s)
         if enclosing is None and s >= start:
             enclosing = any(stack)
             _require(not any(item[1] for item in shown_open), "FIGURE_SPAN_MISMATCH")
@@ -441,9 +489,13 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
             shown = html.unescape(text)
             if shown == text:      # not a reference: the '&' is literal text
                 pos = s + 1
-            elif hidden is None:
-                tokens.append((s, e, _FIGURE_REF_KIND, shown))
+            else:
+                if hidden is None:
+                    table_text(s, e, reference=True)
+                    tokens.append((s, e, _FIGURE_REF_KIND, shown))
+                prev_end = e
             continue
+        prev_end = e
         if tok == b"<":            # a tag opener that never closes
             hidden = (b"", [], hidden[2] if hidden is not None else s, True)
             break
@@ -462,7 +514,7 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
         name = nm.group(2).lower() if nm is not None else b""
         local = name.rsplit(b":", 1)[-1]
         decl = tok[1:2] in (b"!", b"?")
-        if not closing and local in _FIGURE_RAWTEXT_NAMES:
+        if not closing and name in _FIGURE_RAWTEXT_NAMES:     # R7-2: unprefixed names only
             if hidden is None:
                 unreadable, _display = _figure_tag_style(tok)
                 _require(not (e > window_lo and (not _figure_name_known(name) or unreadable)),
@@ -472,37 +524,87 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
             stop = close.end() if close is not None else len(raw)
             if hidden is None:
                 tokens.append((s, stop, _FIGURE_DEAD_KIND, ""))
-            pos = stop
+            pos = prev_end = stop
             continue
         if hidden is not None:
             hname, names, hstart, permanent = hidden
             if permanent or decl:
                 continue
             if closing:
-                if name != (names[-1] if names else hname):
-                    hidden = (hname, names, hstart, True)   # R6-1: stays hidden to the end
-                elif names:
-                    names.pop()
-                else:
+                # R7-1: walk down skipping flagged (prefixed self-closed) entries not
+                # named like the closing tag; the first other entry decides.
+                i = len(names) - 1
+                while i >= 0 and names[i][1] and names[i][0] != name:
+                    i -= 1
+                if i >= 0:
+                    if names[i][1] or names[i][0] != name:
+                        hidden = (hname, names, hstart, True)   # readings disagree / broken nesting
+                    else:
+                        del names[i:]
+                elif name == hname:
                     tokens.append((hstart, e, _FIGURE_DEAD_KIND, ""))
                     hidden = None
-            elif name not in _FIGURE_VOID_NAMES and not (tok.endswith(b"/>") and b":" in name):
-                names.append(name)    # a self-closed unprefixed non-void tag counts as opening
+                else:
+                    hidden = (hname, names, hstart, True)
+            elif name not in _FIGURE_VOID_NAMES:
+                names.append((name, tok.endswith(b"/>") and b":" in name))
             continue
         if not closing and name not in _FIGURE_VOID_NAMES and _figure_tag_hidden(local, tok):
+            if (tok.endswith(b"/>") and name in (b"td", b"th")
+                    and _FIGURE_EMPTY_CELL_NEXT.match(raw, e) is not None):
+                # R7-8: an empty closed hidden cell; the next token is not consumed.
+                # Recorded as a plain tag: a DEAD token met before any neighbour is
+                # FIGURE_SIGN_UNSUPPORTED, which would refuse the honest row again.
+                tokens.append((s, e, _FIGURE_TAG_KIND, ""))
+                continue
             hidden = (name, [], s, False)
             continue
         display = False
         if not decl:
             unreadable, display = _figure_tag_style(tok)
             bad = unreadable or not _figure_name_known(name)
-            _require(not (e > window_lo and bad), "FIGURE_SPAN_MISMATCH")
             if closing:
-                display = False
-                if shown_open and shown_open[-1][0] == name:
-                    display = shown_open.pop()[2]
-            elif name not in _FIGURE_VOID_NAMES:
-                shown_open.append((name, bad, display))
+                # R7-3: one HTML-reading stack of the shown elements.
+                _require(not (e > window_lo and bad), "FIGURE_SPAN_MISMATCH")
+                idx = next((i for i in range(len(shown_open) - 1, -1, -1)
+                            if shown_open[i][0] == name), None)
+                if idx is None:        # a stray closing tag: no separator, pops nothing
+                    # R7-3a: with nothing open its opening tag lies before the excerpt.
+                    _require(not (shown_open and e > window_lo), "FIGURE_SPAN_MISMATCH")
+                    display = True
+                else:
+                    _require(not (e > window_lo and any(not item[3] for item in shown_open[idx + 1:])),
+                             "FIGURE_SPAN_MISMATCH")
+                    found = shown_open[idx]
+                    del shown_open[idx:]
+                    display = found[2]
+                    if found[3]:       # the XML reading closed the nearest lower same-name element
+                        for j in range(len(shown_open) - 1, -1, -1):
+                            if shown_open[j][0] == name:
+                                low = shown_open[j]
+                                shown_open[j] = (name, low[1], low[2], True)
+                                display = display or low[2]
+                                break
+            else:
+                sc = tok.endswith(b"/>") and name not in _FIGURE_VOID_NAMES
+                if name in (b"td", b"th"):
+                    if shown_open and shown_open[-1][3] and shown_open[-1][0] in (b"td", b"th"):
+                        shown_open.pop()
+                elif name == b"tr":
+                    if shown_open and shown_open[-1][3] and shown_open[-1][0] in (b"td", b"th"):
+                        shown_open.pop()
+                    if shown_open and shown_open[-1][3] and shown_open[-1][0] == b"tr":
+                        shown_open.pop()
+                # R7-4: the table content model.
+                innermost = shown_open[-1][0] if shown_open else None
+                needs = _FIGURE_TABLE_NEEDS.get(name)
+                if needs is not None:
+                    bad = bad or (innermost is not None and innermost not in needs)
+                elif innermost in _FIGURE_TABLE_PARENTS:
+                    bad = True
+                _require(not (e > window_lo and bad), "FIGURE_SPAN_MISMATCH")
+                if name not in _FIGURE_VOID_NAMES:
+                    shown_open.append((name, bad, display, sc))
         if local == b"nonfraction":
             if closing:
                 if stack:
@@ -743,7 +845,14 @@ def _verify_figure_span(name: str, span: dict, text: str, sign: str, raw: bytes,
     needs a known name. R6-3: a ``style`` value holding a backslash, ``/*`` or
     ``&``, or any ``dir`` attribute, is refused there. R6-4: a block tag that is
     hidden or carries a ``display`` declaration is not a separator in rules 3 and
-    4. Pre-2001 SGML text filings are refused (accepted limit).
+    4. Pre-2001 SGML text filings are refused (accepted limit). Fix 7 (ruling 67)
+    adds R7-1 to R7-6, described in ``_figure_scan``, with the same property.
+    Accepted limits (ruling 70): a table tag is tested against the table content
+    model only when something is open (a document with no root element passes it);
+    a stray closing tag with nothing open is ignored (a fragment). R7-8, the one
+    change that admits more than before: a hidden self-closed ``td``/``th`` followed
+    only by blanks and then an opening ``td``/``th`` or a closing ``tr`` is an
+    empty closed cell and opens no hidden region.
 
     Known limits, left to the ratifier who reads the rendered excerpt: the
     meaning of nearby words ("loss", "credit"), the stated scale, and invisibility

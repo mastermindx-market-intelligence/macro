@@ -1745,3 +1745,114 @@ def test_r6_5_replay_refuses_a_figure_span_outside_the_activity_span(tmp_path):
 
 def test_r6_5_replay_honest_source_still_returns_none(tmp_path):
     test_r5_replay_honest_segment_source_returns_none(tmp_path)
+
+
+# ---------------------------------------------------------------------------
+# Seventh review (ruling 67): the exact inputs of the sixth reviewer's probe
+# (B1..B6, B9) plus the sc-tag and replay-bounds cases.
+# ---------------------------------------------------------------------------
+
+_R7_PAD = "<p>" + "pad " * 600 + "</p>"
+
+
+@pytest.mark.parametrize("doc", [
+    "<p>Intro</p><ix:nonNumeric style=~display:none~ name=~a~><ix:nonNumeric name=~b~/></ix:nonNumeric>"
+    "Revenue [[1,234]] total</p>" + _R6_NX,
+    "<p>Intro</p><x:span hidden><x:span/></x:span>Revenue [[1,234]] total" + _R6_NX,
+], ids=["B1_ix_selfclose_same_name_hidden", "B1b_x_span_hidden_attr"])
+def test_r7_1_flagged_self_closed_entry_named_like_the_closing_tag_is_permanent(doc):
+    _r6_refused(doc)
+
+
+@pytest.mark.parametrize("doc", [
+    "<p>Intro</p><x:title><div hidden></x:title>" + _R7_PAD + "Revenue [[1,234]] total</div>" + _R6_NX,
+    "<p>Intro</p><x:title><div hidden></x:title>Revenue [[1,234]] total</div>" + _R6_NX,
+], ids=["B2_prefixed_rawtext_far", "B2b_prefixed_rawtext_near"])
+def test_r7_2_a_prefixed_name_is_not_raw_text(doc):
+    _r6_refused(doc)
+
+
+def test_r7_3_a_misnested_inline_block_is_refused():
+    _r6_refused("<p>Revenue</p><p style=~display:inline~>5<b></p><p style=~display:inline~>[[1,234]]</p>" + _R6_NX)
+
+
+@pytest.mark.parametrize("early", ["<span/>", "<td/>"])
+def test_r7_3_a12_after_an_earlier_sc_tag_is_still_refused(early):
+    _r6_refused(early + "<p>Revenue</p><p style=~display:inline~>5</p>"
+                "<p style=~display:inline~>[[1,234]]</p>" + _R6_NX)
+
+
+@pytest.mark.parametrize("doc", [
+    "<p>Revenue 5<td>[[1,234]]</td> total</p>" + _R6_NX,
+    "<div>Revenue 5<tr>[[1,234]] total</div>" + _R6_NX,
+    "<div>Revenue 5<caption>[[1,234]] total</div>" + _R6_NX,
+    "<div>Revenue 5<table>[[1,234]]<tr><td>x</td></tr></table></div>" + _R6_NX,
+    "<div>Revenue 5<table><tr><td>x</td></tr>[[1,234]]</table> total</div>" + _R6_NX,
+], ids=["B3_td_outside_table", "B3b_tr_outside_table", "B3d_caption_outside",
+        "B4_foster_before_tr", "B4b_foster_after_tr"])
+def test_r7_4_the_table_content_model_is_enforced(doc):
+    _r6_refused(doc)
+
+
+def test_r7_5_style_direction_is_unreadable():
+    _r6_refused("<p>Segment</p><p style=~direction:rtl~>[[1,234]] abc -</p>" + _R6_NX)
+
+
+def test_r7_6_img_alt_holding_a_digit_is_refused():
+    _r6_refused("<p>Revenue <img src=~x~ alt=~5~>[[1,234]] total</p>" + _R6_NX)
+
+
+@pytest.mark.parametrize("start,end", [(-5, 99999), (0, 10 ** 9)], ids=["negative_start", "end_past_body"])
+def test_r7_7_replay_refuses_an_activity_span_outside_the_body(tmp_path, start, end):
+    case = _segment_case(tmp_path)
+    spec = copy.deepcopy(case.snapshot.spec)
+    body_len = spec["edition"]["source_byte_length"]
+    spec["fact"]["span"] = {"start_byte": start, "end_byte": end if end < 10 ** 9 else body_len + 7,
+                            "text_sha256": spec["fact"]["span"]["text_sha256"]}
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    with pytest.raises(n.DisclosureError) as caught:
+        segment.replay_segment_source(snapshot, case.pinned.authority)
+    assert caught.value.code == "SOURCE_SPAN_MISMATCH"
+
+
+# Ruling 70: R7-3a (stray closing tag with nothing open) and R7-8 (empty hidden cell).
+
+def test_r7_3a_a_stray_closing_tag_with_something_open_is_still_refused():
+    _r6_refused("<div>Revenue</td>5 <b>[[1,234]]</b> total</div>" + _R6_NX)
+
+
+def test_r7_3a_a_stray_closing_tag_with_nothing_open_is_ignored():
+    _r6_verify("$</td><td>[[1,234]]</td></tr>" + _R6_NX)
+
+
+_R7_8_ROW = ("<table><tr><td>Revenue</td><td style=~display:none~/>{mid}"
+             "{nxt}[[1,234]]</td></tr></table>" + _R6_NX)
+
+
+def test_r7_8_a_empty_hidden_cell_before_a_cell_is_admitted():
+    _r6_verify(_R7_8_ROW.format(mid="", nxt="<td>"))
+
+
+def test_r7_8_b_text_after_the_hidden_cell_is_refused():
+    _r6_refused(_R7_8_ROW.format(mid="5", nxt="<td>"))
+
+
+def test_r7_8_c_an_inline_tag_after_the_hidden_cell_is_refused():
+    _r6_refused(_R7_8_ROW.format(mid="", nxt="<span>"))
+
+
+def test_r7_8_d_a_hidden_self_closed_div_before_a_cell_is_refused_as_today():
+    _r6_refused("<table><tr><td>Revenue</td><div style=~display:none~/><td>[[1,234]]</td></tr></table>" + _R6_NX)
+
+
+def test_r7_8_e_hidden_cell_then_row_end_then_new_row_is_admitted():
+    _r6_verify("<table><tr><td>Revenue</td><td style=~display:none~/></tr>"
+               "<tr><td>[[1,234]]</td></tr></table>" + _R6_NX)
+
+
+def test_r7_8_f_hidden_cell_followed_by_a_closing_cell_is_refused():
+    # refused as today: the region opens and its end is a not-printed neighbour
+    with pytest.raises(n.DisclosureError) as caught:
+        _r6_verify("<table><tr><td>Revenue</td><td style=~display:none~/></td>"
+                   "<td>[[1,234]]</td></tr></table>" + _R6_NX)
+    assert caught.value.code == "FIGURE_SIGN_UNSUPPORTED"
