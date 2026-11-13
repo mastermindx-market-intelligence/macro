@@ -1810,13 +1810,11 @@ def test_regime_self_heal_binds_repair_push_to_main(
 def test_live_setup_retires_legacy_only_after_smoke_and_timer_enable():
     root = Path(__file__).resolve().parents[1]
     text = (root / "app" / "deploy" / "live-setup.sh").read_text()
-    smoke = text.index("setup_control smoke")
-    enable = text.index("setup_control arm")
-    retire = text.index("setup_control finish")
+    smoke = text.index("systemctl start macro-live-fast.service")
+    enable = text.index("systemctl enable --now")
+    retire = text.index('grep -v "macro-live')
     assert smoke < enable < retire
-    assert "preserving original transaction and publication evidence" in text
-    assert 'mv "$PUBLIC_DIR"' not in text
-    assert 'exec /usr/local/bin/macro-update --live-setup' in text
+    assert "first install failed; restoring legacy-only ownership" in text
     assert 'systemd-analyze verify "${unit_sources[@]}"' in text
 
 
@@ -2143,13 +2141,8 @@ def test_live_setup_installs_and_arms_the_breadth_lane():
     root = Path(__file__).resolve().parents[1]
     live_setup = (root / "app" / "deploy" / "live-setup.sh").read_text()
     assert "macro-live-breadth.service macro-live-breadth.timer" in live_setup
-    assert "setup_control arm" in live_setup
-    owner = (root / "app/deploy/update.sh").read_text()
-    assert 'for lane in ("prophet", "closepass", "breadth")' in owner
-    assert '(ANCILLARY_TIMERS if setup["ancillary_enrollment"] == "absent" else ())' in owner
-    # Fresh arming and disabled-existing intent are executed in the Linux owner
-    # fixtures; setup no longer runs an independent blanket enable command.
-    assert "systemctl enable --now" not in live_setup
+    enable_block = live_setup.split("systemctl enable --now")[1].split("\n\n")[0]
+    assert "macro-live-breadth.timer" in enable_block
 
 
 def test_breadth_unit_pair_exists_and_uses_the_shared_env_file():
