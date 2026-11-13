@@ -85,8 +85,11 @@ _CONTRA_STEMS = (
 _CONTRA_PATTERNS = [(s, re.compile(re.escape(s), re.IGNORECASE)) for s in _CONTRA_STEMS]
 _CONTRA_TERMS_MAX = 8
 
-# LLM tier (DeepSeek over its Anthropic-compatible endpoint — raw urllib, no SDK dep
-# in the admin venv). Verdicts land in the SAME sidecar as manual ratings.
+# LLM tier (DeepSeek over its Anthropic-compatible endpoint — raw urllib, so the legacy
+# path needs no SDK in the admin venv). Verdicts land in the SAME sidecar as manual
+# ratings. The Capacity Fabric branch below DOES need the anthropic SDK, which
+# admin/requirements.txt now carries; without it the adapter reports FabricUnavailable
+# and this urllib path stays the effective default.
 _CLASSIFY_URL = "https://api.deepseek.com/anthropic/v1/messages"
 _CLASSIFY_MODEL = "deepseek-v4-flash"
 _CLASSIFY_LIMIT_MAX = 50
@@ -688,10 +691,122 @@ def _parse_verdict(text: str) -> dict:
     return {"contradiction": v, "signals": signals, "note": str(obj.get("note") or "")[:400]}
 
 
+# --- Capacity Fabric cutover (Chairman estate migration outcome #3, 2026-11-12) ------
+# The classifier routes through the Capacity Fabric unified_router whenever a router
+# token is present; MACRO_LOGS_CLASSIFY_FABRIC=0 is the operator kill-switch. Off (no
+# token, killed, or the SDK will not import) leaves the raw-urllib path below byte-
+# identical. ONE router request per row: the router owns provider selection and its own
+# fallback ladder, so a served failure degrades exactly like a legacy failure and a
+# local retry would double-serve a call the router already resolved.
+_FABRIC_KILL_ENV = "MACRO_LOGS_CLASSIFY_FABRIC"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-logs-classify"
+_FABRIC_USAGE_LANE = "logs-classify"
+_FABRIC_LANE = "fast"
+# "Not enabled, or unreachable before any request left this host" — the caller then runs
+# the untouched legacy POST. Distinct from None, which is a served-call degradation.
+_FABRIC_FALLBACK = object()
+
+
+def _fabric_client():
+    """The Capacity Fabric adapter, or None when this host cannot import it.
+
+    Lazy and guarded: the admin panel must keep starting on a host without the adapter,
+    and `lib` is only importable once the repo root is on sys.path."""
+    try:
+        from lib import fabric_client  # noqa: PLC0415
+    except Exception:  # noqa: BLE001 — absent adapter is simply "not configured"
+        return None
+    return fabric_client
+
+
+def _fabric_enabled() -> bool:
+    """True when this classifier should route through the Capacity Fabric."""
+    if os.environ.get(_FABRIC_KILL_ENV, "").strip() == "0":
+        return False
+    fc = _fabric_client()
+    if fc is None:
+        return False
+    try:
+        return bool(fc.is_configured())
+    except Exception:  # noqa: BLE001 — an unreadable adapter state is "off"
+        return False
+
+
+def _record_fabric_usage(comp: Any) -> None:
+    """Book one router-served classification (provider="fabric", lane="logs-classify").
+
+    Never raises: a ledger miss must not lose a verdict that was already served."""
+    try:
+        from lib import ai_costs  # noqa: PLC0415
+
+        u = comp.usage or {}
+        ai_costs.record_usage(
+            lane=_FABRIC_USAGE_LANE,
+            provider="fabric",
+            model=getattr(comp, "model_served", None),
+            input_tokens=int(u.get("input_tokens") or 0),
+            output_tokens=int(u.get("output_tokens") or 0),
+            cache_read_tokens=int(u.get("cache_read_input_tokens") or 0),
+            cache_creation_tokens=int(u.get("cache_creation_input_tokens") or 0),
+            stage="mastermind_logs",
+        )
+    except Exception:  # noqa: BLE001 — telemetry only
+        pass
+
+
+def _classify_call_fabric(prompt: str) -> Any:
+    """One fabric classification, or _FABRIC_FALLBACK when nothing left the host.
+
+    Returns a parsed verdict dict on success, None for an empty reply, and None for a
+    served failure — the caller counts both as a skip, exactly as it counts a legacy
+    network error. A refusal drops any partial text before the parser can see it.
+    """
+    if not _fabric_enabled():
+        return _FABRIC_FALLBACK
+    fc = _fabric_client()
+    # _classify_prompt() embeds the instructions in the user text (the legacy POST has
+    # no system field). The router takes a real system block, so lift the instructions
+    # out and send the DATA block as the user turn — same content, no duplication.
+    system = _CLASSIFY_INSTRUCTIONS
+    user = prompt
+    if prompt.startswith(_CLASSIFY_INSTRUCTIONS):
+        user = prompt[len(_CLASSIFY_INSTRUCTIONS):].lstrip()
+    try:
+        comp = fc.complete(
+            [{"role": "user", "content": user}],
+            system=system,
+            lane=_FABRIC_LANE,
+            max_tokens=400,          # matches the legacy body cap
+            client="Python client",
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=_FABRIC_SESSION_ID,
+        )
+    except fc.FabricUnavailable:
+        # No request left this host (no token after all, or the SDK will not import),
+        # so nothing was served or billed: the legacy POST stays the effective path.
+        return _FABRIC_FALLBACK
+    except Exception:  # noqa: BLE001 — served failure degrades, never retries
+        return None
+    if getattr(comp.raw, "stop_reason", None) == "refusal":
+        return None
+    if not comp.text:
+        return None
+    _record_fabric_usage(comp)
+    return _parse_verdict(comp.text)
+
+
 def _classify_call(prompt: str, api_key: str) -> dict | None:
     """One DeepSeek call over its Anthropic-compatible endpoint. Raw urllib on purpose:
-    the admin venv carries no LLM SDK, and this is a single unstreamed POST. Raises on a
-    network/HTTP problem — the caller counts it as a skip."""
+    this legacy path needs no LLM SDK, and it is a single unstreamed POST. Raises on a
+    network/HTTP problem — the caller counts it as a skip.
+
+    Capacity Fabric: when the router is configured (and MACRO_LOGS_CLASSIFY_FABRIC is
+    not "0") the call above serves the row instead. A router that cannot be reached at
+    all falls through to the urllib path below, which is unchanged."""
+    fabric = _classify_call_fabric(prompt)
+    if fabric is not _FABRIC_FALLBACK:
+        return fabric
     body = json.dumps({
         "model": _CLASSIFY_MODEL,
         "max_tokens": 400,
@@ -744,7 +859,10 @@ def classify_contradictions(limit: int = 20, root: Path | None = None) -> dict:
                 "generated_at": _now_iso()}
     try:
         api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
-        if not api_key:
+        # Capacity Fabric: the router holds the credentials, so a missing DeepSeek key
+        # is not a reason to refuse the batch when the fabric branch will serve it.
+        # With the fabric off this is exactly the legacy gate.
+        if not api_key and not _fabric_enabled():
             return {"ok": False, "error": "no_llm_key", "classified": 0, "skipped": 0,
                     "note": "DEEPSEEK_API_KEY is not set for the admin process — "
                             "the deterministic ⚡ scan still works without it.",
