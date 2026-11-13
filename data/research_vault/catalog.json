@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T21:39:49.780660+00:00",
-  "count": 3322,
+  "generated_at": "2026-11-13T22:09:51.842078+00:00",
+  "count": 3323,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -2033,6 +2033,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kod9opxdmbj-8f289b",
+      "title": "Nuclear Nuggets Global reactor tracker November edition",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:43:07Z",
+      "summary_points": [
+        "US Regulatory Milestone: NRC approves Xe-100 Construction Permit (first high-temp gas-cooled reactor permit in 60 years, 11/9/2026), accelerating SMR commercialization and private capital deployment.",
+        "Uranium Pricing Shift: Spot U₃O₈ spiked to $92.50/lb (late Oct), term prices rose to $97/lb; term volumes trend toward 5-year average, signaling supply-demand tension amid utility solicitations.",
+        "EU/China Capital Allocation: EU’s €400mn Innovation Fund for France’s CAL30 reactor (11/6/2026) and China’s 7+ nuclear construction starts (incl.",
+        "Haiyang 5, Tianwan-7) reflect accelerated capital flows and supply chain expansion.",
+        "UEC Supply Agreement: UEC signed long-term U₃O₈ sales agreements (1.1M lbs 2027-2032) with U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
