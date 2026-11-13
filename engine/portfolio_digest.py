@@ -1,99 +1,15 @@
-"""Change-triggered portfolio digest — the COMPOSER only (PSI §19.5, W6).
+"""Pure change-triggered portfolio digest composer (PSI §19.5).
 
-    compose_digest(previous, current, *, user_id, asof, population) -> dict | None
+The composer returns bilingual content or None on a quiet day. It imports no
+mailer and performs no I/O. The explicit, default-off job boundary lives in
+scripts/deliver_portfolio_digest.py. Only that caller checks a specific user's
+digest preference, resolves the recipient and passes a marketing message to
+the existing ledger-first mailer. The shared transactional alert drain is a
+separate path. The nightly snapshot cursor and authenticated opt-in are
+runtime prerequisites. The presence of the caller does not establish either.
 
-**THE SEND PATH IS OFF. That statement is DATED, and it was checked on 2026-09-13
-against ``origin/main``.** This module composes a digest and returns it as data. It does
-not import ``app.mailer``, does not open a socket, and contains no call that could
-deliver anything to a human. No digest has ever reached a reader. ``send_path_status()``
-returns the same statement as data so a caller or an ops surface reports the truth
-instead of inferring it; only its ``en``/``zh`` fields may ever be rendered.
-
-Why "off" and not merely "unwired by choice" — the seat ruling for this packet (W9
-RATIFICATION row ``w9b_f08_12``) is conditional: wire the digest into the existing drain
-*if the drain has a configured transport*, otherwise ship the dated honesty line and name
-the missing transport once. The digest has no transport of its own and the existing drain
-is not its home, so this is the honesty line and ``NEEDS_SEAT`` below names what is
-missing.
-
-Four reads support that. Three are IN-TREE and re-checkable on ``origin/main`` — a test
-pins them. The fourth is a DEPLOYED fact this tree can document but never prove. Keep the
-two apart: only the first three can be re-verified by reading the repo, so a reader who
-wants to age the claim knows which leg needs a host and which needs a checkout.
-
-* IN-TREE, and the load-bearing leg: nothing calls the composer. ``git grep -n
-  "compose_digest" -- ':!tests/'`` returns this file alone, so no endpoint, job or script
-  under ``app/``, ``engine/`` or ``scripts/`` composes a digest in order to hand it to
-  anything. A send path with no caller cannot send, whatever the credentials say.
-* IN-TREE: the predicate a future send would have to satisfy is
-  ``app/mailer.py:126-133`` ``is_configured()`` — ``MAIL_SMTP_HOST`` + ``MAIL_SMTP_USER``
-  + ``MAIL_SMTP_PASS`` + ``MAIL_FROM`` — and ``app/mailer.py:408-411`` returns
-  ``'skipped_no_smtp'`` rather than mailing when it is false.
-* IN-TREE: the existing drain is not a drop-in home even once enabled.
-  ``engine/alert_delivery_drain.py``, reached via ``scripts/drain_alert_outbox.py``, moves
-  transactional ``alert_fire`` rows out of ``public.alert_outbox``, while a digest is
-  ``marketing`` class (see ``CLS``) and needs the email_prefs digest opt-in / unsub /
-  one-click leg that drain does not have (measured: ``grep -c email_prefs
-  engine/alert_delivery_drain.py`` is 0, ``grep -c unsub`` is 0, ``grep -c one-click``
-  is 0 — the drain DOES have email_suppression at :473 / :305, so that is not a
-  missing leg). Its own code files a marketing row that reaches it under
-  "a marketing-only ledger race that should never reach this transactional class in
-  practice". ``ALERT_DRAIN_ENABLE=1``
-  (``scripts/drain_alert_outbox.py:43-46``; ``app/deploy/README.md:361-363``, "Ships
-  DORMANT … forces ``--dry-run`` (decisions only, no sends, no writes)") is THAT lane's
-  flag and is **not** a precondition for this path: a digest is not an ``alert_fire`` row,
-  so no value of that flag can ever send one. The same is true of the opus privacy/risk
-  review ``app/deploy/README.md:363-365`` requires before the alert drain's live sends —
-  it is scoped to that lane, has not been performed, and is not a substitute for the
-  review a marketing-class digest send would owe in its own right.
-* DEPLOYED, documented here but not provable from this tree: whether relay credentials
-  are actually set lives in ``/etc/macro-api.env``, written from repo secrets by
-  ``.github/workflows/deploy-api-secrets.yml:195`` (``touch /etc/macro-api.env`` and
-  the heredoc that writes the MAIL_SMTP_* keys; ``:163`` is the value-source line
-  ``_add MAIL_SMTP_HOST "$MAIL_HOST"``, not the env-file write). The in-repo
-  statement of record is
-  ``docs/ops/email-support-setup.md:3`` — the estate "works today in **mail-off mode**" —
-  with §4 (``:126``) spelling out what mail-off looks like and ``:71`` restating that
-  ``is_configured()`` requires host + user + pass + from, a partial config counting as
-  mail-off on purpose. Re-checking THIS clause means reading the deployed environment, not
-  this checkout. What the digest would additionally owe before a first send is PSI §19.5
-  gate 12 (``research/PORTFOLIO_SUPERINTELLIGENCE_MASTERPLAN_BY_FABLE.md:673``): opt-in →
-  change → ONE email → one-click unsub honored, with mail-off degrading clean.
-
-Wiring the nightly job — recipient resolution, the ``email_prefs`` digest opt-in, the
-quiet-day/weekly-heartbeat schedule, suppression, the one-click unsub URL — therefore
-remains the named follow-up (PSI §19.5 gate 12, "opt-in → change → ONE email → one-click
-unsub honored"). Shipping the composer and the send path together would have put an
-untested nightly job one config flag away from mailing real users; shipping the composer
-alone is the reviewable half, and the half the diff engine needs to be proven against.
-
-Layering law (the one ``engine/alert_delivery_drain.py`` cites this module for):
-``engine/`` may not import ``app/``, so a future send path injects its send function at
-the ``scripts/`` seam exactly as the alert drain does — it is never imported from here.
-
-The deliberate structural consequence: because there is no mailer import ANYWHERE in
-this module, no test of it — and no build step that imports it — can send mail. That is
-enforced by construction rather than by discipline, and pinned by a test.
-
-**Return contract.** ``None`` on a quiet day (no changes) — PSI §19.5: "a quiet day sends
-NOTHING". Otherwise a dict carrying exactly the arguments a future send path needs:
-
-    {"template", "cls", "idem_key", "subject", "title_en", "title_zh", "preheader",
-     "eyebrow", "why_en", "why_zh", "blocks", "change_count"}
-
-``blocks`` is already in ``app.mailer.render_email``'s block format, so the wiring job is
-``html, text = mailer.render_email(d["title_en"], d["title_zh"], d["blocks"], …)`` — no
-content decisions left to make at send time.
-
-**Privacy (PSI §19.5 + the two-organisms law).** The composer receives snapshots, which
-carry tickers and desk state and nothing else — no shares, no cost basis, no weights (see
-engine/portfolio_changes). The ``idem_key`` is ``psi_digest:<user_id>:<asof>`` — the user
-id and the date, which is what makes it idempotent per user-day, and it is the ONLY place
-a user identifier appears. The composed body names holdings, so neither it nor the
-snapshots may ever be logged; the send ledger records metadata only.
-
-Descriptive, never prescriptive; bilingual EN+ZH throughout; no falsifier/refutation
-vocabulary. The lines are the change engine's own, passed through verbatim.
+Snapshot inputs contain desk state, never money values. Do not log the digest
+or snapshots. The mailer's metadata-only daily key is psi_digest:<user_id>:<asof>.
 """
 from __future__ import annotations
 
@@ -113,14 +29,9 @@ MAX_LINES = 10
 # --------------------------------------------------------------------------- #
 # Send-path state (packet W9B_F08_12, MO-PAID-085 residual — the honesty fork)
 # --------------------------------------------------------------------------- #
-# The date the two claims below were checked against origin/main. An undated "not
-# wired" is what LEDGER_MOVES #10 kept re-filing: a reader cannot age it, so it reads
-# as either fresh or abandoned and gets re-investigated either way. Re-checking means
-# re-running the three reads named in the module docstring and moving this date.
-SEND_PATH_ASOF = "2026-09-13"
+# Source observation only. Activation and delivery require separate evidence.
+SEND_PATH_ASOF = "2026-11-02"
 
-# Machine field. Never rendered — the sentences a person may be shown are the EN/ZH
-# pair below, which carry no enum, no slug and no config name.
 SEND_PATH_STATE = "off"
 
 _REFUSAL_MONTHS_EN = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -149,55 +60,21 @@ def _plain_date(iso):
 _SEND_PATH_DATE_EN, _SEND_PATH_DATE_ZH = _plain_date(SEND_PATH_ASOF)
 
 SEND_PATH_HONESTY_EN = (
-    "Portfolio change digests are not being emailed yet. As of " + _SEND_PATH_DATE_EN +
-    ", nothing is emailed — the digest is written and then stops, and none has ever "
-    "reached a reader. Two things are missing: the mail service it would be handed to "
-    "has no delivery credentials set up, and switching delivery on still needs a privacy "
-    "review that has not been done. Digests will reach readers once both are in place."
+    "As of " + _SEND_PATH_DATE_EN + ", portfolio change emails are off by default."
 )
-
 SEND_PATH_HONESTY_ZH = (
-    "投资组合变化摘要目前还不会发送邮件。截至 " + _SEND_PATH_DATE_ZH +
-    "，没有任何邮件会发出：摘要只会生成，不会发出，也从未有一封送到读者手中。还缺两件事："
-    "负责发送的邮件服务还没有配置发送凭据；开启投递还需要一次尚未完成的隐私审查。"
-    "只有这两件事都办妥，摘要才会送到读者手中。"
+    "截至" + _SEND_PATH_DATE_ZH + "，投资组合变化邮件默认关闭。"
 )
 
-# The ONE needs-seat line this packet owes (W9 RATIFICATION row w9b_f08_12): the digest's
-# OWN missing transport, named concretely so the next reader does not redo the
-# investigation. Engineer-facing — this string must never be rendered to a user. The alert
-# lane's dormant flag is named only to be ruled off this path (review round 2 MAJOR-1):
-# listing it as a precondition would hand a future lane a production enable this packet's
-# OUT OF SCOPE forbids, for a flag that can never send a digest in any case.
 NEEDS_SEAT = (
-    "NEEDS_SEAT: the digest send path stays off until the digest has a transport of its "
-    "own — MAIL_SMTP_HOST + MAIL_SMTP_USER + MAIL_SMTP_PASS + MAIL_FROM so "
-    "app.mailer.is_configured() is true (today send() returns 'skipped_no_smtp'); a "
-    "marketing-class leg the transactional drain does not have (email_prefs digest "
-    "opt-in / unsub / one-click — PSI §19.5 gate 12; the drain DOES have "
-    "email_suppression at engine/alert_delivery_drain.py:473, so that is not a "
-    "missing leg); and a privacy/risk review for mailing holdings-level content to "
-    "real users. ALERT_DRAIN_ENABLE=1 is the alert lane's flag and is NOT a "
-    "precondition here: scripts/drain_alert_outbox.py moves transactional alert_fire "
-    "rows out of public.alert_outbox and a digest is not one, so this path needs its "
-    "own scripts/ seam, exactly as that drain has its own."
+    "NEEDS_SEAT: a real digest needs authenticated digest opt-in in email_prefs, "
+    "a user-scoped snapshot cursor, configured marketing mail and privacy/risk review "
+    "before activation. Real opt-in, one delivery and one-click opt-out require runtime evidence."
 )
 
 
 def send_path_status() -> dict:
-    """The send path's own answer to "does this digest actually go out?" — as data.
-
-        {"state": "off", "asof": "2026-09-13", "en": <sentence>, "zh": <句子>}
-
-    A caller that is about to hand a composed digest to something that mails people
-    should read this first and surface ``en``/``zh`` rather than guess from the absence
-    of an exception. ``state``/``asof`` are machine fields for branching and for aging
-    the claim; only ``en``/``zh`` may be rendered, and they are the plain-language pair
-    pinned by ``tests/test_portfolio_changes.py``.
-
-    Pure and side-effect free: reading the status cannot deliver anything, which is the
-    same construction guarantee the rest of this module relies on.
-    """
+    """Report the default source posture without inspecting a host or sending."""
     return {
         "state": SEND_PATH_STATE,
         "asof": SEND_PATH_ASOF,

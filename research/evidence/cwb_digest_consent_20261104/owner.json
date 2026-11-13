@@ -1,0 +1,54 @@
+{
+  "base": "b0f3e4183170a2590950bbf7d85ff6f9e7ef542c",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence",
+  "command": [
+    "/tmp/clear-workstream-blockers-20261103-test-venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_billing_emails.py",
+    "tests/test_deliver_portfolio_digest.py",
+    "tests/test_portfolio_digest_consent.py",
+    "tests/test_portfolio_digest_consent_postgres.py",
+    "-v",
+    "-ra",
+    "--basetemp=/tmp/cwb10597-p2-owner-1104-pytest",
+    "--junitxml=/tmp/cwb10597-p2-owner-1104.xml"
+  ],
+  "exit": 0,
+  "seconds": 21.4,
+  "log": "/tmp/cwb10597-p2-owner-1104.log",
+  "log_sha256": "0bddc76d95a03b3b830aed6a625f8e1d8c422851a5cd9e1ff3b6c32cd08e3540",
+  "tail": "consent_postgres.py::test_two_enables_of_one_observation_have_one_winner[inactive] PASSED [ 93%]\ntests/test_portfolio_digest_consent_postgres.py::test_language_mirror_and_global_unsubscribe_cannot_be_overwritten_by_digest PASSED [ 94%]\ntests/test_portfolio_digest_consent_postgres.py::test_legacy_negative_write_fences_old_enable_and_positive_bypass_is_denied PASSED [ 94%]\ntests/test_portfolio_digest_consent_postgres.py::test_direct_positive_insert_is_denied_and_client_roles_cannot_invoke_rpc PASSED [ 95%]\ntests/test_portfolio_digest_consent_postgres.py::test_existing_preference_row_delete_is_not_a_supported_fence_reset PASSED [ 95%]\ntests/test_portfolio_digest_consent_postgres.py::test_actual_api_lost_commit_reply_stays_uncertain_without_replay[False] PASSED [ 96%]\ntests/test_portfolio_digest_consent_postgres.py::test_actual_api_lost_commit_reply_stays_uncertain_without_replay[True] PASSED [ 96%]\ntests/test_portfolio_digest_consent_postgres.py::test_reapply_preserves_decisions_and_revisions PASSED [ 97%]\ntests/test_portfolio_digest_consent_postgres.py::test_reapply_refuses_membership_and_unrelated_definer_drift PASSED [ 97%]\ntests/test_portfolio_digest_consent_postgres.py::test_rollback_retains_fences_and_negative_writes_without_positive_authority PASSED [ 98%]\ntests/test_portfolio_digest_consent_postgres.py::test_tombstone_cannot_move_to_another_existing_auth_account PASSED [ 98%]\ntests/test_portfolio_digest_consent_postgres.py::test_reapply_refuses_effective_erasure_and_default_drift PASSED [ 99%]\ntests/test_portfolio_digest_consent_postgres.py::test_reapply_refuses_an_unreviewed_before_trigger PASSED [100%]\n\n------------- generated xml file: /tmp/cwb10597-p2-owner-1104.xml --------------\n============================= 190 passed in 18.87s =============================\n",
+  "suites": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "190",
+      "time": "19.296",
+      "timestamp": "2026-11-03T23:39:51.398748-07:00",
+      "hostname": "m2studio"
+    }
+  ],
+  "nonpassing": [],
+  "source_hashes": {
+    ".github/ci/legacy-jobs.yml": "e006b1e2218f4edc64298b77000337d5f905bb89dc076cc24b2a1dfabec82613",
+    "app/account_prefs.py": "185194ceb95cfe8a50cd646ba73067bd7cab381d54624717a24b2d3db3399383",
+    "scripts/deploy/portfolio_digest_consent_v1.sql": "a330a0fcbcde0669487fd327ad22cdd5acbb8b08de9fca3f575066acfd50569b",
+    "scripts/deploy/portfolio_digest_consent_v1_rollback.sql": "2683a10b4d84d981a7fc5b3ab5ecb6831c69cca0029357ea1d0f223c60b6b7c7",
+    "tests/test_portfolio_digest_consent.py": "2bbee6477987dd2c83ccd4c068a5bc80fd6796ede1a5b3b1746edf29fa1f4b1c",
+    "tests/test_portfolio_digest_consent_postgres.py": "bb62534282e29830d5e54bb0debb6b07b1d2f001e5785707be3343b2f38f9573",
+    "tests/test_deliver_portfolio_digest.py": "87b8fa1b949d4a883ab953b4e87a3e5966b9d8cfd0dd569d18f9d683cf0e2c43"
+  },
+  "diff_check_exit": 0,
+  "status": [
+    " M .github/ci/legacy-jobs.yml",
+    " M app/account_prefs.py",
+    " M tests/test_deliver_portfolio_digest.py",
+    "?? scripts/deploy/portfolio_digest_consent_v1.sql",
+    "?? scripts/deploy/portfolio_digest_consent_v1_rollback.sql",
+    "?? tests/test_portfolio_digest_consent.py",
+    "?? tests/test_portfolio_digest_consent_postgres.py"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "base": "b0f3e4183170a2590950bbf7d85ff6f9e7ef542c",
+  "candidate_tree": "c690a735fb7cea3180688c15f9ad801d56490e33",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/clear-workstream-blockers-20261104-digest-withdrawal-fence",
+  "command": [
+    "/tmp/clear-workstream-blockers-20261103-test-venv/bin/python",
+    "scripts/check_contract_delta.py",
+    "--base",
+    "b0f3e4183170a2590950bbf7d85ff6f9e7ef542c"
+  ],
+  "exit": 0,
+  "seconds": 493.36,
+  "log": "/tmp/cwb10597-p2-contract-delta-1104.log",
+  "log_sha256": "77a643a6805628a17045ee607848600b1aa9418e9e8cc5a9370e3cb2b60aaf35",
+  "source_hashes_preserved": true,
+  "post_source_hashes": {
+    ".github/ci/legacy-jobs.yml": "e006b1e2218f4edc64298b77000337d5f905bb89dc076cc24b2a1dfabec82613",
+    "app/account_prefs.py": "185194ceb95cfe8a50cd646ba73067bd7cab381d54624717a24b2d3db3399383",
+    "scripts/deploy/portfolio_digest_consent_v1.sql": "a330a0fcbcde0669487fd327ad22cdd5acbb8b08de9fca3f575066acfd50569b",
+    "scripts/deploy/portfolio_digest_consent_v1_rollback.sql": "2683a10b4d84d981a7fc5b3ab5ecb6831c69cca0029357ea1d0f223c60b6b7c7",
+    "tests/test_deliver_portfolio_digest.py": "87b8fa1b949d4a883ab953b4e87a3e5966b9d8cfd0dd569d18f9d683cf0e2c43",
+    "tests/test_portfolio_digest_consent.py": "2bbee6477987dd2c83ccd4c068a5bc80fd6796ede1a5b3b1746edf29fa1f4b1c",
+    "tests/test_portfolio_digest_consent_postgres.py": "bb62534282e29830d5e54bb0debb6b07b1d2f001e5785707be3343b2f38f9573"
+  },
+  "tail": "contract-delta: probe templates/index.html: head 136 jobs / 5,848 s / 10 packs; base 136 jobs / 5,844 s / 10 packs; ceilings 137 / 5,886 / 10\ncontract-delta: probe scripts/build_free_content.py: head 137 jobs / 5,877 s / 10 packs; base 137 jobs / 5,873 s / 10 packs; ceilings 138 / 5,877 / 10\ncontract-delta: probe engine/prophet/plan_book.py: head 129 jobs / 5,600 s / 10 packs; base 129 jobs / 5,596 s / 10 packs; ceilings 130 / 5,636 / 10\ncontract-delta: head census seconds: closure_and_suites 286.2, probes 82.6, skip_only 33.0, trigger_gaps 51.7\ncontract-delta: base census seconds: closure_and_suites 278.5, probes 81.3, skip_only 32.9, trigger_gaps 51.9\ncontract-delta: 0 introduced, 0 inherited (base b0f3e4183170)\ncontract-delta: wall 493.1 s\n"
+}

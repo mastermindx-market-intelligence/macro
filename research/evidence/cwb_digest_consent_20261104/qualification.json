@@ -1,0 +1,84 @@
+{
+  "schema": "clear_workstream_blockers.digest_consent_qualification.v1",
+  "recorded_at": "2026-11-04T06:58:02.267866+00:00",
+  "status": "SOURCE_QUALIFIED_REVIEW_AND_INSTALLATION_PENDING",
+  "operation_id": "clear-workstream-blockers-20261104-digest-withdrawal-fence",
+  "source_law_pin": "mastermindx-market-intelligence/Mastermind@910803421beca53ca25145392725ab2d84c7a8e9",
+  "integration_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/10597",
+  "base": "b0f3e4183170a2590950bbf7d85ff6f9e7ef542c",
+  "tested_source_tree": "c690a735fb7cea3180688c15f9ad801d56490e33",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "e006b1e2218f4edc64298b77000337d5f905bb89dc076cc24b2a1dfabec82613",
+    "app/account_prefs.py": "185194ceb95cfe8a50cd646ba73067bd7cab381d54624717a24b2d3db3399383",
+    "scripts/deploy/portfolio_digest_consent_v1.sql": "a330a0fcbcde0669487fd327ad22cdd5acbb8b08de9fca3f575066acfd50569b",
+    "scripts/deploy/portfolio_digest_consent_v1_rollback.sql": "2683a10b4d84d981a7fc5b3ab5ecb6831c69cca0029357ea1d0f223c60b6b7c7",
+    "tests/test_portfolio_digest_consent.py": "2bbee6477987dd2c83ccd4c068a5bc80fd6796ede1a5b3b1746edf29fa1f4b1c",
+    "tests/test_portfolio_digest_consent_postgres.py": "bb62534282e29830d5e54bb0debb6b07b1d2f001e5785707be3343b2f38f9573",
+    "tests/test_deliver_portfolio_digest.py": "87b8fa1b949d4a883ab953b4e87a3e5966b9d8cfd0dd569d18f9d683cf0e2c43"
+  },
+  "brief": {
+    "path": "research/CLEAR_WORKSTREAM_BLOCKERS_DIGEST_WITHDRAWAL_FENCE_2026-11-04.md",
+    "sha256": "055e7ad147d89b8edc9d6ec65f3ea00a8da2ac38f987585f33c455f15a217122"
+  },
+  "result": {
+    "passed": 190,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "contract_introduced": 0,
+    "contract_inherited": 0
+  },
+  "evidence": {
+    "owner.json": {
+      "sha256": "520fc37bd7c7af8bf7901e7db835c315aa3743c2256167c63e9ee07fbab63b48",
+      "original_path": "/tmp/cwb10597-p2-owner-1104.json",
+      "original_sha256": "520fc37bd7c7af8bf7901e7db835c315aa3743c2256167c63e9ee07fbab63b48"
+    },
+    "contract_delta.json": {
+      "sha256": "1638c0e1e0d79389490684e900c8d98bd74d1097f57c871108ac463effc03b0f",
+      "original_path": "/tmp/cwb10597-p2-contract-delta-1104.json",
+      "original_sha256": "1638c0e1e0d79389490684e900c8d98bd74d1097f57c871108ac463effc03b0f"
+    },
+    "tested_source.json": {
+      "sha256": "791e2f072eadb36f1fbd4f33181de016d442f6221541da35a872c6234b7c2903",
+      "original_path": "/tmp/cwb10597-p2-staged-1104.json",
+      "original_sha256": "791e2f072eadb36f1fbd4f33181de016d442f6221541da35a872c6234b7c2903"
+    },
+    "installed_reader_probe.json": {
+      "sha256": "ceb6015322b311c59d067868ccaf056a63abe6209efc401a7c134076a248d554",
+      "original_path": "/tmp/cwb10597-installed-api-schema-probe-1104.json",
+      "original_sha256": "ceb6015322b311c59d067868ccaf056a63abe6209efc401a7c134076a248d554"
+    },
+    "owner.log.gz": {
+      "sha256": "4c457fe16ea19e364dea5de969d928146ecb2d1ec2e7d81e50dabeb07a7dcc73",
+      "original_path": "/tmp/cwb10597-p2-owner-1104.log",
+      "uncompressed_sha256": "0bddc76d95a03b3b830aed6a625f8e1d8c422851a5cd9e1ff3b6c32cd08e3540"
+    },
+    "contract_delta.log.gz": {
+      "sha256": "6ac97afbda3c4e772b0cdf0e4da8b8248e3037b1a62d4df833d98bf7db7b9dc8",
+      "original_path": "/tmp/cwb10597-p2-contract-delta-1104.log",
+      "uncompressed_sha256": "77a643a6805628a17045ee607848600b1aa9418e9e8cc5a9370e3cb2b60aaf35"
+    },
+    "owner.junit.xml": {
+      "sha256": "bb1c775d7deb911c8fc9c6553ac096c7cb265ca6e2d6dc2cb884dc06415b8509",
+      "original_path": "/tmp/cwb10597-p2-owner-1104.xml"
+    }
+  },
+  "holds": [
+    "genuine non-author source review",
+    "installed catalog and privilege qualification",
+    "reviewed migration and PostgREST readback",
+    "authenticated revision-bearing client",
+    "original P1 request reconciliation and address suppression repair",
+    "trusted nightly account cursor",
+    "real opt-in/send/withdrawal and browser acceptance"
+  ],
+  "activation": false,
+  "live_database_requests": 0,
+  "live_mail_sent": 0,
+  "original_unknowns_preserved": [
+    "clear-workstream-blockers-20261104-digest-retry-consent address-test append/run",
+    "clear-workstream-blockers-20261104-auth-union native commit",
+    "clear-workstream-blockers-20261104-rotation-snapshot acquisition"
+  ]
+}
