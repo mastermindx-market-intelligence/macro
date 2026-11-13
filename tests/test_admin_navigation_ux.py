@@ -189,6 +189,15 @@ const pending = hung('/hung-body'); await started;
 timers.at(-1).fn();
 await assert.rejects(pending, /too long to respond/);
 assert.equal(cleared.length, 2);
+let bodyReady;
+const bodyWaiting = new Promise(resolve => { bodyReady = resolve; });
+const normalized = make(async (path, opts) => { signal = opts.signal; return {}; }, () => new Promise(resolve => {
+  signal.addEventListener('abort', () => resolve({ok:false, error:'not JSON'}), {once:true}); bodyReady();
+}));
+const normalizedPending = normalized('/api/intelligence_os'); await bodyWaiting;
+timers.at(-1).fn();
+await assert.rejects(normalizedPending, error => error.error_code === 'admin_read_deadline_exceeded');
+assert.equal(cleared.length, 3);
 """)
 
 
@@ -200,6 +209,31 @@ def test_startup_cannot_treat_a_failed_session_probe_as_authenticated():
     assert 'Unable to verify your session.' in init
     assert 'catch(() => ({ auth_enabled: false, authenticated: true }))' not in init
     assert 'SUMMARY = next; // keep the last good snapshot' in APP
+
+
+def test_evidence_reads_allow_the_owned_worker_to_return_its_bounded_result():
+    _node_assert("""
+const helper = block('const ADMIN_READ_TIMEOUT_MS = ', 'async function api(');
+const timers = []; const calls = [];
+const read = new Function('fetch', 'readJson', 'AbortController', 'setTimeout', 'clearTimeout', helper + ';return readAdminResponse;')(
+  async (path, opts) => { calls.push(opts); return {}; }, async () => ({ok:true}), AbortController,
+  (fn, delay) => { timers.push(delay); return timers.length; }, () => {}
+);
+for (const path of ['/api/intelligence_os', '/api/intelligence_os?force=1', '/api/intelligence_os/engine?id=a']) {
+  await read(path); assert.equal(timers.at(-1), 50000);
+}
+for (const path of ['/api/session', '/api/intelligence_os_extra', '/api/intelligence_os/other']) {
+  await read(path); assert.equal(timers.at(-1), 30000);
+}
+const count = timers.length;
+const signal = new AbortController().signal;
+await read('/api/intelligence_os', {signal});
+assert.equal(timers.length, count);
+assert.equal(calls.at(-1).signal, signal);
+await read('/api/intelligence_os', {method:'POST'});
+assert.equal(timers.length, count);
+assert.equal(calls.at(-1).signal, undefined);
+""")
 
 
 def test_content_review_intersects_filters_before_twelve_card_pagination():

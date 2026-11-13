@@ -50,6 +50,7 @@ const out = cases.map(c => ({{
   bands: iosNormalizeCeoBands(c.bands),
   cell: iosEvidenceCell(c.engine),
   detail: iosEvidenceDetailCard(c.engine),
+  failure: iosFailureNotice(c.failure, "Could not derive the estate"),
 }}));
 console.log(JSON.stringify(out));
 """
@@ -64,6 +65,29 @@ console.log(JSON.stringify(out));
         )
     assert run.returncode == 0, run.stdout + run.stderr
     return json.loads(run.stdout)
+
+
+def test_evidence_failure_copy_is_typed_bilingual_and_does_not_echo_raw_errors():
+    failures = [
+        {"error_code": "evidence_derivation_busy"},
+        {"error_code": "evidence_deadline_exceeded"},
+        {"error_code": "evidence_cleanup_unconfirmed"},
+        {"error_code": "<script>private</script>", "error": "private provider diagnostic"},
+        {"known_ids_sample": ["available"]},
+        {"error_code": "changed_during_read"},
+        {"error_code": "evidence_estate_unavailable"},
+    ]
+    results = _run([{"statuses": [], "bands": [], "engine": {}, "failure": x} for x in failures])
+    busy, deadline, cleanup, unknown, missing_engine, changed, unavailable = [x["failure"] for x in results]
+    assert "already being checked" in busy and "证据正在检查中" in busy
+    assert 'id="ios-retry"' in busy and 'role="alert"' in busy
+    assert "time limit" in deadline and 'id="ios-retry"' in deadline
+    assert "cleanup is unconfirmed" in cleanup and 'id="ios-retry"' not in cleanup
+    assert "evidence_request_failed" in unknown and "private" not in unknown
+    assert "<script>" not in unknown
+    assert "choose an available engine" in missing_engine and 'id="ios-retry"' not in missing_engine
+    assert "changed during this check" in changed and "changed_during_read" in changed
+    assert "evidence is unavailable" in unavailable and "evidence_estate_unavailable" in unavailable
 
 
 def test_evidence_bands_are_complete_ordered_and_visually_distinct():
