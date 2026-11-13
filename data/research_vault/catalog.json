@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T00:20:40.634604+00:00",
-  "count": 3261,
+  "generated_at": "2026-11-13T00:54:41.049854+00:00",
+  "count": 3263,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -421,6 +421,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-ay8c3xuac9h-0f5715",
+      "title": "Japan soft consumption constrains BoJ tightening",
+      "institution": "ANZ",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:32:59Z",
+      "summary_points": [
+        "Consumer Spending Weakness: Real household spending down 6.8% y/y (Kumamoto earthquake, energy shock), offsetting PMI strength (services 51.7, composite 52.1), creating critical near-term demand risk despite low unemployment (2.4%) and rising real cash earnings (2.2% y/y).",
+        "Core Inflation Persistence: Core ex-energy CPI at 2.4% y/y (highest in 9 months), confirming BoJ’s inflation target return (2.0-2.5%) but highlighting persistent underlying pressure from wage growth risks and energy distribution costs.",
+        "Policy Hike Path & Labor Market: BoJ confirms 25bp hikes in Dec 2026/March 2027 (target 1.75%) amid tight labor market (unemployment 2.4%, job-to-applicants ratio 1.19), with wage negotiations under close monitoring as key policy trigger.",
+        "Geopolitical Tailwind: Middle East conflict de-escalation expected to support consumer spending, partially countering natural disaster and energy shock headwinds, offering near-term demand catalyst."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-wz7hfcpo1h3-1d4780",
       "title": "JPM US Market Intell Morning Briefing",
       "institution": "J.P. Morgan",
@@ -622,6 +642,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 35,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-o79vpxoen41-caa328",
+      "title": "JPM Flows Liquidity",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T10:40:34Z",
+      "summary_points": [
+        "Retail flows bullish, buying dips post-Oct inflows: Leveraged equity ETF inflows hit $30bn/day (vs $20bn for standard ETFs), with retail driving 90%+ of April-June peak levels; $5bn+ inflows Nov 5-6 equivalent to $15bn capital impact.",
+        "Oracle CDS subsiding signals neocloud fear easing: Oracle CDS trading volumes peaked Oct 23, subsided post-Oct 30 CMOS and CoreWeave earnings, indicating reduced neocloud funding fears.",
+        "QQQ Short Interest Surge: Short interest on QQQ ETF rose to 2023 highs, signaling heightened bearish sentiment or potential short squeeze risk in tech equities.",
+        "Volatility Mispricing Signal: Equity indices (S&P 500, EuroSTOXX) show implied volatility below realized (ratio <1), indicating cheapness; FX/credit markets exhibit implied volatility above realized (ratio >1), signaling upside risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 32,
       "language": "en",
       "needs_metadata": false
     },
