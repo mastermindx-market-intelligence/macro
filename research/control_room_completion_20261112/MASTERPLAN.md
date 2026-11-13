@@ -1,5 +1,26 @@
 # Control Room completion programme — 12 November 2026
 
+## Recovery milestone — 13 November 2026
+
+The current Chairman instruction renews the same estate-completion mission, including active T3 Prophet/Sector Intelligence support. The assigned Meta-CEO owns next-action recovery; no live source writer or runtime effect is transferred.
+
+- Reused this exact original plan at `a8786ddba39ec2a6e4fe02246b24e02729081d2c` on its original branch; no duplicate plan or workstream was created.
+- Current governing pin: Mastermind `fc91f33ccce3e8f18c78546f03c955c2ced0c704`, compatible skillpack 1.0.1. GitHub authenticated principal `mastermindxryan`; repository push permission observed.
+- The live VPS Agent OS projection generated at `2026-11-13T06:38:57Z` agrees with the finite census: 115 records, comprising 92 active, 5 blocked, 4 parked and 14 marked done. Recorded states remain distinct from accepted outcomes; parked records retain disposition review.
+- M2 Studio and the existing configured VPS route support bounded read-only inspection. No credential, host, service, publication or runtime setting was changed. Browser UI remains blocked by an open Chrome extension panel; this is not product/browser acceptance. Executive reader is backend-unavailable and the Fabric adapter reports unavailable; no worker dispatch was attempted.
+- Two native reasoning coordinators reconstructed product acceptance and portfolio dependencies. They have read-only scope and return to this parent; no implementation, runtime or release grant. Direct bounded source work uses NO_ELIGIBLE_PRE_EFFECT_WORKER / CRITICAL_PATH_SHORTCUT under the existing commission.
+
+### Ready frontier and original effects
+
+1. **P2: Prophet earnings reaction — original PR [#11199](https://github.com/mastermindx-market-intelligence/macro/pull/11199), head `57c80eb9eca093b46271b276ece8145884c6a9b7`.** Existing 72-test implementation proof plus [source-to-board acceptance](https://github.com/mastermindx-market-intelligence/macro/pull/11199#issuecomment-6844695228) is retained, not rerun without relevant change. [Current CI diagnosis](https://github.com/mastermindx-market-intelligence/macro/pull/11199#issuecomment-6844940153) identifies the inherited expiring forensics fixture and an introduced stock-liquidity test dependency trigger. Reconcile current shared-manifest custody, repair the original branch, qualify hosted checks and use its normal release controller. Preserve the original hosted base-replay settlement uncertainty; do not retry that effect. Live output remains owed.
+2. **P3: uncovered SI auxiliary [#10943](https://github.com/mastermindx-market-intelligence/macro/issues/10943).** Current source still directly scores hazards in `scripts/build_cycle.py` and `engine/commodity_cycle_state.py`. The shared qualification owner is now protected through #11094; do not revive incorporated #10924 or duplicate Country/China gates. After fresh path-collision check, qualify these two direct flagship-family consumers and regressions, preserving all non-hazard context. Source, controller release and served artifact verification remain separate.
+3. **P1/P7:** Mastermind #2466 is merged at the current governing pin; the previous queue request must not repeat. Its actual deploy/Brain consumer acceptance is still to be read.
+4. **P6/Data OS:** Terminal #1043 is not a ready source-transfer lane. Preserve its original Studio publication uncertainty, local-ahead source, exact workspace and prior denied/unknown effects. Read-only original-carrier reconciliation precedes any dependent publishing or integration. No alternative writer or replacement PR.
+5. **P5/News:** #10851 retains explicit HOLD-FOR-SOL and original native completion/acquisition uncertainty; no rerun/replay. #10853 is already armed, with prior exact-head success; consume its existing controller's current-main freshness verdict, never add another release request. Several earlier source waits are merged, but seven real production journeys remain owed.
+6. **P2/P3 live overlap:** preserve current T3 SI/Prophet core branches and the already-dispatched #11193 rescue. Help via uncovered/disjoint dependencies; do not duplicate that rescue or compete with their active core files.
+
+Parent DONE_WHEN is unchanged and unproven. Save this milestone, execute the next safe source/CI step, then update this same plan and its linked canonical handoff with verified outcomes.
+
 ## Commission and completion contract
 
 The Chairman assigns this Meta-CEO session responsibility for progressing every current Control Room project through its original acceptance. This is a multi-turn delivery programme, including Prophet and Sector Intelligence alongside their existing T3 teams. Historical authors do not own recovery indefinitely; live writers, existing effects, original carriers, explicit holds and actual protection rules remain binding.
