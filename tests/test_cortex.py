@@ -61,6 +61,10 @@ def _make_repo(tmp: Path) -> Path:
     (tmp / "config").mkdir(parents=True)
     (tmp / ".env").touch()  # deny-roots test target
 
+    (tmp / "config" / "synapse.yml").write_text(
+        "artifacts:\n  cortex-memo:\n    freshness_sla_hours: 30\n", encoding="utf-8"
+    )
+
     # world_state.json
     ws = {
         "schema": "neuralweb.world_state.v1",
@@ -482,13 +486,23 @@ class TestBudgetEnforcement:
 # 5. Staleness gate
 # ---------------------------------------------------------------------------
 
+def _write_completed_memo(root, clock=None, status="ok"):
+    clock = clock or datetime.now(timezone.utc).isoformat()
+    memo = {"schema": "neuralweb.cortex_memo.v1", "as_of": clock,
+            "run_status": {"status": status, "degraded": False}}
+    path = root / "data/neuralweb/cortex/memo.json"
+    path.write_text(json.dumps(memo), encoding="utf-8")
+    return clock
+
+
 class TestStalenessGate:
 
     def test_unchanged_state_skips_llm(self, repo):
         """If state hash is unchanged from last_run_state.json, no model call is made."""
         from engine.neuralweb.cortex import _compute_run_state_hash, _save_last_run_state, run
 
-        # Compute current state and save it as "last run"
+        # A legacy hash-only gate can reuse its fresh, explicitly completed memo.
+        _write_completed_memo(repo)
         state = _compute_run_state_hash(repo)
         _save_last_run_state(repo, state)
 
@@ -1496,7 +1510,8 @@ class TestContextStale:
 
         # Pre-write a memo
         memo_path = repo / "data" / "neuralweb" / "cortex" / "memo.json"
-        prior_memo = {"schema": "neuralweb.cortex_memo.v1", "as_of": "2026-07-04T00:00:00+00:00",
+        prior_memo = {"schema": "neuralweb.cortex_memo.v1", "as_of": datetime.now(timezone.utc).isoformat(),
+                      "run_status": {"status": "warn", "degraded": False},
                       "summary": "prior memo — must survive staleness skip",
                       "is_context_only": True, "tool_call_census": {"read_world_state": 2}}
         memo_path.write_text(json.dumps(prior_memo), encoding="utf-8")
@@ -1557,6 +1572,82 @@ def test_unverified_current_memo_keeps_input_gate_open(repo, outcome):
         assert not gate_path.exists()
         assert run(root=repo) == 0
         assert loop.call_count == 2
+
+
+@pytest.mark.parametrize("outcome", ["missing", "corrupt", "different_clock", "degraded", "expired", "future"])
+def test_closed_gate_checks_the_canonical_memo_before_skipping(repo, outcome):
+    from datetime import timedelta
+    from engine.neuralweb.cortex import _compute_run_state_hash, _save_last_run_state, run
+
+    now = datetime.now(timezone.utc)
+    clock = now.isoformat()
+    memo_path = repo / "data/neuralweb/cortex/memo.json"
+    if outcome in {"expired", "future"}:
+        clock = (now + timedelta(hours=-31 if outcome == "expired" else 1)).isoformat()
+    _write_completed_memo(repo, clock)
+    _save_last_run_state(repo, {**_compute_run_state_hash(repo), "memo_as_of": clock})
+    if outcome == "missing":
+        memo_path.unlink()
+    elif outcome == "corrupt":
+        memo_path.write_text("not JSON")
+    elif outcome == "different_clock":
+        _write_completed_memo(repo, (now - timedelta(minutes=1)).isoformat())
+    elif outcome == "degraded":
+        _write_completed_memo(repo, clock, "degraded")
+
+    def complete(root, cfg, providers, now_str, probation_status):
+        _write_completed_memo(root, now_str, "warn")
+        return {"written": str(memo_path)}
+
+    with patch("engine.neuralweb.cortex._build_providers", return_value=[{}]) as providers, \
+         patch("engine.neuralweb.cortex._run_tool_loop", side_effect=complete):
+        assert run(root=repo) == 0
+        assert run(root=repo) == 0
+    providers.assert_called_once()
+
+
+@pytest.mark.parametrize("no_provider", [False, True])
+def test_failed_forced_attempt_cannot_reuse_its_previous_success(repo, no_provider):
+    from engine.neuralweb.cortex import _compute_run_state_hash, _save_last_run_state, run
+
+    clock = _write_completed_memo(repo)
+    _save_last_run_state(repo, {**_compute_run_state_hash(repo), "memo_as_of": clock})
+    gate = repo / "data/neuralweb/cortex/last_run_state.json"
+
+    def complete(root, cfg, providers, now_str, probation_status):
+        _write_completed_memo(root, now_str)
+        return {"written": "memo.json"}
+
+    # Neither failed path replaces the existing good memo.
+    with patch("engine.neuralweb.cortex._build_providers", return_value=[] if no_provider else [{}]), \
+         patch("engine.neuralweb.cortex._run_tool_loop", return_value={"written": "old"}), \
+         patch("engine.neuralweb.cortex._single_call_fallback"):
+        assert run(root=repo, force=True) == 0
+    assert not gate.exists()
+    with patch("engine.neuralweb.cortex._build_providers", return_value=[{}]) as providers, \
+         patch("engine.neuralweb.cortex._run_tool_loop", side_effect=complete):
+        assert run(root=repo) == 0
+        assert run(root=repo) == 0
+    providers.assert_called_once()
+    assert json.loads(gate.read_text())["memo_as_of"] != clock
+
+
+def test_corrupt_gate_shape_and_missing_policy_do_not_create_a_spend_loop(repo):
+    from engine.neuralweb.cortex import run
+
+    gate = repo / "data/neuralweb/cortex/last_run_state.json"
+    gate.write_text('"not a state object"')
+    (repo / "config/synapse.yml").unlink()
+
+    def complete(root, cfg, providers, now_str, probation_status):
+        _write_completed_memo(root, now_str)
+        return {"written": "memo.json"}
+
+    with patch("engine.neuralweb.cortex._build_providers", return_value=[{}]) as providers, \
+         patch("engine.neuralweb.cortex._run_tool_loop", side_effect=complete):
+        assert run(root=repo) == 0
+        assert run(root=repo) == 0
+    providers.assert_called_once()
 
 
 class TestDegradedGate:

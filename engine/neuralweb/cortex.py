@@ -318,7 +318,8 @@ def _compute_run_state_hash(root: Path) -> dict:
 def _load_last_run_state(root: Path) -> dict:
     p = _cortex_dir(root) / "last_run_state.json"
     try:
-        return json.loads(p.read_text(encoding="utf-8"))
+        state = json.loads(p.read_text(encoding="utf-8"))
+        return state if isinstance(state, dict) else {}
     except Exception:  # noqa: BLE001
         return {}
 
@@ -3388,17 +3389,37 @@ def _check_constitution(root: Path) -> dict:
 # Public entrypoint
 # ---------------------------------------------------------------------------
 
-def _verified_current_memo(root: Path, now_str: str) -> bool:
-    """Only an explicit, readable result from this run may close the input gate."""
+def _completed_memo_clock(root: Path) -> str | None:
+    """Return the canonical clock only for a readable, explicitly completed memo."""
     try:
         memo = json.loads((_cortex_dir(root) / "memo.json").read_text(encoding="utf-8"))
-        if not isinstance(memo, dict) or memo.get("schema") != _SCHEMA_MEMO or memo.get("as_of") != now_str:
-            return False
-        status = memo.get("run_status")
-        return (isinstance(status, dict) and status.get("status") in ("ok", "warn")
-                and status.get("degraded") is False)
-    except (OSError, ValueError, TypeError):
+    except (OSError, ValueError):
+        return None
+    if not isinstance(memo, dict) or memo.get("schema") != _SCHEMA_MEMO:
+        return None
+    status = memo.get("run_status")
+    clock = memo.get("as_of")
+    if (isinstance(status, dict) and status.get("status") in ("ok", "warn")
+            and status.get("degraded") is False and isinstance(clock, str)):
+        return clock
+    return None
+
+
+def _can_reuse_memo(root: Path, last_state: dict) -> bool:
+    from engine.neuralweb.health import cortex_memo_age_hours, cortex_memo_sla_hours
+
+    clock = _completed_memo_clock(root)
+    if not clock or ("memo_as_of" in last_state and clock != last_state["memo_as_of"]):
         return False
+    age = cortex_memo_age_hours(clock)
+    if age is None or age < 0:
+        return False
+    sla = cortex_memo_sla_hours(root)
+    if sla is None:
+        # A missing cadence policy alone should not repeatedly spend on an
+        # unchanged input and its previously verified, exactly bound output.
+        return last_state.get("memo_as_of") == clock
+    return age <= sla
 
 
 def run(root: Path | None = None, force: bool = False) -> int:
@@ -3414,13 +3435,22 @@ def run(root: Path | None = None, force: bool = False) -> int:
     current_state = _compute_run_state_hash(root)
     last_state = _load_last_run_state(root)
 
-    if not force and not _state_changed(current_state, last_state):
+    if not force and not _state_changed(current_state, last_state) and _can_reuse_memo(root, last_state):
         log.info(
             "cortex: inputs unchanged (ws_hash=%s, spine_rows=%s) — skipping LLM spend",
             current_state.get("ws_inputs_hash", "")[:8],
             current_state.get("spine_rows"),
         )
         return 0
+
+    # Retire the prior completion before the new attempt. A forced failure
+    # may leave the old memo untouched or take the no-provider early return.
+    if last_state:
+        try:
+            (_cortex_dir(root) / "last_run_state.json").unlink(missing_ok=True)
+        except OSError as exc:
+            log.warning("cortex: could not reopen the input gate (%s); deferring run", exc)
+            return 0
 
     # 2. Constitution wiring
     probation_status = _check_constitution(root)
@@ -3448,13 +3478,13 @@ def run(root: Path | None = None, force: bool = False) -> int:
 
     # 5. A missing/corrupt/previous result is not completion. Leave the existing
     # gate open until this run's stamped memo explicitly confirms ok or warn.
-    if not _verified_current_memo(root, now_str):
+    if _completed_memo_clock(root) != now_str:
         log.info(
             "cortex: skipping last_run_state save (current memo not verified) — "
             "gate stays open so next nightly retries"
         )
     else:
-        _save_last_run_state(root, current_state)
+        _save_last_run_state(root, {**current_state, "memo_as_of": now_str})
 
     # 6. Write probation.json from the in-memory probation_status so data/neuralweb/cortex/
     #    probation.json and the memo's embedded probation block are always in sync.

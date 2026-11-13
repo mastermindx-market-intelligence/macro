@@ -15343,7 +15343,7 @@ RENDER.long_hold = async () => {
         <td>${esc(it.mechanism || "—")}</td>
         <td><span class="statpill ${it.reconcile === "matched" ? "s-ok" : it.reconcile ? "s-warn" : ""}">${esc(it.reconcile || "—")}</span></td>
         <td class="sub" style="max-width:320px">${esc(it.thesis_one_liner || "—")}</td>
-        <td>${it.file ? `<a href="${esc(it.file)}" target="_blank" rel="noopener">case</a>` : "—"}</td>
+        <td>${/^research\/winners\/cases\/[A-Za-z0-9][A-Za-z0-9._-]*\.md$/.test(it.file || "") ? `<a href="https://github.com/mastermindx-market-intelligence/macro/blob/main/${esc(it.file)}" target="_blank" rel="noopener">case</a>` : "—"}</td>
       </tr>`
     ).join("") || `<tr><td colspan="6" class="muted sub">no cases yet</td></tr>`;
     const casesBlock = `
@@ -15481,8 +15481,14 @@ RENDER.context_lobe = async () => {
         detail = `US ${esc(lobe.us_quad || "—")} · CN ${esc(lobe.china_quad || "—")} · HK ${esc(lobe.hk_quad || "—")}`;
       } else if (name === "bottom_sensors") {
         const counts = lobe.counts || {};
-        const countStr = Object.entries(counts).map(([k, n]) => `${esc(k)} ${n}`).join(" · ") || "—";
-        detail = `n=${lobe.n_rows != null ? lobe.n_rows : "—"} · ${countStr}`;
+        const countStr = Object.entries(counts).map(([group, values]) => {
+          if (Number.isInteger(values)) return `${esc(group)} ${values}`;
+          const entries = values && typeof values === "object" && !Array.isArray(values)
+            ? Object.entries(values).filter(([, count]) => Number.isInteger(count)) : [];
+          const breakdown = entries.map(([label, count]) => `${esc(label)} ${count}`).join(", ");
+          return `${esc(group)}: ${breakdown || "—"}`;
+        }).join(" · ") || "—";
+        detail = `n=${lobe.n_rows != null ? esc(lobe.n_rows) : "—"} · ${countStr}`;
       } else if (name === "options_entry") {
         const gate = lobe.gate || {};
         detail = Object.entries(gate).map(([k, v2]) => `${esc(k)}=${esc(String(v2))}`).join(" · ") || "—";

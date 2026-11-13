@@ -439,6 +439,27 @@ def _derive_run_status_legacy(memo: dict) -> dict:
     }
 
 
+def cortex_memo_sla_hours(root: Path, artifacts: dict | None = None) -> float | None:
+    """Read the memo SLA from its Synapse registration."""
+    if artifacts is None:
+        registry = _parse_yaml_synapse(root / "config" / "synapse.yml")
+        artifacts = registry.get("artifacts", {}) if isinstance(registry, dict) else {}
+    policy = artifacts.get("cortex-memo", {}) if isinstance(artifacts, dict) else {}
+    sla = policy.get("freshness_sla_hours") if isinstance(policy, dict) else None
+    return sla if _positive_finite(sla) else None
+
+
+def cortex_memo_age_hours(clock: Any) -> float | None:
+    """Age from the content clock using the bus convention for naive timestamps."""
+    try:
+        stamp = datetime.fromisoformat(clock.replace("Z", "+00:00"))
+        if stamp.tzinfo is None:
+            stamp = stamp.replace(tzinfo=timezone.utc)
+        return (datetime.now(timezone.utc) - stamp).total_seconds() / 3600
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return None
+
+
 def _cortex_section(root: Path, cortex_source: str = "previous_run", *, artifacts: dict | None = None) -> dict:
     """Build the cortex health section."""
     memo_path = root / "data" / "neuralweb" / "cortex" / "memo.json"
@@ -455,30 +476,17 @@ def _cortex_section(root: Path, cortex_source: str = "previous_run", *, artifact
         "freshness_sla_hours": None,
     }
 
-    # Synapse owns cadence/SLA. A missing policy cannot establish freshness, and
-    # filesystem mtime (e.g. a deploy or mirror copy) is never a memo heartbeat.
-    if artifacts is None:
-        registry = _parse_yaml_synapse(root / "config" / "synapse.yml")
-        artifacts = registry.get("artifacts", {}) if isinstance(registry, dict) else {}
-    policy = artifacts.get("cortex-memo", {}) if isinstance(artifacts, dict) else {}
-    sla = policy.get("freshness_sla_hours") if isinstance(policy, dict) else None
-    if _positive_finite(sla):
-        out["freshness_sla_hours"] = sla
-
+    sla = cortex_memo_sla_hours(root, artifacts)
+    out["freshness_sla_hours"] = sla
     memo = _read_json(memo_path)
     if isinstance(memo, dict) and memo:
         memo_clock = memo.get("as_of") or memo.get("generated_at")
-        try:
-            stamp = datetime.fromisoformat(memo_clock.replace("Z", "+00:00"))
+        age = cortex_memo_age_hours(memo_clock)
+        if age is not None:
             out["memo_as_of"] = memo_clock
-            if stamp.tzinfo is None:
-                stamp = stamp.replace(tzinfo=timezone.utc)  # bus convention
-            age = (datetime.now(timezone.utc) - stamp).total_seconds() / 3600
             out["age_hours"] = round(age, 2)
-            if age >= 0 and out["freshness_sla_hours"] is not None:
+            if age >= 0 and sla is not None:
                 out["freshness_status"] = "stale" if age > sla else "fresh"
-        except (AttributeError, TypeError, ValueError, OverflowError):
-            pass  # unknown clock must remain unknown
         raw_rs = memo.get("run_status")
         run_status = _derive_run_status_legacy(memo) if raw_rs is None else raw_rs
         if not isinstance(run_status, dict):
