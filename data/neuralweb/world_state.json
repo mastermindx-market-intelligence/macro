@@ -5813,7 +5813,7 @@
     ],
     "freshness": {
       "asof": "2026-11-11",
-      "built_at": "2026-11-12T08:01:41Z",
+      "built_at": "2026-11-12T10:26:57Z",
       "age_days": 1,
       "age_sessions": 1,
       "max_age_sessions": 1,
@@ -5852,11 +5852,11 @@
     "date": "2026-11-11"
   },
   "rotation": {
-    "asof": "2026-11-10",
+    "asof": "2026-11-11",
     "regime": {
       "n_active_complexes": 0,
       "breadth": null,
-      "vix_regime": 0.754,
+      "vix_regime": 0.5675,
       "rotation_tag": {
         "tag": "quiet",
         "tag_zh": "平静",
@@ -5947,7 +5947,7 @@
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.6316
+              0.6053
             ],
             [
               "stair_step_leader",
@@ -6054,7 +6054,7 @@
               0.1143
             ],
             [
-              "stair_step_leader",
+              "failed_breakout_trap",
               0.0571
             ]
           ],
@@ -6133,32 +6133,32 @@
           "dominant_member_archetypes": [
             [
               "financial",
-              0.8506
+              0.8409
             ],
             [
               "distressed",
-              0.1379
+              0.1364
             ],
             [
               "secular_growth",
-              0.0115
+              0.0114
             ]
           ],
           "dominant_chart_labels": [
             [
               "mixed_chart",
-              0.6392
-            ],
-            [
-              "mean_reversion_rubber_band",
-              0.134
+              0.6465
             ],
             [
               "volatile_momentum_vehicle",
-              0.134
+              0.1313
+            ],
+            [
+              "mean_reversion_rubber_band",
+              0.1313
             ]
           ],
-          "tinderbox_share": 0.0638,
+          "tinderbox_share": 0.0625,
           "event_override_share": 0.0,
           "share_denominators": {
             "archetypes_and_flags": "covered_tickers",
@@ -6275,7 +6275,7 @@
       "by_tier": {},
       "by_direction": {}
     },
-    "n_onset_watchlist": 4
+    "n_onset_watchlist": 1
   },
   "liquidity": {
     "liquidity_overlay": "contracting"
@@ -6327,7 +6327,7 @@
   },
   "alerts": {
     "asof": "2026-11-11",
-    "generated_utc": "2026-11-12 08:16",
+    "generated_utc": "2026-11-12 10:43",
     "total": 60,
     "critical": 2,
     "major": 2,
@@ -6339,8 +6339,8 @@
     "style_regime": "junk_rally",
     "style_regime_pending": null,
     "style_regime_hold_days": 2,
-    "factor_leader": "low_vol",
-    "factor_leader_ic": -0.0209,
+    "factor_leader": "profitability",
+    "factor_leader_ic": 0.0141,
     "etf_pulse_summary": "IWF/IWD_20d=-0.0994; QQQ/SPY_20d=-0.0402; IWM/SPY_20d=+0.0559",
     "ratio_iwf_iwd_20d": -0.09936434097561253,
     "ratio_qqq_spy_20d": -0.040190865678228826,
@@ -7109,11 +7109,11 @@
     "display_only": true
   },
   "intelligence": {
-    "as_of": "2026-11-11",
-    "n_universe": 2912,
+    "as_of": "2026-11-12",
+    "n_universe": 2915,
     "n_priority": 25,
-    "n_actionable": 3,
-    "n_divergences": 43,
+    "n_actionable": 1,
+    "n_divergences": 58,
     "macro_context": {
       "regime": "Reflation",
       "posture": "Reflation is still the confirmed label, but today's axes read growth +0.33 (improving) / inflation -0.52 (cooling) — Goldilocks on the raw sign rule. Posture: DEFENSIVE — minimum equity risk; capital preservation mode.",
@@ -7121,32 +7121,32 @@
     },
     "top_actionable": [
       {
-        "ticker": "GILD",
-        "priority": 0.427,
-        "lean": -1,
-        "read": "fading"
-      },
-      {
         "ticker": "GME",
         "priority": 0.427,
         "lean": -1,
         "read": "fading"
       },
       {
-        "ticker": "RHHBY",
-        "priority": 0.383,
-        "lean": -1,
-        "read": "fading"
-      },
-      {
-        "ticker": "HLT",
-        "priority": 0.338,
-        "lean": -1,
-        "read": "fading"
-      },
-      {
         "ticker": "KVYO",
-        "priority": 0.338,
+        "priority": 0.352,
+        "lean": -1,
+        "read": "fading"
+      },
+      {
+        "ticker": "NXPI",
+        "priority": 0.323,
+        "lean": -1,
+        "read": "fading"
+      },
+      {
+        "ticker": "IBM",
+        "priority": 0.315,
+        "lean": 1,
+        "read": "accumulation"
+      },
+      {
+        "ticker": "RHHBY",
+        "priority": 0.307,
         "lean": -1,
         "read": "fading"
       }
@@ -7837,10 +7837,10 @@
     "revision": "settled",
     "source_session": "2026-11-11",
     "as_of": "2026-11-11",
-    "observed_at": "2026-11-12T11:48:07Z",
-    "produced_at": "2026-11-12T11:48:07Z",
+    "observed_at": "2026-11-12T13:56:07Z",
+    "produced_at": "2026-11-12T13:56:07Z",
     "stale_after": null,
-    "bundle_id": "54976daf91083f5c",
+    "bundle_id": "a6544109efaaa86b",
     "measured_state": {
       "as_of": "2026-11-11",
       "role": "slow_confirmed_trend",
@@ -8403,7 +8403,7 @@
               "weight": 0.16
             }
           },
-          "logged_at": "2026-11-12T08:21:26+00:00",
+          "logged_at": "2026-11-12T10:50:46+00:00",
           "raw_score": 49,
           "score": 49,
           "score_caps": [],
@@ -8533,7 +8533,7 @@
             "weight": 0.16
           }
         },
-        "logged_at": "2026-11-12T08:21:26+00:00",
+        "logged_at": "2026-11-12T10:50:46+00:00",
         "raw_score": 49,
         "score": 49,
         "score_caps": [],
@@ -8741,44 +8741,44 @@
   "stock_personality_summary": {
     "available": true,
     "as_of": "2026-11-11",
-    "n_tickers": 1719,
+    "n_tickers": 2948,
     "coverage": {
-      "archetype": 0.869,
-      "dna_class": 0.653,
-      "ownership": 0.583,
-      "micro": 0.225,
-      "chart": 0.761
+      "archetype": 0.73,
+      "dna_class": 0.383,
+      "ownership": 0.419,
+      "micro": 0.179,
+      "chart": 0.775
     },
     "top_archetype_shares": [
       [
-        "rate_sensitive",
-        0.1808
+        "speculative_unprofitable",
+        0.3787
       ],
       [
-        "speculative_unprofitable",
-        0.1487
+        "rate_sensitive",
+        0.1287
       ],
       [
         "financial",
-        0.148
+        0.1027
       ]
     ],
     "top_chart_shares": [
       [
         "mixed_chart",
-        0.5082
+        0.4742
       ],
       [
         "volatile_momentum_vehicle",
-        0.1861
+        0.1751
       ],
       [
         "failed_breakout_trap",
-        0.1328
+        0.1618
       ]
     ],
-    "n_tinderbox": 256,
-    "n_event_override": 43,
+    "n_tinderbox": 263,
+    "n_event_override": 68,
     "display_only": true
   },
   "context_risk": {
@@ -8910,7 +8910,7 @@
   },
   "thematic_state": {
     "available": true,
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-12",
     "n_themes": 18,
     "stage_counts": {
       "WATCH": 13,
@@ -8948,7 +8948,7 @@
         "falsifier_id": "ag_f1"
       }
     ],
-    "n_stale_legs": 10,
+    "n_stale_legs": 9,
     "noteworthy": [
       {
         "theme_id": "nuclear_power",
@@ -8967,7 +8967,7 @@
       },
       {
         "theme_id": "glp1_obesity",
-        "reason": "stage=BROADENING, tight_bottleneck+stale",
+        "reason": "stage=BROADENING",
         "stage": "BROADENING"
       },
       {
@@ -9004,14 +9004,15 @@
   "live_overlay": {
     "source": "data/regime/latest.json:freshness",
     "asof": "2026-11-11",
-    "built_at": "2026-11-12T08:01:41Z",
+    "built_at": "2026-11-12T10:26:57Z",
     "age_days": 1,
     "stale": false
   },
   "contradictions": {
     "n": 2,
     "by_severity": {
-      "tension": 2
+      "note": 1,
+      "tension": 1
     },
     "top_pair_ids": [
       "regime_vector-vs-risk_radar",
@@ -9236,7 +9237,7 @@
     "display_only": true
   },
   "theme_rotation": {
-    "as_of": "2026-11-10",
+    "as_of": "2026-11-11",
     "leadership_state": "rotating",
     "days_in_state": 5,
     "stance_en": "Rotation under way — favour the fresh leaders, not the old one.",
@@ -9246,7 +9247,7 @@
       "name": "Memory, HBM & Storage",
       "health": "broken",
       "breadth": 0.0,
-      "r10": -0.2624
+      "r10": -0.2244
     },
     "strength": [
       {
@@ -9258,23 +9259,23 @@
         "name": "Consumer Staples"
       },
       {
-        "id": "retail",
-        "name": "Retail"
+        "id": "big_pharma",
+        "name": "Big Pharma"
       },
       {
-        "id": "insurance",
-        "name": "Insurance & Brokers"
+        "id": "retail",
+        "name": "Retail"
       }
     ],
     "migration": {
       "absorbing": [
         {
-          "category": "Consumer Defensive",
-          "avg_breadth": 0.833
+          "category": "Consumer Cyclical",
+          "avg_breadth": 0.854
         },
         {
-          "category": "Consumer Cyclical",
-          "avg_breadth": 0.825
+          "category": "Consumer Defensive",
+          "avg_breadth": 0.833
         },
         {
           "category": "Healthcare",
@@ -9283,16 +9284,16 @@
       ],
       "bleeding": [
         {
-          "category": "Semiconductors",
-          "avg_breadth": 0.028
-        },
-        {
           "category": "Materials & Mining",
-          "avg_breadth": 0.05
+          "avg_breadth": 0.0
         },
         {
-          "category": "Energy & Power",
-          "avg_breadth": 0.155
+          "category": "Semiconductors",
+          "avg_breadth": 0.104
+        },
+        {
+          "category": "Crypto & Digital Assets",
+          "avg_breadth": 0.214
         }
       ]
     },
@@ -9319,69 +9320,87 @@
         "days_in_state": 6
       },
       "theme_label:managed_care": {
-        "current": "dominant",
+        "current": "neutral",
         "prev": "emerging",
-        "changed_on": "2026-11-10",
+        "changed_on": "2026-11-11",
+        "days_in_state": 1
+      },
+      "theme_label:industrial_distribution": {
+        "current": "dominant",
+        "prev": "neutral",
+        "changed_on": "2026-11-11",
         "days_in_state": 1
       },
       "theme_label:us_sector_discretionary": {
         "current": "dominant",
         "prev": "emerging",
-        "changed_on": "2026-11-10",
+        "changed_on": "2026-11-11",
         "days_in_state": 1
       },
       "theme_label:us_sector_financials": {
         "current": "dominant",
         "prev": "neutral",
-        "changed_on": "2026-11-10",
+        "changed_on": "2026-11-11",
         "days_in_state": 1
       },
       "theme_label:travel": {
         "current": "dominant",
         "prev": "emerging",
-        "changed_on": "2026-11-10",
+        "changed_on": "2026-11-11",
         "days_in_state": 1
       },
-      "theme_label:us_sector_industrials": {
+      "theme_label:housing": {
         "current": "neutral",
         "prev": "emerging",
-        "changed_on": "2026-11-10",
+        "changed_on": "2026-11-11",
         "days_in_state": 1
       },
       "theme_label:crypto_rails": {
         "current": "neutral",
         "prev": "deteriorating",
-        "changed_on": "2026-11-10",
+        "changed_on": "2026-11-11",
         "days_in_state": 1
       },
       "theme_label:regional_banks": {
         "current": "dominant",
         "prev": "emerging",
-        "changed_on": "2026-11-10",
+        "changed_on": "2026-11-11",
+        "days_in_state": 1
+      },
+      "theme_label:obesity_glp1": {
+        "current": "neutral",
+        "prev": "emerging",
+        "changed_on": "2026-11-11",
         "days_in_state": 1
       },
       "theme_label:payments_fintech": {
-        "current": "dominant",
+        "current": "fading",
         "prev": "emerging",
-        "changed_on": "2026-11-10",
-        "days_in_state": 1
-      },
-      "theme_label:ai_agents": {
-        "current": "emerging",
-        "prev": "neutral",
-        "changed_on": "2026-11-10",
-        "days_in_state": 1
-      },
-      "theme_label:defense": {
-        "current": "emerging",
-        "prev": "neutral",
-        "changed_on": "2026-11-10",
+        "changed_on": "2026-11-11",
         "days_in_state": 1
       },
       "theme_label:space_economy": {
         "current": "emerging",
         "prev": "deteriorating",
-        "changed_on": "2026-11-10",
+        "changed_on": "2026-11-11",
+        "days_in_state": 1
+      },
+      "theme_label:defense": {
+        "current": "emerging",
+        "prev": "neutral",
+        "changed_on": "2026-11-11",
+        "days_in_state": 1
+      },
+      "theme_label:ai_agents": {
+        "current": "emerging",
+        "prev": "neutral",
+        "changed_on": "2026-11-11",
+        "days_in_state": 1
+      },
+      "theme_label:quantum_computing": {
+        "current": "emerging",
+        "prev": "deteriorating",
+        "changed_on": "2026-11-11",
         "days_in_state": 1
       }
     },
@@ -10074,8 +10093,8 @@
     "regime_outlook": {
       "schema_version": "regime_outlook.v1",
       "scope": "US",
-      "analysis_cutoff": "2026-11-12T11:47:54.687285+00:00",
-      "built_at": "2026-11-12T11:47:54.696455+00:00",
+      "analysis_cutoff": "2026-11-12T13:55:57.638570+00:00",
+      "built_at": "2026-11-12T13:55:57.642535+00:00",
       "mapping_version": "VERDICT_MAPPING_V2",
       "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
       "inputs": {
@@ -10086,7 +10105,7 @@
         },
         "R": {
           "path": "data/regime/latest.json",
-          "sha256": "32f701de908ab3953e868f7073039d90bc7b1b155e29cb6ee9b762a58d76cbe8",
+          "sha256": "f089129e4576ebce418da756609fc49f5eb852797047ea7b3486ed4243f7c815",
           "read_status": "available"
         },
         "M": {
@@ -10729,7 +10748,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/labor_nowcast/read",
-            "sha256": "32f701de908ab3953e868f7073039d90bc7b1b155e29cb6ee9b762a58d76cbe8",
+            "sha256": "f089129e4576ebce418da756609fc49f5eb852797047ea7b3486ed4243f7c815",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-11",
             "precision": "date",
@@ -10766,7 +10785,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/state",
-            "sha256": "32f701de908ab3953e868f7073039d90bc7b1b155e29cb6ee9b762a58d76cbe8",
+            "sha256": "f089129e4576ebce418da756609fc49f5eb852797047ea7b3486ed4243f7c815",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-30",
             "precision": "date",
@@ -10803,7 +10822,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/complacency/breadth_div",
-            "sha256": "32f701de908ab3953e868f7073039d90bc7b1b155e29cb6ee9b762a58d76cbe8",
+            "sha256": "f089129e4576ebce418da756609fc49f5eb852797047ea7b3486ed4243f7c815",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-11",
             "precision": "date",
@@ -10840,7 +10859,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/label",
-            "sha256": "32f701de908ab3953e868f7073039d90bc7b1b155e29cb6ee9b762a58d76cbe8",
+            "sha256": "f089129e4576ebce418da756609fc49f5eb852797047ea7b3486ed4243f7c815",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-11",
             "precision": "date",
@@ -10877,7 +10896,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-            "sha256": "32f701de908ab3953e868f7073039d90bc7b1b155e29cb6ee9b762a58d76cbe8",
+            "sha256": "f089129e4576ebce418da756609fc49f5eb852797047ea7b3486ed4243f7c815",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-11",
             "precision": "date",
@@ -11057,7 +11076,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-            "sha256": "32f701de908ab3953e868f7073039d90bc7b1b155e29cb6ee9b762a58d76cbe8",
+            "sha256": "f089129e4576ebce418da756609fc49f5eb852797047ea7b3486ed4243f7c815",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-11",
             "precision": "date",
@@ -11279,7 +11298,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/trend",
-            "sha256": "32f701de908ab3953e868f7073039d90bc7b1b155e29cb6ee9b762a58d76cbe8",
+            "sha256": "f089129e4576ebce418da756609fc49f5eb852797047ea7b3486ed4243f7c815",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-30",
             "precision": "date",
@@ -11316,7 +11335,7 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-            "sha256": "32f701de908ab3953e868f7073039d90bc7b1b155e29cb6ee9b762a58d76cbe8",
+            "sha256": "f089129e4576ebce418da756609fc49f5eb852797047ea7b3486ed4243f7c815",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-11",
             "precision": "date",
@@ -12687,13 +12706,13 @@
     "data/market_state/latest.json": "2026-11-11",
     "data/regime/latest.json": "2026-11-11",
     "data/breadth/breadth.parquet": "2026-11-11",
-    "site/basketdata/oracle_state.json": "2026-11-10",
+    "site/basketdata/oracle_state.json": "2026-11-11",
     "data/run_status.json": "2026-11-12T07:08:38.724539+00:00",
     "site/factordata/alerts_triage.json": "2026-11-11",
     "data/neuralweb/liquidity_plumbing.json": "2026-10-14",
     "data/rebalance_pulse/latest.json": "2026-11-06",
     "site/chinastatedata/market_state.json": null,
-    "data/neuralweb/theme_state.json": "2026-11-11",
+    "data/neuralweb/theme_state.json": "2026-11-12",
     "data/transmission/latest.json": "2026-11-06",
     "data/rates_command/latest.json": "2026-11-06",
     "data/forex/latest.json": "2026-11-09",
@@ -12702,10 +12721,10 @@
     "data/hk_regime/latest.json": "2026-11-10",
     "data/canada_regime/latest.json": "2026-10-14",
     "data/commodity/latest.json": "2026-11-08",
-    "site/intelligence/briefing.json": "2026-11-11",
+    "site/intelligence/briefing.json": "2026-11-12",
     "data/crossasset/latest.json": "2026-11-09",
     "data/intl_risk/latest.json": null,
-    "site/basketdata/theme_context.json": "2026-11-10",
+    "site/basketdata/theme_context.json": "2026-11-11",
     "data/market_structure/latest.json": "2026-11-11",
     "data/stage_analysis/context/latest.json": "2026-11-09",
     "data/darkpool/context/latest.json": "2026-11-06",
@@ -12716,7 +12735,7 @@
   },
   "schema_version": 1,
   "produced_by": "engine/neuralweb/world_state.py",
-  "produced_at": "2026-11-12T11:48:09Z",
-  "inputs_hash": "sha256:de7009f9091a0bc46be97d188deed17e97c4bf59aef5db1a1058c64b8e5d26e2",
+  "produced_at": "2026-11-12T13:56:09Z",
+  "inputs_hash": "sha256:730df295e5924d312fd3a071792fb058e703a9c24aee2a99e0d6ecdb9a350195",
   "tier": "infrastructure"
 }
