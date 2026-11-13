@@ -1002,6 +1002,23 @@ def _snapshot_store(panel: str, n: int, m: int, gap: int, result: dict,
         while len(_WARM_SNAPSHOT_CACHE) > 8:
             _WARM_SNAPSHOT_CACHE.pop(next(iter(_WARM_SNAPSHOT_CACHE)))
 
+
+def _panel_rows(sql: str) -> list:
+    """A panel fold's rows, admitted only as a well-formed row array.
+
+    The Management API answers 201 with a JSON array of row objects on success, but a
+    malformed body (null/object/scalar, or a list carrying null/string/number entries)
+    must never be served — or cached by the warmer — as a successful population. A
+    genuine empty list IS valid (a real empty window). Raising here makes _guard report
+    failure, so a malformed refresh neither replaces a known-good snapshot nor renews its
+    age (the snapshot cache would otherwise persist one bad upstream body for its whole
+    max age). Top-level row shape only; this is not a field-schema validator."""
+    rows = _query(sql)
+    if not isinstance(rows, list) or any(not isinstance(r, dict) for r in rows):
+        raise ValueError("malformed analytics row set")
+    return rows
+
+
 def warm_panels() -> None:
     """Rebuild default 24h and 30d snapshots, with a bounded global warm-pass cost."""
     try:
@@ -1225,7 +1242,7 @@ def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=N
         cached = _snapshot_read("sessions", n, m, g, qq, include_bots, force)
         if cached is not None:
             return cached
-        rows = _query(_cte(include_ident=True, include_candidate=True, candidate_window=m,
+        rows = _panel_rows(_cte(include_ident=True, include_candidate=True, candidate_window=m,
                            bot_window=m, focus_excluded=True) +
             # ev: in-window, non-hidden events tagged with their canonical person, so a
             # signed-in visitor's separate macro/terminal cookies stitch into one visit.
@@ -1269,7 +1286,7 @@ def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=N
             "left join cand c on c.visitor_id = s.visitor_id "
             "left join auth.users cu on cu.id::text = c.uid "
             f"{where}"
-            f"order by s.started desc, s.session_id limit {n}") or []
+            f"order by s.started desc, s.session_id limit {n}")
         return {"sessions": _apply_geo_overrides(rows), "q": qq, "include_bots": include_bots,
                 "tz": _TZ, "tz_label": _tz_label(), "visit_gap_min": g}
     return _guard(run)
@@ -1305,7 +1322,7 @@ def visitors(limit=250, q="", include_bots=False, minutes=None, days=None, gap=N
         cached = _snapshot_read("visitors", n, m, g, qq, include_bots, force)
         if cached is not None:
             return cached
-        rows = _query(
+        rows = _panel_rows(
             # ident: each mm_aid -> the user uuid it belongs to (if ever authenticated).
             # A cookie signed into by 2+ DIFFERENT accounts (shared/kiosk device) is
             # AMBIGUOUS — excluded from the auto-merge so one person's activity is never
@@ -1348,7 +1365,7 @@ def visitors(limit=250, q="", include_bots=False, minutes=None, days=None, gap=N
             "left join auth.users cu on cu.id::text = c.uid "
             "left join public.ip_geo g on g.ip = v.last_ip "
             f"{where}"
-            f"order by v.sessions desc, v.last_seen desc, v.canon limit {n}") or []
+            f"order by v.sessions desc, v.last_seen desc, v.canon limit {n}")
         return {"visitors": _apply_geo_overrides(rows, "last_ip"), "q": qq,
                 "include_bots": include_bots, "tz": _TZ, "tz_label": _tz_label(),
                 "visit_gap_min": g}

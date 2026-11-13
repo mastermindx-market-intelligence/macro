@@ -379,3 +379,80 @@ def test_warmer_global_deadline_cannot_be_reset_by_each_panel(warm_snapshots, mo
         "each panel must inherit the original 30-second warm-pass deadline")
     assert len(calls) == 2, "do not start expensive 30d work beyond the global deadline"
     assert a._DEADLINE.get() is None, "the global deadline must not leak into requests"
+
+
+# ---- Panel row-set admission: a malformed upstream body is never a population ----
+
+@pytest.mark.parametrize("payload", [
+    None, {}, False, 0, "", {"error": "synthetic"}, {"rows": []},
+    [None], ["synthetic"], [3], [{"visitor_id": "v"}, None],
+])
+def test_panel_rows_rejects_malformed_bodies(monkeypatch, payload):
+    monkeypatch.setattr(a, "_query", lambda sql, *args, **kwargs: payload)
+    with pytest.raises(ValueError, match="malformed analytics row set"):
+        a._panel_rows("select 1")
+
+
+def test_panel_rows_accepts_genuine_empty_and_row_arrays(monkeypatch):
+    monkeypatch.setattr(a, "_query", lambda sql, *args, **kwargs: [])
+    assert a._panel_rows("select 1") == []          # a real empty window is valid
+    rows = [{"visitor_id": "v", "session_id": "s", "events": 2}]
+    monkeypatch.setattr(a, "_query", lambda sql, *args, **kwargs: rows)
+    assert a._panel_rows("select 1") == rows
+
+
+@pytest.mark.parametrize("payload", [
+    None, {}, False, 0, "", {"error": "synthetic"}, {"rows": []},
+    [None], ["synthetic"], [3],
+])
+def test_malformed_warm_refresh_preserves_good_snapshot_and_age(monkeypatch, payload):
+    monkeypatch.setattr(a.settings, "supabase_pat", lambda: "sbp_test")
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_CACHE", {})
+    monkeypatch.setattr(a, "_CLASSIFIER_CACHE", {})
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_MAX_AGE_S", 900.0)
+    monkeypatch.setattr(a, "_load_exclusions", lambda: {
+        "emails": [], "locations": [], "ips": [], "visitor_ids": [],
+        "bots": {}, "geo_overrides": []})
+    monkeypatch.setattr(a, "refresh_classifier_cache", lambda: None)
+    clock = [1000.0]
+    monkeypatch.setattr(a.time, "monotonic", lambda: clock[0])
+    good = [{"visitor_id": "retained-v", "session_id": "retained-s", "events": 1}]
+    state = {"rows": good}
+    monkeypatch.setattr(a, "_query", lambda sql, *args, **kwargs: state["rows"])
+
+    a.warm_panels()
+    assert len(a._WARM_SNAPSHOT_CACHE) == 4
+    key = a._snapshot_key("visitors", 250, 1440, a._gap(None))
+    original_expiry = a._WARM_SNAPSHOT_CACHE[key][0]
+
+    clock[0] += 100.0
+    state["rows"] = payload                 # upstream returns a malformed 201 body
+    a.warm_panels()
+    assert a._WARM_SNAPSHOT_CACHE[key][0] == original_expiry, "must not renew the age"
+    for minutes in (1440, 43200):
+        v = a.visitors(minutes=minutes)
+        s = a.sessions(minutes=minutes)
+        assert v["ok"] is True and v["visitors"] == good
+        assert s["ok"] is True and s["sessions"] == good
+    clock[0] = original_expiry - 0.5        # still inside the ORIGINAL lifetime
+    assert a.visitors(minutes=1440)["visitors"] == good
+
+
+def test_genuine_empty_population_is_warmed_and_served(monkeypatch):
+    monkeypatch.setattr(a.settings, "supabase_pat", lambda: "sbp_test")
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_CACHE", {})
+    monkeypatch.setattr(a, "_CLASSIFIER_CACHE", {})
+    monkeypatch.setattr(a, "_load_exclusions", lambda: {
+        "emails": [], "locations": [], "ips": [], "visitor_ids": [],
+        "bots": {}, "geo_overrides": []})
+    monkeypatch.setattr(a, "refresh_classifier_cache", lambda: None)
+    calls = []
+    def query(sql, *args, **kwargs):
+        calls.append(sql)
+        return []                            # a genuine empty window
+    monkeypatch.setattr(a, "_query", query)
+    a.warm_panels()
+    assert len(a._WARM_SNAPSHOT_CACHE) == 4
+    assert a.visitors(minutes=43200)["visitors"] == []
+    assert a.sessions(minutes=43200)["sessions"] == []
+    assert len(calls) == 4, "a genuine empty population is a valid cached snapshot"
