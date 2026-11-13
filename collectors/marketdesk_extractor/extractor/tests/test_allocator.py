@@ -311,6 +311,15 @@ def test_expected_new_weekday_peak():
     assert allocator.expected_new_next_hours(mon_peak, 3) == pytest.approx(69.3)
 
 
+def test_post_dst_fall_back_uses_real_eastern_hour_and_weekday():
+    # 2026-11-07T04:30Z is Friday 23:30 EST, not Saturday 00:30 EDT.
+    # Misclassifying it as the weekend reserves 4.55 rather than 11.60
+    # prospective new posts over the next four hours.
+    stamp = datetime(2026, 11, 7, 4, 30, tzinfo=timezone.utc)
+    assert allocator._to_et(stamp) == datetime(2026, 11, 6, 23, 30)
+    assert allocator.expected_new_next_hours(stamp, 4) == pytest.approx(11.60)
+
+
 def test_expected_new_weekend_lower_than_weekday():
     # Saturday 00:00 ET == 04:00 UTC; weekend hrs 0..3 = 5.9+0.1+0.0+1.5 = 7.5
     sat_mid = datetime(2026, 7, 25, 4, 0, 0, tzinfo=timezone.utc)
@@ -346,3 +355,343 @@ def test_expected_new_profile_is_overridable():
     # a flat 1/hr profile integrates to exactly the window length
     assert allocator.expected_new_next_hours(NOW, 5, flat) == pytest.approx(5.0)
     assert allocator.expected_new_next_hours(NOW, 2.5, flat) == pytest.approx(2.5)
+
+
+# ---------------------------------------------------------------------------
+# Bounded, evidence-driven backfill admission
+# ---------------------------------------------------------------------------
+# Measured on M1 at 2026-10-22T07:16:48Z from the real installed code and DB:
+# cap=70/24h, BACKFILL_RESERVE_HOURS=24, NEW_WINDOW_HOURS=48, 0 known-new
+# pending, 7,386 backfill pending. The old gate was one comparison —
+# ``allow_backfill = quota > reserve`` — with ``reserve`` the RAW demand
+# forecast. At those settings the forecast is 206.5 papers against a 70-pull
+# allowance, so the condition was UNREACHABLE for all time and the backlog
+# stalled permanently, with nothing in the logs saying so. These tests pin the
+# repaired gate's three bounds and, more importantly, its refusals: backfill
+# stays off unless an operator grants a budget, discovery evidence must be real
+# and recent, and the reservation must be holdable.
+M1_NOW = datetime(2026, 10, 22, 7, 16, 48, tzinfo=timezone.utc)  # Thursday 03:16 ET
+M1_CAP = 70
+M1_FORECAST_24H = 206.5   # measured from expected_new_next_hours(), not hand-written
+
+
+def _health(state, *, age_h: float = 0.0, observed_at: str | None = None, **extra):
+    """A discovery-health record shaped like ``db.discovery_health``'s return."""
+    record = {
+        "state": state,
+        "observed_at": observed_at
+        if observed_at is not None
+        else _iso(M1_NOW - timedelta(hours=age_h)),
+    }
+    record.update(extra)
+    return record
+
+
+def _healthy(age_h: float = 0.5):
+    return _health(db.DISCOVERY_HEALTHY, age_h=age_h)
+
+
+def _decide(conn, **over):
+    """``decide_backfill`` with the M1 production settings as the baseline."""
+    kwargs = dict(
+        account="acct",
+        quota=M1_CAP,
+        cap=M1_CAP,
+        new_window_hours=48,
+        backfill_reserve_hours=24,
+        reserve_feasible_ratio=0.5,
+        backfill_budget=0,
+        discovery=_healthy(),
+    )
+    kwargs.update(over)
+    return allocator.decide_backfill(conn, M1_NOW, **kwargs)
+
+
+# --- 1. the defect's precondition, and the feasible-reserve repair ---------
+def test_raw_forecast_exceeds_the_whole_allowance_at_m1_settings():
+    """Pin WHY the old gate was unreachable, from the real measured numbers."""
+    forecast = allocator.expected_new_next_hours(M1_NOW, 24)
+    assert forecast == pytest.approx(M1_FORECAST_24H, abs=0.05)
+    assert forecast > M1_CAP
+    # The old comparison, reproduced verbatim: 70 > 206.5 is False, forever.
+    assert not (M1_CAP > forecast)
+
+
+def test_effective_reserve_clamps_the_forecast_to_what_can_be_withheld():
+    forecast, reserve = allocator.effective_reserve(
+        M1_NOW, 24, cap=M1_CAP, feasible_ratio=0.5
+    )
+    # The forecast is REPORTED, not erased — the clamp must stay auditable.
+    assert forecast == pytest.approx(M1_FORECAST_24H, abs=0.05)
+    assert reserve == pytest.approx(M1_CAP * 0.5)
+    # The point of the repair: the reservation is now holdable, so the gate fires.
+    assert M1_CAP > reserve
+
+
+def test_effective_reserve_passes_a_small_forecast_through_untouched():
+    forecast, reserve = allocator.effective_reserve(
+        M1_NOW, 0.25, cap=M1_CAP, feasible_ratio=0.5
+    )
+    assert reserve == pytest.approx(forecast)
+    assert reserve < M1_CAP * 0.5
+
+
+@pytest.mark.parametrize("ratio", [0.0, 0.25, 0.5, 1.0, 5.0, 100.0])
+def test_reserve_ceiling_never_exceeds_the_provider_cap(ratio):
+    """Even a badly mis-set ratio cannot reserve more than the whole allowance."""
+    _, reserve = allocator.effective_reserve(M1_NOW, 24, cap=M1_CAP, feasible_ratio=ratio)
+    assert 0.0 <= reserve <= M1_CAP
+
+
+# --- 2. the discovery-evidence gate fails closed ---------------------------
+@pytest.mark.parametrize(
+    "health, expected",
+    [
+        (None, "DISCOVERY_UNKNOWN"),
+        ({}, "DISCOVERY_UNKNOWN"),
+        (_health(db.DISCOVERY_UNKNOWN), "DISCOVERY_UNKNOWN"),
+        (_health(db.DISCOVERY_FAILED), "DISCOVERY_FAILED"),
+        (_health(db.DISCOVERY_FAILED, age_h=100.0), "DISCOVERY_FAILED"),
+        (_health(db.DISCOVERY_HEALTHY, age_h=99.0), "DISCOVERY_STALE"),
+        (_health(db.DISCOVERY_HEALTHY, observed_at="not-a-timestamp"), "DISCOVERY_UNSTAMPED"),
+        (_health(db.DISCOVERY_HEALTHY, observed_at=""), "DISCOVERY_UNSTAMPED"),
+    ],
+)
+def test_discovery_gate_refuses_anything_not_recent_and_healthy(health, expected):
+    ok, why = allocator.discovery_is_current(health, M1_NOW, max_age_hours=6.0)
+    assert ok is False
+    assert why == expected
+
+
+def test_discovery_gate_admits_a_recent_healthy_pass():
+    ok, why = allocator.discovery_is_current(_healthy(age_h=1.0), M1_NOW, max_age_hours=6.0)
+    assert (ok, why) == (True, "OK")
+
+
+def test_a_future_discovery_stamp_cannot_grant_indefinite_freshness():
+    """Clock skew must fail closed, not hand out a free pass."""
+    health = _health(db.DISCOVERY_HEALTHY, observed_at=_iso(M1_NOW + timedelta(days=7)))
+    ok, why = allocator.discovery_is_current(health, M1_NOW, max_age_hours=6.0)
+    assert (ok, why) == (False, "DISCOVERY_FUTURE")
+
+
+@pytest.mark.parametrize("max_age", [float("nan"), float("inf"), -1.0, 0.0, True])
+def test_invalid_discovery_age_limit_refuses_backfill(max_age):
+    ok, why = allocator.discovery_is_current(
+        _healthy(age_h=1.0), M1_NOW, max_age_hours=max_age
+    )
+    assert (ok, why) == (False, "DISCOVERY_CONFIG_INVALID")
+
+
+def test_discovery_future_timestamp_refused_beyond_clock_skew():
+    too_future = _health(
+        db.DISCOVERY_HEALTHY,
+        observed_at=_iso(M1_NOW + timedelta(hours=1)),
+    )
+    near_future = _health(
+        db.DISCOVERY_HEALTHY,
+        observed_at=_iso(M1_NOW + timedelta(minutes=3)),
+    )
+    assert allocator.discovery_is_current(
+        too_future, M1_NOW, max_age_hours=6
+    ) == (False, "DISCOVERY_FUTURE")
+    assert allocator.discovery_is_current(
+        near_future, M1_NOW, max_age_hours=6
+    ) == (True, "OK")
+
+
+@pytest.mark.parametrize("ratio", [float("nan"), -0.2])
+def test_invalid_reserve_ratio_cannot_erase_fresh_protection(ratio):
+    _, reserve = allocator.effective_reserve(
+        M1_NOW, 24, cap=M1_CAP, feasible_ratio=ratio
+    )
+    assert reserve == M1_CAP
+
+
+# --- 3. decide_backfill — three independent bounds -------------------------
+def test_backfill_refuses_new_window_shorter_than_rolling_download_ledger(conn):
+    # A 12h 'new' window would reclassify fresh downloads as historical within
+    # the same rolling 24h budget, so it cannot authorize a backfill pull.
+    d = _decide(conn, new_window_hours=12, backfill_budget=5)
+    assert (d.allowed, d.reason) == (False, "WINDOW_BELOW_LEDGER")
+
+
+def test_backfill_is_disabled_by_default_so_no_allowance_is_invented(conn):
+    """The shipped default is the OLD behaviour: no backfill, no new spend."""
+    decision = _decide(conn, backfill_budget=0)
+    assert (decision.allowed, decision.reason) == (False, "BUDGET_DISABLED")
+    assert decision.budget == 0
+
+
+def test_backfill_stays_off_even_when_discovery_is_perfect_and_quota_is_surplus(conn):
+    """Healthy discovery alone must not create backfill."""
+    assert _decide(conn, backfill_budget=0, discovery=_healthy()).allowed is False
+
+
+@pytest.mark.parametrize(
+    "discovery, reason",
+    [
+        (_health(db.DISCOVERY_FAILED), "DISCOVERY_FAILED"),
+        (_health(db.DISCOVERY_UNKNOWN), "DISCOVERY_UNKNOWN"),
+        (_healthy(age_h=48.0), "DISCOVERY_STALE"),
+        (None, "DISCOVERY_UNKNOWN"),
+    ],
+)
+def test_no_backfill_is_spent_while_discovery_cannot_see_the_feed(conn, discovery, reason):
+    """The outage case: upstream discovery down must not drain quota on stale rows."""
+    decision = _decide(conn, backfill_budget=25, discovery=discovery)
+    assert (decision.allowed, decision.reason) == (False, reason)
+    assert decision.used_24h is None
+    assert "backfill_24h=unmeasured/" in decision.describe()
+
+
+def test_backfill_is_admitted_only_with_budget_healthy_discovery_and_surplus(conn):
+    decision = _decide(conn, backfill_budget=5, discovery=_healthy(), quota=70)
+    assert (decision.allowed, decision.reason) == (True, "OK")
+    # Every number the caller needs to audit the call.
+    assert decision.reserve == pytest.approx(35.0)
+    assert decision.forecast == pytest.approx(M1_FORECAST_24H, abs=0.05)
+    assert decision.used_24h == 0
+    assert decision.budget == 5
+
+
+def test_reserve_is_held_when_quota_does_not_cover_the_feasible_reservation(conn):
+    held = _decide(conn, backfill_budget=5, discovery=_healthy(), quota=35)
+    assert (held.allowed, held.reason) == (False, "RESERVE_HELD")
+
+    # One slot above the feasible reserve is exactly where it starts to admit.
+    admitted = _decide(conn, backfill_budget=5, discovery=_healthy(), quota=36)
+    assert (admitted.allowed, admitted.reason) == (True, "OK")
+
+
+def test_budget_is_a_hard_ceiling_rather_than_a_rate_hint(conn):
+    """5 backfill pulls already spent against a budget of 2 → stop."""
+    for i in range(5):
+        _insert(
+            conn, f"spent{i}",
+            published_at=M1_NOW - timedelta(hours=200),
+            downloaded_at=M1_NOW - timedelta(hours=1),
+            account="acct",
+        )
+    decision = _decide(conn, backfill_budget=2, discovery=_healthy())
+    assert (decision.allowed, decision.reason) == (False, "BUDGET_SPENT")
+    assert decision.used_24h == 5
+
+
+# --- 4. backfill_used_24h reads the SAME ledger as the quota gauge ----------
+def test_backfill_used_24h_counts_only_backfill_pulls(conn):
+    # a fresh, new-window pull — must NOT consume the backfill budget
+    _insert(conn, "fresh_pull", published_at=M1_NOW - timedelta(hours=2),
+            downloaded_at=M1_NOW - timedelta(hours=1), account="acct")
+    # an undated pull counts as backfill (unknown age → not fresh), as in queue_depths
+    _insert(conn, "undated_pull", published_at=None,
+            downloaded_at=M1_NOW - timedelta(hours=1), account="acct")
+    # an old backfill pull
+    _insert(conn, "old_pull", published_at=M1_NOW - timedelta(hours=300),
+            downloaded_at=M1_NOW - timedelta(hours=2), account="acct")
+    # a backfill pull from a DIFFERENT account — per-account ledger, not global
+    _insert(conn, "other_acct_pull", published_at=M1_NOW - timedelta(hours=300),
+            downloaded_at=M1_NOW - timedelta(hours=2), account="someone_else")
+    # a backfill pull that aged out of the trailing window
+    _insert(conn, "aged_out_pull", published_at=M1_NOW - timedelta(hours=300),
+            downloaded_at=M1_NOW - timedelta(hours=25), account="acct")
+    used = allocator.backfill_used_24h(conn, "acct", M1_NOW, new_window_hours=48)
+    assert used == 2   # undated + old; NOT fresh_pull, other account, or aged-out
+
+
+# --- 5. invariants the repair must never break -----------------------------
+def test_admitting_backfill_never_bypasses_the_fresh_tier(conn):
+    """Backfill may only ever be chosen when the fresh queue is EMPTY."""
+    _insert(conn, "stale_gold", published_at=M1_NOW - timedelta(hours=400), score=99)
+    _insert(conn, "fresh_dud", published_at=M1_NOW - timedelta(hours=1), score=0)
+
+    # Even with backfill admitted AND a far higher-scored backfill row waiting,
+    # the new-window paper is returned.
+    got = allocator.next_candidate(
+        conn, M1_NOW, new_window_hours=48, reserve=0.0, allow_backfill=True
+    )
+    assert got == "fresh_dud"
+
+    # Only once the fresh queue drains does the backfill row become reachable.
+    conn.execute("UPDATE papers SET status=? WHERE blob_id='fresh_dud'",
+                 (Status.COMPLETE.value,))
+    conn.commit()
+    got = allocator.next_candidate(
+        conn, M1_NOW, new_window_hours=48, reserve=0.0, allow_backfill=True
+    )
+    assert got == "stale_gold"
+
+
+def test_backfill_cannot_spend_outside_the_provider_cap(conn):
+    """Total pulls for an account stay bounded by the cap; backfill only reorders."""
+    for i in range(M1_CAP):
+        _insert(conn, f"full{i}", published_at=M1_NOW - timedelta(hours=300),
+                downloaded_at=M1_NOW - timedelta(hours=1), account="acct")
+    assert db.available_quota(conn, "acct", M1_CAP, M1_NOW) == 0
+    decision = _decide(conn, backfill_budget=100, discovery=_healthy(), quota=0)
+    assert decision.allowed is False
+    # And the ledger the ceiling reads is the same one the quota gauge reads.
+    assert db.trailing_24h_count(conn, "acct", M1_NOW) == M1_CAP
+    assert allocator.backfill_used_24h(conn, "acct", M1_NOW, new_window_hours=48) == M1_CAP
+
+
+def test_the_gate_decides_for_one_account_without_inventing_another(conn):
+    """Per-account keys: one account's spend is never another account's allowance."""
+    _insert(conn, "spent_by_other", published_at=M1_NOW - timedelta(hours=300),
+            downloaded_at=M1_NOW - timedelta(hours=1), account="acct2")
+    decision = _decide(conn, backfill_budget=5, discovery=_healthy())
+    assert decision.allowed is True           # acct's own budget is untouched
+    assert decision.used_24h == 0             # acct2's spend is not acct's
+
+
+def test_decision_is_deterministic(conn):
+    """Same inputs, same decision — the gate must not flap between calls."""
+    first = _decide(conn, backfill_budget=5, discovery=_healthy())
+    second = _decide(conn, backfill_budget=5, discovery=_healthy())
+    assert first == second
+
+
+def test_describe_reports_the_evidence(conn):
+    decision = _decide(conn, backfill_budget=5, discovery=_healthy())
+    text = decision.describe()
+    assert "True(OK)" in text
+    assert "forecast=206.5" in text
+    assert "backfill_24h=0/5" in text
+
+
+# --- 6. the durable discovery-health contract (existing meta KV) -----------
+def test_absent_discovery_health_reads_unknown_not_healthy(conn):
+    """A DB predating the contract must never be inferred healthy."""
+    assert db.discovery_health(conn)["state"] == db.DISCOVERY_UNKNOWN
+
+
+def test_discovery_health_roundtrip_and_reason_clearing(conn):
+    stamp = _iso(M1_NOW)
+    db.set_discovery_health(conn, state=db.DISCOVERY_FAILED, observed_at=stamp,
+                            reason="DISCOVER_ERROR:Timeout", found_new=0)
+    failed = db.discovery_health(conn)
+    assert failed["state"] == db.DISCOVERY_FAILED
+    assert "Timeout" in failed["reason"]
+    assert failed["found_new"] == "0"
+
+    db.set_discovery_health(conn, state=db.DISCOVERY_HEALTHY,
+                            observed_at=_iso(M1_NOW), found_new=12)
+    healthy = db.discovery_health(conn)
+    assert healthy["state"] == db.DISCOVERY_HEALTHY
+    assert healthy["reason"] == ""          # nothing outstanding to explain
+    assert healthy["found_new"] == "12"
+
+
+def test_discovery_health_rejects_an_unsupported_state(conn):
+    with pytest.raises(ValueError):
+        db.set_discovery_health(conn, state="SORT_OF_FINE", observed_at=_iso(M1_NOW))
+
+
+def test_discovery_health_rejects_an_empty_timestamp(conn):
+    with pytest.raises(ValueError):
+        db.set_discovery_health(conn, state=db.DISCOVERY_HEALTHY, observed_at="  ")
+
+
+def test_a_corrupt_state_value_degrades_to_unknown(conn):
+    db.set_meta(conn, db.DISCOVERY_STATE_KEY, "gibberish")
+    assert db.discovery_health(conn)["state"] == db.DISCOVERY_UNKNOWN

@@ -438,6 +438,36 @@ def coverage(catalog: dict) -> dict[str, dict]:
 # A raw aggregate only: publication health remains owned by health(), and the
 # source-freshness policy stays in the existing source guard. No clock is stored.
 SOURCE_CLOCK_SCHEMA = "research_vault.source_clock.v1"
+# Canonical, producer-derived source namespace. publish_vault.vault_id() builds
+# every MarketDesk sidecar id as "marketdesk-<casefolded blob_id>-<sha256(raw)[:6]>"
+# and sidecar_for() assigns sidecar["id"] = vault_id(blob_id), so this prefix
+# identifies MarketDesk rows without guessing from institution or title. The
+# freshness guard imports this constant rather than re-declaring the namespace;
+# collectors/marketdesk_extractor/.../publish_vault.py remains the reference and
+# is deliberately NOT imported here (the hosted guard runs a sparse checkout that
+# does not contain the collector tree).
+MARKETDESK_ID_PREFIX = "marketdesk-"
+# The provider sub-clocks carried under "providers". Adding this key is additive:
+# every pre-existing source_clock key keeps its exact name, type and value, so
+# old readers of latest_report_published_at stay correct during rollout.
+SOURCE_CLOCK_PROVIDER_KEYS = ("marketdesk",)
+
+
+def _parse_published_at(value: Any) -> Any:
+    """Parse one published_at to an aware UTC datetime, or None when unusable.
+
+    Missing/malformed values are INVALID, never zero-aged research. Dates without
+    an offset keep the existing UTC interpretation.
+    """
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        stamp = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+        if stamp.tzinfo is None:
+            stamp = stamp.replace(tzinfo=timezone.utc)
+        return stamp.astimezone(timezone.utc)
+    except (TypeError, ValueError, OverflowError):
+        return None
 
 
 def source_clock_summary(catalog: dict) -> dict[str, Any]:
@@ -447,6 +477,15 @@ def source_clock_summary(catalog: dict) -> dict[str, Any]:
     count as invalid, not as zero-aged research. Dates without offsets preserve
     the existing UTC interpretation. This function does not mutate the catalog,
     apply age policy, read a store, or change Wave-4 validation/publication rules.
+
+    A single global ``max(published_at)`` cannot distinguish a healthy vault from
+    one whose MarketDesk provider has stopped publishing while an internal desk
+    keeps the vault-wide clock young, so a compact per-provider clock is emitted
+    alongside it under ``providers``. It is computed in the SAME pass, with the
+    same parser, as the global clock — a provider row can never be graded by
+    different rules than the vault it belongs to. Provider clocks are counts and
+    a maximum timestamp only: no id, title, institution or summary text is
+    exposed. Callers grade provider health; this function applies no age policy.
     """
     rows = catalog.get("items")
     complete = isinstance(rows, list) and catalog.get("preview") is not True
@@ -454,20 +493,28 @@ def source_clock_summary(catalog: dict) -> dict[str, Any]:
         rows = []
     latest = None
     valid = 0
+    provider_rows = 0
+    provider_valid = 0
+    provider_latest = None
     for row in rows:
-        value = row.get("published_at") if isinstance(row, dict) else None
-        if not isinstance(value, str) or not value.strip():
-            continue
-        try:
-            stamp = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
-            if stamp.tzinfo is None:
-                stamp = stamp.replace(tzinfo=timezone.utc)
-            stamp = stamp.astimezone(timezone.utc)
-        except (TypeError, ValueError, OverflowError):
+        is_dict = isinstance(row, dict)
+        provider = (
+            is_dict
+            and isinstance(row.get("id"), str)
+            and row["id"].startswith(MARKETDESK_ID_PREFIX)
+        )
+        if provider:
+            provider_rows += 1
+        stamp = _parse_published_at(row.get("published_at") if is_dict else None)
+        if stamp is None:
             continue
         valid += 1
         if latest is None or stamp > latest:
             latest = stamp
+        if provider:
+            provider_valid += 1
+            if provider_latest is None or stamp > provider_latest:
+                provider_latest = stamp
     return {
         "schema": SOURCE_CLOCK_SCHEMA,
         "complete": complete,
@@ -475,6 +522,17 @@ def source_clock_summary(catalog: dict) -> dict[str, Any]:
         "valid_clock_count": valid,
         "invalid_clock_count": len(rows) - valid,
         "latest_report_published_at": latest.isoformat() if latest is not None else None,
+        "providers": {
+            "marketdesk": {
+                "id_prefix": MARKETDESK_ID_PREFIX,
+                "report_count": provider_rows,
+                "valid_clock_count": provider_valid,
+                "invalid_clock_count": provider_rows - provider_valid,
+                "latest_report_published_at": (
+                    provider_latest.isoformat() if provider_latest is not None else None
+                ),
+            }
+        },
     }
 
 

@@ -8,8 +8,14 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
+
 from marketdesk_extractor import db
 from marketdesk_extractor.config import Config
+from marketdesk_extractor.marketdesk import (
+    DownloadCapExhausted, MarketDeskError, ProviderBlobRefused,
+    TransientHTTPError, UnsupportedBlobError,
+)
 from marketdesk_extractor.schemas import Status
 
 T = 1782000000  # fixed publish time -> stable date folder
@@ -109,6 +115,104 @@ def test_full_pipeline_stitch(tmp_path, monkeypatch):
     assert entry["blob_id"] in {"PID1", "PID2"}
     assert entry["blob_url"].endswith("/blob")
     assert entry["status"] == Status.COMPLETE.value
+
+
+@pytest.mark.parametrize(
+    "error",
+    [ProviderBlobRefused, MarketDeskError, DownloadCapExhausted,
+     TransientHTTPError],
+)
+def test_manual_download_pass_preserves_metadata_on_unqualified_provider_error(
+    tmp_path, monkeypatch, error,
+):
+    from marketdesk_extractor.discover import discover
+    from marketdesk_extractor.download import download_pending
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    discover(cfg, conn, FakeClient(), limit=10)
+
+    class ProviderFailure(FakeClient):
+        def __init__(self):
+            self.calls = []
+
+        def download_blob(self, blob_id):
+            self.calls.append(blob_id)
+            raise error("provider did not deliver PDF")
+
+    client = ProviderFailure()
+    try:
+        result = download_pending(cfg, conn, client)
+        assert result.failed == 1
+        assert len(client.calls) == 1, "a rejected report must stop the pass"
+        for blob_id in ("PID1", "PID2"):
+            row = db.get_by_blob_id(conn, blob_id)
+            assert row["status"] == Status.DISCOVERED.value
+            assert row["sha256"] is None
+    finally:
+        conn.close()
+
+
+def test_manual_download_pass_preserves_and_raises_expired_auth(
+    tmp_path, monkeypatch,
+):
+    from marketdesk_extractor.discover import discover
+    from marketdesk_extractor.download import download_pending
+    from marketdesk_extractor.marketdesk import SessionExpired
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    discover(cfg, conn, FakeClient(), limit=10)
+
+    class LoggedOutClient(FakeClient):
+        def __init__(self):
+            self.calls = []
+
+        def download_blob(self, blob_id):
+            self.calls.append(blob_id)
+            raise SessionExpired("session control confirmed logged out")
+
+    client = LoggedOutClient()
+    try:
+        with pytest.raises(SessionExpired, match="confirmed logged out"):
+            download_pending(cfg, conn, client)
+        assert len(client.calls) == 1
+        for blob_id in ("PID1", "PID2"):
+            row = db.get_by_blob_id(conn, blob_id)
+            assert row["status"] == Status.DISCOVERED.value
+            assert row["sha256"] is None
+    finally:
+        conn.close()
+
+
+def test_manual_download_pass_terminal_only_for_proven_binary_non_pdf(
+    tmp_path, monkeypatch,
+):
+    from marketdesk_extractor.discover import discover
+    from marketdesk_extractor.download import download_pending
+
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url); db.init_db(conn)
+    discover(cfg, conn, FakeClient(), limit=10)
+
+    class OneUnsupported(FakeClient):
+        def download_blob(self, blob_id):
+            if blob_id == "PID1":
+                raise UnsupportedBlobError("binary ZIP container")
+            return super().download_blob(blob_id)
+
+    try:
+        result = download_pending(cfg, conn, OneUnsupported())
+        assert result.failed == 1
+        assert result.downloaded == 1
+        assert db.get_by_blob_id(conn, "PID1")["status"] == (
+            Status.SKIPPED_UNSUPPORTED.value
+        )
+        assert db.get_by_blob_id(conn, "PID2")["status"] == (
+            Status.DOWNLOADED.value
+        )
+    finally:
+        conn.close()
 
 
 def _date() -> str:

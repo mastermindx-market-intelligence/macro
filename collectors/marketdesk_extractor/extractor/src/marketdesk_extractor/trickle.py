@@ -44,6 +44,7 @@ from .marketdesk import (
     DownloadCapExhausted,
     MarketDeskClient,
     MarketDeskError,
+    UnsupportedBlobError,
     SessionExpired,
     TransientHTTPError,
 )
@@ -161,6 +162,12 @@ class AccountPlan:
     cooldown_until: datetime | None = None
     transient_retry_after: datetime | None = None
     browser_start_failed: bool = False
+    #: The raw demand forecast behind ``reserve``. Reported separately so a
+    #: reserve clamped by the feasibility ceiling never hides how large the
+    #: forecast actually was — that gap is what made the stall invisible.
+    reserve_forecast: float = 0.0
+    #: Why backfill was or was not admitted (see ``allocator.BackfillDecision``).
+    backfill_reason: str = ""
 
     def describe(self) -> str:
         if not self.authed:
@@ -179,8 +186,10 @@ class AccountPlan:
         nxt = self.next_blob_id or "(none eligible)"
         return (
             f"[{self.account}] quota={self.available_quota} "
-            f"(used_24h={self.trailing_24h}) reserve={self.reserve:.1f} "
-            f"allow_backfill={self.allow_backfill} next={self.next_kind}:{nxt} "
+            f"(used_24h={self.trailing_24h}) reserve={self.reserve:.1f}"
+            f"/forecast={self.reserve_forecast:.1f} "
+            f"allow_backfill={self.allow_backfill}:{self.backfill_reason or 'n/a'} "
+            f"next={self.next_kind}:{nxt} "
             f"queue(new={self.new_pending},backfill={self.backfill_pending}){cd}"
         )
 
@@ -192,6 +201,7 @@ class TickResult:
     downloaded_backfill: int = 0
     cap_bounces: int = 0
     transient_errors: int = 0  # safely requeued provider TLS/HTTP 5xx
+    provider_refusals: int = 0  # access/ambiguous responses are not bad PDFs
     unsupported: int = 0
     errors: int = 0
     driver_dead: int = 0  # attempts that died on the Playwright transport
@@ -201,7 +211,7 @@ class TickResult:
         return (
             f"downloaded new={self.downloaded_new} backfill={self.downloaded_backfill} "
             f"cap_bounces={self.cap_bounces} transient_errors={self.transient_errors} "
-            f"unsupported={self.unsupported} "
+            f"provider_refusals={self.provider_refusals} unsupported={self.unsupported} "
             f"errors={self.errors} driver_dead={self.driver_dead} "
             f"session_expired={self.session_expired}"
         )
@@ -210,6 +220,33 @@ class TickResult:
 # ---------------------------------------------------------------------------
 # Planning (pure-ish: reads DB + clock, no downloads) — used by dry-run too
 # ---------------------------------------------------------------------------
+def _decide_backfill(
+    cfg: Config, conn, state: AccountState, now: datetime,
+    quota: int, *, profile: allocator.HourlyProfile | None = None,
+) -> allocator.BackfillDecision:
+    """The ONE backfill gate, shared by ``plan_account`` and ``run_tick``.
+
+    Both call sites previously recomputed ``allow_backfill = quota > reserve``
+    independently. Duplicating a decision is how the two drift, and here the
+    duplicate was itself the defect: the raw forecast it compared against quota
+    exceeded the entire cap, so neither site could ever admit a backfill pull.
+    One pure allocator function now decides, and both sites report its reason.
+    """
+    return allocator.decide_backfill(
+        conn, now,
+        account=state.name,
+        quota=quota,
+        cap=cfg.download_cap_per_account_24h,
+        new_window_hours=cfg.new_window_hours,
+        backfill_reserve_hours=cfg.backfill_reserve_hours,
+        reserve_feasible_ratio=cfg.backfill_reserve_feasible_ratio,
+        backfill_budget=cfg.backfill_budget_per_account_24h,
+        profile=profile,
+        discovery=db.discovery_health(conn),
+        discovery_max_age_hours=cfg.backfill_discovery_max_age_hours,
+    )
+
+
 def plan_account(
     cfg: Config, conn, state: AccountState, now: datetime,
     *, profile: allocator.HourlyProfile | None = None,
@@ -217,8 +254,7 @@ def plan_account(
     prof = profile or allocator.DEFAULT_PROFILE
     used = db.trailing_24h_count(conn, state.name, now)
     quota = max(0, cfg.download_cap_per_account_24h - used)
-    reserve = allocator.expected_new_next_hours(now, cfg.backfill_reserve_hours, prof)
-    allow_backfill = quota > reserve
+    backfill = _decide_backfill(cfg, conn, state, now, quota, profile=prof)
     new_pending, backfill_pending = allocator.queue_depths(
         conn, now, new_window_hours=cfg.new_window_hours
     )
@@ -227,7 +263,7 @@ def plan_account(
     if quota > 0 and state.authed and not state.in_cooldown(now):
         blob_id = allocator.next_candidate(
             conn, now, new_window_hours=cfg.new_window_hours,
-            reserve=reserve, allow_backfill=allow_backfill,
+            reserve=backfill.reserve, allow_backfill=backfill.allowed,
         )
         if blob_id is not None:
             kind = _classify(conn, blob_id, now, cfg.new_window_hours)
@@ -236,8 +272,8 @@ def plan_account(
         authed=state.authed,
         available_quota=quota,
         trailing_24h=used,
-        reserve=reserve,
-        allow_backfill=allow_backfill,
+        reserve=backfill.reserve,
+        allow_backfill=backfill.allowed,
         next_blob_id=blob_id,
         next_kind=kind,
         new_pending=new_pending,
@@ -249,6 +285,8 @@ def plan_account(
             and now < state.transient_retry_after else None
         ),
         browser_start_failed=state.browser_start_failed,
+        reserve_forecast=backfill.forecast,
+        backfill_reason=backfill.reason,
     )
 
 
@@ -325,13 +363,12 @@ def run_tick(
             quota = max(0, cfg.download_cap_per_account_24h - used)
             if quota <= 0:
                 break
-            reserve = allocator.expected_new_next_hours(
-                now, cfg.backfill_reserve_hours, profile or allocator.DEFAULT_PROFILE
-            )
-            allow_backfill = quota > reserve
+            # Same gate, same reason code as the plan line — a per-pull decision
+            # must never be laxer than the tick-level plan that authorised it.
+            backfill = _decide_backfill(cfg, conn, state, now, quota, profile=profile)
             blob_id = allocator.next_candidate(
                 conn, now, new_window_hours=cfg.new_window_hours,
-                reserve=reserve, allow_backfill=allow_backfill,
+                reserve=backfill.reserve, allow_backfill=backfill.allowed,
             )
             if blob_id is None:
                 break
@@ -405,16 +442,36 @@ def run_tick(
                     state.transient_retry_after.isoformat(),
                 )
                 break
-            except MarketDeskError as e:
-                # A non-cap blob that isn't a PDF (ZIP/XLSX/data attachment). The
-                # vault is PDF-only, so this is terminal: mark SKIPPED_UNSUPPORTED
-                # so next_candidate never re-selects it (retrying only wastes quota).
+            except UnsupportedBlobError as e:
+                # Only positively identified non-PDF bytes may be terminal.
                 res.unsupported += 1
                 db.set_status(conn, blob_id, Status.SKIPPED_UNSUPPORTED,
                               error_message=str(e)[:500])
-                log.info("[%s] unsupported blob %s (not a PDF) — skipping: %s",
+                log.info("[%s] confirmed non-PDF blob %s — skipping: %s",
                          state.name, blob_id, e)
                 pulled += 1
+            except MarketDeskError as e:
+                # A rejected/ambiguous PDF is NOT proven unsupported. Keep the
+                # source row retryable, but take it out of this tick's ranked
+                # queue: leaving it DISCOVERED selects the same top-ranked
+                # document forever and starves every healthy report behind it.
+                # FAILED is the incumbent temporary state; _reset_failed()
+                # re-admits it at startup and on the daily wide discovery pass.
+                # Session, cap and transient transport errors have their own
+                # branches above and must not be quarantined this way.
+                res.provider_refusals += 1
+                db.set_status(
+                    conn, blob_id, Status.FAILED,
+                    error_message=f"PROVIDER_PDF_UNQUALIFIED:{type(e).__name__}"[:160],
+                )
+                state.transient_retry_after = now + TRANSIENT_PDF_RETRY_DELAY
+                log.warning(
+                    "[%s] PDF provider access/response unqualified on %s: %s "
+                    "— retained for next wide retry, account retry after %s",
+                    state.name, blob_id, e,
+                    state.transient_retry_after.isoformat(),
+                )
+                break
             except Exception as e:  # noqa: BLE001 - bad paper, keep going
                 res.errors += 1
                 if _is_driver_dead(e):
@@ -623,12 +680,22 @@ def _refresh_queue(
     a truncated wide pass silently re-examines nothing older (observed on the
     first production wide pass: exactly ``scanned=300``). Discovery is uncapped,
     so a wide pass costs API calls and wall-clock, never download quota.
+
+    Every outcome is recorded in the meta KV (``db.set_discovery_health``). That
+    record is the EVIDENCE the backfill gate reads: without it, "no known fresh
+    candidates" is indistinguishable from "discovery has been broken since before
+    the backlog formed", and a bounded catch-up trickle would spend the day's
+    quota on stale history precisely when the feed cannot be seen.
     """
     from .discover import discover
 
     authed = next((s for s in states if s.authed and s.client is not None), None)
     if authed is None:
         log.warning("trickle discover: no authenticated account; skipping refresh")
+        db.set_discovery_health(
+            conn, state=db.DISCOVERY_UNKNOWN,
+            observed_at=utc_now().isoformat(), reason="NO_AUTHENTICATED_ACCOUNT",
+        )
         return
     if since_hours is None:
         since_hours = cfg.new_window_hours + 24  # a little older than the new window
@@ -647,6 +714,11 @@ def _refresh_queue(
             "trickle discover (via %s, since=%dh): %s",
             authed.name, since_hours, res.summary(),
         )
+        db.set_discovery_health(
+            conn, state=db.DISCOVERY_HEALTHY,
+            observed_at=utc_now().isoformat(),
+            found_new=res.discovered_new,
+        )
     except SessionExpired as e:
         # Park the account rather than logging a soft warning: a logged-out
         # discovery returns a clean-looking scanned=0, which is indistinguishable
@@ -664,19 +736,36 @@ def _refresh_queue(
                         "trickle discover after silent relogin (via %s, since=%dh): %s",
                         authed.name, since_hours, res.summary(),
                     )
+                    db.set_discovery_health(
+                        conn, state=db.DISCOVERY_HEALTHY,
+                        observed_at=utc_now().isoformat(),
+                        found_new=res.discovered_new,
+                    )
                     return
                 except SessionExpired as retry_exc:
                     e = retry_exc
         authed.authed = False
         log.error("[%s] SESSION EXPIRED during discovery: %s", authed.name, e)
+        db.set_discovery_health(
+            conn, state=db.DISCOVERY_FAILED,
+            observed_at=utc_now().isoformat(), reason="SESSION_EXPIRED",
+        )
     except Exception as e:  # noqa: BLE001
         log.warning("trickle discover failed: %s", e)
+        db.set_discovery_health(
+            conn, state=db.DISCOVERY_FAILED,
+            observed_at=utc_now().isoformat(),
+            reason=f"DISCOVER_ERROR:{type(e).__name__}",
+        )
 
 
 def _reset_failed(conn) -> int:
-    """FAILED papers failed on the cap (not bad content) — reset to DISCOVERED so
-    they re-enter the candidate pool. Run at loop start AND on every wide pass, so
-    a long-lived daemon re-tries them daily rather than only on restart."""
+    """Re-admit retryable FAILED candidates (cap/unsupported not asserted).
+
+    Retained provider-refused PDFs are temporarily FAILED to avoid reselecting
+    the same top-priority blob every tick. Reset only at daemon start and the
+    existing daily wide pass; never turn them into SKIPPED_UNSUPPORTED.
+    """
     rows = db.get_by_status(conn, [Status.FAILED])
     for r in rows:
         db.set_status(conn, r["blob_id"], Status.DISCOVERED, error_message=None)
@@ -720,9 +809,12 @@ def run_trickle(
     states = [AccountState(profile=p) for p in cfg.profiles]
     log.info(
         "trickle starting: %d profile(s)=%s cap=%d/24h new_window=%dh "
-        "reserve=%dh interval=%ds discover_every=%ds wide_every=%ds/%dh%s",
+        "reserve=%dh feasible_ratio=%.2f backfill_budget=%d/24h "
+        "discovery_max_age=%.1fh interval=%ds discover_every=%ds wide_every=%ds/%dh%s",
         len(states), [s.name for s in states], cfg.download_cap_per_account_24h,
-        cfg.new_window_hours, cfg.backfill_reserve_hours, cfg.trickle_interval_sec,
+        cfg.new_window_hours, cfg.backfill_reserve_hours,
+        cfg.backfill_reserve_feasible_ratio, cfg.backfill_budget_per_account_24h,
+        cfg.backfill_discovery_max_age_hours, cfg.trickle_interval_sec,
         cfg.discover_every_sec, cfg.trickle_wide_discover_every_sec,
         cfg.trickle_wide_discover_hours, " [DRY-RUN]" if dry_run else "",
     )
@@ -730,7 +822,7 @@ def run_trickle(
     if not dry_run:
         n = _reset_failed(conn)
         if n:
-            log.info("reset %d FAILED papers to DISCOVERED (cap-failures, retryable)", n)
+            log.info("reset %d retryable FAILED papers to DISCOVERED", n)
 
     results: list[TickResult] = []
     _open_sessions(cfg, states)

@@ -18529,7 +18529,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
-    timeout-minutes: 10
+    # Prospective Ontology-only grant: portfolio ruling6375835730.
+    # Setup stays <=600 inside this original absolute720 total; every
+    # existing semantic/browser assertion remains required.
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

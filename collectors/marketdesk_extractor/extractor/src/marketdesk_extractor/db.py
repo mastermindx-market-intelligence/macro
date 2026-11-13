@@ -197,6 +197,81 @@ def set_producer_auth_health(
     return producer_auth_health(conn)
 
 
+# --- discovery health (the evidence a backfill admission reads) ------------
+# Producer AUTH is not discovery HEALTH: an authenticated session can still fail
+# to refresh the new-post queue (transport, API 5xx, a truncated scan). When
+# discovery fails, "no known fresh candidates" is BLINDNESS, not an empty feed —
+# and a blind collector must not spend quota on stale backlog, because it cannot
+# tell a quiet news day from a broken one. This mirrors the producer-auth contract
+# exactly (state + observed_at + reason in the incumbent meta KV, absence =
+# UNKNOWN) so no second store and no schema migration is introduced.
+DISCOVERY_STATE_KEY = "discovery_state"
+DISCOVERY_OBSERVED_AT_KEY = "discovery_observed_at"
+DISCOVERY_REASON_KEY = "discovery_reason"
+DISCOVERY_FOUND_NEW_KEY = "discovery_found_new"
+
+DISCOVERY_HEALTHY = "HEALTHY"
+DISCOVERY_FAILED = "FAILED"
+DISCOVERY_UNKNOWN = "UNKNOWN"
+DISCOVERY_STATES = frozenset({DISCOVERY_HEALTHY, DISCOVERY_FAILED, DISCOVERY_UNKNOWN})
+
+
+def discovery_health(conn: sqlite3.Connection) -> dict[str, str]:
+    """Read typed discovery state from the incumbent MarketDesk meta table.
+
+    Absence means the deployed producer predates this contract (or has never
+    completed a discovery pass): callers MUST treat that as UNKNOWN, never as
+    health inferred from process presence or an empty queue.
+    """
+    state = get_meta(conn, DISCOVERY_STATE_KEY, DISCOVERY_UNKNOWN) or DISCOVERY_UNKNOWN
+    if state not in DISCOVERY_STATES:
+        state = DISCOVERY_UNKNOWN
+    return {
+        "state": state,
+        "observed_at": get_meta(conn, DISCOVERY_OBSERVED_AT_KEY, "") or "",
+        "reason": get_meta(conn, DISCOVERY_REASON_KEY, "") or "",
+        "found_new": get_meta(conn, DISCOVERY_FOUND_NEW_KEY, "") or "",
+    }
+
+
+def set_discovery_health(
+    conn: sqlite3.Connection,
+    *,
+    state: str,
+    observed_at: str,
+    reason: str = "",
+    found_new: int | None = None,
+) -> dict[str, str]:
+    """Persist one discovery transition atomically in the existing meta KV.
+
+    A HEALTHY transition clears the reason (there is nothing outstanding to
+    explain); FAILED/UNKNOWN carry a short reason so an operator reading the plan
+    line knows WHICH blindness blocked backfill. ``found_new`` is recorded when
+    known and left untouched otherwise, so a failure never erases the count from
+    the last pass that actually ran.
+    """
+    if state not in DISCOVERY_STATES:
+        raise ValueError(f"unsupported discovery state: {state!r}")
+    if not isinstance(observed_at, str) or not observed_at.strip():
+        raise ValueError("observed_at must be a nonempty timestamp string")
+
+    clean_reason = "" if state == DISCOVERY_HEALTHY else str(reason or "").strip()[:160]
+    values: list[tuple[str, str]] = [
+        (DISCOVERY_STATE_KEY, state),
+        (DISCOVERY_OBSERVED_AT_KEY, observed_at),
+        (DISCOVERY_REASON_KEY, clean_reason),
+    ]
+    if found_new is not None:
+        values.append((DISCOVERY_FOUND_NEW_KEY, str(int(found_new))))
+    conn.executemany(
+        "INSERT INTO meta(key, value) VALUES(?,?) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        values,
+    )
+    conn.commit()
+    return discovery_health(conn)
+
+
 # --- dedup lookups ---------------------------------------------------------
 def get_by_blob_id(conn: sqlite3.Connection, blob_id: str) -> sqlite3.Row | None:
     return conn.execute("SELECT * FROM papers WHERE blob_id=?", (blob_id,)).fetchone()
