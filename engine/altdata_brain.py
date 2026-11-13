@@ -51,11 +51,13 @@ from __future__ import annotations
 import json
 import logging
 import math
+import os
 import re
 from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
 
 from lib import config
+from lib import fabric_client
 from engine.catalyst_tone import _extract_json
 from engine import ai_desk as _desk
 from engine import ai_desk_scorer as _scorer
@@ -200,6 +202,108 @@ def enabled() -> bool:
     return bool(_cfg().get("enabled", False))
 
 
+# --------------------------------------------------------------------------- Capacity Fabric
+# Chairman order 2026-11-12 (estate migration outcome #3): the brain's LLM call
+# routes through the Capacity Fabric unified_router. This is the WRITER-SITE
+# cutover only — engine/llm_auth.py (the shared neural-web/cortex/brain client)
+# is not edited.
+_FABRIC_KILL_SWITCH = "MACRO_ALTDATA_BRAIN_FABRIC"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-altdata-brain"
+
+
+def _fabric_enabled() -> bool:
+    """True when the brain writer should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_ALTDATA_BRAIN_FABRIC=0
+    is the operator kill-switch. Inert when unconfigured: the legacy ladder then
+    runs byte-identically.
+    """
+    if os.environ.get(_FABRIC_KILL_SWITCH, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _record_fabric_usage(cfg: dict, comp) -> None:
+    """Book one ai_costs row for a router-served call. NEVER raises.
+
+    Mirrors engine.llm_auth._capture_usage: the row names the provider that
+    actually served the call ("fabric") and the model the router reported,
+    rather than charging router spend to the legacy Claude/DeepSeek lanes.
+    """
+    try:
+        usage = comp.usage or {}
+        if not isinstance(usage, dict):
+            usage = dict(usage)
+
+        def _int(key: str) -> int:
+            try:
+                return int(usage.get(key) or 0)
+            except Exception:  # noqa: BLE001 — usage accounting must never break a call
+                return 0
+
+        from lib import ai_costs  # noqa: PLC0415 — ledger module, lazy like llm_auth
+
+        ai_costs.record_usage(
+            lane=str(cfg.get("usage_lane") or "altdata-brain"),
+            provider="fabric",
+            model=comp.model_served or None,
+            input_tokens=_int("input_tokens"),
+            output_tokens=_int("output_tokens"),
+            cache_read_tokens=_int("cache_read_input_tokens"),
+            cache_creation_tokens=_int("cache_creation_input_tokens"),
+            stage="altdata_brain",
+        )
+    except Exception as e:  # noqa: BLE001 — telemetry only
+        log.debug("altdata_brain: fabric usage capture failed (%s)", e)
+
+
+def _fabric_call(system: str, user: str, cfg: dict,
+                 max_tokens: int) -> tuple[str | None, str | None]:
+    """ONE brain call through the router. Never retries, never fails over.
+
+    The router owns provider selection, cooldown and account pooling, so this
+    makes exactly one request: a raised SDK error degrades the brain exactly as
+    a legacy ladder failure would, and a second attempt here would double-serve
+    a call the router already resolved.
+
+    FabricUnavailable is the one exception and is re-raised: it means no request
+    ever left this host (no token, or the SDK will not import), so nothing was
+    served and nothing was billed. _make_call's caller-side branch catches it
+    and runs the legacy ladder — blanking a brain the old path could still
+    produce would be a regression, not a degradation.
+    """
+    try:
+        comp = fabric_client.complete(
+            [{"role": "user", "content": user}],
+            system=system,
+            lane="balanced",
+            max_tokens=int(max_tokens),
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=_FABRIC_SESSION_ID,
+        )
+    except fabric_client.FabricUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 — degrade, never raise, never retry
+        log.warning("altdata_brain: fabric call failed (%s)", e)
+        return None, "llm_error"
+
+    # The call was served and billed regardless of what it returned, so the
+    # usage row is booked before any content gate below drops the reply.
+    _record_fabric_usage(cfg, comp)
+
+    stop_reason = getattr(comp.raw, "stop_reason", None)
+    # A refusal is a refusal even with partial text: the legacy _do_call drops
+    # the reply on any refusal, and truncated text must never reach the
+    # fail-closed JSON parser where a complete-looking object could pass.
+    if stop_reason == "refusal":
+        return None, "refusal"
+    text = comp.text or ""
+    if not text:
+        return None, "empty_reply"
+    return text, ("truncated" if stop_reason == "max_tokens" else None)
+
+
 def _make_call(cfg: dict):
     """Return call(system, user) -> (text|None, degraded|None). Opus reasoning model; caches
     the stable system block. None when no provider is available.
@@ -207,15 +311,31 @@ def _make_call(cfg: dict):
     W5 ITEM 1 — 401-fallback: uses engine.llm_auth.make_call() so an expired OAuth
     token triggers a fallback to ANTHROPIC_API_KEY, with degraded_reason
     "auth_invalid:<provider>" distinguishing auth failures from LLM content errors.
+
+    Capacity Fabric (Chairman order 2026-11-12): when the router is configured the
+    returned call goes through fabric_client first; when it is not — no token, or
+    MACRO_ALTDATA_BRAIN_FABRIC=0 — the legacy ladder below runs unchanged. A
+    router that cannot be reached at all (FabricUnavailable: no token after all,
+    or the SDK will not import) also falls through rather than blanking the brain.
     """
     from engine import llm_auth
 
+    fabric = _fabric_enabled()
+
     providers = llm_auth.build_providers(cfg, opus_model=_reasoning_model(cfg))
-    if not providers:
+    if not providers and not fabric:
         return None
     max_tokens = int(cfg.get("max_tokens", 8000))
 
     def call(system: str, user: str):
+        if fabric:
+            try:
+                return _fabric_call(system, user, cfg, max_tokens)
+            except fabric_client.FabricUnavailable as e:
+                log.warning(
+                    "altdata_brain: fabric router unavailable (%s); using the legacy ladder",
+                    e)
+
         def _do_call(client, model: str):
             resp = client.messages.create(
                 model=model, max_tokens=max_tokens,
