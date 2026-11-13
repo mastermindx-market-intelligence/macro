@@ -16,6 +16,7 @@ All stub-based: no network, no API keys, no sparse-omitted directory.
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -267,6 +268,77 @@ def test_kill_switch_other_value_keeps_fabric_on(fabric_on, monkeypatch):
     text, reason = wb._call_model("sys", "user", _CFG)
     assert reason == "fabric"
     assert len(fabric_on) == 1
+
+
+# --------------------------------------------------------------------------- #
+# evaluate(): the "fabric" tag is PROVENANCE, never a degraded reason
+#
+# _call_model's second element is the DEGRADED reason. Returning "fabric" for a
+# successful call is correct as a provenance tag, but evaluate() writes any
+# truthy reason into rec["degraded_reason"] — so without normalisation every
+# healthy router-served alert would be recorded as degraded in the ledger and in
+# data/whitehouse/health.json, the exact dark-vs-quiet confusion that file exists
+# to prevent.
+# --------------------------------------------------------------------------- #
+_ITEM = {
+    "id": "wh-1", "title": "Tariff order", "url": "https://x/",
+    "section": "presidential-actions",
+    "published": "2026-06-22T20:00:00+00:00",
+    "body": "25% tariff on imported autos.", "excerpt": "",
+}
+
+_ALERT = {
+    "activate": True, "importance": 88, "tone": "mixed",
+    "banner_title": "Tariff order", "summary": "s", "analysis": "a",
+    "confidence": "high", "sectors": [], "tickers": [],
+}
+
+
+def _serve(payload):
+    return _completion(json.dumps(payload))
+
+
+def _configure(monkeypatch, payload):
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete",
+                        lambda messages, **kw: _serve(payload))
+    monkeypatch.delenv("MACRO_WHITEHOUSE_FABRIC", raising=False)
+
+
+def test_evaluate_records_fabric_as_provenance_not_degradation(monkeypatch):
+    _configure(monkeypatch, _ALERT)
+    rec = wb.evaluate(dict(_ITEM), dict(wb._DEFAULTS), None)
+    assert rec["activated"] is True
+    assert rec["degraded_reason"] is None
+    assert rec["served_by"] == "fabric"
+
+
+def test_evaluate_fabric_skip_is_not_recorded_as_degraded(monkeypatch):
+    """A below-floor item is a healthy skip, not a degradation."""
+    _configure(monkeypatch, {**_ALERT, "importance": 10})
+    rec = wb.evaluate(dict(_ITEM), dict(wb._DEFAULTS), None)
+    assert rec["activated"] is False
+    assert rec["degraded_reason"] is None
+    assert rec["served_by"] == "fabric"
+
+
+def test_evaluate_fabric_unparseable_reply_keeps_the_real_reason(monkeypatch):
+    """A genuine failure must still report its own diagnosis, not "fabric"."""
+    _configure(monkeypatch, "not json at all")
+    rec = wb.evaluate(dict(_ITEM), dict(wb._DEFAULTS), None)
+    assert rec["activated"] is False
+    assert rec["degraded_reason"] == "unparseable_reply"
+
+
+def test_evaluate_legacy_path_unchanged(monkeypatch):
+    """Killed router -> no served_by key, legacy reasons untouched."""
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete",
+                        lambda messages, **kw: pytest.fail("must not run"))
+    monkeypatch.setenv("MACRO_WHITEHOUSE_FABRIC", "0")
+    rec = wb.evaluate(dict(_ITEM), dict(wb._DEFAULTS), None)
+    assert rec["degraded_reason"] == "no_provider"
+    assert "served_by" not in rec
 
 
 if __name__ == "__main__":

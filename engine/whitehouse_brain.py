@@ -282,6 +282,11 @@ _FABRIC_KILL_ENV = "MACRO_WHITEHOUSE_FABRIC"
 _FABRIC_LANE = "fast"
 _FABRIC_PROJECT_ID = "macro-dashboard"
 _FABRIC_SESSION_ID = "macro-whitehouse-brain"
+#: The success tag _fabric_call returns as the tuple's second element. It is
+#: PROVENANCE, not a degraded reason — evaluate() normalises it into
+#: rec["served_by"] and clears `reason`, because _call_model's contract is
+#: (reply_text, degraded_reason) and a fabric-served reply is a success.
+_FABRIC_REASON = "fabric"
 
 
 def _fabric_enabled() -> bool:
@@ -616,6 +621,16 @@ def evaluate(item: dict, cfg: dict | None = None, root: Path | None = None) -> d
 
     reply, reason = _call_model(system, user, cfg)
     rec["raw_text"] = reply
+    if reason == _FABRIC_REASON:
+        # Provenance, not degradation. _call_model's second element is the
+        # DEGRADED reason, and every `if reason:` below writes it into
+        # rec["degraded_reason"] — so a healthy router-served alert would
+        # otherwise land in the ledger and health.json as "degraded", which is
+        # exactly the dark-vs-quiet confusion health.json exists to prevent.
+        # Only reachable when the fabric branch served the call, so a killed or
+        # unconfigured router leaves this legacy path byte-identical.
+        rec["served_by"] = _FABRIC_REASON
+        reason = None
     if reply is None:
         rec["degraded_reason"] = reason
         return rec
