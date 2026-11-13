@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T05:23:00.368743+00:00",
-  "count": 3276,
+  "generated_at": "2026-11-13T05:38:10.482249+00:00",
+  "count": 3277,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -235,6 +235,27 @@
         "Japan as preferred developed market: Wage-led growth, resilient earnings, corporate reforms, reduced overseas dependency; favored over US equities due to AI-driven earnings resilience beyond tech sector.",
         "US dollar overweight, credit shifts: Resilient US growth, hawkish Fed, rate differentials, and oil prices support dollar overweight; high yield overweight (strong fundamentals, widening spreads) vs. investment grade underweight (AI debt issuance headwinds).",
         "Earnings resilience broadening: Japan leads earnings revisions beyond AI; corporate fundamentals support cautious optimism despite higher yields moderating growth and geopolitical risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-oggst8gzzup-577a20",
+      "title": "FIXED INCOME MONTHLY NOV 2026",
+      "institution": "Fidelity",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T02:55:58Z",
+      "summary_points": [
+        "Midterm Fiscal Risk: US midterms heighten fiscal sustainability concerns, driving debt trajectory focus and policy uncertainty impacting fixed income management.",
+        "China HY Yield Spike: High Yield China (USD) at 19.3% signals extreme geopolitical risk and credit stress, critical for risk allocation.",
+        "EM Sovereign Divergence: EM USD Sovereigns show strong 2025 returns (+14.3%) but negative YTD (0.7%), indicating market repricing of emerging market risks.",
+        "Brazil Election Impact: Lula’s victory triggered $2.2bn EM debt outflows and sharp sell-off in Brazilian government bonds (-0.7%).",
+        "Credit Allocation Shifts: Neutral global IG stance; negative US/Euro high yield (tight valuations, rising rates); cautious Euro IG amid fiscal/political pressures."
       ],
       "tags": [],
       "tickers": [],
