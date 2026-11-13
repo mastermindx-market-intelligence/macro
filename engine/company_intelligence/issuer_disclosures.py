@@ -341,7 +341,11 @@ _FIGURE_DISPLAY = re.compile(r"(?:^|;)\s*display\s*:", re.IGNORECASE)
 _FIGURE_DIRECTION = re.compile(r"(?:^|;)\s*(?:direction|unicode-bidi)\s*:", re.IGNORECASE)
 # R7-8: after an empty self-closed hidden cell, only blanks and then a cell opens or a row closes.
 _FIGURE_EMPTY_CELL_NEXT = re.compile(
-    rb"[ \t\r\n\f]*(?:<(?:td|th)(?=[\s/>])|</tr\s*>)", re.IGNORECASE)
+    rb"[ \t\r\n\f]*(?:<(?:td|th)(?=[ \t\r\n\f/>])|</tr[ \t\r\n\f]*>)", re.IGNORECASE)
+# R8-4: an unprefixed html or body opening tag, anywhere in the document.
+_FIGURE_ROOT_OPEN = re.compile(rb"<(html|body)(?=[ \t\r\n\f/>])", re.IGNORECASE)
+# R8-2: a self-closed tag of these names stays open in a browser; refused anywhere.
+_FIGURE_SC_REFUSED = frozenset(b"table thead tbody tfoot caption colgroup".split())
 # R7-4: the table content model. A tag whose innermost open element is one of the
 # table parents must be one that belongs there, and holds no text of its own.
 _FIGURE_TABLE_PARENTS = frozenset(b"table thead tbody tfoot tr colgroup".split())
@@ -459,6 +463,20 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
     limit = end + _FIGURE_WINDOW_BYTES
     window_lo = start - _FIGURE_WINDOW_BYTES
     pos = prev_end = 0
+    # R8-1: a vertical tab is a blank to the tokenizer's ``\s`` and not to a browser.
+    _require(raw.find(b"\x0b", 0, limit) < 0, "FIGURE_SPAN_MISMATCH")
+    # R8-4: a browser copies the attributes of any later html/body start tag onto
+    # the root or body element, wherever it lies; so over the whole document.
+    roots = {b"html": 0, b"body": 0}
+    for rm in _FIGURE_ROOT_OPEN.finditer(raw):
+        rname = rm.group(1).lower()
+        roots[rname] += 1
+        rtok = _FIGURE_TOKEN.match(raw, rm.start())
+        _require(roots[rname] == 1 and rtok is not None and rtok.group(0) != b"<",
+                 "FIGURE_SPAN_MISMATCH")
+        runreadable, rdisplay = _figure_tag_style(rtok.group(0))
+        _require(not (runreadable or rdisplay or _figure_tag_hidden(rname, rtok.group(0))),
+                 "FIGURE_SPAN_MISMATCH")
 
     def table_text(lo: int, hi: int, *, reference: bool = False) -> None:
         # R7-4: text, or a character reference, directly inside a table parent.
@@ -570,10 +588,12 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
                             if shown_open[i][0] == name), None)
                 if idx is None:        # a stray closing tag: no separator, pops nothing
                     # R7-3a: with nothing open its opening tag lies before the excerpt.
-                    _require(not (shown_open and e > window_lo), "FIGURE_SPAN_MISMATCH")
+                    # R8-3: with anything open it is a nesting fault, refused anywhere.
+                    _require(not shown_open, "FIGURE_SPAN_MISMATCH")
                     display = True
                 else:
-                    _require(not (e > window_lo and any(not item[3] for item in shown_open[idx + 1:])),
+                    # R8-3: a mis-nested closing tag is refused wherever it lies.
+                    _require(not any(not item[3] for item in shown_open[idx + 1:]),
                              "FIGURE_SPAN_MISMATCH")
                     found = shown_open[idx]
                     del shown_open[idx:]
@@ -587,6 +607,8 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
                                 break
             else:
                 sc = tok.endswith(b"/>") and name not in _FIGURE_VOID_NAMES
+                # R8-2: a browser leaves a self-closed table part open.
+                _require(not (sc and name in _FIGURE_SC_REFUSED), "FIGURE_SPAN_MISMATCH")
                 if name in (b"td", b"th"):
                     if shown_open and shown_open[-1][3] and shown_open[-1][0] in (b"td", b"th"):
                         shown_open.pop()
@@ -853,6 +875,18 @@ def _verify_figure_span(name: str, span: dict, text: str, sign: str, raw: bytes,
     change that admits more than before: a hidden self-closed ``td``/``th`` followed
     only by blanks and then an opening ``td``/``th`` or a closing ``tr`` is an
     empty closed cell and opens no hidden region.
+    Fix 8 (ruling 73), refusals only: R8-1 a vertical tab (0x0B) in the bytes the
+    scan covers; R8-2 a self-closed ``table``, ``thead``, ``tbody``, ``tfoot``,
+    ``caption`` or ``colgroup`` (a browser leaves it open); R8-3 a mis-nested
+    closing tag, or a stray one with anything open, refuses wherever it lies, not
+    only in the window. A page that is not well formed is refused wherever the
+    fault lies, so plain-HTML filings with unclosed elements are refused (accepted
+    limit); Inline XBRL filings are well formed XHTML. Ruling 74, R8-4: over the
+    whole document, more than one unprefixed ``html`` tag or more than one
+    ``body`` tag refuses, as does any such tag that is hidden, unreadable or
+    carries a ``display`` declaration (a browser merges the attributes of a later
+    one onto the root element, even after the figure). A match inside a comment,
+    a script or an attribute value refuses too (accepted, refusal only).
 
     Known limits, left to the ratifier who reads the rendered excerpt: the
     meaning of nearby words ("loss", "credit"), the stated scale, and invisibility

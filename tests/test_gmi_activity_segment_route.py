@@ -1856,3 +1856,70 @@ def test_r7_8_f_hidden_cell_followed_by_a_closing_cell_is_refused():
         _r6_verify("<table><tr><td>Revenue</td><td style=~display:none~/></td>"
                    "<td>[[1,234]]</td></tr></table>" + _R6_NX)
     assert caught.value.code == "FIGURE_SIGN_UNSUPPORTED"
+
+
+# ---------------------------------------------------------------------------
+# Eighth review (ruling 73): the exact inputs of the seventh reviewer's probe.
+# ---------------------------------------------------------------------------
+
+_R8_VT = chr(11)
+_R8_H = "<html><body>"
+_R8_T = "</body></html>"
+
+
+@pytest.mark.parametrize("doc", [
+    _R8_H + "<table><tr><td>Revenue</td><td style=~display:none~/><td" + _R8_VT + ">[[1,234]]</td><td>x</td></tr></table>" + _R8_T,
+    _R8_H + "<table><tr><td>Revenue</td><td style=~display:none~/><td" + _R8_VT + "class=~c~>[[1,234]]</td><td>x</td></tr></table>" + _R8_T,
+    _R8_H + "<table><tr><td>Revenue</td><td style=~display:none~/></tr" + _R8_VT + "><tr><td>[[1,234]]</td></tr></table>" + _R8_T,
+], ids=["VT_td", "VT_td_attr", "VT_tr"])
+def test_r8_1_a_vertical_tab_is_refused(doc):
+    _r6_refused(doc)
+
+
+@pytest.mark.parametrize("doc", [
+    _R8_H + "<div>Revenue 7<table/></div><b>[[1,234]]</b>" + _R8_T,
+    _R8_H + "<div>7<table/></div><b>[[1,234]]</b><p>tail</p>" + _R8_T,
+    _R8_H + "<div>Revenue 7<table/></div>[[1,234]]" + _R8_T,
+    _R8_H + "<p>Revenue 7<table/></p><span>[[1,234]]</span>" + _R8_T,
+    _R8_H + "<div>Revenue 7<TABLE/></div><b>[[1,234]]</b>" + _R8_T,
+    _R8_H + "<div>Revenue 7<tbody/></div><b>[[1,234]]</b>" + _R8_T,
+], ids=["sc_table_div", "sc_table_div2", "sc_table_plain", "sc_table_p", "sc_TABLE_up", "sc_tbody"])
+def test_r8_2_a_self_closed_table_part_is_refused(doc):
+    _r6_refused(doc)
+
+
+def test_r8_2_a_properly_closed_empty_table_is_admitted():
+    _r6_verify(_R8_H + "<div>Revenue 7<table></table></div><b>[[1,234]]</b>" + _R8_T)
+
+
+@pytest.mark.parametrize("doc", [
+    _R8_H + "<div><span>7<table></span><tr><td>" + "A" * 2100 + "</td></tr><b>[[1,234]]</b></div>" + _R8_T,
+    _R8_H + "<div><span>7<table></span><tr><td>AAA</td></tr><b>[[1,234]]</b></div>" + _R8_T,
+    "<html><body><div><span style=~direction:rtl~><p></span>" + "A" * 2100 + "<b>[[1,234]]</b></div></body></html>",
+], ids=["desync_win", "desync_inwin", "misnest_far_before_window"])
+def test_r8_3_a_nesting_fault_is_refused_wherever_it_lies(doc):
+    _r6_refused(doc)
+
+
+# Ruling 74: R8-4, the root attribute merge.
+
+_R8_PAD = "<p>" + "A" * 2100 + "</p>"
+
+
+@pytest.mark.parametrize("doc", [
+    "</p><div><sub>[[1,234]]<h4>,<body hidden><br><h3/>",
+    "<html><body><p>Revenue [[1,234]] total</p>" + _R8_PAD + "<body hidden></body></html>",
+    "<html><body><p>Revenue [[1,234]] total</p>" + _R8_PAD + "<html style=~display:none~></body></html>",
+    "<html><body><p>Revenue [[1,234]] total</p>" + _R8_PAD + "<body dir=~rtl~></body></html>",
+    "<html><body style=~direction:rtl~></body>" + _R8_PAD + "<p>Revenue [[1,234]] total</p></html>",
+], ids=["oracle_4989", "late_body_hidden", "late_html_display_none", "late_body_dir", "only_body_direction"])
+def test_r8_4_a_root_tag_that_could_hide_or_merge_is_refused(doc):
+    _r6_refused(doc)
+
+
+def test_r8_4_a_plain_page_is_admitted():
+    _r6_verify("<html><body><p>Revenue [[1,234]] total</p></body></html>" + _R6_NX)
+
+
+def test_r8_4_a_fragment_with_neither_tag_is_admitted():
+    _r6_verify("<p>Revenue [[1,234]] total</p>" + _R6_NX)
