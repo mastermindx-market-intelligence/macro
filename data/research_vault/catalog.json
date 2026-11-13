@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T22:24:47.510602+00:00",
-  "count": 3324,
+  "generated_at": "2026-11-13T22:54:47.474472+00:00",
+  "count": 3325,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -2236,6 +2236,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tvcoi49dkns-00c8c7",
+      "title": "Square Enix Holdings (9684)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:41:11Z",
+      "summary_points": [
+        "Sell Rating Maintained: Elevated valuations (FY2 P/E 27.3X vs. peer median 24.3X) persist despite 2Q beat and FY3/27 guidance hike, with Goldman Sachs maintaining SELL rating due to high multiples (P/E 36.5X, P/B 3.1X) and financial strain (net debt/equity 75.0x).",
+        "Margin Compression & Growth Weakness: EBIT margin (21.3%) and net income margin (9.9%) show compression amid slowing revenue growth (8.9%), with modest DPS growth (10.0%) signaling limited upside potential.",
+        "Structural Risks & Volatility: Persistent earnings volatility from game development cycles, sluggish software sales vs. development investment, and pipeline fluctuations drive structural reforms and valuation losses."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
