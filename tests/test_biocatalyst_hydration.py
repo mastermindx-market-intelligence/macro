@@ -940,3 +940,124 @@ def test_template_and_site_js_remain_byte_equivalent() -> None:
     assert "function withAuth(headers)" in JS.read_text(encoding="utf-8")
     # Silent-auth fallback is out of scope for this PR.
     assert "}).catch(function () { return headers; });" in JS.read_text(encoding="utf-8")
+
+
+# #10911: raw textarea edits must not mutate the accepted peer request.
+_PEER_IDS = ["NCT00000001", "NCT00000002"]
+_PEER_DRAFT = "  nct00000003\nNCT00000004, NCT00000003  "
+
+
+def _peer_draft_scenario(actions: list[dict], lang: str, *, accepted: bool = False) -> dict:
+    payload = {
+        "contract_id": "trial_peer_set.v1", "schema_version": "1.0.0", "as_of": AS_OF,
+        "trials": [], "cohort_nct_ids": _PEER_IDS, "uncovered_nct_ids": _PEER_IDS,
+        "coverage": {"class": "current_only", "selection_basis": "explicit_nct_id_cohort",
+                     "requested_count": 2, "covered_count": 0, "uncovered_count": 2},
+        "pagination": {"limit": 50, "total": 0, "next_cursor": None},
+        "authority": CEILING_AUTHORITY,
+    }
+    return {
+        "lang": lang, "authSubject": "fixture-user", "search": "?mode=peers" + (
+            "&cohort=" + ",".join(_PEER_IDS) if accepted else ""),
+        "routes": {"/api/biocatalyst/v1/trial-peer-sets:resolve": _route(200, _json(payload))},
+        "actions": actions,
+    }
+
+
+def _peer_requests(snapshot: dict) -> list[dict]:
+    return [body for url, body in zip(snapshot["fetchCalls"], snapshot["fetchBodies"])
+            if "/trial-peer-sets:resolve" in url]
+
+
+@needs_node
+@pytest.mark.parametrize("asset", [TEMPLATES / "biocatalyst.js", SITE / "biocatalyst.js"], ids=["template", "served"])
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("repaint", ["language", "window", "mode", "field"])
+def test_peer_draft_survives_unrelated_repaint(tmp_path: Path, asset: Path, lang: str, repaint: str) -> None:
+    actions = [{"type": "cohort-input", "value": _PEER_DRAFT}]
+    if repaint == "language":
+        actions += [{"type": "language", "lang": "zh" if lang == "en" else "en"}]
+    elif repaint == "mode":
+        actions += [{"type": "mode", "mode": "screen"}, {"type": "mode", "mode": "peers"}]
+    elif repaint == "field":
+        actions += [{"type": "field", "value": "all"}]
+    else:
+        actions += [{"type": "window", "value": "180"}]
+    snapshots = _run(tmp_path, _peer_draft_scenario(actions, lang), asset.read_text())["snapshots"]
+    assert snapshots[-1]["cohortDraft"] == _PEER_DRAFT
+    assert "cohort=" not in snapshots[-1]["url"]
+    assert _peer_requests(snapshots[-1]) == []
+    if repaint == "language":
+        assert snapshots[-1]["fetchCalls"] == snapshots[1]["fetchCalls"]
+        assert snapshots[-1]["activeElement"] == "bci-cohort-input"
+
+
+@needs_node
+@pytest.mark.parametrize("asset", [TEMPLATES / "biocatalyst.js", SITE / "biocatalyst.js"], ids=["template", "served"])
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("submit", ["compare", "ctrl", "meta"])
+def test_peer_rejected_compare_keeps_accepted_request(tmp_path: Path, asset: Path, lang: str, submit: str) -> None:
+    action = {"type": "compare"} if submit == "compare" else {"type": "compare-key", submit: True}
+    scenario = _peer_draft_scenario([
+        {"type": "cohort-input", "value": "NCT00000003"}, action,
+        {"type": "cohort-input", "value": _PEER_DRAFT},
+        {"type": "language", "lang": "zh" if lang == "en" else "en"},
+        {"type": "refresh"},
+    ], lang, accepted=True)
+    snapshots = _run(tmp_path, scenario, asset.read_text())["snapshots"]
+    assert snapshots[2]["notice"]
+    assert snapshots[2]["url"] == snapshots[0]["url"]
+    assert snapshots[2]["fetchCalls"] == snapshots[0]["fetchCalls"]
+    assert snapshots[-1]["cohortDraft"] == _PEER_DRAFT
+    assert _peer_requests(snapshots[-1]) == [
+        {"nct_ids": _PEER_IDS, "limit": 50}, {"nct_ids": _PEER_IDS, "limit": 50}]
+    assert snapshots[-1]["workspaceState"] == "empty"
+    assert snapshots[-1]["url"] == snapshots[0]["url"]
+
+
+@needs_node
+@pytest.mark.parametrize("asset", [TEMPLATES / "biocatalyst.js", SITE / "biocatalyst.js"], ids=["template", "served"])
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("boundary", ["clear", "empty-compare", "popstate", "auth"])
+def test_peer_draft_explicit_boundaries(tmp_path: Path, asset: Path, lang: str, boundary: str) -> None:
+    actions = [{"type": "cohort-input", "value": _PEER_DRAFT}]
+    if boundary == "clear":
+        actions += [{"type": "clear"}, {"type": "language", "lang": lang}]
+    elif boundary == "empty-compare":
+        actions += [{"type": "cohort-input", "value": ""}, {"type": "compare"}, {"type": "refresh"}]
+    elif boundary == "popstate":
+        actions += [{"type": "popstate", "search": "?mode=peers&cohort=NCT00000001,NCT00000002"},
+                    {"type": "language", "lang": lang}]
+    else:
+        actions += [{"type": "auth", "subject": "", "event": "SIGNED_OUT"},
+                    {"type": "language", "lang": lang}]
+    snapshots = _run(tmp_path, _peer_draft_scenario(actions, lang, accepted=True), asset.read_text())["snapshots"]
+    last = snapshots[-1]
+    if boundary in {"clear", "empty-compare"}:
+        assert last["cohortDraft"] == ""
+        assert "cohort=" not in last["url"]
+        assert len(_peer_requests(last)) == 1
+    elif boundary == "popstate":
+        assert last["cohortDraft"] == "\n".join(_PEER_IDS)
+        assert len(_peer_requests(last)) == 2
+    else:
+        assert last["workspaceState"] == "locked"
+        assert last["cohortDraft"] == _PEER_DRAFT
+        assert len(_peer_requests(last)) == 1
+
+
+@needs_node
+@pytest.mark.parametrize("asset", [TEMPLATES / "biocatalyst.js", SITE / "biocatalyst.js"], ids=["template", "served"])
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_peer_valid_compare_commits_only_on_submit(tmp_path: Path, asset: Path, lang: str) -> None:
+    raw = "  nct00000002, NCT00000001\nNCT00000002  "
+    snapshots = _run(tmp_path, _peer_draft_scenario([
+        {"type": "cohort-input", "value": raw}, {"type": "language", "lang": lang},
+        {"type": "compare"}, {"type": "language", "lang": lang}, {"type": "refresh"},
+    ], lang), asset.read_text())["snapshots"]
+    assert _peer_requests(snapshots[2]) == []
+    assert snapshots[-1]["cohortDraft"] == raw
+    assert _peer_requests(snapshots[-1]) == [
+        {"nct_ids": ["NCT00000002", "NCT00000001"], "limit": 50},
+        {"nct_ids": ["NCT00000002", "NCT00000001"], "limit": 50}]
+    assert "cohort=NCT00000002%2CNCT00000001" in snapshots[-1]["url"]
