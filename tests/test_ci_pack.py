@@ -8453,6 +8453,16 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     each, all within main's ceilings 11,431 / 11,504 / 10,969. No ceiling,
     job-count ceiling, selector or ten-pack bound is changed by this branch.
     Planning weights are not measured execution times.
+
+    2026-11-12 (Sector Intelligence live weekly breadth, #11128):
+    tests/test_extend_group_breadth_weekly.py joins the same
+    unrun-site-surfaces breadth pytest command. Re-measured 2026-11-12 on
+    this branch merged with main 949420c78732, which already carries the
+    planning-weight rescale and its ceilings: index 137 jobs / 10,874,
+    free-content 138 jobs / 11,378, plan-book 131 jobs / 10,833, ten packs
+    each, all within main's ceilings 11,431 / 11,504 / 10,969. No ceiling,
+    job-count ceiling, selector or ten-pack bound is changed by this branch.
+    Planning weights are not measured execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

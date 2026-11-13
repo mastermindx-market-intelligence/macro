@@ -1,5 +1,6 @@
 {
   "basis": "reconstructed_dated_membership",
+  "refresh": "manual",
   "price_note": "Adjusted closes are today's restated values (split and dividend adjustment as of the store's capture), not the prices printed at the time. The nightly member ledger reads the collector's closes; this history reads the closes file named in inputs. Same functions, two stores; their overlap is recorded in research/breadth_history/OVERLAP_CHECK.md.",
   "redistribution_note": "Group-level shares and counts only; no member prices. The Tiingo research reader marks raw views redistribution_admitted=false; member-level history stays off git.",
   "span": {
