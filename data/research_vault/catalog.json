@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T23:10:03.906417+00:00",
-  "count": 3326,
+  "generated_at": "2026-11-13T23:26:05.568728+00:00",
+  "count": 3327,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -701,6 +701,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0myql29tgug-a20c18",
+      "title": "JPM UK Banks",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T09:17:36Z",
+      "summary_points": [
+        "Metro Bank Sale Risks: Large UK banks show limited appetite due to integration risks, operational hurdles, and low ROI (7.5% vs large banks’ ~20%), despite Metro’s low-cost deposits (98bps) and commercial focus (£5bn mortgages).",
+        "Profitability Collapse: Underlying NII (242 vs 460) and total revenue (301 vs 585) contracted 47% and 49% YoY (H1 2026 vs FY25), signaling severe margin pressure and earnings deterioration.",
+        "Risk Exposure Surge: RWAs rose 4.9% (7,038 vs 6,711) and cost of risk increased to 0.22% (vs 0.16%), indicating heightened credit risk and capital adequacy challenges.",
+        "Consolidation vs.",
+        "Competition: Sector M&A (e.g., Santander-TSB, Natwest-Sainsbury’s) signals capital shift to consumer finance, but near-term competition pressures and regulatory scrutiny on deals threaten margin gains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
