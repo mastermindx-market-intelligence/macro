@@ -1,0 +1,5216 @@
+{
+  "acceptance": "https://github.com/mastermindx-market-intelligence/macro/pull/1157#issuecomment-6804733051",
+  "browser_acceptance": {
+    "details": "The emitted page navigation failed with connection refused. Subsequent tab inspection was rejected by browser URL policy because its current protocol was not allowed. That action stopped; no alternate browser surface or policy workaround was used.",
+    "production_render_or_deployment_proven": false,
+    "proven": false,
+    "status": "blocked"
+  },
+  "browser_inputs": {
+    "files": [
+      {
+        "bytes": 5407,
+        "path": "lib/shared_shell.py",
+        "sha": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+        "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c"
+      },
+      {
+        "bytes": 7180,
+        "path": "lib/site_assets.py",
+        "sha": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+        "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275"
+      },
+      {
+        "bytes": 2367,
+        "path": "templates/data_base.js",
+        "sha": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+        "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+      },
+      {
+        "bytes": 51296,
+        "path": "templates/shared_shell_bridge.js",
+        "sha": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+        "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b"
+      },
+      {
+        "bytes": 467,
+        "path": "templates/shared_shell.css",
+        "sha": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+        "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+      },
+      {
+        "bytes": 400176,
+        "path": "templates/theme.js",
+        "sha": "21a1fb1627ac34badc6078cff486f98486e9b773",
+        "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+      },
+      {
+        "bytes": 41029,
+        "path": "templates/terminal_overlay.js",
+        "sha": "e0f7c9747f1f9d38eb526f4794f0db0bcf695a7a",
+        "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+      },
+      {
+        "bytes": 318034,
+        "path": "templates/mm_brain.js",
+        "sha": "5cf4cb81914ac9e64212c860d80f8f83a9cf672e",
+        "sha256": "62cc85477f05bbac3befac401d79556abef56c426d8e4e84703033f2c9c8d6c0"
+      },
+      {
+        "bytes": 227583,
+        "path": "templates/theme.css",
+        "sha": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+      },
+      {
+        "bytes": 104548,
+        "path": "templates/navigation-refresh.css",
+        "sha": "2c96dbf6f96da1c5c7fab58d9314cc3fb06d15d1",
+        "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+      },
+      {
+        "bytes": 41645,
+        "path": "templates/product-nav-icons.css",
+        "sha": "58336d2b2521c7c4d126c0ddc11f08a5045d28dc",
+        "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+      },
+      {
+        "bytes": 202,
+        "path": "templates/logo_config.js",
+        "sha": "523923f9f424a144f4a0cf3e4814e2ea36392474",
+        "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+      },
+      {
+        "bytes": 16539,
+        "path": "templates/stock-logos.js",
+        "sha": "759d78f4dfb11de591d8db5cec36a91ca372fe3c",
+        "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+      },
+      {
+        "bytes": 367,
+        "path": "site/live_config.js",
+        "sha": "2ad84da9b70e83cd9825a684d3c846fc81e7366d",
+        "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+      },
+      {
+        "bytes": 50731,
+        "path": "templates/live.js",
+        "sha": "7e91599afb20a69c4010d5dc36c85439381d529f",
+        "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+      },
+      {
+        "bytes": 75906,
+        "path": "templates/account.js",
+        "sha": "bee3f81cb1db0578633b8cb70e28d70d51c4e47f",
+        "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+      },
+      {
+        "bytes": 96881,
+        "path": "templates/nav_market.js",
+        "sha": "37c7ac74301661d0bc4fe1997bb37d572a8573bb",
+        "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+      },
+      {
+        "bytes": 23664,
+        "path": "templates/fonts/Inter-400.woff2",
+        "sha": "f15b025d666269fb07daf0263e54231481e4289c",
+        "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+      },
+      {
+        "bytes": 24272,
+        "path": "templates/fonts/Inter-500.woff2",
+        "sha": "54f0a595dd3c76344a980109e7517ed42416de93",
+        "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+      },
+      {
+        "bytes": 24452,
+        "path": "templates/fonts/Inter-600.woff2",
+        "sha": "d1897949fda5c7fc5f04622df43a3fcba5b89d84",
+        "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+      },
+      {
+        "bytes": 24356,
+        "path": "templates/fonts/Inter-700.woff2",
+        "sha": "a68fb101cd9224aa7bb6ca80356b5132c40c6f3f",
+        "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+      },
+      {
+        "bytes": 24400,
+        "path": "templates/fonts/Inter-800.woff2",
+        "sha": "74a16d45945264434aa7409e79549c626ebcdfb1",
+        "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+      },
+      {
+        "bytes": 23900,
+        "path": "templates/fonts/Inter-900.woff2",
+        "sha": "4db8333caca3f0c93ff4683fed2d7eaa7ecdc786",
+        "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+      }
+    ],
+    "pin": "1be0661c6b7edfe4088fee71ada89a6b454ba095"
+  },
+  "candidate_files": [
+    {
+      "bytes": 13303,
+      "path": "engine/gov_exposure.py",
+      "sha": "75f22bee1db9f62b41c21a8ace6e123403f7fdd0",
+      "sha256": "8dde8530585640d18ae0acbed7d0eb7b6447e7ecee369c4799c4854cd11a2734"
+    },
+    {
+      "bytes": 16027,
+      "path": "templates/demand.html.j2",
+      "sha": "d35b68cc809dff66d30f072a3644d60666a3c362",
+      "sha256": "a846616df34678cd0b68f54f4f998acc5721e93e242ffc5a355700fbd9ed2a87"
+    },
+    {
+      "bytes": 25768,
+      "path": "tests/test_gov_exposure.py",
+      "sha": "abc3a9d51fde4a55e1a3c0326cd7cb9986476ef0",
+      "sha256": "9a9987b35f1fdd36b99f5d17636cf716f7afff65813a94bb8b82f0106b90d4af"
+    }
+  ],
+  "ci_enrollment": {
+    "after": {
+      "command_chars": 1028,
+      "commands": 8,
+      "test_paths": 20,
+      "weight": 49
+    },
+    "before": {
+      "command_chars": 981,
+      "commands": 7,
+      "test_paths": 19,
+      "weight": 46
+    },
+    "code_owners": 328,
+    "files": [
+      {
+        "bytes": 2681023,
+        "path": ".github/ci/legacy-jobs.yml",
+        "sha": "422eb249db82857e32bd81b71b840f249e8c7b85",
+        "sha256": "156a39eaaf555bf7bb16f27a20b26f23b094580e040de842136aad5e380ad063"
+      },
+      {
+        "bytes": 33733,
+        "path": "config/unrun_test_baseline.json",
+        "sha": "9c1b0f7b3162ba4d13139e4a2f2bc55e44d59293",
+        "sha256": "77f5e39072b6429e3b73ef54c859efaa1b6aa2a4e64944e2c4ba82c30c30ef7d"
+      },
+      {
+        "bytes": 519111,
+        "path": "tests/test_ci_pack.py",
+        "sha": "9da51fc818a529710eb4fc0cd5ccd582dd249de1",
+        "sha256": "2b002a1dc955a58c4ec815d8a5cba08e12d170d0235047d2950482a3b9befce5"
+      }
+    ],
+    "full_tree_planner_executed": false,
+    "input_pin": "cdb3144ea48f2a69f814560f2248123f02c97ff3",
+    "job_ceilings": [
+      137,
+      138,
+      131
+    ],
+    "max_packs": 10,
+    "original_steps_unchanged": true,
+    "other_owners_unchanged": 400,
+    "owner": "synapse-read-gate",
+    "owners": 401,
+    "probe_ceilings_after": [
+      5969,
+      5992,
+      5727
+    ],
+    "probe_ceilings_before": [
+      5966,
+      5989,
+      5724
+    ],
+    "source_preimages_reverified_at": "1be0661c6b7edfe4088fee71ada89a6b454ba095"
+  },
+  "comparison": {
+    "audit_files": [
+      {
+        "bytes": 464629,
+        "name": "before-audit.json",
+        "sha256": "0b17abc29e4567baab27bb7750783ddce591d2478affe8faf40b2cbd907c4f77"
+      },
+      {
+        "bytes": 464489,
+        "name": "after-audit.json",
+        "sha256": "09e25c5971fe0cf3dc4e7fae02e0626b55b2941d210e64d39186194dc84476bb"
+      }
+    ],
+    "current": {
+      "ai_datacenter|META": {
+        "after": {
+          "burden": {
+            "capex_ocf_latest": 60.2,
+            "capex_ocf_prior": 40.8,
+            "capex_ocf_trend": "rising",
+            "capex_yoy_pct": 87.1,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 46.11,
+            "fcf_trap": false,
+            "fcf_trend": "deteriorating",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "META",
+              "60%",
+              "rising",
+              "+87%",
+              "+46.1",
+              "deteriorating",
+              "—",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "META",
+              "60%",
+              "上升",
+              "+87%",
+              "+46.1",
+              "恶化",
+              "—",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "before": {
+          "burden": {
+            "capex_ocf_latest": 60.2,
+            "capex_ocf_prior": 40.8,
+            "capex_ocf_trend": "rising",
+            "capex_yoy_pct": 87.1,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 46.11,
+            "fcf_trap": false,
+            "fcf_trend": "deteriorating",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 37.93,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "META",
+              "60%",
+              "rising",
+              "+87%",
+              "+46.1",
+              "deteriorating",
+              "+37.9",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "META",
+              "60%",
+              "上升",
+              "+87%",
+              "+46.1",
+              "恶化",
+              "+37.9",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "changes": {
+          "net_debt_delta_bn": {
+            "after": null,
+            "before": 37.93
+          }
+        }
+      },
+      "ai_datacenter|ORCL": {
+        "after": {
+          "burden": {
+            "capex_ocf_latest": 174.1,
+            "capex_ocf_prior": 101.9,
+            "capex_ocf_trend": "rising",
+            "capex_yoy_pct": 162.4,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -23.69,
+            "fcf_trap": true,
+            "fcf_trend": "deteriorating",
+            "fy_latest": 2026,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "ORCL",
+              "174%",
+              "rising",
+              "+162%",
+              "-23.7",
+              "deteriorating",
+              "—",
+              "FY2026",
+              "FCF trap"
+            ],
+            "zh": [
+              "ORCL",
+              "174%",
+              "上升",
+              "+162%",
+              "-23.7",
+              "恶化",
+              "—",
+              "FY2026",
+              "FCF陷阱"
+            ]
+          }
+        },
+        "before": {
+          "burden": {
+            "capex_ocf_latest": 174.1,
+            "capex_ocf_prior": 101.9,
+            "capex_ocf_trend": "rising",
+            "capex_yoy_pct": 162.4,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -23.69,
+            "fcf_trap": true,
+            "fcf_trend": "deteriorating",
+            "fy_latest": 2026,
+            "net_debt_delta_bn": -20.57,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "ORCL",
+              "174%",
+              "rising",
+              "+162%",
+              "-23.7",
+              "deteriorating",
+              "-20.6",
+              "FY2026",
+              "FCF trap"
+            ],
+            "zh": [
+              "ORCL",
+              "174%",
+              "上升",
+              "+162%",
+              "-23.7",
+              "恶化",
+              "-20.6",
+              "FY2026",
+              "FCF陷阱"
+            ]
+          }
+        },
+        "changes": {
+          "net_debt_delta_bn": {
+            "after": null,
+            "before": -20.57
+          }
+        }
+      },
+      "housing|PHM": {
+        "after": {
+          "burden": {
+            "capex_ocf_latest": 6.6,
+            "capex_ocf_prior": 7.1,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 3.5,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 1.75,
+            "fcf_trap": false,
+            "fcf_trend": "improving",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "PHM",
+              "7%",
+              "flat",
+              "+4%",
+              "+1.8",
+              "improving",
+              "—",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "PHM",
+              "7%",
+              "持平",
+              "+4%",
+              "+1.8",
+              "改善",
+              "—",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "before": {
+          "burden": {
+            "capex_ocf_latest": 6.6,
+            "capex_ocf_prior": 7.1,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 3.5,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 1.75,
+            "fcf_trap": false,
+            "fcf_trend": "improving",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": -0.35,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "PHM",
+              "7%",
+              "flat",
+              "+4%",
+              "+1.8",
+              "improving",
+              "-0.3",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "PHM",
+              "7%",
+              "持平",
+              "+4%",
+              "+1.8",
+              "改善",
+              "-0.3",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "changes": {
+          "net_debt_delta_bn": {
+            "after": null,
+            "before": -0.35
+          }
+        }
+      }
+    },
+    "fixtures": {
+      "all_capex_missing": {
+        "after": {
+          "capex_ocf_latest": null,
+          "capex_ocf_prior": null,
+          "capex_ocf_trend": null,
+          "capex_yoy_pct": null,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": null,
+          "fcf_trap": null,
+          "fcf_trend": null,
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": null,
+          "capex_ocf_prior": null,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": null,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 10.0,
+          "fcf_trap": false,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "changes": {
+          "capex_ocf_trend": {
+            "after": null,
+            "before": "flat"
+          },
+          "fcf_latest_bn": {
+            "after": null,
+            "before": 10.0
+          },
+          "fcf_trap": {
+            "after": null,
+            "before": false
+          },
+          "fcf_trend": {
+            "after": null,
+            "before": "flat"
+          }
+        },
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "+0.0",
+            "FY2025",
+            "—"
+          ],
+          "zh": [
+            "MSFT",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "+0.0",
+            "FY2025",
+            "—"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "—",
+            "flat",
+            "—",
+            "+10.0",
+            "flat",
+            "+0.0",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "MSFT",
+            "—",
+            "持平",
+            "—",
+            "+10.0",
+            "持平",
+            "+0.0",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "complete": {
+        "after": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "changes": {},
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "+0.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "+0.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "+0.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "+0.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "missing_latest_capex": {
+        "after": {
+          "capex_ocf_latest": null,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": null,
+          "capex_yoy_pct": null,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": null,
+          "fcf_trap": null,
+          "fcf_trend": null,
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": null,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": null,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 10.0,
+          "fcf_trap": false,
+          "fcf_trend": "improving",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "changes": {
+          "capex_ocf_trend": {
+            "after": null,
+            "before": "flat"
+          },
+          "fcf_latest_bn": {
+            "after": null,
+            "before": 10.0
+          },
+          "fcf_trap": {
+            "after": null,
+            "before": false
+          },
+          "fcf_trend": {
+            "after": null,
+            "before": "improving"
+          }
+        },
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "+0.0",
+            "FY2025",
+            "—"
+          ],
+          "zh": [
+            "MSFT",
+            "—",
+            "—",
+            "—",
+            "—",
+            "—",
+            "+0.0",
+            "FY2025",
+            "—"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "—",
+            "flat",
+            "—",
+            "+10.0",
+            "improving",
+            "+0.0",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "MSFT",
+            "—",
+            "持平",
+            "—",
+            "+10.0",
+            "改善",
+            "+0.0",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "missing_latest_cash": {
+        "after": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 20.0,
+          "score_cap": 60
+        },
+        "changes": {
+          "net_debt_delta_bn": {
+            "after": null,
+            "before": 20.0
+          }
+        },
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "—",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "—",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "+20.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "+20.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "missing_latest_debt_cur": {
+        "after": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": -5.0,
+          "score_cap": 60
+        },
+        "changes": {
+          "net_debt_delta_bn": {
+            "after": null,
+            "before": -5.0
+          }
+        },
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "—",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "—",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "-5.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "-5.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "missing_latest_debt_lt": {
+        "after": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": -25.0,
+          "score_cap": 60
+        },
+        "changes": {
+          "net_debt_delta_bn": {
+            "after": null,
+            "before": -25.0
+          }
+        },
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "—",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "—",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "-25.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "-25.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "missing_prior_capex": {
+        "after": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": null,
+          "capex_ocf_trend": null,
+          "capex_yoy_pct": null,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": null,
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": null,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": null,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "changes": {
+          "capex_ocf_trend": {
+            "after": null,
+            "before": "flat"
+          },
+          "fcf_trend": {
+            "after": null,
+            "before": "deteriorating"
+          }
+        },
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "120%",
+            "—",
+            "—",
+            "-2.0",
+            "—",
+            "+0.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "—",
+            "—",
+            "-2.0",
+            "—",
+            "+0.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "—",
+            "-2.0",
+            "deteriorating",
+            "+0.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "—",
+            "-2.0",
+            "恶化",
+            "+0.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "missing_prior_cash": {
+        "after": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": -20.0,
+          "score_cap": 60
+        },
+        "changes": {
+          "net_debt_delta_bn": {
+            "after": null,
+            "before": -20.0
+          }
+        },
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "—",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "—",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "-20.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "-20.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "missing_prior_debt_cur": {
+        "after": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 5.0,
+          "score_cap": 60
+        },
+        "changes": {
+          "net_debt_delta_bn": {
+            "after": null,
+            "before": 5.0
+          }
+        },
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "—",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "—",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "+5.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "+5.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "missing_prior_debt_lt": {
+        "after": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 25.0,
+          "score_cap": 60
+        },
+        "changes": {
+          "net_debt_delta_bn": {
+            "after": null,
+            "before": 25.0
+          }
+        },
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "—",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "—",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "+25.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "+25.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "zero_capex": {
+        "after": {
+          "capex_ocf_latest": 0.0,
+          "capex_ocf_prior": 0.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": null,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 10.0,
+          "fcf_trap": false,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 0.0,
+          "capex_ocf_prior": 0.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": null,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 10.0,
+          "fcf_trap": false,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "changes": {},
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "0%",
+            "flat",
+            "—",
+            "+10.0",
+            "flat",
+            "+0.0",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "MSFT",
+            "0%",
+            "持平",
+            "—",
+            "+10.0",
+            "持平",
+            "+0.0",
+            "FY2025",
+            ""
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "0%",
+            "flat",
+            "—",
+            "+10.0",
+            "flat",
+            "+0.0",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "MSFT",
+            "0%",
+            "持平",
+            "—",
+            "+10.0",
+            "持平",
+            "+0.0",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "zero_cash": {
+        "after": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "changes": {},
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "+0.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "+0.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "+0.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "+0.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "zero_debt": {
+        "after": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 120.0,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -2.0,
+          "fcf_trap": true,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "changes": {},
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "+0.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "+0.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "120%",
+            "flat",
+            "+0%",
+            "-2.0",
+            "flat",
+            "+0.0",
+            "FY2025",
+            "FCF trap"
+          ],
+          "zh": [
+            "MSFT",
+            "120%",
+            "持平",
+            "+0%",
+            "-2.0",
+            "持平",
+            "+0.0",
+            "FY2025",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "zero_fcf": {
+        "after": {
+          "capex_ocf_latest": 100.0,
+          "capex_ocf_prior": 100.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 0.0,
+          "fcf_trap": false,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": 100.0,
+          "capex_ocf_prior": 100.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 0.0,
+          "fcf_trap": false,
+          "fcf_trend": "flat",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "changes": {},
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "100%",
+            "flat",
+            "+0%",
+            "+0.0",
+            "flat",
+            "+0.0",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "MSFT",
+            "100%",
+            "持平",
+            "+0%",
+            "+0.0",
+            "持平",
+            "+0.0",
+            "FY2025",
+            ""
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "100%",
+            "flat",
+            "+0%",
+            "+0.0",
+            "flat",
+            "+0.0",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "MSFT",
+            "100%",
+            "持平",
+            "+0%",
+            "+0.0",
+            "持平",
+            "+0.0",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "zero_latest_cfo": {
+        "after": {
+          "capex_ocf_latest": null,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": null,
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -12.0,
+          "fcf_trap": null,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "before": {
+          "capex_ocf_latest": null,
+          "capex_ocf_prior": 120.0,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 0.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -12.0,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 0.0,
+          "score_cap": 60
+        },
+        "changes": {
+          "capex_ocf_trend": {
+            "after": null,
+            "before": "flat"
+          },
+          "fcf_trap": {
+            "after": null,
+            "before": false
+          }
+        },
+        "texts_after": {
+          "en": [
+            "MSFT",
+            "—",
+            "—",
+            "+0%",
+            "-12.0",
+            "deteriorating",
+            "+0.0",
+            "FY2025",
+            "—"
+          ],
+          "zh": [
+            "MSFT",
+            "—",
+            "—",
+            "+0%",
+            "-12.0",
+            "恶化",
+            "+0.0",
+            "FY2025",
+            "—"
+          ]
+        },
+        "texts_before": {
+          "en": [
+            "MSFT",
+            "—",
+            "flat",
+            "+0%",
+            "-12.0",
+            "deteriorating",
+            "+0.0",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "MSFT",
+            "—",
+            "持平",
+            "+0%",
+            "-12.0",
+            "恶化",
+            "+0.0",
+            "FY2025",
+            ""
+          ]
+        }
+      }
+    },
+    "historical": {
+      "ai_datacenter|GOOGL|2022": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": -1.06
+        }
+      },
+      "ai_datacenter|GOOGL|2023": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": -1.62
+        }
+      },
+      "ai_datacenter|META|2023": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": -18.72
+        }
+      },
+      "ai_datacenter|META|2024": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": 8.41
+        }
+      },
+      "ai_datacenter|META|2025": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": 37.93
+        }
+      },
+      "ai_datacenter|ORCL|2023": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": 11.93
+        }
+      },
+      "ai_datacenter|ORCL|2024": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": 5.86
+        }
+      },
+      "ai_datacenter|ORCL|2025": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": -3.67
+        }
+      },
+      "ai_datacenter|ORCL|2026": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": -20.57
+        }
+      },
+      "housing|KBH|2022": {
+        "capex_ocf_trend": {
+          "after": null,
+          "before": "flat"
+        }
+      },
+      "housing|PHM|2022": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": 0.74
+        }
+      },
+      "housing|PHM|2023": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": -0.76
+        }
+      },
+      "housing|PHM|2024": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": 0.15
+        }
+      },
+      "housing|PHM|2025": {
+        "net_debt_delta_bn": {
+          "after": null,
+          "before": -0.35
+        }
+      }
+    },
+    "preserved": {
+      "reads_count": 139,
+      "reads_sha256": "df5c5d184a95e3e5c4de838e36b934dce278aea354030a04228f50c26632fba0",
+      "signals_count": 2,
+      "signals_sha256": "4ebdb4d68af5e4c96daa7127b2cb9863007d4083ca3448c688ed6d04ddd6ec19"
+    },
+    "summary": {
+      "all_fixture_signals_and_reads_identical": true,
+      "current_changed_payers": 3,
+      "current_payers": 11,
+      "fixtures": 15,
+      "historical_changed_observations": 14,
+      "historical_observations": 44,
+      "new_or_remeasured_numeric_values": 0,
+      "statement_rows": 15869,
+      "tickers": 2838
+    }
+  },
+  "current_payers": {
+    "after": {
+      "ai_datacenter|AMZN": {
+        "burden": {
+          "capex_ocf_latest": 94.5,
+          "capex_ocf_prior": 71.6,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 58.8,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 7.7,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 2.73,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "AMZN",
+            "94%",
+            "rising",
+            "+59%",
+            "+7.7",
+            "deteriorating",
+            "+2.7",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "AMZN",
+            "94%",
+            "上升",
+            "+59%",
+            "+7.7",
+            "恶化",
+            "+2.7",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "ai_datacenter|GOOGL": {
+        "burden": {
+          "capex_ocf_latest": 55.5,
+          "capex_ocf_prior": 41.9,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 74.1,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 73.27,
+          "fcf_trap": false,
+          "fcf_trend": "improving",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 29.42,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "GOOGL",
+            "56%",
+            "rising",
+            "+74%",
+            "+73.3",
+            "improving",
+            "+29.4",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "GOOGL",
+            "56%",
+            "上升",
+            "+74%",
+            "+73.3",
+            "改善",
+            "+29.4",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "ai_datacenter|META": {
+        "burden": {
+          "capex_ocf_latest": 60.2,
+          "capex_ocf_prior": 40.8,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 87.1,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 46.11,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "META",
+            "60%",
+            "rising",
+            "+87%",
+            "+46.1",
+            "deteriorating",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "META",
+            "60%",
+            "上升",
+            "+87%",
+            "+46.1",
+            "恶化",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "ai_datacenter|MSFT": {
+        "burden": {
+          "capex_ocf_latest": 63.4,
+          "capex_ocf_prior": 47.4,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 79.6,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 66.99,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2026,
+          "net_debt_delta_bn": 6.45,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "MSFT",
+            "63%",
+            "rising",
+            "+80%",
+            "+67.0",
+            "deteriorating",
+            "+6.5",
+            "FY2026",
+            ""
+          ],
+          "zh": [
+            "MSFT",
+            "63%",
+            "上升",
+            "+80%",
+            "+67.0",
+            "恶化",
+            "+6.5",
+            "FY2026",
+            ""
+          ]
+        }
+      },
+      "ai_datacenter|ORCL": {
+        "burden": {
+          "capex_ocf_latest": 174.1,
+          "capex_ocf_prior": 101.9,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 162.4,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -23.69,
+          "fcf_trap": true,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2026,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "ORCL",
+            "174%",
+            "rising",
+            "+162%",
+            "-23.7",
+            "deteriorating",
+            "—",
+            "FY2026",
+            "FCF trap"
+          ],
+          "zh": [
+            "ORCL",
+            "174%",
+            "上升",
+            "+162%",
+            "-23.7",
+            "恶化",
+            "—",
+            "FY2026",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "housing|DHI": {
+        "burden": {
+          "capex_ocf_latest": 4.0,
+          "capex_ocf_prior": 7.5,
+          "capex_ocf_trend": "falling",
+          "capex_yoy_pct": -16.9,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 3.28,
+          "fcf_trap": false,
+          "fcf_trend": "improving",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "DHI",
+            "4%",
+            "falling",
+            "-17%",
+            "+3.3",
+            "improving",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "DHI",
+            "4%",
+            "下降",
+            "-17%",
+            "+3.3",
+            "改善",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "housing|KBH": {
+        "burden": {
+          "capex_ocf_latest": 14.4,
+          "capex_ocf_prior": 10.8,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 23.1,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 0.29,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "KBH",
+            "14%",
+            "rising",
+            "+23%",
+            "+0.3",
+            "deteriorating",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "KBH",
+            "14%",
+            "上升",
+            "+23%",
+            "+0.3",
+            "恶化",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "housing|LEN": {
+        "burden": {
+          "capex_ocf_latest": 87.0,
+          "capex_ocf_prior": 7.1,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 10.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 0.03,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "LEN",
+            "87%",
+            "rising",
+            "+10%",
+            "+0.0",
+            "deteriorating",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "LEN",
+            "87%",
+            "上升",
+            "+10%",
+            "+0.0",
+            "恶化",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "housing|NVR": {
+        "burden": {
+          "capex_ocf_latest": 2.2,
+          "capex_ocf_prior": 2.1,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": -16.1,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 1.1,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "NVR",
+            "2%",
+            "flat",
+            "-16%",
+            "+1.1",
+            "deteriorating",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "NVR",
+            "2%",
+            "持平",
+            "-16%",
+            "+1.1",
+            "恶化",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "housing|PHM": {
+        "burden": {
+          "capex_ocf_latest": 6.6,
+          "capex_ocf_prior": 7.1,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 3.5,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 1.75,
+          "fcf_trap": false,
+          "fcf_trend": "improving",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "PHM",
+            "7%",
+            "flat",
+            "+4%",
+            "+1.8",
+            "improving",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "PHM",
+            "7%",
+            "持平",
+            "+4%",
+            "+1.8",
+            "改善",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "housing|TOL": {
+        "burden": {
+          "capex_ocf_latest": 7.7,
+          "capex_ocf_prior": 7.3,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 17.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 1.03,
+          "fcf_trap": false,
+          "fcf_trend": "improving",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "TOL",
+            "8%",
+            "flat",
+            "+17%",
+            "+1.0",
+            "improving",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "TOL",
+            "8%",
+            "持平",
+            "+17%",
+            "+1.0",
+            "改善",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      }
+    },
+    "before": {
+      "ai_datacenter|AMZN": {
+        "burden": {
+          "capex_ocf_latest": 94.5,
+          "capex_ocf_prior": 71.6,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 58.8,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 7.7,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 2.73,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "AMZN",
+            "94%",
+            "rising",
+            "+59%",
+            "+7.7",
+            "deteriorating",
+            "+2.7",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "AMZN",
+            "94%",
+            "上升",
+            "+59%",
+            "+7.7",
+            "恶化",
+            "+2.7",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "ai_datacenter|GOOGL": {
+        "burden": {
+          "capex_ocf_latest": 55.5,
+          "capex_ocf_prior": 41.9,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 74.1,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 73.27,
+          "fcf_trap": false,
+          "fcf_trend": "improving",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 29.42,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "GOOGL",
+            "56%",
+            "rising",
+            "+74%",
+            "+73.3",
+            "improving",
+            "+29.4",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "GOOGL",
+            "56%",
+            "上升",
+            "+74%",
+            "+73.3",
+            "改善",
+            "+29.4",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "ai_datacenter|META": {
+        "burden": {
+          "capex_ocf_latest": 60.2,
+          "capex_ocf_prior": 40.8,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 87.1,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 46.11,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": 37.93,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "META",
+            "60%",
+            "rising",
+            "+87%",
+            "+46.1",
+            "deteriorating",
+            "+37.9",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "META",
+            "60%",
+            "上升",
+            "+87%",
+            "+46.1",
+            "恶化",
+            "+37.9",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "ai_datacenter|MSFT": {
+        "burden": {
+          "capex_ocf_latest": 63.4,
+          "capex_ocf_prior": 47.4,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 79.6,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 66.99,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2026,
+          "net_debt_delta_bn": 6.45,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "MSFT",
+            "63%",
+            "rising",
+            "+80%",
+            "+67.0",
+            "deteriorating",
+            "+6.5",
+            "FY2026",
+            ""
+          ],
+          "zh": [
+            "MSFT",
+            "63%",
+            "上升",
+            "+80%",
+            "+67.0",
+            "恶化",
+            "+6.5",
+            "FY2026",
+            ""
+          ]
+        }
+      },
+      "ai_datacenter|ORCL": {
+        "burden": {
+          "capex_ocf_latest": 174.1,
+          "capex_ocf_prior": 101.9,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 162.4,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": -23.69,
+          "fcf_trap": true,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2026,
+          "net_debt_delta_bn": -20.57,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "ORCL",
+            "174%",
+            "rising",
+            "+162%",
+            "-23.7",
+            "deteriorating",
+            "-20.6",
+            "FY2026",
+            "FCF trap"
+          ],
+          "zh": [
+            "ORCL",
+            "174%",
+            "上升",
+            "+162%",
+            "-23.7",
+            "恶化",
+            "-20.6",
+            "FY2026",
+            "FCF陷阱"
+          ]
+        }
+      },
+      "housing|DHI": {
+        "burden": {
+          "capex_ocf_latest": 4.0,
+          "capex_ocf_prior": 7.5,
+          "capex_ocf_trend": "falling",
+          "capex_yoy_pct": -16.9,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 3.28,
+          "fcf_trap": false,
+          "fcf_trend": "improving",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "DHI",
+            "4%",
+            "falling",
+            "-17%",
+            "+3.3",
+            "improving",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "DHI",
+            "4%",
+            "下降",
+            "-17%",
+            "+3.3",
+            "改善",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "housing|KBH": {
+        "burden": {
+          "capex_ocf_latest": 14.4,
+          "capex_ocf_prior": 10.8,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 23.1,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 0.29,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "KBH",
+            "14%",
+            "rising",
+            "+23%",
+            "+0.3",
+            "deteriorating",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "KBH",
+            "14%",
+            "上升",
+            "+23%",
+            "+0.3",
+            "恶化",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "housing|LEN": {
+        "burden": {
+          "capex_ocf_latest": 87.0,
+          "capex_ocf_prior": 7.1,
+          "capex_ocf_trend": "rising",
+          "capex_yoy_pct": 10.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 0.03,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "LEN",
+            "87%",
+            "rising",
+            "+10%",
+            "+0.0",
+            "deteriorating",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "LEN",
+            "87%",
+            "上升",
+            "+10%",
+            "+0.0",
+            "恶化",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "housing|NVR": {
+        "burden": {
+          "capex_ocf_latest": 2.2,
+          "capex_ocf_prior": 2.1,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": -16.1,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 1.1,
+          "fcf_trap": false,
+          "fcf_trend": "deteriorating",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "NVR",
+            "2%",
+            "flat",
+            "-16%",
+            "+1.1",
+            "deteriorating",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "NVR",
+            "2%",
+            "持平",
+            "-16%",
+            "+1.1",
+            "恶化",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "housing|PHM": {
+        "burden": {
+          "capex_ocf_latest": 6.6,
+          "capex_ocf_prior": 7.1,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 3.5,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 1.75,
+          "fcf_trap": false,
+          "fcf_trend": "improving",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": -0.35,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "PHM",
+            "7%",
+            "flat",
+            "+4%",
+            "+1.8",
+            "improving",
+            "-0.3",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "PHM",
+            "7%",
+            "持平",
+            "+4%",
+            "+1.8",
+            "改善",
+            "-0.3",
+            "FY2025",
+            ""
+          ]
+        }
+      },
+      "housing|TOL": {
+        "burden": {
+          "capex_ocf_latest": 7.7,
+          "capex_ocf_prior": 7.3,
+          "capex_ocf_trend": "flat",
+          "capex_yoy_pct": 17.0,
+          "evidence_tier": "fingerprint",
+          "fcf_latest_bn": 1.03,
+          "fcf_trap": false,
+          "fcf_trend": "improving",
+          "fy_latest": 2025,
+          "net_debt_delta_bn": null,
+          "score_cap": 60
+        },
+        "texts": {
+          "en": [
+            "TOL",
+            "8%",
+            "flat",
+            "+17%",
+            "+1.0",
+            "improving",
+            "—",
+            "FY2025",
+            ""
+          ],
+          "zh": [
+            "TOL",
+            "8%",
+            "持平",
+            "+17%",
+            "+1.0",
+            "改善",
+            "—",
+            "FY2025",
+            ""
+          ]
+        }
+      }
+    }
+  },
+  "historical_payers": {
+    "after": {
+      "ai_datacenter|AMZN|2022": {
+        "capex_ocf_latest": 136.1,
+        "capex_ocf_prior": 131.8,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 4.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": -16.89,
+        "fcf_trap": true,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": 2.25,
+        "score_cap": 60
+      },
+      "ai_datacenter|AMZN|2023": {
+        "capex_ocf_latest": 62.1,
+        "capex_ocf_prior": 136.1,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -17.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 32.22,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": -22.84,
+        "score_cap": 60
+      },
+      "ai_datacenter|AMZN|2024": {
+        "capex_ocf_latest": 71.6,
+        "capex_ocf_prior": 62.1,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 57.4,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 32.88,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": -14.56,
+        "score_cap": 60
+      },
+      "ai_datacenter|AMZN|2025": {
+        "capex_ocf_latest": 94.5,
+        "capex_ocf_prior": 71.6,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 58.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 7.7,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": 2.73,
+        "score_cap": 60
+      },
+      "ai_datacenter|GOOGL|2022": {
+        "capex_ocf_latest": 34.4,
+        "capex_ocf_prior": 26.9,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 27.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 60.01,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "ai_datacenter|GOOGL|2023": {
+        "capex_ocf_latest": 31.7,
+        "capex_ocf_prior": 34.4,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 2.4,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 69.5,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "ai_datacenter|GOOGL|2024": {
+        "capex_ocf_latest": 41.9,
+        "capex_ocf_prior": 31.7,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 62.9,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 72.76,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": -3.4,
+        "score_cap": 60
+      },
+      "ai_datacenter|GOOGL|2025": {
+        "capex_ocf_latest": 55.5,
+        "capex_ocf_prior": 41.9,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 74.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 73.27,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": 29.42,
+        "score_cap": 60
+      },
+      "ai_datacenter|META|2022": {
+        "capex_ocf_latest": 62.3,
+        "capex_ocf_prior": 32.2,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 69.3,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 19.04,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "ai_datacenter|META|2023": {
+        "capex_ocf_latest": 38.3,
+        "capex_ocf_prior": 62.3,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -13.3,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 43.85,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "ai_datacenter|META|2024": {
+        "capex_ocf_latest": 40.8,
+        "capex_ocf_prior": 38.3,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 36.6,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 54.07,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "ai_datacenter|META|2025": {
+        "capex_ocf_latest": 60.2,
+        "capex_ocf_prior": 40.8,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 87.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 46.11,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "ai_datacenter|MSFT|2023": {
+        "capex_ocf_latest": 32.1,
+        "capex_ocf_prior": 26.8,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 17.7,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 59.48,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": -23.32,
+        "score_cap": 60
+      },
+      "ai_datacenter|MSFT|2024": {
+        "capex_ocf_latest": 37.5,
+        "capex_ocf_prior": 32.1,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 58.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 74.07,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": 14.09,
+        "score_cap": 60
+      },
+      "ai_datacenter|MSFT|2025": {
+        "capex_ocf_latest": 47.4,
+        "capex_ocf_prior": 37.5,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 45.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 71.61,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": -13.71,
+        "score_cap": 60
+      },
+      "ai_datacenter|MSFT|2026": {
+        "capex_ocf_latest": 63.4,
+        "capex_ocf_prior": 47.4,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 79.6,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 66.99,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2026,
+        "net_debt_delta_bn": 6.45,
+        "score_cap": 60
+      },
+      "ai_datacenter|ORCL|2023": {
+        "capex_ocf_latest": 50.7,
+        "capex_ocf_prior": 47.3,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 92.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 8.47,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "ai_datacenter|ORCL|2024": {
+        "capex_ocf_latest": 36.8,
+        "capex_ocf_prior": 50.7,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -21.0,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 11.81,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "ai_datacenter|ORCL|2025": {
+        "capex_ocf_latest": 101.9,
+        "capex_ocf_prior": 36.8,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 209.0,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": -0.39,
+        "fcf_trap": true,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "ai_datacenter|ORCL|2026": {
+        "capex_ocf_latest": 174.1,
+        "capex_ocf_prior": 101.9,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 162.4,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": -23.69,
+        "fcf_trap": true,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2026,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|DHI|2022": {
+        "capex_ocf_latest": 26.4,
+        "capex_ocf_prior": 17.5,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 58.5,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.41,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|DHI|2023": {
+        "capex_ocf_latest": 3.5,
+        "capex_ocf_prior": 26.4,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": 0.3,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 4.16,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|DHI|2024": {
+        "capex_ocf_latest": 7.5,
+        "capex_ocf_prior": 3.5,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 11.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 2.02,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|DHI|2025": {
+        "capex_ocf_latest": 4.0,
+        "capex_ocf_prior": 7.5,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -16.9,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 3.28,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|KBH|2022": {
+        "capex_ocf_latest": 24.7,
+        "capex_ocf_prior": null,
+        "capex_ocf_trend": null,
+        "capex_yoy_pct": 14.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.14,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|KBH|2023": {
+        "capex_ocf_latest": 3.3,
+        "capex_ocf_prior": 24.7,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -21.6,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.05,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|KBH|2024": {
+        "capex_ocf_latest": 10.8,
+        "capex_ocf_prior": 3.3,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 10.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.32,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|KBH|2025": {
+        "capex_ocf_latest": 14.4,
+        "capex_ocf_prior": 10.8,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 23.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.29,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|LEN|2022": {
+        "capex_ocf_latest": 1.8,
+        "capex_ocf_prior": 2.6,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": -12.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 3.21,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|LEN|2023": {
+        "capex_ocf_latest": 1.9,
+        "capex_ocf_prior": 1.8,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 74.4,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 5.08,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|LEN|2024": {
+        "capex_ocf_latest": 7.1,
+        "capex_ocf_prior": 1.9,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 71.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 2.23,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|LEN|2025": {
+        "capex_ocf_latest": 87.0,
+        "capex_ocf_prior": 7.1,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 10.0,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.03,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|NVR|2022": {
+        "capex_ocf_latest": 1.0,
+        "capex_ocf_prior": 1.4,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 3.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.85,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|NVR|2023": {
+        "capex_ocf_latest": 1.7,
+        "capex_ocf_prior": 1.0,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 35.0,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.47,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|NVR|2024": {
+        "capex_ocf_latest": 2.1,
+        "capex_ocf_prior": 1.7,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 17.4,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.35,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|NVR|2025": {
+        "capex_ocf_latest": 2.2,
+        "capex_ocf_prior": 2.1,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": -16.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.1,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|PHM|2022": {
+        "capex_ocf_latest": 16.9,
+        "capex_ocf_prior": 7.2,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 54.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.56,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|PHM|2023": {
+        "capex_ocf_latest": 4.2,
+        "capex_ocf_prior": 16.9,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -18.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 2.1,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|PHM|2024": {
+        "capex_ocf_latest": 7.1,
+        "capex_ocf_prior": 4.2,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 28.6,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.56,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|PHM|2025": {
+        "capex_ocf_latest": 6.6,
+        "capex_ocf_prior": 7.1,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 3.5,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.75,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|TOL|2022": {
+        "capex_ocf_latest": 7.3,
+        "capex_ocf_prior": 5.1,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 7.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.92,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|TOL|2023": {
+        "capex_ocf_latest": 5.8,
+        "capex_ocf_prior": 7.3,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 1.7,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.19,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|TOL|2024": {
+        "capex_ocf_latest": 7.3,
+        "capex_ocf_prior": 5.8,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 0.9,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.94,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|TOL|2025": {
+        "capex_ocf_latest": 7.7,
+        "capex_ocf_prior": 7.3,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 17.0,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.03,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      }
+    },
+    "before": {
+      "ai_datacenter|AMZN|2022": {
+        "capex_ocf_latest": 136.1,
+        "capex_ocf_prior": 131.8,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 4.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": -16.89,
+        "fcf_trap": true,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": 2.25,
+        "score_cap": 60
+      },
+      "ai_datacenter|AMZN|2023": {
+        "capex_ocf_latest": 62.1,
+        "capex_ocf_prior": 136.1,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -17.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 32.22,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": -22.84,
+        "score_cap": 60
+      },
+      "ai_datacenter|AMZN|2024": {
+        "capex_ocf_latest": 71.6,
+        "capex_ocf_prior": 62.1,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 57.4,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 32.88,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": -14.56,
+        "score_cap": 60
+      },
+      "ai_datacenter|AMZN|2025": {
+        "capex_ocf_latest": 94.5,
+        "capex_ocf_prior": 71.6,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 58.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 7.7,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": 2.73,
+        "score_cap": 60
+      },
+      "ai_datacenter|GOOGL|2022": {
+        "capex_ocf_latest": 34.4,
+        "capex_ocf_prior": 26.9,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 27.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 60.01,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": -1.06,
+        "score_cap": 60
+      },
+      "ai_datacenter|GOOGL|2023": {
+        "capex_ocf_latest": 31.7,
+        "capex_ocf_prior": 34.4,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 2.4,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 69.5,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": -1.62,
+        "score_cap": 60
+      },
+      "ai_datacenter|GOOGL|2024": {
+        "capex_ocf_latest": 41.9,
+        "capex_ocf_prior": 31.7,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 62.9,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 72.76,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": -3.4,
+        "score_cap": 60
+      },
+      "ai_datacenter|GOOGL|2025": {
+        "capex_ocf_latest": 55.5,
+        "capex_ocf_prior": 41.9,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 74.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 73.27,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": 29.42,
+        "score_cap": 60
+      },
+      "ai_datacenter|META|2022": {
+        "capex_ocf_latest": 62.3,
+        "capex_ocf_prior": 32.2,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 69.3,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 19.04,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "ai_datacenter|META|2023": {
+        "capex_ocf_latest": 38.3,
+        "capex_ocf_prior": 62.3,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -13.3,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 43.85,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": -18.72,
+        "score_cap": 60
+      },
+      "ai_datacenter|META|2024": {
+        "capex_ocf_latest": 40.8,
+        "capex_ocf_prior": 38.3,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 36.6,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 54.07,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": 8.41,
+        "score_cap": 60
+      },
+      "ai_datacenter|META|2025": {
+        "capex_ocf_latest": 60.2,
+        "capex_ocf_prior": 40.8,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 87.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 46.11,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": 37.93,
+        "score_cap": 60
+      },
+      "ai_datacenter|MSFT|2023": {
+        "capex_ocf_latest": 32.1,
+        "capex_ocf_prior": 26.8,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 17.7,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 59.48,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": -23.32,
+        "score_cap": 60
+      },
+      "ai_datacenter|MSFT|2024": {
+        "capex_ocf_latest": 37.5,
+        "capex_ocf_prior": 32.1,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 58.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 74.07,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": 14.09,
+        "score_cap": 60
+      },
+      "ai_datacenter|MSFT|2025": {
+        "capex_ocf_latest": 47.4,
+        "capex_ocf_prior": 37.5,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 45.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 71.61,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": -13.71,
+        "score_cap": 60
+      },
+      "ai_datacenter|MSFT|2026": {
+        "capex_ocf_latest": 63.4,
+        "capex_ocf_prior": 47.4,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 79.6,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 66.99,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2026,
+        "net_debt_delta_bn": 6.45,
+        "score_cap": 60
+      },
+      "ai_datacenter|ORCL|2023": {
+        "capex_ocf_latest": 50.7,
+        "capex_ocf_prior": 47.3,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 92.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 8.47,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": 11.93,
+        "score_cap": 60
+      },
+      "ai_datacenter|ORCL|2024": {
+        "capex_ocf_latest": 36.8,
+        "capex_ocf_prior": 50.7,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -21.0,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 11.81,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": 5.86,
+        "score_cap": 60
+      },
+      "ai_datacenter|ORCL|2025": {
+        "capex_ocf_latest": 101.9,
+        "capex_ocf_prior": 36.8,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 209.0,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": -0.39,
+        "fcf_trap": true,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": -3.67,
+        "score_cap": 60
+      },
+      "ai_datacenter|ORCL|2026": {
+        "capex_ocf_latest": 174.1,
+        "capex_ocf_prior": 101.9,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 162.4,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": -23.69,
+        "fcf_trap": true,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2026,
+        "net_debt_delta_bn": -20.57,
+        "score_cap": 60
+      },
+      "housing|DHI|2022": {
+        "capex_ocf_latest": 26.4,
+        "capex_ocf_prior": 17.5,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 58.5,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.41,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|DHI|2023": {
+        "capex_ocf_latest": 3.5,
+        "capex_ocf_prior": 26.4,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": 0.3,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 4.16,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|DHI|2024": {
+        "capex_ocf_latest": 7.5,
+        "capex_ocf_prior": 3.5,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 11.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 2.02,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|DHI|2025": {
+        "capex_ocf_latest": 4.0,
+        "capex_ocf_prior": 7.5,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -16.9,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 3.28,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|KBH|2022": {
+        "capex_ocf_latest": 24.7,
+        "capex_ocf_prior": null,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 14.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.14,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|KBH|2023": {
+        "capex_ocf_latest": 3.3,
+        "capex_ocf_prior": 24.7,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -21.6,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.05,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|KBH|2024": {
+        "capex_ocf_latest": 10.8,
+        "capex_ocf_prior": 3.3,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 10.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.32,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|KBH|2025": {
+        "capex_ocf_latest": 14.4,
+        "capex_ocf_prior": 10.8,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 23.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.29,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|LEN|2022": {
+        "capex_ocf_latest": 1.8,
+        "capex_ocf_prior": 2.6,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": -12.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 3.21,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|LEN|2023": {
+        "capex_ocf_latest": 1.9,
+        "capex_ocf_prior": 1.8,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 74.4,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 5.08,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|LEN|2024": {
+        "capex_ocf_latest": 7.1,
+        "capex_ocf_prior": 1.9,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 71.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 2.23,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|LEN|2025": {
+        "capex_ocf_latest": 87.0,
+        "capex_ocf_prior": 7.1,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 10.0,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.03,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|NVR|2022": {
+        "capex_ocf_latest": 1.0,
+        "capex_ocf_prior": 1.4,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 3.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.85,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|NVR|2023": {
+        "capex_ocf_latest": 1.7,
+        "capex_ocf_prior": 1.0,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 35.0,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.47,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|NVR|2024": {
+        "capex_ocf_latest": 2.1,
+        "capex_ocf_prior": 1.7,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 17.4,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.35,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|NVR|2025": {
+        "capex_ocf_latest": 2.2,
+        "capex_ocf_prior": 2.1,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": -16.1,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.1,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|PHM|2022": {
+        "capex_ocf_latest": 16.9,
+        "capex_ocf_prior": 7.2,
+        "capex_ocf_trend": "rising",
+        "capex_yoy_pct": 54.8,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.56,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": 0.74,
+        "score_cap": 60
+      },
+      "housing|PHM|2023": {
+        "capex_ocf_latest": 4.2,
+        "capex_ocf_prior": 16.9,
+        "capex_ocf_trend": "falling",
+        "capex_yoy_pct": -18.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 2.1,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": -0.76,
+        "score_cap": 60
+      },
+      "housing|PHM|2024": {
+        "capex_ocf_latest": 7.1,
+        "capex_ocf_prior": 4.2,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 28.6,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.56,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": 0.15,
+        "score_cap": 60
+      },
+      "housing|PHM|2025": {
+        "capex_ocf_latest": 6.6,
+        "capex_ocf_prior": 7.1,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 3.5,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.75,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": -0.35,
+        "score_cap": 60
+      },
+      "housing|TOL|2022": {
+        "capex_ocf_latest": 7.3,
+        "capex_ocf_prior": 5.1,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 7.2,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.92,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2022,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|TOL|2023": {
+        "capex_ocf_latest": 5.8,
+        "capex_ocf_prior": 7.3,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 1.7,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.19,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2023,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|TOL|2024": {
+        "capex_ocf_latest": 7.3,
+        "capex_ocf_prior": 5.8,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 0.9,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 0.94,
+        "fcf_trap": false,
+        "fcf_trend": "deteriorating",
+        "fy_latest": 2024,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      },
+      "housing|TOL|2025": {
+        "capex_ocf_latest": 7.7,
+        "capex_ocf_prior": 7.3,
+        "capex_ocf_trend": "flat",
+        "capex_yoy_pct": 17.0,
+        "evidence_tier": "fingerprint",
+        "fcf_latest_bn": 1.03,
+        "fcf_trap": false,
+        "fcf_trend": "improving",
+        "fy_latest": 2025,
+        "net_debt_delta_bn": null,
+        "score_cap": 60
+      }
+    }
+  },
+  "input_manifest": {
+    "files": [
+      {
+        "bytes": 2217,
+        "path": "scripts/__init__.py",
+        "sha": "dafbbd0c3a49c56a2635c0d3d8918302d10689a6",
+        "sha256": "099b906ef95aec83bbfc4d84b5ceb4f050e57a5fd2840e99faa9dc202e90c378"
+      },
+      {
+        "bytes": 10091,
+        "path": "scripts/build_demand.py",
+        "sha": "e13de04966a3383ace8a1eb4fe50ee24eb3010ef",
+        "sha256": "ce31c37087149846029eec3bdb399e4a688ae762b5259bd9ef7e5ce719035a93"
+      },
+      {
+        "bytes": 0,
+        "path": "collectors/__init__.py",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 23453,
+        "path": "collectors/edgar_facts.py",
+        "sha": "08b8830f1d8f83fec61633cfe002cc85f5e97ead",
+        "sha256": "d6a3d9ed27abdf7572cd41ac190a226dca775045389bb71270b568483ba8f2c0"
+      },
+      {
+        "bytes": 0,
+        "path": "engine/__init__.py",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 26174,
+        "path": "engine/demand_chain.py",
+        "sha": "a3cadfb4f82d1f59158f898bc0245a7475161e0d",
+        "sha256": "1ac0779e1d4dc2f0caa85201449293135da2f20c4a1bf19be4c6787b78c1c35b"
+      },
+      {
+        "bytes": 15555,
+        "path": "engine/demand_ledger.py",
+        "sha": "c4b1975646e0c1d767a0b7bccbd8488f453d4ab5",
+        "sha256": "3846cdf8d600c37c63ba638a3c2ee587f835a1023d8f3157adf7314b714c6aeb"
+      },
+      {
+        "bytes": 13021,
+        "path": "engine/gov_exposure.py",
+        "sha": "e2d4b46e35012d8bab3707ac9ba27cd3a9fa0461",
+        "sha256": "567e11be4f927fcee74511dad47c8316300308a783f2d8496be8735fdc5ce504"
+      },
+      {
+        "bytes": 35238,
+        "path": "engine/i18n.py",
+        "sha": "d3b240fa5e9b91b3e8070ae372c294c897e37464",
+        "sha256": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152"
+      },
+      {
+        "bytes": 6499,
+        "path": "engine/demand_alerts.py",
+        "sha": "704adbf11193ee8adbc2be937791b255bec6517e",
+        "sha256": "c486278176ffea01ab1e5f5f9f9b058b0789b927831d9bb42cdae3f89c9acdb8"
+      },
+      {
+        "bytes": 41592,
+        "path": "engine/ai_desk.py",
+        "sha": "f171e4e61d5da2cb002e7d5be692ffa31e6f852f",
+        "sha256": "d895b14bdb86db0f536c10ea03a0360de10c440e6b4b8d2c3ba7bc83ae65d94b"
+      },
+      {
+        "bytes": 6660,
+        "path": "engine/ai_desk_scorer.py",
+        "sha": "d949a7d9deda72bc497f52bae7abd7eca6b59adc",
+        "sha256": "083c2ed200d2771921407e5c792a52962c463fd52eaa3e6b513b9b1b2f348550"
+      },
+      {
+        "bytes": 6683,
+        "path": "engine/desk_ledger.py",
+        "sha": "379028a7bf1fbf4ec96c86e39eeb0339b1d69381",
+        "sha256": "9e079f7d26e3a60e75ee651140612c2efd6a9d00a9405ac5c424fe219600dbc2"
+      },
+      {
+        "bytes": 21038,
+        "path": "engine/desk_scorer.py",
+        "sha": "fdffc74187f5f322981a7f39ccb9d5519a1450fc",
+        "sha256": "d1629aa70b66f7bee53d41a4710fc9d5b3ccb062f10bacabc22079b2ae7a6e77"
+      },
+      {
+        "bytes": 1817,
+        "path": "engine/regime_label.py",
+        "sha": "fb5a5714694b532d3404938eb4d2e634c9904944",
+        "sha256": "3ade9c6d28daacefb7f31ecf56a01067a572c1ae4f4ea0458347904a6efdbfbf"
+      },
+      {
+        "bytes": 2205,
+        "path": "engine/ledger_lane.py",
+        "sha": "1e519c921d2f2028a6fc2bee5372cdb84133c209",
+        "sha256": "7462536242fc9563f4037c87927c4e5524fd9b6ecbe0b3275528d8ce67d88bf0"
+      },
+      {
+        "bytes": 142755,
+        "path": "engine/master_brain.py",
+        "sha": "67bf21c6bb387505bd4c8b237804ba664181ff38",
+        "sha256": "9d58cfe754f365206be998d95b29a60cf2a54df46a1cad8ac7788fae66a16b70"
+      },
+      {
+        "bytes": 31503,
+        "path": "engine/catalyst_tone.py",
+        "sha": "0540c15eefbff8944730c3ea6e1df1b9c5fe9b84",
+        "sha256": "1856dc10ea0c9fc480517d50b1b8488303ea29dbc18c7b86cd11d29ea0e7dbb0"
+      },
+      {
+        "bytes": 0,
+        "path": "lib/__init__.py",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 1131,
+        "path": "lib/config.py",
+        "sha": "b6fc888269876242597da354aaa726c20ed95802",
+        "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+      },
+      {
+        "bytes": 38933,
+        "path": "lib/pages.py",
+        "sha": "db175c463a31828263b57a3287afba661439a765",
+        "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba"
+      },
+      {
+        "bytes": 3461,
+        "path": "lib/ticker_aliases.py",
+        "sha": "7d1aacd5c32209f9e47461f50287db25e2404a65",
+        "sha256": "6a6da16e40de28e9ac3eb9f319ca6b1a137a479656101b590b9264211e3e70fd"
+      },
+      {
+        "bytes": 496073,
+        "path": "config.yml",
+        "sha": "5be75249c98033d7ee0fbe55928713b1f50af627",
+        "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+      },
+      {
+        "bytes": 15809,
+        "path": "templates/demand.html.j2",
+        "sha": "5059cdf7aa0f967496250f995c5f593ddc23643d",
+        "sha256": "cebac4376cb4ee2815d11b460bd90444fbba9d2760e045e5d0016f83a6d81fca"
+      },
+      {
+        "bytes": 2335,
+        "path": "templates/_seo_head.html.j2",
+        "sha": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+        "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee"
+      },
+      {
+        "bytes": 3684,
+        "path": "templates/_site_nav.html.j2",
+        "sha": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+        "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376"
+      },
+      {
+        "bytes": 54533,
+        "path": "templates/_navlinks.html.j2",
+        "sha": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+        "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83"
+      },
+      {
+        "bytes": 12688,
+        "path": "tests/test_gov_exposure.py",
+        "sha": "91d8ae7859593d14ae6850a3f4fe836a9127230a",
+        "sha256": "fb8aa18e83406282b57498875ceae3fc8eb269330a8134e41f87e6aee1067ea2"
+      },
+      {
+        "bytes": 17528,
+        "path": "tests/test_build_demand.py",
+        "sha": "e406afd273e66a84d4eb5dce7c5a7428c00a6baa",
+        "sha256": "50ff455d63b72556f218bb98a87192375214b660bc9e49a509694ebf7280a1b8"
+      },
+      {
+        "bytes": 34456,
+        "path": "tests/conftest.py",
+        "sha": "b2d40ef0eebddcfa3b4292a0d1cd296563222cdc",
+        "sha256": "ad0b342a4303b5dc098d203530e8e8a83d4b5c3cbc38730309448cac14570425"
+      },
+      {
+        "bytes": 90878,
+        "path": "scripts/worktree_sparse.py",
+        "sha": "75297acb10d0cef4d01730a59fdcad19c7cfd3e6",
+        "sha256": "fc5bd906b117511504a46a79f2ca4c689a496683952972dcf6a9858f9d819d99"
+      },
+      {
+        "bytes": 2212409,
+        "path": "data/edgar/statements.parquet",
+        "sha": "65503882d7f898e37a7a5ed4c7d9a94385c05a32",
+        "sha256": "3e0821aab5df25a1c0c312e533d6d78f4906d7a5b29737bee4db97163382d882"
+      },
+      {
+        "bytes": 312808,
+        "path": "data/baskets/membership.json",
+        "sha": "42149e59b72987f8510df149322c41b266aa6f92",
+        "sha256": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae"
+      },
+      {
+        "bytes": 67841,
+        "path": "data/revisions/latest.parquet",
+        "sha": "236dad732cac32cdc4595da6006f3597c9e2e824",
+        "sha256": "fc4c997b9d2cd8a1359a7388de3e12696d99013adfa67c5b3c72be457133da06"
+      },
+      {
+        "bytes": 9928,
+        "path": "data/edgar/rpo.parquet",
+        "sha": "95c26556e9c354109f2fa2b551f8d24dbc04ff6a",
+        "sha256": "37180d8afeb4b4a9334ea67a1df5a9d2e32068e8d5234a7d8971d6c51e1fa9c3"
+      },
+      {
+        "bytes": 3682,
+        "path": "data/edgar/headcount.parquet",
+        "sha": "e5bbbdb706c53c387d1f923e4f7248a268204247",
+        "sha256": "8d9143ec40c85d5af37d38f1d4d7eb92987d866205c94367315bf2b46ff16298"
+      }
+    ],
+    "missing_optional": [],
+    "pin": "1be0661c6b7edfe4088fee71ada89a6b454ba095"
+  },
+  "issue": 11067,
+  "native_emitted_pages": {
+    "current": {
+      "assets": [
+        {
+          "bytes": 75906,
+          "path": "account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "bytes": 2367,
+          "path": "data_base.js",
+          "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+        },
+        {
+          "bytes": 172045,
+          "path": "demand.html",
+          "sha256": "866c6132400c9d5c1b960d2c5ba25e01969d4a4830ec180f8567479f121636fa"
+        },
+        {
+          "bytes": 23664,
+          "path": "fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "bytes": 24272,
+          "path": "fonts/Inter-500.woff2",
+          "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+        },
+        {
+          "bytes": 24452,
+          "path": "fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "bytes": 24356,
+          "path": "fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "bytes": 24400,
+          "path": "fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "bytes": 23900,
+          "path": "fonts/Inter-900.woff2",
+          "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+        },
+        {
+          "bytes": 50731,
+          "path": "live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "bytes": 367,
+          "path": "live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "bytes": 202,
+          "path": "logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "bytes": 96881,
+          "path": "nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "bytes": 104548,
+          "path": "navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "bytes": 41645,
+          "path": "product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "bytes": 467,
+          "path": "shared_shell.css",
+          "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+        },
+        {
+          "bytes": 51296,
+          "path": "shared_shell_bridge.js",
+          "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b"
+        },
+        {
+          "bytes": 16539,
+          "path": "stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "bytes": 227583,
+          "path": "theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "bytes": 280236,
+          "path": "theme.js",
+          "sha256": "aa83d371263aa05e866a6a79a9f425f4c16b1cdedc8845ae78f1f8ee52ff3b71"
+        }
+      ],
+      "html_bytes": 172045,
+      "html_sha256": "866c6132400c9d5c1b960d2c5ba25e01969d4a4830ec180f8567479f121636fa",
+      "payer_rows": {
+        "ai_datacenter|AMZN": {
+          "burden": {
+            "capex_ocf_latest": 94.5,
+            "capex_ocf_prior": 71.6,
+            "capex_ocf_trend": "rising",
+            "capex_yoy_pct": 58.8,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 7.7,
+            "fcf_trap": false,
+            "fcf_trend": "deteriorating",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 2.73,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "AMZN",
+              "94%",
+              "rising",
+              "+59%",
+              "+7.7",
+              "deteriorating",
+              "+2.7",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "AMZN",
+              "94%",
+              "上升",
+              "+59%",
+              "+7.7",
+              "恶化",
+              "+2.7",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "ai_datacenter|GOOGL": {
+          "burden": {
+            "capex_ocf_latest": 55.5,
+            "capex_ocf_prior": 41.9,
+            "capex_ocf_trend": "rising",
+            "capex_yoy_pct": 74.1,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 73.27,
+            "fcf_trap": false,
+            "fcf_trend": "improving",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 29.42,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "GOOGL",
+              "56%",
+              "rising",
+              "+74%",
+              "+73.3",
+              "improving",
+              "+29.4",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "GOOGL",
+              "56%",
+              "上升",
+              "+74%",
+              "+73.3",
+              "改善",
+              "+29.4",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "ai_datacenter|META": {
+          "burden": {
+            "capex_ocf_latest": 60.2,
+            "capex_ocf_prior": 40.8,
+            "capex_ocf_trend": "rising",
+            "capex_yoy_pct": 87.1,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 46.11,
+            "fcf_trap": false,
+            "fcf_trend": "deteriorating",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "META",
+              "60%",
+              "rising",
+              "+87%",
+              "+46.1",
+              "deteriorating",
+              "—",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "META",
+              "60%",
+              "上升",
+              "+87%",
+              "+46.1",
+              "恶化",
+              "—",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "ai_datacenter|MSFT": {
+          "burden": {
+            "capex_ocf_latest": 63.4,
+            "capex_ocf_prior": 47.4,
+            "capex_ocf_trend": "rising",
+            "capex_yoy_pct": 79.6,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 66.99,
+            "fcf_trap": false,
+            "fcf_trend": "deteriorating",
+            "fy_latest": 2026,
+            "net_debt_delta_bn": 6.45,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "MSFT",
+              "63%",
+              "rising",
+              "+80%",
+              "+67.0",
+              "deteriorating",
+              "+6.5",
+              "FY2026",
+              ""
+            ],
+            "zh": [
+              "MSFT",
+              "63%",
+              "上升",
+              "+80%",
+              "+67.0",
+              "恶化",
+              "+6.5",
+              "FY2026",
+              ""
+            ]
+          }
+        },
+        "ai_datacenter|ORCL": {
+          "burden": {
+            "capex_ocf_latest": 174.1,
+            "capex_ocf_prior": 101.9,
+            "capex_ocf_trend": "rising",
+            "capex_yoy_pct": 162.4,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -23.69,
+            "fcf_trap": true,
+            "fcf_trend": "deteriorating",
+            "fy_latest": 2026,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "ORCL",
+              "174%",
+              "rising",
+              "+162%",
+              "-23.7",
+              "deteriorating",
+              "—",
+              "FY2026",
+              "FCF trap"
+            ],
+            "zh": [
+              "ORCL",
+              "174%",
+              "上升",
+              "+162%",
+              "-23.7",
+              "恶化",
+              "—",
+              "FY2026",
+              "FCF陷阱"
+            ]
+          }
+        },
+        "housing|DHI": {
+          "burden": {
+            "capex_ocf_latest": 4.0,
+            "capex_ocf_prior": 7.5,
+            "capex_ocf_trend": "falling",
+            "capex_yoy_pct": -16.9,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 3.28,
+            "fcf_trap": false,
+            "fcf_trend": "improving",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "DHI",
+              "4%",
+              "falling",
+              "-17%",
+              "+3.3",
+              "improving",
+              "—",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "DHI",
+              "4%",
+              "下降",
+              "-17%",
+              "+3.3",
+              "改善",
+              "—",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "housing|KBH": {
+          "burden": {
+            "capex_ocf_latest": 14.4,
+            "capex_ocf_prior": 10.8,
+            "capex_ocf_trend": "rising",
+            "capex_yoy_pct": 23.1,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 0.29,
+            "fcf_trap": false,
+            "fcf_trend": "deteriorating",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "KBH",
+              "14%",
+              "rising",
+              "+23%",
+              "+0.3",
+              "deteriorating",
+              "—",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "KBH",
+              "14%",
+              "上升",
+              "+23%",
+              "+0.3",
+              "恶化",
+              "—",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "housing|LEN": {
+          "burden": {
+            "capex_ocf_latest": 87.0,
+            "capex_ocf_prior": 7.1,
+            "capex_ocf_trend": "rising",
+            "capex_yoy_pct": 10.0,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 0.03,
+            "fcf_trap": false,
+            "fcf_trend": "deteriorating",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "LEN",
+              "87%",
+              "rising",
+              "+10%",
+              "+0.0",
+              "deteriorating",
+              "—",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "LEN",
+              "87%",
+              "上升",
+              "+10%",
+              "+0.0",
+              "恶化",
+              "—",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "housing|NVR": {
+          "burden": {
+            "capex_ocf_latest": 2.2,
+            "capex_ocf_prior": 2.1,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": -16.1,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 1.1,
+            "fcf_trap": false,
+            "fcf_trend": "deteriorating",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "NVR",
+              "2%",
+              "flat",
+              "-16%",
+              "+1.1",
+              "deteriorating",
+              "—",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "NVR",
+              "2%",
+              "持平",
+              "-16%",
+              "+1.1",
+              "恶化",
+              "—",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "housing|PHM": {
+          "burden": {
+            "capex_ocf_latest": 6.6,
+            "capex_ocf_prior": 7.1,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 3.5,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 1.75,
+            "fcf_trap": false,
+            "fcf_trend": "improving",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "PHM",
+              "7%",
+              "flat",
+              "+4%",
+              "+1.8",
+              "improving",
+              "—",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "PHM",
+              "7%",
+              "持平",
+              "+4%",
+              "+1.8",
+              "改善",
+              "—",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "housing|TOL": {
+          "burden": {
+            "capex_ocf_latest": 7.7,
+            "capex_ocf_prior": 7.3,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 17.0,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 1.03,
+            "fcf_trap": false,
+            "fcf_trend": "improving",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "TOL",
+              "8%",
+              "flat",
+              "+17%",
+              "+1.0",
+              "improving",
+              "—",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "TOL",
+              "8%",
+              "持平",
+              "+17%",
+              "+1.0",
+              "改善",
+              "—",
+              "FY2025",
+              ""
+            ]
+          }
+        }
+      }
+    },
+    "fixture": {
+      "assets": [
+        {
+          "bytes": 75906,
+          "path": "account.js",
+          "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+        },
+        {
+          "bytes": 2367,
+          "path": "data_base.js",
+          "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+        },
+        {
+          "bytes": 76107,
+          "path": "demand.html",
+          "sha256": "28b1d7246ad96cc8b0d7813b40a0ff6e5e2a70f30bfc2645e911ee5b65e69e5e"
+        },
+        {
+          "bytes": 23664,
+          "path": "fonts/Inter-400.woff2",
+          "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+        },
+        {
+          "bytes": 24272,
+          "path": "fonts/Inter-500.woff2",
+          "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+        },
+        {
+          "bytes": 24452,
+          "path": "fonts/Inter-600.woff2",
+          "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+        },
+        {
+          "bytes": 24356,
+          "path": "fonts/Inter-700.woff2",
+          "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+        },
+        {
+          "bytes": 24400,
+          "path": "fonts/Inter-800.woff2",
+          "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+        },
+        {
+          "bytes": 23900,
+          "path": "fonts/Inter-900.woff2",
+          "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+        },
+        {
+          "bytes": 50731,
+          "path": "live.js",
+          "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+        },
+        {
+          "bytes": 367,
+          "path": "live_config.js",
+          "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+        },
+        {
+          "bytes": 202,
+          "path": "logo_config.js",
+          "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+        },
+        {
+          "bytes": 96881,
+          "path": "nav_market.js",
+          "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+        },
+        {
+          "bytes": 104548,
+          "path": "navigation-refresh.css",
+          "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+        },
+        {
+          "bytes": 41645,
+          "path": "product-nav-icons.css",
+          "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+        },
+        {
+          "bytes": 467,
+          "path": "shared_shell.css",
+          "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e"
+        },
+        {
+          "bytes": 51296,
+          "path": "shared_shell_bridge.js",
+          "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b"
+        },
+        {
+          "bytes": 16539,
+          "path": "stock-logos.js",
+          "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+        },
+        {
+          "bytes": 227583,
+          "path": "theme.css",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+        },
+        {
+          "bytes": 280236,
+          "path": "theme.js",
+          "sha256": "aa83d371263aa05e866a6a79a9f425f4c16b1cdedc8845ae78f1f8ee52ff3b71"
+        }
+      ],
+      "html_bytes": 76107,
+      "html_sha256": "28b1d7246ad96cc8b0d7813b40a0ff6e5e2a70f30bfc2645e911ee5b65e69e5e",
+      "payer_rows": {
+        "ai_datacenter|AMZN": {
+          "burden": {
+            "capex_ocf_latest": 100.0,
+            "capex_ocf_prior": 100.0,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 0.0,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": 0.0,
+            "fcf_trap": false,
+            "fcf_trend": "flat",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 0.0,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "AMZN",
+              "100%",
+              "flat",
+              "+0%",
+              "+0.0",
+              "flat",
+              "+0.0",
+              "FY2025",
+              ""
+            ],
+            "zh": [
+              "AMZN",
+              "100%",
+              "持平",
+              "+0%",
+              "+0.0",
+              "持平",
+              "+0.0",
+              "FY2025",
+              ""
+            ]
+          }
+        },
+        "ai_datacenter|GOOGL": {
+          "burden": {
+            "capex_ocf_latest": 120.0,
+            "capex_ocf_prior": 120.0,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 0.0,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -2.0,
+            "fcf_trap": true,
+            "fcf_trend": "flat",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": null,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "GOOGL",
+              "120%",
+              "flat",
+              "+0%",
+              "-2.0",
+              "flat",
+              "—",
+              "FY2025",
+              "FCF trap"
+            ],
+            "zh": [
+              "GOOGL",
+              "120%",
+              "持平",
+              "+0%",
+              "-2.0",
+              "持平",
+              "—",
+              "FY2025",
+              "FCF陷阱"
+            ]
+          }
+        },
+        "ai_datacenter|META": {
+          "burden": {
+            "capex_ocf_latest": 120.0,
+            "capex_ocf_prior": 120.0,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 0.0,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -2.0,
+            "fcf_trap": true,
+            "fcf_trend": "flat",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 0.0,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "META",
+              "120%",
+              "flat",
+              "+0%",
+              "-2.0",
+              "flat",
+              "+0.0",
+              "FY2025",
+              "FCF trap"
+            ],
+            "zh": [
+              "META",
+              "120%",
+              "持平",
+              "+0%",
+              "-2.0",
+              "持平",
+              "+0.0",
+              "FY2025",
+              "FCF陷阱"
+            ]
+          }
+        },
+        "ai_datacenter|MSFT": {
+          "burden": {
+            "capex_ocf_latest": null,
+            "capex_ocf_prior": 120.0,
+            "capex_ocf_trend": null,
+            "capex_yoy_pct": null,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": null,
+            "fcf_trap": null,
+            "fcf_trend": null,
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 0.0,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "MSFT",
+              "—",
+              "—",
+              "—",
+              "—",
+              "—",
+              "+0.0",
+              "FY2025",
+              "—"
+            ],
+            "zh": [
+              "MSFT",
+              "—",
+              "—",
+              "—",
+              "—",
+              "—",
+              "+0.0",
+              "FY2025",
+              "—"
+            ]
+          }
+        },
+        "ai_datacenter|ORCL": {
+          "burden": {
+            "capex_ocf_latest": 120.0,
+            "capex_ocf_prior": null,
+            "capex_ocf_trend": null,
+            "capex_yoy_pct": null,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -2.0,
+            "fcf_trap": true,
+            "fcf_trend": null,
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 0.0,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "ORCL",
+              "120%",
+              "—",
+              "—",
+              "-2.0",
+              "—",
+              "+0.0",
+              "FY2025",
+              "FCF trap"
+            ],
+            "zh": [
+              "ORCL",
+              "120%",
+              "—",
+              "—",
+              "-2.0",
+              "—",
+              "+0.0",
+              "FY2025",
+              "FCF陷阱"
+            ]
+          }
+        },
+        "housing|DHI": {
+          "burden": {
+            "capex_ocf_latest": 120.0,
+            "capex_ocf_prior": 120.0,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 0.0,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -2.0,
+            "fcf_trap": true,
+            "fcf_trend": "flat",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 0.0,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "DHI",
+              "120%",
+              "flat",
+              "+0%",
+              "-2.0",
+              "flat",
+              "+0.0",
+              "FY2025",
+              "FCF trap"
+            ],
+            "zh": [
+              "DHI",
+              "120%",
+              "持平",
+              "+0%",
+              "-2.0",
+              "持平",
+              "+0.0",
+              "FY2025",
+              "FCF陷阱"
+            ]
+          }
+        },
+        "housing|KBH": {
+          "burden": {
+            "capex_ocf_latest": 120.0,
+            "capex_ocf_prior": 120.0,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 0.0,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -2.0,
+            "fcf_trap": true,
+            "fcf_trend": "flat",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 0.0,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "KBH",
+              "120%",
+              "flat",
+              "+0%",
+              "-2.0",
+              "flat",
+              "+0.0",
+              "FY2025",
+              "FCF trap"
+            ],
+            "zh": [
+              "KBH",
+              "120%",
+              "持平",
+              "+0%",
+              "-2.0",
+              "持平",
+              "+0.0",
+              "FY2025",
+              "FCF陷阱"
+            ]
+          }
+        },
+        "housing|LEN": {
+          "burden": {
+            "capex_ocf_latest": 120.0,
+            "capex_ocf_prior": 120.0,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 0.0,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -2.0,
+            "fcf_trap": true,
+            "fcf_trend": "flat",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 0.0,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "LEN",
+              "120%",
+              "flat",
+              "+0%",
+              "-2.0",
+              "flat",
+              "+0.0",
+              "FY2025",
+              "FCF trap"
+            ],
+            "zh": [
+              "LEN",
+              "120%",
+              "持平",
+              "+0%",
+              "-2.0",
+              "持平",
+              "+0.0",
+              "FY2025",
+              "FCF陷阱"
+            ]
+          }
+        },
+        "housing|NVR": {
+          "burden": {
+            "capex_ocf_latest": 120.0,
+            "capex_ocf_prior": 120.0,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 0.0,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -2.0,
+            "fcf_trap": true,
+            "fcf_trend": "flat",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 0.0,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "NVR",
+              "120%",
+              "flat",
+              "+0%",
+              "-2.0",
+              "flat",
+              "+0.0",
+              "FY2025",
+              "FCF trap"
+            ],
+            "zh": [
+              "NVR",
+              "120%",
+              "持平",
+              "+0%",
+              "-2.0",
+              "持平",
+              "+0.0",
+              "FY2025",
+              "FCF陷阱"
+            ]
+          }
+        },
+        "housing|PHM": {
+          "burden": {
+            "capex_ocf_latest": 120.0,
+            "capex_ocf_prior": 120.0,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 0.0,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -2.0,
+            "fcf_trap": true,
+            "fcf_trend": "flat",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 0.0,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "PHM",
+              "120%",
+              "flat",
+              "+0%",
+              "-2.0",
+              "flat",
+              "+0.0",
+              "FY2025",
+              "FCF trap"
+            ],
+            "zh": [
+              "PHM",
+              "120%",
+              "持平",
+              "+0%",
+              "-2.0",
+              "持平",
+              "+0.0",
+              "FY2025",
+              "FCF陷阱"
+            ]
+          }
+        },
+        "housing|TOL": {
+          "burden": {
+            "capex_ocf_latest": 120.0,
+            "capex_ocf_prior": 120.0,
+            "capex_ocf_trend": "flat",
+            "capex_yoy_pct": 0.0,
+            "evidence_tier": "fingerprint",
+            "fcf_latest_bn": -2.0,
+            "fcf_trap": true,
+            "fcf_trend": "flat",
+            "fy_latest": 2025,
+            "net_debt_delta_bn": 0.0,
+            "score_cap": 60
+          },
+          "texts": {
+            "en": [
+              "TOL",
+              "120%",
+              "flat",
+              "+0%",
+              "-2.0",
+              "flat",
+              "+0.0",
+              "FY2025",
+              "FCF trap"
+            ],
+            "zh": [
+              "TOL",
+              "120%",
+              "持平",
+              "+0%",
+              "-2.0",
+              "持平",
+              "+0.0",
+              "FY2025",
+              "FCF陷阱"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "parent_comparison": {
+    "affected_inputs_changed": false,
+    "base": "1be0661c6b7edfe4088fee71ada89a6b454ba095",
+    "changed_paths": 8,
+    "commits": 7,
+    "head": "16e874433e0ff0fb0ad863b839deb1d16f824005"
+  },
+  "publication_parent": "16e874433e0ff0fb0ad863b839deb1d16f824005",
+  "python": "3.14.7",
+  "reproduction_scripts": {
+    "audit.py": "from pathlib import Path\nimport hashlib,importlib.util,json,sys\nimport pandas as pd\nfrom pytest import MonkeyPatch\nroot=Path(\".\")\nlabel=sys.argv[1]\nsource=root/label\nsys.path.insert(0,str(source))\nspec=importlib.util.spec_from_file_location(\"demand_proof_fixture\",root/\"after/tests/test_gov_exposure.py\")\nfx=importlib.util.module_from_spec(spec);spec.loader.exec_module(fx)\nfrom scripts import build_demand as bd\nfrom engine import demand_chain as dc,demand_alerts,gov_exposure as ge\nfrom lib import config\ndef digest(value):\n    return hashlib.sha256(json.dumps(value,sort_keys=True,ensure_ascii=False,allow_nan=False,separators=(\",\",\":\")).encode()).hexdigest()\nout={\"label\":label,\"fixtures\":{}}\nfor case,edits in fx._PIPELINE_CASES.items():\n    with MonkeyPatch.context() as mp:\n        result=fx._native_component_pipeline(root/(\"fixtures-v2-\"+label)/case,mp,edits)\n        cells,texts=fx._burden_cells(result[\"html\"])\n        out[\"fixtures\"][case]={\"signals\":result[\"signals\"],\"reads\":result[\"reads\"],\"burdens\":result[\"burdens\"],\n            \"texts\":texts,\"cell_attrs\":[x[0] for x in cells],\"html_sha256\":hashlib.sha256(result[\"html\"].encode()).hexdigest(),\n            \"signals_sha256\":digest(result[\"signals\"]),\"reads_sha256\":digest(result[\"reads\"])}\nframe=pd.read_parquet(source/\"data/edgar/statements.parquet\")\nsignals,reads,burdens=bd._collect(source)\nassert signals and reads and burdens\nfor chain in dc.CHAINS:\n    direct=ge.spender_capex_burden(frame,chain[\"key\"])\n    if direct: assert burdens.get(chain[\"key\"])==direct\nwith MonkeyPatch.context() as mp:\n    alert_calls=[];page_writes=[]\n    mp.setattr(demand_alerts,\"rebuild\",lambda data,**kw:alert_calls.append(data) or [])\n    def write_page(path,html):\n        target=root/(label+\"-current-demand.html\");target.write_text(html);page_writes.append(target);return target\n    mp.setattr(bd,\"write_page\",write_page)\n    html=bd.build(root=source)\n    assert len(page_writes)==1 and page_writes[0].read_text()==html and alert_calls==[reads]\ncurrent_rows={}\nfor chain,items in burdens.items():\n    for ticker,burden in items.items():\n        if burden is not None:\n            _,texts=fx._burden_cells(html,ticker)\n            current_rows[chain+\"|\"+ticker]={\"burden\":burden,\"texts\":texts}\nout[\"current\"]={\"statement_rows\":len(frame),\"tickers\":int(frame[\"ticker\"].nunique()),\n    \"signals\":signals,\"reads\":reads,\"burdens\":burdens,\"payer_rows\":current_rows,\n    \"signals_sha256\":digest(signals),\"reads_sha256\":digest(reads),\n    \"html_sha256\":hashlib.sha256(html.encode()).hexdigest()}\nout[\"historical\"]={}\nfor cutoff in sorted(int(x) for x in frame[\"fy\"].dropna().unique()):\n    past=frame[frame[\"fy\"]<=cutoff]\n    for chain in dc.CHAINS:\n        for ticker,burden in ge.spender_capex_burden(past,chain[\"key\"]).items():\n            if burden is not None and burden[\"fy_latest\"]==cutoff:\n                out[\"historical\"][chain[\"key\"]+\"|\"+ticker+\"|\"+str(cutoff)]=burden\ntarget=root/(label+\"-audit.json\")\ntarget.write_text(json.dumps(out,sort_keys=True,ensure_ascii=False,allow_nan=False,indent=2)+\"\\n\")\nprint(json.dumps({\"label\":label,\"fixtures\":len(out[\"fixtures\"]),\"statement_rows\":len(frame),\n\"tickers\":out[\"current\"][\"tickers\"],\"signals\":len(signals),\"reads\":len(reads),\n\"payer_rows\":len(current_rows),\"historical_observations\":len(out[\"historical\"]),\n\"audit_sha256\":hashlib.sha256(target.read_bytes()).hexdigest(),\"audit_bytes\":target.stat().st_size}),flush=True)\n",
+    "compare.py": "from pathlib import Path\nimport hashlib,json\nroot=Path(\".\")\na=json.loads((root/\"before-audit.json\").read_text());b=json.loads((root/\"after-audit.json\").read_text())\nfields={\"fcf_latest_bn\",\"fcf_trend\",\"capex_ocf_trend\",\"net_debt_delta_bn\",\"fcf_trap\"}\ndef changes(x,y):\n    assert x.keys()==y.keys()\n    return {k:{\"before\":x[k],\"after\":y[k]} for k in x if x[k]!=y[k]}\nresult={\"current\":{},\"historical\":{},\"fixtures\":{},\"preserved\":{}}\nfor key in (\"signals\",\"reads\"):\n    assert a[\"current\"][key]==b[\"current\"][key],key\n    result[\"preserved\"][key+\"_count\"]=len(a[\"current\"][key])\n    result[\"preserved\"][key+\"_sha256\"]=b[\"current\"][key+\"_sha256\"]\nassert a[\"historical\"].keys()==b[\"historical\"].keys()\nfor key,x in a[\"historical\"].items():\n    y=b[\"historical\"][key];delta=changes(x,y)\n    assert set(delta)<=fields,(key,delta)\n    assert all(v[\"after\"] is None for v in delta.values()),(key,delta)\n    if delta:result[\"historical\"][key]=delta\nfor key,x in a[\"current\"][\"payer_rows\"].items():\n    y=b[\"current\"][\"payer_rows\"][key];delta=changes(x[\"burden\"],y[\"burden\"])\n    assert set(delta)<=fields\n    if delta or x[\"texts\"]!=y[\"texts\"]:\n        result[\"current\"][key]={\"changes\":delta,\"before\":x,\"after\":y}\nfor case,x in a[\"fixtures\"].items():\n    y=b[\"fixtures\"][case]\n    assert x[\"signals\"]==y[\"signals\"] and x[\"reads\"]==y[\"reads\"],case\n    for chain,items in x[\"burdens\"].items():\n        for ticker,payer in items.items():\n            if ticker!=\"MSFT\":assert payer==y[\"burdens\"][chain][ticker],(case,chain,ticker)\n    result[\"fixtures\"][case]={\"changes\":changes(x[\"burdens\"][\"ai_datacenter\"][\"MSFT\"],y[\"burdens\"][\"ai_datacenter\"][\"MSFT\"]),\n       \"before\":x[\"burdens\"][\"ai_datacenter\"][\"MSFT\"],\"after\":y[\"burdens\"][\"ai_datacenter\"][\"MSFT\"],\n       \"texts_before\":x[\"texts\"],\"texts_after\":y[\"texts\"]}\nresult[\"summary\"]={\"statement_rows\":b[\"current\"][\"statement_rows\"],\"tickers\":b[\"current\"][\"tickers\"],\n\"current_payers\":len(b[\"current\"][\"payer_rows\"]),\"current_changed_payers\":len(result[\"current\"]),\n\"historical_observations\":len(b[\"historical\"]),\"historical_changed_observations\":len(result[\"historical\"]),\n\"new_or_remeasured_numeric_values\":0,\"fixtures\":len(result[\"fixtures\"]),\"all_fixture_signals_and_reads_identical\":True}\nresult[\"audit_files\"]=[{\"name\":label+\"-audit.json\",\"bytes\":(root/(label+\"-audit.json\")).stat().st_size,\"sha256\":hashlib.sha256((root/(label+\"-audit.json\")).read_bytes()).hexdigest()} for label in (\"before\",\"after\")]\n(root/\"comparison.json\").write_text(json.dumps(result,sort_keys=True,ensure_ascii=False,allow_nan=False,indent=2)+\"\\n\")\nprint(json.dumps({\"summary\":result[\"summary\"],\"preserved\":result[\"preserved\"],\"current_changes\":{k:v[\"changes\"] for k,v in result[\"current\"].items()},\"historical_changes\":result[\"historical\"]},ensure_ascii=False),flush=True)\n",
+    "emit_browser.py": "from pathlib import Path\nimport base64,gzip,hashlib,importlib.util,io,json,re,shutil,sys,tarfile\nimport pandas as pd\nfrom pytest import MonkeyPatch\nroot=Path(\".\").resolve();source=root/\"after\";sys.path.insert(0,str(source))\nspec=importlib.util.spec_from_file_location(\"demand_fixture\",source/\"tests/test_gov_exposure.py\")\nfx=importlib.util.module_from_spec(spec);spec.loader.exec_module(fx)\nfrom scripts import build_demand as bd\nfrom collectors import edgar_facts as ef\nfrom engine import demand_alerts\nfrom lib import config,pages,site_assets\nassert bd.write_page is pages.write_page\nbrowser=root/\"browser-v2\";browser.mkdir(exist_ok=False)\nscenarios={\"fixture\":{\"MSFT\":{(\"capex\",2025):None},\"GOOGL\":{(\"cash\",2025):None},\"AMZN\":{(\"capex\",fy):10e9 for fy in range(2020,2026)},\"ORCL\":{(\"capex\",2024):None}},\"current\":None}\nreceipts={}\nfor label,edits in scenarios.items():\n    target=browser/label;target.mkdir()\n    shutil.copytree((root/\"fixtures-v2-after/complete/fixture/data\") if edits is not None else source/\"data\",target/\"data\")\n    for relative in [\"config.yml\",\"templates/demand.html.j2\",\"templates/_seo_head.html.j2\",\"templates/_site_nav.html.j2\",\"templates/_navlinks.html.j2\",\"templates/data_base.js\"]:\n        p=target/relative;p.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source/relative,p)\n    with MonkeyPatch.context() as mp:\n        if edits is not None:\n            facts={1000+i:fx._companyfacts(edits.get(ticker,{})) for i,ticker in enumerate(fx._SPENDERS)}\n            requests=[];wires=[]\n            def get_json(url):\n                cik=int(re.search(r\"CIK(\\d+)\\.json$\",url).group(1));assert cik in facts;requests.append(cik);return facts[cik]\n            mp.setattr(ef,\"_get_json\",get_json)\n            mp.setattr(ef.time,\"sleep\",lambda seconds:None)\n            mp.setattr(ef,\"_dm_wire_cache\",lambda cik,data:wires.append((cik,data is facts[cik])))\n            rows=[]\n            for i,ticker in enumerate(fx._SPENDERS):\n                rows.extend({**r,\"ticker\":ticker} for r in ef._statements_for(1000+i))\n            assert requests==list(facts) and wires==[(cik,True) for cik in facts]\n            pd.DataFrame(rows).to_parquet(target/\"data/edgar/statements.parquet\")\n        mp.setattr(config,\"ROOT\",target);mp.setattr(config,\"data_dir\",lambda:target/\"data\")\n        mp.setattr(demand_alerts,\"rebuild\",lambda data,**kw:[])\n        if hasattr(pages,\"_shim_checked\"):mp.setattr(pages,\"_shim_checked\",False)\n        raw=bd.build(root=target)\n        site=target/config.load()[\"storage\"][\"site_dir\"]\n        final=(site/\"demand.html\").read_text()\n        assert raw!=final and \"data-dbase\" in final and \"shared_shell_bridge.js\" in final\n        for asset in [\"theme.js\",\"theme.css\",\"navigation-refresh.css\",\"product-nav-icons.css\",\"logo_config.js\",\"stock-logos.js\",\"live.js\",\"account.js\",\"nav_market.js\"]:\n            site_assets.copy_asset(asset,source/\"templates\"/asset,site)\n        shutil.copyfile(source/\"site/live_config.js\",site/\"live_config.js\")\n        shutil.copytree(source/\"templates/fonts\",site/\"fonts\")\n        _,_,burdens=bd._collect(target)\n        receipts[label]={\"html_sha256\":hashlib.sha256((site/\"demand.html\").read_bytes()).hexdigest(),\"html_bytes\":(site/\"demand.html\").stat().st_size,\"payer_rows\":{chain+\"|\"+ticker:{\"burden\":b,\"texts\":fx._burden_cells(final,ticker)[1]} for chain,items in burdens.items() for ticker,b in items.items() if b is not None},\"assets\":[{\"path\":str(p.relative_to(site)),\"sha256\":hashlib.sha256(p.read_bytes()).hexdigest(),\"bytes\":p.stat().st_size} for p in sorted(site.rglob(\"*\")) if p.is_file()]}\nbundle=root/\"browser-pages.tar.gz\"\nwith tarfile.open(bundle,\"w:gz\") as archive:\n    for label in scenarios:archive.add(browser/label/\"site\",arcname=label)\nencoded=base64.b64encode(bundle.read_bytes()).decode()\n(root/\"browser-pages.b64\").write_text(\"\\n\".join(encoded[i:i+76] for i in range(0,len(encoded),76))+\"\\n\")\n(root/\"browser-emission.json\").write_text(json.dumps(receipts,ensure_ascii=False,allow_nan=False,indent=2)+\"\\n\")\nprint(json.dumps({\"pages\":{k:{\"html_sha256\":v[\"html_sha256\"],\"html_bytes\":v[\"html_bytes\"],\"payers\":len(v[\"payer_rows\"]),\"assets\":len(v[\"assets\"])} for k,v in receipts.items()},\"bundle_bytes\":bundle.stat().st_size,\"bundle_sha256\":hashlib.sha256(bundle.read_bytes()).hexdigest(),\"b64_lines\":(len(encoded)+75)//76}),flush=True)\n",
+    "native_tests.py": "from pathlib import Path\nimport hashlib,json,os,subprocess,time\nroot=Path(\".\")\nexpected=json.loads(\"[{\\\"path\\\":\\\"engine/gov_exposure.py\\\",\\\"sha\\\":\\\"75f22bee1db9f62b41c21a8ace6e123403f7fdd0\\\",\\\"sha256\\\":\\\"8dde8530585640d18ae0acbed7d0eb7b6447e7ecee369c4799c4854cd11a2734\\\",\\\"bytes\\\":13303},{\\\"path\\\":\\\"templates/demand.html.j2\\\",\\\"sha\\\":\\\"d35b68cc809dff66d30f072a3644d60666a3c362\\\",\\\"sha256\\\":\\\"a846616df34678cd0b68f54f4f998acc5721e93e242ffc5a355700fbd9ed2a87\\\",\\\"bytes\\\":16027},{\\\"path\\\":\\\"tests/test_gov_exposure.py\\\",\\\"sha\\\":\\\"abc3a9d51fde4a55e1a3c0326cd7cb9986476ef0\\\",\\\"sha256\\\":\\\"9a9987b35f1fdd36b99f5d17636cf716f7afff65813a94bb8b82f0106b90d4af\\\",\\\"bytes\\\":25768}]\")\nfor item in expected:\n    p=root/\"after\"/item[\"path\"]; b=p.read_bytes()\n    assert hashlib.sha1(b\"blob \"+str(len(b)).encode()+b\"\\0\"+b).hexdigest()==item[\"sha\"],item[\"path\"]\n    assert hashlib.sha256(b).hexdigest()==item[\"sha256\"],item[\"path\"]\nprint(\"CANDIDATE_HASHES_VERIFIED\",flush=True)\npy=\"/opt/homebrew/opt/python@3.14/bin/python3.14\"\nenv=dict(os.environ,PYTHONDONTWRITEBYTECODE=\"1\")\ncmd=[py,\"-m\",\"pytest\",\"tests/test_gov_exposure.py\",\"tests/test_build_demand.py\",\"-q\",\"-p\",\"no:cacheprovider\"]\nresults={}\noriginal=(root/\"before/tests/test_gov_exposure.py\").read_bytes()\ntry:\n    (root/\"before/tests/test_gov_exposure.py\").write_bytes((root/\"after/tests/test_gov_exposure.py\").read_bytes())\n    for label in [\"before\",\"after\"]:\n        start=time.monotonic()\n        p=subprocess.run(cmd,cwd=root/label,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=180)\n        log=root/(label+\"-tests.log\");log.write_bytes(p.stdout)\n        lines=p.stdout.decode(errors=\"replace\").splitlines()\n        results[label]={\"returncode\":p.returncode,\"seconds\":round(time.monotonic()-start,3),\"log_sha256\":hashlib.sha256(p.stdout).hexdigest(),\"log_bytes\":len(p.stdout),\"tail\":lines[-14:]}\n        print(label.upper(),json.dumps(results[label]),flush=True)\nfinally:\n    (root/\"before/tests/test_gov_exposure.py\").write_bytes(original)\n(root/\"test-results.json\").write_text(json.dumps(results,indent=2)+\"\\n\")\nprint(\"DEMAND_NATIVE_TESTS_COMPLETE\",flush=True)\n"
+  },
+  "schema": "demand-component-completeness-validation-v1",
+  "scope_limits": [
+    "Retrospective cached annual observations, not point-in-time data or a performance backtest.",
+    "Existing selection of rows with CFO, fiscal ordering, duplicate/nonconsecutive years, nonfinite admission and alias behavior are preserved.",
+    "The synthetic companyfacts values do not describe the actual finances of the named issuers.",
+    "Natural CI, browser acceptance and a covering production render remain distinct."
+  ],
+  "source_pin": "1be0661c6b7edfe4088fee71ada89a6b454ba095",
+  "tests": {
+    "after": {
+      "log_bytes": 99,
+      "log_sha256": "7cecfed9c9595b00d6ad643a979bad905272fd096f3bb87cc8fba059e11f4885",
+      "returncode": 0,
+      "seconds": 4.308,
+      "tail": [
+        "........................................................................ [100%]",
+        "72 passed in 4.01s"
+      ]
+    },
+    "before": {
+      "log_bytes": 46366,
+      "log_sha256": "30c6bf8926a6c118ca6f907ffac93b4c20bf047033948159de9c24cc6449d1fc",
+      "returncode": 1,
+      "seconds": 4.517,
+      "tail": [
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[all_capex_missing]",
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[missing_latest_cash]",
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[missing_latest_debt_lt]",
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[missing_latest_debt_cur]",
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[missing_prior_cash]",
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[missing_prior_debt_lt]",
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[missing_prior_debt_cur]",
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[zero_capex]",
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[zero_cash]",
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[zero_debt]",
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[zero_fcf]",
+        "FAILED tests/test_gov_exposure.py::test_native_companyfacts_parquet_builder_and_bilingual_disclosure[zero_latest_cfo]",
+        "FAILED tests/test_gov_exposure.py::TestCapexBurden::test_none_when_capex_missing_but_cfo_present",
+        "27 failed, 45 passed in 4.17s"
+      ]
+    }
+  }
+}

@@ -6040,6 +6040,30 @@ def test_probe_weight_ceilings_follow_the_weight_rescale() -> None:
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    Historical measurements from PR #11078 before the current main integration:
+    2026-11-12 (PR #11078, current-source conflict composition):
+    Preserve the landed #11041 measured-weight scale and #10211 feedback
+    enrollment. The separate Demand step still runs the complete
+    tests/test_gov_exposure.py suite. With the current observed override,
+    synapse-read-gate remains 249 before and after that added command;
+    its old 46 -> 49 heuristic delta below is historical, not new funding.
+    Keep legacy ceilings 5975/5999/5733 and their derived live limits
+    11414/11460/10952, job ceilings 137/138/131, and ten packs unchanged.
+    All current provenance, commands, dependencies, selectors and scale
+    assertions are retained. This source composition does not retry the
+    original queued workflows or the separately denied browser action;
+    fresh natural CI must qualify this successor.
+
+    2026-11-11 (Demand component completeness, issue #11067):
+    Add tests/test_gov_exposure.py as a separate step in the existing
+    synapse-read-gate CODE owner, preserving its existing command and steps.
+    The unchanged estimator measures 46 -> 49: one command and one test path;
+    981 -> 1028 command characters stays in the same 800-character bucket.
+    Fund only this +3 contribution: 5966/5989/5724 -> 5969/5992/5727.
+    Other owners, job/pack ceilings, installs and admission controls remain.
+    This is isolated owner accounting; natural CI must qualify the composed
+    source and actual packing probes. No unmerged carrier cost is pre-funded.
+
     2026-11-12 (PR #11094, merge of main a07e3fe4ce0c / #11041 weight refresh):
     main moved planner weights to measured hosted seconds and pins each live
     ceiling to PACK.rescale_legacy_weight(legacy). This branch's legacy

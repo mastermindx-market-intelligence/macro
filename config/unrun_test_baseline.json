@@ -358,7 +358,6 @@
     "tests/test_gex_confirm.py",
     "tests/test_global_liquidity.py",
     "tests/test_glut_watch.py",
-    "tests/test_gov_exposure.py",
     "tests/test_grading_spine_v2.py",
     "tests/test_grading_stats_calibration.py",
     "tests/test_great_company_trap_wiring.py",
