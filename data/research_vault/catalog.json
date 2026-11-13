@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T17:39:12.802327+00:00",
-  "count": 3310,
+  "generated_at": "2026-11-13T19:24:26.024889+00:00",
+  "count": 3315,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -125,6 +125,69 @@
   ],
   "items": [
     {
+      "id": "marketdesk-zsgvsit12vf-323bb3",
+      "title": "BofA US Economic Weekly Fed call change: Adding a hike in Jan ’27",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:35:57Z",
+      "summary_points": [
+        "Fed rate hike path: 3 hikes (Dec '26, Jan '27, Mar '27) to terminal rate 4.5-4.75%, driven by persistent core CPI (goods-led) and stable labor market (unemployment at 4.1% through Q2 '27).",
+        "Inflation persistence: Core CPI +0.3% m/m (Oct), revised core PCE at 3.3% y/y; structural forces (tariffs, energy, AI) keep underlying inflation at 2.5% above target through 2028.",
+        "Key rate triggers: Wage inflation (0.4% Nov) and price resets risk pushing terminal rate above 5%; Fed may delay final hike if soft data or financial tightening emerges.",
+        "Near-term data catalysts: Nov 17 Retail Sales (0.4% vs 0.3% consensus), Nov 18 FOMC Minutes, and Housing Starts critical for portfolio adjustments.",
+        "Geopolitical inflation drivers: Middle East supply shocks (Musalem) and AI build-out (Goolsbee/Williams) complicate policy path amid tariff/oil pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gsqtn17sojj-2e5b71",
+      "title": "BofA Global FX weekly Greenback Mountain",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:35:41Z",
+      "summary_points": [
+        "USD Strength from CPI: Hot US CPI fuels USD strength, pushing EURUSD toward YTD lows (1.10/1.0882, 1.06); bearish bias amid USD/JPY intervention risk at 160.",
+        "Fed Terminal Rate Forecast: FOMC minutes reveal terminal rate forecast (4.25-4.50%) and March hike risk; hot CPI suggests Fed may lag inflation.",
+        "Structural USD Bearishness: IMF Q2 COFER shows EUR gaining $220bn in reserves vs.",
+        "USD $8bn outflow, confirming long-term USD diversification into EUR/AUD.",
+        "USD/JPY Intervention Risk: USD/JPY bullish at 152 (BoJ hikes, tech stocks); 160 level critical but intervention less certain due to yen not main driver."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6vchuar8n9p-c9e78c",
+      "title": "UBS S&T UBS Macro Equity Navigator Favorable AI Asymmetry Justinus Steinhorst 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:23:07Z",
+      "summary_points": [
+        "AI Asymmetry Theme: Central trade driver with \"favorable AI asymmetry\" guiding decisions; AI Winners show elevated but manageable crowding (not washed out), supporting near-term positioning despite fragile sentiment.",
+        "China Earnings Divergence: CSI 300 vs S&P 500 earnings revisions breadth at multi-year lows; sustained recovery hinges on policy support and property stabilization, signaling critical valuation pressure.",
+        "Sector Rotation Signals: Hyperscalers (UBXXHYPE) surging vs Neoclouds+ (UBXNEOC) with 50 DMA > 200 DMA crossover; Neoclouds+ underperforming (-19.2%) highlights severe tech/AI sector weakness and rotation risk.",
+        "Stoxx 600 Momentum Shift: Stoxx 600 making new highs (+9pp vs S&P 500 since Oct) driven by fading macro headwinds (rates/energy), with only 11% AI exposure—key for EU equity positioning.",
+        "EU Bank Earnings Risk: Sharp decline in EU Banks EPS revisions (red circle, ~2027) indicates deteriorating fundamentals, a critical risk for Stoxx 600 exposure amid weakening momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-gobxvme2usm-c1b717",
       "title": "GS Codacci Pisanelli Macro Roadmap 13 Nov 2026",
       "institution": "S&T",
@@ -183,6 +246,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3dxdy8bmiuu-b39f6c",
+      "title": "Research Unplugged 2027 Global Commodities Outlook",
+      "institution": "2027 Outlook",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:50:54Z",
+      "summary_points": [
+        "Commodities Structural Value: Structural drivers sustain commodities' hedging/diversification value despite sharp risk premia declines, with sector-specific analysis for oil, gas, agriculture, and metals.",
+        "US Macro Data Focus: AI capex and housing affordability are critical US economic data points for 2027 positioning, alongside supply-driven commodity pricing.",
+        "China Policy Risk: China's stretched budgets and \"more uncertainty\" represent top geopolitical/policy risk factor, amplifying trade/tariff impacts on emerging markets and consumer sectors."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
@@ -364,6 +446,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cygl5ychkog-a7e0ca",
+      "title": "GS Novak GS U.S. Industrials & Materials airlines into 2027 EPS charts to chew on 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T13:32:53Z",
+      "summary_points": [
+        "Global Data Beats: Asia PPI 7.1% vs 6.5% exp, UK Industrial Production +3.1% vs +0.4% exp, US S&P futures down 30bps tech-driven; oil prices key risk (Brent $92).",
+        "Breakout Requirements: Durable market recovery needs lower rates, lower energy prices, and broader leadership; oil volatility critical for avoiding choppy performance.",
+        "FERG/GWM Misalignment: Equity ratio 0.1779 (historical low 0.1584), price disparity FERG $264.50 vs GWM $1,486.53 signals valuation risk and heightened exposure.",
+        "AVEX Outperformance: Q3 revenue/EBITDA beat, FY26 guidance lifted (revenue +17%, EBITDA +20%) driven by BlackSea Technologies roll-in (45% EBITDA above consensus)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
