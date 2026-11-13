@@ -909,7 +909,10 @@ def _series(dips: dict[str, float] | None = None) -> pd.Series:
 def _item(ticker: str, entry: str, exit_: str | None, *, pnl: float | None = None,
           matured: bool = True, series: "pd.Series | None" = None) -> dict:
     sc = None if pnl is None else {"pnl": pnl, "mark": pnl, "matured": matured,
-                                   "entry": 100.0}
+                                   "entry": 100.0,
+                                   # Synthetic fixture fills the NEXT business session.
+                                   "entry_date": str((pd.Timestamp(entry) +
+                                                      pd.offsets.BDay(1)).date())}
     return {"ep": {"ticker": ticker, "entry_date": entry, "exit_date": exit_},
             "sc": sc, "series": _series() if series is None and pnl is not None
             else series}
