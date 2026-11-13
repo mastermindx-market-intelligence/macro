@@ -51032,6 +51032,9 @@ jobs:
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
       - "lib/exchange_holidays.py"
+      # Capacity Fabric cutover (#983, PR #11212): engine/commodity_news.py now
+      # imports lib/fabric_client, so this job's import closure reaches it.
+      - "lib/fabric_client.py"
       - "lib/forex_link.py"
       - "lib/hk_calendar.py"
       - "lib/market_observations.py"
@@ -51505,6 +51508,9 @@ jobs:
       - "lib/dataos/temporal.py"
       - "lib/delisted_symbols.py"
       - "lib/exchange_holidays.py"
+      # Capacity Fabric cutover (#983, PR #11212): engine/commodity_news.py now
+      # imports lib/fabric_client, so this job's import closure reaches it.
+      - "lib/fabric_client.py"
       - "lib/forex_link.py"
       - "lib/hk_calendar.py"
       - "lib/market_observations.py"
