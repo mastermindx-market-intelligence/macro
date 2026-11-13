@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T21:09:35.046785+00:00",
-  "count": 3320,
+  "generated_at": "2026-11-13T21:24:39.649467+00:00",
+  "count": 3321,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1641,6 +1641,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hnbfwh1baqe-5ae0b1",
+      "title": "GS Ambrose GWIS Buy the GS China Go Global Biotech basket ahead of catalysts 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:10:33Z",
+      "summary_points": [
+        "FDA Catalysts: Near-term performance driven by U.S.",
+        "FDA decisions (e.g., Ivonescimab approval for mutated lung cancer) and HARMONI-3 trial results critical for displacing global standards of care.",
+        "2027 Strategic Shift: Sector transitioning from re-entry to 2027 positioning, with key trials (e.g., Zai Lab’s Phase 3 for small cell lung cancer by 2026) targeting accelerated global approvals via H1 2027 results.",
+        "Ivonescimab FDA Decision: Imminent U.S.",
+        "FDA approval decision for Ivonescimab (Akeso/Summit) in genetically mutated lung cancer patients, pivotal for sector leadership."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
