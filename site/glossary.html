@@ -1090,7 +1090,7 @@
   var panel=root.querySelector('[data-empty-state]');
   var rows=[].slice.call(root.querySelectorAll('[data-glossary-row]'));
   var sections=[].slice.call(root.querySelectorAll('[data-domain-section]'));
-  var buttons=[].slice.call(root.querySelectorAll('[data-domain]'));
+  var buttons=[].slice.call(root.querySelectorAll('button.gl-filter[data-domain]'));
   var letters=[].slice.call(root.querySelectorAll('.gl-letter'));
   var domain='all';
   function normal(v){return (v||'').toLocaleLowerCase().trim();}
