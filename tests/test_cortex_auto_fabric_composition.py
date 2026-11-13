@@ -103,7 +103,9 @@ def test_completed_auto_input_reuse_and_changed_input_keep_original_custody(cort
     fixed.call(state, force=True)
     next_run = fixed.record(state)
     assert next_run["operation_id"] != original["operation_id"]
-    assert next_run["phase"] == "complete" and len(state.native.rows("application_turns")) == 2
+    assert next_run["phase"] == "held" and not next_run["business_complete"]
+    assert next_run["failure"] == "cortex_fabric_memo_not_submitted"
+    assert len(state.native.rows("application_turns")) == 2
     assert len(state.closes) == 2
 
 
@@ -279,3 +281,18 @@ def test_native_step_limit_remains_an_original_hold_not_a_new_operation(cortex_a
     assert len(state.native.posts) == 2
     assert len(fixed.rows(state.cost_path)) == 2
     fixed.held_no_replay(state, monkeypatch)
+
+
+def test_auto_closed_without_memo_does_not_become_completed(cortex_auto, monkeypatch):
+    fixed.assert_closed_without_memo_stays_held(cortex_auto, monkeypatch)
+
+
+@pytest.mark.parametrize("entrypoint", [
+    "public", "selected", "native_save", "successor", "same_operation", "noop_commit"])
+def test_auto_historical_unaccepted_completion_preserves_custody(cortex_auto, monkeypatch, entrypoint):
+    fixed.assert_historical_unaccepted_record_stays_fenced(cortex_auto, monkeypatch, entrypoint)
+
+
+@pytest.mark.parametrize("corruption", ["memo_clock", "projection_clock", "business_flag", "memo_digest"])
+def test_auto_acceptance_hold_validates_its_final_receipts(cortex_auto, monkeypatch, corruption):
+    fixed.assert_acceptance_hold_keeps_final_receipt_validation(cortex_auto, monkeypatch, corruption)

@@ -339,7 +339,7 @@ def _save_last_run_state(root: Path, state: dict) -> None:
         with _fabric_state_lock(root):
             current = _fabric_read_state(root)
             if type(current) is dict and current.get("schema") == _FABRIC_STATE_SCHEMA:
-                if current["fabric"]["phase"] != "complete":
+                if _fabric_original_held(current):
                     return
                 # A real later native completion can advance its own warm
                 # tuple without discarding the settled Fabric evidence.
@@ -678,9 +678,12 @@ def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
                 or close["disposition"] not in {"local_only", "refused", "pending", "effect_unknown", "closed"}
                 or any(type(close[k]) is not bool for k in ("closed", "effect_unknown", "attempted"))):
             raise _CortexFabricHold("cortex_fabric_close_receipt_invalid")
-    if run["phase"] == "complete":
+    acceptance_hold = (run["phase"] == "held"
+                       and run["failure"] == "cortex_fabric_memo_not_submitted")
+    if run["phase"] == "complete" or acceptance_hold:
         receipt = run["receipt"] or {}
-        if (not run["business_complete"] or run["failure"] is not None
+        if (run["business_complete"] is not (not acceptance_hold)
+                or not acceptance_hold and run["failure"] is not None
                 or projection["phase"] != "complete" or not run["steps"]
                 or any(s["phase"] != "response" for s in run["steps"])
                 or any(t["phase"] != "complete" for t in run["tools"])
@@ -812,9 +815,13 @@ def _fabric_commit(root: Path, prior: Any, run: dict) -> dict:
         if _fabric_digest(actual) != _fabric_digest(prior):
             raise _CortexFabricHold("cortex_fabric_state_cas")
         selected_prior = type(prior) is dict and prior.get("schema") == _FABRIC_STATE_SCHEMA
-        if selected_prior and prior["fabric"]["operation_id"] != run["operation_id"] \
-                and prior["fabric"]["phase"] != "complete":
-            raise _CortexFabricHold("cortex_fabric_original_held")
+        if selected_prior:
+            previous = prior["fabric"]
+            # Historical complete records remain immutable evidence even when
+            # their settled transport never produced an accepted Brain memo.
+            if (previous["phase"] == "complete" and not _fabric_business_accepted(previous)
+                    or previous["operation_id"] != run["operation_id"] and _fabric_original_held(prior)):
+                raise _CortexFabricHold("cortex_fabric_original_held")
         if run.get("schema") == _FABRIC_AUTO_RUN_SCHEMA:
             previous = prior["fabric"] if selected_prior else None
             if previous is not None and previous["operation_id"] == run["operation_id"]:
@@ -847,9 +854,34 @@ def _fabric_commit(root: Path, prior: Any, run: dict) -> dict:
         return value
 
 
+def _fabric_business_accepted(run: dict) -> bool:
+    """Classify validated retained output without trusting completion flags.
+
+    A finalizer-written fallback is diagnostic output, not an acknowledged
+    model write_memo. This predicate is also safe before the final phase is set
+    and does not rewrite older records that conflated close with acceptance.
+    """
+    memo = run.get("memo")
+    document = memo.get("document") if type(memo) is dict else None
+    status = document.get("run_status") if type(document) is dict else None
+    projection = run.get("projection") or {}
+    receipt = run.get("receipt") or {}
+    acknowledged = {"written": str(Path(run["root"]) / "data/neuralweb/cortex/memo.json"),
+                    "as_of": run["created_at"]}
+    return (type(status) is dict and status.get("status") in ("ok", "warn")
+            and status.get("degraded") is False
+            and projection.get("phase") == "complete" and projection.get("result") == acknowledged
+            and receipt.get("pending") is False
+            and receipt.get("close") == {"disposition": "closed", "closed": True,
+                                         "effect_unknown": False, "attempted": True}
+            and any(tool["name"] == "write_memo" and tool["phase"] == "complete"
+                    and tool["result"] == acknowledged for tool in run["tools"]))
+
+
 def _fabric_original_held(state: Any) -> bool:
     return (type(state) is dict and state.get("schema") == _FABRIC_STATE_SCHEMA
-            and state["fabric"]["phase"] != "complete")
+            and (state["fabric"]["phase"] != "complete"
+                 or not _fabric_business_accepted(state["fabric"])))
 
 
 # ---------------------------------------------------------------------------
@@ -3715,6 +3747,8 @@ def _run_fabric(root: Path, cfg: dict, mode_id: str, prior: Any, now_str: str) -
     from engine.provider_production_modes import make_application_fabric_factory
 
     root = root.resolve(strict=True)
+    if _fabric_original_held(prior):
+        raise _CortexFabricHold("cortex_fabric_original_held")
     max_tokens = cfg.get("max_tokens", 4096)
     max_rounds = cfg.get("max_tool_calls", _DEFAULT_MAX_TOOL_CALLS)
     if (type(max_tokens) is not int or not 1 <= max_tokens <= 32768
@@ -3740,8 +3774,6 @@ def _run_fabric(root: Path, cfg: dict, mode_id: str, prior: Any, now_str: str) -
                "max_tool_calls": max_rounds, "caller_cfg_sha256": _fabric_digest(caller_cfg)}
     if type(prior) is dict and prior.get("schema") == _FABRIC_STATE_SCHEMA:
         previous = prior["fabric"]
-        if previous["phase"] != "complete":
-            raise _CortexFabricHold("cortex_fabric_original_held")
         if (previous["source"], previous["selection"], previous["inspection"], previous["request"]) \
                 == (source, mode_id, identity, request):
             return 0
@@ -3918,8 +3950,10 @@ def _run_fabric(root: Path, cfg: dict, mode_id: str, prior: Any, now_str: str) -
         result = _tool_write_memo(root, params, now_str, probation)
         run["memo"] = _fabric_memo_receipt(root, run)
         run["projection"].update(phase="complete", result=_fabric_clone(result))
-        run["business_complete"] = True
-        run["phase"] = "complete"
+        accepted = _fabric_business_accepted(run)
+        run["business_complete"] = accepted
+        run["failure"] = None if accepted else "cortex_fabric_memo_not_submitted"
+        run["phase"] = "complete" if accepted else "held"
         doc = _fabric_commit(root, doc, run)
     except BaseException as exc:
         run["failure"] = "cortex_fabric_finalization_unknown"

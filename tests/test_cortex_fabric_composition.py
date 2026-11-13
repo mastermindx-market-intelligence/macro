@@ -364,7 +364,9 @@ def test_host_profile_intersection_uses_real_allowed_providers(cortex, monkeypat
     monkeypatch.setenv("MM_PROVIDER_WORKLOAD_PROFILE", profile)
     cortex.responses = [packet()]
     call(cortex)
-    assert record(cortex)["phase"] == "complete"
+    assert record(cortex)["phase"] == "held"
+    assert record(cortex)["failure"] == "cortex_fabric_memo_not_submitted"
+    assert record(cortex)["receipt"]["close"]["closed"]
     assert cortex.native.rows("application_turns")[0]["workload"] == "lobe_analysis"
     assert len(cortex.native.posts) == 1
 
@@ -475,7 +477,8 @@ def test_stake_uses_actual_registry_trial_governance_and_inbox_receipts(cortex):
     cortex.responses = [packet(tool("stake_hypothesis", hypothesis(), "hyp-1")), packet()]
     call(cortex)
     run = record(cortex)
-    assert run["phase"] == "complete" and run["tools"][0]["result"]["status"] == "registered"
+    assert run["phase"] == "held" and run["tools"][0]["result"]["status"] == "registered"
+    assert run["failure"] == "cortex_fabric_memo_not_submitted"
     registered = rows(cortex.root / "data/neuralweb/machine_registry.jsonl")
     trial = rows(cortex.root / "data/trial_ledger.jsonl")
     governance = rows(cortex.root / "data/neuralweb/governance.jsonl")
@@ -520,7 +523,8 @@ def test_invalid_hypothesis_is_audited_as_business_refusal(cortex):
     cortex.responses = [packet(tool("stake_hypothesis", value, "hyp-1")), packet()]
     call(cortex)
     run = record(cortex)
-    assert run["phase"] == "complete" and run["tools"][0]["result"]["status"] == "invalid"
+    assert run["phase"] == "held" and run["tools"][0]["result"]["status"] == "invalid"
+    assert run["failure"] == "cortex_fabric_memo_not_submitted"
     assert len(rows(cortex.root / "data/neuralweb/machine_registry.jsonl")) == 1
     assert len(rows(cortex.path.parent / "hypothesis_inbox.jsonl")) == 1
     assert not rows(cortex.root / "data/trial_ledger.jsonl")
@@ -540,11 +544,13 @@ def test_hardlinked_output_refuses_before_the_real_tool_writer(cortex, monkeypat
     held_no_replay(cortex, monkeypatch)
 
 
-def test_budget_exhausted_without_model_memo_is_a_closed_degraded_result(cortex):
+def test_budget_exhausted_without_model_memo_is_a_closed_acceptance_hold(cortex):
     cortex.cfg["max_tool_calls"] = 1
     call(cortex)
     run = record(cortex)
-    assert run["phase"] == "complete" and len(cortex.native.posts) == 1
+    assert run["phase"] == "held" and not run["business_complete"]
+    assert run["failure"] == "cortex_fabric_memo_not_submitted"
+    assert len(cortex.native.posts) == 1
     status = run["memo"]["document"]["run_status"]
     assert status["degraded"] and status["degradation_reason"] == "memo_not_submitted"
     assert status["close"]["closed"] and status["usage"]["usage_state"] == "known"
@@ -627,5 +633,112 @@ def test_two_real_processes_share_one_claim_and_network_operation(cortex):
             if process is not None and process.poll() is None:
                 process.kill(); process.communicate()
     assert len(cortex.native.posts) == len(cortex.native.rows("leases")) == 1
-    assert record(cortex)["phase"] == "complete"
+    assert record(cortex)["phase"] == "held"
+    assert record(cortex)["failure"] == "cortex_fabric_memo_not_submitted"
+    assert record(cortex)["receipt"]["close"]["closed"]
     assert len(rows(cortex.cost_path)) == 1
+
+
+def assert_closed_without_memo_stays_held(state, monkeypatch):
+    state.responses = [packet()]
+    call(state)
+    run = record(state)
+    assert run["phase"] == "held" and run["business_complete"] is False
+    assert run["failure"] == "cortex_fabric_memo_not_submitted"
+    assert run["receipt"]["close"] == {
+        "disposition": "closed", "closed": True, "effect_unknown": False, "attempted": True}
+    assert run["receipt"]["usage"]["usage_state"] == "known"
+    assert run["projection"]["phase"] == "complete"
+    assert run["memo"]["document"]["run_status"]["degradation_reason"] == "memo_not_submitted"
+    before = state.path.read_bytes()
+    held_no_replay(state, monkeypatch)
+    assert state.path.read_bytes() == before
+
+
+def test_closed_without_memo_does_not_become_a_completed_brain_run(cortex, monkeypatch):
+    assert_closed_without_memo_stays_held(cortex, monkeypatch)
+
+
+def assert_historical_unaccepted_record_stays_fenced(state, monkeypatch, entrypoint):
+    state.cfg["max_tool_calls"] = 1
+    call(state)
+    # Reproduce the prior writer's exact accepted schema: settled transport and
+    # a degraded fallback were historically marked business-complete. This is
+    # retained evidence to classify, never a migration/rewrite request.
+    value = json.loads(state.path.read_text())
+    value["fabric"].update(phase="complete", business_complete=True, failure=None)
+    value["sha256"] = cx._fabric_digest({k: v for k, v in value.items() if k != "sha256"})
+    state.path.write_text(json.dumps(value))
+    original = state.path.read_bytes()
+    memo = (state.path.parent / "memo.json").read_bytes()
+    prior = cx._fabric_read_state(state.root)
+    assert prior == value
+    assert cx._fabric_original_held(prior)
+    before = (len(state.native.posts), list(state.closes), list(state.events),
+              rows(state.cost_path), rows(state.health_path))
+    factory = Mock(side_effect=AssertionError("held predecessor must precede discovery"))
+    monkeypatch.setattr(owner, "make_application_fabric_factory", factory)
+    (state.root / "data/neuralweb/world_state.json").write_text('{"inputs_hash":"changed"}')
+    if entrypoint == "public":
+        state.cfg.clear()
+        monkeypatch.delenv(auth.APPLICATION_MODE_ENV, raising=False)
+        call(state, force=True)
+    elif entrypoint == "selected":
+        with pytest.raises(cx._CortexFabricHold, match="cortex_fabric_original_held"):
+            cx._run_fabric(state.root, state.cfg, "shared_fabric", prior, prior["fabric"]["created_at"])
+    elif entrypoint == "native_save":
+        cx._save_last_run_state(state.root, {
+            "ws_inputs_hash": "changed", "spine_rows": 0, "contradictions_hash": ""})
+    else:
+        successor = copy.deepcopy(prior["fabric"])
+        if entrypoint == "successor":
+            successor["operation_id"] = "cortex:" + "f" * 32
+        elif entrypoint == "same_operation":
+            successor["failure"] = "rewritten_history"
+        assert entrypoint in {"successor", "same_operation", "noop_commit"}
+        with pytest.raises(cx._CortexFabricHold, match="cortex_fabric_original_held"):
+            cx._fabric_commit(state.root, prior, successor)
+    factory.assert_not_called()
+    no_native(state)
+    assert (len(state.native.posts), state.closes, state.events,
+            rows(state.cost_path), rows(state.health_path)) == before
+    assert state.path.read_bytes() == original
+    assert (state.path.parent / "memo.json").read_bytes() == memo
+
+
+@pytest.mark.parametrize("entrypoint", [
+    "public", "selected", "native_save", "successor", "same_operation", "noop_commit"])
+def test_historical_unaccepted_completion_preserves_original_custody(cortex, monkeypatch, entrypoint):
+    assert_historical_unaccepted_record_stays_fenced(cortex, monkeypatch, entrypoint)
+
+
+def assert_acceptance_hold_keeps_final_receipt_validation(state, monkeypatch, corruption):
+    state.cfg["max_tool_calls"] = 1
+    call(state)
+    value = json.loads(state.path.read_text())
+    run = value["fabric"]
+    assert run["phase"] == "held" and run["projection"]["phase"] == "complete"
+    if corruption == "memo_clock":
+        run["memo"]["document"]["as_of"] = "1999-01-01T00:00:00Z"
+        run["memo"]["document_sha256"] = cx._fabric_digest(run["memo"]["document"])
+    elif corruption == "projection_clock":
+        run["projection"]["result"]["as_of"] = "1999-01-01T00:00:00Z"
+    elif corruption == "business_flag":
+        run["business_complete"] = True
+    elif corruption == "memo_digest":
+        run["memo"]["document_sha256"] = "f" * 64
+    value["sha256"] = cx._fabric_digest({k: v for k, v in value.items() if k != "sha256"})
+    state.path.write_text(json.dumps(value))
+    original = state.path.read_bytes()
+    before = (len(state.native.posts), list(state.closes), rows(state.cost_path))
+    with pytest.raises(cx._CortexFabricHold):
+        cx._fabric_read_state(state.root)
+    call(state, force=True)
+    assert state.path.read_bytes() == original
+    assert (len(state.native.posts), state.closes, rows(state.cost_path)) == before
+    no_native(state)
+
+
+@pytest.mark.parametrize("corruption", ["memo_clock", "projection_clock", "business_flag", "memo_digest"])
+def test_closed_acceptance_hold_validates_its_final_receipts(cortex, monkeypatch, corruption):
+    assert_acceptance_hold_keeps_final_receipt_validation(cortex, monkeypatch, corruption)
