@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T17:24:07.495069+00:00",
-  "count": 3309,
+  "generated_at": "2026-11-13T17:39:12.802327+00:00",
+  "count": 3310,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -183,6 +183,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-8ry7l0qskhg-34c260",
+      "title": "Japan Focus of the Week Q3 GDP, October National CPI",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:38:40Z",
+      "summary_points": [
+        "BOJ Rate Hike Timeline Shifted to December: BOJ maintained 1.25% rate, revised hike to December; policy emphasizes monitoring financial conditions over accelerating hikes, directly impacting yen volatility and bond yields.",
+        "Domestic CGPI Surpasses Expectations: CGPI rose +0.7% mom (vs +0.2% exp), largest single-month increase since May, driven by petroleum & coal rebound; signals persistent inflationary pressures beyond core CPI.",
+        "US FOMC Minutes (Nov 18): Critical policy event with potential market impact; Fed’s stance on rates could influence global liquidity, risk assets, and cross-asset correlations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
