@@ -503,6 +503,65 @@ def test_the_canonical_bio_link_is_still_the_one_token_a_bio_may_carry():
     assert validate_bio(_bio(), child_id=CHILD, known_ids={CHILD}) == []
 
 
+# Rejecting a filename-shaped candidate must leave later explicit URLs visible
+# to every consumer of the shared scanner, including the profile-only gates.
+@pytest.mark.parametrize("prefix", [
+    "Node.js", "notes.txt", "setup.exe", "page.html", "payload.json",
+])
+@pytest.mark.parametrize("url", [
+    "https://evil.example/path", "http://evil.example/path", "www.evil.example/path",
+])
+@pytest.mark.parametrize("wrapper", [
+    "{prefix}/{url}", "{prefix}/({url})", "{prefix}/[{url}]", "{prefix}/nested/{url}",
+])
+@pytest.mark.parametrize("surface", ["post", "reply", "quote", "bio", "display_name"])
+def test_rejected_filename_cannot_hide_an_explicit_url(prefix, url, wrapper, surface, personas):
+    text = wrapper.format(prefix=prefix, url=url) + " today"
+    assert links_in_text(text) == [url]
+    if surface in ("post", "reply", "quote"):
+        problems = validate(clean_draft(text, surface), personas[MILA])
+        assert any(f"URL in {surface} text" in p for p in problems), problems
+    elif surface == "bio":
+        problems = validate_bio(f"{_bio()} {text}", child_id=CHILD, known_ids={CHILD})
+        assert any("2 URLs in the bio" in p for p in problems), problems
+    else:
+        problems = validate_bio(_bio(), child_id=CHILD, display_name=text)
+        assert any("display name carries a URL" in p for p in problems), problems
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("notes.txt.http://evil.example/path", "http://evil.example/path"),
+    ("notes.txt.https://evil.example/path", "https://evil.example/path"),
+    ("notes.txt.www.evil.notarealtld/path", "www.evil.notarealtld/path"),
+    ("notes.txt/(evil.example/a/b?x=1)", "evil.example/a/b?x=1"),
+    ("notes.txt/[x.com/handle]", "x.com/handle"),
+    ("notes.txt/(twitter.com/somebody)", "twitter.com/somebody"),
+    ("notes.txt/(t.co/AbCd12)", "t.co/AbCd12"),
+    ("notes.txt/(mastermind-x.com/x/ab12cd34)", "mastermind-x.com/x/ab12cd34"),
+])
+def test_rejected_filename_resumes_with_original_token_context(text, expected):
+    assert links_in_text(text) == [expected]
+
+
+def test_rejected_filename_preserves_link_paths_order_and_deduplication():
+    assert links_in_text(
+        "notes.txt/https://evil.example/a/b?x=1 then x.com/handle "
+        "and https://evil.example/a/b?x=1"
+    ) == ["https://evil.example/a/b?x=1", "x.com/handle"]
+
+
+def test_nested_filename_path_does_not_consume_the_final_explicit_url():
+    text = "/".join(["notes.txt"] * 2000 + ["https://evil.example/path"])
+    assert links_in_text(text) == ["https://evil.example/path"]
+
+
+@pytest.mark.parametrize("text", [
+    "notes.txt/subdir/file.json", "notes.txt/evil.example/path", "notes.txt/a.b@corp.com",
+])
+def test_rejected_filename_preserves_existing_bare_host_boundaries(text):
+    assert links_in_text(text) == []
+
+
 # --- the TLD data file: versioned, sha256-pinned, consumed ------------------
 
 

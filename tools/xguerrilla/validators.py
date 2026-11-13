@@ -107,9 +107,12 @@ _LINK_TOKEN = re.compile(
     r"|www\.[^\s<>\"'`]+"
     r"|(?<![\w.@/-])(?:%s)(?:/[^\s<>\"'`]*)?(?![\w-])"
     r"|(?<![\w.@/-])(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+([a-z]{2,})"
-    r"(?:/[^\s<>\"'`]*)?(?![\w-]))"
+    r"(?![\w-]))"
     % "|".join(re.escape(h) for h in sorted(_BARE_LINK_HOSTS))
 )
+# Consume a general host's path only after its TLD qualifies. A rejected
+# filename must not swallow a real URL later in that same slash-delimited text.
+_LINK_PATH = re.compile(r"/[^\s<>\"'`]*")
 #: Sentence punctuation is not part of a link.
 _TRAILING = ".,;:!?)]}»’\"'"
 
@@ -174,13 +177,26 @@ def links_in_text(text: str) -> list[str]:
     refuse it. Scheme, ``www.`` and the named bare hosts carry no group 1 and
     always count.
     """
+    text = text or ""
     found: list[str] = []
-    for match in _LINK_TOKEN.finditer(text or ""):
+    seen: set[str] = set()
+    cursor = 0
+    while match := _LINK_TOKEN.search(text, cursor):
         tail = match.group(1)
         if tail is not None and not is_tld(tail):
+            # An explicit www./http(s) start can be inside the rejected dotted
+            # header. Keep original-string lookbehind context when resuming.
+            cursor = match.start() + 1
             continue
-        token = match.group(0).strip().rstrip(_TRAILING).strip()
-        if token and token not in found:
+        end = match.end()
+        if tail is not None:
+            path = _LINK_PATH.match(text, end)
+            if path is not None:
+                end = path.end()
+        cursor = end
+        token = text[match.start():end].strip().rstrip(_TRAILING).strip()
+        if token and token not in seen:
+            seen.add(token)
             found.append(token)
     return found
 
