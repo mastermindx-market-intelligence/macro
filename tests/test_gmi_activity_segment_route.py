@@ -2223,3 +2223,219 @@ def test_r9_5_a_stored_activity_span_that_is_not_a_mapping_is_a_disclosure_error
     with pytest.raises(n.DisclosureError) as caught:
         segment.replay_segment_source(snapshot, case.pinned.authority)
     assert caught.value.code == "SOURCE_SPAN_MISMATCH"
+
+
+# ---------------------------------------------------------------------------------------------
+# Fix 9b (ruling 84): only DisclosureError for a malformed span or stored row; invalid UTF-8; comment forms.
+# ---------------------------------------------------------------------------------------------
+_R9B_VALUES = [("none", None), ("true", True), ("float", 1.5), ("str", "x"), ("list", []), ("dict", {}),
+               ("negative", -1), ("huge", 2 ** 80), ("removed", "__REMOVED__")]
+_R9B_PAGE = b"<html><body><p>Revenue 1,234 total</p></body></html>"
+_R9B_START = _R9B_PAGE.index(b"1,234")
+_R9B_SPAN = {"start_byte": _R9B_START, "end_byte": _R9B_START + 5,
+             "text_sha256": hashlib.sha256(_R9B_PAGE[_R9B_START:_R9B_START + 5]).hexdigest()}
+# Every argument and every span key _verify_figure_span reads (``name`` and ``whole_document`` are not
+# read as data: ``name`` is only a label, ``whole_document`` only selects a branch by truthiness).
+_R9B_FIGURE_KEYS = ["span", "span.start_byte", "span.end_byte", "span.text_sha256", "text", "sign", "raw"]
+
+
+def _r9b_figure_call(path, value):
+    args = {"span": dict(_R9B_SPAN), "text": "1,234", "sign": "+", "raw": _R9B_PAGE}
+    head, _, key = path.partition(".")
+    if key:
+        if value == "__REMOVED__":
+            del args[head][key]
+        else:
+            args[head][key] = value
+    elif value == "__REMOVED__":
+        args[head] = None
+    else:
+        args[head] = value
+    n._verify_figure_span("revenue", args["span"], args["text"], args["sign"], args["raw"])
+
+
+def test_r9b_the_valid_figure_input_is_admitted():
+    _r9b_figure_call("text", "1,234")
+
+
+@pytest.mark.parametrize("path", _R9B_FIGURE_KEYS)
+@pytest.mark.parametrize("value", [v for _, v in _R9B_VALUES], ids=[i for i, _ in _R9B_VALUES])
+def test_r9b_a_malformed_figure_span_or_argument_is_only_a_disclosure_error(path, value):
+    with pytest.raises(n.DisclosureError):
+        _r9b_figure_call(path, value)
+
+
+def test_r9b_a_figure_span_with_an_extra_key_is_refused():
+    with pytest.raises(n.DisclosureError) as caught:
+        n._verify_figure_span("revenue", dict(_R9B_SPAN, extra=1), "1,234", "+", _R9B_PAGE)
+    assert caught.value.code == "FIGURE_SPAN_MISMATCH"
+
+
+def test_r9b_a_wrong_type_sign_has_the_sign_code_and_the_others_the_span_code():
+    with pytest.raises(n.DisclosureError) as caught:
+        n._verify_figure_span("revenue", dict(_R9B_SPAN), "1,234", None, _R9B_PAGE)
+    assert caught.value.code == "FIGURE_SIGN_UNSUPPORTED"
+    for span, text, raw in ((None, "1,234", _R9B_PAGE), (dict(_R9B_SPAN), 5, _R9B_PAGE),
+                            (dict(_R9B_SPAN), "1,234", "text")):
+        with pytest.raises(n.DisclosureError) as caught:
+            n._verify_figure_span("revenue", span, text, "+", raw)
+        assert caught.value.code == "FIGURE_SPAN_MISMATCH"
+
+
+# Stored edition and fact keys read by read_source and replay_segment_source.
+_R9B_EDITION_KEYS = ["schema", "disclosure_id", "source_sha256", "source_byte_length", "published_date",
+                     "sec_source"] + ["sec_source." + k for k in (
+                         "snapshot_id", "manifest_key", "document_id", "snapshot_at", "issuer_cik", "accession",
+                         "accepted_at", "recorded_at", "archive_url", "retrieval_receipt_id", "retrieved_at")]
+_R9B_FACT_KEYS = (["schema", "edition", "form_type", "span", "span.start_byte", "span.end_byte", "span.text_sha256",
+                   "figure_spans"] + ["figure_spans." + name for name in n.SEGMENT_FIGURE_NAMES]
+                  + [f"figure_spans.{name}.{key}" for name in n.SEGMENT_FIGURE_NAMES
+                     for key in ("start_byte", "end_byte", "text_sha256")]
+                  + [f"{name}{suffix}" for name in n.SEGMENT_FIGURE_NAMES
+                     for suffix in ("", "_text", "_sign", "_scale")])
+_R9B_NULLABLE = {"figure_spans." + name for name in n.SEGMENT_FIGURE_NAMES}
+_R9B_REPLAY_KEYS = ([("edition", k) for k in _R9B_EDITION_KEYS] + [("fact", k) for k in _R9B_FACT_KEYS])
+
+
+def _r9b_set(container, dotted, value):
+    parts = dotted.split(".")
+    for part in parts[:-1]:
+        container = container[part]
+    if value == "__REMOVED__":
+        del container[parts[-1]]
+    else:
+        container[parts[-1]] = value
+
+
+@pytest.mark.parametrize("value", [v for _, v in _R9B_VALUES], ids=[i for i, _ in _R9B_VALUES])
+@pytest.mark.parametrize("where,key", _R9B_REPLAY_KEYS, ids=[f"{w}.{k}" for w, k in _R9B_REPLAY_KEYS])
+def test_r9b_a_malformed_stored_row_is_only_a_disclosure_error_at_replay(tmp_path, where, key, value):
+    case = _segment_case(tmp_path)
+    spec = copy.deepcopy(case.snapshot.spec)
+    _r9b_set(spec[where], key, value)
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    if where == "fact" and key in _R9B_NULLABLE and value is None:
+        # A figure span of None is the legal absent figure, not a malformed row.
+        assert segment.replay_segment_source(snapshot, case.pinned.authority) is None
+        return
+    with pytest.raises(n.DisclosureError):
+        segment.replay_segment_source(snapshot, case.pinned.authority)
+
+
+@pytest.mark.parametrize("value", [v for _, v in _R9B_VALUES], ids=[i for i, _ in _R9B_VALUES])
+@pytest.mark.parametrize("where", ["edition", "fact", "spec"])
+def test_r9b_a_stored_container_of_any_type_is_only_a_disclosure_error_at_replay(tmp_path, where, value):
+    case = _segment_case(tmp_path)
+    spec = copy.deepcopy(case.snapshot.spec)
+    if where == "spec":
+        if value == "__REMOVED__":
+            value = None
+        snapshot = SimpleNamespace(spec=value, bindings=dict(case.snapshot.bindings))
+    else:
+        _r9b_set(spec, where, value)
+        snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    with pytest.raises(n.DisclosureError):
+        segment.replay_segment_source(snapshot, case.pinned.authority)
+
+
+def test_r9b_the_valid_stored_row_replays(tmp_path):
+    case = _segment_case(tmp_path)
+    assert segment.replay_segment_source(case.snapshot, case.pinned.authority) is None
+
+
+@pytest.mark.parametrize("which,code", [
+    ("span_sha_none", "SOURCE_SPAN_MISMATCH"),
+    ("figures_list", "SOURCE_SPAN_MISMATCH"),
+    ("figures_missing_name", "SOURCE_SPAN_MISMATCH"),
+    ("figure_sha_int", "SOURCE_SPAN_MISMATCH"),
+    ("length_bool", "SOURCE_BYTES_MISMATCH"),
+    ("source_sha_int", "SOURCE_BYTES_MISMATCH"),
+])
+def test_r9b_stored_span_and_source_field_codes(tmp_path, which, code):
+    edits = {
+        "span_sha_none": lambda spec: spec["fact"]["span"].__setitem__("text_sha256", None),
+        "figures_list": lambda spec: spec["fact"].__setitem__("figure_spans", []),
+        "figures_missing_name": lambda spec: spec["fact"]["figure_spans"].pop("revenue"),
+        "figure_sha_int": lambda spec: spec["fact"]["figure_spans"]["revenue"].__setitem__("text_sha256", 1),
+        "length_bool": lambda spec: spec["edition"].__setitem__("source_byte_length", True),
+        "source_sha_int": lambda spec: spec["edition"].__setitem__("source_sha256", 5),
+    }
+    case = _segment_case(tmp_path)
+    spec = copy.deepcopy(case.snapshot.spec)
+    edits[which](spec)
+    with pytest.raises(n.DisclosureError) as caught:
+        segment.replay_segment_source(SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings)),
+                                      case.pinned.authority)
+    assert caught.value.code == code
+
+
+def _r9b_bytes_verify(raw: bytes, marker=b"[[", close=b"]]"):
+    i = raw.index(marker)
+    j = raw.index(close)
+    page = raw[:i] + raw[i + len(marker):j] + raw[j + len(close):]
+    start, end = i, j - len(marker)
+    span = {"start_byte": start, "end_byte": end, "text_sha256": hashlib.sha256(page[start:end]).hexdigest()}
+    n._verify_figure_span("revenue", span, page[start:end].decode("ascii"), "+", page)
+
+
+def _r9b_bytes_refused(raw: bytes):
+    with pytest.raises(n.DisclosureError) as caught:
+        _r9b_bytes_verify(raw)
+    assert caught.value.code == "FIGURE_SPAN_MISMATCH"
+
+
+_R9B_OPEN = _R9_HEAD.replace("~", '"').encode("utf-8")
+_R9B_CLOSE = _R9_TAIL.encode("utf-8")
+
+
+@pytest.mark.parametrize("before", [b"Revenue \xff\xfe ", b"\x80total ", b"Revenue \xc3 ", b"Revenue \xed\xa0\x80 ",
+                                    b"Revenue \xc0\xaf "], ids=["ff_fe", "lone_continuation", "truncated_lead",
+                                                                "surrogate", "overlong"])
+def test_r9b_3_invalid_utf8_before_the_figure_is_refused(before):
+    _r9b_bytes_refused(_R9B_OPEN + b"<p>" + before + b"[[1,234]] \x80total</p>" + _R9B_CLOSE)
+
+
+def test_r9b_3_the_exact_spec_example_is_refused():
+    _r9b_bytes_refused(_R9B_OPEN + b"<p>Revenue \xff\xfe [[1,234]] \x80total</p>" + _R9B_CLOSE)
+
+
+def test_r9b_3_valid_two_and_three_byte_characters_before_the_figure_are_admitted():
+    _r9b_bytes_verify(_R9B_OPEN + "<p>Café €</p><p>Revenue [[1,234]] total</p>".encode("utf-8") + _R9B_CLOSE)
+
+
+def test_r9b_3_invalid_bytes_after_the_scan_limit_are_admitted():
+    _r9b_bytes_verify(_R9B_OPEN + b"<p>Revenue [[1,234]] total</p>" + b"A" * 2100 + b"\xff\xfe\x80" + _R9B_CLOSE)
+
+
+def test_r9b_3_a_character_cut_by_the_scan_limit_is_not_invalid():
+    # The 2,000-byte right window ends inside the three-byte euro sign; the cut tail is not an error.
+    filler = b"A" * 1996
+    _r9b_bytes_verify(_R9B_OPEN + b"<p>Revenue [[1,234]]" + filler + "€".encode("utf-8") + b"</p>" + _R9B_CLOSE)
+
+
+@pytest.mark.parametrize("body", [
+    "<p>Revenue <!-- a --!> [[1,234]] <!-- --> total</p>",
+    "<p>Revenue <!-- a --!> [[1,234]] total</p>",
+    "<!-- a --!><p>Revenue [[1,234]] total</p>",
+    "<p>Revenue --!> [[1,234]] total</p>",
+    "<!-- a -- b --><p>Revenue [[1,234]] total</p>",
+    "<p>Revenue <!-- a -- b --> [[1,234]] total</p>",
+    "<!-- -- --><p>Revenue [[1,234]] total</p>",
+], ids=["spec_example", "bang_close_only", "bang_close_before", "bang_close_in_text", "double_hyphen",
+        "double_hyphen_inline", "double_hyphen_only"])
+def test_r9b_4_a_comment_end_bang_or_a_double_hyphen_comment_body_is_refused(body):
+    _r9_refused(body)
+
+
+@pytest.mark.parametrize("body", [
+    "<p>Revenue <!-- note --> [[1,234]] total</p>",
+    "<p>Revenue <!----> [[1,234]] total</p>",
+    "<!-- one --><!-- two --><p>Revenue [[1,234]] total</p>",
+    "<p>Revenue <!-- a - b --> [[1,234]] total</p>",
+], ids=["plain_comment", "empty_comment", "two_comments", "single_hyphen"])
+def test_r9b_4_an_ordinary_comment_is_admitted(body):
+    _r9_admitted(body)
+
+
+def test_r9b_4_a_double_hyphen_after_the_scan_limit_is_admitted():
+    _r9_admitted("<p>Revenue [[1,234]] total</p><p>" + "A" * 2100 + "</p><!-- a -- b --><!-- c --!>")

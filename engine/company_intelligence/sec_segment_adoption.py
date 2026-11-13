@@ -267,6 +267,25 @@ def qualify_records(code_version, spec_raw, ruling_raw, registry_raw, identities
         owner.digest(n._canonical(rows[0])), row.status.value, n._canonical(identities))
 
 
+def _stored_span_ok(span):
+    """Fix 9b (B2): a stored span is exactly start_byte, end_byte (int, not bool) and text_sha256 (a digest string)."""
+    return (type(span) is dict and set(span) == {'start_byte', 'end_byte', 'text_sha256'}
+            and type(span['start_byte']) is int and type(span['end_byte']) is int
+            and type(span['text_sha256']) is str)
+
+
+def _stored_figure_spans_ok(figure_spans):
+    """Fix 9b (B2): the stored container holds every figure name, each None or an exact span."""
+    return (type(figure_spans) is dict and set(figure_spans) == set(n.SEGMENT_FIGURE_NAMES)
+            and all(value is None or _stored_span_ok(value) for value in figure_spans.values()))
+
+
+def _stored_source_fields_ok(edition):
+    """Fix 9b (B2): the stored source fields compared with the body are a digest and an int (not bool)."""
+    return (type(edition) is dict and type(edition.get('source_sha256')) is str
+            and type(edition.get('source_byte_length')) is int)
+
+
 class PinnedSegmentSource:
     """Existing publication source interface over the exact retained snapshot.
 
@@ -277,16 +296,25 @@ class PinnedSegmentSource:
     def __init__(self, snapshot, authority):
         from engine.fundamental_forensics.filing_attestation import PinnedSourceAuthority
         n._require(type(authority) is PinnedSourceAuthority, 'EXACT_NATIVE_AUTHORITY_REQUIRED')
-        self.edition = snapshot.spec['edition']
-        self.fact = snapshot.spec['fact']
+        spec = snapshot.spec
+        n._require(type(spec) is dict and type(spec.get('edition')) is dict and type(spec.get('fact')) is dict,
+                   'FACT_SPECIES_INVALID')
+        self.edition = spec['edition']
+        self.fact = spec['fact']
         self.authority = authority
-        n._require(self.edition['schema'] == n.SEC_EDITION_SCHEMA, 'SEC_SOURCE_BINDING_MISMATCH')
+        n._require(self.edition.get('schema') == n.SEC_EDITION_SCHEMA, 'SEC_SOURCE_BINDING_MISMATCH')
 
     def read_source(self, **binding):
         from engine.fundamental_forensics.filing_attestation import PinnedSourceAuthority, gzip_stored_byte_ceiling
         from engine.fundamental_forensics.sec_document_spine import manifest_from_json_bytes
-        e = self.edition; s = e['sec_source']
-        n._require(binding == dict(disclosure_id=e['disclosure_id'], edition_reference=n.validate_edition(e),
+        e = self.edition
+        # Fix 9b (B2): every stored value is shape-checked before its first use.
+        n._require(_stored_source_fields_ok(e), 'SOURCE_BYTES_MISMATCH')
+        edition_reference = n.validate_edition(e)
+        n._require(type(e.get('sec_source')) is dict, 'SEC_SOURCE_BINDING_MISMATCH')
+        s = e['sec_source']
+        n._require(_stored_figure_spans_ok(self.fact.get('figure_spans')), 'SOURCE_SPAN_MISMATCH')
+        n._require(binding == dict(disclosure_id=e.get('disclosure_id'), edition_reference=edition_reference,
             source_sha256=e['source_sha256'], expected_byte_length=e['source_byte_length'],
             max_byte_length=n.MAX_SEC_SOURCE_BYTES), 'RETAINED_SOURCE_BINDING_MISMATCH')
         a = PinnedSourceAuthority(store=self.authority._store, snapshot_id=s['snapshot_id'])
@@ -303,7 +331,7 @@ class PinnedSegmentSource:
             and r['byte_length'] == e['source_byte_length'], 'SEC_SOURCE_BINDING_MISMATCH')
         # The annual-report form gate: the pinned manifest's own form must equal
         # the adopted fact's form_type, else the segment fact is not admitted.
-        n._require(m['filing']['form'] == self.fact['form_type'], 'SEGMENT_FORM_NOT_ADMITTED')
+        n._require(m['filing']['form'] == self.fact.get('form_type'), 'SEGMENT_FORM_NOT_ADMITTED')
         read = a.read_archive_document(storage_key=d['storage_key'], expected_receipt=r,
             maximum_bytes=n.MAX_SEC_SOURCE_BYTES,
             maximum_stored_bytes=gzip_stored_byte_ceiling(e['source_byte_length']))
@@ -314,15 +342,16 @@ class PinnedSegmentSource:
         for name in n.SEGMENT_FIGURE_NAMES:
             span = self.fact['figure_spans'][name]
             if span is not None:
-                n._verify_figure_span(name, span, self.fact[f'{name}_text'],
-                                      self.fact[f'{name}_sign'], read.content)
-                text, sign, scale = (self.fact[f'{name}_text'], self.fact[f'{name}_sign'],
-                                     self.fact[f'{name}_scale'])
+                n._verify_figure_span(name, span, self.fact.get(f'{name}_text'),
+                                      self.fact.get(f'{name}_sign'), read.content)
+                text, sign, scale = (self.fact.get(f'{name}_text'), self.fact.get(f'{name}_sign'),
+                                     self.fact.get(f'{name}_scale'))
                 n._require(type(text) is str and n._FIGURE_TEXT.fullmatch(text) is not None
-                           and sign in n.SEGMENT_FIGURE_SIGNS and scale in n.SEGMENT_FIGURE_SCALES,
+                           and type(sign) is str and sign in n.SEGMENT_FIGURE_SIGNS
+                           and type(scale) is str and scale in n.SEGMENT_FIGURE_SCALES,
                            'FIGURE_TEXT_MISMATCH')
                 derived = (-1 if sign == '-' else 1) * int(text.replace(',', '')) * n.SEGMENT_FIGURE_SCALES[scale]
-                n._require(self.fact[name] == derived, 'FIGURE_TEXT_MISMATCH')
+                n._require(self.fact.get(name) == derived, 'FIGURE_TEXT_MISMATCH')
         return read.content
 
 
@@ -334,11 +363,18 @@ def replay_segment_source(snapshot, authority):
     own figure check for one. One bounded read of the pinned document; every
     failure is a ``DisclosureError``.
     """
-    e, f = snapshot.spec['edition'], snapshot.spec['fact']
-    n._require(f['schema'] == n.SEGMENT_FACT_SCHEMA and e['schema'] == n.SEC_EDITION_SCHEMA
-               and f['edition'] == n.validate_edition(e).payload(), 'FACT_SPECIES_INVALID')
+    spec = snapshot.spec
+    n._require(type(spec) is dict and type(spec.get('edition')) is dict and type(spec.get('fact')) is dict,
+               'FACT_SPECIES_INVALID')
+    e, f = spec['edition'], spec['fact']
+    n._require(_stored_source_fields_ok(e), 'SOURCE_BYTES_MISMATCH')
+    n._require(f.get('schema') == n.SEGMENT_FACT_SCHEMA and e.get('schema') == n.SEC_EDITION_SCHEMA
+               and f.get('edition') == n.validate_edition(e).payload(), 'FACT_SPECIES_INVALID')
+    # Fix 9b (B2): every stored value read below is shape-checked before its first use.
+    n._require(_stored_span_ok(f.get('span')), 'SOURCE_SPAN_MISMATCH')
+    n._require(_stored_figure_spans_ok(f.get('figure_spans')), 'SOURCE_SPAN_MISMATCH')
     body = PinnedSegmentSource(snapshot, authority).read_source(
-        disclosure_id=e['disclosure_id'], edition_reference=n.validate_edition(e),
+        disclosure_id=e.get('disclosure_id'), edition_reference=n.validate_edition(e),
         source_sha256=e['source_sha256'], expected_byte_length=e['source_byte_length'],
         max_byte_length=n.MAX_SEC_SOURCE_BYTES)
     n._require(type(body) is bytes and len(body) == e['source_byte_length']
@@ -346,10 +382,8 @@ def replay_segment_source(snapshot, authority):
     span = f['span']
     # Fix 9 (R9-5): stored offsets are int and not bool before any arithmetic or slicing, so no
     # TypeError or ValueError can leave replay for a malformed stored row.
-    n._require(type(span) is dict and all(type(span.get(key)) is int for key in ('start_byte', 'end_byte')),
-               'SOURCE_SPAN_MISMATCH')
     n._require(0 <= span['start_byte'] < span['end_byte'] <= len(body), 'SOURCE_SPAN_MISMATCH')
-    n._require(sha256(body[span['start_byte']:span['end_byte']]).hexdigest() == f['span']['text_sha256'],
+    n._require(sha256(body[span['start_byte']:span['end_byte']]).hexdigest() == span['text_sha256'],
                'SOURCE_SPAN_MISMATCH')
     # Prepare's containment check, repeated: every figure span lies inside the
     # activity span (relative to its start, within the hash-verified span bytes).
@@ -357,9 +391,6 @@ def replay_segment_source(snapshot, authority):
     for name in n.SEGMENT_FIGURE_NAMES:
         figure = f['figure_spans'][name]
         if figure is not None:
-            n._require(type(figure) is dict and all(type(figure.get(key)) is int
-                                                    for key in ('start_byte', 'end_byte')),
-                       'SOURCE_SPAN_MISMATCH')
             n._require(0 <= figure['start_byte'] - span['start_byte']
                        < figure['end_byte'] - span['start_byte'] <= main_len, 'SOURCE_SPAN_MISMATCH')
     return None

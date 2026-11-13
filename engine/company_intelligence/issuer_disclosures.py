@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
+import codecs
 import hashlib
 import html
 import json
@@ -510,6 +511,21 @@ def _figure_r9(raw: bytes, window_lo: int, limit: int) -> None:
             _require(value == _FIGURE_R9_XHTML_NS, "FIGURE_SPAN_MISMATCH")
         else:
             _require(value not in _FIGURE_R9_FOREIGN_NS, "FIGURE_SPAN_MISMATCH")
+    # Fix 9b (B3): invalid UTF-8 anywhere from byte 0 to the scan limit (a multi-byte character cut
+    # by the limit itself is not invalid).
+    try:
+        codecs.getincrementaldecoder("utf-8")("strict").decode(raw[:limit])
+    except UnicodeDecodeError:
+        raise DisclosureError("FIGURE_SPAN_MISMATCH") from None
+    # Fix 9b (B4): the comment end ``--!>``, and a comment whose body holds ``--``, from byte 0 to the limit.
+    _require(raw.find(b"--!>", 0, limit + 3) < 0, "FIGURE_SPAN_MISMATCH")
+    at = raw.find(b"<!--", 0, limit)
+    while at >= 0:
+        close = raw.find(b"-->", at + 4)
+        if close < 0:
+            break
+        _require(raw.find(b"--", at + 4, min(close, limit)) < 0, "FIGURE_SPAN_MISMATCH")
+        at = raw.find(b"<!--", close + 3, limit)
     # R9-6 (A4): a declared encoding other than UTF-8 or ASCII, and an ESC byte, before the scan limit.
     _require(raw.find(b"\x1b", 0, limit) < 0, "FIGURE_SPAN_MISMATCH")
     declared = _FIGURE_R9_XMLDECL_ENC.match(raw, bom, limit)
@@ -1020,11 +1036,17 @@ def _verify_figure_span(name: str, span: dict, text: str, sign: str, raw: bytes,
     meaning of nearby words ("loss", "credit"), the stated scale, and invisibility
     produced by a style sheet class or by CSS other than the three forms above.
     """
+    # Fix 9b (B1): every argument is shape-checked before its first use, so only a DisclosureError
+    # can leave for a malformed span, text, sign or page.
+    _require(type(span) is dict and set(span) == {"start_byte", "end_byte", "text_sha256"}
+             and type(span["start_byte"]) is int and type(span["end_byte"]) is int
+             and type(span["text_sha256"]) is str, "FIGURE_SPAN_MISMATCH")
+    _require(type(raw) is bytes and type(text) is str, "FIGURE_SPAN_MISMATCH")
+    _require(type(sign) is str, "FIGURE_SIGN_UNSUPPORTED")
     start, end = span["start_byte"], span["end_byte"]
-    _require(type(raw) is bytes and type(start) is int and type(end) is int
-             and 0 <= start < end <= len(raw), "FIGURE_SPAN_MISMATCH")
+    _require(0 <= start < end <= len(raw), "FIGURE_SPAN_MISMATCH")
     _require(hashlib.sha256(raw[start:end]).hexdigest() == span["text_sha256"], "FIGURE_SPAN_MISMATCH")
-    _require(type(text) is str and _FIGURE_TEXT.fullmatch(text) is not None, "FIGURE_SPAN_MISMATCH")
+    _require(_FIGURE_TEXT.fullmatch(text) is not None, "FIGURE_SPAN_MISMATCH")
     if not whole_document:
         first = re.search(rb"[<>]", raw)
         _require(first is None or first.group(0) == b"<", "FIGURE_SPAN_MISMATCH")
