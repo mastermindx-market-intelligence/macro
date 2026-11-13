@@ -1,7 +1,7 @@
 {
   "schema": "altdata.mastermind.v1",
-  "as_of": "2026-11-12",
-  "generated_utc": "2026-11-12T08:02:31.690622+00:00",
+  "as_of": "2026-11-13",
+  "generated_utc": "2026-11-13T04:57:22.887668+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
   "regime_read": "The strongest measured convergence sits in enterprise technology and semiconductors, but several signals face near-term earnings risk and the track record has only two scored observations. IBM and MU offer the cleanest non-extended alignment; MSFT has credible convergence but is already extended.",
   "brain_present": true,
@@ -21,7 +21,7 @@
     "note": "12 scored, hit-rate 0.833 (directional accuracy 0.833)."
   },
   "n_signals": 75,
-  "n_broken": 40,
+  "n_broken": 41,
   "signals": [
     {
       "ticker": "IBM",
@@ -92,7 +92,7 @@
       "off_high_252": -6.3,
       "ret_20d": 4.8,
       "above_50dma": true,
-      "entry_tier": "T2",
+      "entry_tier": null,
       "affiliations": [
         {
           "actor": "Nancy Pelosi",
@@ -144,7 +144,7 @@
       "off_high_252": 0.0,
       "ret_20d": 3.7,
       "above_50dma": true,
-      "entry_tier": null,
+      "entry_tier": "T1",
       "affiliations": [
         {
           "actor": "Dan Crenshaw",
@@ -703,7 +703,7 @@
       "off_high_252": -24.5,
       "ret_20d": 2.0,
       "above_50dma": true,
-      "entry_tier": "T2",
+      "entry_tier": null,
       "affiliations": [
         {
           "actor": "Bill Ackman",
@@ -767,7 +767,7 @@
       "off_high_252": -27.1,
       "ret_20d": -1.7,
       "above_50dma": true,
-      "entry_tier": null,
+      "entry_tier": "T2",
       "affiliations": [],
       "n_affiliated_actors": 0,
       "thesis": null,
@@ -1049,17 +1049,18 @@
   "broken_signals": [
     {
       "ticker": "META",
-      "signal_score": 60,
+      "signal_score": 74,
       "conviction": "high",
       "action": "WATCH",
       "direction": "neutral",
       "source": "deterministic",
-      "weighted_score": 1.45,
-      "convergence_score": 5,
+      "weighted_score": 2.0,
+      "convergence_score": 6,
       "channels": [
         "affiliation",
         "github_momentum",
         "lobbying",
+        "material_8k",
         "special_situation",
         "stocktwits_bull"
       ],
@@ -1287,42 +1288,6 @@
         }
       ],
       "n_affiliated_actors": 2,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "BAC",
-      "signal_score": 42,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.45,
-      "convergence_score": 3,
-      "channels": [
-        "affiliation",
-        "material_8k",
-        "patent_cluster"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -20.0,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -21.4,
-      "ret_20d": -1.4,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Warren Buffett",
-          "rel": "AFFILIATES_WITH",
-          "kind": "fund"
-        }
-      ],
-      "n_affiliated_actors": 1,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -1741,9 +1706,44 @@
       "off_high_252": -22.6,
       "ret_20d": -8.0,
       "above_50dma": false,
-      "entry_tier": null,
+      "entry_tier": "T2",
       "affiliations": [],
       "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "BAC",
+      "signal_score": 24,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.9,
+      "convergence_score": 2,
+      "channels": [
+        "affiliation",
+        "patent_cluster"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -20.0,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -21.4,
+      "ret_20d": -1.4,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Warren Buffett",
+          "rel": "AFFILIATES_WITH",
+          "kind": "fund"
+        }
+      ],
+      "n_affiliated_actors": 1,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -1798,6 +1798,35 @@
       "rolling_over": true,
       "off_high_252": -43.3,
       "ret_20d": -19.5,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "MRVL",
+      "signal_score": 22,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.9,
+      "convergence_score": 2,
+      "channels": [
+        "analyst_upgrade_cluster",
+        "material_8k"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -21.1,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -46.6,
+      "ret_20d": -31.2,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],
@@ -2079,41 +2108,6 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "DJT",
-      "signal_score": 16,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.7,
-      "convergence_score": 2,
-      "channels": [
-        "affiliation",
-        "special_situation"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -34.9,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -67.7,
-      "ret_20d": -28.1,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Eric Trump",
-          "rel": "CONTROLS",
-          "kind": "trump_family"
-        }
-      ],
-      "n_affiliated_actors": 1,
       "thesis": null,
       "second_order": [],
       "falsifier": null,

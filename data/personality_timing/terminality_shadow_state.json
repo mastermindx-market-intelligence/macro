@@ -8,7 +8,7 @@
  "may_gate": false,
  "may_alert": false,
  "as_of": "2026-11-12",
- "generated_utc": "2026-11-12T08:01:12.471953+00:00",
+ "generated_utc": "2026-11-12T10:26:31.144219+00:00",
  "gate_open": true,
  "artifact_ok": true,
  "train_end": "2022-12-31",

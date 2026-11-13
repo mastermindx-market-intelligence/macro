@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-11-11",
-  "generated_at": "2026-11-11T12:44:10Z",
+  "as_of": "2026-11-12",
+  "generated_at": "2026-11-12T14:02:07Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -28,10 +28,10 @@
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-11",
+      "as_of": "2026-11-12",
       "thesis_id": "ai_semiconductors.v1",
       "content_hash": "sha256:4f16dbeab5c8cd255729f78342334565e644dfec4c40187c2ebfb47be02ea111",
-      "prev_content_hash": "sha256:891dab00ca7f67fb49cfd06420524241d54f7cd4de3ea57182cf1a1e781215ab",
+      "prev_content_hash": "sha256:a3270377788d5ae1cae92986acd5bb1a9f4db92fd9800101a3fa14059db0338f",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -150,10 +150,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-11",
+      "as_of": "2026-11-12",
       "thesis_id": "memory_storage.v1",
       "content_hash": "sha256:1114b7c7a9b047106cfbc68acd4703db48e87492358d1c90e9a743c9fb638fe7",
-      "prev_content_hash": "sha256:2466d97fd9eeab9c2cad9ccff34983b6724eb5e719dca6639dfa3001e12722f6",
+      "prev_content_hash": "sha256:165d348472a67e146822e9f9806f14f075b6db15fe5442467708c8b8f1897b80",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -252,10 +252,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-11",
+      "as_of": "2026-11-12",
       "thesis_id": "semicap_equipment.v1",
       "content_hash": "sha256:19d520def28738c9f90f60d1848ee337c42e1cb990db9d666ed637be709a00fa",
-      "prev_content_hash": "sha256:18df6f639dec7e976f3d2399ac67591ba74c95db670e9ac87cd733ed03827359",
+      "prev_content_hash": "sha256:ace00482064fa2a9be0b622a2005c201844cb33c9f34e428c691217808439668",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -337,10 +337,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-08",
+      "as_of": "2026-11-12",
       "thesis_id": "data_center_power.v1",
       "content_hash": "sha256:5f97520209155edd403665af2bc57b6c8ade7498627f237cd289d6a0c72e7717",
-      "prev_content_hash": "sha256:00d7f10d269615e8b0dd09b46e5a74d9d9ef49c273d62bcec8243b3a4b53bf35",
+      "prev_content_hash": "sha256:26d7b60c44eabe2cb7cd4c7c287fcf2bead933d3d31288b2f397696004bb847b",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -503,10 +503,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-11",
+      "as_of": "2026-11-12",
       "thesis_id": "robotics_automation.v1",
-      "content_hash": "sha256:4e75180ec576949469d26bc82e777101f83a4709f6ae05b83a442f755caf8a4a",
-      "prev_content_hash": "sha256:ae997d6d4346dac08db48a0de31286f4094ee60497bad03ca5871d2ec45865b2",
+      "content_hash": "sha256:e25e9f734d1df0743ccd9d7798ed2ee3bfb05261a76e9c69c9f87ccca71d8028",
+      "prev_content_hash": "sha256:4e75180ec576949469d26bc82e777101f83a4709f6ae05b83a442f755caf8a4a",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -572,7 +572,7 @@
           "rule_en": "If reshoring basket score falls below 30 or moves to 'avoid' label, the industrial-capex driver underpinning automation demand is weakening.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=39.0"
+          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=46.0"
         },
         {
           "id": "robo_f3",
@@ -592,10 +592,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-11",
+      "as_of": "2026-11-12",
       "thesis_id": "fintech_payments.v1",
       "content_hash": "sha256:0b2b12e59c6891fcabfd09a2c4f79be5caf38b3a1c2f08f2c728d76dd4259a77",
-      "prev_content_hash": "sha256:d32e24bbd3f0405afb3be338c9f4859122d430b33c0fbd131590ee70579d248b",
+      "prev_content_hash": "sha256:0caaa8cd8c69561badc89656322fd646aebd1341b62b19cd797a7e2b4284e753",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -930,10 +930,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-11",
+      "as_of": "2026-11-12",
       "thesis_id": "defense_aerospace.v1",
       "content_hash": "sha256:117738e579b5e16ffe258dc39e883a2636a1b2d7017ceca115f1c108b4a700f4",
-      "prev_content_hash": "sha256:fbcb62a7c90cae52695536246ae9d22f4535b3088de50f959b9e947047d92631",
+      "prev_content_hash": "sha256:1efe0efc20eb451554cce2cf85f6d4bc53a61851d47fa7a1291264134a504b6e",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1187,10 +1187,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-11",
+      "as_of": "2026-11-12",
       "thesis_id": "diagnostics_lifesci.v1",
       "content_hash": "sha256:7c2fe6f8a8ecbf311988446ef4c15abc33b5818d1715f85a6555c9c51e26f7f3",
-      "prev_content_hash": "sha256:9c3a971c898751add3e92c9d50cdbf6978364808b31fdb714fc23b89a9740034",
+      "prev_content_hash": "sha256:3a26c188acdc829b8204b3bb9a103c705cbc3a4705b82ca84b6da8a31cfbaf36",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1264,10 +1264,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-09",
+      "as_of": "2026-11-12",
       "thesis_id": "rare_earth_critical_min.v1",
       "content_hash": "sha256:c27242f010dc3c7e7172546a4657a39f0dd8d654e478a85ba883b7142ba77d2b",
-      "prev_content_hash": "sha256:7a5220192fdcd80ee69aa3aa3d63d7e61b5fa2147f22e97a9c940ca3f2c226cd",
+      "prev_content_hash": "sha256:f43311eb9dc79387c58cc12f758d3b473c3222b6599ccbe3a7189161d1fc4fa9",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1495,10 +1495,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-11",
+      "as_of": "2026-11-12",
       "thesis_id": "space_satellite.v1",
       "content_hash": "sha256:e680a3045366736f66debc528dfed976578a8ddd3730dadf53be612141e4cb78",
-      "prev_content_hash": "sha256:91b420832e439cec7d7b47546b0acff7f82b8cfc445ef2d0c8dc5bcea786504f",
+      "prev_content_hash": "sha256:6557d3fcb464b0d87f6d2e1f45e23450d6b72868ac40abb49649554cdeef1d4c",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1573,7 +1573,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-11-11T12:44:10Z",
-  "inputs_hash": "sha256:89b6ee16e9d409593ac40eca6d9c6b2b18533bc8d18521bc815f1ae41c3f9d0d",
+  "produced_at": "2026-11-12T14:02:07Z",
+  "inputs_hash": "sha256:e0bfb4cc6ee097e89312bc3696254073ea8cd528e83a828be2e1cf01f9b86193",
   "tier": "display"
 }

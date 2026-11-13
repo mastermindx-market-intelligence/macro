@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-11-11",
+  "as_of": "2026-11-12",
   "universe_coverage": {
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-12",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -62,6 +62,14 @@
         "id": "mantle",
         "source": "CoinGecko",
         "as_of": "2026-10-01",
+        "reason": "OLDER_SNAPSHOT"
+      },
+      {
+        "file": "market_ondo.parquet",
+        "symbol": "ONDO",
+        "id": "ondo-finance",
+        "source": "CoinGecko",
+        "as_of": "2026-11-11",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -170,15 +178,15 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-11-11",
+      "as_of": "2026-11-12",
       "eligible": 44,
       "required": 10,
       "excluded": 6,
-      "positive": 9,
+      "positive": 5,
       "denominator": 44,
       "basis": "reported_30d_return_positive",
       "available": true,
-      "value": 20,
+      "value": 11,
       "state": "Narrow",
       "tone": "bear",
       "state_zh": "狭窄"
@@ -539,8 +547,8 @@
         "to_label_en": "direct total",
         "to_label_zh": "直接总量",
         "support_before": 1,
-        "support_after": 1,
-        "level_ratio": 1.133710717938818,
+        "support_after": 2,
+        "level_ratio": 0.9965644771969134,
         "regime_treatment": "continuity_adjusted"
       }
     ]
@@ -578,13 +586,13 @@
       "trend": "Fading",
       "risk": "Stressed",
       "relative": "Lagging Bitcoin",
-      "coverage": "3,816 daily observations from Coinbase daily OHLCV."
+      "coverage": "3,817 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
       "trend": "Fading",
       "risk": "Stressed",
       "relative": "Lagging Bitcoin",
-      "coverage": "1,974 daily observations from Coinbase daily OHLCV."
+      "coverage": "1,975 daily observations from Coinbase daily OHLCV."
     }
   }
 }
