@@ -93,7 +93,16 @@ def test_mixed_refresh_preserves_old_row_and_admits_new_deal(calendar_io, old, n
     pd.testing.assert_series_equal(result.loc["one"], before.loc["one"], check_dtype=False)
     assert result.loc["two", "status"] == "priced"
     assert result.loc["two", "company"] == "New Listing"
-    pd.testing.assert_frame_equal(result, ic.load_calendar(), check_dtype=False)
+    loaded = ic.load_calendar()
+    # Parquet may normalize None/NaN and pandas 3 distinguishes those sentinels.
+    # Prove missing-cell locations independently, then compare every known value.
+    pd.testing.assert_frame_equal(result.isna(), loaded.isna())
+    pd.testing.assert_frame_equal(
+        result.astype(object).where(result.notna(), None),
+        loaded.astype(object).where(loaded.notna(), None),
+        check_dtype=False,
+        check_exact=True,
+    )
 
 
 def test_rejected_demotion_preserves_recent_listing_and_pipeline(calendar_io):
