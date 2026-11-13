@@ -32,7 +32,7 @@ import json
 import logging
 import os
 import sys
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -249,6 +249,9 @@ def main() -> int:
     site_out = root / site_dir_name / "event_windows"
     site_out.mkdir(parents=True, exist_ok=True)
     snap_path = site_out / "snapshot.json"
+    from engine.release_surprise_confirmation import read_consumer_context
+    snap["macro_surprise_context"] = read_consumer_context(
+        root, consumer="event_windows", asof=datetime.now(timezone.utc).isoformat())
     snap_path.write_text(json.dumps(snap, separators=(",", ":"), default=float))
     log.info(
         "build_event_windows: snapshot written — phase=%s collisions=%s asof=%s",

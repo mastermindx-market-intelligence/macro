@@ -4461,6 +4461,10 @@ def build(root: Path, dry_run: bool = False) -> dict:
         else "shadow_candidate_withheld_no_valid_current_projection"
     )
 
+    # Descriptive PIT surprise evidence, independent of experimental model points.
+    from engine.release_surprise_confirmation import build_confirmation_artifact
+    surprise_confirmation = build_confirmation_artifact(root, asof=asof_utc)
+
     # 10. Assemble latest.json artifact (schema release_forecast.v2)
     accuracy_claim = "withheld_until_clean_aligned_forward_evidence"
     latest = {
@@ -4492,10 +4496,12 @@ def build(root: Path, dry_run: bool = False) -> dict:
             ),
         },
         "last_scored_all_forward": last_scored_all_forward,
+        "surprise_confirmation": surprise_confirmation,
         "enrichments": [
             "surprise_distribution", "market_implied", "reaction_sensitivity",
             "quirk_flags", "expectation_read", "coverage_flags", "input_snapshot_ref",
             "shadows", "coherent_ridge_v1", "cutoff_label",
+            "surprise_confirmation",
             # W11-G additions
             "print_integrity", "revision_context",
             # MRI-R40: combined_v1 combination layer

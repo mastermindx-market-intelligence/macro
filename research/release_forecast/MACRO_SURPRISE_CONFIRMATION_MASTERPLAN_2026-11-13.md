@@ -44,3 +44,18 @@ The current MRI builder explicitly reports `street_consensus: unavailable`. Exis
 ## Evidence and continuation
 
 This branch is implementation evidence, not adopted organizational state. Until the existing Agent OS writer links it, mark `PLAN_NOT_ORG_LINKED`. Initial source save must be read back before construction; record subsequent material results here and in the existing owner's dated handoff without per-tool paperwork. The next source step is MSC.2 with the resolved MRI input contract, then its actual consumer integrations. No new watcher, external worker, deployment, or trade has been started by this plan.
+
+## Implementation milestone - 2026-11-13
+
+MSC.1 incumbent recovery and MSC.2 typed PIT joins are implemented. MSC.3 has an executable exact-session outcome adapter, full-family time-block/ Holm diagnostics, close-tail risk and purged train-only-scaled fixed-ridge challenger. MSC.4 is wired into the original MRI producer, Event Windows and Sector Central; Prophet is an explicit `include_macro_context=true|false` extension on its existing authenticated endpoint, with the default closed response shape unchanged. Release Radar markup/renderer is present; browser acceptance is next. MSC.5 includes ingestion and study CLIs that reuse the existing receipt append and TrialLedger owners. No live source, trial ledger or deployment was modified by tests.
+
+Observed checks:
+- 52 new join/statistics contract tests passed (synthetic fixtures only).
+- Focused new + affected incumbent suites: 265 passed, 7 skipped, 5 warnings. Skips/warnings are not promoted to evidence; their cause remains to be classified before delivery.
+- Real fixture producer/reader, ingestion/trial, optional route integration: 114 passed, 5 warnings in the subsequent focused run.
+- MRI fixture writer produced byte-identical latest/site artifacts; all four readers returned the same evidence digest.
+- Native Prophet fixture verifies identical candidate contents/source bytes and legacy response shape when enrichment is omitted.
+
+New modules are descriptive only. Core PPI stays unsupported because the canonical actual owner has no such target. Missing street-consensus history remains missing; no published Alphatica results or fabricated data were used to establish an edge. Historical reproduction, prospective validation and production deployment are NOT proven by these tests.
+
+Next: browser/freshness/error-state proof, full scientific adversarial self-check, protocol/runbook and existing Agent OS linkage, affected binding CI and Ready PR through the permitted repository release controller. Preserve the original operation/branch; do not reacquire or reroute it.

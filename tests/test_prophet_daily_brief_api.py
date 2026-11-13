@@ -456,3 +456,24 @@ def test_busy_reader_does_not_replace_invalid_query_response(client, route, monk
     assert response.status_code == 400
     assert response.json() == {"error": "INVALID_QUERY"}
     private(response)
+
+
+@pytest.mark.parametrize("value,expected", [("true", True), ("false", False)])
+def test_macro_context_extension_is_explicit_and_typed(value, expected):
+    from starlette.requests import Request
+    from app.prophet_daily_brief import _query
+    request = Request({"type": "http", "query_string": _query_string_for_macro(value)})
+    assert _query(request)["include_macro_context"] is expected
+
+
+def _query_string_for_macro(value):
+    return _query({**GOOD, "include_macro_context": value})[1:].encode()
+
+
+@pytest.mark.parametrize("value", ["1", "TRUE", "", "yes", "../../private"])
+def test_macro_context_extension_refuses_nonboolean_grammar(value):
+    from starlette.requests import Request
+    from app.prophet_daily_brief import _query as parse_query, DailyBriefQueryError
+    request = Request({"type": "http", "query_string": _query_string_for_macro(value)})
+    with pytest.raises(DailyBriefQueryError):
+        parse_query(request)
