@@ -58,6 +58,25 @@ def valid_session(cookie: str | None) -> bool:
         return False
 
 
+def refreshed_session(cookie: str | None) -> str | None:
+    """Extend a valid signed session at most daily; never revive an expired token.
+
+    Cookie Max-Age alone is not auth renewal: the signed expiry must advance.
+    Existing signed sessions remain valid if ADMIN_SESSION_SECRET is unchanged.
+    """
+    if not valid_session(cookie):
+        return None
+    try:
+        body = cookie.split(".", 1)[0]
+        issued = int(json.loads(_b64d(body)).get("iat", 0))
+    except (ValueError, TypeError, KeyError):
+        return None
+    now = int(time.time())
+    ttl_seconds = settings.session_ttl_hours() * 3600
+    refresh_after = min(24 * 3600, max(1, ttl_seconds // 2))
+    return mint_session() if now - issued >= refresh_after else cookie
+
+
 def new_csrf() -> str:
     return secrets.token_urlsafe(24)
 

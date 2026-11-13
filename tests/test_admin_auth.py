@@ -70,6 +70,36 @@ def test_session_expiry():
         _restore(old)
 
 
+def test_session_rolling_refresh_and_expiration():
+    from unittest.mock import patch
+    old = _set_env(ADMIN_SESSION_SECRET="rolling-secret", ADMIN_SESSION_TTL_HOURS="720")
+    try:
+        with patch("admin.auth.time.time", return_value=1_800_000_000):
+            original = auth.mint_session()
+            assert auth.refreshed_session(original) == original
+        with patch("admin.auth.time.time", return_value=1_800_000_000 + 86401):
+            renewed = auth.refreshed_session(original)
+            assert renewed is not None and renewed != original
+            assert auth.valid_session(renewed)
+        with patch("admin.auth.time.time", return_value=1_800_000_000 + 720 * 3600 + 1):
+            assert auth.refreshed_session(original) is None
+        with patch("admin.auth.time.time", return_value=1_800_000_000 + 86401):
+            assert auth.refreshed_session(original + "tamper") is None
+        _set_env(ADMIN_SESSION_SECRET="rotated-secret")
+        with patch("admin.auth.time.time", return_value=1_800_000_000 + 86401):
+            assert auth.refreshed_session(original) is None
+    finally:
+        _restore(old)
+
+
+def test_default_session_ttl_is_rolling_30_days():
+    old = _set_env(ADMIN_SESSION_TTL_HOURS=None)
+    try:
+        assert settings.session_ttl_hours() == 720
+    finally:
+        _restore(old)
+
+
 def test_password_and_lockout():
     old = _set_env(ADMIN_PASSWORD="hunter2")
     _reset_throttle()
@@ -546,6 +576,32 @@ def test_session_check_promotes_only_a_valid_deployed_session_to_parent_domain()
         assert legacy["httponly"] is True
         assert legacy["max-age"] == "0"
         assert all(m.key != auth.CSRF_COOKIE for m in promoted)
+    finally:
+        httpd.shutdown(); httpd.server_close()
+        _restore(old)
+
+
+def test_session_endpoint_renews_old_signed_token_without_changing_csrf():
+    from unittest.mock import patch
+    old = _set_env(ADMIN_DEPLOYED="1", ADMIN_PASSWORD="s3cret",
+                   ADMIN_SESSION_SECRET="renewal-secret", ADMIN_SESSION_TTL_HOURS="720")
+    httpd, port = _server()
+    try:
+        now = 1_800_000_000
+        with patch("admin.auth.time.time", return_value=now):
+            previous = auth.mint_session()
+        with patch("admin.auth.time.time", return_value=now + 86401):
+            response = _req(port, "/api/session", cookies={auth.SESSION_COOKIE: previous})
+            assert json.loads(response.read())["authenticated"] is True
+            cookies = _response_cookies(response)
+            assert len(cookies) == 2
+            shared, old_host = cookies
+            assert shared.value != previous
+            assert shared["domain"] == "mastermind-x.com"
+            assert shared["max-age"] == str(720 * 3600)
+            assert old_host.value == ""
+            assert auth.valid_session(shared.value)
+            assert all(cookie.key != auth.CSRF_COOKIE for cookie in cookies)
     finally:
         httpd.shutdown(); httpd.server_close()
         _restore(old)

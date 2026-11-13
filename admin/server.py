@@ -844,7 +844,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self._file("index.html")
             if path == "/assets/theme-tokens.css":
                 return self._theme_tokens_file()
-            if path in ("/app.js", "/styles.css", "/preferences.js", "/capacity-router.js", "/capacity-router.css"):
+            if path in ("/app.js", "/styles.css", "/preferences.js", "/capacity-router.js", "/capacity-router.css", "/session-keepalive.js"):
                 return self._file(path.lstrip("/"))
             if path == "/research-diagnostic-tokens.css":
                 from .research_diagnostic_tokens import stylesheet
@@ -872,12 +872,11 @@ class Handler(BaseHTTPRequestHandler):
                                    "deployed": settings.deployed()})
             if path == "/api/session":
                 auth_enabled = settings.auth_enabled()
-                authenticated = (not auth_enabled) or self._authed()
+                session = auth.refreshed_session(self._cookie_val(auth.SESSION_COOKIE)) if auth_enabled else None
+                authenticated = (not auth_enabled) or session is not None
                 cookies = None
                 if settings.deployed() and auth_enabled and authenticated:
-                    cookies = self._promote_session_cookie(
-                        self._cookie_val(auth.SESSION_COOKIE) or ""
-                    )
+                    cookies = self._promote_session_cookie(session)
                 return self._json({
                     "auth_enabled": auth_enabled,
                     "authenticated": authenticated,
