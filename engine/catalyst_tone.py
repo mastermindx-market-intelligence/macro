@@ -490,10 +490,19 @@ def _call_model(source_text: str, context: str, cfg: dict) -> tuple[str | None, 
     # digest.
     if _fabric_enabled():
         try:
-            return _fabric_call(source_text, context, cfg)
+            text, reason = _fabric_call(source_text, context, cfg)
         except fabric_client.FabricUnavailable as e:
             log.warning(
                 "catalyst_tone: fabric router unavailable (%s); using the legacy ladder", e)
+        else:
+            # W7 #33 determinism: the reply cache is keyed on the PROMPT, and both
+            # paths send the same bytes (_user_prompt), so a fabric reply must be
+            # cached exactly like a legacy one. Returning early without this would
+            # re-call the model for the same document on the same day and could
+            # yield a DIFFERENT graded record — the very drift the cache prevents.
+            if text:
+                _reply_cache_put(phash, text, cfg)
+            return text, reason
     client = _client(cfg)
     if client is None:
         return None, "no_client_or_key"

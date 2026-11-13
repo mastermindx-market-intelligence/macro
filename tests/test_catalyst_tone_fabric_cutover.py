@@ -310,6 +310,44 @@ def test_no_token_means_fabric_never_called(monkeypatch, cfg):
 
 
 # --------------------------------------------------------------------------- #
+# W7 #33 determinism: a fabric reply is cached exactly like a legacy reply
+#
+# Graded fields (tone_score -> ledger, shock_reversible -> spvector veto) MUST be
+# reproducible for the same document on the same day. The cache is keyed on the
+# PROMPT, and both paths send identical bytes, so skipping the cache write on the
+# fabric path would re-call the model every run and allow drift.
+# --------------------------------------------------------------------------- #
+def test_fabric_reply_is_written_to_the_reply_cache(fabric_on, cfg):
+    text, reason = ct._call_model(_DOC, "ctx", cfg)
+    assert reason == "fabric"
+    phash = ct._prompt_hash(ct._extraction_model(cfg), ct.CATALYST_SYSTEM,
+                            ct._user_prompt(_DOC, "ctx"))
+    assert ct._reply_cache_get(phash, cfg) == text
+
+
+def test_second_same_document_call_is_a_cache_hit_not_a_second_fabric_call(
+        fabric_on, cfg):
+    first, _ = ct._call_model(_DOC, "ctx", cfg)
+    second, reason = ct._call_model(_DOC, "ctx", cfg)
+    assert second == first
+    assert reason is None            # cache HIT, no degraded reason
+    assert len(fabric_on) == 1       # exactly one model call for the same document
+
+
+def test_failed_fabric_call_writes_no_cache_entry(monkeypatch, cfg):
+    """A refusal / empty / error must not poison the cache with a bad reply."""
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete", lambda messages, **kw: _completion(""))
+    monkeypatch.delenv("MACRO_CATALYST_TONE_FABRIC", raising=False)
+
+    text, reason = ct._call_model(_DOC, "ctx", cfg)
+    assert text is None and reason == "empty_reply"
+    phash = ct._prompt_hash(ct._extraction_model(cfg), ct.CATALYST_SYSTEM,
+                            ct._user_prompt(_DOC, "ctx"))
+    assert ct._reply_cache_get(phash, cfg) is None
+
+
+# --------------------------------------------------------------------------- #
 # the shared tolerant parser is untouched by this cutover
 # --------------------------------------------------------------------------- #
 def test_extract_json_behavior_unchanged():
