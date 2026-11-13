@@ -4405,3 +4405,113 @@ class TestContentReviewReads:
         assert marketing._content_revision({"a": 1, "b": 2}) == marketing._content_revision({"b": 2, "a": 1})
         assert marketing._content_revision({"a": 1}) != marketing._content_revision({"a": 2})
         assert marketing._content_chart_metadata({"id": 42, "svg": "<svg/>"})["preview_available"] is False
+
+
+class TestPublishingEvidence:
+    """Provider acceptance, public confirmation and original-copy age differ."""
+
+    @pytest.mark.parametrize("url", [
+        "https://x.com:0/desk/status/123", "https://x.com:443/desk/status/123",
+        "https://x.com:bad/desk/status/123", "https://user@x.com/desk/status/123",
+        "http://x.com/desk/status/123", "https://x.com.evil.test/desk/status/123",
+        "https://buffer.com/desk/status/123", "javascript:alert(1)",
+        "https://x.com/desk/status/1٥", "https://x.com/desk/status/0",
+    ])
+    def test_only_public_x_permalinks_qualify(self, url):
+        from admin.marketing_evidence import x_permalink
+        assert x_permalink(url) is None
+
+    def test_receipt_states_and_timezones(self):
+        from datetime import datetime, timezone
+        from admin.marketing_evidence import delivery_evidence
+        rec = {"backend": "buffer", "external_id": "provider-1", "booked_at": "2026-11-13T04:00:00Z"}
+        for now in (datetime(2026, 11, 13, 3), datetime(2026, 11, 13, 3, tzinfo=timezone.utc),
+                    datetime.fromisoformat("2026-11-12T19:00:00-08:00")):
+            assert delivery_evidence("posted", rec, now=now)["state"] == "scheduled"
+        assert delivery_evidence("posted", rec, now=datetime(2026, 11, 14))["state"] == "accepted"
+        assert delivery_evidence("posted", {})["state"] == "unconfirmed"
+        rec["external_url"] = "https://twitter.com/desk/status/123?utm_source=buffer"
+        proof = delivery_evidence("posted", rec)
+        assert proof["confirmed"] and proof["url"] == "https://x.com/desk/status/123"
+        for state in ("posting", "failed", "recalled", "queued"):
+            assert delivery_evidence(state, rec)["confirmed"] is False
+
+    def test_summary_counts_full_unique_items_and_review_is_bounded(self, tmp_path):
+        folder = tmp_path / "data/marketing/outbox"
+        folder.mkdir(parents=True)
+        items = [{"id": f"ob-proof-{i}", "account": "flagship", "kind": "signal",
+                  "text": f"Synthetic editorial record {i}", "as_of": "2026-11-12", "status": "queued"}
+                 for i in range(56)]
+        items[-1]["source"] = {"review": {"verdict": "bad", "issues": ["repeated_opener"] * 9,
+                                           "note": "a" * 900}, "internal_secret": "must-not-cross"}
+        ledger = [{"id": row["id"], "to": "posted", "at": "2026-11-12T12:00:00Z",
+                   "receipt": {"backend": "buffer", "external_id": str(i),
+                               **({"external_url": f"https://x.com/desk/status/{1000+i}"} if i < 54 else {})}}
+                  for i, row in enumerate(items[:-1])]
+        (folder / "items.jsonl").write_text("".join(json.dumps(r) + "\n" for r in items + [items[0]]))
+        transitions = []
+        for row in ledger:
+            transitions.extend({"id": row["id"], "to": state, "at": row["at"]} for state in ("approved", "posting"))
+            transitions.append(row)
+        transitions.append(ledger[0])
+        (folder / "status_ledger.jsonl").write_text("".join(json.dumps(r) + "\n" for r in transitions))
+        payload = marketing.outbox(tmp_path)
+        assert payload["ok"]
+        assert payload["history_total"] == 55 and len(payload["history"]) == 50
+        assert payload["delivery_summary"]["confirmed"] == 54
+        assert payload["delivery_summary"]["accepted"] == 1
+        assert payload["delivery_summary"]["publication_time_known"] is False
+        draft = next(i for a in payload["accounts"] for i in a["items"] if i["id"] == items[-1]["id"])
+        assert len(draft["source"]["review"]["issues"]) == 5
+        assert len(draft["source"]["review"]["note"]) == 400
+        assert "must-not-cross" not in json.dumps(payload)
+
+    def _failed(self, root, *, old=True, text=_CLEAN_A):
+        from datetime import datetime, timedelta, timezone
+        from engine.marketing import outbox
+        now = datetime.now(timezone.utc) - timedelta(hours=72 if old else 1)
+        item = outbox.make_item(account="flagship", kind="signal", text=text,
+            as_of=now.date().isoformat(), scheduled_at=now.isoformat(),
+            provenance="content_studio", now=now)
+        assert outbox.enqueue(item, root=root) == "queued"
+        for state in ("approved", "posting", "failed"):
+            assert outbox.transition(item["id"], state, actor="test", root=root, now=now)
+        return item
+
+    def test_stale_single_approval_does_not_write_but_hold_remains(self, tmp_path):
+        from engine.marketing import outbox
+        item = self._failed(tmp_path)
+        before = (tmp_path / "data/marketing/outbox/status_ledger.jsonl").read_bytes()
+        assert marketing.decide_outbox(item["id"], "approve", root=tmp_path) is False
+        assert outbox.fold_state(tmp_path)["decisions"] == {}
+        assert (tmp_path / "data/marketing/outbox/status_ledger.jsonl").read_bytes() == before
+        assert marketing.decide_outbox(item["id"], "hold", root=tmp_path) is True
+
+    def test_mixed_batch_only_rearms_fresh_copy(self, tmp_path):
+        from engine.marketing import outbox
+        old = self._failed(tmp_path)
+        fresh = self._failed(tmp_path, old=False, text=_CLEAN_B)
+        result = marketing.decide_outbox_batch([old["id"], fresh["id"]], "approve", root=tmp_path)
+        assert result["decided"] == 1 and old["id"] in result["blocked"]
+        state = outbox.fold_state(tmp_path)
+        assert state["status"][old["id"]] == "failed" and old["id"] not in state["decisions"]
+        assert state["status"][fresh["id"]] == "approved"
+
+    def test_stale_post_now_never_dispatches(self, tmp_path, monkeypatch):
+        from admin import github_api
+        item = self._failed(tmp_path)
+        monkeypatch.setattr(marketing, "_default_root", lambda: tmp_path)
+        monkeypatch.setattr(github_api, "dispatch", lambda **kw: pytest.fail("stale retry dispatched"))
+        result = marketing.post_now(item["id"])
+        assert result["ok"] is False and item["id"] in result["blocked"]
+
+    def test_retry_uses_original_evidence_not_decision_time(self):
+        from datetime import datetime
+        from admin.marketing_evidence import retry_freshness
+        row = {"provenance": "press_lane", "kind": "breaking",
+               "created_at": "2026-11-12T00:00:00Z", "decided_at": "2026-11-13T00:00:00Z"}
+        assert retry_freshness(row, now=datetime(2026, 11, 13))["state"] == "stale"
+        row.pop("created_at")
+        assert retry_freshness(row)["state"] == "unknown"
+        row["provenance"] = "independent_lane"
+        assert retry_freshness(row)["state"] == "unscoped"

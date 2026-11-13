@@ -39,8 +39,10 @@ from .marketing import (
     _read_json,
     _read_jsonl,
     _read_yaml,
+    _latest_metrics_by_remote_id,
     arm_state,
 )
+from .marketing_evidence import _timestamp, delivery_evidence, delivery_summary
 
 # ---------------------------------------------------------------------------
 # paths
@@ -72,7 +74,7 @@ _PLANNED_KINDS = frozenset({
 # renders, under its raw name — a new engine counter must never go invisible
 # just because this table wasn't updated.
 _ACTIVITY_WORDS: dict[str, str] = {
-    "posted": "went out to X",
+    "posted": "accepted by the publishing provider",
     "would_post": "would have gone out (dry run)",
     "failed": "failed at the API",
     # A WAIT, NOT A LOSS — and the wording is the whole point. These posts went
@@ -564,7 +566,8 @@ def floor(root=None) -> dict:  # noqa: PLR0912, PLR0915
         held_policy = counts.get("quarantined_policy")
         trimmed = counts.get("quarantined_overflow")
 
-        items = _read_jsonl(repo / _ITEMS_REL) or []
+        items = list({str(it["id"]): it for it in (_read_jsonl(repo / _ITEMS_REL) or [])
+                      if isinstance(it, dict) and it.get("id")}.values())
         ledger = _read_jsonl(repo / _LEDGER_REL) or []
         final: dict[str, dict] = {}
         for row in ledger:
@@ -579,7 +582,15 @@ def floor(root=None) -> dict:  # noqa: PLR0912, PLR0915
                        if isinstance(it, dict) and it.get("as_of") == as_of]
         enqueued = len(today_items) if as_of else None
         by_status = Counter(_status(it) for it in today_items)
-        live = by_status.get("posted", 0) + by_status.get("posting", 0)
+        metrics = _latest_metrics_by_remote_id(repo)
+        deliveries = {}
+        for it in items:
+            rec = (final.get(str(it.get("id"))) or {}).get("receipt")
+            rid = str((rec or {}).get("external_id") or "") if isinstance(rec, dict) else ""
+            deliveries[str(it["id"])] = delivery_evidence(_status(it), rec, metrics.get(rid), now=_utcnow())
+        live = sum(deliveries[str(it["id"])]["confirmed"] for it in today_items)
+        submitted = sum(deliveries[str(it["id"])]["state"] in
+                        {"confirmed", "scheduled", "accepted"} for it in today_items)
         awaiting = by_status.get("queued", 0)
         approved = by_status.get("approved", 0)
 
@@ -593,27 +604,32 @@ def floor(root=None) -> dict:  # noqa: PLR0912, PLR0915
             str((final.get(str(it.get("id"))) or {}).get("to")
                 or it.get("status") or "queued")
             for it in items if isinstance(it, dict))
-        posted_recent_at: list[str] = []
-        for row in ledger:
-            if isinstance(row, dict) and row.get("to") == "posted" and row.get("at"):
-                posted_recent_at.append(str(row["at"]))
+        posted_recent_at: list[datetime] = []
+        now = _utcnow()
+        for iid, row in final.items():
+            if (iid in deliveries and deliveries[iid]["state"] in
+                    {"confirmed", "scheduled", "accepted"}):
+                stamp = _timestamp(row.get("at"))
+                if stamp and stamp <= now:
+                    posted_recent_at.append(stamp)
         posted_recent_at.sort()
-        _today_utc = _utcnow().strftime("%Y-%m-%d")
-        posted_today = sum(1 for a in posted_recent_at if a[:10] == _today_utc)
-        # 72h window: the honest evidence that the plant CAN post, used to
-        # de-escalate the host-local "Nothing can post" blocker (defect F5).
-        _cut = (_utcnow() - timedelta(hours=72)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        posted_today = sum(1 for a in posted_recent_at if a.date() == now.date())
+        # Recent provider submissions resolve local blindness, not X delivery.
+        _cut = now - timedelta(hours=72)
         posted_recently = any(a >= _cut for a in posted_recent_at)
         today_block = {
-            "going_out": (awaiting + approved) if enqueued is not None else None,
+            "going_out": approved if enqueued is not None else None,
             "awaiting_review": awaiting if enqueued is not None else None,
             "went_out_today": posted_today,
-            "last_post_at": posted_recent_at[-1] if posted_recent_at else None,
+            "last_post_at": posted_recent_at[-1].isoformat() if posted_recent_at else None,
             "blocked_total": _all_final.get("quarantined", 0) + _all_final.get("failed", 0),
             "blocked_today": sum(
                 1 for it in today_items
                 if _status(it) in ("quarantined", "failed")),
             "posted_recently": posted_recently,
+            "submitted_today": posted_today,
+            "delivery": delivery_summary([{"id": iid, "delivery": value}
+                                          for iid, value in deliveries.items()]),
         }
 
         act = _last_activity(repo)
@@ -635,13 +651,13 @@ def floor(root=None) -> dict:  # noqa: PLR0912, PLR0915
             _station("enqueued", "Queued", "reached the outbox rail",
                      enqueued, cleared, "cleared but never enqueued",
                      goto="marketing_outbox"),
-            _station("dispatched", "Dispatched", "survived the publish sweep",
-                     (live + approved) or 0 if enqueued is not None else None,
+            _station("dispatched", "Provider accepted", "publishing records; confirmation separate",
+                     submitted if enqueued is not None else None,
                      enqueued, "pulled at dispatch", goto="marketing_publish",
                      detail=(f"{ledger_block.get('lost_total')} lost across "
                              f"{len(ledger_block.get('lines') or [])} counters"
                              if ledger_block.get("present") else None)),
-            _station("live", "Live on X", "actually posted",
+            _station("live", "Confirmed on X", "public post link recorded",
                      live if enqueued is not None else None,
                      (live + approved) or 0 if enqueued is not None else None,
                      "approved but still waiting", goto="marketing_publish"),
@@ -655,7 +671,12 @@ def floor(root=None) -> dict:  # noqa: PLR0912, PLR0915
         for st in line:
             if st.get("odd"):
                 _chain = False
-            st["chain_ok"] = _chain
+            # Monotone counts are not evidence of a common cohort. Only the
+            # writer stamp is a known subset of the exact in-memory plan.
+            st["chain_ok"] = _chain and st["id"] in {"planned", "written"}
+            if not st["chain_ok"]:
+                st["lost"] = None
+                st["yield"] = None
         line_odd = [st["id"] for st in line if st.get("odd")]
 
         # The break point = the station that loses the most POSTS, not the
@@ -693,6 +714,8 @@ def floor(root=None) -> dict:  # noqa: PLR0912, PLR0915
             "plan_stale": _plan_is_stale(cp) if isinstance(cp, dict) else None,
             "plan_claimed_total": claimed,
             "line": line,
+            "cohort_verified": False,
+            "comparison_note": "Independent stage counts; a shared post cohort is not recorded.",
             "break_at": break_at,
             # Stations whose out exceeds their in. Non-empty => the UI must print
             # the "these counters do not nest" sentence instead of a chain verdict.
@@ -881,13 +904,11 @@ def _blockers(repo: Path, *, line: list[dict], authorship: dict, pub: dict,
         # this is a console blindness, and it says so.
         if posted_recently and pub.get("host_local_only"):
             add("watch", "This console cannot see the publish switch",
-                "Posts went out in the last three days, so the publisher is "
-                "working. What is missing is local: " + "; ".join(missing) + ". "
-                "Those are facts about this admin process, not about the runner "
-                "that actually posts.",
-                "Nothing to fix in the plant. To read the switch from here, give "
-                "this host a GitHub token; the Publisher page shows the same "
-                "checklist with the same caveat.",
+                "Publishing providers accepted submissions in the last three days. "
+                "Public X delivery needs its own confirmation. This console cannot "
+                "read: " + "; ".join(missing) + ".",
+                "Inspect the provider receipts and the publisher checklist. "
+                "A missing local credential does not establish the runner's state.",
                 goto="marketing_publish")
         else:
             add("stop", "Nothing can post",

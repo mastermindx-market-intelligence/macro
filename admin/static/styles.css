@@ -3092,7 +3092,7 @@ tr.lab-cell-floor td { opacity: .72; }
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   overflow: hidden;
-  background: #0d1117;
+  background: var(--surface);
 }
 .obx-media-head {
   padding: 6px 10px;
@@ -3122,9 +3122,45 @@ tr.lab-cell-floor td { opacity: .72; }
   display: block;
   width: 100%;
   height: auto;
-  max-height: 200px;
+  max-height: none;
   object-fit: contain;
   cursor: zoom-in;
+}
+.obx-media-open {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+.obx-media-open:focus-visible, .obx-lb-close:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+.obx-review-note { display: block; color: var(--text); line-height: 1.5; }
+.mkt-stage-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.mkt-stage-grid-four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+button.mkt-stage {
+  display: flex; flex-direction: column; gap: 8px; padding: 18px;
+  text-align: left; color: var(--text); background: transparent;
+  border: 0; border-radius: var(--r-sm); cursor: pointer;
+}
+button.mkt-stage:hover { background: var(--surface2); }
+button.mkt-stage:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.mkt-stage strong { font-size: 28px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.mkt-stage-name { font-size: 12px; color: var(--muted); font-weight: 600; }
+.mkt-diagnostics { margin-top: 10px; color: var(--muted); font-size: 12px; }
+.mkt-diagnostics summary { cursor: pointer; }
+.mkt-diagnostics p { margin: 6px 0; }
+.mkt-publication { padding: 16px 0; border-bottom: 1px solid var(--border); }
+.mkt-publication .pc-text { margin: 0 0 10px; }
+@media (max-width: 1000px) { .mkt-stage-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .mkt-stage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  button.mkt-stage { padding: 12px; }
+  .mkt-stage strong { font-size: 24px; }
 }
 
 /* Decision controls */
@@ -6573,3 +6609,6 @@ html[data-lang="zh"] #view .l-en { display: none; }
 .rf-diagnostics .rf-identity { display:block; overflow-wrap:anywhere; font-family:var(--font-mono); font-size:var(--fs-xs,12px); }
 
 .experiments-table-scroll { max-width:100%; overflow-x:auto; }
+
+/* Marketing decisions are named in chips; containers retain neutral borders. */
+.obx-card.lv::before { display: none; }

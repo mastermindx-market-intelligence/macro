@@ -22,6 +22,8 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from .marketing_evidence import delivery_evidence, delivery_summary, editorial_review, retry_freshness
+
 log = logging.getLogger(__name__)
 
 
@@ -449,6 +451,21 @@ _ITEM_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
 _MAX_POST_NOW_IDS = 5
 
 
+def _stale_failed_approvals(item_ids, repo: Path) -> dict[str, str]:
+    """Read the original evidence before an administrative retry can write."""
+    from engine.marketing import outbox as _ob
+    state = _ob.fold_state(repo)
+    items, statuses = state.get("items") or {}, state.get("status") or {}
+    blocked = {}
+    for item_id in item_ids:
+        if statuses.get(item_id) != "failed" or item_id not in items:
+            continue
+        freshness = retry_freshness(items[item_id])
+        if not freshness["eligible"]:
+            blocked[item_id] = freshness["reason"]
+    return blocked
+
+
 def post_now(item_id) -> dict:
     """BREAKING DISPATCH — send one (or a few) outbox items right now.
 
@@ -477,6 +494,11 @@ def post_now(item_id) -> dict:
         if bad:
             return {"ok": False, "error": f"not a valid outbox item id: {bad[0]!r}",
                     "note": "id rejected"}
+
+        blocked = _stale_failed_approvals(ids, _default_root())
+        if blocked:
+            return {"ok": False, "error": "Failed posts need refreshed source evidence before retrying.",
+                    "blocked": blocked, "note": "No dispatch was requested."}
 
         from . import github_api  # noqa: PLC0415
         if not github_api.token():
@@ -1086,6 +1108,8 @@ def _content_funnel(repo: Path, cp: dict, plan_as_of: Any,
 
     return {
         "planned": planned or None,
+        "cohort_verified": False,
+        "comparison_note": "Independent stage counts; a shared post cohort is not recorded.",
         # The plan file's own header has been drifting from its queue length for
         # weeks (155 claimed vs 156 real today). The queue is the truth; the
         # claim ships beside it so the drift is visible, not silently authoritative.
@@ -2112,6 +2136,7 @@ def outbox(root=None) -> dict:
                 "accounts": [],
                 "history": [],
                 "history_total": 0,
+                "delivery_summary": delivery_summary([]),
                 "activity": activity,
                 "decision_log": [],
             }
@@ -2124,6 +2149,7 @@ def outbox(root=None) -> dict:
             return folded
 
         # Build item enriched dicts
+        metrics_by_rid = _latest_metrics_by_remote_id(repo)
         enriched: list[dict] = []
         for item in items:
             item_id = item.get("id", "")
@@ -2135,6 +2161,7 @@ def outbox(root=None) -> dict:
             last_row = state["last"].get(item_id)
             last_transition_at = last_row.get("at") if last_row else None
             receipt = last_row.get("receipt") if last_row else None
+            remote_id = str((receipt or {}).get("external_id") or "") if isinstance(receipt, dict) else ""
             enriched.append({
                 "id": item_id,
                 "as_of": item.get("as_of"),
@@ -2160,6 +2187,9 @@ def outbox(root=None) -> dict:
                 "attempts": state["attempts"].get(item_id, 0),
                 "effective_attempts": _ob.effective_attempts(state, item_id),
                 "receipt": receipt,
+                "delivery": delivery_evidence(folded, receipt, metrics_by_rid.get(remote_id)),
+                "source": editorial_review(item.get("source")),
+                "retry_freshness": retry_freshness(item) if folded == "failed" else None,
                 "_effective": eff,
                 "_account": item.get("account", ""),
             })
@@ -2236,6 +2266,8 @@ def outbox(root=None) -> dict:
                 "status": e["status"],
                 "at": e["last_transition_at"],
                 "receipt": e["receipt"],
+                "delivery": e["delivery"],
+                "retry_freshness": e["retry_freshness"],
                 "note": (state["last"].get(e["id"]) or {}).get("note"),
                 "attempts": e["attempts"],
                 "effective_attempts": _ob.effective_attempts(state, e["id"]),
@@ -2262,6 +2294,7 @@ def outbox(root=None) -> dict:
             "caps_by_account": _caps_by_account(cfg, repo, as_of=max_as_of),
             "sentinel": sentinel,
             "summary": summary,
+            "delivery_summary": delivery_summary(enriched),
             "accounts": accounts_out,
             "history": history_out,
             "history_total": history_total,
@@ -2501,6 +2534,7 @@ def publisher(root=None) -> dict:
             # returns one; the poller's post() query does). Front-end renders
             # `metrics`/`external_url` only when present, so absent = unchanged.
             met = metrics_by_rid.get(str(external_id or "").strip()) if external_id else None
+            delivery = delivery_evidence(statuses.get(iid, it.get("status", "queued")), rec, met)
             row = {
                 "id": iid,
                 "account": it.get("account", ""),
@@ -2509,7 +2543,8 @@ def publisher(root=None) -> dict:
                 "at": lr.get("at"),
                 "note": lr.get("note"),
                 "external_id": external_id,
-                "external_url": external_url or (met or {}).get("external_url"),
+                "external_url": delivery["url"],
+                "delivery": delivery,
                 "backend": (rec or {}).get("backend"),
             }
             if met and met.get("metrics"):
@@ -2543,6 +2578,7 @@ def publisher(root=None) -> dict:
                 # split must gate on.
                 "attempts": state["attempts"].get(iid, 0),
                 "effective_attempts": _ob.effective_attempts(state, iid),
+                "retry_freshness": retry_freshness(it),
                 "note": lr.get("note"),
                 "excerpt": (txt[:110] + "…") if len(txt) > 110 else txt,
             }
@@ -2698,6 +2734,8 @@ def decide_outbox(item_id: str, decision: str, note: str | None = None, root=Non
     try:
         from engine.marketing import outbox as _ob  # noqa: PLC0415
         repo = Path(root) if root is not None else _default_root()
+        if decision == "approve" and _stale_failed_approvals([item_id], repo):
+            return False
         ok = _ob.record_decision(item_id, decision, actor="admin", root=repo, note=note)
         if ok and decision == "approve":
             # Fail-soft on the apply half: the decision row is the durable
@@ -2817,11 +2855,18 @@ def decide_outbox_batch(item_ids: list, decision: str, note: str | None = None,
     passed, so a rejected id never rides along.
     """
     results: dict[str, bool] = {}
+    blocked: dict[str, str] = {}
     try:
         from engine.marketing import outbox as _ob  # noqa: PLC0415
         repo = Path(root) if root is not None else _default_root()
+        if decision == "approve":
+            blocked = _stale_failed_approvals(
+                [i for i in item_ids if isinstance(i, str) and i], repo)
         for item_id in item_ids:
             if not isinstance(item_id, str) or not item_id:
+                continue
+            if item_id in blocked:
+                results[item_id] = False
                 continue
             results[item_id] = _ob.record_decision(
                 item_id, decision, actor="admin", root=repo, note=note)
@@ -2835,7 +2880,8 @@ def decide_outbox_batch(item_ids: list, decision: str, note: str | None = None,
                             "but not applied: %s", len(recorded), exc)
     except Exception as exc:  # noqa: BLE001
         log.warning("marketing.decide_outbox_batch failed: %s", exc)
-    return {"decided": sum(1 for v in results.values() if v), "results": results}
+    return {"decided": sum(1 for v in results.values() if v), "results": results,
+            "blocked": blocked}
 
 
 # ---------------------------------------------------------------------------

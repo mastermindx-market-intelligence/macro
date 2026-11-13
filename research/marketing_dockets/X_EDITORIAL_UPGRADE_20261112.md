@@ -54,3 +54,16 @@ P1/P2 source milestone: removed the automatic earnings-call disclaimer, tone-onl
 Executed proof: `python -m pytest -q tests/test_marketing_earnings_call_lane.py tests/test_marketing_copy_auditor.py tests/test_marketing_copy_v2.py --tb=short` returned **376 passed, 2 skipped**. An initial sparse-source run lacked root `config.yml`; after materializing that committed dependency, the identical focused set passed. No provider/LLM call or live publication occurred. These tests prove source behavior and compatibility, not prospective post quality or engagement.
 
 Next: compose P3/P4 admin delivery evidence, independent stage counts, review visibility and readable media, then validate their real UI consumer.
+
+
+## P4 — admin evidence and review controls, local qualification
+
+- Added read-only delivery projections: strict public X permalink, Buffer scheduled/accepted, in-flight and unconfirmed. The full folded history is counted once per item; publication time is not inferred from a provider submission timestamp.
+- Removed cross-population funnel conversion/loss claims. Independent stage counts and current-plan workload are explicit.
+- Carried bounded existing advisory review into the Outbox, expanded media previews, added keyboard lightbox focus/return, and retained isolated SVG-as-image rendering.
+- Failed administrative retries now check the original source age before single/bulk approval or post-now dispatch. Existing lane freshness windows are reused; unscoped lanes keep their incumbent publisher checks. Old content is not rewritten or automatically resent.
+- 309 admin/floor tests passed after materializing the existing app import closure. Includes strict URL parsing, full-history deduplication, no-write stale retry rejection and mixed-batch behavior. Node syntax check passed.
+- Local Playwright browser launch was attempted on the isolated synthetic preview. Chromium's process singleton socket was refused by the execution environment (`Operation not permitted`); the process exited before navigation. No browser proof, user-account interaction or publication occurred. Do not repeat this launch with security-disabling flags or silently switch carriers to evade the restriction. Interface visual/interaction acceptance remains owed through an authorized execution surface.
+- Existing held PR source/effect boundaries remain intact. No runtime activation, queue approval or X send was requested.
+
+Next: qualify social chart readability and grounded analytical content, then current-head checks and normal release. Parent acceptance remains open.
