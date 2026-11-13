@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T04:53:01.966486+00:00",
-  "count": 3275,
+  "generated_at": "2026-11-13T05:23:00.368743+00:00",
+  "count": 3276,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -90,6 +90,7 @@
     "SPCX",
     "SYZ",
     "Safra",
+    "Schroders",
     "Scotiabank",
     "Shikhara",
     "SocGen - Albert Edwards",
@@ -198,6 +199,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sudllflm71k-223431",
+      "title": "Schroders Credit Lens GBP.nov",
+      "institution": "Schroders",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T03:12:33Z",
+      "summary_points": [
+        "Credit Spreads Divergence: European credit spreads (EUR IG, EUR HY, Corporate EMD) widened significantly (30-Sep–31-Oct), while USD/GBP IG/HY spreads narrowed, signaling heightened risk premiums in Europe versus defensive USD flows.",
+        "Margin of Safety Critical: High-yield debt (8.3% yield, 2.5% margin of safety) absorbs yield rises better than cash (4.4% yield, 0.7% margin), making it resilient to rate hikes versus low-yield assets.",
+        "Big Tech Debt Surge: 2026 big tech bond issuance (Nvidia, Microsoft) exceeds all prior years, driving sector concentration and amplifying rate sensitivity risk amid rising debt financing.",
+        "Hyperscaler Spread Premium: US hyperscalers’ credit spreads now trade at a widening premium vs.",
+        "US IG (spread difference turned positive and accelerating since 2022), reflecting elevated risk pricing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 67,
       "language": "en",
       "needs_metadata": false
     },
