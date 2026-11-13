@@ -45,11 +45,13 @@ def test_cn_symbol_routing_and_tencent_codes():
 def test_parse_polygon_snapshot_trade_basis_uses_trade_time():
     now = datetime(2026, 6, 21, 15, 0, tzinfo=timezone.utc)
     trade_ns = int(datetime(2026, 6, 21, 14, 50, tzinfo=timezone.utc).timestamp() * 1e9)
+    nbbo_ns = int(datetime(2026, 6, 21, 14, 50, 1, tzinfo=timezone.utc).timestamp() * 1e9)
     upd_ns = int(datetime(2026, 6, 21, 14, 59, tzinfo=timezone.utc).timestamp() * 1e9)
     payload = {"tickers": [
         {"ticker": "AAPL", "updated": upd_ns,
          "lastTrade": {"p": 201.25, "t": trade_ns},
-         "day": {"c": 200.0}, "prevDay": {"c": 198.0}},
+         "lastQuote": {"p": 201.20, "P": 201.30, "t": nbbo_ns},
+         "day": {"o": 199.50, "c": 200.0}, "prevDay": {"c": 198.0}},
         {"ticker": "NODATA", "day": {}, "prevDay": {}},
     ]}
     out = lq.parse_polygon_snapshot(payload, now=now)
@@ -57,7 +59,54 @@ def test_parse_polygon_snapshot_trade_basis_uses_trade_time():
     q = out["AAPL"]
     assert q["price"] == 201.25 and q["price_basis"] == "trade"
     assert q["prev_close"] == 198.0
+    assert q["day_open"] == 199.50              # same incumbent Polygon day bucket
     assert q["delay_min"] == 10.0               # from TRADE time, not the 1m-old `updated`
+    assert q["bid_price"] == 201.20 and q["ask_price"] == 201.30
+    assert q["nbbo_ts"] == "2026-06-21T14:50:01+00:00"
+    assert q["nbbo_source"] == "polygon_lastQuote"
+
+
+def test_parse_polygon_snapshot_refuses_unproven_nbbo():
+    trade_ns = int(datetime(2026, 6, 21, 14, 50, tzinfo=timezone.utc).timestamp() * 1e9)
+    payload = {"tickers": [
+        {"ticker": "LOCKED", "lastTrade": {"p": 10.0, "t": trade_ns},
+         "lastQuote": {"p": 10.0, "P": 10.0, "t": trade_ns},
+         "day": {"o": 0.0}},
+        {"ticker": "NOTIME", "lastTrade": {"p": 20.0, "t": trade_ns},
+         "lastQuote": {"p": 19.99, "P": 20.01},
+         "day": {"o": "not-a-price"}},
+    ]}
+    out = lq.parse_polygon_snapshot(payload)
+    for symbol in ("LOCKED", "NOTIME"):
+        assert out[symbol]["bid_price"] is None
+        assert out[symbol]["ask_price"] is None
+        assert out[symbol]["nbbo_ts"] is None
+        assert out[symbol]["nbbo_source"] is None
+        assert out[symbol]["day_open"] is None
+
+
+def test_parse_polygon_snapshot_rejects_boolean_and_nonfinite_measurements():
+    trade_ns = int(datetime(2026, 6, 21, 14, 50, tzinfo=timezone.utc).timestamp() * 1e9)
+    cases = [
+        {"ticker": "BOOLBID", "lastTrade": {"p": 10.0, "t": trade_ns},
+         "lastQuote": {"p": True, "P": 10.01, "t": trade_ns},
+         "day": {"o": True}},
+        {"ticker": "INFASK", "lastTrade": {"p": 20.0, "t": trade_ns},
+         "lastQuote": {"p": 19.99, "P": float("inf"), "t": trade_ns},
+         "day": {"o": float("inf")}},
+        {"ticker": "BOOLTIME", "lastTrade": {"p": 30.0, "t": trade_ns},
+         "lastQuote": {"p": 29.99, "P": 30.01, "t": True},
+         "day": {"o": 29.5}},
+    ]
+    out = lq.parse_polygon_snapshot({"tickers": cases})
+    for symbol in ("BOOLBID", "INFASK", "BOOLTIME"):
+        assert out[symbol]["bid_price"] is None
+        assert out[symbol]["ask_price"] is None
+        assert out[symbol]["nbbo_ts"] is None
+        assert out[symbol]["nbbo_source"] is None
+    assert out["BOOLBID"]["day_open"] is None
+    assert out["INFASK"]["day_open"] is None
+    assert out["BOOLTIME"]["day_open"] == 29.5
 
 
 def test_parse_polygon_snapshot_prevday_basis_is_not_live():
