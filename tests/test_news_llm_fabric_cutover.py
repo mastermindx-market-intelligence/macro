@@ -337,6 +337,47 @@ def test_no_token_uses_legacy_ladder(monkeypatch):
 
 
 # --------------------------------------------------------------------------- #
+# the REAL adapter shape (not the stub above)
+# --------------------------------------------------------------------------- #
+def test_refusal_is_detected_on_the_real_completion_shape():
+    """The real lib.fabric_client.Completion has NO stop_reason field.
+
+    It carries the raw Anthropic message in ``.raw``, and that is where the
+    stop reason lives. The stub ``_completion`` above sets ``raw=_Raw(...)``,
+    which would hide a regression that only reads ``comp.stop_reason``. This
+    test pins the real shape so the fallback cannot be dropped silently.
+    """
+    class _RealMsg:
+        def __init__(self, stop_reason):
+            self.stop_reason = stop_reason
+            self.content = []
+            self.model = "deepseek-v4.1-flash"
+
+    real = fc.Completion(text="", model_served="deepseek-v4.1-flash",
+                         raw=_RealMsg("refusal"))
+    assert not hasattr(real, "stop_reason"), (
+        "the adapter grew a stop_reason field; news_llm's .raw fallback may now "
+        "be dead code and this test should be revisited")
+    assert news_llm._fabric_stop_reason(real) == "refusal"
+
+    # A normal completion must not be mistaken for a refusal.
+    ok = fc.Completion(text="[]", model_served="m", raw=_RealMsg("end_turn"))
+    assert news_llm._fabric_stop_reason(ok) == "end_turn"
+
+    # No raw at all must degrade, never raise.
+    bare = fc.Completion(text="x", model_served="m", raw=None)
+    assert news_llm._fabric_stop_reason(bare) == ""
+
+
+def test_usage_tokens_read_the_real_usage_dict():
+    real = fc.Completion(text="x", model_served="m",
+                         usage={"input_tokens": 11, "output_tokens": 7}, raw=None)
+    assert news_llm._usage_tokens(real) == (11, 7)
+    assert news_llm._usage_tokens(
+        fc.Completion(text="x", model_served="m", usage={}, raw=None)) == (0, 0)
+
+
+# --------------------------------------------------------------------------- #
 # the gate itself
 # --------------------------------------------------------------------------- #
 def test_fabric_enabled_gate(monkeypatch):
