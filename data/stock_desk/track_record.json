@@ -1,23 +1,23 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-11-12",
-  "scored_total": 372,
-  "open": 41,
-  "unscored_neutral": 484,
+  "as_of": "2026-11-13",
+  "scored_total": 374,
+  "open": 38,
+  "unscored_neutral": 487,
   "overall": {
-    "n": 372,
-    "hits": 248,
-    "misses": 124,
-    "hit_rate": 0.667,
+    "n": 374,
+    "hits": 249,
+    "misses": 125,
+    "hit_rate": 0.666,
     "dir_accuracy": 0.465
   },
   "by_lean": {
     "constructive": {
-      "n": 234,
-      "hits": 142,
-      "misses": 92,
-      "hit_rate": 0.607,
-      "dir_accuracy": 0.38
+      "n": 236,
+      "hits": 143,
+      "misses": 93,
+      "hit_rate": 0.606,
+      "dir_accuracy": 0.381
     },
     "neutral": {
       "n": 0,
@@ -43,10 +43,10 @@
   },
   "by_conviction": {
     "low": {
-      "n": 290,
-      "hits": 187,
-      "misses": 103,
-      "hit_rate": 0.645,
+      "n": 292,
+      "hits": 188,
+      "misses": 104,
+      "hit_rate": 0.644,
       "dir_accuracy": 0.421
     },
     "medium": {
@@ -64,8 +64,26 @@
       "dir_accuracy": 0.0
     }
   },
-  "calibration_note": "372 leans scored, hit-rate 0.667 (directional accuracy 0.465). Chance alone would land a hit-rate near 0.7484 (directional accuracy near 0.5049) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "374 leans scored, hit-rate 0.666 (directional accuracy 0.465). Chance alone would land a hit-rate near 0.7484 (directional accuracy near 0.5049) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "2026-10-01-BJ-20261003094930-1",
+      "ticker": "BJ",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.1841,
+      "check_by": "2026-11-12"
+    },
+    {
+      "id": "2026-10-01-KN-20261003094930-6",
+      "ticker": "KN",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.1019,
+      "check_by": "2026-11-12"
+    },
     {
       "id": "2026-10-14-ETSY-20261015090624-1",
       "ticker": "ETSY",
@@ -155,24 +173,6 @@
       "outcome": "miss",
       "realized": 0.1105,
       "check_by": "2026-11-11"
-    },
-    {
-      "id": "2026-10-06-JOE-20261007112041-4",
-      "ticker": "JOE",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.1425,
-      "check_by": "2026-11-10"
-    },
-    {
-      "id": "2026-10-06-MCK-20261007112041-5",
-      "ticker": "MCK",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.212,
-      "check_by": "2026-11-10"
     }
   ]
 }
