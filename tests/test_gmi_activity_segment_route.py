@@ -1242,7 +1242,9 @@ _TABLE_R4 = [
     ('r4-K13_unreadable_tag_before', 'x <a b"c> revenue 1,234 y', ('f', '1,234'), '1,234', '+', True, False),
     ('r4-K14_open_tag_never_closed', 'revenue <td style="x 1,234 y', ('f', '1,234'), '1,234', '+', True, False),
     ('r4-K15_comment_never_closed', 'revenue <!-- x 1,234 y', ('f', '1,234'), '1,234', '+', True, False),
-    ('r4-K16_empty_comment_then_text', '<!-->revenue 1,234 total-->', ('f', '1,234'), '1,234', '+', True, True),
+    # Fix 9 addendum (ruling 81): wanted False. An XML parser reads the whole string as one comment, so the
+    # figure is not shown; the row was right for the HTML reading only.
+    ('r4-K16_empty_comment_then_text', '<!-->revenue 1,234 total-->', ('f', '1,234'), '1,234', '+', True, False),
     ('r4-K17_literal_ampersand_word', 'AT&T revenue 1,234 total', ('f', '1,234'), '1,234', '+', True, True),
     ('r4-K18_span_holds_a_numeric_ref', 'x &#49;,234 y', ('f', '&#49;,234'), '1,234', '+', True, False),
     ('r4-K19_excerpt_starts_inside_a_tag', 'font-size:10pt">Revenue 54,602</p>', ('f', '10'), '10', '+', False, False),
@@ -1923,3 +1925,301 @@ def test_r8_4_a_plain_page_is_admitted():
 
 def test_r8_4_a_fragment_with_neither_tag_is_admitted():
     _r6_verify("<p>Revenue [[1,234]] total</p>" + _R6_NX)
+
+
+# ---------------------------------------------------------------------------
+# Ninth review (ruling 80): R9-1 to R9-5. ~ stands for a double quote; [[ ]] marks the span.
+# ---------------------------------------------------------------------------
+
+_R9_NS = "http://www.w3.org/1999/xhtml"
+_R9_HEAD = "<?xml version=~1.0~ encoding=~UTF-8~?><html xmlns=~" + _R9_NS + "~><body>"
+_R9_TAIL = "</body></html>"
+
+
+def _r9_doc(body: str, head: str = _R9_HEAD) -> str:
+    return head + body + _R9_TAIL
+
+
+def _r9_refused(body: str, head: str = _R9_HEAD):
+    _r6_refused(_r9_doc(body, head))
+
+
+def _r9_admitted(body: str, head: str = _R9_HEAD):
+    _r6_verify(_r9_doc(body, head))
+
+
+def test_r9_template_is_admitted():
+    _r9_admitted("<p>Revenue [[1,234]] total</p>")
+
+
+@pytest.mark.parametrize("body", [
+    "<p>5&#x200F;:[[1,234]]</p>",
+    "<p>Net -&#x200F;:[[1,234]]</p>",
+    "<p>5‏:[[1,234]]</p>",
+    "<p>Net -‏:[[1,234]]</p>",
+    "<p>5&#x61C;:[[1,234]]</p>",
+    "<p>5&#x200F;)[[1,234]]</p>",
+    "<table><tr><td>5&#x200F;)[[1,234]]</td></tr></table>",
+    "<p>5א:[[1,234]]</p>",
+    "<p>-א:[[1,234]]</p>",
+    "<p>-א)[[1,234]]</p>",
+    "<p>-ا:[[1,234]]</p>",
+    "<p>[[1,234]]:&#x200F;5</p>",
+    "<p>[[1,234]] א</p>",
+    "<p>[[1,234]] &#1488;</p>",
+    "<p>Revenue ١ [[1,234]] total</p>",
+    "<p>Revenue [[1,234]] total ١</p>",
+    "<p title=~א~>Revenue [[1,234]] total</p>",
+], ids=["rlm_ref", "rlm_ref_minus", "rlm_literal", "rlm_literal_minus", "alm_ref", "rlm_paren", "rlm_paren_td",
+        "hebrew_left", "hebrew_minus", "hebrew_minus_paren", "arabic_minus", "rlm_right", "hebrew_right",
+        "hebrew_ref_right", "arabic_indic_digit_left", "arabic_indic_digit_right", "hebrew_in_attribute"])
+def test_r9_1_a_right_to_left_character_in_the_window_is_refused(body):
+    _r9_refused(body)
+
+
+def test_r9_1_a_named_reference_to_a_right_to_left_mark_is_refused():
+    _r9_refused("<p>5&rlm;:[[1,234]]</p>")
+
+
+def test_r9_1_a_right_to_left_character_far_before_the_window_is_refused():
+    _r9_refused("<p>א</p><p>" + "A" * 2100 + "</p><p>Revenue [[1,234]] total</p>")
+
+
+def test_r9_1_blanks_do_not_hide_a_right_to_left_mark_from_the_window():
+    _r9_refused("<p>Net -&#x200F;:" + " " * 2100 + "[[1,234]] total</p>")
+
+
+def test_r9_1_a_right_to_left_letter_fifty_thousand_bytes_before_is_refused():
+    _r9_refused("<p>א</p><p>" + "A" * 50000 + "</p><p>Revenue [[1,234]] total</p>")
+
+
+def test_r9_1_a_direction_override_followed_by_blanks_is_refused():
+    _r9_refused("<p>Net -&#x202E;" + " " * 2100 + "[[1,234]] total</p>")
+
+
+def test_r9_1_a_literal_isolate_fifty_thousand_bytes_before_is_refused():
+    _r9_refused("<p>⁧</p><p>" + "A" * 50000 + "</p><p>Revenue [[1,234]] total</p>")
+
+
+def test_r9_1_a_direction_override_on_the_right_before_the_scan_limit_is_refused():
+    _r9_refused("<p>Revenue [[1,234]] total &#x202E;</p>")
+
+
+def test_r9_1_a_direction_override_after_the_scan_limit_is_admitted():
+    _r9_admitted("<p>Revenue [[1,234]] total</p><p>" + "A" * 2100 + "</p><p>&#x202E;⁧</p>")
+
+
+def test_r9_1_a_right_to_left_letter_after_the_scan_limit_is_admitted():
+    _r9_admitted("<p>Revenue [[1,234]] total</p><p>" + "A" * 2100 + "</p><p>א</p>")
+
+
+def test_r9_1_a_right_to_left_reference_after_the_scan_limit_is_admitted():
+    _r9_admitted("<p>Revenue [[1,234]] total</p><p>" + "A" * 2100 + "</p><p>&#x200F;&#1488;</p>")
+
+
+@pytest.mark.parametrize("body", [
+    '<h:script xmlns:h=~http://www.w3.org/1999/xhtml~>[[1,234]]</h:script>',
+    '<p>Revenue</p><h:span xmlns:h=~http://www.w3.org/1999/xhtml~ hidden=~hidden~>[[1,234]]</h:span>',
+    '<h:title xmlns:h=~http://www.w3.org/1999/xhtml~>[[1,234]]</h:title>',
+    '<p xmlns:h=~http://www.w3.org/1999/xht&#109;l~>Revenue [[1,234]] total</p>',
+    '<p XMLNS:h=~http://www.w3.org/1999/xhtml~>Revenue [[1,234]] total</p>',
+], ids=["script", "span_hidden", "title", "reference", "upper_case"])
+def test_r9_3b_the_xhtml_namespace_under_a_prefix_is_refused(body):
+    _r9_refused(body)
+
+
+@pytest.mark.parametrize("body,head", [
+    ("<p>Revenue [[1,234]] total</p>", "<?xml version=~1.0~ encoding=~windows-1255~?><html><body>"),
+    ("<p>Revenue [[1,234]] total</p>", "<?xml version=~1.0~ encoding=~ISO-8859-8~?><html><body>"),
+    ("<head><meta charset=~shift_jis~/></head><p>Revenue [[1,234]] total</p>", _R9_HEAD),
+    ("<head><meta http-equiv=~Content-Type~ content=~text/html; charset=windows-1255~/></head><p>Revenue [[1,234]] total</p>", _R9_HEAD),
+    ("<head><META CHARSET=~Windows-1255~></head><p>Revenue [[1,234]] total</p>", _R9_HEAD),
+    ("<p>Revenue [[1,234]] total</p>", _R9_HEAD),
+    ("<p>Revenue [[1,234]] total</p>", _R9_HEAD),
+], ids=["xml_windows_1255", "xml_iso_8859_8", "meta_shift_jis", "meta_http_equiv", "meta_upper_case", "esc_after",
+        "esc_before"])
+def test_r9_6_a_declared_encoding_other_than_utf8_or_ascii_or_an_esc_byte_is_refused(body, head):
+    _r9_refused(body, head)
+
+
+@pytest.mark.parametrize("body,head", [
+    ("<p>Revenue [[1,234]] total</p>", "<?xml version=~1.0~ encoding=~UTF-8~?><html><body>"),
+    ("<p>Revenue [[1,234]] total</p>", "<?xml version='1.0' encoding='ASCII'?><html><body>"),
+    ("<p>Revenue [[1,234]] total</p>", "<?xml version=~1.0~ encoding=~us-ascii~?><html><body>"),
+    ("<head><meta charset=~utf-8~/></head><p>Revenue [[1,234]] total</p>", _R9_HEAD),
+    ("<head><meta http-equiv=~Content-Type~ content=~text/html; charset=UTF-8~/></head><p>Revenue [[1,234]] total</p>", _R9_HEAD),
+    ("<head><meta name=~viewport~ content=~width=device-width~/></head><p>Revenue [[1,234]] total</p>", _R9_HEAD),
+], ids=["xml_utf8_upper", "xml_ascii_single_quotes", "xml_us_ascii", "meta_utf8", "meta_http_equiv_utf8", "meta_other"])
+def test_r9_6_utf8_and_ascii_declarations_are_admitted(body, head):
+    _r9_admitted(body, head)
+
+
+def test_r9_6_a_declaration_after_the_scan_limit_is_admitted():
+    _r9_admitted("<p>Revenue [[1,234]] total</p><p>" + "A" * 2100 + "</p><meta charset=~shift_jis~/>")
+
+
+def test_r9_1_plain_text_is_admitted():
+    _r9_admitted("<p>Revenue [[1,234]] total</p>")
+
+
+@pytest.mark.parametrize("body", [
+    "<p>5<!-->x<!x-->[[1,234]]</p>",
+    "<p>-<!-->x<!x-->[[1,234]]</p>",
+    "<p>-<?p >q<!x?>[[1,234]]</p>",
+    "<p>5<!--->x<!x-->[[1,234]]</p>",
+    "<p>Revenue [[1,234]] total</p><?php echo 1; ?>",
+    "<?php echo 1; ?><p>Revenue [[1,234]] total</p>",
+    "<?xml version=~1.0~?><p>Revenue [[1,234]] total</p>",
+    "<!DOCTYPE html><p>Revenue [[1,234]] total</p>",
+    "<p>Revenue [[1,234]] total</p><!ENTITY x ~y~>",
+], ids=["empty_comment", "empty_comment_minus", "pi", "dash_comment", "php_after", "php_before",
+        "second_xml_declaration", "doctype_after_root", "entity_declaration"])
+def test_r9_2_a_split_comment_or_instruction_form_is_refused(body):
+    _r9_refused(body)
+
+
+def test_r9_2_a_cdata_section_is_refused():
+    # The marker helper cannot hold ]] before the span, so the raw bytes are cut by hand.
+    raw = _r9_doc("<p>5<![CDATA[x]]>1,234</p>").replace("~", chr(34)).encode("utf-8")
+    start = raw.rfind(b"1,234")
+    span = {"start_byte": start, "end_byte": start + 5, "text_sha256": hashlib.sha256(raw[start:start + 5]).hexdigest()}
+    with pytest.raises(n.DisclosureError) as caught:
+        n._verify_figure_span("revenue", span, "1,234", "+", raw)
+    assert caught.value.code == "FIGURE_SPAN_MISMATCH"
+
+
+def test_r9_2_a_php_instruction_at_byte_zero_is_refused():
+    _r6_refused("<?php echo 1; ?><html><body><p>Revenue [[1,234]] total</p></body></html>")
+
+
+def test_r9_2_a_second_doctype_is_refused():
+    _r6_refused("<!DOCTYPE html><!DOCTYPE html><html><body><p>Revenue [[1,234]] total</p></body></html>")
+
+
+def test_r9_2_the_template_with_its_xml_declaration_is_admitted():
+    _r9_admitted("<p>Revenue [[1,234]] total</p>")
+
+
+def test_r9_2_an_ordinary_comment_before_the_figure_is_admitted():
+    _r9_admitted("<!-- note --><p>Revenue [[1,234]] total</p>")
+
+
+def test_r9_2_a_doctype_before_the_root_is_admitted():
+    _r6_verify("<!DOCTYPE html><html><body><p>Revenue [[1,234]] total</p></body></html>")
+
+
+def test_r9_2_an_empty_dash_comment_is_admitted():
+    _r9_admitted("<p>Revenue<!----> [[1,234]] total</p>")
+
+
+def test_r9_2_a_byte_order_mark_before_the_xml_declaration_is_admitted():
+    _r6_verify("﻿" + _r9_doc("<p>Revenue [[1,234]] total</p>"))
+
+
+@pytest.mark.parametrize("body", [
+    "<p>Revenue <span xmlns=~http://www.w3.org/2000/svg~>[[1,234]]</span> total</p>",
+    "<div xmlns=~http://www.w3.org/2000/svg~><p>Revenue [[1,234]] total</p></div>",
+    "<div xmlns=~http://www.w3.org/2000/sv&#x67;~><p>Revenue [[1,234]] total</p></div>",
+    "<div xmlns=~~><p>Revenue [[1,234]] total</p></div>",
+    "<div xmlns=~urn:x~><p>Revenue [[1,234]] total</p></div>",
+    "<div XMLNS=~urn:x~><p>Revenue [[1,234]] total</p></div>",
+    "<p xmlns:s=~http://www.w3.org/2000/svg~>Revenue [[1,234]] total</p>",
+    "<p xmlns:s=~http://www.w3.org/1998/Math/MathML~>Revenue [[1,234]] total</p>",
+    "<p xmlns:s=~http://www.w3.org/2000/sv&#103;~>Revenue [[1,234]] total</p>",
+    "<p XMLNS:m=~http://www.w3.org/1998/Math/MathML~>Revenue [[1,234]] total</p>",
+], ids=["svg_on_span", "svg_on_div", "svg_with_reference", "empty_value", "urn_value", "upper_case_name",
+        "svg_prefix", "mathml_prefix", "svg_prefix_reference", "mathml_prefix_upper_case"])
+def test_r9_3_a_foreign_namespace_is_refused(body):
+    _r9_refused(body)
+
+
+def test_r9_3_a_foreign_prefix_with_an_element_of_that_prefix_is_refused():
+    _r9_refused("<p xmlns:s=~http://www.w3.org/2000/svg~>Revenue <s:text>[[1,234]]</s:text></p>")
+
+
+def test_r9_3_a_foreign_namespace_before_the_window_is_refused():
+    _r9_refused("<div xmlns=~urn:x~></div><p>" + "A" * 2100 + "</p><p>Revenue [[1,234]] total</p>")
+
+
+def test_r9_3_a_nested_xhtml_namespace_is_admitted():
+    _r9_admitted("<div xmlns=~" + _R9_NS + "~><p>Revenue [[1,234]] total</p></div>")
+
+
+def test_r9_3_another_prefixed_declaration_is_admitted():
+    _r9_admitted("<p xmlns:s=~urn:other~>Revenue [[1,234]] total</p>")
+
+
+def test_r9_3_inline_xbrl_declarations_are_admitted():
+    head = ("<html xmlns=~" + _R9_NS + "~ xmlns:ix=~http://www.xbrl.org/2013/inlineXBRL~"
+            " xmlns:xbrli=~http://www.xbrl.org/2003/instance~ xmlns:us-gaap=~http://fasb.org/us-gaap/2025~><body>")
+    _r6_verify(head + "<p>Revenue <ix:nonFraction name=~us-gaap:Revenues~>[[1,234]]</ix:nonFraction> total</p>"
+               + _R9_TAIL)
+
+
+@pytest.mark.parametrize("body", [
+    "<p>5&#138;[[1,234]]</p>",
+    "<p>5&#x8A;[[1,234]]</p>",
+    "<p>5&#x9F;[[1,234]]</p>",
+    "<p>5&#128;[[1,234]]</p>",
+    "<p>5&#X8a;[[1,234]]</p>",
+    "<p>5&#0000138;[[1,234]]</p>",
+    "<p>5&#138[[1,234]]</p>",
+    "<p>[[1,234]]&#145;5</p>",
+], ids=["decimal_138", "hex_8A", "hex_9F", "decimal_128", "upper_hex", "leading_zeros", "no_semicolon", "right_side"])
+def test_r9_4_a_reference_to_a_c1_control_is_refused(body):
+    _r9_refused(body)
+
+
+def test_r9_4_a_reference_just_outside_the_range_is_admitted():
+    _r9_admitted("<p>Revenue&#160;[[1,234]]&#xA0;total</p>")
+
+
+def test_r9_4_an_em_dash_reference_is_handled_as_before():
+    with pytest.raises(n.DisclosureError) as caught:
+        _r6_verify(_r9_doc("<p>Revenue &#8212; [[1,234]] total</p>"))
+    assert caught.value.code == "FIGURE_SIGN_UNSUPPORTED"
+
+
+@pytest.mark.parametrize("body", [
+    "<p>Revenue &#" + "9" * 6000 + "; [[1,234]] total</p>",
+    "<p>Revenue &#x" + "F" * 6000 + "; [[1,234]] total</p>",
+    "<p>Revenue [[1,234]] total</p>" + "<p>" + "A" * 2100 + "</p><body title=~&#" + "9" * 6000 + ";~>",
+], ids=["decimal_6000", "hex_6000", "root_tag_after_the_window"])
+def test_r9_4_a_reference_with_thousands_of_figures_is_a_disclosure_error_not_a_value_error(body):
+    _r9_refused(body)
+
+
+def _r9_replay_snapshot(case, edit):
+    spec = copy.deepcopy(case.snapshot.spec)
+    edit(spec["fact"])
+    return SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+
+
+_R9_BAD_TYPES = [(1.0, "float"), ("1", "str"), (None, "none"), (True, "bool")]
+
+
+@pytest.mark.parametrize("field", ["start_byte", "end_byte"])
+@pytest.mark.parametrize("bad", [b for b, _ in _R9_BAD_TYPES], ids=[i for _, i in _R9_BAD_TYPES])
+def test_r9_5_a_stored_activity_span_offset_of_the_wrong_type_is_a_disclosure_error(tmp_path, field, bad):
+    case = _segment_case(tmp_path)
+    snapshot = _r9_replay_snapshot(case, lambda fact: fact["span"].__setitem__(field, bad))
+    with pytest.raises(n.DisclosureError) as caught:
+        segment.replay_segment_source(snapshot, case.pinned.authority)
+    assert caught.value.code == "SOURCE_SPAN_MISMATCH"
+
+
+@pytest.mark.parametrize("bad", [b for b, _ in _R9_BAD_TYPES], ids=[i for _, i in _R9_BAD_TYPES])
+def test_r9_5_a_stored_figure_offset_of_the_wrong_type_is_a_disclosure_error(tmp_path, bad):
+    case = _segment_case(tmp_path)
+    snapshot = _r9_replay_snapshot(case, lambda fact: fact["figure_spans"]["revenue"].__setitem__("end_byte", bad))
+    with pytest.raises(n.DisclosureError) as caught:
+        segment.replay_segment_source(snapshot, case.pinned.authority)
+    assert caught.value.code in ("SOURCE_SPAN_MISMATCH", "FIGURE_SPAN_MISMATCH")
+
+
+def test_r9_5_a_stored_activity_span_that_is_not_a_mapping_is_a_disclosure_error(tmp_path):
+    case = _segment_case(tmp_path)
+    snapshot = _r9_replay_snapshot(case, lambda fact: fact.__setitem__("span", None))
+    with pytest.raises(n.DisclosureError) as caught:
+        segment.replay_segment_source(snapshot, case.pinned.authority)
+    assert caught.value.code == "SOURCE_SPAN_MISMATCH"

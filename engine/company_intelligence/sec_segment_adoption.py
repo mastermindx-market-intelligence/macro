@@ -344,6 +344,10 @@ def replay_segment_source(snapshot, authority):
     n._require(type(body) is bytes and len(body) == e['source_byte_length']
                and sha256(body).hexdigest() == e['source_sha256'], 'SOURCE_BYTES_MISMATCH')
     span = f['span']
+    # Fix 9 (R9-5): stored offsets are int and not bool before any arithmetic or slicing, so no
+    # TypeError or ValueError can leave replay for a malformed stored row.
+    n._require(type(span) is dict and all(type(span.get(key)) is int for key in ('start_byte', 'end_byte')),
+               'SOURCE_SPAN_MISMATCH')
     n._require(0 <= span['start_byte'] < span['end_byte'] <= len(body), 'SOURCE_SPAN_MISMATCH')
     n._require(sha256(body[span['start_byte']:span['end_byte']]).hexdigest() == f['span']['text_sha256'],
                'SOURCE_SPAN_MISMATCH')
@@ -353,6 +357,9 @@ def replay_segment_source(snapshot, authority):
     for name in n.SEGMENT_FIGURE_NAMES:
         figure = f['figure_spans'][name]
         if figure is not None:
+            n._require(type(figure) is dict and all(type(figure.get(key)) is int
+                                                    for key in ('start_byte', 'end_byte')),
+                       'SOURCE_SPAN_MISMATCH')
             n._require(0 <= figure['start_byte'] - span['start_byte']
                        < figure['end_byte'] - span['start_byte'] <= main_len, 'SOURCE_SPAN_MISMATCH')
     return None

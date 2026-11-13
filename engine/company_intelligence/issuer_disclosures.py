@@ -416,6 +416,121 @@ def _figure_tag_style(tok: bytes) -> tuple[bool, bool]:
     return unreadable, display
 
 
+# Fix 9 (ruling 80), refusals only. R9-1: a right-to-left character, or an explicit direction
+# control (A5), anywhere from byte 0 to the scan limit.
+_FIGURE_R9_BIDI_CLASSES = frozenset(("R", "AL", "AN", "LRE", "RLE", "LRO", "RLO", "PDF",
+                                     "LRI", "RLI", "FSI", "PDI"))
+# Computed once per document (see _figure_bidi_offsets); at most four documents are kept.
+_FIGURE_BIDI_CACHE: dict = {}
+# R9-2: comment and processing-instruction forms the two readings split differently.
+_FIGURE_R9_MARK = re.compile(rb"<[?!]")
+_FIGURE_R9_XMLDECL = re.compile(rb"<\?xml[ \t\r\n]")
+_FIGURE_R9_DOCTYPE = re.compile(rb"<!DOCTYPE[ \t\r\n]", re.IGNORECASE)
+_FIGURE_R9_ELEMENT = re.compile(rb"<[A-Za-z]")
+# R9-3: a namespace declaration that moves an element out of XHTML.
+_FIGURE_R9_XMLNS = re.compile(
+    rb"(?<=[\s\"'])xmlns(?::([^\s<>/\"'=]+))?\s*=\s*(\"[^\"]*\"|'[^']*'|[^\s<>\"'`]+)",
+    re.IGNORECASE)
+_FIGURE_R9_XHTML_NS = "http://www.w3.org/1999/xhtml"
+# R9-3b: a prefix bound to the XHTML namespace is refused too (an XML reader gives it XHTML meaning).
+_FIGURE_R9_FOREIGN_NS = frozenset(("http://www.w3.org/2000/svg", "http://www.w3.org/1998/Math/MathML",
+                                   "http://www.w3.org/1999/xhtml"))
+# R9-4: a numeric reference to U+0080..U+009F (a browser maps it to another character).
+# R9-1 (A2): every bidi R/AL/AN character of the document, literal or as a reference.
+_FIGURE_R9_HIGH = re.compile(rb"[\x80-\xff]+")
+_FIGURE_R9_ANYREF = re.compile(rb"&(?:#[0-9]+;?|#[xX][0-9A-Fa-f]+;?|[A-Za-z0-9]+;?)")
+# R9-6 (A4): a declared encoding other than UTF-8 or ASCII.
+_FIGURE_R9_ENCODINGS = frozenset(("utf-8", "ascii", "us-ascii"))
+_FIGURE_R9_XMLDECL_ENC = re.compile(rb"<\?xml[ \t\r\n][^>]*?encoding\s*=\s*[\"']([^\"']*)[\"']", re.IGNORECASE)
+_FIGURE_R9_META = re.compile(rb"<meta(?=[\s/>])(?:\"[^\"]*\"|'[^']*'|[^>\"'])*>?", re.IGNORECASE)
+_FIGURE_R9_CHARSET = re.compile(r"charset\s*=\s*[\"']?\s*([^\s\"';>/]*)", re.IGNORECASE)
+_FIGURE_R9_NUMREF = re.compile(rb"&#(?:([0-9]+)|[xX]([0-9A-Fa-f]+))")
+# A numeric reference of 21 or more figures is no character, and html.unescape raises ValueError on
+# thousands of them: refuse it here, before any unescape (the scan's own call included).
+_FIGURE_R9_LONGREF = re.compile(rb"&#(?:[0-9]{21}|[xX][0-9A-Fa-f]{21})")
+
+
+def _figure_bidi_offsets(raw: bytes) -> tuple:
+    """Sorted byte offsets of every character of bidirectional class R, AL or AN in ``raw``,
+    written literally or as a character reference. Computed once per document and cached."""
+    cached = _FIGURE_BIDI_CACHE.get(raw)
+    if cached is not None:
+        return cached
+    found = []
+    for run in _FIGURE_R9_HIGH.finditer(raw):
+        at = run.start()
+        for ch in run.group(0).decode("utf-8", errors="surrogateescape"):
+            if unicodedata.bidirectional(ch) in _FIGURE_R9_BIDI_CLASSES:
+                found.append(at)
+            at += len(ch.encode("utf-8", errors="surrogateescape"))
+    for ref in _FIGURE_R9_ANYREF.finditer(raw):
+        text = ref.group(0).decode("ascii")
+        if len(text) < 30 and any(unicodedata.bidirectional(ch) in _FIGURE_R9_BIDI_CLASSES
+                                  for ch in html.unescape(text)):
+            found.append(ref.start())
+    result = tuple(sorted(found))
+    if len(_FIGURE_BIDI_CACHE) >= 4:
+        _FIGURE_BIDI_CACHE.clear()
+    _FIGURE_BIDI_CACHE[raw] = result
+    return result
+
+
+def _figure_r9(raw: bytes, window_lo: int, limit: int) -> None:
+    """Fix 9 (rulings 80 and 81): R9-1 to R9-6 on ``raw`` up to the scan limit; each only refuses.
+
+    R9-1 bidi characters and direction controls, R9-2 comment and processing-instruction
+    forms, R9-3 foreign and XHTML-prefixed namespaces, R9-4 numeric references to
+    U+0080 to U+009F, R9-5 is in ``sec_segment_adoption`` (replay types), R9-6 declared encoding.
+    """
+    # R9-2, from byte 0: the empty comment forms, any processing instruction but one
+    # XML declaration at byte 0 (after a byte-order mark), any ``<!`` that is neither a
+    # comment nor the one doctype before the first element (a CDATA section included).
+    _require(raw.find(b"<!-->", 0, limit + 4) < 0 and raw.find(b"<!--->", 0, limit + 5) < 0,
+             "FIGURE_SPAN_MISMATCH")
+    bom = 3 if raw.startswith(b"\xef\xbb\xbf") else 0
+    first = _FIGURE_R9_ELEMENT.search(raw)
+    doctypes = 0
+    for mark in _FIGURE_R9_MARK.finditer(raw, 0, limit):
+        at = mark.start()
+        if raw.startswith(b"<!--", at):
+            continue
+        if mark.group(0) == b"<?":
+            _require(at == bom and _FIGURE_R9_XMLDECL.match(raw, at) is not None, "FIGURE_SPAN_MISMATCH")
+            continue
+        doctypes += 1
+        _require(doctypes == 1 and _FIGURE_R9_DOCTYPE.match(raw, at) is not None
+                 and (first is None or at < first.start()), "FIGURE_SPAN_MISMATCH")
+    # R9-3, from byte 0, on any tag.
+    for decl in _FIGURE_R9_XMLNS.finditer(raw, 0, limit):
+        value = decl.group(2)
+        if value[:1] in (b'"', b"'"):
+            value = value[1:-1]
+        value = html.unescape(value.decode("utf-8", errors="ignore"))
+        if decl.group(1) is None:
+            _require(value == _FIGURE_R9_XHTML_NS, "FIGURE_SPAN_MISMATCH")
+        else:
+            _require(value not in _FIGURE_R9_FOREIGN_NS, "FIGURE_SPAN_MISMATCH")
+    # R9-6 (A4): a declared encoding other than UTF-8 or ASCII, and an ESC byte, before the scan limit.
+    _require(raw.find(b"\x1b", 0, limit) < 0, "FIGURE_SPAN_MISMATCH")
+    declared = _FIGURE_R9_XMLDECL_ENC.match(raw, bom, limit)
+    _require(declared is None or declared.group(1).decode("ascii", errors="replace").strip().lower()
+             in _FIGURE_R9_ENCODINGS, "FIGURE_SPAN_MISMATCH")
+    for meta in _FIGURE_R9_META.finditer(raw, 0, limit):
+        tag = html.unescape(meta.group(0).decode("utf-8", errors="ignore"))
+        for charset in _FIGURE_R9_CHARSET.finditer(tag):
+            _require(charset.group(1).lower() in _FIGURE_R9_ENCODINGS, "FIGURE_SPAN_MISMATCH")
+    # R9-1 (A2): any right-to-left character from byte 0 to the scan limit.
+    offsets = _figure_bidi_offsets(raw)
+    _require(not offsets or offsets[0] >= limit, "FIGURE_SPAN_MISMATCH")
+    # R9-4, in the window (2,000 bytes before the span, to the scan limit).
+    window = raw[max(0, window_lo):limit]
+    for ref in _FIGURE_R9_NUMREF.finditer(window):
+        number = (ref.group(1) or ref.group(2)).lstrip(b"0")
+        if len(number) <= 4:
+            _require(not 0x80 <= int(number or b"0", 10 if ref.group(1) else 16) <= 0x9F,
+                     "FIGURE_SPAN_MISMATCH")
+
+
 def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
     """Tokenise ``raw`` from byte 0 to just past the right-hand window.
 
@@ -465,6 +580,8 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
     pos = prev_end = 0
     # R8-1: a vertical tab is a blank to the tokenizer's ``\s`` and not to a browser.
     _require(raw.find(b"\x0b", 0, limit) < 0, "FIGURE_SPAN_MISMATCH")
+    # R9-4 (support): the root-tag loop below unescapes tag text anywhere in the document.
+    _require(_FIGURE_R9_LONGREF.search(raw) is None, "FIGURE_SPAN_MISMATCH")
     # R8-4: a browser copies the attributes of any later html/body start tag onto
     # the root or body element, wherever it lies; so over the whole document.
     roots = {b"html": 0, b"body": 0}
@@ -477,6 +594,7 @@ def _figure_scan(raw: bytes, start: int, end: int) -> tuple[list, bool]:
         runreadable, rdisplay = _figure_tag_style(rtok.group(0))
         _require(not (runreadable or rdisplay or _figure_tag_hidden(rname, rtok.group(0))),
                  "FIGURE_SPAN_MISMATCH")
+    _figure_r9(raw, window_lo, limit)
 
     def table_text(lo: int, hi: int, *, reference: bool = False) -> None:
         # R7-4: text, or a character reference, directly inside a table parent.
@@ -887,6 +1005,16 @@ def _verify_figure_span(name: str, span: dict, text: str, sign: str, raw: bytes,
     carries a ``display`` declaration (a browser merges the attributes of a later
     one onto the root element, even after the figure). A match inside a comment,
     a script or an attribute value refuses too (accepted, refusal only).
+    Fix 9 (ruling 80, addendum 81), refusals only: R9-1 a character of bidirectional class
+    R, AL or AN, literal or as a reference, anywhere from byte 0 to the scan limit (blanks
+    collapse on screen, so the window is not enough; computed once per document); R9-6 a
+    declared encoding other than UTF-8 or ASCII (XML declaration or a meta charset) and a 0x1B
+    byte before the scan limit; R9-3b an ``xmlns:`` prefix bound to the XHTML namespace; R9-2 from byte 0 to the scan
+    limit, the strings ``<!-->`` and ``<!--->``, a processing instruction other than
+    one XML declaration at byte 0, and a ``<!`` that is neither a comment nor the one
+    doctype before the first element (a CDATA section included); R9-3 an unprefixed
+    ``xmlns`` that is not the XHTML namespace, or an ``xmlns:`` prefix bound to the
+    SVG or MathML namespace; R9-4 a numeric reference to U+0080 to U+009F in the window.
 
     Known limits, left to the ratifier who reads the rendered excerpt: the
     meaning of nearby words ("loss", "credit"), the stated scale, and invisibility
