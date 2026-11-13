@@ -664,7 +664,7 @@
           "signal": -9.6083,
           "hist": 0.9491,
           "hist_vel3": 1.1261,
-          "k": 78.1978,
+          "k": 78.1977,
           "d": 63.0268,
           "depth_pctile": 7.9868,
           "as_of": "2026-11-10",
@@ -1923,12 +1923,6 @@
       "n_snapshots": 67,
       "fallen_angel_candidates": [
         {
-          "isin": "US524660BA49",
-          "name": "LEGGETT + PLATT INC SR UNSECURED 11/51 3.5",
-          "last_ig_date": "2026-10-01",
-          "first_hy_date": "2026-10-06"
-        },
-        {
           "isin": "US524660AY34",
           "name": "LEGGETT + PLATT INC SR UNSECURED 11/27 3.5",
           "last_ig_date": "2026-09-24",
@@ -1939,6 +1933,12 @@
           "name": "FLOWERS FOODS INC SR UNSECURED 03/31 2.4",
           "last_ig_date": "2026-09-24",
           "first_hy_date": "2026-10-19"
+        },
+        {
+          "isin": "US524660BA49",
+          "name": "LEGGETT + PLATT INC SR UNSECURED 11/51 3.5",
+          "last_ig_date": "2026-10-01",
+          "first_hy_date": "2026-10-06"
         }
       ],
       "rising_star_candidates": [
@@ -2025,6 +2025,6 @@
       "note": null
     }
   ],
-  "_timing_s": 24.46,
+  "_timing_s": 27.36,
   "_n_ledger_new": 0
 }
