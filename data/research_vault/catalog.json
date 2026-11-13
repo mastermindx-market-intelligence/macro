@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T05:38:10.482249+00:00",
-  "count": 3277,
+  "generated_at": "2026-11-13T06:07:58.614913+00:00",
+  "count": 3278,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -261,6 +261,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qymq7kuzekb-e14fa4",
+      "title": "Fidelity equities monthly nov 2026",
+      "institution": "Fidelity",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T02:55:48Z",
+      "summary_points": [
+        "AI Deployment Execution Risk: Fidelity International identifies deployment hurdles (adoption, implementation) as primary AI concern, not demand, shifting focus to execution over growth narratives.",
+        "AI Infrastructure Bottlenecks: Physical constraints (power, permitting) and semiconductor capacity delays risk AI infrastructure build, amplified by Asia geopolitical tensions (Korea/Taiwan corrections, Japan policy).",
+        "Asia Tech Sell-Off & Earnings Miss: APxJ equities fell 6.9% in October; 53% earnings forecast misses despite 15.7% YTD return, signaling severe underperformance risk for regional exposure.",
+        "China Materials Sector Outlier: 94.1% absolute growth estimate in materials sector, indicating policy-driven dynamics critical for China-focused strategy positioning.",
+        "IT Sector Overvaluation: 25.0% YTD return with 95% earnings forecast (5% miss), highlighting potential overvaluation and earnings disappointment risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
