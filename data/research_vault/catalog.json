@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T04:22:51.684398+00:00",
-  "count": 3273,
+  "generated_at": "2026-11-13T04:37:53.865405+00:00",
+  "count": 3274,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -141,6 +141,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-donifixdlgw-1e0fa5",
+      "title": "The Month at a Glance November 2026 EN",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-13T03:50:23Z",
+      "summary_points": [
+        "AI Sector Rotation Catalyst: Debt-funded AI investment scrutiny triggered tech/comms sell-off (US Tech/Comms down -5.0%/-9.3%) and momentum reversal (US momentum factor down 16%), driving rotation to defensives (Healthcare +7.94%, Staples +7.25%).",
+        "European Equity Valuation Gap: STOXX Europe 600 trades at 14x earnings vs S&P 500’s 18x, supported by structural catalysts (ReArm Europe €800bn, REPowerEU €300bn, Chips Act €43bn), 3.2% euro-area dividend yield (vs S&P 500’s 1.3%), and €85.7bn Q1 2026 buybacks.",
+        "Geopolitical & Policy Shift: Persistent China competition and AI funding scrutiny accelerated diversification away from AI themes, with Europe’s value ETFs underperforming amid broader rotation, while EU policy packages drive defense/energy/digitalization flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
