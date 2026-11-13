@@ -122,6 +122,7 @@ def _renderer_version() -> str:
     """
     inputs = [
         Path(__file__),
+        _REPO / "scripts" / "earnings_route_shards.py",
         _REPO / "engine" / "earnings_narrative" / "public_wire.py",
         _REPO / "lib" / "pages.py",
         _REPO / "lib" / "seo.py",
