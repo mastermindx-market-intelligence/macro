@@ -797,8 +797,8 @@ http:// {
 	# a rsync'd NEW <SYM>.fund.json 404'd until rebuild), and the fundamentals
 	# pipeline rsyncs NEW per-symbol files daily (fund/opts/tx waves). Caddy's
 	# file_server has no build manifest — a new file serves on the next request.
-	# Cache headers set here (plain header: file_server emits no Cache-Control, so
-	# no defer needed). EdgeOne still RefreshHits until an owner console rule exists.
+	# Keep errors out of shared caches. Only a successful static response can
+	# select a public TTL, including byte ranges and conditional validation.
 	handle /data/* {
 		root * /opt/terminal/terminal/public
 		@manifest path /data/manifest.json
@@ -806,9 +806,26 @@ http:// {
 			path /data/*
 			not path /data/manifest.json
 		}
-		header @manifest Cache-Control "public, s-maxage=60, max-age=0, must-revalidate"
-		header @rest Cache-Control "public, s-maxage=300, max-age=0, must-revalidate"
-		file_server
+		route {
+			header Cache-Control "no-store"
+			header {
+				Cache-Control "no-store"
+				match status 4xx 5xx
+			}
+			header @manifest {
+				Cache-Control "public, s-maxage=60, max-age=0, must-revalidate"
+				match status 200 206 304
+			}
+			header @rest {
+				Cache-Control "public, s-maxage=300, max-age=0, must-revalidate"
+				match status 200 206 304
+			}
+			file_server {
+				pass_thru
+			}
+			header Content-Type application/json
+			respond `{"error":"not_found"}` 404
+		}
 	}
 
 }
