@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T14:08:44.416612+00:00",
-  "count": 3300,
+  "generated_at": "2026-11-13T14:39:10.675286+00:00",
+  "count": 3301,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -141,6 +141,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-1yw57247lzk-b92d50",
+      "title": "GS Jeter Top Stories 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T13:51:40Z",
+      "summary_points": [
+        "US-China AI Chip Controls: Escalating tech trade tensions from restricted Nvidia access risk semiconductor/tech sector exposure and global supply chain disruptions.",
+        "China Credit Growth Miss: Contraction in new loans signals economic slowdown, triggering potential policy tightening and equity/bond volatility.",
+        "Fed Speakers Drive Rate Expectations: Multiple Fed officials today will shape immediate USD, bond, and equity market moves via rate policy signals.",
+        "Semiconductor Sector Vulnerability: Downgrades in AMAT, NVDA, Broadcom highlight policy-driven sector risk, with selective positioning in analog/semiconductor plays."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
