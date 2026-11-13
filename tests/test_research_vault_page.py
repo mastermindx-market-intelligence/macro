@@ -236,19 +236,24 @@ def test_client_preview_is_fixed_to_three_and_fails_closed():
     assert "var opts = { headers: h, credentials: 'include', cache: 'no-store' };" in js
 
 
-def test_exact_catalog_id_search_survives_an_empty_fulltext_response():
-    """The Search UI must find an admitted catalog ID even if FTS does not index IDs.
+def test_catalog_metadata_search_survives_an_empty_fulltext_response():
+    """A lagging FTS index must not hide an admitted catalog title or exact ID.
 
-    Exact identity lookup occurs AFTER lane/facet filters and BEFORE FTS hit
-    restriction; non-Pro callers remain restricted to previewItems().
+    Exact identity and text matching occur AFTER lane/facet filters. A body
+    hit is accepted immediately, but an empty server set still gets a local
+    title, summary and ID lookup, inside the same tier-visible catalog.
     """
     js = (bld.ROOT / "site" / "research_vault_app.js").read_text(encoding="utf-8")
     match = js.split("function matchItem(x) {", 1)[1].split("function renderFeed()", 1)[0]
     exact = "if (x.id && x.id.toLowerCase() === FILT.q.toLowerCase()) return true;"
-    assert exact in match
+    hit = "if (SEARCH_HITS && SEARCH_HITS[x.id]) return true;"
+    assert exact in match and hit in match
     for facet in ("FILT.inst", "FILT.side", "FILT.theme"):
         assert match.index(facet) < match.index(exact)
-    assert match.index(exact) < match.index("if (SEARCH_HITS)")
+    assert match.index(exact) < match.index(hit)
+    assert match.index(hit) < match.index("var hay =")
+    assert match.index("var hay =") < match.index("if (hay.indexOf")
+    assert "if (SEARCH_HITS) return !!SEARCH_HITS[x.id];" not in match
     assert "previewItems().filter(matchItem)" in js
 
 
