@@ -426,3 +426,44 @@ slowChannels=true;channels.innerHTML='waiting';const inverse=run();resolvePress(
 assert.equal(slot.innerHTML,'Press settled');assert.equal(channels.innerHTML,'waiting');
 resolveChannels({ok:true,note:'channels finally ready'});await inverse;assert(channels.innerHTML.includes('channels finally ready'));
 """)
+
+
+def test_late_research_responses_do_not_replace_the_selected_page():
+    _node_assert("""
+const group = new Function(block('const NAV_GROUPS = [', 'const TAB_LABELS = ') + ';return NAV_GROUPS;')().find(g => g.label === 'Intelligence & research');
+for (const [id] of group.items.filter(([id]) => !['research_tools', 'mastermind_logs'].includes(id))) {
+  const marker = 'RENDER.' + id + ' = async ';
+  const start = APP.indexOf(marker);
+  assert.notEqual(start, -1, id);
+  const source = APP.slice(start, APP.indexOf('\\n};', start) + 3);
+  const view = {innerHTML:'', isConnected:true};
+  const RENDER = {};
+  let finish;
+  const read = new Promise(resolve => { finish = resolve; });
+  const harness = new Function('RENDER', '$', 'api', 'nwCrumbs',
+    'let ADMIN_RENDER_EPOCH=0;' + source + ';return () => ++ADMIN_RENDER_EPOCH;');
+  const navigate = harness(RENDER, () => view, () => read);
+  const pending = RENDER[id]();
+  navigate();
+  view.innerHTML = 'new research page';
+  finish({ok:false, error:'old response'});
+  await pending;
+  assert.equal(view.innerHTML, 'new research page', id);
+}
+""")
+
+
+def test_long_hold_and_chronicle_render_existing_evidence_and_absence():
+    _node_assert("""
+const build = (start, end, name) => new Function('card', 'esc', 'fmtNum',
+  block(start, end) + ';return ' + name)((t, body) => t + body, String, n => n == null ? '—' : String(n));
+const longHold = build('function longHoldEvidence(', 'RENDER.long_hold =', 'longHoldEvidence');
+const render = longHold({available:true, counts:{n_ok:0, n_episodes:1, n_refused:1},
+  refused_examples:[{ticker:'EXAMPLE', t0:'2025-10-01', refusal_reasons:['missing_shares']}]},
+  {available:false, reason:'manifest missing'});
+for (const value of ['0 of 1', 'EXAMPLE', 'missing_shares', 'manifest missing']) assert(render.includes(value));
+const chronicle = build('function chronicleNamedExposures(', 'RENDER.chronicle =', 'chronicleNamedExposures');
+assert(chronicle({rows:[{event_id:'evt-1', direct_tickers:['ABC']}]}).includes('evt-1'));
+assert(chronicle({reason_en:'No direct tickers in this window.'}).includes('No direct tickers in this window.'));
+assert(chronicle({error:'failed'}).includes('unavailable'));
+""")

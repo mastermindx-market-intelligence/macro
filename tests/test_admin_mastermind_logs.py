@@ -877,3 +877,13 @@ def test_rate_route_returns_the_folded_contra_fields(tmp_path, monkeypatch):
     assert d["eval"]["grade"] == 4 and d["eval"]["thumb"] == "up"
     assert d["eval"]["contra_verdict"] == "market_divergence"
     assert d["eval"]["contra_signals"] == ["breadth", "credit"]
+
+
+def test_provider_filter_applies_to_list_and_export_with_whole_window_choices(tmp_path):
+    _seed(tmp_path, [_row("one", provider="alpha"), _row("two", provider="beta")])
+    filters = _mm_log_filters({"provider": ["beta"]})
+    result = ml.logs(filters=filters, root=tmp_path)
+    assert result["stats"]["by_provider"] == {"alpha": 1, "beta": 1}
+    assert [row["id"] for row in result["rows"]] == ["two"]
+    exported = ml.export(filters=filters, root=tmp_path)
+    assert exported["count"] == 1 and json.loads(exported["content"])["id"] == "two"

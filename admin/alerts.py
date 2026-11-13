@@ -27,13 +27,13 @@ def _age_days(ts) -> float | None:
     if not ts:
         return None
     s = str(ts).strip()
-    for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
-        try:
-            dt = datetime.strptime(s[:len(fmt) + 2], fmt).replace(tzinfo=timezone.utc)
-            return (datetime.now(timezone.utc) - dt).total_seconds() / 86400.0
-        except ValueError:
-            continue
-    return None
+    try:
+        dt = datetime.fromisoformat(s.removesuffix(" UTC").replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return (datetime.now(timezone.utc) - dt).total_seconds() / 86400.0
+    except (ValueError, OverflowError):
+        return None
 
 
 def _triage_calibration() -> dict | None:

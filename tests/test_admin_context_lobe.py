@@ -199,3 +199,16 @@ def test_candidate_cap(tmp_path, monkeypatch):
     assert d["n_candidates_total"] == 100
     assert d["n_candidates_shown"] == context_lobe._CANDIDATE_CAP
     assert len(d["candidates"]) == context_lobe._CANDIDATE_CAP
+
+
+def test_candidate_earnings_today_and_missing_conflict_coverage(tmp_path, monkeypatch):
+    p = tmp_path / "context.json"
+    p.write_text(json.dumps({"candidate_context": {
+        "TODAY": {"bottom": {"earnings_days_to": 0}, "earnings_ctx": {"days_to_earnings": 7}},
+        "EMPTY": {"graph_conflicts": []}, "BAD": None,
+    }}))
+    monkeypatch.setattr(context_lobe, "_CTX_PRIMARY", p)
+    rows = {r["ticker"]: r for r in context_lobe.panel()["candidates"]}
+    assert rows["TODAY"]["earnings_days_to"] == 0
+    assert rows["TODAY"]["n_graph_conflicts"] is None
+    assert rows["EMPTY"]["n_graph_conflicts"] == 0

@@ -44,7 +44,8 @@ _CANDIDATE_CAP = 25
 def _read_json(path: Path) -> dict | None:
     """Read + parse JSON from path. Returns None on any error."""
     try:
-        return json.loads(path.read_text())
+        value = json.loads(path.read_text())
+        return value if isinstance(value, dict) else None
     except Exception:  # noqa: BLE001
         return None
 
@@ -183,11 +184,10 @@ def _candidate_block(raw: dict) -> list:
             return []
 
         # Sort by richness descending so we surface the most-complete rows
-        ranked = sorted(cc.items(), key=lambda kv: _row_richness(kv[1]), reverse=True)
+        valid_rows = ((ticker, row) for ticker, row in cc.items() if isinstance(row, dict))
+        ranked = sorted(valid_rows, key=lambda kv: _row_richness(kv[1]), reverse=True)
         rows = []
         for ticker, row in ranked[:_CANDIDATE_CAP]:
-            if not isinstance(row, dict):
-                continue
             bottom    = row.get("bottom")    or {}
             val       = row.get("valuation") or {}
             opts      = row.get("options")   or {}
@@ -196,7 +196,7 @@ def _candidate_block(raw: dict) -> list:
             dil       = row.get("dilution")  or {}
             earn      = row.get("earnings_ctx") or {}
             vis       = row.get("visibility") or {}
-            graph_c   = row.get("graph_conflicts") or []
+            graph_c   = row.get("graph_conflicts")
             kernel    = row.get("kernel")    or {}
 
             rows.append({
@@ -206,7 +206,8 @@ def _candidate_block(raw: dict) -> list:
                 "trigger_age_ticks":       bottom.get("trigger_age_ticks"),
                 "coiled":                  bottom.get("coiled"),
                 "star":                    bottom.get("star"),
-                "earnings_days_to":        bottom.get("earnings_days_to") or earn.get("days_to_earnings"),
+                "earnings_days_to":        (bottom["earnings_days_to"] if bottom.get("earnings_days_to") is not None
+                                             else earn.get("days_to_earnings")),
                 "earnings_next_date":      bottom.get("earnings_next_date"),
                 # valuation (may be absent in Build 1)
                 "ev_sales":                val.get("ev_sales"),
@@ -224,7 +225,7 @@ def _candidate_block(raw: dict) -> list:
                 "underwater_state":        struct.get("underwater_state"),
                 "decline_geometry":        struct.get("decline_geometry"),
                 # graph conflicts count
-                "n_graph_conflicts":       len(graph_c),
+                "n_graph_conflicts":       len(graph_c) if isinstance(graph_c, list) else None,
                 # kernel
                 "kernel_fdr_cleared":      kernel.get("fdr_cleared"),
                 # meta

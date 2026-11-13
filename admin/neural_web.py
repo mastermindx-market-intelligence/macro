@@ -1958,15 +1958,11 @@ def orchestrator_panel(root=None) -> dict:
     if not reviews_path.exists():
         status_hero["reviews_note"] = "no reviews ledger yet"
 
-    # PR-R4: fail-soft read of prophet suggestions for compact display on Master Brain page
-    prophet_suggestions: list = []
-    try:
-        _ps_path = repo / "data" / "neuralweb" / "prophet_suggestions.json"
-        _ps_data = _read_json(_ps_path)
-        if isinstance(_ps_data, dict):
-            prophet_suggestions = (_ps_data.get("suggestions") or [])[:10]
-    except Exception:  # noqa: BLE001
-        pass
+    source = _read_json(repo / "data" / "neuralweb" / "prophet_suggestions.json")
+    suggestions = source.get("suggestions") if isinstance(source, dict) else None
+    suggestions_available = isinstance(suggestions, list) and all(
+        isinstance(row, dict) for row in suggestions
+    )
 
     return {
         "ok": True,
@@ -1976,7 +1972,8 @@ def orchestrator_panel(root=None) -> dict:
         "settings": data["settings"],
         "dialogue": dialogue,
         "cortex": cortex,
-        "prophet_suggestions": prophet_suggestions,
+        "prophet_suggestions": suggestions[:10] if suggestions_available else [],
+        "prophet_suggestions_available": suggestions_available,
     }
 
 

@@ -264,7 +264,7 @@ def _int_param(q: dict, key: str, default: int, lo: int, hi: int) -> int:
 def _mm_log_filters(q: dict) -> dict:
     """Build the mastermind_logs filter dict from a parsed query string.
 
-    Recognised params: surface, lane, model, mode, graded (yes|no|all),
+    Recognised params: surface, provider, lane, model, mode, graded (yes|no|all),
     thumb (up|down|all), starred (1), error (1), search (substring), since (ISO/date),
     thinking (1 → only rows carrying a reasoning trace), contra (1 → only rows the
     deterministic conflict scan hits), verdict (LLM contradiction label).
@@ -273,6 +273,7 @@ def _mm_log_filters(q: dict) -> dict:
         return (q.get(key) or [""])[0].strip()
     return {
         "surface": one("surface") or "all",
+        "provider": one("provider") or "all",
         "lane": one("lane") or "all",
         "model": one("model"),
         "mode": one("mode"),

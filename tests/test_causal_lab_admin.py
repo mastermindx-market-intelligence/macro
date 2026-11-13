@@ -374,3 +374,23 @@ def test_panel_import_clean():
     """admin.causal_lab imports without error and has panel() callable."""
     import admin.causal_lab as m  # noqa: PLC0415
     assert callable(m.panel)
+
+
+def test_edges_use_producer_clock_before_legacy_clock_and_ignore_non_records(tmp_path):
+    rows = [
+        {**_EDGE_ROW, "edge_id": "canonical", "asof": "2026-07-09T12:00:00+02:00",
+         "scanned_at": "2020-01-01"},
+        ["malformed"],
+        {**_EDGE_ROW, "edge_id": "legacy", "scanned_at": "2026-07-09T11:00:00Z"},
+        {"edge_id": "undated", "asof": "unknown"},
+    ]
+    with _PatchedPaths(tmp_path) as m:
+        _write_lab(m._LAB_PRIMARY, _LAB_STATE)
+        _write_jsonl(m._EDGES, rows)
+        result = m.panel()
+    assert result["n_edges"] == 3
+    assert [(e["edge_id"], e["scanned_at"]) for e in result["latest_edges"]] == [
+        ("legacy", "2026-07-09T11:00:00Z"),
+        ("canonical", "2026-07-09T12:00:00+02:00"),
+        ("undated", ""),
+    ]

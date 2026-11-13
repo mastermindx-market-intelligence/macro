@@ -408,6 +408,9 @@ def _matches(row: dict, ev: dict, f: dict, contra: dict | None = None,
     surface = f.get("surface")
     if surface and surface != "all" and row.get("surface") != surface:
         return False
+    provider = f.get("provider")
+    if provider and provider != "all" and row.get("provider") != provider:
+        return False
     lane = f.get("lane")
     if lane and lane != "all" and (row.get("lane") or "") != lane:
         return False
