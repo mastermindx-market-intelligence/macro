@@ -1487,6 +1487,20 @@ def test_company_alignment_requires_latest_event_not_only_history(tmp_path: Path
     assert row["dossier_available"] is False
 
 
+def test_unchanged_route_shard_preserves_file_identity(tmp_path: Path) -> None:
+    path = tmp_path / "route-shards" / "part-1c.json"
+    write = wire_builder._atomic_write_if_changed
+    first = b'{"shard":"1c","routes":{}}\\n'
+    write(path, first)
+    before = path.stat()
+    write(path, first)
+    same = path.stat()
+    assert path.read_bytes() == first
+    assert (same.st_ino, same.st_mtime_ns) == (before.st_ino, before.st_mtime_ns)
+    write(path, b'{"shard":"1c","routes":{"AAPL":{}}}\\n')
+    assert path.read_bytes() != first
+
+
 def test_publish_removes_stale_article_named_by_prior_redacted_routes(tmp_path: Path) -> None:
     article, manifest, manifest_raw, _packet = _article(tmp_path)
     publication = build_public_wire_manifest(
