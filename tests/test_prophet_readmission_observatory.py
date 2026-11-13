@@ -5,6 +5,8 @@ This module deliberately does not fit trading thresholds or change authority.
 from __future__ import annotations
 
 import json
+import shutil
+import subprocess
 from pathlib import Path
 
 import pandas as pd
@@ -123,3 +125,55 @@ def test_observatory_source_renders_hindsight_and_vintage_cues():
     assert "Historical snapshot — as of" in js
     assert "llCaseRows.map(" in js
     assert "Upper bound " in js
+
+
+def test_observatory_dynamic_render_and_html_escaping():
+    """Execute the actual read-only template block in Node when available."""
+    if shutil.which("node") is None:
+        pytest.skip("node unavailable; source-contract checks still run")
+    js = (Path(__file__).resolve().parents[1]
+          / "admin" / "static" / "app.js")
+    runner = r"""
+const fs = require('node:fs');
+const source = fs.readFileSync(process.argv[1], 'utf8');
+const start = source.indexOf('  const llAsOf =');
+const end = source.indexOf('  /* --- Fable spend meter --- */', start);
+if (start < 0 || end < start) throw Error('learning-loop renderer absent');
+const render = new Function('ll', 'd', 'esc',
+  source.slice(start, end) + '\nreturn llHtml;');
+const esc = s => String(s == null ? '' : s)
+  .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+const ll = {
+  as_of: '2026-07-31', n_episodes:808, n_matured:610,
+  n_in_flight:194, n_board_dates:24, n_losers:132, n_winners:91,
+  horizon:10, labels:[],
+  veto_cost: [
+    {en:'Prior already underwater', leg:'open_drawdown_at_readmit',
+     variant:'buildable', visible_at_entry:true,
+     n_flagged:0, n_universe:610, net_pct_if_vetoed:0},
+    {en:'Prior eventually lost', leg:'prior_episode_loss',
+     variant:'hindsight_upper_bound', visible_at_entry:false,
+     n_flagged:8, n_universe:610, net_pct_if_vetoed:86.53},
+  ],
+  reentry_cases:[{ticker:'<img src=x>', entry_date:'2026-07-15',
+    prior_mark_at_readmit_pct:3.04, prior_mark_observation_date:null,
+    outcome_pct:-17.86, sector_reco_at_entry:'avoid',
+    entry_status_at_entry:'await_confluence'}],
+};
+const html = render(ll, {}, esc);
+const checks = [
+  html.includes('Historical snapshot — as of 2026-07-31'),
+  html.includes('Hindsight only'), html.includes('Known at entry'),
+  html.includes('Upper bound +86.53pp'),
+  html.includes('0 / 610'),
+  html.includes('Observed close date'),
+  html.includes('not recorded'),
+  html.includes('&lt;img src=x&gt;') && !html.includes('<img src=x>'),
+];
+if (checks.some(x => !x)) throw Error('display regression: ' + JSON.stringify(checks));
+"""
+    result = subprocess.run(
+        ["node", "-e", runner, str(js)], check=False, capture_output=True,
+        text=True, timeout=20,
+    )
+    assert result.returncode == 0, result.stderr[:1200]
