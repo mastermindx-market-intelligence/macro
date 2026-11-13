@@ -3973,9 +3973,9 @@ def content_plan(
     # to accounts that will actually post — never to a planned (disabled) desk,
     # or the Sentinel would carry content for a desk that doesn't exist (F3d). A
     # planned row keeps its empty queue; enabled_rows drives every reach-item
-    # placement below. Falls back to all rows only if nothing is enabled (so a
-    # fully-planned network still produces a plan rather than crashing).
-    enabled_rows = [r for r in account_rows if r.get("status") != "planned"] or account_rows
+    # placement below. An entirely disabled network has no allocation pool;
+    # falling back to all rows would refill the deliberately empty queues.
+    enabled_rows = [r for r in account_rows if r.get("status") != "planned"]
 
     # ── Featured charts: EVERY post that names a ticker gets a card ───────────
     # Operator law, 2026-07-28: "we should always have illustrations for charting

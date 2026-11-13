@@ -662,6 +662,46 @@ def test_actual_nightly_plan_uses_measured_theme_caption_and_chart(tmp_path, mon
     assert "20.0%" in chart["svg"] and "4 of 24" in chart["svg"]
 
 
+@pytest.mark.parametrize("disabled_by_override", [False, True])
+def test_all_disabled_desks_keep_empty_queues_and_writer_contexts(
+        tmp_path, monkeypatch, disabled_by_override):
+    import json
+    import engine.marketing.chart_render as cr
+    import engine.marketing.content_studio as cs
+
+    data = _participation_data()
+    assert ms.theme_lists(data, n=4), "The allocation test needs real reach supply"
+    assert ms.theme_copy(ms.theme_lists(data, n=4)[0])["headline"]
+    monkeypatch.setattr(ms, "load_movers", lambda *a, **k: data)
+    monkeypatch.setattr(cr, "resolve_color_logo", lambda *a, **k: None)
+    monkeypatch.setattr(cr, "resolve_logo", lambda *a, **k: None)
+    monkeypatch.setattr(cs, "_LADDER_SLOTS", ["S1", "S2", "S3", "S4"])
+    monkeypatch.delenv("MARKETING_LLM_ENABLED", raising=False)
+    seen_contexts = []
+    real_writer = copywriter.write_posts_deterministic
+
+    def record_writer_contexts(contexts, **kwargs):
+        seen_contexts.extend(contexts)
+        return real_writer(contexts, **kwargs)
+
+    monkeypatch.setattr(copywriter, "write_posts_deterministic", record_writer_contexts)
+    accounts = [{"id": desk, "kind": "branded", "beat": "Market",
+                 "voice": "authoritative desk", "enabled": disabled_by_override,
+                 "tilt": {"theme_list": 1.0}}
+                for desk in ("flagship", "receipts")]
+    cfg = {"desk_network": {"stage": "A", "accounts": accounts}}
+    if disabled_by_override:
+        path = tmp_path / "data/marketing/account_overrides.json"
+        path.parent.mkdir(parents=True)
+        path.write_text(json.dumps({desk["id"]: {"enabled": False} for desk in accounts}))
+    plan = cs.content_plan(cfg, [], root=tmp_path, defer_media=True)
+    assert len(plan["accounts"]) == 2
+    assert all(account["status"] == "planned" and not account["queue"]
+               for account in plan["accounts"])
+    assert plan["summary"]["total_posts"] == 0
+    assert seen_contexts == [], "Disabled desks must not reach the writer with posts"
+
+
 @pytest.mark.parametrize("voice", sorted({v for (t, v) in copywriter._TEMPLATES if t == "theme_list"}))
 @pytest.mark.parametrize("sign", [1, -1])
 @pytest.mark.parametrize("participating,thesis_word", [(4, "minority"), (12, "Half"), (14, "Most"), (24, "Every")])
