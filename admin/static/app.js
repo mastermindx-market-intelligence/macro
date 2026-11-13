@@ -5342,9 +5342,34 @@ RENDER.prophet = async () => {
      Both columns of the veto counterfactual ship together on purpose: losses avoided
      WITHOUT winners forfeited reads as an argument for a veto, which is exactly the
      reading the artifact exists to prevent. Nothing here is recomputed in the browser. */
+  const llAsOf = String((ll && ll.as_of) || "");
+  const llParsedDay = /^\d{4}-\d{2}-\d{2}$/.test(llAsOf)
+    ? Date.parse(llAsOf + "T00:00:00Z") : NaN;
+  const llAgeDays = Number.isFinite(llParsedDay)
+    ? Math.max(0, Math.floor((Date.now() - llParsedDay) / 86400000)) : null;
+  const llCaseRows = Array.isArray(ll && ll.reentry_cases) ? ll.reentry_cases : [];
+  const llCaseHtml = llCaseRows.length
+    ? `<div class="section" style="margin-top:12px">Historical re-admission examples <span class="cnt">${llCaseRows.length}</span></div>
+       <div class="note muted">The earlier position's mark was observable when the name reappeared; its later resolved result was NOT known then. These are hypothetical board episodes, not executed trades.</div>
+       <div class="tbl-scroll"><table>
+         <thead><tr><th>Stock</th><th>Board date</th><th>Earlier mark at re-entry</th><th>New 10-session return</th><th>Sector at entry</th><th>Entry status</th></tr></thead><tbody>
+         ${llCaseRows.map(c => `<tr>
+           <td class="mono"><b>${esc(c.ticker || "—")}</b></td>
+           <td class="mono sub">${esc(c.entry_date || "—")}</td>
+           <td class="mono">${c.prior_mark_at_readmit_pct == null ? "unknown" : Number(c.prior_mark_at_readmit_pct).toFixed(2) + "%"}</td>
+           <td class="mono">${c.outcome_pct == null ? "unknown" : Number(c.outcome_pct).toFixed(2) + "%"}</td>
+           <td class="sub">${esc(c.sector_reco_at_entry || "not recorded")}</td>
+           <td class="sub mono">${esc(c.entry_status_at_entry || "not recorded")}</td>
+         </tr>`).join("")}
+         </tbody></table></div>`
+    : "";
+
   const llHtml = ll
     ? `<div class="section">Learning loop — postmortem <span class="cnt">${esc(ll.as_of || "—")}</span></div>
        <div class="card">
+         <div class="note" role="status" style="padding:8px 10px;border-left:3px solid var(--warn);background:var(--warn-bg);margin-bottom:10px">
+           <b>Historical snapshot — as of ${esc(llAsOf || "unknown")}</b>${llAgeDays == null ? " · age unknown" : " · " + llAgeDays + " calendar days old"}. This panel reads a committed artifact; its numbers are NOT a live board verdict or an executable trading policy.
+         </div>
          <div class="sub">${Number(ll.n_episodes || 0)} episodes · ${Number(ll.n_matured || 0)} matured across ${Number(ll.n_board_dates || 0)} board dates · ${Number(ll.n_in_flight || 0)} in flight (counted in no rate) · <b>${Number(ll.n_losers || 0)}</b> losers · <b>${Number(ll.n_winners || 0)}</b> winners · H=${esc(String(ll.horizon ?? "—"))}${ll.llm_used === false ? " · no LLM in the classification path" : ""}</div>
          <div class="tbl-scroll" style="margin-top:8px"><table><thead><tr><th>Failure label</th><th>Visible at entry</th><th>Losers</th><th>share</th><th>Winners</th><th>share</th><th>nulls</th></tr></thead><tbody>
          ${(ll.labels || []).map(f => `<tr>
@@ -5359,17 +5384,20 @@ RENDER.prophet = async () => {
          </tbody></table></div>
          <div class="note muted" style="margin-top:4px">Shares are over the episodes where the label could be decided; <code>nulls</code> counts matured episodes whose entry state was never recorded, excluded from that label's denominator rather than counted as clean.</div>
          <div class="section" style="margin-top:10px">What a veto would have cost — both sides</div>
-         <div class="tbl-scroll"><table><thead><tr><th>Would-be veto</th><th>Flagged</th><th>Losers avoided</th><th>Loss avoided</th><th>Winners forfeited</th><th>Gains forfeited</th><th>Net</th></tr></thead><tbody>
+         <div class="note" style="color:var(--warn);margin-bottom:6px"><b>HINDSIGHT ONLY is not actionable.</b> A prior episode's final loss was not known when Prophet re-admitted the stock. Compare the separate known-at-entry leg; do not treat the hindsight net as capital saved.</div>
+         <div class="tbl-scroll"><table><thead><tr><th>Would-be veto</th><th>Evidence</th><th>Flagged</th><th>Losers avoided</th><th>Loss avoided</th><th>Winners forfeited</th><th>Gains forfeited</th><th>Net</th></tr></thead><tbody>
          ${(ll.veto_cost || []).map(v => `<tr>
-           <td>${esc(v.en || v.label || "—")}</td>
+           <td>${esc(v.en || v.label || "—")} <span class="sub muted mono">${esc(v.leg || "")}</span></td>
+           <td><span class="statpill ${v.variant === "hindsight_upper_bound" ? "s-warn" : v.visible_at_entry && v.variant === "buildable" ? "s-ok" : "s-mut"}">${v.variant === "hindsight_upper_bound" ? "Hindsight only" : v.visible_at_entry && v.variant === "buildable" ? "Known at entry" : "Unknown"}</span></td>
            <td class="sub mono">${Number(v.n_flagged || 0)} / ${Number(v.n_universe || 0)}</td>
            <td class="mono">${Number(v.n_losers_avoided || 0)}</td>
            <td class="mono s-ok">${Number(v.loss_avoided_pct || 0).toFixed(2)}pp</td>
            <td class="mono"><b>${Number(v.n_winners_forfeited || 0)}</b></td>
            <td class="mono s-bad"><b>${Number(v.winners_forfeited_pct || 0).toFixed(2)}pp</b></td>
-           <td class="mono">${Number(v.net_pct_if_vetoed || 0) >= 0 ? "+" : ""}${Number(v.net_pct_if_vetoed || 0).toFixed(2)}pp</td>
+           <td class="mono ${v.variant === "hindsight_upper_bound" ? "s-warn" : ""}">${v.variant === "hindsight_upper_bound" ? "Upper bound " : ""}${Number(v.net_pct_if_vetoed || 0) >= 0 ? "+" : ""}${Number(v.net_pct_if_vetoed || 0).toFixed(2)}pp</td>
          </tr>`).join("")}
          </tbody></table></div>
+         ${llCaseHtml}
          <div class="note muted" style="margin-top:4px">Equal-weight arithmetic counterfactual, not a backtest — it ignores sizing and the overlap between episodes surfaced on one board night. Measurement tier: no rule here is live. Artifact <code>${esc(ll.artifact || "")}</code> · report <code>${esc(ll.report || "")}</code> · protocol <code>${esc(ll.protocol || "")}</code>.</div>
        </div>`
     : `<div class="section">Learning loop — postmortem</div><div class="sub muted">${esc(d.learning_loop_note || "not yet written.")}</div>`;
