@@ -959,10 +959,16 @@ def _mark_at(prev: dict, when: str) -> float | None:
     entry_px = (sc or {}).get("entry")
     if series is None or not entry_px:
         return None
-    j = series.index.searchsorted(pd.Timestamp(when), side="left")
-    if j >= len(series):
+    # The board date is the decision clock. A close printed later must never
+    # enter an entry-time feature (missing sessions/holidays can occur).
+    # Use the last close at or before that day, not the first later close.
+    j = int(series.index.searchsorted(pd.Timestamp(when), side="right")) - 1
+    if j < 0:
         return None
-    return (float(series.iloc[j]) / float(entry_px) - 1.0) * 100.0
+    px = series.iloc[j]
+    if pd.isna(px) or float(px) <= 0:
+        return None
+    return (float(px) / float(entry_px) - 1.0) * 100.0
 
 
 def _rev(date: Any) -> str:
