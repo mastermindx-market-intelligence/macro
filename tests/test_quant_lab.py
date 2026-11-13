@@ -743,3 +743,57 @@ def test_num_macro_is_non_finite_safe_even_if_fmt_is_bypassed(monkeypatch):
     # macros alone must still null all three (>= not == : the underlying synthetic
     # TOPNAN-shaped row may already carry its own legitimately-null leg, which is fine)
     assert row_html.count('<span class="muted">—</span>') >= 3
+
+# =======================================================================================
+# SCE V11 external-method dossier — version-safe negative/limited-identification result
+# =======================================================================================
+def test_sce_v11_method_artifact_preserves_the_version_boundary_and_scoped_null():
+    """The product slice may make the negative August result useful, but it must never
+    turn it into a claim that the current September method lacks an exit rule. Likewise,
+    old June/July rules cannot silently fill September's undisclosed Section 3."""
+    import json
+    from pathlib import Path
+    from lib import config
+
+    spec = specs.METHODS["systematic_core_engine"]
+    assert spec["display_kind"] == "versioned_dossier"
+    p = Path(config.ROOT) / "data" / "quant_lab" / "methods" / spec["result_artifact"]
+    result = json.loads(p.read_text())
+
+    assert result["schema"] == "quant_lab_method_result.v1"
+    assert result["method_key"] == "systematic_core_engine"
+    assert result["current"]["status"] == "LIMITED_IDENTIFICATION_CURRENT_VERSION"
+    assert result["current"]["universe"] == ["SPY", "XLE", "GLD", "SHY"]
+    assert result["current"]["architecture"] == ["Trend Base", "Dislocation Overlay"]
+
+    august = next(x for x in result["scoped_results"] if x["version"] == "2026-08")
+    assert august["status"] == "NO_EXIT_RULE_VALIDATED"
+    assert august["scope"] == "tested August auction-profile exit family only"
+    assert "not" in august["does_not_mean_en"].lower()
+    assert "current" in august["does_not_mean_en"].lower()
+
+    periods = [x["period"] for x in result["timeline"]]
+    assert periods == ["2026-06-25", "2026-07-06", "2026-07-10", "2026-08-12", "2026-09-10–12"]
+    assert len(result["unresolved_current_rules"]) >= 5
+    assert {x["class"] for x in result["evidence_partition"]} >= {
+        "disclosed_fact", "publisher_claim", "tested_result", "unresolved"
+    }
+
+    ruling = (Path(config.ROOT) / result["artifacts"]["ruling"]).read_text()
+    decision = (Path(config.ROOT) / result["artifacts"]["decision"]).read_text()
+    assert "LIMITED_IDENTIFICATION_CURRENT_VERSION" in ruling
+    assert "NO_EXIT_RULE_VALIDATED" in ruling
+    assert "LIMITED_IDENTIFICATION_CURRENT_VERSION" in decision
+
+
+def test_sce_v11_dossier_renders_limited_identification_as_a_result_not_a_broken_card():
+    seg = _method_section(_render())
+    assert "Systematic Core Engine (SCE)" in seg
+    assert "LIMITED_IDENTIFICATION_CURRENT_VERSION" in seg
+    assert "NO_EXIT_RULE_VALIDATED" in seg
+    assert "tested August auction-profile exit family only" in seg
+    assert "SPY" in seg and "XLE" in seg and "GLD" in seg and "SHY" in seg
+    assert "Trend Base" in seg and "Dislocation Overlay" in seg
+    assert "Version timeline" in seg and "Evidence partition" in seg
+    assert "Current rules still unknown" in seg
+    assert "Display only" in seg and "rank, size, or gate" in seg
