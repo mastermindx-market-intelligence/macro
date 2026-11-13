@@ -21,18 +21,24 @@ AUTH: Claude via the user's Claude-Code OAuth token (CLAUDE_CODE_OAUTH_TOKEN →
 `auth_token=` Bearer path + the required `anthropic-beta: oauth-2025-04-20` header), or an
 ANTHROPIC_API_KEY fallback. No key → graceful no-op (writes a degraded artifact). Every
 public function returns plain data or None and never raises into the pipeline.
+
+CAPACITY FABRIC: when a router token (FABRIC_ROUTER_TOKEN) is present and
+MACRO_NARRATIVE_BRAIN_FABRIC is not "0", the writer calls the Capacity Fabric
+unified_router through lib.fabric_client instead of the OAuth/API ladder
+(Chairman order 2026-11-12). No token → the legacy ladder runs unchanged.
 """
 from __future__ import annotations
 
 import json
 import logging
+import os
 from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 
 from engine.catalyst_tone import _extract_json   # shared tolerant JSON parser (leaf util)
-from lib import config
+from lib import config, fabric_client
 
 log = logging.getLogger(__name__)
 
@@ -127,7 +133,101 @@ def enabled() -> bool:
     return bool(_cfg().get("enabled", False))
 
 
-def _make_call(cfg: dict):
+# --- Capacity Fabric cutover (Chairman order 2026-11-12) -----------------------
+# The writer routes through the Capacity Fabric unified_router whenever a router
+# token is present; MACRO_NARRATIVE_BRAIN_FABRIC=0 is the operator kill-switch.
+# Without a token this module is byte-identical to the legacy llm_auth ladder.
+_FABRIC_KILL_ENV = "MACRO_NARRATIVE_BRAIN_FABRIC"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-narrative-brain"
+_FABRIC_LANE = "balanced"
+
+
+def _fabric_enabled() -> bool:
+    """True when narrative_brain should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_NARRATIVE_BRAIN_FABRIC=0
+    is the operator kill-switch. No token → the legacy llm_auth ladder runs
+    unchanged.
+    """
+    if os.environ.get(_FABRIC_KILL_ENV, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _record_fabric_usage(cfg: dict, comp: fabric_client.Completion) -> None:
+    """Book one fabric-served call in the AI cost ledger (provider="fabric").
+
+    Lane continuity: the row keeps this writer's usage_lane (default
+    "narrative-brain") so the spend drill-down stays comparable with the legacy
+    rows; the provider is the router and the model is what it actually served.
+    Never raises — a ledger miss must not break a served call.
+    """
+    try:
+        from lib import ai_costs
+
+        u = comp.usage or {}
+        ai_costs.record_usage(
+            lane=str(cfg.get("usage_lane") or "narrative-brain"),
+            provider="fabric",
+            model=comp.model_served,
+            input_tokens=int(u.get("input_tokens") or 0),
+            output_tokens=int(u.get("output_tokens") or 0),
+            cache_read_tokens=int(u.get("cache_read_input_tokens") or 0),
+            cache_creation_tokens=int(u.get("cache_creation_input_tokens") or 0),
+            stage="narrative_brain",
+        )
+    except Exception as e:  # noqa: BLE001 — telemetry only
+        log.debug("narrative_brain: fabric usage ledger failed (%s)", e)
+
+
+def _fabric_call(cfg: dict):
+    """Return a fabric call(model, system, user) -> (text|None, degraded|None).
+
+    ONE router request per logical call. The router owns provider selection,
+    cooldown and account pooling, so a raised error degrades exactly as a legacy
+    ladder failure would — no retry, no second provider, no raise. A refusal is
+    a refusal even when the router attached partial text, so it is dropped
+    before any fail-closed parser ever sees it.
+
+    FabricUnavailable is the one exception and is handled by falling through to
+    the legacy ladder: it means no request ever left this host (the SDK will not
+    import), so nothing was served or billed.
+    """
+    max_tokens = int(cfg.get("max_tokens", 6000))
+
+    def call(model: str, system: str, user: str):
+        try:
+            comp = fabric_client.complete(
+                [{"role": "user", "content": user}],
+                system=system,
+                lane=_FABRIC_LANE,
+                max_tokens=max_tokens,
+                client="Python client",
+                project_id=_FABRIC_PROJECT_ID,
+                session_id=_FABRIC_SESSION_ID,
+            )
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "narrative_brain: fabric router unavailable (%s); using the legacy ladder", e)
+            legacy = _make_call(cfg, _force_legacy=True)
+            if legacy is None:
+                return None, "no_client_or_key"
+            return legacy(model, system, user)
+        except Exception as e:  # noqa: BLE001 — degrade, never raise
+            log.warning("narrative_brain call failed (%s): %s", model, e)
+            return None, "llm_error"
+        if getattr(comp.raw, "stop_reason", None) == "refusal":
+            return None, "refusal"
+        if not comp.text:
+            return None, "empty_reply"
+        _record_fabric_usage(cfg, comp)
+        return comp.text, None
+
+    return call
+
+
+def _make_call(cfg: dict, _force_legacy: bool = False):
     """Return a call(model, system, user) -> (text|None, degraded|None). Caches the stable
     system block (cache_control) so the per-theme rubric is reused across calls.
 
@@ -140,6 +240,13 @@ def _make_call(cfg: dict):
     (sonnet) call is made, the model id is overridden inside _do_call via the
     `model` argument passed to call() — the client itself is model-agnostic.
     """
+    # Capacity Fabric cutover (Chairman order 2026-11-12): when the router is
+    # configured the fabric adapter below serves both tiers; when it is not —
+    # no token, or MACRO_NARRATIVE_BRAIN_FABRIC=0 — the legacy ladder runs
+    # unchanged. _force_legacy is the FabricUnavailable fall-through.
+    if not _force_legacy and _fabric_enabled():
+        return _fabric_call(cfg)
+
     from engine import llm_auth
 
     # Build providers using the rotation model (opus) as the primary model.
