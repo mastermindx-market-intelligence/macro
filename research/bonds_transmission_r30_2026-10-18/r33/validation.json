@@ -1,0 +1,132 @@
+{
+  "schema": "mastermind.design_validation.bonds_transmission.r33",
+  "status": "design_and_source_reference_verified_production_pending",
+  "verified_at": "2026-10-19T00:16:52Z",
+  "mission": {
+    "requested_native_mockup_and_implementation_ready_reference_complete": true,
+    "r33_source_handoff_complete": true,
+    "production_complete": false,
+    "capability": "BUILT_NOT_PROVEN",
+    "scope": "Requested native mockup revamp and complete implementation-ready offline reference; production delivery is not claimed."
+  },
+  "reference": {
+    "baseline_sha256": "b319f1bbf464b18a0ba94d6b1115d7e4b9a331d5ae78b68f2551ac12da76347f",
+    "source_contract": "macro_context.decision_publication.v1",
+    "captured_content_sha256": "d568576803a0fa032846f419fd433a9391e01c13e60e6dc4c75a8ff6017a1455",
+    "html_sha256": "6565f567302e39d16a9849609532f669b122045fd059a3c5e084b8caef0fc15f",
+    "bytes": 811982,
+    "routes": 8,
+    "tool_families": 15
+  },
+  "tests": {
+    "publisher": {
+      "passed": 239,
+      "failed": 0,
+      "deselected": 49
+    },
+    "adapter": {
+      "passed": 40,
+      "failed": 0
+    },
+    "source": {
+      "passed": 26,
+      "failed": 0
+    },
+    "core": {
+      "passed": 65,
+      "failed": 0
+    }
+  },
+  "browser": {
+    "version": "151.0.7922.34",
+    "widths": [
+      1440,
+      1024,
+      390
+    ],
+    "languages": [
+      "en",
+      "zh-CN"
+    ],
+    "page_errors": 0,
+    "http_requests": 0,
+    "final_source_and_core_suites_bound_to_html_sha256": "6565f567302e39d16a9849609532f669b122045fd059a3c5e084b8caef0fc15f"
+  },
+  "native": {
+    "current_owned_artboards": 21,
+    "routes": 8,
+    "tool_families": 15,
+    "atlases": 7,
+    "archived_predecessors": 28,
+    "changed_exports": 5,
+    "unique_ids_in_changed_exports": 916,
+    "duplicate_ids_in_changed_exports": 0,
+    "new_appended_nodes": 177,
+    "baseline_r32_nodes": 4081,
+    "derived_current_owned_node_count": 4258,
+    "count_method": "Accepted R32 census plus the two fully exported appended subtrees; existing IDs preserved, no nodes removed.",
+    "operations": 32,
+    "effect_counts": {
+      "EFFECT_NONE_RECONCILED": 3,
+      "APPLIED_RESPONSE_OBSERVED": 29
+    },
+    "unresolved_effects": 0,
+    "carrier": "Mastermind Paper",
+    "tokens_unchanged": "cfd3d65c",
+    "working_indicators_finished": true
+  },
+  "source": {
+    "procedure_pin": "89cf2399c47da20c0c23826266e52984f88c27e7",
+    "macro_capture_input_pin": "b912fd97827cca925a7123aa2012e9765077f3f7",
+    "macro_current_base_observed": "08d09c100a601397b3da9b3b172729b14ea72e48",
+    "current_base_builder_unchanged": true,
+    "terminal_owner_pin": "367f488e5c67d0871d4a34c2aa7371f327d44c3d",
+    "handoff_parent": "023a376a87938d2b22c20a9172f6d46f552fa0e9",
+    "builder_sha256": "8faf0dd041707cc31dee037f2b71fe51d4797a5ca3ceaa59c89a1953a80ab98d",
+    "tests_sha256": "2d9a4b8e5c313ceddf87aa326cd5b4fe14109689da18895bbd8f715b60dd0cac",
+    "captured_content_sha256": "d568576803a0fa032846f419fd433a9391e01c13e60e6dc4c75a8ff6017a1455",
+    "capture_scope": "Locally built from pinned owner inputs; not deployed-feed capture"
+  },
+  "scope": {
+    "paper_pages": [
+      "p-1H-0",
+      "p-1E-0"
+    ],
+    "protected_forex": [
+      "p-1F-0",
+      "p-N-1"
+    ],
+    "other_owner_boards_excluded": [
+      "6GDA-0",
+      "6JKG-0"
+    ],
+    "forex_edits_r33": 0,
+    "history": "R31 repaired transient foreign attachment retained in its existing record."
+  },
+  "not_performed": [
+    "Merge",
+    "Deployment",
+    "Production feed or consumer mounting",
+    "CI/DAG/render-input changes",
+    "Real save",
+    "Activated monitoring",
+    "Qualified event inference",
+    "Forecast calibration"
+  ],
+  "primary_next_action": "Macro owner reviews and integrates the additive companion and mounts the adapter in the existing Bonds consumer under current source and repository checks.",
+  "dependent_owners": {
+    "retention": "Terminal Investigation v2 admission and exact resolvers",
+    "compound_monitor": "Terminal Alerts admission/evaluation/dry-run/receipts",
+    "qualified_inputs": "Existing instrument/credit/funding owners",
+    "likelihood": "Existing point-in-time model qualification owner"
+  },
+  "evidence": {
+    "publisher": "verification/publisher-results.json",
+    "adapter": "verification/adapter-results.json",
+    "source_journeys": "verification/source-journey-results.json",
+    "core_journeys": "verification/core/journey-results.json",
+    "native": "native/effects.json",
+    "review": "verification/review.json"
+  },
+  "finalization_classification": "PROVEN_OUTCOME"
+}

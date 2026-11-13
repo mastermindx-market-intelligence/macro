@@ -1,0 +1,118 @@
+{
+  "schema": "bonds.r33.current-main-closure-repair.v1",
+  "recorded_at": "2026-11-02T07:01:22.857588+00:00",
+  "original_head": "92871c7ac4ecbabde729048b21c14e4a0091b095",
+  "integrated_main": "9eaefeeddd9fb22109c23ea3e5f966669c8fded8",
+  "automatic_composition_tree": "e0ad5577c7d8bbe974e71c2c9ff1303b8ead876e",
+  "tested_source_tree": "28032c6fcf3a90d07a415f0869b12eac345ba485",
+  "manifest_before_sha256": "5353cb8a5b26b1dd3df47912e4ee6348d71fbb96a93dff36ada49a65f13fb8a4",
+  "manifest_after_sha256": "7880776e695e212b31187e73fc68de8dc02a8ba2f32610ee6ee50fff18b39e79",
+  "manifest_after_blob": "ac700d967268fd3475cf229c76f093a67a4a1a25",
+  "old_path_count": 1038,
+  "new_path_count": 1059,
+  "added_paths": [
+    "app/catalyst_source_wiring.py",
+    "config/catalyst_pilot_universe.json",
+    "engine/fundamental_forensics/catalog_service.py",
+    "engine/marketing/accounts.py",
+    "engine/marketing/authority.py",
+    "engine/marketing/campaign_compiler.py",
+    "engine/marketing/catalyst_source_adapter.py",
+    "engine/marketing/catalyst_source_cycle.py",
+    "engine/marketing/catalyst_source_store.py",
+    "engine/marketing/charter.py",
+    "engine/marketing/claims.py",
+    "engine/marketing/cmo.py",
+    "engine/marketing/departments.py",
+    "engine/marketing/economics.py",
+    "engine/marketing/events.py",
+    "engine/marketing/ledgers.py",
+    "engine/marketing/opportunity_bus.py",
+    "engine/marketing/publication.py",
+    "engine/marketing/state.py",
+    "engine/news_impact/__init__.py",
+    "engine/news_impact/edgar_body.py"
+  ],
+  "scope": "only ccw-w4-credit-desk literal paths; 24 inserted lines including 3 comments; zero removals",
+  "worker_return": {
+    "run_id": "r33-main-closure-repair-20261102-c4",
+    "root_id": "bonds-transmission-r30-20261018-sol001",
+    "parent_id": "chatgpt4-r33-resume-20261101",
+    "controller_pid": 11483,
+    "state": "TERMINAL",
+    "rc": 0,
+    "root_verified": true,
+    "response_bytes": 10988,
+    "response_sha256": "07704f8622b6786a9865927647a3b12f505fd698efc41b23e98de9166d22deb7",
+    "digest_scope": "complete retained adapter response, not independent artifact attestation",
+    "evidence_home": "/home/ubuntu0/lanes/tmp/r33-closure-repair-20261102-c5/artifacts/",
+    "patch_sha256": "662ac626127253ec65b295dad34f8e67e03d39760e7e6b3836845352cceca787"
+  },
+  "worker_reported_validation": {
+    "baseline_guards": {
+      "exit": 1,
+      "passed": 3,
+      "failed": 1,
+      "failure": "test_curated_exclusive_scopes_cover_their_own_import_closure"
+    },
+    "patched_guards": {
+      "exit": 0,
+      "passed": 4,
+      "deselected": 234,
+      "seconds": 143.12
+    },
+    "publisher_consumer": {
+      "exit": 0,
+      "passed": 22,
+      "seconds": 1.47,
+      "targets": [
+        "tests/test_macro_decision_publication.py",
+        "tests/test_bonds_source_integration.py"
+      ]
+    },
+    "closure_missing_before": 20,
+    "closure_missing_after": 0,
+    "full_tracked_inventory_matches_sparse_derivation": true,
+    "tracked_inventory_files": 141411,
+    "ancestor_census_unchanged": "pairs=343 jobs=121/172 nonempty_pairs=209 distinct_inits=36",
+    "network_isolation": "credential-scrubbed env -i, empty HOME, Python socket deny hooks; not OS namespace",
+    "network_attempts": 0,
+    "receipt_scope": "Worker return consumed; individual remote JUnit/log bytes not independently fetched by parent."
+  },
+  "parent_independent_checks": {
+    "exact_composed_and_repaired_tree_match": true,
+    "parsed_yaml_unchanged_except_21_added_literals": true,
+    "all_original_paths_preserved_in_order": true,
+    "duplicates": 0,
+    "removed_paths": 0,
+    "added_paths_exist_in_composed_tree": true,
+    "owned_diff_check": "PASS",
+    "index_postimage_matches_worker": true,
+    "source_runtime_files_unchanged_by_patch": true
+  },
+  "execution_deviation": {
+    "kind": "worker shared-checkout fetch escaped isolated cwd",
+    "worker_reported_changed": "added github remote, extensions.partialClone changed origin to github, shallow boundary rewritten",
+    "worker_reported_restored": "original remote configuration, extensions.partialClone and shallow bytes; HEAD, refs, index, worktree registry unchanged",
+    "residual_effects": "additive immutable shared objects and overwritten shared .git/FETCH_HEAD",
+    "parent_disposition": "Patch artifact usable after independent identity/scope checks; this does not approve or erase the execution-scope deviation. Remote restoration is worker-reported, not parent-reverified."
+  },
+  "parent_apply_reconciliation": {
+    "apply_pid": 48625,
+    "timeout": "Final git write-tree exceeded caller 15-second timeout after exact file write and successful git add; wrapper exited 1",
+    "post_timeout_verified": "exact manifest blob staged, HEAD/MERGE_HEAD unchanged, no conflicts or unstaged manifest",
+    "stale_lock_recovery": "Exact zero-byte index.lock inode1941079122, uid501, mtime_ns1793602478011389726; wrapper ended, no matching git process or lsof holder. Only that reconciled stale lock removed. Patch not replayed.",
+    "reconciliation_pid": 73371,
+    "exit": 0,
+    "source_tree": "28032c6fcf3a90d07a415f0869b12eac345ba485",
+    "lock_after": false
+  },
+  "acceptance": {
+    "parent_artifact_disposition": "QUALIFIED_FOR_SAME_CARRIER_INTEGRATION",
+    "fabric_accept_receipt": false,
+    "fabric_accept_error": "INVALID_ARGUMENT field=verification_summary; no retry loop",
+    "independent_review": false,
+    "hosted_ci_for_new_source": false,
+    "production_acceptance": false
+  }
+}

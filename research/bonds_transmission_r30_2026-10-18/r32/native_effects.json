@@ -1,0 +1,1708 @@
+{
+  "operation_id": "bonds-transmission-r32-20261018",
+  "summary": {
+    "operations": 62,
+    "applied": 61,
+    "reconciled_no_effect": 1,
+    "unresolved": 0
+  },
+  "effects": [
+    {
+      "operation_id": "bonds-transmission-r32-20261018-001",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64UT-1"
+      ],
+      "response": [
+        {
+          "id": "6GTF-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTG-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTH-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTI-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTJ-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTK-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTL-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTM-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-002",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GTF-0"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-003",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GTF-0"
+      ],
+      "response": [
+        {
+          "id": "6GTO-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTP-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTQ-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-004",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GTF-0"
+      ],
+      "response": [
+        {
+          "id": "6GTS-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTT-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTU-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTV-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTW-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTX-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GTY-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GTZ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GU0-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GU1-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GU2-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GU3-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GU4-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GU5-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GU6-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GU7-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-005",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GTF-0"
+      ],
+      "response": [
+        {
+          "id": "6GU9-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUA-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUB-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUC-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUD-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUE-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUF-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-006",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": []
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-007",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64SK-1"
+      ],
+      "response": [
+        {
+          "id": "6GUI-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUJ-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUK-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUL-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUM-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUN-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUO-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUP-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUQ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUR-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUS-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUT-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GUU-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUV-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUW-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GUX-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-008",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "63K4-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-009",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "63UM-1",
+        "63YQ-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-010",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "641B-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-011",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64AT-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-012",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64IK-1",
+        "64IQ-1",
+        "64KY-1",
+        "64LD-1",
+        "64ME-1",
+        "64KR-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-013",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64SF-1",
+        "64S9-1",
+        "64S4-1",
+        "64WN-1",
+        "64WH-1",
+        "64WI-1",
+        "6GTM-0"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-014",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64ZE-1",
+        "64Z8-1",
+        "64ZU-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-015",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "673E-1",
+        "6738-1",
+        "673R-1",
+        "673Y-1",
+        "674K-1",
+        "674O-1",
+        "674Q-1",
+        "672Z-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-016",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "66HS-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-017",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "66K6-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-018",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64L6-1",
+        "6GUI-0"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-019",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "665Y-1",
+        "6660-1",
+        "6662-1",
+        "666S-1",
+        "666V-1",
+        "666X-1",
+        "666Y-1",
+        "6671-1",
+        "6673-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-020",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": []
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-021",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6GY5-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GY6-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GY7-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GY8-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GY9-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GYA-0",
+          "component": "Text"
+        },
+        {
+          "id": "6GYB-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-022",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6GZW-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6GZX-0",
+          "component": "Rectangle"
+        },
+        {
+          "id": "6GZY-0",
+          "component": "Rectangle"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-023",
+      "tool": "write_html",
+      "state": "EFFECT_UNKNOWN",
+      "reconciliation": {
+        "state": "EFFECT_NONE_CONFIRMED_BY_SAME_CARRIER_READBACK",
+        "reason": "Upstream rejected insertion into a Rectangle. Exact target remains an empty Rectangle under the original owned row.",
+        "target": {
+          "id": "6GZX-0",
+          "name": "Rectangle",
+          "component": "Rectangle",
+          "width": 760,
+          "height": null,
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null,
+          "isVisible": true,
+          "isLocked": false,
+          "parentId": "6GZW-0",
+          "childIds": [],
+          "childCount": 0,
+          "artboardId": "6C1S-1",
+          "textContent": null
+        }
+      },
+      "target_node_ids": [
+        "6GZX-0"
+      ],
+      "response": []
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-024",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GZX-0"
+      ],
+      "response": [
+        {
+          "id": "6H13-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H14-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H15-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H16-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H17-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H18-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H19-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H1A-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H1B-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H1C-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H1D-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-025",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6GZY-0"
+      ],
+      "response": [
+        {
+          "id": "6H1F-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H1G-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H1H-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-026",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H13-0"
+      ],
+      "response": [
+        {
+          "id": "6H26-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H27-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H28-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H29-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2A-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2B-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2C-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2D-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2E-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2F-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2G-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2H-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-027",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H13-0"
+      ],
+      "response": [
+        {
+          "id": "6H2L-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2M-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2N-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2O-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2P-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2Q-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2R-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2S-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2T-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2U-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2V-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H2W-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-028",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H13-0"
+      ],
+      "response": [
+        {
+          "id": "6H2Y-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H2Z-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H30-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H31-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H32-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H33-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-029",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H1F-0"
+      ],
+      "response": [
+        {
+          "id": "6H44-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H45-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H46-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-030",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H1F-0"
+      ],
+      "response": [
+        {
+          "id": "6H48-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H49-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4A-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-031",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H1F-0"
+      ],
+      "response": [
+        {
+          "id": "6H4C-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4D-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4E-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-032",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H1F-0"
+      ],
+      "response": [
+        {
+          "id": "6H4G-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4H-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4I-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-033",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H1F-0"
+      ],
+      "response": [
+        {
+          "id": "6H4K-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4L-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4M-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-034",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6H4O-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4P-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4Q-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4R-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4S-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4T-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H4U-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4V-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-035",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6H4X-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4Y-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H4Z-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H50-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H51-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H52-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H53-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-036",
+      "tool": "update_styles",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": []
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-037",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H6E-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6F-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6G-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6H-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6I-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6J-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6K-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6L-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6M-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6N-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-038",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H6P-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6Q-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6R-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6S-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6T-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6U-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6V-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6W-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H6X-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6Y-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H6Z-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H70-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H71-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-039",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H7F-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H7G-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7H-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H7I-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-040",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H7K-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H7L-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7M-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7N-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7O-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-041",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H7Q-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H7R-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7S-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7T-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7U-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-042",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H7W-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H7X-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7Y-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H7Z-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H80-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-043",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H82-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H83-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H84-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H85-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H86-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-044",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6H88-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H89-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H8A-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H8B-0",
+          "component": "Text"
+        },
+        {
+          "id": "6H8C-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6H8D-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-045",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H4X-0"
+      ],
+      "response": [
+        {
+          "id": "6HAY-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HAZ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HB0-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HB1-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HB2-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-046",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": []
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-047",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6H2P-0",
+        "6H50-0"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-048",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6HB4-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HB5-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HB6-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HB7-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HB8-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HB9-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBA-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBB-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBC-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBD-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBE-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBF-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBG-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBH-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBI-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBJ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBK-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBL-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBM-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-049",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6HBO-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBP-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBQ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBR-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBS-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBT-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBU-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBV-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBW-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBX-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HBY-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HBZ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC0-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC1-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC2-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HC3-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC4-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC5-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HC6-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HC7-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-050",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "63KU-1",
+        "63ML-1",
+        "63MP-1",
+        "642B-1",
+        "6423-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-051",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6C21-1"
+      ],
+      "response": [
+        {
+          "id": "6HC9-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HCA-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCB-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HCC-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HCD-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCE-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCF-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HCG-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCH-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCI-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6HCJ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6HCK-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-052",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64RN-1",
+        "64RY-1",
+        "64TQ-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-053",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6889-1",
+        "6898-1",
+        "67ZK-1",
+        "67ZI-1",
+        "6811-1",
+        "6812-1",
+        "6828-1",
+        "685T-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-054",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "63GL-1",
+        "63S3-1",
+        "63YS-1",
+        "648A-1",
+        "64G1-1",
+        "64PQ-1",
+        "64WP-1",
+        "65YV-1",
+        "670P-1",
+        "67ZC-1",
+        "6885-1",
+        "6894-1",
+        "6C1S-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-055",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "63GL-1",
+        "63S3-1",
+        "63YS-1",
+        "648A-1",
+        "64G1-1",
+        "64PQ-1",
+        "64WP-1",
+        "65YV-1",
+        "670P-1",
+        "67ZC-1",
+        "6885-1",
+        "6894-1",
+        "6C1S-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-056",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64KQ-1",
+        "64KU-1",
+        "64KW-1",
+        "66IY-1",
+        "66J0-1",
+        "66J2-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-057",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "64G1-1",
+        "66HU-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-058",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "67ZI-1",
+        "67ZK-1",
+        "6813-1",
+        "681D-1",
+        "685N-1",
+        "685Q-1",
+        "685S-1",
+        "685T-1",
+        "685V-1",
+        "685X-1",
+        "685Y-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-059",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6891-1",
+        "6892-1",
+        "689G-1",
+        "689J-1",
+        "689L-1",
+        "689T-1",
+        "68A0-1",
+        "68A1-1"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-060",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6B6S-1"
+      ],
+      "response": [
+        {
+          "id": "6JFT-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6JFU-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6JFV-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JFW-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JFX-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6JFY-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6JFZ-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG0-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG1-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG2-0",
+          "component": "Frame"
+        },
+        {
+          "id": "6JG3-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG4-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG5-0",
+          "component": "Text"
+        },
+        {
+          "id": "6JG6-0",
+          "component": "Text"
+        }
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-061",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "6JFT-0"
+      ]
+    },
+    {
+      "operation_id": "bonds-transmission-r32-20261018-062",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "target_node_ids": [
+        "67ZC-1",
+        "6885-1",
+        "6894-1",
+        "6B6Q-1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+/* R33 display renderer port. The accepted adapter remains byte-identical;
+   this host controller adds only protected transport and transient inspector UI. */
+(function(){
+  'use strict';
+  if(!window.MMXSourceAdapter)return;
+  const A=window.MMXSourceAdapter;
+  const DLG='bonds-source-dialog',TTL='bonds-source-title',CT='bonds-source-content',OPN='bonds-source-open',CLS='bonds-source-close';
+  const URL='/macro-context-data/decision_workspaces.json';
+  const CAP=1500000,MS=12000;
+  const zL=document.documentElement.getAttribute('data-lang')==='zh'?'zh':'en';
+  const E=A.parse(null);
+  const S={model:E,section:'overview',field:null,returnSection:'overview',lang:zL,query:'',pending:false,filename:null,request:0,origin:'site',opener:null,controller:null};
+  const F=r=>({...A.parse(null),errors:[r]});
+  const X=x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+  const T=(e,z)=>S.lang==='zh'?z:e;
+  const H=x=>String(x??'').replaceAll('_',' ');
+  const K=x=>x==='healthy'?T('Healthy','健康'):x==='lean_long'?T('Long duration lean','偏向长久期'):x==='calm'?T('Calm','平静'):H(x);
+  const W=r=>S.lang==='zh'?r.titleZh:r.title;
+  const B=(l,a,k,p)=>'<button type="button" class="button'+(p?' primary':'')+'"'+' data-source-action="'+a+'" '+(k||'')+'>'+X(l)+'</button>';
+  const TB=(k,e,z)=>'<button type="button" class="source-tab" data-source-action="section" data-section="'+k+'" aria-pressed="'+(S.section===k&&!S.field)+'">'+T(e,z)+'</button>';
+  const V=r=>{if(!r||!r.available)return T('Unavailable','暂无数据');if(r.type==='number')return new Intl.NumberFormat(S.lang==='zh'?'zh-CN':'en-US',{maximumFractionDigits:r.unit==='bp'?2:4,minimumFractionDigits:r.unit==='%'?2:0}).format(r.value)+(r.unit?' '+r.unit:'');if(r.type==='boolean')return r.value?T('Flagged by owner','上游已标记'):T('Not flagged','未标记');return K(r.value);};
+  const R=p=>(S.model.fields||[]).find(x=>x.path===p);
+  const D=x=>x||T('Date unavailable','暂无数据');
+  function OL(){return S.origin==='import'?'<span class="chip">'+T('Local import · unverified publisher','本地导入 · 发布者未验证')+'</span>':'<span class="chip">'+T('Site publication · publisher identity not authenticated','站点发布数据 · 发布者身份未验证')+'</span>';}
+  function PB(){const m=S.model;if(!m||!m.ok||!m.identity||!m.identity.validationDate)return'';const v=String(m.identity.validationDate),td=new Date().toISOString().slice(0,10);if(v>td)return'<div class="bonds-source-banner cautious" role="status">'+T('Publication assessed '+X(v)+'; later than today’s UTC date. Component dates shown separately.','评估日期为 '+X(v)+'；晚于今天的 UTC 日期。组件日期另行显示。')+'</div>';if(v<td)return'<div class="bonds-source-banner" role="status">'+T('Publication assessed '+X(v)+'; older than today’s UTC date. Component dates shown separately.','评估日期为 '+X(v)+'；早于今天的 UTC 日期。组件日期另行显示。')+'</div>';return'';}
+  function TBAR(){return'<div class="source-loadbar"><div><strong>'+T('Inspect another publication','检查另一份发布数据')+'</strong><div class="small muted">'+T('JSON file · stays in this tab','JSON 文件 · 仅在本标签页中使用')+'</div></div><label class="button source-file-label">'+T('Choose JSON','选择 JSON')+'<input aria-label="'+T('Choose publication JSON file','选择发布 JSON 文件')+'" type="file" accept=".json,application/json" data-source-file></label>'+B(T('Reload site publication','重新载入站点发布数据'),'reload-site')+'</div>';}
+  function OV(){const m=S.model,fs=m.fields||[],sup=fs.filter(r=>r.available).length;
+    const ST=['transmission.equities.hy_oas','mechanism_evidence.real_10y','cross_asset.funding_state'].map(k=>{const r=R(k);if(!r)return'';return'<button type="button" class="source-metric" data-source-action="field" data-field="'+k+'"><span class="label">'+X(W(r))+'</span><strong>'+X(V(r))+'</strong><span class="small muted">'+T('Component','组件')+' · '+X(D(r.componentDate))+'</span><span class="source-metric-link">'+T('Inspect origin →','检查来源 →')+'</span></button>';}).join('');
+    return'<div class="stack">'+PB()+'<div class="source-summary"><div><div class="label">'+T('Bonds context','债券背景')+'</div><h3 class="source-heading">'+X(V(R('current_read.health')))+' · '+X(V(R('current_read.duration_lean')))+'</h3><div class="muted">'+T('Dated transmission context. Inspect a value for its source and limits.','带日期的传导背景。检查数值以查看其来源与边界。')+'</div></div><div class="source-summary-meta"><strong>'+sup+' / '+fs.length+'</strong><span class="small muted">'+T('displayed fields supplied','已提供的显示字段')+'</span></div></div><div class="source-metrics">'+ST+'</div><div class="source-date-note"><span>'+T(m.mixedComponentDates?'Component dates differ.':'Inspect the source dates.',m.mixedComponentDates?'组件日期不同。':'检查来源日期。')+' '+T('Exact observation and availability times are not supplied.','尚未提供精确观察时间与可用时间。')+'</span>'+B(T('Compare dates','比较日期'),'section','data-section="dates"')+'</div><div class="source-next"><div><h3>'+T('Before testing Treasury relief','检验国债缓解情景之前')+'</h3><div class="muted">'+T('Connect the Treasury observation, matched credit peers and current funding evidence.','连接国债观察、匹配的信用同业与当前融资证据。')+'</div></div>'+B(T('See missing evidence','查看缺失证据'),'section','data-section="missing"',true)+'</div>'+((m.warnings&&m.warnings.length)||(m.invalidValues&&m.invalidValues.length)||(m.reportedGaps&&m.reportedGaps.length)?'<div class="source-date-note"><span>'+T('Some source fields need attention.','部分来源字段需要检查。')+'</span>'+B(T('Review details','查看详情'),'section','data-section="fields"')+'</div>':'')+'<details><summary>'+T('Selected label changes','选定的标签变化')+' · '+m.selectedChanges.length+'</summary><div class="source-change-list">'+(m.selectedChanges.length?m.selectedChanges.map(c=>'<div><span class="small muted">'+X(D(c.asof))+'</span><strong>'+X(H(c.field))+'</strong><span>'+X(H(c.from))+' → '+X(H(c.to))+'</span></div>').join(''):'<div>'+T('No selected label changes supplied.','未提供选定的标签变化。')+'</div>')+'</div><div class="small muted">'+T('Selected transitions from the owner projection; not a complete history or event result.','来自上游投影的选定变化；不代表完整历史或事件结果。')+'</div></details></div>';}
+  function FV(){const fs=S.model.fields||[];
+    return'<div class="stack">'+PB()+'<label class="field">'+T('Find a field','查找字段')+'<input data-source-search type="search" placeholder="'+T('Yield, funding, curve…','收益率、融资、曲线…')+'" value="'+X(S.query)+'"></label><div class="source-field-list" data-testid="source-fields">'+fs.map(r=>'<button type="button" class="source-field-row" data-source-action="field" data-field="'+r.path+'" data-source-search-text="'+X((r.title+' '+r.titleZh+' '+r.sourcePath).toLowerCase())+'"><span><strong>'+X(W(r))+'</strong><small>'+X(D(r.componentDate))+' · '+T('component date','组件日期')+'</small></span><span class="source-field-value">'+X(r.type==='label'&&r.available&&r.value.length>70?T('Read owner note','阅读上游说明'):V(r))+'</span><span aria-hidden="true">→</span></button>').join('')+'</div><div class="muted" data-source-no-results hidden>'+T('No matching fields. Try another term.','没有匹配字段，请换个关键词。')+'</div><details><summary>'+T('Reported gaps and validation details','上游缺口与验证详情')+'</summary><div class="receipt">'+X(JSON.stringify({reportedGaps:S.model.reportedGaps,warnings:S.model.warnings,invalidValues:S.model.invalidValues},null,2))+'</div></details></div>';}
+  function DV(){const m=S.model,nm={snapshot:T('Macro snapshot','宏观快照'),rates_credit:T('Rates & credit','利率与信用'),cross_asset:T('Cross-asset funding','跨资产融资'),regime:T('Regime component','宏观状态组件'),snapshot_oldest_component:T('Oldest reported component','最早报告的组件')};
+    return'<div class="stack">'+PB()+'<div><h3>'+T('Different clocks, different meanings','不同时间，含义不同')+'</h3><div class="muted">'+T('A recent build can contain earlier components. None establishes quote observability.','最近构建的数据也可能包含较早的组件。这些日期无法证明报价何时可被观察。')+'</div></div><div class="source-clock-list">'+Object.entries(nm).map(([k,n])=>{const c=m.componentClocks&&m.componentClocks[k];return'<div class="source-clock"><div><strong>'+n+'</strong><small>'+T('Component date','组件日期')+'</small></div><div><strong>'+X(c&&c.asof||T('Unavailable','暂无数据'))+'</strong><small>'+X(c&&c.date_status==='known'?T('Date supplied','已提供日期'):T('Date issue: ','日期问题：')+(c&&c.date_status||'missing'))+'</small></div></div>';}).join('')+'</div><div class="grid2"><div class="soft-panel"><div class="label">'+T('Exact observation time','精确观察时间')+'</div><strong>'+T('Not supplied','未提供')+'</strong></div><div class="soft-panel"><div class="label">'+T('Available to the user at','用户可获取的时间')+'</div><strong>'+T('Not supplied','未提供')+'</strong></div></div><details><summary>'+T('Related regime-series dates','相关宏观序列日期')+'</summary><div class="small muted">'+T('Related inputs, not matched observation clocks for displayed fields. The owner stale flag uses each series’ cadence.','相关输入，并非显示字段的匹配观察时间。上游过期标记依据各序列的更新频率。')+'</div><div class="source-clock-list">'+Object.entries(m.relatedVintages||{}).map(([k,v])=>'<div class="source-clock"><div><strong>'+X(H(k))+'</strong><small>'+T('Upstream stale flag','上游过期标记')+': '+X(v?.reported?.stale==null?T('Not supplied','未提供'):v.reported.stale?T('Flagged by owner','上游已标记'):T('Not flagged','未标记'))+'</small></div><div><strong>'+X(v&&v.clock&&v.clock.asof||T('Unavailable','暂无数据'))+'</strong><small>'+T('Cadence','更新频率')+': '+X(v&&v.reported&&v.reported.cadence_days!=null?v.reported.cadence_days:'—')+' '+T('days','天')+'</small></div></div>').join('')+'</div></details><details><summary>'+T('Publication identity','发布内容标识')+'</summary><dl class="source-identity"><dt>'+T('Built at','构建时间')+'</dt><dd>'+X(m.identity.buildTime)+'</dd><dt>'+T('Date assessment','日期评估基准')+'</dt><dd>'+X(m.identity.validationDate)+'</dd><dt>'+T('Snapshot label ID','快照标签 ID')+'</dt><dd>'+X(m.identity.snapshot)+'</dd><dt>'+T('Publisher-declared content ID','发布者声明的内容 ID')+'</dt><dd>'+X(m.identity.content)+'</dd></dl><div class="small muted">'+T('Does not recompute the Python content digest. ID is for declared content comparison, not authentication or a resolvable saved evidence reference.','此消费者不会重新计算 Python 内容摘要。该标识用于声明内容比较，不代表身份验证或可解析的已保存证据引用。')+'</div></details>'+diagnostics()+'</div>';}
+  const NS=[['Treasury observation','国债观察','Exact instrument, quote convention, close and availability time.','精确工具、报价惯例、收盘与可用时间。','The supplied 10Y–3M curve cannot substitute for a 2Y–10Y observation.','提供的10年–3个月曲线不能替代2年–10年观察。'],['Matched credit peers','匹配的信用同业','Complete cohort, identical cutoff and finite spread changes.','完整样本、相同截止时间与有效的利差变化。','HY OAS is an index level, not a twelve-peer mean change.','广泛高收益债利差是指数水平，不能替代12个同业的平均变化。'],['Current funding evidence','当前融资证据','Dated terms, instrument scope and a qualified observation receipt.','带日期的条款、工具范围与合格观察凭证。','Calm funding proxy is context; not a qualified rule input.','平静的融资代理指标仅提供背景，不满足复合规则。']];
+  function diagnostics(){const m=S.model;return '<details><summary>'+T('Publication diagnostics','发布数据诊断')+'</summary><div class="receipt">'+X(JSON.stringify({input_fingerprints:m.identity.inputs,component_clocks:m.componentClocks,reported_cross_asset_stale:m.reportedCrossAssetStale,capabilities:m.capabilities,requirements:m.requirements},null,2))+'</div></details>';}
+  function MV(){return'<div class="stack">'+PB()+'<div><h3>'+T('What would make this testable?','什么证据能让它可检验？')+'</h3><div class="muted">'+T('Use the macro reading to decide what to investigate next.','用宏观读数来决定下一步调查什么。')+'</div></div>'+NS.map((n,i)=>'<div class="source-need"><div class="source-need-top"><span class="step-number">'+(i+1)+'</span><strong>'+T(n[0],n[1])+'</strong><span class="chip">'+T('Not supplied','未提供')+'</span></div><div>'+T(n[2],n[3])+'</div><details><summary>'+T('Why this matters','为什么重要')+'</summary><div class="small muted">'+T(n[4],n[5])+'</div></details></div>').join('')+'<div class="source-date-note"><span>'+T('No event result or continuation probability can be calculated from this projection alone.','仅凭这份投影无法计算事件结果或持续概率。')+'</span></div><details><summary>'+T('Additional capability requirements','其他能力要求')+'</summary><div>'+T('Matched buyer transactions need funding-origin evidence; historical likelihoods need a calibrated point-in-time model; retained research and monitoring require existing services to admit exact evidence types.','匹配的买方交易需资金来源；历史概率需校准的时点模型；留存研究与监控需要现有服务接纳精确证据类型。')+'</div></details></div>';}
+  function FLD(){const r=R(S.field);if(!r)return UB();const l=r.lineage||{},c=l.component_clock?S.model.componentClocks[l.component_clock]:null;const nt=r.path==='transmission.equities.hy_oas'?NS[1]:r.path==='cross_asset.funding_state'?NS[2]:r.path==='mechanism_evidence.curve_slope_10y3m'?NS[0]:null;
+    return'<div class="stack">'+PB()+B(T('← Back','← 返回'),'back')+'<div class="source-detail-heading"><div class="label">'+X(W(r))+'</div><div class="source-detail-value">'+X(V(r))+'</div><span class="chip">'+T('Owner projection','上游投影')+'</span></div>'+(nt?'<div class="muted">'+T(nt[4],nt[5])+'</div>':'')+'<div class="source-clock-list"><div class="source-clock"><div><strong>'+T('Component date','组件日期')+'</strong><small>'+X(l.component_clock||T('No selected source','没有选定来源'))+'</small></div><div><strong>'+X(c&&c.asof||T('Unavailable','暂无数据'))+'</strong><small>'+X(c&&c.date_status||'missing')+'</small></div></div><div class="source-clock"><strong>'+T('Observation time / availability time','观察时间 / 可用时间')+'</strong><span>'+T('Not supplied / not supplied','未提供 / 未提供')+'</span></div></div><details open><summary>'+T('Selected origin','选定来源')+'</summary><dl class="source-identity"><dt>'+T('File','文件')+'</dt><dd>'+X(l.source_file||T('Unavailable','暂无数据'))+'</dd><dt>'+T('Field','字段')+'</dt><dd>'+X(l.source_path||T('Unavailable','暂无数据'))+'</dd><dt>'+T('Selection','选择方式')+'</dt><dd>'+X(l.selection)+'</dd></dl>'+(l.reported_upstream?'<div class="small muted">'+T('Snapshot-reported source date','快照报告的来源日期')+': '+X(l.reported_upstream.asof||T('Unavailable','暂无数据'))+' · '+X(l.reported_upstream.path)+'</div>':'')+'</details><details><summary>'+T('Candidate paths and raw value','候选路径与原始值')+'</summary><div class="receipt">'+X(JSON.stringify({rawValue:r.rawValue,issue:r.issue,attemptedPaths:l.attempted_paths},null,2))+'</div></details><div class="small muted">'+T('Repeated use of this field in another view does not create independent confirmation.','在其他视图重复使用该字段，不会形成独立确认。')+'</div></div>';}
+  function UB(){const er=(S.model&&S.model.errors)||[];let m=T('This publication could not be loaded','无法载入这份发布数据');if(er.indexOf('signin_required')>=0)m=T('Sign-in required to view the publication','查看此发布数据需要登录');else if(er.indexOf('access_required')>=0)m=T('Access required to view the publication','查看此发布数据需要相应权限');else if(er.indexOf('not_published')>=0)m=T('No publication available at the configured path','配置路径下没有可用的发布数据');else if(er.indexOf('timeout')>=0)m=T('Loading the publication timed out. Try again.','载入发布数据超时，请重试。');else if(er.indexOf('publication_too_large')>=0)m=T('Publication exceeds the 1.5 MB limit','发布数据超过 1.5 MB 上限');else if(er.indexOf('file_read_failed')>=0)m=T('Could not read the imported file','无法读取导入的文件');else if(er.indexOf('invalid_json')>=0)m=T('Publication JSON could not be parsed','发布数据 JSON 无法解析');else if(er.indexOf('unsupported_media_type')>=0)m=T('The response is not publication JSON','响应不是发布数据 JSON');else if(er.indexOf('invalid_utf8')>=0)m=T('Publication text is not valid UTF-8','发布数据文本不是有效的 UTF-8');else if(er.indexOf('network_or_redirect')>=0)m=T('The publication is unreachable or redirected','发布数据无法连接或发生重定向');else if(er.some(c=>c.startsWith('http_')))m=T('The publication service is unavailable','发布数据服务暂不可用');else if(er.indexOf('network')>=0)m=T('Could not reach the publication endpoint','无法连接发布数据接口');else if(er.some(c=>c.indexOf('unsupported_')===0)||er.some(c=>c.indexOf('malformed_')===0)||er.some(c=>c==='missing_provenance'))m=T('Publication schema not recognised','发布数据格式无法识别');
+    return'<div class="stack source-empty"><div class="label">'+T('Source unavailable','来源不可用')+'</div><h3 class="source-heading">'+m+'</h3><div class="muted">'+T('Choose a compatible publication or reload the site publication.','请选择兼容的数据或重新载入站点发布数据。')+'</div><details><summary>'+T('Validation details','验证详情')+'</summary><div class="receipt">'+X(er.join('\n'))+'</div></details></div>';}
+  function VW(){
+    const valid=S.model.ok&&!S.pending;
+    const tabs=valid?'<nav class="source-tabs" aria-label="'+T('Source inspector views','来源检查视图')+'">'+TB('overview','Overview','概览')+TB('fields','Fields','字段')+TB('dates','Dates','日期')+TB('missing','Missing evidence','缺失证据')+'</nav>':'';
+    const content=S.pending?'<div class="source-empty"><h3>'+T(S.origin==='import'?'Reading local publication…':'Reading site publication…',S.origin==='import'?'正在读取本地数据…':'正在读取站点发布数据…')+'</h3><p>'+T('Source values remain unavailable until validation finishes.','验证完成前，来源值保持不可用。')+'</p></div>':!S.model.ok?UB():S.field?FLD():({overview:OV,fields:FV,dates:DV,missing:MV}[S.section]||OV)();
+    const filename=S.filename?'<div class="small muted source-filename">'+X(S.filename)+'</div>':'';
+    return '<div id="bonds-source-root" class="stack" lang="'+(S.lang==='zh'?'zh-CN':'en')+'"><div>'+OL()+filename+'</div>'+tabs+'<section data-source-content>'+content+'</section>'+TBAR()+'</div>';
+  }
+  function GB(){return document.getElementById(CT);}
+  function RF(focusSelector){
+    const body=GB();
+    if(!body)return;
+    const active=document.activeElement;
+    const preserveFocus=body.contains(active);
+    const loadbarFocus=active?.matches('[data-source-file]')?'[data-source-file]':
+      active?.matches('[data-source-action="reload-site"]')?'[data-source-action="reload-site"]':null;
+    const title=document.getElementById(TTL);
+    if(title)title.textContent=T('Bonds transmission sources','债券传导来源');
+    const close=document.getElementById(CLS);
+    if(close)close.setAttribute('aria-label',T('Close source inspector','关闭来源检查器'));
+    body.setAttribute('aria-busy',String(S.pending));
+    body.innerHTML=VW();
+    BD(body);
+    const status=document.getElementById('bonds-source-status');
+    if(status)status.textContent=S.pending?T('Reading publication.','正在读取发布数据。'):S.model.ok?T('Publication loaded. Display context only.','发布数据已载入，仅用于显示背景。'):T('Source unavailable.','来源不可用。');
+    const selector=focusSelector||loadbarFocus;
+    const target=selector?body.querySelector(selector):null;
+    if(target)target.focus();
+    else if(preserveFocus)body.focus({preventScroll:true});
+  }
+  function SR(body){
+    const query=S.query.toLowerCase().trim();
+    let count=0;
+    body.querySelectorAll('[data-source-search-text]').forEach(el=>{
+      el.hidden=!el.dataset.sourceSearchText.includes(query);
+      if(!el.hidden)count++;
+    });
+    const empty=body.querySelector('[data-source-no-results]');
+    if(empty)empty.hidden=count>0;
+  }
+  function cancelPending(reason){
+    S.request++;
+    const controller=S.controller;
+    S.controller=null;
+    S.pending=false;
+    if(controller)controller.abort(reason);
+  }
+  function beginRead(origin,filename){
+    cancelPending('superseded');
+    S.origin=origin;
+    S.filename=filename||null;
+    S.pending=true;
+    S.model=A.parse(null);
+    S.field=null;
+    S.section='overview';
+    RF();
+    return S.request;
+  }
+  function completeRead(request,model){
+    if(request!==S.request)return;
+    S.model=model;
+    S.pending=false;
+    S.controller=null;
+    RF();
+  }
+  async function readFile(file){
+    const request=beginRead('import',file.name);
+    if(file.size>CAP){completeRead(request,F('publication_too_large'));return;}
+    let bytes;
+    try{bytes=await file.arrayBuffer();}
+    catch(_){completeRead(request,F('file_read_failed'));return;}
+    if(request!==S.request)return;
+    let model;
+    try{model=A.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}
+    catch(_){model=F('invalid_utf8');}
+    completeRead(request,model);
+  }
+  function BD(body){
+    SR(body);
+    body.querySelector('[data-source-search]')?.addEventListener('input',event=>{
+      S.query=event.target.value;
+      SR(body);
+    });
+    body.querySelectorAll('[data-source-action]').forEach(el=>el.addEventListener('click',()=>{
+      const action=el.dataset.sourceAction;
+      if(action==='section'){
+        S.section=el.dataset.section;S.field=null;RF();body.focus();
+      }else if(action==='field'){
+        S.returnSection=S.section;S.field=el.dataset.field;RF('[data-source-action="back"]');
+      }else if(action==='back'){
+        const field=S.field;S.field=null;S.section=S.returnSection;RF('[data-field="'+field+'"]');
+      }else if(action==='reload-site'){FS();}
+    }));
+    body.querySelector('[data-source-file]')?.addEventListener('change',event=>{
+      const file=event.target.files?.[0];
+      if(file)readFile(file);
+    });
+  }
+  async function boundedResponseText(response){
+    const declared=Number(response.headers.get('content-length'));
+    if(Number.isFinite(declared)&&declared>CAP)throw new Error('publication_too_large');
+    let bytes;
+    if(response.body?.getReader){
+      const reader=response.body.getReader(),chunks=[];
+      let length=0;
+      try{
+        while(true){
+          const next=await reader.read();
+          if(next.done)break;
+          length+=next.value.byteLength;
+          if(length>CAP){await reader.cancel();throw new Error('publication_too_large');}
+          chunks.push(next.value);
+        }
+      }finally{reader.releaseLock();}
+      bytes=new Uint8Array(length);
+      let offset=0;
+      for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+    }else{
+      const buffer=await response.arrayBuffer();
+      if(buffer.byteLength>CAP)throw new Error('publication_too_large');
+      bytes=new Uint8Array(buffer);
+    }
+    try{return new TextDecoder('utf-8',{fatal:true}).decode(bytes);}
+    catch(_){throw new Error('invalid_utf8');}
+  }
+  async function FS(){
+    const request=beginRead('site');
+    const controller=new AbortController();
+    S.controller=controller;
+    let timedOut=false;
+    const timeout=setTimeout(()=>{timedOut=true;controller.abort();},MS);
+    let model=F('network');
+    try{
+      const response=await fetch(URL,{
+        credentials:'same-origin',cache:'no-store',redirect:'error',
+        signal:controller.signal,headers:{Accept:'application/json'}
+      });
+      if(request!==S.request)return;
+      if(response.status===401)model=F('signin_required');
+      else if(response.status===403)model=F('access_required');
+      else if(response.status===404)model=F('not_published');
+      else if(!response.ok)model=F('http_'+response.status);
+      else if((response.headers.get('content-type')||'').split(';')[0].trim().toLowerCase()!=='application/json'){
+        model=F('unsupported_media_type');
+      }else{
+        const text=await boundedResponseText(response);
+        if(request!==S.request)return;
+        model=A.parse(text);
+      }
+    }catch(error){
+      if(request!==S.request)return;
+      model=F(timedOut?'timeout':['publication_too_large','invalid_utf8'].includes(error?.message)?error.message:'network_or_redirect');
+    }finally{
+      clearTimeout(timeout);
+      if(S.controller===controller)S.controller=null;
+      completeRead(request,model);
+    }
+  }
+  function OD(){
+    const dialog=document.getElementById(DLG),opener=document.getElementById(OPN);
+    if(!dialog)return;
+    S.lang=document.documentElement.getAttribute('data-lang')==='zh'?'zh':'en';
+    S.opener=opener;
+    if(!dialog.open)dialog.showModal();
+    opener?.setAttribute('aria-expanded','true');
+    if(!S.model.ok&&!S.pending)FS();else RF();
+  }
+  function CD(){
+    const dialog=document.getElementById(DLG);
+    cancelPending('dialog_closed');
+    if(dialog?.open)dialog.close();
+  }
+  function BDL(){
+    const dialog=document.getElementById(DLG),opener=document.getElementById(OPN),close=document.getElementById(CLS);
+    opener?.addEventListener('click',event=>{event.preventDefault();OD();});
+    close?.addEventListener('click',event=>{event.preventDefault();CD();});
+    if(!dialog)return;
+    // Keep keyboard cycling within the active dialog, including Chromium's
+    // last-control boundary. Native modal inertness still owns the background.
+    dialog.addEventListener('keydown',event=>{
+      if(event.key!=='Tab'||!dialog.open)return;
+      const controls=Array.from(dialog.querySelectorAll(
+        'a[href],button:not([disabled]),input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])'
+      )).filter(el=>el.tabIndex>=0&&el.getClientRects().length&&getComputedStyle(el).visibility==='visible');
+      const first=controls[0],last=controls.at(-1),active=document.activeElement;
+      if(!first){event.preventDefault();GB()?.focus();return;}
+      if(event.shiftKey&&(active===first||!dialog.contains(active))){
+        event.preventDefault();last.focus();
+      }else if(!event.shiftKey&&(active===last||!dialog.contains(active))){
+        event.preventDefault();first.focus();
+      }
+    });
+    dialog.addEventListener('cancel',event=>{event.preventDefault();CD();});
+    dialog.addEventListener('close',()=>{
+      cancelPending('dialog_closed');
+      opener?.setAttribute('aria-expanded','false');
+      if(S.opener&&document.contains(S.opener))S.opener.focus();
+      S.opener=null;
+    });
+    dialog.addEventListener('click',event=>{
+      if(event.target!==dialog)return;
+      const rect=dialog.getBoundingClientRect();
+      if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)CD();
+    });
+    document.addEventListener('langchange',()=>{
+      S.lang=document.documentElement.getAttribute('data-lang')==='zh'?'zh':'en';
+      RF();
+    });
+  }
+  function init(){BDL();RF();}
+  window.MMXSourceInspector=Object.freeze({
+    view:VW,bind:body=>BD(body||GB()),close:CD,open:OD,
+    getState:()=>JSON.parse(JSON.stringify({
+      model:S.model,section:S.section,field:S.field,returnSection:S.returnSection,
+      lang:S.lang,query:S.query,pending:S.pending,filename:S.filename,origin:S.origin,request:S.request
+    }))
+  });
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+})();

@@ -1,0 +1,1469 @@
+[
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b02",
+    "key": "b02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GL-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b03",
+    "key": "b03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GN-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b04",
+    "key": "b04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GN-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b05",
+    "key": "b05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GN-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b06",
+    "key": "b06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GN-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b07",
+    "key": "b07",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GP-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b08",
+    "key": "b08",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GQ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b09",
+    "key": "b09",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GQ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b10",
+    "key": "b10",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GQ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b11",
+    "key": "b11",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GQ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b12",
+    "key": "b12",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63LJ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b13",
+    "key": "b13",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63LJ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b14",
+    "key": "b14",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63LQ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b15",
+    "key": "b15",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63LQ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b16",
+    "key": "b16",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63LQ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b17",
+    "key": "b17",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GQ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b18",
+    "key": "b18",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63GQ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-b19",
+    "key": "b19",
+    "tool": "update_styles",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 1
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-curvea",
+    "key": "curvea",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1H-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-curveb",
+    "key": "curveb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63S3-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-curvec",
+    "key": "curvec",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63TU-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-c02",
+    "key": "c02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63TV-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-c03",
+    "key": "c03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63TV-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-c04",
+    "key": "c04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63TV-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-c05",
+    "key": "c05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63TV-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-c06",
+    "key": "c06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63TV-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-credita",
+    "key": "credita",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1H-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-creditb",
+    "key": "creditb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63YS-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-creditc",
+    "key": "creditc",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "640J-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cr02",
+    "key": "cr02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "640K-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cr03",
+    "key": "cr03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "640K-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cr04",
+    "key": "cr04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "640K-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cr05",
+    "key": "cr05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "640K-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cr06",
+    "key": "cr06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "640K-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cr07",
+    "key": "cr07",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "640K-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-capitala",
+    "key": "capitala",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1H-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-capitalb",
+    "key": "capitalb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "648A-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-capitalc",
+    "key": "capitalc",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64A1-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cp02",
+    "key": "cp02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64A2-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cp03",
+    "key": "cp03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64A2-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cp04",
+    "key": "cp04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64A2-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cp05",
+    "key": "cp05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64A2-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cp06",
+    "key": "cp06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64A2-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-transmissiona",
+    "key": "transmissiona",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1E-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-transmissionb",
+    "key": "transmissionb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64G1-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-transmissionc",
+    "key": "transmissionc",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64HS-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tr02",
+    "key": "tr02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64HT-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tr03",
+    "key": "tr03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64HT-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tr04",
+    "key": "tr04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64HT-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tr05",
+    "key": "tr05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64HT-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tr06",
+    "key": "tr06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64HT-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cr08",
+    "key": "cr08",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "643L-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tr07",
+    "key": "tr07",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64J7-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cr09",
+    "key": "cr09",
+    "tool": "set_text_content",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 1
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-scenarioa",
+    "key": "scenarioa",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1E-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-scenariob",
+    "key": "scenariob",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64PQ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-scenarioc",
+    "key": "scenarioc",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64RH-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-sc02",
+    "key": "sc02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64RI-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-sc03",
+    "key": "sc03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64RI-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-sc04",
+    "key": "sc04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64RI-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-sc05",
+    "key": "sc05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64RI-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-sc06",
+    "key": "sc06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64RI-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-copy01",
+    "key": "copy01",
+    "tool": "set_text_content",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 12
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-replaya",
+    "key": "replaya",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1E-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-replayb",
+    "key": "replayb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64WP-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-replayc",
+    "key": "replayc",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64YG-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-rp02",
+    "key": "rp02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64YH-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-rp03",
+    "key": "rp03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64YH-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-rp04",
+    "key": "rp04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64YH-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-rp05",
+    "key": "rp05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64YH-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-rp06",
+    "key": "rp06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64YH-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-rp07",
+    "key": "rp07",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "652H-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-cp07",
+    "key": "cp07",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64EH-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-overlaysa",
+    "key": "overlaysa",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1E-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-overlaysb",
+    "key": "overlaysb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "65YV-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-ov02",
+    "key": "ov02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "65YW-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-ov03",
+    "key": "ov03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "65Z6-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-ov04",
+    "key": "ov04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "65Z7-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-ov05",
+    "key": "ov05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "65Z8-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-ov06",
+    "key": "ov06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "65YW-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-toolsa",
+    "key": "toolsa",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1H-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-toolsb",
+    "key": "toolsb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "6693-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tl02",
+    "key": "tl02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "6694-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tl03",
+    "key": "tl03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "6694-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tl04",
+    "key": "tl04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "6694-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tl05",
+    "key": "tl05",
+    "tool": "update_styles",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 1
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tl06",
+    "key": "tl06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "6694-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tl07",
+    "key": "tl07",
+    "tool": "move_nodes",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 4
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tl08",
+    "key": "tl08",
+    "tool": "move_nodes",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 2
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tl09",
+    "key": "tl09",
+    "tool": "rename_nodes",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 4
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mobile_bondsa",
+    "key": "mobile_bondsa",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1H-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mobile_bondsb",
+    "key": "mobile_bondsb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66FJ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mb02",
+    "key": "mb02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66FR-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mb03",
+    "key": "mb03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66FR-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mb04",
+    "key": "mb04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66FR-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mb05",
+    "key": "mb05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66FS-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mobile_transmissiona",
+    "key": "mobile_transmissiona",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1E-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mobile_transmissionb",
+    "key": "mobile_transmissionb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66HU-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mt02",
+    "key": "mt02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66I2-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mt03",
+    "key": "mt03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66I2-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mt04",
+    "key": "mt04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66I2-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mt05",
+    "key": "mt05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66I3-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mt06",
+    "key": "mt06",
+    "tool": "update_styles",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 1
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mobile_zha",
+    "key": "mobile_zha",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1E-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mobile_zhb",
+    "key": "mobile_zhb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66MZ-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mz02",
+    "key": "mz02",
+    "tool": "update_styles",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 1
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mz03",
+    "key": "mz03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66N7-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mz04",
+    "key": "mz04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66N7-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-mz05",
+    "key": "mz05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "66N8-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-saveda",
+    "key": "saveda",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1E-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-savedb",
+    "key": "savedb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "670P-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-savedc",
+    "key": "savedc",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "672G-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-sv02",
+    "key": "sv02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "672H-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-sv03",
+    "key": "sv03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "672H-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-sv04",
+    "key": "sv04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "672H-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-sv05",
+    "key": "sv05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "672H-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-sv06",
+    "key": "sv06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "672H-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-names01",
+    "key": "names01",
+    "tool": "rename_nodes",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 5
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tba",
+    "key": "tba",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1H-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tbb",
+    "key": "tbb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "676M-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tb02",
+    "key": "tb02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "679U-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tb03",
+    "key": "tb03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "679U-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tb04",
+    "key": "tb04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "679U-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-tb05",
+    "key": "tb05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "679U-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-statesa",
+    "key": "statesa",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1E-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-statesb",
+    "key": "statesb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67EA-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-st02",
+    "key": "st02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67EB-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-st03",
+    "key": "st03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67EB-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-st04",
+    "key": "st04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67EB-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-st05",
+    "key": "st05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67EB-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-st06",
+    "key": "st06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67EB-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-st07",
+    "key": "st07",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67EB-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-research_toolsa",
+    "key": "research_toolsa",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1E-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-research_toolsb",
+    "key": "research_toolsb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67N6-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-rt02",
+    "key": "rt02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67N7-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-rt03",
+    "key": "rt03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67N7-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-rt04",
+    "key": "rt04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67N7-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-qa01",
+    "key": "qa01",
+    "tool": "set_text_content",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 14
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-qa02",
+    "key": "qa02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "63LF-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-qa03",
+    "key": "qa03",
+    "tool": "set_text_content",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 1
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-implementationa",
+    "key": "implementationa",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1H-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-implementationb",
+    "key": "implementationb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67ZC-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-im02",
+    "key": "im02",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67ZD-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-im03",
+    "key": "im03",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67ZD-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-im04",
+    "key": "im04",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67ZD-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-im05",
+    "key": "im05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67ZD-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-qa04",
+    "key": "qa04",
+    "tool": "set_text_content",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 4
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-qa05",
+    "key": "qa05",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67HT-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-qa06",
+    "key": "qa06",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67HU-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-qa07",
+    "key": "qa07",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "65Z6-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-qa08",
+    "key": "qa08",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "67N7-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-start_bondsa",
+    "key": "start_bondsa",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1H-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-start_bondsb",
+    "key": "start_bondsb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "6885-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-start_transmissiona",
+    "key": "start_transmissiona",
+    "tool": "create_artboard",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": "p-1E-0",
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-start_transmissionb",
+    "key": "start_transmissionb",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "6894-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-archive01",
+    "key": "archive01",
+    "tool": "create_page",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-archive02",
+    "key": "archive02",
+    "tool": "move_nodes",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 28
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-arrange01",
+    "key": "arrange01",
+    "tool": "update_styles",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 26
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-qa09",
+    "key": "qa09",
+    "tool": "set_text_content",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 18
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-qa10",
+    "key": "qa10",
+    "tool": "set_text_content",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 1
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-qa11",
+    "key": "qa11",
+    "tool": "write_html",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": "64JH-1",
+    "target_count": null
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-arrange02",
+    "key": "arrange02",
+    "tool": "move_nodes",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 19
+  },
+  {
+    "operation_id": "bonds-transmission-r30-20261018-sol-001-finish01",
+    "key": "finish01",
+    "tool": "finish_working_on_nodes",
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "pageId": null,
+    "targetNodeId": null,
+    "target_count": 47
+  }
+]
