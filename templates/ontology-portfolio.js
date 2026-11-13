@@ -84,7 +84,13 @@ export function portfolioBooks(rows, membership, ps) {
     const weighting = snapshot.weighting;
     if (weighting.complete) {
       const values = bookRows.map(r => weighting.weights[r.ticker]);
-      if (!['equal_assumption', 'entry_cost'].includes(weighting.basis)
+      // The membership book labels a security, not the stored entry price.
+      // Reuse the monetary owner so a valid foreign-unit cost cannot be labeled
+      // as this book's currency. Unsized equal assumptions carry no money.
+      const costUnitMatches = weighting.basis !== 'entry_cost' ||
+        (typeof ps.computeRowMoney === 'function' &&
+         bookRows.every(r => ps.computeRowMoney(r, null).currency === currency));
+      if (!costUnitMatches || !['equal_assumption', 'entry_cost'].includes(weighting.basis)
           || values.some(v => !Number.isFinite(v) || v < 0 || v > 100)
           || Math.abs(values.reduce((a, b) => a + b, 0) - 100) > 0.000001) {
         books.push({ currency, weighting: { complete: false, weights: {}, basis: 'none' } }); continue;

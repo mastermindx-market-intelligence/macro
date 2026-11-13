@@ -211,8 +211,8 @@ def test_malformed_auth_binding_never_reads_owner_snapshot(browser, user, token)
 # data response is synthetic and intercepted; no cloud or production calls occur.
 _PORTFOLIO_AUTH = """
 window.pOwner='owner-a';window.pToken='fixture-token';window.pCalls={queries:0,sessions:0,writes:0};
-window.pRows=[{id:'a',user_id:'owner-a',ticker:'AAA',shares:2,entry_price:30,status:'open',entry_date:null,created_at:null},
- {id:'b',user_id:'owner-a',ticker:'BBB',shares:1,entry_price:40,status:'open',entry_date:null,created_at:null}];
+window.pRows=[{id:'a',user_id:'owner-a',ticker:'AAA',shares:2,entry_price:30,entry_currency:'USD',entry_currency_basis:{ticker:'AAA',price:30},status:'open',entry_date:null,created_at:null},
+ {id:'b',user_id:'owner-a',ticker:'BBB',shares:1,entry_price:40,entry_currency:'USD',entry_currency_basis:{ticker:'BBB',price:40},status:'open',entry_date:null,created_at:null}];
 window.wLists=[{id:'wl-a',user_id:'owner-a',name:'Energy <private>',position:0,created_at:null}];
 window.wSymbols=[{watchlist_id:'wl-a',symbol:'AAA',position:0,created_at:null},
  {watchlist_id:'wl-a',symbol:'BBB',position:1,created_at:null},{watchlist_id:'wl-a',symbol:'AAA',position:2,created_at:null}];
@@ -222,7 +222,7 @@ window.pClient={auth:{getSession:async()=>{pCalls.sessions++;if(window.pSessionH
  onAuthStateChange:fn=>{pCallbacks.push(fn);return{data:{subscription:{unsubscribe(){}}}};}},
  from:table=>{pCalls.queries++;(pCalls.tables||(pCalls.tables=[])).push(table);
  if(!['portfolio_positions','watchlists','watchlist_symbols'].includes(table))throw Error('wrong table');
- const filters={};let q={select:(cols,opts)=>{if(cols.includes('notes')||opts.count!=='exact')throw Error('private scope');return q;},
+ const filters={};let q={select:(cols,opts)=>{if(cols.includes('notes')||opts.count!=='exact')throw Error('private scope');if(table==='portfolio_positions'&&!['entry_currency','entry_currency_basis'].every(k=>cols.split(',').map(x=>x.trim()).includes(k)))throw Error('entry unit projection missing');return q;},
  eq:(key,value)=>{filters[key]=value;return q;},order:()=>q,limit:()=>q,abortSignal:()=>q,
  then:(ok,no)=>{let rows;
  if(table==='portfolio_positions'){if(filters.user_id!==pOwner)throw Error('wrong owner');
@@ -424,8 +424,8 @@ def test_portfolio_cloud_empty_is_not_an_unknown_book(browser,synthetic_snapshot
 @pytest.mark.parametrize('setup,has_weights',[
   ("pRows[0].shares=null",False),
   ("pRows.forEach(r=>r.shares=null)",True),
-  ("pRows[1].ticker='AAA'",False),
-  ("pRows[0].shares=1e308;pRows[0].entry_price=1e308",False),
+  ("pRows[1].ticker='AAA';pRows[1].entry_currency_basis.ticker='AAA'",False),
+  ("pRows[0].shares=1e308;pRows[0].entry_price=1e308;pRows[0].entry_currency_basis.price=1e308",False),
   ("pRows[0].shares=-2",False),
 ])
 def test_portfolio_reuses_owner_weighting_and_refuses_incomplete_or_overflow_books(browser,synthetic_snapshot,setup,has_weights):
@@ -474,7 +474,7 @@ def test_portfolio_never_sums_weights_across_currencies(browser,synthetic_snapsh
         return s,h,v
     ctx,page,seen,errors=portfolio_start(browser,synthetic_snapshot,mutate=two_books)
     try:
-        page.evaluate("pRows.push({...pRows[0],id:'c',ticker:'CCC'},{...pRows[1],id:'d',ticker:'DDD'})")
+        page.evaluate("pRows.push({...pRows[0],id:'c',ticker:'CCC',entry_currency:'CAD',entry_currency_basis:{ticker:'CCC',price:30}},{...pRows[1],id:'d',ticker:'DDD',entry_currency:'CAD',entry_currency_basis:{ticker:'DDD',price:40}})")
         page.locator('[data-portfolio-read]').click();portfolio_settled(page,'ready')
         rows=page.locator('.ox-portfolio-row')
         assert '60.00% within USD' in rows.nth(0).inner_text()

@@ -75,8 +75,25 @@
     } catch (e) { return 'unknown'; }
   }
 
+  // Exact stored declaration, never a unit guessed from a ticker or a new price.
+  function currencyCode(value) {
+    if (typeof value !== 'string' || value === 'XXX' || value === 'XTS') return null;
+    try { return Intl.supportedValuesOf('currency').indexOf(value) >= 0 ? value : null; }
+    catch (e) { return null; }
+  }
+  function entryCurrency(row) {
+    var unit = currencyCode(row.entry_currency), basis = row.entry_currency_basis;
+    if (!unit || !basis || typeof basis !== 'object' || Array.isArray(basis) ||
+        Object.keys(basis).length !== 2 || !own(basis, 'ticker') || !own(basis, 'price') ||
+        basis.ticker !== row.ticker) return null;
+    var price = row.entry_price;
+    if (price === null) return basis.price === null ? unit : null;
+    return typeof price === 'number' && isFinite(price) &&
+      typeof basis.price === 'number' && isFinite(basis.price) && basis.price === price ? unit : null;
+  }
+
   function semantic(row) {
-    return {
+    var out = {
       id: row.id,
       ticker: row.ticker,
       shares: row.shares == null ? null : Number(row.shares),
@@ -85,11 +102,18 @@
       notes: row.notes == null || row.notes === '' ? null : String(row.notes),
       status: row.status === 'closed' ? 'closed' : 'open'
     };
+    if (own(row, 'entry_currency') || own(row, 'entry_currency_basis')) {
+      var unit = entryCurrency(row);
+      out.entry_currency = unit;
+      out.entry_currency_basis = unit ? { ticker: row.ticker, price: row.entry_price } : null;
+    }
+    return out;
   }
 
   function semanticKey(row, includeId) {
     var s = semantic(row);
-    var out = [s.ticker, s.shares, s.entry_price, s.entry_date, s.notes, s.status];
+    var out = [s.ticker, s.shares, s.entry_price, s.entry_date, s.notes, s.status,
+               s.entry_currency || null, s.entry_currency_basis || null];
     if (includeId) out.unshift(s.id);
     return JSON.stringify(out);
   }
@@ -171,7 +195,10 @@
       out.line = row.line; out.coverage = row.coverage; out.warnings = row.warnings || [];
       if (own(patch, 'ticker')) {
         var ticker = normalizeTicker(patch.ticker);
-        if (!ticker) errors.push({ code: 'invalid_ticker', id: id }); else out.ticker = ticker;
+        var unsupported = ticker ? unsupportedCode(ticker, [ticker]) : null;
+        if (!ticker) errors.push({ code: 'invalid_ticker', id: id });
+        else if (unsupported) errors.push({ code: unsupported, id: id });
+        else out.ticker = ticker;
       }
       if (own(patch, 'shares')) {
         var shares = numericOrError(patch.shares, true);
@@ -199,7 +226,7 @@
     return { ok: next.length !== (rows || []).length, rows: annotate(next) };
   }
 
-  function validate(rows) {
+  function validateRows(rows, storedRows) {
     if (!Array.isArray(rows) || !rows.length) return { ok: false, code: 'empty_batch' };
     var ids = {};
     for (var i = 0; i < rows.length; i++) {
@@ -208,6 +235,8 @@
       if (ids[row.id]) return { ok: false, code: 'duplicate_uuid', index: i };
       ids[row.id] = true;
       if (!ticker || ticker !== row.ticker) return { ok: false, code: 'invalid_ticker', index: i };
+      var unsupported = storedRows ? null : unsupportedCode(ticker, [ticker]);
+      if (unsupported) return { ok: false, code: unsupported, index: i };
       if (row.shares != null && (typeof row.shares !== 'number' || !isFinite(row.shares))) {
         return { ok: false, code: 'invalid_shares', index: i };
       }
@@ -220,10 +249,19 @@
       if (row.status !== 'open' || (row.notes !== null && row.notes !== undefined && row.notes !== '')) {
         return { ok: false, code: 'unsupported_semantics', index: i };
       }
+      if ((row.entry_currency != null && !entryCurrency(row)) ||
+          (row.entry_currency == null && row.entry_currency_basis != null)) {
+        return { ok: false, code: 'invalid_entry_currency_receipt', index: i };
+      }
       if (own(row, 'user_id')) return { ok: false, code: 'caller_owner_forbidden', index: i };
     }
     return { ok: true, code: null };
   }
+
+  function validate(rows) { return validateRows(rows, false); }
+  // Existing UUID rows can be changed by ordinary Portfolio CRUD. Folding those
+  // already-stored rows retains structural checks without new-import exclusions.
+  function validateStored(rows) { return validateRows(rows, true); }
 
   function fingerprint(rows) {
     var check = validate(rows);
@@ -236,8 +274,11 @@
     edit: edit,
     remove: remove,
     validate: validate,
+    validateStored: validateStored,
     fingerprint: fingerprint,
     semantic: semantic,
+    currencyCode: currencyCode,
+    entryCurrency: entryCurrency,
     sameSemantic: sameSemantic,
     isUuid: isUuid,
     isRealDate: isRealDate,

@@ -1808,7 +1808,8 @@
   // blob uses, so an identical re-write never fires a pointless storage event.
   function pfSig(rows) {
     return JSON.stringify((rows || []).map(function (r) {
-      return [r.id, r.ticker, r.shares, r.entry_price, r.entry_date, r.notes, r.status];
+      return [r.id, r.ticker, r.shares, r.entry_price, r.entry_date, r.notes, r.status,
+              r.entry_currency || null, r.entry_currency_basis || null];
     }).sort(function (a, b) { return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0; }));
   }
   function pfWrite(rows) {
@@ -1826,8 +1827,8 @@
     var n = Number(v);
     return isNaN(n) ? null : n;
   }
-  function pfNormalize(pos, id) {
-    return {
+  function pfNormalize(pos, id, prior) {
+    var out = {
       id: id,
       ticker: pos.ticker,
       shares: pfNumOrNull(pos.shares),
@@ -1836,6 +1837,18 @@
       notes: pos.notes || null,
       status: pos.status === 'closed' ? 'closed' : 'open'
     };
+    // An old writer may omit metadata. Preserve only the receipt still matching
+    // its resulting ticker/price; changing away and back cannot revive it.
+    var declaration = pos.entry_currency !== undefined ? pos : prior;
+    if (declaration && (Object.prototype.hasOwnProperty.call(declaration, 'entry_currency') ||
+                        Object.prototype.hasOwnProperty.call(declaration, 'entry_currency_basis'))) {
+      var candidate = Object.assign({}, out, {entry_currency:declaration.entry_currency,
+        entry_currency_basis:declaration.entry_currency_basis});
+      var unit = pfEntryCurrency(candidate);
+      out.entry_currency = unit;
+      out.entry_currency_basis = unit ? {ticker:out.ticker,price:out.entry_price} : null;
+    }
+    return out;
   }
   function pfImportApi() {
     return window.PortfolioImport || null;
@@ -1843,6 +1856,22 @@
   function pfIsUuid(id) {
     var api = pfImportApi();
     return !!(api && api.isUuid && api.isUuid(id));
+  }
+  function pfEntryCurrency(row) {
+    var api = pfImportApi();
+    if (api && api.entryCurrency) return api.entryCurrency(row);
+    // WatchStore also serves pages without the import module. The same narrow
+    // receipt fence applies; an unavailable Intl implementation fails closed.
+    var unit = row.entry_currency, basis = row.entry_currency_basis;
+    if (typeof unit !== 'string' || unit === 'XXX' || unit === 'XTS') return null;
+    try { if (Intl.supportedValuesOf('currency').indexOf(unit) < 0) return null; }
+    catch (e) { return null; }
+    if (!basis || typeof basis !== 'object' || Array.isArray(basis) ||
+        Object.keys(basis).length !== 2 || !Object.prototype.hasOwnProperty.call(basis,'ticker') ||
+        !Object.prototype.hasOwnProperty.call(basis,'price') || basis.ticker !== row.ticker) return null;
+    return row.entry_price === null ? (basis.price === null ? unit : null) :
+      typeof row.entry_price === 'number' && isFinite(row.entry_price) &&
+      typeof basis.price === 'number' && isFinite(basis.price) && basis.price === row.entry_price ? unit : null;
   }
   function pfImportSemantic(row) {
     var api = pfImportApi();
@@ -1861,10 +1890,11 @@
     if (api && api.sameSemantic) return api.sameSemantic(a, b);
     return JSON.stringify(pfImportSemantic(a)) === JSON.stringify(pfImportSemantic(b));
   }
-  function pfImportValidate(rows) {
+  function pfImportValidate(rows, storedRows) {
     var api = pfImportApi();
-    if (!api || !api.validate) return { ok: false, code: 'import-contract-unavailable' };
-    return api.validate(rows);
+    var validator = api && (storedRows ? api.validateStored : api.validate);
+    if (!validator) return { ok: false, code: 'import-contract-unavailable' };
+    return validator(rows);
   }
   function pfImportClassify(wanted, found, uid) {
     var byId = {}, exact = 0, conflicts = 0, wrongOwner = 0;
@@ -1948,7 +1978,7 @@
     if (pos.id) {
       for (var i = 0; i < rows.length; i++) {
         if (String(rows[i].id) === String(pos.id)) {
-          rows[i] = pfNormalize(pos, rows[i].id);
+          rows[i] = pfNormalize(pos, rows[i].id, rows[i]);
           return Promise.resolve(pfWrite(rows) ? rows[i] : null);
         }
       }
@@ -1984,12 +2014,18 @@
         var toInsert = pfFoldPlan(local, res.data || []);
         if (!toInsert.length) return true;
         var rows = toInsert.map(function (r) {
-          return {
+          var out = {
             user_id: uidAtCall, ticker: r.ticker, shares: pfNumOrNull(r.shares),
             entry_price: pfNumOrNull(r.entry_price), entry_date: r.entry_date || null,
             notes: r.notes || null, status: r.status === 'closed' ? 'closed' : 'open',
             updated_at: new Date().toISOString()
           };
+          if (Object.prototype.hasOwnProperty.call(r,'entry_currency')) {
+            var unit = pfEntryCurrency(Object.assign({},r,out));
+            out.entry_currency = unit;
+            out.entry_currency_basis = unit ? {ticker:out.ticker,price:out.entry_price} : null;
+          }
+          return out;
         });
         return sb.from('portfolio_positions').insert(rows).then(function (ins) {
           if (authEpoch !== epochAtCall || !user || user.id !== uidAtCall) return false;
@@ -2015,7 +2051,7 @@
        not ticker/lot, so duplicate lots remain legal and a repeated fold cannot make
        a second row. Legacy loc-* rows retain the pre-A1B safest existing semantic
        fold; A1B does not rewrite their historical identity law. */
-    var stableCheck = stable.length ? pfImportValidate(stable) : { ok: true };
+    var stableCheck = stable.length ? pfImportValidate(stable, true) : { ok: true };
     var stablePromise = !stableCheck.ok
       ? Promise.resolve({ ok: false })
       : (stable.length ? pfCloudImport(stable.map(pfImportSemantic)) : Promise.resolve({ ok: true }));
@@ -2250,7 +2286,7 @@
       // Request one overflow row and the exact owner count. A server cap or a
       // partial response must never turn an incomplete book into a false zero.
       var query = client.from('portfolio_positions')
-        .select('id,user_id,ticker,shares,entry_price,entry_date,status,created_at', { count: 'exact' })
+        .select('id,user_id,ticker,shares,entry_price,entry_currency,entry_currency_basis,entry_date,status,created_at', { count: 'exact' })
         .eq('user_id', ownerId).order('created_at').limit(501);
       if (typeof query.abortSignal === 'function') query = query.abortSignal(controller.signal);
       var response = await query;
@@ -2275,8 +2311,11 @@
         });
         // Copy only the selected position fields. Private notes are not needed
         // for exposure, and are neither queried nor forwarded by this method.
+        var entryCurrency = pfEntryCurrency(row);
         return { id: row.id, ticker: row.ticker, shares: row.shares,
           entry_price: row.entry_price, entry_date: row.entry_date,
+          entry_currency: entryCurrency,
+          entry_currency_basis: entryCurrency ? { ticker: row.ticker, price: row.entry_price } : null,
           status: row.status, created_at: row.created_at };
       });
       await owner(client, token);
@@ -2309,16 +2348,21 @@
     });
   }
 
-  var PF_IMPORT_SELECT = 'id, user_id, ticker, shares, entry_price, entry_date, notes, status';
+  var PF_IMPORT_SELECT = 'id, user_id, ticker, shares, entry_price, entry_currency, entry_currency_basis, entry_date, notes, status';
 
   function pfCloudRows(rows, uid) {
     return rows.map(function (row) {
       var s = pfImportSemantic(row);
-      return {
+      var out = {
         id: s.id, user_id: uid, ticker: s.ticker, shares: s.shares,
         entry_price: s.entry_price, entry_date: s.entry_date,
         notes: s.notes, status: s.status
       };
+      if (Object.prototype.hasOwnProperty.call(s,'entry_currency')) {
+        out.entry_currency = s.entry_currency;
+        out.entry_currency_basis = s.entry_currency_basis;
+      }
+      return out;
     });
   }
   function pfCloudReconcile(wanted, uid, epoch) {
@@ -2483,6 +2527,12 @@
         status: pos.status === 'closed' ? 'closed' : 'open',
         updated_at: new Date().toISOString()
       };
+      if (pos.entry_currency !== undefined) {
+        var declaration = Object.assign({},pos,row);
+        var unit = pfEntryCurrency(declaration);
+        row.entry_currency = unit;
+        row.entry_currency_basis = unit ? {ticker:row.ticker,price:row.entry_price} : null;
+      }
       if (pos.id) {
         return sb.from('portfolio_positions')
           .update(row)

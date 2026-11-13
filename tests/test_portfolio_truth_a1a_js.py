@@ -344,7 +344,8 @@ def test_5_canonical_book_read_never_blends_a_computed_value_with_an_equal_fallb
     assert "100 / byBook[lead]" not in code
     assert "computeWeighting(leadRows" in code
     assert "W.complete !== true" in code
-    assert "W.weights[r.ticker]" in code
+    assert "W.weights[ticker]" in code
+    assert "Object.keys(W.weights).map" in code
 
 
 # ===========================================================================
@@ -670,31 +671,29 @@ def test_b1_sign_out_also_resets_last_good_cloud():
 # B2 (review — BLOCKING): split-deploy falsehood — PS absent must make no
 # weighting-law claim
 # ===========================================================================
-def test_b2_ps_absent_and_fully_priced_book_gets_real_weights_no_abstain_copy():
-    """MUTATION CHECK: revert to the pre-fix `var W = ps ? ps.computeWeighting(...) :
-    null; if (!W || W.complete !== true) { ...abstain copy... }` and this reds — a
-    fully sized, fully live-priced book must never be told "weights not shown" merely
-    because portfolio_state.js has not finished deploying yet (split-deploy window)."""
+def test_b2_ps_absent_shows_population_without_fabricating_money_weights():
+    """The qualifier's absence proves no currency, even when prices are present.
+    The split-deploy fallback stays a minimal population read."""
     code = _pf_code()
-    assert "allCurrent = leadRows.length > 0 && leadRows.every" in code
-    # the PS-absent branch must reach the SAME `items`-construction / cluster / etc.
-    # code the PS-present path uses — never its own copy of the abstain message
-    ps_idx = code.index("var ps = PS();")
-    b2_block = code[ps_idx:code.index("if (!W || W.complete !== true) {", ps_idx)]
-    assert "mixedAbstain" not in b2_block
-    assert "equalAssumed" not in b2_block
+    idx = code.index("var ps = PS();", code.index("function renderBookRead()"))
+    block = code[idx:code.index("if (!W || W.complete !== true) {", idx)]
+    fallback = block[block.index("} else {"):]
+    assert "This book holds" in fallback
+    assert "return;" in fallback
+    assert "mixedAbstain" not in fallback
+    assert "equalAssumed" not in fallback
+    assert "psWeights" not in fallback
+    assert "priceOf(" not in fallback
 
 
-def test_b2_ps_absent_and_not_fully_priced_shows_no_weighting_claim():
-    """MUTATION CHECK: same as above, from the other direction — a mixed book under
-    a PS-absent split-deploy window must show NEITHER the abstain copy NOR the equal-
-    assumption label; only a bare position count."""
+def test_b2_ps_absent_fallback_keeps_the_relationship_panels_empty():
     code = _pf_code()
-    idx = code.index("if (!allCurrent) {")
-    block = code[idx:idx + 800]
-    assert "mixedAbstain" not in block
-    assert "equalAssumed" not in block
-    assert "This book holds" in block
+    idx = code.index("var ps = PS();", code.index("function renderBookRead()"))
+    block = code[idx:code.index("if (!W || W.complete !== true) {", idx)]
+    fallback = block[block.index("} else {"):]
+    for panel in ('because', 'stance', 'cov'):
+        assert "if (" + panel + ") " + panel + ".innerHTML = '';" in fallback
+    assert "WS().seam(el('ws_seam'), null)" in fallback
 
 
 # ===========================================================================
@@ -1002,7 +1001,7 @@ def test_partB_ps_absent_read_banner_falls_back_to_readState_directly():
     code = _pf_code()
     idx = code.index("function refreshSnapshot() {")
     fn = code[idx:code.index("\n  function ", idx + 10)]
-    assert "if (!ps) { snapshot = null; return null; }" in fn
+    assert "if (!ps || typeof ps.computeRowMoney !== 'function') { snapshot = null; return null; }" in fn
 
 
 def test_md_a_plain_read_never_claims_saved():
@@ -1072,17 +1071,17 @@ def test_single_position_lead_book_never_gets_the_mixed_sizing_copy():
 # ===========================================================================
 def test_f5_renderbookread_single_book_reads_snapshot_weighting():
     """MUTATION CHECK: delete the `singleBookSnap`/`refreshSnapshot()` routing
-    (reverting to the bare `ps.computeWeighting(leadRows, priceOf)` call for every
+    (reverting to the bare `ps.computeWeighting(leadRows, moneyPriceOf)` call for every
     book) and this reds — a single-currency book must read the snapshot's own
     `weighting` field, not a second independently-computed one. The multi-currency
     §12 carve-out keeps the direct call (commented) — this test pins that both
     still exist."""
     code = _pf_code()
-    idx = code.index("var ps = PS();\n    var W;\n    if (ps) {")
+    idx = code.index("var ps = PS();\n    var W;\n    if (ps && typeof ps.computeRowMoney === 'function') {")
     block = code[idx:idx + 900]
     assert "singleBookSnap" in block
     assert "refreshSnapshot()" in block
-    assert "ps.computeWeighting(leadRows, priceOf)" in block  # §12 multi-currency carve-out
+    assert "ps.computeWeighting(leadRows, moneyPriceOf)" in block  # §12 multi-currency carve-out
 
 
 def test_f5_pfchipstatefor_and_dispatch_helpers_read_the_snapshot():
@@ -1124,16 +1123,14 @@ def test_f5_ps_absent_open_rows_filter_matches_openrowsof_truthy_ticker():
 
 
 def test_f5_pushfxweights_ps_absent_never_fabricates_a_partial_distribution():
-    """MUTATION CHECK: delete the `allCurrent` gate from pushFxWeights()'s
-    PS-absent branch (falling back to silently dropping unsized/unpriced rows from
-    `w`) and this reds — a PS-absent book with even ONE row that is not sized+
-    priced must push the honest-empty `{}`, never a partial weight map that sums
-    to less than the whole book while implying it is complete."""
+    """A split-deploy page without the qualifier cannot prove money units and
+    must keep the factor engine on the empty auto path, avoiding Watchlist fallback."""
     code = _pf_code()
     idx = code.index("function pushFxWeights() {")
     fn = code[idx:code.index("\n  function ", idx + 10)]
-    assert "allCurrent = modeled.length > 0 && modeled.every" in fn
-    assert fn.count("window.FX.setAutoWeights({})") >= 2  # S3 abstain + F5 non-allCurrent
+    assert fn.count("window.FX.setAutoWeights({})") >= 2
+    assert "w = Object.assign({},wgt.weights)" in fn
+    assert "priceOf(r.ticker)" not in fn
 
 
 # Ontology's explicit private read must not enroll the page in WatchStore sync.
@@ -1317,3 +1314,187 @@ def test_portfolio_readonly_same_owner_rotation_is_session_change_not_account_ch
     """)
     assert out['state']=='error' and out['rows'] is None
     assert out['warning']=='session-changed'
+
+
+# A09 compatibility: the existing explicit read must carry exact entry units to
+# the existing cost-weight owner. These are Node protocol tests, not a browser
+# capture or an authenticated production acceptance receipt.
+def _a09_readonly_unit_rows(currency="USD", tickers=("AAA", "BBB")):
+    return [
+        {"id": ticker.lower(), "user_id": "owner-a", "ticker": ticker,
+         "shares": shares, "entry_price": price, "entry_currency": currency,
+         "entry_currency_basis": {"ticker": ticker, "price": price},
+         "entry_date": None, "status": "open", "created_at": None,
+         "notes": "PRIVATE_NOTE_MUST_NOT_LEAVE_QUERY"}
+        for ticker, shares, price in zip(tickers, (2, 1), (30, 40))
+    ]
+
+
+def _a09_readonly_unit_result(rows, currencies, *, direct=False,
+                              missing_money_method=False, mutate_receipt=False):
+    script = r"""
+    const inputRows = INPUT_ROWS;
+    response = {data:inputRows,count:inputRows.length,error:null};
+    const originalFrom = client.from;
+    // Model an actual selected-column response, so an overgenerous fake server
+    // cannot hide a production query that forgot the two unit fields.
+    client.from = function(table) {
+      const q = originalFrom(table), originalThen = q.then;
+      q.then = function(ok,no) {
+        return originalThen.call(q, function(answer) {
+          if (!Array.isArray(answer.data)) return ok(answer);
+          const cols = selected.cols.split(',').map(x=>x.trim());
+          return ok({...answer,data:answer.data.map(row=>
+            Object.fromEntries(cols.filter(k=>Object.prototype.hasOwnProperty.call(row,k)).map(k=>[k,row[k]])))});
+        }, no);
+      };
+      return q;
+    };
+    let networkAttempts = 0;
+    global.fetch = function(){networkAttempts++;throw Error('network forbidden');};
+    (async()=>{
+      const beforeCache = JSON.stringify(WS.portfolio.readState());
+      const initialListenerCount = Object.values(listeners).reduce((n,a)=>n+a.length,0);
+      const result = await WS.portfolio.readOnly();
+      const PS = require(STATE_MODULE);
+      const money = PS.computeRowMoney;
+      if (MISSING_MONEY_METHOD) delete PS.computeRowMoney;
+      const source = require('node:fs').readFileSync(CONSUMER_MODULE,'utf8');
+      const consumer = await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+      const readRows = DIRECT ? inputRows : result.rows;
+      if (MUTATE_RECEIPT && inputRows[0].entry_currency_basis)
+        inputRows[0].entry_currency_basis.ticker='CHANGED_AFTER_READ';
+      const membership = {rows:inputRows.map((r,i)=>({symbol:r.ticker,currency:CURRENCIES[i]}))};
+      const books = consumer.portfolioBooks(readRows,membership,PS);
+      OUT({result,books,selected,calls,store:__store,networkAttempts,initialListenerCount,
+           qualified:readRows.map(r=>money(r,null)),
+           cacheUnchanged:beforeCache===JSON.stringify(WS.portfolio.readState()),
+           remainingListeners:Object.values(listeners).reduce((n,a)=>n+a.length,0)});
+    })().catch(e=>{console.error(e);process.exitCode=1;});
+    """
+    for key, value in {
+        "INPUT_ROWS": rows, "CURRENCIES": currencies, "DIRECT": direct,
+        "MISSING_MONEY_METHOD": missing_money_method,
+        "MUTATE_RECEIPT": mutate_receipt,
+        "STATE_MODULE": str(ROOT / "templates" / "portfolio_state.js"),
+        "CONSUMER_MODULE": str(ROOT / "templates" / "ontology-portfolio.js"),
+    }.items():
+        script = script.replace(key, json.dumps(value))
+    out = _readonly(script)
+    assert out["result"]["state"] == "ready"
+    assert out["calls"] == {"client": 1, "session": 2, "query": 1, "writes": 0,
+                            "filter": ["user_id", "owner-a"], "limit": 501}
+    assert out["selected"]["opts"] == {"count": "exact"}
+    assert "notes" not in out["selected"]["cols"]
+    assert "PRIVATE_NOTE_MUST_NOT_LEAVE_QUERY" not in json.dumps(out)
+    assert out["store"] == {} and out["cacheUnchanged"] is True
+    assert out["networkAttempts"] == 0
+    assert out["remainingListeners"] == out["initialListenerCount"]
+    return out
+
+
+@needs_node
+@pytest.mark.parametrize("currency", ["USD", "CAD", "EUR", "JPY"])
+def test_a09_readonly_valid_entry_units_reach_actual_cost_book(currency):
+    out = _a09_readonly_unit_result(_a09_readonly_unit_rows(currency),
+                                    [currency, currency], mutate_receipt=True)
+    assert {"entry_currency", "entry_currency_basis"} <= set(out["selected"]["cols"].split(","))
+    assert [r["entry_currency"] for r in out["result"]["rows"]] == [currency, currency]
+    assert out["result"]["rows"][0]["entry_currency_basis"] == {"ticker": "AAA", "price": 30}
+    book = out["books"]["books"][0]
+    assert book["currency"] == currency
+    assert book["weighting"]["complete"] is True
+    assert book["weighting"]["basis"] == "entry_cost"
+    assert book["weighting"]["weights"] == pytest.approx({"AAA": 60, "BBB": 40})
+
+
+@needs_node
+@pytest.mark.parametrize("damage", [
+    "missing_unit", "missing_basis", "ticker", "price", "extra_field",
+    "unsupported", "lowercase", "string_basis_price",
+])
+def test_a09_readonly_bad_entry_receipt_keeps_names_without_partial_weights(damage):
+    rows = _a09_readonly_unit_rows()
+    if damage == "missing_unit":
+        rows[0].pop("entry_currency")
+    elif damage == "missing_basis":
+        rows[0].pop("entry_currency_basis")
+    elif damage == "ticker":
+        rows[0]["entry_currency_basis"]["ticker"] = "OTHER"
+    elif damage == "price":
+        rows[0]["entry_currency_basis"]["price"] = 31
+    elif damage == "extra_field":
+        rows[0]["entry_currency_basis"]["note"] = "not a receipt field"
+    elif damage == "unsupported":
+        rows[0]["entry_currency"] = "XXX"
+    elif damage == "lowercase":
+        rows[0]["entry_currency"] = "usd"
+    else:
+        rows[0]["entry_currency_basis"]["price"] = "30"
+    out = _a09_readonly_unit_result(rows, ["USD", "USD"])
+    assert [r["ticker"] for r in out["result"]["rows"]] == ["AAA", "BBB"]
+    assert out["result"]["rows"][0].get("entry_currency") is None
+    book = out["books"]["books"][0]
+    assert book["weighting"]["complete"] is False
+    assert book["weighting"]["weights"] == {}
+
+
+@needs_node
+def test_a09_readonly_two_qualified_currencies_keep_separate_cost_books():
+    rows = _a09_readonly_unit_rows() + _a09_readonly_unit_rows("CAD", ("CCC", "DDD"))
+    out = _a09_readonly_unit_result(rows, ["USD", "USD", "CAD", "CAD"])
+    books = out["books"]["books"]
+    assert [b["currency"] for b in books] == ["USD", "CAD"]
+    assert all(b["weighting"]["complete"] and b["weighting"]["basis"] == "entry_cost" for b in books)
+    assert books[0]["weighting"]["weights"] == pytest.approx({"AAA": 60, "BBB": 40})
+    assert books[1]["weighting"]["weights"] == pytest.approx({"CCC": 60, "DDD": 40})
+
+
+@needs_node
+@pytest.mark.parametrize("entry_currency", ["CAD", "EUR"])
+def test_a09_readonly_consumer_cannot_label_another_entry_currency_as_usd(entry_currency):
+    out = _a09_readonly_unit_result(_a09_readonly_unit_rows(entry_currency),
+                                    ["USD", "USD"], direct=True)
+    assert all(m["currency"] == entry_currency and m["value"] > 0 for m in out["qualified"])
+    book = out["books"]["books"][0]
+    assert book["currency"] == "USD"
+    assert book["weighting"]["complete"] is False
+    assert book["weighting"]["weights"] == {}
+
+
+@needs_node
+def test_a09_readonly_consumer_without_row_unit_owner_withholds_cost_weights():
+    out = _a09_readonly_unit_result(_a09_readonly_unit_rows(), ["USD", "USD"],
+                                    direct=True, missing_money_method=True)
+    assert out["books"]["books"][0]["weighting"]["complete"] is False
+    assert out["books"]["books"][0]["weighting"]["weights"] == {}
+
+
+@needs_node
+@pytest.mark.parametrize("direct", [False, True])
+def test_a09_readonly_equal_unsized_assumption_does_not_require_money_units(direct):
+    rows = _a09_readonly_unit_rows()
+    for row in rows:
+        row["shares"] = row["entry_price"] = None
+        row.pop("entry_currency")
+        row.pop("entry_currency_basis")
+    out = _a09_readonly_unit_result(rows, ["USD", "USD"], direct=direct,
+                                    missing_money_method=True)
+    book = out["books"]["books"][0]
+    assert book["weighting"]["complete"] is True
+    assert book["weighting"]["basis"] == "equal_assumption"
+    assert book["weighting"]["weights"] == pytest.approx({"AAA": 50, "BBB": 50})
+
+
+@needs_node
+def test_a09_readonly_receipt_valid_overflow_still_withholds_the_whole_book():
+    rows = _a09_readonly_unit_rows()
+    rows[0]["shares"] = rows[0]["entry_price"] = rows[0]["entry_currency_basis"]["price"] = 1e308
+    out = _a09_readonly_unit_result(rows, ["USD", "USD"])
+    assert out["result"]["rows"][0]["entry_currency"] == "USD"
+    assert out["result"]["rows"][0]["entry_currency_basis"]["price"] == 1e308
+    assert out["qualified"][0]["currency"] == "USD" and out["qualified"][0]["value"] is None
+    book = out["books"]["books"][0]
+    assert book["weighting"]["complete"] is False
+    assert book["weighting"]["reason"] == "amount_overflow"
+    assert book["weighting"]["weights"] == {}
