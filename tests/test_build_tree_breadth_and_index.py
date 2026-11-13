@@ -838,11 +838,15 @@ _organ_yahoo_needs = pytest.mark.skipif(
 # --- reported, never tuned (brief; ruling 38 s2d).
 _OB_US = {"total": 1911, "match": 1803, "mismatch": 108}         # us_basket dated vs ledger
 _OB_US_MM_SHA = "f294e536e376992592d40e26853b94b473897d6ffecf6dfcfe192c584d485507"
-_OB_PH_BF = {"total": 1881, "match": 652, "mismatch": 1229}      # phase_v2 vs backfill (month_end)
-_OB_PH_BF_MM_SHA = "7bd59797d33dee41e66916c27338212525d7764e03e5635dff5f68233f77ace8"
-_OB_PH_FL = {"total": 858, "match": 601, "mismatch": 257}        # phase_v2 vs forward_log (daily)
-_OB_PH_FL_MM_SHA = "61a9f9e6818960af3031a1dbdc332b45c0f8a0d9b132b2a407ddb18599812a3a"
-_OB_RO = {"total": 110, "match": 110, "mismatch": 0}             # rolling_over vs live engine
+_OB_PH_BF = {"total": 1881, "match": 652, "mismatch": 1229}      # phase_v2 current vs backfill (month_end)
+_OB_PH_BF_MM_SHA = "12600d05fa845783836f1275971b38a84b421989d22aa956bcd56147bfb594c5"
+_OB_PH_FL = {"total": 858, "match": 601, "mismatch": 257}        # phase_v2 current vs forward_log (daily)
+_OB_PH_FL_MM_SHA = "962fb38d6032a89f23536e33c124df88b77656bf1c6a7ef60ed8ad2f9228402a"
+_OB_PH_BF_LEG = {"total": 1881, "match": 1881, "mismatch": 0}    # phase_v2 legacy vs backfill (exact: legacy wrote it)
+_OB_PH_BF_LEG_MM_SHA = "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+_OB_PH_FL_LEG = {"total": 858, "match": 0, "mismatch": 858}      # phase_v2 legacy vs forward_log (current wrote it)
+_OB_PH_FL_LEG_MM_SHA = "dcb64e5d6c1e3420e4fe2f14fa7963dc070c51d555156a1f2845257906dd14c0"
+_OB_RO = {"total": 110, "match": 110, "mismatch": 0}             # rolling_over vs live engine (branch + main tape)
 _OB_RO_MM_SHA = "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
 _OB_RO_N = 10                                                    # --rolling-fidelity-sessions
 
@@ -850,7 +854,7 @@ _ORGAN_COLS = [
     "organ", "level", "group_key", "session_date", "state", "first_knowable_date",
     "membership_basis", "n_members", "engine_code_sha", "after_2023_12_29",
     "days_in_state", "confirmed_transition", "phase", "pos_v2", "osc_slope",
-    "basis", "phase_v2_source", "rolling", "pos", "timing_state", "signal",
+    "basis", "phase_v2_source", "rolling", "pos", "engine_timing_state", "engine_signal",
     "divergence",
 ]
 
@@ -873,9 +877,13 @@ def test_organ_histories_schema_and_provenance():
     df = pd.read_parquet(_ORGAN_PQ)
     assert list(df.columns) == _ORGAN_COLS
     assert set(df["organ"].unique()) == {"us_basket", "rolling_over", "phase_v2"}
-    # one pinned engine commit for every row; no hand-copied threshold/rule
-    assert set(df["engine_code_sha"].unique()) == {oh.ENGINE_CODE_SHA}
+    # two pinned engine commits: the current engine (primary series) and the legacy
+    # engine that wrote backfill.parquet; no hand-copied threshold/rule
+    assert set(df["engine_code_sha"].unique()) == {oh.ENGINE_CODE_SHA, oh.LEGACY_ENGINE_CODE_SHA}
     assert oh.ENGINE_CODE_SHA == "72082493cb5e29cf5fe4a093fadf6f435b6fe2c3"
+    assert oh.LEGACY_ENGINE_CODE_SHA == "896471652cea87edc77a651d5c7e8d9d790119f8"
+    # legacy rows are phase_v2 only (the backfill writer's organ)
+    assert set(df.loc[df.engine_code_sha == oh.LEGACY_ENGINE_CODE_SHA, "organ"]) == {"phase_v2"}
     # levels + membership bases
     assert set(df.loc[df.organ == "us_basket", "level"]) == {"basket"}
     assert set(df.loc[df.organ != "us_basket", "level"]) == {"sector"}
@@ -918,8 +926,21 @@ def test_organ_us_basket_fidelity_vs_ledger():
 def test_organ_phase_v2_fidelity_vs_stores():
     df = pd.read_parquet(_ORGAN_PQ)
     res = oh.fidelity_phase_v2(df)
-    _assert_fidelity(res["backfill"], _OB_PH_BF, _OB_PH_BF_MM_SHA)
-    _assert_fidelity(res["forward_log"], _OB_PH_FL, _OB_PH_FL_MM_SHA)
+    # current engine (primary series) vs both stores
+    _assert_fidelity(res["current"]["backfill"], _OB_PH_BF, _OB_PH_BF_MM_SHA)
+    _assert_fidelity(res["current"]["forward_log"], _OB_PH_FL, _OB_PH_FL_MM_SHA)
+    # legacy engine (the backfill writer's version) vs both stores
+    _assert_fidelity(res["legacy"]["backfill"], _OB_PH_BF_LEG, _OB_PH_BF_LEG_MM_SHA)
+    _assert_fidelity(res["legacy"]["forward_log"], _OB_PH_FL_LEG, _OB_PH_FL_LEG_MM_SHA)
+    # forward_log writer is not recorded -> labelled unproven against the store
+    assert res["current"]["forward_log"]["fidelity"] == "unproven_against_store"
+    assert res["legacy"]["forward_log"]["fidelity"] == "unproven_against_store"
+    # both engine versions overlap on the store grid; the version difference is counted
+    assert res["version_overlap"]["overlap_pairs"] > 0
+    assert res["version_overlap"]["different_phase"] >= 0
+    # D-1 table cells sum to the population (no row added/re-keyed)
+    d1 = res["current"]["forward_log"]["d1_table"]
+    assert d1["sum_check"] is True
 
 
 @_organ_yahoo_needs
@@ -945,12 +966,26 @@ def test_organ_sidecar_consistency():
     us = fid["us_basket"]
     assert (us["total"], us["match"], us["mismatch"]) == (
         _OB_US["total"], _OB_US["match"], _OB_US["mismatch"])
-    bf = fid["phase_v2"]["backfill"]
-    fl = fid["phase_v2"]["forward_log"]
+    bf = fid["phase_v2"]["current"]["backfill"]
+    fl = fid["phase_v2"]["current"]["forward_log"]
     assert (bf["total"], bf["match"], bf["mismatch"]) == (
         _OB_PH_BF["total"], _OB_PH_BF["match"], _OB_PH_BF["mismatch"])
     assert (fl["total"], fl["match"], fl["mismatch"]) == (
         _OB_PH_FL["total"], _OB_PH_FL["match"], _OB_PH_FL["mismatch"])
+    bfl = fid["phase_v2"]["legacy"]["backfill"]
+    fll = fid["phase_v2"]["legacy"]["forward_log"]
+    assert (bfl["total"], bfl["match"], bfl["mismatch"]) == (
+        _OB_PH_BF_LEG["total"], _OB_PH_BF_LEG["match"], _OB_PH_BF_LEG["mismatch"])
+    assert (fll["total"], fll["match"], fll["mismatch"]) == (
+        _OB_PH_FL_LEG["total"], _OB_PH_FL_LEG["match"], _OB_PH_FL_LEG["mismatch"])
+    # no-fallback proof: both regime calibrations opened at inputs_commit bytes, caches non-empty
+    rcp = meta["regime_calibration_proof"]
+    assert rcp["fitted_bands_nonempty"] is True
+    assert rcp["risk_calib_nonempty"] is True
+    for rec in rcp["files"].values():
+        assert rec["opened"] is True
+        assert rec["matches_inputs_commit"] is True
+    assert meta["hazard_cannot_load_count"] == 0
     ro = fid["rolling_over"]
     assert (ro["total"], ro["match"], ro["mismatch"]) == (
         _OB_RO["total"], _OB_RO["match"], _OB_RO["mismatch"])
@@ -961,3 +996,145 @@ def test_organ_sidecar_consistency():
         for key, val in g.items():
             assert fk[organ][key] == val
     assert _ORGAN_REPORT.exists()
+
+
+# --- Builder refusal guards (brief item 6; COO steers 2d / 3d / 22:48).
+# --- Fixture git repos in tmp_path with MADE-UP files only; no real engine input is
+# --- touched. These assert the builder REFUSES (SystemExit), never that it proceeds.
+def _fixture_git_env():
+    import os
+    return {**os.environ, "GIT_CONFIG_GLOBAL": "/dev/null", "GIT_CONFIG_SYSTEM": "/dev/null"}
+
+
+def _init_fixture_repo(tmp_path):
+    import subprocess
+    repo = tmp_path / "fixture_repo"
+    repo.mkdir()
+    env = _fixture_git_env()
+    subprocess.run(["git", "init", "-q"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "config", "user.email", "fixture@example.com"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "config", "user.name", "fixture"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "config", "commit.gpgsign", "false"], cwd=repo, check=True, env=env)
+    (repo / "seed.txt").write_text("seed")
+    subprocess.run(["git", "add", "."], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "commit", "-qm", "seed", "--no-verify"], cwd=repo, check=True, env=env)
+    return repo
+
+
+def _fixture_commit_all(repo):
+    import subprocess
+    env = _fixture_git_env()
+    subprocess.run(["git", "add", "."], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "commit", "-qm", "update", "--no-verify"], cwd=repo, check=True, env=env)
+
+
+def test_organ_requires_staging_dir():
+    # --staging-dir is REQUIRED; invoking without it must refuse (argparse SystemExit)
+    with pytest.raises(SystemExit):
+        oh.main([])
+
+
+def test_organ_staging_refusal_nonempty(tmp_path):
+    st = tmp_path / "staging"
+    st.mkdir()
+    (st / "preexisting.txt").write_text("x")
+    with pytest.raises(SystemExit):
+        oh.check_staging(st)
+
+
+def test_organ_staging_refusal_prelinked(tmp_path):
+    st = tmp_path / "staging"
+    st.mkdir()
+    target = tmp_path / "target"
+    target.mkdir()
+    (st / "link").symlink_to(target, target_is_directory=True)
+    with pytest.raises(SystemExit):
+        oh.check_staging(st)
+
+
+def test_organ_input_gate_refusal_differs_from_head(tmp_path, monkeypatch):
+    # a made-up in-repo input whose working bytes differ from its blob at HEAD -> refuse
+    repo = _init_fixture_repo(tmp_path)
+    f = repo / "data" / "made_up_input.json"
+    f.parent.mkdir(parents=True)
+    f.write_text('{"v": 1}')
+    _fixture_commit_all(repo)
+    monkeypatch.setattr(oh, "ROOT", repo)
+    monkeypatch.setattr(oh, "enumerate_inputs", lambda: (["data/made_up_input.json"], []))
+    f.write_text('{"v": 2}')  # working bytes now differ from the HEAD blob
+    with pytest.raises(SystemExit):
+        oh.input_gate(oh.git_head(), oh.head_blobs())
+
+
+def test_organ_input_gate_refusal_absent_calibration(tmp_path, monkeypatch):
+    # a made-up calibration file absent from the fixture tree -> refuse (missing required)
+    repo = _init_fixture_repo(tmp_path)
+    monkeypatch.setattr(oh, "ROOT", repo)
+    monkeypatch.setattr(oh, "enumerate_inputs",
+                    lambda: (["data/regime/made_up_calibration.json"], []))
+    with pytest.raises(SystemExit):
+        oh.input_gate(oh.git_head(), oh.head_blobs())
+
+
+def test_organ_input_gate_refusal_empty_calibration(tmp_path, monkeypatch):
+    # a made-up calibration file present but EMPTY (made-up bytes) -> refuse
+    repo = _init_fixture_repo(tmp_path)
+    f = repo / "data" / "regime" / "made_up_calibration.json"
+    f.parent.mkdir(parents=True)
+    f.write_text('{"bands": [1, 2]}')
+    _fixture_commit_all(repo)
+    monkeypatch.setattr(oh, "ROOT", repo)
+    monkeypatch.setattr(oh, "enumerate_inputs",
+                    lambda: (["data/regime/made_up_calibration.json"], []))
+    f.write_text("")  # present but empty -> working bytes differ from the HEAD blob
+    with pytest.raises(SystemExit):
+        oh.input_gate(oh.git_head(), oh.head_blobs())
+
+
+# ── overlay-gate refusals (COO 23:32Z): data/vol_regime/basket_overlay_gate.json ──────
+# Loader engine/vol_regime.py load_overlay_gate (:291-308, path constant :87). When the
+# file is absent, `if p.exists()` falls through and returns a CLOSED gate with NO log,
+# reached unconditionally from cycles.ladder_state via regime_caution_scored
+# (cycles.py:1458-1462, vol_regime.py:311-315). An open audit hook does NOT see the
+# p.exists() stat, so absence leaves no trace in the opened-file record — only this
+# required-present gate (pinned by sha256 at inputs_commit) catches it.
+def test_organ_input_gate_refusal_absent_overlay_gate(tmp_path, monkeypatch):
+    repo = _init_fixture_repo(tmp_path)
+    monkeypatch.setattr(oh, "ROOT", repo)
+    monkeypatch.setattr(oh, "enumerate_inputs",
+                    lambda: (["data/vol_regime/basket_overlay_gate.json"], []))
+    with pytest.raises(SystemExit):
+        oh.input_gate(oh.git_head(), oh.head_blobs())
+
+
+def test_organ_input_gate_refusal_empty_overlay_gate(tmp_path, monkeypatch):
+    # present but EMPTY (made-up bytes) -> working bytes differ from the HEAD blob
+    repo = _init_fixture_repo(tmp_path)
+    f = repo / "data" / "vol_regime" / "basket_overlay_gate.json"
+    f.parent.mkdir(parents=True)
+    f.write_text('{"gate": "open"}')
+    _fixture_commit_all(repo)
+    monkeypatch.setattr(oh, "ROOT", repo)
+    monkeypatch.setattr(oh, "enumerate_inputs",
+                    lambda: (["data/vol_regime/basket_overlay_gate.json"], []))
+    f.write_text("")
+    with pytest.raises(SystemExit):
+        oh.input_gate(oh.git_head(), oh.head_blobs())
+
+
+def test_organ_input_gate_refusal_unreadable_overlay_gate(tmp_path, monkeypatch):
+    # present but UNREADABLE (mode 000) -> working_blob_id catches OSError -> refuse
+    repo = _init_fixture_repo(tmp_path)
+    f = repo / "data" / "vol_regime" / "basket_overlay_gate.json"
+    f.parent.mkdir(parents=True)
+    f.write_text('{"gate": "open"}')
+    _fixture_commit_all(repo)
+    monkeypatch.setattr(oh, "ROOT", repo)
+    monkeypatch.setattr(oh, "enumerate_inputs",
+                    lambda: (["data/vol_regime/basket_overlay_gate.json"], []))
+    f.chmod(0o000)
+    try:
+        with pytest.raises(SystemExit):
+            oh.input_gate(oh.git_head(), oh.head_blobs())
+    finally:
+        f.chmod(0o644)
