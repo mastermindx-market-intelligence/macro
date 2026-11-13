@@ -745,3 +745,249 @@ def test_a_refused_destination_keeps_the_hook_and_cli_failure_contracts(
     assert main(["--out", str(link)]) == 1
     assert link.is_symlink()
     assert _names(tmp_path) == ["sector_holdings_coverage.json"]
+
+
+# --- PSL-2: the capture receipt (owner-local, NOT part of the v1 feed) ------
+#
+# The per-fund store carries one reserved capture block per capture. The
+# receipt binds a fund's latest stored snapshot to the response that produced
+# it. It is deliberately humble: it proves the rows came from one identified
+# response, and nothing else. The published sector_holdings.coverage.v1 feed
+# is a CLOSED contract and carries none of this.
+
+CAPTURE_URL = ("https://www.ssga.com/us/en/intermediary/etfs/library-content/"
+               "products/fund-data/etfs/us/holdings-daily-us-en-xlk.xlsx")
+
+
+def _captured_frame(rows, day="2026-11-06", **overrides):
+    """A store-shaped frame that also carries the reserved capture block."""
+    frame = _frame(rows, day=day)
+    capture = {
+        "capture_schema_version": "sector_holdings.capture.v1",
+        "capture_fund": "XLK",
+        "capture_source_url": CAPTURE_URL,
+        "capture_content_sha256": "a" * 64,
+        "capture_content_bytes": 4096,
+        "capture_retrieved_at": "2026-11-06T21:12:33.456789+00:00",
+        "capture_issuer_as_of": day,
+        "capture_date_origin": "issuer_reported",
+    }
+    capture.update(overrides)
+    for column, value in capture.items():
+        frame[column] = value
+    return frame
+
+
+def _without_capture_on(frame, position):
+    """Blank the capture block on one selected row (object dtype first, so the
+    write itself cannot trip a dtype rule)."""
+    for column in shc.CAPTURE_COLUMNS:
+        frame[column] = frame[column].astype(object)
+        frame.iloc[position, frame.columns.get_loc(column)] = None
+    return frame
+
+
+def test_the_published_v1_feed_is_byte_identical_with_and_without_the_capture_block():
+    """Identical holdings must produce byte-identical v1 output: the capture
+    block belongs to the store, never to the published feed."""
+    rows = [("NVDA", 14.21), ("AAPL", 12.05), ("MSFT", 6.33)]
+    legacy = _frame(rows, day="2026-11-06")
+    captured = _captured_frame(rows, day="2026-11-06")
+    plain = json.dumps(build_holdings_coverage({"XLK": legacy}, funds=["XLK"]),
+                       separators=(",", ":"), ensure_ascii=False)
+    with_capture = json.dumps(
+        build_holdings_coverage({"XLK": captured}, funds=["XLK"]),
+        separators=(",", ":"), ensure_ascii=False)
+    assert plain == with_capture
+    # the closed v1 contract carries no capture field at all
+    assert "capture" not in plain
+    assert "receipt" not in plain
+
+
+def test_a_consistent_capture_yields_a_bound_receipt():
+    snap = _captured_frame([("NVDA", 14.21), ("AAPL", 12.05)])
+    bound = shc.coverage_with_source_receipt("XLK", snap, asof=date(2026, 11, 6))
+    receipt = bound["receipt"]
+    assert receipt["status"] == "consistent"
+    assert receipt["fund"] == "XLK"
+    assert receipt["as_of"] == "2026-11-06"
+    assert receipt["capture"]["schema_version"] == "sector_holdings.capture.v1"
+    assert receipt["capture"]["fund"] == "XLK"
+    assert receipt["capture"]["source_url"] == CAPTURE_URL
+    assert receipt["capture"]["content_sha256"] == "a" * 64
+    assert receipt["capture"]["content_bytes"] == 4096
+    assert receipt["capture"]["retrieved_at"] == "2026-11-06T21:12:33.456789+00:00"
+    assert receipt["capture"]["issuer_as_of"] == "2026-11-06"
+    assert receipt["capture"]["date_origin"] == "issuer_reported"
+    assert receipt["issuer_effective_date_qualified"] is True
+    # the coverage block beside it is the EXISTING one — same denominators,
+    # same unknown total, same fund-versus-sample semantics
+    assert bound["coverage"] == coverage_for_fund(
+        "XLK", snap, asof=date(2026, 11, 6))
+    assert bound["coverage"]["n_holdings_total"] is None
+    assert bound["coverage"]["total_unknown"] is True
+    assert bound["coverage"]["coverage"]["count"]["listed"] == 2
+
+
+def test_a_retrieval_date_fallback_is_honest_about_the_issuer_effective_date():
+    snap = _captured_frame([("NVDA", 14.21)],
+                           capture_issuer_as_of=None,
+                           capture_date_origin="retrieval_date_fallback")
+    receipt = shc.source_receipt_for_fund("XLK", snap)
+    assert receipt["status"] == "consistent"
+    assert receipt["capture"]["issuer_as_of"] is None
+    assert receipt["capture"]["date_origin"] == "retrieval_date_fallback"
+    assert receipt["issuer_effective_date_qualified"] is False
+
+
+def test_a_legacy_snapshot_reports_the_date_origin_as_not_recorded():
+    receipt = shc.source_receipt_for_fund(
+        "XLK", _frame([("NVDA", 14.21)], day="2026-11-06"))
+    assert receipt["status"] == "missing"
+    assert receipt["capture"]["date_origin"] == "date_origin_not_recorded"
+    assert receipt["capture"]["content_sha256"] is None
+    assert receipt["issuer_effective_date_qualified"] is False
+
+
+def test_a_mixed_capture_is_withheld_before_the_holdings_filter(monkeypatch):
+    snap = _without_capture_on(
+        _captured_frame([("NVDA", 14.21), ("AAPL", 12.05)]), 1)
+    receipt = shc.source_receipt_for_fund("XLK", snap)
+    assert receipt["status"] == "mixed"
+    assert receipt["capture"]["content_sha256"] is None
+    assert receipt["capture"]["date_origin"] is None
+    assert receipt["issuer_effective_date_qualified"] is False
+
+    # the receipt is computed BEFORE the coverage block's filter/dedup
+    order = []
+    real_receipt = shc.source_receipt_for_fund
+    real_coverage = shc.coverage_for_fund
+    monkeypatch.setattr(
+        shc, "source_receipt_for_fund",
+        lambda *a, **k: (order.append("receipt"), real_receipt(*a, **k))[1])
+    monkeypatch.setattr(
+        shc, "coverage_for_fund",
+        lambda *a, **k: (order.append("coverage"), real_coverage(*a, **k))[1])
+    bound = shc.coverage_with_source_receipt("XLK", snap, asof=date(2026, 11, 6))
+    assert order == ["receipt", "coverage"]
+    # the coverage block itself is unaffected by the withheld receipt
+    assert bound["coverage"]["coverage"]["count"]["listed"] == 2
+
+
+@pytest.mark.parametrize(
+    ("overrides", "reason"),
+    [
+        ({"capture_content_sha256": "not-a-digest"}, "digest"),
+        ({"capture_content_sha256": "A" * 64}, "digest"),
+        ({"capture_retrieved_at": "2026-11-06T21:12:33"}, "timestamp"),
+        ({"capture_retrieved_at": "2026-11-06T21:12:33+02:00"}, "timestamp"),
+        ({"capture_fund": "XLF"}, "source fund"),
+        ({"capture_content_bytes": -1}, "byte count"),
+        ({"capture_content_bytes": 4096.5}, "byte count"),
+        ({"capture_schema_version": "sector_holdings.capture.v0"}, "schema version"),
+        ({"capture_issuer_as_of": "2026-11-05"}, "not the indexed date"),
+        ({"capture_date_origin": "date_origin_not_recorded"}, "native capture origin"),
+        ({"capture_source_url": ""}, "https url"),
+        ({"capture_source_url": CAPTURE_URL.replace("-xlk.xlsx", "-xlf.xlsx")},
+         "canonical"),
+        ({"capture_source_url": "https://unrelated.example/holdings.xlsx"},
+         "canonical"),
+        ({"capture_source_url": CAPTURE_URL + "?fund=xlf"}, "canonical"),
+    ],
+    ids=["digest-not-hex", "digest-not-lowercase", "timestamp-naive",
+         "timestamp-not-utc", "wrong-source-fund", "negative-byte-count",
+         "fractional-byte-count", "unknown-schema", "issuer-date-not-the-index",
+         "legacy-origin-in-a-native-capture", "empty-source-url",
+         "wrong-fund-source-url", "unrelated-source-host", "altered-source-url"],
+)
+def test_a_malformed_capture_is_withheld(overrides, reason):
+    snap = _captured_frame([("NVDA", 14.21)], **overrides)
+    receipt = shc.source_receipt_for_fund("XLK", snap)
+    assert receipt["status"] == "malformed", receipt["reasons"]
+    assert any(reason in r for r in receipt["reasons"]), receipt["reasons"]
+    assert receipt["capture"]["content_sha256"] is None
+    assert receipt["capture"]["date_origin"] is None
+    assert receipt["issuer_effective_date_qualified"] is False
+
+
+def test_capture_fields_that_disagree_across_rows_are_mixed():
+    snap = _captured_frame([("NVDA", 14.21), ("AAPL", 12.05)])
+    snap["capture_content_sha256"] = snap["capture_content_sha256"].astype(object)
+    snap.iloc[1, snap.columns.get_loc("capture_content_sha256")] = "b" * 64
+    receipt = shc.source_receipt_for_fund("XLK", snap)
+    assert receipt["status"] == "mixed"
+    assert any("capture_content_sha256" in r for r in receipt["reasons"])
+    assert receipt["capture"]["content_sha256"] is None
+
+
+def test_an_incomplete_capture_block_is_malformed():
+    snap = _captured_frame([("NVDA", 14.21)])
+    snap = snap.drop(columns=["capture_content_sha256"])
+    receipt = shc.source_receipt_for_fund("XLK", snap)
+    assert receipt["status"] == "malformed"
+    assert any("capture_content_sha256" in r for r in receipt["reasons"])
+
+
+def test_the_receipt_never_claims_admission():
+    receipt = shc.source_receipt_for_fund(
+        "XLK", _captured_frame([("NVDA", 14.21)]))
+    assert receipt["original_available_at"] is None
+    assert receipt["historically_admissible"] is False
+    assert receipt["source_body_retained"] is False
+    for lineage in ("revision_lineage", "supersession_lineage"):
+        assert receipt[lineage]["status"] == "unavailable"
+        assert receipt[lineage]["predecessor"] is None
+        assert receipt[lineage]["successor"] is None
+    limitation = receipt["limitation"]
+    assert "not issuer mapping" in limitation
+    assert "source-use rights" in limitation
+    assert "economic causation" in limitation
+    assert "historical availability" in limitation
+    assert "correction history" in limitation
+
+
+def test_the_receipt_reads_the_frame_without_mutating_it():
+    snap = _captured_frame([("NVDA", 14.21), ("AAPL", 12.05)])
+    before = snap.copy(deep=True)
+    shc.source_receipt_for_fund("XLK", snap)
+    assert snap.equals(before)
+
+
+def test_a_capture_read_back_from_the_store_stays_consistent(tmp_path):
+    """The store's round-trip widens an int column that carries nulls (a
+    legacy row beside a captured row) to float64 — the receipt must read that
+    byte count as the integer it is, not as a malformed capture."""
+    legacy = _frame([("OLD", 1.0)], day="2026-11-05")
+    captured = _captured_frame([("NVDA", 14.21), ("AAPL", 12.05)], day="2026-11-06")
+    path = tmp_path / "XLK.parquet"
+    pd.concat([legacy, captured]).to_parquet(path)
+
+    back = pd.read_parquet(path)
+    receipt = shc.source_receipt_for_fund("XLK", back)
+
+    assert receipt["status"] == "consistent", receipt["reasons"]
+    assert receipt["capture"]["content_bytes"] == 4096
+    assert receipt["capture"]["content_sha256"] == "a" * 64
+
+
+def test_an_exact_integer_byte_count_survives_a_float_representation():
+    snap = _captured_frame([("NVDA", 14.21)], capture_content_bytes=4096.0)
+    receipt = shc.source_receipt_for_fund("XLK", snap)
+    assert receipt["status"] == "consistent", receipt["reasons"]
+    assert receipt["capture"]["content_bytes"] == 4096
+
+
+def test_the_coverage_capture_mirror_matches_the_collector_contract():
+    """The coverage builder MIRRORS the producer's capture contract; this
+    assertion is what stops the mirror from drifting."""
+    from collectors import sector_holdings as sh
+
+    assert shc.CAPTURE_COLUMNS == sh.CAPTURE_COLUMNS
+    assert shc.CAPTURE_PREFIX == sh.CAPTURE_PREFIX
+    assert shc.CAPTURE_SCHEMA_VERSION == sh.CAPTURE_SCHEMA_VERSION
+    assert shc.SSGA_XLSX == sh.SSGA_XLSX
+    assert shc.DATE_ORIGIN_ISSUER_REPORTED == sh.DATE_ORIGIN_ISSUER_REPORTED
+    assert (shc.DATE_ORIGIN_RETRIEVAL_FALLBACK
+            == sh.DATE_ORIGIN_RETRIEVAL_FALLBACK)
+    assert shc.DATE_ORIGIN_NOT_RECORDED == sh.DATE_ORIGIN_NOT_RECORDED
+    assert all(c.startswith(shc.CAPTURE_PREFIX) for c in shc.CAPTURE_COLUMNS)
