@@ -189,6 +189,19 @@ def test_fabric_refusal_returns_refusal_shape(monkeypatch):
     assert len(calls) == 1
 
 
+def test_fabric_max_tokens_matches_legacy_refusal_vocabulary(monkeypatch):
+    """The legacy _call_fn maps a max_tokens stop to "llm_refusal"; the fabric
+    path must report the same reason so a page diagnosis reads identically."""
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete",
+                        lambda messages, **kw: _completion(
+                            '{"evidence": "trunc', stop_reason="max_tokens"))
+    monkeypatch.delenv("MACRO_COMMODITY_NEWS_FABRIC", raising=False)
+
+    parsed, reason = cn._classify_cause("oil", "moved -4%", _HEADLINES, dict(_CFG))
+    assert parsed is None and reason == "llm_refusal"
+
+
 def test_fabric_empty_reply_is_not_retried(monkeypatch):
     calls: list[dict] = []
 

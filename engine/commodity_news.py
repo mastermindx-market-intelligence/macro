@@ -173,7 +173,11 @@ def _fabric_call(asset: str, move_desc: str, headlines: list[dict],
         )
     except Exception:  # noqa: BLE001
         pass
-    if _fabric_stop_reason(comp) == "refusal":
+    # Same reason vocabulary as the legacy _call_fn, which treats a refusal AND
+    # a max_tokens stop as "llm_refusal" (a truncated reply is not a usable
+    # classification either). Keeping the two paths' degraded_reason identical
+    # means a page-level diagnosis reads the same whichever path served.
+    if _fabric_stop_reason(comp) in ("refusal", "max_tokens"):
         return None, "llm_refusal", "fabric"
     if not comp.text:
         return None, "llm_error", "fabric"
