@@ -79,3 +79,38 @@ Initial recovery: original observatory plan retained. PLAN_NOT_ORG_LINKED for th
 Durable SQLite telemetry, all-node stable topology, incremental SSE request delivery, adaptive demand/quota analysis and a revision-fenced settings adapter are implemented in the owned branch. The adapter uses the incumbent SSH observation pipe and native ConfigRefresh owner, not another listener or router. Only allowlisted future-admission priorities/weights and observation cadence are editable; no subscriptions, secrets, quota ceilings or paid-routing permissions.
 
 Proof so far: 15 history cases and the original 25 observer cases passed before the latest control integration; rerun required for the final composition. A real Chromium synthetic fixture rendered all 209 nodes / 318 edges, retained request DOM identity across a real delta, and passed dark/light 1440px plus 390px reduced-motion checks with no browser errors. Synthetic UI proof is not production proof. Current latest code still requires control/intelligence/stream tests, real API integration, and release/source-custody qualification. No live service, configuration, subscription or router policy has been changed.
+
+
+## Recovery seal after interrupted Pro execution - 2026-11-13
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+CAPABILITY: BUILT_NOT_PROVEN
+SESSION_HEALTH: ROTATION_REQUIRED
+REASON: repeated terminal Thinking failures, including a failure after substantial implementation in this heavy conversation. This is an observed conversation reliability boundary, not a claim about hidden provider limits. Substantial work moves to one fresh Pro conversation after this save is verified.
+
+### Durable source and custody
+- Original operation: `capacity-router-upgrade-20261113-pro`; repository `mastermindx-market-intelligence/macro`; branch `sol/web-capacity-router-upgrade-20261113-pro`.
+- Reconciled implementation commit: `b433077d09e22ceac2de61238c0b95da4c4fac87`; both local and GitHub readback agree. Interrupted publish PID 16891 actually completed successfully with exit code 0; do not replay it.
+- Isolated workspace: `/Volumes/Mastermind 2/agent-workspaces/macro/web/capacity-router-upgrade-20261113-pro`; installed `mmx-workspace` operation/custody receipt remains controlling. Do not mint a replacement, overwrite another writer or force-reset this branch.
+- Governing pin: Mastermind protected master `c0b30b422d2310e614f91faed49a4adbce4291f0`, skillpack 1.0.1, compatible bootstrap major 1. Reuse unless material law/source/custody changes require refresh.
+- Same carrier: Studio Direct C2 Business, verified local `m2studio`; no remote fleet host was selected. Earlier refused `studio_select_host(m2)` was a remote-selector mismatch and was not replayed.
+- No provider worker, Executive Job, watcher, scheduled task, inference canary or daemon was launched. Fabric adapter unavailable was observed; no refused worker effect was retried.
+- Agent OS upgrade linkage remains unverified/unupdated. This owning-repository checkpoint is not an Agent OS wave acceptance or a new registry.
+
+### Recovered proof and limits
+- The 22 control-safety cases completed successfully. Regression PID 18394 completed with 55 passing history/stream/intelligence/observer cases. These are two runs totaling 77 local passing cases, not hosted CI or production acceptance. Three previously untracked test modules are preserved with this recovery commit.
+- `review_evidence/capacity_router/2026-11-13-recovery.json` records source/test hashes, exact run summaries, resolved effects and pending proof. The regression log includes a sqlite3 unclosed-connection ResourceWarning, which must be examined rather than hidden by the pass count.
+- Earlier real Chromium synthetic proof rendered 209 nodes and 318 edges, preserved request-row identity on deltas and passed dark/light desktop plus mobile reduced-motion checks. It predates later UI corrections/settings completion; rerun current source. Earlier screenshot files are local reproducible QA, not current release evidence.
+- No merge, deployment, live router configuration change, router restart, purchase or production-browser acceptance has occurred in this operation. All modifying effects are reconciled at this recovery boundary; no uncertain mutation is being transferred.
+
+### Exact next action in the fresh assigned Pro conversation
+1. Read this recovery section and its evidence JSON at the latest exact saved branch commit, confirm the same local branch/head and absence of another active writer. Locate the draft PR for this exact branch (create only if still absent); do not replay prior publication.
+2. Run `python3 -m admin.tests.prove_capacity_router_ui` in the existing workspace using installed Playwright. Inspect current screenshots; verify settings validation/apply behavior and persistent row/node identity. Investigate the sqlite ResourceWarning and add focused evidence without rerunning accepted tests merely for activity.
+3. Complete adversarial self-review and actual admin API/auth/CSRF/SSE/control transport tests. Settings are deliberately non-writable until the installed native control owner and transport are proven. Preserve exact cumulative-usage and unknown-versus-zero semantics; preserve shared quota grouping and conditional, not autonomous, subscription advice.
+4. Qualify exact incumbent runtime overlay: original observer/schema matched the earlier macro base, but preserve all independently advanced gateway/wire/service/config patches. The old staging helper requires adaptation to the current service factory. Observe existing reload/custody/active-stream constraints. Mastermind PR #2367 and macro PR #10952 are related work, not authorization to clear their holds or replace their source; recheck actual current state before dependent effects.
+5. Publish final fixes on this branch, make the candidate Ready only after qualification, use the existing permitted protected release path, deploy the exact accepted admin revision through its incumbent VPS owner, and activate only the qualified observer/control overlay. Prove authenticated browser traffic, reconnect behavior, retained-history restart behavior, live effective settings readback and one explicit reversible telemetry-cadence change. Never use an actual routing/spend change as a dummy test.
+6. Update this same task tree and the existing legitimate Agent OS continuity surface with verified production receipts. Parent completion requires the user-visible live dashboard, not tests, a PR, or a staging directory.
+
+### DO_NOT_REDO / preserve
+Do not rebuild the observatory or create another router, provider catalog, control plane, listener, scheduler or quota owner. Do not recreate the operation/workspace/branch or redispatch nonexistent children. Do not infer pre-observation historical charts from lifetime totals. Do not count model routes as independent subscriptions. No credentials, prompts or completions enter telemetry. No deployment occurred and none is preauthorized by a test result. After an ambiguous settings reply, reconcile the same operation ID; never replay it or bypass the existing native owner.
