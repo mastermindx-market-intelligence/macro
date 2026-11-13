@@ -6396,7 +6396,7 @@ function flrAuthorship(a) {
 /* ---- 4 · DISPATCH LEDGER ---------------------------------------------- */
 /* The publisher writes ~25 counters per run and the console used to render
    five. Every counter renders here, zeroes included and dimmed: a zero on
-   "went out to X" is the most important number on the page. A counter this
+   "accepted by the provider" names submission, not X visibility. A counter this
    view has no plain word for still renders, under its raw name — a new engine
    gate must never ship invisible. */
 function flrLedger(led) {
@@ -6425,7 +6425,7 @@ function flrLedger(led) {
   return `<div class="card">
     <h3>Where tonight's posts went
       <span class="cnt">last sweep ${esc(led.at || "—")} · ${esc(led.backend || "—")}</span></h3>
-    <div class="note muted" style="margin-bottom:10px">Every counter the publisher wrote on its last run. Zeroes are kept and dimmed — a zero next to “went out to X” is the whole story.</div>
+    <div class="note muted" style="margin-bottom:10px">${mktCopy("Counters from the last publisher run. Provider acceptance is a submission receipt; public visibility requires separate evidence.", "最近一次发布任务的计数。服务商接受仅表示收到提交；公开可见性需要单独证据。")}</div>
     <div class="flr-led">${rows}</div>
     ${halted}
   </div>`;
@@ -6617,10 +6617,10 @@ function flrAnswers(d) {
       ["Undecided posts in this plan","本次计划中尚未决定的帖子"], ["Open Outbox →","打开待审箱 →"], "marketing_outbox", t.awaiting_review ? "you" : null)}
     ${flrAnsCell(["Ready to send","准备发送"], t.going_out,
       ["Approved in this plan; publisher checks apply","本次计划中已批准；发送前仍需检查"], ["Open Publisher →","打开发布器 →"], "marketing_publish")}
-    ${flrAnsCell(["Confirmed on X","已确认在 X 发布"], evidence.confirmed,
-      ["Public links recorded · all history","已记录公开链接 · 全部历史"], ["View records →","查看记录 →"], "marketing_outbox")}
-    ${flrAnsCell(["Awaiting confirmation","等待发布确认"], evidence.pending_confirmation,
-      ["Provider records without an X link · all history","缺少 X 链接的发布记录 · 全部历史"], ["Inspect delivery →","查看发布状态 →"], "marketing_publish")}
+    ${flrAnsCell(["Observed on X","已验证 X 可见性"], evidence.confirmed,
+      ["Visibility evidence recorded · all history","已记录可见性证据 · 全部历史"], ["View records →","查看记录 →"], "marketing_outbox")}
+    ${flrAnsCell(["Needs delivery check","需要核查发布状态"], evidence.needs_delivery_check,
+      ["Unverified, failed or unreadable records · all history","未确认、失败或无法核查的记录 · 全部历史"], ["Inspect delivery →","查看发布状态 →"], "marketing_publish")}
     ${flrAnsCell(["Stopped in this plan","本次计划中已停止"], t.blocked_today,
       ["Held by a check or failed; inspect the reason","被检查拦截或发送失败；请查看原因"], ["Inspect exceptions →","查看异常 →"], "marketing_publish", t.blocked_today ? "loss" : null)}
   </div>`;
@@ -9598,10 +9598,10 @@ RENDER.marketing_outbox = async () => {
 
   const delivery = d.delivery_summary || {};
   const confirmed = delivery.confirmed;
-  const pending = delivery.pending_confirmation;
+  const pending = delivery.needs_delivery_check;
   const statePill = `<span class="obx-shadow-pill">${mktCopy(
-    `${flrN(confirmed)} confirmed on X · ${flrN(pending)} awaiting confirmation · all records`,
-    `${flrN(confirmed)} 条已确认在 X 发布 · ${flrN(pending)} 条等待确认 · 全部记录`)}</span>`;
+    `${flrN(confirmed)} observed on X · ${flrN(pending)} need a delivery check · all records`,
+    `${flrN(confirmed)} 条已验证 X 可见性 · ${flrN(pending)} 条需要核查发布状态 · 全部记录`)}</span>`;
   const asOfChip = asOf ? `<span class="cnt">${esc(asOf)}</span>` : "";
   const header = `<div class="section">Outbox ${asOfChip}${sentinelChip}${statePill}</div>
     <div class="obx-lede">${mktCopy("Review the copy, evidence and full-size media before approving. Approved posts can send when the publisher is armed and its checks pass.", "批准前请检查文案、证据和完整尺寸媒体。发布器启用且检查通过后，已批准的帖子即可发送。")}</div>`;
@@ -10888,9 +10888,9 @@ RENDER.marketing_publish = async () => {
   if (posted.length) {
     const num = (v2) => (v2 == null ? `<span class="faint">—</span>` : `<span class="pub-met-n">${esc(String(v2))}</span>`);
     const rows = posted.map(r => {
-      const publicLink = r.delivery && r.delivery.confirmed ? obxPublicPostHref(r.delivery.url) : null;
+      const publicLink = r.delivery ? obxPublicPostHref(r.delivery.url) : null;
       const idCell = publicLink
-        ? `<a href="${esc(publicLink)}" target="_blank" rel="noopener noreferrer">${mktCopy("View on X", "在 X 查看")}</a>`
+        ? `<a href="${esc(publicLink)}" target="_blank" rel="noopener noreferrer">${mktCopy("Open recorded X link", "打开已记录的 X 链接")}</a>`
         : (r.external_id ? esc(r.external_id) : `<span class="muted">—</span>`);
       const m = r.metrics || null;
       /* An absent metrics block is NOT a zero — it means the poller has not
@@ -10911,7 +10911,7 @@ RENDER.marketing_publish = async () => {
     }).join("");
     postedCard = `<div class="card" id="pub-posted">
       <div class="section">Recent publisher records <span class="cnt">last ${posted.length} · newest first</span></div>
-      <div class="note muted">${mktCopy("Provider acceptance is not delivery confirmation or permission to resend. Verified X links are shown on each record.", "服务商接受不代表已在 X 发布，也不代表可以重发。已验证的 X 链接会显示在对应记录中。")}</div>
+      <div class="note muted">${mktCopy("Provider acceptance is not delivery confirmation or permission to resend. Recorded X links are available for inspection; visibility evidence is separate.", "服务商接受不代表已在 X 发布，也不代表可以重发。可打开已记录的 X 链接进行检查；可见性证据单独显示。")}</div>
       <div class="table-wrap"><table class="tbl pub-tbl"><thead><tr><th>at</th><th>desk</th><th>post</th>${anyMetrics ? "<th>how it did</th>" : ""}<th>via</th><th>receipt</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
       ${anyMetrics ? `<div class="note muted" style="margin-top:6px">A dash means no measurement is available, not zero. Metrics alone do not establish delivery.</div>` : ""}
@@ -11819,12 +11819,20 @@ function obxDeadBlock(history, spentFailures, historyTotal) {
 function obxDeliveryChip(delivery) {
   const d = delivery || {};
   const names = {
-    confirmed:["Confirmed on X","已确认在 X 发布"], scheduled:["Scheduled with Buffer","已在 Buffer 排期"],
+    confirmed:["Observed on X","已验证 X 可见性"], scheduled:["Scheduled with Buffer","已在 Buffer 排期"],
+    provider_sent:["Provider reports sent · visibility unverified","服务商报告已发送 · 可见性未验证"],
+    linked:["X link recorded · visibility unverified","已记录 X 链接 · 可见性未验证"],
+    failed:["Provider reports failed","服务商报告发送失败"],
+    degraded:["Delivery check incomplete","发布核查未完成"],
+    not_visible:["Not visible at the last X check","最近一次 X 核查未见公开内容"],
     accepted:["Accepted by Buffer · confirmation pending","Buffer 已接收 · 等待确认"],
     sending:["Sending · outcome pending","正在发送 · 结果待定"],
     unconfirmed:["Delivery unconfirmed","尚未确认发布"]
   };
-  return `<span class="statpill ${d.confirmed ? "s-ok" : "s-mut"}">${mktCopy(...(names[d.state] || names.unconfirmed))}</span>`;
+  const tone = d.confirmed ? "s-ok" : ["failed","not_visible"].includes(d.state) ? "s-bad" : d.state === "degraded" ? "s-warn" : "s-mut";
+  const providerDetail = [[mktCopy("Provider status", "服务商状态"), d.provider_status], [mktCopy("Publishing mode", "发布方式"), d.scheduling_type], [mktCopy("Notification status", "通知状态"), d.notification_status]].filter(([,value]) => value).map(([label,value]) => `<p>${label}: ${esc(value)}</p>`).join("");
+  const detail = d.detail || providerDetail || d.channel_ready === false ? `<details class="mkt-diagnostics"><summary>${mktCopy("Delivery details", "发布详情")}</summary>${providerDetail}${d.channel_ready === false ? `<p>${mktCopy("The provider reports the channel is not ready.", "服务商报告该频道尚未就绪。")}</p>` : ""}${d.detail ? `<p>${esc(d.detail)}</p>` : ""}</details>` : "";
+  return `<span class="statpill ${tone}" title="${esc(d.visibility_checked_at || d.observed_at || "")}">${mktCopy(...(names[d.state] || names.unconfirmed))}</span>${d.observation_stale ? `<span class="statpill s-warn">${mktCopy("Latest check needs review", "最新核查需要检查")}</span>` : ""}${detail}`;
 }
 function obxPublicPostHref(raw) {
   try {
@@ -11839,13 +11847,13 @@ function obxPostedBlock(history, historyTotal) {
   if (!posted.length) return `<div class="section">${heading}</div>${blEmpty(mktText("No publishing records loaded", "尚未加载发布记录"), mktText("Provider receipts and public X confirmation will appear here separately.", "发布服务回执与 X 公开确认将分别显示。"))}`;
   const rows = posted.map(h => {
     const rl = obxReceiptLine(h.receipt);
-    const link = h.delivery && h.delivery.confirmed ? obxPublicPostHref(h.delivery.url) : null;
+    const link = h.delivery ? obxPublicPostHref(h.delivery.url) : null;
     return `<article class="obx-posted-row mkt-publication">
       <p class="pc-text">${esc(h.text || "")}</p>
       <div class="obx-dead-meta"><span class="pc-desk">${esc(h.account || "—")}</span>${obxKindChip(h.kind)}
         <span class="pc-when" title="Record time; not verified publication time">${obxStamp(h.at)}</span>
         ${obxDeliveryChip(h.delivery)}
-        ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">${mktCopy("View on X ↗", "在 X 查看 ↗")}</a>` : ""}
+        ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">${mktCopy("Open recorded X link ↗", "打开已记录的 X 链接 ↗")}</a>` : ""}
       </div>
       ${rl ? `<details class="mkt-diagnostics"><summary>${mktCopy("Provider receipt", "发布服务回执")}</summary><div class="obx-dead-rc">${rl}</div></details>` : ""}
     </article>`;

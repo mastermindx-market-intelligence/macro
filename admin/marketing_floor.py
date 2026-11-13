@@ -42,7 +42,7 @@ from .marketing import (
     _latest_metrics_by_remote_id,
     arm_state,
 )
-from .marketing_evidence import _timestamp, delivery_evidence, delivery_summary
+from .marketing_evidence import _timestamp, delivery_evidence, delivery_records, delivery_summary
 
 # ---------------------------------------------------------------------------
 # paths
@@ -583,14 +583,17 @@ def floor(root=None) -> dict:  # noqa: PLR0912, PLR0915
         enqueued = len(today_items) if as_of else None
         by_status = Counter(_status(it) for it in today_items)
         metrics = _latest_metrics_by_remote_id(repo)
+        provider_by_item = delivery_records(repo)
         deliveries = {}
         for it in items:
             rec = (final.get(str(it.get("id"))) or {}).get("receipt")
             rid = str((rec or {}).get("external_id") or "") if isinstance(rec, dict) else ""
-            deliveries[str(it["id"])] = delivery_evidence(_status(it), rec, metrics.get(rid), now=_utcnow())
+            deliveries[str(it["id"])] = delivery_evidence(_status(it), rec, metrics.get(rid),
+                projection=provider_by_item.get(str(it["id"])), now=_utcnow())
         live = sum(deliveries[str(it["id"])]["confirmed"] for it in today_items)
-        submitted = sum(deliveries[str(it["id"])]["state"] in
-                        {"confirmed", "scheduled", "accepted"} for it in today_items)
+        submitted = sum(_status(it) == "posted" and
+                        bool(((final.get(str(it["id"])) or {}).get("receipt") or {}).get("external_id"))
+                        for it in today_items)
         awaiting = by_status.get("queued", 0)
         approved = by_status.get("approved", 0)
 
@@ -607,8 +610,9 @@ def floor(root=None) -> dict:  # noqa: PLR0912, PLR0915
         posted_recent_at: list[datetime] = []
         now = _utcnow()
         for iid, row in final.items():
-            if (iid in deliveries and deliveries[iid]["state"] in
-                    {"confirmed", "scheduled", "accepted"}):
+            receipt = row.get("receipt")
+            if (iid in deliveries and row.get("to") == "posted"
+                    and isinstance(receipt, dict) and receipt.get("external_id")):
                 stamp = _timestamp(row.get("at"))
                 if stamp and stamp <= now:
                     posted_recent_at.append(stamp)
@@ -657,7 +661,7 @@ def floor(root=None) -> dict:  # noqa: PLR0912, PLR0915
                      detail=(f"{ledger_block.get('lost_total')} lost across "
                              f"{len(ledger_block.get('lines') or [])} counters"
                              if ledger_block.get("present") else None)),
-            _station("live", "Confirmed on X", "public post link recorded",
+            _station("live", "Observed on X", "separate visibility evidence recorded",
                      live if enqueued is not None else None,
                      (live + approved) or 0 if enqueued is not None else None,
                      "approved but still waiting", goto="marketing_publish"),

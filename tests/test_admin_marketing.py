@@ -4432,7 +4432,7 @@ class TestPublishingEvidence:
         assert delivery_evidence("posted", {})["state"] == "unconfirmed"
         rec["external_url"] = "https://twitter.com/desk/status/123?utm_source=buffer"
         proof = delivery_evidence("posted", rec)
-        assert proof["confirmed"] and proof["url"] == "https://x.com/desk/status/123"
+        assert proof["confirmed"] is False and proof["url"] == "https://x.com/desk/status/123"
         for state in ("posting", "failed", "recalled", "queued"):
             assert delivery_evidence(state, rec)["confirmed"] is False
 
@@ -4458,13 +4458,129 @@ class TestPublishingEvidence:
         payload = marketing.outbox(tmp_path)
         assert payload["ok"]
         assert payload["history_total"] == 55 and len(payload["history"]) == 50
-        assert payload["delivery_summary"]["confirmed"] == 54
+        assert payload["delivery_summary"]["confirmed"] == 0
+        assert payload["delivery_summary"]["linked"] == 54
         assert payload["delivery_summary"]["accepted"] == 1
         assert payload["delivery_summary"]["publication_time_known"] is False
         draft = next(i for a in payload["accounts"] for i in a["items"] if i["id"] == items[-1]["id"])
         assert len(draft["source"]["review"]["issues"]) == 5
         assert len(draft["source"]["review"]["note"]) == 400
         assert "must-not-cross" not in json.dumps(payload)
+
+    def _posted_with_observations(self, root, observations, *, backend="buffer",
+                                  receipt_url="https://x.com/desk/status/123", booked_at=None):
+        from datetime import datetime, timezone
+        from engine.marketing import outbox
+        now = datetime(2026, 10, 12, 12, tzinfo=timezone.utc)
+        item = outbox.make_item(account="flagship", kind="signal", text=_CLEAN_A,
+            as_of="2026-10-12", scheduled_at=now.isoformat(), provenance="content_studio", now=now)
+        assert outbox.enqueue(item, root=root) == "queued"
+        for state in ("approved", "posting"):
+            assert outbox.transition(item["id"], state, actor="test", root=root, now=now)
+        assert outbox.transition(item["id"], "posted", actor="test", root=root, now=now,
+            receipt={"backend": backend, "external_id": "provider-1",
+                     "external_url": receipt_url, "at": now.isoformat(), "booked_at": booked_at})
+        rows = [{"remote_id": "provider-1", "ok": True, "metrics": {},
+                 "polled_at": obs.get("observed_at"), "delivery": obs} for obs in observations]
+        (root / "data/marketing/post_metrics.jsonl").write_text("".join(json.dumps(row) + "\n" for row in rows))
+        return item
+
+    def _sent_observation(self, **changes):
+        return {"schema": "marketing.provider_delivery/v1", "provider_id": "provider-1",
+                "read_ok": True, "state": "provider_sent", "provider_sent": True,
+                "provider_sent_at": "2026-10-12T12:05:00Z", "observed_at": "2026-10-12T12:10:00Z",
+                "external_url": "https://x.com/desk/status/123", "x_visible": None,
+                "x_visible_at": None, **changes}
+
+    def test_actual_canonical_send_survives_later_timeout_without_inventing_visibility(self, tmp_path):
+        from admin import marketing_floor
+        sent = self._sent_observation()
+        timeout = self._sent_observation(read_ok=False, state="unknown_degraded", provider_sent=None,
+                    provider_sent_at=None, observed_at="2026-10-12T13:10:00Z", error="provider timeout")
+        item = self._posted_with_observations(tmp_path, [sent, timeout])
+        payload = marketing.outbox(tmp_path)
+        proof = next(row["delivery"] for row in payload["history"] if row["id"] == item["id"])
+        assert proof["state"] == "provider_sent" and proof["provider_sent"] is True
+        assert proof["confirmed"] is False and proof["observation_stale"] is True
+        assert proof["detail"] == "provider timeout"
+        assert proof["provider_sent_at"] == "2026-10-12T12:05:00Z"
+        assert payload["delivery_summary"]["provider_sent"] == 1
+        assert payload["delivery_summary"]["confirmed"] == 0
+        assert marketing_floor.floor(tmp_path)["today"]["delivery"]["provider_sent"] == 1
+        assert marketing.publisher(tmp_path)["recent_posted"][0]["delivery"]["state"] == "provider_sent"
+
+    @pytest.mark.parametrize("changes", [
+        {"provider_id": "other-post"}, {"schema": "unsupported/v2"},
+        {"read_ok": False}, {"provider_sent_at": "not-a-time"},
+    ])
+    def test_invalid_observation_cannot_promote_a_visibility_claim(self, tmp_path, changes):
+        obs = self._sent_observation(x_visible=True, x_visible_at="2026-10-12T12:10:00Z", **changes)
+        self._posted_with_observations(tmp_path, [obs])
+        proof = marketing.outbox(tmp_path)["history"][0]["delivery"]
+        assert proof["confirmed"] is False and proof["state"] == "degraded"
+
+    @pytest.mark.parametrize("visible,stamp", [
+        ("true", "2026-10-12T12:10:00Z"), (1, "2026-10-12T12:10:00Z"),
+        (True, None), (True, "2026-10-12T12:10:00"), (True, "bad-time"),
+        (True, "2099-10-12T12:10:00Z"),
+        (False, None), (False, "2026-10-12T12:10:00"), (False, "bad-time"),
+        (False, "2099-10-12T12:10:00Z"),
+    ])
+    def test_visibility_requires_a_distinct_typed_dated_observation(self, tmp_path, visible, stamp):
+        self._posted_with_observations(tmp_path, [self._sent_observation(x_visible=visible, x_visible_at=stamp)])
+        proof = marketing.outbox(tmp_path)["history"][0]["delivery"]
+        assert proof["state"] == "provider_sent" and proof["confirmed"] is False
+
+    def test_valid_visibility_is_separate_and_backend_bound(self, tmp_path):
+        obs = self._sent_observation(x_visible=True, x_visible_at="2026-10-12T12:10:00Z")
+        self._posted_with_observations(tmp_path, [obs])
+        proof = marketing.outbox(tmp_path)["history"][0]["delivery"]
+        assert proof["confirmed"] is True and proof["confirmed_at"] == "2026-10-12T12:10:00+00:00"
+        other = tmp_path / "other"
+        self._posted_with_observations(other, [obs], backend="other")
+        other_proof = marketing.outbox(other)["history"][0]["delivery"]
+        assert other_proof["state"] == "linked" and other_proof["confirmed"] is False
+
+    @pytest.mark.parametrize("observation", [None, "sent", "failed_lookup"])
+    def test_recent_submission_does_not_disappear_when_delivery_classification_changes(
+            self, tmp_path, monkeypatch, observation):
+        from datetime import datetime, timezone
+        from admin import marketing_floor
+        observations = ([] if observation is None else [self._sent_observation(
+            **({"read_ok": False, "state": "unknown_degraded", "provider_sent": None,
+                "provider_sent_at": None} if observation == "failed_lookup" else {}))])
+        self._posted_with_observations(tmp_path, observations)
+        monkeypatch.setattr(marketing_floor, "_utcnow", lambda: datetime(2026, 10, 12, 14, tzinfo=timezone.utc))
+        today = marketing_floor.floor(tmp_path)["today"]
+        assert today["submitted_today"] == 1 and today["posted_recently"] is True
+
+    def test_buffer_id_collision_cannot_attach_a_link_or_metrics_to_another_backend(self, tmp_path):
+        self._posted_with_observations(tmp_path, [self._sent_observation()],
+                                       backend="other", receipt_url=None)
+        path = tmp_path / "data/marketing/post_metrics.jsonl"
+        row = json.loads(path.read_text())
+        row.update(external_url="https://x.com/another/status/456", metrics={"impressions": 99})
+        path.write_text(json.dumps(row) + "\n")
+        assert marketing.outbox(tmp_path)["history"][0]["delivery"]["url"] is None
+        published = marketing.publisher(tmp_path)["recent_posted"][0]
+        assert published["external_url"] is None and "metrics" not in published
+
+    def test_invalid_observation_cannot_attach_another_posts_link(self, tmp_path):
+        self._posted_with_observations(tmp_path, [self._sent_observation(
+            provider_id="other-post", external_url="https://x.com/another/status/456")])
+        proof = marketing.outbox(tmp_path)["history"][0]["delivery"]
+        assert proof["state"] == "degraded"
+        assert proof["url"] == "https://x.com/desk/status/123"  # only the canonical receipt survives
+
+    def test_newer_approval_state_overrides_an_old_booking(self, tmp_path):
+        self._posted_with_observations(tmp_path, [self._sent_observation(
+            state="accepted_unconfirmed", provider_sent=False, provider_sent_at=None,
+            provider_status="needs_approval", scheduling_type="notification",
+            notification_status="pending", channel_ready=False)], booked_at="2099-10-12T15:00:00Z")
+        proof = marketing.outbox(tmp_path)["history"][0]["delivery"]
+        assert proof["state"] == "accepted" and proof["scheduled_at"] is None
+        assert proof["provider_status"] == "needs_approval"
+        assert proof["scheduling_type"] == "notification" and proof["channel_ready"] is False
 
     def _failed(self, root, *, old=True, text=_CLEAN_A):
         from datetime import datetime, timedelta, timezone

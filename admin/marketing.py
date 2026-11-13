@@ -22,7 +22,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from .marketing_evidence import delivery_evidence, delivery_summary, editorial_review, retry_freshness
+from .marketing_evidence import delivery_evidence, delivery_records, delivery_summary, editorial_review, retry_freshness
 
 log = logging.getLogger(__name__)
 
@@ -2150,6 +2150,7 @@ def outbox(root=None) -> dict:
 
         # Build item enriched dicts
         metrics_by_rid = _latest_metrics_by_remote_id(repo)
+        provider_by_item = delivery_records(repo)
         enriched: list[dict] = []
         for item in items:
             item_id = item.get("id", "")
@@ -2187,7 +2188,8 @@ def outbox(root=None) -> dict:
                 "attempts": state["attempts"].get(item_id, 0),
                 "effective_attempts": _ob.effective_attempts(state, item_id),
                 "receipt": receipt,
-                "delivery": delivery_evidence(folded, receipt, metrics_by_rid.get(remote_id)),
+                "delivery": delivery_evidence(folded, receipt, metrics_by_rid.get(remote_id),
+                                              projection=provider_by_item.get(str(item_id))),
                 "source": editorial_review(item.get("source")),
                 "retry_freshness": retry_freshness(item) if folded == "failed" else None,
                 "_effective": eff,
@@ -2522,6 +2524,7 @@ def publisher(root=None) -> dict:
         # Latest per-post analytics (impressions/likes/… + x.com permalink),
         # keyed by Buffer post id == the receipt's external_id. Fail-soft {}.
         metrics_by_rid = _latest_metrics_by_remote_id(repo)
+        provider_by_item = delivery_records(repo)
 
         def _row(iid: str) -> dict:
             it = items.get(iid, {})
@@ -2533,8 +2536,11 @@ def publisher(root=None) -> dict:
             # Join fetched metrics + backfill the permalink (createPost never
             # returns one; the poller's post() query does). Front-end renders
             # `metrics`/`external_url` only when present, so absent = unchanged.
-            met = metrics_by_rid.get(str(external_id or "").strip()) if external_id else None
-            delivery = delivery_evidence(statuses.get(iid, it.get("status", "queued")), rec, met)
+            met = (metrics_by_rid.get(str(external_id or "").strip())
+                   if external_id and str((rec or {}).get("backend") or "").lower() == "buffer"
+                   else None)
+            delivery = delivery_evidence(statuses.get(iid, it.get("status", "queued")), rec, met,
+                                         projection=provider_by_item.get(str(iid)))
             row = {
                 "id": iid,
                 "account": it.get("account", ""),

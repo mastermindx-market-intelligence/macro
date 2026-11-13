@@ -33159,6 +33159,22 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+      - name: editorial evidence, social charts and publishing review
+        # These consumers previously ran only under gate:data. Their hermetic
+        # regressions must execute when their source changes on an ordinary PR.
+        # Reuse this code owner and dependency set; held compiler/frontier steps
+        # retain their original carriers and compose independently.
+        run: >-
+          python -m pytest tests/test_marketing_earnings_call_lane.py
+          tests/test_marketing_copy_auditor.py tests/test_admin_marketing.py
+          tests/test_admin_marketing_floor.py
+          tests/test_market_facts.py::test_credit_comparison_uses_source_precision_and_real_copy_gates
+          tests/test_market_facts.py::test_missing_credit_comparison_does_not_claim_flat
+          tests/test_market_facts.py::test_observed_zero_credit_change_is_distinct_from_missing
+          tests/test_market_facts.py::test_curve_comparison_keeps_signed_spread_units
+          tests/test_market_facts.py::test_missing_curve_change_keeps_only_the_level
+          tests/test_marketing_anchor_law.py tests/test_marketing_intelligence_desk.py
+          tests/test_chart_director.py -q
       - name: ad plane O + persona model + reply-desk arming
         run: python -m pytest tests/test_marketing_ad_plane_o.py tests/test_marketing_persona_model.py tests/test_marketing_reply_arming.py -q
       - name: X ad-campaign asset manifests (desktop + mobile)
@@ -51565,6 +51581,7 @@ jobs:
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "admin/press_audience.py"
+      - "admin/marketing_evidence.py"
       - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
