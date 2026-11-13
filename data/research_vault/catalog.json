@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T16:09:10.161606+00:00",
-  "count": 3306,
+  "generated_at": "2026-11-13T16:39:24.166867+00:00",
+  "count": 3307,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -142,6 +142,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hqypfrldwhv-2ec7d4",
+      "title": "Europe Equity Strategy 2027 Outlook Finding growth",
+      "institution": "2027 Outlook",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:51:03Z",
+      "summary_points": [
+        "Energy Relief as Core Catalyst: Brent oil to $78/bbl and TTF gas to EUR 31/MWh drive earnings recovery; energy prices tightly correlate with STOXX 600 P/E, benefiting cyclical/Consumer Discretionary sectors while Energy underperforms.",
+        "Earnings Growth Deceleration: 2027 earnings growth slows to 7% (vs 18% in 2026) due to energy EPS decline, weaker growth, and higher costs; STOXX 600 EPS forecasted at 7% (2027), above historical average but vulnerable to recessions.",
+        "French Fiscal Risk & Sector Rotation: Sovereign spreads and 3% CAC 40 downside risk (linked to 50% French corporate bonds in OATs) lead Goldman to advise against French domestic stocks; Energy downgraded to Underweight, Defense/Defense overweighted (PEG <1, 20% EPS growth).",
+        "Valuation Gap & Diversification Edge: Europe trades at 14% P/E discount vs.",
+        "US (narrowing from 34%), with European Tech/Defense offering undervaluation (PEG <1 vs US); Tech/Telecom/Oil & Gas sectors show lower intra-sector correlations for risk reduction."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
       "language": "en",
       "needs_metadata": false
     },
