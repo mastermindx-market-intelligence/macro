@@ -207,3 +207,93 @@ def test_encoded_angle_brackets_are_text_not_markup():
     page = _PAGE.replace('First Advantage', 'First &lt;Advantage&gt; &amp; Co')
     rows = C.parse_changes_page(page, 'http://x/fa', '2026-06-11')
     assert rows[0]['company'] == 'First <Advantage> & Co'
+
+
+@pytest.mark.parametrize('phrase', ['Set to Join', 'to join the', 'join'])
+@pytest.mark.parametrize('amp', ['&amp;', '&#38;', '&#x26;'])
+@pytest.mark.parametrize('mode', ['plain', 'escaped', 'cdata'])
+@pytest.mark.parametrize('namespace', ['', 'urn:rss-test'])
+def test_rss_xml_identity_before_filtering(phrase, amp, mode, namespace):
+    url = 'https://press.spglobal.com/a?s=2429&item=999'
+    wire = 'https://press.spglobal.com/a' if mode == 'plain' else (
+        url.replace('&', '&amp;') if mode == 'escaped' else '<![CDATA[' + url + ']]>')
+    expected = 'https://press.spglobal.com/a' if mode == 'plain' else url
+    ns = ' xmlns="' + namespace + '"' if namespace else ''
+    rss = f'<rss{ns}><channel><item><title>A {phrase} S{amp}P 500</title><link>{wire}</link></item></channel></rss>'
+    assert C.parse_rss(rss) == [{'title': f'A {phrase} S&P 500', 'url': expected, 'announce_date': None}]
+
+
+@pytest.mark.parametrize('bad', [
+    '<rss><channel><item>', '<rss/>', '<html/>',
+    '<rss><channel><item><title>Join S&bogus;P</title></item></channel></rss>',
+    '<!DOCTYPE rss [<!ENTITY a "Join S&amp;P">]><rss><channel/></rss>',
+])
+def test_rss_invalid_document_preserves_cache(monkeypatch, tmp_path, caplog, bad):
+    import requests
+    from types import SimpleNamespace
+    from lib import config
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    cache = C._cache_path()
+    pd.DataFrame([{'announce_url': 'old', 'ticker': 'OLD'}]).to_parquet(cache)
+    before = cache.read_bytes()
+    calls = []
+    class Session:
+        def __init__(self): self.headers = {}
+        def get(self, url, timeout):
+            calls.append(url)
+            return SimpleNamespace(status_code=200, text=bad)
+    monkeypatch.setattr(requests, 'Session', Session)
+    assert C.fetch_index_changes().ticker.tolist() == ['OLD']
+    assert cache.read_bytes() == before
+    assert calls == [C._RSS]
+    assert 'RSS fetch failed' in caplog.text
+
+
+def test_rss_cdata_decodes_once_and_ignores_nonitems():
+    text = '<rss><channel><title>Join S&amp;P</title><link>wrong</link><item><title><![CDATA[A join S&P]]></title><link><![CDATA[https://x/?a=1&amp;b=2]]></link></item><item><title>Join S&amp;P</title><link> </link></item></channel></rss>'
+    assert C.parse_rss(text) == [{'title':'A join S&P','url':'https://x/?a=1&amp;b=2','announce_date':None}]
+    assert C.parse_rss('<rss><channel/></rss>') == []
+
+
+@pytest.mark.parametrize('phrase', ['Set to Join', 'to join the', 'join'])
+@pytest.mark.parametrize('amp', ['&amp;', '&#38;', '&#x26;'])
+@pytest.mark.parametrize('mode', ['plain', 'escaped', 'cdata'])
+@pytest.mark.parametrize('warm', [False, True])
+def test_rss_xml_to_native_writer(monkeypatch, tmp_path, phrase, amp, mode, warm):
+    import json
+    import requests
+    from types import SimpleNamespace
+    from lib import config
+    from scripts import build_index_changes as B
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path / 'data')
+    monkeypatch.setattr(config, 'load', lambda: {'storage': {'site_dir': 'site'}})
+    class Clock(date):
+        @classmethod
+        def today(cls): return cls(2026, 6, 21)
+    monkeypatch.setattr(IC, 'date', Clock)
+    url = 'https://press.spglobal.com/a' if mode == 'plain' else 'https://press.spglobal.com/a?s=2429&item=999'
+    wire = '<![CDATA[' + url + ']]>' if mode == 'cdata' else url.replace('&', '&amp;')
+    rss = f'<rss><channel><item><title>A {phrase} S{amp}P SmallCap 600</title><link>{wire}</link><pubDate>Thu, 11 Jun 2026 18:41:00 -0400</pubDate></item></channel></rss>'
+    cache = C._cache_path()
+    if warm:
+        pd.DataFrame([{'ticker':'OLD','index':'sp600','action':'addition','effective_date':'2020-01-01','announce_date':'2019-12-20','company':'Old','announce_url':'https://old','_seen':'old'}]).to_parquet(cache)
+    calls = []
+    class Session:
+        def __init__(self): self.headers = {}
+        def get(self, target, timeout):
+            calls.append(target)
+            assert target in (C._RSS, url), 'XML-encoded request identity escaped boundary'
+            return SimpleNamespace(status_code=200, text=rss if target == C._RSS else _PAGE)
+    monkeypatch.setattr(requests, 'Session', Session)
+    assert B.main() == 0
+    payload = json.loads((tmp_path/'site/index_changes/latest.json').read_text())
+    assert payload['n_pure'] == 1 and payload['pure_additions'][0]['ticker'] == 'FA'
+    assert payload['scored'] is False and payload['is_context_only'] is True
+    rows = pd.read_parquet(cache)
+    assert set(rows[rows.announce_url == url].ticker) == {'FA', 'KW'}
+    assert len(rows) == 2 + int(warm)
+    before = cache.read_bytes()
+    assert B.main() == 0
+    assert cache.read_bytes() == before
+    assert calls == [C._RSS, url, C._RSS]
