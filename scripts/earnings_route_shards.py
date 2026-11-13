@@ -61,9 +61,9 @@ def build_route_shards(catalog_bytes: bytes) -> dict[str, bytes]:
     if not isinstance(catalog, Mapping) or catalog.get("schema") != CATALOG_SCHEMA:
         raise EarningsRouteShardError("public route catalog schema is not v2")
     routes = catalog.get("routes")
-    generation = catalog.get("source_generation_id")
-    verified_at = catalog.get("verified_at")
-    if not isinstance(routes, Mapping) or not isinstance(generation, str) or not isinstance(verified_at, str):
+    if (not isinstance(routes, Mapping)
+            or not isinstance(catalog.get("source_generation_id"), str)
+            or not isinstance(catalog.get("verified_at"), str)):
         raise EarningsRouteShardError("incomplete canonical public route catalog")
     buckets: list[dict[str, dict]] = [{} for _ in range(SHARD_COUNT)]
     for ticker, route in routes.items():
@@ -84,8 +84,8 @@ def build_route_shards(catalog_bytes: bytes) -> dict[str, bytes]:
         filename = f"part-{index:02x}.json"
         payload = {
             "schema": SHARD_SCHEMA,
-            "source_generation_id": generation,
-            "verified_at": verified_at,
+            # No generation clock/receipt here: unchanged ticker routes MUST
+            # retain identical bytes across hourly source verifications.
             "shard": f"{index:02x}",
             "routes": {ticker: subset[ticker] for ticker in sorted(subset)},
         }
