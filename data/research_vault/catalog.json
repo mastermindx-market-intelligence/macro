@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T03:52:48.727315+00:00",
-  "count": 3272,
+  "generated_at": "2026-11-13T04:22:51.684398+00:00",
+  "count": 3273,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -123,6 +123,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-p2orjrkzdbd-63b5be",
+      "title": "nb.com AI Data Centers and the New Compute of Politics Power and Capex",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-13T03:52:41Z",
+      "summary_points": [
+        "Political Execution Shifts: Midterms intensified political tensions on data centers, altering project execution speed/location via new governors' restrictive campaigns without halting buildout.",
+        "Critical Timing Triggers: Late 2026 (permitting reform), Dec 10 (Texas audit), Q4 2023 (earnings), and Jan 2024+ (governor changes) dictate capex timing and project progression.",
+        "Hyperscaler Funding Dynamics: $115B debt/$98B equity raised by cloud providers cushions capex growth, but slowing demand—not funding gaps—threatens margins beyond 2028.",
+        "State Utility Positioning: FL/LA/IN/MO/IA better positioned for stable power contracts vs.",
+        "Ohio; self-supply by data centers mitigates regulatory delays in transmission/permits."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-6j1p9w15sso-0e1df7",
       "title": "ING Think rates spark inflation pricing sending mixed signals",
