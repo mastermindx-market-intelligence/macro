@@ -8,6 +8,7 @@ from __future__ import annotations
 import inspect
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -109,17 +110,20 @@ def test_the_three_loader_copies_are_identical_source():
 
 # --- _master_brief_vm (build_site): real loader, tmp site/data dirs ---------------------
 
-def _brief_vm(tmp_path):
+def _brief_vm(tmp_path, now=None):
     from scripts.build_site import _master_brief_vm
-    return _master_brief_vm(site_dir=tmp_path / "site", data_dir=tmp_path / "data")
+    return _master_brief_vm(site_dir=tmp_path / "site", data_dir=tmp_path / "data", now=now)
 
 
 def test_master_brief_vm_carries_macro_freshness(tmp_path):
+    # Coherent control: the rendered brief IS the receipt's certified payload (same source
+    # + generated_at), qualified fresh at the injected consumer build clock.
     site = tmp_path / "site"
     _write(site, _receipt(macro={"refresh_days": 2}, china={"stale": True}))
-    (site / "master_brief.json").write_text(json.dumps({"summary": "s"}), encoding="utf-8")
-    vm = _brief_vm(tmp_path)
-    assert vm["master_brief"] == {"summary": "s"}
+    _brief = {"summary": "s", "generated_at": "2026-11-09T06:30:00+00:00", "refresh_days": 2}
+    (site / "master_brief.json").write_text(json.dumps(_brief), encoding="utf-8")
+    vm = _brief_vm(tmp_path, now=datetime(2026, 11, 9, 7, 0, tzinfo=timezone.utc))
+    assert vm["master_brief"] == _brief
     assert vm["master_brief_freshness"] == {
         "stale": False, "generated_date": "2026-11-09", "refresh_days": 2}
 
@@ -207,3 +211,125 @@ def test_macro_with_blanked_refresh_days_emits_no_raw_cadence_chip(lens):
     brief = {"summary": "s", "refresh_days": 1, "generated_at": "2020-01-01T00:00:00+00:00"}
     out = tpl.render(b=brief, lens=lens)
     assert "Updated daily" not in out and "Updated every" not in out
+
+
+# --- identity binding: real producer -> consumer journeys (reviewer acceptance #11075) --
+# The receipt must certify ONLY the exact payload the consumer renders, re-qualified at the
+# consumer build clock through the producer's own cadence/grace (single authority). A
+# divergent, aged or unmatched receipt certifies nothing (no chip); coherent fresh/stale
+# controls stay intact and content stays fail-open.
+
+_NOW = datetime(2026, 11, 13, 1, 23, tzinfo=timezone.utc)
+_OLD = "2026-10-19T06:30:00+00:00"
+_NEW = "2026-11-13T00:30:00+00:00"
+
+
+def _journey(tmp_path, site_stamp, data_stamp, receipt_now, replace_after=None):
+    """Run the REAL producer (select freshest + build + write receipt) over tmp site/data
+    briefs, optionally replacing the site brief AFTER the receipt is written. Returns the
+    site dir so the real consumer loader can be pointed at it."""
+    from scripts import build_aibrief as P
+    site = tmp_path / "site"
+    data = tmp_path / "data"
+    site.mkdir(parents=True, exist_ok=True)
+    (data / "regime").mkdir(parents=True, exist_ok=True)
+
+    def _b(stamp, label):
+        return {"generated_at": stamp, "state_asof": stamp[:10], "refresh_days": 1,
+                "summary": label, "schema": "master_brief.v2"}
+
+    for fname in ("master_brief.json", "china_brief.json", "btc_brief.json"):
+        (site / fname).write_text(json.dumps(_b(site_stamp, "SITE")), encoding="utf-8")
+        (data / "regime" / fname).write_text(json.dumps(_b(data_stamp, "DATA")), encoding="utf-8")
+    loaded = P._load_briefs_with_source(site, data)
+    receipt = P._build_freshness(loaded, receipt_now)
+    P._write_freshness_receipt(site, receipt)
+    if replace_after is not None:
+        for fname in ("master_brief.json", "china_brief.json"):
+            (site / fname).write_text(json.dumps(_b(replace_after, "REPLACED")), encoding="utf-8")
+    return site
+
+
+def test_divergent_data_receipt_does_not_certify_old_site_content(tmp_path):
+    # Producer picks the newer data/regime brief; the consumer renders the older SITE brief.
+    # The receipt certifies a different payload -> no chip (content stays fail-open).
+    _journey(tmp_path, _OLD, _NEW, _NOW)
+    vm = _brief_vm(tmp_path, now=_NOW)
+    assert vm["master_brief"]["generated_at"] == _OLD
+    assert vm["master_brief_freshness"] is None
+
+
+def test_aged_receipt_requalifies_stale_at_consumer_clock(tmp_path):
+    # Receipt was built when the brief was fresh; the brief has since aged past cadence+grace.
+    # The consumer re-qualifies at its own clock -> measured stale, dated disclosure.
+    _journey(tmp_path, _OLD, _OLD, datetime(2026, 10, 19, 7, 0, tzinfo=timezone.utc))
+    vm = _brief_vm(tmp_path, now=_NOW)
+    assert vm["master_brief_freshness"] == {
+        "stale": True, "generated_date": "2026-10-19", "refresh_days": 1}
+
+
+def test_post_receipt_replacement_does_not_inherit_old_date(tmp_path):
+    # The site brief is replaced AFTER a stale receipt was written. The receipt certifies the
+    # OLD payload; the consumer renders the NEW one -> unmatched -> no chip (no false stale).
+    _journey(tmp_path, _OLD, _OLD, _NOW, replace_after=_NEW)
+    vm = _brief_vm(tmp_path, now=_NOW)
+    assert vm["master_brief"]["generated_at"] == _NEW
+    assert vm["master_brief_freshness"] is None
+
+
+def test_coherent_fresh_journey(tmp_path):
+    _journey(tmp_path, _NEW, _NEW, _NOW)
+    vm = _brief_vm(tmp_path, now=_NOW)
+    assert vm["master_brief_freshness"] == {
+        "stale": False, "generated_date": "2026-11-13", "refresh_days": 1}
+
+
+def test_coherent_stale_journey(tmp_path):
+    _journey(tmp_path, _OLD, _OLD, _NOW)
+    vm = _brief_vm(tmp_path, now=_NOW)
+    assert vm["master_brief_freshness"] == {
+        "stale": True, "generated_date": "2026-10-19", "refresh_days": 1}
+
+
+@pytest.mark.parametrize("which", ["site", "china", "hk"])
+def test_bound_source_mismatch_is_none(tmp_path, which):
+    _write(tmp_path, _both(source="data_regime"))
+    brief = {"generated_at": "2026-11-09T06:30:00+00:00", "refresh_days": 1}
+    assert _loaders()[which](tmp_path, _lens_of(which), brief=brief, source="site", now=_NOW) is None
+
+
+@pytest.mark.parametrize("which", ["site", "china", "hk"])
+def test_bound_generated_at_mismatch_is_none(tmp_path, which):
+    _write(tmp_path, _both())  # receipt generated_at 2026-11-09
+    brief = {"generated_at": _NEW, "refresh_days": 1}
+    assert _loaders()[which](tmp_path, _lens_of(which), brief=brief, source="site", now=_NOW) is None
+
+
+@pytest.mark.parametrize("which", ["site", "china", "hk"])
+def test_bound_coherent_fresh_requalified(tmp_path, which):
+    _write(tmp_path, _both(generated_at=_NEW, stale=False))
+    brief = {"generated_at": _NEW, "refresh_days": 1}
+    assert _loaders()[which](tmp_path, _lens_of(which), brief=brief, source="site", now=_NOW) == {
+        "stale": False, "generated_date": "2026-11-13", "refresh_days": 1}
+
+
+@pytest.mark.parametrize("which", ["site", "china", "hk"])
+def test_bound_aged_receipt_requalifies_stale(tmp_path, which):
+    _write(tmp_path, _both(generated_at=_OLD, stale=False))  # aged receipt claims fresh
+    brief = {"generated_at": _OLD, "refresh_days": 1}
+    assert _loaders()[which](tmp_path, _lens_of(which), brief=brief, source="site", now=_NOW) == {
+        "stale": True, "generated_date": "2026-10-19", "refresh_days": 1}
+
+
+@pytest.mark.parametrize("which", ["site", "china", "hk"])
+def test_bound_unknown_age_is_none(tmp_path, which):
+    _write(tmp_path, _both())
+    brief = {"summary": "s"}  # no generated_at -> cannot verify -> no chip
+    assert _loaders()[which](tmp_path, _lens_of(which), brief=brief, source="site", now=_NOW) is None
+
+
+@pytest.mark.parametrize("which", ["site", "china", "hk"])
+def test_bound_non_dict_brief_is_none(tmp_path, which):
+    _write(tmp_path, _both())
+    assert _loaders()[which](tmp_path, _lens_of(which), brief="not-a-dict",
+                             source="site", now=_NOW) is None
