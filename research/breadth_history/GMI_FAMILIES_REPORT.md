@@ -89,7 +89,7 @@ no US members and no series.
 
 The first valid breadth date for each group is in the house sidecar. Under the floor of 2,
 a group begins when its second member has 200 sessions, so most start in 2000.
-Cybersecurity starts 2013-08-09.
+One group starts 2013-08-09.
 
 ## Relationship hubs (COO ruling 32 §2)
 

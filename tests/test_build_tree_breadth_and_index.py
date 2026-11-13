@@ -9,6 +9,7 @@ import pandas as pd
 import pytest
 
 from scripts import build_tree_breadth_and_index as bt
+from scripts import build_vendor_subsector_index as bv
 
 
 def _closes(n_tickers: int, start="1998-01-01", periods=1500, seed=0) -> pd.DataFrame:
@@ -449,10 +450,7 @@ def test_committed_links_have_no_tickers_and_match_index():
 @_needs
 @_needs_vendor
 def test_vendor_links_stay_with_vendor_files():
-    house = pd.read_parquet(LINK_FILES["house"][0])
     vend = pd.read_parquet(LINK_FILES["internal_only"][0])
-    fam = lambda d: set(d.child_family) | set(d.parent_family)  # noqa: E731
-    assert not fam(house) & set(ex.VENDOR_FAMILIES)
     assert ((vend.child_family.isin(ex.VENDOR_FAMILIES)) | (vend.parent_family.isin(ex.VENDOR_FAMILIES))).all()
     meta = json.loads(LINK_FILES["internal_only"][0].with_suffix(".meta.json").read_text())
     assert meta["source_family"] == "finviz_themes"
@@ -460,6 +458,40 @@ def test_vendor_links_stay_with_vendor_files():
     if meta["subsectors_matched_to_local_theme"] == 0:
         assert meta["subsector_to_theme_cause"] == ex.SUBSECTOR_THEME_CAUSE
         assert not ((vend.child_family == "subsector") & (vend.parent_family == "gmi_theme")).any()
+
+
+@_needs
+def test_house_links_contain_no_vendor_families():
+    # House-side containment half of test_vendor_links_stay_with_vendor_files, moved out so it
+    # runs without the off-tree vendor files (COO ruling 21:07Z). No new skip; nothing loosened.
+    house = pd.read_parquet(LINK_FILES["house"][0])
+    fam = set(house.child_family) | set(house.parent_family)
+    assert not fam & set(ex.VENDOR_FAMILIES)
+
+
+# A house sidecar carries vendor-fed fields as counts (integers), never as name lists: the
+# vendor-family name list stays in the off-tree vendor sidecar (COO ruling 21:07Z).
+VENDOR_COUNT_FIELDS = ("subsectors_total", "subsectors_matched_to_local_theme", "subsectors_unmatched")
+
+
+@_needs
+def test_house_sidecars_carry_vendor_counts_not_names():
+    sidecars = [p for p in sorted(HIST.rglob("*.meta.json"))
+                if "internal_only" not in p.parts and "vendor" not in p.name]
+    assert sidecars
+    checked = 0
+    for p in sidecars:
+        meta = json.loads(p.read_text())
+        if meta.get("rights_class") == "internal_only":
+            continue
+        for k in VENDOR_COUNT_FIELDS:
+            if k in meta:
+                assert isinstance(meta[k], int) and not isinstance(meta[k], bool), (p.name, k)
+                checked += 1
+        for k, v in meta.items():
+            if k.startswith("subsectors_"):
+                assert not isinstance(v, list), (p.name, k)
+    assert checked
 
 
 @_needs
@@ -775,6 +807,589 @@ def test_regime_committed_sidecar_consistency():
     hits = {t for t in tickers if len(t) >= 2 and re.search(r"\b" + re.escape(t) + r"\b", prose)}
     assert not hits, sorted(hits)
     assert len(table_part.encode()) < 15_000
+
+
+# ===========================================================================
+# Group price indexes (COO ruling 38 Part B) — house sectors + baskets.
+# Reuses engine.baskets._ew_level and build_tree_breadth_and_index.group_index
+# with a floor of 5 priced members. Group-level numbers and counts only: no
+# member ticker, price or per-security date in the committed files.
+# ===========================================================================
+import hashlib  # noqa: E402
+
+from engine.baskets import _ew_level  # noqa: E402
+from engine.neuralweb.sector_map import GICS_TO_ETF  # noqa: E402
+
+GI_DATED = HIST / "group_index_daily_dated.parquet"
+GI_SENS = HIST / "group_index_daily_current_sensitivity.parquet"
+GI_META = HIST / "group_index.meta.json"
+GI_KEYMAP = HIST / "group_index_key_map.csv"
+GI_REPORT = ROOT / "research/breadth_history/GROUP_INDEX_REPORT.md"
+GI_FLOOR = 5
+_GI_COLS = ["date", "level", "group", "index", "n_priced_members", "membership_basis"]
+_GI_ABBREV = {"EW", "COO"}   # equal-weight / ruling authority, not member references
+_gi_needs = pytest.mark.skipif(not GI_DATED.exists(),
+                               reason="data/ not checked out (sparse tree)")
+
+
+def _gi_member_tickers() -> set:
+    cons = pd.read_parquet(ROOT / "data/breadth/constituents.parquet")
+    bmem = json.loads((ROOT / "data/baskets/membership.json").read_text())
+    return (set(cons.index.astype(str))
+            | {m["ticker"] for b in bmem["baskets"].values() for m in b["members"]})
+
+
+# ---- synthetic: EW convention, floor of 5, dated window --------------------
+def test_group_index_ew_matches_manual_cumprod():
+    closes = _closes(6, start="1999-01-01", periods=400)
+    start = pd.Timestamp("2000-01-03")
+    rets = closes.pct_change(fill_method=None).where(closes.notna() & closes.shift(1).notna())
+    members = list(closes.columns)
+    lvl, n, reason = bt.group_index(rets, members, start, floor=GI_FLOOR, priced=closes.notna())
+    r = closes[members].pct_change().loc[start:].mean(axis=1)
+    exp = (1 + r.fillna(0)).cumprod()
+    assert np.allclose(lvl.loc[start:].values, exp.round(6).values, atol=2e-6)
+    assert (n.loc[start:] == 6).all()
+    assert reason.loc[start:].isna().all()
+    assert lvl.loc[:start].iloc[:-1].isna().all()        # blank before the start gate
+
+
+def test_group_index_floor_of_5_blanks_below_floor():
+    closes = _closes(6, start="2000-01-03", periods=300)
+    closes.iloc[100:110, :2] = np.nan                    # 4 priced -> below floor of 5
+    rets = closes.pct_change(fill_method=None).where(closes.notna() & closes.shift(1).notna())
+    lvl, n, reason = bt.group_index(rets, list(closes.columns), pd.Timestamp("2000-01-03"),
+                                    floor=GI_FLOOR, priced=closes.notna())
+    assert (n.iloc[100:110] == 4).all() and n.iloc[110] == 6   # floor counts closes, not returns
+    assert lvl.iloc[100:110].isna().all()
+    assert (reason.iloc[100:110] == bt.REASON_FLOOR).all()
+    assert lvl.iloc[110:].notna().all() and lvl.iloc[99] > 0
+    closes.iloc[120:130, :1] = np.nan                    # exactly 5 priced -> at the floor
+    rets2 = closes.pct_change(fill_method=None).where(closes.notna() & closes.shift(1).notna())
+    lvl2, n2, _ = bt.group_index(rets2, list(closes.columns), pd.Timestamp("2000-01-03"),
+                                 floor=GI_FLOOR, priced=closes.notna())
+    assert (n2.iloc[120:130] == 5).all() and lvl2.iloc[120:130].notna().all()
+
+
+def test_group_index_dated_window_added_member_not_counted_early():
+    idx = pd.bdate_range("2000-01-03", periods=12)
+    closes = pd.DataFrame({f"T{i}": 100 * np.cumprod(1 + np.random.default_rng(i).normal(0.0003, 0.01, 12))
+                           for i in range(4)}, index=idx)
+    rets = closes.pct_change(fill_method=None).where(closes.notna() & closes.shift(1).notna())
+    base = [{"ticker": f"T{i}", "added": "2000-01-03", "removed": None} for i in range(3)]
+    late = base + [{"ticker": "T3", "added": str(idx[6].date()), "removed": None}]
+    lvl_base = _ew_level(rets, base, idx)
+    lvl_late = _ew_level(rets, late, idx)
+    # before T3's added date both rosters have the same active members -> identical level
+    assert np.allclose(lvl_base.loc[idx[1]:idx[5]].values, lvl_late.loc[idx[1]:idx[5]].values, atol=1e-9)
+    # once added, the fourth member changes the equal-weight return -> levels diverge
+    assert not np.allclose(lvl_base.loc[idx[8]:].values, lvl_late.loc[idx[8]:].values)
+
+
+# ---- committed artifacts (skipped on a sparse tree without data/) ----------
+@_gi_needs
+def test_group_index_committed_columns_and_no_ticker_column():
+    tickers = _gi_member_tickers() - _GI_ABBREV
+    for p in (GI_DATED, GI_SENS):
+        df = pd.read_parquet(p)
+        assert list(df.columns) == _GI_COLS
+        assert not any("ticker" in c for c in df.columns)   # n_priced_members is a count, not a price
+        assert pd.api.types.is_integer_dtype(df["n_priced_members"])
+        assert not df.duplicated(["level", "group", "date"]).any()
+        assert not (set(df.group) & tickers)
+
+
+@_gi_needs
+def test_group_index_committed_floor_and_basis():
+    dated = pd.read_parquet(GI_DATED)
+    sens = pd.read_parquet(GI_SENS)
+    assert set(dated.level) == {"sector"}
+    assert dated.membership_basis.unique().tolist() == ["reconstructed_dated_membership"]
+    assert set(sens.level) == {"sector", "basket"}
+    assert sens.membership_basis.unique().tolist() == ["reconstructed_current_membership"]
+    for df in (dated, sens):
+        assert (df["index"].notna() == (df["n_priced_members"] >= GI_FLOOR)).all()
+    meta = json.loads(GI_META.read_text())
+    assert meta["files"]["group_index_daily_current_sensitivity.parquet"]["sensitivity"] is True
+    assert meta["levels"]["basket"]["dated"] is False
+    assert meta["index"]["floor"] == GI_FLOOR
+
+
+@_gi_needs
+def test_group_index_key_map_one_row_per_key():
+    km = pd.read_csv(GI_KEYMAP, keep_default_na=False)
+    assert list(km.columns) == ["group_key", "level", "engine_key", "spdr_parent"]
+    assert len(km) == km.group_key.nunique()
+    assert (km.spdr_parent == "").all()
+    dated = pd.read_parquet(GI_DATED, columns=["level", "group"])
+    sens = pd.read_parquet(GI_SENS, columns=["level", "group"])
+    keys = set(zip(dated.level, dated.group)) | set(zip(sens.level, sens.group))
+    assert set(zip(km.level, km.group_key)) == keys
+    sec = km[km.level == "sector"]
+    assert set(sec.engine_key) == set(GICS_TO_ETF.values())      # SPDR tickers, from the code map
+    for r in sec.itertuples(index=False):
+        assert GICS_TO_ETF[r.group_key] == r.engine_key
+    bk = km[km.level == "basket"]
+    assert (bk.engine_key == bk.group_key).all()                 # basket id is the organ key
+
+
+@_regime_needs
+def test_group_index_regime_files_frozen():
+    assert hashlib.sha256((HIST / "regime_inputs_daily_current.parquet").read_bytes()).hexdigest() == \
+        "c15d5c2d533ae7d66dd84a67c8c1abfa19457aa44fcd1e8504d00bc0c9348177"
+    assert hashlib.sha256((HIST / "regime_inputs_current.meta.json").read_bytes()).hexdigest() == \
+        "552260044b01a67b6a5aed0a30dee52db634c77dd100fb7726d5f282cf0f634d"
+
+
+@_gi_needs
+def test_group_index_committed_sidecar_and_report_clean():
+    meta_text = GI_META.read_text()
+    report = GI_REPORT.read_text()
+    assert not _FORBIDDEN.search(meta_text)
+    assert not _FORBIDDEN.search(report)
+    tickers = _gi_member_tickers() - _GI_ABBREV
+    for text in (meta_text, report):
+        hits = {t for t in tickers if len(t) >= 2 and re.search(r"\b" + re.escape(t) + r"\b", text)}
+        assert not hits, sorted(hits)
+    meta = json.loads(meta_text)
+    dated = pd.read_parquet(GI_DATED)
+    fv = meta["levels"]["sector"]["dated"]["first_valid_index"]
+    for g, sub in dated.groupby("group"):
+        v = sub.dropna(subset=["index"])
+        assert fv[g] == (str(v["date"].min().date()) if len(v) else None)
+
+
+# ---- vendor subsector index (COO ruling 38 s2b) -------------------------------
+# The repository is public: the vendor builder writes only outside the tree and its
+# tests use a made-up fixture group, never a vendor name. No vendor data is committed.
+def _vendor_fixture_mem() -> pd.DataFrame:
+    rows = [{"ticker": f"T{i:02d}", "group": "fixture_group_a"} for i in range(6)]   # 6 -> reaches floor
+    rows += [{"ticker": f"T{i:02d}", "group": "fixture_group_b"} for i in range(6, 9)]  # 3 -> below floor
+    return pd.DataFrame(rows, columns=["ticker", "group"])
+
+
+def test_vendor_index_fixture_floor_and_rights():
+    closes = _closes(12, start="1999-01-01", periods=400)
+    mem = _vendor_fixture_mem()
+    engine_keys = {"fixture_group_a", "fixture_group_b", "fixture_store_only"}
+    start = pd.Timestamp("2000-01-01")
+    df, km, counts = bv.build_index(closes, mem, engine_keys, start)
+    assert list(df.columns) == bv.COLS
+    assert (df["level"] == "subsector").all()
+    assert (df["rights_class"] == "internal_only").all()           # rights on every row
+    assert (df["membership_basis"] == "reconstructed_current_membership").all()
+    assert pd.api.types.is_integer_dtype(df["n_priced_members"])
+    assert (df["index"].notna() == (df["n_priced_members"] >= 5)).all()
+    assert df["date"].min() >= start
+    assert set(df.group) == {"fixture_group_a", "fixture_group_b"}  # store-only key not built
+    a = df[df.group == "fixture_group_a"]
+    b = df[df.group == "fixture_group_b"]
+    assert a["index"].notna().any() and not b["index"].notna().any()
+    assert counts["built_keys"] == 2
+    assert counts["store_only_keys"] == 1 and counts["family_only_keys"] == 0
+    assert counts["groups_reaching_floor"] == 1
+    assert counts["groups_below_floor_throughout"] == 1
+    assert list(km.columns) == ["group_key", "level", "engine_key", "spdr_parent"]
+    assert (km.engine_key == km.group_key).all() and (km.spdr_parent == "").all()
+    assert set(km.group_key) == {"fixture_group_a", "fixture_group_b"}
+
+
+def test_vendor_index_family_only_key_not_built():
+    closes = _closes(12, start="1999-01-01", periods=400)
+    mem = _vendor_fixture_mem()
+    df, km, counts = bv.build_index(closes, mem, {"fixture_group_a"}, pd.Timestamp("2000-01-01"))
+    assert set(df.group) == {"fixture_group_a"}
+    assert counts["built_keys"] == 1
+    assert counts["family_only_keys"] == 1 and counts["store_only_keys"] == 0
+
+
+def test_vendor_guard_refuses_in_tree(tmp_path):
+    root = tmp_path / "repo"
+    root.mkdir()
+    with pytest.raises(ValueError):
+        bv.guard_out(root / "data/breadth/history", root)
+    with pytest.raises(ValueError):
+        bv.guard_out(root, root)
+    out = tmp_path / "outside"                       # sibling of the repo, not under it
+    assert bv.guard_out(out, root) == out.resolve()
+
+
+def test_vendor_default_out_is_out_of_tree():
+    assert bv.DEFAULT_OUT == Path("/tmp/r38b/vendor_out")
+    assert ROOT not in bv.DEFAULT_OUT.resolve().parents
+
+
+def test_vendor_write_outputs_out_of_tree(tmp_path):
+    closes = _closes(12, start="1999-01-01", periods=400)
+    mem = _vendor_fixture_mem()
+    start = pd.Timestamp("2000-01-01")
+    df, km, counts = bv.build_index(closes, mem, {"fixture_group_a", "fixture_group_b"}, start)
+    root = tmp_path / "repo"
+    root.mkdir()
+    out = tmp_path / "vendor_out"
+    meta = bv.write_outputs(df, km, counts, out, root, {"vintage": "fixture", "topup": None}, start)
+    for name in (bv.OUT_INDEX, bv.OUT_META, bv.OUT_KEYMAP):
+        assert (out / name).exists()
+    assert meta["rights_class"] == "internal_only"
+    assert meta["rights_sentence"] == bt.VENDOR_RIGHTS["rights_sentence"]
+    assert meta["use"] == bt.VENDOR_RIGHTS["use"]
+    assert meta["rights_source"] == "config/theme_sources.yml:33"
+    assert meta["sensitivity"] is True and meta["floor"] == 5
+    assert not list(root.rglob("*"))                 # nothing written under the repo root
+    back = pd.read_parquet(out / bv.OUT_INDEX)
+    assert (back["rights_class"] == "internal_only").all()
+
+
+def test_vendor_builder_source_names_no_vendor_file():
+    src = (ROOT / "scripts/build_vendor_subsector_index.py").read_text()
+    for m in MARKERS:                                # derives names from the rights prefix
+        assert m not in src
+
+
+def test_vendor_cli_refuses_in_tree_out(tmp_path, monkeypatch):
+    """COO ruling 38 continuation A: the builder CLI exits non-zero with a clear message
+    when --out is inside the repository tree, using a made-up fixture group."""
+    import sys  # noqa: E402
+    root = tmp_path / "repo"
+    root.mkdir()
+    closes = _closes(12, start="1999-01-01", periods=400)
+    cp = tmp_path / "closes.parquet"; closes.to_parquet(cp)
+    dm = tmp_path / "dm.json"; dm.write_text(json.dumps({"vintage": "fixture"}))
+    tree = tmp_path / "tree.json"
+    tree.write_text(json.dumps([{"theme": "Fixture", "key": "fixture_theme", "subsectors": [
+        {"key": "fixture_group_a", "members": list(closes.columns[:6])}]}]))
+    state = tmp_path / "state.json"; state.write_text(json.dumps({"fixture_group_a": {}}))
+    monkeypatch.setattr(sys, "argv", ["build_vendor_subsector_index.py",
+                                      "--closes", str(cp), "--download-meta", str(dm),
+                                      "--tree", str(tree), "--state", str(state),
+                                      "--root", str(root),
+                                      "--out", str(root / "data/breadth/history")])
+    with pytest.raises(SystemExit) as ei:
+        bv.main()
+    assert ei.value.code not in (0, None)
+    assert not list(root.rglob("*"))                 # refused before writing anything
+
+
+# ---- continuation fixes (ruling 38 Part B): dated baskets, dated sp400/sp600 ----
+# New files only; the four existing group_index files stay byte-frozen. The dated
+# basket index uses the engine's [added, removed) inclusion windows from
+# data/baskets/membership.json (seed 2023-05-09); the sp400/sp600 sector indexes are
+# built per universe and never pooled with sp500.
+GI_BK_DATED = HIST / "group_index_basket_daily_dated.parquet"
+GI_BK_META = HIST / "group_index_basket_daily_dated.meta.json"
+GI_SP_EXT = HIST / "group_index_daily_dated_sp400_sp600.parquet"
+GI_SP_META = HIST / "group_index_daily_dated_sp400_sp600.meta.json"
+_gi_ext_needs = pytest.mark.skipif(not GI_BK_DATED.exists(),
+                                   reason="data/ not checked out (sparse tree)")
+
+
+def test_basket_dated_window_counts_only_inside_window():
+    """Synthetic: the dated basket method (engine.baskets._ew_level) counts a member only
+    on sessions inside [added, removed): a late entrant joins at added, and a removed
+    member stops counting ON the removed date."""
+    idx = pd.bdate_range("2024-01-01", periods=30)
+    closes = pd.DataFrame({f"T{i}": 100 * np.cumprod(
+        1 + np.random.default_rng(i).normal(0.0003, 0.01, 30)) for i in range(6)}, index=idx)
+    rets = closes.pct_change(fill_method=None).where(closes.notna() & closes.shift(1).notna())
+    base = [f"T{i}" for i in range(4)]
+    roster = [{"ticker": t, "added": str(idx[0].date()), "removed": None} for t in base]
+    roster.append({"ticker": "T4", "added": str(idx[10].date()), "removed": None})
+    roster.append({"ticker": "T5", "added": str(idx[0].date()), "removed": str(idx[15].date())})
+    lvl = _ew_level(rets, roster, idx)
+    assert np.isnan(lvl.iloc[0])                       # no return on the first session
+    r = lvl.pct_change()
+    # T5 is active from idx[0] until removed (exclusive) at idx[15]; T4 joins at idx[10].
+    assert np.allclose(r.iloc[2:10].values,
+                       rets[base + ["T5"]].iloc[2:10].mean(axis=1).values, atol=1e-12)
+    assert np.allclose(r.iloc[10:15].values,
+                       rets[base + ["T4", "T5"]].iloc[10:15].mean(axis=1).values, atol=1e-12)
+    assert np.allclose(r.iloc[15:].values,
+                       rets[base + ["T4"]].iloc[15:].mean(axis=1).values, atol=1e-12)
+    # a late entrant never changes history before its added date
+    no_late = _ew_level(rets, [m for m in roster if m["ticker"] != "T4"], idx)
+    assert np.allclose(lvl.iloc[:10].values, no_late.iloc[:10].values,
+                       atol=1e-12, equal_nan=True)
+
+
+@_gi_ext_needs
+def test_basket_dated_committed_window_bound_and_floor():
+    df = pd.read_parquet(GI_BK_DATED)
+    assert list(df.columns) == _GI_COLS
+    assert set(df.level) == {"basket"}
+    assert df.membership_basis.unique().tolist() == ["reconstructed_dated_membership"]
+    assert (df["index"].notna() == (df.n_priced_members >= GI_FLOOR)).all()
+    assert str(df.date.min().date()) == "2023-05-09"   # dated basket membership starts at the seed
+    assert df.group.nunique() == 49
+    assert pd.api.types.is_integer_dtype(df.n_priced_members)
+    assert not df.duplicated(["level", "group", "date"]).any()
+    # Repo-only window bound: the priced count can never exceed the number of members
+    # whose recorded [added, removed) window covers the session (prices only lower it).
+    doc = json.loads((ROOT / "data/baskets/membership.json").read_text())
+    dates = pd.DatetimeIndex(df.date.drop_duplicates().sort_values())
+    for bid, b in doc["baskets"].items():
+        cap = pd.Series(0, index=dates)
+        for m in b["members"]:
+            w = dates >= pd.Timestamp(m["added"])
+            if m.get("removed"):
+                w = w & (dates < pd.Timestamp(m["removed"]))
+            cap = cap + w.astype(int)
+        n = df[df.group == bid].set_index("date").n_priced_members.reindex(dates)
+        assert (n <= cap).all(), bid
+
+
+@_gi_ext_needs
+def test_group_index_extension_no_ticker():
+    tickers = _gi_member_tickers() - _GI_ABBREV
+    bk = pd.read_parquet(GI_BK_DATED)
+    sp = pd.read_parquet(GI_SP_EXT)
+    assert list(sp.columns) == _GI_COLS + ["index_universe"]
+    for df in (bk, sp):
+        assert not any("ticker" in c for c in df.columns)
+        assert not (set(df.group) & tickers)
+    assert set(sp[sp.index_universe == "sp400"].group) == set(GICS_TO_ETF)
+    assert set(sp[sp.index_universe == "sp600"].group) == set(GICS_TO_ETF)
+    for p in (GI_BK_META, GI_SP_META):
+        text = p.read_text()
+        assert not _FORBIDDEN.search(text)
+        hits = {t for t in tickers if len(t) >= 2 and re.search(r"\b" + re.escape(t) + r"\b", text)}
+        assert not hits, sorted(hits)
+
+
+@_gi_ext_needs
+def test_group_index_extension_floor_basis_and_separation():
+    sp = pd.read_parquet(GI_SP_EXT)
+    assert set(sp.level) == {"sector"}
+    assert sp.membership_basis.unique().tolist() == ["reconstructed_dated_membership"]
+    assert set(sp.index_universe) == {"sp400", "sp600"}
+    assert (sp["index"].notna() == (sp.n_priced_members >= GI_FLOOR)).all()
+    assert not sp.duplicated(["level", "group", "date", "index_universe"]).any()
+    assert str(sp[sp.index_universe == "sp400"].date.min().date()) == "2012-01-13"
+    assert str(sp[sp.index_universe == "sp600"].date.min().date()) == "2019-12-17"
+    sm = json.loads(GI_SP_META.read_text())
+    assert sm["never_pooled"] == "The S&P 500, 400 and 600 indexes are never pooled."
+    bm = json.loads(GI_BK_META.read_text())
+    assert bm["dated_membership_start"] == "2023-05-09"
+    assert bm["index"]["floor"] == GI_FLOOR and sm["index"]["floor"] == GI_FLOOR
+
+
+@_gi_ext_needs
+def test_group_index_extension_sidecars_consistent():
+    bk = pd.read_parquet(GI_BK_DATED)
+    bm = json.loads(GI_BK_META.read_text())
+    for g, sub in bk.groupby("group"):
+        v = sub.dropna(subset=["index"])
+        assert bm["first_valid_index"][g] == (str(v.date.min().date()) if len(v) else None)
+        assert bm["n_priced_at_last_date"][g] == int(sub.loc[sub.date.idxmax(), "n_priced_members"])
+        assert bm["below_floor_sessions_per_basket"][g] == int((sub.n_priced_members < GI_FLOOR).sum())
+    sp = pd.read_parquet(GI_SP_EXT)
+    sm = json.loads(GI_SP_META.read_text())
+    for src in ("sp400", "sp600"):
+        u = sp[sp.index_universe == src]
+        um = sm["universes"][src]
+        assert um["rows"] == len(u)
+        for g, sub in u.groupby("group"):
+            v = sub.dropna(subset=["index"])
+            assert um["first_valid_index"][g] == (str(v.date.min().date()) if len(v) else None)
+            assert um["n_priced_at_last_date"][g] == int(sub.loc[sub.date.idxmax(), "n_priced_members"])
+
+
+@_gi_needs
+def test_group_index_key_map_house_only():
+    """COO continuation B: the committed key map stays HOUSE ONLY — exactly 11 sector and
+    49 basket rows; the extension files add no new key (levels stay sector and basket)."""
+    km = pd.read_csv(GI_KEYMAP, keep_default_na=False)
+    assert len(km) == 60
+    assert km.level.value_counts().to_dict() == {"basket": 49, "sector": 11}
+    if GI_BK_DATED.exists():
+        bk = pd.read_parquet(GI_BK_DATED, columns=["level", "group"])
+        sp = pd.read_parquet(GI_SP_EXT, columns=["level", "group"])
+        keys = set(zip(km.level, km.group_key))
+        assert set(zip(bk.level, bk.group)) <= keys
+        assert set(zip(sp.level, sp.group)) <= keys
+
+
+@_gi_needs
+def test_group_index_existing_files_frozen():
+    """COO continuation D: the four existing group_index files keep their exact bytes from
+    ac0da85fadab861477c23d107eaa62033fcc06a0; the extension adds new files only."""
+    frozen = {
+        "group_index.meta.json":
+            "5a22beeb1e09b0bb618913de1cafc8043a21ff5f9a9e59815733b3bd535e02da",
+        "group_index_daily_current_sensitivity.parquet":
+            "1116577f3fb10a7fe9f9da534c9726fa63009ccd3c6496c30229a87be0514fba",
+        "group_index_daily_dated.parquet":
+            "27a4420e0c990fb97486a3e2829e6e3580f5f199a3267ba2d09731f68ebea6e3",
+        "group_index_key_map.csv":
+            "b34de4871aac30c0e26c1735092163f88d77867bfe0944e7700866d85f1b7de2",
+    }
+    for name, h in frozen.items():
+        assert hashlib.sha256((HIST / name).read_bytes()).hexdigest() == h, name
+
+
+# ---- in-repo house builder (#11171 reproducibility) ---------------------------
+# scripts/build_group_index_house.py is the committed producer of the eight house
+# group-index files. The fixture tests run its core functions on made-up tickers
+# and prices only (no real ticker, no archive data). The value-equality test
+# rebuilds every committed file from the real price inputs named by the
+# GROUP_INDEX_* environment variables and skips cleanly when those inputs (or
+# the committed data/ files) are absent, e.g. in CI or on a sparse tree.
+import os  # noqa: E402
+
+from scripts import build_group_index_house as bh  # noqa: E402
+
+
+def test_house_builder_three_group_fixture():
+    """Core functions on a 3-group made-up fixture: dated [start, end) windows,
+    the floor of 5, the EW level convention, frame columns and the first-date
+    census. Every ticker and price here is synthetic."""
+    idx = pd.bdate_range("2001-01-01", periods=120)
+    rng = np.random.default_rng(11)
+    tickers = [f"FAKE{i:02d}" for i in range(1, 19)]
+    closes = pd.DataFrame(
+        100 * np.exp(np.cumsum(rng.normal(0.0003, 0.01, size=(120, 18)), axis=0)),
+        index=idx, columns=tickers)
+    # fixture_grp_a: six members over the whole span.
+    # fixture_grp_b: FAKE12 joins at session 30; FAKE11 is removed AT session 60.
+    # fixture_grp_c: only four in-window members until session 40 (below floor).
+    rows = [{"ticker": t, "group": "fixture_grp_a", "start_date": idx[0], "end_date": pd.NaT}
+            for t in tickers[0:6]]
+    rows += [{"ticker": t, "group": "fixture_grp_b", "start_date": idx[0], "end_date": pd.NaT}
+             for t in tickers[6:10]]
+    rows.append({"ticker": tickers[10], "group": "fixture_grp_b",
+                 "start_date": idx[0], "end_date": idx[60]})
+    rows.append({"ticker": tickers[11], "group": "fixture_grp_b",
+                 "start_date": idx[30], "end_date": pd.NaT})
+    rows += [{"ticker": t, "group": "fixture_grp_c", "start_date": idx[0], "end_date": pd.NaT}
+             for t in tickers[12:16]]
+    rows += [{"ticker": t, "group": "fixture_grp_c", "start_date": idx[40], "end_date": pd.NaT}
+             for t in tickers[16:18]]
+    mem = pd.DataFrame(rows, columns=["ticker", "group", "start_date", "end_date"])
+
+    rets, priced = bh.rets_priced(closes)
+    out = {}
+    for g, sub in mem.groupby("group"):
+        out[g] = bh.dated_index(rets, sub, priced, bh.FLOOR)
+
+    lvl_a, n_a = out["fixture_grp_a"]
+    assert (n_a == 6).all()
+    assert np.isnan(lvl_a.iloc[0])                    # no return on the first session
+    exp = (1 + rets[tickers[0:6]].mean(axis=1).fillna(0)).cumprod()
+    assert np.allclose(lvl_a.iloc[1:].values, exp.iloc[1:].values, atol=1e-12)
+
+    lvl_b, n_b = out["fixture_grp_b"]
+    assert (n_b.iloc[:30] == 5).all()                 # FAKE12 not yet in its window
+    assert (n_b.iloc[30:60] == 6).all()
+    assert (n_b.iloc[60:] == 5).all()                 # FAKE11 removed ON its end date
+    assert lvl_b.iloc[1:].notna().all()               # never below the floor of 5
+    r_b = lvl_b.pct_change()
+    assert np.allclose(r_b.iloc[2:30].values,
+                       rets[tickers[6:11]].iloc[2:30].mean(axis=1).values, atol=1e-12)
+    assert np.allclose(r_b.iloc[30:60].values,
+                       rets[tickers[6:12]].iloc[30:60].mean(axis=1).values, atol=1e-12)
+    assert np.allclose(r_b.iloc[60:].values,
+                       rets[tickers[6:10] + [tickers[11]]].iloc[60:].mean(axis=1).values,
+                       atol=1e-12)
+
+    lvl_c, n_c = out["fixture_grp_c"]
+    assert (n_c.iloc[:40] == 4).all() and (n_c.iloc[40:] == 6).all()
+    assert lvl_c.iloc[:40].isna().all()               # below floor: blank index
+    assert lvl_c.iloc[40:].notna().all()
+
+    # current-members convention on the same fixture matches the dated one when
+    # every member is in-window for the whole span
+    lvl_cur, n_cur = bh.current_index(rets, tickers[0:6], priced, bh.FLOOR)
+    assert (n_cur == 6).all()
+    assert np.allclose(lvl_cur.iloc[1:].values, exp.iloc[1:].values, atol=1e-12)
+
+    df = pd.concat([bh.frame(idx, "sector", g, lvl, n, bh.DATED_BASIS)
+                    for g, (lvl, n) in out.items()], ignore_index=True)
+    assert list(df.columns) == ["date", "level", "group", "index",
+                                "n_priced_members", "membership_basis"]
+    assert (df["index"].dropna() == df["index"].dropna().round(6)).all()
+    first, nlast = bh.firsts_n(df)
+    assert first == {"fixture_grp_a": str(idx[1].date()),
+                     "fixture_grp_b": str(idx[1].date()),
+                     "fixture_grp_c": str(idx[40].date())}
+    assert nlast == {"fixture_grp_a": 6, "fixture_grp_b": 5, "fixture_grp_c": 6}
+
+    # a group with no priced member yields a blank level and zero counts
+    lvl_none, n_none = bh.dated_index(rets, mem.iloc[0:0], priced, bh.FLOOR)
+    assert lvl_none.isna().all() and (n_none == 0).all()
+
+
+def test_house_builder_basket_windows_and_below_floor_counts():
+    """dated_basket_membership keeps removed members as [added, removed) windows;
+    below_floor_counts counts blank-index sessions per group. Made-up doc only."""
+    doc = {"seed_date": "2023-05-09", "baskets": {
+        "fixture_bk_a": {"members": [
+            {"ticker": "FAKE01", "added": "2023-05-09", "removed": None},
+            {"ticker": "FAKE02", "added": "2023-05-09", "removed": "2024-01-02"}]},
+        "fixture_bk_b": {"members": [
+            {"ticker": "FAKE03", "added": "2023-01-03", "removed": None}]}}}
+    mem = bh.dated_basket_membership(doc)
+    assert list(mem.columns) == ["ticker", "group", "start_date", "end_date"]
+    assert len(mem) == 3                              # removed members are kept
+    assert mem.loc[mem.ticker == "FAKE02", "end_date"].iloc[0] == pd.Timestamp("2024-01-02")
+    assert mem.loc[mem.ticker == "FAKE01", "end_date"].iloc[0] is pd.NaT
+    assert mem.loc[mem.ticker == "FAKE03", "start_date"].iloc[0] == pd.Timestamp("2023-01-03")
+    df = pd.DataFrame({"group": ["fixture_bk_a"] * 4 + ["fixture_bk_b"] * 2,
+                       "n_priced_members": [5, 4, 6, 3, 2, 5]})
+    assert bh.below_floor_counts(df) == {"fixture_bk_a": 2, "fixture_bk_b": 1}
+
+
+_HB_INPUT_ENV = ("GROUP_INDEX_CLOSES", "GROUP_INDEX_BASKET_CLOSES",
+                 "GROUP_INDEX_MEMBERSHIP_DIR", "GROUP_INDEX_BASKET_MEMBERSHIP")
+
+
+def _hb_inputs():
+    vals = [os.environ.get(k) for k in _HB_INPUT_ENV]
+    if not all(vals):
+        return None
+    paths = [Path(v) for v in vals]
+    return paths if all(p.exists() for p in paths) else None
+
+
+_HB_INPUTS = _hb_inputs()
+_hb_needs = pytest.mark.skipif(
+    _HB_INPUTS is None or not GI_DATED.exists() or not GI_BK_DATED.exists(),
+    reason="house-builder price inputs (GROUP_INDEX_* env) or committed data/ absent")
+
+
+def _hb_strip_volatile(obj):
+    """Sidecar comparison modulo the build timestamp and input-path fields — the
+    only keys the reproducibility contract allows to differ."""
+    if isinstance(obj, dict):
+        return {k: _hb_strip_volatile(v) for k, v in obj.items()
+                if k not in ("build_time_utc", "path")}
+    if isinstance(obj, list):
+        return [_hb_strip_volatile(v) for v in obj]
+    return obj
+
+
+@_hb_needs
+def test_house_builder_reproduces_committed_values(tmp_path):
+    """Rebuild all eight house files from the real inputs and assert VALUE
+    equality with the committed files (parquets exact; sidecars modulo the build
+    timestamp and input paths). Skips when the inputs or data/ are absent."""
+    closes, basket_closes, mem_dir, basket_mem = _HB_INPUTS
+    out = tmp_path / "house_out"
+    bh.main(["--closes", str(closes), "--basket-closes", str(basket_closes),
+             "--membership-dir", str(mem_dir), "--basket-membership", str(basket_mem),
+             "--out", str(out)])
+    for name in ("group_index_daily_dated.parquet",
+                 "group_index_daily_current_sensitivity.parquet",
+                 "group_index_basket_daily_dated.parquet",
+                 "group_index_daily_dated_sp400_sp600.parquet"):
+        pd.testing.assert_frame_equal(pd.read_parquet(out / name),
+                                      pd.read_parquet(HIST / name), check_exact=True)
+    pd.testing.assert_frame_equal(
+        pd.read_csv(out / "group_index_key_map.csv", keep_default_na=False),
+        pd.read_csv(GI_KEYMAP, keep_default_na=False), check_exact=True)
+    for name in ("group_index.meta.json", "group_index_basket_daily_dated.meta.json",
+                 "group_index_daily_dated_sp400_sp600.meta.json"):
+        got = json.loads((out / name).read_text())
+        want = json.loads((HIST / name).read_text())
+        assert _hb_strip_volatile(got) == _hb_strip_volatile(want), name
 
 # ===========================================================================
 # Organ alert histories (COO ruling 38 Part A) — scripts/build_organ_histories.py
