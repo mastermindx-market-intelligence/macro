@@ -1,0 +1,605 @@
+{
+  "source_ref": "8a3310cdf03bc16704d51235172a5bbcf1f9a73e",
+  "mode": "IMMUTABLE_GIT_CENSUS_NOT_LIVE_OR_PIT_PROOF",
+  "sources": {
+    "engine/residual_alpha.py": {
+      "bytes": 14599,
+      "sha256": "718c701e10892a08e9722728f68e6bd357517572fcafe2c309563c8e8aa858c1",
+      "git_blob": "e0afcb355b83b30f3afe5e0f04afd078676fb957"
+    },
+    "engine/top_picks.py": {
+      "bytes": 7868,
+      "sha256": "9723cf65d1a704dba803d494c9efc3f20141c4e712c1bebaaf4f765c6b3fbfcd",
+      "git_blob": "25d5e760d5428c318abc09984762149bdecfa993"
+    },
+    "scripts/build_discovery.py": {
+      "bytes": 18188,
+      "sha256": "c30c1fa60053b46b675859a4391d727acad40d258d06f3728f0549656e6616f7",
+      "git_blob": "d18996c7d6941c3999b29339257d9099083b7303"
+    },
+    "templates/discovery.html.j2": {
+      "bytes": 36984,
+      "sha256": "b4c67c089004b9d4b00261eeac0ce5b6710716b5fb25a2fb48b9a03c1772d420",
+      "git_blob": "ad3833b0898426d459fefb1ecc824038423f835f"
+    },
+    "research/RESIDUAL_ALPHA_MOMENTUM.md": {
+      "bytes": 15275,
+      "sha256": "db9e60e4d285618f3bdce20033e0595ca9a55e195d1e8e8889b58e132be835c9",
+      "git_blob": "c9cf318e99253e453296664c467536da769c6a0b"
+    },
+    "research/US_STANDOUT_SETUP_SCORE.md": {
+      "bytes": 11288,
+      "sha256": "0a12fc5ef869b480cc6f94b0002dddbc085447f81e8538e9c5ef4f63f9bd66a6",
+      "git_blob": "1f65988bed48f7a0f0f9fd2a08c43ff25acd9174"
+    },
+    "reports/residual-alpha-phase0.md": {
+      "bytes": 2686,
+      "sha256": "600fdc1eac9fc6b54a6425d7143d85e51d13aa87fff2063d7eaddac257c41f3e",
+      "git_blob": "2db5317699684541ca0ad43fec7e90c12dafc0f6"
+    },
+    "reports/top-picks-phase0.md": {
+      "status": "ABSENT_AT_SOURCE_PIN"
+    },
+    "site/discovery.html": {
+      "bytes": 776269,
+      "sha256": "4e2126d2d1a81b1be4a16bda2b43d6d15228e198da5938922bc7d880b5508939",
+      "git_blob": "2595c159045a362005c4943940bd79cf4f3d988e"
+    },
+    "site/factordata/alpha.json": {
+      "bytes": 358617,
+      "sha256": "f4002e4df1661beaf34b0633a15cdbd9fbb44840c1d0d0e3ee79f3b7f16c271f",
+      "git_blob": "3963beffd158e7f7b2a93d9c1b4baea51dac908f"
+    },
+    "site/factordata/factors.json": {
+      "bytes": 542917,
+      "sha256": "f3dff5648ff618d8170de816d6b7d4e4d9801c6f5aada420d198c745b91f77ac",
+      "git_blob": "bcb300d4067a87fd3a0910100d582d563bbc654d"
+    },
+    "site/basketdata/baskets.json": {
+      "bytes": 1456861,
+      "sha256": "7ed839bdfc143595b5d44fbb326ebb52215d07958b887974cfcb629f723a22fd",
+      "git_blob": "274340063cd0b9a2cf8add52f50bace0cd369a46"
+    },
+    "research/LEADER_RADAR_MASTERPLAN_BY_FABLE.md": {
+      "bytes": 49133,
+      "sha256": "803cefa639a0461a63345c700b4af39107bea22cec827a6e96ae5fe00dee463c",
+      "git_blob": "6731e5cacf4908350cb682885fa43ddaf7158d79"
+    },
+    "engine/leader_lifecycle.py": {
+      "bytes": 81366,
+      "sha256": "97b02fe4c00da96646ae7fa48f7bb4b8c1fe29e55f8bf02692de6f42d0fa1ea5",
+      "git_blob": "80bb0fed4b284ebce0917ef42de0b4434ad71cbe"
+    },
+    "engine/winner_autopsy.py": {
+      "bytes": 64000,
+      "sha256": "811a127216dc118af62df639b0dcdf8890f43517218db8c23fef67f1e83b0792",
+      "git_blob": "32ae63b2a91e26f3aebff08e2badd8c566acd088"
+    },
+    "scripts/build_leader_radar.py": {
+      "bytes": 133029,
+      "sha256": "61007482e4fa61546fbf28a7d55bd36df3c632160ee1458e6c164de474b54fb4",
+      "git_blob": "0ff389d12010951ee88857c0595d4050c27910bd"
+    },
+    "site/leaderradar/radar.json": {
+      "bytes": 346445,
+      "sha256": "7bf623efa0b4a84fc5fd89d665635aad7cbc81ec72fd7a9873216fd4357cab1e",
+      "git_blob": "af8001f33102a898e7bd425c86d22cd486ce1e63"
+    },
+    "data/leader_radar/state_history.parquet": {
+      "bytes": 12938,
+      "sha256": "e7f13ce61dd0cb207b00f6da0896c5513673d42258682ecf24329100c365e60b",
+      "git_blob": "391b3c5d8f682cc5e3fdce35d0e2cacc9fd8e437"
+    },
+    "data/leader_radar/revisions_history.parquet": {
+      "bytes": 342995,
+      "sha256": "f57b3f640e40275f28cad7216a4462a9eb458dec7a72fda79d2638314203ad03",
+      "git_blob": "91ecc15f0ff2c03e50ff1a9857dd1ff1bcbab5c3"
+    },
+    "data/leader_radar/fire_log.parquet": {
+      "bytes": 2769,
+      "sha256": "bd7dc81703168171efd13331716dc5adc669355259e55bd4e993fb89ef9f2656",
+      "git_blob": "3ebca90afc1d7746a6e86cf9bfc04a38ed439f92"
+    },
+    "data/rs_series/MU.parquet": {
+      "bytes": 56680,
+      "sha256": "90bafe717ecbe79fe589130e563ae87e303d6d88dbb0e7e13f0847497527f3c1",
+      "git_blob": "ce7237a9ce1ced4418c814e3d574aed47c3c7918"
+    },
+    "data/rs_series/SNDK.parquet": {
+      "bytes": 8748,
+      "sha256": "7c925cd2143c64acf854b6f58af171ab6f969f54e52f750fdeed038a0ec98901",
+      "git_blob": "2f95565d4d60b32c776d12baece7ca5fa4dedd10"
+    },
+    "data/pick_lab/fires.jsonl": {
+      "bytes": 1498166,
+      "sha256": "3671a4f38f278e66a496721dae18f3d786f4e5b7bf2cc85532cc87f8e52878aa",
+      "git_blob": "ca883debe8c77369fce0237135399b205953e186"
+    },
+    "data/pick_lab/grades.jsonl": {
+      "bytes": 2054300,
+      "sha256": "6b195efd9ab13d4736ae20a571b7f0eaa506bbbccd657f3ef38825e4d42fd5b8",
+      "git_blob": "0df1e4dbf068701da3234bffc919d9614aedd3a8"
+    },
+    "engine/pick_lab/registry.py": {
+      "bytes": 25191,
+      "sha256": "8a25d62280e772efb31a7e33a08e1dc24ce4f3af8264273fa58b10cc24ce470f",
+      "git_blob": "3678a5d98882aa7f06170b619eea207f0d2faa0f"
+    },
+    "engine/pick_lab/candidates.py": {
+      "bytes": 49345,
+      "sha256": "9d9c403769a77b77a2c132751c6bd5cfb72a4d13806767aa450a81dbade36803",
+      "git_blob": "547fae4fcdf2c8c76a524fa72daa95954669d487"
+    },
+    "engine/pick_lab/ledger.py": {
+      "bytes": 11790,
+      "sha256": "734471d7cf15c8d13b752014028c320b43e294a7bec2fd3ac56b09ecd2bc902e",
+      "git_blob": "88d732ae7c4cc5123b0c674b0149bce57ed3890c"
+    },
+    "scripts/grade_us_board.py": {
+      "bytes": 168546,
+      "sha256": "2b218588f07698be39387fe0bdc5106f99d70b121ba80f3d64fa01161eb9ba90",
+      "git_blob": "68ef9eb7620f0592e3cd02d66a3eae2ab0998dce"
+    },
+    "data/us_board_ledger/README.md": {
+      "bytes": 15130,
+      "sha256": "99f28d3817475d026b3913f594fee6cf0e2e7401fc09913daa67c68a6f536029",
+      "git_blob": "80ff03f40524c53d513757de3fd6373b2bdeccb9"
+    },
+    "data/us_board_ledger/snapshots.jsonl": {
+      "bytes": 78495472,
+      "status": "METADATA_ONLY_SIZE_LIMIT",
+      "git_blob": "276d1ae9ff623f09b8dc3bc50149061917f738da"
+    },
+    "data/us_board_ledger/snapshots_v2.jsonl": {
+      "bytes": 333421,
+      "sha256": "a0ee10df7ccf54ccb916cb32c4fc076d0b82604eac1c969b071852aa88c29777",
+      "git_blob": "eed190902f62b0757a65f70646ad4a309d784372"
+    },
+    "data/us_board_ledger/retro_grades.parquet": {
+      "bytes": 1070132,
+      "sha256": "61bb8cc6ff0f1cfd14f33ba50fc5ce17db4c93e800f74e307c70c5606ae4f9d7",
+      "git_blob": "b0ee089e86269854b699f4667b47dd10a469374c"
+    },
+    "data/us_board_ledger/retro_grades_v2.parquet": {
+      "bytes": 45097,
+      "sha256": "35877ac9076fcd4c5faef4f118c252a5cc43a657e6e29c62c126c1dab2aac17d",
+      "git_blob": "5ef5253067f1a25ab2b28801fc380ec4f62f711d"
+    },
+    "data/us_board_ledger/disclosed_gaps.json": {
+      "bytes": 5218,
+      "sha256": "d971da8b67de66c082cc74c3650c2c405ab64dac3366df4773cd5f6d1ebd2c94",
+      "git_blob": "3881c93009d169fe953d79e142715afff1f7ba8e"
+    },
+    "engine/group_flow.py": {
+      "bytes": 44775,
+      "sha256": "420a873d429986679e182b34a625c53653c6606ce786550a9790e6ec4a10f33d",
+      "git_blob": "af0d5f671edded697c03a827976d207bb2b7e7a3"
+    },
+    "engine/us_leader_pullback_coverage.py": {
+      "bytes": 33560,
+      "sha256": "2865b3c87b3ca706a1ebac1d680a98404e1434cf88f4619e5df465f7085c86ee",
+      "git_blob": "961809e0f9feb15d029d52b184675c9579737366"
+    },
+    "research/alpha_intelligence/expectation_market_dynamics/OWNER_AND_REUSE_MATRIX.md": {
+      "bytes": 3652,
+      "sha256": "65aaa7fa739d5c621d41d856d66005dce3266cf375e6e2b26905ae0f2fed26dc",
+      "git_blob": "ebd787cae2da3a7c72820199c59e38544f7483b7"
+    },
+    "research/alpha_intelligence/expectation_market_dynamics/BUILD_SEQUENCE.md": {
+      "bytes": 1563,
+      "sha256": "1c996847af2f0cfc89ecf3ecd98b42127a2c1a8675619289933f99b82e8180df",
+      "git_blob": "4294ed65218a69445c76592a7f1cce31ad59fa70"
+    }
+  },
+  "findings": {
+    "alpha": {
+      "as_of": "2026-10-02",
+      "rows": 1602,
+      "illustrative_recovered_rows": {
+        "SNDK": {
+          "alpha": 3.0,
+          "rs": 99.0
+        },
+        "MU": {
+          "alpha": 2.96,
+          "rs": 99.0
+        }
+      }
+    },
+    "factors": {
+      "as_of": "2026-10-02",
+      "rows": 1527
+    },
+    "baskets": {
+      "as_of": "2026-10-02",
+      "rows": 49
+    },
+    "leader_radar": {
+      "schema": "leader_radar.v2",
+      "as_of": "2026-10-02",
+      "built_at": "2026-10-05T07:27:19.324520+00:00",
+      "freshness": {
+        "price_through": "2026-10-02",
+        "breadth_through": "2026-10-02",
+        "rs_series_through": "2026-10-02",
+        "regime_as_of": "2026-10-04",
+        "revisions_asof": "2026-10-04",
+        "state_history_through": "2026-10-01",
+        "built_at": "2026-10-05T07:27:19.324520+00:00"
+      },
+      "history_since": "2026-07-11",
+      "history_gaps": [
+        "2026-07-13",
+        "2026-07-14",
+        "2026-07-22",
+        "2026-07-23",
+        "2026-08-06",
+        "2026-08-10",
+        "2026-08-11",
+        "2026-08-14",
+        "2026-09-01",
+        "2026-09-02",
+        "2026-09-14",
+        "2026-09-18",
+        "2026-09-22"
+      ],
+      "degraded": [],
+      "rows": 174,
+      "rerating_watch_rows": 13,
+      "early_entry_rows": 31,
+      "handoff_pairs": 0,
+      "analyst_covered": 0,
+      "revisions_uncovered_count": 35,
+      "pit_caveat": "Built October 5 with revision/regime dates after price-through October 2; not a lawful October 2 knowledge replay."
+    },
+    "rs_series": {
+      "tracked_files": 174,
+      "full_directory_values_read": false
+    },
+    "parquets": {
+      "data/leader_radar/state_history.parquet": {
+        "rows": 8148,
+        "columns": [
+          "date",
+          "ticker",
+          "raw_state",
+          "confirmed_state",
+          "state_entry_date"
+        ],
+        "date": {
+          "distinct": 47,
+          "min": "2026-07-11 00:00:00",
+          "max": "2026-10-02 00:00:00"
+        },
+        "tickers": 174
+      },
+      "data/leader_radar/revisions_history.parquet": {
+        "rows": 17983,
+        "columns": [
+          "ticker",
+          "net_up_30d",
+          "breadth",
+          "est_chg_30d",
+          "est_chg_90d",
+          "n_analysts",
+          "asof",
+          "n_covering",
+          "breadth_cov",
+          "eps_dispersion_norm",
+          "rev_growth_fwd",
+          "rev_est_high_low_spread_norm",
+          "rev_n_analysts"
+        ],
+        "asof": {
+          "distinct": 79,
+          "min": "2026-06-16 00:00:00",
+          "max": "2026-10-04 00:00:00"
+        },
+        "tickers": 1545
+      },
+      "data/leader_radar/fire_log.parquet": {
+        "rows": 59,
+        "columns": [
+          "date",
+          "ticker",
+          "fire_type"
+        ],
+        "date": {
+          "distinct": 18,
+          "min": "2026-07-15 00:00:00",
+          "max": "2026-10-02 00:00:00"
+        },
+        "tickers": 51
+      },
+      "data/rs_series/MU.parquet": {
+        "rows": 3207,
+        "columns": [
+          "rs"
+        ],
+        "index": {
+          "min": "2014-01-02 00:00:00",
+          "max": "2026-10-02 00:00:00"
+        }
+      },
+      "data/rs_series/SNDK.parquet": {
+        "rows": 411,
+        "columns": [
+          "rs"
+        ],
+        "index": {
+          "min": "2025-02-13 00:00:00",
+          "max": "2026-10-02 00:00:00"
+        }
+      },
+      "data/us_board_ledger/retro_grades.parquet": {
+        "rows": 13563,
+        "columns": [
+          "as_of",
+          "entry_date",
+          "rank_by",
+          "horizon",
+          "lane",
+          "position",
+          "ticker",
+          "sector",
+          "alpha",
+          "score",
+          "band",
+          "composite_z",
+          "verdict",
+          "align_tier",
+          "urgency",
+          "state",
+          "entry_status",
+          "act_level",
+          "signal_quality",
+          "validation_status",
+          "vol_squeeze",
+          "dispersion_state",
+          "donor_state",
+          "donor_sector",
+          "off_high",
+          "hold_state",
+          "hold_days",
+          "hold_inv",
+          "hold_anchor_src",
+          "ret",
+          "spy_ret",
+          "excess_spy",
+          "mae_close_excess_spy",
+          "sector_etf",
+          "etf_ret",
+          "excess_sector",
+          "mae_close_excess_sector",
+          "tier_cascade",
+          "opt_gamma_regime",
+          "opt_dist_to_flip_pct",
+          "opt_wall_up",
+          "opt_wall_down",
+          "opt_iv30",
+          "opt_iv_rank_252",
+          "opt_doi_slope_5d",
+          "opt_voi_flag",
+          "opt_ivspread_rel",
+          "opt_skew",
+          "opt_skew_5d_chg",
+          "opt_opex_days",
+          "opt_pin_risk",
+          "opt_wall_dist_up_pct",
+          "opt_wall_dist_down_pct",
+          "board_tenure_days",
+          "insider_cluster",
+          "gex_confirm_verdict",
+          "altdata_conv_gte2",
+          "sue_fresh",
+          "news_burst",
+          "smartmoney_add",
+          "has_stop_guidance",
+          "confluence_k",
+          "fwd_mfe_5",
+          "terminal_state_clean15_126",
+          "terminal_state_clean8_21",
+          "post_cushion_breach",
+          "rate_pressure",
+          "quad_hard_label",
+          "fused_risk_label",
+          "vol_regime",
+          "risk_radar_state",
+          "regime_vector_degraded",
+          "vector_asof",
+          "staleness_hours",
+          "archetype",
+          "opt_net_signed_prem_5d_z",
+          "opt_flow_breadth_group",
+          "opt_dte_quality",
+          "opt_crowding_flag",
+          "fwd_mfe_10",
+          "opt_vanna_relief",
+          "opt_front7_charm_share",
+          "opt_root_class",
+          "fwd_mfe_21",
+          "entry_status_reason",
+          "price_source",
+          "price_basis"
+        ],
+        "as_of": {
+          "distinct": 48,
+          "min": "2026-06-15",
+          "max": "2026-09-17"
+        },
+        "tickers": 1130,
+        "lane": {
+          "buy": 6332,
+          "watch": 4236,
+          "laggards": 1335,
+          "leaders": 1002,
+          "ran": 658
+        },
+        "price_basis": {
+          "adjusted": 10785,
+          "unverified_pre_20260806": 1342,
+          "UNKNOWN": 950,
+          "unadjusted": 486
+        }
+      },
+      "data/us_board_ledger/retro_grades_v2.parquet": {
+        "rows": 125,
+        "columns": [
+          "as_of",
+          "entry_date",
+          "rank_by",
+          "horizon",
+          "lane",
+          "position",
+          "ticker",
+          "sector",
+          "alpha",
+          "score",
+          "band",
+          "composite_z",
+          "verdict",
+          "align_tier",
+          "urgency",
+          "state",
+          "entry_status",
+          "act_level",
+          "signal_quality",
+          "validation_status",
+          "vol_squeeze",
+          "dispersion_state",
+          "donor_state",
+          "donor_sector",
+          "off_high",
+          "hold_state",
+          "hold_days",
+          "hold_inv",
+          "hold_anchor_src",
+          "tier_cascade",
+          "board_tenure_days",
+          "insider_cluster",
+          "gex_confirm_verdict",
+          "altdata_conv_gte2",
+          "sue_fresh",
+          "news_burst",
+          "smartmoney_add",
+          "has_stop_guidance",
+          "confluence_k",
+          "ret",
+          "fwd_mfe_5",
+          "terminal_state_clean15_126",
+          "terminal_state_clean8_21",
+          "post_cushion_breach",
+          "rate_pressure",
+          "quad_hard_label",
+          "fused_risk_label",
+          "vol_regime",
+          "risk_radar_state",
+          "regime_vector_degraded",
+          "vector_asof",
+          "staleness_hours",
+          "archetype",
+          "spy_ret",
+          "excess_spy",
+          "mae_close_excess_spy",
+          "sector_etf",
+          "etf_ret",
+          "excess_sector",
+          "mae_close_excess_sector",
+          "fwd_mfe_10",
+          "entry_status_reason",
+          "price_source",
+          "price_basis"
+        ],
+        "as_of": {
+          "distinct": 11,
+          "min": "2026-07-10",
+          "max": "2026-07-30"
+        },
+        "tickers": 54,
+        "lane": {
+          "v2_entry_open": 107,
+          "v2_setting_up": 18
+        },
+        "price_basis": {
+          "unverified_pre_20260806": 82,
+          "adjusted": 28,
+          "unadjusted": 15
+        }
+      }
+    },
+    "pick_lab": {
+      "data/pick_lab/fires.jsonl": {
+        "all_books_rows": 2697,
+        "books": {
+          "plab_leader_precipice": {
+            "rows": 8,
+            "distinct_tickers": 8,
+            "first_fire_date": "2026-07-21",
+            "last_fire_date": "2026-10-02",
+            "duplicate_natural_keys": 0,
+            "authorities": [
+              "display_only"
+            ]
+          },
+          "plab_leader_onset": {
+            "rows": 44,
+            "distinct_tickers": 39,
+            "first_fire_date": "2026-07-15",
+            "last_fire_date": "2026-10-02",
+            "duplicate_natural_keys": 0,
+            "authorities": [
+              "display_only"
+            ]
+          }
+        }
+      },
+      "data/pick_lab/grades.jsonl": {
+        "all_books_rows": 5625,
+        "books": {
+          "plab_leader_precipice": {
+            "rows": 23,
+            "distinct_tickers": 6,
+            "first_fire_date": "2026-07-21",
+            "last_fire_date": "2026-08-27",
+            "duplicate_natural_keys": 0,
+            "authorities": [
+              "display_only"
+            ],
+            "grade_horizons": {
+              "10": 6,
+              "21": 6,
+              "25": 5,
+              "5": 6
+            },
+            "matured_21d_return_rows": 6
+          },
+          "plab_leader_onset": {
+            "rows": 97,
+            "distinct_tickers": 29,
+            "first_fire_date": "2026-07-15",
+            "last_fire_date": "2026-09-21",
+            "duplicate_natural_keys": 0,
+            "authorities": [
+              "display_only"
+            ],
+            "grade_horizons": {
+              "10": 26,
+              "21": 22,
+              "25": 18,
+              "5": 31
+            },
+            "matured_21d_return_rows": 22
+          }
+        }
+      }
+    },
+    "limits": [
+      "No outcome performance or forecast calibration computed.",
+      "Precipice/onset fires do not cover all 1602 legacy Alpha records or all continuation entries.",
+      "Stored snapshot dates do not establish source availability or deployment.",
+      "Raw Radar fire_log and Pick Lab fires use different schemas and counts; exact episode join remains unqualified.",
+      "State history contains gaps; retrospective transitions cannot be invented.",
+      "Existing source ownership, held chips and forward writers unchanged."
+    ]
+  }
+}
