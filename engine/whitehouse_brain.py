@@ -32,10 +32,12 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
 from lib import config
+from lib import fabric_client
 from engine.catalyst_tone import _extract_json   # shared tolerant JSON parser (leaf util)
 
 log = logging.getLogger(__name__)
@@ -271,6 +273,79 @@ def _wh_reply_cache_put(prompt_hash: str, text: str, cfg: dict) -> None:
         pass
 
 
+# --------------------------------------------------------------------------- #
+# Capacity Fabric cutover — the White House brain (Chairman order 2026-11-12)
+# --------------------------------------------------------------------------- #
+#: Operator kill-switch. Default ON whenever the router token is present;
+#: MACRO_WHITEHOUSE_FABRIC=0 forces the legacy ladder byte-identically.
+_FABRIC_KILL_ENV = "MACRO_WHITEHOUSE_FABRIC"
+_FABRIC_LANE = "fast"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-whitehouse-brain"
+
+
+def _fabric_enabled() -> bool:
+    """True when this writer should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_WHITEHOUSE_FABRIC=0 is
+    the operator kill-switch. When this is False the legacy ladder below runs
+    byte-identically — the gate reads one env var and one boolean before any
+    legacy statement.
+    """
+    if os.environ.get(_FABRIC_KILL_ENV, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _fabric_call(system: str, user: str, cfg: dict) -> tuple[str | None, str | None]:
+    """ONE White House call through the router. Never retries, never fails over.
+
+    The router owns provider selection, cooldown and account pooling, so this
+    makes exactly one request: a raised SDK error degrades exactly as a legacy
+    ladder failure would, and a second attempt here would double-serve a call the
+    router already resolved.
+
+    FabricUnavailable is the one exception and is re-raised: it means no request
+    ever left this host (no token, or the SDK will not import), so nothing was
+    served and nothing was billed. _call_model catches it and runs the legacy
+    ladder — blanking an alert that a healthy legacy path could still produce
+    would be a regression, not a degradation.
+    """
+    try:
+        comp = fabric_client.complete(
+            messages=[{"role": "user", "content": user}],
+            system=system,
+            lane=_FABRIC_LANE,
+            max_tokens=int(cfg.get("max_tokens", 4000)),
+            client="Python client",
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=_FABRIC_SESSION_ID,
+        )
+    except fabric_client.FabricUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("whitehouse_brain: fabric call failed (%s)", e)
+        return None, "llm_error"
+    # The adapter's Completion carries the served message as ``raw``; a stub
+    # router may expose stop_reason directly. Either spelling is honoured.
+    stop_reason = (getattr(comp, "stop_reason", None)
+                   or getattr(getattr(comp, "raw", None), "stop_reason", None))
+    if stop_reason == "refusal":
+        return None, "refusal"
+    if not comp.text:
+        return None, "empty_reply"
+    try:  # ledger only — never let this break a call that otherwise worked
+        from lib import ai_costs as _ac  # noqa: PLC0415
+        _ac.record_usage(
+            lane=_FABRIC_LANE,
+            provider="fabric",
+            model=comp.model_served,
+        )
+    except Exception as e:  # noqa: BLE001
+        log.debug("whitehouse_brain: fabric usage record failed (%s)", e)
+    return comp.text, "fabric"
+
+
 def _call_model(system: str, user: str, cfg: dict) -> tuple[str | None, str | None]:
     """(reply_text, degraded_reason). Never raises.
 
@@ -289,6 +364,19 @@ def _call_model(system: str, user: str, cfg: dict) -> tuple[str | None, str | No
     CI log clearly distinguishes an auth failure from an LLM content error.
     """
     from engine import llm_auth
+
+    # Capacity Fabric cutover (Chairman order 2026-11-12): this writer goes
+    # through the router when it is configured. When it is not — no token, or
+    # MACRO_WHITEHOUSE_FABRIC=0 — the legacy ladder below runs unchanged. A
+    # router that cannot be reached at all (FabricUnavailable: no token after
+    # all, or the SDK will not import) also falls through here rather than
+    # blanking the alert.
+    if _fabric_enabled():
+        try:
+            return _fabric_call(system, user, cfg)
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "whitehouse_brain: fabric router unavailable (%s); using the legacy ladder", e)
 
     providers = llm_auth.build_providers(cfg, opus_model=cfg.get("opus_model", "claude-opus-4-8"),
                                          deepseek_model=cfg.get("deepseek_model", "deepseek-v4-pro"))
