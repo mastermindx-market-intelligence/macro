@@ -18,6 +18,93 @@ import pandas as pd
 log = logging.getLogger("stock_library")
 
 
+def _read_prophet_owner_read(index_path: Path, ticker: str) -> dict:
+    """Read private owner facts through a bounded, identifier-free adapter.
+
+    The owner supplies lifecycle and source clocks. Only a boolean current-plan
+    observation crosses this boundary; IDs, counts, strategy and plan details
+    stay in the private book. The compiler publishes the existing v1 status.
+    """
+    empty = {
+        "disposition": "unavailable",
+        "published_asof": None,
+        "source_asof": None,
+        "source_delayed": None,
+        "source_unknown": None,
+        "has_current_plan": None,
+    }
+    try:
+        payload = json.loads(index_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return empty
+    if not isinstance(payload, dict) or payload.get("schema") != "prophet.index/v1":
+        return {**empty, "disposition": "conflicted"}
+    plans = payload.get("plans")
+    if not isinstance(plans, list):
+        return {**empty, "disposition": "conflicted"}
+
+    current_ids: set[str] = set()
+    malformed_match = False
+    for row in plans:
+        if not isinstance(row, dict):
+            malformed_match = True
+            continue
+        asset = row.get("asset")
+        if not isinstance(asset, str) or not asset.strip():
+            malformed_match = True
+            continue
+        if asset.strip().upper() != ticker:
+            continue
+        closed = row.get("closed")
+        lifecycle = str(row.get("lifecycle_state") or "").strip().lower()
+        if not isinstance(closed, bool) or lifecycle not in {
+            "ready", "entered", "invalidated", "resolved",
+        }:
+            malformed_match = True
+            continue
+        # Reuse the owner's lifecycle and quarantine verdicts. Read the whole
+        # matching population: a valid row cannot hide a later malformed row.
+        if (
+            lifecycle not in {"ready", "entered"}
+            or closed
+            or row.get("integrity_status") == "quarantined"
+        ):
+            continue
+        plan_id = row.get("id")
+        if not isinstance(plan_id, str) or not plan_id.strip():
+            malformed_match = True
+            continue
+        plan_id = plan_id.strip()
+        if plan_id in current_ids:
+            malformed_match = True
+        current_ids.add(plan_id)
+
+    def _clock(name: str) -> str | None:
+        value = payload.get(name)
+        return (value.strip() or None) if isinstance(value, str) else None
+
+    published_asof = _clock("asof")
+    malformed_clock = any(
+        payload.get(name) is not None and not isinstance(payload.get(name), str)
+        for name in ("asof", "source_asof")
+    )
+    result = {
+        "disposition": "conflicted"
+        if malformed_match or malformed_clock or published_asof is None
+        else "found",
+        "published_asof": published_asof,
+        "source_asof": _clock("source_asof"),
+        "source_delayed": payload.get("source_delayed")
+        if isinstance(payload.get("source_delayed"), bool)
+        else None,
+        "source_unknown": payload.get("source_unknown")
+        if isinstance(payload.get("source_unknown"), bool)
+        else None,
+        "has_current_plan": None if malformed_match else bool(current_ids),
+    }
+    return result
+
+
 def _read_security_state_identity_rows(
     data_dir: Path,
     tickers: tuple[str, ...],
@@ -298,6 +385,7 @@ def _compile_security_state_for_ticker(
     find_event_id,
     load_workspace,
     fetch_manifest,
+    prophet_owner_read: dict | None = None,
 ) -> dict:
     """Compile one security's state after bounded owner/dependency reads.
 
@@ -336,7 +424,8 @@ def _compile_security_state_for_ticker(
     )
     return ss.compile_security_state(
         validator=validator, now=now, workspace=workspace, workspace_disposition=disposition,
-        blob=rec, manifest_sha256=manifest_sha256, k1_bundle=k1_bundle, **identity,
+        blob=rec, manifest_sha256=manifest_sha256, k1_bundle=k1_bundle,
+        prophet_owner_read=prophet_owner_read, **identity,
     )
 
 

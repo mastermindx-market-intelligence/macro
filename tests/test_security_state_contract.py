@@ -439,6 +439,141 @@ def test_case5_prophet_unavailable() -> None:
     assert prophet["reason"] == "PROPHET_OWNER_OUTPUT_ABSENT"
 
 
+
+
+@pytest.mark.parametrize(
+    "changes, expected_state, expected_reason",
+    [
+        ({}, "NOT_APPLICABLE", "PROPHET_NO_CURRENT_PLAN"),
+        ({"has_current_plan": True}, "AVAILABLE", "PROPHET_CURRENT_OUTLOOK_AVAILABLE"),
+        ({"published_asof": "2026-08-22", "source_asof": "2026-08-22",
+          "has_current_plan": True}, "STALE", "PROPHET_OWNER_OUTPUT_STALE"),
+        ({"source_asof": "2026-08-20", "source_delayed": True},
+         "PARTIAL", "PROPHET_SOURCE_DELAYED"),
+        ({"source_asof": "2026-08-20", "source_delayed": True, "has_current_plan": True},
+         "PARTIAL", "PROPHET_SOURCE_DELAYED"),
+        ({"published_asof": "2026-08-24"}, "CONFLICTED", "PROPHET_OWNER_CLOCK_FUTURE"),
+        ({"source_asof": "2026-08-24"}, "CONFLICTED", "PROPHET_OWNER_CONFLICTED"),
+        ({"source_asof": None, "source_delayed": None, "source_unknown": None},
+         "PARTIAL", "PROPHET_SOURCE_UNKNOWN"),
+        ({"source_unknown": True}, "PARTIAL", "PROPHET_SOURCE_UNKNOWN"),
+        ({"disposition": "unavailable"}, "UNAVAILABLE", "PROPHET_OWNER_OUTPUT_ABSENT"),
+        ({"disposition": "conflicted"}, "CONFLICTED", "PROPHET_OWNER_CONFLICTED"),
+        ({"has_current_plan": None}, "CONFLICTED", "PROPHET_OWNER_CONFLICTED"),
+    ],
+)
+def test_case5_prophet_status_preserves_closed_v1_and_other_owners(
+    changes: dict, expected_state: str, expected_reason: str,
+) -> None:
+    inp = _golden_input()
+    baseline = ss.compile_security_state(**inp)
+    inp["prophet_owner_read"] = {
+        "disposition": "found",
+        "published_asof": "2026-08-23",
+        "source_asof": "2026-08-23",
+        "source_delayed": False,
+        "source_unknown": False,
+        "has_current_plan": False,
+        **changes,
+    }
+    state = ss.compile_security_state(**inp)
+    prophet = state["legs"]["opportunity_context"]["prophet"]
+    assert prophet == {"ref": None, "state": expected_state, "reason": expected_reason}
+    _validator().validate(state)
+    assert state["authority"] == baseline["authority"]
+    assert not any(value for key, value in state["authority"].items() if key.startswith("can_"))
+    assert state["as_of"] == baseline["as_of"]
+    # Only the Prophet slot and its content digest may change; no new Entry,
+    # identity, evidence, coverage or Change source-frontier authority.
+    actual = copy.deepcopy(state)
+    expected = copy.deepcopy(baseline)
+    for obj in (actual, expected):
+        obj.pop("content_sha256")
+        obj["legs"]["opportunity_context"].pop("prophet")
+    assert actual == expected
+
+
+def test_case5_prophet_positive_population_and_private_details_do_not_change_public_bytes(
+    tmp_path: Path,
+) -> None:
+    from scripts.security_state_producer import _read_prophet_owner_read
+
+    public_states = []
+    for ids in (["PRIVATE-ONE"], ["PRIVATE-RENAMED"], ["PRIVATE-ONE", "PRIVATE-TWO"]):
+        owner_path = tmp_path / "private.json"
+        owner_path.write_text(json.dumps({
+            "schema": "prophet.index/v1", "asof": "2026-08-23",
+            "source_asof": "2026-08-23", "source_delayed": False, "source_unknown": False,
+            "plans": [
+                {"id": plan_id, "asset": "AAPL", "closed": False,
+                 "lifecycle_state": "ready", "strategy": "PRIVATE-STRATEGY",
+                 "entry": 123.456, "risk": {"sizing": "PRIVATE-SIZING"}}
+                for plan_id in ids
+            ],
+        }), encoding="utf-8")
+        inp = _golden_input()
+        inp["prophet_owner_read"] = _read_prophet_owner_read(owner_path, "AAPL")
+        assert inp["prophet_owner_read"]["has_current_plan"] is True
+        assert "PRIVATE" not in json.dumps(inp["prophet_owner_read"])
+        state = ss.compile_security_state(**inp)
+        _validator().validate(state)
+        public_states.append(json.dumps(state, sort_keys=True))
+    assert public_states[0] == public_states[1] == public_states[2]
+    assert "PRIVATE" not in public_states[0]
+
+
+@pytest.mark.parametrize("changes", [
+    {"published_asof": "PRIVATE-CLOCK"},
+    {"source_asof": "PRIVATE-CLOCK"},
+    {"source_asof": 123},
+    {"published_asof": "20260823"},
+    {"disposition": "PRIVATE-DISPOSITION"},
+    {"has_current_plan": "PRIVATE-ID"},
+])
+def test_case5_prophet_malformed_owner_values_are_not_echoed(changes: dict, capsys) -> None:
+    inp = _golden_input()
+    inp["prophet_owner_read"] = {
+        "disposition": "found", "published_asof": "2026-08-23",
+        "source_asof": "2026-08-23", "source_delayed": False,
+        "source_unknown": False, "has_current_plan": True, **changes,
+    }
+    state = ss.compile_security_state(**inp)
+    assert state["legs"]["opportunity_context"]["prophet"] == {
+        "ref": None, "state": "CONFLICTED", "reason": "PROPHET_OWNER_CONFLICTED",
+    }
+    _validator().validate(state)
+    captured = capsys.readouterr()
+    assert "PRIVATE" not in json.dumps(state) + captured.out + captured.err
+
+
+def test_case5_prophet_uses_eastern_decision_day_not_utc_midnight() -> None:
+    inp = _golden_input()
+    # 01:00 UTC is still the prior US market-calendar day.
+    inp["now"] = "2026-08-24T01:00:00Z"
+    inp["prophet_owner_read"] = {
+        "disposition": "found", "published_asof": "2026-08-23",
+        "source_asof": "2026-08-23", "source_delayed": False,
+        "source_unknown": False, "has_current_plan": True,
+    }
+    prophet = ss.compile_security_state(**inp)["legs"]["opportunity_context"]["prophet"]
+    assert prophet == {
+        "ref": None, "state": "AVAILABLE", "reason": "PROPHET_CURRENT_OUTLOOK_AVAILABLE",
+    }
+
+
+def test_case5_prophet_publication_clock_is_independent_of_market_data_asof() -> None:
+    inp = _golden_input()
+    inp["now"] = "2026-09-24T23:39:01Z"
+    inp["blob"] = dict(inp["blob"])
+    inp["blob"]["asof"] = "2026-09-22"
+    inp["prophet_owner_read"] = {
+        "disposition": "found", "published_asof": "2026-09-24",
+        "source_asof": "2026-09-21", "source_delayed": True,
+        "source_unknown": False, "has_current_plan": False,
+    }
+    prophet = ss.compile_security_state(**inp)["legs"]["opportunity_context"]["prophet"]
+    assert prophet == {"ref": None, "state": "PARTIAL", "reason": "PROPHET_SOURCE_DELAYED"}
+
 def test_case6_entry_unavailable() -> None:
     state = ss.compile_security_state(**_load("entry_unavailable_input.json"))
     entry = state["legs"]["opportunity_context"]["entry"]
