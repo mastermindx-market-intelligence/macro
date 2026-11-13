@@ -402,6 +402,35 @@ def test_ledger_row_is_booked_even_when_reply_is_dropped(fabric_on, monkeypatch,
     assert len(usage_rows) == 1 and usage_rows[0]["provider"] == "fabric"
 
 
+def test_fabric_unparseable_reply_degrades_closed(fabric_on, monkeypatch,
+                                                  tmp_path):
+    """The fabric branch feeds the SAME fail-closed parser: prose that is not a
+    JSON object must not become a brief."""
+    monkeypatch.setattr(llm_auth_mod, "build_providers", lambda *a, **kw: [])
+    fabric_on["state"]["reply"] = "I cannot help with that."
+
+    brief = ab.synthesize(dict(_STATE), dict(_CFG), root=tmp_path)
+
+    assert brief["theses"] == []
+    assert brief["regime_read"] is None
+    assert brief["degraded_reason"] == "unparseable_reply"
+    assert len(fabric_on["calls"]) == 1
+
+
+def test_fabric_truncated_and_unparseable_reports_truncation(fabric_on, monkeypatch,
+                                                             tmp_path):
+    """A max_tokens cut is the more useful diagnosis: the fabric reason wins over
+    the generic "unparseable_reply"."""
+    monkeypatch.setattr(llm_auth_mod, "build_providers", lambda *a, **kw: [])
+    fabric_on["state"]["reply"] = '{"theses": [{"ticker": "AAA"'   # cut mid-object
+    fabric_on["state"]["stop_reason"] = "max_tokens"
+
+    brief = ab.synthesize(dict(_STATE), dict(_CFG), root=tmp_path)
+
+    assert brief["theses"] == []
+    assert brief["degraded_reason"] == "truncated"
+
+
 def test_transport_error_records_no_ledger_row(monkeypatch, usage_rows):
     """Nothing was served, so nothing is billed — even though the router may
     have attempted a provider."""
