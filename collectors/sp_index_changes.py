@@ -101,19 +101,28 @@ def parse_changes_page(html: str, url: str, announce_date: str | None) -> list[d
 
 def fetch_index_changes() -> pd.DataFrame:
     """Poll the RSS, fetch NEW announcement pages, parse + APPEND to the git-tracked cache.
-    Idempotent on (announce_url, ticker, action). Never raises; degrades to the cache."""
+    Idempotent on (announce_url, ticker, action). Poll failures degrade to the cache.
+    Return-only attrs["index_changes_poll"] reports whether this poll completed;
+    it is not persisted as historical cache metadata or evidence freshness.
+    """
     import requests
     cache = _cache_path()
     prev = pd.read_parquet(cache) if cache.exists() else pd.DataFrame()
     seen_urls = set(prev["announce_url"]) if not prev.empty else set()
 
+    poll_errors = []
     sess = requests.Session()
     sess.headers.update({"User-Agent": _UA})
     try:
         r = sess.get(_RSS, timeout=30)
-        items = parse_rss(r.text) if r.status_code == 200 else []
+        if r.status_code != 200:
+            poll_errors.append("rss_http_error")
+            items = []
+        else:
+            items = parse_rss(r.text)
     except Exception as e:  # noqa: BLE001
         log.warning("sp_index_changes: RSS fetch failed (%s) — keeping cache", e)
+        poll_errors.append("rss_fetch_or_parse_error")
         items = []
 
     fresh = []
@@ -123,19 +132,24 @@ def fetch_index_changes() -> pd.DataFrame:
         try:
             pg = sess.get(it["url"], timeout=30)
             if pg.status_code != 200:
+                poll_errors.append("page_http_error")
                 log.info("sp_index_changes: page %s -> HTTP %d (skip)", it["url"][-30:], pg.status_code)
                 continue
             rows = parse_changes_page(pg.text, it["url"], it["announce_date"])
             if not rows:
+                poll_errors.append("page_parse_error")
                 log.warning("sp_index_changes: announcement %s yielded no parseable rows; "
                             "keeping cache (not a verified no-change feed)", it["url"])
                 continue
             fresh.extend(rows)
             log.info("sp_index_changes: %s -> %d rows", it["url"].split("/")[-1][:40], len(rows))
         except Exception as e:  # noqa: BLE001
+            poll_errors.append("page_fetch_or_parse_error")
             log.warning("sp_index_changes: page fetch failed %s (%s)", it["url"][-30:], e)
 
+    poll = {"complete": not poll_errors, "errors": sorted(set(poll_errors))}
     if not fresh:
+        prev.attrs["index_changes_poll"] = poll
         return prev
     fdf = pd.DataFrame(fresh)
     fdf["_seen"] = datetime.now(timezone.utc).isoformat()
@@ -143,6 +157,7 @@ def fetch_index_changes() -> pd.DataFrame:
     combined = combined.drop_duplicates(["announce_url", "ticker", "action"], keep="first").reset_index(drop=True)
     combined.to_parquet(cache)
     log.info("sp_index_changes: +%d rows (cache=%d)", len(fdf), len(combined))
+    combined.attrs["index_changes_poll"] = poll
     return combined
 
 
