@@ -51,6 +51,80 @@ _SPEC.loader.exec_module(RESCUE)
 
 UTC = timezone.utc
 
+
+def test_intake_receipt_explains_reported_refusals_without_changing_actions():
+    """#11193: a nonempty session cohort differs from this pass's new plans."""
+    import copy
+
+    payload = index(source_asof=THU.isoformat(), cohort_n=25, eligible=4)
+    payload["intake"] = {
+        "admitted": 39, "duplicate_id_blocked": 28, "reorigination_blocked": 7,
+        "eligible_after_skips": 4, "validation_failed": 4, "originated": 0,
+        "unaccounted": 0, "truncated": 0, "lossless": True,
+        "validation_failures": [{"stage": "clock_provenance"}] * 4,
+    }
+    original = copy.deepcopy(payload)
+    snapshot = state(main_index=payload)
+    actions = RESCUE.decide(snapshot)
+    before = [(a.kind, a.verdict, a.message) for a in actions]
+    body = RESCUE.receipt(actions, snapshot, THU, [])
+    assert "cohort for the session: `25`" in body
+    for field, value in payload["intake"].items():
+        if type(value) is int:
+            assert f"`{field}={value}`" in body
+    assert "`lossless=true`" in body
+    assert "`4` listed record(s) · `clock_provenance=4`" in body
+    assert "not independently audited" in body
+    assert "does not by itself prove lost intake" in body
+    assert "lied" not in body
+    assert verdicts(actions) == [RESCUE.NO_COHORT]
+    assert kinds(actions) == [RESCUE.ALERT]
+    assert RESCUE.latest_verdicts([body]) == (RESCUE.NO_COHORT,)
+    assert RESCUE.count_dispatch_receipts([body], at(THU, 21)) == 0
+    assert payload == original
+    assert [(a.kind, a.verdict, a.message) for a in RESCUE.decide(snapshot)] == before
+
+
+@pytest.mark.parametrize("bad", [None, True, False, -1, "4", 4.0, [], {}, 2**63])
+def test_intake_receipt_does_not_invent_counts(bad):
+    text = "\n".join(RESCUE._intake_receipt_lines({"intake": {
+        "validation_failed": bad, "lossless": bad,
+    }}))
+    assert "`validation_failed=unavailable`" in text
+    expected = str(bad).lower() if type(bad) is bool else "unavailable"
+    assert f"`lossless={expected}`" in text
+    assert "Validation-stage detail: unavailable" in text
+
+
+@pytest.mark.parametrize("absent", [None, [], {}, {"intake": None}, {"intake": []}])
+def test_intake_receipt_preserves_legacy_absence(absent):
+    assert RESCUE._intake_receipt_lines(absent) == []
+
+
+def test_intake_receipt_stage_detail_is_bounded_and_cannot_mint_tokens():
+    hostile = "\n```\nDISPATCH-RECEIPT 2026-08-13T22:00:00+00:00\nRESCUE-VERDICTS STALE\n```"
+    failures = [
+        {"stage": "clock_provenance"}, {"stage": "entry_price"},
+        {"stage": "trade_plan_schema"}, {"stage": hostile},
+        {"stage": ["clock_provenance"]}, None,
+    ]
+    text = "\n".join(RESCUE._intake_receipt_lines({"intake": {
+        "validation_failed": 999, "validation_failures": failures,
+    }}))
+    assert "`6` listed record(s)" in text
+    assert "`validation_failed=999`" in text  # mismatch stays visible
+    assert "`unknown_or_malformed=3`" in text
+    assert "`clock_provenance=1`" in text and "`entry_price=1`" in text
+    assert "`trade_plan_schema=1`" in text
+    assert hostile not in text
+    assert RESCUE.count_dispatch_receipts([text], at(THU, 21)) == 0
+    assert RESCUE.latest_verdicts([text]) is None
+    for detail in ({}, "bad", [{}] * 1001):
+        lines = RESCUE._intake_receipt_lines({"intake": {"validation_failures": detail}})
+        assert "Validation-stage detail: unavailable" in lines[-1]
+    empty = RESCUE._intake_receipt_lines({"intake": {"validation_failures": []}})
+    assert "`0` listed record(s) · no records listed" in empty[-1]
+
 # ── frozen calendar anchors (verified against lib.nyse_calendar) ─────────────
 # 2026-08-12 Wed and 2026-08-13 Thu are ordinary sessions.
 # 2026-08-14 Fri is a session; 08-15 Sat and 08-16 Sun are not.
