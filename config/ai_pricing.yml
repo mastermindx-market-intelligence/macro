@@ -36,6 +36,40 @@ per_mtok:
     input: 0.14
     output: 0.28
 
+  # BytePlus commercial ModelArk Standard, source checked 2026-10-30:
+  # https://console.byteplus.com/ark/region:ap-southeast-1/docs/model-pricing
+  # Distinct from Z.ai direct pricing, BytePlus Personal Coding Plan, and
+  # dynamic DeepSeek V4.1 peak/off-peak. No paid call or model activation
+  # follows from these reviewed estimates.
+  glm-5-3-flash-260828:
+    input: 0.15
+    output: 0.50
+    cache_read_multiplier: 0.20  # $0.03/M / $0.15/M
+    cache_write_5m_multiplier: null  # storage-hour basis is not write tokens
+  dola-seed-2-1-turbo-260628:
+    input: 0.50
+    output: 2.50
+    cache_read_multiplier: 0.20  # rate published for family alias, verify issuer
+    cache_write_5m_multiplier: null
+
+# Time-variable BytePlus Standard pricing. Without an explicit timezone-aware
+# as-of instant the existing cost owner returns UNKNOWN rather than claiming a
+# fixed DeepSeek V4.1 rate. Zone Asia/Shanghai (UTC+8) Mon-Fri 09-12, 14-18
+# is PEAK; offpeak all other hours. On published October 30 model pricing.
+temporal_per_mtok:
+  deepseek-v4-1-flash-261017:
+    schedule: asia_shanghai_weekday_peak_09_12_14_18_v1
+    peak:
+      input: 0.30
+      output: 1.20
+      cache_read_multiplier: 0.02
+      cache_write_5m_multiplier: null
+    offpeak:
+      input: 0.15
+      output: 0.60
+      cache_read_multiplier: 0.02
+      cache_write_5m_multiplier: null
+
 # cache: multipliers applied on top of the input rate.
 #   read_multiplier:       cache-read tokens cost this fraction of the input rate.
 #   write_5m_multiplier:   cache-creation tokens cost this multiple of the input rate.
