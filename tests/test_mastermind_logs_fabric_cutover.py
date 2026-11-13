@@ -285,6 +285,34 @@ def test_empty_text_is_not_a_verdict(fabric_on, legacy_post, ledger_rows, monkey
     assert ledger_rows == []
 
 
+def test_keyless_batch_served_by_fabric_succeeds(fabric_on, legacy_post, tmp_path,
+                                                 monkeypatch):
+    """No DeepSeek key is fine when the router serves the rows."""
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    _seed(tmp_path, [{"id": "a", "question": "q", "answer": "the readings conflict"}])
+
+    out = ml.classify_contradictions(limit=5, root=tmp_path)
+    assert out["ok"] is True and out["classified"] == 1
+    assert legacy_post == []
+
+
+def test_keyless_batch_with_a_dead_router_reports_no_llm_key(tmp_path, monkeypatch):
+    """The batch is let past the key gate only because the fabric promised to serve it.
+    If the router is unreachable AND there is no key, "ok: True, skipped: N" would tell
+    the operator nothing — the documented fail-soft answer is no_llm_key."""
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        fc, "complete",
+        lambda messages, **kw: (_ for _ in ()).throw(fc.FabricUnavailable("no sdk")))
+    monkeypatch.delenv("MACRO_LOGS_CLASSIFY_FABRIC", raising=False)
+    _seed(tmp_path, [{"id": "a", "question": "q", "answer": "the readings conflict"}])
+
+    out = ml.classify_contradictions(limit=5, root=tmp_path)
+    assert out["ok"] is False and out["error"] == "no_llm_key"
+    assert "unreachable" in out["note"]
+
+
 # --------------------------------------------------------------------------- #
 # the admin venv must actually ship the SDK the adapter imports
 # --------------------------------------------------------------------------- #

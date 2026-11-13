@@ -708,6 +708,13 @@ _FABRIC_LANE = "fast"
 _FABRIC_FALLBACK = object()
 
 
+class _NoCredentialPath(RuntimeError):
+    """The router could not be reached AND there is no DeepSeek key to fall back to.
+
+    Distinct from an ordinary skip: it means the batch had no usable credential at all,
+    so the summary must say so rather than reporting a silent pile of skips."""
+
+
 def _fabric_client():
     """The Capacity Fabric adapter, or None when this host cannot import it.
 
@@ -807,6 +814,11 @@ def _classify_call(prompt: str, api_key: str) -> dict | None:
     fabric = _classify_call_fabric(prompt)
     if fabric is not _FABRIC_FALLBACK:
         return fabric
+    if not api_key:
+        # The router promised to serve this row and could not be reached; the legacy
+        # POST below has no key either, so there is no credential path at all.
+        raise _NoCredentialPath("the Capacity Fabric is unreachable and DEEPSEEK_API_KEY "
+                                "is not set")
     body = json.dumps({
         "model": _CLASSIFY_MODEL,
         "max_tokens": 400,
@@ -889,11 +901,15 @@ def classify_contradictions(limit: int = 20, root: Path | None = None) -> dict:
 
         classified = 0
         skipped = 0
+        no_credential = False
         verdicts: dict[str, int] = {}
         for r in cands:
             rid = str(r.get("id"))
             try:
                 res = _classify_call(_classify_prompt(r), api_key)
+            except _NoCredentialPath:
+                no_credential = True
+                res = None
             except Exception:  # noqa: BLE001 — network/HTTP/decode → skip this row only
                 res = None
             if not res:
@@ -921,6 +937,18 @@ def classify_contradictions(limit: int = 20, root: Path | None = None) -> dict:
             overlay[rid] = merged
             classified += 1
             verdicts[res["contradiction"]] = verdicts.get(res["contradiction"], 0) + 1
+
+        # Honest failure: with no DeepSeek key the batch was let through ONLY on the
+        # promise that the fabric branch would serve it. If every row came back with no
+        # reachable credential at all, "ok: True, skipped: N" would tell the operator
+        # nothing — report the real cause instead, which is the documented fail-soft
+        # contract ("no key → no_llm_key without raising").
+        if no_credential and classified == 0:
+            return {"ok": False, "error": "no_llm_key", "classified": 0, "skipped": skipped,
+                    "note": "DEEPSEEK_API_KEY is not set and the Capacity Fabric was "
+                            "unreachable — the deterministic ⚡ scan still works "
+                            "without a key.",
+                    "generated_at": _now_iso()}
 
         return {"ok": True, "classified": classified, "skipped": skipped,
                 "candidates": total_candidates, "attempted": len(cands),
