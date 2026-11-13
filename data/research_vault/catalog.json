@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T03:37:42.833106+00:00",
-  "count": 3271,
+  "generated_at": "2026-11-13T03:52:48.727315+00:00",
+  "count": 3272,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -123,6 +123,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-6j1p9w15sso-0e1df7",
+      "title": "ING Think rates spark inflation pricing sending mixed signals",
+      "institution": "ING",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T03:38:31Z",
+      "summary_points": [
+        "Structural Inflation Underpricing: 5Y5Y EUR inflation swap at 2.07% (below historical norms) signals underpricing of structural risks, amplified by low unemployment and global tensions driving supply-side pressures.",
+        "Fiscal-Driven Central Bank Dovishness: ECB survey inflation expectations below 2.0% (vs pre-GFC) amid fiscal fragility (France/US), tilting risk to upside as central banks tolerate higher inflation than markets anticipate.",
+        "Event-Driven Market Positioning: Thursday’s key data (UK GDP, US jobless claims, Fed budget) + central bank speakers (ECB Nagel/Lagarde, Fed Schmid/Williams) + bond auctions (UK Gilts, Italy BTPs, US 30y) dictate near-term flows and positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-igu4wh2iijq-d40246",
       "title": "Global asset allocation insights november 2026",
