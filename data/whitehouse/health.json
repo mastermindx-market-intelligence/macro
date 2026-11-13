@@ -1,15 +1,45 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-12T03:00:31.591152+00:00",
-  "posts_seen": 19,
-  "seen_total": 347,
-  "evaluated": 1,
-  "activated": 0,
+  "as_of": "2026-11-13T00:27:30.511385+00:00",
+  "posts_seen": 24,
+  "seen_total": 353,
+  "evaluated": 6,
+  "activated": 1,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-11-11-we-render-you-the-highest-salute-president-trump-honors-americas-veterans-on-hal",
-      "importance": 20,
+      "id": "wh-2026-11-12-first-lady-melania-trump-honors-americas-fallen-heroes-at-the-tomb-of-the-unknow",
+      "importance": 0,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-12-nominations-sent-to-the-senate-16a6",
+      "importance": 15,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-12-democrats-will-help-us-caravans-march-north-as-dems-vow-to-reopen-the-border-pre",
+      "importance": 72,
+      "activated": true,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-12-presidential-message-on-national-native-american-heritage-month-39c4",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-12-presidential-message-on-national-military-families-month",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-12-presidential-message-on-national-entrepreneurship-month-bfcb",
+      "importance": 15,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     }
