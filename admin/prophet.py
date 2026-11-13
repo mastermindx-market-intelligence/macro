@@ -217,6 +217,7 @@ def _reentry_case_rows(doc: dict) -> list[dict]:
             "outcome_pct": row.get("outcome_pct"),
             "prior_entry_date": prior.get("entry_date"),
             "prior_mark_at_readmit_pct": prior.get("mark_at_readmit_pct"),
+            "prior_mark_observation_date": prior.get("mark_observation_date"),
             "prior_resolved_outcome_pct": prior.get("outcome_pct"),
             "sector_reco_at_entry": (ctx.get("sector_basket") or {}).get("reco"),
             "entry_status_at_entry": (ctx.get("entry_plan") or {}).get("status"),
