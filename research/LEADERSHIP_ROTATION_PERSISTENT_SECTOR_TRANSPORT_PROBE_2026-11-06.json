@@ -1,0 +1,150 @@
+{
+  "schema": "persistent_sector_transport_probe/v1",
+  "source_repository": "mastermindx-market-intelligence/Mastermind",
+  "source_commit": "fa46c271b23902555c5f3c83592edc2cf77069c6",
+  "source_paths": [
+    "brain/bot_mcp.py",
+    "brain/portfolio_intelligence.py",
+    "brain/autonomous_mcp.py"
+  ],
+  "method": "Executed only the exact pinned pure _ok, _compact_json_value, _json and _rotation_row definitions in isolation. No full MCP module import, tool call, server, auth or native artifact read occurred.",
+  "producer_commit": "378e289b180b90ed2902a7689e960932a8a26fe6",
+  "fixture_sha256": "22bb12e0516db2ca8f99b8d10af93deab0f75c96d362ae84a3fa99d95855fcb3",
+  "budget_characters": 8000,
+  "cases": [
+    {
+      "case": "dossier_alone",
+      "input_characters": 4808,
+      "output_characters": 4808,
+      "transport_truncated": false,
+      "expected_group_ids": [
+        "XLB",
+        "XLC",
+        "XLE",
+        "XLF",
+        "XLI",
+        "XLK",
+        "XLP",
+        "XLRE",
+        "XLU",
+        "XLV",
+        "XLY"
+      ],
+      "delivered_group_ids": [
+        "XLB",
+        "XLC",
+        "XLE",
+        "XLF",
+        "XLI",
+        "XLK",
+        "XLP",
+        "XLRE",
+        "XLU",
+        "XLV",
+        "XLY"
+      ],
+      "all_eleven_preserved": true,
+      "declared_expected_n": 11,
+      "delivered_group_count": 11
+    },
+    {
+      "case": "default_six_rows_plus_dossier",
+      "input_characters": 11353,
+      "output_characters": 6490,
+      "transport_truncated": true,
+      "expected_group_ids": [
+        "XLB",
+        "XLC",
+        "XLE",
+        "XLF",
+        "XLI",
+        "XLK",
+        "XLP",
+        "XLRE",
+        "XLU",
+        "XLV",
+        "XLY"
+      ],
+      "delivered_group_ids": [
+        "XLB",
+        "XLC",
+        "XLE"
+      ],
+      "all_eleven_preserved": false,
+      "declared_expected_n": 11,
+      "delivered_group_count": 3
+    },
+    {
+      "case": "unavailable_dossier_alone",
+      "input_characters": 8304,
+      "output_characters": 7791,
+      "transport_truncated": true,
+      "expected_group_ids": [
+        "XLB",
+        "XLC",
+        "XLE",
+        "XLF",
+        "XLI",
+        "XLK",
+        "XLP",
+        "XLRE",
+        "XLU",
+        "XLV",
+        "XLY"
+      ],
+      "delivered_group_ids": [
+        "XLB",
+        "XLC",
+        "XLE",
+        "XLF",
+        "XLI",
+        "XLK",
+        "XLP",
+        "XLRE",
+        "XLU",
+        "XLV"
+      ],
+      "all_eleven_preserved": false,
+      "declared_expected_n": 11,
+      "delivered_group_count": 10
+    }
+  ],
+  "production_proven": false,
+  "ruling": "Raw appendix passthrough remains inadmissible. The separate all-eleven consumer projection is locally qualified, including unavailable, malformed and oversized refusal paths. Native generation publication, hosted CI/release and signed-in production parity remain separate.",
+  "actual_dispatch": "brain.autonomous_mcp.get_sector_rotation -> brain.portfolio_intelligence.sector_rotation -> brain.bot_mcp._json",
+  "qualified_projection": {
+    "consumer_commit": "21775669516630a183817f1ef334be0ff7d4aba2",
+    "consumer_pr": "https://github.com/mastermindx-market-intelligence/Mastermind/pull/2157",
+    "selector": "projection=sector_dossiers",
+    "budget_utf8_bytes": 7200,
+    "method": "Actual decorated MCP handler and unchanged serializer, invoked locally with controlled producer fixture inputs. No server, authentication, SDK/model turn, live portfolio, publication or deployment was invoked.",
+    "fixture_cases": [
+      {
+        "name": "sector_dossiers_v1.json",
+        "response_utf8_bytes": 4323,
+        "group_count": 11,
+        "transport_truncated": false
+      },
+      {
+        "name": "sector_dossiers_unavailable_v1.json",
+        "response_utf8_bytes": 4943,
+        "group_count": 11,
+        "transport_truncated": false
+      }
+    ],
+    "retained_native_case": {
+      "source_artifact": "site/sectordata/sector_cycles.json",
+      "source_sha256": "46a7b95a11446f12028a90cb071955710d516accd68f49db5ad99bab111194fa",
+      "source_session": "2026-10-22",
+      "response_utf8_bytes": 4298,
+      "group_count": 11,
+      "measurement_status": "available",
+      "dossier_status": "partial",
+      "values_and_shared_qualifications_equal": true,
+      "transport_truncated": false,
+      "source_bytes_unchanged": true
+    },
+    "production_proven": false,
+    "limitation": "The retained 2026-10-22 native input was composed in memory and supplied to the existing handler. It was not a naturally published Sector Central generation or a production endpoint. Freshness is unverified and historical admissibility is false."
+  }
+}

@@ -1,0 +1,522 @@
+{
+ "scope": "full_template_and_native_router_with_synthetic_owner_data",
+ "production_authenticated": false,
+ "source_revision": "65df4b24b255d89f815208f00e4b6e158b85c2c8",
+ "page_sha256": "ec270f384071cebcd7e1b04767e87a5468fa5d1750fdd6efdb9871599d8dee6f",
+ "cells": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "height": 900,
+   "locale": "en",
+   "theme": "dark",
+   "screenshot": "desktop-en-dark.png",
+   "detail_screenshot": "desktop-en-dark--detail.png",
+   "page_errors": [],
+   "console": [
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: net::ERR_FAILED",
+    "error: Error: <rect> attribute height: A negative value is not valid. (\"-39\")",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <rect> attribute height: A negative value is not valid. (\"-43\")",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: net::ERR_FAILED",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\"."
+   ],
+   "facts": {
+    "scrollWidth": 1440,
+    "innerWidth": 1440,
+    "horizontal_overflow": false,
+    "elements_wider_than_viewport": 0,
+    "wide_elements": [],
+    "summary_height": 44,
+    "summary_focus_visible": true,
+    "summary_outline_width": "2px",
+    "summary_outline_style": "solid",
+    "evidence_text": "Leadership evidence\n\n2026-10-09 · total return · Energy · 能源 XLE\n\nMeasured profile available; explanatory evidence incomplete.\n\n21 trading sessions vs S&P 500\n+2.4%\n63 trading sessions vs S&P 500\n+4.1%\nSectors ahead over 21 sessions\n5 of 9 measured (of 11 sectors)\nSectors ahead over 63 sessions\n5 of 9 measured (of 11 sectors)\n\n5- and 20-session windows are not supplied.\n\nAbsolute returns are not supplied.\n\nThese are sector ETF counts. Constituent participation is not supplied — this is not stock-level breadth.\n\nExplanation unavailable — no qualified evidence for this sector.\n\nSector risk context unavailable — this is not a risk verdict.\n\nEvidence details\nSource\nengine.sector_cycles\nCompatibility key\n2026-10-09|SPY|us_sectors_11 — a session, benchmark and cohort key — not a revision id\nImmutable generation\nNot supplied immutable_generation_not_supplied\nAvailability\nDated snapshot · original availability not supplied original_availability_not_supplied\nHistory\nReconstructed from prices — not naturally observed reconstructed_price_history\nFreshness\nUnverified owner_freshness_receipt_not_supplied\nCorrections\nUnavailable native_revision_selection_not_supplied\nDependency\n1 source families · shared rolling windows · independence not established not_established\nForecast\nExcluded — no approved forecasting model not_qualified\nAuthority\nNo ranking, gating, sizing, trading or escalation may_rank=false · may_gate=false · may_size=false · may_trade=false · may_escalate=false\nNull reasons\nnone — both windows are measured\nQualification\nnone\n\nSectors without a measurement in this cohort: XLRE (missing_group), XLU (thin_history)",
+    "details_open": true,
+    "panel_rows": 9
+   },
+   "journey": {
+    "deep_link_opens_native_map": true,
+    "selection_updates_existing_url": true,
+    "back_forward_reload_preserve_selection": true,
+    "existing_workflow_returns_to_map": true,
+    "native_empty_keeps_eleven_rows": true,
+    "native_empty_has_source_reason": true,
+    "restored_packet_disclosure_closed": true
+   },
+   "request_boundaries": [
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_narr_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_dna_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "live/shock_state.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "policy_lever.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "live/basket_pulse.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/index_leadership.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/narrative_emergence.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/baskets.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "marketdata/rotation_events.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/sector_fragmentation.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "nav_market.js",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "url": "https://cloud.umami.is/script.js",
+     "state": "external_aborted"
+    },
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_narr_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_dna_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "live/shock_state.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "policy_lever.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "live/basket_pulse.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/index_leadership.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/narrative_emergence.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/baskets.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "marketdata/rotation_events.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/sector_fragmentation.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "nav_market.js",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "url": "https://cloud.umami.is/script.js",
+     "state": "external_aborted"
+    }
+   ],
+   "problems": []
+  },
+  {
+   "viewport": "phone",
+   "width": 390,
+   "height": 844,
+   "locale": "zh",
+   "theme": "light",
+   "screenshot": "phone-zh-light.png",
+   "detail_screenshot": "phone-zh-light--detail.png",
+   "page_errors": [],
+   "console": [
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: net::ERR_FAILED",
+    "error: Error: <rect> attribute height: A negative value is not valid. (\"-39\")",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <rect> attribute height: A negative value is not valid. (\"-43\")",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "error: Failed to load resource: net::ERR_FAILED",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x1: Expected length, \"NaN\".",
+    "error: Error: <line> attribute x2: Expected length, \"NaN\".",
+    "error: Error: <text> attribute x: Expected length, \"NaN\"."
+   ],
+   "facts": {
+    "scrollWidth": 390,
+    "innerWidth": 390,
+    "horizontal_overflow": false,
+    "elements_wider_than_viewport": 0,
+    "wide_elements": [],
+    "summary_height": 44,
+    "summary_focus_visible": true,
+    "summary_outline_width": "2px",
+    "summary_outline_style": "solid",
+    "evidence_text": "领涨证据\n\n2026-10-09 · 含股息总回报 · Energy · 能源 XLE\n\n已有实测概况；解释性证据尚不完整。\n\n21个交易日 相对标普500\n+2.4%\n63个交易日 相对标普500\n+4.1%\n21个交易日中领先的板块\n已测 9 个中有 5 个领先（共 11 个板块）\n63个交易日中领先的板块\n已测 9 个中有 5 个领先（共 11 个板块）\n\n5 和 20 个交易日的窗口未提供。\n\n绝对收益未提供。\n\n以上为行业ETF口径。成分股参与度未提供 — 这不是个股层面的广度。\n\n解释暂不可用 — 该板块没有合格证据。\n\n板块风险背景暂不可用 — 这不是风险结论。\n\n证据详情\n来源\nengine.sector_cycles\n兼容键\n2026-10-09|SPY|us_sectors_11 — 会话、基准与队列键 — 不是修订号\n不可变代次\n未提供 immutable_generation_not_supplied\n可用性\n日期快照 · 原始可用时间未提供 original_availability_not_supplied\n历史\n按价格重建 — 并非自然观测 reconstructed_price_history\n新鲜度\n未验证 owner_freshness_receipt_not_supplied\n修订\n暂不可用 native_revision_selection_not_supplied\n依赖\n1 个来源类别 · 共用滚动窗口 · 独立性未确立 not_established\n预测\n已排除 — 没有获批的预测模型 not_qualified\n权限\n无排序、门控、仓位、交易或升级权限 may_rank=false · may_gate=false · may_size=false · may_trade=false · may_escalate=false\n空值原因\n无 — 两个窗口均已测得\n资格\n无\n\n本次队列中没有测得的板块：XLRE (missing_group), XLU (thin_history)",
+    "details_open": true,
+    "panel_rows": 9
+   },
+   "journey": {
+    "deep_link_opens_native_map": true,
+    "selection_updates_existing_url": true,
+    "back_forward_reload_preserve_selection": true,
+    "existing_workflow_returns_to_map": true,
+    "native_empty_keeps_eleven_rows": true,
+    "native_empty_has_source_reason": true,
+    "restored_packet_disclosure_closed": true
+   },
+   "request_boundaries": [
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_narr_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_dna_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "live/shock_state.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "policy_lever.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "live/basket_pulse.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "fonts/Inter-800.woff2",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "fonts/Inter-500.woff2",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/index_leadership.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/narrative_emergence.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/baskets.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "marketdata/rotation_events.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/sector_fragmentation.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "nav_market.js",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "url": "https://cloud.umami.is/script.js",
+     "state": "external_aborted"
+    },
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_narr_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_dna_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "live/shock_state.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "policy_lever.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "live/basket_pulse.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/index_leadership.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "fonts/Inter-800.woff2",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "fonts/Inter-500.woff2",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/narrative_emergence.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/baskets.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "marketdata/rotation_events.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/sector_fragmentation.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "nav_market.js",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "url": "https://cloud.umami.is/script.js",
+     "state": "external_aborted"
+    }
+   ],
+   "problems": []
+  }
+ ],
+ "outcome": "captured",
+ "problem_count": 0
+}

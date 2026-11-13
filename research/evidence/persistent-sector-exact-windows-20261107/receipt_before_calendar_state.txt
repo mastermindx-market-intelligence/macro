@@ -1,0 +1,23 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_w37_the_canonical_us_session_reference_keeps_a_holiday_out_of_the_window _
+
+    def test_w37_the_canonical_us_session_reference_keeps_a_holiday_out_of_the_window():
+        """US Labor Day 2026-09-07 is not a session. The canonical 63-session
+        window therefore starts on 2026-08-07, where the weekday approximation
+        started on 2026-08-10 and counted the holiday as one of the sixty-three.
+        A capture row on the holiday is never promoted to a session either."""
+        from lib import nyse_calendar
+    
+        calendar = _psl_calendar()
+        end = date.fromisoformat(_PSL_END)
+        assert not nyse_calendar.is_session(date(2026, 9, 7))
+>       assert "2026-09-07" not in calendar
+E       AssertionError: assert '2026-09-07' not in ['2025-09-12', '2025-09-15', '2025-09-16', '2025-09-17', '2025-09-18', '2025-09-19', ...]
+
+tests/test_leadership_measured_read.py:1529: AssertionError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_leadership_measured_read.py::test_w37_the_canonical_us_session_reference_keeps_a_holiday_out_of_the_window
+1 failed, 114 deselected in 1.10s

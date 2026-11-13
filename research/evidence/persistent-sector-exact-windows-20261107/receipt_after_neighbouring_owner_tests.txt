@@ -1,0 +1,22 @@
+........................................................................ [ 27%]
+........................................................................ [ 55%]
+........................................................................ [ 82%]
+.............................................                            [100%]
+=============================== warnings summary ===============================
+tests/test_leadership_rotation_run.py::test_paired_bootstrap_one_w_shared_across_groups
+tests/test_leadership_rotation_run.py::test_holm_missing_group_adjusted_p_is_one
+tests/test_leadership_rotation_run.py::test_h2_h3_finite_at_calendar_end_with_pending_baseline_outcomes
+tests/test_leadership_rotation_run.py::test_b1_bootstrap_replicate_sd_positive_with_own_index_weights
+tests/test_leadership_rotation_run.py::test_h2_safety_fail_closed_when_b2_unmeasurable
+tests/test_leadership_rotation_run.py::test_h1_h3_uncertainty_interval_keys_finite_on_synthetic_group
+tests/test_leadership_rotation_run.py::test_look_count_distinguishes_zero_from_counted_looks
+  /home/ubuntu2/lanes/repos/macro/.claude/worktrees/psl-exact-window-binding-fix-20261107-c4/scripts/leadership_rotation_run.py:962: RuntimeWarning: invalid value encountered in divide
+    rep_bur_cut = 1.0 - (bur1 / bur0)
+
+tests/test_leadership_rotation_run.py::test_h2_h3_finite_at_calendar_end_with_pending_baseline_outcomes
+tests/test_leadership_rotation_run.py::test_h1_h3_uncertainty_interval_keys_finite_on_synthetic_group
+  /home/ubuntu2/lanes/repos/macro/.claude/worktrees/psl-exact-window-binding-fix-20261107-c4/scripts/leadership_rotation_run.py:962: RuntimeWarning: divide by zero encountered in divide
+    rep_bur_cut = 1.0 - (bur1 / bur0)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+261 passed, 9 warnings in 11.73s

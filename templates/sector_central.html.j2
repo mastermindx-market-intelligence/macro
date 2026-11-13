@@ -662,7 +662,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .mr-row{width:100%;min-height:40px;padding:6px 10px;background:none;border:0;border-radius:var(--r-ctl,8px);color:var(--text);font:inherit;font-size:var(--fs-md);text-align:left;cursor:pointer}
 .mr-row-na{grid-template-columns:minmax(0,1fr) auto}
 .mr-row:hover{background:var(--panel2)}
-.mr-row:focus-visible,.mr-segbtn:focus-visible,.mr-link:focus-visible{outline:2px solid var(--ink-info);outline-offset:2px}
+.mr-row:focus-visible,.mr-segbtn:focus-visible,.mr-link:focus-visible,.mr-ev-sum:focus-visible{outline:2px solid var(--ink-info);outline-offset:2px}
 .mr-row[aria-pressed="true"]{background:var(--panel2);box-shadow:none}
 .mr-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mr-c{font-family:var(--font-mono);font-size:var(--fs-sm)}
@@ -690,6 +690,24 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .mr-early{margin-top:var(--sp-4,16px);padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2)}
 .mr-early-lab{font-size:var(--fs-label);color:var(--muted);margin:0 0 4px} .mr-early-clause{margin:0 0 4px;font-size:var(--fs-md);color:var(--text)} .mr-early-cov{margin:0;font-size:var(--fs-sm);color:var(--muted)}
 .mr-noforecast{margin:8px 0 0;font-size:var(--fs-label);color:var(--muted)}
+/* PSL-3 · leadership evidence (the dated dossier addendum) — a SECTION of the
+   measured panel, not a nested card: a neutral hairline, the incumbent type
+   ramp and semantic ink. No accent edge, no glow, no new chart, no new font. */
+.mr-ev{margin:14px 0 12px;padding-top:10px;border-top:1px solid var(--line)}
+.mr-ev-h{margin:0 0 2px;font-size:var(--fs-md);font-weight:600;color:var(--text)}
+.mr-ev-meta{margin:0 0 8px;font-size:var(--fs-label);color:var(--muted);line-height:1.5}
+.mr-ev-stance{margin:0 0 10px;font-size:var(--fs-sm);color:var(--text)}
+.mr-ev-notes{margin:0}
+.mr-ev-notes .mr-hint{margin:0 0 6px;line-height:1.55}
+.mr-ev-notes .mr-hint:last-child{margin-bottom:0}
+.mr-ev-sum{min-height:44px;margin:8px 0 6px;padding:2px 0;font-size:var(--fs-sm);color:var(--muted);cursor:pointer}
+.mr-ev-body{margin:0 0 2px;font-size:var(--fs-sm);color:var(--muted)}
+.mr-ev-src{margin:0 0 8px}
+.mr-ev-src div{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;padding:6px 0;border-bottom:1px solid var(--line)}
+.mr-ev-src div:last-child{border-bottom:0}
+.mr-ev-src dt{font-size:var(--fs-label);color:var(--muted)}
+.mr-ev-src dd{margin:0;font-size:var(--fs-sm);color:var(--text);overflow-wrap:anywhere}
+.mr-ev-code{font-family:var(--font-mono);font-size:var(--fs-label);color:var(--muted)}
 /* LIGHT TREATMENT — research workspace: white material, hairline, shadow instead of glow */
 html[data-theme="light"] .mr-row:hover{background:var(--ff-tint-muted-8)}
 html[data-theme="light"] .mr-row[aria-pressed="true"]{background:var(--ff-tint-info-8)}
@@ -3574,9 +3592,493 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     return null;
   }
 
+  /* ── PSL-3 · Persistent Sector Leadership: the dated evidence addendum ─────
+     window.SECTOR_CENTRAL.measured_read may carry an optional, strictly
+     qualified projection — leadership_rotation_context.sector_dossiers/v1.
+     It is qualified HERE, separately from the legacy measured read: schema,
+     cohort identity, session, benchmark, basis, units, windows and the exact
+     eleven native identities must all agree with the current parent read, and
+     a payload claiming authority or provenance this read does not have is
+     refused rather than echoed. Nothing here is inferred, ranked, forecast,
+     sized or fetched; the incumbent selection, deep link and language switch
+     own the journey, and an absent, invalid or mismatched addendum never
+     touches the legacy metrics or history. */
+  var DOSSIER_SCHEMA = 'leadership_rotation_context.sector_dossiers/v1';
+  var EV_COHORT_N = 11;
+  var EV_WINDOWS = [21, 63];
+  var DOSSIER = null;
+  var DOSSIER_STATE = 'absent';   // absent | invalid | mismatch | refused | ok
+  var DOSSIER_WHY = '';
+  var EV_OPEN = false;
+  var EV_KEY = '';
+
+  function isObj(v) { return v !== null && typeof v === 'object' && !Array.isArray(v); }
+  function isFin(v) { return typeof v === 'number' && isFinite(v); }
+  function safeText(v, max) {
+    if (typeof v !== 'string' || !v) return null;
+    if (max && v.length > max) return null;
+    for (var i = 0; i < v.length; i++) { if (v.charCodeAt(i) < 32) return null; }
+    return v;
+  }
+  function evCohort(read) {
+    var g = read && read.groups, ids = [], seen = {}, i;
+    if (!Array.isArray(g) || g.length !== EV_COHORT_N) return null;
+    for (i = 0; i < g.length; i++) {
+      var id = g[i] && g[i].group_id;
+      if (typeof id !== 'string' || !id || seen[id]) return null;
+      seen[id] = 1; ids.push(id);
+    }
+    return ids;
+  }
+  /* The v1 contract grants no authority and carries no forecast; a payload that
+     claims otherwise, or that upgrades a provenance slot this read cannot
+     support, is refused — never echoed. */
+  function evContract(d) {
+    var a = d.authority;
+    if (!isObj(a)) return 'authority_missing';
+    if (a.may_rank !== false || a.may_gate !== false || a.may_size !== false ||
+        a.may_trade !== false || a.may_escalate !== false) return 'authority_claimed';
+    var f = d.forecasts;
+    if (!isObj(f)) return 'forecast_missing';
+    if (f.status !== 'not_qualified') return 'forecast_claimed';
+    if (f.expected_return !== null || f.persistence_estimate !== null ||
+        f.allocation_weight !== null) return 'forecast_value_claimed';
+    if (!isObj(d.source_generation) || d.source_generation.status !== 'unavailable') {
+      return 'immutable_generation_claimed';
+    }
+    if (!isObj(d.history) || d.history.naturally_observed !== false) return 'naturally_observed_claimed';
+    if (!isObj(d.availability) || d.availability.historically_admissible !== false) {
+      return 'historical_admissibility_claimed';
+    }
+    if (d.availability.mode !== 'dated_snapshot' && d.availability.mode !== 'as_known') {
+      return 'availability_mode_unknown';
+    }
+    if (!isObj(d.freshness) || d.freshness.status !== 'unverified') return 'freshness_claimed';
+    if (!isObj(d.mechanism) || d.mechanism.status !== 'unavailable') return 'mechanism_claimed';
+    if (!isObj(d.risk) || d.risk.status !== 'unavailable') return 'risk_claimed';
+    if (!isObj(d.constituent_breadth) || d.constituent_breadth.status !== 'unavailable') {
+      return 'constituent_breadth_claimed';
+    }
+    if (!isObj(d.constituent_concentration) || d.constituent_concentration.status !== 'unavailable') {
+      return 'constituent_concentration_claimed';
+    }
+    return null;
+  }
+  // Closed v1 wire identities, not a membership or ranking authority.
+  var EV_IDS = ['XLB','XLC','XLE','XLF','XLI','XLK','XLP','XLRE','XLU','XLV','XLY'];
+  function evKeys(v, keys) {
+    return isObj(v) && Object.keys(v).length === keys.length &&
+      keys.every(function (k) { return Object.prototype.hasOwnProperty.call(v, k); });
+  }
+  function evExact(v, expected) {
+    var keys = Object.keys(expected);
+    return evKeys(v, keys) && keys.every(function (k) { return v[k] === expected[k]; });
+  }
+  function evText(v, max) { return safeText(v, max || 120) !== null; }
+  function evNullableText(v, max) { return v === null || evText(v, max); }
+  function evInt(v, max) { return isFin(v) && Math.floor(v) === v && v >= 0 && v <= max; }
+  function evStrings(v, max, check) {
+    if (!Array.isArray(v) || v.length > max) return false;
+    var seen = Object.create(null);
+    return v.every(function (x) {
+      if (!check(x) || Object.prototype.hasOwnProperty.call(seen, x)) return false;
+      seen[x] = true; return true;
+    });
+  }
+  function evReasons(v) { return evStrings(v, 32, function (x) { return evText(x, 120); }); }
+  function evDay(v) {
+    if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
+    var date = new Date(v + 'T00:00:00Z');
+    return isFinite(date.getTime()) && date.toISOString().slice(0, 10) === v;
+  }
+  function evCut(v) {
+    return typeof v === 'string' && v.length <= 64 && evDay(v.slice(0, 10)) &&
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(v) &&
+      isFinite(Date.parse(v));
+  }
+  function evUnavailable(v, reason, extras) {
+    var expected = {status:'unavailable', reason:reason};
+    Object.keys(extras || {}).forEach(function (k) { expected[k] = extras[k]; });
+    return evExact(v, expected);
+  }
+  function evValidate(read) {
+    var out = {state:'absent', why:'not_supplied', dossier:null};
+    function fail(state, why) { out.state = state; out.why = why; return out; }
+    if (!isObj(read) || !Object.prototype.hasOwnProperty.call(read, 'sector_dossiers')) return out;
+    var d = read.sector_dossiers;
+    if (!isObj(d)) return fail('invalid', 'not_an_object');
+    if (d.schema !== DOSSIER_SCHEMA) return fail('invalid', 'unknown_schema');
+    if (!evKeys(d, ['schema','status','measurement_status','cohort_id','population','as_of',
+        'benchmark','price_basis','units','windows_sessions','unavailable_windows','absolute_returns',
+        'compatibility_key','source_generation','availability','history','freshness','corrections',
+        'authority','forecasts','mechanism','risk','constituent_breadth','constituent_concentration',
+        'cross_sector_breadth_counts','dependency_audit','diagnostics','groups'])) {
+      return fail('invalid', 'dossier_shape_invalid');
+    }
+    var refuse = evContract(d);
+    if (refuse) return fail('refused', refuse);
+    if (read.schema !== 'leadership_rotation_context.measured_group_read/v1' ||
+        ['available','partial','unavailable'].indexOf(read.status) < 0) {
+      return fail('mismatch', 'parent_schema_invalid');
+    }
+    var gen = isObj(read.generation) ? read.generation : null;
+    if (!gen) return fail('mismatch', 'parent_generation_missing');
+    var ids = evCohort(read);
+    if (!ids || ids.some(function (id) { return EV_IDS.indexOf(id) < 0; }) ||
+        read.groups.some(function (g) { return g.group_kind !== 'sector'; })) {
+      return fail('mismatch', 'parent_cohort_invalid');
+    }
+    if (d.cohort_id !== 'us_sectors_11' || gen.cohort_id !== d.cohort_id ||
+        d.population !== 'eleven_sector_etf_proxies') return fail('mismatch', 'cohort_mismatch');
+    if (d.as_of !== null && (!evDay(d.as_of) || d.as_of !== gen.session_end)) {
+      return fail('mismatch', 'session_mismatch');
+    }
+    if (d.benchmark !== null && (!evText(d.benchmark, 16) ||
+        !/^[A-Z][A-Z0-9.^-]{0,15}$/.test(d.benchmark) ||
+        ['UNKNOWN','NONE','NULL'].indexOf(d.benchmark) >= 0 || d.benchmark !== gen.benchmark)) {
+      return fail('mismatch', 'benchmark_mismatch');
+    }
+    if (d.price_basis !== null && (d.price_basis !== 'total_return' || d.price_basis !== gen.price_basis)) {
+      return fail('mismatch', 'basis_mismatch');
+    }
+    if (!evNullableText(d.compatibility_key, 160) ||
+        (d.compatibility_key !== null && d.compatibility_key !== gen.id)) {
+      return fail('mismatch', 'compatibility_mismatch');
+    }
+    if (d.units !== 'pct') return fail('mismatch', 'units_mismatch');
+    if (!Array.isArray(d.windows_sessions) || d.windows_sessions.length !== 2 ||
+        d.windows_sessions[0] !== 21 || d.windows_sessions[1] !== 63) {
+      return fail('mismatch', 'window_mismatch');
+    }
+    if (['partial','unavailable'].indexOf(d.status) < 0 ||
+        ['available','partial','unavailable'].indexOf(d.measurement_status) < 0) {
+      return fail('invalid', 'dossier_status_invalid');
+    }
+    var uw = d.unavailable_windows, av = d.availability, da = d.dependency_audit, diag = d.diagnostics;
+    if (!evKeys(uw, ['sessions','reason']) || uw.reason !== 'not_supplied_by_owner' ||
+        !Array.isArray(uw.sessions) || uw.sessions.length !== 2 || uw.sessions[0] !== 5 || uw.sessions[1] !== 20 ||
+        !evUnavailable(d.absolute_returns, 'not_supplied_by_owner') ||
+        !evUnavailable(d.source_generation, 'immutable_generation_not_supplied', {id:null}) ||
+        !evExact(d.history, {mode:'reconstructed_price_history', naturally_observed:false}) ||
+        !evExact(d.freshness, {status:'unverified', reason:'owner_freshness_receipt_not_supplied'}) ||
+        !evUnavailable(d.corrections, 'native_revision_selection_not_supplied') ||
+        !evExact(d.authority, {may_rank:false, may_gate:false, may_size:false, may_trade:false, may_escalate:false}) ||
+        !evExact(d.forecasts, {status:'not_qualified', expected_return:null, persistence_estimate:null, allocation_weight:null}) ||
+        !evUnavailable(d.mechanism, 'no_qualified_evidence', {owner:'engine.theme_graph'}) ||
+        !evUnavailable(d.risk, 'no_qualified_risk_context', {owner:'engine.risk_envelope', scope:null}) ||
+        !evUnavailable(d.constituent_breadth, 'native_membership_not_supplied') ||
+        !evUnavailable(d.constituent_concentration, 'native_weights_not_supplied')) {
+      return fail('invalid', 'provenance_contract_invalid');
+    }
+    if (!evKeys(av, ['mode','decision_cutoff','original_available_at','historically_admissible','reason']) ||
+        av.original_available_at !== null || av.historically_admissible !== false ||
+        (av.decision_cutoff !== null && !evCut(av.decision_cutoff)) ||
+        ['dated_snapshot','as_known'].indexOf(av.mode) < 0 ||
+        ['original_availability_not_supplied','invalid_decision_cutoff','source_session_after_decision_cutoff',
+          'availability_time_missing'].indexOf(av.reason) < 0) return fail('invalid', 'availability_contract_invalid');
+    if ((av.mode === 'dated_snapshot' && (av.decision_cutoff !== null || av.reason !== 'original_availability_not_supplied')) ||
+        (av.mode === 'as_known' && (av.reason === 'original_availability_not_supplied' ||
+          ((av.reason === 'invalid_decision_cutoff') !== (av.decision_cutoff === null))))) {
+      return fail('invalid', 'availability_contract_invalid');
+    }
+    if (!evKeys(da, ['source_roots','source_family_count','independence','shared_rolling_windows','constituent_overlap']) ||
+        !evStrings(da.source_roots, 1, function (x) { return x === 'engine.sector_cycles'; }) ||
+        !evInt(da.source_family_count, 1) || da.source_family_count !== da.source_roots.length ||
+        da.independence !== 'not_established' || da.shared_rolling_windows !== true || da.constituent_overlap !== 'unknown') {
+      return fail('invalid', 'dependency_contract_invalid');
+    }
+    if (!evKeys(diag, ['qualification_reasons','duplicate_groups','outside_cohort','malformed_source_rows','malformed_measured_rows']) ||
+        !evReasons(diag.qualification_reasons) ||
+        !evStrings(diag.duplicate_groups, 11, function (x) { return EV_IDS.indexOf(x) >= 0; }) ||
+        !evStrings(diag.outside_cohort, 11, function (x) {
+          return typeof x === 'string' && /^[A-Z][A-Z0-9]{0,7}$/.test(x) && EV_IDS.indexOf(x) < 0;
+        }) || !evInt(diag.malformed_source_rows, 128) || !evInt(diag.malformed_measured_rows, 128)) {
+      return fail('invalid', 'diagnostics_contract_invalid');
+    }
+    if (!Array.isArray(d.groups) || d.groups.length !== 11) return fail('mismatch', 'cohort_size_mismatch');
+    var byId = Object.create(null), parents = Object.create(null), available = 0, anyValues = false;
+    var measured = [0,0], positive = [0,0];
+    read.groups.forEach(function (g) { parents[g.group_id] = g; });
+    for (var i = 0; i < d.groups.length; i++) {
+      var r = d.groups[i];
+      if (!isObj(r) || EV_IDS.indexOf(r.group_id) < 0) return fail('mismatch', 'identity_mismatch');
+      if (Object.prototype.hasOwnProperty.call(byId, r.group_id)) return fail('mismatch', 'duplicate_identity');
+      byId[r.group_id] = r;
+      if (!evKeys(r, ['group_id','name_en','name_zh','status','relative_wealth_pct','null_reasons','qualification_reasons']) ||
+          !evNullableText(r.name_en, 120) || !evNullableText(r.name_zh, 120) ||
+          !evReasons(r.qualification_reasons) ||
+          !evKeys(r.relative_wealth_pct, ['rs_21d','rs_63d']) || !evKeys(r.null_reasons, ['rs_21d','rs_63d'])) {
+        return fail('invalid', 'row_shape_invalid');
+      }
+      var current = parents[r.group_id].current, n = 0;
+      if (!isObj(current) || current.metric !== 'relative_wealth_pct' || current.units !== 'pct') {
+        return fail('mismatch', 'parent_measurement_invalid');
+      }
+      for (var w = 0; w < 2; w++) {
+        var field = 'rs_' + EV_WINDOWS[w] + 'd', value = r.relative_wealth_pct[field], reason = r.null_reasons[field];
+        if (value === null) {
+          if (!evText(reason, 120)) return fail('invalid', 'row_value_unexplained');
+        } else {
+          if (!isFin(value) || value < -100) return fail('invalid', 'row_value_invalid');
+          if (reason !== null || r.qualification_reasons.length > 0) return fail('invalid', 'row_reason_inconsistent');
+          if (current[field] !== value) return fail('mismatch', 'measurement_projection_mismatch');
+          n++; measured[w]++; if (value > 0) positive[w]++;
+        }
+      }
+      if (r.status !== (n === 2 ? 'available' : n === 1 ? 'partial' : 'unavailable')) {
+        return fail('invalid', 'row_status_invalid');
+      }
+      if (n === 2) available++;
+      anyValues = anyValues || n > 0;
+    }
+    if (d.status !== (anyValues ? 'partial' : 'unavailable') ||
+        d.measurement_status !== (available === 11 ? 'available' : anyValues ? 'partial' : 'unavailable')) {
+      return fail('invalid', 'dossier_status_inconsistent');
+    }
+    if ((diag.qualification_reasons.length > 0 && anyValues) ||
+        diag.duplicate_groups.some(function (id) { return byId[id].status !== 'unavailable'; })) {
+      return fail('invalid', 'diagnostics_inconsistent');
+    }
+    if (anyValues && (d.as_of === null || d.benchmark === null || d.price_basis !== 'total_return' ||
+        da.source_family_count !== 1 || av.mode === 'as_known')) return fail('invalid', 'measurement_not_qualified');
+    if (!evKeys(d.cross_sector_breadth_counts, ['21','63'])) return fail('invalid', 'counts_invalid');
+    for (var j = 0; j < 2; j++) {
+      var c = d.cross_sector_breadth_counts[String(EV_WINDOWS[j])];
+      if (!evKeys(c, ['expected_n','measured_n','positive_n']) || c.expected_n !== 11 ||
+          !evInt(c.measured_n, 11) || c.measured_n !== measured[j] ||
+          c.positive_n !== (measured[j] ? positive[j] : null)) return fail('invalid', 'counts_inconsistent');
+    }
+    out.state = 'ok'; out.why = ''; out.dossier = d; return out;
+  }
+  function evRefresh(read) {
+    var r = evValidate(read);
+    DOSSIER = r.dossier;
+    DOSSIER_STATE = r.state;
+    DOSSIER_WHY = r.why;
+    // Refused/absent packets reset disclosure before a render can return early.
+    evSyncKey();
+  }
+  function evRow(id) {
+    if (!DOSSIER || !Array.isArray(DOSSIER.groups)) return null;
+    for (var i = 0; i < DOSSIER.groups.length; i++) {
+      if (DOSSIER.groups[i] && DOSSIER.groups[i].group_id === id) return DOSSIER.groups[i];
+    }
+    return null;
+  }
+  function evKeyFor(id) {
+    // A compatibility key can be reused by revised payloads. Compare this
+    // bounded admitted content for disclosure continuity only; it is not an
+    // immutable generation or a second accepted-data cache.
+    var src = DOSSIER ? JSON.stringify(DOSSIER) : '';
+    return String(id == null ? '' : id) + '|' + src;
+  }
+  /* The disclosure keeps its open state only for the SAME selected identity and
+     the SAME source. Any other identity — or a replaced source — closes it. */
+  function evSyncKey() {
+    var key = evKeyFor(SEL);
+    if (key !== EV_KEY) { EV_KEY = key; EV_OPEN = false; }
+  }
+  var EV_STATE_TEXT = {
+    absent: ['Leadership evidence is not in today\'s data yet.', '今日数据尚未包含领涨证据。'],
+    invalid: ['Leadership evidence could not be checked, so it is not shown.', '领涨证据无法校验，因此不显示。'],
+    mismatch: ['Leadership evidence does not match today\'s read, so it is not shown.', '领涨证据与今日读数不匹配，因此不显示。'],
+    refused: ['Leadership evidence claimed capabilities this read does not have, so it is not shown.',
+              '领涨证据声称了本次读数不具备的能力，因此不显示。']
+  };
+  var EV_NULL_TEXT = {
+    missing_group: ['no data for this sector in the evidence source', '证据来源没有该板块的数据'],
+    thin_history: ['not enough price history yet', '价格历史不足'],
+    missing_input: ['no price data for this sector today', '今日缺少该板块价格数据'],
+    invalid_measurement: ['the measurement could not be read', '测量值无法读取'],
+    outside_relative_wealth_domain: ['outside the possible range for relative wealth', '超出相对财富的可能范围'],
+    measurement_projection_mismatch: ['the measurement does not match the current read', '测量值与当前读数不一致'],
+    source_session_missing_or_invalid: ['the source session date is missing or invalid', '来源交易日期缺失或无效'],
+    history_session_missing_or_invalid: ['the history session date is missing or invalid', '历史数据的交易日期缺失或无效'],
+    benchmark_missing_or_invalid: ['the source benchmark is missing or invalid', '来源基准缺失或无效'],
+    return_basis_not_qualified: ['the total-return basis is not established', '尚未确立含股息总回报口径'],
+    history_schema_not_qualified: ['the history data format is not supported', '历史数据格式不受支持'],
+    evidence_mode_not_qualified: ['the history observation method is not established', '尚未确立历史数据的观测方式'],
+    missing_or_invalid_rows: ['the source rows are missing or invalid', '来源数据行缺失或无效'],
+    duplicate_group_identity: ['the source repeats this sector identity', '来源重复提供该板块标识'],
+    group_kind_mismatch: ['the source group is not a sector', '来源分组不是板块'],
+    measured_group_kind_mismatch: ['the measured group is not a sector', '测量分组不是板块'],
+    measurement_definition_mismatch: ['the measurement definition or units do not match', '测量定义或单位不一致'],
+    row_provenance_invalid: ['the row source information is invalid', '该行来源信息无效'],
+    row_return_basis_mismatch: ['the return basis does not match', '回报口径不一致'],
+    row_benchmark_mismatch: ['the benchmark does not match', '基准不一致'],
+    invalid_decision_cutoff: ['the requested knowledge cutoff is invalid', '请求的已知信息截止时间无效'],
+    source_session_after_decision_cutoff: ['the source session is later than the requested cutoff', '来源交易日期晚于请求截止时间'],
+    availability_time_missing: ['what was known at the requested cutoff is not established', '无法确立请求截止时间当时已知的信息']
+  };
+  function evNullText(code) {
+    var m = (code != null && Object.prototype.hasOwnProperty.call(EV_NULL_TEXT, code)) ? EV_NULL_TEXT[code] : null;
+    return m ? L(m[0], m[1]) : L('not measured', '未测得');
+  }
+  function evBreadth(d, w) {
+    var c = isObj(d.cross_sector_breadth_counts) ? d.cross_sector_breadth_counts[w] : null;
+    if (c.positive_n === null) {
+      return esc(L('Positive count unavailable (' + c.measured_n + ' measured; ' + c.expected_n + ' ETF sectors expected)',
+                   '领先数量不可用（已测 ' + c.measured_n + ' 个；预期 ' + c.expected_n + ' 个ETF板块）'));
+    }
+    return esc(L(c.positive_n + ' of ' + c.measured_n + ' measured (of ' + c.expected_n + ' sectors)',
+                 '已测 ' + c.measured_n + ' 个中有 ' + c.positive_n + ' 个领先（共 ' + c.expected_n + ' 个板块）'));
+  }
+  function evHtml(g) {
+    // The state and the exact failed check ride as machine-readable attributes
+    // (never as visible copy — a raw slug does not belong at rest).
+    var head = '<section class="mr-ev" aria-labelledby="mr-ev-h" data-ev-state="' +
+      esc(DOSSIER_STATE) + '" data-ev-why="' + esc(DOSSIER_WHY) + '">' +
+      '<h4 class="mr-ev-h" id="mr-ev-h">' +
+      esc(L('Leadership evidence', '领涨证据')) + '</h4>';
+    if (DOSSIER_STATE !== 'ok') {
+      var t = EV_STATE_TEXT[DOSSIER_STATE] || EV_STATE_TEXT.invalid;
+      return head + '<p class="mr-hint">' + esc(L(t[0], t[1])) + '</p></section>';
+    }
+    var d = DOSSIER;
+    var row = evRow(g.group_id);
+    if (!row) {
+      return head + '<p class="mr-hint">' +
+        esc(L('This sector is not in the leadership evidence for today.', '该板块不在今日的领涨证据中。')) +
+        '</p></section>';
+    }
+    var nameEn = safeText(row.name_en, 120) || g.name_en || g.group_id;
+    var nameZh = safeText(row.name_zh, 120) || '';
+    var rw = row.relative_wealth_pct, nr = row.null_reasons;
+    function evVal(f) {
+      var v = rw[f];
+      if (v === null || v === undefined) return '<span class="mr-na">' + esc(evNullText(nr[f])) + '</span>';
+      return pct(v);
+    }
+    var body = '<p class="mr-ev-meta">' + esc(d.as_of || L('Source date unavailable', '来源日期不可用')) + ' · ' +
+      (d.price_basis === null ? esc(L('Return basis unavailable', '回报口径不可用')) : basis(d.price_basis)) +
+      ' · ' + esc(nameEn) + (nameZh ? ' · ' + esc(nameZh) : '') +
+      ' <span class="mr-tk">' + esc(g.group_id) + '</span></p>' +
+      '<p class="mr-ev-stance">' + esc(row.status === 'unavailable'
+        ? L('Measured profile unavailable; explanatory evidence unavailable.',
+            '实测概况暂不可用；解释性证据暂不可用。')
+        : L('Measured profile available; explanatory evidence incomplete.',
+            '已有实测概况；解释性证据尚不完整。')) + '</p>' +
+      '<dl class="mr-facts">' +
+      '<div><dt>' + esc(L('21 trading sessions vs ', '21个交易日 相对')) + (d.benchmark === null ? esc(L('unavailable benchmark', '基准不可用')) : bench(d.benchmark)) + '</dt><dd>' +
+      evVal('rs_21d') + '</dd></div>' +
+      '<div><dt>' + esc(L('63 trading sessions vs ', '63个交易日 相对')) + (d.benchmark === null ? esc(L('unavailable benchmark', '基准不可用')) : bench(d.benchmark)) + '</dt><dd>' +
+      evVal('rs_63d') + '</dd></div>' +
+      '<div><dt>' + esc(L('Sectors ahead over 21 sessions', '21个交易日中领先的板块')) + '</dt><dd>' +
+      evBreadth(d, '21') + '</dd></div>' +
+      '<div><dt>' + esc(L('Sectors ahead over 63 sessions', '63个交易日中领先的板块')) + '</dt><dd>' +
+      evBreadth(d, '63') + '</dd></div>' +
+      '</dl>';
+    var notes = '';
+    var uw = (isObj(d.unavailable_windows) && Array.isArray(d.unavailable_windows.sessions))
+      ? d.unavailable_windows.sessions.filter(function (x) { return isFin(x); }) : [];
+    if (uw.length === 2) {
+      notes += '<p class="mr-hint">' + esc(L(uw[0] + '- and ' + uw[1] + '-session windows are not supplied.',
+                                            uw[0] + ' 和 ' + uw[1] + ' 个交易日的窗口未提供。')) + '</p>';
+    }
+    if (isObj(d.absolute_returns) && d.absolute_returns.status === 'unavailable') {
+      notes += '<p class="mr-hint">' + esc(L('Absolute returns are not supplied.', '绝对收益未提供。')) + '</p>';
+    }
+    notes += '<p class="mr-hint">' + esc(L(
+      'These are sector ETF counts. Constituent participation is not supplied — this is not stock-level breadth.',
+      '以上为行业ETF口径。成分股参与度未提供 — 这不是个股层面的广度。')) + '</p>' +
+      '<p class="mr-hint">' + esc(L(
+      'Explanation unavailable — no qualified evidence for this sector.',
+      '解释暂不可用 — 该板块没有合格证据。')) + '</p>' +
+      '<p class="mr-hint">' + esc(L(
+      'Sector risk context unavailable — this is not a risk verdict.',
+      '板块风险背景暂不可用 — 这不是风险结论。')) + '</p>';
+    body += '<div class="mr-ev-notes">' + notes + '</div>';
+    body += evDetails(d, row);
+    return head + body + '</section>';
+  }
+  function evDetails(d, row) {
+    var srcRows = [];
+    function addRow(dt, dd, code) {
+      srcRows.push('<div><dt>' + dt + '</dt><dd>' + dd +
+        (code ? ' <span class="mr-ev-code">' + esc(code) + '</span>' : '') + '</dd></div>');
+    }
+    var da = isObj(d.dependency_audit) ? d.dependency_audit : {};
+    var roots = Array.isArray(da.source_roots)
+      ? da.source_roots.filter(function (x) { return typeof x === 'string' && x; }) : [];
+    addRow(esc(L('Source', '来源')),
+      roots.length ? '<span class="mr-ev-code">' + esc(roots.join(', ')) + '</span>'
+                    : esc(L('not supplied', '未提供')));
+    addRow(esc(L('Compatibility key', '兼容键')),
+      '<span class="mr-ev-code">' + esc(safeText(d.compatibility_key, 200) || '—') + '</span> — ' +
+      esc(L('a session, benchmark and cohort key — not a revision id',
+            '会话、基准与队列键 — 不是修订号')));
+    addRow(esc(L('Immutable generation', '不可变代次')),
+      esc(L('Not supplied', '未提供')), 'immutable_generation_not_supplied');
+    addRow(esc(L('Availability', '可用性')),
+      esc(d.availability.mode === 'as_known' ? L('As known', '按已知时点') : L('Dated snapshot', '日期快照')) +
+      ' · ' + esc(L('original availability not supplied', '原始可用时间未提供')), d.availability.reason);
+    if (d.availability.mode === 'as_known') {
+      addRow(esc(L('Requested knowledge cutoff', '请求的已知信息截止时间')),
+        esc(d.availability.decision_cutoff || '—') + ' · ' + esc(evNullText(d.availability.reason)),
+        d.availability.reason);
+    }
+    addRow(esc(L('History', '历史')),
+      esc(L('Reconstructed from prices — not naturally observed', '按价格重建 — 并非自然观测')),
+      d.history.mode);
+    addRow(esc(L('Freshness', '新鲜度')), esc(L('Unverified', '未验证')), d.freshness.reason);
+    addRow(esc(L('Corrections', '修订')), esc(L('Unavailable', '暂不可用')), d.corrections.reason);
+    addRow(esc(L('Dependency', '依赖')),
+      esc(L(da.source_family_count + ' source families · shared rolling windows · independence not established',
+            da.source_family_count + ' 个来源类别 · 共用滚动窗口 · 独立性未确立')), da.independence);
+    addRow(esc(L('Forecast', '预测')),
+      esc(L('Excluded — no approved forecasting model', '已排除 — 没有获批的预测模型')), d.forecasts.status);
+    addRow(esc(L('Authority', '权限')),
+      esc(L('No ranking, gating, sizing, trading or escalation', '无排序、门控、仓位、交易或升级权限')),
+      'may_rank=false · may_gate=false · may_size=false · may_trade=false · may_escalate=false');
+    var rw = row.relative_wealth_pct, nr = row.null_reasons, bits = [], w;
+    for (w = 0; w < EV_WINDOWS.length; w++) {
+      var f = 'rs_' + EV_WINDOWS[w] + 'd';
+      if (rw[f] === null) bits.push(EV_WINDOWS[w] + ' sessions: ' + (nr[f] || 'unexplained'));
+    }
+    addRow(esc(L('Null reasons', '空值原因')),
+      bits.length ? '<span class="mr-ev-code">' + esc(bits.join(' · ')) + '</span>'
+                  : esc(L('none — both windows are measured', '无 — 两个窗口均已测得')));
+    var diag = isObj(d.diagnostics) ? d.diagnostics : {};
+    var qual = [], seen = {}, i, k;
+    if (Array.isArray(diag.qualification_reasons)) qual = qual.concat(diag.qualification_reasons);
+    if (Array.isArray(row.qualification_reasons)) qual = qual.concat(row.qualification_reasons);
+    var uniq = [];
+    for (i = 0; i < qual.length; i++) {
+      k = String(qual[i]);
+      if (!seen[k]) { seen[k] = 1; uniq.push(k); }
+    }
+    addRow(esc(L('Qualification', '资格')),
+      uniq.length ? '<span class="mr-ev-code">' + esc(uniq.join(', ')) + '</span>' : esc(L('none', '无')));
+    var unavailable = [];
+    for (i = 0; i < d.groups.length; i++) {
+      var gr = d.groups[i];
+      if (!isObj(gr) || gr.status === 'available') continue;
+      var gb = [], seenGb = {};
+      for (w = 0; w < EV_WINDOWS.length; w++) {
+        var gf = 'rs_' + EV_WINDOWS[w] + 'd';
+        if (isObj(gr.relative_wealth_pct) && gr.relative_wealth_pct[gf] === null) {
+          var gc = (isObj(gr.null_reasons) && gr.null_reasons[gf]) || 'unexplained';
+          if (!seenGb[gc]) { seenGb[gc] = 1; gb.push(gc); }
+        }
+      }
+      unavailable.push(esc(gr.group_id) + ' (' + esc(gb.join(', ') || 'partial') + ')');
+    }
+    var cohortNote = unavailable.length
+      ? '<p class="mr-hint">' + esc(L('Sectors without a measurement in this cohort: ',
+                                      '本次队列中没有测得的板块：')) +
+        '<span class="mr-ev-code">' + unavailable.join(', ') + '</span></p>'
+      : '';
+    return '<details class="mr-ev-det"' + (EV_OPEN ? ' open' : '') + '>' +
+      '<summary class="mr-ev-sum">' + esc(L('Evidence details', '证据详情')) + '</summary>' +
+      '<div class="mr-ev-body"><dl class="mr-ev-src">' + srcRows.join('') + '</dl>' + cohortNote +
+      '</div></details>';
+  }
+
   function render() {
     var D = window.SECTOR_CENTRAL;
     var M2 = D && D.measured_read;
+    // The addendum is qualified on its own terms — never on the legacy status.
+    evRefresh(M2);
     function groupsOk(arr) {
       if (!Array.isArray(arr)) return false;
       for (var k = 0; k < arr.length; k++) {
@@ -3599,14 +4101,25 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
                                    '下次夜间构建发布后将自动出现。'));
       return;
     }
+    var LEGACY_OUT = false;
     if (M2 && M2.status === 'unavailable') {
-      bodyEl.innerHTML = mxError(L('This read could not be produced today.', '今日无法生成此项读数。'),
-                                 L('The rest of this page is unaffected.', '本页其余部分不受影响。'));
-      return;
+      var legacyOut = mxError(L('This read could not be produced today.', '今日无法生成此项读数。'),
+                              L('The rest of this page is unaffected.', '本页其余部分不受影响。'));
+      if (DOSSIER_STATE !== 'ok') {
+        bodyEl.innerHTML = legacyOut;
+        return;
+      }
+      // A qualified addendum keeps the journey alive: the legacy notice stays,
+      // the eleven cohort identities stay selectable, and the selected sector's
+      // evidence is shown with its exact null reasons. The legacy read is still
+      // unavailable and still says so.
+      LEGACY_OUT = true;
+      bodyEl.innerHTML = legacyOut + GRID_HTML;
     }
-    if (!M2 || M2.schema !== 'leadership_rotation_context.measured_group_read/v1' ||
-        (M2.status !== 'available' && M2.status !== 'partial') || !Array.isArray(M2.groups) ||
-        !groupsOk(M2.groups)) {
+    if (!LEGACY_OUT &&
+        (!M2 || M2.schema !== 'leadership_rotation_context.measured_group_read/v1' ||
+         (M2.status !== 'available' && M2.status !== 'partial') || !Array.isArray(M2.groups) ||
+         !groupsOk(M2.groups))) {
       bodyEl.innerHTML = '<div class="mr-invalid">' +
         esc(L('This read could not be checked, so it is not shown.', '此项数据无法校验，因此不显示。')) + '</div>';
       return;
@@ -3707,6 +4220,8 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   }
 
   function renderDetail() {
+    evRefresh(M);
+    evSyncKey();
     var g = selGroup();
     if (!g) {
       detailEl.innerHTML = '<p class="mr-hint">' +
@@ -3733,6 +4248,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
       '</dl>' +
       (prophetHref ? '<p class="mr-hint"><a href="' + esc(prophetHref) + '">' +
         esc(L('Compare in Prophet →', '前往 Prophet 对照 →')) + '</a></p>' : '') +
+      evHtml(g) +
       '<div class="mr-seg" role="group" aria-labelledby="mr-seg-l"><span class="mr-seg-l" id="mr-seg-l">' +
       esc(L('History', '历史')) + '</span>' +
       '<button type="button" class="mr-segbtn" data-h="recon" aria-pressed="' + (MODE === 'recon' ? 'true' : 'false') + '">' +
@@ -4020,6 +4536,17 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
       if (e.preventDefault) e.preventDefault();
     }
   });
+
+  // The evidence disclosure keeps its open state across a language re-render
+  // for the SAME selected identity and source, and closes when either changes.
+  // The listener is delegated and capture-phase so a re-render (which replaces
+  // the node) cannot leave a stale open state behind; it never moves focus.
+  root.addEventListener('toggle', function (e) {
+    var t = e && e.target;
+    if (!t || String(t.className || '').indexOf('mr-ev-det') < 0) return;
+    if (detailEl && detailEl.contains && !detailEl.contains(t)) return;
+    EV_OPEN = (t.open === true);
+  }, true);
 
   document.addEventListener('sc:cycles-data', function () {
     CYCLES_STATE = window.SECTOR_CYCLES ? 'ready' : 'failed';
