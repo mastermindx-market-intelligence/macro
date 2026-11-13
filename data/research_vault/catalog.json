@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T03:22:41.818747+00:00",
-  "count": 3270,
+  "generated_at": "2026-11-13T03:37:42.833106+00:00",
+  "count": 3271,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -123,6 +123,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-igu4wh2iijq-d40246",
+      "title": "Global asset allocation insights november 2026",
+      "institution": "Fidelity",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T02:56:18Z",
+      "summary_points": [
+        "Geopolitical stagflation risk: Persistent uncertainty, inflation, and higher yields create stagflation; portfolio reduces Korea/Taiwan exposure, overweight Japan amid Iran conflict escalation risks renewing inflation pressures.",
+        "Japan as preferred developed market: Wage-led growth, resilient earnings, corporate reforms, reduced overseas dependency; favored over US equities due to AI-driven earnings resilience beyond tech sector.",
+        "US dollar overweight, credit shifts: Resilient US growth, hawkish Fed, rate differentials, and oil prices support dollar overweight; high yield overweight (strong fundamentals, widening spreads) vs. investment grade underweight (AI debt issuance headwinds).",
+        "Earnings resilience broadening: Japan leads earnings revisions beyond AI; corporate fundamentals support cautious optimism despite higher yields moderating growth and geopolitical risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-samuqx3ougs-3dc426",
       "title": "Correction, not yet contagion",
