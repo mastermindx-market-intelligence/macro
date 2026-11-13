@@ -80,7 +80,7 @@ def _committed_bytes(path: str) -> bytes:
 def _figure_span_for(body: bytes, name: str, text: str) -> dict:
     """The pinned byte span of one figure's digits inside its unique labelled slot."""
     source = body.decode("utf-8")
-    marker = f"[{name}:"
+    marker = f"{name}: "
     pos = source.index(marker) + len(marker)
     assert source[pos:pos + len(text)] == text
     start = len(source[:pos].encode("utf-8"))
@@ -101,7 +101,7 @@ def _segment_case(tmp_path, *, share_scope="segment", revenue=30.0, revenue_deno
                    {"text": str(int(abs(value))), "sign": "+" if value >= 0 else "-", "scale": "units"})
             for name, value in figures.items()}
     if body is None:
-        parts = [SEG_BODY_BASE] + [f"[{name}:{figure_specs[name]['text']}]"
+        parts = [SEG_BODY_BASE] + [f"{name}: {figure_specs[name]['text']}"
                                    for name in n.SEGMENT_FIGURE_NAMES if figure_specs[name] is not None]
         body = " ".join(parts).encode("utf-8")
     if figure_spans is None:
@@ -637,8 +637,8 @@ def test_loss_profit_ix_shape_carries_sign_and_omits_profit_share(tmp_path):
     # The inline-XBRL loss shape keeps its parentheses outside the tag, so "(54,602)"
     # is never contiguous; the digits are pinned literally and the sign is declared.
     ix_loss = '(<ix:nonFraction name="us-gaap:OperatingIncomeLoss" sign="-">54,602</ix:nonFraction>)'
-    body = (SEG_BODY_BASE + " [revenue:30] [revenue_denominator:100] "
-            + ix_loss + " [profit_denominator:100]").encode("utf-8")
+    body = (SEG_BODY_BASE + " revenue: 30 revenue_denominator: 100 "
+            + ix_loss + " profit_denominator: 100").encode("utf-8")
     source = body.decode("utf-8")
     pos = source.index(ix_loss)
     start = len(source[:pos].encode("utf-8"))
@@ -753,8 +753,8 @@ def test_operator_role_refused_for_planned_product_integration():
 
 def _profit_expression_case(tmp_path, expression, *, profit, sign, text="54,602", scale="units"):
     """A case whose profit figure is pinned to a custom printed expression."""
-    body = (SEG_BODY_BASE + " [revenue:30] [revenue_denominator:100] "
-            + expression + " [profit_denominator:100]").encode("utf-8")
+    body = (SEG_BODY_BASE + " revenue: 30 revenue_denominator: 100 "
+            + expression + " profit_denominator: 100").encode("utf-8")
     source = body.decode("utf-8")
     pos = source.index(expression)
     start = len(source[:pos].encode("utf-8"))
@@ -806,8 +806,8 @@ def test_figure_trailing_fragment_refused(tmp_path):
 
 def test_figure_comma_group_fragment_refused(tmp_path):
     # A fragment inside a comma group ("602" in "54,602") is not a whole token.
-    body = (SEG_BODY_BASE + " [revenue:54,602] [revenue_denominator:100] "
-            "[profit:10] [profit_denominator:100]").encode("utf-8")
+    body = (SEG_BODY_BASE + " revenue: 54,602 revenue_denominator: 100 "
+            "profit: 10 profit_denominator: 100").encode("utf-8")
     figure_specs = {
         "revenue": {"text": "54,602", "sign": "+", "scale": "units"},
         "revenue_denominator": {"text": "100", "sign": "+", "scale": "units"},
@@ -874,9 +874,10 @@ def test_parentheses_declared_plus_refused(tmp_path):
 
 
 def test_note_parentheses_declared_minus_refused(tmp_path):
-    # Reviewer probe 3: "(Note 5) 54,602 (a)" with sign "-" was -54602; the nearest
-    # non-tag characters are ")" and "(", not a loss shape, so it is now refused.
-    with pytest.raises(n.DisclosureError, match="FIGURE_SIGN_UNSUPPORTED"):
+    # Reviewer probe 3: "(Note 5) 54,602 (a)" with sign "-" was -54602. Under the
+    # closed rule the printed span is not one of the three figure shapes (extra
+    # note text and footnote mark), so it is refused as FIGURE_SPAN_MISMATCH.
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
         _profit_expression_case(tmp_path, "(Note 5) 54,602 (a)", profit=-54602.0, sign="-")
 
 
@@ -886,7 +887,9 @@ def test_minus_declared_plus_refused(tmp_path):
 
 
 def test_trailing_paren_declared_plus_refused(tmp_path):
-    with pytest.raises(n.DisclosureError, match="FIGURE_SIGN_UNSUPPORTED"):
+    # A trailing ")" is printed in the span but is not part of any closed shape,
+    # so the span is refused as FIGURE_SPAN_MISMATCH (not a sign disagreement).
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
         _profit_expression_case(tmp_path, "54,602)", profit=54602.0, sign="+")
 
 
@@ -937,4 +940,214 @@ def test_manifest_form_not_equal_to_fact_form_refused_at_replay(tmp_path):
     snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
     source = segment.PinnedSegmentSource(snapshot, case.pinned.authority)
     with pytest.raises(n.DisclosureError, match="SEGMENT_FORM_NOT_ADMITTED"):
+        _read_source(source, spec["edition"])
+
+
+# ---------------------------------------------------------------------------
+# Test 8 — fix round 3: the span IS the figure (closed rule, tables A-D)
+# ---------------------------------------------------------------------------
+
+# Non-ASCII characters used in table A, written as explicit escapes so a dash or
+# bracket look-alike can never slip in.
+_EN_DASH = "–"
+_EM_DASH = "—"
+_MINUS = "−"
+_FW_OPEN = "（"
+_FW_CLOSE = "）"
+
+# Table A: one parametrised test straight on _verify_figure_span. Each row is
+# (id, raw, span, text, sign, whole_document, expected_code); expected_code None
+# means ADMIT. The span is the whole raw string unless a cut is named (then the
+# span is the named substring of raw).
+_TABLE_A = [
+    # --- must be ADMITTED ---
+    ("A01_plain", "54,602", "54,602", "54,602", "+", True, None),
+    ("A02_dollar_space", "$ 54,602", "$ 54,602", "54,602", "+", True, None),
+    ("A03_ix_scale_decimals",
+     '<ix:nonFraction scale="3" decimals="-3" contextRef="c30" id="f-30">54,602</ix:nonFraction>',
+     '<ix:nonFraction scale="3" decimals="-3" contextRef="c30" id="f-30">54,602</ix:nonFraction>',
+     "54,602", "+", True, None),
+    ("A04_ix_loss_parens", '(<ix:nonFraction sign="-" scale="3">54,602</ix:nonFraction>)',
+     '(<ix:nonFraction sign="-" scale="3">54,602</ix:nonFraction>)', "54,602", "-", True, None),
+    ("A05_td_cells_dollar", "$</td><td>(54,602</td><td>)", "$</td><td>(54,602</td><td>)",
+     "54,602", "-", True, None),
+    ("A06_parens", "(54,602)", "(54,602)", "54,602", "-", True, None),
+    ("A07_ascii_minus", "-54,602", "-54,602", "54,602", "-", True, None),
+    ("A08_unicode_minus", _MINUS + "54,602", _MINUS + "54,602", "54,602", "-", True, None),
+    ("A09_sentence_end", "was 54,602.", "54,602", "54,602", "+", True, None),
+    ("A10_sentence_end_prepare", "was 54,602.", "54,602", "54,602", "+", False, None),
+    ("A11_leading_digits_doc", "54,602 was revenue", "54,602", "54,602", "+", True, None),
+    ("A12_ix_scale_cut", 'Revenue <ix:nonFraction scale="3">54,602</ix:nonFraction>',
+     "54,602", "54,602", "+", True, None),
+    ("A13_table_cells_cut", "<td>48,310</td><td>54,602</td><td>(1,200)</td>",
+     "54,602", "54,602", "+", True, None),
+    # --- must be REFUSED ---
+    ("A14_leading_fragment", "30", "30", "3", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A15_ix_scale_fragment", '<ix:nonFraction scale="3">30</ix:nonFraction>',
+     '<ix:nonFraction scale="3">30</ix:nonFraction>', "3", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A16_ix_scale_text3", '<ix:nonFraction scale="3">54,602</ix:nonFraction>',
+     '<ix:nonFraction scale="3">54,602</ix:nonFraction>', "3", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A17_ix_decimals_text3", '<ix:nonFraction decimals="-3">54,602</ix:nonFraction>',
+     '<ix:nonFraction decimals="-3">54,602</ix:nonFraction>', "3", "-", True, "FIGURE_SPAN_MISMATCH"),
+    ("A18_space_group", "54 602", "54 602", "602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A19_nbsp_group", "54&#160;602", "54&#160;602", "602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A20_dot_group", "54.602", "54.602", "602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A21_percent", "30%", "30%", "30", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A22_footnote", "54,602(a)", "54,602(a)", "54,602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A23_second_number", "300 and 3", "300 and 3", "3", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A24_parens_declared_plus", "(54,602)", "(54,602)", "54,602", "+", True, "FIGURE_SIGN_UNSUPPORTED"),
+    ("A25_note_parens", "(Note 5) 54,602 (a)", "(Note 5) 54,602 (a)", "54,602", "-", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("A26_en_dash", _EN_DASH + "54,602", _EN_DASH + "54,602", "54,602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("A27_em_dash", _EM_DASH + "54,602", _EM_DASH + "54,602", "54,602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("A28_entity_minus", "&#x2212;54,602", "&#x2212;54,602", "54,602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("A29_fullwidth_parens", _FW_OPEN + "54,602" + _FW_CLOSE, _FW_OPEN + "54,602" + _FW_CLOSE,
+     "54,602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A30_trailing_minus", "54,602-", "54,602-", "54,602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A31_cr", "54,602 CR", "54,602 CR", "54,602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A32_double_open_paren", "((54,602)", "((54,602)", "54,602", "-", True, "FIGURE_SPAN_MISMATCH"),
+    ("A33_broken_tag", "(<b>x >54,602)", "(<b>x >54,602)", "54,602", "-", True, "FIGURE_SPAN_MISMATCH"),
+    ("A34_double_dollar", "($$54,602)", "($$54,602)", "54,602", "-", True, "FIGURE_SPAN_MISMATCH"),
+    ("A35_cut_parens", "(54,602)", "54,602", "54,602", "+", True, "FIGURE_SIGN_UNSUPPORTED"),
+    ("A36_cut_en_dash", _EN_DASH + "54,602", "54,602", "54,602", "+", True, "FIGURE_SIGN_UNSUPPORTED"),
+    ("A37_cut_entity_minus", "&#x2212;54,602", "54,602", "54,602", "+", True, "FIGURE_SIGN_UNSUPPORTED"),
+    ("A38_cut_trailing_minus", "54,602-", "54,602", "54,602", "+", True, "FIGURE_SIGN_UNSUPPORTED"),
+    ("A39_cut_ix_loss", '(<ix:nonFraction sign="-">54,602</ix:nonFraction>)', "54,602", "54,602",
+     "+", True, "FIGURE_SIGN_UNSUPPORTED"),
+    ("A40_ix_neg_declared_plus", '<ix:nonFraction sign="-" scale="3">54,602</ix:nonFraction>',
+     '<ix:nonFraction sign="-" scale="3">54,602</ix:nonFraction>', "54,602", "+", True,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("A41_ix_neg_declared_minus", '<ix:nonFraction sign="-" scale="3">54,602</ix:nonFraction>',
+     '<ix:nonFraction sign="-" scale="3">54,602</ix:nonFraction>', "54,602", "-", True,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("A42_cut_ix_neg_doc", 'Revenue <ix:nonFraction sign="-" scale="3">54,602</ix:nonFraction>',
+     "54,602", "54,602", "+", True, "FIGURE_SIGN_UNSUPPORTED"),
+    ("A43_leading_digits_prepare", "54,602 was revenue", "54,602", "54,602", "+", False,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("A44_cut_comma_group", "54,602", "4,602", "4,602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("A45_cut_decimal", "54,602.5", "54,602", "54,602", "+", True, "FIGURE_SPAN_MISMATCH"),
+]
+
+
+def _table_a_span(raw: bytes, span: bytes) -> dict:
+    start = raw.index(span)
+    end = start + len(span)
+    return {"start_byte": start, "end_byte": end,
+            "text_sha256": hashlib.sha256(raw[start:end]).hexdigest()}
+
+
+@pytest.mark.parametrize("row", _TABLE_A, ids=[r[0] for r in _TABLE_A])
+def test_figure_span_closed_rule_table_a(row):
+    _, raw, span_text, text, sign, whole_document, expected = row
+    raw_bytes = raw.encode("utf-8")
+    span = _table_a_span(raw_bytes, span_text.encode("utf-8"))
+    if expected is None:
+        n._verify_figure_span("profit", span, text, sign, raw_bytes, whole_document=whole_document)
+    else:
+        with pytest.raises(n.DisclosureError) as caught:
+            n._verify_figure_span("profit", span, text, sign, raw_bytes, whole_document=whole_document)
+        assert caught.value.code == expected
+
+
+# --- B: end to end through prepare/adopt/qualify, refused at prepare ---------
+
+def test_b_scale_attribute_not_a_figure_refused_at_prepare(tmp_path):
+    # The scale="3" attribute is not the figure: the span prints 54,602, text "3".
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
+        _profit_expression_case(tmp_path, '<ix:nonFraction scale="3">54,602</ix:nonFraction>',
+                                profit=3.0, sign="+", text="3")
+
+
+def test_b_decimals_attribute_not_a_sign_refused_at_prepare(tmp_path):
+    # decimals="-3" is not a minus sign: the span prints 54,602, text "3", sign "-".
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
+        _profit_expression_case(tmp_path, '<ix:nonFraction decimals="-3">54,602</ix:nonFraction>',
+                                profit=-3.0, sign="-", text="3")
+
+
+def test_b_en_dash_not_a_minus_refused_at_prepare(tmp_path):
+    # The en dash is not a minus sign. Pin it as the FIRST figure so no other
+    # figure's neighbour window sees the dash; the span prints "–54,602" while
+    # text is "54,602" and sign "+", which is not a closed shape.
+    expression = _EN_DASH + "54,602"
+    body = (SEG_BODY_BASE + " " + expression + " revenue_denominator: 100 "
+            "profit: 10 profit_denominator: 100").encode("utf-8")
+    source = body.decode("utf-8")
+    pos = source.index(expression)
+    start = len(source[:pos].encode("utf-8"))
+    end = len(source[:pos + len(expression)].encode("utf-8"))
+    figure_specs = {
+        "revenue": {"text": "54,602", "sign": "+", "scale": "units"},
+        "revenue_denominator": {"text": "100", "sign": "+", "scale": "units"},
+        "profit": {"text": "10", "sign": "+", "scale": "units"},
+        "profit_denominator": {"text": "100", "sign": "+", "scale": "units"}}
+    figure_spans = {
+        "revenue": {"start_byte": start, "end_byte": end,
+                    "text_sha256": hashlib.sha256(body[start:end]).hexdigest()},
+        "revenue_denominator": _figure_span_for(body, "revenue_denominator", "100"),
+        "profit": _figure_span_for(body, "profit", "10"),
+        "profit_denominator": _figure_span_for(body, "profit_denominator", "100")}
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
+        _segment_case(tmp_path, revenue=54602.0, body=body,
+                      figure_specs=figure_specs, figure_spans=figure_spans)
+
+
+# --- C: a span cut to the digits inside printed parentheses, refused at replay ---
+
+def test_c_cut_span_inside_parentheses_refused_at_replay(tmp_path):
+    # Prepare a valid loss fact, then cut the profit span to the digits while the
+    # document still prints parentheses around it and declare "+": refused at replay.
+    case = _profit_expression_case(tmp_path, "(54,602)", profit=-54602.0, sign="-")
+    body = case.receipt["span_text"].encode("utf-8")
+    digits = b"54,602"
+    pos = body.index(digits)
+    spec = copy.deepcopy(case.snapshot.spec)
+    spec["fact"]["figure_spans"]["profit"] = {
+        "start_byte": pos, "end_byte": pos + len(digits),
+        "text_sha256": hashlib.sha256(body[pos:pos + len(digits)]).hexdigest()}
+    spec["fact"]["profit_sign"] = "+"
+    spec["fact"]["profit"] = 54602.0
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    source = segment.PinnedSegmentSource(snapshot, case.pinned.authority)
+    with pytest.raises(n.DisclosureError, match="FIGURE_SIGN_UNSUPPORTED"):
+        _read_source(source, spec["edition"])
+
+
+# --- D: the four reviewer probes from round 2 must still be refused ----------
+
+def test_d_round2_reviewer_probes_still_refused(tmp_path):
+    # Each probe builds its own pinned fixture, so each needs its own directory.
+    # Probe 1: span "30", text "3".
+    def probe1(a):
+        a["revenue"] = 3.0
+        a["revenue_text"] = "3"
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
+        _segment_case(tmp_path / "p1", revenue=30.0, mutate_assertion=probe1)
+    # Probe 2: "(54,602)" declared "+".
+    with pytest.raises(n.DisclosureError, match="FIGURE_SIGN_UNSUPPORTED"):
+        _profit_expression_case(tmp_path / "p2", "(54,602)", profit=54602.0, sign="+")
+    # Probe 3: "(Note 5) 54,602 (a)" declared "-".
+    with pytest.raises(n.DisclosureError, match="FIGURE_SPAN_MISMATCH"):
+        _profit_expression_case(tmp_path / "p3", "(Note 5) 54,602 (a)", profit=-54602.0, sign="-")
+    # Probe 4: revenue altered to 90.0 at adopt, qualify and replay.
+    case = _segment_case(tmp_path / "p4")
+    prepared = copy.deepcopy(case.prepared)
+    prepared["proposed_fact"]["revenue"] = 90.0
+    with pytest.raises(n.DisclosureError, match="FIGURE_TEXT_MISMATCH"):
+        segment.adopt_segment_input(prepared, adopted_at="2024-03-05T10:00:00Z",
+                                    ruling_raw=canon(case.policy), theme_sources_raw=case.theme,
+                                    identity_observed_at="2024-03-03T10:00:00Z")
+    spec = copy.deepcopy(case.spec)
+    spec["fact"]["revenue"] = 90.0
+    with pytest.raises(n.DisclosureError, match="FIGURE_TEXT_MISMATCH"):
+        o.qualify_records("a" * 40, canon(spec), canon(case.policy), case.registry,
+                          case.identities, theme_sources_raw=case.theme)
+    spec = copy.deepcopy(case.snapshot.spec)
+    spec["fact"]["revenue"] = 90.0
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    source = segment.PinnedSegmentSource(snapshot, case.pinned.authority)
+    with pytest.raises(n.DisclosureError, match="FIGURE_TEXT_MISMATCH"):
         _read_source(source, spec["edition"])

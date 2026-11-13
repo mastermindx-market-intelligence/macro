@@ -16,8 +16,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 import hashlib
+import html
 import json
 import re
+import unicodedata
 from typing import Protocol
 
 from .documents import text_span
@@ -286,109 +288,167 @@ def _segment_figure_span(value: object) -> dict:
     return span
 
 
-_FIGURE_TOKEN_BOUNDARY = frozenset("0123456789,.")
-_FIGURE_SKIP_ENTITIES = ("&#160;", "&nbsp;")
+_FIGURE_TAG = re.compile(r"<[^<>]*>")
+# Rule 5: an inline-XBRL opening tag that flags its figure negative (sign="-").
+_FIGURE_NEG_OPEN = re.compile(r"<ix:nonfraction\b[^<>]*\bsign\s*=\s*[\"']-[\"'][^<>]*>", re.IGNORECASE)
+_FIGURE_IX_OPEN = re.compile(r"<ix:nonfraction\b[^<>]*>", re.IGNORECASE)
+_FIGURE_IX_CLOSE = re.compile(r"</ix:nonfraction", re.IGNORECASE)
+_FIGURE_WINDOW_BYTES = 2000
 
 
-def _whole_figure_match(fig_text: str, text: str) -> int | None:
-    """The first occurrence of ``text`` as a whole printed number, else ``None``.
+def _figure_printed_text(decoded: str) -> str:
+    """Rule 1: the printed text P of an already-decoded span.
 
-    At the match position the character immediately before and the character
-    immediately after must not be a digit, a comma or a decimal point. A span edge
-    (no character on that side) is a valid boundary, and a tag delimiter such as
-    ``>`` or ``<`` is not a boundary character, so ``>54,602<`` still matches.
+    Remove every well-formed tag, fold ``&#160;``/``&nbsp;``/``&#xa0;`` (either hex
+    case) and U+00A0 to one space, refuse any leftover ``<``/``>``/``&``, then
+    collapse each whitespace run to one space and strip the ends.
     """
-    start = 0
-    while True:
-        idx = fig_text.find(text, start)
-        if idx < 0:
-            return None
-        after_pos = idx + len(text)
-        before_ok = idx == 0 or fig_text[idx - 1] not in _FIGURE_TOKEN_BOUNDARY
-        after_ok = after_pos == len(fig_text) or fig_text[after_pos] not in _FIGURE_TOKEN_BOUNDARY
-        if before_ok and after_ok:
-            return idx
-        start = idx + 1
+    text = _FIGURE_TAG.sub("", decoded)
+    for entity in ("&#160;", "&nbsp;", "&#xa0;", "&#XA0;"):
+        text = text.replace(entity, " ")
+    text = text.replace(" ", " ")
+    _require("<" not in text and ">" not in text and "&" not in text, "FIGURE_SPAN_MISMATCH")
+    return " ".join(text.split())
 
 
-def _nearest_non_tag(fig_text: str, pos: int, direction: int) -> str | None:
-    """The nearest non-tag character walking outward from ``pos`` (direction ±1).
+def _figure_not_cut_from_number(raw: bytes, start: int, end: int) -> None:
+    """Rule 3: the span is not cut out of a longer number (raw bytes, no skipping).
 
-    Skips whole HTML/XML tags (``<...>``), whitespace, ``&#160;`` and ``&nbsp;``
-    entities, and a single currency symbol ``$``; the first other character is the
-    nearest non-tag character. Returns ``None`` at the span edge. A ``<`` or ``>``
-    without its matching partner is not a whole tag and is returned literally.
+    Refuse an ASCII digit immediately before/after the span, and a ',' or '.'
+    immediately before/after that is itself glued to an ASCII digit. A sentence
+    end ("... of 54,602.") is allowed.
     """
-    i = pos
-    while 0 <= i < len(fig_text):
-        ch = fig_text[i]
-        if ch.isspace() or ch == "$":
-            i += direction
+    def digit(byte):
+        return byte is not None and 48 <= byte <= 57
+
+    before = raw[start - 1] if start > 0 else None
+    after = raw[end] if end < len(raw) else None
+    _require(not digit(before) and not digit(after), "FIGURE_SPAN_MISMATCH")
+    if before in (44, 46) and start >= 2:
+        _require(not digit(raw[start - 2]), "FIGURE_SPAN_MISMATCH")
+    if after in (44, 46) and end + 1 < len(raw):
+        _require(not digit(raw[end + 1]), "FIGURE_SPAN_MISMATCH")
+
+
+def _figure_neighbour(window: bytes, *, left: bool) -> str | None:
+    """Rule 4: the first non-skipped character walking outward from the span edge.
+
+    The window is decoded with errors ignored, whole tags are removed and entities
+    unescaped; then walk from the span edge skipping whitespace, U+00A0 and at most
+    one ``$``. ``None`` when the window holds nothing else.
+    """
+    text = html.unescape(_FIGURE_TAG.sub("", window.decode("utf-8", errors="ignore")))
+    dollars = 0
+    for ch in (text[::-1] if left else text):
+        if ch.isspace() or ch == " ":
             continue
-        if direction < 0:
-            if ch == ">":
-                open_idx = fig_text.rfind("<", 0, i)
-                if open_idx >= 0:
-                    i = open_idx - 1
-                    continue
-                return ch
-            if ch == ";":
-                entity = next((e for e in _FIGURE_SKIP_ENTITIES
-                               if i - len(e) + 1 >= 0 and fig_text[i - len(e) + 1:i + 1] == e), None)
-                if entity is not None:
-                    i -= len(entity)
-                    continue
-                return ch
-            return ch
-        if ch == "<":
-            close_idx = fig_text.find(">", i + 1)
-            if close_idx >= 0:
-                i = close_idx + 1
-                continue
-            return ch
-        if ch == "&":
-            entity = next((e for e in _FIGURE_SKIP_ENTITIES if fig_text[i:i + len(e)] == e), None)
-            if entity is not None:
-                i += len(entity)
-                continue
-            return ch
+        if ch == "$" and dollars < 1:
+            dollars += 1
+            continue
         return ch
     return None
 
 
-def _verify_figure_span(name: str, span: dict, text: str, sign: str, raw: bytes) -> None:
-    """Replay one figure span against pinned bytes: hash, whole-token text, sign marker.
+def _figure_ix_negative(span_decoded: str, left_window: bytes) -> bool:
+    """Rule 5: an inline-XBRL negative flag inside the span or enclosing it on the left.
 
-    The match is literal, never numeric: the span bytes must contain ``text`` (the
-    digits as printed, separators included, no sign) as a WHOLE token — at the match
-    position the character immediately before and immediately after must not be a
-    digit, a comma or a decimal point, so a leading/trailing fragment ("3" or "0" in
-    "30") or a fragment inside a comma group ("602" in "54,602") is refused. A number
-    inside an ix tag (``>54,602<``) still matches.
+    Checks the span's own raw text, then the left window before tags are removed:
+    the LAST ``<ix:nonfraction`` opening tag with no ``</ix:nonfraction`` after it
+    in the window (the span sits inside it) and a ``sign="-"`` attribute.
+    """
+    if _FIGURE_NEG_OPEN.search(span_decoded) is not None:
+        return True
+    text = left_window.decode("utf-8", errors="ignore")
+    opens = list(_FIGURE_IX_OPEN.finditer(text))
+    if opens:
+        last = opens[-1]
+        if _FIGURE_IX_CLOSE.search(text, last.end()) is None:
+            return _FIGURE_NEG_OPEN.fullmatch(last.group(0)) is not None
+    return False
 
-    "Nearest non-tag character": walk outward from the matched digits, skipping whole
-    HTML/XML tags (``<...>``), whitespace, ``&#160;`` and ``&nbsp;`` entities, and a
-    single currency symbol ``$``; the first other character on each side is the
-    nearest non-tag character (``None`` at the span edge). A declared ``-`` is
-    admitted only if the nearest left is ``(`` AND the nearest right is ``)``, or the
-    nearest left is ``-`` or ``−`` (U+2212). A declared ``+`` is refused if the nearest
-    left is ``(``, ``-`` or ``−``, or the nearest right is ``)``. The inline-XBRL loss
-    shape ``(<ix:nonFraction sign="-">54,602</ix:nonFraction>)`` keeps its parentheses
-    outside the tag, so ``(54,602)`` is never contiguous.
+
+def _verify_figure_span(name: str, span: dict, text: str, sign: str, raw: bytes,
+                        *, whole_document: bool = True) -> None:
+    """Replay one figure span against pinned bytes: the span IS the figure.
+
+    ``raw`` is the whole document at replay (``whole_document=True``, the default)
+    but only the activity span at prepare (``whole_document=False``), where the
+    figure span is relative to it. The bounds and sha256 checks run first, then
+    five closed rules, in order:
+
+    1. Printed text P: decode the span as UTF-8 (a decode error is a mismatch),
+       remove every well-formed tag (``<[^<>]*>``), fold ``&#160;``/``&nbsp;``/
+       ``&#xa0;`` (either hex case) and U+00A0 to one space, refuse any leftover
+       ``<``/``>``/``&``, then collapse whitespace runs and strip the ends.
+    2. Closed shapes: ``text`` must full-match ``_FIGURE_TEXT`` and P must
+       full-match exactly one of PLUS ``$? s T``, MINUS-parentheses
+       ``$? s ( s $? s T s )`` or MINUS-leading-sign ``$? s [-−] s $? s T``
+       (``s`` = an optional single space, ``T`` = ``re.escape(text)``). The shape
+       decides the sign; a shape sign differing from the declared sign is
+       FIGURE_SIGN_UNSUPPORTED. Nothing else is printed in the span: no footnote
+       mark, percent sign, second number, other dash, full-width bracket or "CR".
+    3. Not cut from a longer number: on the raw bytes, refuse an ASCII digit
+       immediately before/after the span, or a ','/'.' before/after that is itself
+       glued to an ASCII digit. A sentence end ("... of 54,602.") is allowed.
+    4. No sign mark left outside the span: in a <=2000-byte window each side
+       (decode errors ignored, tags removed, entities unescaped) walk from the
+       span edge skipping whitespace, U+00A0 and at most one '$'. No neighbour
+       because raw ends passes, except on the LEFT at prepare (the excerpt must
+       show what is printed left of the figure). No neighbour without reaching
+       raw's end, a '<'/'>' neighbour, a LEFT neighbour that is U+2212 / any dash
+       (Pd) / any opening bracket (Ps), or a RIGHT neighbour that is any closing
+       bracket (Pe) / any dash (Pd), is FIGURE_SIGN_UNSUPPORTED.
+    5. An inline-XBRL ``sign="-"`` flag inside the span, or on the last unclosed
+       ``<ix:nonfraction`` opening tag in the left window, is never read as plus:
+       with a declared '+' it is FIGURE_SIGN_UNSUPPORTED. This rule only refuses;
+       the printed shape in rule 2 still decides the sign.
     """
     start, end = span["start_byte"], span["end_byte"]
     _require(0 <= start < end <= len(raw), "FIGURE_SPAN_MISMATCH")
     fig_bytes = raw[start:end]
     _require(hashlib.sha256(fig_bytes).hexdigest() == span["text_sha256"], "FIGURE_SPAN_MISMATCH")
-    fig_text = fig_bytes.decode("utf-8")
-    idx = _whole_figure_match(fig_text, text)
-    _require(idx is not None, "FIGURE_SPAN_MISMATCH")
-    left = _nearest_non_tag(fig_text, idx - 1, -1)
-    right = _nearest_non_tag(fig_text, idx + len(text), 1)
-    if sign == "-":
-        _require((left == "(" and right == ")") or left in ("-", "−"), "FIGURE_SIGN_UNSUPPORTED")
+    # Rule 1: the printed text of the span.
+    try:
+        decoded = fig_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        raise DisclosureError("FIGURE_SPAN_MISMATCH") from None
+    printed = _figure_printed_text(decoded)
+    # Rule 2: the closed shape decides the sign.
+    _require(type(text) is str and _FIGURE_TEXT.fullmatch(text) is not None, "FIGURE_SPAN_MISMATCH")
+    t = re.escape(text)
+    if re.fullmatch(rf"\$? ?{t}", printed):
+        shape_sign = "+"
+    elif (re.fullmatch(rf"\$? ?\( ?\$? ?{t} ?\)", printed)
+          or re.fullmatch(rf"\$? ?[-−] ?\$? ?{t}", printed)):
+        shape_sign = "-"
     else:
-        _require(left not in ("(", "-", "−") and right != ")", "FIGURE_SIGN_UNSUPPORTED")
+        shape_sign = None
+    _require(shape_sign is not None, "FIGURE_SPAN_MISMATCH")
+    _require(shape_sign == sign, "FIGURE_SIGN_UNSUPPORTED")
+    # Rule 3: the span is not a fragment of a longer number.
+    _figure_not_cut_from_number(raw, start, end)
+    # Rule 4: no sign mark left outside the span.
+    left_window = raw[max(0, start - _FIGURE_WINDOW_BYTES):start]
+    right_window = raw[end:end + _FIGURE_WINDOW_BYTES]
+    left = _figure_neighbour(left_window, left=True)
+    right = _figure_neighbour(right_window, left=False)
+    if left is None:
+        if start <= _FIGURE_WINDOW_BYTES:  # the window reached the start of raw
+            _require(whole_document, "FIGURE_SIGN_UNSUPPORTED")
+        else:
+            raise DisclosureError("FIGURE_SIGN_UNSUPPORTED")
+    else:
+        _require(left not in "<>", "FIGURE_SIGN_UNSUPPORTED")
+        _require(left != "−" and unicodedata.category(left) not in ("Pd", "Ps"),
+                 "FIGURE_SIGN_UNSUPPORTED")
+    if right is None:
+        _require(end + _FIGURE_WINDOW_BYTES >= len(raw), "FIGURE_SIGN_UNSUPPORTED")
+    else:
+        _require(right not in "<>", "FIGURE_SIGN_UNSUPPORTED")
+        _require(unicodedata.category(right) not in ("Pe", "Pd"), "FIGURE_SIGN_UNSUPPORTED")
+    # Rule 5: an inline-XBRL negative flag is never read as plus.
+    if sign == "+":
+        _require(not _figure_ix_negative(decoded, left_window), "FIGURE_SIGN_UNSUPPORTED")
 
 
 def _segment_figure_number(value: object, code: str) -> None:

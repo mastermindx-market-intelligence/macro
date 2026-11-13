@@ -133,7 +133,8 @@ def prepare_segment_input(inspection, *, assertion, receipt, identities, identit
         n._require(0 <= rel_start < rel_end <= len(main_bytes), 'FIGURE_SPAN_MISMATCH')
         text, sign, scale = (assertion[f'{name}_text'], assertion[f'{name}_sign'], assertion[f'{name}_scale'])
         n._verify_figure_span(name, {'start_byte': rel_start, 'end_byte': rel_end,
-                                     'text_sha256': span['text_sha256']}, text, sign, main_bytes)
+                                     'text_sha256': span['text_sha256']}, text, sign, main_bytes,
+                              whole_document=False)
         n._require(type(text) is str and n._FIGURE_TEXT.fullmatch(text) is not None, 'FIGURE_TEXT_MISMATCH')
         n._require(sign in n.SEGMENT_FIGURE_SIGNS and scale in n.SEGMENT_FIGURE_SCALES, 'FIGURE_TEXT_MISMATCH')
         derived = (-1 if sign == '-' else 1) * int(text.replace(',', '')) * n.SEGMENT_FIGURE_SCALES[scale]
