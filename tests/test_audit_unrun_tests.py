@@ -712,3 +712,41 @@ def test_sparseness_is_never_detected_with_is_dir(sparse_repo: Path) -> None:
         )
     finally:
         husked.rmdir()
+
+
+@pytest.mark.parametrize("native_present", [True, False])
+def test_admitted_proof_ownership_keeps_paths_through_native_cutover(tmp_path, native_present):
+    """The real Foundation inputs keep the same coverage across S10 delivery."""
+    workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
+    manifest = yaml.safe_load(MANIFEST.read_text())
+    events = workflow.get("on", workflow.get(True))
+    native = events.get("pull_request")
+    expected = list(native["paths"] if isinstance(native, dict) else manifest["proof_paths"])
+    if native_present:
+        events["pull_request"] = {"paths": list(expected)}
+    else:
+        events.pop("pull_request", None)
+    workflows = tmp_path / "coverage-workflows"
+    _write(workflows / "ci.yml", yaml.safe_dump(workflow))
+    catalog = _write(tmp_path / "coverage-catalog.yml", yaml.safe_dump(manifest))
+    assert GUARD.ci_proof_paths(workflows, catalog) == expected
+
+
+@pytest.mark.parametrize("bad_paths", [None, ["!tests/**"], ["**"], ["tests/foreign.py"]])
+def test_admitted_proof_ownership_refuses_missing_or_divergent_manifest(tmp_path, bad_paths):
+    """Missing metadata or a caller-supplied narrower claim cannot fill the gap."""
+    workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
+    manifest = yaml.safe_load(MANIFEST.read_text())
+    events = workflow.get("on", workflow.get(True))
+    native = events.get("pull_request")
+    canonical = list(native["paths"] if isinstance(native, dict) else manifest["proof_paths"])
+    events["pull_request"] = {"paths": canonical}
+    if bad_paths is None:
+        manifest.pop("proof_paths", None)
+    else:
+        manifest["proof_paths"] = bad_paths
+    workflows = tmp_path / "coverage-workflows"
+    _write(workflows / "ci.yml", yaml.safe_dump(workflow))
+    catalog = _write(tmp_path / "coverage-catalog.yml", yaml.safe_dump(manifest))
+    with pytest.raises(RuntimeError, match="CI proof ownership unavailable"):
+        GUARD.ci_proof_paths(workflows, catalog)

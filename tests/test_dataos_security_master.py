@@ -2657,7 +2657,8 @@ def test_the_rename_maps_live_in_a_file_that_can_reach_this_suite() -> None:
     )
     # And the workflow can actually start on that file, or the scope is decorative.
     workflow = yaml.safe_load((ROOT / ".github" / "workflows" / "ci.yml").read_text())
-    triggers = (workflow.get("on") or workflow.get(True))["pull_request"]["paths"]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    triggers = ci_proof_paths()
     assert "config.yml" in triggers
 
 

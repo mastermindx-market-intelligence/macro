@@ -669,6 +669,9 @@ def test_setup_table_chart_is_inert_text_until_display_guard():
     svg = '<svg viewBox="0 0 240 42"><polyline points="0,40 240,5"/></svg>'
     s = BeautifulSoup(str(m.table_action({'ticker': 'TEST', 'spark_svg': svg}, None)), 'html5lib')
     assert not s.select('svg, script, img, [onerror]')
+    # Keep the content check inside inert templates on SoupSieve 4 too.
+    assert not s.find_all(['svg', 'script', 'img'])
+    assert not s.find_all(attrs={'onerror': True})
     assert s.select_one('template.pvs-chart-source').string == svg
     assert s.select_one('details')['data-setup-asof'] == ''
 
@@ -686,6 +689,8 @@ def test_setup_table_hostile_source_cannot_break_out_of_serialized_row():
     assert '</script>' not in encoded and '<img' not in encoded
     s = BeautifulSoup(json.loads(encoded)['setup_detail'], 'html5lib')
     assert not s.select('script, img, iframe, [onerror]')
+    assert not s.find_all(['script', 'img', 'iframe'])
+    assert not s.find_all(attrs={'onerror': True})
     assert attack in s.get_text()
 
 

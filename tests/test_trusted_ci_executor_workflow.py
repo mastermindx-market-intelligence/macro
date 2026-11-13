@@ -22,6 +22,7 @@ MAIN_CONTROL_FILES = {
     "ci_apt_native_stage.py",
     "ci_apt_transaction_contract.py",
     "ci_browser_native_setup.py",
+    "ci_im14_browser_setup.py",
     "ci_authority_paths.py",
     "ci_scope_dependencies.py",
     "audit_unrun_tests.py",
@@ -165,10 +166,8 @@ def test_p3bb_executor_stays_call_capable_after_production_route_activation() ->
         "mastermindx-market-intelligence/macro/.github/workflows/"
         "trusted-ci-executor.yml@main"
     )
-    assert {
-        production["jobs"][name]["runs-on"]
-        for name in ("ci-plan", "ci-pack", "ci-gate")
-    } == {"ubuntu-latest"}
+    assert production["jobs"]["ci-pack"]["runs-on"] == "ubuntu-24.04"
+    assert {production["jobs"][name]["runs-on"] for name in ("ci-plan", "ci-gate")} == {"ubuntu-latest"}
 
 
 def test_p3ba_accepts_exact_main_called_same_repo_pr_and_derives_identity(

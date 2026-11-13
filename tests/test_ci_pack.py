@@ -388,7 +388,7 @@ def test_workflows_cancel_superseded_pr_runs() -> None:
     # PR events keep cancel-on-newer-push. Dispatches (ci) and main pushes (fences)
     # do not — those are the two proof paths.
     assert ci["concurrency"]["cancel-in-progress"] == (
-        "${{ github.event_name != 'workflow_dispatch' }}"
+        "${{ github.event_name != 'workflow_dispatch' && github.event_name != 'merge_group' }}"
     ), "a main baseline dispatch must never cancel the proof already running"
     assert fences["concurrency"]["cancel-in-progress"] == (
         "${{ github.event_name == 'pull_request' }}"
@@ -397,9 +397,18 @@ def test_workflows_cancel_superseded_pr_runs() -> None:
     assert "github.ref" in ci["concurrency"]["group"]
     assert "pull_request.number" in fences["concurrency"]["group"]
     assert ci["concurrency"]["group"] == (
-        "ci-${{ github.event.pull_request.number || github.ref }}"
-    )
+        "ci-${{ github.event_name == 'merge_group' && format('group-{0}-{1}-{2}', "
+        "github.event.merge_group.base_ref, github.sha, github.run_id) || "
+        "inputs.proof_role == 'pr_head' && format('admitted-{0}-{1}', "
+        "inputs.admission_generation, github.run_id) || github.event.pull_request.number || github.ref }}"
+    ), "admitted original runs must not replace one another; legacy PR/main grouping remains"
+    assert fences["concurrency"]["group"] == (
+        "fences-${{ github.event_name == 'merge_group' && format('group-{0}-{1}-{2}', "
+        "github.event.merge_group.base_ref, github.sha, github.run_id) || "
+        "github.event.pull_request.number || github.ref }}"
+    ), "native target/group/run identities must not cancel or replace one another"
     triggers = ci.get("on") or ci.get(True)
+    assert triggers["merge_group"] == {"types": ["checks_requested"]}
     assert triggers["pull_request"]["types"] == [
         "opened", "synchronize", "reopened"
     ], "a closed event must never occupy or replace the active PR proof slot"
@@ -1438,7 +1447,8 @@ def test_derived_scopes_are_startable_by_the_ci_workflow(real_manifest_scopes) -
     """
     jobs, _ = real_manifest_scopes
     on = _yaml(WORKFLOW).get("on") or _yaml(WORKFLOW).get(True)
-    triggers = tuple(on["pull_request"]["paths"])
+    from scripts.audit_unrun_tests import ci_proof_paths
+    triggers = tuple(ci_proof_paths())
     gaps: list[tuple[str, str]] = []
     for job in jobs:
         for path in job.paths + job.fallback_paths:
@@ -3911,12 +3921,13 @@ def test_workflow_scopes_only_pull_requests() -> None:
         "${{ vars.CI_DYNAMIC_MATRIX_MODE == 'off' && 'off' || 'active' }}"
     )
     scope_arg = str(plan_step["env"]["CI_SCOPE_ARG"])
-    assert "github.event_name == 'pull_request'" in scope_arg
+    assert "steps.identity.outputs.semantic_role == 'pr_head'" in scope_arg
     assert "--changed-from" in scope_arg
     assert "steps.identity.outputs.tested_base_sha" in scope_arg
     assert "github.base_ref" not in scope_arg
     on = _yaml(WORKFLOW).get("on") or _yaml(WORKFLOW).get(True)
-    pull_paths = on["pull_request"]["paths"]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    pull_paths = ci_proof_paths()
     assert "**" in pull_paths
     assert "worker/**" in pull_paths
     assert "content/**" in pull_paths
@@ -3969,6 +3980,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
     # called main workflow; the caller's ci-pack matrix remains the stable hosted
     # anchor set and retains the full implementation only for forks.
     assert set(workflow["jobs"]) <= {
+        "ci-admission",
         "ci-plan",
         "trusted-ci",
         "ci-pack",
@@ -4007,7 +4019,8 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
     # more than it saved: `render-linux` is FOUR runners shared with render.yml,
     # engine-render.yml and merge-on-green.yml, so even four packs took the entire pool
     # and starved the sweeper that merges every armed pull request.
-    assert pack["runs-on"] == "ubuntu-latest"
+    # Use the literal GitHub-hosted Ubuntu label admitted by runner policy.
+    assert pack["runs-on"] == "ubuntu-24.04"
     # The self-hosted pools are the render/nightly lanes and must never absorb CI packs.
     runs_on = " ".join(str(pack["runs-on"]).split())
     assert "macstudio" not in runs_on
@@ -4032,7 +4045,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
     assert pack["if"] == (
         "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
-        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "(github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')"
     )
     run_text = "\n".join(
@@ -4044,7 +4057,8 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
     # A manifest edit must trigger CI even though GitHub does not interpret the
     # manifest itself as a workflow.
     triggers = workflow.get("on") or workflow.get(True)
-    assert ".github/ci/legacy-jobs.yml" in triggers["pull_request"]["paths"]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    assert ".github/ci/legacy-jobs.yml" in ci_proof_paths()
     assert triggers["pull_request"]["types"] == [
         "opened", "synchronize", "reopened"
     ]
@@ -4054,7 +4068,8 @@ def test_company_intelligence_product_surfaces_reach_focused_ci_packs() -> None:
     """Both public product faces must trigger CI and run their focused suites."""
     workflow = _yaml(WORKFLOW)
     triggers = workflow.get("on") or workflow.get(True)
-    paths = set(triggers["pull_request"]["paths"])
+    from scripts.audit_unrun_tests import ci_proof_paths
+    paths = set(ci_proof_paths())
     required_paths = {
         "app/company_intelligence.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
         "app/earnings.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
@@ -4178,7 +4193,7 @@ def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> 
     checkout = next(
         step
         for step in pack["steps"]
-        if str(step.get("uses", "")).startswith("actions/checkout@")
+        if step.get("name") == "check out the exact candidate"
     )
     assert "filter" not in checkout["with"]
     assert checkout["with"]["fetch-depth"] == 1
@@ -4187,7 +4202,7 @@ def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> 
     plan_checkout = next(
         step
         for step in plan["steps"]
-        if str(step.get("uses", "")).startswith("actions/checkout@")
+        if step.get("name") == "check out the exact candidate"
     )
     assert plan_checkout["with"]["fetch-depth"] == 0
     assert plan_checkout["with"]["sparse-checkout-cone-mode"] is False
@@ -4215,8 +4230,15 @@ def test_same_repo_fences_share_one_runner_and_keep_required_contexts() -> None:
     checkout = next(
         step
         for step in pack["steps"]
-        if str(step.get("uses", "")).startswith("actions/checkout@")
+        if step.get("id") == "candidate_checkout"
     )
+    assert checkout["uses"] == "actions/checkout@v4"
+    protected = next(step for step in pack["steps"]
+                     if step.get("name") == "check out protected native membership control")
+    assert protected["if"] == "github.event_name == 'merge_group'"
+    assert protected["with"]["ref"] == "${{ github.workflow_sha }}"
+    assert protected["with"]["persist-credentials"] is False
+    assert pack["steps"].index(protected) < pack["steps"].index(checkout)
     assert checkout["with"]["filter"] == "blob:none"
     # Commit 09abde056620 "fix(ci): contain fence checkout to proof surface"
     # bounded fence-pack's checkout to fetch-depth 256 + sparse-checkout
@@ -4502,7 +4524,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
     )
 
     workflow = _yaml(WORKFLOW)
-    triggers = (workflow.get("on") or workflow.get(True))["pull_request"]["paths"]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    triggers = ci_proof_paths()
     unmatched = [rel for rel in contracts if not CLOSURE.matched(rel, triggers)]
 
     assert not unmatched, (
@@ -4560,6 +4583,7 @@ CURATED_EXCLUSIVE = {
     "admin-research-tools",
     # F04 exact import/read closure; all suites retained, no homepage fallback.
     "ontology-explorer",
+    "ontology-explorer-static-contracts",  # preserves original ontology non-browser groups in separate bounded job
     # DR3: exact closure isolates the observation consumer; no packing ceiling change.
     "rotation-observation-delivery",
 
@@ -4618,6 +4642,7 @@ CURATED_EXCLUSIVE = {
     # plus the files they read. The cover-their-own-import-closure test and
     # check_ci_trigger_closure.py (both run in this job) keep that list honest.
     "ci-control-plane-contracts",
+    "ci-admission-source-contracts",  # admission suites retain explicit source owner after split
     # 2026-11-04 (#917 CI acceleration): the control-plane job split three ways so
     # the planner can spread its 1,000-2,000 s across packs; same paths, same gate.
     "ci-control-plane-structure",
@@ -5001,6 +5026,8 @@ CURATED_EXCLUSIVE = {
     "international-gs-closure",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
+    "international-workspace-browser-im13",
+    "international-workspace-browser-im14",
     # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
     # template and imports the builder (lib/config, lib/pages, lib/site_assets,
     # engine/i18n). As an ordinary job its inferred scope would widen the
@@ -5335,6 +5362,10 @@ CURATED_EXCLUSIVE = {
     # exact 55-file non-wildcard import closure plus the eight Jinja templates the
     # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
     "global-liquidity-transmission",
+    # Y7 #10656: retain named import closure without incidental fallback fan-out.
+    "engine-render-guards",
+    "market-memory-contract",
+    "capital-structure-intelligence",
     # Options scenario contract: keep the ordinary code job explicitly scoped.
     "options-scenario-contract",
     # xguerrilla admission chain: one gate:code exclusive home for the
@@ -8814,7 +8845,7 @@ def _run_ci_pack_invocation_blocks(text: str) -> list[str]:
     interpreter line — the next YAML key/step.
     """
     lines = text.splitlines()
-    invocation_re = re.compile(r'bin/python"?\s+scripts/run_ci_pack\.py\b')
+    invocation_re = re.compile(r'bin/python"?\s+(?:-I\s+)?(?:scripts/run_ci_pack\.py\b|"\$CONTROL_ROOT/scripts/run_ci_pack\.py")')
     blocks: list[str] = []
     index = 0
     while index < len(lines):
@@ -9699,6 +9730,11 @@ def test_ancestor_init_census_cli_flag_prints_summary_line(
     # ``fatal: not a git repository`` (rc=128). Blocked discovery makes
     # ``_find_repo_root`` fall back to ``workflow.parent`` == ``tmp_path``,
     # so the fixture census prints ``pairs=2`` under any ``--basetemp``.
+    # This synthetic temp workflow is not the protected checkout; keep the
+    # trusted-root binding in production and drop it ONLY in this child.
+    child_env = dict(os.environ)
+    child_env.pop("MASTERMIND_TRUSTED_CI_REPO_ROOT", None)
+    child_env["GIT_CEILING_DIRECTORIES"] = str(tmp_path.resolve().parent)
     proc = subprocess.run(
         [
             sys.executable,
@@ -9711,7 +9747,7 @@ def test_ancestor_init_census_cli_flag_prints_summary_line(
         text=True,
         check=False,
         cwd=str(tmp_path),
-        env={**os.environ, "GIT_CEILING_DIRECTORIES": str(tmp_path.resolve().parent)},
+        env=child_env,
     )
     assert proc.returncode == 0, (proc.stdout, proc.stderr)
     out_lines = proc.stdout.strip().splitlines()
@@ -10196,6 +10232,24 @@ def test_options_nbbo_cohort_keeps_exact_source_and_avoids_unrelated_code_probes
         assert selected == [], probe
 
 
+@pytest.mark.parametrize("regression", ["group_cancellation", "group_pc_wait", "candidate_depth"])
+def test_native_workflow_packing_contract_rejects_regressions(monkeypatch, regression):
+    ci, fences = _yaml(WORKFLOW), _yaml(FENCES)
+    if regression == "group_cancellation":
+        ci["concurrency"]["cancel-in-progress"] = "${{ github.event_name != 'workflow_dispatch' }}"
+        check = test_workflows_cancel_superseded_pr_runs
+    elif regression == "group_pc_wait":
+        ci["jobs"]["ci-pack"]["if"] = ci["jobs"]["ci-pack"]["if"].replace("github.event_name == 'merge_group' || ", "")
+        check = test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs
+    else:
+        checkout = next(s for s in fences["jobs"]["fence-pack"]["steps"] if s.get("id") == "candidate_checkout")
+        checkout["with"]["fetch-depth"] = 0
+        check = test_same_repo_fences_share_one_runner_and_keep_required_contexts
+    monkeypatch.setattr(sys.modules[__name__], "_yaml", lambda path: ci if path == WORKFLOW else fences)
+    with pytest.raises(AssertionError):
+        check()
+
+
 # Fast-ship compacts a genuinely scoped PR selection, never the main baseline.
 # Baseline pack names remain available for incumbent inherited-red comparisons.
 def _fastship_jobs(weights: list[int]) -> list[object]:
@@ -10349,3 +10403,49 @@ def test_fastship_invalid_base_reference_remains_refused(monkeypatch, base):
         PACK.build_plan(jobs, ["engine/example.py"], changed_from=base,
                         scope_mode="active", pack_count=12,
                         event="pull_request", role="pr_head")
+
+
+def test_international_browser_partition_preserves_commands_guards_and_budget() -> None:
+    """Pin the original proofs, shared guards and IM14-specific setup."""
+    import hashlib
+    ids = ('international-workspace-browser', 'international-workspace-browser-im13', 'international-workspace-browser-im14')
+    jobs = _yaml(MANIFEST)["jobs"]
+    expected = {'Actual International builder and template contracts': 'b9102f5acac53df540ef541f9d61d2963110cd1dc11d6c6ce61e9a34401825f6', 'Actual DOM controller and page entry in Chromium': 'c5a2c66c08bd64a96ac4f036ffaba792600f808991d7a585c253759635b7e349', 'Generic table sort/filter in Chromium (templates/tablesort.js)': '83aec9d0d16c173b2c3823357e4a22b9ff124c87fe126cd881242e7b3aafa72d', 'IM13 global scanner + coverage tests (W2A)': 'a393484a514a9ebb948f6a1ac569bc49536a9ed62123e97bddb0d670698a5b38', 'IM13 scanner + coverage browser proof (W2A)': '6db4c14b98cd7696e8dee8e807b8a26e36cb55d6772e51809f6c4d4c0d0b853d', 'IM14 market dossier tests (W2B)': '7931d7cb2d7896f640a63955d6d01308cd14e3f9ff85c18801a03bb54c4f77ac', 'IM14 market dossier browser proof (W2B)': '510b5ee9ef1a30cdcdb95a036a7ba158ea5d7e496629efb89fc09ebf7be4e39c'}
+    digest = lambda value: hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    actual = {}
+    for job_id in ids:
+        job = jobs[job_id]
+        assert job["timeout-minutes"] == 20
+        assert job["if"] == "${{ false }}"
+        assert job["gate"] == "code" and job["scope"] == "exclusive"
+        assert job["runs-on"] == "ubuntu-latest"
+        paths = job["paths"]
+        shared_setup = job["steps"][:6]
+        proofs = job["steps"][6:]
+        if job_id == ids[2]:
+            assert paths[:2] == [
+                "scripts/ci_im14_browser_setup.py",
+                "tests/test_ci_im14_browser_setup.py",
+            ]
+            paths = paths[2:]
+            assert job["steps"][4:6] == [
+                {
+                    "name": "IM14 browser setup contract",
+                    "run": "python -m pytest tests/test_ci_im14_browser_setup.py -q",
+                },
+                {
+                    "name": "install browser test dependencies",
+                    "phase": "browser_setup",
+                    "timeout-minutes": 20,
+                    "run": "python -I scripts/ci_im14_browser_setup.py",
+                },
+            ]
+            shared_setup = [*job["steps"][:4], jobs[ids[0]]["steps"][4], job["steps"][6]]
+            proofs = job["steps"][7:]
+        assert digest(paths) == 'e3d0818aa0ca9c9256117db3f3b83263428d7804fe60df48aec306b36752583f'
+        assert digest(shared_setup) == '837f572c82597fce7f0caab46c9f99aaed2caf2f00a0a7247aad93bad285ea2b'
+        assert len(proofs) == (3 if job_id == ids[0] else 2)
+        for step in proofs:
+            assert step["name"] not in actual, step["name"]
+            actual[step["name"]] = hashlib.sha256(step["run"].encode()).hexdigest()
+    assert actual == expected

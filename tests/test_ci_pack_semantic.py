@@ -32,6 +32,109 @@ SHA_HEAD = "2" * 40
 SHA_BASE = "3" * 40
 
 
+def _admitted_plan(jobs, generation="a" * 12):
+    return PACK.build_plan(jobs, ["engine/example.py"], changed_from=SHA_BASE,
+        scope_mode="active", pack_count=1, workflow_run_id="987654321", workflow="ci",
+        event="workflow_dispatch", role="pr_head", tested_tree_sha=SHA_TREE,
+        subject_head_sha=SHA_HEAD, base_sha=SHA_BASE, admission_generation=generation)
+
+
+def test_admitted_plan_roundtrip_and_generation_expectation(tmp_path):
+    manifest = _write_manifest(tmp_path / "manifest.yml", [_job("demo", [{"name": "proof", "run": "true"}])])
+    jobs = PACK.load_legacy_jobs(manifest)
+    plan = _admitted_plan(jobs)
+    path = tmp_path / "plan.json"
+    PACK._atomic_write_json(path, plan.to_dict())
+    consumed = PACK.load_authoritative_plan(path, workflow=manifest,
+        expect_plan_sha=plan.plan_sha256, expect_admission_generation="a" * 12)
+    assert consumed.to_dict() == plan.to_dict()
+    assert SEMANTIC.authoritative_plan_sha256(plan.to_dict()) == plan.plan_sha256
+    assert _admitted_plan(jobs, "b" * 12).plan_sha256 != plan.plan_sha256
+    with pytest.raises(PACK.ManifestError, match="admission_generation"):
+        PACK.load_authoritative_plan(path, workflow=manifest, expect_admission_generation="b" * 12)
+    for change in (None, "b" * 12):
+        document = plan.to_dict()
+        if change is None:
+            document.pop("admission_generation")
+        else:
+            document["admission_generation"] = change
+        PACK._atomic_write_json(path, document)
+        with pytest.raises(PACK.ManifestError):
+            PACK.load_authoritative_plan(path, workflow=manifest)
+
+
+@pytest.mark.parametrize("generation", [None, "", True, "A" * 12, "a" * 11])
+def test_admitted_planner_refuses_missing_or_malformed_generation(monkeypatch, generation):
+    monkeypatch.delenv("CI_ADMISSION_GENERATION", raising=False)
+    with pytest.raises(PACK.ManifestError, match="admission_generation"):
+        _admitted_plan([_job("demo", [{"run": "true"}])], generation)
+
+
+@pytest.mark.parametrize("mode", ["success", "startup-failure", "attestation-failure"])
+def test_admitted_pack_all_fragment_paths_retain_generation(tmp_path, monkeypatch, mode):
+    job = _job("demo", [{"name": "proof", "run": "true"}])
+    plan = _admitted_plan([job])
+    target = tmp_path / "fragment.json"
+    monkeypatch.setattr(PACK, "_workspace_root", lambda: tmp_path)
+    monkeypatch.setattr(PACK, "_current_commit_sha", lambda _root: "9" * 40 if mode == "startup-failure" else SHA_TREE)
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_args: None)
+    monkeypatch.setattr(PACK, "_dependency_environment", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(PACK, "_run_exact_base_replays", lambda **_kwargs: None)
+    if mode == "attestation-failure":
+        def refuse(_plan):
+            raise RuntimeError("test attestation refusal")
+        monkeypatch.setattr(PACK, "attest_execution_profile", refuse)
+    result = PACK.execute_pack([job], plan=plan, pack_index=0,
+        emit_semantic_fragment=target, require_attestation=mode == "attestation-failure")
+    assert result == (0 if mode == "success" else 1)
+    fragment = json.loads(target.read_text())
+    assert fragment["admission_generation"] == "a" * 12 and fragment["event"] == "workflow_dispatch"
+    if mode == "attestation-failure":
+        # Existing attestation_failed fragments deliberately remain rejected by
+        # the strict aggregate; its CLI emits bound planner-failure evidence.
+        # This identity change must not widen the legacy outcome allowlist.
+        with pytest.raises(SEMANTIC.SemanticProofError, match="attestation_failed"):
+            SEMANTIC.reconcile_evidence(plan.to_dict(), [fragment])
+        return
+    evidence = SEMANTIC.reconcile_evidence(plan.to_dict(), [fragment])
+    assert evidence["admission_generation"] == "a" * 12
+    assert evidence["status"] == ("clear" if mode == "success" else "failure")
+
+
+def test_replay_identity_does_not_inherit_parent_admission_generation(monkeypatch):
+    monkeypatch.setenv("CI_ADMISSION_GENERATION", "a" * 12)
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "base_replay")
+    monkeypatch.setenv("CI_SEMANTIC_ROLE", "main")
+    assert PACK._fragment_admission_fields(None) == {}
+    with pytest.raises(SystemExit):
+        PACK.parse_args(["--workflow", str(MANIFEST), "--execute", "--semantic-replay-job", "demo", "--emit-semantic-fragment", "/unused",
+                         "--admission-generation", "a" * 12])
+
+
+def test_runner_cli_carries_generation_for_plan_and_consumer():
+    args = PACK.parse_args(["--workflow", str(MANIFEST), "--admission-generation", "a" * 12, "--expect-admission-generation", "a" * 12])
+    assert args.admission_generation == args.expect_admission_generation == "a" * 12
+
+
+def test_admitted_runner_cli_publishes_and_consumes_full_plan(tmp_path):
+    manifest = _write_manifest(tmp_path / "manifest.yml", [_job("demo", [{"name": "proof", "run": "true"}])])
+    changed = tmp_path / "changed.json"
+    changed.write_text('["engine/example.py"]')
+    published, consumed = tmp_path / "published.json", tmp_path / "consumed.json"
+    assert PACK.main(["--workflow", str(manifest), "--plan-only", "--pack-count", "1",
+        "--changed-from", SHA_BASE, "--changed-files-file", str(changed),
+        "--workflow-run-id", "987654321", "--workflow-name", "ci", "--event", "workflow_dispatch",
+        "--role", "pr_head", "--tested-tree-sha", SHA_TREE, "--subject-head-sha", SHA_HEAD,
+        "--base-sha", SHA_BASE, "--admission-generation", "a" * 12,
+        "--emit-plan-json", str(published)]) == 0
+    document = json.loads(published.read_text())
+    assert document["admission_generation"] == "a" * 12
+    assert PACK.main(["--workflow", str(manifest), "--plan-json", str(published),
+        "--changed-files-file", str(changed), "--expect-plan-sha", document["plan_sha256"],
+        "--expect-admission-generation", "a" * 12, "--emit-plan-json", str(consumed)]) == 0
+    assert json.loads(consumed.read_text()) == document
+
+
 @pytest.fixture(autouse=True)
 def _isolate_tested_tree_sha():
     """``execute_pack`` publishes the plan-bound tree as ``TESTED_TREE_SHA`` in
@@ -3816,7 +3919,7 @@ def _cm_commit(root, path, content, message):
     return _cm_git(root, 'rev-parse', 'HEAD')
 
 
-def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_checkout=False, old_history=False):
+def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_checkout=False, old_history=False, distinct_frozen=False):
     """main is ahead of tested's first parent; tested itself diverges from main.
 
     Both tested parents meet at main-2, 22 first-parent edges behind main-24.
@@ -3835,7 +3938,8 @@ def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_chec
     for path in _CM_FROZEN_PATHS:
         dest = source / path
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text('frozen baseline\n', encoding='utf-8')
+        baseline = 'frozen baseline ' + path + '\n' if distinct_frozen else 'frozen baseline\n'
+        dest.write_text(baseline, encoding='utf-8')
     _cm_git(source, 'add', '.')
     _cm_git(source, 'commit', '-qm', 'frozen baseline')
     if old_history:
@@ -3891,12 +3995,14 @@ def _cm_prepare(fixture, *, hook=None, tested=None, base_ref='main'):
     """
     real_run = _cm_subprocess.run
     fixture['fetches'] = []
+    fixture['fetch_inputs'] = []
 
     def observed(argv, *args, **kwargs):
         command = list(argv) if isinstance(argv, (list, tuple)) else []
         is_fetch = bool(command and command[0] == 'git' and 'fetch' in command)
         if is_fetch:
             fixture['fetches'].append(command)
+            fixture['fetch_inputs'].append(kwargs.get('input'))
             if hook:
                 hook('before', fixture, command, len(fixture['fetches']))
         result = real_run(argv, *args, **kwargs)
@@ -3955,9 +4061,15 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         command = PACK.render_command(step["run"], base_ref="main", head_ref="feature")
         # Keep the actual manifest command and the current interpreter's exact
         # path, including the venv/relocatable runtime context it identifies.
-        environment = _cm_python_environment(self.parent, _cm_sys.executable)
+        # Reproduce the hosted parent control-root environment even locally.
+        # The subprocess is testing its own checkout, not the parent workspace.
+        with _cm_mock.patch.dict(os.environ, {
+            "MASTERMIND_TRUSTED_CI_REPO_ROOT": str(ROOT),
+        }):
+            environment = _cm_python_environment(self.parent, _cm_sys.executable)
         environment.update({
             "PYTHONPATH": str(ROOT),
+            "MASTERMIND_TRUSTED_CI_REPO_ROOT": str(f["checkout"]),
             # Base replay has its own exact tree; inherited parent-run identity
             # must not replace it. Neither event-base value is canonical main.
             "CI_TESTED_TREE_SHA": f["tested"],
@@ -4124,12 +4236,12 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
         removed = []
 
         def remove(phase, fixture, command, count):
-            if phase != 'after' or count != 1:
+            if phase != 'after':
                 return
             repo = fixture['checkout']
             blob = _cm_git(repo, 'rev-parse', fixture['tested'] + ':' + _CM_FROZEN_PATHS[0])
             packs = repo / '.git' / 'objects' / 'pack'
-            held = self.parent / 'retained-fixture-packs'
+            held = self.parent / f'retained-fixture-packs-{count}'
             held.mkdir()
             names = [p.name for p in packs.glob('*.pack')]
             for path in list(packs.iterdir()):
@@ -4146,8 +4258,9 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
 
         with self.assertRaisesRegex(RuntimeError, 'required.*object'):
             _cm_prepare(f, hook=remove)
-        self.assertEqual(len(removed), 1)
-        self.assertEqual(len(f['fetches']), 1)
+        self.assertEqual(len(removed), 2)
+        self.assertEqual(len(f['fetches']), 2)
+        self.assertIn('--stdin', f['fetches'][-1])
         self.assert_head(f)
 
     def test_missing_origin_main_acquires_actual_canonical_tip(self):
@@ -4306,3 +4419,623 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                     else:
                         guard(path)
                 self.assert_head(f)
+
+
+# Dynamic design diffs reuse the canonical acquisition without turning the
+# fixed-file readiness contract into an added/deleted-path exemption.
+_DESIGN_CANONICAL_STEPS = (
+    ('forward-only design ratchet (new forbidden decisions on changed lines)',
+     'scripts/check_design_system.py', ('templates',), '/tmp/design.diff'),
+    ('visual evidence required for a material UI change',
+     'scripts/check_ui_visual_evidence.py', ('templates', 'site'), '/tmp/ui.diff'),
+)
+
+
+def _design_canonical_step(name):
+    jobs = yaml.safe_load(MANIFEST.read_text())['jobs']
+    return next(step['run'] for step in jobs['design-governance']['steps']
+                if step.get('name') == name)
+
+
+@pytest.mark.parametrize('name,script,scope,output', _DESIGN_CANONICAL_STEPS)
+def test_design_canonical_manifest_retains_complete_gate(name, script, scope, output):
+    command = _design_canonical_step(name)
+    assert 'from scripts.run_ci_pack import prepare_canonical_main' in command
+    assert f'frozen_paths=("{script}",)' in command
+    assert 'os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"]' in command
+    assert 'export GIT_NO_LAZY_FETCH=1 GIT_ALLOW_PROTOCOL=' in command
+    assert 'git fetch' not in command
+    assert 'git merge-base "origin/${{ github.base_ref || \'main\' }}" HEAD' in command
+    assert f'git diff --unified=0 "$mb" HEAD -- {" ".join(scope)} > {output}' in command
+    expected = f'python3 {script}' + (' --mode enforce-added' if 'design_system' in script else '') + f' --diff-file {output}'
+    assert command.rstrip().endswith(expected)
+
+
+def _design_canonical_fixture(tmp_path):
+    root = tmp_path / 'comparison'
+    root.mkdir()
+    env = PACK._trusted_git_environment(root)
+    env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
+    def git(*args):
+        return subprocess.run(['git', *args], cwd=root, env=env, check=True,
+                              text=True, capture_output=True).stdout.strip()
+    git('init', '-q', '-b', 'main')
+    git('config', 'user.name', 'Local Fixture')
+    git('config', 'user.email', 'fixture@example.invalid')
+    for path, text in {
+        'scripts/check_design_system.py': '# fixed design guard\n',
+        'scripts/check_ui_visual_evidence.py': '# fixed evidence guard\n',
+        'templates/deleted.txt': 'deleted comparison blob\n',
+        'templates/renamed.txt': 'rename content retained\n',
+        'templates/changed.txt': 'old line\n',
+        'site/changed.txt': 'old site\n',
+    }.items():
+        file = root / path; file.parent.mkdir(parents=True, exist_ok=True); file.write_text(text)
+    git('add', '.'); git('commit', '-qm', 'base')
+    base = git('rev-parse', 'HEAD')
+    missing_blob = git('rev-parse', 'HEAD:templates/deleted.txt')
+    git('switch', '-qc', 'tested')
+    (root / 'templates/deleted.txt').unlink()
+    (root / 'templates/renamed.txt').rename(root / 'templates/new-name.txt')
+    (root / 'templates/added.txt').write_text('new comparison line\n')
+    (root / 'templates/changed.txt').write_text('new line\n')
+    (root / 'site/changed.txt').write_text('new site\n')
+    git('add', '-A'); git('commit', '-qm', 'candidate')
+    tested = git('rev-parse', 'HEAD')
+    git('switch', '-q', 'main')
+    (root / 'main-only.txt').write_text('canonical advanced independently\n')
+    git('add', '.'); git('commit', '-qm', 'canonical advance')
+    canonical = git('rev-parse', 'HEAD')
+    git('checkout', '-q', '--detach', tested)
+    return root, git, base, tested, canonical, missing_blob
+
+
+@pytest.mark.parametrize('name,script,scope,output', _DESIGN_CANONICAL_STEPS)
+@pytest.mark.parametrize('boundary', ['complete', 'transport-failure', 'missing-diff-blob', 'wrong-tested-head'])
+def test_design_canonical_actual_local_comparison_boundary(tmp_path, monkeypatch, name, script, scope, output, boundary):
+    root, git, base, tested, canonical, missing_blob = _design_canonical_fixture(tmp_path)
+    command = PACK.render_command(_design_canonical_step(name), base_ref='main', head_ref='candidate')
+    assert "python - <<'PY_CANONICAL'" in command
+    code, tail = command.split("python - <<'PY_CANONICAL'\n", 1)[1].split('\nPY_CANONICAL\n', 1)
+    expected = subprocess.run(['git', 'diff', '--unified=0', base, tested, '--', *scope],
+                              cwd=root, check=True, capture_output=True).stdout
+    monkeypatch.chdir(root)
+    monkeypatch.setenv('CI_TESTED_TREE_SHA', 'f' * 40 if boundary == 'wrong-tested-head' else tested)
+    monkeypatch.setenv('TESTED_TREE_SHA', 'e' * 40)  # replay identity must win
+    monkeypatch.setitem(sys.modules, 'scripts.run_ci_pack', PACK)
+    real_run = subprocess.run
+    fetches = []
+    def original_transport_boundary(argv, *args, **kwargs):
+        if (isinstance(argv, (list, tuple)) and
+                (list(argv[:2]) == ['git', 'fetch'] or
+                 list(argv[:4]) == ['git', '-c', 'fetch.negotiationAlgorithm=noop', 'fetch'])):
+            fetches.append(list(argv))
+            assert '--no-tags' in argv and '--no-recurse-submodules' in argv
+            assert '--filter=blob:none' in argv
+            if '--stdin' in argv:
+                assert boundary == 'missing-diff-blob'
+                return subprocess.CompletedProcess(argv, 0)
+            assert argv[-2:] == ['+refs/heads/main:refs/remotes/origin/main', tested]
+            if boundary == 'transport-failure':
+                raise subprocess.CalledProcessError(128, argv, stderr='fixture transport EOF')
+            # No transport occurs: install ONLY refs to actual fixture-issued
+            # objects. All ancestry, commit, tree, blob and diff probes are real.
+            git('update-ref', 'refs/remotes/origin/main', canonical)
+            (root / '.git/FETCH_HEAD').write_text(canonical + '\t\tfixture main\n')
+            return subprocess.CompletedProcess(argv, 0)
+        return real_run(argv, *args, **kwargs)
+    monkeypatch.setattr(PACK.subprocess, 'run', original_transport_boundary)
+    if boundary in {'transport-failure', 'wrong-tested-head'}:
+        with pytest.raises((subprocess.CalledProcessError, RuntimeError)):
+            exec(compile(code, '<actual-design-manifest>', 'exec'), {})
+        assert len(fetches) == (1 if boundary == 'transport-failure' else 0)
+        return
+    if boundary == 'missing-diff-blob':
+        (root / '.git/objects' / missing_blob[:2] / missing_blob[2:]).unlink()
+    if boundary == 'missing-diff-blob':
+        with pytest.raises(RuntimeError, match='comparison blobs remained unavailable'):
+            exec(compile(code, '<actual-design-manifest>', 'exec'), {})
+        assert len(fetches) == 2
+        return
+    exec(compile(code, '<actual-design-manifest>', 'exec'), {})
+    assert len(fetches) == 1
+    assert git('rev-parse', 'HEAD') == tested
+    assert git('rev-parse', 'origin/main') == canonical
+    # Execute the exact shell merge-base/diff portion with its real -e contract.
+    # Its final marker represents arrival at the unchanged guard command, not
+    # fabricated acceptance by either guard.
+    diff_path = tmp_path / 'actual.diff'
+    guard_line = next(line for line in tail.splitlines() if line.startswith('python3 '))
+    marker = tmp_path / 'guard-reached'
+    shell = tail.replace(output, str(diff_path)).replace(guard_line.replace(output, str(diff_path)),
+                           'touch ' + shlex.quote(str(marker)))
+    result = real_run(['bash', '-eo', 'pipefail', '-c', shell], cwd=root,
+                      env=PACK._trusted_git_environment(root), capture_output=True, text=True)
+    if boundary == 'missing-diff-blob':
+        assert result.returncode != 0
+        assert not marker.exists()
+    else:
+        assert result.returncode == 0, result.stderr
+        assert marker.exists()
+        assert diff_path.read_bytes() == expected
+        assert b'deleted.txt' in expected and b'added.txt' in expected and b'new-name.txt' in expected
+        assert (b'site/changed.txt' in expected) == ('site' in scope)
+
+
+@pytest.mark.parametrize('outcome', ['complete', 'complete-with-old-guard', 'transport-failure', 'incomplete', 'changed-main', 'changed-fetch-head'])
+def test_design_canonical_shallow_promisor_comparison(tmp_path, monkeypatch, outcome):
+    root, git, base, tested, canonical, deleted = _design_canonical_fixture(tmp_path)
+    if outcome == 'complete-with-old-guard':
+        for script in ('check_design_system.py', 'check_ui_visual_evidence.py'):
+            (root / 'scripts' / script).write_text('# revised tested guard\n')
+        git('add', '.'); git('commit', '-qm', 'guard revision')
+        tested = git('rev-parse', 'HEAD')
+    missing = {git('rev-parse', f'{base}:{path}') for path in
+               ('templates/deleted.txt', 'templates/changed.txt', 'site/changed.txt')}
+    if outcome == 'complete-with-old-guard':
+        missing.update(git('rev-parse', f'{base}:scripts/{script}') for script in
+                       ('check_design_system.py', 'check_ui_visual_evidence.py'))
+    real_run = subprocess.run
+    retained = {oid: real_run(['git', 'cat-file', 'blob', oid], cwd=root,
+                              capture_output=True, check=True).stdout for oid in missing}
+    expected = real_run(['git', 'diff', '--unified=0', base, tested, '--', 'templates', 'site'],
+                        cwd=root, capture_output=True, check=True).stdout
+    # Build a genuine local promisor pack with current files/ancestry but no
+    # historical comparison blobs. No clone, fetch, provider or network runs.
+    objects = {line.split()[0] for line in git('rev-list', '--objects', '--all').splitlines()}
+    pack = real_run(['git', 'pack-objects', '.git/objects/pack/fixture'], cwd=root,
+                    input=''.join(oid + '\n' for oid in sorted(objects - missing)),
+                    text=True, capture_output=True, check=True).stdout.strip()
+    (root / '.git/objects/pack' / f'fixture-{pack}.promisor').touch()
+    for directory in (root / '.git/objects').iterdir():
+        if directory.is_dir() and len(directory.name) == 2:
+            for obj in directory.iterdir(): obj.unlink()
+            directory.rmdir()
+    (root / '.git/shallow').write_text(base + '\n')
+    git('config', 'remote.origin.promisor', 'true')
+    git('config', 'remote.origin.partialclonefilter', 'blob:none')
+    git('config', 'remote.origin.url', 'https://fixture.invalid/never-contacted')
+    assert git('rev-parse', '--is-shallow-repository') == 'true'
+    assert git('config', '--get', 'remote.origin.promisor') == 'true'
+    offline = PACK._trusted_git_environment(root)
+    offline.update(GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL='')
+    before = real_run(['git', 'diff', '--unified=0', base, tested, '--', 'templates', 'site'],
+                      cwd=root, env=offline, capture_output=True)
+    assert before.returncode != 0
+    fetches = []
+    def acquire(argv, *args, **kwargs):
+        if (isinstance(argv, (list, tuple)) and
+                (list(argv[:2]) == ['git', 'fetch'] or
+                 list(argv[:4]) == ['git', '-c', 'fetch.negotiationAlgorithm=noop', 'fetch'])):
+            fetches.append((list(argv), kwargs.get('input')))
+            if '--stdin' not in argv:
+                assert '--filter=blob:none' in argv and '--deepen=2' in argv
+                git('update-ref', 'refs/remotes/origin/main', canonical)
+                (root / '.git/FETCH_HEAD').write_text(canonical + '\t\tfixture main\n')
+            else:
+                assert '--no-write-fetch-head' in argv
+                assert set(kwargs['input'].splitlines()) == missing
+                if outcome == 'transport-failure':
+                    raise subprocess.CalledProcessError(128, argv, stderr='fixture batch EOF')
+                if outcome != 'incomplete':
+                    for oid in missing:
+                        written = real_run(['git', 'hash-object', '-w', '--stdin'], cwd=root,
+                                           input=retained[oid], capture_output=True, check=True).stdout.decode().strip()
+                        assert written == oid
+                if outcome == 'changed-fetch-head':
+                    (root / '.git/FETCH_HEAD').write_text(tested + '\t\twrong fixture head\n')
+                if outcome == 'changed-main':
+                    git('update-ref', 'refs/remotes/origin/main', tested)
+            return subprocess.CompletedProcess(argv, 0)
+        return real_run(argv, *args, **kwargs)
+    monkeypatch.setattr(PACK.subprocess, 'run', acquire)
+    import inspect
+    keywords = dict(tested_tree_sha=tested,
+                    frozen_paths=('scripts/check_design_system.py', 'scripts/check_ui_visual_evidence.py'))
+    # The RED uses the incumbent's supported signature: it accepts ancestry
+    # and fixed guards, then the real ordinary-layout dynamic diff still fails.
+    if 'comparison_paths' in inspect.signature(PACK.prepare_canonical_main).parameters:
+        keywords['comparison_paths'] = ('templates', 'site')
+    if outcome not in {'complete', 'complete-with-old-guard'}:
+        with pytest.raises((RuntimeError, subprocess.CalledProcessError)):
+            PACK.prepare_canonical_main(root, **keywords)
+        assert len(fetches) == 2  # one canonical + one batch, never retry
+        return
+    assert PACK.prepare_canonical_main(root, **keywords) == canonical
+    after = real_run(['git', 'diff', '--unified=0', base, tested, '--', 'templates', 'site'],
+                     cwd=root, env=offline, capture_output=True)
+    assert after.returncode == 0, after.stderr.decode()
+    assert after.stdout == expected
+    assert len(fetches) == 2
+    assert git('rev-parse', 'HEAD') == tested
+    assert git('rev-parse', 'FETCH_HEAD') == canonical
+    assert git('rev-parse', '--is-shallow-repository') == 'true'
+
+
+@pytest.mark.parametrize('paths', [(), ['templates'], ('../templates',), (':(exclude)site',), ('/templates',)])
+def test_design_canonical_comparison_paths_fail_before_transport(tmp_path, monkeypatch, paths):
+    def forbidden(*args, **kwargs):
+        raise AssertionError('invalid comparison paths reached Git')
+    monkeypatch.setattr(PACK.subprocess, 'run', forbidden)
+    with pytest.raises(RuntimeError, match='relative comparison paths'):
+        PACK.prepare_canonical_main(tmp_path, tested_tree_sha='a' * 40, comparison_paths=paths)
+
+
+@pytest.mark.parametrize('missing_guard', [False, True])
+def test_design_canonical_default_frozen_contract_unchanged(tmp_path, monkeypatch, missing_guard):
+    root, git, base, tested, canonical, deleted = _design_canonical_fixture(tmp_path)
+    if missing_guard:
+        oid = git('rev-parse', f'{base}:scripts/check_design_system.py')
+        (root / '.git/objects' / oid[:2] / oid[2:]).unlink()
+    real_run = subprocess.run
+    fetches = []
+    def acquire(argv, *args, **kwargs):
+        if (isinstance(argv, (list, tuple)) and
+                (list(argv[:2]) == ['git', 'fetch'] or
+                 list(argv[:4]) == ['git', '-c', 'fetch.negotiationAlgorithm=noop', 'fetch'])):
+            fetches.append(list(argv))
+            if '--stdin' in argv:
+                assert missing_guard
+                assert '--no-write-fetch-head' in argv
+                assert kwargs['input'] == oid + '\n'
+                # Completed explicit acquisition still omitted the required
+                # blob: default frozen guards must continue to refuse.
+                return subprocess.CompletedProcess(argv, 0)
+            git('update-ref', 'refs/remotes/origin/main', canonical)
+            (root / '.git/FETCH_HEAD').write_text(canonical + '\t\tfixture main\n')
+            return subprocess.CompletedProcess(argv, 0)
+        return real_run(argv, *args, **kwargs)
+    monkeypatch.setattr(PACK.subprocess, 'run', acquire)
+    keywords = dict(tested_tree_sha=tested, frozen_paths=('scripts/check_design_system.py',))
+    if missing_guard:
+        with pytest.raises(RuntimeError, match='required local object unavailable'):
+            PACK.prepare_canonical_main(root, **keywords)
+    else:
+        assert PACK.prepare_canonical_main(root, **keywords) == canonical
+    assert len(fetches) == (2 if missing_guard else 1)
+
+
+@pytest.mark.parametrize('boundary', ['complete', 'transport-failure', 'missing-after-batch', 'changed-main', 'changed-fetch-head'])
+def test_canonical_frozen_only_missing_promisor_blob_is_acquired_once(tmp_path, boundary):
+    """Default International guards need finite blobs as well as ancestry."""
+    import hashlib
+    f = _cm_fixture(tmp_path)
+    _cm_git(f['source'], 'config', 'uploadpack.allowFilter', 'true')
+    root = f['checkout']
+    original_index = (root / '.git/index').read_bytes()
+    original_head = _cm_git(root, 'rev-parse', 'HEAD')
+    original_files = {str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
+                      for path in root.rglob('*') if path.is_file()
+                      and not path.is_relative_to(root / '.git')}
+    removed = []
+    batch_count = []
+    batch_shallow = []
+    assert _cm_git(root, 'rev-parse', '--is-shallow-repository') == 'true'
+
+    def remove_blob(blob, suffix):
+        packs = root / '.git/objects/pack'
+        held = tmp_path / ('held-packs-' + suffix)
+        held.mkdir()
+        names = [path.name for path in packs.glob('*.pack')]
+        for path in list(packs.iterdir()):
+            path.rename(held / path.name)
+        for name in names:
+            with (held / name).open('rb') as data:
+                _cm_subprocess.run(['git', '-C', str(root), 'unpack-objects', '-r'],
+                    stdin=data, check=True, capture_output=True,
+                    env=dict(os.environ, GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL=''))
+        target = root / '.git/objects' / blob[:2] / blob[2:]
+        assert target.is_file()
+        target.unlink()
+
+    def boundary_hook(phase, fixture, command, count):
+        if phase == 'after' and '--stdin' not in command and not removed:
+            offline = PACK._trusted_git_environment(root)
+            offline.update(GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL='')
+            # Inject only at the actual ready-ancestry boundary. Removing an
+            # ordinary checkout blob before another deepen tests connectivity,
+            # not the completed canonical-fetch/frozen-guard defect.
+            ready = PACK._tested_tree_ancestry_ready(root, offline, f['tested'])
+            base = _cm_subprocess.run(['git', 'merge-base', f['canonical'], f['tested']],
+                cwd=root, env=offline, capture_output=True)
+            if ready and base.returncode == 0:
+                blob = _cm_git(root, 'rev-parse', f['tested'] + ':' + _CM_FROZEN_PATHS[0])
+                remove_blob(blob, 'initial')
+                removed.append(blob)
+        if '--stdin' not in command:
+            return
+        assert '--no-write-fetch-head' in command
+        assert '--filter=blob:none' in command
+        if phase == 'before':
+            batch_count.append(count)
+            batch_shallow.append(_cm_git(root, 'rev-parse', '--is-shallow-repository'))
+            if boundary == 'transport-failure':
+                raise _cm_subprocess.CalledProcessError(128, command, stderr='fixture explicit batch failure')
+        if phase == 'after':
+            if boundary == 'missing-after-batch':
+                remove_blob(removed[0], 'after-batch')
+            elif boundary == 'changed-main':
+                _cm_git(root, 'update-ref', 'refs/remotes/origin/main', f['tested'])
+            elif boundary == 'changed-fetch-head':
+                (root / '.git/FETCH_HEAD').write_text(f['tested'] + '\t\twrong fixture head\n')
+
+    if boundary == 'complete':
+        assert _cm_prepare(f, hook=boundary_hook) == f['canonical']
+        offline = PACK._trusted_git_environment(root)
+        offline.update(GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL='')
+        for ref in (f['tested'], _cm_git(root, 'merge-base', f['canonical'], f['tested'])):
+            for path in _CM_FROZEN_PATHS:
+                result = _cm_subprocess.run(['git', 'cat-file', '-e', f'{ref}:{path}'],
+                    cwd=root, env=offline, capture_output=True)
+                assert result.returncode == 0
+        assert _cm_git(root, 'rev-parse', 'FETCH_HEAD') == f['canonical']
+        assert _cm_git(root, 'rev-parse', '--is-shallow-repository') == batch_shallow[0]
+    else:
+        with pytest.raises((RuntimeError, _cm_subprocess.CalledProcessError)):
+            _cm_prepare(f, hook=boundary_hook)
+    assert len(removed) == len(batch_count) == 1
+    assert sum('--stdin' in command for command in f['fetches']) == 1
+    batch_inputs = [value for command, value in zip(f['fetches'], f['fetch_inputs']) if '--stdin' in command]
+    assert batch_inputs == [''.join(oid + '\n' for oid in sorted(removed))]
+    assert _cm_git(root, 'rev-parse', 'HEAD') == original_head
+    assert (root / '.git/index').read_bytes() == original_index
+    assert {str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in root.rglob('*') if path.is_file()
+            and not path.is_relative_to(root / '.git')} == original_files
+
+
+def test_canonical_frozen_blob_from_packed_smart_http(tmp_path):
+    """A real promisor batch must acquire a missing base blob from packed HTTP.
+
+    Distinct baseline blobs matter: an identical blob at another checkout path
+    would already hydrate the old theme and conceal this connectivity failure.
+    """
+    import http.server
+    import threading
+    import urllib.parse
+
+    f = _cm_fixture(tmp_path, changed_frozen=True, full_checkout=True,
+                    distinct_frozen=True)
+    source = f['source']
+    _cm_git(source, 'config', 'uploadpack.allowFilter', 'true')
+    _cm_git(source, 'config', 'uploadpack.allowReachableSHA1InWant', 'true')
+    _cm_git(source, 'repack', '-adb', '--write-bitmap-index')
+    _cm_git(source, 'prune-packed')
+    assert list((source / '.git/objects/pack').glob('*.bitmap'))
+    backend = Path(_cm_git(source, '--exec-path')) / 'git-http-backend'
+    assert backend.is_file(), 'Git smart HTTP backend is required by this regression'
+    requests = []
+    backend_errors = []
+
+    class GitHandler(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_GET(self):
+            self.handle_git()
+
+        def do_POST(self):
+            self.handle_git()
+
+        def handle_git(self):
+            uri = urllib.parse.urlsplit(self.path)
+            if (not uri.path.startswith('/source/.git/') or
+                    not uri.path.endswith(('/info/refs', '/git-upload-pack'))):
+                self.send_error(404)
+                return
+            size = int(self.headers.get('Content-Length', '0'))
+            if not 0 <= size < 1024 * 1024:
+                self.send_error(413)
+                return
+            env = PACK._trusted_git_environment(source)
+            env.update(GIT_PROJECT_ROOT=str(tmp_path), GIT_HTTP_EXPORT_ALL='1',
+                       REQUEST_METHOD=self.command, PATH_INFO=uri.path,
+                       QUERY_STRING=uri.query,
+                       CONTENT_TYPE=self.headers.get('Content-Type', ''),
+                       CONTENT_LENGTH=str(size), SERVER_PROTOCOL=self.protocol_version,
+                       REMOTE_ADDR='127.0.0.1', SERVER_NAME='localhost',
+                       SERVER_PORT=str(self.server.server_port))
+            if self.headers.get('Git-Protocol'):
+                env['GIT_PROTOCOL'] = self.headers['Git-Protocol']
+            result = _cm_subprocess.run(
+                [str(backend)], input=self.rfile.read(size), env=env,
+                capture_output=True, timeout=30,
+            )
+            separator = b'\r\n\r\n' if b'\r\n\r\n' in result.stdout else b'\n\n'
+            headers, found, body = result.stdout.partition(separator)
+            if result.returncode or not found:
+                backend_errors.append((result.returncode, result.stderr))
+                self.send_error(502)
+                return
+            status, outgoing = 200, []
+            for line in headers.decode().splitlines():
+                key, _, value = line.partition(':')
+                if key.lower() == 'status':
+                    status = int(value.strip().split()[0])
+                else:
+                    outgoing.append((key, value.strip()))
+            requests.append((self.command, uri.path, status))
+            self.send_response(status)
+            for key, value in outgoing:
+                self.send_header(key, value)
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), GitHandler)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.start()
+    try:
+        root = tmp_path / 'http-blobless-checkout'
+        origin = f'http://127.0.0.1:{server.server_port}/source/.git'
+        _cm_git(tmp_path, 'clone', '-q', '--filter=blob:none', '--no-checkout',
+                '--single-branch', '--branch=tested', '--config=gc.auto=0',
+                '--config=maintenance.auto=false', origin, root)
+        _cm_git(root, 'checkout', '-q', '--detach', f['tested'])
+        f['checkout'] = root
+        base = _cm_git(source, 'merge-base', f['canonical'], f['tested'])
+        old = _cm_git(source, 'rev-parse', base + ':templates/theme.css')
+        new = _cm_git(source, 'rev-parse', f['tested'] + ':templates/theme.css')
+        assert old != new
+        offline = PACK._trusted_git_environment(root)
+        offline.update(GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL='')
+
+        def probe(oid):
+            return _cm_subprocess.run(
+                ['git', 'cat-file', '--batch-check=%(objectname) %(objecttype)'],
+                cwd=root, env=offline, input=oid + '\n', text=True,
+                capture_output=True, check=True,
+            ).stdout.strip()
+
+        assert probe(old) == old + ' missing'
+        assert probe(new) == new + ' blob'
+        before = {
+            'HEAD': _cm_git(root, 'rev-parse', 'HEAD'),
+            'index': (root / '.git/index').read_bytes(),
+            'config': (root / '.git/config').read_bytes(),
+            'files': {str(path.relative_to(root)): path.read_bytes()
+                      for path in root.rglob('*') if path.is_file()
+                      and not path.is_relative_to(root / '.git')},
+        }
+        assert _cm_prepare(f) == f['canonical']
+        assert probe(old) == old + ' blob'
+        assert _cm_git(root, 'rev-parse', 'HEAD') == before['HEAD']
+        assert (root / '.git/index').read_bytes() == before['index']
+        assert (root / '.git/config').read_bytes() == before['config']
+        assert {str(path.relative_to(root)): path.read_bytes()
+                for path in root.rglob('*') if path.is_file()
+                and not path.is_relative_to(root / '.git')} == before['files']
+        assert _cm_git(root, 'rev-parse', 'origin/main') == f['canonical']
+        assert _cm_git(root, 'rev-parse', 'FETCH_HEAD') == f['canonical']
+        batches = [(cmd, value) for cmd, value in
+                   zip(f['fetches'], f['fetch_inputs']) if '--stdin' in cmd]
+        assert len(batches) == 1
+        assert batches[0][1] == old + '\n'
+        assert batches[0][0][:3] == ['git', '-c', 'fetch.negotiationAlgorithm=noop']
+        assert '--filter=blob:none' in batches[0][0]
+        assert '--no-write-fetch-head' in batches[0][0]
+        assert not backend_errors
+        assert requests and all(status == 200 for _, _, status in requests)
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(5)
+        assert not thread.is_alive()
+
+
+def im14_job():
+    return next(job for job in PACK.load_legacy_jobs(MANIFEST) if job.job_id == PACK.IM14_BROWSER_JOB_ID)
+
+
+def test_setup_contract_keeps_budget_owner_and_assertions():
+    job = im14_job()
+    spec, = PACK._browser_setup_contract(job)
+    assert spec["timeout_minutes"] == job.definition["timeout-minutes"] == 20
+    assert "acquisition" not in spec
+    assert PACK.IM14_BROWSER_SETUP_COMMAND == spec["command"]
+    ids = [step.proof_id for step in PACK.semantic_step_specs(job)]
+    assert "install browser test dependencies" not in ids
+    assert ids == ["IM14 browser setup contract",
+                   "canonical base for the frozen-file guard (fail closed)",
+                   "IM14 market dossier tests (W2B)", "IM14 market dossier browser proof (W2B)"]
+    with pytest.raises(PACK.ManifestError, match="original owner and job deadline"):
+        PACK._browser_setup_contract(PACK.replace(job, job_id="other"))
+    with pytest.raises(PACK.ManifestError, match="original owner and job deadline"):
+        PACK._browser_setup_contract(PACK.replace(job, definition={**job.definition, "timeout-minutes": 21}))
+
+
+@pytest.mark.parametrize("outcome,settlement,infrastructure", [
+    ("failed", None, "dependency_failed"),
+    ("timed_out", "unknown", "unknown"),
+])
+def test_failed_setup_cannot_run_browser_or_create_semantic_replay_target(
+    monkeypatch, outcome, settlement, infrastructure
+):
+    job = im14_job()
+    calls = []
+    monkeypatch.setattr(PACK, "_restore_workspace", lambda *_: None)
+    monkeypatch.setattr(PACK, "_prepare_provided_actions", lambda *_, **__: None)
+
+    def stream(command, **kwargs):
+        calls.append(command)
+        if command.startswith("python -I - "):
+            with os.fdopen(os.dup(kwargs["stdin"]), "rb") as verified:
+                assert verified.read() == (ROOT / "scripts/ci_im14_browser_setup.py").read_bytes()
+            return PACK.CommandObservation(outcome=outcome, returncode=100 if outcome == "failed" else None,
+                                           detail="original APT result", timeout_settlement=settlement)
+        assert command.startswith("python -m pytest tests/test_ci_im14_browser_setup.py")
+        return PACK.CommandObservation(outcome="passed", returncode=0)
+
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    result = PACK._run_job(job, base_ref="main", head_ref="test", command_env={})
+    assert len(calls) == 2
+    assert result.infrastructure["outcome"] == infrastructure
+    assert result.timeout_settlement == settlement
+    assert [step["outcome"] for step in result.steps] == ["passed"] + ["infrastructure_blocked"] * 3
+
+
+def test_later_browser_assertion_failure_cannot_launch_old_privileged_base(monkeypatch):
+    monkeypatch.setattr(PACK, "_exact_base_worktree",
+                        lambda *_, **__: pytest.fail("IM14 base setup is not replayable"))
+    step = {"outcome": "failed", "proof_id": "IM14 market dossier browser proof (W2B)"}
+    plan = SimpleNamespace(role="pr_head", base_sha="a" * 40)
+    PACK._run_exact_base_replays(root=Path("."), plan=plan, records=[
+        {"logical_job_id": PACK.IM14_BROWSER_JOB_ID, "steps": [step]},
+    ], budget_seconds=120)
+    assert step["base_replay"]["outcome"] == "unavailable"
+
+@pytest.mark.parametrize("shape", ["different-bytes", "symlink", "directory-symlink"])
+def test_im14_refuses_candidate_helper_mismatch_before_process_start(tmp_path, monkeypatch, shape):
+    setup, = PACK._browser_setup_contract(im14_job())
+    control = ROOT / "scripts/ci_im14_browser_setup.py"
+    scripts = tmp_path / "scripts"
+    if shape == "directory-symlink":
+        scripts.symlink_to(control.parent, target_is_directory=True)
+    else:
+        scripts.mkdir()
+        candidate = scripts / control.name
+        if shape == "symlink":
+            candidate.symlink_to(control)
+        else:
+            candidate.write_text("raise SystemExit('different candidate')\n")
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(PACK, "_stream_command", lambda *a, **kw: pytest.fail("process started"))
+    result = PACK._run_im14_browser_setup(
+        setup, job_deadline=PACK.time.monotonic() + 10, command_env={},
+    )
+    assert result.outcome == "failed" and result.timeout_settlement is None
+    assert "no launch" in result.detail
+
+
+def test_im14_launches_a_verified_snapshot_even_if_candidate_changes(tmp_path, monkeypatch):
+    setup, = PACK._browser_setup_contract(im14_job())
+    control = ROOT / "scripts/ci_im14_browser_setup.py"
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    original = control.read_bytes()
+    candidate = scripts / control.name
+    candidate.write_bytes(original)
+    monkeypatch.chdir(tmp_path)
+
+    def stream(command, **kwargs):
+        candidate.write_bytes(b"changed after verification")
+        assert command.startswith("python -I - ")
+        with os.fdopen(os.dup(kwargs["stdin"]), "rb") as snapshot:
+            assert snapshot.read() == original
+        return PACK.CommandObservation(outcome="passed", returncode=0)
+
+    monkeypatch.setattr(PACK, "_stream_command", stream)
+    result = PACK._run_im14_browser_setup(
+        setup, job_deadline=PACK.time.monotonic() + 10, command_env={},
+    )
+    assert result.outcome == "passed"
+
+def test_im14_nested_root_timeout_stays_unknown(monkeypatch):
+    setup, = PACK._browser_setup_contract(im14_job())
+    monkeypatch.setattr(PACK, "_stream_command",
+                        lambda *a, **kw: PACK.CommandObservation(outcome="failed", returncode=124))
+    result = PACK._run_im14_browser_setup(
+        setup, job_deadline=PACK.time.monotonic() + 10, command_env={},
+    )
+    assert result.outcome == "timed_out"
+    assert result.timeout_settlement == "unknown"

@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -1312,13 +1313,7 @@ def test_missing_store_annotates_at_line_start_and_exits_zero(tmp_path):
     """House annotation law: bare print, '::' first on the line, exit 0."""
     data_dir = tmp_path / "data"
     (data_dir / "massive_stock_day").mkdir(parents=True)
-    proc = subprocess.run(
-        [sys.executable, "-m", "scripts.build_price_pressure",
-         "--data-root", str(data_dir)],
-        cwd=str(ROOT), capture_output=True, text=True, timeout=300,
-        env={"PATH": "/usr/bin:/bin", "PYTHONPATH": str(ROOT), "TZ": "UTC",
-             "HOME": str(tmp_path)},
-    )
+    proc = _run_builder(data_dir, tmp_path)
     assert proc.returncode == 0, proc.stderr[-2000:]
     hits = [ln for ln in proc.stdout.splitlines()
             if ln.startswith("::warning title=price-pressure-store-stale::")]
@@ -1376,13 +1371,72 @@ def _restored_ledger(data_dir: Path, max_date: str) -> Path:
     return pp_ledger.ledger_path(data_dir)
 
 
+@pytest.mark.parametrize("include_selected", [True, False])
+def test_builder_child_preserves_only_the_selected_loader_directory(
+    tmp_path, monkeypatch, include_selected,
+):
+    prefix = tmp_path / "selected-python"
+    library_dir = prefix / "lib"
+    library_dir.mkdir(parents=True)
+    alias = tmp_path / "tool-cache-alias"
+    alias.symlink_to(library_dir, target_is_directory=True)
+    foreign = tmp_path / "other-python"
+    foreign.mkdir()
+    entries = [str(foreign), "relative", str(tmp_path / "missing")]
+    if include_selected:
+        entries.append(str(alias))
+    monkeypatch.setattr(sys, "platform", "linux")
+    monkeypatch.setattr(sys, "base_prefix", str(prefix))
+    monkeypatch.setenv("LD_LIBRARY_PATH", os.pathsep.join(entries))
+    monkeypatch.setenv("LD_PRELOAD", "unrelated-library.so")
+    monkeypatch.setenv("UNRELATED_TEST_ENV", "must-stay-in-parent")
+    invocations = []
+
+    def run(args, **kwargs):
+        invocations.append((args, kwargs))
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setattr(subprocess, "run", run)
+    data_dir = tmp_path / "data"
+    assert _run_builder(data_dir, tmp_path).returncode == 0
+
+    expected_env = {
+        "PATH": "/usr/bin:/bin", "PYTHONPATH": str(ROOT), "TZ": "UTC",
+        "HOME": str(tmp_path),
+    }
+    if include_selected:
+        expected_env["LD_LIBRARY_PATH"] = str(library_dir.resolve())
+    assert invocations == [
+        ([sys.executable, "-m", "scripts.build_price_pressure",
+          "--data-root", str(data_dir)],
+         {"cwd": str(ROOT), "capture_output": True, "text": True,
+          "timeout": 300, "env": expected_env}),
+    ]
+
+
 def _run_builder(data_dir: Path, tmp_path: Path):
+    environment = {
+        "PATH": "/usr/bin:/bin", "PYTHONPATH": str(ROOT), "TZ": "UTC",
+        "HOME": str(tmp_path),
+    }
+    # A shared tool-cache build needs its own libpython in the allowlisted child.
+    if sys.platform.startswith("linux") and (loader_paths := os.environ.get("LD_LIBRARY_PATH")):
+        library_dir = Path(sys.base_prefix).resolve(strict=True) / "lib"
+        for entry in loader_paths.split(os.pathsep):
+            candidate = Path(entry)
+            if not candidate.is_absolute():
+                continue
+            try:
+                resolved = candidate.resolve(strict=True)
+            except (OSError, RuntimeError):
+                continue
+            if resolved == library_dir and resolved.is_dir():
+                environment["LD_LIBRARY_PATH"] = str(library_dir)
+                break
     return subprocess.run(
         [sys.executable, "-m", "scripts.build_price_pressure",
          "--data-root", str(data_dir)],
-        cwd=str(ROOT), capture_output=True, text=True, timeout=300,
-        env={"PATH": "/usr/bin:/bin", "PYTHONPATH": str(ROOT), "TZ": "UTC",
-             "HOME": str(tmp_path)},
+        cwd=str(ROOT), capture_output=True, text=True, timeout=300, env=environment,
     )
 
 

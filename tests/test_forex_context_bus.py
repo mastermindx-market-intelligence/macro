@@ -2079,12 +2079,19 @@ def test_r15_context_bus_has_one_code_gated_run_owner():
     manifest = Path(__file__).resolve().parents[1] / '.github/ci/legacy-jobs.yml'
     jobs = yaml.safe_load(manifest.read_text())['jobs']
     suite = 'tests/test_forex_context_bus.py'
-    owners = [(name, job) for name, job in jobs.items()
-              if any(suite in shlex.split(step.get('run', ''))
-                     for step in job.get('steps', []))]
-    assert [(name, job.get('gate', 'code')) for name, job in owners] == [('data-base-shim', 'code')]
-    runs = [step['run'] for step in owners[0][1]['steps'] if suite in step.get('run', '')]
-    assert len(runs) == 1 and '-k' not in shlex.split(runs[0])
+    runs = []
+    for name, job in jobs.items():
+        for step in job.get('steps', []):
+            # Full-line shell comments are prose and can contain unmatched quotes.
+            executable = '\n'.join(
+                line for line in step.get('run', '').split('\n')
+                if not line.lstrip(' \t').startswith('#')
+            )
+            args = shlex.split(executable)
+            if suite in args:
+                runs.append((name, job.get('gate', 'code'), args))
+    assert [(name, gate) for name, gate, _ in runs] == [('data-base-shim', 'code')]
+    assert '-k' not in runs[0][2]
     assert jobs['unrun-macro-panels']['gate'] == 'data'
     assert any('tests/test_forex.py' in step.get('run', '')
                for step in jobs['unrun-macro-panels']['steps'])

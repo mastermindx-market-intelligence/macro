@@ -1,0 +1,314 @@
+"""Protected dispatch wiring: candidate code cannot authenticate its own proof."""
+from pathlib import Path
+import yaml
+import ast
+import re
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def workflow():
+    return yaml.safe_load((ROOT / '.github/workflows/ci.yml').read_text())
+
+
+def test_admitted_pr_inputs_are_bounded_and_do_not_replace_main_baseline():
+    doc=workflow();inputs=doc.get('on',doc.get(True))['workflow_dispatch']['inputs']
+    assert set(inputs)=={'expected_sha','proof_role','admission_generation','admission_artifact_id',
+        'admission_payload_sha256','pr_number','subject_head_sha','tested_base_sha','tested_merge_sha',
+        'expected_workflow_definition_sha'}
+    assert all(i['type']=='string' and i['required'] is False for i in inputs.values())
+    assert 'inputs.admission_generation' in doc['concurrency']['group']
+    assert 'github.run_id' in doc['concurrency']['group']
+
+
+def test_readonly_protected_resolver_precedes_every_candidate_job():
+    jobs=workflow()['jobs'];gate=jobs['ci-admission']
+    assert gate['runs-on']=='ubuntu-latest' and gate['timeout-minutes']<=5
+    assert gate['permissions']=={'contents':'read','actions':'read','pull-requests':'read'}
+    checkout=next(s for s in gate['steps'] if 'checkout@' in s.get('uses',''))
+    assert checkout['with']['ref']=='${{ github.workflow_sha }}'
+    assert checkout['with']['persist-credentials'] is False
+    resolver=next(s for s in gate['steps'] if s.get('id')=='resolve')
+    assert 'python3 -I scripts/resolve_ci_pr_admission.py' in resolver['run']
+    assert resolver['env']['GITHUB_WORKFLOW_SHA']=='${{ github.workflow_sha }}'
+    assert resolver['env']['CI_PR_ADMISSION_INPUTS']=='${{ toJSON(inputs) }}'
+    assert 'secrets.ADMIN' not in str(gate)
+    assert jobs['ci-plan']['needs']==['ci-admission']
+    assert "needs.ci-admission.result == 'success'" in jobs['ci-plan']['if']
+    assert 'inputs.tested_merge_sha' not in str(jobs['ci-plan']['steps'])
+
+
+def test_exact_resolved_identity_reaches_execution_and_contract_gate():
+    jobs=workflow()['jobs'];plan=jobs['ci-plan']
+    checkout=next(s for s in plan['steps'] if s.get('name')=='check out the exact candidate')
+    assert 'needs.ci-admission.outputs.tested_commit' in checkout['with']['ref']
+    identity=next(s for s in plan['steps'] if s.get('id')=='identity')
+    assert identity['env']['ADMISSION_GENERATION']=='${{ needs.ci-admission.outputs.admission_generation }}'
+    assert 'ADMITTED_BASE' in identity['run'] and 'ADMITTED_HEAD' in identity['run']
+    assert 'admission_generation' in plan['outputs']
+    pack=jobs['ci-pack'];contract=jobs['contract-delta']
+    pack_checkout=next(s for s in pack['steps'] if s.get('name')=='check out the exact candidate')
+    assert pack_checkout['with']['ref']=='${{ needs.ci-plan.outputs.tested_tree_sha }}'
+    assert contract['needs']==['ci-plan']
+    assert "needs.ci-plan.outputs.semantic_role == 'pr_head'" in contract['if']
+    contract_checkout=next(s for s in contract['steps'] if s.get('name')=='check out the exact candidate')
+    assert contract_checkout['with']['ref']=='${{ needs.ci-plan.outputs.tested_tree_sha }}'
+    contract_gate=next(s for s in jobs['ci-gate']['steps'] if s.get('name')=='enforce contract-delta verdict')
+    assert "PR_PROOF" in contract_gate['env']
+    assert '!= "success"' in contract_gate['run']
+
+
+def test_planner_and_pack_use_protected_bundle_for_admitted_mode():
+    jobs=workflow()['jobs']
+    for key in ('ci-plan','ci-pack'):
+        steps=jobs[key]['steps']
+        bundle=next(s for s in steps if s.get('name')=='retain protected proof control bundle')
+        assert 'ci-proof-control' in bundle['run']
+        assert '-I ' in str(steps)
+    run=next(s for s in jobs['ci-plan']['steps'] if s.get('name')=='plan the CI packs once')
+    assert '--admission-generation' in run['env']['CI_ADMISSION_ARG']
+    assert 'CONTROL_ROOT' in run['run']
+    pack=next(s for s in jobs['ci-pack']['steps'] if s.get('name')=='validate and run legacy CI pack')
+    assert '--expect-admission-generation' in pack['run']
+    assert 'CONTROL_ROOT' in pack['run']
+
+
+def test_incumbent_controller_serializes_receipt_upload_before_each_effect():
+    doc=yaml.safe_load((ROOT/'.github/workflows/merge-on-green.yml').read_text())
+    assert doc['permissions']['checks']=='write'
+    text=(ROOT/'.github/workflows/merge-on-green.yml').read_text()
+    assert "github.event.workflow_run.name == 'ci'" in text
+    jobs=doc['jobs'];sweep=jobs['sweep'];steps=sweep['steps']
+    commands=[(i,s) for i,s in enumerate(steps) if 'ci_admission_stages.py' in s.get('run','')]
+    actions = ['migration-prepare', 'migration-apply', 'bind-native', 'finalize-native',
+               'complete', 'prepare', 'reserve', 'dispatch', 'finalize',
+               'bind-native-wait', 'finalize-native']
+    assert [s['run'] for _, s in commands] == [
+        'python3 -I scripts/ci_admission_stages.py ' + action for action in actions
+    ]
+    # Each original binding is uploaded before its own finalizer; a queued
+    # response or the other generation's artifact is not execution evidence.
+    by_id = {s.get('id'): (i, s) for i, s in enumerate(steps) if s.get('id')}
+    for command_index, binder, upload in ((2, 'native_bind', 'native_bound'),
+                                         (9, 'native_same_original', 'native_same_bound')):
+        bind_index, bind = by_id[binder]
+        upload_index, receipt = by_id[upload]
+        final_index, final = commands[command_index + 1]
+        assert commands[command_index][0] == bind_index < upload_index < final_index
+        assert receipt['if'] == 'steps.' + binder + ".outputs.bound == 'true'"
+        assert final['if'] == 'steps.' + upload + ".outcome == 'success'"
+        assert final['env']['ARTIFACT_ID'] == '${{ steps.' + upload + '.outputs.artifact-id }}'
+    for i,step in enumerate(steps):
+        if 'upload-artifact@' in step.get('uses',''):
+            assert step['with'].get('overwrite',False) is False
+            assert step['with']['if-no-files-found']=='error'
+    checkout=next(s for s in steps if 'checkout@' in s.get('uses',''))
+    assert checkout['with']['ref']=='${{ github.workflow_sha }}'
+    assert checkout['with']['persist-credentials'] is False
+    assert '.github/ci/legacy-jobs.yml' in checkout['with']['sparse-checkout']
+
+
+def test_job_environment_uses_only_job_available_contexts():
+    # GitHub validates jobs.<id>.env before a runner exists, including skipped jobs.
+    # runner.* is legal in a step; it makes the whole workflow invalid here.
+    for name, job in workflow()['jobs'].items():
+        assert 'runner.' not in str(job.get('env', {})), name
+    for name in ('ci-plan', 'ci-pack', 'contract-delta'):
+        assert workflow()['jobs'][name]['env']['CONTROL_ROOT'] == '${{ github.workspace }}'
+
+
+def test_admitted_bundle_binds_control_root_before_candidate_checkout(tmp_path):
+    import os
+    import subprocess
+    for name in ('ci-plan', 'ci-pack', 'contract-delta'):
+        steps = workflow()['jobs'][name]['steps']
+        bundle_index = next(i for i, s in enumerate(steps)
+                            if s.get('name') == 'retain protected proof control bundle')
+        candidate_index = next(i for i, s in enumerate(steps)
+                               if s.get('name') == 'check out the exact candidate')
+        assert bundle_index < candidate_index
+        root = tmp_path / name
+        root.mkdir()
+        (root / 'scripts').mkdir()
+        (root / 'scripts' / 'control.py').write_text('# protected bytes')
+        temporary = root / 'runner temp'
+        temporary.mkdir()
+        env_file = root / 'step-env'
+        env_file.touch()
+        env = dict(os.environ, RUNNER_TEMP=str(temporary), GITHUB_ENV=str(env_file))
+        subprocess.run(['bash', '-c', steps[bundle_index]['run']], cwd=root, env=env, check=True)
+        expected = temporary / 'ci-proof-control'
+        assert env_file.read_text() == f'CONTROL_ROOT={expected}\n'
+        assert (expected / 'scripts' / 'control.py').read_text() == '# protected bytes'
+
+
+def test_foundation_preserves_zero_input_executor_and_no_pr_target():
+    doc = workflow()
+    assert 'pull_request' in doc.get('on', doc.get(True))
+    caller = doc['jobs']['trusted-ci']
+    assert caller['uses'] == 'mastermindx-market-intelligence/macro/.github/workflows/trusted-ci-executor.yml@main'
+    assert not caller.get('with')  # Installed legacy callee declares no inputs.
+    assert caller['if'] == ("!cancelled() && needs.ci-plan.result == 'success' && needs.ci-plan.outputs.has_work == 'true' && "
+                            "github.event_name != 'merge_group' && "
+                            "github.event.pull_request.head.repo.full_name == github.repository && "
+                            "vars.CI_EXECUTION_ROUTE == 'pc'")
+    callee = yaml.safe_load((ROOT / '.github/workflows/trusted-ci-executor.yml').read_text())
+    assert callee.get('on', callee.get(True))['workflow_call'].get('inputs', {}) == {}
+    sweep = yaml.safe_load((ROOT / '.github/workflows/merge-on-green.yml').read_text())
+    assert 'pull_request_target' not in sweep.get('on', sweep.get(True))
+    controller = yaml.safe_load((ROOT / '.github/workflows/merge-on-green.yml').read_text())
+    steps = controller['jobs']['sweep']['steps']
+    reserve = next(s for s in steps if s.get('id') == 'admission_reserve')
+    assert "steps.admission_prepare.outputs.ready == 'true'" in reserve['if']
+    complete = next(s for s in steps if s.get('name') == 'reconcile original admitted completion')
+    assert 'ready' not in complete.get('if', '')
+
+
+def _source_only_job_predicate(expression, values):
+    """Evaluate only this source boolean subset, not GitHub scheduling semantics.
+
+    No model of implicit success(), ancestor propagation, or hosted execution is
+    claimed. Explicit status-function presence is asserted separately below.
+    """
+    for key in sorted(values, key=len, reverse=True):
+        expression = expression.replace(key, repr(values[key]))
+    expression = expression.replace('&&', ' and ').replace('||', ' or ')
+    expression = re.sub(r'!(?!=)', ' not ', expression).strip()
+    tree = ast.parse(expression, mode='eval')
+    allowed = (ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.UnaryOp,
+               ast.Not, ast.Compare, ast.Eq, ast.NotEq, ast.Constant)
+    assert all(isinstance(node, allowed) for node in ast.walk(tree))
+    return eval(compile(tree, '<source-only-job-predicate>', 'eval'), {'__builtins__': {}}, {})
+
+
+@pytest.mark.parametrize('job', ['contract-delta', 'trusted-ci'])
+def test_proof_consumers_have_explicit_status_and_successful_plan(job):
+    condition = workflow()['jobs'][job]['if']
+    assert condition.startswith("!cancelled() && needs.ci-plan.result == 'success' && ")
+
+
+@pytest.mark.parametrize('job,changes,expected', [
+    ('contract-delta', {}, True),
+    ('contract-delta', {'github.event_name': 'merge_group', 'needs.ci-plan.outputs.semantic_role': 'merge_group'}, True),
+    ('contract-delta', {'cancelled()': True}, False),
+    ('contract-delta', {'needs.ci-plan.result': 'failure'}, False),
+    ('contract-delta', {'needs.ci-plan.result': 'skipped'}, False),
+    ('contract-delta', {'needs.ci-plan.outputs.semantic_role': 'main'}, False),
+    # Main-owned PC fallback remains zero-input; admitted dispatches are hosted.
+    ('trusted-ci', {}, True),
+    ('trusted-ci', {'github.event_name': 'merge_group'}, False),
+    ('trusted-ci', {'cancelled()': True}, False),
+    ('trusted-ci', {'needs.ci-plan.result': 'failure'}, False),
+    ('trusted-ci', {'needs.ci-plan.result': 'skipped'}, False),
+    ('trusted-ci', {'github.event.pull_request.head.repo.full_name': ''}, False),
+    ('trusted-ci', {'github.event.pull_request.head.repo.full_name': 'other/repo'}, False),
+    ('trusted-ci', {'vars.CI_EXECUTION_ROUTE': 'hosted'}, False),
+    ('trusted-ci', {'needs.ci-plan.outputs.has_work': 'false'}, False),
+])
+def test_explicit_consumer_predicate_source_cases(job, changes, expected):
+    # Native PR shape: resolver skipped, plan independently succeeded. This
+    # establishes the expression's value only; GitHub must qualify scheduling.
+    values = {'cancelled()': False, 'github.event_name': 'pull_request',
+              'needs.ci-admission.result': 'skipped',
+              'needs.ci-plan.result': 'success',
+              'needs.ci-plan.outputs.semantic_role': 'pr_head',
+              'github.event.pull_request.head.repo.full_name': 'macro/repo',
+               'github.repository': 'macro/repo',
+              'needs.ci-plan.outputs.has_work': 'true',
+              'vars.CI_EXECUTION_ROUTE': 'pc'}
+    values.update(changes)
+    condition = workflow()['jobs'][job]['if']
+    assert _source_only_job_predicate(condition, values) is expected
+
+
+@pytest.mark.parametrize('event,name,branch,conclusion,job_ready,stage_ready', [
+    ('workflow_run','fences','cutover-candidate','success',True,True),
+    ('workflow_run','fences','cutover-candidate','failure',True,False),
+    ('workflow_run','fences','main','success',False,False),
+    ('workflow_run','ci','cutover-candidate','failure',True,True),
+    ('schedule','','','',True,True),
+])
+def test_hosted_cutover_natural_fences_wake_source_contract(event,name,branch,conclusion,job_ready,stage_ready):
+    import re
+    fences=yaml.safe_load((ROOT/'.github/workflows/fences.yml').read_text())
+    assert fences['name']=='fences'
+    # Default PR activities are opened/synchronize/reopened; no paths or draft
+    # filter suppresses this source trigger. This is not a hosted-run assertion.
+    assert fences.get('on',fences.get(True))['pull_request']=={'branches':['main']}
+    sweep=yaml.safe_load((ROOT/'.github/workflows/merge-on-green.yml').read_text())
+    events=sweep.get('on',sweep.get(True))
+    assert 'pull_request_target' not in events
+    assert events['workflow_run']=={'workflows':['ci','fences','integration-baseline'],'types':['requested','completed']}
+    job=sweep['jobs']['sweep']
+    values={'github.event_name':event,'github.event.workflow_run.name':name,
+            'github.event.workflow_run.head_branch':branch,
+            'github.event.workflow_run.conclusion':conclusion,
+            'github.event.action':'completed','github.event.workflow_run.event':'pull_request',
+            'steps.native_bind.outputs.bound':'false','cancelled()':False}
+    def source_bool(expression):
+        for key in sorted(values,key=len,reverse=True):expression=expression.replace(key,repr(values[key]))
+        expression=re.sub(r'!(?!=)',' not ',expression).replace('&&',' and ').replace('||',' or ').strip()
+        tree=ast.parse(expression,mode='eval')
+        assert all(isinstance(n,(ast.Expression,ast.BoolOp,ast.And,ast.Or,ast.UnaryOp,ast.Not,ast.Compare,ast.Eq,ast.NotEq,ast.Constant)) for n in ast.walk(tree))
+        return bool(eval(compile(tree,'<source-only-wake>','eval'),{'__builtins__':{}},{}))
+    assert source_bool(job['if']) is job_ready
+    for step in job['steps']:
+        if step.get('id')=='admission_prepare' or step.get('name')=='reconcile original admitted completion':
+            assert (job_ready and source_bool(step['if'])) is stage_ready
+    assert job['concurrency']['cancel-in-progress'] is False
+    assert job['steps'][0]['with']['ref']=='${{ github.workflow_sha }}'
+
+
+def test_migration_workflow_retains_original_intent_apply_outcome_boundaries():
+    doc=yaml.safe_load((ROOT/'.github/workflows/merge-on-green.yml').read_text())
+    steps=doc['jobs']['sweep']['steps'];by_id={s.get('id'):s for s in steps}
+    assert doc['jobs']['sweep']['timeout-minutes']==15
+    assert by_id['migration_prepare']['run']=='python3 -I scripts/ci_admission_stages.py migration-prepare'
+    assert by_id['migration_apply']['if']=="steps.migration_intent.outcome == 'success'"
+    assert by_id['migration_apply']['env']['ARTIFACT_ID']=='${{ steps.migration_intent.outputs.artifact-id }}'
+    assert by_id['migration_outcome']['if']=="steps.migration_apply.outputs.settled == 'true'"
+    for kind in ('intent','outcome'):
+        step=by_id['migration_'+kind]
+        assert step['uses']=='actions/upload-artifact@v4'
+        assert step['with']['overwrite'] is False
+        assert step['with']['retention-days']==90
+    assert steps.index(by_id['migration_intent'])<steps.index(by_id['migration_apply'])<steps.index(by_id['migration_outcome'])
+
+@pytest.mark.parametrize('name,event,action,branch,conclusion,expected', [
+    ('ci','merge_group','requested','gh-readonly-queue/pilot','',True),
+    ('ci','pull_request','requested','source','',False),
+    ('fences','push','completed','main','success',True),
+])
+def test_native_requested_binding_and_protected_landing_wakes(name,event,action,branch,conclusion,expected):
+    doc=yaml.safe_load((ROOT/'.github/workflows/merge-on-green.yml').read_text())
+    values={'github.event_name':'workflow_run','github.event.action':action,
+            'github.event.workflow_run.name':name,'github.event.workflow_run.event':event,
+            'github.event.workflow_run.head_branch':branch,'github.event.workflow_run.conclusion':conclusion}
+    assert _source_only_job_predicate(doc['jobs']['sweep']['if'],values) is expected
+
+
+def test_bound_original_keeps_completion_but_defers_new_preparation():
+    doc=yaml.safe_load((ROOT/'.github/workflows/merge-on-green.yml').read_text())
+    steps=doc['jobs']['sweep']['steps']
+    values={'github.event_name':'workflow_run','github.event.workflow_run.name':'ci',
+            'github.event.workflow_run.conclusion':'success',
+            'steps.native_bind.outputs.bound':'true','cancelled()':False}
+    prepare=next(s for s in steps if s.get('id')=='admission_prepare')
+    complete=next(s for s in steps if s.get('run')=='python3 -I scripts/ci_admission_stages.py complete')
+    assert _source_only_job_predicate(prepare['if'],values) is False
+    assert _source_only_job_predicate(complete['if'],values) is True
+
+
+@pytest.mark.parametrize('mutation',['missing_binding','early_finalize','wrong_original_artifact'])
+def test_native_receipt_order_contract_rejects_changed_custody(monkeypatch,mutation):
+    doc=yaml.safe_load((ROOT/'.github/workflows/merge-on-green.yml').read_text())
+    steps=doc['jobs']['sweep']['steps']
+    binder=next(i for i,s in enumerate(steps) if s.get('id')=='native_bind')
+    upload=next(i for i,s in enumerate(steps) if s.get('id')=='native_bound')
+    final=next(i for i,s in enumerate(steps) if s.get('run')=='python3 -I scripts/ci_admission_stages.py finalize-native')
+    if mutation=='missing_binding':steps.pop(binder)
+    elif mutation=='early_finalize':steps[upload],steps[final]=steps[final],steps[upload]
+    else:steps[final]['env']['ARTIFACT_ID']='${{ steps.native_same_bound.outputs.artifact-id }}'
+    monkeypatch.setattr(yaml,'safe_load',lambda _text:doc)
+    with pytest.raises(AssertionError):test_incumbent_controller_serializes_receipt_upload_before_each_effect()

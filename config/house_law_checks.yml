@@ -1,5 +1,5 @@
 schema: house_law_checks.v1
-updated: "2026-10-21"
+updated: "2026-11-10"
 
 # Canonical registry of every house law and its enforcement status.
 # Maintained by scripts/check_house_law_registry.py (meta-guard).
@@ -149,6 +149,32 @@ checks:
       guard shipped with each got their own emitter fix, and
       tests/test_check_site_asset_refs.py ratchets the empty state so a re-pin has
       to be argued in review rather than riding in with a fresh 404.
+
+  - law_id: ui.shared_shell_publication_review_cue
+    summary: >
+      A successful earnings publication compares its exact before and after
+      commits. Changed public route admissions produce a retained review cue
+      for the existing Shared Shell compatibility owner.
+    source_ref:
+      - scripts/check_shared_shell_publication_delta.py
+      - tests/test_shared_shell_publication_delta.py
+      - .github/workflows/earnings-public-wire.yml
+    severity: hard
+    check_script: scripts/check_shared_shell_publication_delta.py
+    ci_wiring:
+      - workflow: .github/workflows/earnings-public-wire.yml
+        job: publish
+        lane: scheduled
+    selftest: false
+    selftest_exempt_reason: >
+      The existing data-base-shim code gate runs the exact publication
+      comparison and workflow seam tests with synthetic commits.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - A cue records a publication change for review. It does not admit routes
+        to the catalog or prove that a consumer accepted the change.
+    owner_program: shared-shell
 
   - law_id: ui.commodity_publication_integrity
     summary: >

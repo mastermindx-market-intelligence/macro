@@ -371,7 +371,8 @@ def test_staging_evidence_is_uploaded_even_on_a_thin_run():
 
 
 def test_press_paths_reach_ci():
-    paths = _triggers(_load(_CI))["pull_request"]["paths"]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    paths = ci_proof_paths()
     for needed in ("engine/press/**", "scripts/run_press.py", "config/press.yml",
                    "admin/press.py", "tests/test_press_*.py",
                    ".github/workflows/press-publish.yml"):
@@ -381,7 +382,8 @@ def test_press_paths_reach_ci():
 def test_the_estate_check_still_triggers_on_content_changes():
     """--emit writes content/seo/blog and site/blog; the estate drift law has to
     see that."""
-    paths = _triggers(_load(_CI))["pull_request"]["paths"]
+    from scripts.audit_unrun_tests import ci_proof_paths
+    paths = ci_proof_paths()
     assert "content/seo/**" in paths
     assert "scripts/build_free_content.py" in paths
 

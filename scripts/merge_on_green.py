@@ -240,6 +240,7 @@ budget deferred DID run, correctly, so that exits 0.
 from __future__ import annotations
 
 import base64
+import hashlib
 import datetime as dt
 import io
 import json
@@ -247,13 +248,14 @@ import math
 import os
 import re
 import secrets
+import subprocess
 import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any
 
@@ -263,10 +265,12 @@ sys.path.insert(0, str(_ROOT))
 try:  # imported as `scripts.merge_on_green` (the test pack, and any other caller)
     from scripts.gh_path_filter import NEGATION_PREFIX, matching_patterns
     from scripts import ci_semantic_proof as semantic_proof
+    from scripts import ci_proof_admission as proof_admission
     from scripts.ci_authority_paths import AuthorityPathError, is_ci_authority_path
 except ImportError:  # run as `python3 scripts/merge_on_green.py` (the workflow step)
     from gh_path_filter import NEGATION_PREFIX, matching_patterns  # type: ignore[no-redef]
     import ci_semantic_proof as semantic_proof  # type: ignore[no-redef]
+    import ci_proof_admission as proof_admission  # type: ignore[no-redef]
     from ci_authority_paths import (  # type: ignore[no-redef]
         AuthorityPathError,
         is_ci_authority_path,
@@ -356,7 +360,8 @@ MAX_PULL_CAP = 128
 # live bucket is partly spent. These are deliberately pessimistic: the merge writes
 # normally charge MERGE_TOKEN, not READ_TOKEN, but counting them here makes an
 # admitted window affordable even on the fallback token.
-# Extra commit-file pagination reads shared by every PR and commit in one sweep.
+# Extra commit-file pagination and optional proof projection reads share this
+# existing reserve across every PR and commit in one sweep.
 # Exhaustion keeps the affected inventory incomplete; it never clears a proof.
 COMMIT_FILE_PAGE_READ_CAP = 100
 # 87 measured + 5 for the adaptive hosted-pool census (one queued-run read, one
@@ -771,10 +776,10 @@ def is_non_binding_check(name: str, *, base_ref: str = "main") -> bool:
     check = str(name or "")
     if is_spurious_check(check) or check == VERCEL_STATUS_CONTEXT:
         return True
-    return (
-        str(base_ref or "main") == "main"
-        and check == CI_AUTHORITY_INACTIVE_CONTEXT
-    )
+    target=str(base_ref or "main")
+    inactive={'main':CI_AUTHORITY_INACTIVE_CONTEXT,
+              'codex/merge-queue-pilot':'ci-authority/main'}
+    return target in inactive and check==inactive[target]
 
 
 def check_name(run: dict[str, Any]) -> str:
@@ -877,7 +882,21 @@ def is_skip_ci_noise(message: str, files: list[str] | None) -> bool:
         return True
     if files is None or not files:
         return False
-    return all(is_skip_ci_path(name) for name in files if name)
+    if all(is_skip_ci_path(name) for name in files if name):
+        return True
+    # The daily engine emits this one Markdown companion beside its machine
+    # report and baseline. Keep the exception at the COMPLETE commit boundary:
+    # no reports/ root exemption, no mixed source/definition edits, and no
+    # promotion of the message's producer shape into authenticated provenance.
+    companions = {"reports/signal-sanity.md", "data/signal_sanity/signal_sanity.json",
+                  "data/signal_sanity/baseline.jsonl"}
+    subject = str(message or "").split("\n", 1)[0]
+    return (
+        re.fullmatch(r"engine: regime update [0-9]{4}-[0-9]{2}-[0-9]{2}", subject) is not None
+        and all(isinstance(name, str) and name for name in files)
+        and companions.issubset(files)
+        and all(name == "reports/signal-sanity.md" or name.startswith(("data/", "site/")) for name in files)
+    )
 
 
 def is_base_branch_modified(detail: str) -> bool:
@@ -1408,6 +1427,340 @@ def _bind_pr_tested_tree(
     return loaded
 
 
+ADMITTED_SUBJECT_CHECK_PREFIX = "mm-ci-admission-v1:"
+ADMITTED_SUBJECT_CHECK_NAMES = ("ci-plan", "contract-delta", "ci-gate")
+
+
+def has_admitted_subject_checks(checks):
+    """A marker triggers authentication; its presence grants no authority."""
+    return any(isinstance(c, dict) and str(c.get("external_id") or "").startswith(
+        ADMITTED_SUBJECT_CHECK_PREFIX) for c in checks or [])
+
+
+def admitted_subject_external_id(reference):
+    keys = ("artifact_id", "controller_run_id", "controller_attempt", "controller_sha", "payload_sha256")
+    if not isinstance(reference, dict) or set(reference) != set(keys):
+        raise semantic_proof.SemanticProofError("invalid admitted check reference")
+    value = ADMITTED_SUBJECT_CHECK_PREFIX + ":".join(str(reference[k]) for k in keys)
+    if _admitted_subject_reference(value) != reference:
+        raise semantic_proof.SemanticProofError("noncanonical admitted check reference")
+    return value
+
+
+def _admitted_subject_reference(value):
+    if not isinstance(value, str) or len(value) > 255:
+        raise semantic_proof.SemanticProofError("oversized admitted check reference")
+    pattern = re.escape(ADMITTED_SUBJECT_CHECK_PREFIX) + r"([1-9][0-9]{0,19}):([1-9][0-9]{0,19}):([1-9][0-9]{0,19}):([0-9a-f]{40}):([0-9a-f]{64})"
+    match = re.fullmatch(pattern, value)
+    if not match:
+        raise semantic_proof.SemanticProofError("malformed admitted check reference")
+    return dict(zip(("artifact_id", "controller_run_id", "controller_attempt", "controller_sha", "payload_sha256"),
+                    [int(match[1]), int(match[2]), int(match[3]), match[4], match[5]]))
+
+
+def _admitted_reads(repo, token, read_json=None, download=None):
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
+        raise semantic_proof.SemanticProofError("invalid admitted repository")
+    prefix = f"{GITHUB_API}/repos/{repo}"
+    def read(suffix):
+        url = prefix + suffix
+        if read_json is not None:
+            result = read_json(url)
+        else:
+            status, result = _request("GET", url, token)
+            if status != 200:
+                raise semantic_proof.SemanticProofError("admitted proof source unavailable")
+        if not isinstance(result, dict):
+            raise semantic_proof.SemanticProofError("malformed admitted proof source")
+        return result
+    def archive(artifact_id):
+        if type(artifact_id) is not int or artifact_id <= 0:
+            raise semantic_proof.SemanticProofError("invalid artifact identity")
+        url = prefix + f"/actions/artifacts/{artifact_id}/zip"
+        return download(url) if download is not None else _download_semantic_artifact(url, token)
+    return read, archive
+
+
+def _admitted_ancestor(read, ancestor, descendant):
+    if ancestor == descendant:
+        return True
+    compared = read(f"/compare/{ancestor}...{descendant}?per_page=1")
+    return (compared.get("status") in {"ahead", "identical"}
+            and (compared.get("base_commit") or {}).get("sha") == ancestor
+            and (compared.get("merge_base_commit") or {}).get("sha") == ancestor)
+
+
+def _admitted_run_order(proof):
+    stamp = proof["run"].get("created_at")
+    if not isinstance(stamp, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?Z", stamp):
+        raise semantic_proof.SemanticProofError("original run creation clock unavailable")
+    try:
+        return (dt.datetime.fromisoformat(stamp.replace("Z", "+00:00")), proof["admission"].run_id)
+    except ValueError as exc:
+        raise semantic_proof.SemanticProofError("invalid original run creation clock") from exc
+
+
+def _admitted_completion_binding(repo, token, reference, *, expected_run_id=None,
+                              expected_run_attempt=None, expected_subject_head=None,
+                              expected_base_sha=None, protected_controller_sha=None,
+                              read_json=None, download=None):
+    """Authenticate one terminal original dispatch; no check text is evidence.
+
+    Optional I/O adapters keep the local guard on its incumbent cached reader and
+    download carrier. All paths are fixed repository APIs; no URL from an index
+    or artifact is followed. This function performs no writes.
+    """
+    reference = _admitted_subject_reference(admitted_subject_external_id(reference))
+    read, archive = _admitted_reads(repo, token, read_json, download)
+    repository = read("")
+    repository_id = repository.get("id")
+    if (type(repository_id) is not int or repository_id <= 0
+            or repository.get("full_name") != repo or repository.get("default_branch") != "main"):
+        raise semantic_proof.SemanticProofError("admitted repository identity mismatch")
+    current_control = protected_controller_sha or (read("/branches/main").get("commit") or {}).get("sha")
+    if (not isinstance(current_control, str) or not re.fullmatch(r"[0-9a-f]{40}", current_control)
+            or not _admitted_ancestor(read, reference["controller_sha"], current_control)):
+        raise semantic_proof.SemanticProofError("receipt controller lacks protected ancestry")
+    artifact = read(f"/actions/artifacts/{reference['artifact_id']}")
+    controller = read(f"/actions/runs/{reference['controller_run_id']}/attempts/{reference['controller_attempt']}")
+    try:
+        admitted = proof_admission.authenticate_receipt(archive=archive(reference["artifact_id"]),
+            payload_sha256=reference["payload_sha256"], repository_id=repository_id,
+            artifact_id=reference["artifact_id"], controller_run_id=reference["controller_run_id"],
+            controller_attempt=reference["controller_attempt"], controller_sha=reference["controller_sha"],
+            artifact=artifact, controller=controller)
+    except (ValueError, TypeError) as exc:
+        raise semantic_proof.SemanticProofError("admitted bound receipt unavailable or invalid") from exc
+    if (isinstance(admitted,proof_admission.NativeAdmission) or admitted.run_id is None or admitted.settled
+            or (expected_run_id is not None and (type(expected_run_id) is not int or admitted.run_id != expected_run_id))
+            or (expected_run_attempt is not None and (type(expected_run_attempt) is not int or admitted.run_attempt != expected_run_attempt))
+            or (expected_subject_head is not None and admitted.head_sha != expected_subject_head)
+            or not _admitted_ancestor(read, admitted.workflow_sha, current_control)):
+        raise semantic_proof.SemanticProofError("original admitted execution identity mismatch")
+    if expected_base_sha is not None:
+        if (not re.fullmatch(r"[0-9a-f]{40}", expected_base_sha)
+                or not _admitted_ancestor(read, expected_base_sha, admitted.base_sha)):
+            raise semantic_proof.SemanticProofError("admitted proof does not cover expected base")
+    run = read(f"/actions/runs/{admitted.run_id}")
+    if (type(run.get("id")) is not int or run["id"] != admitted.run_id
+            or type(run.get("run_attempt")) is not int or run["run_attempt"] != admitted.run_attempt
+            or run.get("status") not in {*proof_admission.ACTIVE_STATUSES, "completed"} or run.get("event") != "workflow_dispatch"
+            or run.get("name") != "ci" or run.get("head_branch") != "main"
+            or run.get("head_sha") != admitted.workflow_sha
+            or run.get("path") not in {".github/workflows/ci.yml", ".github/workflows/ci.yml@main",
+                ".github/workflows/ci.yml@refs/heads/main", ".github/workflows/ci.yml@" + admitted.workflow_sha}
+            or type((run.get("repository") or {}).get("id")) is not int
+            or run["repository"]["id"] != repository_id
+            or type(run.get("run_number")) is not int or run["run_number"] <= 0):
+        raise semantic_proof.SemanticProofError("original admitted run is not terminal or changed identity/attempt")
+    binding = {"admission": admitted, "run": run, "reference": reference,
+               "read": read, "archive": archive, "repository_id": repository_id}
+    _admitted_run_order(binding)
+    return binding
+
+
+def admitted_completion_proof(repo, token, reference, **context):
+    """Load complete terminal evidence only after immutable dispatch binding."""
+    import hashlib
+    binding = _admitted_completion_binding(repo, token, reference, **context)
+    admitted, run = binding["admission"], binding["run"]
+    repository_id = binding["repository_id"]
+    read, archive, reference = binding["read"], binding["archive"], binding["reference"]
+    if run["status"] != "completed":
+        raise semantic_proof.SemanticProofError("original admitted run is not terminal")
+    commit = read(f"/git/commits/{admitted.merge_sha}")
+    parents = commit.get("parents")
+    if (commit.get("sha") != admitted.merge_sha or not isinstance(parents, list)
+            or [p.get("sha") if isinstance(p, dict) else None for p in parents] != [admitted.base_sha, admitted.head_sha]):
+        raise semantic_proof.SemanticProofError("admitted immutable merge parents mismatch")
+    listing = read(f"/actions/runs/{admitted.run_id}/artifacts?per_page=100")
+    rows = listing.get("artifacts")
+    if (not isinstance(rows, list) or type(listing.get("total_count")) is not int
+            or listing["total_count"] != len(rows) or len(rows) > 100
+            or any(not isinstance(row, dict) for row in rows)):
+        raise semantic_proof.SemanticProofError("incomplete admitted artifact inventory")
+    matches = [row for row in rows if row.get("name") == f"{SEMANTIC_ARTIFACT_PREFIX}{admitted.run_id}"]
+    if len(matches) != 1:
+        raise semantic_proof.SemanticProofError("missing or ambiguous admitted semantic evidence")
+    artifact = matches[0]
+    binding = artifact.get("workflow_run") or {}
+    if (artifact.get("expired") is not False or type(binding.get("id")) is not int
+            or binding["id"] != admitted.run_id or type(binding.get("repository_id")) is not int
+            or binding["repository_id"] != repository_id or binding.get("head_sha") != admitted.workflow_sha):
+        raise semantic_proof.SemanticProofError("semantic artifact original-run binding mismatch")
+    data = archive(artifact.get("id"))
+    if artifact.get("digest") != "sha256:" + hashlib.sha256(data).hexdigest():
+        raise semantic_proof.SemanticProofError("semantic archive digest mismatch")
+    loaded = semantic_proof.load_semantic_evidence(_semantic_json_from_archive(data), advertised=True,
+        expected_run_id=admitted.run_id, expected_subject_head_sha=admitted.head_sha,
+        expected_tested_tree_sha=admitted.merge_sha, expected_base_sha=admitted.base_sha,
+        expected_event="workflow_dispatch", expected_role="pr_head", expected_workflow="ci",
+        expected_admission_generation=admitted.generation)
+    gate = semantic_proof.semantic_gate_verdict(loaded.evidence)
+    if gate.infrastructure_blocking:
+        raise semantic_proof.SemanticProofError("admitted semantic execution is incomplete")
+    listing = read(f"/actions/runs/{admitted.run_id}/attempts/{admitted.run_attempt}/jobs?per_page=100")
+    rows = listing.get("jobs")
+    if (not isinstance(rows, list) or type(listing.get("total_count")) is not int
+            or listing["total_count"] != len(rows) or len(rows) > 100
+            or any(not isinstance(row, dict) for row in rows)):
+        raise semantic_proof.SemanticProofError("incomplete original-attempt jobs")
+    jobs = {}
+    for name in ADMITTED_SUBJECT_CHECK_NAMES:
+        matches = [row for row in rows if row.get("name") == name]
+        if (len(matches) != 1 or matches[0].get("status") != "completed"
+                or matches[0].get("conclusion") not in {"success", "failure"}
+                or type(matches[0].get("run_id")) is not int or matches[0]["run_id"] != admitted.run_id
+                or ("run_attempt" in matches[0] and (type(matches[0]["run_attempt"]) is not int
+                    or matches[0]["run_attempt"] != admitted.run_attempt))):
+            raise semantic_proof.SemanticProofError("original required job is incomplete or ambiguous")
+        jobs[name] = matches[0]["conclusion"]
+    if not gate.clear:
+        jobs["ci-gate"] = "failure"
+    return {"admission": admitted, "run": run, "loaded": loaded, "jobs": jobs, "reference": reference}
+
+
+def _admitted_check_inventory(read, head_sha):
+    all_checks = []
+    seen = set()
+    expected_total = None
+    for page in range(1, CHECK_RUN_PAGE_CAP + 1):
+        listing = read(f"/commits/{head_sha}/check-runs?per_page=100&page={page}&filter=all")
+        rows = listing.get("check_runs")
+        total = listing.get("total_count")
+        if (not isinstance(rows, list) or len(rows) > 100
+                or any(not isinstance(c, dict) or type(c.get("id")) is not int or c["id"] <= 0 for c in rows)
+                or type(total) is not int or total < len(rows) or total > CHECK_RUN_PAGE_CAP * 100
+                or (expected_total is not None and expected_total != total)):
+            raise semantic_proof.SemanticProofError("incomplete admitted check discovery")
+        expected_total = total
+        for check in rows:
+            if check["id"] in seen:
+                raise semantic_proof.SemanticProofError("duplicated admitted check inventory identity")
+            seen.add(check["id"])
+        all_checks.extend(rows)
+        if len(all_checks) == total:
+            break
+        if len(rows) < 100:
+            raise semantic_proof.SemanticProofError("truncated admitted check discovery")
+    else:
+        raise semantic_proof.SemanticProofError("admitted check discovery exceeds bound")
+    return all_checks
+
+
+def admitted_semantic_evidence_for_head(repo, head_sha, token, *, check_runs,
+                                        expected_base_sha=None, read_json=None, download=None):
+    """Select the newest authenticated original run; never fall back from UNKNOWN.
+
+    Every advertised admitted generation is authenticated before ordering by the
+    server run creation time and original ID. An unreadable candidate closes this decision.
+    Legacy check conflicts remain with the existing legacy reader.
+    """
+    read, _archive = _admitted_reads(repo, token, read_json, download)
+    # filter=latest can hide a newer original run behind a later-published old
+    # completion. Recover the bounded server inventory before selecting identity.
+    all_checks = _admitted_check_inventory(read, head_sha)
+    check_runs = [*check_runs, *all_checks]
+    markers = {str(c.get("external_id") or "") for c in check_runs if isinstance(c, dict)
+        and c.get("name") in ADMITTED_SUBJECT_CHECK_NAMES and str(c.get("external_id") or "").startswith(ADMITTED_SUBJECT_CHECK_PREFIX)}
+    if len(markers) > SEMANTIC_RUN_LOOKBACK:
+        raise semantic_proof.SemanticProofError("admitted generation discovery exceeds bounded lookback")
+    candidates = {}
+    for check in check_runs:
+        if not isinstance(check, dict) or check.get("name") not in ADMITTED_SUBJECT_CHECK_NAMES:
+            continue
+        marker = check.get("external_id")
+        if not isinstance(marker, str) or not marker.startswith(ADMITTED_SUBJECT_CHECK_PREFIX):
+            continue
+        reference = _admitted_subject_reference(marker)
+        if marker not in candidates:
+            candidates[marker] = _admitted_completion_binding(repo, token, reference,
+                expected_subject_head=head_sha,
+                read_json=read_json, download=download)
+    if not candidates:
+        raise semantic_proof.SemanticProofError("admitted subject checks lack an authenticated ci-gate")
+    selected = max(candidates.values(), key=_admitted_run_order)
+    if expected_base_sha is not None and (not re.fullmatch(r"[0-9a-f]{40}", expected_base_sha)
+            or not _admitted_ancestor(read, expected_base_sha, selected["admission"].base_sha)):
+        raise semantic_proof.SemanticProofError("newest admitted proof does not cover expected base")
+    selected = admitted_completion_proof(repo, token, selected["reference"],
+        expected_subject_head=head_sha, expected_base_sha=expected_base_sha,
+        read_json=read_json, download=download)
+    selected_marker = admitted_subject_external_id(selected["reference"])
+    for name in ADMITTED_SUBJECT_CHECK_NAMES:
+        matches = [c for c in check_runs if c.get("name") == name and c.get("external_id") == selected_marker]
+        if any(type(c.get("id")) is not int or c["id"] <= 0 for c in matches):
+            raise semantic_proof.SemanticProofError("admitted check lacks server identity")
+        by_id = {c["id"]: c for c in matches}
+        if (len(by_id) != 1 or any(c.get("head_sha") != head_sha or not is_actions_check(c)
+                or c.get("status") != "completed" or c.get("conclusion") != selected["jobs"][name]
+                for c in matches)):
+            raise semantic_proof.SemanticProofError("selected admission completion is partial or inconsistent")
+    if any(selected["jobs"][name] != "success" for name in ADMITTED_SUBJECT_CHECK_NAMES):
+        if semantic_proof.semantic_gate_verdict(selected["loaded"].evidence).clear:
+            raise semantic_proof.SemanticProofError("original admitted required job failed outside semantic units")
+    return selected["loaded"]
+
+
+def publish_admitted_subject_checks(repo, read_token, checks_token, bound_reference, *,
+                                    expected_run_id, expected_run_attempt, protected_controller_sha):
+    """One completion publication attempt, called only by protected controller.
+
+    A lost POST result is UNKNOWN and ends this invocation. The caller must retain
+    that original operation and reconcile it; this function grants no retry.
+    """
+    try:
+        proof = admitted_completion_proof(repo, read_token, bound_reference,
+            expected_run_id=expected_run_id, expected_run_attempt=expected_run_attempt,
+            protected_controller_sha=protected_controller_sha)
+        admitted = proof["admission"]
+        marker = admitted_subject_external_id(bound_reference)
+        read, _archive = _admitted_reads(repo, read_token)
+        existing = _admitted_check_inventory(read, admitted.head_sha)
+        markers = {c.get("external_id") for c in existing if c.get("name") in ADMITTED_SUBJECT_CHECK_NAMES
+            and isinstance(c.get("external_id"), str) and c["external_id"].startswith(ADMITTED_SUBJECT_CHECK_PREFIX)}
+        if len(markers) > SEMANTIC_RUN_LOOKBACK:
+            raise semantic_proof.SemanticProofError("admitted publication history exceeds bounded lookback")
+        for other in markers:
+            if other != marker:
+                newer = _admitted_completion_binding(repo, read_token, _admitted_subject_reference(other),
+                    expected_subject_head=admitted.head_sha, protected_controller_sha=protected_controller_sha)
+                if _admitted_run_order(newer) > _admitted_run_order(proof):
+                    raise semantic_proof.SemanticProofError("newer original generation already published")
+        done = set()
+        for name in ADMITTED_SUBJECT_CHECK_NAMES:
+            matches = [c for c in existing if c.get("name") == name and c.get("external_id") == marker]
+            if len(matches) > 1:
+                raise semantic_proof.SemanticProofError("ambiguous original completion publication")
+            if matches:
+                check = matches[0]
+                if (not is_actions_check(check) or check.get("head_sha") != admitted.head_sha
+                        or check.get("status") != "completed" or check.get("conclusion") != proof["jobs"][name]):
+                    raise semantic_proof.SemanticProofError("existing completion does not match original evidence")
+                done.add(name)
+    except Exception:
+        return {"disposition": "held", "published": (), "detail": "original completion proof unavailable or incomplete"}
+    published = []
+    for name in ADMITTED_SUBJECT_CHECK_NAMES:
+        if name in done:
+            continue
+        payload = {"name": name, "head_sha": admitted.head_sha, "external_id": marker,
+            "details_url": f"https://github.com/{repo}/actions/runs/{admitted.run_id}/attempts/{admitted.run_attempt}",
+            "status": "completed", "conclusion": proof["jobs"][name],
+            "output": {"title": "Authenticated original PR proof", "summary":
+                f"Original run {admitted.run_id}, attempt {admitted.run_attempt}; admission {admitted.generation}."}}
+        try:
+            status, check = _shared_admission_effect("POST", f"{GITHUB_API}/repos/{repo}/check-runs", checks_token, payload)
+            if (status != 201 or not isinstance(check, dict) or type(check.get("id")) is not int
+                    or check["id"] <= 0 or any(check.get(k) != payload[k] for k in
+                        ("name", "head_sha", "external_id", "status", "conclusion"))):
+                return {"disposition": "unknown", "published": tuple(published), "detail": "original check creation not settled; no retry"}
+        except Exception:
+            return {"disposition": "unknown", "published": tuple(published), "detail": "original check creation response lost; no retry"}
+        published.append(name)
+    return {"disposition": "published" if published else "already_published", "published": tuple(published), "detail": "exact original completion checks"}
+
+
 def _semantic_evidence_for_run(
     repo: str,
     run: dict[str, Any],
@@ -1526,6 +1879,11 @@ def _semantic_evidence_for_run(
             f"run {run_id}'s advertised semantic artifact has no download URL"
         )
     source = _semantic_json_from_archive(_download_semantic_artifact(download_url, token))
+    if (role == "main" and isinstance(source, dict) and source.get("event") == "workflow_dispatch"
+            and source.get("role") == "pr_head"):
+        semantic_proof.load_semantic_evidence(source, advertised=True, expected_run_id=run_id,
+            expected_event="workflow_dispatch", expected_role="pr_head", expected_workflow="ci")
+        return semantic_proof.LoadedSemanticEvidence("admitted_pr", None)
     expected_tree = head_sha if role == "main" else None
     # PR-head evidence seals the tested merge commit's FIRST PARENT as
     # ``base_sha``; the advertised ``pull_requests[].base`` is GitHub's lazily
@@ -1624,6 +1982,9 @@ def semantic_evidence_for_head(
     expected_base_sha: str | None = None,
 ) -> Any:
     """Newest canonical PR evidence for an exact subject head, with bounded lookup."""
+    if has_admitted_subject_checks(check_runs):
+        return admitted_semantic_evidence_for_head(repo, head_sha, token,
+            check_runs=check_runs, expected_base_sha=expected_base_sha)
     linked: list[tuple[int, dict[str, Any]]] = []
     for check in check_runs or []:
         if str(check.get("name") or "") != REQUIRED_CI_GATE:
@@ -1989,7 +2350,12 @@ def _changed_file_paths(rows: Any) -> list[str]:
 
 
 def load_pr_gates(workflows_dir: Path = WORKFLOWS_DIR) -> list[dict[str, Any]]:
-    """Every `on.pull_request` workflow and the `paths:` filter it declares.
+    """PR proof ownership, including CI's authenticated dispatch entrypoint.
+
+    Admitted CI keeps its canonical paths in the incumbent executable manifest.
+    The foundation's native paths must exactly match until that trigger is
+    removed; removing the trigger must never remove the proof's tested surface.
+    Other workflows retain their historical native path-filter interpretation.
 
     ``patterns is None`` means the workflow declares no filter and starts on every
     pull request — it therefore says NOTHING about which files affect its verdict,
@@ -2026,9 +2392,31 @@ def load_pr_gates(workflows_dir: Path = WORKFLOWS_DIR) -> list[dict[str, Any]]:
             continue
         # PyYAML resolves the bare key `on:` to the boolean True (YAML 1.1).
         block = payload[True] if True in payload else payload.get("on")
-        if not isinstance(block, dict) or "pull_request" not in block:
+        if not isinstance(block, dict):
+            continue
+        dispatch = block.get("workflow_dispatch")
+        inputs = dispatch.get("inputs") if isinstance(dispatch, dict) else None
+        admitted_ci = (path.name == "ci.yml" and isinstance(inputs, dict)
+                       and {"proof_role", "admission_generation"} <= inputs.keys())
+        if "pull_request" not in block and not admitted_ci:
             continue
         trigger = block.get("pull_request")
+        if admitted_ci:
+            manifest_path = workflows_dir.parent / "ci" / "legacy-jobs.yml"
+            try:
+                manifest = yaml.safe_load(manifest_path.read_text())
+                canonical = manifest.get("proof_paths") if isinstance(manifest, dict) else None
+            except (OSError, yaml.YAMLError) as exc:
+                raise RuntimeError(f"canonical CI proof ownership unavailable: {exc}") from exc
+            if (not isinstance(canonical, list) or not canonical
+                    or any(not isinstance(entry, str) or not entry or entry.startswith(NEGATION_PREFIX)
+                           for entry in canonical)
+                    or not any(entry not in START_ONLY_PATH_PATTERNS for entry in canonical)):
+                raise RuntimeError("canonical CI proof ownership must contain valid specific paths without negation")
+            if "pull_request" in block and (
+                    not isinstance(trigger, dict) or trigger.get("paths") != canonical):
+                raise RuntimeError("ci.yml native paths list differs from canonical CI proof ownership")
+            trigger = {"paths": canonical}
         patterns = None
         start_only_patterns: list[str] = []
         if isinstance(trigger, dict) and isinstance(trigger.get("paths"), list):
@@ -2127,6 +2515,338 @@ def _commit_identity(payload: Any) -> tuple[str, str, tuple[str, ...]] | None:
     return sha, tree_sha, tuple(parent_shas)
 
 
+# Frozen input-reader contract for the bounded legacy-manifest optimization.
+# Unknown versions defer; these are not new required-check/release source pins.
+# The extra entries are frozen Git-object identity data. The controller asks
+# the existing Git-tree reader for their immutable entry IDs; the local unit
+# suites supply those entry identities and never import/open these working-tree
+# files. Unknown or mixed versions defer. This does not narrow any guard's
+# own always-on execution or its source/input invalidation below.
+FENCE_MANIFEST_READER_CONTRACT = {
+    '.claude/hooks/ship_loop_guard.py': '9ec39a302354a96d0bec910b0aa71a24b590ebed',
+    '.github/workflows/ci.yml': 'a9c409efa499d621c6a91196fcefc313ceee16b7',
+    '.github/workflows/fences.yml': 'e997b23a40d5767ccb7eea203af64754e769ae5c',
+    'config/grader_manifest.yml': '9de7fc29e444aa51810dcbbf32cf4b5398683487',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/__init__.py': 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/ai_desk.py': 'f171e4e61d5da2cb002e7d5be692ffa31e6f852f',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/ai_desk_scorer.py': 'd949a7d9deda72bc497f52bae7abd7eca6b59adc',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/altdata_ledger.py': 'a84ea31856ca93503251d086c03d85713b11e6e9',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/altdata_models.py': 'e21181a42a2aeb88235bf1636ae35066b679779b',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/altdata_picks.py': 'bb39683083d4b6b929f605d0767fd34a9e0e5b26',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/altdata_signals.py': 'dae7b2db43a0552e8871808f935fc7fd4e280081',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/basket_breadth_divergence.py': '0ad5ecbfc6a0b983d43bf3d591904878e7bb004f',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/canon.py': '32116817bbb4c844c2c811905eb8d778482342c6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/catalyst_tone.py': '0540c15eefbff8944730c3ea6e1df1b9c5fe9b84',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_altdata.py': '1665966a51112807f09b6c7336f49940eb752f32',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_basket_spine.py': '800b92b32ec7ba97846cc7c55b2ce002265cb68b',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_conviction.py': '48979da38779abd67b6ed9b3d836026861ffade3',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_crowding.py': 'a9cb119591533a7d7ed870ce28aa28dc5fe0c8ec',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_discovery.py': '68d76d702c127856be1074c46cfb6ad688b91896',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_event_calendar.py': '4c9a4001fba9fe3f298c950967ec95067676fd59',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_extras.py': '11219d650fc06f685b5effbd14f809b97cdcad74',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_intel_bus.py': '366f0284b836a4414fb7db5f45001d164652b6f7',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_news.py': '431584da650851b68302852454d2137c62312e96',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_news_intel.py': '92596a431ee13f507f6f888851ac70b3067e8821',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_radar.py': '89021977826ffb7a16aaab48c64bdeee0ee9c149',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_radar_ledger.py': '16a7adde202ab6cfdb0e8190ab8d4b3950be3f90',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_signal_lab.py': '9c0c79a02841f432ae556f97790df84071261e21',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/china_validation.py': 'dc1d68689858253766576ab6b5513d44ba88f58d',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/cn_newswires.py': '1791a5f39bf0e4d3824aa1ade239ecbb32b3e3c2',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/codex_lane/runner.py': '3a298b4f0dde85d42f3e65a7a7412eeda4059b2c',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/codex_provider.py': '09f17919cf7ceaa55425394f1ac7dc6b397e0b05',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/context_index/fusion.py': '069e29f6d3f11d162f9bb7ad9a0f4fd681841735',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/context_index/gitinfo.py': 'd0791be64557cdcd366d413ef74ba36f9481fee7',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/context_index/lexical.py': '5744fcc4cb77f2e44224efc57a681b18e55cc639',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/context_index/packet.py': '60e9bd003a3638bb0bfed923667f117560fa9d16',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/context_index/structured.py': '674178ee9933dc41bc3b165f9f2f8acb50de4e90',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/desk_ledger.py': '379028a7bf1fbf4ec96c86e39eeb0339b1d69381',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/desk_scorer.py': 'fdffc74187f5f322981a7f39ccb9d5519a1450fc',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/entity_resolver.py': '6c21d72d1a15ae01db72562d403940681e3808db',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/event_calendar.py': '8c611c96a8b3157f5be659215df8b1b38e7894a1',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/forward_calendar_context.py': '788e07b751748897a37dfe3ade594874a1ec8d04',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/gdelt_client.py': '27f194c1002021331572635b3b9faab1d3b58775',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/indicators_m2.py': '5645e2612bc31fc2e900844109a445b011b4ab36',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/ledger_lane.py': '1e519c921d2f2028a6fc2bee5372cdb84133c209',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/llm_auth.py': '7294dec2759716416059155ba727392064ab99aa',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/macro_surprise.py': 'fa2f5f086f437b5c46ce0c52a6c56cea7f14a7cb',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/manager_lag.py': '245d772414a77b0a2a101f36ca69fd86f816c73c',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/manager_quality.py': '1a754add0d605db21324b7f57690b5920c61dd2b',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/manager_trades.py': 'f072775da4a5f2966b10c572f077ca69d7be817d',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/__init__.py': '43080bba5ba2a0649a4ae0a7a18a1493cb5f39b2',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/accounts.py': '8af0b7119cd4cb9e0bcb8591ae6ac216e1aacd8d',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/authority.py': 'b106235bcbf842dc793680585e9b1f2144910682',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/campaign_compiler.py': 'dac1dc7c8da5db071700bdce104befc27a97ec81',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/chart_render.py': '2de10f26bfebde3a5baf28756823a8e4a7e19c92',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/charter.py': '150e34351754dcbc2aad5a796752c2bd88735109',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/claims.py': 'ecc812e3cd5d2b0a9675ceed600542e300dfa107',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/cmo.py': '9c401b07af2080ddb4dcb706de67369d27cf6fd8',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/departments.py': '1f3d42cb9afae285cada2606dc4138962d3cd3bc',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/economics.py': 'd2b9da7d075f1dc1f1e67cec2ed931e826a055ff',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/events.py': '2773e8872a3f14599d0c6b5c5fd0680b6bbba6fe',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/ledgers.py': 'fa7759742dfb9cab8605d8104e93fc9f37951d70',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/logo_cache.py': '43685a6ccd37403e93f91e88f4eb845253e5d82e',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/opportunity_bus.py': '624fc8d229e61de1f92d2142a34fe56c8382eb30',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/publication.py': '5b466cda88cdb05f37461a2184c07347734aceee',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/share_cards.py': '7571bfa85e551f3778f1c68d42302b8928cb2e5a',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/source_authority.py': 'caa2395e2373c3ec9f0e49760861401251f9a996',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/marketing/state.py': '4acc5934c0c23316e6893cb50fde0b0199948bab',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/master_brain.py': '67bf21c6bb387505bd4c8b237804ba664181ff38',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/metabolism/__init__.py': 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/metabolism/budget_gate.py': '3b4ba5a2ee35e5effbc1bc03051ac5ba04f5b21e',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/name_resolver.py': '61913365c8e95021c2079b27cbdc33913dff1fe3',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/narrative_crossmarket.py': '5d71faf075d1f3f3735e72498de6214097825761',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/neuralweb/__init__.py': 'ffdf5aa13745cfc47e2e3e535fcacdc1e8eda10c',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/neuralweb/brief_context.py': 'fb91c6fc3bf098291e954c0bbd142ff3fe856b43',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/neuralweb/capability_broker.py': 'b744dd39c5e025a1085d6865154aa0390197daff',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/neuralweb/key_pool.py': '87a19b9794e19a32ac436ea8fbab7ecb2df528ff',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/neuralweb/read.py': '44f4182d4248f3eb854b0607f657a7e6f5de99bd',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/news_common.py': '71e153136d66dad02239325a6927510a965d7026',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/news_translate.py': 'fd334ddea268070ad954a21d9f0debb79931f99e',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/ollama_provider.py': '5703930982326c17ebbe6a591f68f0b8b2c11f06',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/opex.py': '2184566e4a478a4eebc0a19e8fa98c4e585dded2',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/passport.py': '978ce05b9135089469220a81bad24272690e1892',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/pooling.py': 'a75dfac3814b50296f18272ed845544c5e56d63d',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/provider_health.py': '2447897c9a9ae146431a6da976261b86f45a8671',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/qbus.py': '11f0948a7f7b54b7c67e502f479daae594a30f97',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/qkernel.py': 'e037e2b1fe6c473a8fc487ee5f54770eb6282d19',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/rebalance_calendar.py': '4f83cf8366f6fa35f780f597841515abe09d3a5e',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/regime_label.py': 'fb5a5714694b532d3404938eb4d2e634c9904944',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/smart_money.py': 'e811b8896bffee82d337f5c392ceb3916b66c7d4',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/spine.py': '9d1c49373c63618cc4d9ed0f636e73896c9b48d5',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/ticker_shape.py': 'bd9e4a25b439fc0d5ea991026148c782b499cec4',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/trial_ledger.py': 'b9b444015549a691b9ab917590cc920ef6c8bb89',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/tushare_freshness.py': '695b10dedff29ce3ba28b22b4c7958e65624b564',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'engine/validation.py': 'c9a09740cd630f920e52fd21b88ff36ff31366b6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/__init__.py': 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/ai_costs.py': '87e15773e8e235ddf8fd11d39d142301c0c5424e',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/closes_panel.py': 'f36b47e9d10590c3d750cbce7f5646f504794b64',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/cn_calendar.py': '72a9cf8b4ee4f32a542b77b530d40af8caa99a1a',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/config.py': 'b6fc888269876242597da354aaa726c20ed95802',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/dataos/identity.py': 'fb99fd182ac506a158c63ab434f09374cdbbd4f8',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/exchange_holidays.py': '8b97e9109999754e57f94e10bc1737801878c6a2',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/filing_value_units.py': '40f562467fb3f7cc21fba779a05763a10b9a7cc7',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/hk_calendar.py': '5ffb5af434657c3c48cec4dc8f99f1d55cb588f9',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/market_session.py': 'fb6e8237796faf704ef5c04561104580a461fc14',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/nyse_calendar.py': '0ece6439ffe4b081ee7a268fe99b69e1de1216a3',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/pages.py': 'db175c463a31828263b57a3287afba661439a765',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/pr_linkage_validator.py': '46abbe3a57f279e96d37c797af3fe9be6641d3bd',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/shared_shell.py': 'cffbeba3f8fdcf7a9413d9428aec0154d97d9614',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/site_assets.py': '03d7ce6137a30b990435cb1fee2090e61c2e95e3',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/store.py': '3a0985944f534be7d771c926d73eb49f53aba140',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/ticker_aliases.py': '7d1aacd5c32209f9e47461f50287db25e2404a65',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/tsx_calendar.py': 'e4db47f618a7e6a0048d25369d2a39460d4f16a6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'lib/us_cash_calendar.py': '08fbfa49293d7fce66581fe998359f6001da8867',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/__init__.py': 'dafbbd0c3a49c56a2635c0d3d8918302d10689a6',
+    'scripts/agentos.py': '94fe2e7290797119cbb7f9890580e950012616d7',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/agentos_project_plan_contract.py': '84ff653fe948a138efb1ad0e0e3b7e44c9058e89',  # ci-trigger-closure: data — dynamic consumer Git identity, not a local source read
+    'scripts/agentos_ship_capture.py': 'da9b09796fd790212975bf57c53f6173e3e23b22',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/audit_stranded_work.py': 'cfe7c2bd98bf363e7fa91bb5ca272c5e6e777599',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/audit_unrun_tests.py': '9ae74b91a276733b2b1a310cb652a847ad5f7dc0',
+    'scripts/check_capability_redline.py': 'dba8879122e4772b567f8cd0f4736bc110b8029c',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/check_grader_manifest.py': 'a9086ea25bad50258dddddf4d70731cfc4301ef6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/check_self_mod_fence.py': 'b8968ba17dd0ade03820113aa5b7f23bb318aecf',
+    'scripts/check_template_site_sync.py': 'bec2af6bd5abb7a21ebb57b8beb416445bcb0e81',  # ci-trigger-closure: data — dynamic consumer Git identity, not a local source read
+    'scripts/ci_apt_cold_acquisition.py': '7d402b92c83b837fd38b965b9974b44696ff3f60',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_apt_native_plan.py': '2a98c8ec5e4adee68d77d9aeddb5837e1b7440f6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_apt_native_stage.py': '2446beea8a43546c78251fdf32d8e648982229f4',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_apt_transaction_contract.py': 'beb8ad4e1ab758c4da5634b2c2a50fab50aee840',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_authority_paths.py': '1403e7dce4cbc83178f3dc515fe2404b84655a94',
+    'scripts/ci_browser_dependency_capture.py': '78f544a102c9c0cf2b5306ccc3592c4b23fe8302',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_browser_dependency_inputs.py': 'fa076c97c9fe389adf7ae1f032cf56490c4e06a9',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_browser_native_setup.py': 'bfa98a4396d600cd393d6e578a722f2a83cf3307',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/ci_scope_dependencies.py': '4c4779479f5bb41741fe7a5db114dfe304350a8a',
+    'scripts/ci_semantic_proof.py': 'df7e5007413584d8593bfeb69dd9b479daa99147',
+    'scripts/run_ci_pack.py': '3cbed58986d571e40af59eb03464e9419e8055a5',
+    'scripts/ship_loop_hold_wrapper.py': '650fffa773105b0a7cd212326e93f74c6507bbb5',
+    'scripts/sync_chat_nav.py': 'b355fb8754a6d3a29c0188e09005d1056503752d',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'scripts/workflow_run_source.py': 'b55fe2447f6a50dc6f6d160537961e77145078cb',
+    'scripts/worktree_sparse.py': '75297acb10d0cef4d01730a59fdcad19c7cfd3e6',  # ci-trigger-closure: data — remote Git-entry identity, not a local suite read
+    'tests/__init__.py': 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391',
+    'tests/conftest.py': 'b2d40ef0eebddcfa3b4292a0d1cd296563222cdc',
+    'tests/test_ci_canary_workflows.py': '672aed321ca9dc3617372468b280073db14ec2c6',
+    'tests/test_fence_checkout_contract.py': '6a38496b36c1d08793c2f725d785e887c5261a9e',
+    'tests/test_self_mod_fence.py': '126d2ccb403b3c28c48e7f2ed2113b01e3af04e1',
+    'tests/test_ship_loop_hold_wrapper.py': '1dc6c1a5d980c0b5590aa63b5ddd08dcd1dcd35d',
+}
+
+
+# Both immutable modules have identical imports and render_command's complete
+# module-global closure (render_command, EXPRESSION_RE, ManifestError). The later
+# module changes only plan balancing and exact-base replay, which this fence
+# reader does not call. Keep whole-blob admission explicit: arbitrary equal
+# modules, and even mixed qualified versions across frames, still refuse.
+FENCE_MANIFEST_RENDERER_CONTRACTS = frozenset({
+    "3cbed58986d571e40af59eb03464e9419e8055a5",
+    "471640444ecdda2496a14ffa38f66e4d0b9c5202",
+})
+
+
+# Finite non-input boundary for the immutable independent consumer versions above.
+# These product modules/assertions are neither selected nor imported, hashed,
+# scanned, loaded by pathname, or used for import resolution by those invocations.
+# This is not a general Python exemption: unknown paths, including new modules,
+# dynamic inputs, package initializers, configuration and resources stay stale.
+# A new consumer version must requalify the boundary before reuse is possible.
+FENCE_QUALIFIED_NONINPUT_PATHS = frozenset({
+    'engine/stock_identity/replay/naive.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'engine/stock_identity/replay/sea.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'engine/stock_identity/replay/starter.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'engine/track_scoring.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'scripts/build_opportunity_timeline.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'scripts/grade_us_board.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'tests/test_first_party_import_names.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'tests/test_opportunity_timeline.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'tests/test_stock_identity_input_boundaries.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'tests/test_track_ledger_emitters.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+    'tests/test_track_scoring.py',  # ci-trigger-closure: data — remote changed-path comparison, not a local source read
+})
+
+# The only config variation in the qualified reader frames changes four intl
+# publication flags. Both retain the same storage/asset read selectors; neither
+# introduces Python loading. Unknown selectors fail closed, even if CI passed.
+FENCE_RESOURCE_SELECTOR_CONTRACTS = {
+    "config.yml": frozenset({
+        "5be75249c98033d7ee0fbe55928713b1f50af627",
+        "fca6b562fbf8253a34308d0aeb9cebd79d19239b",
+    }),
+}
+
+# Materialized inputs of the pinned independent fence workflow. Directories
+# include their descendants because imports, Jinja includes and journal globs
+# can resolve names not present in the code contract. Exact off-sparse Git
+# reads (such as the HOLD delegate) use regular entries checked separately.
+FENCE_ALIAS_SELECTOR_PATHS = (
+    ".github/", "agentos/", "config/", "lib/", "scripts/", "templates/", "tests/",
+    "engine/metabolism/", "engine/neuralweb/",
+    "engine/foresight_leadlag.py",  # ci-trigger-closure: data — remote Git-entry selector
+    "engine/theme_placebo.py",  # ci-trigger-closure: data — remote Git-entry selector
+    "engine/qledger_falsifier.py",  # ci-trigger-closure: data — remote Git-entry selector
+    "site/chat.html",  # ci-trigger-closure: data — remote Git-entry selector
+    "data/neuralweb/capability_audit.jsonl",  # ci-trigger-closure: data — remote Git-entry selector
+    "data/metabolism/key_ledger.jsonl",  # ci-trigger-closure: data — remote Git-entry selector
+    "data/metabolism/journal/",
+    "data/ai_costs/usage.jsonl",  # ci-trigger-closure: data — remote Git-entry selector
+    "config.yml",  # ci-trigger-closure: data — remote Git-entry selector
+    "CLAUDE.md", "AGENTS.md", ".cursor/rules/ship-loop-terminal-states.mdc",  # ci-trigger-closure: data — remote Git-entry selectors
+)
+
+
+def _semantic_manifest_input_is_current(
+    repo: str, pull: dict[str, Any], runs: list[dict[str, Any]],
+    freshness: "ProofFreshness", evidence: dict[str, Any],
+) -> bool:
+    """Use only the incumbent CI ownership, never a universal fence base.
+
+    Unfiltered fences remain affirmative current-head controls. A path belongs
+    to a freshness surface only through ownership_matches/load_pr_gates; fence
+    success is not promoted into an execution-base attestation here.
+    """
+    if not isinstance(freshness, ProofFreshness) or freshness.repo != repo:
+        return False
+    owners = {gate.get("workflow") for gate in freshness.gates
+              if ownership_matches(".github/ci/legacy-jobs.yml", gate.get("patterns"))}
+    if owners != {"ci.yml"}:
+        return False
+    positions = {str(c.get("sha") or ""): i for i, c in enumerate(freshness.commits)}
+    if evidence["base_sha"] not in positions:
+        return False
+    head = str((pull.get("head") or {}).get("sha") or "")
+    number = str(pull.get("number") or "")
+    if not _is_full_sha(head) or not re.fullmatch(r"[1-9][0-9]*", number):
+        return False
+    anchors = proof_anchor_runs(runs)
+    gate = anchors.get(REQUIRED_CI_GATE)
+    if gate is None:
+        return False
+    linked = re.fullmatch(re.escape(f"https://github.com/{repo}/actions/runs/") + r"([1-9][0-9]*)(?:/job/[1-9][0-9]*)?/?", str(gate.get("details_url") or ""))
+    if linked is None or linked.group(1) != str(evidence.get("workflow_run_id") or ""):
+        return False
+    # Fork fences can pass the ordinary gate, but their full checkout does not
+    # have the input boundary qualified for the sparse fence-pack.
+    required = {REQUIRED_FENCE_ANCHOR, REQUIRED_CI_GATE}
+    if not required <= anchors.keys():
+        return False
+    bases = set()
+    for name, check in anchors.items():
+        if check.get("head_sha") != head or check.get("status") != "completed":
+            return False
+        if name in REQUIRED_CI_ANCHORS:
+            ci_link = re.fullmatch(re.escape(f"https://github.com/{repo}/actions/runs/") + r"([1-9][0-9]*)(?:/job/[1-9][0-9]*)?/?", str(check.get("details_url") or ""))
+            if ci_link is None or ci_link.group(1) != linked.group(1):
+                return False
+        if name in required and check.get("conclusion") != "success":
+            return False
+        associations = check.get("pull_requests")
+        if not isinstance(associations, list):
+            return False
+        matched = {str((a.get("base") or {}).get("sha") or "")
+                   for a in associations if isinstance(a, dict) and str(a.get("number") or "") == number
+                   and str((a.get("head") or {}).get("sha") or "") == head}
+        if len(matched) != 1 or not all(re.fullmatch(r"[0-9a-f]{40}", b) for b in matched):
+            return False
+        bases.update(matched)
+    # A mixed/unknown independent anchor never becomes authority by borrowing CI.
+    if len(bases) != 1:
+        return False
+    old = next(iter(bases))
+    tested = evidence.get("tested_tree_sha")
+    return (old in positions and positions[evidence["base_sha"]] <= positions[old]
+            and _is_full_sha(tested)
+            and freshness._qualified_fence_projection(old, evidence["base_sha"], head, tested))
+
+
+def _reconcile_original_proof_base(
+    repo: str, pull: dict[str, Any], runs: list[dict[str, Any]], token: str,
+    freshness: "ProofFreshness", verdict: tuple[bool | None, str],
+    *, semantic_evidence: Any | None = None,
+) -> tuple[bool | None, str]:
+    """A contradictory original proof identity defers; it never refreshes.
+
+    Check associations are lazy PR snapshots, not immutable execution parents.
+    The existing semantic loader authenticates its sealed CI base/subject/merge.
+    That CI fact cannot advance independent fence anchors. Until those anchors
+    have an existing qualified execution binding, refuse the disagreement rather
+    than treating a read inconsistency as permission for a branch write/new CI.
+    Already-bound admitted proofs and genuinely legacy originals stay unchanged.
+    """
+    if (verdict[0] is not True or has_admitted_subject_checks(runs)
+            or not _head_can_advertise_semantic_evidence(runs)):
+        return verdict
+    try:
+        loaded = semantic_evidence
+        if loaded is None:
+            loaded = semantic_evidence_for_head(
+                repo, str((pull.get("head") or {}).get("sha") or ""), token,
+                check_runs=runs,
+                expected_base_sha=_semantic_pr_base_sha(
+                    runs, str((pull.get("head") or {}).get("sha") or ""), pull.get("number")),
+            )
+        if getattr(loaded, "mode", "") == "legacy":
+            return verdict
+        evidence = getattr(loaded, "evidence", None)
+        if (getattr(loaded, "mode", "") != "semantic" or not isinstance(evidence, dict)
+                or evidence.get("role") != "pr_head"
+                or evidence.get("subject_head_sha") != str((pull.get("head") or {}).get("sha") or "")
+                or not re.fullmatch(r"[0-9a-f]{40}", str(evidence.get("base_sha") or ""))):
+            return None, "original CI identity cannot establish exact proof freshness"
+        advertised, _problem = freshness.exact_proof_base(pull, runs)
+        if advertised != evidence["base_sha"]:
+            gate = _semantic_gate(loaded) if isinstance(freshness, ProofFreshness) else None
+            if (gate is not None and gate.clear
+                    and _semantic_manifest_input_is_current(repo, pull, runs, freshness, evidence)):
+                answer = freshness.stale_for(pull, runs, semantic_ci_base=evidence["base_sha"])
+                return answer[0], "authenticated CI covers its manifest definition input and qualified CI-only source; " + answer[1]
+            return None, (
+                "original CI execution base contradicts advertised check associations; "
+                "independent anchor execution bindings remain required"
+            )
+    except RateLimited:
+        raise
+    except (semantic_proof.SemanticProofError, RuntimeError, ValueError, TypeError, AttributeError):
+        return None, "original CI identity is unreadable; no branch update is authorized"
+    return verdict
+
+
 class ProofFreshness:
     """Per-sweep answer to: has main moved under this pull request's proof?
 
@@ -2175,6 +2895,7 @@ class ProofFreshness:
         self._root_trees: dict[str, dict[str, tuple[str, str, str]]] = {}
         self._recursive_trees: dict[str, dict[str, tuple[str, str, str]]] = {}
         self._blobs: dict[str, bytes] = {}
+        self._fence_manifest_jobs: dict[str, dict[str, Any]] = {}
         self._pr_files: dict[Any, list[str] | None] = {}
         # Exact checked head -> newest main commit already contained by that head.
         # This is a compatibility fallback for older/external check records that do
@@ -2183,6 +2904,7 @@ class ProofFreshness:
         self._proof_bound_sha: str | None = None
         self.commit_file_reads = 0
         self._commit_file_page_reads = 0
+        self._fence_projection_in_progress = False
 
     # -- construction ---------------------------------------------------------
 
@@ -2382,6 +3104,7 @@ class ProofFreshness:
         cached = self._root_trees.get(tree_sha)
         if cached is not None:
             return cached
+        self._charge_fence_projection_read()
         status, payload = _request(
             "GET",
             f"{GITHUB_API}/repos/{self.repo}/git/trees/{tree_sha}",
@@ -2389,19 +3112,18 @@ class ProofFreshness:
         )
         if status >= 400 or not isinstance(payload, dict):
             raise _read_failed(status, payload, f"root tree {tree_sha[:12]} unreadable")
-        if payload.get("truncated") is True:
-            raise RuntimeError(f"root tree {tree_sha[:12]} was truncated")
+        rows = payload.get("tree")
+        if payload.get("truncated") is not False or not isinstance(rows, list):
+            raise RuntimeError(f"root tree {tree_sha[:12]} is incomplete")
         entries: dict[str, tuple[str, str, str]] = {}
-        for raw in payload.get("tree") or []:
-            entry = raw or {}
-            path = str(entry.get("path") or "")
-            if not path:
-                continue
-            entries[path] = (
-                str(entry.get("type") or ""),
-                str(entry.get("mode") or ""),
-                str(entry.get("sha") or ""),
-            )
+        for entry in rows:
+            if not isinstance(entry, dict):
+                raise RuntimeError(f"root tree {tree_sha[:12]} contains a malformed entry")
+            path, kind, mode, oid = (entry.get(key) for key in ("path", "type", "mode", "sha"))
+            if (not isinstance(path, str) or not path or "/" in path or path in entries
+                    or not isinstance(kind, str) or not isinstance(mode, str) or not _is_full_sha(oid)):
+                raise RuntimeError(f"root tree {tree_sha[:12]} contains a malformed entry")
+            entries[path] = (kind, mode, oid)
         if not entries:
             raise RuntimeError(f"root tree {tree_sha[:12]} had no usable entries")
         self._root_trees[tree_sha] = entries
@@ -2411,6 +3133,7 @@ class ProofFreshness:
         cached = self._commit_tree_shas.get(commit_sha)
         if cached:
             return cached
+        self._charge_fence_projection_read()
         status, payload = _request(
             "GET",
             f"{GITHUB_API}/repos/{self.repo}/git/commits/{commit_sha}",
@@ -2431,6 +3154,7 @@ class ProofFreshness:
         cached = self._recursive_trees.get(tree_sha)
         if cached is not None:
             return cached
+        self._charge_fence_projection_read()
         status, payload = _request(
             "GET",
             f"{GITHUB_API}/repos/{self.repo}/git/trees/{tree_sha}?recursive=1",
@@ -2440,19 +3164,18 @@ class ProofFreshness:
             raise _read_failed(
                 status, payload, f"recursive tree {tree_sha[:12]} unreadable"
             )
-        if payload.get("truncated") is True:
-            raise RuntimeError(f"recursive tree {tree_sha[:12]} was truncated")
+        rows = payload.get("tree")
+        if payload.get("truncated") is not False or not isinstance(rows, list):
+            raise RuntimeError(f"recursive tree {tree_sha[:12]} is incomplete")
         entries: dict[str, tuple[str, str, str]] = {}
-        for raw in payload.get("tree") or []:
-            entry = raw or {}
-            path = str(entry.get("path") or "")
-            if not path:
-                continue
-            entries[path] = (
-                str(entry.get("type") or ""),
-                str(entry.get("mode") or ""),
-                str(entry.get("sha") or ""),
-            )
+        for entry in rows:
+            if not isinstance(entry, dict):
+                raise RuntimeError(f"recursive tree {tree_sha[:12]} contains a malformed entry")
+            path, kind, mode, oid = (entry.get(key) for key in ("path", "type", "mode", "sha"))
+            if (not isinstance(path, str) or not path or path in entries
+                    or not isinstance(kind, str) or not isinstance(mode, str) or not _is_full_sha(oid)):
+                raise RuntimeError(f"recursive tree {tree_sha[:12]} contains a malformed entry")
+            entries[path] = (kind, mode, oid)
         self._recursive_trees[tree_sha] = entries
         return entries
 
@@ -2460,6 +3183,7 @@ class ProofFreshness:
         cached = self._blobs.get(blob_sha)
         if cached is not None:
             return cached
+        self._charge_fence_projection_read()
         status, payload = _request(
             "GET",
             f"{GITHUB_API}/repos/{self.repo}/git/blobs/{blob_sha}",
@@ -2768,18 +3492,31 @@ class ProofFreshness:
     def exact_proof_base(
         self, pull: dict[str, Any], runs: list[dict[str, Any]]
     ) -> tuple[str | None, str]:
-        """Exact main SHA the current head's GitHub Actions proof tested.
+        """Conservative common base advertised by the exact-head proof anchors.
 
-        A ``pull_request`` check run already carries the immutable event identity
-        needed here: ``pull_requests[].base.sha`` beside the exact PR number and
-        head SHA.  That is strictly stronger than inferring the base from job start
-        times.  In particular, runner queue time can never make a SHA ambiguous.
+        ``pull_requests[].base.sha`` binds a PR number/head association, but its
+        base can be an older PR-object snapshot rather than the executed merge's
+        parent. Authenticated semantic CI coverage is reconciled separately;
+        it must not silently advance the independent anchors here. Job start
+        times and runner queue time never establish either execution identity.
 
         Every non-spurious GitHub Actions run must agree.  Missing, mismatched or
         contradictory metadata is *indeterminate*, not stale: changing the branch
         cannot repair a control-plane read, and treating one as staleness recreates
         the self-reproof loop this controller exists to end.
         """
+        if has_admitted_subject_checks(runs):
+            try:
+                loaded = admitted_semantic_evidence_for_head(self.repo,
+                    str((pull.get("head") or {}).get("sha") or ""), self.token,
+                    check_runs=runs)
+                base = loaded.evidence["base_sha"]
+                if not isinstance(base, str) or not re.fullmatch(r"[0-9a-f]{40}", base):
+                    raise ValueError("missing original admitted base")
+                return base, "authenticated original admitted tested base"
+            except Exception:
+                return None, "admitted original tested-base evidence unavailable"
+
         number = str(pull.get("number") or "")
         head_sha = str((pull.get("head") or {}).get("sha") or "").lower()
         if not number or not head_sha:
@@ -2892,8 +3629,110 @@ class ProofFreshness:
                 surface.update(ownership_matches(name, gate["patterns"]))
         return surface
 
+    def _proof_input_entry(self, commit: str, path: str) -> tuple[str, str, str]:
+        tree = self._commit_tree_sha(commit)
+        parts = path.split("/")
+        for i, part in enumerate(parts):
+            entry = self._root_tree(tree).get(part)
+            if not entry or not _is_full_sha(entry[2]):
+                raise ValueError("original proof input identity unavailable")
+            if i == len(parts) - 1:
+                if entry[0] != "blob" or entry[1] not in {"100644", "100755"}:
+                    raise ValueError("original proof input is not a regular source blob")
+                return entry
+            if entry[0] != "tree" or entry[1] != "040000":
+                raise ValueError("original proof input ancestry is not a source tree")
+            tree = entry[2]
+        raise ValueError("original proof input path unavailable")
+
+    def _fence_alias_inputs_are_regular(self, commit: str) -> bool:
+        """Refuse link traversal in the pinned fence checkout projection."""
+        root = self._commit_tree_sha(commit)
+        directory = ("tree", "040000")
+        regular = {("blob", "100644"), ("blob", "100755")}
+        for selector in FENCE_ALIAS_SELECTOR_PATHS:
+            parts = selector.rstrip("/").split("/")
+            tree = root
+            for index, part in enumerate(parts):
+                entry = self._root_tree(tree).get(part)
+                if entry is None:
+                    break  # An absent sparse path cannot supply an alias.
+                kind, mode, oid = entry
+                if not _is_full_sha(oid):
+                    return False
+                if index < len(parts) - 1 or selector.endswith("/"):
+                    if (kind, mode) != directory:
+                        return False
+                    tree = oid
+                elif (kind, mode) not in regular:
+                    return False
+            else:
+                if selector.endswith("/") and any(
+                    (kind, mode) not in regular and (kind, mode) != directory
+                    for kind, mode, _ in self._recursive_tree(tree).values()
+                ):
+                    return False
+        return True
+
+    def _charge_fence_projection_read(self) -> None:
+        if not self._fence_projection_in_progress:
+            return
+        if self._commit_file_page_reads >= COMMIT_FILE_PAGE_READ_CAP:
+            raise RuntimeError("optional proof projection exhausted the shared sweep read reserve")
+        self._commit_file_page_reads += 1
+
+    def _qualified_fence_projection(self, advertised: str, sealed: str, head: str, tested: str) -> bool:
+        self._fence_projection_in_progress = True
+        try:
+            return (self._fence_manifest_inputs_unchanged(advertised, sealed, head)
+                    and all(self._fence_alias_inputs_are_regular(frame)
+                            for frame in (advertised, sealed, head, tested)))
+        finally:
+            self._fence_projection_in_progress = False
+
+    def _fence_manifest_inputs_unchanged(self, advertised: str, sealed: str, head: str) -> bool:
+        """Preserve the existing fence reader and its whole self-mod-fence job.
+
+        test_self_mod_fence._fence_step_run selects jobs/self-mod-fence. Keep
+        its reader, renderer and producer source identical across all three
+        immutable frames before using that input projection. This does not
+        claim a new fence execution base or interpret arbitrary job log text.
+        """
+        frames = (advertised, sealed, head)
+        for path, expected_blob in FENCE_MANIFEST_READER_CONTRACT.items():
+            entries = [self._proof_input_entry(commit, path) for commit in frames]
+            qualified = (FENCE_MANIFEST_RENDERER_CONTRACTS
+                         if path == "scripts/run_ci_pack.py" else {expected_blob})
+            if len(set(entries)) != 1 or entries[0][2] not in qualified:
+                return False
+        for path, qualified in FENCE_RESOURCE_SELECTOR_CONTRACTS.items():
+            if any(self._proof_input_entry(commit, path)[2] not in qualified for commit in frames):
+                return False
+        import yaml
+        jobs = []
+        for commit in frames:
+            entry = self._proof_input_entry(commit, ".github/ci/legacy-jobs.yml")
+            if entry[2] in self._fence_manifest_jobs:
+                jobs.append(self._fence_manifest_jobs[entry[2]])
+                continue
+            raw = self._blob(entry[2])
+            if (len(raw) > SEMANTIC_ARTIFACT_MAX_BYTES
+                    or hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() != entry[2]):
+                return False
+            try:
+                document = yaml.safe_load(raw)
+            except yaml.YAMLError:
+                return False
+            job = (document.get("jobs") or {}).get("self-mod-fence") if isinstance(document, dict) else None
+            if not isinstance(job, dict) or not isinstance(job.get("steps"), list) or not job["steps"]:
+                return False
+            self._fence_manifest_jobs[entry[2]] = job
+            jobs.append(job)
+        return jobs[0] == jobs[1] == jobs[2]
+
     def stale_for(
-        self, pull: dict[str, Any], runs: list[dict[str, Any]]
+        self, pull: dict[str, Any], runs: list[dict[str, Any]], *,
+        semantic_ci_base: str | None = None,
     ) -> tuple[bool | None, str]:
         """Freshness verdict for one clean head.
 
@@ -2903,6 +3742,8 @@ class ProofFreshness:
         """
         number = pull.get("number")
         proof_base, metadata_problem = self.exact_proof_base(pull, runs)
+        if proof_base is None and has_admitted_subject_checks(runs):
+            return None, metadata_problem  # never downgrade to head ancestry
         if proof_base:
             for index, commit in enumerate(self.commits):
                 if str(commit.get("sha") or "").lower() != proof_base:
@@ -2965,6 +3806,32 @@ class ProofFreshness:
                 )
             if is_skip_ci_noise(message, files):
                 continue  # data/site/hot-tape tick, not an edit
+            if semantic_ci_base is not None:
+                positions = {str(c.get("sha") or ""): i for i, c in enumerate(self.commits)}
+                if (semantic_ci_base in positions and commit["sha"] in positions
+                        and positions[commit["sha"]] >= positions[semantic_ci_base]):
+                    # The existing authenticated reader bound this CI execution
+                    # to the sealed base, not the lazy PR-association snapshot.
+                    # Reuse that base ONLY for the finite qualified non-input
+                    # boundary under CI's exclusive ownership. The caller also
+                    # qualified the independent fence's exact input
+                    # projection; no other anchor receives a new execution base.
+                    remaining = []
+                    for name in files:
+                        if name == ".github/ci/legacy-jobs.yml":
+                            continue
+                        owners = {gate.get("workflow") for gate in self.gates
+                                  if ownership_matches(name, gate.get("patterns"))}
+                        if (name not in FENCE_QUALIFIED_NONINPUT_PATHS
+                                or name.startswith(CI_DEFINITION_TREES)
+                                or name in self.ci_definition_files
+                                or owners != {"ci.yml"}):
+                            remaining.append(name)
+                    # Other workflow/control definitions, shared ownership and
+                    # every edit newer than the sealed base remain unchanged.
+                    files = remaining
+                    if not files:
+                        continue
             product_commits += 1
             if product_commits > MAIN_COMMIT_FILE_CAP:
                 return True, (
@@ -3036,14 +3903,16 @@ class ProofFreshness:
         )
 
 
-def labeled_pulls(repo: str, token: str) -> list[dict[str, Any]]:
-    """Open pull requests carrying `merge-on-green`.
+def open_pulls(repo: str, token: str) -> list[dict[str, Any]]:
+    """One bounded mutable open-PR traversal for source discovery and merging.
 
     Discovery is paginated independently of the evaluation cap.  Otherwise an
     older armed pull request beyond the first 100 open pulls is invisible forever;
-    wall-clock rotation cannot rotate something it never discovered.
+    wall-clock rotation cannot rotate something it never discovered. Offset pages
+    are not an atomic population snapshot: absence never proves closure.
     """
     pulls: list[dict[str, Any]] = []
+    seen = set()
     for page in range(1, OPEN_PULL_PAGE_CAP + 1):
         query = urllib.parse.urlencode(
             {"state": "open", "per_page": "100", "page": str(page)}
@@ -3053,7 +3922,12 @@ def labeled_pulls(repo: str, token: str) -> list[dict[str, Any]]:
         )
         if status >= 400 or not isinstance(payload, list):
             raise _read_failed(status, payload, "pull-request listing failed")
-        pulls.extend(pull for pull in payload if isinstance(pull, dict))
+        for pull in payload:
+            if (not isinstance(pull, dict) or type(pull.get("number")) is not int
+                    or pull["number"] <= 0 or pull["number"] in seen):
+                raise RuntimeError("open pull discovery returned malformed or duplicate identity")
+            seen.add(pull["number"])
+            pulls.append(pull)
         if len(payload) < 100:
             break
     else:
@@ -3061,7 +3935,38 @@ def labeled_pulls(repo: str, token: str) -> list[dict[str, Any]]:
             f"open pull discovery reached its {OPEN_PULL_PAGE_CAP * 100}-pull safety "
             "cap; refusing a permanently truncated queue"
         )
-    return [pull for pull in pulls if MERGE_ON_GREEN_LABEL in label_names(pull)]
+    return pulls
+
+
+def labeled_pulls(repo: str, token: str) -> list[dict[str, Any]]:
+    """Legacy merge evaluation projection; source admission also retains Drafts."""
+    return [pull for pull in open_pulls(repo, token) if MERGE_ON_GREEN_LABEL in label_names(pull)]
+
+
+def current_shared_census() -> list[dict[str, Any]] | None:
+    """Reuse protected same-job observed candidates, never claim global coverage.
+
+    The legacy merger independently checks each candidate; this handoff is not
+    authority to retire missing demand witnesses or certify admission fairness.
+    """
+    directory = os.environ.get("CI_ADMISSION_STAGE_DIR", "")
+    if not directory:
+        return None
+    path = Path(directory) / "census.json"
+    if not path.exists():
+        return None  # no complete stage result; incumbent read path remains
+    data = json.loads(path.read_text(encoding="utf-8"))
+    expected = dict(repository_id=int(os.environ["GITHUB_REPOSITORY_ID"]),
+                    protected_controller_sha=os.environ["GITHUB_SHA"],
+                    current_run_id=os.environ["GITHUB_RUN_ID"],
+                    current_run_attempt=int(os.environ["GITHUB_RUN_ATTEMPT"]))
+    pulls = data.get("pulls")
+    if (data.get("context") != expected or not isinstance(pulls, list)
+            or len(pulls) > OPEN_PULL_PAGE_CAP * 100
+            or any(not isinstance(p, dict) or type(p.get("number")) is not int or p["number"] <= 0 for p in pulls)
+            or len({p["number"] for p in pulls}) != len(pulls)):
+        raise ValueError("shared discovery does not belong to this original controller")
+    return pulls
 
 
 def is_sweep_candidate(pull: dict[str, Any]) -> bool:
@@ -3074,43 +3979,2038 @@ def is_sweep_candidate(pull: dict[str, Any]) -> bool:
     )
 
 
-def in_flight_pr_proofs(repo: str, token: str) -> int | None:
-    """Repo-wide active pull-request ``ci.yml`` runs, or ``None`` if unreadable.
+ADMISSION_COMMENT_PREFIX = "<!-- merge-on-green:proof-admission:v1 -->\n"
+DEMAND_COMMENT_PREFIX = "<!-- merge-on-green:proof-demand:v1 -->\n"
+CHECKPOINT_COMMENT_PREFIX = "<!-- merge-on-green:proof-checkpoint:v1 -->\n"
 
-    This is the controller's workload circuit breaker.  A per-sweep refresh cap
-    does not bound anything when green workflow completions start another sweep
-    every minute; active Actions runs are the durable state shared by those sweeps.
-    Five tiny ``per_page=1`` reads use GitHub's own status index and ``total_count``
-    so proofs outside the pull-list/evaluation window still consume capacity.
 
-    Unreadable is deliberately ``None`` rather than zero.  The caller pauses only
-    NEW ``update-branch`` work while continuing to judge and merge already-proven
-    heads; an API blip must not be interpreted as an empty runner pool.
+@dataclass(frozen=True)
+class SharedProofWorkload:
+    complete: bool
+    runs: tuple[proof_admission.Run, ...] = ()
+    admissions: tuple[proof_admission.Admission, ...] = ()
+    demands: tuple[proof_admission.Demand, ...] = ()
+
+
+
+def native_target_protection(repo, token, target, *, repository_id, protected_controller_sha, allow_off=False):
+    """Read selected active native rules; no configuration/write or fallback.
+
+    Ordinary entry calls this only from the authenticated serialized controller.
+    Main and pilot have separate actual configuration; absence means native OFF.
     """
-    total = 0
+    from scripts import ci_authority as authority
+    if target not in authority.NATIVE_QUEUE_TARGETS:
+        raise ValueError('native target not allowlisted')
+    rows=[]
+    for page in range(1,11):
+        status,data=_request('GET',f'{GITHUB_API}/repos/{repo}/rules/branches/' +
+            urllib.parse.quote(target,safe='')+f'?per_page=100&page={page}',token)
+        if status!=200 or not isinstance(data,list) or len(data)>100 or any(not isinstance(x,dict) for x in data):
+            raise ValueError('native effective rules incomplete or unavailable')
+        rows.extend(data)
+        if len(data)<100:break
+    else:raise ValueError('native effective rules exceed existing bounded inventory')
+    if allow_off and not any(row.get('type')=='merge_queue' for row in rows):
+        return None  # Affirmatively no active native queue rule, not unreadable.
+    relevant=[row for rule in rows if rule.get('type')=='workflows'
+        for row in (rule.get('parameters') or {}).get('workflows',[])
+        if isinstance(row,dict) and row.get('path') in {
+            '.github/workflows/ci.yml','.github/workflows/fences.yml','.github/workflows/ci-authority.yml'}]
+    sources={row.get('sha') for row in relevant}
+    if len(sources)!=1:raise ValueError('native required source pin ambiguous')
+    source=next(iter(sources))
+    if not isinstance(source,str) or not re.fullmatch('[0-9a-f]{40}',source):
+        raise ValueError('native required source pin missing')
+    if source!=protected_controller_sha and not _github_is_ancestor(repo,token,source,protected_controller_sha):
+        raise ValueError('native required source is not protected ancestry')
+    return authority.native_protection_contract(rows,repository_id=repository_id,
+        protected_source_sha=source,selected_target=target)
+
+
+def native_rule_blocks_legacy(repo, token, target):
+    """Do not REST-merge/update around configured or unreadable native policy."""
+    if target not in {'main','codex/merge-queue-pilot'}:return True
+    try:
+        for page in range(1,11):
+            code,rows=_request('GET',f'{GITHUB_API}/repos/{repo}/rules/branches/'+
+                urllib.parse.quote(target,safe='')+f'?per_page=100&page={page}',token)
+            if code!=200 or not isinstance(rows,list) or len(rows)>100 or any(not isinstance(r,dict) for r in rows):return True
+            if any(r.get('type')=='merge_queue' for r in rows):return True
+            if len(rows)<100:return False
+    except Exception:return True
+    return True
+
+
+def native_empty_target(repo, token, target, expected_base):
+    """Serial build does not imply a one-entry queue; require actual emptiness."""
+    from scripts import ci_authority as authority
+    owner,name=repo.split('/')
+    code,result=_request('POST',GITHUB_API+'/graphql',token,dict(query=authority.NATIVE_QUEUE_QUERY,
+        variables=dict(owner=owner,name=name,target=target,qualifiedRef='refs/heads/'+target)))
+    repository=(result.get('data') or {}).get('repository') if isinstance(result,dict) else None
+    queue=repository.get('mergeQueue') if isinstance(repository,dict) else None
+    entries=queue.get('entries') if isinstance(queue,dict) else None
+    config=queue.get('configuration') if isinstance(queue,dict) else None
+    if (code!=200 or result.get('errors') or repository.get('nameWithOwner')!=repo
+            or (repository.get('ref') or {}).get('name')!=target
+            or ((repository.get('ref') or {}).get('target') or {}).get('oid')!=expected_base
+            or not isinstance(entries,dict) or entries.get('nodes')!=[]
+            or type(entries.get('totalCount')) is not int or entries['totalCount']!=0
+            or (entries.get('pageInfo') or {}).get('hasNextPage') is not False
+            or not isinstance(config,dict) or config.get('mergeMethod')!='SQUASH'
+            or any(type(config.get(k)) is not int or config[k]!=1 for k in
+                ('maximumEntriesToBuild','maximumEntriesToMerge','minimumEntriesToMerge'))):
+        raise ValueError('native selected target is occupied, changed or incomplete')
+
+
+def native_original_group_snapshot(repo, token, payload, *, execution_sha, execution_ref):
+    """Single complete membership read on the incumbent request/budget carrier."""
+    from scripts import ci_authority as authority
+    event_group=payload.get('merge_group') if isinstance(payload,dict) else None
+    target=(event_group or {}).get('base_ref','').removeprefix('refs/heads/')
+    if target not in authority.NATIVE_QUEUE_TARGETS:
+        raise ValueError('native event target unsupported')
+    owner,name=repo.split('/')
+    code,result=_request('POST',GITHUB_API+'/graphql',token,dict(query=authority.NATIVE_QUEUE_QUERY,
+        variables=dict(owner=owner,name=name,target=target,qualifiedRef='refs/heads/'+target)))
+    if code!=200 or not isinstance(result,dict) or result.get('errors') or not isinstance(result.get('data'),dict):
+        raise ValueError('native original membership unavailable')
+    return authority.validate_native_queue_snapshot(result['data'],payload,repo,
+        execution_sha=execution_sha,execution_ref=execution_ref)
+
+
+def native_producer_intent(repo, token, pull, group, arm_events, *, protection):
+    """Authorize only the first, still-current App-issued producer intent.
+
+    App identity is read from the original producer check suite and compared to
+    the actual label event, never assigned a collaborator role. A withdrawn or
+    relabelled intent cannot be revived with an old source-origin artifact.
+    """
+    if (not isinstance(arm_events,list) or len(arm_events)!=1
+            or not isinstance(arm_events[0],dict)):
+        raise ValueError('producer intent history is not the unique original arm')
+    event=arm_events[0];actor=event.get('actor');app=event.get('performed_via_github_app')
+    if (event.get('event')!='labeled' or (event.get('label') or {}).get('name')!=MERGE_ON_GREEN_LABEL
+            or type(event.get('id')) is not int or event['id']<=0
+            or not isinstance(actor,dict) or actor.get('type')!='Bot'
+            or actor.get('login')!='github-actions[bot]' or type(actor.get('id')) is not int
+            or not isinstance(app,dict) or type(app.get('id')) is not int or app['id']<=0
+            or app.get('slug')!='github-actions'):
+        raise ValueError('producer App-issued intent unavailable')
+    root=f'{GITHUB_API}/repos/{repo}'
+    def get(path):
+        code,row=_request('GET',root+path,token)
+        if code!=200 or not isinstance(row,dict):raise ValueError('producer intent original read unavailable')
+        return row
+    main=get('/branches/main');main_sha=(main.get('commit') or {}).get('sha')
+    if (main.get('name')!='main' or main.get('protected') is not True
+            or not isinstance(main_sha,str) or not re.fullmatch('[0-9a-f]{40}',main_sha)):
+        raise ValueError('producer current protected source unavailable')
+    _migration_control_ancestor(repo,token,protection['protected_source_sha'],main_sha)
+    repository_id=((pull.get('base') or {}).get('repo') or {}).get('id')
+    if type(repository_id) is not int or repository_id<=0:raise ValueError('producer repository identity unavailable')
+    origin=authenticated_producer_origin(repo,token,pull,repository_id=repository_id,
+        protected_controller_sha=main_sha,require_queue_intent=True)
+    if (not isinstance(origin,dict) or origin.get('published_source_head')!=group.get('source_head_sha')
+            or origin.get('pr_number')!=group.get('pr_number')
+            or origin.get('selected_target')!=group.get('target_ref')
+            or actor['id']!=origin.get('pr_creation_user_id')
+            or actor['login']!=origin.get('pr_creation_login')):
+        raise ValueError('producer intent source/actor differs from authenticated original')
+    run=get('/actions/runs/'+str(origin['producer_run_id']))
+    suite_id=run.get('check_suite_id')
+    if (run.get('id')!=origin['producer_run_id'] or run.get('run_attempt')!=origin['producer_run_attempt']
+            or run.get('head_sha')!=origin['workflow_sha']
+            or (run.get('repository') or {}).get('id')!=repository_id
+            or type(suite_id) is not int or suite_id<=0):
+        raise ValueError('producer intent original run changed')
+    suite=get('/check-suites/'+str(suite_id));suite_app=suite.get('app')
+    if (suite.get('id')!=suite_id or suite.get('head_sha')!=origin['workflow_sha']
+            or (suite.get('repository') or {}).get('id')!=repository_id
+            or not isinstance(suite_app,dict) or suite_app.get('id')!=app['id']
+            or suite_app.get('slug')!='github-actions'):
+        raise ValueError('producer label App differs from original execution App')
+    if get('/branches/main')!=main:
+        raise ValueError('producer protected source moved during intent qualification')
+    return dict(kind='github_actions_producer',repository=repo,repository_id=repository_id,
+        pr_number=group['pr_number'],head_sha=group['source_head_sha'],target_ref=group['target_ref'],
+        arm_event_id=event['id'],actor_id=actor['id'],actor_login=actor['login'],app_id=app['id'],
+        producer_run_id=origin['producer_run_id'],producer_run_attempt=origin['producer_run_attempt'],
+        producer_generation=origin['original_generation'])
+
+
+def native_current_release(repo, token, group, *, protection):
+    """Fresh original source/arm/review/hold gates, shared by entry and final.
+
+    All pages remain inside the caller's existing deadline/API quota scope. An
+    absent/changed label event or missing permission is never release authority.
+    No source-base freshness check occurs here: only native integrated proof may
+    settle that different obligation.
+    """
+    from scripts import ci_authority as authority
+    number=group.get('pr_number') if isinstance(group,dict) else None
+    if type(number) is not int or number<=0:raise ValueError('native source identity missing')
+    root=f'{GITHUB_API}/repos/{repo}'
+    def get(path):
+        code,row=_request('GET',root+path,token)
+        if code!=200:raise ValueError('native current authority unavailable')
+        return row
+    def pages(path):
+        rows=[]
+        for page in range(1,11):
+            part=get(path+f'?per_page=100&page={page}')
+            if not isinstance(part,list) or len(part)>100 or any(not isinstance(x,dict) for x in part):
+                raise ValueError('native current authority pagination incomplete')
+            rows.extend(part)
+            if len(part)<100:break
+        else:raise ValueError('native current authority exceeds existing inventory bound')
+        commits_path=path.endswith('/commits')
+        ids=[r.get('sha' if commits_path else 'id') for r in rows]
+        if any((not isinstance(n,str) or not re.fullmatch('[0-9a-f]{40}',n)) if commits_path else (type(n) is not int or n<=0) for n in ids) or len(set(ids))!=len(ids):
+            raise ValueError('native current authority duplicate/missing identity')
+        return rows
+    pull=get(f'/pulls/{number}')
+    comments=fetch_issue_comments(repo,number,token,strict=True)
+    reviews=pages(f'/pulls/{number}/reviews')
+    events=pages(f'/issues/{number}/events')
+    arm=[e for e in events if e.get('event') in {'labeled','unlabeled'}
+         and isinstance(e.get('label'),dict) and e['label'].get('name')==MERGE_ON_GREEN_LABEL]
+    if not arm:raise ValueError('native arm has no original server issuer')
+    latest=max(arm,key=lambda row:row['id'])
+    issuer=(latest.get('actor') or {}).get('login')
+    if latest['event']!='labeled' or authority._safe_login(issuer) is None:
+        raise ValueError('native arm is absent or issuer unavailable')
+    producer_intent=None
+    if (latest.get('actor') or {}).get('type')=='Bot':
+        producer_intent=native_producer_intent(repo,token,pull,group,arm,protection=protection)
+        permission=None  # An App grant is never a human collaborator role.
+    else:
+        permission=get('/collaborators/'+urllib.parse.quote(issuer,safe='')+'/permission')
+        permission=permission.get('permission') if isinstance(permission,dict) else None
+    owner,name=repo.split('/')
+    code,response=_request('POST',GITHUB_API+'/graphql',token,dict(query=authority.NATIVE_PR_RELEASE_QUERY,
+        variables=dict(owner=owner,name=name,number=number)))
+    repository=(response.get('data') or {}).get('repository') if isinstance(response,dict) else None
+    row=repository.get('pullRequest') if isinstance(repository,dict) else None
+    if (code!=200 or response.get('errors') or repository.get('nameWithOwner')!=repo or not isinstance(row,dict)
+            or type(row.get('number')) is not int or row['number']!=number
+            or row.get('state')!='OPEN' or row.get('isDraft') is not False
+            or row.get('headRefOid')!=group['source_head_sha'] or row.get('baseRefName')!=group['target_ref']
+            or not isinstance(row.get('id'),str) or not re.fullmatch('[A-Za-z0-9_=-]{1,256}',row['id'])):
+        raise ValueError('native current review/source read changed')
+    # Canonical policy assessment owns risk-proportionate review counts and
+    # source-contributor independence. Zero-review work does not need unrelated
+    # ancestry mappings; the adapter reads commits only when reviews are owed.
+    from scripts import ci_native_review_policy as policy
+    native_facts=authority.native_review_facts(protection,row,repository=repo,group=group)
+    def policy_get(path):
+        own=f'/repos/{repo}/pulls/{number}'
+        canonical='/repos/mastermindx-market-intelligence/Mastermind/'
+        allowed=isinstance(path,str) and (path==own or path==canonical+'branches/master'
+            or re.fullmatch(re.escape(own)+r'/(?:files|commits)\?per_page=100&page=[1-9][0-9]{0,2}',path)
+            or re.fullmatch(re.escape(canonical)+
+                r'contents/control_plane/github_review_risk_(?:policy|source|dispatch)\.py\?ref=[0-9a-f]{40}',path))
+        if not allowed:
+            raise ValueError('native policy read path is outside its fixed source/current PR contract')
+        code,data=_request('GET',GITHUB_API+path,token)
+        if code!=200:raise policy.NativeReviewReadError(code,data)
+        return data
+    qualification=policy.qualify_native_review(repo,pull,reviews,issuer,
+        get=policy_get,now=time.time,native_facts=native_facts)
+    authority.native_release_authorization(pull,comments,reviews,group=group,
+        review_decision=row.get('reviewDecision'),issuer_permission=permission,
+        comments_complete=comments is not None,reviews_complete=True,expected_repository=repo,
+        review_policy=qualification,issuer_login=issuer,producer_intent=producer_intent)
+    runs=head_check_runs(repo,group['source_head_sha'],token)
+    binding=[r for r in runs if not is_non_binding_check(str(r.get('name') or ''),base_ref=group['target_ref'])]
+    if (not binding or any(r.get('status')!='completed' or r.get('conclusion') not in CLEAN_CONCLUSIONS for r in binding)
+            or not any(r.get('conclusion')=='success' for r in binding)):
+        raise ValueError('native source still has pending, failed or unknown binding checks')
+    # Re-fence exact mutable source/arm/draft after bounded history reads.
+    current=get(f'/pulls/{number}')
+    for key in ('number','state','draft','merged','head','base','labels','title','body'):
+        if current.get(key)!=pull.get(key):raise ValueError('native current source/authorization changed')
+    if producer_intent is not None:
+        current_events=pages(f'/issues/{number}/events')
+        current_arm=[e for e in current_events if e.get('event') in {'labeled','unlabeled'}
+            and isinstance(e.get('label'),dict) and e['label'].get('name')==MERGE_ON_GREEN_LABEL]
+        if current_arm!=arm:raise ValueError('producer original intent changed during release qualification')
+    return dict(pull=pull,node_id=row['id'],issuer=issuer,checks=runs)
+
+
+PRODUCER_ORIGIN_MARKER = '<!-- mastermind-native-publication-origin:v1 '
+
+
+def producer_origin_pointer(pull):
+    """A bounded untrusted original locator, never source or admission authority."""
+    body=pull.get('body') if isinstance(pull,dict) else None
+    if not isinstance(body,str):raise ValueError('producer pointer body unavailable')
+    count=body.count(PRODUCER_ORIGIN_MARKER)
+    if count==0:return None
+    matches=re.findall(re.escape(PRODUCER_ORIGIN_MARKER)+r'([^\n]{1,1024}) -->',body)
+    if count!=1 or len(matches)!=1:raise ValueError('producer original pointer ambiguous')
+    row=json.loads(matches[0],object_pairs_hook=proof_admission._unique_object)
+    if (not isinstance(row,dict) or set(row)!={'run_id','run_attempt','job','step','generation'}
+            or any(type(row[k]) is not int or row[k]<=0 for k in ('run_id','run_attempt'))
+            or row['job']!='shock' or row['step']!='native_publication_stage'
+            or not isinstance(row['generation'],str) or not re.fullmatch('[0-9a-f]{12}',row['generation'])):
+        raise ValueError('producer original pointer invalid')
+    return row
+
+
+def producer_workflow_source_contract(document, *, require_queue_intent=False):
+    """First protected producer's exact source/token boundary, not bot inference.
+
+    The immutable workflow must already be protected main ancestry. Arbitrary
+    producer paths, PR event source, input-selected checkout and admin token
+    substitutions do not inherit this narrow GITHUB_TOKEN-origin contract.
+    """
+    if not isinstance(document,dict):raise ValueError('producer workflow unavailable')
+    events=document.get('on',document.get(True))
+    if not isinstance(events,dict) or set(events)-{'schedule','push','workflow_dispatch'}:
+        raise ValueError('producer workflow event source unsupported')
+    job=(document.get('jobs') or {}).get('shock')
+    if (not isinstance(job,dict) or any(k in job for k in ('uses','with','secrets','container','services'))
+            or 'defaults' in job or 'defaults' in document):raise ValueError('producer job source unsupported')
+    steps=job.get('steps')
+    if not isinstance(steps,list) or any(not isinstance(x,dict) for x in steps):raise ValueError('producer steps malformed')
+    publications=[(i,x) for i,x in enumerate(steps) if x.get('id')=='native_publication_stage']
+    checkouts=[(i,x) for i,x in enumerate(steps) if str(x.get('uses','')).startswith('actions/checkout@')]
+    if len(publications)!=1 or len(checkouts)!=1:raise ValueError('producer original source ambiguous')
+    index,step=publications[0];checkout_index,checkout=checkouts[0]
+    options=checkout.get('with') or {}
+    if (checkout_index>=index or checkout.get('uses')!='actions/checkout@v4'
+            or options.get('ref') not in (None,'${{ github.sha }}','${{ github.workflow_sha }}')
+            or options.get('repository') not in (None,'${{ github.repository }}')
+            or options.get('token','${{ secrets.GITHUB_TOKEN }}')!='${{ secrets.GITHUB_TOKEN }}'
+            or options.get('ssh-key') or options.get('persist-credentials',True) is not True):
+        raise ValueError('producer checkout credential/source boundary changed')
+    env={}
+    for owner in (document,job,step):
+        current=owner.get('env',{})
+        if not isinstance(current,dict):raise ValueError('producer environment malformed')
+        env.update(current)
+    if any(env.get(key) not in (None,'${{ secrets.GITHUB_TOKEN }}') for key in ('GITHUB_TOKEN','GH_TOKEN','ADMIN_GH_TOKEN')):
+        raise ValueError('producer publication credential origin changed')
+    command=step.get('run')
+    if (not isinstance(command,str) or 'scripts/ci/push_retry.sh' not in command
+            or 'ADMIN_GH_TOKEN' in command or 'working-directory' in step or 'uses' in step
+            or step.get('shell') not in (None,'bash')):raise ValueError('producer publication step changed')
+    name=step.get('name','native_publication_stage');job_name=job.get('name','shock')
+    if any(not isinstance(x,str) or not x or '${{' in x for x in (name,job_name)):
+        raise ValueError('producer execution names not exact')
+    if sum(x.get('name',x.get('id'))==name for x in steps)!=1:raise ValueError('producer execution step name ambiguous')
+    if require_queue_intent:
+        # The source-hint codec does not assert an arm/readback postcondition.
+        # Qualify this only against the supplier's immutable publishing helper
+        # and workflow, not an App name or candidate-controlled payload claim.
+        raise ValueError('protected producer queue-intent postcondition not yet qualified')
+    return job_name,name
+
+
+def authenticated_producer_origin(repo,token,pull,*,repository_id,protected_controller_sha,require_queue_intent=False):
+    """First-source hint from the SAME original producer, never a slot or proof.
+
+    All immutable bytes and mutable source reads use the existing bounded read
+    carrier. Missing upload, duplicates or original ambiguity HOLD; no search for
+    a replacement original and no synthetic artifact identifier is permitted.
+    """
+    locator=producer_origin_pointer(pull)
+    if locator is None:return None
+    root=f'{GITHUB_API}/repos/{repo}'
+    def get(path):
+        status,row=_request('GET',root+path,token)
+        if status!=200:raise ValueError('producer original source evidence unavailable')
+        return row
+    run=get(f"/actions/runs/{locator['run_id']}")
+    if not isinstance(run,dict) or run.get('run_attempt')!=locator['run_attempt']:
+        raise ValueError('producer original attempt changed')
+    producer_sha=run.get('head_sha')
+    _migration_control_ancestor(repo,token,producer_sha,protected_controller_sha)
+    name=f"ci-proof-producer-origin-{locator['run_id']}-{locator['run_attempt']}-{locator['job']}-{locator['step']}-{locator['generation']}"
+    listing=get(f"/actions/runs/{locator['run_id']}/artifacts?per_page=100")
+    rows=listing.get('artifacts') if isinstance(listing,dict) else None
+    if (not isinstance(rows,list) or type(listing.get('total_count')) is not int
+            or listing['total_count']!=len(rows) or len(rows)>100 or any(not isinstance(x,dict) for x in rows)):
+        raise ValueError('producer original artifact inventory incomplete')
+    selected=[x for x in rows if x.get('name')==name]
+    if len(selected)!=1 or type(selected[0].get('id')) is not int or selected[0]['id']<=0:
+        raise ValueError('producer original artifact missing or duplicated')
+    artifact=get('/actions/artifacts/'+str(selected[0]['id']))
+    archive=_download_semantic_artifact(root+'/actions/artifacts/'+str(selected[0]['id'])+'/zip',token)
+    # Original provider archive is parsed only by the bounded common envelope.
+    # Validate claimed source against live PR/tree before reading its fixed path.
+    current=get('/pulls/'+str(pull['number']))
+    for key in ('number','head','base','user','state','body'):
+        if current.get(key)!=pull.get(key):raise ValueError('producer subject changed during read')
+    commit=get('/git/commits/'+str((current.get('head') or {}).get('sha')))
+    origin=proof_admission.authenticate_producer_origin(archive=archive,artifact=artifact,producer_run=run,
+        repository_id=repository_id,protected_producer_sha=producer_sha,repository=repo,pull=current,source_commit=commit)
+    if any(origin[key]!=locator[alias] for key,alias in [('producer_run_id','run_id'),('producer_run_attempt','run_attempt'),
+            ('publishing_job','job'),('publishing_step','step'),('original_generation','generation')]):
+        raise ValueError('producer artifact differs from original pointer')
+    source=get('/contents/.github/workflows/commodity-sentinel.yml?ref='+producer_sha)
+    import base64,hashlib,yaml
+    if (not isinstance(source,dict) or source.get('path')!='.github/workflows/commodity-sentinel.yml'
+            or source.get('type')!='file' or source.get('encoding')!='base64'
+            or type(source.get('size')) is not int or not 0<source['size']<=1048576):raise ValueError('producer source bytes unavailable')
+    raw=base64.b64decode(''.join(source.get('content','').split()),validate=True)
+    if (len(raw)!=source['size'] or hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()!=source.get('sha')):
+        raise ValueError('producer source blob changed')
+    class UniqueLoader(yaml.SafeLoader):pass
+    def unique(loader,node,deep=False):
+        result={}
+        for key_node,value_node in node.value:
+            key=loader.construct_object(key_node,deep=deep)
+            if key in result:raise ValueError('duplicate producer source key')
+            result[key]=loader.construct_object(value_node,deep=deep)
+        return result
+    UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,unique)
+    job_name,step_name=producer_workflow_source_contract(yaml.load(raw,Loader=UniqueLoader),require_queue_intent=require_queue_intent)
+    jobs=get(f"/actions/runs/{locator['run_id']}/attempts/{locator['run_attempt']}/jobs?per_page=100")
+    rows=jobs.get('jobs') if isinstance(jobs,dict) else None
+    if (not isinstance(rows,list) or type(jobs.get('total_count')) is not int or jobs['total_count']!=len(rows)
+            or len(rows)>100 or any(not isinstance(x,dict) for x in rows)):
+        raise ValueError('producer job execution inventory incomplete')
+    matches=[x for x in rows if x.get('name')==job_name]
+    if len(matches)!=1:raise ValueError('producer original job ambiguous')
+    job=matches[0]
+    if (type(job.get('id')) is not int or job['id']<=0 or job.get('run_id')!=locator['run_id']
+            or job.get('run_attempt')!=locator['run_attempt'] or job.get('head_sha')!=producer_sha
+            or not isinstance(job.get('steps'),list)):
+        raise ValueError('producer original job changed')
+    steps=[x for x in job['steps'] if isinstance(x,dict) and x.get('name')==step_name]
+    if len(steps)!=1 or steps[0].get('status')!='completed' or steps[0].get('conclusion')!='success':
+        raise ValueError('producer original publication step not concluded')
+    latest=get(f"/actions/runs/{locator['run_id']}")
+    if any(latest.get(k)!=run.get(k) for k in ('id','run_attempt','head_sha','path','head_branch','event','repository')):
+        raise ValueError('producer original changed before demand qualification')
+    return origin
+
+
+def native_bound_original(repo, token, admitted, repository_id):
+    """Resolve one actual queued entry to one actual CI original; never dispatch."""
+    from scripts import ci_authority as authority
+    if (not isinstance(admitted,proof_admission.NativeAdmission) or not admitted.queue_entry_id
+            or admitted.run_id is not None or admitted.settled):raise ValueError('not native queued original')
+    owner,name=repo.split('/')
+    code,response=_request('POST',GITHUB_API+'/graphql',token,dict(query=authority.NATIVE_QUEUE_QUERY,
+        variables=dict(owner=owner,name=name,target=admitted.target_ref,qualifiedRef='refs/heads/'+admitted.target_ref)))
+    data=response.get('data') if isinstance(response,dict) else None
+    queue=((data or {}).get('repository') or {}).get('mergeQueue')
+    entries=(queue or {}).get('entries')
+    if (code!=200 or response.get('errors') or not isinstance(entries,dict)
+            or (entries.get('pageInfo') or {}).get('hasNextPage') is not False
+            or not isinstance(entries.get('nodes'),list) or type(entries.get('totalCount')) is not int
+            or entries['totalCount']!=len(entries['nodes']) or entries['totalCount']>100):
+        raise ValueError('native queued membership incomplete')
+    matches=[row for row in entries['nodes'] if isinstance(row,dict) and row.get('id')==admitted.queue_entry_id]
+    if len(matches)!=1:raise ValueError('native original entry is absent or ambiguous')
+    head=matches[0].get('headCommit')
+    if head is None:return None
+    if not isinstance(head,dict) or not re.fullmatch('[0-9a-f]{40}',str(head.get('oid',''))):
+        raise ValueError('native group head unavailable')
+    query=urllib.parse.urlencode(dict(event='merge_group',head_sha=head['oid'],per_page=100))
+    code,listing=_request('GET',f'{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/runs?'+query,token)
+    rows=listing.get('workflow_runs') if isinstance(listing,dict) else None
+    if (code!=200 or not isinstance(rows,list) or type(listing.get('total_count')) is not int
+            or listing['total_count']!=len(rows) or len(rows)>100):raise ValueError('native original run inventory incomplete')
+    if not rows:return None
+    if len(rows)!=1:raise ValueError('native group has multiple originals; cannot select a retry')
+    run=rows[0]
+    branch=run.get('head_branch') if isinstance(run,dict) else None
+    if not isinstance(branch,str):raise ValueError('native original ref unavailable')
+    event=dict(action='checks_requested',repository={'full_name':repo},merge_group=dict(
+        base_ref='refs/heads/'+admitted.target_ref,base_sha=admitted.base_sha,
+        head_sha=head['oid'],head_ref='refs/heads/'+branch))
+    group=authority.validate_native_queue_snapshot(data,event,repo,
+        execution_sha=head['oid'],execution_ref='refs/heads/'+branch)
+    bound=proof_admission.bind_native_execution(admitted,group,run.get('id'),run.get('run_attempt'))
+    native_original_run(repo,token,bound,repository_id)
+    return bound
+
+
+def native_original_run(repo, token, admitted, repository_id):
+    """Capacity reconciliation only; terminal does not grant group success."""
+    if (not isinstance(admitted,proof_admission.NativeAdmission)
+            or not proof_admission._admission_valid(admitted) or admitted.run_id is None):
+        raise ValueError('native original run is not bound')
+    code,run=_request('GET',f'{GITHUB_API}/repos/{repo}/actions/runs/{admitted.run_id}',token)
+    branch=run.get('head_branch') if isinstance(run,dict) else None
+    if (code!=200 or not isinstance(run,dict)
+            or type(run.get('id')) is not int or run['id']!=admitted.run_id
+            or type(run.get('run_attempt')) is not int or run['run_attempt']!=admitted.run_attempt
+            or run.get('event')!='merge_group' or run.get('head_sha')!=admitted.group_head_sha
+            or not isinstance(branch,str) or not branch.startswith('gh-readonly-queue/'+admitted.target_ref+'/')
+            or run.get('path') not in {'.github/workflows/ci.yml','.github/workflows/ci.yml@main',
+                '.github/workflows/ci.yml@refs/heads/main','.github/workflows/ci.yml@'+admitted.workflow_sha}
+            or type((run.get('repository') or {}).get('id')) is not int
+            or run['repository']['id']!=repository_id
+            or run.get('status') not in {*ACTIVE_PR_PROOF_STATUSES,'completed'}):
+        raise ValueError('native original run changed or unavailable')
+    return proof_admission.Run(admitted.run_id,admitted.run_attempt,run['status'],'merge_group')
+
+def _read_admitted_run(repo, token, admitted, repository_id):
+    """Return status only for the exact original run, attempt and definition."""
+    if isinstance(admitted,proof_admission.NativeAdmission):
+        return native_original_run(repo,token,admitted,repository_id)
+    if admitted.run_id is None:
+        raise ValueError("unbound admission has no observable run")
+    status, run = _request("GET", f"{GITHUB_API}/repos/{repo}/actions/runs/{admitted.run_id}", token)
+    if (status != 200 or not isinstance(run, dict)
+            or type(run.get("id")) is not int or run["id"] != admitted.run_id
+            or type(run.get("run_attempt")) is not int or run["run_attempt"] != admitted.run_attempt
+            or run.get("path") not in {".github/workflows/ci.yml", ".github/workflows/ci.yml@main",
+                ".github/workflows/ci.yml@refs/heads/main", ".github/workflows/ci.yml@" + admitted.workflow_sha}
+            or run.get("head_branch") != "main" or run.get("event") != "workflow_dispatch"
+            or type((run.get("repository") or {}).get("id")) is not int
+            or run["repository"]["id"] != repository_id
+            or run.get("head_sha") != admitted.workflow_sha
+            or run.get("status") not in {*ACTIVE_PR_PROOF_STATUSES, "completed"}):
+        raise ValueError("original admitted run evidence unavailable or changed")
+    return proof_admission.Run(admitted.run_id, admitted.run_attempt, run["status"], "pr_head")
+
+
+def prepare_shared_checkpoint(repo, read_token, number, *, repository_id,
+                              protected_controller_sha, current_run_id, current_run_attempt, age_snapshot=None):
+    """Construct replacement coverage from complete authenticated original state.
+
+    No caller-supplied record list, elapsed time or PR closure can retire a slot.
+    This stage has no hosted writes; later upload/publication must authenticate
+    these bytes from this same controller attempt. Unknown reads refuse coverage.
+    """
+    if not _shared_controller_authority(repo, read_token, repository_id=repository_id,
+            protected_controller_sha=protected_controller_sha, current_run_id=current_run_id,
+            current_run_attempt=current_run_attempt):
+        raise ValueError("not exact original checkpoint controller")
+    comments = fetch_issue_comments(repo, number, read_token, strict=True)
+    if (not isinstance(comments, list) or not comments
+            or any(not isinstance(c, dict) or type(c.get("id")) is not int or c["id"] <= 0 for c in comments)
+            or len({c["id"] for c in comments}) != len(comments)):
+        raise ValueError("no complete original comment coverage")
+    records, demands = pr_admission_history(repo, read_token, number, comments,
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha,age_snapshot=age_snapshot)
+    active = indexed_active_ci_runs(repo, read_token)
+    if active is None:
+        raise ValueError("active original-run census unavailable")
+    observations = list(active)
+    for admitted in records:
+        if admitted.run_id is not None:
+            if any(r.run_id == admitted.run_id and (r.attempt != admitted.run_attempt or r.role != proof_admission.admission_role(admitted))
+                    for r in active):
+                raise ValueError("indexed original run identity changed")
+            if not admitted.settled:
+                observations.append(_read_admitted_run(repo, read_token, admitted, repository_id))
+    coverage = max(c["id"] for c in comments)
+    original = proof_admission.compact_pr_records(number, coverage, records, demands, [], records_complete=True)
+    replacement = proof_admission.compact_pr_records(number, coverage, records, demands, observations, records_complete=True)
+    # Compare complete authenticated source state BEFORE publishing replacement.
+    # Coverage is the actual last original comment ID, never a minted boundary.
+    proof_admission.validate_checkpoint_transition(original, replacement)
+    return replacement
+
+
+def shared_proof_workload(repo: str, token: str, *, repository_id: int,
+                          protected_controller_sha: str, age_snapshot=None) -> SharedProofWorkload:
+    """Load the incumbent label/PR record inventory and immutable receipts.
+
+    Closed PRs retain their association. Missing index records, unreadable/expired
+    receipt evidence and conflicting original identities make capacity unknown.
+    This function is read-only; even terminal observation never removes a label.
+    """
+    inventory = shared_admission_inventory(repo, token)
+    if inventory.mode != "shared" or not inventory.complete or inventory.indexing is not None:
+        return SharedProofWorkload(False)
+    try:
+        authenticated_migration_root(repo, token,
+            shared_register_text('a2 idle',inventory.migration_root),
+            repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+    except Exception:
+        return SharedProofWorkload(False)
+    runs = indexed_active_ci_runs(repo, token)
+    if runs is None:
+        return SharedProofWorkload(False)
+    records = []
+    demands = []
+    try:
+        if age_snapshot is None:
+            age_snapshot,_=read_age_frontier(repo,token,repository_id=repository_id,protected_controller_sha=protected_controller_sha,inventory=inventory)
+        for issue in inventory.issues:
+            comments = fetch_issue_comments(repo, issue["number"], token, strict=True)
+            if comments is None:
+                return SharedProofWorkload(False, tuple(runs))
+            current, _demands = pr_admission_history(repo, token, issue["number"], comments,
+                repository_id=repository_id, protected_controller_sha=protected_controller_sha,age_snapshot=age_snapshot,
+                allow_empty=issue["number"] in dict(age_snapshot.covered_comments))
+            records.extend(current)
+            demands.extend(_demands)
+        records = proof_admission.merge_records(records)
+        if inventory.launch and not any(
+                a.pr_number == inventory.launch[0] and a.generation == inventory.launch[1]
+                for a in records):
+            return SharedProofWorkload(False, tuple(runs))
+        for index, admitted in enumerate(records):
+            if admitted.run_id is None or admitted.settled:
+                continue
+            observed = _read_admitted_run(repo, token, admitted, repository_id)
+            runs.append(observed)
+            if observed.status == "completed":
+                records[index] = proof_admission.settle_run(admitted, observed)
+        return SharedProofWorkload(True, tuple(runs), tuple(records), tuple(demands))
+    except RateLimited:
+        raise
+    except Exception:
+        return SharedProofWorkload(False, tuple(runs))
+
+
+@dataclass(frozen=True)
+class AdmissionDispatchResult:
+    disposition: str
+    admission: proof_admission.Admission | None = None
+    detail: str = ""
+
+
+def admitted_dispatch_source_ready(repo, ci_document, executor_document):
+    """Recognize the installed protected hosted admission capability.
+
+    Candidate-native detection preserves first-proof ownership during coexistence.
+    The installed hosted bridge can prove the later trigger-removal candidate;
+    no identity input is accepted by the protected zero-input PC fallback. Source readiness alone is not runtime activation or release proof.
+    """
+    def expression(value):
+        return " ".join(value.split()) if isinstance(value, str) else None
+
+    def bindings(actual, expected):
+        return isinstance(actual, dict) and all(
+            expression(actual.get(key)) == expression(value) for key, value in expected.items())
+
+    def needs(job, name):
+        return job.get("needs") in (name, [name])
+
+    try:
+        if not isinstance(repo, str) or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
+            return False
+        ci_events = ci_document.get("on", ci_document.get(True))
+        callee_events = executor_document.get("on", executor_document.get(True))
+        dispatch_inputs = ci_events["workflow_dispatch"]["inputs"]
+        required_inputs = {"proof_role", "admission_generation", "admission_artifact_id",
+                           "admission_payload_sha256", "pr_number", "subject_head_sha",
+                           "tested_base_sha", "tested_merge_sha", "expected_workflow_definition_sha"}
+        if any(not isinstance(dispatch_inputs.get(key), dict)
+               or dispatch_inputs[key].get("type") != "string" for key in required_inputs):
+            return False
+        if any(not isinstance(value, dict) or (value.get("required") is True and key not in required_inputs)
+               for key, value in dispatch_inputs.items()):
+            return False
+        jobs = ci_document["jobs"]
+        resolver, plan, caller = (jobs[key] for key in ("ci-admission", "ci-plan", "trusted-ci"))
+        # No PR-authored identity crosses the protected zero-input PC executor.
+        # Installed hosted capability must prove the later trigger-removal PR.
+        # Candidate-native detection still owns first proof during coexistence.
+        if "pull_request" in ci_events:
+            native = ci_events["pull_request"]
+            if (not isinstance(native, dict) or native.get("types") != ["opened", "synchronize", "reopened"]
+                    or native.get("branches") != ["main"] or not isinstance(native.get("paths"), list)
+                    or not native["paths"] or any(not isinstance(v, str) for v in native["paths"])):
+                return False
+        if 'merge_group' in ci_events:
+            return native_dispatch_source_ready(repo,ci_document,executor_document)
+        trusted_call = {
+            "name": "trusted-ci",
+            "needs": "ci-plan",
+            "if": ("!cancelled() && needs.ci-plan.result == 'success' && needs.ci-plan.outputs.has_work == 'true' && "
+                   "github.event.pull_request.head.repo.full_name == github.repository && "
+                   "vars.CI_EXECUTION_ROUTE == 'pc'"),
+            "uses": f"{repo}/.github/workflows/trusted-ci-executor.yml@main",
+            "permissions": {"contents": "read", "pull-requests": "read"},
+        }
+        if caller != trusted_call or callee_events["workflow_call"].get("inputs") != {}:
+            return False
+        pack = jobs["ci-pack"]
+        contract = jobs["contract-delta"]
+        gate = jobs["ci-gate"]
+        if (pack.get("needs") != ["ci-plan", "trusted-ci"]
+                or expression(pack.get("if")) != (
+                    "!cancelled() && needs.ci-plan.result == 'success' && "
+                    "needs.ci-plan.outputs.has_work == 'true' && "
+                    "(github.event.pull_request.head.repo.full_name != github.repository || "
+                    "vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')")
+                or contract.get("needs") != ["ci-plan"]
+                or expression(contract.get("if")) != (
+                    "!cancelled() && needs.ci-plan.result == 'success' && "
+                    "needs.ci-plan.outputs.semantic_role == 'pr_head'")
+                or gate.get("needs") != ["ci-plan", "ci-pack", "contract-delta"]):
+            return False
+        if (not needs(plan, "ci-admission")
+                or expression(plan.get("if")) != "always() && !cancelled() && (needs.ci-admission.result == 'skipped' || needs.ci-admission.result == 'success')"
+                or expression(resolver.get("if")) != "github.event_name == 'workflow_dispatch' && inputs.proof_role != ''"
+                or resolver.get("permissions") != {"contents": "read", "actions": "read", "pull-requests": "read"}):
+            return False
+        resolve_outputs = {key: "${{ steps.resolve.outputs." + key + " }}" for key in (
+            "tested_commit", "subject_head", "base", "same_repository", "pr_number",
+            "head_repository_id", "admission_generation")}
+        if not bindings(resolver.get("outputs"), resolve_outputs):
+            return False
+        steps = resolver["steps"]
+        if (len(steps) != 2 or steps[0].get("uses") != "actions/checkout@v4"
+                or steps[0].get("with", {}).get("ref") != "${{ github.workflow_sha }}"
+                or steps[0].get("with", {}).get("persist-credentials") is not False
+                or steps[1].get("id") != "resolve"
+                or steps[1].get("run") != "python3 -I scripts/resolve_ci_pr_admission.py"
+                or not bindings(steps[1].get("env"), {
+                    "GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
+                    "GITHUB_WORKFLOW_SHA": "${{ github.workflow_sha }}",
+                    "CI_PR_ADMISSION_INPUTS": "${{ toJSON(inputs) }}"})):
+            return False
+        if not bindings(plan.get("outputs"), {
+                "tested_tree_sha": "${{ steps.identity.outputs.tested_tree_sha }}",
+                "subject_head_sha": "${{ steps.identity.outputs.subject_head_sha }}",
+                "tested_base_sha": "${{ steps.identity.outputs.tested_base_sha }}",
+                "admission_generation": "${{ steps.identity.outputs.admission_generation }}",
+                "admitted_pr": "${{ needs.ci-admission.outputs.pr_number }}",
+                "admitted_repository_id": "${{ needs.ci-admission.outputs.head_repository_id }}",
+                "same_repository": "${{ needs.ci-admission.outputs.same_repository || (github.event.pull_request.head.repo.full_name == github.repository && 'true' || 'false') }}"}):
+            return False
+        identities = [step for step in plan["steps"] if step.get("id") == "identity"]
+        return len(identities) == 1 and bindings(identities[0].get("env"), {
+            "ADMISSION_GENERATION": "${{ needs.ci-admission.outputs.admission_generation }}",
+            "ADMITTED_MERGE": "${{ needs.ci-admission.outputs.tested_commit }}",
+            "ADMITTED_BASE": "${{ needs.ci-admission.outputs.base }}",
+            "ADMITTED_HEAD": "${{ needs.ci-admission.outputs.subject_head }}"})
+    except (AttributeError, KeyError, TypeError, ValueError):
+        return False
+
+
+def native_dispatch_source_ready(repo, ci_document, executor_document):
+    """Exact installed capability; active rules and membership are separate.
+
+    Reuse the incumbent source policy's resolver/identity contract so its
+    execution-modifier guards cannot drift from the controller capability gate.
+    """
+    try:
+        from scripts import check_runner_policy as policy
+        triggers=ci_document.get('on',ci_document.get(True))
+        jobs=ci_document['jobs'];gate=jobs['ci-gate']
+        if not isinstance(triggers,dict) or triggers.get('merge_group')!={'types':['checks_requested']}:return False
+        if not isinstance(repo,str) or not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+',repo) or not policy._admitted_caller_graph_exact(ci_document):return False
+        if not policy._trusted_call_is_exact(jobs['trusted-ci'],repository=repo):return False
+        if any(k in gate for k in ('container','services','continue-on-error','env','defaults','environment')):return False
+        if {k:v for k,v in gate.items() if k!='steps'} != {'if': 'always()',
+ 'name': 'ci-gate',
+ 'needs': ['ci-plan', 'ci-pack', 'contract-delta'],
+ 'permissions': {'actions': 'read', 'checks': 'read', 'contents': 'read', 'pull-requests': 'read'},
+ 'runs-on': 'ubuntu-latest',
+ 'timeout-minutes': 10}:return False
+        finals=[step for step in gate['steps'] if '--native-final' in step.get('run','')]
+        if finals!=[{'env': {'GITHUB_TOKEN': '${{ secrets.GITHUB_TOKEN }}',
+         'GITHUB_WORKFLOW_REF': '${{ github.workflow_ref }}',
+         'GITHUB_WORKFLOW_SHA': '${{ github.workflow_sha }}'},
+ 'if': "always() && github.event_name == 'merge_group'",
+ 'name': 'enforce current native group authority',
+ 'run': 'python3 -I scripts/ci_authority.py --native-final --event "$GITHUB_EVENT_PATH" --evidence '
+        '"$RUNNER_TEMP/ci-semantic-final/ci-semantic-evidence.json"'}]:return False
+        if jobs['ci-pack'].get('if')!="!cancelled() && needs.ci-plan.result == 'success' && needs.ci-plan.outputs.has_work == 'true' && (github.event_name == 'merge_group' || github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')":return False
+        if jobs['ci-pack'].get('needs')!=['ci-plan','trusted-ci']:return False
+        if jobs['contract-delta'].get('if')!="!cancelled() && needs.ci-plan.result == 'success' && (needs.ci-plan.outputs.semantic_role == 'pr_head' || needs.ci-plan.outputs.semantic_role == 'merge_group')" or jobs['contract-delta'].get('needs')!=['ci-plan']:return False
+        events=executor_document.get('on',executor_document.get(True))
+        return events.get('workflow_call',{}).get('inputs')=={}
+    except (AttributeError,KeyError,TypeError,ImportError):return False
+
+
+def installed_native_dispatch_ready(repo, protected_controller_sha):
+    return _installed_dispatch_source_ready(repo,protected_controller_sha,native=True)
+
+
+def installed_admitted_dispatch_ready(repo, protected_controller_sha):
+    return _installed_dispatch_source_ready(repo,protected_controller_sha,native=False)
+
+
+def _installed_dispatch_source_ready(repo, protected_controller_sha, *, native):
+    """Read only bounded exact Git objects in the protected controller checkout.
+
+    No candidate working files, implicit fetch, replacement objects or API reads.
+    Missing objects and unsupported source are a bootstrap hold, never readiness.
+    """
+    if not isinstance(protected_controller_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", protected_controller_sha):
+        return False
+    try:
+        import yaml
+    except ImportError:
+        return False
+    try:
+        class UniqueLoader(yaml.SafeLoader):
+            pass
+
+        def unique_mapping(loader, node, deep=False):
+            result = {}
+            for key_node, value_node in node.value:
+                key = loader.construct_object(key_node, deep=deep)
+                if key in result:
+                    raise ValueError("duplicate workflow mapping key")
+                result[key] = loader.construct_object(value_node, deep=deep)
+            return result
+
+        UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, unique_mapping)
+        env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+        env.update(GIT_NO_LAZY_FETCH="1", GIT_NO_REPLACE_OBJECTS="1", GIT_TERMINAL_PROMPT="0")
+
+        def git(*args):
+            result = subprocess.run(["git", "--no-pager", *args], cwd=_ROOT, env=env,
+                                    capture_output=True, timeout=5, check=False)
+            if result.returncode != 0:
+                raise ValueError("protected Git object unavailable")
+            return result.stdout
+
+        if git("rev-parse", "--verify", "HEAD").decode().strip() != protected_controller_sha:
+            return False
+        documents = []
+        for name in ("ci", "trusted-ci-executor"):
+            identity = f"{protected_controller_sha}:.github/workflows/{name}.yml"
+            size = int(git("cat-file", "-s", identity).decode().strip())
+            if not 0 < size <= 1024 * 1024:
+                return False
+            raw = git("show", identity)
+            if len(raw) != size:
+                return False
+            documents.append(yaml.load(raw, Loader=UniqueLoader))
+        return (native_dispatch_source_ready if native else admitted_dispatch_source_ready)(repo, *documents)
+    except (OSError, subprocess.SubprocessError, UnicodeError, ValueError, TypeError, yaml.YAMLError):
+        return False
+
+
+def _shared_controller_authority(repo, token, *, repository_id, protected_controller_sha,
+                                 current_run_id, current_run_attempt):
+    """Verify this exact original controller attempt, not just its run number."""
+    if (type(repository_id) is not int or repository_id <= 0
+            or not isinstance(current_run_id, str) or not re.fullmatch(r"[1-9][0-9]*", current_run_id)
+            or type(current_run_attempt) is not int or current_run_attempt <= 0
+            or not isinstance(protected_controller_sha, str)
+            or not re.fullmatch(r"[0-9a-f]{40}", protected_controller_sha)
+            or not serialized_refresh_authority(repo, token, current_run_id, "")):
+        return False
+    try:
+        status, run = _request("GET", f"{GITHUB_API}/repos/{repo}/actions/runs/{current_run_id}", token)
+        return (status == 200 and isinstance(run, dict)
+                and type(run.get("id")) is int and run["id"] == int(current_run_id)
+                and type(run.get("run_attempt")) is int and run["run_attempt"] == current_run_attempt
+                and run.get("head_sha") == protected_controller_sha
+                and type((run.get("repository") or {}).get("id")) is int
+                and run["repository"]["id"] == repository_id)
+    except Exception:
+        return False
+
+
+def native_enqueue_issuer(repo, read_token, native_token, *, repository_id, expected=None):
+    """Qualify the existing user credential; never infer event delivery from enqueue.
+
+    The protected workflow supplies ADMIN_GH_TOKEN separately, without a job-token
+    fallback. Authenticated /user plus the same credential's repository grant bind
+    the actual principal. The same original stage keeps only this public identity,
+    never token bytes; enqueue rechecks it. Actual group delivery is runtime proof.
+    """
+    if (not isinstance(native_token,str) or not native_token.strip()
+            or native_token == read_token or type(repository_id) is not int or repository_id<=0):
+        raise ValueError('native event-generating issuer unavailable')
+    status,user=_request('GET',GITHUB_API+'/user',native_token)
+    if (status!=200 or not isinstance(user,dict) or user.get('type')!='User'
+            or type(user.get('id')) is not int or user['id']<=0
+            or not isinstance(user.get('login'),str)
+            or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9-]{0,38}',user['login'])):
+        raise ValueError('native authenticated user issuer unavailable')
+    status,repository=_request('GET',GITHUB_API+'/repos/'+repo,native_token)
+    if (status!=200 or not isinstance(repository,dict)
+            or type(repository.get('id')) is not int or repository['id']!=repository_id
+            or repository.get('full_name')!=repo
+            or not isinstance(repository.get('permissions'),dict)
+            or repository['permissions'].get('push') is not True):
+        raise ValueError('native issuer repository grant unavailable')
+    identity=dict(repository_id=repository_id,issuer_id=user['id'],issuer_login=user['login'])
+    if expected is not None and (not isinstance(expected,dict) or identity!=expected):
+        raise ValueError('native original issuer changed or incomplete')
+    return identity
+
+
+def reserve_shared_admission(repo, read_token, write_token, demand, *, repository_id,
+                             protected_controller_sha, current_run_id, current_run_attempt,
+                             decision=None, native_target=None, source_target=None, native_enqueue_token=None):
+    """Prepare one exact synthetic-merge proof in the incumbent serialized lane.
+
+    Both authored and stale-base demand use the actual current merge object. A
+    refresh does not PUT update-branch: its old head gets new, independently bound
+    proof against the admitted base. Draft/merge holds remain wholly separate.
+    A missing/conflicted merge is ineligible. No dispatch is possible until the
+    prepared receipt is uploaded and authenticated by the same original attempt.
+    The launch register is persisted BEFORE that upload; an ambiguous write is
+    retained, never cleared or retried here. Fair eligibility is a caller duty.
+    """
+    if decision is not None:
+        decision["capacity"] = {"evaluated": False}
+    context = dict(repository_id=repository_id, protected_controller_sha=protected_controller_sha,
+                   current_run_id=current_run_id, current_run_attempt=current_run_attempt)
+    if not _shared_controller_authority(repo, read_token, **context):
+        return AdmissionDispatchResult("held", detail="not the exact serialized controller attempt")
+    if native_target is None and source_target is None and not installed_admitted_dispatch_ready(repo, protected_controller_sha):
+        return AdmissionDispatchResult("held", detail="protected caller/callee admission bridge not installed")
+    try:
+        native_protection = None
+        if native_target is not None:
+            issuer=native_enqueue_issuer(repo,read_token,native_enqueue_token,repository_id=repository_id)
+            if decision is not None:decision['native_issuer']=issuer
+        if source_target is not None:
+            if native_target is not None:raise ValueError('source proof cannot be queue entry')
+            native_target_protection(repo,read_token,source_target,
+                repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        if native_target is not None:
+            native_protection=native_target_protection(repo,read_token,native_target,
+                repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        proof_admission.ordered_demands([demand])
+        workload = shared_proof_workload(repo, read_token, repository_id=repository_id,
+                                         protected_controller_sha=protected_controller_sha)
+        if (any(a.generation == demand.demand_id or
+                (a.pr_number == demand.pr_number and not a.settled) for a in workload.admissions)
+                or not proof_admission.capacity(workload.runs, workload.admissions,
+                    census_complete=workload.complete, records_complete=workload.complete,
+                    decision=decision["capacity"] if decision is not None else None)):
+            return AdmissionDispatchResult("held", detail="shared capacity or outstanding generation")
+        if native_target is not None and any(isinstance(a,proof_admission.NativeAdmission)
+                and a.target_ref==native_target and not a.settled for a in workload.admissions):
+            return AdmissionDispatchResult('held',detail='one native original per selected target')
+        root = f"{GITHUB_API}/repos/{repo}"
+        register_url = root + "/labels/" + urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
+        status, register = _request("GET", register_url, read_token)
+        if (status != 200 or not isinstance(register, dict)
+                or not migration_register_is_idle(repo, read_token, register.get("description"),
+                    repository_id=repository_id, protected_controller_sha=protected_controller_sha)):
+            return AdmissionDispatchResult("held", detail="launch register occupied or unqualified")
+        original_register = register.get("description")
+        status, pull = _request("GET", root + f"/pulls/{demand.pr_number}", read_token)
+        if status == 200 and isinstance(pull, dict) and pull.get("number") == demand.pr_number:
+            if (pull.get("state") == "closed" or pull.get("mergeable") is False
+                    or (isinstance((pull.get("head") or {}).get("sha"), str)
+                        and pull["head"]["sha"] != demand.head_sha)):
+                return AdmissionDispatchResult("ineligible", detail="affirmatively closed, conflicted or replaced subject")
+        if (status != 200 or not isinstance(pull, dict)
+                or type(pull.get("number")) is not int or pull["number"] != demand.pr_number
+                or pull.get("state") != "open" or pull.get("mergeable") is not True
+                or (pull.get("head") or {}).get("sha") != demand.head_sha
+                or (pull.get("base") or {}).get("ref") != (native_target or source_target or "main")
+                or type(((pull.get("base") or {}).get("repo") or {}).get("id")) is not int
+                or pull["base"]["repo"]["id"] != repository_id
+                or (native_target is None and source_target is None and pull["base"].get("sha") != protected_controller_sha)):
+            return AdmissionDispatchResult("held", detail="live subject/base/merge eligibility incomplete")
+        admitted = proof_admission.Admission(demand.demand_id, demand.pr_number, demand.head_sha,
+            pull["base"]["sha"], pull.get("merge_commit_sha"), protected_controller_sha)
+        if source_target is not None:
+            admitted=proof_admission.SourceAdmission(**asdict(admitted),target_ref=source_target)
+        if not proof_admission._admission_valid(admitted):
+            return AdmissionDispatchResult("held", detail="no exact current merge identity")
+        status, commit = _request("GET", root + f"/git/commits/{admitted.merge_sha}", read_token)
+        if status != 200 or not isinstance(commit, dict) or commit.get("sha") != admitted.merge_sha:
+            return AdmissionDispatchResult("held", detail="exact merge object unavailable")
+        proof_admission.validate_execution(admitted, subject_head=demand.head_sha,
+            base=admitted.base_sha, merge=commit["sha"],
+            parents=[p.get("sha") for p in commit.get("parents", [])], workflow=protected_controller_sha)
+        if native_target is not None:
+            from scripts import ci_authority as authority
+            tree=(commit.get('tree') or {}).get('sha')
+            admitted=proof_admission.NativeAdmission(admitted.generation,admitted.pr_number,
+                admitted.head_sha,admitted.base_sha,admitted.merge_sha,native_protection['protected_source_sha'],
+                target_ref=native_target,tree_sha=tree)
+            if not proof_admission._admission_valid(admitted):raise ValueError('native tree missing')
+            native_empty_target(repo,read_token,native_target,admitted.base_sha)
+            group=dict(pr_number=admitted.pr_number,source_head_sha=admitted.head_sha,target_ref=native_target)
+            release=native_current_release(repo,read_token,group,protection=native_protection)
+            loaded=semantic_evidence_for_head(repo,admitted.head_sha,read_token,check_runs=release['checks'])
+            authority.native_source_entry_qualification(loaded,expected_head_sha=admitted.head_sha,protection=native_protection)
+            status,target=_request('GET',root+'/branches/'+urllib.parse.quote(native_target,safe=''),read_token)
+            if status!=200 or (target.get('commit') or {}).get('sha')!=admitted.base_sha:
+                raise ValueError('native target changed before reservation')
+        # Do not start a protected-main dispatch after the control definition has
+        # changed. Existing admitted proofs retain their exact immutable tuple.
+        status, main = _request("GET", root + "/branches/main", read_token)
+        if status != 200 or not isinstance(main, dict) or (main.get("commit") or {}).get("sha") != protected_controller_sha:
+            return AdmissionDispatchResult("held", detail="protected dispatch definition moved")
+    except Exception:
+        return AdmissionDispatchResult("held", detail="preparation evidence unreadable or inconsistent")
+    status, fenced = _request("GET", register_url, read_token)
+    if status != 200 or not isinstance(fenced, dict) or fenced.get("description") != original_register:
+        return AdmissionDispatchResult("held", detail="original launch register changed")
+    description = shared_register_text(f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared",shared_register_parts(original_register)[1])
+    if native_target is not None:
+        try:
+            native_enqueue_issuer(repo,read_token,native_enqueue_token,repository_id=repository_id,expected=issuer)
+        except Exception:
+            return AdmissionDispatchResult('held',detail='native original issuer changed before reservation')
+    try:
+        status, _ = _shared_admission_effect("PATCH", register_url, write_token, {"description": description})
+        if status != 200:
+            return AdmissionDispatchResult("unknown", admitted, "original reservation write unsettled")
+        status, register = _request("GET", register_url, read_token)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != description:
+            return AdmissionDispatchResult("unknown", admitted, "original reservation readback unsettled")
+    except Exception:
+        return AdmissionDispatchResult("unknown", admitted, "original reservation response lost")
+    return AdmissionDispatchResult("prepared", admitted, "reservation retained; immutable receipt upload owed")
+
+
+def _publish_admission_reference(repo, read_token, write_token, admitted, reference):
+    """Index one authenticated receipt, returning only exact original readback.
+
+    The caller has authenticated the artifact and owns the launch register. A
+    comment is merely discovery, never authority. Lost POST/readback is retained
+    as unknown; this function never searches, posts twice or releases capacity.
+    """
+    body = ADMISSION_COMMENT_PREFIX + json.dumps(reference, sort_keys=True, separators=(",", ":"))
+    root = f"{GITHUB_API}/repos/{repo}"
+    status, result = _shared_admission_effect("POST", root + f"/issues/{admitted.pr_number}/comments", read_token, {"body": body})
+    if (status != 201 or not isinstance(result, dict) or type(result.get("id")) is not int
+            or result["id"] <= 0 or result.get("body") != body
+            or not admission_index_writer(result)):
+        return False
+    status, observed = _request("GET", root + f"/issues/comments/{result['id']}", read_token)
+    return status == 200 and isinstance(observed, dict) and observed.get("id") == result["id"] and observed.get("body") == body and admission_index_writer(observed)
+
+
+def publish_prepared_shared_admission(repo, read_token, write_token, reference, *, repository_id,
+                                     protected_controller_sha, current_run_id, current_run_attempt):
+    """Index the original uploaded reservation before any dispatch is eligible.
+
+    The singleton pointer already conserves capacity if upload or indexing fails.
+    This stage never clears that pointer or launches proof. Authenticated receipt
+    plus exact original POST readback make discovery possible for the later stage;
+    a lost response remains on this generation without a compensating write.
+    """
+    context = dict(repository_id=repository_id, protected_controller_sha=protected_controller_sha,
+                   current_run_id=current_run_id, current_run_attempt=current_run_attempt)
+    if (not _shared_controller_authority(repo, read_token, **context)
+            or not isinstance(reference, dict)
+            or reference.get("controller_run_id") != int(current_run_id)
+            or reference.get("controller_attempt") != current_run_attempt):
+        return AdmissionDispatchResult("held", detail="not original preparation owner")
+    try:
+        admitted = authenticated_admission_from_ref(repo, read_token, reference,
+            repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+        if (admitted.run_id is not None or admitted.settled or admitted.run_attempt != 1
+                or (not isinstance(admitted,proof_admission.NativeAdmission) and admitted.workflow_sha != protected_controller_sha)):
+            return AdmissionDispatchResult("held", admitted, "not original prepared identity")
+        root = f"{GITHUB_API}/repos/{repo}"
+        register_url = root + "/labels/" + urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
+        status, register = _request("GET", register_url, read_token)
+        migration_root = authenticated_migration_root(repo,read_token,register.get('description'),
+            repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        prepared = shared_register_text(f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared",migration_root)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != prepared:
+            return AdmissionDispatchResult("held", admitted, "original preparation pointer differs")
+    except Exception:
+        return AdmissionDispatchResult("held", detail="prepared evidence unavailable")
+    try:
+        if not _publish_admission_reference(repo, read_token, write_token, admitted, reference):
+            return AdmissionDispatchResult("unknown", admitted, "original prepared index unsettled")
+        status, _ = _shared_admission_effect("POST", root + f"/issues/{admitted.pr_number}/labels", write_token,
+                             {"labels": [REFRESH_LEASE_LABEL]})
+        if status != 200:
+            return AdmissionDispatchResult("unknown", admitted, "prepared association unsettled")
+        status, labels = _request("GET", root + f"/issues/{admitted.pr_number}/labels", read_token)
+        if (status != 200 or not isinstance(labels, list)
+                or REFRESH_LEASE_LABEL not in {row.get("name") for row in labels if isinstance(row, dict)}):
+            return AdmissionDispatchResult("unknown", admitted, "prepared association readback unavailable")
+    except Exception:
+        return AdmissionDispatchResult("unknown", admitted, "original prepared indexing response lost")
+    return AdmissionDispatchResult("indexed", admitted, "original preparation indexed; dispatch still separate")
+
+
+def finalize_shared_admission(repo, read_token, write_token, reference, *, repository_id,
+                              protected_controller_sha, current_run_id, current_run_attempt):
+    """Bind the returned original run before clearing only the launch pointer.
+
+    Actual active capacity remains in the authenticated PR admission association.
+    This does not settle the run, publish success, clear holds or authorize merge.
+    Every dependent write needs the preceding original readback. A lost response
+    stops this invocation without a retry or compensating cleanup.
+    """
+    context = dict(repository_id=repository_id, protected_controller_sha=protected_controller_sha,
+                   current_run_id=current_run_id, current_run_attempt=current_run_attempt)
+    if (not _shared_controller_authority(repo, read_token, **context)
+            or not isinstance(reference, dict)
+            or reference.get("controller_run_id") != int(current_run_id)
+            or reference.get("controller_attempt") != current_run_attempt):
+        return AdmissionDispatchResult("held", detail="not original controller receipt owner")
+    try:
+        admitted = authenticated_admission_from_ref(repo, read_token, reference,
+            repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+        if admitted.run_id is None or admitted.settled or admitted.run_attempt != 1:
+            return AdmissionDispatchResult("held", admitted, "no original bound dispatch")
+        root = f"{GITHUB_API}/repos/{repo}"
+        register_url = root + "/labels/" + urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
+        status, register = _request("GET", register_url, read_token)
+        migration_root = authenticated_migration_root(repo,read_token,register.get('description'),
+            repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        state="binding" if isinstance(admitted,proof_admission.NativeAdmission) else "started"
+        started = shared_register_text(f"a2 p={admitted.pr_number} g={admitted.generation} s={state}",migration_root)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != started:
+            return AdmissionDispatchResult("held", admitted, "not original started generation")
+        if isinstance(admitted,proof_admission.NativeAdmission):
+            native_original_run(repo,read_token,admitted,repository_id)
+        else:
+            status, run = _request("GET", root + f"/actions/runs/{admitted.run_id}", read_token)
+            allowed_paths = {".github/workflows/ci.yml", ".github/workflows/ci.yml@main",
+                             ".github/workflows/ci.yml@refs/heads/main", ".github/workflows/ci.yml@" + admitted.workflow_sha}
+            if (status != 200 or not isinstance(run, dict)
+                    or type(run.get("id")) is not int or run["id"] != admitted.run_id
+                    or type(run.get("run_attempt")) is not int or run["run_attempt"] != admitted.run_attempt
+                    or run.get("path") not in allowed_paths or run.get("event") != "workflow_dispatch"
+                    or run.get("head_branch") != "main" or run.get("head_sha") != admitted.workflow_sha
+                    or type((run.get("repository") or {}).get("id")) is not int
+                    or run["repository"]["id"] != repository_id
+                    or run.get("status") not in {*ACTIVE_PR_PROOF_STATUSES, "completed"}):
+                return AdmissionDispatchResult("held", admitted, "returned run identity unavailable or different")
+    except Exception:
+        return AdmissionDispatchResult("held", detail="bound receipt/run evidence unreadable")
+    try:
+        if not _publish_admission_reference(repo, read_token, write_token, admitted, reference):
+            return AdmissionDispatchResult("unknown", admitted, "original bound index publication unsettled")
+        status, _ = _shared_admission_effect("POST", root + f"/issues/{admitted.pr_number}/labels", write_token,
+                             {"labels": [REFRESH_LEASE_LABEL]})
+        if status != 200:
+            return AdmissionDispatchResult("unknown", admitted, "original capacity association unsettled")
+        status, labels = _request("GET", root + f"/issues/{admitted.pr_number}/labels", read_token)
+        if (status != 200 or not isinstance(labels, list)
+                or REFRESH_LEASE_LABEL not in {l.get("name") for l in labels if isinstance(l, dict)}):
+            return AdmissionDispatchResult("unknown", admitted, "capacity association readback unavailable")
+        status, register = _request("GET", register_url, read_token)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != started:
+            return AdmissionDispatchResult("unknown", admitted, "launch custody changed before finalization")
+        status, _ = _shared_admission_effect("PATCH", register_url, write_token, {"description": shared_register_text("a2 idle",migration_root)})
+        if status != 200:
+            return AdmissionDispatchResult("unknown", admitted, "original pointer finalization unsettled")
+        status, register = _request("GET", register_url, read_token)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != shared_register_text("a2 idle",migration_root):
+            return AdmissionDispatchResult("unknown", admitted, "pointer finalization readback unavailable")
+    except Exception:
+        return AdmissionDispatchResult("unknown", admitted, "original finalization effect unresolved")
+    return AdmissionDispatchResult("finalized", admitted, "bound PR workload retained; original launch pointer released")
+
+
+def enqueue_native_admission(repo, read_token, write_token, reference, *, repository_id,
+                             protected_controller_sha, current_run_id, current_run_attempt, decision=None,
+                             native_enqueue_token=None, expected_issuer=None):
+    """One expected-head enqueue from the SAME prepared slot; no mutation retry.
+
+    The original PATCH start intent precedes the only mutation. A lost entry ID
+    never becomes permission to search-and-reenqueue. Native execution is bound
+    separately from the queued receipt when its actual original run is known.
+    """
+    context=dict(repository_id=repository_id,protected_controller_sha=protected_controller_sha,
+        current_run_id=current_run_id,current_run_attempt=current_run_attempt)
+    if (not _shared_controller_authority(repo,read_token,**context) or not isinstance(reference,dict)
+            or reference.get('controller_run_id')!=int(current_run_id)
+            or reference.get('controller_attempt')!=current_run_attempt):
+        return AdmissionDispatchResult('held',detail='not original native preparation owner')
+    admitted=None
+    try:
+        if not isinstance(expected_issuer,dict):raise ValueError('native original issuer binding missing')
+        native_enqueue_issuer(repo,read_token,native_enqueue_token,repository_id=repository_id,expected=expected_issuer)
+        admitted=authenticated_admission_from_ref(repo,read_token,reference,
+            repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        if (not isinstance(admitted,proof_admission.NativeAdmission) or admitted.queue_entry_id is not None
+                or admitted.run_id is not None or admitted.settled):raise ValueError('not unstarted native admission')
+        protection=native_target_protection(repo,read_token,admitted.target_ref,
+            repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        if protection['protected_source_sha']!=admitted.workflow_sha:raise ValueError('native source definition moved')
+        workload=shared_proof_workload(repo,read_token,repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        detail={} if decision is None else decision.setdefault('capacity_recheck',{})
+        if not proof_admission.reserved_dispatch_allowed(workload.runs,workload.admissions,admitted,
+                census_complete=workload.complete,records_complete=workload.complete,decision=detail):
+            raise ValueError('native reserved workload exceeds actual cap8')
+        group=dict(pr_number=admitted.pr_number,source_head_sha=admitted.head_sha,target_ref=admitted.target_ref)
+        native_empty_target(repo,read_token,admitted.target_ref,admitted.base_sha)
+        release=native_current_release(repo,read_token,group,protection=protection)
+        pull=release['pull']
+        if ((pull.get('base') or {}).get('sha')!=admitted.base_sha or pull.get('merge_commit_sha')!=admitted.merge_sha):
+            raise ValueError('native reserved target/merge changed')
+        from scripts import ci_authority as authority
+        loaded=semantic_evidence_for_head(repo,admitted.head_sha,read_token,check_runs=release['checks'])
+        authority.native_source_entry_qualification(loaded,expected_head_sha=admitted.head_sha,protection=protection)
+        url=f'{GITHUB_API}/repos/{repo}/labels/'+urllib.parse.quote(REFRESH_LEASE_LABEL,safe='')
+        code,register=_request('GET',url,read_token)
+        if code!=200 or not isinstance(register,dict):raise ValueError('native register unavailable')
+        root=authenticated_migration_root(repo,read_token,register.get('description'),
+            repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        prepared=shared_register_text(f'a2 p={admitted.pr_number} g={admitted.generation} s=prepared',root)
+        started=shared_register_text(f'a2 p={admitted.pr_number} g={admitted.generation} s=started',root)
+        if register.get('description')!=prepared:raise ValueError('native original is not affirmatively unstarted')
+        code,fenced=_request('GET',url,read_token)
+        if code!=200 or fenced.get('description')!=prepared:raise ValueError('native original root/pointer changed')
+    except Exception:
+        return AdmissionDispatchResult('held',admitted,'native original entry qualification incomplete')
+    scope=_MIGRATION_READ_SCOPE.get()
+    if scope is None or time.time()+120>=scope.require_budget().deadline:
+        return AdmissionDispatchResult('held',admitted,'original native binding deadline reserve exhausted')
+    try:
+        code,_=_shared_admission_effect('PATCH',url,write_token,{'description':started})
+        if code!=200:return AdmissionDispatchResult('unknown',admitted,'native enqueue intent unsettled')
+        code,row=_request('GET',url,read_token)
+        if code!=200 or row.get('description')!=started:
+            return AdmissionDispatchResult('unknown',admitted,'native enqueue intent readback unsettled')
+        native_enqueue_issuer(repo,read_token,native_enqueue_token,repository_id=repository_id,expected=expected_issuer)
+        mutation='mutation($input:EnqueuePullRequestInput!){enqueuePullRequest(input:$input){mergeQueueEntry{id position}}}'
+        code,result=_shared_admission_effect('POST',GITHUB_API+'/graphql',native_enqueue_token,
+            {'query':mutation,'variables':{'input':{'pullRequestId':release['node_id'],
+                'expectedHeadOid':admitted.head_sha,'jump':False}}})
+        # Even a GraphQL error can accompany partial effects. No absence/error
+        # or clientMutationId heuristic authorizes a second enqueue.
+        entry=(((result.get('data') or {}).get('enqueuePullRequest') or {}).get('mergeQueueEntry') or {}).get('id') if isinstance(result,dict) else None
+        if code!=200 or result.get('errors') or not isinstance(entry,str):
+            return AdmissionDispatchResult('unknown',admitted,'native original enqueue response unbound')
+        if result['data']['enqueuePullRequest']['mergeQueueEntry'].get('position')!=1:
+            return AdmissionDispatchResult('unknown',admitted,'native entry not serial first; no replay')
+        queued=proof_admission.bind_native_entry(admitted,entry)
+        return AdmissionDispatchResult('queued',queued,'native original entry returned; immutable queued receipt owed')
+    except Exception:
+        return AdmissionDispatchResult('unknown',admitted,'native original enqueue response lost; no replay')
+
+
+def dispatch_admitted_pr_proof(
+    repo: str, read_token: str, write_token: str, reference: dict[str, Any], *,
+    repository_id: int, protected_controller_sha: str,
+    current_run_id: str, current_run_attempt: int, decision=None,
+) -> AdmissionDispatchResult:
+    """Execute one already reserved, artifact-authenticated original dispatch.
+
+    Preparation owns shared capacity admission and persists the reservation BEFORE
+    upload. Only that same serialized original controller attempt can cross this
+    boundary. Start intent is durably read back before POST; unknown responses keep
+    the same reservation, and this function has no retry or release path. The
+    returned run ID still needs an immutable post-dispatch receipt before the
+    singleton pointer can be cleared. No successful check is created here.
+    """
+    if decision is not None:
+        decision["capacity_recheck"] = {"evaluated": False}
+    context = dict(repository_id=repository_id, protected_controller_sha=protected_controller_sha,
+                   current_run_id=current_run_id, current_run_attempt=current_run_attempt)
+    if (not _shared_controller_authority(repo, read_token, **context)
+            or not isinstance(reference, dict)
+            or reference.get("controller_run_id") != int(current_run_id)
+            or reference.get("controller_attempt") != current_run_attempt):
+        return AdmissionDispatchResult("held", detail="not the original serialized controller attempt")
+    try:
+        admitted = authenticated_admission_from_ref(
+            repo, read_token, reference, repository_id=repository_id,
+            protected_controller_sha=protected_controller_sha)
+    except Exception:
+        return AdmissionDispatchResult("held", detail="admission receipt unavailable or unqualified")
+    if isinstance(admitted,proof_admission.NativeAdmission):
+        return AdmissionDispatchResult('held',admitted,'native entry cannot use workflow dispatch')
+    if isinstance(admitted,proof_admission.SourceAdmission):
+        try:
+            native_target_protection(repo,read_token,admitted.target_ref,
+                repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        except Exception:return AdmissionDispatchResult('held',admitted,'source target protection unavailable')
+    elif not installed_admitted_dispatch_ready(repo,protected_controller_sha):
+        return AdmissionDispatchResult('held',admitted,'protected admission bridge not installed')
+    if admitted.run_id is not None or admitted.run_attempt != 1 or admitted.settled:
+        return AdmissionDispatchResult("held", admitted, "already bound or settled admission")
+    workload = shared_proof_workload(repo, read_token, repository_id=repository_id,
+                                     protected_controller_sha=protected_controller_sha)
+    if not proof_admission.reserved_dispatch_allowed(
+            workload.runs, workload.admissions, admitted,
+            census_complete=workload.complete, records_complete=workload.complete,
+            decision=decision["capacity_recheck"] if decision is not None else None):
+        return AdmissionDispatchResult("held", admitted, "reserved workload no longer fits true cap8")
+    encoded = urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
+    register_url = f"{GITHUB_API}/repos/{repo}/labels/{encoded}"
+    try:
+        status, register = _request("GET", register_url, read_token)
+        migration_root=authenticated_migration_root(repo,read_token,register.get('description'),
+            repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        prepared=shared_register_text(f"a2 p={admitted.pr_number} g={admitted.generation} s=prepared",migration_root)
+        started=shared_register_text(f"a2 p={admitted.pr_number} g={admitted.generation} s=started",migration_root)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != prepared:
+            return AdmissionDispatchResult("held", admitted, "launch not affirmatively unstarted")
+        status, pull = _request("GET", f"{GITHUB_API}/repos/{repo}/pulls/{admitted.pr_number}", read_token)
+        if (status != 200 or not isinstance(pull, dict) or pull.get("state") != "open"
+                or pull.get("number") != admitted.pr_number
+                or (pull.get("head") or {}).get("sha") != admitted.head_sha
+                or (pull.get("base") or {}).get("sha") != admitted.base_sha
+                or (pull.get("base") or {}).get("ref") != getattr(admitted,"target_ref","main")
+                or pull.get("merge_commit_sha") != admitted.merge_sha):
+            return AdmissionDispatchResult("held", admitted, "current PR no longer matches reserved source")
+    except Exception:
+        return AdmissionDispatchResult("held", admitted, "pre-dispatch live read unavailable")
+    try:
+        status, fenced = _request("GET", register_url, read_token)
+        if status != 200 or fenced.get("description") != prepared:
+            return AdmissionDispatchResult("held", admitted, "original root/pointer changed")
+        status, _ = _shared_admission_effect("PATCH", register_url, write_token, {"description": started})
+        if status != 200:
+            return AdmissionDispatchResult("unknown", admitted, "start-intent write not settled")
+        status, register = _request("GET", register_url, read_token)
+        if status != 200 or not isinstance(register, dict) or register.get("description") != started:
+            return AdmissionDispatchResult("unknown", admitted, "start-intent readback not exact")
+    except Exception:
+        return AdmissionDispatchResult("unknown", admitted, "start-intent effect unresolved")
+    inputs = {
+        "proof_role": "pr_head", "admission_generation": admitted.generation,
+        "admission_artifact_id": str(reference["artifact_id"]),
+        "admission_payload_sha256": reference["payload_sha256"],
+        "pr_number": str(admitted.pr_number), "subject_head_sha": admitted.head_sha,
+        "tested_base_sha": admitted.base_sha, "tested_merge_sha": admitted.merge_sha,
+        "expected_workflow_definition_sha": admitted.workflow_sha,
+    }
+    try:
+        status, result = _shared_admission_effect("POST", f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/dispatches",
+                                 write_token, {"ref": "main", "inputs": inputs, "return_run_details": True})
+    except Exception:
+        return AdmissionDispatchResult("unknown", admitted, "original dispatch response lost")
+    if status in {400, 401, 403, 404, 422}:
+        return AdmissionDispatchResult("refused", admitted, f"original dispatch refused HTTP {status}; no retry")
+    run_id = result.get("workflow_run_id") if isinstance(result, dict) else None
+    if status != 200 or type(run_id) is not int or run_id <= 0:
+        return AdmissionDispatchResult("unknown", admitted, "no exact original run ID in dispatch response")
+    return AdmissionDispatchResult("bound", proof_admission.bind_run(admitted, run_id, 1),
+                                   "returned original run ID; post-dispatch receipt still required")
+
+
+def _receipt_context_from_ref(
+    repo: str, token: str, reference: dict[str, Any], *,
+    repository_id: int, protected_controller_sha: str,
+) -> dict[str, Any]:
+    """Load a PR index reference through server-bound immutable controller evidence.
+
+    The reference is untrusted comment data, never a bearer capability. The caller
+    establishes the control revision's protected ancestry independently. Fixed
+    repository API paths prevent comment-controlled download URLs/credentials.
+    Failure preserves the reservation; this read neither dispatches nor settles.
+    """
+    required = {"artifact_id", "controller_run_id", "controller_attempt",
+                "controller_sha", "payload_sha256"}
+    if (not isinstance(reference, dict) or set(reference) != required
+            or any(type(reference[k]) is not int or reference[k] <= 0
+                   for k in ("artifact_id", "controller_run_id", "controller_attempt"))
+            or reference["controller_sha"] != protected_controller_sha):
+        raise ValueError("invalid admission receipt reference")
+    artifact_id, run_id = reference["artifact_id"], reference["controller_run_id"]
+    artifact_status, artifact = _request(
+        "GET", f"{GITHUB_API}/repos/{repo}/actions/artifacts/{artifact_id}", token)
+    run_status, controller = _request(
+        "GET", f"{GITHUB_API}/repos/{repo}/actions/runs/{run_id}/attempts/{reference['controller_attempt']}", token)
+    if artifact_status != 200 or run_status != 200:
+        raise ValueError("unreadable original controller admission evidence")
+    archive = _download_semantic_artifact(
+        f"{GITHUB_API}/repos/{repo}/actions/artifacts/{artifact_id}/zip", token)
+    return dict(
+        archive=archive, payload_sha256=reference["payload_sha256"],
+        repository_id=repository_id, artifact_id=artifact_id,
+        controller_run_id=run_id, controller_attempt=reference["controller_attempt"],
+        controller_sha=protected_controller_sha, artifact=artifact, controller=controller)
+
+
+def authenticated_admission_from_ref(repo, token, reference, *, repository_id, protected_controller_sha):
+    return proof_admission.authenticate_receipt(**_receipt_context_from_ref(
+        repo, token, reference, repository_id=repository_id, protected_controller_sha=protected_controller_sha))
+
+
+def authenticated_demands_from_ref(repo, token, reference, *, repository_id, protected_controller_sha):
+    return proof_admission.authenticate_demands(**_receipt_context_from_ref(
+        repo, token, reference, repository_id=repository_id, protected_controller_sha=protected_controller_sha))
+
+
+def authenticated_checkpoint_from_ref(repo, token, reference, *, repository_id, protected_controller_sha):
+    return proof_admission.authenticate_checkpoint(**_receipt_context_from_ref(
+        repo, token, reference, repository_id=repository_id, protected_controller_sha=protected_controller_sha))
+
+
+
+MIGRATION_COMMENT_PREFIX = "<!-- merge-on-green:proof-migration:v1 -->\n"
+
+
+# One protected stage invocation owns this ephemeral read scope. Immutable
+# receipts are authenticated once against original server metadata/expiry in that
+# invocation; expiry is checked on reuse. No cache crosses a process boundary.
+# Register, indexes, residual applicability and final effect fences stay live.
+from contextvars import ContextVar
+from contextlib import contextmanager
+from functools import wraps
+
+_MIGRATION_READ_SCOPE = ContextVar('migration_read_scope', default=None)
+
+
+class MigrationReadScope:
+    def __init__(self, repo, token, identity=None, directory=None):
+        self.repo, self.token = repo, token
+        self.identity, self.directory = identity, directory
+        self.budget = None
+        self.archives, self.controllers, self.receipts = {}, {}, {}
+        self.deadline = None
+
+    def require_budget(self):
+        if self.budget is None:
+            self.budget = MigrationBudget(self.token, self.identity, self.directory)
+            self.deadline = self.budget.deadline
+        self.budget.require()
+        return self.budget
+
+
+class MigrationBudget:
+    """Strict migration continuation; ordinary SweepBudget is unchanged.
+
+    The protected job's existing stage directory conserves its entry observation
+    across Python processes. This local handoff is not admission authority. Every
+    continuation observes quota anew and retains the original 260 reserve and
+    240-second deadline; only the original entry uses the 700 floor.
+    """
+    def __init__(self, token, identity=None, directory=None):
+        self.original = SweepBudget(token)
+        self.deadline = time.time() + 240
+        marker = Path(directory) / 'migration-budget.json' if directory is not None else None
+        if marker is not None and marker.exists():
+            row = json.loads(marker.read_text(), object_pairs_hook=proof_admission._unique_object)
+            if (not isinstance(row, dict) or set(row) != {'identity','started','deadline'}
+                    or row['identity'] != identity or type(row['started']) not in {int,float}
+                    or type(row['deadline']) not in {int,float}
+                    or row['deadline'] != row['started'] + 240
+                    or not row['started'] <= time.time() < row['deadline']):
+                raise ValueError('original migration budget/deadline custody unavailable')
+            self.deadline = row['deadline']
+            self.require()
+        else:
+            self.require(entry=True)
+            if marker is not None:
+                marker.parent.mkdir(parents=True, exist_ok=True)
+                with marker.open('x') as stream:
+                    json.dump(dict(identity=identity, started=self.deadline-240,
+                                   deadline=self.deadline), stream, sort_keys=True)
+
+    @property
+    def last_seen(self):
+        return self.original.last_seen
+
+    def require(self, *, entry=False):
+        reading = self.original._poll()
+        if (time.time() >= self.deadline or reading is None
+                or type(reading[0]) is not int or type(reading[1]) is not int
+                or reading[1] <= 0 or reading[0] < (self.original.floor if entry else self.original.reserve)):
+            raise ValueError('migration quota/deadline unavailable; original custody retained')
+        return True, ''
+
+    def preflight(self):
+        return self.require()
+
+    def may_continue(self, evaluated):
+        # Every required migration recheck is fresh, including non-poll multiples.
+        return self.require()
+
+
+@contextmanager
+def migration_read_scope(repo, token, *, identity=None, directory=None):
+    current = _MIGRATION_READ_SCOPE.get()
+    if current is not None:
+        if current.repo != repo or current.token != token:
+            raise ValueError('foreign migration read scope')
+        yield current
+        return
+    scope = MigrationReadScope(repo, token, identity, directory)
+    handle = _MIGRATION_READ_SCOPE.set(scope)
+    try:
+        yield scope
+    finally:
+        _MIGRATION_READ_SCOPE.reset(handle)
+
+
+def _migration_read_operation(function):
+    @wraps(function)
+    def scoped(repo, token, *args, **kwargs):
+        with migration_read_scope(repo, token):
+            return function(repo, token, *args, **kwargs)
+    return scoped
+
+
+def migration_budget(token):
+    scope = _MIGRATION_READ_SCOPE.get()
+    if scope is None or scope.token != token:
+        return MigrationBudget(token)
+    return scope.require_budget()
+
+
+def _shared_admission_effect(method, url, token, payload=None):
+    """Fence the dependent effect after all reads/waits in this original scope.
+
+    A refusal never clears an already-written index/start/completion intent.
+    Outside the newly scoped controller path, existing behavior is unchanged.
+    """
+    scope = _MIGRATION_READ_SCOPE.get()
+    if scope is not None and scope.budget is not None:
+        scope.budget.require()
+    return _request(method, url, token, payload)
+
+
+def _migration_control_ancestor(repo, token, control, protected):
+    if not isinstance(control, str) or not re.fullmatch('[0-9a-f]{40}', control):
+        raise ValueError('migration controller missing')
+    if control == protected:
+        return
+    code, row = _request('GET', f'{GITHUB_API}/repos/{repo}/compare/{control}...{protected}?per_page=1', token)
+    if (code != 200 or not isinstance(row, dict) or row.get('status') not in {'identical','ahead'}
+            or (row.get('base_commit') or {}).get('sha') != control
+            or (row.get('merge_base_commit') or {}).get('sha') != control):
+        raise ValueError('migration controller lacks protected ancestry')
+
+
+@_migration_read_operation
+def authenticated_migration_from_ref(repo, token, reference, *, repository_id, protected_controller_sha):
+    if (not isinstance(reference, dict) or set(reference) != {'artifact_id', 'controller_run_id',
+            'controller_attempt', 'controller_sha', 'payload_sha256'}):
+        raise ValueError('invalid original migration reference')
+    record, actual = migration_from_artifact(repo, token, reference['artifact_id'],
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    if reference != actual or any(type(reference[k]) is not type(actual[k]) for k in actual):
+        raise ValueError('original migration reference mismatch')
+    return record
+
+
+@_migration_read_operation
+def migration_from_artifact(repo, token, artifact_id, *, repository_id, protected_controller_sha):
+    """Recover only original server-bound bytes; absence never means settled."""
+    import copy, hashlib, io, zipfile
+    if type(artifact_id) is not int or artifact_id <= 0:
+        raise ValueError('invalid migration artifact')
+    scope = _MIGRATION_READ_SCOPE.get()
+    key = (repository_id, protected_controller_sha, artifact_id)
+    cached = scope.receipts.get(key)
+    if cached is not None:
+        expiry, record, reference = cached
+        if expiry <= time.time():
+            raise ValueError('original migration artifact expired within invocation')
+        return copy.deepcopy((record, reference))
+    code, artifact = _request('GET', f'{GITHUB_API}/repos/{repo}/actions/artifacts/{artifact_id}', token)
+    if code != 200 or not isinstance(artifact, dict):
+        raise ValueError('original migration artifact unavailable')
+    name = re.fullmatch(r'ci-proof-migration-([1-9][0-9]*)-1-([0-9a-f]{12})-(intent|outcome)',
+                        str(artifact.get('name')))
+    control = (artifact.get('workflow_run') or {}).get('head_sha')
+    if not name:
+        raise ValueError('unqualified migration artifact name')
+    expiry = _parse_dt(artifact.get('expires_at'))
+    if expiry is None or expiry.timestamp() <= time.time() or artifact.get('expired') is not False:
+        raise ValueError('original migration artifact expiry unavailable')
+    _migration_control_ancestor(repo, token, control, protected_controller_sha)
+    scope = _MIGRATION_READ_SCOPE.get()
+    controller_key = (int(name[1]), control)
+    controller = scope.controllers.get(controller_key)
+    if controller is None:
+        code, controller = _request('GET', f'{GITHUB_API}/repos/{repo}/actions/runs/{name[1]}/attempts/1', token)
+        if code != 200:
+            raise ValueError('original migration controller unavailable')
+    archive_key = (artifact_id, artifact.get('digest'))
+    archive = scope.archives.get(archive_key)
+    if archive is None:
+        archive = _download_semantic_artifact(f'{GITHUB_API}/repos/{repo}/actions/artifacts/{artifact_id}/zip', token)
+    if not isinstance(archive, bytes) or len(archive) > 1048576:
+        raise ValueError('oversized migration archive')
+    with zipfile.ZipFile(io.BytesIO(archive)) as bundle:
+        entries = bundle.infolist()
+        if (len(entries) != 1 or entries[0].filename != 'ci-proof-admission.json'
+                or entries[0].is_dir() or entries[0].file_size > 32768):
+            raise ValueError('invalid migration member')
+        with bundle.open(entries[0]) as member:
+            payload = member.read(32769)
+        if len(payload) > 32768:
+            raise ValueError('oversized migration member')
+    ref = dict(artifact_id=artifact_id, controller_run_id=int(name[1]), controller_attempt=1,
+               controller_sha=control, payload_sha256=hashlib.sha256(payload).hexdigest())
+    record = proof_admission.authenticate_migration(archive=archive, repository_id=repository_id,
+        artifact=artifact, controller=controller, **ref)
+    scope.controllers[controller_key] = controller
+    scope.archives[archive_key] = archive
+    # Only two original migration members are normally needed. Eviction changes
+    # cost only, never authority; no new archive/member or request cap is added.
+    if len(scope.receipts) >= 2:
+        scope.receipts.pop(next(iter(scope.receipts)))
+    scope.receipts[key] = (expiry.timestamp(), copy.deepcopy(record), dict(ref))
+    if len(scope.archives) > 2:
+        scope.archives.pop(next(iter(scope.archives)))
+    if len(scope.controllers) > 2:
+        scope.controllers.pop(next(iter(scope.controllers)))
+    return record, ref
+
+
+def migration_outcome(repo, token, intent_ref, intent, *, repository_id, protected_controller_sha):
+    """Only an immutable positive original ack/postread unblocks a successor."""
+    from dataclasses import replace
+    run_id = intent_ref['controller_run_id']
+    code, listing = _request('GET', f'{GITHUB_API}/repos/{repo}/actions/runs/{run_id}/artifacts?per_page=100', token)
+    rows = listing.get('artifacts') if isinstance(listing, dict) else None
+    if (code != 200 or not isinstance(rows, list) or type(listing.get('total_count')) is not int
+            or listing['total_count'] != len(rows) or len(rows) > 100
+            or any(not isinstance(row, dict) for row in rows)):
+        raise ValueError('incomplete original migration outcome inventory')
+    name = f"ci-proof-migration-{run_id}-1-{intent.generation}-outcome"
+    found = [row for row in rows if row.get('name') == name]
+    if len(found) != 1:
+        raise ValueError('UNKNOWN original migration outcome absent or ambiguous; no replay')
+    outcome, ref = migration_from_artifact(repo, token, found[0].get('id'),
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    if (outcome.phase != 'outcome' or outcome.intent_artifact_id != intent_ref['artifact_id']
+            or any(ref[k] != intent_ref[k] for k in ('controller_run_id','controller_attempt','controller_sha'))
+            or replace(outcome, phase='intent', intent_artifact_id=None,
+                       acknowledged=False, observed_register=None) != intent):
+        raise ValueError('original migration outcome does not bind its intent')
+    return outcome
+
+
+def legacy_residual_fact(repo, token, number, *, repository_id, comments=None, allowed_reference=None):
+    """A scoped closed legacy association, never a universal closed-PR waiver."""
+    code,pull=_request('GET',f'{GITHUB_API}/repos/{repo}/pulls/{number}',token)
+    head=(pull.get('head') or {}).get('sha') if isinstance(pull,dict) else None
+    if (code!=200 or pull.get('number')!=number or pull.get('state')!='closed'
+            or not proof_admission._hex(head,40)
+            or ((pull.get('base') or {}).get('repo') or {}).get('id')!=repository_id):
+        raise ValueError('legacy residual reopened, changed or unavailable')
+    comments=fetch_issue_comments(repo,number,token,strict=True) if comments is None else comments
+    if comments is None:raise ValueError('legacy residual comments incomplete')
+    own_indexes=0
+    for c in comments:
+        if not isinstance(c,dict):raise ValueError('legacy residual comment malformed')
+        body=str(c.get('body',''))
+        if body.startswith((ADMISSION_COMMENT_PREFIX,DEMAND_COMMENT_PREFIX,CHECKPOINT_COMMENT_PREFIX)) and admission_index_writer(c):
+            raise ValueError('legacy residual has later shared custody')
+        if body.startswith(MIGRATION_COMMENT_PREFIX) and admission_index_writer(c):
+            if allowed_reference is None or body!=MIGRATION_COMMENT_PREFIX+json.dumps(allowed_reference,sort_keys=True,separators=(',',':')):
+                raise ValueError('legacy residual has different or unresolved migration custody')
+            own_indexes+=1
+        if 'EFFECT_UNKNOWN' in body:
+            raise ValueError('legacy residual explicit unresolved effect')
+    if allowed_reference is not None and own_indexes!=1:
+        raise ValueError('legacy residual migration index absent or ambiguous')
+    runs=head_check_runs(repo,head,token)
+    if any(not isinstance(r,dict) or r.get('head_sha')!=head
+           or r.get('status')!='completed' for r in runs):
+        raise ValueError('legacy residual proof work active or unavailable')
+    # Explicit run index covers a check-registration gap. No absence of check
+    # anchors is promoted to a success or original-generation settlement.
+    query=urllib.parse.urlencode(dict(head_sha=head,per_page=100))
+    code,listing=_request('GET',f'{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/runs?{query}',token)
+    rows=listing.get('workflow_runs') if isinstance(listing,dict) else None
+    if (code!=200 or not isinstance(rows,list) or type(listing.get('total_count')) is not int
+            or listing['total_count']!=len(rows) or len(rows)>100
+            or any(not isinstance(r,dict) or r.get('status')!='completed'
+                or r.get('head_sha')!=head or (r.get('repository') or {}).get('id')!=repository_id for r in rows)):
+        raise ValueError('legacy residual original work inventory incomplete or active')
+    return dict(pr_number=number,head_sha=head,state='closed')
+
+
+@_migration_read_operation
+def migration_history(repo, token, number, comments, *, repository_id, protected_controller_sha):
+    """Migration indexes grant no proof/age; every applicable intent must settle."""
+    if not isinstance(comments, list):
+        raise ValueError('migration history unavailable')
+    intents = []
+    ids = set()
+    for comment in comments:
+        if not isinstance(comment, dict):
+            raise ValueError('incomplete migration comment history')
+        body = comment.get('body')
+        if not isinstance(body, str) or not body.startswith(MIGRATION_COMMENT_PREFIX):
+            continue
+        if not admission_index_writer(comment):
+            continue
+        cid = comment.get('id')
+        if type(cid) is not int or cid <= 0 or cid in ids or len(body) > 4096:
+            raise ValueError('invalid migration index identity')
+        ids.add(cid)
+        ref = json.loads(body[len(MIGRATION_COMMENT_PREFIX):], object_pairs_hook=proof_admission._unique_object)
+        record = authenticated_migration_from_ref(repo, token, ref,
+            repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+        residual=next((r for r in record.residuals if r['pr_number']==number),None)
+        if record.phase != 'intent' or (record.pr_number != number and residual is None):
+            raise ValueError('foreign migration index')
+        if residual is not None and legacy_residual_fact(repo,token,number,repository_id=repository_id,comments=comments,allowed_reference=ref)!=residual:
+            raise ValueError('legacy residual applicability changed')
+        if any(old.generation == record.generation for old, _ in intents):
+            raise ValueError('UNKNOWN conflicting migration intents')
+        migration_outcome(repo, token, ref, record,
+            repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+        intents.append((record, ref))
+    return intents
+
+
+def shared_register_parts(description):
+    """The existing 100-character register conserves its immutable migration root."""
+    match = re.fullmatch(r'(a2 .+) r=([1-9][0-9]*)', str(description))
+    if not match or len(description) > 100 or ' r=' in match[1]:
+        raise ValueError('shared register migration root missing or malformed')
+    return match[1], int(match[2])
+
+
+def shared_register_text(body, root):
+    if not isinstance(body, str) or not body.startswith('a2 ') or not proof_admission._positive(root):
+        raise ValueError('invalid shared register identity')
+    value = f'{body} r={root}'
+    if len(value) > 100 or ' r=' in body:
+        raise ValueError('shared register exceeds original description bound')
+    return value
+
+
+@_migration_read_operation
+def authenticated_migration_root(repo, token, description, *, repository_id, protected_controller_sha):
+    _, artifact_id = shared_register_parts(description)
+    budget=migration_budget(token)
+    deadline=budget.deadline
+    intent, reference = migration_from_artifact(repo, token, artifact_id,
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    if intent.phase != 'intent':
+        raise ValueError('migration root is not an original intent')
+    body,_=shared_register_parts(description)
+    if body.endswith(' s=migrating') and description!=proof_admission.migration_pointer(intent,artifact_id):
+        raise ValueError('migration pointer differs from original root owner')
+    comments = fetch_issue_comments(repo, intent.pr_number, token, strict=True)
+    originals = migration_history(repo, token, intent.pr_number, comments,
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    if not any(r == intent and ref == reference for r, ref in originals):
+        raise ValueError('migration root lacks positively indexed original custody')
+    for index,residual in enumerate(intent.residuals):
+        allowed,_=budget.may_continue(index)
+        if not allowed or time.time()>=deadline:
+            raise ValueError('migration root residual budget/deadline boundary')
+        rows=fetch_issue_comments(repo,residual['pr_number'],token,strict=True)
+        indexed=migration_history(repo,token,residual['pr_number'],rows,repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+        if not any(r==intent and ref==reference for r,ref in indexed):
+            raise ValueError('migration residual index absent or inconsistent')
+    return artifact_id
+
+
+def migration_register_is_idle(repo, token, description, *, repository_id, protected_controller_sha):
+    body, root = shared_register_parts(description)
+    authenticated_migration_root(repo, token, description,
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    if body == 'a2 idle':return True
+    match=re.fullmatch(r'a2 p=([1-9][0-9]*) i=([1-9][0-9]*) s=migrating',body)
+    return bool(match and int(match[2])==root)
+
+
+def admission_index_writer(comment):
+    """Classify server provenance before parsing untrusted comment bodies.
+
+    New shared-admission indexes are posted only by the protected job token.
+    A PAT's changing collaborator permissions must never erase original history.
+    The immutable original controller artifact remains the authority; the bot
+    identity is only the mandatory-history namespace, not proof by itself.
+    """
+    author = comment.get("user")
+    if (not isinstance(author, dict) or type(author.get("id")) is not int
+            or author["id"] <= 0 or not isinstance(author.get("login"), str)
+            or not isinstance(author.get("type"), str)):
+        raise ValueError("admission index author unavailable")
+    if author["id"] == 41898282:
+        if author["type"] != "Bot" or author["login"] != "github-actions[bot]":
+            raise ValueError("contradictory original bot identity")
+        return True
+    if author["login"] == "github-actions[bot]":
+        raise ValueError("contradictory original bot identifier")
+    return False
+
+
+def read_age_frontier(repo, token, *, repository_id, protected_controller_sha,
+                      inventory=None, comments_by_pr=None, retention=None):
+    """Existing PR indexes supply historical age only; closed anchors persist.
+
+    Optional retention observation comes from metadata already read for exact
+    authenticated uncovered originals. It grants no coverage or admission and
+    adds no requests. Publish it only after the complete frontier validates.
+    """
+    inventory=inventory or shared_admission_inventory(repo,token)
+    if not inventory.complete or inventory.indexing is not None:
+        raise ValueError('age inventory incomplete or original index unsettled')
+    authenticated_migration_root(repo,token,shared_register_text('a2 idle',inventory.migration_root),
+        repository_id=repository_id,protected_controller_sha=protected_controller_sha)
+    comments=dict(comments_by_pr or {})
+    for issue in inventory.issues:
+        number=issue['number']
+        if number not in comments:
+            comments[number]=fetch_issue_comments(repo,number,token,strict=True)
+    entries=[]
+    for number,rows in comments.items():
+        if rows is None:raise ValueError('age comments incomplete')
+        for c in rows:
+            if not isinstance(c,dict):raise ValueError('age comment row malformed')
+            body=c.get('body')
+            if not isinstance(body,str) or not body.startswith(DEMAND_COMMENT_PREFIX):continue
+            if not admission_index_writer(c):continue
+            if len(body)>4096:raise ValueError('age index oversized')
+            reference=json.loads(body[len(DEMAND_COMMENT_PREFIX):],object_pairs_hook=proof_admission._unique_object)
+            entries.append((number,c.get('id'),reference))
+    cache={};controls={protected_controller_sha};expiries=[]
+    def load(reference):
+        if not isinstance(reference,dict):raise ValueError('age reference malformed')
+        control=reference.get('controller_sha')
+        if not isinstance(control,str) or not re.fullmatch('[0-9a-f]{40}',control):raise ValueError('age control missing')
+        if control not in controls:
+            status,row=_request('GET',f'{GITHUB_API}/repos/{repo}/compare/{control}...{protected_controller_sha}?per_page=1',token)
+            if (status!=200 or not isinstance(row,dict) or row.get('status') not in {'ahead','identical'}
+                    or (row.get('base_commit') or {}).get('sha')!=control
+                    or (row.get('merge_base_commit') or {}).get('sha')!=control):
+                raise ValueError('age controller is not protected ancestry')
+            controls.add(control)
+        key=json.dumps(reference,sort_keys=True)
+        if key not in cache:
+            context=_receipt_context_from_ref(repo,token,reference,
+                repository_id=repository_id,protected_controller_sha=control)
+            cache[key]=proof_admission.authenticate_age_snapshot(**context)
+            if retention is not None:
+                expiry=context["artifact"].get("expires_at")
+                try:
+                    if not isinstance(expiry,str):raise ValueError("missing expiry")
+                    expiry=dt.datetime.fromisoformat(expiry.replace("Z","+00:00"))
+                    if expiry.tzinfo is None or expiry.utcoffset() is None:
+                        raise ValueError("unqualified expiry timezone")
+                    if expiry<=dt.datetime.now(dt.timezone.utc):
+                        raise ValueError("uncovered original already expired")
+                except (ValueError,TypeError,OverflowError) as exc:
+                    raise ValueError("age artifact retention expiry unavailable or expired") from exc
+                expiries.append(expiry)
+
+        return cache[key]
+    snapshot=proof_admission.fold_age_snapshots(entries,load)
+    observed={n:c for n,c in snapshot.covered_comments if n in comments}
+    for number,comment_id,_ in entries:observed[number]=max(observed.get(number,0),comment_id)
+    if retention is not None:
+        retention.clear()
+        retention.update(earliest_expiry=min(expiries).isoformat() if expiries else None,
+                         authenticated_artifacts=len(expiries))
+    return snapshot,observed
+
+
+def pr_admission_history(repo, token, number, comments, *, repository_id, protected_controller_sha, reference_catalog=None, allow_empty=False, age_snapshot=None):
+    """Read bounded original records after authenticated complete PR coverage.
+
+    Old artifacts below a verified checkpoint need not be reopened. No expired or
+    unreadable *uncovered* reference is silently ignored. New/replayed comments
+    cannot rewind coverage or erase a later original dispatch. The supplied
+    comments must be the incumbent complete bounded server read, not a tail page.
+    """
+    if type(number) is not int or number <= 0 or not isinstance(comments, list):
+        raise ValueError("invalid PR comment custody")
+    prefixes = {ADMISSION_COMMENT_PREFIX: "admission", DEMAND_COMMENT_PREFIX: "demands",
+                CHECKPOINT_COMMENT_PREFIX: "checkpoint"}
+    entries = []
+    seen = set()
+    age_coverage=dict(age_snapshot.covered_comments) if age_snapshot is not None else {}
+    for comment in comments:
+        if not isinstance(comment, dict):
+            raise ValueError("malformed PR comment")
+        body = comment.get("body")
+        if not isinstance(body, str):
+            continue
+        matching = [(prefix, kind) for prefix, kind in prefixes.items() if body.startswith(prefix)]
+        if not matching:
+            continue
+        if not admission_index_writer(comment):
+            continue
+        comment_id = comment.get("id")
+        if type(comment_id) is not int or comment_id <= 0 or comment_id in seen or len(body) > 4096:
+            raise ValueError("malformed original admission index")
+        seen.add(comment_id)
+        prefix, kind = matching[0]
+        if kind == "demands" and comment_id <= age_coverage.get(number,0):
+            continue  # authenticated age coverage NEVER covers admission records
+        reference = json.loads(body[len(prefix):], object_pairs_hook=proof_admission._unique_object)
+        entries.append((comment_id, (kind, reference)))
+    controls = {protected_controller_sha}
+
+    def load(kind, reference):
+        control_sha = reference.get("controller_sha") if isinstance(reference, dict) else None
+        if not isinstance(control_sha, str) or not re.fullmatch(r"[0-9a-f]{40}", control_sha):
+            raise ValueError("invalid admission control identity")
+        if control_sha not in controls:
+            status, compared = _request("GET", f"{GITHUB_API}/repos/{repo}/compare/{control_sha}...{protected_controller_sha}?per_page=1", token)
+            if (status != 200 or not isinstance(compared, dict)
+                    or compared.get("status") not in {"ahead", "identical"}
+                    or (compared.get("base_commit") or {}).get("sha") != control_sha
+                    or (compared.get("merge_base_commit") or {}).get("sha") != control_sha):
+                raise ValueError("record controller is not protected ancestry")
+            controls.add(control_sha)
+        loader = {"admission": authenticated_admission_from_ref,
+                  "demands": authenticated_demands_from_ref,
+                  "checkpoint": authenticated_checkpoint_from_ref}[kind]
+        return loader(repo, token, reference, repository_id=repository_id, protected_controller_sha=control_sha)
+
+    migrations = migration_history(repo, token, number, comments,
+        repository_id=repository_id, protected_controller_sha=protected_controller_sha)
+    checkpoint = None
+    checkpoints = []
+    for comment_id, (kind, reference) in sorted(entries, reverse=True):
+        if kind != "checkpoint" or (checkpoint and comment_id <= checkpoint.covered_through_comment_id):
+            continue
+        observed = load(kind, reference)
+        if observed.pr_number != number or observed.covered_through_comment_id >= comment_id:
+            raise ValueError("checkpoint covers its own or future index")
+        checkpoints.append(observed)
+        checkpoint = proof_admission.select_checkpoint(checkpoints, number)
+    records = list(checkpoint.admissions + checkpoint.settled) if checkpoint else []
+    demands = list(checkpoint.demands) if checkpoint else []
+    if age_snapshot is not None:
+        demands.extend(d for d in age_snapshot.demands if d.pr_number == number)
+    uncovered = proof_admission.references_after_checkpoint(entries, checkpoint)
+    for _comment_id, (kind, reference) in sorted(uncovered):
+        if kind == "checkpoint":
+            continue  # already authenticated above, never just skipped by its text
+        result = load(kind, reference)
+        if kind == "admission":
+            if result.pr_number != number:
+                raise ValueError("cross-PR admission index")
+            if reference_catalog is not None:
+                reference_catalog[(result.generation, result.run_id)] = reference
+            records.append(result)
+        else:
+            matching = [d for d in result if d.pr_number == number]
+            if not matching:
+                raise ValueError("PR demand index lacks its own demand")
+            demands.extend(matching)
+    if checkpoint is None and not records and not demands and not allow_empty and not migrations:
+        raise ValueError("associated PR lacks authenticated records")
+    return proof_admission.merge_records(records), demands
+
+
+@dataclass(frozen=True)
+class SharedAdmissionInventory:
+    """Read-only v2 view of the existing lease label, not a second registry.
+
+    ``complete`` covers association discovery only. Authentication and exact
+    outstanding-record settlement remain required before capacity is computed.
+    """
+    mode: str
+    complete: bool
+    issues: tuple[dict[str, Any], ...] = ()
+    launch: tuple[int, str] | None = None
+    launch_started: bool = False
+    indexing: tuple[int, int, int, int] | None = None
+    migration: tuple[int, int] | None = None
+    migration_root: int | None = None
+
+
+def shared_admission_inventory(repo: str, token: str) -> SharedAdmissionInventory:
+    """Preserve every outstanding association, including closed/disarmed PRs.
+
+    Never migrates or cleans an m1 owner. The a2 description is only a singleton
+    launch pointer; associations retain admitted work until exact settlement.
+    The direct pointer closes eventual-consistency gaps in GitHub's label index.
+    """
+    encoded = urllib.parse.quote(REFRESH_LEASE_LABEL, safe="")
+    try:
+        status, label = _request("GET", f"{GITHUB_API}/repos/{repo}/labels/{encoded}", token)
+        if status == 404:
+            return SharedAdmissionInventory("legacy", False)
+        if status != 200 or not isinstance(label, dict):
+            return SharedAdmissionInventory("unknown", False)
+        description = label.get("description")
+        if (description == REFRESH_LEASE_DESCRIPTION
+                or parse_refresh_lease_record(description) is not None):
+            return SharedAdmissionInventory("legacy", False)
+        description, migration_root = shared_register_parts(description)
+        launch = None
+        launch_started = False
+        indexing = None
+        migration = None
+        migration_match = re.fullmatch(r"a2 p=([1-9][0-9]*) i=([1-9][0-9]*) s=migrating", str(description))
+        index_match=re.fullmatch(r"a2 b=([1-9][0-9]*) p=([1-9][0-9]*) i=([0123]) t=([0-9]+) s=indexing",str(description))
+        if migration_match:
+            migration = tuple(map(int, migration_match.groups()))
+        elif index_match:
+            indexing=tuple(int(v) for v in index_match.groups())
+        elif description != "a2 idle":
+            match = re.fullmatch(r"a2 p=([1-9][0-9]*) g=([0-9a-f]{12}) s=(prepared|started|completing|binding)", str(description))
+            if not match:
+                return SharedAdmissionInventory("unknown", False)
+            launch = (int(match[1]), match[2])
+            launch_started = match[3] == "started"
+        issues: dict[int, dict[str, Any]] = {}
+        for page in range(1, OPEN_PULL_PAGE_CAP + 1):
+            query = urllib.parse.urlencode({
+                "state": "all", "labels": REFRESH_LEASE_LABEL, "per_page": "100", "page": str(page)})
+            status, rows = _request("GET", f"{GITHUB_API}/repos/{repo}/issues?{query}", token)
+            if status != 200 or not isinstance(rows, list):
+                return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
+            for issue in rows:
+                if (not isinstance(issue, dict) or type(issue.get("number")) is not int
+                        or issue["number"] <= 0 or not isinstance(issue.get("pull_request"), dict)
+                        or issue.get("state") not in {"open", "closed"}
+                        or not isinstance(issue.get("labels"), list)
+                        or REFRESH_LEASE_LABEL not in label_names(issue)
+                        or issue["number"] in issues):
+                    return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
+                issues[issue["number"]] = issue
+            if len(rows) < 100:
+                break
+        else:
+            return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
+        owner=launch[0] if launch else indexing[1] if indexing else migration[0] if migration else None
+        if owner is not None and owner not in issues:
+            status, issue = _request("GET", f"{GITHUB_API}/repos/{repo}/issues/{owner}", token)
+            if (status != 200 or not isinstance(issue, dict)
+                    or type(issue.get("number")) is not int or issue["number"] != owner
+                    or issue.get("state") not in {"open", "closed"}
+                    or not isinstance(issue.get("pull_request"), dict)):
+                return SharedAdmissionInventory("shared", False, tuple(issues.values()), launch, launch_started)
+            issues[owner] = issue
+        return SharedAdmissionInventory("shared", True, tuple(issues.values()), launch, launch_started, indexing, migration, migration_root)
+    except RateLimited:
+        raise
+    except Exception:
+        return SharedAdmissionInventory("unknown", False)
+
+
+def indexed_active_ci_runs(repo: str, token: str) -> list[proof_admission.Run] | None:
+    """Distinct active CI identities across legacy PR and dispatched carriers.
+
+    All five active states count. A dispatch without affirmative main-baseline
+    binding is conservatively workload, never an exemption. The five reads retain
+    the incumbent API budget; a truncated/malformed page closes admission rather
+    than pretending the omitted runs do not exist. Status-page transitions are a
+    set union. Authenticated outstanding admission records supply the additional
+    conservative floor in the shared admission path; this census alone is not an
+    atomic platform snapshot or authority to dispatch.
+    """
+    identities: dict[int, tuple[int, str]] = {}
     for run_status in ACTIVE_PR_PROOF_STATUSES:
-        query = urllib.parse.urlencode(
-            {
-                "event": "pull_request",
-                "status": run_status,
-                "per_page": "1",
-            }
-        )
+        query = urllib.parse.urlencode({"status": run_status, "per_page": "100"})
         status, payload = _request(
-            "GET",
-            f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/runs?{query}",
-            token,
+            "GET", f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/runs?{query}", token,
         )
-        count = (payload or {}).get("total_count") if isinstance(payload, dict) else None
-        if (
-            status >= 400
-            or not isinstance(count, int)
-            or isinstance(count, bool)
-            or count < 0
-        ):
+        if status != 200 or not isinstance(payload, dict):
             return None
-        total += count
-    return total
+        count = payload.get("total_count")
+        rows = payload.get("workflow_runs")
+        if (type(count) is not int or count < 0 or not isinstance(rows, list)
+                or len(rows) != count or count > 100):
+            return None
+        page_ids: set[int] = set()
+        for run in rows:
+            if not isinstance(run, dict):
+                return None
+            run_id, attempt = run.get("id"), run.get("run_attempt")
+            event, observed_status = run.get("event"), run.get("status")
+            if (type(run_id) is not int or run_id <= 0
+                    or type(attempt) is not int or attempt <= 0
+                    or not isinstance(event, str) or not event
+                    or observed_status not in {*ACTIVE_PR_PROOF_STATUSES, "completed"}
+                    or run_id in page_ids):
+                return None
+            page_ids.add(run_id)
+            identity = (attempt, event)
+            if run_id in identities and identities[run_id] != identity:
+                return None
+            # A run selected by the active index may complete during the read;
+            # retain it conservatively for this observation, not as green proof.
+            identities[run_id] = identity
+    return [proof_admission.Run(run_id, identity[0], "in_progress",
+                               "merge_group" if identity[1]=="merge_group" else "pr_head")
+            for run_id, identity in identities.items()]
+
+
+def in_flight_pr_proofs(repo: str, token: str) -> int | None:
+    runs = indexed_active_ci_runs(repo, token)
+    return len(runs) if runs is not None else None
 
 
 @dataclass(frozen=True)
@@ -3423,7 +6323,7 @@ def serialized_refresh_authority(
         and str(payload.get("head_branch") or "") == "main"
         and str((repository or {}).get("full_name") or "") == repo
         and str(payload.get("event") or "")
-        in {"workflow_run", "schedule", "workflow_dispatch"}
+        in {"workflow_run", "schedule", "workflow_dispatch", "pull_request_target"}
     )
 
 
@@ -3959,6 +6859,10 @@ class RefreshLease:
         """Release a definitive owner; failure leaves ownership fail-closed."""
         if not self.owns(pull) and REFRESH_LEASE_LABEL not in label_names(pull):
             return True
+        if not self.readable:
+            # Includes the shared a2 register: this legacy lease object owns no
+            # authority to erase a shared active/UNKNOWN record association.
+            return False
         number = pull.get("number")
         # A settled generation must never reacquire in this same sweep, even when
         # GitHub accepts the delete but loses the response.  Keeping owner_number on
@@ -3993,6 +6897,14 @@ class RefreshLease:
         return True
 
 
+def legacy_migration_pending(repo, token, number):
+    """An old writer may never release/overwrite an indexed migration intent."""
+    comments=fetch_issue_comments(repo,number,token,strict=True)
+    if comments is None:raise ValueError('legacy migration history unavailable')
+    return any(isinstance(c,dict) and str(c.get('body','')).startswith(MIGRATION_COMMENT_PREFIX)
+               and admission_index_writer(c) for c in comments)
+
+
 def prepare_refresh_lease(
     repo: str,
     read_token: str,
@@ -4000,6 +6912,11 @@ def prepare_refresh_lease(
     pulls: list[dict[str, Any]],
 ) -> tuple[RefreshLease, list[dict[str, Any]]]:
     """Load/clean the durable owner and inject it when the pull page omitted it."""
+    # Once this exact protected source supports shared admission, the legacy
+    # writer cannot race/overwrite migration custody after a failed early stage.
+    protected=os.environ.get('GITHUB_SHA','')
+    if re.fullmatch('[0-9a-f]{40}',protected) and installed_admitted_dispatch_ready(repo,protected):
+        return RefreshLease(repo,read_token,write_token,readable=False),pulls
     try:
         issues = open_refresh_lease_issues(repo, read_token)
     except Exception as exc:
@@ -4032,6 +6949,11 @@ def prepare_refresh_lease(
             "refreshes paused rather than assuming no prior owner.",
         )
         return RefreshLease(repo, read_token, write_token, readable=False), pulls
+    if generation is not None:
+        try: migration_pending=legacy_migration_pending(repo,read_token,generation[0])
+        except Exception: migration_pending=True
+        if migration_pending:
+            return RefreshLease(repo, read_token, write_token, readable=False), pulls
     if generation is not None and not any(
         str(issue.get("number")) == str(generation[0]) for issue in issues
     ):
@@ -6272,7 +9194,7 @@ class CommentCapExceeded(RuntimeError):
 
 
 def fetch_issue_comments(
-    repo: str, number: Any, token: str
+    repo: str, number: Any, token: str, *, strict: bool = False
 ) -> list[dict[str, Any]] | None:
     """Every issue comment on a pull request.
 
@@ -6285,10 +9207,9 @@ def fetch_issue_comments(
     more history than the cap can see, and the caller uses the partial
     inventory rather than treating this as an ordinary API outage.
 
-    Called from exactly one place: `sweep_pull`'s about-to-merge path, immediately
-    before the merge call and after every other gate (checks, freshness, the
-    clobbered-head invariant) has already concluded clean — this module's API
-    budget doctrine spends a call here only on a pull request that has earned it.
+    Admission custody uses strict mode: a malformed row is incomplete evidence,
+    never an item to discard while claiming complete checkpoint coverage.
+    Legacy hold readers retain their incumbent interface and page cap.
     """
     if number is None:
         return None
@@ -6301,6 +9222,8 @@ def fetch_issue_comments(
             token,
         )
         if status >= 400 or not isinstance(payload, list):
+            return None
+        if strict and any(not isinstance(item, dict) for item in payload):
             return None
         comments.extend(item for item in payload if isinstance(item, dict))
         if len(payload) < 100:
@@ -7118,6 +10041,7 @@ def sweep_pull(
     reconcile_only: bool = False,
     semantic_evidence: Any | None = None,
     check_runs: list[dict[str, Any]] | None = None,
+    native_guard: bool = False,
 ) -> str:
     """Judge and, when clean, merge one labeled pull request. Returns the verdict.
 
@@ -7142,6 +10066,8 @@ def sweep_pull(
     proof actually cost anything this pass. Nothing here reads it, so it cannot
     influence any verdict.
     """
+    if native_guard and native_rule_blocks_legacy(repo,read_token,(pull.get('base') or {}).get('ref')):
+        return 'native-queue-held'  # Only the existing admission stages may enqueue.
     if proof is None:
         proof = MainProof(frozenset(), None, "", "no proof supplied")
     number = pull.get("number")
@@ -7256,14 +10182,18 @@ def sweep_pull(
         if anchor_verdict != "clean":
             verdict, names = anchor_verdict, anchor_names
 
+    loaded = semantic_evidence
     semantic_mode = False
     semantic_gate = None
     semantic_refusal = ""
-    # Green heads retain the zero-artifact-call fast path. A red/ambiguous head,
+    # Legacy green heads retain the zero-artifact-call fast path. Admitted
+    # subject checks always authenticate their original generation and artifact. A red/ambiguous head,
     # or a candidate already loaded for the semantic main-red overlap decision,
     # must use v1 when present. Claimed malformed v1 is a hard refusal and cannot
     # fall back to pack-name causality.
-    if semantic_evidence is not None or (
+    admitted_authentication = has_admitted_subject_checks(runs)
+    physically_clean_admitted = admitted_authentication and verdict == "clean" and semantic_evidence is None
+    if admitted_authentication or semantic_evidence is not None or (
         verdict in {"blocked", "incomplete"}
         and _head_can_advertise_semantic_evidence(runs)
     ):
@@ -7278,7 +10208,7 @@ def sweep_pull(
             semantic_gate = _semantic_gate(loaded)
             if semantic_gate is not None:
                 semantic_mode = True
-                if semantic_gate.clear and _touches_semantic_authority(
+                if semantic_gate.clear and not physically_clean_admitted and _touches_semantic_authority(
                     freshness.pull_files(number)
                 ):
                     semantic_refusal = _semantic_authority_refusal(number)
@@ -7485,6 +10415,10 @@ def sweep_pull(
         stale, reason = freshness.stale_for(pull, runs)
     except Exception as exc:  # a broken read must never become permission to merge
         stale, reason = None, f"the tested-surface check itself failed ({exc})"
+    stale, reason = _reconcile_original_proof_base(
+        repo, pull, runs, read_token, freshness, (stale, reason),
+        semantic_evidence=loaded,
+    )
     if stale is None:
         _annotate(
             "warning",
@@ -8497,7 +11431,9 @@ def main() -> int:
         )
 
     try:
-        pulls = labeled_pulls(repo, read_token)
+        census = current_shared_census()
+        pulls = ([p for p in census if MERGE_ON_GREEN_LABEL in label_names(p)]
+                 if census is not None else labeled_pulls(repo, read_token))
     except RateLimited as exc:
         _annotate("warning", "merge-on-green", f"Sweep deferred: {exc}. No PRs swept.")
         return 0
@@ -8860,7 +11796,7 @@ def main() -> int:
                 sweep_options["check_runs"] = candidate_runs
             verdict = sweep_pull(
                 repo, pull, read_token, merge_token, freshness, proof, budget,
-                blocked_names, **sweep_options,
+                blocked_names, native_guard=True, **sweep_options,
             )
         except RateLimited as exc:
             # The budget ran out between two polls. Stop the sweep rather than
