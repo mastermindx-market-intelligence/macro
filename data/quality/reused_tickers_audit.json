@@ -37,7 +37,7 @@
     {
      "name": "ECHO",
      "kind": "zombie",
-     "detail": "dead-registry name advancing 1814d past its 2021-11-22 registry bar; overlap corr -0.139"
+     "detail": "dead-registry name advancing 1815d past its 2021-11-22 registry bar; overlap corr -0.139"
     }
    ]
   },
@@ -780,7 +780,7 @@
   }
  ],
  "ledger_identity": {
-  "ledger": "/Users/chriswong/actions-runner-4/_work/macro/macro/data/signal_archive/track_record.parquet",
+  "ledger": "/Users/chriswong/actions-runner-2/_work/macro/macro/data/signal_archive/track_record.parquet",
   "declared_duplicates": [],
   "undeclared_candidates": [],
   "ticker_key_migrations": {
@@ -805,8 +805,8 @@
     {
      "ticker": "ECHO",
      "registry_last": "2021-11-22",
-     "store_tip": "2026-11-10",
-     "days_past_death": 1814,
+     "store_tip": "2026-11-11",
+     "days_past_death": 1815,
      "overlap": {
       "n_overlap": 99,
       "ret_corr_full": -0.0318,
@@ -1610,8 +1610,8 @@
     {
      "ticker": "HPP",
      "registry_last": "2024-12-23",
-     "store_tip": "2026-11-10",
-     "days_past_death": 687,
+     "store_tip": "2026-11-11",
+     "days_past_death": 688,
      "overlap": {
       "n_overlap": 874,
       "ret_corr_full": 0.9984,
@@ -1623,8 +1623,8 @@
     {
      "ticker": "HVT",
      "registry_last": "2024-11-21",
-     "store_tip": "2026-11-10",
-     "days_past_death": 719,
+     "store_tip": "2026-11-11",
+     "days_past_death": 720,
      "overlap": {
       "n_overlap": 1517,
       "ret_corr_full": 1.0,

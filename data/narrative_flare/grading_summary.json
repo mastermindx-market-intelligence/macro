@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T05:32:08.737481+00:00",
+  "generated_at": "2026-11-12T07:32:06.195008+00:00",
   "families": {
     "narrative_source_call": {
       "n_claims": 629,
@@ -34,12 +34,14 @@
           "mean_excess": 0.142356
         },
         "63": {
-          "n": 0,
-          "excess_values": [],
-          "mean_excess": null
+          "n": 1,
+          "excess_values": [
+            0.160768
+          ],
+          "mean_excess": 0.160768
         }
       },
-      "excess_n_matured": 12
+      "excess_n_matured": 13
     }
   },
   "source_registry_n": 2,
