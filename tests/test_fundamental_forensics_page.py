@@ -486,7 +486,18 @@ def test_disk_summary_prints_the_count_day(tmp_path: Path):
         {"companies": 1240, "findings": 3417, "top_symbol": "SMCI"},
         generated_at="2026-10-12T21:36:01+00:00",
     )
-    html = render_shell(tmp_path).read_text(encoding="utf-8")
+    # The recency gate reads wall-clock now, so a fixed calendar stamp would age
+    # out of PUBLIC_SUMMARY_MAX_AGE_DAYS and the fact be (correctly) omitted.
+    # Freeze now beside the fixture to keep the assertion deterministic — the
+    # same inject-now pattern the stale-stat test below uses.
+    import scripts.build_fundamental_forensics as bff
+    real_read = bff.read_public_summary
+    frozen = datetime(2026, 10, 13, tzinfo=timezone.utc)
+    try:
+        bff.read_public_summary = lambda root, **kw: real_read(root, now=frozen)
+        html = render_shell(tmp_path).read_text(encoding="utf-8")
+    finally:
+        bff.read_public_summary = real_read
     assert "Counted 2026-10-12" in html
     assert "统计日 2026-10-12" in html
 
