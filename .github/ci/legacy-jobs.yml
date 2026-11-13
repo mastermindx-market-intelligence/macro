@@ -31373,6 +31373,20 @@ jobs:
       - templates/calculators/covered_call.html.j2
       - site/tools/calculators/covered-call.html
       - tests/js/covered_call_annualized_copy.test.mjs
+      - templates/calculators/risk_of_ruin.html.j2
+      - site/tools/calculators/risk-of-ruin.html
+      - tests/js/risk_of_ruin_result_generation.test.mjs
+      - tests/test_risk_of_ruin_browser.py
+      - site/account.js
+      - site/onboard.js
+      - site/product-nav-icons.css
+      - site/shared_shell.css
+      - site/shared_shell_bridge.js
+      - site/supabase.js
+      - site/theme.css
+      - site/theme.js
+      - site/wh_banner.js
+      - site/assets/css/**
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31383,7 +31397,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install copy feedback test dependency
-        run: pip install pytest
+        run: pip install pytest playwright==1.64.1
       - name: CAGR truthful copy feedback
         run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity
@@ -31393,6 +31407,14 @@ jobs:
           node --test tests/js/covered_call_annualized_copy.test.mjs
           node tests/js/savings_goal_arithmetic.test.mjs templates/calculators/savings_goal.html.j2
           node tests/js/savings_goal_arithmetic.test.mjs site/tools/calculators/savings-goal.html
+          node --test tests/js/risk_of_ruin_result_generation.test.mjs
+      - name: install Risk of Ruin Chromium
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
+      - name: Risk of Ruin real worker and clipboard generation proof
+        run: MM_REQUIRE_BROWSER=1 PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_risk_of_ruin_browser.py -q -s
 
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free

@@ -87,7 +87,7 @@ def test_install_census_is_exact():
     for job, step in steps:
         if step.get("phase") == "browser_setup":
             assert step["run"].strip() == "python -m playwright install --with-deps chromium", job
-    assert len(_plain_install_steps()) == 7
+    assert len(_plain_install_steps()) == 8
 
 
 def test_every_plain_with_deps_install_has_the_bounded_fallback():

@@ -1,0 +1,865 @@
+{
+  "browser_required_cases": [
+    "test_pending_copy_current_completion_and_language",
+    "test_obsolete_success_during_valid_edit_debounce",
+    "test_obsolete_success_after_invalid_edit_and_recovery",
+    "test_reversed_real_results_cannot_replace_current_copy",
+    "test_actual_worker_error_falls_back_to_current_form",
+    "test_synchronous_postmessage_failure_and_late_error",
+    "test_unavailable_worker_keeps_existing_synchronous_result",
+    "test_rapid_valid_invalid_edits_only_commit_final_generation"
+  ],
+  "claim": "https://github.com/mastermindx-market-intelligence/macro/issues/11100#issuecomment-6812306464",
+  "custody": {
+    "bytes": 6163,
+    "record": {
+      "ci_action_scope": "Append only tests/js/risk_of_ruin_result_generation.test.mjs Node command and its template/page/test selectors to existing calculator-input-integrity. Preserve current main's other fields and all existing carrier contributions. No blanket same-job lock.",
+      "ci_scope": {
+        "actual_equal_owner_blocks": 5,
+        "closed_at_product_read": 3,
+        "complete_inventory_disjoint": 299,
+        "fresh_prior_delta_complete_patches": 11,
+        "identities_in_finite_union": 656,
+        "prior_exact_catalog_equalities": 18,
+        "remaining15_resolved": {
+          "complete_patches_no_mutable_seam_mentions": 13,
+          "newly_moved_equal_catalog": 2
+        },
+        "retained_complete_catalog_patches": 305,
+        "unresolved": 0
+      },
+      "compatible_ci_carriers": [
+        {
+          "H": "164d13b1ed4ae176ac8d4f2a30099d408027d935",
+          "change": "DCA selectors and second filename on existing first Node command; preserve it.",
+          "n": 10215
+        },
+        {
+          "H": "faeb2768a641cd693fd666ba4745e7c48c83f9e6",
+          "change": "Net Worth selectors and distinct Node step; preserve it.",
+          "n": 10741
+        },
+        {
+          "H": "a1006abfe9f4481168fcb52829ae05ccc0e9ca6b",
+          "change": "Trade Profit selectors and distinct Node command; preserve it.",
+          "n": 11048
+        },
+        {
+          "H": "c086c2f813647a0930e819ba72f50013fd6d4f05",
+          "change": "Next distinct dividend-copy-feedback owner; no calculator-input-integrity edit.",
+          "n": 10797
+        }
+      ],
+      "evidence": [
+        {
+          "bytes": 202159,
+          "path": "/tmp/macro-risk11100-custody-plan-20261112.json",
+          "sha256": "7c0ab835bbdad62cefb3c10d65e7a718bd8f2ae0363fc1a4784c101a2f01fc3d"
+        },
+        {
+          "bytes": 133870,
+          "path": "/tmp/macro-risk11100-custody-qualification-20261112/custody.json",
+          "sha256": "f7eccfedaab0706b2d7d1d7a18e7b56179506f83cd30c41678f64824674cb2a4"
+        },
+        {
+          "bytes": 10986,
+          "path": "/tmp/macro-risk11100-ci-seam-scan-20261112.json",
+          "sha256": "2d878d663cc90f0aabc2f5eb14095c018305fc9313232f2f1abd63fccabee16a"
+        },
+        {
+          "bytes": 396316,
+          "path": "/tmp/macro-risk11100-ci-carriers-20261112.json",
+          "sha256": "f8bedd1f55c48d52e47cc562e38a698e20194461acc7d2e6630a05444134b766"
+        },
+        {
+          "bytes": 144037,
+          "path": "/tmp/macro-risk11100-ci-current-closure-20261112.json",
+          "sha256": "809f5bb66fe08e61448896e50d44698f6ad8c0dd1e6dd082e13dba46db96ca72"
+        },
+        {
+          "bytes": 5981,
+          "path": "/tmp/macro-risk11100-ci-11037-owner-20261112.json",
+          "sha256": "c48426abe9d419ad70123980d5aa8b63ca9e83ada8e0354dc01b793823f44f1b"
+        },
+        {
+          "bytes": 99592,
+          "path": "/tmp/macro-risk11100-ci-frontier-patches-20261112.json",
+          "sha256": "b1e33bcc46bd57cc1d8d2d3e989bab21c8c337a62b6213c3b3af8df750ea067e"
+        }
+      ],
+      "limits": [
+        "Finite retained/current-source custody, not a claim that all unpublished writers are absent.",
+        "No authorization or acceptance of the named auth/style/calculator carriers and no clearance of their browser, runtime, UNKNOWN, security or release holds.",
+        "No source edits, tests, browser, provider, CI, approval, label, merge or dispatch actions occurred.",
+        "Source publication still requires final exact-head/main guard and normal affected validation by root."
+      ],
+      "main": "9d8a0c8be5bbac0073b99762e46ae092235acf4f",
+      "main_catalog_blob": "bd94ab96439112dd4823b1b966c7297f3244f7f9",
+      "newly_moved_ci_heads": [
+        {
+          "H": "5c5b40ec6a1fff92479badd47d67360bb1f38a20",
+          "H_blob": "bd94ab96439112dd4823b1b966c7297f3244f7f9",
+          "M": "9d8a0c8be5bbac0073b99762e46ae092235acf4f",
+          "M_blob": "bd94ab96439112dd4823b1b966c7297f3244f7f9",
+          "catalog_equal": true,
+          "head_readback": {
+            "B": "9d8a0c8be5bbac0073b99762e46ae092235acf4f",
+            "H": "5c5b40ec6a1fff92479badd47d67360bb1f38a20",
+            "state": "open",
+            "updated": "2026-11-12T02:09:55Z"
+          },
+          "head_stable": true,
+          "n": 11041
+        },
+        {
+          "H": "843feeb43f8854b3c2d67e26ca1a4e6edc8af40c",
+          "H_blob": "bd94ab96439112dd4823b1b966c7297f3244f7f9",
+          "M": "9d8a0c8be5bbac0073b99762e46ae092235acf4f",
+          "M_blob": "bd94ab96439112dd4823b1b966c7297f3244f7f9",
+          "catalog_equal": true,
+          "head_readback": {
+            "B": "9d8a0c8be5bbac0073b99762e46ae092235acf4f",
+            "H": "843feeb43f8854b3c2d67e26ca1a4e6edc8af40c",
+            "state": "open",
+            "updated": "2026-11-12T02:09:09Z"
+          },
+          "head_stable": true,
+          "n": 11064
+        }
+      ],
+      "observed_at": "2026-11-12T02:27:04.866659+00:00",
+      "product_hunk_qualification": [
+        {
+          "H": "41bd2ee34aaecb9bad61774b5ebb32171273d38b",
+          "H_page_blob": "ea1be865212b1d140132f69c499f6e279d6f1f16",
+          "M": "9c4e332b0a42bfb4b5ec5dd16ee145868795a090",
+          "M_page_blob": "38cecfe30f6513aa3d6f562b0961cf8370bb8d05",
+          "all_changed_lines_equal_after_only_declared_asset_reference_mask": true,
+          "calculator_script_identical": true,
+          "changed_line_pairs": 2,
+          "copy_button_identical": true,
+          "n": 9953,
+          "proof": "Complete source diff has no non-asset-reference changed bytes; nested EN/ZH copied-status markup, inputs, output DOM and whole calculator script therefore remain unchanged."
+        },
+        {
+          "H": "9cd1c665595933532a2186164deb1dce18962708",
+          "H_page_blob": "e1c77ed6096642275086423ef5c0a1354b049e9d",
+          "M": "3d277257801f2d22f54924cfab73f7cf48ec4ca8",
+          "M_page_blob": "4355c86e11c27dd1047075c26ad04badba40c6fe",
+          "all_changed_lines_equal_after_only_declared_asset_reference_mask": true,
+          "calculator_script_identical": true,
+          "changed_line_pairs": 5,
+          "copy_button_identical": true,
+          "n": 10654,
+          "proof": "Complete source diff has no non-asset-reference changed bytes; nested EN/ZH copied-status markup, inputs, output DOM and whole calculator script therefore remain unchanged."
+        }
+      ],
+      "product_hunk_source": {
+        "bytes": 19322,
+        "path": "/tmp/macro-risk11100-product-hunk-custody-20261112.json",
+        "sha256": "9af416fa42bf29d2f0550a3dbbd52b6ff5940f34126bdf74d5b834a577463c50"
+      },
+      "schema": "risk11100-final-source-custody-closure-v1"
+    },
+    "sha256": "f510086f4a35d8f3aaa415f3e896cfaf8cdd003bfe328a61f78c732064101f3a"
+  },
+  "installer_mock_contract": {
+    "bytes": 2514,
+    "record": {
+      "command": [
+        "/private/tmp/macro-ivspread11080-proof-20261111/native-env/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_ci_browser_setup.py",
+        "-q",
+        "--junitxml=/tmp/macro-risk11100-browser-publication-20261112/browser-setup-tests.xml"
+      ],
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 10
+      },
+      "cwd": "/tmp/macro-risk11100-browser-publication-20261112/source",
+      "elapsed_seconds": 25.761,
+      "full_global_planner": "not executed; natural CI required",
+      "inputs_after": {
+        ".github/ci/legacy-jobs.yml": "03f988f3648506938167aec475bb30f92dd25ca331f27b555e64dec1eb65d8fa",
+        "site/tools/calculators/risk-of-ruin.html": "07072a09103b1bbaf3293273445d963d328adf89405ff34b90a2d8b39cbb49bf",
+        "templates/calculators/risk_of_ruin.html.j2": "8062381bf71e1f2cea69a14555e60cb5a1ab1d87f228108e70888eeafa9f0f12",
+        "tests/conftest.py": "ad0b342a4303b5dc098d203530e8e8a83d4b5c3cbc38730309448cac14570425",
+        "tests/js/risk_of_ruin_result_generation.test.mjs": "cbd1af973ef9ee523f6efbe0e5373b2798d7f3d17bd8fe67d8f29be67f340441",
+        "tests/test_ci_browser_setup.py": "672886bb3024751028aff39cec45247c11cdc32dff0e31d28dfc21b25f2b95a6",
+        "tests/test_risk_of_ruin_browser.py": "da7e3a2890753a5a25dac7d03cd7fad74a730d1b0a81e28907b1acc5f3c4addc"
+      },
+      "inputs_before": {
+        ".github/ci/legacy-jobs.yml": "03f988f3648506938167aec475bb30f92dd25ca331f27b555e64dec1eb65d8fa",
+        "site/tools/calculators/risk-of-ruin.html": "07072a09103b1bbaf3293273445d963d328adf89405ff34b90a2d8b39cbb49bf",
+        "templates/calculators/risk_of_ruin.html.j2": "8062381bf71e1f2cea69a14555e60cb5a1ab1d87f228108e70888eeafa9f0f12",
+        "tests/conftest.py": "ad0b342a4303b5dc098d203530e8e8a83d4b5c3cbc38730309448cac14570425",
+        "tests/js/risk_of_ruin_result_generation.test.mjs": "cbd1af973ef9ee523f6efbe0e5373b2798d7f3d17bd8fe67d8f29be67f340441",
+        "tests/test_ci_browser_setup.py": "672886bb3024751028aff39cec45247c11cdc32dff0e31d28dfc21b25f2b95a6",
+        "tests/test_risk_of_ruin_browser.py": "da7e3a2890753a5a25dac7d03cd7fad74a730d1b0a81e28907b1acc5f3c4addc"
+      },
+      "inputs_unchanged": true,
+      "junit_sha256": "a65b78b3b985438e973379d5059fe8ba181e014728838ff05ac302582f391020",
+      "log_sha256": "09b7ffc0a79c3574e6e0f4a1ee35b40e7e27b9ca93040a9eb59bbde99d0d585a",
+      "returncode": 0,
+      "scope": "Exact main browser setup suite with repository conftest, executing its mocked installer shell shapes against the composed candidate catalogue; no actual browser installation or launch"
+    },
+    "sha256": "2a7cfc0336de317044dead2f9fe7f54d6ff5e6c6ff644f98a6f0df75601bffbd"
+  },
+  "issue": "https://github.com/mastermindx-market-intelligence/macro/issues/11100",
+  "law_pin": "c42e812e4a754d7a95efd954441d3f01607a7fb5",
+  "native_regressions": {
+    "bytes": 3266,
+    "record": {
+      "node": "v26.5.0",
+      "runs": [
+        {
+          "command": [
+            "/opt/homebrew/bin/node",
+            "--test",
+            "--test-reporter=tap",
+            "tests/js/risk_of_ruin_result_generation.test.mjs"
+          ],
+          "counts": {
+            "cancelled": 0,
+            "fail": 54,
+            "pass": 10,
+            "skipped": 0,
+            "suites": 2,
+            "tests": 64,
+            "todo": 0
+          },
+          "inputs": {
+            "site/tools/calculators/risk-of-ruin.html": {
+              "blob": "4355c86e11c27dd1047075c26ad04badba40c6fe",
+              "bytes": 53095,
+              "sha256": "8044867fb3ac76fbd0a25f663e17965f8ec917a2bf4a07187ff9b4ccf4dc81e4"
+            },
+            "templates/calculators/risk_of_ruin.html.j2": {
+              "blob": "5ceb9cb2150060ab6bec736a401cf9f6c9f3e5ea",
+              "bytes": 23150,
+              "sha256": "3662d8bb6a0cf71a8cec59959a10a1779da1040862ba3d7cf53d6847e54c4148"
+            },
+            "tests/js/risk_of_ruin_result_generation.test.mjs": {
+              "blob": "6ec657ad03636131c4c8b76e9fe113bd189254cf",
+              "bytes": 18703,
+              "sha256": "cbd1af973ef9ee523f6efbe0e5373b2798d7f3d17bd8fe67d8f29be67f340441"
+            }
+          },
+          "inputs_unchanged": true,
+          "log": {
+            "blob": "6f00664c8ff19de3842d64bc62d608ff579caa50",
+            "bytes": 75514,
+            "sha256": "d260a3da276f8329db60b951af28f2e1bca711297812e4ecc1c07047ce74926c"
+          },
+          "returncode": 1,
+          "seconds": 59.078,
+          "side": "before"
+        },
+        {
+          "command": [
+            "/opt/homebrew/bin/node",
+            "--test",
+            "--test-reporter=tap",
+            "tests/js/risk_of_ruin_result_generation.test.mjs"
+          ],
+          "counts": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 64,
+            "skipped": 0,
+            "suites": 2,
+            "tests": 64,
+            "todo": 0
+          },
+          "inputs": {
+            "site/tools/calculators/risk-of-ruin.html": {
+              "blob": "e4855163bb5f6cf72b48549bf5c987a0b9cb356f",
+              "bytes": 54056,
+              "sha256": "07072a09103b1bbaf3293273445d963d328adf89405ff34b90a2d8b39cbb49bf"
+            },
+            "templates/calculators/risk_of_ruin.html.j2": {
+              "blob": "63fbdd959d4716640efb615feafd948d1e9979a1",
+              "bytes": 24111,
+              "sha256": "8062381bf71e1f2cea69a14555e60cb5a1ab1d87f228108e70888eeafa9f0f12"
+            },
+            "tests/js/risk_of_ruin_result_generation.test.mjs": {
+              "blob": "6ec657ad03636131c4c8b76e9fe113bd189254cf",
+              "bytes": 18703,
+              "sha256": "cbd1af973ef9ee523f6efbe0e5373b2798d7f3d17bd8fe67d8f29be67f340441"
+            }
+          },
+          "inputs_unchanged": true,
+          "log": {
+            "blob": "578138f4772a67003854382d7ba6ae47768789c7",
+            "bytes": 14483,
+            "sha256": "c4bb6f39b7c33ed1d83dac758e1de04188d0f463cdd54c295c0c58d883b1d980"
+          },
+          "returncode": 0,
+          "seconds": 91.837,
+          "side": "candidate"
+        }
+      ],
+      "schema": "macro.risk11100.native_regressions.v1",
+      "scope": "Complete actual template and committed-page scripts plus their serialized Worker core under controlled DOM/timer/clipboard boundaries; not actual browser proof",
+      "test_source": {
+        "blob": "6ec657ad03636131c4c8b76e9fe113bd189254cf",
+        "bytes": 18703,
+        "sha256": "cbd1af973ef9ee523f6efbe0e5373b2798d7f3d17bd8fe67d8f29be67f340441"
+      }
+    },
+    "sha256": "1cb3a97a7b1d0d0a4753a6e369f52fadab874583b0aadbbe9f4b681b348abd83"
+  },
+  "new_census_seam_custody_and_planner_architecture": {
+    "bytes": 41384,
+    "record": {
+      "census_custody": {
+        "closed_or_merged_exclusions": [
+          11019,
+          11051,
+          11090,
+          11064
+        ],
+        "currently_open_residual_equalities": 65,
+        "errors": 0,
+        "evidence_paths": [
+          "/tmp/macro-risk11100-custody-plan-20261112.json",
+          "/tmp/macro-risk11100-custody-qualification-20261112/custody.json",
+          "/tmp/macro-risk11100-browser-census-custody-plan-20261112.json",
+          "/tmp/macro-risk11100-browser-census-custody-objects-20261112.json",
+          "/tmp/macro-risk11100-browser-census-custody-qualified-20261112.json"
+        ],
+        "head_moves_during_read": 0,
+        "identities": 656,
+        "limits": "The 587 retained full inventories bind to their recorded heads; this pass refreshed only the 66 residual identities and moved heads required for this target. It is not a new all-estate current-head scan and cannot exclude unpublished or newly created writers outside that corpus. No other held carrier was adopted or altered.",
+        "main_blob": "2f765e9a8a63240a0d14486aa4e1adf53b15eed4",
+        "main_bytes": 6837,
+        "moved_before_read": [
+          {
+            "H": "71226063442a72042fe7493b7ceee45b283d9b15",
+            "H_blob": "2f765e9a8a63240a0d14486aa4e1adf53b15eed4",
+            "M": "27bdebdbdc973398c0caa509498c568816871bf5",
+            "M_blob": "2f765e9a8a63240a0d14486aa4e1adf53b15eed4",
+            "number": 7217
+          },
+          {
+            "H": "2c49a07f813116db7935f9962f6b23903379d862",
+            "H_blob": null,
+            "M": "18de8ef0a97d86f97537f986eb2452fcdbb06f64",
+            "M_blob": null,
+            "number": 7466
+          }
+        ],
+        "open_target_changes": 0,
+        "previous_blob": "8738b391faf6b661a9d934f59719b1b83f31a0fc",
+        "proposed_scope": "Change only len(_plain_install_steps()) == 7 to == 8, preserving current #11064 source and three native contract owners/installer requirements.",
+        "relevant_merged_contributor": {
+          "H": "843feeb43f8854b3c2d67e26ca1a4e6edc8af40c",
+          "H_blob": "2f765e9a8a63240a0d14486aa4e1adf53b15eed4",
+          "M": "9d8a0c8be5bbac0073b99762e46ae092235acf4f",
+          "M_blob": "8738b391faf6b661a9d934f59719b1b83f31a0fc",
+          "number": 11064,
+          "state": "MERGED",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/11064"
+        },
+        "residual_exact_comparisons": 66,
+        "retained_complete_inventory_exclusions": 587,
+        "target": "tests/test_ci_browser_setup.py"
+      },
+      "conclusions": {
+        "authority": "Root will use the natural PR's incumbent contract-delta and absolute packing CI as authoritative; no new broad local checkout is requested.",
+        "baseline_and_candidate": "Use separately prepared exact baseline and candidate Git subjects with their own source and index; a new candidate test must be tracked in the candidate subject. Separate Python processes avoid module ROOT/cache contamination.",
+        "caps": "Keep the incumbent three probe ceilings and max_packs=10 unchanged. The planned calculator weight 5->10 is not a full-tree measurement; actual selected jobs/weights may change through inferred reads.",
+        "git_index": "discover_suites uses git ls-files. Preserve a complete index of the tested tree as well as commit/tree objects; a manually partial staged index is not a faithful full-tree census.",
+        "minimum_logical_scope": "The minimum is the complete Git path/index universe, exact manifest/control helpers/spec, all suite-classification source, and the transitive Python closure of every inferred manifest job. It is not necessarily all generated data/site blobs. No numerical count of that global closure was claimed or measured here.",
+        "natural_receipt": "Consume exact-head natural contract-delta rows and absolute packing result, plus the actual browser semantic case/fragment evidence. Queued CI or an installer success is not acceptance.",
+        "no_gate_filter": "packing_probe_measurements loads all manifest jobs with no gate filter; adding gate='code' would change the incumbent measurement.",
+        "parsed_bytes": "Materialize exact catalog/helper bytes, every tracked suite candidate needed by discover_suites, and every transitive Python source required by nonexclusive job inference. Complete inventory metadata substitutes only for tracked-path existence, including non-Python leaves; required source bytes fail closed via ScopeMaterializationError.",
+        "path_universe": "A detached path list or JSON source index plus catalog is insufficient. ci.tracked_paths.v1 is checked against a real exact Git commit, checkout HEAD, and byte-identical git ls-tree -r --name-only -z payload.",
+        "suite_candidates": "audit_unrun_tests matches basename ^(?:test_.+|.+_test)\\.py$, excludes its declared environment/vendor directories, and reads bytes to classify test definitions. Omitting candidates from an ad hoc partial checkout can change discovery; 719 changed-owner source files are not proof of full catalog closure."
+      },
+      "evidence_readback": [
+        {
+          "bytes": 202159,
+          "path": "/tmp/macro-risk11100-custody-plan-20261112.json",
+          "sha256": "7c0ab835bbdad62cefb3c10d65e7a718bd8f2ae0363fc1a4784c101a2f01fc3d"
+        },
+        {
+          "bytes": 133870,
+          "path": "/tmp/macro-risk11100-custody-qualification-20261112/custody.json",
+          "sha256": "f7eccfedaab0706b2d7d1d7a18e7b56179506f83cd30c41678f64824674cb2a4"
+        },
+        {
+          "bytes": 25912,
+          "path": "/tmp/macro-risk11100-browser-census-custody-plan-20261112.json",
+          "sha256": "12c399a8ef9d5bcc0a26532d6785578a79fd77f5553be51abd39925c1e3d8125"
+        },
+        {
+          "bytes": 61554,
+          "path": "/tmp/macro-risk11100-browser-census-custody-objects-20261112.json",
+          "sha256": "4143448021266e00a293b8efbd6dff3cc2a31afee4537c8b440fc6f16f444f16"
+        },
+        {
+          "bytes": 82516,
+          "path": "/tmp/macro-risk11100-browser-census-custody-qualified-20261112.json",
+          "sha256": "c2e64b4671598a37941b205cce00f1177cc2a0f9b40aca506639143a7dbf75f1"
+        }
+      ],
+      "incumbent_invocation": {
+        "absolute_guard": "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+        "behavior": "The incumbent creates and cleans a detached base worktree, mirrors an actual cone-mode sparse profile, binds each exact tree inventory, and runs a fresh base subprocess. It measures more than packing: closure, unrun suites, skip-only and trigger gaps too.",
+        "command": "python scripts/check_contract_delta.py --base 27bdebdbdc973398c0caa509498c568816871bf5",
+        "cwd": "Candidate exact Git checkout root",
+        "packing_only_recipe": "# Invocation design only; not executed by the release-reasoning agent.\n# Run once per separately prepared exact Git checkout, in separate processes.\nfrom pathlib import Path\nfrom tempfile import TemporaryDirectory\nimport json, subprocess\nfrom scripts.check_contract_delta import packing_probe_spec\nfrom scripts.ci_scope_dependencies import (\n    write_tracked_path_inventory, planner_tracked_path_inventory,\n)\nfrom scripts.run_ci_pack import packing_probe_measurements, packing_probe_breaches\n\nroot = Path.cwd().resolve()\ntested = subprocess.run(\n    [\"git\", \"rev-parse\", \"HEAD\"], check=True, text=True, capture_output=True\n).stdout.strip()\nspec = packing_probe_spec(root / \"tests/test_ci_pack.py\")\nwith TemporaryDirectory(prefix=\"risk11100-packing-\") as temp:\n    inventory = Path(temp) / \"tracked-paths.v1\"\n    binding = write_tracked_path_inventory(inventory, tested, root=root)\n    with planner_tracked_path_inventory(inventory, tested, root=root):\n        rows = packing_probe_measurements(\n            root / \".github/ci/legacy-jobs.yml\",\n            [tuple(row) for row in spec[\"probes\"]],\n            max_packs=spec[\"max_packs\"],\n        )\n        breaches = packing_probe_breaches(rows)\n    print(json.dumps({\n        \"tested_tree_sha\": tested,\n        \"tracked_path_count\": len(binding.files),\n        \"tracked_paths_sha256\": binding.payload_sha256,\n        \"rows\": rows,\n        \"breaches\": breaches,\n    }, sort_keys=True))\n",
+        "recipe_limit": "Design only. This snippet uses incumbent measurement functions but does not perform the full contract-delta suite; no proposed local result exists."
+      },
+      "main": "27bdebdbdc973398c0caa509498c568816871bf5",
+      "packing_limits": [
+        {
+          "max_jobs": 137,
+          "max_packs": 10,
+          "max_weight": 5969,
+          "probe": "templates/index.html"
+        },
+        {
+          "max_jobs": 138,
+          "max_packs": 10,
+          "max_weight": 5993,
+          "probe": "scripts/build_free_content.py"
+        },
+        {
+          "max_jobs": 131,
+          "max_packs": 10,
+          "max_weight": 5727,
+          "probe": "engine/prophet/plan_book.py"
+        }
+      ],
+      "role": "Read-only source/reasoning qualification; no planner, test, browser, repository edit, CI, or GitHub mutation executed.",
+      "saved_at": "2026-11-12T03:16:05.015674+00:00",
+      "schema": "risk11100.packing_staging_and_browser_census_custody.v1",
+      "source_bindings": [
+        {
+          "H": "27bdebdbdc973398c0caa509498c568816871bf5",
+          "blob": "fdd099b87cf72e8221372ef55de95efa2b7d284e",
+          "bytes": 260230,
+          "local": "/tmp/macro-risk11100-packing-source-27bdeb-20261112/scripts/run_ci_pack.py",
+          "path": "scripts/run_ci_pack.py",
+          "sha256": "b00540d822d63181d347e8f8801657dde991d923510112fb7bcc3fbf49f869d9"
+        },
+        {
+          "H": "27bdebdbdc973398c0caa509498c568816871bf5",
+          "blob": "4c4779479f5bb41741fe7a5db114dfe304350a8a",
+          "bytes": 41920,
+          "local": "/tmp/macro-risk11100-packing-source-27bdeb-20261112/scripts/ci_scope_dependencies.py",
+          "path": "scripts/ci_scope_dependencies.py",
+          "sha256": "74f9afe96de53fd01c1630fdcef8db6c13680442085acb16c262a5927f090546"
+        },
+        {
+          "H": "27bdebdbdc973398c0caa509498c568816871bf5",
+          "blob": "2f765e9a8a63240a0d14486aa4e1adf53b15eed4",
+          "bytes": 6837,
+          "local": "/tmp/macro-risk11100-packing-source-27bdeb-20261112/tests/test_ci_browser_setup.py",
+          "path": "tests/test_ci_browser_setup.py",
+          "sha256": "bf61b6cad9000f8b76c8d95be02a25158dc34a6338683ef273c6fa766df75e09"
+        },
+        {
+          "H": "27bdebdbdc973398c0caa509498c568816871bf5",
+          "blob": "9ae74b91a276733b2b1a310cb652a847ad5f7dc0",
+          "bytes": 50447,
+          "kind": "binding",
+          "local": "/tmp/macro-risk11100-packing-source-27bdeb-20261112/scripts/audit_unrun_tests.py",
+          "path": "scripts/audit_unrun_tests.py",
+          "sha256": "e50ba44cb678761d55f1c5bb9828390bd7c21c1672760d6f52781ca194dd7d47"
+        },
+        {
+          "H": "27bdebdbdc973398c0caa509498c568816871bf5",
+          "blob": "deefde717818f4be641097a24c2f5b01e55cddbd",
+          "bytes": 62554,
+          "kind": "binding",
+          "local": "/tmp/macro-risk11100-packing-source-27bdeb-20261112/scripts/check_contract_delta.py",
+          "path": "scripts/check_contract_delta.py",
+          "sha256": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f"
+        },
+        {
+          "H": "27bdebdbdc973398c0caa509498c568816871bf5",
+          "blob": "3312f4d67a8a3643fed6d9a4599955c29792cb7f",
+          "bytes": 519749,
+          "kind": "binding",
+          "local": "/tmp/macro-risk11100-packing-source-27bdeb-20261112/tests/test_ci_pack.py",
+          "path": "tests/test_ci_pack.py",
+          "sha256": "1bc46aebc0de18a390de0f32d34c4652dc4ae33e9ef7fb67e0c749e4909ac575"
+        }
+      ],
+      "source_evidence": [
+        {
+          "body": "base = (ROOT if root is None else root).resolve()\n_exact_commit(base, tested_tree_sha, label=\"tested tree\")\nhead = _git_bytes(base, \"rev-parse\", \"HEAD\").decode(\"ascii\").strip()\nif head != tested_tree_sha:\n        raise TrackedPathInventoryError(\n            f\"checkout HEAD {head} does not match tested tree {tested_tree_sha}\"\n        )\npayload = _tree_path_payload(base, tested_tree_sha)\nif len(payload) > _MAX_TRACKED_PATHS_BYTES:\n        raise TrackedPathInventoryError(\n            f\"tracked-path payload is {len(payload)} bytes, above the \"\n            f\"{_MAX_TRACKED_PATHS_BYTES}-byte safety bound\"\n        )\ncount = 0 if not payload else len(payload.split(b\"\\0\")) - 1\nheader = {\n        \"path_count\": count,\n        \"paths_sha256\": hashlib.sha256(payload).hexdigest(),\n        \"schema\": TRACKED_PATHS_SCHEMA,\n        \"tested_tree_sha\": tested_tree_sha,\n    }\noutput.parent.mkdir(parents=True, exist_ok=True)\noutput.write_bytes(\n        json.dumps(header, sort_keys=True, separators=(\",\", \":\")).encode(\"ascii\")\n        + b\"\\n\"\n        + payload\n    )\nreturn load_tracked_path_inventory(output, tested_tree_sha, root=base)",
+          "end": 143,
+          "kind": "inventory_source",
+          "line": 110,
+          "name": "write_tracked_path_inventory",
+          "signature": "def write_tracked_path_inventory("
+        },
+        {
+          "body": "base = (ROOT if root is None else root).resolve()\n_exact_commit(base, tested_tree_sha, label=\"expected tested tree\")\nhead = _git_bytes(base, \"rev-parse\", \"HEAD\").decode(\"ascii\").strip()\nif head != tested_tree_sha:\n        raise TrackedPathInventoryError(\n            f\"checkout HEAD {head} does not match expected tested tree {tested_tree_sha}\"\n        )\ntry:\n        raw = source.read_bytes()\n    except OSError as exc:\n        raise TrackedPathInventoryError(\n            f\"tracked-path inventory {source} is unreadable: {exc}\"\n        ) from exc\nif len(raw) > _MAX_TRACKED_PATHS_BYTES:\n        raise TrackedPathInventoryError(\n            f\"tracked-path inventory is {len(raw)} bytes, above the \"\n            f\"{_MAX_TRACKED_PATHS_BYTES}-byte safety bound\"\n        )\nheader_raw, separator, payload = raw.partition(b\"\\n\")\nif not separator:\n        raise TrackedPathInventoryError(\"tracked-path inventory has no header boundary\")\ntry:\n        header = json.loads(header_raw.decode(\"ascii\"))\n    except (UnicodeDecodeError, json.JSONDecodeError) as exc:\n        raise TrackedPathInventoryError(\n            f\"tracked-path inventory header is malformed: {exc}\"\n        ) from exc\nexpected_keys = {\"path_count\", \"paths_sha256\", \"schema\", \"tested_tree_sha\"}\nif not isinstance(header, dict) or set(header) != expected_keys:\n        raise TrackedPathInventoryError(\n            \"tracked-path inventory header fields do not match the v1 contract\"\n        )\nif header[\"schema\"] != TRACKED_PATHS_SCHEMA:\n        raise TrackedPathInventoryError(\n            f\"tracked-path inventory schema is {header['schema']!r}, expected \"\n            f\"{TRACKED_PATHS_SCHEMA!r}\"\n        )\nif header[\"tested_tree_sha\"] != tested_tree_sha:\n        raise TrackedPathInventoryError(\n            f\"tracked-path inventory tree {header['tested_tree_sha']!r} does not \"\n            f\"match expected tree {tested_tree_sha}\"\n        )\ndigest = hashlib.sha256(payload).hexdigest()\nif header[\"paths_sha256\"] != digest:\n        raise TrackedPathInventoryError(\n            \"tracked-path inventory payload digest does not match its header\"\n        )\nif payload and not payload.endswith(b\"\\0\"):\n        raise TrackedPathInventoryError(\n            \"tracked-path inventory payload is not NUL terminated\"\n        )\nencoded_paths = payload[:-1].split(b\"\\0\") if payload else []\nif not isinstance(header[\"path_count\"], int) or header[\"path_count\"] != len(\n        encoded_paths\n    ):\n        raise TrackedPathInventoryError(\n            \"tracked-path inventory count does not match its payload\"\n        )\ncanonical_payload = _tree_path_payload(base, tested_tree_sha)\nif payload != canonical_payload:\n        raise TrackedPathInventoryError(\n            \"tracked-path inventory payload is not byte-identical to git ls-tree \"\n            f\"for {tested_tree_sha}\"\n        )\npaths: list[str] = []\nfor encoded in encoded_paths:\n        if not encoded:\n            raise TrackedPathInventoryError(\n                \"tracked-path inventory contains an empty path record\"\n            )\n        path = os.fsdecode(encoded)\n        parts = path.split(\"/\")\n        if path.startswith(\"/\") or any(part in {\"\", \".\", \"..\"} for part in parts):\n            raise TrackedPathInventoryError(\n                f\"tracked-path inventory contains non-canonical path {path!r}\"\n            )\n        paths.append(path)\nif len(set(paths)) != len(paths):\n        raise TrackedPathInventoryError(\n            \"tracked-path inventory contains duplicate path records\"\n        )\ndirectories = {\n        \"/\".join(parts[:index])\n        for path in paths\n        for parts in (path.split(\"/\"),)\n        for index in range(1, len(parts))\n    }\nreturn TrackedPathInventory(\n        root=base,\n        tested_tree_sha=tested_tree_sha,\n        files=frozenset(paths),\n        directories=frozenset(directories),\n        payload_sha256=digest,\n    )",
+          "end": 247,
+          "kind": "inventory_source",
+          "line": 146,
+          "name": "load_tracked_path_inventory",
+          "signature": "def load_tracked_path_inventory("
+        },
+        {
+          "body": "global _ACTIVE_TRACKED_PATHS\ninventory = load_tracked_path_inventory(source, tested_tree_sha, root=root)\nprevious = _ACTIVE_TRACKED_PATHS\n_ACTIVE_TRACKED_PATHS = inventory\ntry:\n        yield inventory\n    finally:\n        _ACTIVE_TRACKED_PATHS = previous",
+          "end": 265,
+          "kind": "inventory_source",
+          "line": 251,
+          "name": "planner_tracked_path_inventory",
+          "signature": "def planner_tracked_path_inventory("
+        },
+        {
+          "body": "path = require_materialized_file(\n        ROOT / rel, reason=f\"selector analysis of {rel}\"\n    )\nsource = path.read_text(errors=\"ignore\")\ntry:\n        tree = ast.parse(source)\n    except SyntaxError as exc:\n        return (), (f\"{rel}:{exc.lineno or 0}: syntax error\",)\nnodes = tuple(ast.walk(tree))\nreads = set(\n        direct_reads(path, _source=source, _tree=tree, _nodes=nodes)\n    ) | _all_existing_import_reads(rel, tree, nodes=nodes)\nreturn tuple(sorted(reads)), tuple(\n        sorted(_source_ambiguities(path, tree, nodes=nodes))\n    )",
+          "end": 949,
+          "kind": "inventory_source",
+          "line": 926,
+          "name": "_selector_file_analysis",
+          "signature": "def _selector_file_analysis(rel: str) -> tuple[tuple[str, ...], tuple[str, ...]]:"
+        },
+        {
+          "body": "path = Path(suite)\nif not path.is_absolute():\n        path = ROOT / path\ntry:\n        rel = path.resolve().relative_to(ROOT.resolve()).as_posix()\n    except ValueError:\n        return DependencyClosure((), (f\"suite is outside repository: {path}\",))\nif not planner_path_is_file(path):\n        return DependencyClosure((), (f\"suite does not exist: {rel}\",))\npath = require_materialized_file(path, reason=f\"suite analysis of {rel}\")\nfiles: set[str] = {rel}\nambiguities: set[str] = set()\nfrontier = [path]\nvisited: set[str] = set()\nwhile frontier:\n        current = frontier.pop()\n        current_rel = current.relative_to(ROOT).as_posix()\n        if current_rel in visited:\n            continue\n        visited.add(current_rel)\n        reads_raw, ambiguity_raw = _selector_file_analysis(current_rel)\n        ambiguities.update(ambiguity_raw)\n        reads = set(reads_raw)\n        for dependency in reads:\n            dependency_path = ROOT / dependency\n            if not planner_path_is_file(dependency_path):\n                continue\n            files.add(dependency)\n            if dependency.endswith(\".py\") and dependency not in visited:\n                frontier.append(\n                    require_materialized_file(\n                        dependency_path,\n                        reason=f\"transitive dependency analysis from {current_rel}\",\n                    )\n                )\nif pytest_command is not None:\n        ambiguities.update(pytest_invocation_ambiguities(pytest_command))\nreturn DependencyClosure(tuple(sorted(files)), tuple(sorted(ambiguities)))",
+          "end": 1051,
+          "kind": "inventory_source",
+          "line": 1002,
+          "name": "suite_dependency_closure",
+          "signature": "def suite_dependency_closure("
+        },
+        {
+          "kind": "probe_measurement_guard",
+          "source": "def packing_probe_measurements(\n    manifest_path: Path,\n    probes: Iterable[tuple[str, int, int]],\n    *,\n    max_packs: int,\n) -> list[dict[str, Any]]:\n    \"\"\"One row per packing probe: what an ordinary code PR touching it selects.\n\n    This IS ``tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs``'s\n    measurement, factored out so that test and ``scripts/check_contract_delta.py``\n    import one copy, for the reason ``curated_exclusive_closure_findings`` gives\n    above. ``probes`` is that test's ``PACKING_PROBES``: ``(changed path, max\n    selected jobs, max selected weight-seconds)``. The ceilings stay in the test,\n    beside the history that set them; this function only measures, and each row\n    carries its ceilings so ``packing_probe_breaches`` can judge it.\n\n    The verdict depends on the whole tree, not on the probe files: inference\n    walks every job's suites, so a suite that starts reading a probe file puts\n    its job on that probe without touching the manifest.\n    \"\"\"\n    jobs, _note = infer_job_scopes(load_legacy_jobs(manifest_path))\n    rows: list[dict[str, Any]] = []\n    for probe, max_jobs, max_weight in probes:\n        selected, reason = select_jobs(jobs, [probe])\n        weight = sum(job.weight for job in selected)\n        rows.append({\n            \"probe\": probe,\n            \"jobs\": len(selected),\n            \"weight\": weight,\n            # Runners are what the incident actually spends: the pack count\n            # follows the SELECTED weight, so the weight cut is a runner cut.\n            \"packs\": max(1, min(12, -(-weight // PACK_TARGET_SECONDS))),\n            \"max_jobs\": max_jobs,\n            \"max_weight\": max_weight,\n            \"max_packs\": max_packs,\n            \"job_ids\": sorted(job.job_id for job in selected),\n            \"reason\": reason,\n        })\n    return rows"
+        },
+        {
+          "kind": "constant",
+          "line": 39,
+          "path": "tests/test_ci_pack.py",
+          "source": "MANIFEST = ROOT / \".github\" / \"ci\" / \"legacy-jobs.yml\""
+        },
+        {
+          "kind": "constant",
+          "line": 6002,
+          "path": "tests/test_ci_pack.py",
+          "source": "PACKING_PROBES = (\n    (\"templates/index.html\", 137, 5_969),  # ci-trigger-closure: data \u2014 file NAME handed to the planner, not read by this test (note at the top)\n    (\"scripts/build_free_content.py\", 138, 5_993),  # ci-trigger-closure: data \u2014 file NAME handed to the planner, not read by this test (note at the top)\n    (\"engine/prophet/plan_book.py\", 131, 5_727),\n)"
+        },
+        {
+          "kind": "constant",
+          "line": 6008,
+          "path": "tests/test_ci_pack.py",
+          "source": "PACKING_PROBE_MAX_PACKS = 10"
+        },
+        {
+          "kind": "deps_source",
+          "line": 323,
+          "name": "require_materialized_file",
+          "source": "def require_materialized_file(path: str | Path, *, reason: str) -> Path:\n    \"\"\"Return an available file or fail closed when only the oracle can see it.\"\"\"\n    candidate = Path(path)\n    physical, rel = _physical_and_relative(candidate)\n    if physical.is_file():\n        return physical\n    if (\n        _ACTIVE_TRACKED_PATHS is not None\n        and rel is not None\n        and rel in _ACTIVE_TRACKED_PATHS.files\n    ):\n        raise ScopeMaterializationError(\n            f\"tracked path {rel!r} is omitted from the planner checkout but its \"\n            f\"content is required for {reason}; widen the ci-plan sparse profile\"\n        )\n    raise ScopeMaterializationError(\n        f\"required planner file {rel or physical.as_posix()!r} is unavailable for {reason}\"\n    )"
+        },
+        {
+          "kind": "deps_source",
+          "line": 1054,
+          "name": "_inventory_cli",
+          "source": "def _inventory_cli(argv: list[str] | None = None) -> int:\n    parser = argparse.ArgumentParser(\n        description=\"Build ci-plan's ephemeral exact-tree tracked-path inventory.\"\n    )\n    parser.add_argument(\"--write-tracked-paths\", type=Path, required=True)\n    parser.add_argument(\"--tested-tree-sha\", required=True)\n    args = parser.parse_args(argv)\n    inventory = write_tracked_path_inventory(\n        args.write_tracked_paths, args.tested_tree_sha\n    )\n    print(\n        \"TRACKED_PATH_INVENTORY=\"\n        + json.dumps(\n            {\n                \"path_count\": len(inventory.files),\n                \"paths_sha256\": inventory.payload_sha256,\n                \"schema\": TRACKED_PATHS_SCHEMA,\n                \"tested_tree_sha\": inventory.tested_tree_sha,\n            },\n            sort_keys=True,\n            separators=(\",\", \":\"),\n        ),\n        flush=True,\n    )\n    return 0"
+        },
+        {
+          "body": "try:\n        completed = subprocess.run(\n            [\"git\", \"ls-files\", \"-z\"],\n            cwd=root, capture_output=True, text=True, check=True, timeout=120,\n        )\n    except (OSError, subprocess.SubprocessError):\n        return None\nreturn [entry for entry in completed.stdout.split(\"\\0\") if entry]",
+          "kind": "source",
+          "line": 228,
+          "name": "_tracked_candidates",
+          "path": "scripts/audit_unrun_tests.py",
+          "signature": "def _tracked_candidates(root: Path) -> list[str] | None:"
+        },
+        {
+          "body": "base = ROOT if root is None else root\npath = base / rel\nif path.is_file():\n        return path.read_text(errors=\"ignore\")\ntop = rel.split(\"/\", 1)[0]\nif top not in sparse_omitted_dirs(base):\n        return None\nreturn _git_stdout(base, \"cat-file\", \"blob\", f\"HEAD:{rel}\")",
+          "kind": "source",
+          "line": 360,
+          "name": "suite_source",
+          "path": "scripts/audit_unrun_tests.py",
+          "signature": "def suite_source(rel: str, root: Path | None = None) -> str | None:"
+        },
+        {
+          "body": "root = Path(root_str)\nnames = _tracked_candidates(root)\nif names is None:\n        names = _walked_candidates(root)\nomitted = sparse_omitted_dirs(root)\nnames = list(names) + _omitted_candidates(root, omitted, names)\ncandidates = sorted({\n        rel for rel in names\n        if _SUITE_FILENAME.match(rel.rsplit(\"/\", 1)[-1])\n        and not any(part in EXCLUDED_DIRS for part in rel.split(\"/\")[:-1])\n        and ((root / rel).is_file() or rel.split(\"/\", 1)[0] in omitted)\n    })\nsuites: list[str] = []\nnon_suites: list[str] = []\nunreadable: list[str] = []\nfor rel in candidates:\n        src = suite_source(rel, root)\n        if src is None:\n            unreadable.append(rel)\n        elif defines_tests(root / rel, src=src):\n            suites.append(rel)\n        else:\n            non_suites.append(rel)\nreturn tuple(suites), tuple(non_suites), tuple(unreadable)",
+          "kind": "source",
+          "line": 380,
+          "name": "_classify",
+          "path": "scripts/audit_unrun_tests.py",
+          "signature": "def _classify(root_str: str) -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...]]:"
+        },
+        {
+          "body": "tested_tree_sha = _git(\"rev-parse\", \"HEAD\", cwd=repo_root).strip()\nwith tempfile.TemporaryDirectory(prefix=\"contract-delta-inventory-\") as tmp:\n        inventory = Path(tmp) / \"tracked-paths.v1\"\n        try:\n            write_tracked_path_inventory(\n                inventory, tested_tree_sha, root=repo_root\n            )\n            with planner_tracked_path_inventory(\n                inventory, tested_tree_sha, root=repo_root\n            ):\n                yield tested_tree_sha\n        except TrackedPathInventoryError as exc:\n            raise ContractDeltaError(\n                f\"exact-tree inventory refused for {repo_root}: {exc}\"\n            ) from exc",
+          "kind": "source",
+          "line": 222,
+          "name": "_tracked_tree_inventory",
+          "path": "scripts/check_contract_delta.py",
+          "signature": "def _tracked_tree_inventory(repo_root: Path):"
+        },
+        {
+          "body": "base_sha = _git(\"rev-parse\", f\"{base_ref}^{{commit}}\", cwd=repo_root).strip()\ncone = caller_sparse_cone(repo_root)\ntemp_root = base_tree_temp_root()\nreap_stale_base_trees(temp_root, repo_root=repo_root)\ntmpdir = Path(tempfile.mkdtemp(prefix=BASE_PREFIX, dir=temp_root))\ntmpdir.rmdir()\ndef cleanup() -> None:\n        try:\n            _git(\"worktree\", \"remove\", \"--force\", str(tmpdir), cwd=repo_root)\n        except ContractDeltaError:\n            shutil.rmtree(tmpdir, ignore_errors=True)\n            try:\n                _git(\"worktree\", \"prune\", cwd=repo_root)\n            except ContractDeltaError:\n                pass\nif cone is None:\n        _git(\"worktree\", \"add\", \"--detach\", str(tmpdir), base_sha, cwd=repo_root)\n        return tmpdir, base_sha, cleanup\ntry:\n        _git(\"worktree\", \"add\", \"--detach\", \"--no-checkout\", str(tmpdir), base_sha, cwd=repo_root)\n        _git(\"sparse-checkout\", \"set\", \"--cone\", \"--\", *cone, cwd=tmpdir)\n        _git(\"read-tree\", \"-mu\", \"HEAD\", cwd=tmpdir)\n    except BaseException:\n        cleanup()\n        raise\nreturn tmpdir, base_sha, cleanup",
+          "kind": "source",
+          "line": 899,
+          "name": "materialize_base_tree",
+          "path": "scripts/check_contract_delta.py",
+          "signature": "def materialize_base_tree(base_ref: str, *, repo_root: Path = ROOT):"
+        },
+        {
+          "body": "run_started = time.monotonic()\nspec = packing_probe_spec(repo_root / PACKING_PROBE_SUITE_REL)\nbase_tree, base_sha, cleanup = materialize_base_tree(base_ref, repo_root=repo_root)\ntry:\n        base_proc = _start_worker(base_tree, spec)\n        try:\n            if repo_root == ROOT:\n                started = time.monotonic()\n                head = _head_findings()\n                legacy_seconds = round(time.monotonic() - started, 1)\n                head.update(_head_control_plane_findings(spec))\n                head[\"timings\"][\"closure_and_suites\"] = legacy_seconds\n            else:\n                head = _run_worker(repo_root, spec)\n        except ValueError as exc:\n            # curated_exclusive_closure_findings's own hard-fail (a curated job\n            # derives no closure at all) -- a script refusal, not a diffable\n            # finding. The base worker is still running; it would otherwise\n            # leak past this function's return.\n            _kill_quietly(base_proc)\n            raise ContractDeltaError(f\"finding computation refused on this PR's head: {exc}\") from exc\n        except BaseException:\n            _kill_quietly(base_proc)\n            raise\n        base = _finish_worker(base_proc, base_tree)\n    finally:\n        cleanup()\n_require_control_plane_classes(head, \"head\")\n_require_control_plane_classes(base, f\"base {base_sha[:12]}\")\ndelta = compute_delta(head, base)\nfor line in measurement_lines(head, base) + format_report(delta):\n        print(line, flush=True)\nprint(\n        f\"contract-delta: {_count(delta, 'introduced_')} introduced, \"\n        f\"{_count(delta, 'inherited_')} inherited (base {base_sha[:12]})\",\n        flush=True,\n    )\nprint(\n        f\"contract-delta: wall {time.monotonic() - run_started:.1f} s\",\n        flush=True,\n    )\nreturn 1 if has_introduced_findings(delta) else 0",
+          "kind": "source",
+          "line": 1262,
+          "name": "run",
+          "path": "scripts/check_contract_delta.py",
+          "signature": "def run(base_ref: str, *, repo_root: Path = ROOT) -> int:"
+        },
+        {
+          "end": 69,
+          "kind": "segment",
+          "path": "scripts/check_contract_delta.py",
+          "source": "              PR that adds ONE new uncovered path to an already-broken curated\n              job still reds on that one new path, even though the job already\n              had an inherited finding.\n    suites    the suite's repo-relative path string.\n\nBASE-TREE MATERIALIZATION. The base commit is checked out into a throwaway\n`git worktree add --detach` (works under this repo's `blob:none` partial clone \u2014\nmissing blobs fetch lazily over the network). Since 2026-09-14 the throwaway\ntree MIRRORS the calling checkout's sparse cone (`materialize_base_tree`): a\nsparse session worktree gets a sparse base (~0.4 GiB instead of 3.8 GiB, the\ndominant disk burn on the shared dev Macs), a full checkout still gets a full\nbase, and either way both censuses walk the same directory set. It is minted\nunder `$CONTRACT_DELTA_TMP_ROOT`, else the host's external-volume policy root,\nelse the system temp dir (`base_tree_temp_root`), and never under\n`.claude/worktrees/` or any other fleet worktree-GC root \u2014 see\n`scripts/prophet_pit_replay.py`'s `resolve_or_create_vintage_worktree` for the\nsame rule applied to a similar throwaway-worktree need.\n\nWHY A SUBPROCESS PER TREE, NOT TWO IN-PROCESS CALLS. Both\n`scripts/run_ci_pack.py` and `scripts/audit_unrun_tests.py` pin module-level\nglobals (`ROOT`, and the modules they import from each other, e.g.\n`infer_job_scopes`'s `from scripts.audit_unrun_tests import discover_suites`) to\nwherever their OWN `__file__` resolves at import time. Python caches a module by\nNAME, not by path, so importing \"scripts.audit_unrun_tests\" a second time for a\ndifferent tree in the same process would hand back the FIRST tree's cached",
+          "start": 45
+        },
+        {
+          "end": 119,
+          "kind": "segment",
+          "path": "scripts/check_contract_delta.py",
+          "source": "omits generated-heavy `site/` and `data/`, but a test can still add a literal\nread of a tracked non-Python leaf there. PR #7228 did exactly that with\n`site/theme.css`; physical-only existence checks erased the dependency and this\ngate reported `0 introduced`, allowing current main to inherit an absolute\nclosure red. Both the head census and detached-base worker now bind the tested\ncommit to `ci.tracked_paths.v1` before deriving scope. The oracle supplies only\nGit-tree existence; source bytes are never fabricated, and an omitted Python\nfile whose content is required still fails closed.\n\nCONTROL-PLANE CLASSES (2026-09-27). #8033 put the CI control plane's own\ncontract suites on the PR code gate as `ci-control-plane-contracts`, an\nexclusive job that runs only when a PR touches its declared `paths:`. Three of\nthe verdicts it runs depend on the WHOLE tree, so a PR can move them without",
+          "start": 107
+        },
+        {
+          "end": 425,
+          "kind": "segment",
+          "path": "scripts/check_contract_delta.py",
+          "source": "# The base worker's control-plane censuses, kept as their own source string so\n# tests/test_contract_delta.py can exec them against fake guard modules and\n# prove the bootstrap rows equal the shared functions' rows. They read the\n# worker's `importlib`, `time`, `MANIFEST` and `SPEC` globals. Each returns the\n# guard's RAW finding rows; the projection onto finding identity happens once,\n# in `compute_delta`, for both sides alike.\n_WORKER_CONTROL_PLANE_SOURCE = r'''\ndef _guard_module(name):\n    \"\"\"The guard module, or None when this base predates it entirely.\"\"\"\n    try:\n        return importlib.import_module(name)\n    except ModuleNotFoundError as exc:\n        if exc.name != name:\n            raise  # the guard exists but one of its own imports is broken\n        return None\n\n\ndef _probe_rows():\n    \"\"\"tests/test_ci_pack.py's packing-probe measurement, at the HEAD's ceilings.\"\"\"\n    probes = [tuple(probe) for probe in SPEC[\"probes\"]]\n    pack = importlib.import_module(\"scripts.run_ci_pack\")\n    measure = getattr(pack, \"packing_probe_measurements\", None)\n    if measure is not None:\n        return measure(MANIFEST, probes, max_packs=SPEC[\"max_packs\"])",
+          "start": 402
+        },
+        {
+          "end": 558,
+          "kind": "segment",
+          "path": "scripts/check_contract_delta.py",
+          "source": "from pathlib import Path\n\nsys.path.insert(0, \".\")\nMANIFEST = Path(\".github/ci/legacy-jobs.yml\")\n# The head's packing-probe ceilings (check_contract_delta.packing_probe_spec).\nSPEC = json.loads(sys.argv[1])\n\n\ndef _fail(message: str) -> None:\n    print(json.dumps({\"error\": message}))\n    sys.exit(1)\n''' + _WORKER_CONTROL_PLANE_SOURCE + r'''\n\n@contextmanager\ndef _tracked_tree_inventory():\n    \"\"\"Bind exact tracked-path existence when this base supports the v1 oracle.\"\"\"\n    try:\n        deps = importlib.import_module(\"scripts.ci_scope_dependencies\")\n    except ModuleNotFoundError as exc:\n        if exc.name != \"scripts.ci_scope_dependencies\":\n            raise\n        # Bootstrap compatibility only: a deliberately old base can predate the\n        # inventory module. Any nested missing import still fails the worker.\n        yield\n        return\n    planner_tracked_path_inventory = getattr(\n        deps, \"planner_tracked_path_inventory\", None\n    )\n    write_tracked_path_inventory = getattr(\n        deps, \"write_tracked_path_inventory\", None\n    )\n    if planner_tracked_path_inventory is None or write_tracked_path_inventory is None:\n        # A base between the dependency module's birth and the v1 inventory API.\n        yield\n        return\n\n    tested_tree_sha = subprocess.run(\n        [\"git\", \"rev-parse\", \"HEAD\"],\n        check=True,\n        capture_output=True,\n        text=True,\n        timeout=120,\n    ).stdout.strip()\n    root = Path.cwd()\n    with tempfile.TemporaryDirectory(prefix=\"contract-delta-inventory-\") as tmp:\n        inventory = Path(tmp) / \"tracked-paths.v1\"\n        write_tracked_path_inventory(inventory, tested_tree_sha, root=root)\n        with planner_tracked_path_inventory(\n            inventory, tested_tree_sha, root=root\n        ):\n            yield\n\n\ntry:\n    from scripts.run_ci_pack import curated_exclusive_closure_findings as _closure_fn\n    from scripts.audit_unrun_tests import gated_unrun_suites as _suites_fn\nexcept ImportError:\n    _closure_fn = None\n    _suites_fn = None\n\nif _closure_fn is not None and _suites_fn is not None:\n    try:\n        with _tracked_tree_inventory():\n            started = time.monotonic()",
+          "start": 495
+        },
+        {
+          "end": 1336,
+          "kind": "segment",
+          "path": "scripts/check_contract_delta.py",
+          "source": "def main(argv: list[str] | None = None) -> int:\n    ap = argparse.ArgumentParser(description=__doc__,\n                                 formatter_class=argparse.RawDescriptionHelpFormatter)\n    ap.add_argument(\"--base\", required=True,\n                    help=\"ref or SHA to diff against (e.g. origin/main, or a PR's base SHA)\")\n    args = ap.parse_args(argv)\n    # A cancelled CI job (timeout-minutes, workflow cancel) delivers SIGTERM; the\n    # default disposition kills the interpreter without unwinding, so `run()`'s\n    # `finally: cleanup()` never ran and the base worktree stayed on disk. Turn\n    # it into a normal exception so the throwaway tree is removed on the way out.\n    signal.signal(signal.SIGTERM, _raise_on_sigterm)\n    try:\n        return run(args.base)\n    except ContractDeltaError as exc:\n        print(f\"::error title=contract-delta::{exc}\", flush=True)\n        return 1\n",
+          "start": 1320
+        },
+        {
+          "kind": "audit_constant",
+          "source": "_TRUSTED_CONTROL_REPO_ROOT_ENV = \"MASTERMIND_TRUSTED_CI_REPO_ROOT\""
+        },
+        {
+          "kind": "audit_constant",
+          "source": "ROOT = _repository_root()"
+        },
+        {
+          "kind": "audit_constant",
+          "source": "_SUITE_FILENAME = re.compile(r\"^(?:test_.+|.+_test)\\.py$\")"
+        },
+        {
+          "kind": "audit_constant",
+          "source": "EXCLUDED_DIRS = frozenset({\n    \".git\", \".claude\", \".claire\", \".codex-worktrees\", \".worktrees\",\n    \"node_modules\", \"site-packages\", \"vendor\",\n    \".venv\", \"venv\", \".tox\", \".nox\",\n    \"__pycache__\", \".mypy_cache\", \".pytest_cache\", \".ruff_cache\",\n    \"ObsidianBrain\",          # a symlink VIEW over memory/ + research/, not source\n})"
+        },
+        {
+          "body": "try:\n        tree = ast.parse(path.read_text(errors=\"ignore\") if src is None else src)\n    except (SyntaxError, ValueError):\n        return True\nfor node in tree.body:\n        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):\n            if node.name.startswith(\"test\"):\n                return True\n        elif isinstance(node, ast.ClassDef) and node.name.startswith(\"Test\"):\n            if any(\n                isinstance(member, (ast.FunctionDef, ast.AsyncFunctionDef))\n                and member.name.startswith(\"test\")\n                for member in node.body\n            ):\n                return True\nreturn False",
+          "kind": "audit_function",
+          "line": 183,
+          "name": "defines_tests"
+        },
+        {
+          "kind": "deps_header",
+          "source": "import re\nimport shlex\nimport subprocess\nimport sys\nimport tokenize\nfrom dataclasses import dataclass\nfrom pathlib import Path\nfrom typing import Iterator\n\n# Direct file execution must resolve this checkout's ``scripts`` package before\n# any installed namesake.  The import-hygiene gate requires the unconditional\n# pin because a conditional insertion can leave a foreign path at sys.path[0].\n_REPO_ROOT = Path(__file__).resolve().parent.parent\nsys.path.insert(0, str(_REPO_ROOT))\n\nfrom scripts.audit_unrun_tests import FIRST_PARTY, ROOT\n\n\nTRACKED_PATHS_SCHEMA = \"ci.tracked_paths.v1\"\n_MAX_TRACKED_PATHS_BYTES = 64 * 1024 * 1024"
+        }
+      ]
+    },
+    "sha256": "dd6148ba2ced6fcbcf2bd6c8f0d71818554e558a2f27d7ada19fe029a1e6f84e"
+  },
+  "proof_limits": [
+    "The original product source failed54 of64 native Node VM cases, with10 passing controls. The repaired template and actual committed page passed64 of64, zero skips/cancellations. These are VM/DOM-host-boundary checks, not actual-browser or native-clipboard execution.",
+    "The actual calculator arithmetic, deterministic seed, account count, trade cap, validation, self-check and serialized worker code preceding DOM wiring are byte-identical. Generated-page bytes outside the controller and Copy disabled attribute remain unchanged.",
+    "The10 current installer-contract cases execute their existing mocked shell commands, not an actual browser installer or browser launch.",
+    "The final browser receipt-predicate correction changes only the new browser-test file. The consumed catalog, census-test and conftest hashes remain exact to the10-case result; the final browser file passes Python parsing.",
+    "Eight real Chromium cases are authored and required through the incumbent calculator-input-integrity CODE owner. Missing Playwright or failed browser launch must fail when MM_REQUIRE_BROWSER=1. No actual browser execution has occurred locally.",
+    "The genuine Blob Worker computes every successful controlled response. Tests delay only delivery, and distinguish native worker execution errors from injected transport errors. Native clipboard readback is required in CI.",
+    "Node26.5.0 native proof does not substitute for hostedNode20 qualification. ExistingCI provides Python3.12 and pinnedPlaywright1.64.1.",
+    "Owner weight changes5 to10 under the actual unchanged estimator. Global probe/job/pack/runtime ceilings remain unchanged pending the incumbent full-tree contract-delta and packing results; the sparse local source is not a full-tree planner proof.",
+    "No original denied or UNKNOWN browser operation in another lane is resumed. This new issue has no denied or UNKNOWN browser effect.",
+    "An OS clipboard write initiated before an edit cannot be revoked by this UI; the repair prevents new stale requests and stale success feedback.",
+    "The candidate remains Draft and unarmed until required actual-browser and full-tree acceptance qualify. This report does not claim deployment, broad visual/accessibility proof, trading effectiveness or merge."
+  ],
+  "publication": {
+    "actual_required_assets": [
+      "site/account.js",
+      "site/assets/css/17c15c21.css",
+      "site/assets/css/f1bd9987.css",
+      "site/onboard.js",
+      "site/product-nav-icons.css",
+      "site/shared_shell.css",
+      "site/shared_shell_bridge.js",
+      "site/supabase.js",
+      "site/theme.css",
+      "site/theme.js",
+      "site/wh_banner.js"
+    ],
+    "base": "0290e4c41f6cc5032fe4594d009ee2c71055dc5b",
+    "base_tree": "3aa5bdb5cfdfbd45a57b6700df76e5ea1c696652",
+    "browser": "Authored required actual Chromium suite for natural existing CODE owner; no browser execution performed locally.",
+    "browser_receipt_correction": "Success includes immutable source and qualified worker cleanup; the CI command preserves successful JSON receipts with -s.",
+    "browser_test_cases": [
+      "test_pending_copy_current_completion_and_language",
+      "test_obsolete_success_during_valid_edit_debounce",
+      "test_obsolete_success_after_invalid_edit_and_recovery",
+      "test_reversed_real_results_cannot_replace_current_copy",
+      "test_actual_worker_error_falls_back_to_current_form",
+      "test_synchronous_postmessage_failure_and_late_error",
+      "test_unavailable_worker_keeps_existing_synchronous_result",
+      "test_rapid_valid_invalid_edits_only_commit_final_generation"
+    ],
+    "catalog_before": "bd94ab96439112dd4823b1b966c7297f3244f7f9",
+    "files": {
+      ".github/ci/legacy-jobs.yml": {
+        "blob": "9b8a110d9d1e726a77f2ac9d41ee9b68dbc802ff",
+        "bytes": 2685324,
+        "local": "/tmp/macro-risk11100-browser-publication-20261112/source/.github/ci/legacy-jobs.yml",
+        "sha256": "03f988f3648506938167aec475bb30f92dd25ca331f27b555e64dec1eb65d8fa"
+      },
+      "site/tools/calculators/risk-of-ruin.html": {
+        "blob": "e4855163bb5f6cf72b48549bf5c987a0b9cb356f",
+        "bytes": 54056,
+        "local": "/tmp/macro-risk11100-browser-publication-20261112/source/site/tools/calculators/risk-of-ruin.html",
+        "sha256": "07072a09103b1bbaf3293273445d963d328adf89405ff34b90a2d8b39cbb49bf"
+      },
+      "templates/calculators/risk_of_ruin.html.j2": {
+        "blob": "63fbdd959d4716640efb615feafd948d1e9979a1",
+        "bytes": 24111,
+        "local": "/tmp/macro-risk11100-browser-publication-20261112/source/templates/calculators/risk_of_ruin.html.j2",
+        "sha256": "8062381bf71e1f2cea69a14555e60cb5a1ab1d87f228108e70888eeafa9f0f12"
+      },
+      "tests/js/risk_of_ruin_result_generation.test.mjs": {
+        "blob": "6ec657ad03636131c4c8b76e9fe113bd189254cf",
+        "bytes": 18703,
+        "local": "/tmp/macro-risk11100-browser-publication-20261112/source/tests/js/risk_of_ruin_result_generation.test.mjs",
+        "sha256": "cbd1af973ef9ee523f6efbe0e5373b2798d7f3d17bd8fe67d8f29be67f340441"
+      },
+      "tests/test_ci_browser_setup.py": {
+        "blob": "b9a5e2d878d431a9f9677be8bc416a251f7a271f",
+        "bytes": 6837,
+        "local": "/tmp/macro-risk11100-browser-publication-20261112/source/tests/test_ci_browser_setup.py",
+        "sha256": "672886bb3024751028aff39cec45247c11cdc32dff0e31d28dfc21b25f2b95a6"
+      },
+      "tests/test_risk_of_ruin_browser.py": {
+        "blob": "1fb3595d58f5c3aadb5d77447c4899bb675e973d",
+        "bytes": 24087,
+        "local": "/tmp/macro-risk11100-browser-publication-20261112/source/tests/test_risk_of_ruin_browser.py",
+        "sha256": "beabf99f78b6887b52841ced0e4dac5e56693ff62166b0bc0937720c553d8fd7"
+      }
+    },
+    "new_selectors": [
+      "templates/calculators/risk_of_ruin.html.j2",
+      "site/tools/calculators/risk-of-ruin.html",
+      "tests/js/risk_of_ruin_result_generation.test.mjs",
+      "tests/test_risk_of_ruin_browser.py",
+      "site/account.js",
+      "site/onboard.js",
+      "site/product-nav-icons.css",
+      "site/shared_shell.css",
+      "site/shared_shell_bridge.js",
+      "site/supabase.js",
+      "site/theme.css",
+      "site/theme.js",
+      "site/wh_banner.js",
+      "site/assets/css/**"
+    ],
+    "owner": "calculator-input-integrity",
+    "packing": "Global ceilings unchanged; natural incumbent full-tree contract-delta/packing CI required. No local full-tree planner claim.",
+    "plain_browser_installer_census": {
+      "after": 8,
+      "before": 7,
+      "current_preimage": "2f765e9a8a63240a0d14486aa4e1adf53b15eed4"
+    },
+    "schema": "macro.risk11100.browser_publication_inputs.v1",
+    "source_blobs": {
+      "site/tools/calculators/risk-of-ruin.html": "4355c86e11c27dd1047075c26ad04badba40c6fe",
+      "templates/calculators/risk_of_ruin.html.j2": "5ceb9cb2150060ab6bec736a401cf9f6c9f3e5ea",
+      "tests/conftest.py": "b2d40ef0eebddcfa3b4292a0d1cd296563222cdc",
+      "tests/test_ci_browser_setup.py": "2f765e9a8a63240a0d14486aa4e1adf53b15eed4"
+    },
+    "source_conservation": {
+      "accepted_calculator_script_sha256": "9ec590a212f72e5115675925e76a351b5e88c8e4c3805af5e0f6cb96becf54dc",
+      "accepted_node_regressions": "6ec657ad03636131c4c8b76e9fe113bd189254cf",
+      "accepted_template": "63fbdd959d4716640efb615feafd948d1e9979a1",
+      "fresh_page_old_calculator_script_equal": true,
+      "fresh_page_only_calculator_script_and_copy_disabled_changed": true
+    },
+    "syntax_checks": {
+      "browser_control_node_check": "passed",
+      "final_browser_python_ast": "passed",
+      "python_ast": "passed"
+    },
+    "unaffected_owners": 400,
+    "weights": {
+      "after": 10,
+      "before": 5
+    }
+  },
+  "repair": [
+    "Invalidate the current generation at each input event, before debounce",
+    "Withhold the obsolete headline, narrative and Copy eligibility throughout recomputation",
+    "Commit visible fields and exported report from one current result",
+    "Make worker failure and postMessage failure select the current form through one idempotent fallback",
+    "Suppress late copy feedback after input invalidation and claim success only after a successful clipboard operation"
+  ],
+  "schema": "macro.risk11100.result_generation_validation.v1",
+  "source_conservation": {
+    "bytes": 1852,
+    "record": {
+      "actual_browser_execution": "not yet performed",
+      "claim": "https://github.com/mastermindx-market-intelligence/macro/issues/11100#issuecomment-6812306464",
+      "full_builder_execution": "not yet performed",
+      "generated_page_method": "Exact current committed page, changing only its identical calculator script and Copy disabled attribute; other rendered bytes/asset references preserved",
+      "main": "9d8a0c8be5bbac0073b99762e46ae092235acf4f",
+      "main_delta": "marketing/x_intel data only",
+      "outside_controller_and_copy_disabled_attribute_unchanged": true,
+      "paths": {
+        "site/tools/calculators/risk-of-ruin.html": {
+          "before": {
+            "blob": "4355c86e11c27dd1047075c26ad04badba40c6fe",
+            "bytes": 53095,
+            "sha256": "8044867fb3ac76fbd0a25f663e17965f8ec917a2bf4a07187ff9b4ccf4dc81e4"
+          },
+          "candidate": {
+            "blob": "e4855163bb5f6cf72b48549bf5c987a0b9cb356f",
+            "bytes": 54056,
+            "sha256": "07072a09103b1bbaf3293273445d963d328adf89405ff34b90a2d8b39cbb49bf"
+          }
+        },
+        "templates/calculators/risk_of_ruin.html.j2": {
+          "before": {
+            "blob": "5ceb9cb2150060ab6bec736a401cf9f6c9f3e5ea",
+            "bytes": 23150,
+            "sha256": "3662d8bb6a0cf71a8cec59959a10a1779da1040862ba3d7cf53d6847e54c4148"
+          },
+          "candidate": {
+            "blob": "63fbdd959d4716640efb615feafd948d1e9979a1",
+            "bytes": 24111,
+            "sha256": "8062381bf71e1f2cea69a14555e60cb5a1ab1d87f228108e70888eeafa9f0f12"
+          }
+        }
+      },
+      "product_custody_sha256": "f7eccfedaab0706b2d7d1d7a18e7b56179506f83cd30c41678f64824674cb2a4",
+      "product_hunk_custody_sha256": "9af416fa42bf29d2f0550a3dbbd52b6ff5940f34126bdf74d5b834a577463c50",
+      "qualified_current_main": "0b26ae364676069354a53d1d84be21ee94cd78a0",
+      "schema": "macro.risk11100.source_repair.v1",
+      "unchanged_calculation_and_worker_source": true
+    },
+    "sha256": "c3fae8c56d28a1d8fd557cecd04d9460016073072e9169cb85040341087ff05b"
+  },
+  "state": "NATIVE_ACCEPTED_BROWSER_AND_FULL_TREE_PENDING"
+}
