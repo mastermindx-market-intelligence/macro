@@ -1,0 +1,101 @@
+{
+  "schema": "d06.final_canonical_integrity.v1",
+  "manifest": "mockups/evidence/d06-macro-integration-20261104/market_structure/manifest.json",
+  "cells": 24,
+  "counts": {
+    "rest": 8,
+    "help-hover": 8,
+    "help-focus": 8
+  },
+  "png_hash_bytes_dimensions_verified": 24,
+  "png_bytes": 11085614,
+  "zero_console_errors": true,
+  "zero_failed_responses": true,
+  "zero_horizontal_overflow": true,
+  "metrics_match": true,
+  "actual_source_hashes": {
+    "templates/market_structure.html.j2": "f34e88b11467e73b88ffeb8438c1acddbe21f681d948373cb06f59be541ae1bb",
+    "site/market_structure.html": "b69a01d3a916f465173414d30c23df78bed067b874cf229692a04b42821b8cbb",
+    "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "data/market_structure/latest.json": "e949dfb47087919f714fba594328b789544227d76e3cd94fdffc50ec0c4490b1"
+  },
+  "guard_results": {
+    "diff_base": "a8a5d3523614777d88eb2579d6efab52cd862e33",
+    "runs": [
+      {
+        "name": "design-ratchet",
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/check_design_system.py",
+          "--mode",
+          "enforce-added",
+          "--diff-file",
+          "/tmp/d06-macro-c4-11l44i0i/macro-integration-final-ui.diff"
+        ],
+        "exit_code": 0,
+        "seconds": 6.06,
+        "log": "design-ratchet.log"
+      },
+      {
+        "name": "visual-evidence",
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/check_ui_visual_evidence.py",
+          "--diff-file",
+          "/tmp/d06-macro-c4-11l44i0i/macro-integration-final-ui.diff"
+        ],
+        "exit_code": 0,
+        "seconds": 2.05,
+        "log": "visual-evidence.log"
+      }
+    ]
+  },
+  "limits": {
+    "asof_probe": false,
+    "gaps": [
+      {
+        "captured": false,
+        "dimension": "access",
+        "reason": "requires authenticated session; not automatable without approved fixtures",
+        "value": "free"
+      },
+      {
+        "captured": false,
+        "dimension": "access",
+        "reason": "requires authenticated session; not automatable without approved fixtures",
+        "value": "essential"
+      },
+      {
+        "captured": false,
+        "dimension": "access",
+        "reason": "requires authenticated session; not automatable without approved fixtures",
+        "value": "pro"
+      },
+      {
+        "captured": false,
+        "dimension": "page_state",
+        "reason": "state not synthesizable against static output",
+        "value": "loading"
+      },
+      {
+        "captured": false,
+        "dimension": "page_state",
+        "reason": "state not synthesizable against static output",
+        "value": "empty"
+      },
+      {
+        "captured": false,
+        "dimension": "page_state",
+        "reason": "state not synthesizable against static output",
+        "value": "stale"
+      },
+      {
+        "captured": false,
+        "dimension": "page_state",
+        "reason": "state not synthesizable against static output",
+        "value": "error"
+      }
+    ],
+    "settled_help_visibility": "Prior dedicated viewport observations; forced full-page captures alone do not establish settled opacity."
+  }
+}

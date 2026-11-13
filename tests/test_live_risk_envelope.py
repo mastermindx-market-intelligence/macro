@@ -66,6 +66,16 @@ def _write_public(root, doc):
     (root / "site" / "riskdata" / "risk_envelope.json").write_text(json.dumps(doc))
 
 
+def _source_deadline(built, live_active):
+    if not live_active:
+        return None
+    try:
+        stamp = datetime.strptime(built, "%Y-%m-%d %H:%M:%S UTC").replace(tzinfo=timezone.utc)
+    except (TypeError, ValueError):
+        return None
+    return (stamp + timedelta(minutes=5)).isoformat()
+
+
 def _risk_state(built, *, live_active=True, verdict="RISK_OFF", score=40,
                  radar_state="warning", radar_score=61.0, display_verdict="RISK_ON",
                  source_event_time=None):
@@ -79,6 +89,7 @@ def _risk_state(built, *, live_active=True, verdict="RISK_OFF", score=40,
         "built": built,
         "session": {"region": "us", "open": True, "local_time": "11:31 EDT"},
         "live_active": live_active,
+        "stale_after": _source_deadline(built, live_active),
         "realtime": True,
         "delayed_min": 15,
         "live": {
@@ -102,6 +113,7 @@ def _risk_state_empty_live(built, *, live_active=True):
         "built": built,
         "session": {"region": "us", "open": True, "local_time": "11:31 EDT"},
         "live_active": live_active,
+        "stale_after": _source_deadline(built, live_active),
         "realtime": True,
         "delayed_min": 15,
         "live": {},
@@ -1278,32 +1290,83 @@ def test_shared_freshness_keeps_exact_incumbent_boundaries(age, active, expected
     now = datetime(2026, 10, 7, 14, 1, tzinfo=timezone.utc)
     built = now - timedelta(seconds=age)
     doc = {"built": built.strftime("%Y-%m-%d %H:%M:%S UTC"), "live_active": active}
-    result = blre.market_freshness(doc, 5.0, now)
+    # The shared helper's arithmetic remains unchanged. The wrapper now also
+    # requires the producer's absolute deadline; that contract is tested below.
+    result = live_market_freshness(live_active=active, built_dt=built,
+                                   stale_after_min=5.0, now=now)
     assert result == _incumbent_market_freshness(doc, 5.0, now)
-    assert result == live_market_freshness(live_active=active, built_dt=built,
-                                           stale_after_min=5.0, now=now)
     assert tuple(result[key] for key in ("fresh_enough", "future_artifact", "usable")) == expected
 
 
 @pytest.mark.parametrize("doc", [None, {}, {"built": "bad", "live_active": True}])
 def test_shared_freshness_keeps_missing_source_unknown(doc):
     now = datetime(2026, 10, 7, 14, 1, tzinfo=timezone.utc)
-    assert blre.market_freshness(doc, 5.0, now) == _incumbent_market_freshness(doc, 5.0, now)
-    assert blre.market_freshness(doc, 5.0, now)["usable"] is False
+    result = blre.market_freshness(doc, 5.0, now)
+    for key, expected in _incumbent_market_freshness(doc, 5.0, now).items():
+        assert result[key] == expected
+    assert result["usable"] is False
+    assert result["stale_after"] is None
+    assert result["deadline_fresh"] is False
 
 
 @pytest.mark.parametrize("age,active", [(60, True), (300, True), (301, True), (-120, True),
                                         (-121, True), (60, False)])
-def test_shared_freshness_preserves_actual_synthetic_builder_bytes(tmp_path, monkeypatch, age, active):
-    from engine.risk_envelope import canonical_json
+def test_live_wrapper_keeps_clock_guards_and_adds_deadline(tmp_path, monkeypatch, age, active):
     now = datetime(2026, 10, 7, 14, 1, tzinfo=timezone.utc)
-    built = (now - timedelta(seconds=age)).strftime("%Y-%m-%d %H:%M:%S UTC")
-    _write_root(tmp_path, risk_state=_risk_state(built, live_active=active),
+    built_dt = now - timedelta(seconds=age)
+    built = built_dt.strftime("%Y-%m-%d %H:%M:%S UTC")
+    doc = _risk_state(built, live_active=active)
+    _write_root(tmp_path, risk_state=doc,
                 leadership=_leadership("2026-10-06"), settled=_settled("2026-10-06"))
     monkeypatch.setattr(blre, "_risk_envelope_cfg", lambda: {"debounce_ticks": 3, "stale_after_min": 5.0})
-    monkeypatch.setattr(blre, "_emit_materiality_firing", lambda **kw: pytest.fail("reader parity fixture fired"))
+    monkeypatch.setattr(blre, "_emit_materiality_firing", lambda **kw: pytest.fail("clock fixture fired"))
     actual = blre.build(tmp_path, now=now, produced_now=now)
-    monkeypatch.setattr(blre, "market_freshness", _incumbent_market_freshness)
-    before = blre.build(tmp_path, now=now, produced_now=now)
-    assert canonical_json(actual) == canonical_json(before)
-    assert actual["stale_after"] is None
+    carrying = _incumbent_market_freshness(doc, 5.0, now)
+    deadline = (built_dt + timedelta(minutes=5)
+                if active and not carrying["future_artifact"] else None)
+    assert actual["stale_after"] == (deadline.isoformat() if deadline else None)
+    assert actual["live_active"] is bool(
+        carrying["usable"] and deadline is not None and now < deadline)
+    assert actual["clocks"]["upstream_built"] == (
+        None if carrying["future_artifact"] else blre._iso_z(built_dt))
+    assert actual["clocks"]["event_time"] is None
+    assert actual["clocks"]["observed_at"] == actual["clocks"]["produced_at"] == blre._iso_z(now)
+
+
+@pytest.mark.parametrize("deadline,expected", [
+    (None, False),
+    ("invalid", False),
+    ("2026-11-05T15:05:30", False),
+    ("2026-11-05T15:05:29Z", False),
+    ("2026-11-05T15:05:30Z", False),
+    ("2026-11-05T15:05:31Z", True),
+    ("2026-11-05T10:05:31-05:00", True),
+])
+def test_required_quote_wrapper_deadline_controls_live_usability(deadline, expected):
+    now = datetime(2026, 11, 5, 15, 5, 30, tzinfo=timezone.utc)
+    doc = _risk_state("2026-11-05 15:05:00 UTC")
+    doc["stale_after"] = deadline
+    result = blre.market_freshness(doc, 5, now)
+    assert result["fresh_enough"] is True
+    assert result["usable"] is expected
+
+
+@pytest.mark.parametrize("horizon,expected", [
+    (1.0, "2026-11-05T15:06:00+00:00"),
+    (5.0, "2026-11-05T15:08:00+00:00"),
+    (10.0, "2026-11-05T15:08:00+00:00"),
+])
+def test_required_quote_wrapper_cannot_extend_upstream_deadline(tmp_path, monkeypatch, horizon, expected):
+    now = datetime(2026, 11, 5, 15, 5, 10, tzinfo=timezone.utc)
+    doc = _risk_state("2026-11-05 15:05:00 UTC", source_event_time="2026-11-05T14:50:00Z")
+    doc["stale_after"] = "2026-11-05T15:08:00Z"
+    _write_root(tmp_path, risk_state=doc, leadership=_leadership("2026-11-04"),
+                settled=_settled("2026-11-04"))
+    monkeypatch.setattr(blre, "_risk_envelope_cfg",
+                        lambda: {"debounce_ticks": 3, "stale_after_min": horizon})
+    for seconds in (0, 10):
+        env = blre.build(tmp_path, now=now + timedelta(seconds=seconds))
+        assert env["live_active"] is True
+        assert env["stale_after"] is not None
+        assert datetime.fromisoformat(env["stale_after"]) == datetime.fromisoformat(expected)
+        assert env["clocks"]["event_time"] == "2026-11-05T14:50:00.000Z"
