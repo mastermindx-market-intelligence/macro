@@ -1753,3 +1753,319 @@ def test_organ_input_gate_refusal_unreadable_overlay_gate(tmp_path, monkeypatch)
             oh.input_gate(oh.git_head(), oh.head_blobs())
     finally:
         f.chmod(0o644)
+
+
+# ===========================================================================
+# Dated S&P 500 membership basis (COO ruling 36 s2 addition) + like-for-like
+# fixed-set change on both bases. Same engine functions; aggregates/counts only.
+# ===========================================================================
+import hashlib  # noqa: E402
+
+from engine import group_breadth_history as gbh  # noqa: E402
+from scripts import build_group_breadth_history as gb  # noqa: E402
+
+_REGIME_DATED_PQ = HIST / "regime_inputs_dated_sp500_daily.parquet"
+_REGIME_DATED_META = HIST / "regime_inputs_dated_sp500.meta.json"
+_REGIME_FIXCHG_PQ = HIST / "regime_inputs_fixchg_current.parquet"
+_REGIME_FIXCHG_META = HIST / "regime_inputs_fixchg_current.meta.json"
+_dated_needs = pytest.mark.skipif(not _REGIME_DATED_PQ.exists(),
+                                  reason="data/ not checked out (sparse tree)")
+_fixchg_needs = pytest.mark.skipif(not _REGIME_FIXCHG_PQ.exists(),
+                                   reason="data/ not checked out (sparse tree)")
+# The two current-basis outputs are FROZEN: a dated/fixchg addition must never
+# rewrite them. This guard pins their exact bytes for the life of the repo.
+_FROZEN_CURRENT = {
+    "regime_inputs_daily_current.parquet":
+        "c15d5c2d533ae7d66dd84a67c8c1abfa19457aa44fcd1e8504d00bc0c9348177",
+    "regime_inputs_current.meta.json":
+        "552260044b01a67b6a5aed0a30dee52db634c77dd100fb7726d5f282cf0f634d",
+}
+_FIXCHG_SERIES = ({f"fix_chg_pct_above_{w}_{k}" for w in rg.WINDOWS for k in rg.CHANGE_HORIZONS}
+                  | {f"n_fixed_{w}_{k}" for w in rg.WINDOWS for k in rg.CHANGE_HORIZONS})
+# The 11 GICS sector names (as-of-now labels) plus the two computed aggregates are
+# the only legal groups on the dated basis; a member ticker can never be a group.
+_GICS = {"Communication Services", "Consumer Discretionary", "Consumer Staples", "Energy",
+         "Financials", "Health Care", "Industrials", "Information Technology", "Materials",
+         "Real Estate", "Utilities"}
+_DATED_GROUPS = _GICS | {"universe", "high_beta_computed"}
+
+
+def _regime_dated_synth(tmp: Path, n=12, periods=700, start="2020-01-01"):
+    """Synthetic dated membership windows over the regime synth universe.
+
+    The last member exits at 60% of the span and the second-to-last enters at
+    20%, so the in-window count varies by date; sector labels S1/S2 as of now."""
+    closes, root, etf_dir, cp, dm = _regime_synth_root(tmp, n=n, periods=periods, start=start)
+    idx = closes.index
+    t = list(closes.columns)
+    pit = tmp / "pit"; pit.mkdir()
+    rows = []
+    for i, tk in enumerate(t):
+        s, e = idx[0], pd.NaT
+        if i == n - 1:
+            e = idx[int(periods * 0.6)]
+        if i == n - 2:
+            s = idx[int(periods * 0.2)]
+        rows.append({"ticker": tk, "start_date": s, "end_date": e, "src": "sp500"})
+    # A dated member with no stored close (ticker reuse): exercises the same
+    # missing-rows path as the real archive, where some windows are unpriced.
+    rows.append({"ticker": "T99", "start_date": idx[0], "end_date": idx[100], "src": "sp500"})
+    pd.DataFrame(rows).to_parquet(pit / "sp1500_pit_membership.parquet")
+    sec = ["S1"] * (n // 2) + ["S2"] * (n - n // 2)
+    pd.DataFrame({"ticker": t + ["T99"], "sector": sec + ["S2"]}).to_parquet(
+        pit / "sp1500_pit_sectors.parquet")
+    return closes, root, etf_dir, cp, pit
+
+
+# ---- synthetic: dated window semantics -------------------------------------
+def test_regime_dated_window_not_counted_outside():
+    idx = pd.bdate_range("2020-01-01", periods=300)
+    up = np.linspace(100, 200, 300)
+    closes = pd.DataFrame({"A": up, "B": up, "C": up, "D": up}, index=idx)
+    mem = pd.DataFrame({"ticker": ["A", "B", "C", "D"], "group": ["universe"] * 4,
+                        "start_date": [idx[0]] * 4,
+                        "end_date": [pd.NaT, pd.NaT, pd.NaT, idx[250]]})
+    out, ns = rg.universe_breadth(closes, pd.Timestamp("2020-01-01"), membership=mem)
+    assert ns["pct_above_50"].loc[idx[240]] == 4.0     # D still in-window
+    assert ns["pct_above_50"].loc[idx[260]] == 3.0     # D left at idx[250]
+    assert out["pct_above_50"].loc[idx[260]] == 100.0  # 3 of 3 above
+    assert ns["pct_above_50"].loc[idx[-1]] == 3.0
+    assert out["n_counted_nh"].loc[idx[-1]] == 3.0     # NH/NL excludes D too
+
+
+def test_regime_dated_fixed_change_matches_engine():
+    rng = np.random.default_rng(7)
+    idx = pd.bdate_range("2020-01-01", periods=500)
+    r = rng.normal(0.0003, 0.01, size=(500, 8))
+    closes = pd.DataFrame(100 * np.exp(np.cumsum(r, axis=0)), index=idx,
+                          columns=[f"T{i:02d}" for i in range(8)])
+    closes.iloc[100:140, 3] = np.nan                   # a price gap
+    mem = pd.DataFrame({"ticker": list(closes.columns), "group": ["universe"] * 8,
+                        "start_date": [idx[0]] * 6 + [idx[120], idx[0]],
+                        "end_date": [pd.NaT] * 7 + [idx[420]]})
+    out, ns = rg.universe_fixed_change(closes, pd.Timestamp("2020-01-01"), membership=mem)
+    ref = gbh.daily_group_breadth(closes, mem, groups=["universe"], windows=rg.WINDOWS,
+                                  horizons=rg.CHANGE_HORIZONS,
+                                  min_members=bt.BREADTH_FLOOR).set_index("date")
+    for w in rg.WINDOWS:
+        for k in rg.CHANGE_HORIZONS:
+            s = f"fix_chg_pct_above_{w}_{k}"
+            pd.testing.assert_series_equal(out[s], ref[s].reindex(out[s].index), check_names=False)
+            nf = f"n_fixed_{w}_{k}"
+            assert (ns[s].to_numpy() == ref[nf].reindex(ns[s].index).to_numpy()).all()
+
+
+def test_regime_dated_fixchg_start_window_blanked(tmp_path):
+    """The dated build produces no fix_chg / n_fixed row before k sessions of
+    dated membership lie before the end date: the start session t-k must not
+    read closes from before the first dated-membership session. The removal
+    lives in build_dated; universe_fixed_change itself is unchanged."""
+    closes, root, etf_dir, cp, dm = _regime_synth_root(tmp_path, n=8, periods=400)
+    idx = closes.index
+    t = list(closes.columns)
+    pit = tmp_path / "pit"; pit.mkdir()
+    mem_start = idx[100]                     # archive closes predate membership
+    rows = [{"ticker": tk, "start_date": mem_start,
+             "end_date": idx[350] if i == 7 else pd.NaT, "src": "sp500"}
+            for i, tk in enumerate(t)]
+    # A dated member with no stored close: exercises the unpriced-in-window
+    # path of the dated build (same as _regime_dated_synth's T99).
+    rows.append({"ticker": "T99", "start_date": mem_start,
+                 "end_date": idx[350], "src": "sp500"})
+    pd.DataFrame(rows).to_parquet(pit / "sp1500_pit_membership.parquet")
+    pd.DataFrame({"ticker": t + ["T99"], "sector": ["S1"] * 4 + ["S2"] * 5}).to_parquet(
+        pit / "sp1500_pit_sectors.parquet")
+    out = tmp_path / "out"
+    rg.build_dated(cp, pit, out, root=root, etf_dir=etf_dir, start=str(mem_start.date()))
+    df = pd.read_parquet(out / "regime_inputs_dated_sp500_daily.parquet")
+    for w in rg.WINDOWS:
+        for k in rg.CHANGE_HORIZONS:
+            cut = idx[100 + k]               # k membership sessions must lie before t
+            fc = df[df.series == f"fix_chg_pct_above_{w}_{k}"]
+            nf = df[df.series == f"n_fixed_{w}_{k}"]
+            diff = df[df.series == f"diff_pct_above_{w}_{k}d"]
+            assert not fc.empty and not nf.empty and not diff.empty
+            assert (fc.date >= cut).all() and (nf.date >= cut).all()
+            assert fc.date.min() == diff.date.min()      # aligned with the diff series
+            assert list(nf.date) == list(fc.date)
+    # the 50-day lines are the ones the blanking actually cuts: without it they
+    # would start at the first membership session (the archive has closes there)
+    assert df[df.series == "fix_chg_pct_above_50_21"].date.min() == idx[121]
+    assert df[df.series == "fix_chg_pct_above_50_63"].date.min() == idx[163]
+    # universe_fixed_change itself still produces the start-window rows
+    mem = gb.membership_dated(pit, "sp500")
+    mem["group"] = "universe"
+    raw, _ = rg.universe_fixed_change(closes, pd.Timestamp(mem_start), membership=mem)
+    assert raw["fix_chg_pct_above_50_21"].index.min() == idx[100]
+
+
+def test_regime_dated_dispersion_both_ends():
+    rng = np.random.default_rng(5)
+    idx = pd.bdate_range("2020-01-01", periods=120)
+    r = rng.normal(0.0003, 0.01, size=(120, 4))
+    closes = pd.DataFrame(100 * np.exp(np.cumsum(r, axis=0)), index=idx, columns=list("ABCD"))
+    mask = pd.DataFrame(True, index=idx, columns=list("ABCD"))
+    mask.loc[idx[:80], "D"] = False                    # D enters at idx[80]
+    got = rg.dispersion(closes, {}, pd.Timestamp("2020-01-01"), masks={"universe": mask})
+    v, n = got["dispersion_21d"]["universe"]
+    assert n.loc[idx[95]] == 3                         # t-21=idx[74]: D not yet in-window
+    assert n.loc[idx[101]] == 4                        # t-21=idx[80]: D in-window at both ends
+    r21 = rg.window_return(closes, 21)
+    exp = r21.loc[idx[95], ["A", "B", "C"]].std(ddof=1) * 100.0
+    assert abs(v.loc[idx[95]] - exp) < 1e-9
+
+
+def test_regime_dated_high_beta_selection_mask():
+    idx = pd.bdate_range("2020-01-01", periods=700)
+    rng = np.random.default_rng(3)
+    s = rng.normal(0.0003, 0.01, 700)
+    spy = pd.Series(100 * np.cumprod(1 + s), index=idx)
+    betas = np.linspace(0.5, 1.5, 10)
+    closes = pd.DataFrame({f"T{i:02d}": 100 * np.cumprod(1 + b * s)
+                           for i, b in enumerate(betas)}, index=idx)
+    start = pd.Timestamp("2021-06-01")
+    keep = list(closes.columns[:8])
+    mask = pd.DataFrame(False, index=idx, columns=closes.columns)
+    mask[keep] = True
+    # A constant in-window mask over a subset == passing only that subset's columns.
+    lvl_m, n_m, facts_m = rg.high_beta_cohorts(closes, spy, start, member_mask=mask)
+    lvl_s, n_s, facts_s = rg.high_beta_cohorts(closes[keep], spy, start)
+    pd.testing.assert_series_equal(lvl_m, lvl_s, check_names=False)
+    pd.testing.assert_series_equal(n_m, n_s, check_names=False)
+    assert facts_m["cohort_size_max"] == facts_s["cohort_size_max"] == 2   # ceil(8/5)
+    assert facts_m["selection_set"] == "dated members at the selection session"
+    none = pd.DataFrame(False, index=idx, columns=closes.columns)
+    lvl0, _, facts0 = rg.high_beta_cohorts(closes, spy, start, member_mask=none)
+    assert lvl0.dropna().empty and facts0["months_selected"] == 0
+
+
+def test_regime_fixchg_static_equals_plain_diff_without_gaps():
+    rng = np.random.default_rng(9)
+    idx = pd.bdate_range("2020-01-01", periods=400)
+    r = rng.normal(0.0003, 0.01, size=(400, 6))
+    closes = pd.DataFrame(100 * np.exp(np.cumsum(r, axis=0)), index=idx,
+                          columns=[f"T{i:02d}" for i in range(6)])
+    start = pd.Timestamp("2020-01-01")
+    fc, _ = rg.universe_fixed_change(closes, start)            # static, no gaps
+    ub, _ = rg.universe_breadth(closes, start)
+    for w in rg.WINDOWS:
+        for k in rg.CHANGE_HORIZONS:
+            # no gaps + static membership => fixed-set == plain difference
+            pd.testing.assert_series_equal(fc[f"fix_chg_pct_above_{w}_{k}"],
+                                           ub[f"diff_pct_above_{w}_{k}d"], check_names=False)
+    mem = pd.DataFrame({"ticker": list(closes.columns), "group": ["universe"] * 6})
+    ref = gbh.daily_group_breadth(closes, mem, groups=["universe"], windows=rg.WINDOWS,
+                                  horizons=rg.CHANGE_HORIZONS,
+                                  min_members=bt.BREADTH_FLOOR).set_index("date")
+    for w in rg.WINDOWS:
+        for k in rg.CHANGE_HORIZONS:
+            s = f"fix_chg_pct_above_{w}_{k}"
+            pd.testing.assert_series_equal(fc[s], ref[s].reindex(fc[s].index), check_names=False)
+
+
+def test_regime_dated_full_synthetic_build(tmp_path):
+    closes, root, etf_dir, cp, pit = _regime_dated_synth(tmp_path)
+    out = tmp_path / "out"
+    meta = rg.build_dated(cp, pit, out, root=root, etf_dir=etf_dir, start="2021-06-01")
+    df = pd.read_parquet(out / "regime_inputs_dated_sp500_daily.parquet")
+    assert list(df.columns) == ["date", "series", "group", "value", "n", "kind"]
+    assert set(df.kind) <= set(rg.KINDS)
+    assert (df.n >= 2).all() and not df.isna().any().any()
+    assert df.date.min() >= pd.Timestamp("2021-06-01")
+    assert not df.duplicated(["series", "group", "date"]).any()
+    assert set(df.group) <= {"universe", "high_beta_computed", "S1", "S2"}
+    assert meta["basis"] == rg.BASIS_DATED == "reconstructed_dated_membership"
+    assert meta["set"] == "full"
+    assert set(meta["series"]) == set(df.series.unique())
+    # no curated-basket relative indices on the dated basis; computed high-beta is kept
+    assert not any(s.startswith("rel_") and s != "rel_high_beta_computed_vs_ew_universe"
+                   for s in df.series)
+    assert "rel_high_beta_computed_vs_ew_universe" in set(df.series)
+    last = df[(df.series == "pct_above_200") & (df.group == "universe")].sort_values("date").iloc[-1]
+    assert last.n == 11                                # T11 left, T10 present at the end
+    for entry in meta["series"].values():
+        assert {"definition", "first_date", "source", "basis", "kind", "gaps"} <= set(entry)
+    # minimum mode: the COO minimum set, universe + computed high-beta groups only
+    meta_m = rg.build_dated(cp, pit, tmp_path / "out_min", root=root, etf_dir=etf_dir,
+                            start="2021-06-01", minimum=True)
+    dfm = pd.read_parquet(tmp_path / "out_min/regime_inputs_dated_sp500_daily.parquet")
+    assert meta_m["set"] == "minimum"
+    assert rg.MINIMUM_SERIES <= set(dfm.series.unique())
+    assert set(dfm.group) <= {"universe", "high_beta_computed"}
+    assert (tmp_path / "out_min/regime_inputs_dated_sp500.meta.json").stat().st_size < 30_000
+    assert not any(k.endswith("_sample") for k in meta_m["coverage"])
+
+
+def test_regime_fixchg_current_synthetic_build(tmp_path):
+    closes, root, etf_dir, cp, dm = _regime_synth_root(tmp_path)
+    out = tmp_path / "out"
+    meta = rg.build_fixchg_current(cp, dm, out, root=root, start="2021-06-01")
+    df = pd.read_parquet(out / "regime_inputs_fixchg_current.parquet")
+    assert list(df.columns) == ["date", "series", "group", "value", "n", "kind"]
+    assert set(df.series.unique()) == _FIXCHG_SERIES
+    assert set(df.group) == {"universe"} and set(df.kind) == {"house"}
+    assert (df.n >= 2).all() and not df.isna().any().any()
+    assert meta["basis"] == bt.BASIS == "reconstructed_current_membership"
+    assert set(meta["series"]) == _FIXCHG_SERIES
+
+
+# ---- committed dated / fixchg artifacts (skipped on a sparse tree) ---------
+@_dated_needs
+def test_regime_dated_committed_columns_kinds_floors():
+    df = pd.read_parquet(_REGIME_DATED_PQ)
+    assert list(df.columns) == ["date", "series", "group", "value", "n", "kind"]
+    assert not any("ticker" in c or "price" in c for c in df.columns)
+    assert set(df.kind) <= set(rg.KINDS)
+    assert (df.n >= 2).all() and not df.isna().any().any()
+    assert df.date.min() >= pd.Timestamp(rg.START_DATED)
+    assert not df.duplicated(["series", "group", "date"]).any()
+    # No member ticker leaks: a group is one of the 11 GICS sectors or the two
+    # computed aggregates; a series is a lower-case snake_case name.
+    assert set(df.group.unique()) <= _DATED_GROUPS
+    assert all(s == s.lower() for s in df.series.unique())
+    assert rg.MINIMUM_SERIES <= set(df.series.unique())
+    assert not _FORBIDDEN.search(" ".join(df.series.unique()) + " " + " ".join(df.group.unique()))
+
+
+@_dated_needs
+def test_regime_dated_committed_sidecar():
+    df = pd.read_parquet(_REGIME_DATED_PQ)
+    meta = json.loads(_REGIME_DATED_META.read_text())
+    assert _REGIME_DATED_META.stat().st_size < 30_000
+    assert meta["basis"] == "reconstructed_dated_membership"
+    assert meta["no_outcomes"] and not _FORBIDDEN.search(meta["no_outcomes"])
+    assert meta["not_included"]
+    firsts = df.groupby("series").date.min()
+    kinds = df.groupby("series").kind.agg(lambda s: sorted(set(s)))
+    assert set(meta["series"]) == set(df.series.unique())
+    for s, entry in meta["series"].items():
+        assert {"definition", "first_date", "source", "basis", "kind", "gaps"} <= set(entry)
+        assert entry["first_date"] == str(firsts[s].date())
+        ek = entry["kind"] if isinstance(entry["kind"], list) else [entry["kind"]]
+        assert sorted(ek) == kinds[s]
+    # counts only, no per-ticker sample lists in the committed sidecar
+    assert not any(k.endswith("_sample") for k in meta["coverage"])
+    assert isinstance(meta["dropped_partial_rows_count"], int)
+    assert isinstance(meta["duplicate_series_pairs_count"], int)
+
+
+@_fixchg_needs
+def test_regime_fixchg_committed():
+    df = pd.read_parquet(_REGIME_FIXCHG_PQ)
+    assert list(df.columns) == ["date", "series", "group", "value", "n", "kind"]
+    assert set(df.series.unique()) == _FIXCHG_SERIES
+    assert set(df.group) == {"universe"} and set(df.kind) == {"house"}
+    assert (df.n >= 2).all() and not df.isna().any().any()
+    assert df.date.min() >= pd.Timestamp(rg.START)
+    assert not df.duplicated(["series", "group", "date"]).any()
+    meta = json.loads(_REGIME_FIXCHG_META.read_text())
+    assert meta["basis"] == bt.BASIS
+    assert set(meta["series"]) == _FIXCHG_SERIES
+    assert not _FORBIDDEN.search(_REGIME_FIXCHG_META.read_text())
+
+
+@_regime_needs
+def test_regime_current_outputs_frozen():
+    for name, want in _FROZEN_CURRENT.items():
+        got = hashlib.sha256((HIST / name).read_bytes()).hexdigest()
+        assert got == want, f"{name} was rewritten (frozen output)"
