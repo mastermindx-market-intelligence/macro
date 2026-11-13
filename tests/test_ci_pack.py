@@ -6000,9 +6000,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 11_465),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 11_538),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 132, 11_018),
+    ("templates/index.html", 137, 11_469),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 11_542),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 132, 11_022),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -6012,9 +6012,9 @@ PACKING_PROBE_MAX_PACKS = 10
 # job-count ceilings and PACKING_PROBE_MAX_PACKS are not weight-denominated and
 # did not move.
 LEGACY_PACKING_PROBE_WEIGHT_CEILINGS = {
-    "templates/index.html": 6_002,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    "scripts/build_free_content.py": 6_040,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    "engine/prophet/plan_book.py": 5_768,
+    "templates/index.html": 6_004,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    "scripts/build_free_content.py": 6_042,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    "engine/prophet/plan_book.py": 5_770,
 }
 
 
@@ -6039,6 +6039,49 @@ def test_probe_weight_ceilings_follow_the_weight_rescale() -> None:
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-13 (merge of main c11c5131 carrying the lane 1 #10929 stack and
+    #11151, COO ruling 83): main's LEGACY table is 6,002/6,040/5,768 over live
+    11,465/11,538/11,018 at job ceilings 137/138/132 (the plan_book entrant
+    group-read-surface job is main's lane 1). This pull request's own
+    contribution is still the recorded +2 legacy suite token for
+    tests/test_member_perf_archive.py on the existing fetch-finviz-owning step,
+    so its legacy ceilings compose onto main's LEGACY table as
+    6,004/6,042/5,770 and rescale by main's own rescale_legacy_weight to
+    11,469/11,542/11,022 — no hand-picked number. Re-measured on the merged
+    tree with packing_probe_measurements over the merged
+    .github/ci/legacy-jobs.yml (max_packs=10): index 137/10,934, free-content
+    138/11,438, plan_book 132/10,907, ten packs each at PACK_TARGET_SECONDS
+    1,146 (main alone on this tree: 10,929/11,433/10,902; this pull request's
+    measured excess +5/+5/+5 weight, +0 jobs, +0 packs). Every probe measures
+    under its rescaled ceiling; the measured values are not themselves rescale
+    preimages, so the live ceilings keep main's rescale structure rather than
+    the raw measurements. Job ceilings stay the measured 137/138/132; the pack
+    ceiling stays 10 (main and this pull request agree); every selector and
+    every assertion is unchanged; both sides' provenance paragraphs below are
+    kept verbatim.
+
+    2026-11-12 (merge of main 949420c7 carrying #11094, COO 12:48Z rule):
+    main's #11041 weight refresh pins every live ceiling to
+    PACK.rescale_legacy_weight(legacy); main carries live
+    11,431/11,504/10,969 over legacy 5,984/6,022/5,742. This pull
+    request's own contribution is still the recorded +2 suite token for
+    tests/test_member_perf_archive.py on the existing fetch-finviz-owning
+    step, so its legacy ceilings compose onto main's LEGACY table as
+    5,986/6,024/5,744 and rescale by main's own function to
+    11,435/11,507/10,973 — no hand-picked number. Re-measured on the
+    merged tree with packing_probe_measurements over the merged
+    .github/ci/legacy-jobs.yml (max_packs=11): index 137/10,874,
+    free-content 138/11,378, plan_book 131/10,833, ten packs each at
+    PACK_TARGET_SECONDS 1,146 (main alone on this tree: 10,869/11,373/
+    10,828; this pull request's measured excess +5/+5/+5).
+    Every probe measures under its rescaled ceiling; the measured values
+    are not themselves rescale preimages (index 10,874 has none), so the
+    live ceilings keep main's rescale structure rather than the raw
+    measurements. Job ceilings stay 137/138/131; the pack ceiling stays
+    10 (main and this pull request agree); every selector and every
+    assertion is unchanged; main's provenance paragraphs and this pull
+    request's own paragraphs are kept verbatim.
 
     2026-11-12 (PR #11151, merge of main 949420c7 carrying #11094): main's
     #11041 weight refresh moved planner weights to measured hosted seconds and
@@ -6317,6 +6360,35 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     600 -> 1,146 by the same function. Measured on the refreshed weights:
     10,859 / 11,241 / 10,818 weight and 10 / 10 / 10 packs. Job ceilings,
     selection and the ten-pack limit are unchanged.
+
+    2026-11-11 (merge of main 82930233f83a into PR #11024, ceiling
+    re-base onto main's new composition): main's #9230 re-based the
+    free-content ceiling 5,987 -> 5,989; re-apply only this pull
+    request's own measured +2 suite token onto main's new values.
+    Merged-tree measurement (packing_probe_measurements on the merge
+    worktree, 2026-11-11): index 5,968, free-content 5,991, Prophet
+    5,726 — exactly main's current 5,966/5,989/5,724 plus this pull
+    request's own +2/+2/+2, additive with no smear; measured jobs
+    137/137/131 under the retained ceilings 137/138/131, ten packs on
+    every probe. Index and plan_book keep the pull request's registered
+    values; only free-content moves 5,989 -> 5,991 (main's #9230 +2
+    composed). Job ceilings, selectors, commands and every other
+    assertion unchanged; nothing of main's or the pull request's
+    dropped. Natural successor CI must qualify this merged head.
+
+    2026-11-11 (PR #11024, member perf archive suite accounting):
+    contract-delta run 43004476995 measured head 743645ca94ae against
+    base 65f534bdc136: all three probes exactly +2 over ceiling
+    (index 5,968 > 5,966; free 5,989 > 5,987; Prophet 5,726 > 5,724),
+    newly selected: none, jobs stay 137/138/131, ten packs. The +2 is
+    the accepted suite token for tests/test_member_perf_archive.py
+    appended to the existing fetch-finviz-owning step in
+    .github/ci/legacy-jobs.yml (same module, same subject; contract-
+    delta's own run: step wiring demand) — no new owner, no new job, no
+    selector change. Apply that contribution to 5966/5987/5724 ->
+    5968/5989/5726, retaining job ceilings. This is source-derived
+    accounting, not a new planner execution; natural successor CI must
+    qualify this head.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,

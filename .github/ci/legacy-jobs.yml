@@ -33658,8 +33658,10 @@ jobs:
       # subject, and pytest reports EVERY file inside ONE step, so nothing here
       # masks anything else. Stdlib + pytest only (it monkeypatches the fetchers
       # and never touches the network), so the install line above is unchanged.
+      # test_member_perf_archive.py (2026-11-11, member perf capture) rides here
+      # for the same reason: same module, same subject, same stdlib+pytest shape.
       - name: polygon universe/intraday + dead-name prices + finviz archival/tree-refresh + thetadata sessions
-        run: python -m pytest tests/test_build_polygon_universe.py tests/test_polygon_intraday.py tests/test_fetch_dead_name_prices_polygon.py tests/test_finviz_archival.py tests/test_finviz_tree_refresh.py tests/test_thetadata_tape_sessions.py -q
+        run: python -m pytest tests/test_build_polygon_universe.py tests/test_polygon_intraday.py tests/test_fetch_dead_name_prices_polygon.py tests/test_finviz_archival.py tests/test_finviz_tree_refresh.py tests/test_member_perf_archive.py tests/test_thetadata_tape_sessions.py -q
       # Enumerated in NO workflow before this (calendar-asof audit follow-up
       # 2026-08-05): the finviz collector's asof feeds these ledgers, but a PR
       # touching the track record or its heal fired no run that could see a
