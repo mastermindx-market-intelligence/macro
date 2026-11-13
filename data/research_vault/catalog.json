@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T02:57:59.381488+00:00",
-  "count": 3269,
+  "generated_at": "2026-11-13T03:22:41.818747+00:00",
+  "count": 3270,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -123,6 +123,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-samuqx3ougs-3dc426",
+      "title": "Correction, not yet contagion",
+      "institution": "Pictet",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T02:50:44Z",
+      "summary_points": [
+        "Tech Correction Containment: Tech weakness isolated; macro/earnings backdrop lacks deterioration to trigger contagion, preventing broader market decline.",
+        "Nasdaq-S&P 500 Divergence: Nasdaq down 11% vs S&P 500 down 4% from peaks, signaling concentrated tech leadership weakness (not broad risk-off), with 65-70% of S&P 500 above 50-day MA.",
+        "Recession Amplifies Bear-Market Severity: Bear markets with recession show deeper drawdowns (avg -36.7% vs -14.5%), longer durations (16.8m vs 3.8m), and 30% probability of -40% drawdown (vs 0% without recession).",
+        "Earnings Resilience Amid Price Pressure: Forward EPS expectations (beige line) unchanged despite S&P 500 price decline (red line), indicating fundamentals intact; earnings revisions remain positive (ERR rising).",
+        "Macro Momentum Resilience: Citi US Economic Surprise Index positive and Macro Momentum Model recovered to 60–65% (away from recession-risk readings), confirming structural risk not evident."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 21,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-fmdyhq5r3wx-4c1261",
       "title": "JPM US Market Intell Macro Week Ahead",
