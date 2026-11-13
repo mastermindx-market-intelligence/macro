@@ -329,7 +329,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 rjsmin==1.2.5
       # tests/test_ud_b2_w1_red_first_proof.py reads site/macro.html at the pre-fold
       # commit, and this checkout is one commit deep. Fetch only that commit's trees;
       # git show then pulls the one blob it needs. fetch-depth: 0 would cost minutes.
