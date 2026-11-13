@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T15:08:50.052498+00:00",
-  "count": 3303,
+  "generated_at": "2026-11-13T15:39:49.931722+00:00",
+  "count": 3304,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-hn9vqaixlbm-1f8404",
+      "title": "GS Bartlett GS TMT TODAY 11.13.26 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T14:23:55Z",
+      "summary_points": [
+        "MSFT Outage & Security Demand: Global outage drives 3.3%+ gains in security software (PANW, CRWD, OKTA) amid CSCO mixed results (-3% pre) and NVDA float volatility (10% WTD, Jensen departure).",
+        "CSCO Margin Headwinds: Beat on networking/EBIT margins but missed orders; AI revenue growth slowed to 6.8% y/y (vs. 8% prior), signaling potential gross margin pressure from hyperscale revenue mix.",
+        "China Internet Geopolitical Risk: Severe underperformance (YTD -33.55%) amid regulatory tensions and capital flow risks, highlighting critical exposure vulnerability for Chinese tech holdings.",
+        "Datacenter Policy Risk: Midterm elections drive 45% of planned AI/datacenter capacity at risk (Texas 25%), creating downside scenarios via proposed capex/infrastructure restrictions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-qvdyw7yvx20-4b6ba2",
       "title": "GS Mitola GS FINS & REITs Daily 13 Nov 2026",
