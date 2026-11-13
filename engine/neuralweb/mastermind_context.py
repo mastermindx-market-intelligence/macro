@@ -2392,6 +2392,26 @@ def _load_rpo_map(repo: Path, gap_notes: list[str]) -> dict[str, dict]:
 # Candidate context builder
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _capped_candidate_names(
+    us: set[str], china: set[str], altdata: set[str], radar: set[str], cap: int,
+) -> list[str]:
+    """Share overflow slots among primary sources before filling from radar."""
+    primary = us | china | altdata
+    if len(primary) <= cap:
+        return sorted(primary) + sorted(radar - primary)[:cap - len(primary)]
+
+    selected: set[str] = set()
+    pools = [iter(sorted(source)) for source in (us, china, altdata)]
+    while len(selected) < cap:
+        for pool in pools:
+            ticker = next((name for name in pool if name not in selected), None)
+            if ticker is not None:
+                selected.add(ticker)
+                if len(selected) == cap:
+                    break
+    return sorted(selected)
+
+
 def _build_candidate_context(
     repo: Path,
     gap_notes: list[str],
@@ -2428,7 +2448,8 @@ def _build_candidate_context(
     seasonality_map = _load_seasonality_map(repo, gap_notes, now=asof)
     # --- Standouts tickers ---
     standouts_path = repo / "site" / "factordata" / "us_standouts.json"
-    standouts_tickers: set[str] = set()
+    us_tickers: set[str] = set()
+    china_tickers: set[str] = set()
     try:
         ss = _read_json(standouts_path)
         if isinstance(ss, dict):
@@ -2441,7 +2462,7 @@ def _build_candidate_context(
                         else:
                             t = str(item)
                         if t:
-                            standouts_tickers.add(t)
+                            us_tickers.add(t)
     except Exception as exc:  # noqa: BLE001
         gap_notes.append(f"candidate_context: us_standouts read failed — {exc}")
 
@@ -2475,7 +2496,7 @@ def _build_candidate_context(
                         else:
                             t = str(item)
                         if t:
-                            standouts_tickers.add(t)
+                            china_tickers.add(t)
     except Exception as exc:  # noqa: BLE001
         gap_notes.append(f"candidate_context: cn_standouts read failed — {exc}")
 
@@ -2560,13 +2581,13 @@ def _build_candidate_context(
                 trigger_tier = bottom_row.get("trigger_tier") if bottom_row else None
                 has_options = ticker in options_map
                 # Include only if actionable NW context exists
-                if bottom_state != "WATCH" or trigger_tier is not None or has_options:
+                if (bottom_state and bottom_state != "WATCH") or trigger_tier is not None or has_options:
                     radar_actionable.add(ticker)
     except Exception as exc:  # noqa: BLE001
         gap_notes.append(f"candidate_context: radar_ticker read failed — {exc}")
 
     # --- Combined universe ---
-    candidate_universe = standouts_tickers | altdata_tickers | radar_actionable
+    candidate_universe = us_tickers | china_tickers | altdata_tickers | radar_actionable
 
     # --- Build per-ticker rows ---
     result: dict[str, dict] = {}
@@ -2694,18 +2715,18 @@ def _build_candidate_context(
     # Hard cap
     if len(result) > CANDIDATE_ROW_CAP:
         original_count = len(result)
-        # Keep standouts + altdata first (highest priority), then radar
-        priority = list(standouts_tickers | altdata_tickers)
-        priority_set = set(priority)
-        others = [t for t in sorted(result.keys()) if t not in priority_set]
-        keep = sorted(priority_set & set(result.keys()))[:CANDIDATE_ROW_CAP]
-        remaining = CANDIDATE_ROW_CAP - len(keep)
-        if remaining > 0:
-            keep += others[:remaining]
+        keep = _capped_candidate_names(
+            us_tickers, china_tickers, altdata_tickers, radar_actionable, CANDIDATE_ROW_CAP,
+        )
         result = {t: result[t] for t in keep}
+        retained = set(keep)
+        radar_only = radar_actionable - (us_tickers | china_tickers | altdata_tickers)
         gap_notes.append(
             f"candidate_context: truncated from {original_count} to {CANDIDATE_ROW_CAP} rows "
-            f"(standouts+altdata prioritised)"
+            f"(retained/eligible: US standouts {len(retained & us_tickers)}/{len(us_tickers)}, "
+            f"China standouts {len(retained & china_tickers)}/{len(china_tickers)}, "
+            f"Altdata {len(retained & altdata_tickers)}/{len(altdata_tickers)}, "
+            f"radar-only {len(retained & radar_only)}/{len(radar_only)}; primary sources may overlap)"
         )
 
     return result

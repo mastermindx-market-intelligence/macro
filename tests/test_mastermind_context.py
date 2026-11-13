@@ -450,6 +450,44 @@ class TestSizeCap:
 # ---------------------------------------------------------------------------
 
 class TestCandidateScope:
+    def test_overflow_represents_all_primary_sources_before_radar(self, tmp_path, monkeypatch):
+        from engine.neuralweb import mastermind_context as bridge
+
+        _build_minimal_tree(tmp_path)
+        cn = tmp_path / "site" / "factordata" / "china_standouts.json"
+        china_names = [f"{i:06}.SZ" for i in range(20)]
+        cn.write_text(json.dumps({"schema_version": "2.0.0", "forming": china_names}))
+        monkeypatch.setattr(bridge, "CANDIDATE_ROW_CAP", 6)
+        notes = []
+        result = bridge._build_candidate_context(tmp_path, notes, _NOW)
+        assert set(result) == {
+            "000000.SZ", "000001.SZ", "ALTDATA_A", "ALTDATA_B",
+            "FIXTURE_BUY", "FIXTURE_LAGGARD",
+        }
+        assert all(row["allowed_behavior"] == "annotate_only" for row in result.values())
+        assert any("US standouts 2/3, China standouts 2/20, Altdata 2/2" in note for note in notes)
+        cn.write_text(json.dumps({"schema_version": "2.0.0", "forming": list(reversed(china_names))}))
+        assert list(bridge._build_candidate_context(tmp_path, [], _NOW)) == list(result)
+
+    def test_overlapping_sources_and_radar_fill(self):
+        from engine.neuralweb.mastermind_context import _capped_candidate_names
+
+        us, china, altdata = {"A", "B", "C"}, {"A", "D"}, {"A", "E"}
+        radar = {"A", "R1", "R2"}
+        assert _capped_candidate_names(us, china, altdata, radar, 3) == ["A", "D", "E"]
+        assert _capped_candidate_names(us, china, altdata, radar, 5) == ["A", "B", "C", "D", "E"]
+        assert _capped_candidate_names(us, china, altdata, radar, 6) == ["A", "B", "C", "D", "E", "R1"]
+
+    def test_absent_bottom_state_alone_does_not_admit_a_radar_name(self, tmp_path):
+        from engine.neuralweb.mastermind_context import _build_candidate_context
+
+        _build_minimal_tree(tmp_path)
+        path = tmp_path / "site" / "basketdata" / "radar_ticker.json"
+        radar = json.loads(path.read_text())
+        radar["tickers"].append({"ticker": "NO_SENSOR_OR_OPTIONS"})
+        path.write_text(json.dumps(radar))
+        assert "NO_SENSOR_OR_OPTIONS" not in _build_candidate_context(tmp_path, [], _NOW)
+
     def test_candidates_only_from_intake_union(self, tmp_path):
         """Candidate tickers must come from standouts ∪ altdata ∪ radar (actionable).
 
