@@ -255,3 +255,48 @@ Publish/read back this P13 source on the same #11196 branch with expected-head C
 The incumbent post-merge path is `vps-main-sync-wake.yml` job `wake`, with the existing three-minute VPS updater as fallback. A successful wake is not served proof: it can return while the existing updater lock is held. Owed read-only production evidence is the actual merge SHA, installed descendant, current runtime snapshot/service state, served admin JS/CSS bytes matching the accepted source, and the real outbox's delivery-evidence payload. The admin runtime SHA is not inferred from the separate macro-api SHA. These source-traced interfaces do not themselves establish that a deployment occurred.
 
 The available browser tab still requires sign-in; other open admin tabs retain their existing browser-session custody. Authenticated desktop/mobile and dark/light review, actual generated-model/media quality and prospective engagement outcomes remain unproven. No live post, queue approval, provider activation, model call or manual deployment is authorized by these test results. Parent completion remains false; continue qualified source/release and genuine consumer proof on the original carriers.
+
+## P14 — measured macro evidence before natural interpretation
+
+### Cause traced through the real writer input
+
+P13 was published on the original primary carrier at `5108fae70377fed09f94e46fe31eb94ad9871e35`, tree `02bdf5520adc8152ba70b562a9e5d864fcd16f22`, and its PR, commit and full docket were read back exactly. Its natural CI is [run 43404154693](https://github.com/mastermindx-market-intelligence/macro/actions/runs/43404154693). No release label was added. The PR returned to Draft when this further material source defect was demonstrated.
+
+The historical November 12 content plan repeats claims, GDPNow and median CPI across five macro posts and adds claims such as "cooling inflation" and "no labor slack." Those are old generated outputs, not evidence of how P12's new instructions perform. Source tracing distinguished two current producer defects from those old model escalations:
+
+- `market_facts.macro_facts` converts the composite growth/inflation axes into release-like claims and appends them to the leading measured fact. For the committed November 11 regime artifact, blob `d285c2c011da25f50de40fe0500a5e5b0a53066a`, scores `0.333 / -0.52` become "growth data's been running hot" and "inflation's cooling off fast," followed by "Not a comfortable mix." The same artifact records an accelerating sticky-inflation reading. `engine/axes.py` establishes that the axes combine direction signals, largely from markets: their magnitude is not a measured speed of consumer-price inflation. `content_studio` passes this fact packet into `build_context`, which keeps the leading three facts for the actual v2 writer payload. A prompt to trust supplied facts cannot repair a false interpretation already labeled as a fact.
+- `_print_jobless_claims` labels `initial_claims_4wk` as "a week this month." The producer mapping in `engine/pit.py` is `IC4WSA`, the four-week moving average of initial claims, as documented by [FRED](https://fred.stlouisfed.org/series/IC4WSA). Its window is not a calendar month.
+
+The current GDPNow and median-CPI producers already preserve their annual-rate units. [FRED's median-CPI series](https://fred.stlouisfed.org/series/MEDCPIM158SFRBCLE) confirms the latter unit. No change was needed to those conversions, their sign-aware negative cases, or the market-axis engine itself. A lone median-CPI level does not establish cooling. "No labor slack" and policy-rate conclusions were generated escalations, not literal additional source defects found in this bounded review.
+
+### Source repair and consumer behavior
+
+The macro packet now uses the existing standalone named-print path. Claims, GDPNow and median CPI retain their measured values, numeric whitelists, order and salience `12 / 11 / 10`. The two unused score-to-prose helpers and the growth/inflation fold are removed. Positive, negative, intermediate, zero, missing and malformed composite scores cannot change those release facts. Scores alone no longer create a postable macro observation.
+
+The claims fact now says "The four-week average of initial jobless claims is ..." and retains an observed year-over-year comparison when one exists. The spelled-out reference period does not invent another numeric token or change the numeric budget. Missing and near-flat comparison branches continue to omit a directional comparison. Million-scale claims, negative GDPNow and negative median-CPI rendering remain covered.
+
+Legitimate sector breadth keeps its existing count, completed-session wording and tail. The event-driver translation, preferred credit-print path and fallback to actual macro releases remain intact. The corrected producer does not manufacture a stance, append a disclaimer, force a closing condition, or dilute the accepted P12 request for supported interpretation. It gives that writer accurate evidence to interpret.
+
+An additional bounded shape-allocation review found compression pressure but no demonstrated allocator contradiction with P12: a short shape can express one complete, supported observation without including every supplied fact. No shape quota, character ceiling or allocation mechanism was changed. No test result is being presented as a prospective engagement estimate.
+
+### Executed regression evidence
+
+Before the production repair, both new consumer cases failed against unchanged `5108fae`: the actual `macro_facts → build_context → _v2_item_payload` path received the unsupported cooling/hot-growth language, and a scores-only artifact minted an unanchored observation (**2 failed**). After the repair, the release-input matrix checks eight combinations of composite scores while holding the November release evidence fixed. The full writer payload contains the same three correctly labeled observations in every case. The claims sentence passes the real legacy and v2 numeric/voice validators under its one-line shape.
+
+The existing code-gated editorial command now additionally names the two claims-rendering tests and the event-language suite. New macro regressions live in the anchor-law suite already executed by that owner. The final affected command passed **626 tests, zero skips**, one dependency deprecation, in 17.81 seconds:
+
+```text
+python -m pytest tests/test_marketing_earnings_call_lane.py tests/test_marketing_copy_auditor.py tests/test_admin_marketing.py tests/test_admin_marketing_floor.py tests/test_market_facts.py::test_credit_comparison_uses_source_precision_and_real_copy_gates tests/test_market_facts.py::test_missing_credit_comparison_does_not_claim_flat tests/test_market_facts.py::test_observed_zero_credit_change_is_distinct_from_missing tests/test_market_facts.py::test_curve_comparison_keeps_signed_spread_units tests/test_market_facts.py::test_missing_curve_change_keeps_only_the_level tests/test_market_facts.py::test_print_jobless_claims_renders_the_compact_register_and_is_gate_clean tests/test_market_facts.py::test_print_jobless_claims_flat_yoy_variant_is_also_gate_clean tests/test_marketing_anchor_law.py tests/test_marketing_intelligence_desk.py tests/test_marketing_event_language.py tests/test_chart_director.py -q --tb=short
+```
+
+An intermediate run exposed two test-expectation mistakes: a one-line validation fixture was incorrectly assigned a stack shape, and an old million-scale assertion still expected the removed calendar-month sentence. Both fixtures were corrected to the actual shape and four-week measurement; no production validator was relaxed. The subsequent timestamp-only fixture clarification pins its November source and review date; its focused consumer test passed again (**1 passed**, 1.34 seconds).
+
+A bounded source review found no material regression or additional required change. It checked the deleted helpers' callers, the removed fact identifier, named-print ranking, breadth visibility, the dry-run consumer and negative-release compatibility. This reasoning review ran no tests or mutations and is not a formal GitHub approval.
+
+Semantic manifest comparison retains **401 jobs** and changes only the existing `unrun-marketing-desk` editorial command with those three test selections. Job identity, gate, timeout, installation, packing configuration and every other owner's definition remain unchanged. P14 adds no production imports or dependency surface; P13's accepted deployment/restart proof is reused.
+
+### Outstanding delivery and acceptance
+
+Publish/read back P14 on the same primary branch with expected-head CAS, qualify its new natural binding CI and then use only the incumbent permitted release path. Earlier green checks do not qualify a new head. The original compiler remains `e70cb16b2f5d9188c2de75cae6d6d90719f39495` with its genuine review and private-effect holds. Its current contract-delta and completed packs have passed; outstanding packs are not presumed green.
+
+The connected marketing browser tab still shows the sign-in form. Other sessions' authenticated tabs were not displaced. Source and fixture proof do not establish production rollout, live model quality, actual X publication or engagement gains. No live provider generation, model spending, account activation, approval, upload, post, manual deployment or alternate private replay was performed. Continue the original release and consumer-proof frontier; parent completion remains unproven.

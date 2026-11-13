@@ -19,8 +19,9 @@ All functions:
 Voice law (MARKETING_VOICE_DOCTRINE_V2 §6): fact TEXT feeds post copy, so it must
 translate metrics into plain observable words. NO regime labels ("Goldilocks"), NO
 internal scores (growth score / inflation score), NO "(read: ...)" asides, NO em
-dashes. Say what the data plainly shows, e.g. "growth data keeps coming in soft while
-inflation readings are still warm". If the facts are thin, say less.
+dashes. Name the release, its reference period and any observed comparison.
+A composite market score is not a measured growth or inflation release.
+If the facts are thin, say less.
 
 DENOMINATOR LAW (Content Studio W1, 2026-07-29)
 -----------------------------------------------
@@ -82,11 +83,15 @@ behind those scores, each with its number and its publisher:
     fed_path.policy_rate / fed_path.implied.m12                   (funds futures)
     yield_curve.shape.slope_2s10s.value                           (2s10s)
 
-Those become :func:`named_print_facts`, and the highest-ranked one is FOLDED
-into the growth/inflation read (macro) and the driver read (event) so the
-packet's own top fact names a print. The abstraction is still allowed to carry
-the STANCE ("growth data's firming up a little") — it just may no longer be the
-whole claim.
+Those become :func:`named_print_facts`. The highest-ranked print leads the
+macro packet and may anchor an event driver read. Growth/inflation axis scores
+are weighted direction signals, largely from markets (engine/axes.py), not
+measurements of the rate or speed of growth or consumer-price inflation.
+Attaching a claims number to "inflation's cooling off fast" does not validate
+that interpretation. The macro packet therefore carries the named releases
+and their observed comparisons without a score-derived stance. The writer can
+interpret that evidence; a single level does not establish acceleration or
+deceleration.
 
 NOTHING IS INVENTED. Every sentence below quotes a field that exists in the
 artifact, with the units the producing engine documents (checked against
@@ -117,32 +122,6 @@ from engine.marketing import market_clock as _clock
 PathLike = Union[str, Path]
 
 _EMPTY: dict = {"facts": [], "numbers_whitelist": []}
-
-
-def _growth_words(g: float) -> str:
-    """Plain observable phrase for a growth score (no label, no number)."""
-    if g <= -0.30:
-        return "growth data keeps coming in soft"
-    if g < -0.05:
-        return "growth data's been running a touch soft"
-    if g <= 0.05:
-        return "growth data's been roughly steady"
-    if g < 0.30:
-        return "growth data's firming up a little"
-    return "growth data's been running hot"
-
-
-def _inflation_words(i: float) -> str:
-    """Plain observable phrase for an inflation score (no label, no number)."""
-    if i <= -0.30:
-        return "inflation's cooling off fast"
-    if i < -0.05:
-        return "inflation's easing a little"
-    if i <= 0.05:
-        return "inflation's holding roughly flat"
-    if i < 0.30:
-        return "inflation readings are still a bit warm"
-    return "inflation readings are still warm"
 
 
 # Liquidity overlay → plain observable phrase (no label vocab)
@@ -437,15 +416,15 @@ def _print_jobless_claims(regime: dict) -> dict | None:
     if yoy is None or abs(yoy) < 0.05:
         return {
             "id": "print_jobless_claims",
-            "text": f"Jobless claims are averaging {level_words} a week this month.",
+            "text": f"The four-week average of initial jobless claims is {level_words}.",
             "numbers": [level_tok],
         }
     yoy_str = _pct1(abs(yoy))
     side = "below" if yoy < 0 else "above"
     return {
         "id": "print_jobless_claims",
-        "text": (f"Jobless claims are averaging {level_words} a week this "
-                 f"month, {yoy_str} {side} a year ago."),
+        "text": (f"The four-week average of initial jobless claims is {level_words}, "
+                 f"{yoy_str} {side} a year ago."),
         "numbers": [level_tok, yoy_str],
     }
 
@@ -624,13 +603,12 @@ _NAMED_PRINT_BUILDERS: tuple = (
 #: gate; widening it for facts the prompt omits is how that gate goes soft.
 _NAMED_PRINT_MAX = 3
 
-#: Salience for the prints that ship STANDALONE. The top-ranked print is folded
-#: into the packet's lead fact instead (see :func:`macro_facts`), which is what
-#: guarantees the lead fact names a print; these two sit directly beneath it.
+#: Salience for the two prints following the lead. Macro prints are standalone;
+#: an event driver may fold its preferred print into the lead fact.
 _NAMED_PRINT_SALIENCE: tuple[int, ...] = (11, 10)
 
-#: Salience of a lead fact that has a print folded into it. Above every legacy
-#: fact so the anchored read is one of the three the writer actually sees.
+#: Salience of the leading print or anchored event fact. Above every legacy
+#: fact so the release is one of the three the writer actually sees.
 _ANCHORED_LEAD_SALIENCE = 12
 
 
@@ -716,8 +694,8 @@ def macro_facts(root: PathLike, *, now: datetime | None = None,
     """Compute macro facts from regime/latest.json, site/neuralwebdata/daily_brief.json,
     and data/neuralweb/world_state.json.
 
-    Example outputs (plain observable words, no labels or internal scores):
-      "Growth data keeps coming in soft while inflation readings are still warm."
+    Example outputs (named releases, no labels or internal scores):
+      "The four-week average of initial jobless claims is 203k, 8.6% below a year ago."
       "Liquidity's loosening a bit."
       "The picture's still shifting, not settled yet."
       "The AI and chip trade is unwinding today, with tech leading the selloff."
@@ -740,14 +718,10 @@ def macro_facts(root: PathLike, *, now: datetime | None = None,
     facts: list[dict] = []
 
     # ── The ANCHOR: a named print with its number (operator kill 2026-08-01) ──
-    # See the module docstring's ANCHOR LAW. The top-ranked print is FOLDED into
-    # the growth/inflation read below rather than shipped beside it, because the
-    # writer sees only the top three facts and the defect being fixed is that
-    # the LEAD fact named nothing. Folding is what makes an anchorless macro
-    # post hard to write; the remaining prints ship as siblings.
+    # The writer sees only three facts. Keep releases ahead of qualitative
+    # context without turning composite market-axis scores into release facts.
     _prints = _named_prints(regime)
     _anchor = _prints[0] if _prints else None
-    _anchor_folded = False
 
     # ── The concrete digit a macro read carries (Content Studio W1) ───────────
     # WHAT USED TO BE HERE. `brief.thematic_line.n_themes` was folded into the
@@ -816,58 +790,10 @@ def macro_facts(root: PathLike, *, now: datetime | None = None,
         _breadth_count = dict(_cb)
         break
 
-    # ── Growth + inflation, translated to plain observable words ──────────────
-    # NO regime label, NO scores in the text. We read the underlying growth/
-    # inflation scores and say what they plainly imply. The numbers stay internal.
+    # Composite growth/inflation scores do not mint release observations.
+    # In particular, their sign or magnitude cannot establish that consumer
+    # inflation is cooling, accelerating, or flat. Named prints ship below.
     if isinstance(regime, dict):
-        growth = regime.get("growth_score")
-        inflation = regime.get("inflation_score")
-
-        if growth is not None and inflation is not None:
-            try:
-                g = float(growth)
-                infl = float(inflation)
-                gw = _growth_words(g)
-                iw = _inflation_words(infl)
-                # Honest "not a comfortable mix" only when the two genuinely pull
-                # opposite ways (soft growth + warm inflation, or vice versa).
-                uncomfortable = (g < -0.05 and infl > 0.05) or (g > 0.05 and infl < -0.05)
-                tail = " Not a comfortable mix." if uncomfortable else ""
-                text = f"{gw[0].upper()}{gw[1:]} while {iw}.{tail}"
-                _gi: dict = {
-                    "id": "growth_inflation",
-                    "text": text,
-                    "salience": 10,
-                    "numbers": [],
-                }
-                # ANCHOR FIRST, breadth second. Both are concrete, but only the
-                # print answers the operator's actual complaint ("names no
-                # print"): "4 of 11 sectors green" was IN the killed post and
-                # did not save it, because a sector count is our arithmetic over
-                # a board while a claims print is a release with a publisher and
-                # a number a reader can look up. The breadth clause stays as the
-                # fallback for the day the regime artifact carries no print at
-                # all — a concrete observable beats an abstraction, which is
-                # exactly what the pre-2026-08-01 fold was for.
-                # PRINT FIRST, STANCE SECOND. The order is the fix, not a
-                # cosmetic: the killed posts opened on the abstraction and a
-                # reader bounced before reaching anything checkable. Lead with
-                # the release and its number, then say what it means.
-                if _anchor:
-                    _gi["text"] = f"{_anchor['text']} {text}"
-                    _gi["numbers"] = list(_anchor.get("numbers") or [])
-                    _gi["salience"] = _ANCHORED_LEAD_SALIENCE
-                    _anchor_folded = True
-                elif _breadth_clause:
-                    _gi["text"] = " ".join(
-                        p for p in (text, _breadth_clause, _breadth_tail) if p)
-                    _gi["numbers"] = list(_breadth_numbers)
-                    _gi["count"] = dict(_breadth_count or {})
-                    _breadth_clause = ""  # folded; do not also ship it standalone
-                facts.append(_gi)
-            except (TypeError, ValueError):
-                pass
-
         # ── Liquidity overlay ─────────────────────────────────────────────
         liq = regime.get("liquidity_overlay")
         if liq:
@@ -895,8 +821,7 @@ def macro_facts(root: PathLike, *, now: datetime | None = None,
                 "salience": 6,
                 "numbers": [],
             })
-        # STABLE (or anything else) → no separate fact; the growth/inflation line
-        # already carries the read.
+        # STABLE (or anything else) → no separate transition fact.
 
     # ── Daily brief narrative ─────────────────────────────────────────────────
     if isinstance(brief, dict):
@@ -918,9 +843,7 @@ def macro_facts(root: PathLike, *, now: datetime | None = None,
         # move today") is deleted for the same two reasons as the fold-in above:
         # no denominator, and n_themes is a total rather than a count of movers.
 
-    # The breadth pair ships STANDALONE only when it was not folded into the
-    # growth/inflation read above (i.e. no regime data). Never both: one fact
-    # list must not say the same sentence twice.
+    # Breadth keeps its own observed count, session wording and existing tail.
     if _breadth_clause:
         _standalone = _breadth_clause[0].upper() + _breadth_clause[1:]
         # STANDALONE IS EXACTLY THE SHAPE THE BRIEF NAMES, so the stance tail is
@@ -937,19 +860,15 @@ def macro_facts(root: PathLike, *, now: datetime | None = None,
         })
 
     # ── The named prints (ANCHOR LAW) ─────────────────────────────────────────
-    # The top-ranked print ships standalone ONLY when the growth/inflation read
-    # it was meant to anchor never got built (scores missing or unparseable).
-    # Otherwise it lives inside that fact and saying it twice would burn a
-    # writer-visible slot on a sentence already in the packet.
-    _sibling_prints = _prints[1:] if _anchor_folded else _prints
-    if _anchor and not _anchor_folded:
+    # Each release gets one slot. Scores cannot alter its text, rank or units.
+    _sibling_prints = _prints[1:]
+    if _anchor:
         facts.append({
             "id": _anchor["id"],
             "text": _anchor["text"],
             "salience": _ANCHORED_LEAD_SALIENCE,
             "numbers": list(_anchor.get("numbers") or []),
         })
-        _sibling_prints = _prints[1:]
     for _i, _p in enumerate(_sibling_prints[:len(_NAMED_PRINT_SALIENCE)]):
         facts.append({
             "id": _p["id"],

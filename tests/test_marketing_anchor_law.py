@@ -208,7 +208,7 @@ FULL_REGIME = {
 
 EXPECTED_PRINTS = {
     "print_jobless_claims":
-        "Jobless claims are averaging 203k a week this month, 8.6% "
+        "The four-week average of initial jobless claims is 203k, 8.6% "
         "below a year ago.",
     "print_gdpnow":
         "The Atlanta Fed's GDPNow has the economy growing at a 5.0% annual "
@@ -282,7 +282,7 @@ def test_the_packet_carries_no_more_prints_than_the_writer_can_see():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 14-17. The fold: the packet's LEAD fact names a print
+# 14-17. The packet's LEAD fact names a print without invented interpretation
 # ─────────────────────────────────────────────────────────────────────────────
 
 #: Friday 2026-07-31 23:51 ET — the wall clock of the real nightly run that
@@ -297,26 +297,83 @@ def _write(root: Path, rel: str, payload: dict) -> None:
     p.write_text(json.dumps(payload), encoding="utf-8")
 
 
+def test_macro_writer_receives_releases_not_composite_score_interpretations(tmp_path):
+    """The November packet called inflation 'cooling off fast' even though
+    its sticky-price release was accelerating. Market-axis scores cannot
+    establish the direction or speed of a measured inflation release.
+    Exercise the actual writer payload, with the release evidence held fixed.
+    """
+    conditions = {
+        "labor_nowcast": {"initial_claims_4wk": 194750.0,
+                          "claims_yoy_pct": -13.05803571428571},
+        "growth_nowcast": {"gdpnow": 3.481},
+        "inflation_nowcast": {"median_cpi": 3.6649805553,
+                              "sticky_trend": "accelerating"},
+    }
+    expected = [
+        "The four-week average of initial jobless claims is 195k, 13.1% below a year ago.",
+        "The Atlanta Fed's GDPNow has the economy growing at a 3.5% annual rate this quarter.",
+        "The Cleveland Fed's median CPI is running at a 3.7% annual rate.",
+    ]
+    for growth, inflation in ((0.333, -0.52), (-0.8, 0.8), (0.8, -0.8),
+                              (-0.2, 0.2), (0.2, -0.2), (0.0, 0.0),
+                              (None, None), ("unavailable", "unavailable")):
+        _write(tmp_path, "data/regime/latest.json", {
+            "asof": "2026-11-11",
+            "growth_score": growth, "inflation_score": inflation,
+            "conditions": conditions,
+        })
+        facts = mf.macro_facts(
+            tmp_path, now=datetime(2026, 11, 12, 15, tzinfo=timezone.utc))
+        ctx = cw.build_context(
+            {"ticker": "", "type": "macro", "account": "flagship"},
+            facts=facts,
+        )
+        ctx["shape"] = "one_liner"
+        payload = cw._v2_item_payload(
+            ctx, persona_card=None, codex_by_account={}, memory_by_account={},
+        )
+        assert [f["text"] for f in payload["facts"]] == expected, (growth, inflation)
+        assert [f["salience"] for f in facts["facts"]] == [12, 11, 10]
+        assert set(facts["numbers_whitelist"]) == {"195k", "13.1%", "3.5%", "3.7%"}
+        assert cw.validate_copy("", expected[0], ctx) == []
+        assert cw.validate_copy_v2(expected[0], ctx) == []
+
+
+def test_composite_scores_alone_do_not_mint_macro_or_fallback_event_facts(tmp_path):
+    _write(tmp_path, "data/regime/latest.json", {
+        "growth_score": 0.333, "inflation_score": -0.52,
+    })
+    _write(tmp_path, "site/neuralwebdata/daily_brief.json", {
+        "why_the_tape_moved": {"available": True,
+                               "primary": {"direction": "unrecognized driver"}},
+    })
+    assert mf.macro_facts(tmp_path, now=FRIDAY_NIGHT) == {
+        "facts": [], "numbers_whitelist": [],
+    }
+    assert mf.event_facts(tmp_path, now=FRIDAY_NIGHT) == {
+        "facts": [], "numbers_whitelist": [],
+    }
+
+
 def test_the_macro_lead_fact_leads_with_the_print(tmp_path):
     _write(tmp_path, "data/regime/latest.json", FULL_REGIME)
     facts = mf.macro_facts(tmp_path)["facts"]
     lead = facts[0]
-    assert lead["id"] == "growth_inflation", [f["id"] for f in facts]
-    # PRINT FIRST, STANCE SECOND — the killed posts opened on the abstraction.
-    assert lead["text"].startswith(EXPECTED_PRINTS["print_jobless_claims"]), lead
-    assert "growth data" in lead["text"].lower()
-    # And the post built on it is legal, abstraction and all.
+    assert lead["id"] == "print_jobless_claims", [f["id"] for f in facts]
+    assert lead["text"] == EXPECTED_PRINTS["print_jobless_claims"], lead
+    # The measured release remains a usable anchor on its own.
     assert cw.anchorless_macro_violations(lead["text"], "macro") == []
 
 
-def test_the_folded_print_is_not_also_shipped_standalone(tmp_path):
+def test_each_print_ships_once_in_the_visible_macro_packet(tmp_path):
     """One packet must not say the same sentence twice — a duplicate burns one
     of the three slots the writer can see."""
     _write(tmp_path, "data/regime/latest.json", FULL_REGIME)
     facts = mf.macro_facts(tmp_path)["facts"]
     ids = [f["id"] for f in facts]
-    assert "print_jobless_claims" not in ids, ids
-    assert ids[1:3] == ["print_gdpnow", "print_median_cpi"], ids
+    assert ids == ["print_jobless_claims", "print_gdpnow", "print_median_cpi"], ids
+    assert sum("jobless claims" in f["text"] for f in facts) == 1
 
 
 def test_the_top_three_facts_the_writer_sees_all_carry_a_number(tmp_path):
@@ -330,9 +387,8 @@ def test_the_top_three_facts_the_writer_sees_all_carry_a_number(tmp_path):
 
 
 def test_an_artifact_with_no_prints_falls_back_to_the_breadth_clause(tmp_path):
-    """The pre-2026-08-01 behaviour is the FALLBACK, not deleted: where the
-    artifact has no named print, the fact still says the concrete observable it
-    does have.
+    """Where the artifact has no named print, retain its observed breadth
+    without attaching a score-derived growth or inflation conclusion.
 
     CLOCK PINNED (2026-08-02 temporal fix). The breadth clause is now
     session-aware, so this fixture asserted a sentence whose truth depended on
@@ -347,14 +403,14 @@ def test_an_artifact_with_no_prints_falls_back_to_the_breadth_clause(tmp_path):
         {"t": "BBB", "name": "BBB", "sector": "Utilities", "perf": {"1D": -1.3}},
     ]})
     lead = mf.macro_facts(tmp_path, now=FRIDAY_NIGHT)["facts"][0]
-    assert lead["id"] == "growth_inflation"
+    assert lead["id"] == "sector_breadth"
     assert "1 of 2 sectors closed green today." in lead["text"], lead
-    assert lead["salience"] == 10, "unanchored lead must not claim the anchor rank"
+    assert "growth" not in lead["text"].lower() and "inflation" not in lead["text"].lower()
+    assert lead["salience"] == 7, "breadth must retain its own rank"
 
 
-def test_the_anchor_ships_standalone_when_there_is_no_read_to_fold_it_into(tmp_path):
-    """No growth/inflation scores means no lead fact to fold into. The anchor
-    must not vanish with it."""
+def test_the_anchor_does_not_require_composite_scores(tmp_path):
+    """Missing growth/inflation scores cannot remove a measured release."""
     regime = {k: v for k, v in FULL_REGIME.items()
               if k not in ("growth_score", "inflation_score")}
     _write(tmp_path, "data/regime/latest.json", regime)
@@ -501,7 +557,7 @@ def test_a_percent_print_carries_one_decimal():
     assert "2.8%" in out["text"], out
 
 
-def test_the_folded_lead_fits_the_macro_number_budget():
+def test_the_claims_lead_fits_the_macro_number_budget():
     """A macro post is allowed two distinct numbers. The lead fact carries the
     anchor's pair and nothing else, so the writer can quote it whole."""
     text = EXPECTED_PRINTS["print_jobless_claims"]
@@ -568,7 +624,8 @@ def test_a_negative_print_reads_as_english_not_as_a_minus_sign():
         "rate this quarter.")
     surge = {"conditions": {"labor_nowcast": {"initial_claims_4wk": 5_800_000.0,
                                                 "claims_yoy_pct": 420.0}}}
-    assert "5.8m a week" in mf._print_jobless_claims(surge)["text"]
+    assert mf._print_jobless_claims(surge)["text"] == (
+        "The four-week average of initial jobless claims is 5.8m, 420.0% above a year ago.")
 
 
 def test_the_anchored_lead_still_fits_a_deterministic_post(tmp_path):

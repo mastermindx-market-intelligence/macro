@@ -134,6 +134,7 @@ def _write_regime(root: Path) -> None:
     p.mkdir(parents=True, exist_ok=True)
     (p / "latest.json").write_text(json.dumps({
         "growth_score": -0.4, "inflation_score": 0.2,
+        "conditions": {"labor_nowcast": {"initial_claims_4wk": 203000.0}},
     }), encoding="utf-8")
 
 
@@ -168,7 +169,7 @@ def test_event_facts_unknown_label_falls_back_to_macro(tmp_path):
 
     ids = [f["id"] for f in out["facts"]]
     assert "event_catalyst" not in ids
-    assert "growth_inflation" in ids          # macro fallback carried the post
+    assert "print_jobless_claims" in ids      # a measured release carries the fallback
     joined = " ".join(f["text"] for f in out["facts"]).lower()
     assert "flurble" not in joined and "gizmos" not in joined
 

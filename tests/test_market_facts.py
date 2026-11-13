@@ -626,18 +626,20 @@ def test_print_jobless_claims_renders_the_compact_register_and_is_gate_clean():
     assert validate_copy("", fact["text"], ctx) == []
 
 
-def test_print_jobless_claims_flat_yoy_variant_is_also_gate_clean():
+@pytest.mark.parametrize("comparison", [0.0, 0.04, -0.04, None])
+def test_print_jobless_claims_flat_yoy_variant_is_also_gate_clean(comparison):
     """The no-yoy-line branch (abs(yoy) < 0.05) renders a shorter sentence with
     the same level token — covered separately since it is a distinct template."""
     from engine.marketing.copywriter import build_context, validate_copy
     from engine.marketing.market_facts import _print_jobless_claims
 
-    regime = {"conditions": {"labor_nowcast": {
-        "initial_claims_4wk": 221_000.0, "claims_yoy_pct": 0.0,
-    }}}
+    labor = {"initial_claims_4wk": 221_000.0}
+    if comparison is not None:
+        labor["claims_yoy_pct"] = comparison
+    regime = {"conditions": {"labor_nowcast": labor}}
     fact = _print_jobless_claims(regime)
     assert fact is not None
-    assert fact["text"] == "Jobless claims are averaging 221k a week this month."
+    assert fact["text"] == "The four-week average of initial jobless claims is 221k."
     assert fact["numbers"] == ["221k"]
 
     ctx = build_context(
