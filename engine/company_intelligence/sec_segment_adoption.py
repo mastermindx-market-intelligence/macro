@@ -324,3 +324,26 @@ class PinnedSegmentSource:
                 derived = (-1 if sign == '-' else 1) * int(text.replace(',', '')) * n.SEGMENT_FIGURE_SCALES[scale]
                 n._require(self.fact[name] == derived, 'FIGURE_TEXT_MISMATCH')
         return read.content
+
+
+def replay_segment_source(snapshot, authority):
+    """Replay the pinned source document for one segment snapshot.
+
+    The proposal path calls this before any ledger write. The disclosure store
+    does not admit a segment fact, so ``publish_disclosure`` never reaches its
+    own figure check for one. One bounded read of the pinned document; every
+    failure is a ``DisclosureError``.
+    """
+    e, f = snapshot.spec['edition'], snapshot.spec['fact']
+    n._require(f['schema'] == n.SEGMENT_FACT_SCHEMA and e['schema'] == n.SEC_EDITION_SCHEMA
+               and f['edition'] == n.validate_edition(e).payload(), 'FACT_SPECIES_INVALID')
+    body = PinnedSegmentSource(snapshot, authority).read_source(
+        disclosure_id=e['disclosure_id'], edition_reference=n.validate_edition(e),
+        source_sha256=e['source_sha256'], expected_byte_length=e['source_byte_length'],
+        max_byte_length=n.MAX_SEC_SOURCE_BYTES)
+    n._require(type(body) is bytes and len(body) == e['source_byte_length']
+               and sha256(body).hexdigest() == e['source_sha256'], 'SOURCE_BYTES_MISMATCH')
+    span = f['span']
+    n._require(sha256(body[span['start_byte']:span['end_byte']]).hexdigest() == f['span']['text_sha256'],
+               'SOURCE_SPAN_MISMATCH')
+    return None

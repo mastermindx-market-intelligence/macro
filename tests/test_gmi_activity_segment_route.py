@@ -40,6 +40,7 @@ from engine.earnings_release.receipts import receipt_for_char_span
 from engine.theme_graph import activity_history_bridge as bridge
 from engine.theme_graph import materialize, probation
 from engine.theme_graph import membership_evidence as me
+from scripts import propose_activity_membership as cli
 from tests.test_company_pinned_relationship_candidates import (
     fixture as pinned_fixture, inspect as pinned_inspect,
 )
@@ -1413,3 +1414,208 @@ def test_d_round2_reviewer_probes_still_refused(tmp_path):
     source = segment.PinnedSegmentSource(snapshot, case.pinned.authority)
     with pytest.raises(n.DisclosureError, match="FIGURE_TEXT_MISMATCH"):
         _read_source(source, spec["edition"])
+
+
+# ---------------------------------------------------------------------------
+# Fifth review round: the proposal path replays the pinned source before any
+# ledger write (the disclosure store does not admit a segment fact).
+# ---------------------------------------------------------------------------
+
+_R5_ATTR_BODY = (SEG_BODY_BASE + ' <td colspan="30"> revenue: 30 revenue_denominator: 100'
+                 ' profit: 10 profit_denominator: 100').encode("utf-8")
+
+
+def _r5_tampered_snapshot(case):
+    """The honest snapshot with the revenue span moved onto the digits of colspan="30"."""
+    body = _R5_ATTR_BODY
+    digits = b"30"
+    pos = body.index(b'colspan="30"') + len(b'colspan="')
+    spec = copy.deepcopy(case.snapshot.spec)
+    spec["fact"]["figure_spans"]["revenue"] = {
+        "start_byte": pos, "end_byte": pos + len(digits),
+        "text_sha256": hashlib.sha256(body[pos:pos + len(digits)]).hexdigest()}
+    return SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+
+
+def _r5_attr_case(tmp_path):
+    return _segment_case(tmp_path, body=_R5_ATTR_BODY)
+
+
+def _r5_wire_cli(monkeypatch, snapshot, authority):
+    """Point the proposal CLI at one snapshot and one authority; no real owner or store."""
+    monkeypatch.setattr(o, "CommittedDisclosureSource",
+                        lambda root, **kwargs: SimpleNamespace(snapshot=lambda: snapshot))
+    monkeypatch.setattr(cli, "_segment_source_authority", lambda snap: authority)
+    monkeypatch.setattr(me, "_default_activity_identity", _segment_identity_reader)
+
+
+def _r5_propose_argv(ledger):
+    return ["propose", "--issuer", SEG_NODE, "--theme", TARGET, "--role", "operator",
+            "--knowledge-cutoff", KNOWLEDGE_CUTOFF, "--created", CREATED,
+            "--code-version", CODE_VERSION, "--ledger", str(ledger),
+            "--segment-packet", "a", "b", "c", "--exposure-role", "primary", "--profit-driver"]
+
+
+def test_r5_replay_honest_segment_source_returns_none(tmp_path):
+    case = _segment_case(tmp_path)
+    assert segment.replay_segment_source(case.snapshot, case.pinned.authority) is None
+
+
+def test_r5_replay_refuses_figure_span_moved_onto_tag_attribute_digits(tmp_path):
+    case = _r5_attr_case(tmp_path)
+    assert segment.replay_segment_source(case.snapshot, case.pinned.authority) is None
+    tampered = _r5_tampered_snapshot(case)
+    with pytest.raises(n.DisclosureError) as caught:
+        segment.replay_segment_source(tampered, case.pinned.authority)
+    assert caught.value.code == "FIGURE_SPAN_MISMATCH"
+
+
+def test_r5_replay_refuses_fact_form_differing_from_pinned_manifest_form(tmp_path):
+    case = _segment_case(tmp_path)  # manifest and fact both 10-K
+    spec = copy.deepcopy(case.snapshot.spec)
+    spec["fact"]["form_type"] = "20-F"
+    snapshot = SimpleNamespace(spec=spec, bindings=dict(case.snapshot.bindings))
+    with pytest.raises(n.DisclosureError) as caught:
+        segment.replay_segment_source(snapshot, case.pinned.authority)
+    assert caught.value.code == "SEGMENT_FORM_NOT_ADMITTED"
+
+
+def test_r5_cli_honest_segment_packet_writes_one_proposed_row(tmp_path, monkeypatch, capsys):
+    case = _segment_case(tmp_path)
+    ledger = tmp_path / "ledger" / "activity_proposals.jsonl"
+    _r5_wire_cli(monkeypatch, case.snapshot, case.pinned.authority)
+    rc = cli.main(_r5_propose_argv(ledger))
+    assert rc == 0, capsys.readouterr().err
+    rows = probation.read_activity_proposals(ledger)
+    assert len(rows) == 1 and rows[0]["status"] == "PROPOSED"
+
+
+def test_r5_cli_tampered_figure_span_refused_before_any_ledger_write(tmp_path, monkeypatch, capsys):
+    case = _r5_attr_case(tmp_path)
+    ledger = tmp_path / "ledger" / "activity_proposals.jsonl"
+    _r5_wire_cli(monkeypatch, _r5_tampered_snapshot(case), case.pinned.authority)
+    rc = cli.main(_r5_propose_argv(ledger))
+    assert rc == 2
+    err = capsys.readouterr().err
+    assert "SOURCE_OWNER_REFUSED" in err and "FIGURE_SPAN_MISMATCH" in err
+    assert not ledger.exists()
+
+
+def test_r5_cli_replay_is_mandatory_authority_failure_blocks_the_ledger(tmp_path, monkeypatch, capsys):
+    case = _segment_case(tmp_path)
+    ledger = tmp_path / "ledger" / "activity_proposals.jsonl"
+    _r5_wire_cli(monkeypatch, case.snapshot, case.pinned.authority)
+
+    def unavailable(snapshot):
+        raise n.DisclosureError("SEC_NATIVE_SOURCE_STORE_UNAVAILABLE")
+    monkeypatch.setattr(cli, "_segment_source_authority", unavailable)
+    rc = cli.main(_r5_propose_argv(ledger))
+    assert rc == 2
+    err = capsys.readouterr().err
+    assert "SOURCE_OWNER_REFUSED" in err and "SEC_NATIVE_SOURCE_STORE_UNAVAILABLE" in err
+    assert not ledger.exists()
+
+
+def test_r5_factory_refuses_local_source_override_before_any_store_construction(monkeypatch):
+    from engine.research_vault import r2_store
+    monkeypatch.setenv("RESEARCH_LOCAL_STORE", "/must-not-be-created")
+    monkeypatch.setattr(r2_store, "build_store", lambda: pytest.fail("store constructed before refusal"))
+    with pytest.raises(n.DisclosureError, match="SEC_LOCAL_SOURCE_OVERRIDE_REFUSED"):
+        cli._segment_source_authority(None)
+
+
+@pytest.mark.parametrize("store", [None, object()])
+def test_r5_factory_refuses_unavailable_or_alternate_store(monkeypatch, store):
+    from engine.research_vault import r2_store
+    monkeypatch.delenv("RESEARCH_LOCAL_STORE", raising=False)
+    monkeypatch.setattr(r2_store, "build_store", lambda: store)
+    with pytest.raises(n.DisclosureError, match="SEC_NATIVE_SOURCE_STORE_UNAVAILABLE"):
+        cli._segment_source_authority(None)
+
+
+def test_r5_factory_builds_the_native_authority_from_the_native_store(monkeypatch):
+    from engine.fundamental_forensics import filing_attestation
+    from engine.research_vault import r2_store
+    monkeypatch.delenv("RESEARCH_LOCAL_STORE", raising=False)
+
+    class NativeStore:
+        available = True
+    store = NativeStore()
+    monkeypatch.setattr(r2_store, "R2Store", NativeStore)
+    monkeypatch.setattr(r2_store, "build_store", lambda: store)
+    calls = []
+
+    def authority(**kwargs):
+        calls.append(kwargs)
+        return "native-authority"
+    monkeypatch.setattr(filing_attestation, "PinnedSourceAuthority", authority)
+    snapshot = SimpleNamespace(spec={"edition": {"schema": n.SEC_EDITION_SCHEMA,
+                                                 "sec_source": {"snapshot_id": "ffsecsrc_" + "b" * 64}}})
+    assert cli._segment_source_authority(snapshot) == "native-authority"
+    assert calls == [{"store": store, "snapshot_id": "ffsecsrc_" + "b" * 64}]
+
+
+class _R5Store:
+    def __init__(self):
+        self.objects = {}
+        self.reads = self.writes = self.capabilities = 0
+
+    def validate_strict_conditional_write_capability(self):
+        self.capabilities += 1
+
+    def get_bytes_strict_bounded(self, key, *, expected_byte_length, max_byte_length):
+        self.reads += 1
+        return self.objects.get(key)
+
+    def get_bytes_strict_bounded_versioned(self, key, maximum_bytes):
+        self.reads += 1
+        return n.VersionedBytes(None, None)
+
+    def put_bytes_strict_conditional(self, key, raw, *, expected_version, content_type):
+        self.writes += 1
+        self.objects[key] = raw
+        return True
+
+
+class _R5Reader:
+    def __init__(self):
+        self.calls = []
+
+    def read_source(self, **binding):
+        self.calls.append(binding)
+        return b""
+
+
+class _R5Authority:
+    def __init__(self, admission):
+        self.admission = admission
+
+    def resolve(self, request, candidate=None):
+        return self.admission
+
+    def authorize_publication(self, request, candidate):
+        return self.admission
+
+
+def test_r5_store_path_does_not_admit_a_segment_fact_so_it_never_reads_the_source(tmp_path):
+    """Tripwire. The disclosure store does not admit a segment fact at this head: the
+    segment edition carries SEC_EDITION_SCHEMA but Admission.validate demands
+    EDITION_SCHEMA for every non-supplier fact, so publish_disclosure refuses before
+    any source read. Whoever opens that admission must keep the whole-document figure
+    check (the PinnedSegmentSource.read_source path) on the write.
+    """
+    case = _segment_case(tmp_path)
+    edition, fact = case.snapshot.spec["edition"], case.snapshot.spec["fact"]
+    request = n.Request(fact["fact_id"], n.SEC_SUPPLIER_PURPOSE, n.SEC_SUPPLIER_AUDIENCE)
+    admission = n.Admission(
+        request, n.validate_fact(fact), n.validate_edition(edition), "fixture-generation-1",
+        "fixture:disclosures", "DERIVED", "4" * 64, "5" * 64, "6" * 64, "7" * 64, "8" * 64,
+        fact["known_at"], "date", "current", frozenset({"fact_id", "kind", "lifecycle"}),
+        operation="publish")
+    store, reader = _R5Store(), _R5Reader()
+    with pytest.raises(n.DisclosureError) as caught:
+        n.publish_disclosure(store, _R5Authority(admission), request, edition=edition, fact=fact,
+                             source_reader=reader)
+    assert caught.value.code == "ADMISSION_REFERENCE_INVALID"
+    assert reader.calls == []
+    assert store.objects == {} and store.writes == 0

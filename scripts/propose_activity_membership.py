@@ -11,7 +11,8 @@ Evidence comes from the native owners through their default readers:
 ``engine.theme_graph.membership_evidence.build_activity_membership_evidence``
 reads the identity owner and the company-intelligence disclosure owner, and
 ``engine.theme_graph.probation.make_activity_membership_proposal`` wraps that
-evidence as a PROPOSED row. Every refusal is typed and printed as one
+evidence as a PROPOSED row. A segment packet's pinned source is replayed (form
+and every figure span, whole document) before any ledger write. Every refusal is typed and printed as one
 ``REFUSED: <code>: <detail>`` line with exit 2 — never a traceback.
 
 Run:
@@ -24,6 +25,7 @@ Run:
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -50,6 +52,23 @@ def _default_code_version() -> str:
     return out.stdout.strip()
 
 
+def _segment_source_authority(snapshot):
+    # Mirrors scripts/publish_company_disclosure.py::_pinned_supplier_source: reuse
+    # the incumbent private Research store and native pinned-source reader; never
+    # copy raw sources into a second local store.
+    from engine.company_intelligence import issuer_disclosures as native
+    from engine.fundamental_forensics import filing_attestation
+    from engine.research_vault import r2_store
+    native._require(not os.environ.get("RESEARCH_LOCAL_STORE"), "SEC_LOCAL_SOURCE_OVERRIDE_REFUSED")
+    store = r2_store.build_store()
+    native._require(type(store) is r2_store.R2Store and store.available,
+                    "SEC_NATIVE_SOURCE_STORE_UNAVAILABLE")
+    native._require(snapshot.spec["edition"]["schema"] == native.SEC_EDITION_SCHEMA,
+                    "SEC_SOURCE_BINDING_MISMATCH")
+    return filing_attestation.PinnedSourceAuthority(
+        store=store, snapshot_id=snapshot.spec["edition"]["sec_source"]["snapshot_id"])
+
+
 def _cmd_propose(args: argparse.Namespace) -> int:
     code_version = args.code_version or _default_code_version()
     disclosure_reader = None
@@ -58,12 +77,26 @@ def _cmd_propose(args: argparse.Namespace) -> int:
     if args.segment_packet:
         # Explicit deployment-owned segment packet selection, exactly the way
         # CommittedDisclosureSource(sec_supplier_paths=...) selects a supplier
-        # packet: no discovery, no default activation.
+        # packet: no discovery, no default activation. The pinned source is
+        # replayed (form and every figure span, whole document) before any
+        # ledger write: the disclosure store does not admit a segment fact.
         from engine.company_intelligence import issuer_disclosure_owner as owner
+        from engine.company_intelligence import issuer_disclosures as native
+        from engine.company_intelligence import sec_segment_adoption as segment
         source = owner.CommittedDisclosureSource(ROOT, sec_segment_paths=tuple(args.segment_packet))
+        try:
+            snapshot = source.snapshot()
+            segment.replay_segment_source(snapshot, _segment_source_authority(snapshot))
+        except ActivityAdmissionRefusal:
+            raise
+        except native.DisclosureError as exc:
+            raise ActivityAdmissionRefusal(
+                "SOURCE_OWNER_REFUSED", f"segment source replay: {exc.code}") from None
+        except Exception as exc:
+            raise ActivityAdmissionRefusal("SOURCE_OWNER_REFUSED", type(exc).__name__) from None
 
         def disclosure_reader(root, cv):
-            return source.snapshot()
+            return snapshot
 
         exposure_role = args.exposure_role
         profit_driver = args.profit_driver
