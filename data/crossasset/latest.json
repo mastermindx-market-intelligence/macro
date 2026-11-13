@@ -173,25 +173,25 @@
         "pair": "copper_gold",
         "ratio": 0.002,
         "trend": "elevated",
-        "pctile": 87.0
+        "pctile": 86.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 77.639,
+        "ratio": 78.082,
         "trend": "mid",
-        "pctile": 49.0
+        "pctile": 50.0
       },
       {
         "pair": "oil_gold",
         "ratio": 0.023,
         "trend": "mid",
-        "pctile": 79.0
+        "pctile": 78.0
       },
       {
         "pair": "stocks_gold",
-        "ratio": 0.193,
+        "ratio": 0.195,
         "trend": "elevated",
-        "pctile": 84.0
+        "pctile": 85.0
       }
     ],
     "carry": {
@@ -352,8 +352,8 @@
       "unstable_n": 0,
       "fx_stress": {
         "dominant": null,
-        "top_key": "em_crisis_capital_flight",
-        "top_val": 43.4
+        "top_key": "haven_flight_risk_off",
+        "top_val": 29.4
       }
     },
     "shadow": {

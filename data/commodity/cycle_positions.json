@@ -1,39 +1,39 @@
 {
   "gold": {
     "cycle_ref": "gold",
-    "pos": 2.2,
-    "phase": "Trough",
-    "phase_v2": "Downturn",
-    "overdue": false,
-    "overdue_frac": 0.622,
-    "hazard_1m": null,
-    "hazard_3m": null,
-    "hazard_6m": null,
-    "asof": "2026-11-12"
-  },
-  "silver": {
-    "cycle_ref": "silver",
-    "pos": 0.2,
+    "pos": 1.8,
     "phase": "Trough",
     "phase_v2": "Trough",
     "overdue": false,
-    "overdue_frac": 0.65,
+    "overdue_frac": 0.629,
     "hazard_1m": null,
     "hazard_3m": null,
     "hazard_6m": null,
-    "asof": "2026-11-12"
+    "asof": "2026-11-13"
+  },
+  "silver": {
+    "cycle_ref": "silver",
+    "pos": 0.1,
+    "phase": "Trough",
+    "phase_v2": "Trough",
+    "overdue": false,
+    "overdue_frac": 0.658,
+    "hazard_1m": null,
+    "hazard_3m": null,
+    "hazard_6m": null,
+    "asof": "2026-11-13"
   },
   "copper": {
     "cycle_ref": "copper",
-    "pos": 2.6,
+    "pos": 2.1,
     "phase": "Trough",
     "phase_v2": "Downturn",
     "overdue": true,
-    "overdue_frac": 3.728,
+    "overdue_frac": 3.736,
     "hazard_1m": null,
     "hazard_3m": null,
     "hazard_6m": null,
-    "asof": "2026-11-12"
+    "asof": "2026-11-13"
   },
   "oil": {
     "cycle_ref": "oil",
@@ -61,27 +61,27 @@
   },
   "platinum": {
     "cycle_ref": "pgms",
-    "pos": 1.6,
+    "pos": 1.7,
     "phase": "Trough",
     "phase_v2": "Trough",
     "overdue": false,
-    "overdue_frac": 0.316,
+    "overdue_frac": 0.32,
     "hazard_1m": null,
     "hazard_3m": null,
     "hazard_6m": null,
-    "asof": "2026-11-12"
+    "asof": "2026-11-13"
   },
   "palladium": {
     "cycle_ref": "pgms",
-    "pos": 1.6,
+    "pos": 1.7,
     "phase": "Trough",
     "phase_v2": "Trough",
     "overdue": false,
-    "overdue_frac": 0.316,
+    "overdue_frac": 0.32,
     "hazard_1m": null,
     "hazard_3m": null,
     "hazard_6m": null,
-    "asof": "2026-11-12"
+    "asof": "2026-11-13"
   },
   "corn": {
     "cycle_ref": "agriculture",

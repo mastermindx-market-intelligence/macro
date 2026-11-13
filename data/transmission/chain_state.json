@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
   "asof": "2026-11-12",
-  "built": "2026-11-13 10:30 UTC",
+  "built": "2026-11-13 13:52 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -1390,7 +1390,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 2.88,
+              "value": -2.228,
               "op": "gt",
               "threshold": 25,
               "passed": false
@@ -1398,7 +1398,7 @@
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": -0.9014,
+              "value": -1.1548,
               "op": "gt",
               "threshold": 0,
               "passed": false
@@ -1707,7 +1707,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 20,
-              "value": -14.885,
+              "value": -13.341,
               "op": "lt",
               "threshold": -12,
               "passed": true
@@ -1716,7 +1716,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 2.88,
+              "value": -2.228,
               "op": "lt",
               "threshold": -18,
               "passed": false
@@ -1724,7 +1724,7 @@
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": -0.9014,
+              "value": -1.1548,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -3450,7 +3450,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": -13.728,
+              "value": -15.601,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -3524,7 +3524,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": -13.728,
+              "value": -15.601,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -3720,7 +3720,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -6.146,
+              "value": -6.233,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -3790,7 +3790,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -6.146,
+              "value": -6.233,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -5609,8 +5609,8 @@
   "input_capture": {
     "schema": "txi.prospective_input_read.v1",
     "status": "observed_input_bytes",
-    "capture_started_at": "2026-11-13T10:30:26.416975+00:00",
-    "capture_completed_at": "2026-11-13T10:30:32.162963+00:00",
+    "capture_started_at": "2026-11-13T13:52:27.888918+00:00",
+    "capture_completed_at": "2026-11-13T13:52:33.929287+00:00",
     "observation_asof": "2026-11-12",
     "knowledge_basis": "native_process_observation_only",
     "source_available_at": null,
@@ -5630,8 +5630,8 @@
     "reads": [
       {
         "path": "data/forex/latest.json",
-        "bytes": 222434,
-        "sha256": "e751093d0e3220654f54bd9c5677204677d3850be2d0fa3f4daecbb9d5e77161",
+        "bytes": 221736,
+        "sha256": "17913d95fa2fb792b5ef0ab321095ea15680bea4b3f22c012bf4efcbec60b3b3",
         "status": "present"
       },
       {
@@ -5648,8 +5648,8 @@
       },
       {
         "path": "data/regime/latest.json",
-        "bytes": 993172,
-        "sha256": "1ee07f8d6e13eb8eee831eb0d577cdbc50b4f018ac50cdb35cc751b1acb734db",
+        "bytes": 952810,
+        "sha256": "3621a2e6088f1ae4f2c5e00ac6a9be7498d48bc0f622d7bcb703605b40b17371",
         "status": "present"
       },
       {
@@ -5661,19 +5661,19 @@
       {
         "path": "data/transmission/latest.json",
         "bytes": 105688,
-        "sha256": "677b026d4714835282437bdbeaa140e42e90b46c29f0483e39b6ec1669460320",
+        "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
         "status": "present"
       },
       {
         "path": "data/yahoo/BTC-USD.parquet",
         "bytes": 140448,
-        "sha256": "6bcf0694ef7af8730f72d9247410beaae62bff8c3f9cd6d3c90ae5061567dbe0",
+        "sha256": "ffc6ab72d9ef996e0df8d3c16174f9ab8bf3ed2661be2f0b957a1c9a30e78d2b",
         "status": "present"
       },
       {
         "path": "data/yahoo/CL_F.parquet",
-        "bytes": 172578,
-        "sha256": "f00be0a88d28440237845276792f7cb4fb63ca1bce6865a88875446482c0fdfd",
+        "bytes": 172596,
+        "sha256": "7bc3f892a593529e8e51b4f5c8bea02929b77ce7f659ab7988d992d616508aa4",
         "status": "present"
       },
       {
@@ -5684,8 +5684,8 @@
       },
       {
         "path": "data/yahoo/GC_F.parquet",
-        "bytes": 157191,
-        "sha256": "7d1eb347c832c38862dc045df6df1134af4745a429d90cd938de1b48b51d800a",
+        "bytes": 157209,
+        "sha256": "217b581abd074a1d44747356f265721b4710ea1a3dd1cf8c6c5cade20d0a5c21",
         "status": "present"
       },
       {
@@ -5785,11 +5785,11 @@
       ],
       "knowledge/transmission/proposed": []
     },
-    "causal_state_sha256": "53e023adaa11671742635e3a0b66a4ed380e1f6a031245509c27183ca4d40acb",
-    "proposed_transitions_sha256": "959bd63371a70a1bd4e492bb77ecbdb56b7699a4e002fff0a3c3866424080225",
+    "causal_state_sha256": "fbc5292b050f43ec418f1a3a1fea589deb1241779615a2e835444e2e5e666dca",
+    "proposed_transitions_sha256": "aa5e495c613767ed54d610c4ae18dca2d3852bea7cd9224cac1240e72098c86b",
     "retention": "resolve_exact_bytes_in_same_normal_git_publication",
     "publication_receipt": null,
     "scientific_acceptance": false,
-    "generation_id": "sha256:05c0f132686b1adc68a7064dc36d0e50c2d33537441324dffbbdd89bdc8f428c"
+    "generation_id": "sha256:94ac60e518a8dd2616bf277a0c1a619e2bbf07d9f03ddb8ad4cc34b7b6c758de"
   }
 }

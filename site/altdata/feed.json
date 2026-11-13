@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-13T07:24:27.861564+00:00",
+  "generated_utc": "2026-11-13T10:42:44.550553+00:00",
   "as_of": "2026-11-13",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -20,7 +20,7 @@
           "Filed": "2026-10-08",
           "Traded": "2026-08-28 00:00:00",
           "ExcessReturn": null,
-          "_first_seen": "2026-11-13T03:44:35.955354+00:00",
+          "_first_seen": "2026-11-13T06:06:27.072007+00:00",
           "excess_return": "13.03403995108032"
         },
         {
@@ -313,7 +313,7 @@
           "ExcessReturn": "14.074839345958786",
           "PriceChange": "13.17073170731708",
           "SPYChange": "-0.904107638641706",
-          "_first_seen": "2026-11-13T03:44:00.726034+00:00"
+          "_first_seen": "2026-11-13T06:02:59.202592+00:00"
         },
         {
           "Representative": "Richard W. Allen",
@@ -332,7 +332,7 @@
           "ExcessReturn": "12.767035008053245",
           "PriceChange": "10.029433867735461",
           "SPYChange": "-2.7376011403177842",
-          "_first_seen": "2026-11-13T03:44:00.726034+00:00"
+          "_first_seen": "2026-11-13T06:02:59.202592+00:00"
         },
         {
           "Representative": "Gilbert Cisneros",
@@ -1355,7 +1355,7 @@
           "Agency": "National Aeronautics and Space Administration",
           "Amount": "0.0",
           "action_date": "2026-11-06",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "MCK",
@@ -1364,7 +1364,7 @@
           "Agency": "Department of Justice",
           "Amount": "15431.76",
           "action_date": "2026-11-10",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "LMT",
@@ -1373,7 +1373,7 @@
           "Agency": "National Aeronautics and Space Administration",
           "Amount": "0.0",
           "action_date": "2026-11-06",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "LMT",
@@ -1382,7 +1382,7 @@
           "Agency": "National Aeronautics and Space Administration",
           "Amount": "25000.0",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "JLL",
@@ -1391,7 +1391,7 @@
           "Agency": "The Judicial Branch",
           "Amount": "42499.29",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "JLL",
@@ -1400,7 +1400,7 @@
           "Agency": "General Services Administration",
           "Amount": "9390.6",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "JLL",
@@ -1409,7 +1409,7 @@
           "Agency": "The Judicial Branch",
           "Amount": "8946.33",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "JLL",
@@ -1418,7 +1418,7 @@
           "Agency": "General Services Administration",
           "Amount": "9083.18",
           "action_date": "2026-11-10",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "HSIC",
@@ -1427,7 +1427,7 @@
           "Agency": "Department of Health and Human Services",
           "Amount": "4081.1",
           "action_date": "2026-09-17",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "GM",
@@ -1436,7 +1436,7 @@
           "Agency": "General Services Administration",
           "Amount": "43042.0",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "GE",
@@ -1445,7 +1445,7 @@
           "Agency": "Department of Homeland Security",
           "Amount": "56801.54",
           "action_date": "2026-11-10",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "FDX",
@@ -1454,7 +1454,7 @@
           "Agency": "Department of Justice",
           "Amount": "15000.0",
           "action_date": "2026-10-28",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "EW",
@@ -1463,7 +1463,7 @@
           "Agency": "Department of Veterans Affairs",
           "Amount": "198000.0",
           "action_date": "2026-09-29",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "EW",
@@ -1472,7 +1472,7 @@
           "Agency": "Department of Veterans Affairs",
           "Amount": "34000.0",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "CTAS",
@@ -1481,7 +1481,7 @@
           "Agency": "National Gallery of Art",
           "Amount": "10000.0",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "CTAS",
@@ -1490,7 +1490,7 @@
           "Agency": "National Gallery of Art",
           "Amount": "4000.0",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "CTAS",
@@ -1499,7 +1499,7 @@
           "Agency": "National Gallery of Art",
           "Amount": "10000.0",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "SPCX",
@@ -1508,7 +1508,7 @@
           "Agency": "National Aeronautics and Space Administration",
           "Amount": "0.0",
           "action_date": "2026-11-06",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "CAH",
@@ -1517,7 +1517,7 @@
           "Agency": "Department of Veterans Affairs",
           "Amount": "19214.72",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "AEE",
@@ -1526,7 +1526,7 @@
           "Agency": "Department of Justice",
           "Amount": "25000.0",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "AEE",
@@ -1535,7 +1535,7 @@
           "Agency": "Department of Justice",
           "Amount": "25000.0",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "MDLN",
@@ -1544,7 +1544,7 @@
           "Agency": "Department of Veterans Affairs",
           "Amount": "125660.57",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "ABT",
@@ -1553,7 +1553,7 @@
           "Agency": "Department of Veterans Affairs",
           "Amount": "84000.0",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "MCK",
@@ -1562,7 +1562,7 @@
           "Agency": "Department of Justice",
           "Amount": "2952.66",
           "action_date": "2026-11-10",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         },
         {
           "Ticker": "CTAS",
@@ -1571,7 +1571,7 @@
           "Agency": "National Gallery of Art",
           "Amount": "10000.0",
           "action_date": "2026-11-09",
-          "_first_seen": "2026-11-13T03:44:04.757165+00:00"
+          "_first_seen": "2026-11-13T06:03:06.057812+00:00"
         }
       ]
     },
@@ -1590,7 +1590,7 @@
           "Specific_Issue": "No specific Bill/monitor all activity with respect to beer industry. \n No Specific bill number/all activity on all proposed Tax Bills.",
           "Registrant": "THE OB-C GROUP, LLC",
           "Ticker": "BUD",
-          "_first_seen": "2026-11-13T03:44:03.896367+00:00"
+          "_first_seen": "2026-11-13T06:03:03.953777+00:00"
         },
         {
           "Date": "2026-11-12",
@@ -1600,7 +1600,7 @@
           "Specific_Issue": "*No specific bill number/all matters relating to housing and PMI Insurance",
           "Registrant": "THE OB-C GROUP, LLC",
           "Ticker": "NMIH",
-          "_first_seen": "2026-11-13T03:44:03.896367+00:00"
+          "_first_seen": "2026-11-13T06:03:03.953777+00:00"
         },
         {
           "Date": "2026-11-12",
@@ -1610,7 +1610,7 @@
           "Specific_Issue": "H.R. 7084 Defending American Property Abroad Act of 2026",
           "Registrant": "AQUIA GROUP, LLC",
           "Ticker": "VMC",
-          "_first_seen": "2026-11-13T03:44:03.896367+00:00"
+          "_first_seen": "2026-11-13T06:03:03.953777+00:00"
         },
         {
           "Date": "2026-11-12",
@@ -1620,7 +1620,7 @@
           "Specific_Issue": "VISN 21 VA facilities modernization \n Marine Corps Air Station Miramar flight regulations \n Corporate State and Local Tax Deduction",
           "Registrant": "ATLAS ADVOCACY",
           "Ticker": "KRC",
-          "_first_seen": "2026-11-13T03:44:03.896367+00:00"
+          "_first_seen": "2026-11-13T06:03:03.953777+00:00"
         },
         {
           "Date": "2026-11-12",
@@ -1630,7 +1630,7 @@
           "Specific_Issue": "FY27 Department of Defense Appropriations Act, FY27 NDAA FY27 budget issues",
           "Registrant": "CT GROUP FKA CTF GLOBAL LLC",
           "Ticker": "GD",
-          "_first_seen": "2026-11-13T03:44:03.896367+00:00"
+          "_first_seen": "2026-11-13T06:03:03.953777+00:00"
         },
         {
           "Date": "2026-11-11",
@@ -2067,7 +2067,7 @@
           "isOther": "False",
           "directOrIndirectOwnership": "I",
           "uploaded": "2026-11-13T03:00:06.706",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         },
         {
           "Ticker": "ASR",
@@ -2086,7 +2086,7 @@
           "isOther": "False",
           "directOrIndirectOwnership": "I",
           "uploaded": "2026-11-13T02:45:07.834",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         },
         {
           "Ticker": "ASR",
@@ -2105,7 +2105,7 @@
           "isOther": "False",
           "directOrIndirectOwnership": "I",
           "uploaded": "2026-11-13T02:45:07.834",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         },
         {
           "Ticker": "LRMR",
@@ -2124,64 +2124,7 @@
           "isOther": "False",
           "directOrIndirectOwnership": "I",
           "uploaded": "2026-11-13T02:45:07.834",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "CTRI",
-          "Date": "2026-11-10T00:00:00.000",
-          "Name": "ICAHN CARL C",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "S",
-          "Shares": "374430.0",
-          "PricePerShare": "21.0",
-          "SharesOwnedFollowing": "13336044.0",
-          "fileDate": "2026-11-13T02:30:10.000",
-          "officerTitle": null,
-          "isDirector": "False",
-          "isOfficer": "False",
-          "isTenPercentOwner": "True",
-          "isOther": "False",
-          "directOrIndirectOwnership": "I",
-          "uploaded": "2026-11-13T02:45:07.834",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "CTRI",
-          "Date": "2026-11-09T00:00:00.000",
-          "Name": "ICAHN CARL C",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "S",
-          "Shares": "625570.0",
-          "PricePerShare": "21.0",
-          "SharesOwnedFollowing": "13710474.0",
-          "fileDate": "2026-11-13T02:30:10.000",
-          "officerTitle": null,
-          "isDirector": "False",
-          "isOfficer": "False",
-          "isTenPercentOwner": "True",
-          "isOther": "False",
-          "directOrIndirectOwnership": "I",
-          "uploaded": "2026-11-13T02:45:07.834",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "CTRI",
-          "Date": "2026-11-11T00:00:00.000",
-          "Name": "ICAHN CARL C",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "S",
-          "Shares": "175733.0",
-          "PricePerShare": "19.72",
-          "SharesOwnedFollowing": "13160311.0",
-          "fileDate": "2026-11-13T02:30:10.000",
-          "officerTitle": null,
-          "isDirector": "False",
-          "isOfficer": "False",
-          "isTenPercentOwner": "True",
-          "isOther": "False",
-          "directOrIndirectOwnership": "I",
-          "uploaded": "2026-11-13T02:45:07.834",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         },
         {
           "Ticker": "CTRI",
@@ -2200,7 +2143,64 @@
           "isOther": "False",
           "directOrIndirectOwnership": "I",
           "uploaded": "2026-11-13T02:45:07.834",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "CTRI",
+          "Date": "2026-11-09T00:00:00.000",
+          "Name": "ICAHN CARL C",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "S",
+          "Shares": "625570.0",
+          "PricePerShare": "21.0",
+          "SharesOwnedFollowing": "13710474.0",
+          "fileDate": "2026-11-13T02:30:10.000",
+          "officerTitle": null,
+          "isDirector": "False",
+          "isOfficer": "False",
+          "isTenPercentOwner": "True",
+          "isOther": "False",
+          "directOrIndirectOwnership": "I",
+          "uploaded": "2026-11-13T02:45:07.834",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "CTRI",
+          "Date": "2026-11-11T00:00:00.000",
+          "Name": "ICAHN CARL C",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "S",
+          "Shares": "175733.0",
+          "PricePerShare": "19.72",
+          "SharesOwnedFollowing": "13160311.0",
+          "fileDate": "2026-11-13T02:30:10.000",
+          "officerTitle": null,
+          "isDirector": "False",
+          "isOfficer": "False",
+          "isTenPercentOwner": "True",
+          "isOther": "False",
+          "directOrIndirectOwnership": "I",
+          "uploaded": "2026-11-13T02:45:07.834",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "CTRI",
+          "Date": "2026-11-10T00:00:00.000",
+          "Name": "ICAHN CARL C",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "S",
+          "Shares": "374430.0",
+          "PricePerShare": "21.0",
+          "SharesOwnedFollowing": "13336044.0",
+          "fileDate": "2026-11-13T02:30:10.000",
+          "officerTitle": null,
+          "isDirector": "False",
+          "isOfficer": "False",
+          "isTenPercentOwner": "True",
+          "isOther": "False",
+          "directOrIndirectOwnership": "I",
+          "uploaded": "2026-11-13T02:45:07.834",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         },
         {
           "Ticker": "PGY",
@@ -2219,7 +2219,7 @@
           "isOther": "False",
           "directOrIndirectOwnership": "D",
           "uploaded": "2026-11-13T02:30:06.744",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         },
         {
           "Ticker": "CRK",
@@ -2229,7 +2229,7 @@
           "TransactionCode": "G",
           "Shares": "2695.0",
           "PricePerShare": "14.805",
-          "SharesOwnedFollowing": "218148.0",
+          "SharesOwnedFollowing": "228928.0",
           "fileDate": "2026-11-13T02:13:43.000",
           "officerTitle": null,
           "isDirector": "True",
@@ -2238,7 +2238,7 @@
           "isOther": "False",
           "directOrIndirectOwnership": "D",
           "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         },
         {
           "Ticker": "SPFI",
@@ -2257,7 +2257,7 @@
           "isOther": "False",
           "directOrIndirectOwnership": "I",
           "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         },
         {
           "Ticker": "SPFI",
@@ -2276,102 +2276,7 @@
           "isOther": "False",
           "directOrIndirectOwnership": "I",
           "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "ROIV",
-          "Date": "2026-11-11T00:00:00.000",
-          "Name": "Torti Frank",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "J",
-          "Shares": "151293.0",
-          "PricePerShare": "42.01",
-          "SharesOwnedFollowing": "12711793.0",
-          "fileDate": "2026-11-13T02:03:41.000",
-          "officerTitle": "President and Vant Chair",
-          "isDirector": "False",
-          "isOfficer": "True",
-          "isTenPercentOwner": "False",
-          "isOther": "False",
-          "directOrIndirectOwnership": "D",
-          "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "ROIV",
-          "Date": "2026-11-12T00:00:00.000",
-          "Name": "Torti Frank",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "F",
-          "Shares": "12800.0",
-          "PricePerShare": "41.85",
-          "SharesOwnedFollowing": "12306950.0",
-          "fileDate": "2026-11-13T02:03:41.000",
-          "officerTitle": "President and Vant Chair",
-          "isDirector": "False",
-          "isOfficer": "True",
-          "isTenPercentOwner": "False",
-          "isOther": "False",
-          "directOrIndirectOwnership": "D",
-          "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "ROIV",
-          "Date": "2026-11-11T00:00:00.000",
-          "Name": "Torti Frank",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "J",
-          "Shares": "240755.0",
-          "PricePerShare": "41.63",
-          "SharesOwnedFollowing": "12863086.0",
-          "fileDate": "2026-11-13T02:03:41.000",
-          "officerTitle": "President and Vant Chair",
-          "isDirector": "False",
-          "isOfficer": "True",
-          "isTenPercentOwner": "False",
-          "isOther": "False",
-          "directOrIndirectOwnership": "D",
-          "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "ROIV",
-          "Date": "2026-11-10T00:00:00.000",
-          "Name": "Torti Frank",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "J",
-          "Shares": "218369.0",
-          "PricePerShare": "41.13",
-          "SharesOwnedFollowing": "13103841.0",
-          "fileDate": "2026-11-13T02:03:41.000",
-          "officerTitle": "President and Vant Chair",
-          "isDirector": "False",
-          "isOfficer": "True",
-          "isTenPercentOwner": "False",
-          "isOther": "False",
-          "directOrIndirectOwnership": "D",
-          "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "ROIV",
-          "Date": "2026-11-12T00:00:00.000",
-          "Name": "Torti Frank",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "J",
-          "Shares": "62493.0",
-          "PricePerShare": "41.13",
-          "SharesOwnedFollowing": "12319750.0",
-          "fileDate": "2026-11-13T02:03:41.000",
-          "officerTitle": "President and Vant Chair",
-          "isDirector": "False",
-          "isOfficer": "True",
-          "isTenPercentOwner": "False",
-          "isOther": "False",
-          "directOrIndirectOwnership": "D",
-          "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         },
         {
           "Ticker": "ROIV",
@@ -2390,7 +2295,102 @@
           "isOther": "False",
           "directOrIndirectOwnership": "D",
           "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "ROIV",
+          "Date": "2026-11-11T00:00:00.000",
+          "Name": "Torti Frank",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "J",
+          "Shares": "240755.0",
+          "PricePerShare": "41.63",
+          "SharesOwnedFollowing": "12863086.0",
+          "fileDate": "2026-11-13T02:03:41.000",
+          "officerTitle": "President and Vant Chair",
+          "isDirector": "False",
+          "isOfficer": "True",
+          "isTenPercentOwner": "False",
+          "isOther": "False",
+          "directOrIndirectOwnership": "D",
+          "uploaded": "2026-11-13T02:15:06.393",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "ROIV",
+          "Date": "2026-11-11T00:00:00.000",
+          "Name": "Torti Frank",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "J",
+          "Shares": "151293.0",
+          "PricePerShare": "42.01",
+          "SharesOwnedFollowing": "12711793.0",
+          "fileDate": "2026-11-13T02:03:41.000",
+          "officerTitle": "President and Vant Chair",
+          "isDirector": "False",
+          "isOfficer": "True",
+          "isTenPercentOwner": "False",
+          "isOther": "False",
+          "directOrIndirectOwnership": "D",
+          "uploaded": "2026-11-13T02:15:06.393",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "ROIV",
+          "Date": "2026-11-10T00:00:00.000",
+          "Name": "Torti Frank",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "J",
+          "Shares": "218369.0",
+          "PricePerShare": "41.13",
+          "SharesOwnedFollowing": "13103841.0",
+          "fileDate": "2026-11-13T02:03:41.000",
+          "officerTitle": "President and Vant Chair",
+          "isDirector": "False",
+          "isOfficer": "True",
+          "isTenPercentOwner": "False",
+          "isOther": "False",
+          "directOrIndirectOwnership": "D",
+          "uploaded": "2026-11-13T02:15:06.393",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "ROIV",
+          "Date": "2026-11-12T00:00:00.000",
+          "Name": "Torti Frank",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "F",
+          "Shares": "12800.0",
+          "PricePerShare": "41.85",
+          "SharesOwnedFollowing": "12306950.0",
+          "fileDate": "2026-11-13T02:03:41.000",
+          "officerTitle": "President and Vant Chair",
+          "isDirector": "False",
+          "isOfficer": "True",
+          "isTenPercentOwner": "False",
+          "isOther": "False",
+          "directOrIndirectOwnership": "D",
+          "uploaded": "2026-11-13T02:15:06.393",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "ROIV",
+          "Date": "2026-11-12T00:00:00.000",
+          "Name": "Torti Frank",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "J",
+          "Shares": "62493.0",
+          "PricePerShare": "41.13",
+          "SharesOwnedFollowing": "12319750.0",
+          "fileDate": "2026-11-13T02:03:41.000",
+          "officerTitle": "President and Vant Chair",
+          "isDirector": "False",
+          "isOfficer": "True",
+          "isTenPercentOwner": "False",
+          "isOther": "False",
+          "directOrIndirectOwnership": "D",
+          "uploaded": "2026-11-13T02:15:06.393",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         },
         {
           "Ticker": "ROIV",
@@ -2409,102 +2409,7 @@
           "isOther": "False",
           "directOrIndirectOwnership": "D",
           "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "ROIV",
-          "Date": "2026-11-10T00:00:00.000",
-          "Name": "Gline Matthew",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "J",
-          "Shares": "32490.0",
-          "PricePerShare": "41.13",
-          "SharesOwnedFollowing": "16490805.0",
-          "fileDate": "2026-11-13T02:01:02.000",
-          "officerTitle": "CEO",
-          "isDirector": "True",
-          "isOfficer": "True",
-          "isTenPercentOwner": "False",
-          "isOther": "False",
-          "directOrIndirectOwnership": "D",
-          "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "ROIV",
-          "Date": "2026-11-11T00:00:00.000",
-          "Name": "Gline Matthew",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "J",
-          "Shares": "30083.0",
-          "PricePerShare": "41.63",
-          "SharesOwnedFollowing": "16460722.0",
-          "fileDate": "2026-11-13T02:01:02.000",
-          "officerTitle": "CEO",
-          "isDirector": "True",
-          "isOfficer": "True",
-          "isTenPercentOwner": "False",
-          "isOther": "False",
-          "directOrIndirectOwnership": "D",
-          "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "ROIV",
-          "Date": "2026-11-12T00:00:00.000",
-          "Name": "Gline Matthew",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "J",
-          "Shares": "41179.0",
-          "PricePerShare": "40.36",
-          "SharesOwnedFollowing": "16400638.0",
-          "fileDate": "2026-11-13T02:01:02.000",
-          "officerTitle": "CEO",
-          "isDirector": "True",
-          "isOfficer": "True",
-          "isTenPercentOwner": "False",
-          "isOther": "False",
-          "directOrIndirectOwnership": "D",
-          "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "ROIV",
-          "Date": "2026-11-10T00:00:00.000",
-          "Name": "Gline Matthew",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "J",
-          "Shares": "25841.0",
-          "PricePerShare": "40.43",
-          "SharesOwnedFollowing": "16523295.0",
-          "fileDate": "2026-11-13T02:01:02.000",
-          "officerTitle": "CEO",
-          "isDirector": "True",
-          "isOfficer": "True",
-          "isTenPercentOwner": "False",
-          "isOther": "False",
-          "directOrIndirectOwnership": "D",
-          "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
-        },
-        {
-          "Ticker": "ROIV",
-          "Date": "2026-11-11T00:00:00.000",
-          "Name": "Gline Matthew",
-          "AcquiredDisposedCode": "D",
-          "TransactionCode": "J",
-          "Shares": "18905.0",
-          "PricePerShare": "42.01",
-          "SharesOwnedFollowing": "16441817.0",
-          "fileDate": "2026-11-13T02:01:02.000",
-          "officerTitle": "CEO",
-          "isDirector": "True",
-          "isOfficer": "True",
-          "isTenPercentOwner": "False",
-          "isOther": "False",
-          "directOrIndirectOwnership": "D",
-          "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         },
         {
           "Ticker": "ROIV",
@@ -2523,7 +2428,102 @@
           "isOther": "False",
           "directOrIndirectOwnership": "D",
           "uploaded": "2026-11-13T02:15:06.393",
-          "_first_seen": "2026-11-13T03:44:07.577188+00:00"
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "ROIV",
+          "Date": "2026-11-12T00:00:00.000",
+          "Name": "Gline Matthew",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "F",
+          "Shares": "1600.0",
+          "PricePerShare": "41.85",
+          "SharesOwnedFollowing": "16391229.0",
+          "fileDate": "2026-11-13T02:01:02.000",
+          "officerTitle": "CEO",
+          "isDirector": "True",
+          "isOfficer": "True",
+          "isTenPercentOwner": "False",
+          "isOther": "False",
+          "directOrIndirectOwnership": "D",
+          "uploaded": "2026-11-13T02:15:06.393",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "ROIV",
+          "Date": "2026-11-10T00:00:00.000",
+          "Name": "Gline Matthew",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "J",
+          "Shares": "25841.0",
+          "PricePerShare": "40.43",
+          "SharesOwnedFollowing": "16523295.0",
+          "fileDate": "2026-11-13T02:01:02.000",
+          "officerTitle": "CEO",
+          "isDirector": "True",
+          "isOfficer": "True",
+          "isTenPercentOwner": "False",
+          "isOther": "False",
+          "directOrIndirectOwnership": "D",
+          "uploaded": "2026-11-13T02:15:06.393",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "ROIV",
+          "Date": "2026-11-12T00:00:00.000",
+          "Name": "Gline Matthew",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "J",
+          "Shares": "41179.0",
+          "PricePerShare": "40.36",
+          "SharesOwnedFollowing": "16400638.0",
+          "fileDate": "2026-11-13T02:01:02.000",
+          "officerTitle": "CEO",
+          "isDirector": "True",
+          "isOfficer": "True",
+          "isTenPercentOwner": "False",
+          "isOther": "False",
+          "directOrIndirectOwnership": "D",
+          "uploaded": "2026-11-13T02:15:06.393",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "ROIV",
+          "Date": "2026-11-11T00:00:00.000",
+          "Name": "Gline Matthew",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "J",
+          "Shares": "18905.0",
+          "PricePerShare": "42.01",
+          "SharesOwnedFollowing": "16441817.0",
+          "fileDate": "2026-11-13T02:01:02.000",
+          "officerTitle": "CEO",
+          "isDirector": "True",
+          "isOfficer": "True",
+          "isTenPercentOwner": "False",
+          "isOther": "False",
+          "directOrIndirectOwnership": "D",
+          "uploaded": "2026-11-13T02:15:06.393",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
+        },
+        {
+          "Ticker": "ROIV",
+          "Date": "2026-11-11T00:00:00.000",
+          "Name": "Gline Matthew",
+          "AcquiredDisposedCode": "D",
+          "TransactionCode": "J",
+          "Shares": "30083.0",
+          "PricePerShare": "41.63",
+          "SharesOwnedFollowing": "16460722.0",
+          "fileDate": "2026-11-13T02:01:02.000",
+          "officerTitle": "CEO",
+          "isDirector": "True",
+          "isOfficer": "True",
+          "isTenPercentOwner": "False",
+          "isOther": "False",
+          "directOrIndirectOwnership": "D",
+          "uploaded": "2026-11-13T02:15:06.393",
+          "_first_seen": "2026-11-13T06:03:07.582947+00:00"
         }
       ]
     },
@@ -2546,7 +2546,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "SOLE",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "670657105"
         },
         {
@@ -2561,7 +2561,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "294268107"
         },
         {
@@ -2576,7 +2576,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "69374H709"
         },
         {
@@ -2591,7 +2591,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "743315103"
         },
         {
@@ -2606,7 +2606,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "701094104"
         },
         {
@@ -2621,7 +2621,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "SOLE",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "85207H104"
         },
         {
@@ -2636,7 +2636,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "SOLE",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "45782C508"
         },
         {
@@ -2651,7 +2651,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "SOLE",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "45782C813"
         },
         {
@@ -2666,7 +2666,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "695156109"
         },
         {
@@ -2681,7 +2681,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "74340W103"
         },
         {
@@ -2696,7 +2696,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "69608A108"
         },
         {
@@ -2711,7 +2711,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "718172109"
         },
         {
@@ -2726,7 +2726,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "74251V102"
         },
         {
@@ -2741,7 +2741,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "SOLE",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "45782C383"
         },
         {
@@ -2756,7 +2756,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "SOLE",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "45782C318"
         },
         {
@@ -2771,7 +2771,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "693475105"
         },
         {
@@ -2786,7 +2786,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "72200Y102"
         },
         {
@@ -2801,7 +2801,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "SOLE",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "45782C573"
         },
         {
@@ -2816,7 +2816,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "G7S00T104"
         },
         {
@@ -2831,7 +2831,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "SOLE",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "45782C797"
         },
         {
@@ -2846,7 +2846,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "744320102"
         },
         {
@@ -2861,7 +2861,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "74460D109"
         },
         {
@@ -2876,7 +2876,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "DFND",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "742718109"
         },
         {
@@ -2891,7 +2891,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "SOLE",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "464288687"
         },
         {
@@ -2906,7 +2906,7 @@
           "SH/PRN": "SH",
           "Put/Call": null,
           "Direction": "SOLE",
-          "_first_seen": "2026-11-13T03:44:33.496015+00:00",
+          "_first_seen": "2026-11-13T06:06:25.179171+00:00",
           "CUSIP": "808524862"
         }
       ]
@@ -2921,132 +2921,15 @@
         {
           "Date": "2026-11-12T22:28:24.000",
           "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "MELI",
+          "Ticker": "LOW",
           "Fund": "Dakota Wealth Management",
-          "Change": "1728.53",
-          "Change_Share": "1.0",
-          "Change_Pct": "0.0016207455429497568",
-          "Held": "618.0",
-          "Held_Normalized": "618.0",
-          "Close": "1728.53",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TSM",
-          "Fund": "Dakota Wealth Management",
-          "Change": "455277.62",
-          "Change_Share": "998.0",
-          "Change_Pct": "0.11741176470588235",
-          "Held": "9498.0",
-          "Held_Normalized": "9498.0",
-          "Close": "456.19",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TGT",
-          "Fund": "Dakota Wealth Management",
-          "Change": "386710.92",
-          "Change_Share": "2468.0",
-          "Change_Pct": "0.03618556096416632",
-          "Held": "70672.0",
-          "Held_Normalized": "70672.0",
-          "Close": "156.69",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TGB",
-          "Fund": "Dakota Wealth Management",
-          "Change": "142595.64",
-          "Change_Share": "16004.0",
-          "Change_Pct": "0.0898434868524465",
-          "Held": "194136.0",
-          "Held_Normalized": "194136.0",
-          "Close": "8.91",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TFC",
-          "Fund": "Dakota Wealth Management",
-          "Change": "-153623.4",
-          "Change_Share": "-3318.0",
-          "Change_Pct": "-0.052074014784123546",
-          "Held": "60399.0",
-          "Held_Normalized": "60399.0",
-          "Close": "46.3",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TER",
-          "Fund": "Dakota Wealth Management",
-          "Change": "126687.56000000001",
-          "Change_Share": "316.0",
-          "Change_Pct": "0.11197732104890148",
-          "Held": "3138.0",
-          "Held_Normalized": "3138.0",
-          "Close": "400.91",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TEL",
-          "Fund": "Dakota Wealth Management",
-          "Change": "-8865.36",
-          "Change_Share": "-42.0",
-          "Change_Pct": "-0.005870841487279843",
-          "Held": "7112.0",
-          "Held_Normalized": "7112.0",
-          "Close": "211.08",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TM",
-          "Fund": "Dakota Wealth Management",
-          "Change": "-111324.8",
-          "Change_Share": "-608.0",
-          "Change_Pct": "-0.22737471952131638",
-          "Held": "2066.0",
-          "Held_Normalized": "2066.0",
-          "Close": "183.1",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TMO",
-          "Fund": "Dakota Wealth Management",
-          "Change": "37127.75",
-          "Change_Share": "55.0",
-          "Change_Pct": "0.014285714285714285",
-          "Held": "3905.0",
-          "Held_Normalized": "3905.0",
-          "Close": "675.05",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TTEK",
-          "Fund": "Dakota Wealth Management",
-          "Change": "-10214.5",
-          "Change_Share": "-310.0",
-          "Change_Pct": "-0.03210439105219553",
-          "Held": "9346.0",
-          "Held_Normalized": "9346.0",
-          "Close": "32.95",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
+          "Change": "-97857.98999999999",
+          "Change_Share": "-531.0",
+          "Change_Pct": "-0.04895362773116991",
+          "Held": "10316.0",
+          "Held_Normalized": "10316.0",
+          "Close": "184.29",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
         },
         {
           "Date": "2026-11-12T22:28:24.000",
@@ -3059,33 +2942,7 @@
           "Held": "3978.0",
           "Held_Normalized": "3978.0",
           "Close": "96.42",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TT",
-          "Fund": "Dakota Wealth Management",
-          "Change": "211074.66",
-          "Change_Share": "467.0",
-          "Change_Pct": "0.2942659105229994",
-          "Held": "2054.0",
-          "Held_Normalized": "2054.0",
-          "Close": "451.98",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TSLX",
-          "Fund": "Dakota Wealth Management",
-          "Change": "-6307.0",
-          "Change_Share": "-350.0",
-          "Change_Pct": "-0.010609275538041831",
-          "Held": "32640.0",
-          "Held_Normalized": "32640.0",
-          "Close": "18.02",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
         },
         {
           "Date": "2026-11-12T22:28:24.000",
@@ -3098,137 +2955,7 @@
           "Held": "81481.0",
           "Held_Normalized": "81481.0",
           "Close": "132.31",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TSLA",
-          "Fund": "Dakota Wealth Management",
-          "Change": "222465.87",
-          "Change_Share": "627.0",
-          "Change_Pct": "0.044534412955465584",
-          "Held": "14706.0",
-          "Held_Normalized": "14706.0",
-          "Close": "354.81",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TDY",
-          "Fund": "Dakota Wealth Management",
-          "Change": "281559.83999999997",
-          "Change_Share": "464.0",
-          "Change_Pct": "1.0765661252900232",
-          "Held": "895.0",
-          "Held_Normalized": "895.0",
-          "Close": "606.81",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TRV",
-          "Fund": "Dakota Wealth Management",
-          "Change": "-14973.42",
-          "Change_Share": "-42.0",
-          "Change_Pct": "-0.006128702757916241",
-          "Held": "6811.0",
-          "Held_Normalized": "6811.0",
-          "Close": "356.51",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TRIP",
-          "Fund": "Dakota Wealth Management",
-          "Change": "-8411.849999999999",
-          "Change_Share": "-1005.0",
-          "Change_Pct": "-0.015119375366701267",
-          "Held": "65466.0",
-          "Held_Normalized": "65466.0",
-          "Close": "8.37",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TOST",
-          "Fund": "Dakota Wealth Management",
-          "Change": "370985.02999999997",
-          "Change_Share": "12797.0",
-          "Change_Pct": null,
-          "Held": "12797.0",
-          "Held_Normalized": "12797.0",
-          "Close": "28.99",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TMUS",
-          "Fund": "Dakota Wealth Management",
-          "Change": "-4240.08",
-          "Change_Share": "-26.0",
-          "Change_Pct": "-0.00040383331003525776",
-          "Held": "64357.0",
-          "Held_Normalized": "64357.0",
-          "Close": "163.08",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "SPOT",
-          "Fund": "Dakota Wealth Management",
-          "Change": "831470.28",
-          "Change_Share": "1706.0",
-          "Change_Pct": "1.7284701114488348",
-          "Held": "2693.0",
-          "Held_Normalized": "2693.0",
-          "Close": "487.38",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "TDF",
-          "Fund": "Dakota Wealth Management",
-          "Change": "31655.0",
-          "Change_Share": "3250.0",
-          "Change_Pct": "0.1800055386319579",
-          "Held": "21305.0",
-          "Held_Normalized": "21305.0",
-          "Close": "9.74",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "STE",
-          "Fund": "Dakota Wealth Management",
-          "Change": "231641.03",
-          "Change_Share": "1103.0",
-          "Change_Pct": null,
-          "Held": "1103.0",
-          "Held_Normalized": "1103.0",
-          "Close": "210.01",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
-        },
-        {
-          "Date": "2026-11-12T22:28:24.000",
-          "ReportPeriod": "2026-09-30T00:00:00.000",
-          "Ticker": "SRLN",
-          "Fund": "Dakota Wealth Management",
-          "Change": "-4887.1900000000005",
-          "Change_Share": "-121.0",
-          "Change_Pct": "-0.019130434782608695",
-          "Held": "6204.0",
-          "Held_Normalized": "6204.0",
-          "Close": "40.39",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
         },
         {
           "Date": "2026-11-12T22:28:24.000",
@@ -3241,7 +2968,280 @@
           "Held": "105334.0",
           "Held_Normalized": "105334.0",
           "Close": "104.04",
-          "_first_seen": "2026-11-13T03:44:35.138054+00:00"
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TGT",
+          "Fund": "Dakota Wealth Management",
+          "Change": "386710.92",
+          "Change_Share": "2468.0",
+          "Change_Pct": "0.03618556096416632",
+          "Held": "70672.0",
+          "Held_Normalized": "70672.0",
+          "Close": "156.69",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TGB",
+          "Fund": "Dakota Wealth Management",
+          "Change": "142595.64",
+          "Change_Share": "16004.0",
+          "Change_Pct": "0.0898434868524465",
+          "Held": "194136.0",
+          "Held_Normalized": "194136.0",
+          "Close": "8.91",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TFC",
+          "Fund": "Dakota Wealth Management",
+          "Change": "-153623.4",
+          "Change_Share": "-3318.0",
+          "Change_Pct": "-0.052074014784123546",
+          "Held": "60399.0",
+          "Held_Normalized": "60399.0",
+          "Close": "46.3",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TER",
+          "Fund": "Dakota Wealth Management",
+          "Change": "126687.56000000001",
+          "Change_Share": "316.0",
+          "Change_Pct": "0.11197732104890148",
+          "Held": "3138.0",
+          "Held_Normalized": "3138.0",
+          "Close": "400.91",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TEL",
+          "Fund": "Dakota Wealth Management",
+          "Change": "-8865.36",
+          "Change_Share": "-42.0",
+          "Change_Pct": "-0.005870841487279843",
+          "Held": "7112.0",
+          "Held_Normalized": "7112.0",
+          "Close": "211.08",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TM",
+          "Fund": "Dakota Wealth Management",
+          "Change": "-111324.8",
+          "Change_Share": "-608.0",
+          "Change_Pct": "-0.22737471952131638",
+          "Held": "2066.0",
+          "Held_Normalized": "2066.0",
+          "Close": "183.1",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TMO",
+          "Fund": "Dakota Wealth Management",
+          "Change": "37127.75",
+          "Change_Share": "55.0",
+          "Change_Pct": "0.014285714285714285",
+          "Held": "3905.0",
+          "Held_Normalized": "3905.0",
+          "Close": "675.05",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TTEK",
+          "Fund": "Dakota Wealth Management",
+          "Change": "-10214.5",
+          "Change_Share": "-310.0",
+          "Change_Pct": "-0.03210439105219553",
+          "Held": "9346.0",
+          "Held_Normalized": "9346.0",
+          "Close": "32.95",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TT",
+          "Fund": "Dakota Wealth Management",
+          "Change": "211074.66",
+          "Change_Share": "467.0",
+          "Change_Pct": "0.2942659105229994",
+          "Held": "2054.0",
+          "Held_Normalized": "2054.0",
+          "Close": "451.98",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TLT",
+          "Fund": "Dakota Wealth Management",
+          "Change": "-20146886.72",
+          "Change_Share": "-259024.0",
+          "Change_Pct": "-0.882420674665631",
+          "Held": "34514.0",
+          "Held_Normalized": "34514.0",
+          "Close": "77.78",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TSM",
+          "Fund": "Dakota Wealth Management",
+          "Change": "455277.62",
+          "Change_Share": "998.0",
+          "Change_Pct": "0.11741176470588235",
+          "Held": "9498.0",
+          "Held_Normalized": "9498.0",
+          "Close": "456.19",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TSLX",
+          "Fund": "Dakota Wealth Management",
+          "Change": "-6307.0",
+          "Change_Share": "-350.0",
+          "Change_Pct": "-0.010609275538041831",
+          "Held": "32640.0",
+          "Held_Normalized": "32640.0",
+          "Close": "18.02",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TSLA",
+          "Fund": "Dakota Wealth Management",
+          "Change": "222465.87",
+          "Change_Share": "627.0",
+          "Change_Pct": "0.044534412955465584",
+          "Held": "14706.0",
+          "Held_Normalized": "14706.0",
+          "Close": "354.81",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TDY",
+          "Fund": "Dakota Wealth Management",
+          "Change": "281559.83999999997",
+          "Change_Share": "464.0",
+          "Change_Pct": "1.0765661252900232",
+          "Held": "895.0",
+          "Held_Normalized": "895.0",
+          "Close": "606.81",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TRV",
+          "Fund": "Dakota Wealth Management",
+          "Change": "-14973.42",
+          "Change_Share": "-42.0",
+          "Change_Pct": "-0.006128702757916241",
+          "Held": "6811.0",
+          "Held_Normalized": "6811.0",
+          "Close": "356.51",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TRIP",
+          "Fund": "Dakota Wealth Management",
+          "Change": "-8411.849999999999",
+          "Change_Share": "-1005.0",
+          "Change_Pct": "-0.015119375366701267",
+          "Held": "65466.0",
+          "Held_Normalized": "65466.0",
+          "Close": "8.37",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TOST",
+          "Fund": "Dakota Wealth Management",
+          "Change": "370985.02999999997",
+          "Change_Share": "12797.0",
+          "Change_Pct": null,
+          "Held": "12797.0",
+          "Held_Normalized": "12797.0",
+          "Close": "28.99",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TMUS",
+          "Fund": "Dakota Wealth Management",
+          "Change": "-4240.08",
+          "Change_Share": "-26.0",
+          "Change_Pct": "-0.00040383331003525776",
+          "Held": "64357.0",
+          "Held_Normalized": "64357.0",
+          "Close": "163.08",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "SPOT",
+          "Fund": "Dakota Wealth Management",
+          "Change": "831470.28",
+          "Change_Share": "1706.0",
+          "Change_Pct": "1.7284701114488348",
+          "Held": "2693.0",
+          "Held_Normalized": "2693.0",
+          "Close": "487.38",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TDF",
+          "Fund": "Dakota Wealth Management",
+          "Change": "31655.0",
+          "Change_Share": "3250.0",
+          "Change_Pct": "0.1800055386319579",
+          "Held": "21305.0",
+          "Held_Normalized": "21305.0",
+          "Close": "9.74",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
+        },
+        {
+          "Date": "2026-11-12T22:28:24.000",
+          "ReportPeriod": "2026-09-30T00:00:00.000",
+          "Ticker": "TKO",
+          "Fund": "Dakota Wealth Management",
+          "Change": "-2642423.16",
+          "Change_Share": "-14703.0",
+          "Change_Pct": "-1.0",
+          "Held": "0.0",
+          "Held_Normalized": "0.0",
+          "Close": "179.72",
+          "_first_seen": "2026-11-13T06:06:26.199299+00:00"
         }
       ]
     },
@@ -3259,7 +3259,7 @@
           "Direction": "Not Recommending",
           "Traders": "Jim Cramer",
           "Upload_Time": "2026-11-12T16:30:04.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "ET",
@@ -3268,7 +3268,7 @@
           "Direction": "Bullish",
           "Traders": "Jim Cramer",
           "Upload_Time": "2026-11-12T16:29:29.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "PLTR",
@@ -3277,7 +3277,7 @@
           "Direction": "Bullish",
           "Traders": "Jim Cramer",
           "Upload_Time": "2026-11-12T16:29:12.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "OBK",
@@ -3286,7 +3286,7 @@
           "Direction": "Bullish",
           "Traders": "Jim Cramer",
           "Upload_Time": "2026-11-12T16:28:42.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "DKNG",
@@ -3295,7 +3295,7 @@
           "Direction": "Not Recommending",
           "Traders": "Jim Cramer",
           "Upload_Time": "2026-11-12T16:28:09.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "TGB",
@@ -3304,7 +3304,7 @@
           "Direction": "Speculative - Good",
           "Traders": "Jim Cramer",
           "Upload_Time": "2026-11-12T16:27:23.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "BABA",
@@ -3313,7 +3313,7 @@
           "Direction": "Not Recommending",
           "Traders": "Jim Cramer",
           "Upload_Time": "2026-11-12T16:26:39.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "TEVA",
@@ -3322,7 +3322,7 @@
           "Direction": "Interview",
           "Traders": "Jim Cramer",
           "Upload_Time": "2026-11-12T16:26:04.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "DRI",
@@ -3331,7 +3331,7 @@
           "Direction": "Bullish",
           "Traders": "Jim Cramer",
           "Upload_Time": "2026-11-12T16:25:18.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "JMKE",
@@ -3340,7 +3340,7 @@
           "Direction": "Bullish",
           "Traders": "Jim Cramer",
           "Upload_Time": "2026-11-12T16:10:10.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "META",
@@ -3349,7 +3349,7 @@
           "Direction": "Buy on a Pullback",
           "Traders": "Jim Cramer",
           "Upload_Time": "2026-11-12T16:09:37.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "AAPL",
@@ -3358,7 +3358,7 @@
           "Direction": "Long",
           "Traders": "Carter Worth",
           "Upload_Time": "2026-11-12T16:02:25.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "AAPL",
@@ -3367,7 +3367,7 @@
           "Direction": "Long",
           "Traders": "Tim Seymour",
           "Upload_Time": "2026-11-12T16:02:10.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "NVDA",
@@ -3376,7 +3376,7 @@
           "Direction": "Bearish",
           "Traders": "Guy Adami",
           "Upload_Time": "2026-11-12T16:01:43.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "NVDA",
@@ -3385,7 +3385,7 @@
           "Direction": "Hold",
           "Traders": "Karen Finerman",
           "Upload_Time": "2026-11-12T16:00:02.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "CRWV",
@@ -3394,7 +3394,7 @@
           "Direction": "Bearish",
           "Traders": "Guy Adami",
           "Upload_Time": "2026-11-12T15:59:43.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "QQQ",
@@ -3403,7 +3403,7 @@
           "Direction": "Final Trade",
           "Traders": "Anastasia Amoroso",
           "Upload_Time": "2026-11-12T15:58:16.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "MPWR",
@@ -3412,7 +3412,7 @@
           "Direction": "Final Trade",
           "Traders": "Rob Sechan",
           "Upload_Time": "2026-11-12T15:57:50.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "DIS",
@@ -3421,7 +3421,7 @@
           "Direction": "Final Trade",
           "Traders": "Jim Lebenthal",
           "Upload_Time": "2026-11-12T15:57:15.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "APH",
@@ -3430,7 +3430,7 @@
           "Direction": "Final Trade",
           "Traders": "Jim Lebenthal",
           "Upload_Time": "2026-11-12T15:56:59.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "CSCO",
@@ -3439,7 +3439,7 @@
           "Direction": "Long",
           "Traders": "Jim Lebenthal",
           "Upload_Time": "2026-11-12T15:56:32.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "CSCO",
@@ -3448,7 +3448,7 @@
           "Direction": "Bullish",
           "Traders": "Joe Terranova",
           "Upload_Time": "2026-11-12T15:56:11.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "COST",
@@ -3457,7 +3457,7 @@
           "Direction": "Bullish",
           "Traders": "Joe Terranova",
           "Upload_Time": "2026-11-12T15:55:52.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "AZO",
@@ -3466,7 +3466,7 @@
           "Direction": "Bullish",
           "Traders": "Rob Sechan",
           "Upload_Time": "2026-11-12T15:55:31.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         },
         {
           "Ticker": "ABBV",
@@ -3475,7 +3475,7 @@
           "Direction": "Bullish",
           "Traders": "Jim Lebenthal",
           "Upload_Time": "2026-11-12T15:55:05.000",
-          "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+          "_first_seen": "2026-11-13T06:06:26.777906+00:00"
         }
       ]
     },
@@ -3490,175 +3490,175 @@
           "Ticker": "VC",
           "Count": "1",
           "Sentiment": "0.1093",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "LIVE",
           "Count": "1",
           "Sentiment": "0.7359",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "ANET",
           "Count": "15",
           "Sentiment": "0.14191333333333336",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "OKLO",
           "Count": "21",
           "Sentiment": "-0.04873333333333334",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "EU",
           "Count": "9",
           "Sentiment": "0.06314444444444448",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "SE",
           "Count": "4",
           "Sentiment": "0.2897",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "EPS",
           "Count": "5",
           "Sentiment": "0.6384799999999999",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "SEDG",
           "Count": "6",
           "Sentiment": "-0.04284999999999999",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "GO",
           "Count": "6",
           "Sentiment": "-0.06998333333333333",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "FSLR",
           "Count": "2",
           "Sentiment": "0.2673",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "PR",
           "Count": "1",
           "Sentiment": "-0.34",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "BOIL",
           "Count": "1",
           "Sentiment": "0.0",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "HR",
           "Count": "4",
           "Sentiment": "-0.030925000000000008",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "XLV",
           "Count": "1",
           "Sentiment": "-0.8074",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "TDOC",
           "Count": "2",
           "Sentiment": "0.0",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "HOOD",
           "Count": "19",
           "Sentiment": "-0.039557894736842104",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "DIS",
           "Count": "3",
           "Sentiment": "-0.11896666666666667",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "NKLA",
           "Count": "11",
           "Sentiment": "-0.02502727272727273",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "ETSY",
           "Count": "5",
           "Sentiment": "0.3463",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "BKSY",
           "Count": "6",
           "Sentiment": "0.16961666666666667",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "PPT",
           "Count": "1",
           "Sentiment": "0.0",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "DJT",
           "Count": "6",
           "Sentiment": "-0.013500000000000007",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "AB",
           "Count": "1",
           "Sentiment": "-0.3182",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "WELL",
           "Count": "3",
           "Sentiment": "0.6257333333333333",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Ticker": "DATS",
           "Count": "1",
           "Sentiment": "0.0",
-          "_first_seen": "2026-11-13T03:44:19.435530+00:00",
+          "_first_seen": "2026-11-13T06:06:17.477842+00:00",
           "_collected": "2026-11-13"
         }
       ]
@@ -4496,13 +4496,22 @@
       "last_seen": "2026-11-13",
       "recent": [
         {
-          "url": "https://www.quiverquant.com/news/Wise+Group+plc+%28WSE%29+Stock+Rises+on+Q2+2027+Earnings",
-          "time": "2026-11-13 03:31:46",
-          "headline": "Wise Group plc (WSE) Stock Rises on Q2 2027 Earnings",
-          "category": "earnings_automated",
-          "summary": "<p><strong>Wise Group plc ($WSE)</strong> reported second-quarter 2027 revenue of <strong>$726.6 million</strong>, up 22.5% from a year earlier, with gross profit rising 28.3% to <strong>$607.0 million</strong>. Net i\u2026",
-          "image": "https://www.quiverquant.com/images/wse_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "url": "https://www.quiverquant.com/news/RedCloud+Holdings+Announces+100-to-1+Reverse+Share+Split+Effective+November+17%2C+2026",
+          "time": "2026-11-13 05:10:24",
+          "headline": "RedCloud Holdings Announces 100-to-1 Reverse Share Split Effective November 17, 2026",
+          "category": "press_release_summary",
+          "summary": "<p>RedCloud Holdings plc announces a 100-to-1 reverse share split effective November 17, 2026, to maintain Nasdaq listing compliance.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p>RedCloud Holdings plc annou\u2026",
+          "image": "https://www.quiverquant.com/images/rct_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/VEON%E2%80%99s+Mobilink+Bank+Signs+Agreement+to+Acquire+82.5%25+of+Apna+Microfinance+Bank",
+          "time": "2026-11-13 04:40:23",
+          "headline": "VEON\u2019s Mobilink Bank Signs Agreement to Acquire 82.5% of Apna Microfinance Bank",
+          "category": "press_release_summary",
+          "summary": "<p>VEON\u2019s Mobilink Bank signs agreement to acquire 82.5% of Apna Microfinance Bank, enhancing financial services in Pakistan.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p>VEON Ltd. announced that its bankin\u2026",
+          "image": "https://www.quiverquant.com/images/veon_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
           "url": "https://www.quiverquant.com/news/Companhia+Sider%C3%BArgica+Nacional+%28SID%29+Releases+Q3+2026+Earnings%3A+Revenue+Down+8.7%25%2C+Net+Loss+Widens",
@@ -4511,7 +4520,16 @@
           "category": "earnings_automated",
           "summary": "<p>Companhia Sider\u00fargica Nacional <strong>$SID</strong> reported third-quarter 2026 revenue of <strong>$2.0 billion</strong>, down 8.7% from a year earlier, as profitability weakened across the income statement. Gross\u2026",
           "image": "https://www.quiverquant.com/images/sid_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/Wise+Group+plc+%28WSE%29+Stock+Rises+on+Q2+2027+Earnings",
+          "time": "2026-11-13 03:31:46",
+          "headline": "Wise Group plc (WSE) Stock Rises on Q2 2027 Earnings",
+          "category": "earnings_automated",
+          "summary": "<p><strong>Wise Group plc ($WSE)</strong> reported second-quarter 2027 revenue of <strong>$726.6 million</strong>, up 22.5% from a year earlier, with gross profit rising 28.3% to <strong>$607.0 million</strong>. Net i\u2026",
+          "image": "https://www.quiverquant.com/images/wse_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
           "url": "https://www.quiverquant.com/news/Reviva+Pharmaceuticals+Reports+FDA+Feedback+Timeline%2C+New+Brilaroxazine+Patent+Progress+and+Q3+2026+Results",
@@ -4520,7 +4538,7 @@
           "category": "press_release_summary",
           "summary": "<p>Reviva Pharmaceuticals anticipates FDA feedback in Q4 2026 for brilaroxazine, with Phase 3 trial enrollment planned for 1H 2027.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p>Reviva Pharmaceuticals Holdin\u2026",
           "image": "https://www.quiverquant.com/images/rvph _rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
           "url": "https://www.quiverquant.com/news/Press+Release%3A+Hal+Rogers+Votes+to+Advance+Major+Richard+Star+Act",
@@ -4529,7 +4547,7 @@
           "category": "legislation_automated",
           "summary": "<p>Rogers backed a House bill to protect certain disabled veterans\u2019 retirement pay from offset reductions.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189,165,241);\">Rogers backs \u2026",
           "image": "https://www.quiverquant.com/images/R000395_congress.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
           "url": "https://www.quiverquant.com/news/Press+Release%3A+Rep.+Raul+Ruiz+Discusses+Health+Care+Affordability+in+Live+Interviews",
@@ -4538,7 +4556,7 @@
           "category": "legislation_automated",
           "summary": "<p>Ruiz discusses health care affordability, Medicaid cuts, ACA tax credits, and access to care in two interviews.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"color: rgb(189,165,241);\">Ruiz \u2026",
           "image": "https://www.quiverquant.com/images/R000599_congress.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
           "url": "https://www.quiverquant.com/news/Press+Release%3A+Christian+Menefee+Joins+Texas+Democrats+Calling+for+Action+on+Medicaid+Backlog",
@@ -4547,7 +4565,7 @@
           "category": "legislation_automated",
           "summary": "<p>Menefee and Texas Democrats urged federal and state officials to investigate Texas\u2019s growing Medicaid backlog and related benefits delays.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p><strong style=\"colo\u2026",
           "image": "https://www.quiverquant.com/images/M001245_congress.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
           "url": "https://www.quiverquant.com/news/Copa+Holdings+Reports+October+2026+Preliminary+Passenger+Traffic+Statistics",
@@ -4556,7 +4574,7 @@
           "category": "press_release_summary",
           "summary": "<p>Copa Holdings reported a 11.5% increase in capacity and 11.8% rise in passenger traffic for October 2026.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p>Copa Holdings, S.A. announced its preliminary passen\u2026",
           "image": "https://www.quiverquant.com/images/cpa_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
           "url": "https://www.quiverquant.com/news/Eisai+and+Biogen+Launch+LEQEMBI+Pen+in+Japan+for+Subcutaneous+Alzheimer%E2%80%99s+Treatment",
@@ -4565,7 +4583,7 @@
           "category": "press_release_summary",
           "summary": "<p>Eisai and Biogen launched LEQEMBI\u00ae Pen in Japan, offering a subcutaneous option for Alzheimer\u2019s disease treatment.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p>Eisai Co., Ltd. and Biogen Inc. have launch\u2026",
           "image": "https://www.quiverquant.com/images/biib_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
           "url": "https://www.quiverquant.com/news/Windward+Bio+Group+Prices+%24175+Million+Initial+Public+Offering+and+Announces+Concurrent+Private+Placement+to+Sanofi",
@@ -4574,52 +4592,7 @@
           "category": "press_release_summary",
           "summary": "<p>Windward Bio Group AG priced its IPO at $17 per share, aiming to raise $225 million, with shares trading on Nasdaq.</p><div class='ai_summary'><h2>Quiver AI Summary</h2><p>Windward Bio Group AG, a clinical-stage bi\u2026",
           "image": "https://www.quiverquant.com/images/wwb_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/%24SLND+%28%24SLND%29+Releases+Q3+2026+Earnings",
-          "time": "2026-11-12 22:55:59",
-          "headline": "$SLND ($SLND) Releases Q3 2026 Earnings",
-          "category": "earnings_automated",
-          "summary": "<p>$SLND (<a href=\"https://www.quiverquant.com/stock/SLND/\">$SLND</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.62 per share, beating estimates of -\u2026",
-          "image": "https://www.quiverquant.com/images/slnd_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/PARK+DENTAL+PARTNERS+%28%24PARK%29+Releases+Q3+2026+Earnings",
-          "time": "2026-11-12 22:55:59",
-          "headline": "PARK DENTAL PARTNERS ($PARK) Releases Q3 2026 Earnings",
-          "category": "earnings_automated",
-          "summary": "<p>PARK DENTAL PARTNERS (<a href=\"https://www.quiverquant.com/stock/PARK/\">$PARK</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.57 per share, beating\u2026",
-          "image": "https://www.quiverquant.com/images/park_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/HEARTFLOW+%28%24HTFL%29+Releases+Q3+2026+Earnings",
-          "time": "2026-11-12 22:55:59",
-          "headline": "HEARTFLOW ($HTFL) Releases Q3 2026 Earnings",
-          "category": "earnings_automated",
-          "summary": "<p>HEARTFLOW (<a href=\"https://www.quiverquant.com/stock/HTFL/\">$HTFL</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of -$0.03 per share, beating estimates\u2026",
-          "image": "https://www.quiverquant.com/images/htfl_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/XTI+AEROSPACE+%28%24XTIA%29+Releases+Q3+2026+Earnings%2C+Stock+Rises",
-          "time": "2026-11-12 22:55:59",
-          "headline": "XTI AEROSPACE ($XTIA) Releases Q3 2026 Earnings, Stock Rises",
-          "category": "earnings_automated",
-          "summary": "<p>XTI AEROSPACE (<a href=\"https://www.quiverquant.com/stock/XTIA/\">$XTIA</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.04 per share, beating estima\u2026",
-          "image": "https://www.quiverquant.com/images/xtia_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/LIFTOFF+MOBILE+%28%24LFTO%29+Releases+Q3+2026+Earnings%2C+Stock+Rises",
-          "time": "2026-11-12 22:55:59",
-          "headline": "LIFTOFF MOBILE ($LFTO) Releases Q3 2026 Earnings, Stock Rises",
-          "category": "earnings_automated",
-          "summary": "<p>LIFTOFF MOBILE (<a href=\"https://www.quiverquant.com/stock/LFTO/\">$LFTO</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.47 per share, beating estim\u2026",
-          "image": "https://www.quiverquant.com/images/lfto_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
           "url": "https://www.quiverquant.com/news/RMR+GROUP+%28%24RMR%29+Releases+Q4+2026+Earnings",
@@ -4628,16 +4601,7 @@
           "category": "earnings_automated",
           "summary": "<p>RMR GROUP (<a href=\"https://www.quiverquant.com/stock/RMR/\">$RMR</a>) posted quarterly earnings results for Q4 2026 on Thursday, November 12th. The company reported earnings of $0.21 per share, beating estimates of\u2026",
           "image": "https://www.quiverquant.com/images/rmr_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/KINDERCARE+LEARNING+%28%24KLC%29+Releases+Q3+2026+Earnings",
-          "time": "2026-11-12 22:55:59",
-          "headline": "KINDERCARE LEARNING ($KLC) Releases Q3 2026 Earnings",
-          "category": "earnings_automated",
-          "summary": "<p>KINDERCARE LEARNING (<a href=\"https://www.quiverquant.com/stock/KLC/\">$KLC</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of -$0.03 per share, missing e\u2026",
-          "image": "https://www.quiverquant.com/images/klc_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
           "url": "https://www.quiverquant.com/news/CEREBRAS+SYSTEMS+%28%24CBRS%29+Releases+Q3+2026+Earnings%2C+Stock+Rises",
@@ -4646,70 +4610,16 @@
           "category": "earnings_automated",
           "summary": "<p>CEREBRAS SYSTEMS (<a href=\"https://www.quiverquant.com/stock/CBRS/\">$CBRS</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.13 per share, beating est\u2026",
           "image": "https://www.quiverquant.com/images/cbrs_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
-          "url": "https://www.quiverquant.com/news/YORK+SPACE+SYSTEMS+%28%24YSS%29+Releases+Q3+2026+Earnings",
+          "url": "https://www.quiverquant.com/news/KINDERCARE+LEARNING+%28%24KLC%29+Releases+Q3+2026+Earnings",
           "time": "2026-11-12 22:55:59",
-          "headline": "YORK SPACE SYSTEMS ($YSS) Releases Q3 2026 Earnings",
+          "headline": "KINDERCARE LEARNING ($KLC) Releases Q3 2026 Earnings",
           "category": "earnings_automated",
-          "summary": "<p>YORK SPACE SYSTEMS (<a href=\"https://www.quiverquant.com/stock/YSS/\">$YSS</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of -$1.55 per share, missing es\u2026",
-          "image": "https://www.quiverquant.com/images/yss_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/%24PED+%28%24PED%29+Releases+Q3+2026+Earnings",
-          "time": "2026-11-12 22:55:59",
-          "headline": "$PED ($PED) Releases Q3 2026 Earnings",
-          "category": "earnings_automated",
-          "summary": "<p>$PED (<a href=\"https://www.quiverquant.com/stock/PED/\">$PED</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.19 per share, beating estimates of $0.1\u2026",
-          "image": "https://www.quiverquant.com/images/ped_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/LIFEMD+%28%24LFMD%29+Releases+Q3+2026+Earnings",
-          "time": "2026-11-12 22:55:59",
-          "headline": "LIFEMD ($LFMD) Releases Q3 2026 Earnings",
-          "category": "earnings_automated",
-          "summary": "<p>LIFEMD (<a href=\"https://www.quiverquant.com/stock/LFMD/\">$LFMD</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of -$0.11 per share, beating estimates of\u2026",
-          "image": "https://www.quiverquant.com/images/lfmd_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/GEMINI+SPACE+STATION+%28%24GEMI%29+Releases+Q3+2026+Earnings%2C+Stock+Rises",
-          "time": "2026-11-12 22:55:59",
-          "headline": "GEMINI SPACE STATION ($GEMI) Releases Q3 2026 Earnings, Stock Rises",
-          "category": "earnings_automated",
-          "summary": "<p>GEMINI SPACE STATION (<a href=\"https://www.quiverquant.com/stock/GEMI/\">$GEMI</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of -$0.66 per share, missin\u2026",
-          "image": "https://www.quiverquant.com/images/gemi_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/CISCO+SYSTEMS+%28%24CSCO%29+Releases+Q1+2027+Earnings",
-          "time": "2026-11-12 22:55:59",
-          "headline": "CISCO SYSTEMS ($CSCO) Releases Q1 2027 Earnings",
-          "category": "earnings_automated",
-          "summary": "<p>CISCO SYSTEMS (<a href=\"https://www.quiverquant.com/stock/CSCO/\">$CSCO</a>) posted quarterly earnings results for Q1 2027 on Thursday, November 12th. The company reported earnings of $1.40 per share, beating estima\u2026",
-          "image": "https://www.quiverquant.com/images/csco_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/ARROWHEAD+PHARMACEUTICALS+%28%24ARWR%29+Releases+Q4+2026+Earnings",
-          "time": "2026-11-12 22:55:59",
-          "headline": "ARROWHEAD PHARMACEUTICALS ($ARWR) Releases Q4 2026 Earnings",
-          "category": "earnings_automated",
-          "summary": "<p>ARROWHEAD PHARMACEUTICALS (<a href=\"https://www.quiverquant.com/stock/ARWR/\">$ARWR</a>) posted quarterly earnings results for Q4 2026 on Thursday, November 12th. The company reported earnings of -$3.04 per share, m\u2026",
-          "image": "https://www.quiverquant.com/images/arwr_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
-        },
-        {
-          "url": "https://www.quiverquant.com/news/SHIMMICK+%28%24SHIM%29+Releases+Q3+2026+Earnings%2C+Stock+Rises",
-          "time": "2026-11-12 22:55:59",
-          "headline": "SHIMMICK ($SHIM) Releases Q3 2026 Earnings, Stock Rises",
-          "category": "earnings_automated",
-          "summary": "<p>SHIMMICK (<a href=\"https://www.quiverquant.com/stock/SHIM/\">$SHIM</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.08 per share, beating estimates o\u2026",
-          "image": "https://www.quiverquant.com/images/shim_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "summary": "<p>KINDERCARE LEARNING (<a href=\"https://www.quiverquant.com/stock/KLC/\">$KLC</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of -$0.03 per share, missing e\u2026",
+          "image": "https://www.quiverquant.com/images/klc_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         },
         {
           "url": "https://www.quiverquant.com/news/ANDERSEN+GROUP+%28%24ANDG%29+Releases+Q3+2026+Earnings",
@@ -4718,7 +4628,97 @@
           "category": "earnings_automated",
           "summary": "<p>ANDERSEN GROUP (<a href=\"https://www.quiverquant.com/stock/ANDG/\">$ANDG</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $2.39 per share, beating estim\u2026",
           "image": "https://www.quiverquant.com/images/andg_rect_new.png",
-          "_first_seen": "2026-11-13T03:44:37.068670+00:00"
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/%24PED+%28%24PED%29+Releases+Q3+2026+Earnings",
+          "time": "2026-11-12 22:55:59",
+          "headline": "$PED ($PED) Releases Q3 2026 Earnings",
+          "category": "earnings_automated",
+          "summary": "<p>$PED (<a href=\"https://www.quiverquant.com/stock/PED/\">$PED</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.19 per share, beating estimates of $0.1\u2026",
+          "image": "https://www.quiverquant.com/images/ped_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/ONCE+UPON+A+FARM+%28%24OFRM%29+Releases+Q3+2026+Earnings",
+          "time": "2026-11-12 22:55:59",
+          "headline": "ONCE UPON A FARM ($OFRM) Releases Q3 2026 Earnings",
+          "category": "earnings_automated",
+          "summary": "<p>ONCE UPON A FARM (<a href=\"https://www.quiverquant.com/stock/OFRM/\">$OFRM</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of -$0.09 per share, missing es\u2026",
+          "image": "https://www.quiverquant.com/images/ofrm_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/PARK+DENTAL+PARTNERS+%28%24PARK%29+Releases+Q3+2026+Earnings",
+          "time": "2026-11-12 22:55:59",
+          "headline": "PARK DENTAL PARTNERS ($PARK) Releases Q3 2026 Earnings",
+          "category": "earnings_automated",
+          "summary": "<p>PARK DENTAL PARTNERS (<a href=\"https://www.quiverquant.com/stock/PARK/\">$PARK</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.57 per share, beating\u2026",
+          "image": "https://www.quiverquant.com/images/park_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/XTI+AEROSPACE+%28%24XTIA%29+Releases+Q3+2026+Earnings%2C+Stock+Rises",
+          "time": "2026-11-12 22:55:59",
+          "headline": "XTI AEROSPACE ($XTIA) Releases Q3 2026 Earnings, Stock Rises",
+          "category": "earnings_automated",
+          "summary": "<p>XTI AEROSPACE (<a href=\"https://www.quiverquant.com/stock/XTIA/\">$XTIA</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.04 per share, beating estima\u2026",
+          "image": "https://www.quiverquant.com/images/xtia_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/HAWKEYE+360+%28%24HAWK%29+Releases+Q3+2026+Earnings%2C+Stock+Rises",
+          "time": "2026-11-12 22:55:59",
+          "headline": "HAWKEYE 360 ($HAWK) Releases Q3 2026 Earnings, Stock Rises",
+          "category": "earnings_automated",
+          "summary": "<p>HAWKEYE 360 (<a href=\"https://www.quiverquant.com/stock/HAWK/\">$HAWK</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.00 per share, missing estimate\u2026",
+          "image": "https://www.quiverquant.com/images/hawk_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/LIFTOFF+MOBILE+%28%24LFTO%29+Releases+Q3+2026+Earnings%2C+Stock+Rises",
+          "time": "2026-11-12 22:55:59",
+          "headline": "LIFTOFF MOBILE ($LFTO) Releases Q3 2026 Earnings, Stock Rises",
+          "category": "earnings_automated",
+          "summary": "<p>LIFTOFF MOBILE (<a href=\"https://www.quiverquant.com/stock/LFTO/\">$LFTO</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.47 per share, beating estim\u2026",
+          "image": "https://www.quiverquant.com/images/lfto_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/YORK+SPACE+SYSTEMS+%28%24YSS%29+Releases+Q3+2026+Earnings",
+          "time": "2026-11-12 22:55:59",
+          "headline": "YORK SPACE SYSTEMS ($YSS) Releases Q3 2026 Earnings",
+          "category": "earnings_automated",
+          "summary": "<p>YORK SPACE SYSTEMS (<a href=\"https://www.quiverquant.com/stock/YSS/\">$YSS</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of -$1.55 per share, missing es\u2026",
+          "image": "https://www.quiverquant.com/images/yss_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/HEARTFLOW+%28%24HTFL%29+Releases+Q3+2026+Earnings",
+          "time": "2026-11-12 22:55:59",
+          "headline": "HEARTFLOW ($HTFL) Releases Q3 2026 Earnings",
+          "category": "earnings_automated",
+          "summary": "<p>HEARTFLOW (<a href=\"https://www.quiverquant.com/stock/HTFL/\">$HTFL</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of -$0.03 per share, beating estimates\u2026",
+          "image": "https://www.quiverquant.com/images/htfl_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/LIFEWAY+FOODS+%28%24LWAY%29+Releases+Q3+2026+Earnings",
+          "time": "2026-11-12 22:55:59",
+          "headline": "LIFEWAY FOODS ($LWAY) Releases Q3 2026 Earnings",
+          "category": "earnings_automated",
+          "summary": "<p>LIFEWAY FOODS (<a href=\"https://www.quiverquant.com/stock/LWAY/\">$LWAY</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.02 per share, missing estima\u2026",
+          "image": "https://www.quiverquant.com/images/lway_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
+        },
+        {
+          "url": "https://www.quiverquant.com/news/SHIMMICK+%28%24SHIM%29+Releases+Q3+2026+Earnings%2C+Stock+Rises",
+          "time": "2026-11-12 22:55:59",
+          "headline": "SHIMMICK ($SHIM) Releases Q3 2026 Earnings, Stock Rises",
+          "category": "earnings_automated",
+          "summary": "<p>SHIMMICK (<a href=\"https://www.quiverquant.com/stock/SHIM/\">$SHIM</a>) posted quarterly earnings results for Q3 2026 on Thursday, November 12th. The company reported earnings of $0.08 per share, beating estimates o\u2026",
+          "image": "https://www.quiverquant.com/images/shim_rect_new.png",
+          "_first_seen": "2026-11-13T06:06:34.824844+00:00"
         }
       ]
     },
@@ -4733,175 +4733,175 @@
           "Politician": "Zoe Lofgren",
           "Holdings": "{\"MMM\": -8000, \"BABA\": 0, \"CB\": 0, \"CMA\": 0, \"ECL\": -8000, \"TXN\": -8000, \"ACN\": 16000, \"ADBE\": 0, \"ALLY\": 16000, \"AMZN\": 0, \"AEP\": 0, \"AWK\": 0, \"AON\": 32000, \"AMAT\": 8000, \"ARCC\": 0, \"ASML\": 8000, \"T\": 0, \"AGR\": 0, \"B\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Kathy Manning",
           "Holdings": "{\"APD\": 40500, \"GOOGL\": -16000, \"GOOG\": -8000, \"AMGN\": -16000, \"AAPL\": -16000, \"CAT\": 8000, \"CNC\": 16000, \"CB\": 16000, \"CFG\": -8000, \"CME\": 8000, \"EL\": 8000, \"EXPD\": 8000, \"GIS\": 8000, \"HD\": 8000, \"INTC\": -40500, \"INT\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Greg Steube",
           "Holdings": "{\"SNV\": 56500}",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Greg Murphy",
           "Holdings": "{\"NYMX\": -75000}",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Greg Gianforte",
           "Holdings": "{\"ATLKY\": 92000, \"FMX\": 292500, \"OSW\": 553000, \"PEGA\": 742000, \"TSM\": -422500, \"YNDX\": -67500, \"CSGP\": -408000, \"GDDY\": 250000, \"NSRGY\": -315000, \"PRLB\": 0, \"RBA\": -183000, \"FIVE\": -75000, \"IAC\": 175000, \"IFF\": -10000\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Grace Meng",
           "Holdings": "{\"LHX\": 75000}",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Gilbert Cisneros",
           "Holdings": "{\"ADBE\": 40500, \"LNT\": 40000, \"AMZN\": 49000, \"AAPL\": 232000, \"CRNC\": 8000, \"CNS\": 0, \"CYRX\": 8000, \"EBS\": 32000, \"DAVA\": 32000, \"ERIC\": 65000, \"FIVE\": -24000, \"GDDY\": 122500, \"HELE\": -8000, \"INTU\": 0, \"IQV\": -64500, \"\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Gerald E. Connolly",
           "Holdings": "{\"PG\": -8000, \"DIS\": -8000, \"D\": -49000, \"LDOS\": -64500, \"SAIC\": -24000, \"CI\": -16000, \"ERH\": 8000}",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Gary Palmer",
           "Holdings": "{\"ABBV\": 16000, \"AMZN\": 0, \"CTL\": 0, \"EL\": -8000, \"IDTI\": -16000, \"NTRS\": 0, \"REGN\": -8000, \"TJX\": 48000, \"GOOGL\": -8000, \"UHAL\": 16000, \"AMP\": 8000, \"AMGN\": 0, \"AAPL\": -8000, \"APTV\": 8000, \"ASND\": 8000, \"ASML\": 8000,\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Garret Graves",
           "Holdings": "{\"CRNC\": -8000, \"NUAN\": -8000, \"C\": -8000, \"DDD\": -8000, \"GOLD\": 8000, \"PSTH\": 8000, \"ABNB\": 16000, \"AMZN\": 8000}",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Frank Pallone Jr.",
           "Holdings": "{\"CVX\": -8000, \"C\": -8000, \"D\": -8000, \"PM\": -24000, \"EL\": -32500, \"GE\": -16000, \"TXN\": -32500, \"DIS\": -8000, \"MO\": -8000}",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Frank A. Lobiondo",
           "Holdings": "{\"BLK\": 8000, \"AAPL\": 16000, \"IBM\": -8000, \"QCOM\": -16000, \"GIS\": -8000}",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Feinstein, Dianne",
           "Holdings": "{\"ALLO\": -3000000, \"NVS\": 575000, \"GOOGL\": 400000, \"AMAT\": -175000, \"BA\": 25000, \"BAM\": 57500, \"CHTR\": 575000, \"CCI\": 275500, \"DHR\": -725000, \"DLR\": -350000, \"FDX\": -267500, \"FEYE\": -175000, \"INFO\": -575000, \"MSFT\": -\u2026",
           "Type": "Senator",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Enzi, Michael B.",
           "Holdings": "{\"KEY\": -8000}",
           "Type": "Senator",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Elizabeth Fletcher",
           "Holdings": "{\"MMM\": -8000, \"ABT\": -8000, \"ACN\": -16000, \"ANTM\": 8000, \"BDX\": -24000, \"CACI\": 0, \"CCL\": 0, \"CERN\": -16000, \"CTSH\": -16000, \"COST\": -8000, \"DRI\": 0, \"DLTR\": -16000, \"ECL\": -8000, \"FDX\": 0, \"FISV\": -32000, \"HD\": -800\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Elaine Luria",
           "Holdings": "{\"BABA\": -625000, \"QS\": 8000, \"TSLA\": 8000, \"UBER\": 625000}",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Ed Perlmutter",
           "Holdings": "{\"BABA\": 0, \"AMZN\": 8000, \"COST\": 0, \"MSFT\": 0, \"NEM\": -8000, \"KR\": 0, \"BRK.B\": 8000, \"COIN\": 8000, \"GOOG\": 0, \"VZ\": 8000, \"AAPL\": -8000, \"GILD\": 0, \"KMI\": 0, \"HD\": -8000, \"WBA\": 0, \"SWK\": -48500, \"USB\": -81000, \"FB\":\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Ed Case",
           "Holdings": "{\"MRIN\": 8000, \"MO\": -75000, \"GE\": -8000, \"KMI\": -8000, \"MSFT\": 75000}",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Earl Blumenauer",
           "Holdings": "{\"ERJ\": 24000, \"F\": 16000, \"ICE\": 16000, \"NWN\": 37000, \"POR\": 8000, \"USB\": 0, \"DANOY\": 0, \"KR\": -8000, \"ALL\": 8000, \"AAPL\": 0, \"FDX\": 16000, \"GILD\": 16000, \"HHC\": -16000, \"TEL\": 16000, \"BRK.B\": 8000, \"CAT\": 8000, \"CBS\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Dwight Evans",
           "Holdings": "{\"APO\": 16000, \"HII\": -16000, \"KMI\": -8000, \"CG\": 16000, \"BABA\": 16000, \"GOOGL\": 16500, \"AMZN\": -48500, \"AEP\": 0, \"T\": 0, \"BRK.B\": -16000, \"DEO\": 8000, \"HASI\": -8000, \"INTC\": 0, \"TMO\": -8000, \"AWK\": 0, \"XOM\": 8000, \"N\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Duckworth, Tammy",
           "Holdings": "{\"DVMT\": -8000, \"BBL\": 0, \"DWDP\": -16000, \"ABT\": -8000, \"JNJ\": -8000, \"CC\": -8000, \"GME\": -8000, \"CAT\": -16000, \"POT\": -8000, \"MCD\": -8000, \"NEE\": -32500, \"VZ\": -32500, \"ITW\": -8000, \"DIS\": -8000, \"GS\": -8000, \"SOUHY\"\u2026",
           "Type": "Senator",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Donna Shalala",
           "Holdings": "{\"TGNA\": -105500, \"AOS\": 8000, \"ABM\": -8000, \"AYI\": -16000, \"ADUS\": -8000, \"ADDYY\": 0, \"AMD\": 0, \"AGCO\": -8000, \"AAGIY\": -40500, \"ALK\": -16000, \"ALFVY\": -8000, \"ALLE\": 16000, \"AGN\": 0, \"AZSEY\": -32500, \"AIMC\": -8000, \u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Donald Sternoff Beyer Jr.",
           "Holdings": "{\"AAGIY\": -8000, \"CVS\": 8000, \"FVRR\": -8000, \"GH\": -8000, \"IXJ\": 8000, \"IYZ\": 8000, \"NDAQ\": 8000, \"NVS\": -8000, \"BBH\": 8000, \"VZ\": -8000}",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Donald Sternoff Beyer Jr",
           "Holdings": "{\"CONE\": -8000, \"DAIUF\": -8500, \"MSFT\": -24500, \"MSCI\": -32500, \"TDOC\": -16500, \"PEP\": 0, \"ASML\": 0, \"FLIR\": 24000, \"ACN\": 24000, \"GOOG\": -500, \"AMZN\": -24500, \"AAPL\": 40000, \"BRK.B\": 0, \"C\": -16500, \"CGNX\": 16000, \"C\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         },
         {
           "Politician": "Donald Sternoff  Beyer Jr",
           "Holdings": "{\"GOOG\": 8000, \"AAPL\": -16000, \"ASML\": 16000, \"BRK.B\": 24000, \"DAIUF\": -24000, \"ECL\": 0, \"FNV\": 8000, \"MSFT\": -16000, \"NEE\": -32500, \"REGN\": 24000, \"TDOC\": -32000, \"AAIGF\": 8000, \"EL\": 0, \"FVRR\": -8000, \"GS\": 56000, \"\u2026",
           "Type": "Representative",
-          "_first_seen": "2026-11-13T03:44:37.499250+00:00",
+          "_first_seen": "2026-11-13T06:06:35.513526+00:00",
           "_collected": "2026-11-13"
         }
       ]
@@ -5255,7 +5255,7 @@
           "Rating": "4.57774",
           "Count": "3827",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "MMS",
@@ -5265,7 +5265,7 @@
           "Rating": "1.0",
           "Count": "38",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GPS",
@@ -5275,7 +5275,7 @@
           "Rating": "4.88527",
           "Count": "409832",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GPRO",
@@ -5285,7 +5285,7 @@
           "Rating": "4.78026",
           "Count": "834648",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GPI",
@@ -5295,7 +5295,7 @@
           "Rating": "4.85714",
           "Count": "7",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GPC",
@@ -5305,7 +5305,7 @@
           "Rating": "2.77073",
           "Count": "1688",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GOOGL",
@@ -5315,7 +5315,7 @@
           "Rating": "4.71398",
           "Count": "2452562",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GOOGL",
@@ -5325,7 +5325,7 @@
           "Rating": "4.66784",
           "Count": "7451440",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GOOGL",
@@ -5335,7 +5335,7 @@
           "Rating": "4.77655",
           "Count": "7924687",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GOOGL",
@@ -5345,7 +5345,7 @@
           "Rating": "4.68679",
           "Count": "4085647",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GOOGL",
@@ -5355,7 +5355,7 @@
           "Rating": "4.64505",
           "Count": "5353323",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GNTX",
@@ -5365,7 +5365,7 @@
           "Rating": "3.47059",
           "Count": "34",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GME",
@@ -5375,7 +5375,7 @@
           "Rating": "4.77865",
           "Count": "153604",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GM",
@@ -5385,7 +5385,7 @@
           "Rating": "4.84213",
           "Count": "119014",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GM",
@@ -5395,7 +5395,7 @@
           "Rating": "4.83424",
           "Count": "167439",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GM",
@@ -5405,7 +5405,7 @@
           "Rating": "4.82083",
           "Count": "444275",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GM",
@@ -5415,7 +5415,7 @@
           "Rating": "4.81979",
           "Count": "999286",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GLW",
@@ -5425,7 +5425,7 @@
           "Rating": "5.0",
           "Count": "2",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GLW",
@@ -5435,7 +5435,7 @@
           "Rating": "4.8212",
           "Count": "13322",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GL",
@@ -5445,7 +5445,7 @@
           "Rating": "2.90099",
           "Count": "101",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GIS",
@@ -5455,7 +5455,7 @@
           "Rating": "0.0",
           "Count": "0",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GIS",
@@ -5465,7 +5465,7 @@
           "Rating": "4.68358",
           "Count": "148479",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GILD",
@@ -5475,7 +5475,7 @@
           "Rating": "4.33333",
           "Count": "3",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GILD",
@@ -5485,7 +5485,7 @@
           "Rating": "0.0",
           "Count": "0",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         },
         {
           "Ticker": "GIL",
@@ -5495,7 +5495,7 @@
           "Rating": "4.74286",
           "Count": "35",
           "Time": "2026-11-12",
-          "_first_seen": "2026-11-13T03:44:40.303624+00:00"
+          "_first_seen": "2026-11-13T06:06:38.472762+00:00"
         }
       ]
     },
@@ -5503,21 +5503,49 @@
       "emoji": "\ud83c\udfdb\ufe0f",
       "label_en": "Top shareholders",
       "label_zh": "\u4e3b\u8981\u80a1\u4e1c",
-      "rows": 558859,
+      "rows": 558863,
       "last_seen": "2026-11-13",
       "recent": [
         {
           "ticker": "COR",
-          "owner_name": "Nykredit A/S",
+          "owner_name": "Fjarde AP-fonden (The Fourth Swedish National Pensionfund)",
           "owner_title": "Institution",
-          "shares": "67163",
+          "shares": "70766",
           "_collected": "2026-11-13"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "WCM INVESTMENT MANAGEMENT, LLC",
+          "owner_name": "LAZARD ASSET MANAGEMENT LLC",
           "owner_title": "Institution",
-          "shares": "6892870",
+          "shares": "7239349",
+          "_collected": "2026-11-13"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "ALKEON CAPITAL MANAGEMENT LLC",
+          "owner_title": "Institution",
+          "shares": "7964931",
+          "_collected": "2026-11-13"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "APG Asset Management N.V.",
+          "owner_title": "Institution",
+          "shares": "7685964",
+          "_collected": "2026-11-13"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "DnB Asset Management AS",
+          "owner_title": "Institution",
+          "shares": "7491827",
+          "_collected": "2026-11-13"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "PARNASSUS INVESTMENTS, LLC",
+          "owner_title": "Institution",
+          "shares": "7477264",
           "_collected": "2026-11-13"
         },
         {
@@ -5543,16 +5571,16 @@
         },
         {
           "ticker": "AMZN",
-          "owner_name": "LAZARD ASSET MANAGEMENT LLC",
+          "owner_name": "WINDACRE PARTNERSHIP LLC",
           "owner_title": "Institution",
-          "shares": "7239349",
+          "shares": "7185100",
           "_collected": "2026-11-13"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "WINDACRE PARTNERSHIP LLC",
+          "owner_name": "NATIXIS ADVISORS, LLC",
           "owner_title": "Institution",
-          "shares": "7185100",
+          "shares": "9827316",
           "_collected": "2026-11-13"
         },
         {
@@ -5571,16 +5599,23 @@
         },
         {
           "ticker": "AMZN",
-          "owner_name": "MACKENZIE FINANCIAL CORP",
+          "owner_name": "WCM INVESTMENT MANAGEMENT, LLC",
           "owner_title": "Institution",
-          "shares": "6814498",
+          "shares": "6892870",
           "_collected": "2026-11-13"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "VOYA INVESTMENT MANAGEMENT LLC",
+          "owner_name": "Focus Partners Wealth",
           "owner_title": "Institution",
-          "shares": "9584717",
+          "shares": "6879783",
+          "_collected": "2026-11-13"
+        },
+        {
+          "ticker": "AMZN",
+          "owner_name": "MACKENZIE FINANCIAL CORP",
+          "owner_title": "Institution",
+          "shares": "6814498",
           "_collected": "2026-11-13"
         },
         {
@@ -5599,86 +5634,51 @@
         },
         {
           "ticker": "AMZN",
-          "owner_name": "Mariner, LLC",
+          "owner_name": "1832 Asset Management L.P.",
           "owner_title": "Institution",
-          "shares": "6681607",
+          "shares": "7996069",
           "_collected": "2026-11-13"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "Quantinno Capital Management LP",
+          "owner_name": "FAYEZ SAROFIM & CO",
           "owner_title": "Institution",
-          "shares": "6650638",
+          "shares": "8126491",
           "_collected": "2026-11-13"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "Newlands Management Operations LLC",
+          "owner_name": "STATE BOARD OF ADMINISTRATION OF FLORIDA RETIREMENT SYSTEM",
           "owner_title": "Institution",
-          "shares": "6589070",
+          "shares": "8257584",
           "_collected": "2026-11-13"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "THRIVENT FINANCIAL FOR LUTHERANS",
+          "owner_name": "CANADA LIFE ASSURANCE Co",
           "owner_title": "Institution",
-          "shares": "6573407",
+          "shares": "8345507",
           "_collected": "2026-11-13"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "KBC Group NV",
+          "owner_name": "TIGER GLOBAL MANAGEMENT LLC",
           "owner_title": "Institution",
-          "shares": "6407947",
+          "shares": "9683558",
           "_collected": "2026-11-13"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "APG Asset Management N.V.",
+          "owner_name": "Skye Global Management LP",
           "owner_title": "Institution",
-          "shares": "7314985",
+          "shares": "9672000",
           "_collected": "2026-11-13"
         },
         {
           "ticker": "AMZN",
-          "owner_name": "PARNASSUS INVESTMENTS, LLC",
+          "owner_name": "VOYA INVESTMENT MANAGEMENT LLC",
           "owner_title": "Institution",
-          "shares": "7477264",
-          "_collected": "2026-11-13"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "DnB Asset Management AS",
-          "owner_title": "Institution",
-          "shares": "7785587",
-          "_collected": "2026-11-13"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "ALKEON CAPITAL MANAGEMENT LLC",
-          "owner_title": "Institution",
-          "shares": "7964931",
-          "_collected": "2026-11-13"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "ADAGE CAPITAL PARTNERS GP, L.L.C.",
-          "owner_title": "Institution",
-          "shares": "9156260",
-          "_collected": "2026-11-13"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "Robeco Institutional Asset Management B.V.",
-          "owner_title": "Institution",
-          "shares": "9116153",
-          "_collected": "2026-11-13"
-        },
-        {
-          "ticker": "AMZN",
-          "owner_name": "PRUDENTIAL FINANCIAL INC",
-          "owner_title": "Institution",
-          "shares": "8925205",
+          "shares": "9584717",
           "_collected": "2026-11-13"
         }
       ]
@@ -27568,7 +27568,7 @@
         "ticker": "BA",
         "bull_ratio": 1.0,
         "messages": 30,
-        "watchers": 198227,
+        "watchers": 198229,
         "hot": true
       },
       {
@@ -27580,7 +27580,7 @@
       },
       {
         "ticker": "XYZ",
-        "bull_ratio": 0.92,
+        "bull_ratio": 0.93,
         "messages": 30,
         "watchers": 178374,
         "hot": true
@@ -27596,7 +27596,7 @@
         "ticker": "SOFI",
         "bull_ratio": 0.75,
         "messages": 30,
-        "watchers": 157424,
+        "watchers": 157425,
         "hot": true
       },
       {
@@ -27889,8 +27889,8 @@
       },
       {
         "ticker": "MSFT",
-        "stars": 195345,
-        "wow_pct": 0.3,
+        "stars": 195352,
+        "wow_pct": 0.31,
         "hot": true
       },
       {
@@ -27901,19 +27901,19 @@
       },
       {
         "ticker": "ESTC",
-        "stars": 78682,
-        "wow_pct": 0.23,
+        "stars": 78683,
+        "wow_pct": 0.24,
         "hot": true
       },
       {
         "ticker": "U",
-        "stars": 19870,
-        "wow_pct": 0.23,
+        "stars": 19871,
+        "wow_pct": 0.24,
         "hot": true
       },
       {
         "ticker": "META",
-        "stars": 252561,
+        "stars": 252564,
         "wow_pct": 0.22,
         "hot": true
       },
@@ -27931,7 +27931,7 @@
       },
       {
         "ticker": "GOOGL",
-        "stars": 201585,
+        "stars": 201584,
         "wow_pct": 0.14,
         "hot": false
       },
@@ -27961,7 +27961,7 @@
       },
       {
         "ticker": "MDB",
-        "stars": 28685,
+        "stars": 28686,
         "wow_pct": 0.03,
         "hot": false
       },
@@ -27973,14 +27973,14 @@
       },
       {
         "ticker": "CRM",
-        "stars": 11255,
-        "wow_pct": -0.01,
+        "stars": 11254,
+        "wow_pct": -0.02,
         "hot": false
       },
       {
         "ticker": "AMD",
-        "stars": 6809,
-        "wow_pct": -0.03,
+        "stars": 6808,
+        "wow_pct": -0.04,
         "hot": false
       }
     ],
@@ -29524,7 +29524,7 @@
         "Direction": "Not Recommending",
         "Traders": "Jim Cramer",
         "Upload_Time": "2026-11-12T16:30:04.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "ET",
@@ -29533,7 +29533,7 @@
         "Direction": "Bullish",
         "Traders": "Jim Cramer",
         "Upload_Time": "2026-11-12T16:29:29.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "PLTR",
@@ -29542,7 +29542,7 @@
         "Direction": "Bullish",
         "Traders": "Jim Cramer",
         "Upload_Time": "2026-11-12T16:29:12.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "OBK",
@@ -29551,7 +29551,7 @@
         "Direction": "Bullish",
         "Traders": "Jim Cramer",
         "Upload_Time": "2026-11-12T16:28:42.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "DKNG",
@@ -29560,7 +29560,7 @@
         "Direction": "Not Recommending",
         "Traders": "Jim Cramer",
         "Upload_Time": "2026-11-12T16:28:09.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "TGB",
@@ -29569,7 +29569,7 @@
         "Direction": "Speculative - Good",
         "Traders": "Jim Cramer",
         "Upload_Time": "2026-11-12T16:27:23.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "BABA",
@@ -29578,7 +29578,7 @@
         "Direction": "Not Recommending",
         "Traders": "Jim Cramer",
         "Upload_Time": "2026-11-12T16:26:39.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "TEVA",
@@ -29587,7 +29587,7 @@
         "Direction": "Interview",
         "Traders": "Jim Cramer",
         "Upload_Time": "2026-11-12T16:26:04.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "DRI",
@@ -29596,7 +29596,7 @@
         "Direction": "Bullish",
         "Traders": "Jim Cramer",
         "Upload_Time": "2026-11-12T16:25:18.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "JMKE",
@@ -29605,7 +29605,7 @@
         "Direction": "Bullish",
         "Traders": "Jim Cramer",
         "Upload_Time": "2026-11-12T16:10:10.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "META",
@@ -29614,7 +29614,7 @@
         "Direction": "Buy on a Pullback",
         "Traders": "Jim Cramer",
         "Upload_Time": "2026-11-12T16:09:37.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "AAPL",
@@ -29623,7 +29623,7 @@
         "Direction": "Long",
         "Traders": "Carter Worth",
         "Upload_Time": "2026-11-12T16:02:25.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "AAPL",
@@ -29632,7 +29632,7 @@
         "Direction": "Long",
         "Traders": "Tim Seymour",
         "Upload_Time": "2026-11-12T16:02:10.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "NVDA",
@@ -29641,7 +29641,7 @@
         "Direction": "Bearish",
         "Traders": "Guy Adami",
         "Upload_Time": "2026-11-12T16:01:43.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "NVDA",
@@ -29650,7 +29650,7 @@
         "Direction": "Hold",
         "Traders": "Karen Finerman",
         "Upload_Time": "2026-11-12T16:00:02.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "CRWV",
@@ -29659,7 +29659,7 @@
         "Direction": "Bearish",
         "Traders": "Guy Adami",
         "Upload_Time": "2026-11-12T15:59:43.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "QQQ",
@@ -29668,7 +29668,7 @@
         "Direction": "Final Trade",
         "Traders": "Anastasia Amoroso",
         "Upload_Time": "2026-11-12T15:58:16.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "MPWR",
@@ -29677,7 +29677,7 @@
         "Direction": "Final Trade",
         "Traders": "Rob Sechan",
         "Upload_Time": "2026-11-12T15:57:50.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "DIS",
@@ -29686,7 +29686,7 @@
         "Direction": "Final Trade",
         "Traders": "Jim Lebenthal",
         "Upload_Time": "2026-11-12T15:57:15.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "APH",
@@ -29695,7 +29695,7 @@
         "Direction": "Final Trade",
         "Traders": "Jim Lebenthal",
         "Upload_Time": "2026-11-12T15:56:59.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "CSCO",
@@ -29704,7 +29704,7 @@
         "Direction": "Long",
         "Traders": "Jim Lebenthal",
         "Upload_Time": "2026-11-12T15:56:32.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "CSCO",
@@ -29713,7 +29713,7 @@
         "Direction": "Bullish",
         "Traders": "Joe Terranova",
         "Upload_Time": "2026-11-12T15:56:11.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "COST",
@@ -29722,7 +29722,7 @@
         "Direction": "Bullish",
         "Traders": "Joe Terranova",
         "Upload_Time": "2026-11-12T15:55:52.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "AZO",
@@ -29731,7 +29731,7 @@
         "Direction": "Bullish",
         "Traders": "Rob Sechan",
         "Upload_Time": "2026-11-12T15:55:31.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       },
       {
         "Ticker": "ABBV",
@@ -29740,7 +29740,7 @@
         "Direction": "Bullish",
         "Traders": "Jim Lebenthal",
         "Upload_Time": "2026-11-12T15:55:05.000",
-        "_first_seen": "2026-11-13T03:44:35.653723+00:00"
+        "_first_seen": "2026-11-13T06:06:26.777906+00:00"
       }
     ],
     "app_ratings": [
@@ -31537,7 +31537,7 @@
           "patent_cluster",
           "trump"
         ],
-        "why": "analyst_upgrade_cluster: net upgrades +20 revision delta \u00b7 app_demand: 4.77\u2605 \u00d7 20,527,905 reviews \u00b7 github_momentum: +0.3% stars \u00b7 hf_model_momentum: +17.9% model downloads \u00b7 patent_cluster: 524 grants, 49 IPC classes \u00b7 trump: MICROSOFT CORP"
+        "why": "analyst_upgrade_cluster: net upgrades +20 revision delta \u00b7 app_demand: 4.77\u2605 \u00d7 20,527,905 reviews \u00b7 github_momentum: +0.31% stars \u00b7 hf_model_momentum: +17.9% model downloads \u00b7 patent_cluster: 524 grants, 49 IPC classes \u00b7 trump: MICROSOFT CORP"
       },
       {
         "ticker": "IBM",
@@ -31575,7 +31575,7 @@
           "patent_cluster",
           "stocktwits_bull"
         ],
-        "why": "gov_grant_accel: $12,921,445, 2.4x grant accel \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 262 grants, 85 IPC classes \u00b7 stocktwits_bull: 100% bull \u00b7 198,227 watching"
+        "why": "gov_grant_accel: $12,921,445, 2.4x grant accel \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 262 grants, 85 IPC classes \u00b7 stocktwits_bull: 100% bull \u00b7 198,229 watching"
       },
       {
         "ticker": "AMAT",

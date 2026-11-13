@@ -1,16 +1,16 @@
 {
   "schema": "special_sits_context.v1",
   "asof": "2026-11-13",
-  "built": "2026-11-13T10:42:43Z",
+  "built": "2026-11-13T14:10:30Z",
   "is_context_only": true,
   "disclaimer": "Context only — event tracking + display-tier setup ranking, never a signal or sizing input.",
   "counts": {
-    "total": 1624,
-    "new_today": 173,
+    "total": 1621,
+    "new_today": 170,
     "grade_a": 0,
     "grade_b": 2,
     "with_arb": 12,
-    "cross_border": 578
+    "cross_border": 576
   },
   "top_setups": [
     {
@@ -213,13 +213,6 @@
       },
       {
         "kind": "new",
-        "ticker": "ADXN",
-        "category": "Spin-Offs",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
         "ticker": "NXGLW",
         "category": "Spin-Offs",
         "from": null,
@@ -325,7 +318,14 @@
       },
       {
         "kind": "new",
-        "ticker": "GFL",
+        "ticker": "GNS",
+        "category": "Other",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "GLAS",
         "category": "Other",
         "from": null,
         "to": "announced"
@@ -486,14 +486,14 @@
       },
       {
         "kind": "new",
-        "ticker": "CARE",
+        "ticker": "FINW",
         "category": "Capital Returns",
         "from": null,
         "to": "announced"
       },
       {
         "kind": "new",
-        "ticker": "FINW",
+        "ticker": "CARE",
         "category": "Capital Returns",
         "from": null,
         "to": "announced"
@@ -639,13 +639,6 @@
         "to": "announced"
       },
       {
-        "kind": "new",
-        "ticker": "BTAFF",
-        "category": "Activist Campaigns",
-        "from": null,
-        "to": "initiated"
-      },
-      {
         "kind": "stage",
         "ticker": "nan",
         "category": "Acquisitions",
@@ -724,13 +717,6 @@
       },
       {
         "kind": "new",
-        "ticker": "KXS.TO",
-        "category": "Capital Returns",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
         "ticker": "CJT.TO",
         "category": "Capital Returns",
         "from": null,
@@ -740,13 +726,6 @@
         "kind": "new",
         "ticker": "CVE.TO",
         "category": "Capital Returns",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
-        "ticker": "TTEC",
-        "category": "Strategic Reviews",
         "from": null,
         "to": "announced"
       },
@@ -913,13 +892,6 @@
       },
       {
         "kind": "new",
-        "ticker": "ENVA",
-        "category": "Capital Returns",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
         "ticker": "DCX",
         "category": "Capital Returns",
         "from": null,
@@ -949,6 +921,13 @@
       {
         "kind": "new",
         "ticker": "CTM",
+        "category": "Capital Returns",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "ENVA",
         "category": "Capital Returns",
         "from": null,
         "to": "announced"
@@ -1549,7 +1528,7 @@
         "to": null
       }
     ],
-    "n": 199
+    "n": 196
   },
   "prev_state": {
     "asof": "2026-11-09",
@@ -8041,10 +8020,6 @@
       "stage": "initiated",
       "grade": null
     },
-    "ADXN|Spin-Offs": {
-      "stage": "announced",
-      "grade": null
-    },
     "NXGLW|Spin-Offs": {
       "stage": "closed",
       "grade": null
@@ -8109,7 +8084,11 @@
       "stage": "announced",
       "grade": null
     },
-    "GFL|Other": {
+    "GNS|Other": {
+      "stage": "announced",
+      "grade": null
+    },
+    "GLAS|Other": {
       "stage": "announced",
       "grade": null
     },
@@ -8217,7 +8196,7 @@
       "stage": "announced",
       "grade": null
     },
-    "CARE|Capital Returns": {
+    "FINW|Capital Returns": {
       "stage": "announced",
       "grade": null
     },
@@ -8225,7 +8204,7 @@
       "stage": "announced",
       "grade": null
     },
-    "FINW|Capital Returns": {
+    "CARE|Capital Returns": {
       "stage": "announced",
       "grade": null
     },
@@ -8313,10 +8292,6 @@
       "stage": "announced",
       "grade": null
     },
-    "BTAFF|Activist Campaigns": {
-      "stage": "initiated",
-      "grade": null
-    },
     "nan|Acquisitions": {
       "stage": "registered",
       "grade": null
@@ -8361,19 +8336,11 @@
       "stage": "announced",
       "grade": null
     },
-    "KXS.TO|Capital Returns": {
-      "stage": "announced",
-      "grade": null
-    },
     "CJT.TO|Capital Returns": {
       "stage": "announced",
       "grade": null
     },
     "CVE.TO|Capital Returns": {
-      "stage": "announced",
-      "grade": null
-    },
-    "TTEC|Strategic Reviews": {
       "stage": "announced",
       "grade": null
     },
@@ -8481,10 +8448,6 @@
       "stage": "announced",
       "grade": null
     },
-    "ENVA|Capital Returns": {
-      "stage": "announced",
-      "grade": null
-    },
     "DCX|Capital Returns": {
       "stage": "announced",
       "grade": null
@@ -8502,6 +8465,10 @@
       "grade": null
     },
     "CTM|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
+    "ENVA|Capital Returns": {
       "stage": "announced",
       "grade": null
     },
@@ -14515,13 +14482,6 @@
       "days_to_close": 48
     },
     {
-      "ticker": "SSTI",
-      "company": "SOUNDTHINKING, INC.",
-      "gross_spread_pct": -3.96,
-      "annualized_pct": null,
-      "days_to_close": null
-    },
-    {
       "ticker": "SGLA",
       "company": "Sino Green Land Corp.",
       "gross_spread_pct": 25.0,
@@ -14539,6 +14499,13 @@
       "ticker": "VRNS",
       "company": "VARONIS SYSTEMS INC",
       "gross_spread_pct": 2.15,
+      "annualized_pct": null,
+      "days_to_close": null
+    },
+    {
+      "ticker": "KRFG",
+      "company": "King Resources Global, Inc.",
+      "gross_spread_pct": -23.87,
       "annualized_pct": null,
       "days_to_close": null
     }

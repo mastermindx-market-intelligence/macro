@@ -183,7 +183,7 @@
   <url><loc>https://www.mastermind-x.com/stocks/MDLZ.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/MRNA.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/MAA.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.mastermind-x.com/stocks/MSFT.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.mastermind-x.com/stocks/MSFT.html</loc><lastmod>2026-11-13</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/MU.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/MCHP.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/MGM.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
@@ -345,7 +345,7 @@
   <url><loc>https://www.mastermind-x.com/stocks/BMY.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/BSX.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/BKNG.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.mastermind-x.com/stocks/BA.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.mastermind-x.com/stocks/BA.html</loc><lastmod>2026-11-13</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/BNY.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/XYZ.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/BX.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
@@ -1799,7 +1799,7 @@
   <url><loc>https://www.mastermind-x.com/stocks/NMAX.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/ASPN.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/GNK.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.mastermind-x.com/stocks/CSIQ.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.mastermind-x.com/stocks/CSIQ.html</loc><lastmod>2026-11-13</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/EVLV.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/KURA.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/WYFI.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
@@ -2758,6 +2758,7 @@
   <url><loc>https://www.mastermind-x.com/stocks/AMLX.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/stocks/PLSE.html</loc><lastmod>2026-11-12</lastmod><changefreq>daily</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.mastermind-x.com/research/index.html</loc><changefreq>daily</changefreq><priority>0.6</priority></url>
+  <url><loc>https://www.mastermind-x.com/research/jpm-international-market-intelligence-morning-briefing-fe14cb.html</loc><lastmod>2026-11-13</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/nb-com-ai-data-centers-and-the-new-compute-of-politics-power-and-capex-63b5be.html</loc><lastmod>2026-11-13</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/the-month-at-a-glance-november-2026-en-1e0fa5.html</loc><lastmod>2026-11-13</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/ing-think-rates-spark-inflation-pricing-sending-mixed-signals-0e1df7.html</loc><lastmod>2026-11-13</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -2785,7 +2786,9 @@
   <url><loc>https://www.mastermind-x.com/research/gs-blekos-marketcolour-memory-earnings-12-nov-2026-e729c4.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/europe-open-hold-that-thought-f17dc2.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/etrading-update-london-morning-038b67.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://www.mastermind-x.com/research/desktalk-us-equity-check-back-on-script-8613a5.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/desktalk-the-us-consumer-splits-in-two-f7d42d.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://www.mastermind-x.com/research/desktalk-dollar-rally-dose-of-reluctance-f40be4.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/asia-open-open-for-risk-026dc1.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/japan-soft-consumption-constrains-boj-tightening-0f5715.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/jpm-us-market-intell-morning-briefing-1d4780.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
@@ -2797,12 +2800,14 @@
   <url><loc>https://www.mastermind-x.com/research/gs-elster-gs-industrials-siemens-feedback-focused-on-peak-valuation-vs-234e8a.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/gs-crook-gs-morning-1-fx-trader-call-takeaways-2-trading-energy-relief-de9c2d.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/gs-blekos-marketcolour-memory-earnings-12-nov-2026-879613.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://www.mastermind-x.com/research/gs-blekos-europe-macro-outlook-ai-cycle-durable-siemens-energy-pghn-tk-858496.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/jpm-retail-radar-e69374.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/jpm-flows-liquidity-caa328.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/european-equity-daily-3b664b.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/early-morning-reid-macro-strategy-65f975.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/carbonomics-7th-annual-carbonomics-conference-key-takeaways-5ab6f4.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/boyd-group-byd-750d16.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://www.mastermind-x.com/research/americas-utilities-takeaways-from-eei-conference-constructive-tone-des-27bc5c.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/global-economics-comment-should-we-expect-more-upside-inflation-surpri-b855a2.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/avc-3017-36104c.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://www.mastermind-x.com/research/nippon-express-holdings-9147-t-first-take-earnings-review-results-slig-90388a.html</loc><lastmod>2026-11-12</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url>
