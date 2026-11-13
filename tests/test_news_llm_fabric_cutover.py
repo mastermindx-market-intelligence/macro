@@ -28,6 +28,21 @@ from engine import news_llm  # noqa: E402
 from lib import ai_costs as ai_costs_mod  # noqa: E402
 from lib import fabric_client as fc  # noqa: E402
 
+
+@pytest.fixture(autouse=True)
+def isolated_ledger(tmp_path, monkeypatch):
+    """Keep every test off the repo's real data/ai_costs/usage.jsonl.
+
+    The served-usage test asserts on a stubbed record_usage, but the annotation
+    tests run the REAL one. Without this the module appends fixture rows to the
+    committed ledger — dirtying the tree on every run. AI_COSTS_STATE_ROOT must
+    point outside the repository (ai_costs._state_root enforces that), and
+    tmp_path does.
+    """
+    monkeypatch.setenv("AI_COSTS_STATE_ROOT", str(tmp_path))
+    monkeypatch.delenv("AI_COSTS_SHARD", raising=False)
+    yield tmp_path
+
 _CFG = {"enabled": True, "batch_size": 12, "max_batches": 12}
 
 _ROWS = [
@@ -133,6 +148,23 @@ def test_fabric_served_usage_is_recorded_as_fabric(fabric_on, monkeypatch):
     assert row["lane"] == "fast"
     assert row["input_tokens"] == 40
     assert row["output_tokens"] == 12
+
+
+def test_fabric_call_writes_a_real_ledger_row_under_the_isolated_root(
+        fabric_on, isolated_ledger):
+    """End-to-end through the REAL record_usage, proving the ledger row lands in
+    the isolated state root and never in the committed data/ai_costs/usage.jsonl."""
+    news_llm.annotate(_headlines())
+
+    ledger = isolated_ledger / "data" / "ai_costs" / "usage.jsonl"
+    assert ledger.is_file(), "record_usage wrote no ledger row"
+    rows = [json.loads(line) for line in ledger.read_text().splitlines() if line.strip()]
+    assert len(rows) == 1
+    assert rows[0]["lane"] == "fast"
+    assert rows[0]["provider"] == "fabric"
+    assert rows[0]["model"] == "deepseek-v4.1-flash"
+    assert rows[0]["input_tokens"] == 40
+    assert rows[0]["output_tokens"] == 12
 
 
 def test_usage_record_failure_never_breaks_the_call(fabric_on, monkeypatch):
