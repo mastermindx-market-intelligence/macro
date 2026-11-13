@@ -51582,6 +51582,7 @@ jobs:
       - "engine/theme_graph/activity_history_bridge.py"
       - "admin/press_audience.py"
       - "admin/marketing_evidence.py"
+      - "engine/marketing/telemetry.py"
       - "lib/fabric_client.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"

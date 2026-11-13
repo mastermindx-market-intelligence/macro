@@ -126,3 +126,9 @@ Source-recovery ownership belongs to this currently assigned session. This takeo
 The media PR #7489's Content Studio hunks are `_attach_chart_media` and the later claim-local media projection; the mover/theme caption hunk is disjoint. Its armed-plus-blocked release state is preserved. A fresh open-PR path search found no separate `publish_time_content.py` carrier; the exact changed-file inventory of #7489 does not include that helper. The theme-card subtitle's selected-count/full-universe-average mismatch can therefore be evaluated with the compiler consumer repair, without mutating the held publisher script, media transport or outbox.
 
 Next actions: publish/read back the #11196 delivery/CI repair and observe binding CI while completing P7 on #7493; preserve every existing release hold. Actual browser acceptance remains blocked by the connected Chrome extension panel described above. Parent acceptance is still open.
+
+## P6 exact-head dependency follow-through
+
+Hosted contract-delta on `891ff3ba6cdc24211d2c1ffad2f402fea2bf89b5` reported one introduced uncovered path: `eval-os-a1` reaches `engine/marketing/telemetry.py` through the new adapter. [Job 131666897203](https://github.com/mastermindx-market-intelligence/macro/actions/runs/43358671136/job/131666897203) reported zero inherited findings and unchanged packing probes. The exact existing telemetry owner is now declared beside the adapter; exclusive scope, commands, budgets and release gates remain intact. A bounded local single-owner inference probe could not derive a closure in the sparse checkout, so it supplies no admission verdict. Fresh hosted exact-head contract-delta is the remaining proof.
+
+The latest observed `main` (`00f9f71d1f8a21ae7202cb41472d2a8eaaf6f068`) differs from the earlier checked main only in marketing ledgers and research-vault data, with no intervening owned-source change. No release label or manual publication has been applied.
