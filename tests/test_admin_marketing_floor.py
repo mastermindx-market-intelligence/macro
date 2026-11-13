@@ -225,9 +225,65 @@ def test_ledger_loss_total_excludes_informational_counters(repo):
     assert led["lost_total"] == 4
 
 
-def test_disabled_desks_surface_as_a_blocker(repo):
-    hit = [b for b in mf.floor(repo)["blockers"] if "switched off" in b["title"]]
-    assert hit and "receipts" in hit[0]["why"]
+def _disabled_blockers(repo):
+    result = mf.floor(repo)
+    assert result["ok"] is True
+    return [b for b in result["blockers"]
+            if "disabled desks" in b["title"] or "switched off" in b["title"]]
+
+
+def test_disabled_roster_with_empty_queues_is_not_a_production_blocker(repo):
+    path = repo / "data/marketing/content_plan.json"
+    plan = json.loads(path.read_text())
+    plan["accounts"].extend({"id": desk, "status": "planned", "queue": []}
+                            for desk in ("receipts", "theme_desk"))
+    _write(path, plan)
+    assert _disabled_blockers(repo) == []
+
+
+def test_actual_queued_posts_on_a_disabled_desk_report_observed_cost(repo):
+    path = repo / "data/marketing/content_plan.json"
+    plan = json.loads(path.read_text())
+    plan["accounts"].append({"id": "receipts", "status": "planned", "queue": [
+        {"id": "disabled-1", "type": "receipt"},
+        {"id": "disabled-2", "type": "receipt"}]})
+    _write(path, plan)
+    hit, = _disabled_blockers(repo)
+    assert hit["cost"] == 2 and "receipts" in hit["why"]
+    assert hit["goto"] == "marketing_content"
+    assert "model calls" not in hit["why"] + hit["fix"]
+    assert "Turn a desk back on" not in hit["fix"]
+
+
+@pytest.mark.parametrize("include_report", [False, True])
+def test_plan_disabled_reason_counts_its_post_once(repo, include_report):
+    plan_path = repo / "data/marketing/content_plan.json"
+    plan = json.loads(plan_path.read_text())
+    plan["accounts"][1]["queue"][5]["sentinel_reasons"] = ["account_disabled"]
+    _write(plan_path, plan)
+    if include_report:
+        report_path = repo / "data/marketing/sentinel_report.json"
+        report = json.loads(report_path.read_text())
+        report.update(produced_at="2026-07-29T03:10:00Z", quarantined=[{
+            "id": "post-kelly-006", "account": "kelly", "reasons": ["account_disabled"]}])
+        report["checks"]["kill_switch"]["accounts_disabled"] = ["kelly"]
+        _write(report_path, report)
+    hit, = _disabled_blockers(repo)
+    assert hit["cost"] == 1 and "kelly" in hit["why"]
+
+
+@pytest.mark.parametrize("headline", ["k6", "A different post under the reused ID"])
+def test_separate_report_cannot_charge_a_rebuilt_plan(repo, headline):
+    # Planner IDs repeat across builds. Even the same displayed headline does
+    # not bind the body or source packet, which this report does not carry.
+    path = repo / "data/marketing/sentinel_report.json"
+    report = json.loads(path.read_text())
+    report.update(produced_at="2026-07-29T03:10:00Z", quarantined=[{
+        "id": "post-kelly-006", "account": "kelly", "type": "chart",
+        "headline": headline, "reasons": ["account_disabled"]}])
+    report["checks"]["kill_switch"]["accounts_disabled"] = ["kelly"]
+    _write(path, report)
+    assert _disabled_blockers(repo) == []
 
 
 # ---------------------------------------------------------------------------

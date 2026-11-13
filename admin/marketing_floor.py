@@ -936,15 +936,34 @@ def _blockers(repo: Path, *, line: list[dict], authorship: dict, pub: dict,
             f"{st['name']} onward on their own, not as a chain.",
             owner="engine")
 
-    # --- desks switched off ---------------------------------------------
-    disabled = (((rpt or {}).get("checks") or {}).get("kill_switch") or {}).get("accounts_disabled") or []
-    if disabled:
-        add("high", f"{len(disabled)} desks switched off",
-            "These desks are wired but disabled, so their planned posts are "
-            "written and gated and then thrown away: " + ", ".join(map(str, disabled)) + ".",
-            "Turn a desk back on in Channels & Desks, or drop it from the plan "
-            "so the allocator stops spending model calls on it.",
-            cost=None, goto="marketing_channels")
+    # The disabled roster is configuration, not lost production. Count only
+    # entries in this displayed plan. Sentinel reports have no immutable plan
+    # binding, and account/post IDs are reused across same-day rebuilds; their
+    # separate quarantine list cannot be charged to this plan. The gate stamps
+    # its actual reasons on plan items, which is directly attributable here.
+    affected = 0
+    affected_desks: set[str] = set()
+    for account in (cp or {}).get("accounts") or []:
+        if not isinstance(account, dict):
+            continue
+        account_id = str(account.get("id") or "")
+        for post in account.get("queue") or []:
+            if not isinstance(post, dict):
+                continue
+            if (account.get("status") == "planned"
+                    or "account_disabled" in (post.get("sentinel_reasons") or [])):
+                affected += 1
+                affected_desks.add(account_id or "unnamed desk")
+    if affected:
+        noun = "post" if affected == 1 else "posts"
+        verb = "targets" if affected == 1 else "target"
+        add("high", f"{affected} planned {noun} {verb} disabled desks",
+            f"The displayed plan contains {affected} queued {noun} for "
+            + ", ".join(sorted(affected_desks)) + ". The plan records a disabled "
+            "desk or an account-disabled gate result on these entries.",
+            "Review the affected queues in Content Studio and the desk settings "
+            "in Channels & Desks. Correct the allocation and regenerate the plan.",
+            cost=affected, goto="marketing_content", owner="engine")
 
     # --- authorship law -------------------------------------------------
     tmpl = authorship.get("template_on_planned_kind") or 0
