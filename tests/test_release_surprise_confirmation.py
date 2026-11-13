@@ -47,7 +47,7 @@ def poll_fixture(actual, value=0.2, **updates):
         "value": value, "source_id": "synthetic_poll", "source_url": "https://example.test/poll",
         "source_sha256": "b" * 64, "forecast_at": stamp + "T12:00:00Z",
         "observed_at": stamp + "T12:01:00Z", "recorded_at": stamp + "T12:02:00Z",
-        "release_at": actual["source_released_at"], "rights": "display_only",
+        "release_at": actual["source_released_at"], "rights": "redistribution_limited",
         "use_scopes": ["internal_research", "display_derived"], "rights_ref": "synthetic-test-only",
     }
     row.update(updates)
@@ -243,7 +243,7 @@ def test_consumer_staleness_future_digest_and_bad_max_age(tmp_path):
     assert read_consumer_context(tmp_path, consumer="prophet", asof="2026-11-12T00:00:00Z")["reason_codes"] == ["artifact_stale_or_future"]
     artifact["status"] = "invented"
     publish(tmp_path, artifact)
-    assert read_consumer_context(tmp_path, consumer="prophet", asof=ASOF)["reason_codes"] == ["evidence_digest_mismatch"]
+    assert read_consumer_context(tmp_path, consumer="prophet", asof=ASOF)["reason_codes"] == ["unknown_confirmation_status"]
     with pytest.raises(EvidenceError):
         read_consumer_context(tmp_path, consumer="prophet", asof=ASOF, max_age_hours=float("inf"))
 
@@ -264,3 +264,44 @@ def test_internal_research_rights_do_not_imply_display(tmp_path):
     assert artifact["eligible_event_count"] == 3
     assert artifact["latest_releases"] == artifact["latest_pairs"] == []
     assert "derived_display_rights_unavailable" in artifact["reason_codes"]
+
+
+def test_display_only_license_does_not_authorize_research(tmp_path):
+    actual = actual_fixture()[0]
+    result = history(tmp_path, [actual], [poll_fixture(actual, rights="display_only")])
+    assert not result["events"]
+    assert "consensus_invalid:display_only_rights_block_research" in result["reason_counts"]
+
+
+def test_sealed_but_semantically_inconsistent_pair_is_refused(tmp_path):
+    actuals = actual_fixture() + actual_fixture("PPI", day="2026-11-13")
+    write_inputs(tmp_path, actuals, [poll_fixture(a) for a in actuals])
+    artifact = build_confirmation_artifact(tmp_path, asof=ASOF)
+    artifact["latest_pairs"][0]["agreement"] = False
+    publish(tmp_path, seal(artifact))
+    result = read_consumer_context(tmp_path, consumer="prophet", asof=ASOF)
+    assert result["reason_codes"] == ["inconsistent_pair_semantics"]
+
+
+def test_first_report_clock_cannot_replace_paired_clock(tmp_path):
+    actuals = actual_fixture() + actual_fixture("PPI", day="2026-11-13")
+    write_inputs(tmp_path, actuals, [poll_fixture(a) for a in actuals])
+    artifact = build_confirmation_artifact(tmp_path, asof=ASOF)
+    artifact["latest_pairs"][0]["known_at"] = artifact["latest_pairs"][0]["cpi_known_at"]
+    publish(tmp_path, seal(artifact))
+    assert read_consumer_context(tmp_path, consumer="prophet", asof=ASOF)["reason_codes"] == ["pair_clock_not_second_report"]
+
+
+def test_digest_tamper_does_not_disclose_unverified_projection(tmp_path):
+    artifact = build_confirmation_artifact(tmp_path, asof=ASOF)
+    artifact["paired_period_count"] = 999
+    publish(tmp_path, artifact)
+    assert read_consumer_context(tmp_path, consumer="prophet", asof=ASOF)["reason_codes"] == ["evidence_digest_mismatch"]
+
+
+def test_nonobject_consumer_artifact_is_unavailable_not_a_consumer_crash(tmp_path):
+    path = tmp_path / "data/release_forecast/latest.json"
+    path.parent.mkdir(parents=True)
+    path.write_text("[]")
+    result = read_consumer_context(tmp_path, consumer="prophet", asof=ASOF)
+    assert result["status"] == "unavailable" and result["reason_codes"] == ["release_forecast_invalid"]

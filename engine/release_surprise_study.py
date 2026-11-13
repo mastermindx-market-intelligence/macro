@@ -18,7 +18,7 @@ from engine.challenger_spa_comparison import stationary_bootstrap_indices
 from engine.desk_placebo import holm_adjust
 from engine.grading_stats import wilson_ci
 from engine.release_surprise_confirmation import (
-    EvidenceError, PAIR_DEFINITIONS, authority, digest, finite, instant, iso,
+    EvidenceError, PAIR_DEFINITIONS, authority, digest, finite, instant, iso, valid_authority,
 )
 
 SCHEMA = "release_surprise_study.v1"
@@ -158,6 +158,7 @@ def _describe(values: np.ndarray, rows: list[dict]) -> dict:
     wins = int(np.sum(values > 0))
     return {"n": n, "mean_pct": float(np.mean(values)), "median_pct": float(np.median(values)),
             "win_rate": wins / n, "win_rate_interval_descriptive": wilson_ci(wins, n),
+            "win_rate_interval_basis": "Wilson_not_adjusted_for_time_dependence",
             "expected_shortfall_10_pct": float(np.mean(np.sort(values)[:tail_n])),
             "worst_pct": float(np.min(values)),
             "mean_close_max_drawdown_pct": float(np.mean([r["max_drawdown_pct"] for r in rows]))}
@@ -182,34 +183,51 @@ def evaluate_matrix(
     for row in rows:
         finite(row.get("net_return_pct"))
         grouped[(row["pair_id"], row["symbol"], row["horizon"])].append(row)
+    months = []
+    for group in grouped.values():
+        for row in group:
+            try:
+                year, month = map(int, row["period"].split("-"))
+                if not 1 <= month <= 12 or row["period"] != f"{year:04d}-{month:02d}":
+                    raise ValueError
+                months.append(year * 12 + month - 1)
+            except (TypeError, ValueError, KeyError) as exc:
+                raise EvidenceError("invalid_macro_calendar_period") from exc
+    if months and max(months) - min(months) > 1200:
+        raise EvidenceError("macro_calendar_coverage_out_of_bounds")
+    # One complete monthly clock is shared across assets and variants. Missing
+    # months remain gaps rather than compressing a different time axis per ETF.
+    timeline = [f"{m // 12:04d}-{m % 12 + 1:02d}" for m in range(min(months), max(months) + 1)] if months else []
+    shared_indices = stationary_bootstrap_indices(len(timeline), draws, min(mean_block, max(1, len(timeline) / 2)), np.random.default_rng(seed)) if len(timeline) >= 2 else None
     reports, pvalues = [], {}
     for pair_id, _, _ in PAIR_DEFINITIONS:
         for symbol in symbols:
             for horizon in horizons:
-                group = sorted(grouped.get((pair_id, symbol, horizon), []), key=lambda r: (r["signal_known_at"], r["period"]))
+                group = sorted(grouped.get((pair_id, symbol, horizon), []), key=lambda r: (instant(r["signal_known_at"]), r["period"]))
                 if len({r["period"] for r in group}) != len(group):
                     raise EvidenceError("duplicate_macro_period_in_cell")
-                values = np.array([r["net_return_pct"] for r in group], dtype=float)
-                baseline = _describe(values, group)
-                idx = None
-                if len(group) >= 2 * min_cell_n:
-                    idx = stationary_bootstrap_indices(len(group), draws, min(mean_block, len(group) / 2), np.random.default_rng(seed))
+                observed_n = len(group)
+                by_period = {r["period"]: r for r in group}
+                group = [by_period.get(period, {}) for period in timeline]
+                values = np.array([r.get("net_return_pct", np.nan) for r in group], dtype=float)
+                present = np.isfinite(values)
+                idx = shared_indices if observed_n >= 2 * min_cell_n else None
                 for condition in CONDITIONS:
                     key = f"{pair_id}:{symbol}:{horizon}:{condition}"
-                    selected = _mask(group, "agreement" if condition == "agreement_vs_disagreement" else condition)
-                    reference = _mask(group, "disagreement") if condition == "agreement_vs_disagreement" else np.ones(len(group), dtype=bool)
+                    selected = _mask(group, "agreement" if condition == "agreement_vs_disagreement" else condition) & present
+                    reference = (_mask(group, "disagreement") & present) if condition == "agreement_vs_disagreement" else present
                     selected_rows = [r for r, keep in zip(group, selected) if keep]
                     report = {"hypothesis_id": key, "pair_id": pair_id, "symbol": symbol, "horizon": horizon,
                               "condition": condition, "conditional": _describe(values[selected], selected_rows),
                               "baseline": _describe(values[reference], [r for r, keep in zip(group, reference) if keep]),
                               "baseline_kind": "disagreement_same_event_sample" if condition == "agreement_vs_disagreement" else "all_paired_event_months_same_clock",
-                              "independent_macro_periods": len(group), "gap_pct": None, "gap_ci95": None,
+                              "distinct_macro_periods": observed_n, "gap_pct": None, "gap_ci95": None,
                               "p_bootstrap_approx": None, "status": "insufficient_evidence"}
                     pvalues[key] = 1.0  # missing cells retain their slot in the declared family
                     if selected.any() and reference.any():
                         gap = float(np.mean(values[selected]) - np.mean(values[reference]))
                         report["gap_pct"] = gap
-                        complement_n = int((~selected).sum()) if condition != "agreement_vs_disagreement" else int(reference.sum())
+                        complement_n = int(((~selected) & present).sum()) if condition != "agreement_vs_disagreement" else int(reference.sum())
                         if idx is not None and selected.sum() >= min_cell_n and complement_n >= min_cell_n:
                             simulated = []
                             for indices in idx:
@@ -228,6 +246,7 @@ def evaluate_matrix(
         report["p_holm"] = adjusted[report["hypothesis_id"]] if report["p_bootstrap_approx"] is not None else None
     return {"cells": reports, "declared_hypotheses": len(pvalues), "bootstrap_draws": draws,
             "bootstrap_mean_block_periods": mean_block, "seed": seed, "min_cell_n": min_cell_n,
+            "resampling_clock": "shared_complete_reference_month_calendar", "calendar_months": len(timeline),
             "multiplicity": "Holm_all_declared_pair_asset_horizon_conditions_including_unavailable",
             "inference": "exploratory_time_block_bootstrap_not_prospective_validation",
             "authority": authority()}
@@ -266,6 +285,119 @@ def join_regime_features(events: Iterable[dict], observations: Iterable[dict], *
     return output
 
 
+def forecast_at(rows: Iterable[dict], target: dict, *, features: Sequence[str] = FEATURES,
+                min_train: int = 60, ridge_alpha: float = 10.0, embargo_hours: float = 24.0) -> dict:
+    """One as-of fit; no target outcome is read or required. Pure, no capture claim."""
+    if type(min_train) is not int or min_train < max(8, len(features) + 2):
+        raise EvidenceError("invalid_min_train")
+    if not features or len(set(features)) != len(features) or not 0 < finite(ridge_alpha) <= 1e6 or not 0 <= finite(embargo_hours) <= 720:
+        raise EvidenceError("invalid_forecast_configuration")
+    cutoff = instant(target["signal_known_at"])
+    key = (target["pair_id"], target["symbol"], target["horizon"])
+    def vector(row):
+        result = []
+        for name in features:
+            value = row.get("regime_features", {}).get(name[7:]) if name.startswith("regime:") else row.get(name)
+            if name == "agreement" and type(value) is bool:
+                value = float(value)
+            result.append(finite(value))
+        return result
+    try:
+        x_target = np.array(vector(target))
+    except EvidenceError:
+        return {"status": "abstain", "reason": "missing_feature"}
+    train, vectors, seen, periods = [], [], set(), set()
+    for prior in sorted(rows, key=lambda r: (instant(r["signal_known_at"]), r["event_id"])):
+        if (prior["pair_id"], prior["symbol"], prior["horizon"]) != key:
+            continue
+        if prior["event_id"] in seen:
+            raise EvidenceError("duplicate_forecast_training_event")
+        seen.add(prior["event_id"])
+        if prior["period"] in periods:
+            raise EvidenceError("duplicate_forecast_training_period")
+        periods.add(prior["period"])
+        if instant(prior["signal_known_at"]) >= cutoff:
+            continue
+        if instant(prior["outcome_known_at"]) + timedelta(hours=embargo_hours) >= cutoff or instant(prior["exit_at"]) >= cutoff:
+            continue
+        try:
+            values = vector(prior)
+            finite(prior["net_return_pct"])
+        except EvidenceError:
+            continue
+        train.append(prior)
+        vectors.append(values)
+    if len(train) < min_train:
+        return {"status": "abstain", "reason": "insufficient_mature_training_history", "n_train": len(train)}
+    costs = {finite(r.get("round_trip_cost_bps")) for r in train}
+    if len(costs) != 1:
+        raise EvidenceError("mixed_training_cost_scenarios")
+    matrix, y = np.array(vectors), np.array([r["net_return_pct"] for r in train])
+    center, scale = matrix.mean(axis=0), matrix.std(axis=0)
+    scale = np.where(scale > 1e-12, scale, 1.0)
+    z = (matrix - center) / scale
+    beta = np.linalg.solve(z.T @ z + ridge_alpha * np.eye(len(features)), z.T @ (y - y.mean()))
+    forecast = float(y.mean() + ((x_target - center) / scale) @ beta)
+    subgroup = [r["net_return_pct"] for r in train if r["quadrant"] == target["quadrant"]]
+    cell_forecast = float((sum(subgroup) + 10 * y.mean()) / (len(subgroup) + 10))
+    prediction = {"event_id": target["event_id"], "pair_id": target["pair_id"],
+                  "symbol": target["symbol"], "horizon": target["horizon"],
+                  "decision_at": iso(cutoff), "n_train": len(train),
+                  "latest_training_outcome_known_at": iso(max(instant(r["outcome_known_at"]) for r in train)),
+                  "forecast_pct": forecast, "unconditional_forecast_pct": float(y.mean()),
+                  "round_trip_cost_bps": next(iter(costs)),
+                  "shrunk_quadrant_forecast_pct": cell_forecast,
+                  "fit_basis": "train_only_standardization_fixed_ridge",
+                  "training_receipt": digest(train), "target_features_receipt": digest(vector(target))}
+    return {"status": "computed", "prediction": prediction}
+
+
+def prepare_shadow_proposals(rows: Iterable[dict], events: Iterable[dict], session_closes: Sequence[str], *,
+                             symbols: Sequence[str] = DEFAULT_SYMBOLS, horizons: Sequence[int] = DEFAULT_HORIZONS,
+                             asof: str, features: Sequence[str] = FEATURES, min_train: int = 60,
+                             protocol_receipt: str, evidence_class: str = "synthetic") -> dict:
+    """Prepare current forecasts with no outcome labels; persistence is MRI's job.
+
+    A supplied asof is a research cutoff, NOT a trusted capture clock. The original
+    MRI writer separately observes its real clock and refuses late capture.
+    """
+    cutoff, sessions, history = instant(asof), validate_sessions(session_closes), list(rows)
+    if not isinstance(protocol_receipt, str) or not protocol_receipt:
+        raise EvidenceError("protocol_receipt_required")
+    if evidence_class not in {"synthetic", "retrospective_pit", "prospective_capture"}:
+        raise EvidenceError("invalid_shadow_evidence_class")
+    proposals, reasons = [], Counter()
+    for event in events:
+        known = instant(event["known_at"])
+        if known > cutoff or known < sessions[0]:
+            reasons["event_clock_outside_known_calendar"] += 1
+            continue
+        entry_index = bisect_right(sessions, known)
+        if entry_index >= len(sessions) or sessions[entry_index] <= cutoff:
+            reasons["entry_already_passed_or_calendar_unavailable"] += 1
+            continue
+        for symbol in symbols:
+            for horizon in horizons:
+                target = {**event, "signal_known_at": event["known_at"], "symbol": symbol, "horizon": horizon}
+                fitted = forecast_at(history, target, features=features, min_train=min_train)
+                if fitted["status"] != "computed":
+                    reasons[fitted["reason"]] += 1
+                    continue
+                prediction = fitted["prediction"]
+                forecast_id = "msc_forecast:" + digest([protocol_receipt, event["event_id"], symbol, horizon])[:24]
+                proposal = {"schema": "macro_return_shadow_forecast.v1", "row_type": "macro_return_forecast",
+                            "forecast_id": forecast_id, "protocol_receipt": protocol_receipt,
+                            "data_evidence_class": evidence_class,
+                            "prepared_asof": iso(cutoff), "entry_at": iso(sessions[entry_index]),
+                            "prediction": prediction, "authority": authority(),
+                            "release": event["pair_id"], "period": event["period"],
+                            "model": "msc_fixed_ridge_v1", "asof_night": iso(known)[:10]}
+                proposal["proposal_digest"] = digest(proposal)
+                proposals.append(proposal)
+    return {"proposals": proposals, "exclusions": dict(reasons),
+            "status": "prepared_not_captured" if proposals else "no_eligible_proposal", "authority": authority()}
+
+
 def walk_forward(rows: Iterable[dict], *, features: Sequence[str] = FEATURES, min_train: int = 60,
                  ridge_alpha: float = 10.0, embargo_hours: float = 24.0) -> dict:
     """Fixed ridge challenger; purged label availability, train-only scaling.
@@ -283,60 +415,18 @@ def walk_forward(rows: Iterable[dict], *, features: Sequence[str] = FEATURES, mi
         groups[(row["pair_id"], row["symbol"], row["horizon"])].append(row)
     predictions, excluded = [], Counter()
     for group in groups.values():
-        ordered = sorted(group, key=lambda row: (row["signal_known_at"], row["event_id"]))
+        ordered = sorted(group, key=lambda row: (instant(row["signal_known_at"]), row["event_id"]))
         seen_ids = set()
         for target in ordered:
             if target["event_id"] in seen_ids:
                 raise EvidenceError("duplicate_walk_forward_event")
             seen_ids.add(target["event_id"])
-            cutoff = instant(target["signal_known_at"])
-            def vector(row):
-                result = []
-                for name in features:
-                    value = row.get("regime_features", {}).get(name[7:]) if name.startswith("regime:") else row.get(name)
-                    if name == "agreement" and type(value) is bool:
-                        value = float(value)
-                    result.append(finite(value))
-                return result
-            try:
-                x_target = np.array(vector(target))
-            except EvidenceError:
-                excluded["missing_feature"] += 1
+            fitted = forecast_at(ordered, target, features=features, min_train=min_train,
+                                 ridge_alpha=ridge_alpha, embargo_hours=embargo_hours)
+            if fitted["status"] != "computed":
+                excluded[fitted["reason"]] += 1
                 continue
-            train, vectors = [], []
-            for prior in ordered:
-                if instant(prior["signal_known_at"]) >= cutoff:
-                    break
-                if instant(prior["outcome_known_at"]) + timedelta(hours=embargo_hours) >= cutoff or instant(prior["exit_at"]) >= cutoff:
-                    continue
-                try:
-                    values = vector(prior)
-                    finite(prior["net_return_pct"])
-                except EvidenceError:
-                    continue
-                train.append(prior)
-                vectors.append(values)
-            if len(train) < min_train:
-                excluded["insufficient_mature_training_history"] += 1
-                continue
-            matrix = np.array(vectors)
-            y = np.array([r["net_return_pct"] for r in train])
-            center, scale = matrix.mean(axis=0), matrix.std(axis=0)
-            scale = np.where(scale > 1e-12, scale, 1.0)
-            z = (matrix - center) / scale
-            beta = np.linalg.solve(z.T @ z + ridge_alpha * np.eye(len(features)), z.T @ (y - y.mean()))
-            forecast = float(y.mean() + ((x_target - center) / scale) @ beta)
-            subgroup = [r["net_return_pct"] for r in train if r["quadrant"] == target["quadrant"]]
-            # Fixed ten-observation shrinkage toward same-date unconditional base.
-            cell_forecast = float((sum(subgroup) + 10 * y.mean()) / (len(subgroup) + 10))
-            predictions.append({"event_id": target["event_id"], "pair_id": target["pair_id"],
-                                "symbol": target["symbol"], "horizon": target["horizon"],
-                                "decision_at": iso(cutoff), "n_train": len(train),
-                                "latest_training_outcome_known_at": max(r["outcome_known_at"] for r in train),
-                                "forecast_pct": forecast, "unconditional_forecast_pct": float(y.mean()),
-                                "shrunk_quadrant_forecast_pct": cell_forecast,
-                                "realized_pct": finite(target["net_return_pct"]),
-                                "fit_basis": "train_only_standardization_fixed_ridge"})
+            predictions.append({**fitted["prediction"], "realized_pct": finite(target["net_return_pct"])})
     scores = {}
     for key in sorted({(p["pair_id"], p["symbol"], p["horizon"]) for p in predictions}):
         subset = [p for p in predictions if (p["pair_id"], p["symbol"], p["horizon"]) == key]
@@ -349,3 +439,65 @@ def walk_forward(rows: Iterable[dict], *, features: Sequence[str] = FEATURES, mi
             "min_train": min_train, "ridge_alpha": ridge_alpha, "embargo_hours": embargo_hours,
             "features": list(features), "validation_class": "retrospective_walk_forward_not_prospective",
             "authority": authority()}
+
+
+def evaluate_shadow_captures(ledger_rows: Iterable[dict], outcomes: Iterable[dict], *, asof: str) -> dict:
+    """Grade only original, linked, locally observed pre-entry captures.
+
+    Read-only evaluation over the incumbent MRI ledger. This is not independent
+    clock attestation, a new acceptance state machine, or promotion authority.
+    """
+    cutoff = instant(asof)
+    forecasts, captures, labels, reasons = {}, {}, {}, Counter()
+    for row in ledger_rows:
+        target = forecasts if row.get("row_type") == "macro_return_forecast" else captures if row.get("row_type") == "macro_return_capture" else None
+        if target is not None:
+            key = row.get("forecast_id")
+            if key in target and target[key] != row:
+                raise EvidenceError("conflicting_shadow_capture_rows")
+            target[key] = row
+    for row in outcomes:
+        key = (row["event_id"], row["symbol"], row["horizon"])
+        if key in labels:
+            raise EvidenceError("duplicate_shadow_outcome")
+        labels[key] = row
+    graded = []
+    for identity, forecast in forecasts.items():
+        capture = captures.get(identity)
+        try:
+            proposal = {k: v for k, v in forecast.items() if k not in {"proposal_digest", "captured_at"}}
+            if not capture or capture.get("capture_eligible") is not True or not valid_authority(forecast.get("authority")) or not valid_authority(capture.get("authority")):
+                raise EvidenceError("capture_not_qualified")
+            if forecast.get("data_evidence_class") not in {"retrospective_pit", "prospective_capture"}:
+                raise EvidenceError("synthetic_capture_not_prospective_evidence")
+            if forecast["proposal_digest"] != digest(proposal) or capture.get("proposal_digest") != forecast["proposal_digest"]:
+                raise EvidenceError("shadow_capture_binding_mismatch")
+            if capture.get("receipt_digest") != digest({k: v for k, v in capture.items() if k != "receipt_digest"}):
+                raise EvidenceError("shadow_capture_receipt_corrupt")
+            prediction = forecast["prediction"]
+            clocks = [instant(prediction["decision_at"]), instant(forecast["prepared_asof"]), instant(forecast["captured_at"]), instant(capture["capture_observed_at"])]
+            if clocks != sorted(clocks) or not clocks[-1] < instant(forecast["entry_at"]) or clocks[-1] > cutoff:
+                raise EvidenceError("shadow_capture_not_before_entry")
+            if capture["entry_at"] != forecast["entry_at"]:
+                raise EvidenceError("shadow_entry_binding_mismatch")
+            key = (prediction["event_id"], prediction["symbol"], prediction["horizon"])
+            outcome = labels.get(key)
+            if not outcome or instant(outcome["outcome_known_at"]) > cutoff:
+                reasons["label_not_yet_available"] += 1
+                continue
+            if instant(outcome["entry_at"]) != instant(forecast["entry_at"]):
+                raise EvidenceError("shadow_outcome_entry_mismatch")
+            if finite(outcome.get("round_trip_cost_bps")) != finite(prediction.get("round_trip_cost_bps")):
+                raise EvidenceError("shadow_outcome_cost_basis_mismatch")
+            realized = finite(outcome["net_return_pct"])
+            graded.append({"forecast_id": identity, "event_id": prediction["event_id"],
+                           "symbol": prediction["symbol"], "horizon": prediction["horizon"],
+                           "pair_id": prediction["pair_id"], "realized_pct": realized,
+                           "forecast_pct": prediction["forecast_pct"],
+                           "absolute_error_pct": abs(realized - finite(prediction["forecast_pct"])),
+                           "baseline_absolute_error_pct": abs(realized - finite(prediction["unconditional_forecast_pct"])),
+                           "capture_receipt_digest": capture["receipt_digest"], "outcome_receipt": digest(outcome)})
+        except (EvidenceError, ValueError, TypeError, KeyError) as exc:
+            reasons[str(exc) if isinstance(exc, EvidenceError) else "invalid_shadow_capture_contract"] += 1
+    return {"graded": graded, "exclusions": dict(reasons), "evidence_basis": "local_publisher_capture_and_source_bound_outcomes",
+            "independent_timestamp_attestation": False, "live_promotion": False, "authority": authority()}

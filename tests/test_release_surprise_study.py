@@ -53,7 +53,7 @@ def study_rows(n=80):
                      "quadrant": quadrant, "agreement": agreement,
                      "cpi_surprise": cpi, "ppi_surprise": ppi,
                      "net_return_pct": float(0.5 + 1.5 * agreement + rng.normal(0, 0.5)),
-                     "max_drawdown_pct": -1.0})
+                     "max_drawdown_pct": -1.0, "round_trip_cost_bps": 0.0})
     return rows
 
 
@@ -191,3 +191,13 @@ def test_regime_context_is_asof_source_bound_and_unknown_is_not_zero():
     assert result["regime_features"] == {"two_year_yield": 4.1}
     assert result["regime_missing"] == ["breadth"]
     assert result["regime_source_refs"] == {"two_year_yield": "synthetic-rates"}
+
+
+def test_resampling_preserves_calendar_gaps_and_counts_distinct_events():
+    rows = [r for i, r in enumerate(study_rows(80)) if i % 5 != 0]
+    result = evaluate_matrix(rows, symbols=["SPY"], horizons=[20], draws=100, min_cell_n=10)
+    assert result["resampling_clock"] == "shared_complete_reference_month_calendar"
+    assert result["calendar_months"] == 79
+    populated = [r for r in result["cells"] if r["pair_id"] == "cpi_headline_ppi_headline"]
+    assert all(r["distinct_macro_periods"] == 64 for r in populated)
+    assert all("independent_macro_periods" not in r for r in populated)

@@ -24,6 +24,10 @@ from engine.release_surprise_confirmation import (
 from scripts.reconcile_release_actuals import append_receipts
 
 
+class ConsensusAppendUncertain(EvidenceError):
+    """Inspect the original target before retrying an interrupted append."""
+
+
 def _snapshot_identity(row: dict) -> str:
     return digest({k: v for k, v in row.items() if k not in {"receipt_id", "observed_at", "recorded_at"}})
 
@@ -63,11 +67,21 @@ def ingest(source: Path, root: Path, *, commit: bool = False) -> dict:
         try:
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
             novel, previous = novel_rows()
-            appended = append_receipts(out, novel)
-            readback, after = read_jsonl(out)
-            ids = {row["receipt_id"] for row in readback}
-            if after["status"] not in {"ready", "empty"} or any(row["receipt_id"] not in ids for row in novel):
-                raise EvidenceError("consensus_append_readback_unqualified")
+            bound = os.fstat(fd)
+            live = out.stat(follow_symlinks=False)
+            if (bound.st_dev, bound.st_ino) != (live.st_dev, live.st_ino):
+                raise EvidenceError("consensus_target_binding_changed_before_append")
+            try:
+                appended = append_receipts(out, novel)
+                live = out.stat(follow_symlinks=False)
+                if (bound.st_dev, bound.st_ino) != (live.st_dev, live.st_ino):
+                    raise EvidenceError("consensus_target_binding_changed_after_append")
+                readback, after = read_jsonl(out)
+                ids = {row["receipt_id"] for row in readback}
+                if after["status"] not in {"ready", "empty"} or any(row["receipt_id"] not in ids for row in novel):
+                    raise EvidenceError("consensus_append_readback_unqualified")
+            except (OSError, ValueError, TypeError, KeyError) as exc:
+                raise ConsensusAppendUncertain("Inspect original " + CONSENSUS_PATH + " before any replay") from exc
         finally:
             os.close(fd)
     else:
@@ -89,6 +103,9 @@ def main(argv=None) -> int:
     try:
         print(json.dumps(ingest(args.source, args.root, commit=args.commit), sort_keys=True, allow_nan=False))
         return 0
+    except ConsensusAppendUncertain as exc:
+        print(json.dumps({"status": "effect_unknown", "retry_allowed": False, "reason": str(exc)}), file=sys.stderr)
+        return 2
     except (OSError, ValueError, TypeError) as exc:
         print(json.dumps({"status": "refused", "reason": str(exc)}), file=sys.stderr)
         return 1

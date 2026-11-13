@@ -147,3 +147,31 @@ def test_dataset_rights_and_calendar_refs_are_required_before_trials(tmp_path):
     with pytest.raises(EvidenceError):
         run_study(tmp_path, dataset, asof=ASOF, trial_ledger=target)
     assert not target.exists()
+
+
+def test_partial_append_reports_uncertainty_without_replay(tmp_path, monkeypatch):
+    monkeypatch.setattr(ingestion, "datetime", CaptureClock)
+    source = tmp_path / "input.jsonl"
+    source.write_text(json.dumps(poll_fixture(actual_fixture()[0])) + "\n")
+    original = ingestion.append_receipts
+    calls = []
+    def interrupted(path, rows):
+        calls.append(path)
+        original(path, rows)
+        raise OSError("injected failure after durable append")
+    monkeypatch.setattr(ingestion, "append_receipts", interrupted)
+    with pytest.raises(ingestion.ConsensusAppendUncertain):
+        ingestion.ingest(source, tmp_path, commit=True)
+    assert len(calls) == 1
+    assert read_jsonl(tmp_path / CONSENSUS_PATH)[1]["rows"] == 1
+
+
+def test_config_variants_remain_in_same_trial_family(tmp_path):
+    path = tmp_path / "trials.jsonl"
+    run_study(tmp_path, dataset_fixture(), asof=ASOF, trial_ledger=path,
+              symbols=["SPY"], horizons=[1], draws=100, min_train=8, min_cell_n=10)
+    changed = run_study(tmp_path, dataset_fixture(), asof=ASOF, trial_ledger=path,
+                        symbols=["SPY"], horizons=[1], draws=100, min_train=8, min_cell_n=10,
+                        round_trip_cost_bps=5)
+    assert changed["matrix"]["configuration_trials_seen"] == 2
+    assert TrialLedger(path, family=FAMILY).literal_n() == 2

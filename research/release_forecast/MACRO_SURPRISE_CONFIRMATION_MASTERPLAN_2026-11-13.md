@@ -59,3 +59,25 @@ Observed checks:
 New modules are descriptive only. Core PPI stays unsupported because the canonical actual owner has no such target. Missing street-consensus history remains missing; no published Alphatica results or fabricated data were used to establish an edge. Historical reproduction, prospective validation and production deployment are NOT proven by these tests.
 
 Next: browser/freshness/error-state proof, full scientific adversarial self-check, protocol/runbook and existing Agent OS linkage, affected binding CI and Ready PR through the permitted repository release controller. Preserve the original operation/branch; do not reacquire or reroute it.
+
+## Source candidate and durable ownership milestone
+
+The existing `WS:RATES-INFLATION-COMMAND` now links this plan, the runbook and the dated source-phase handoff in the candidate branch. `PLAN_ORG_LINK_AUTHORED_IN_BRANCH`: adoption on protected/shared main still depends on the source PR; no runtime authority or wider RIC wave state changed.
+
+MSC.1-5 are implemented and exercised as engineering paths: typed input/qualification, continuous/paired features, exact-session studies, train-only conditional forecasts, actual-clock forward capture/readback and grading, four existing consumers, and explicit source/rights/missingness contracts. Source does not establish qualified historical coverage, prospective performance or live release.
+
+Latest local proof: 300 passed / 7 skipped / 5 existing deprecation warnings across new and affected suites. The seven skipped Claims tests require the source-profile-excluded committed `data/fred_vintage/vintages.parquet`; do not count them as executed. The browser proof has 12 checks / 8 screenshots / zero page errors, plus assertions for mixed-period labeling, semantic contradiction and XSS; it uses the actual component/renderer in a synthetic host, not the full live page. CI manifest validation accepted 401 legacy job definitions without executing all jobs.
+
+Forward capture is an explicit original-MRI-writer operation. It stores a forecast and a distinct post-fsync readback observation, uses real writer time, rejects missed entry windows, never fills an interrupted observation retrospectively, and preserves first capture under changed proposals. A source-bound later label must match entry and cost basis. This is local capture evidence, not external timestamp attestation or model promotion. No live capture was started.
+
+Statistical hardening now shares a complete monthly resampling clock across assets/variants, retaining missing months; it keeps the full declared family, distinguishes mean-gap and predictive uncertainty, and records configuration trials through the existing TrialLedger. The current `engine/inflation_intelligence.py::_street_consensus` explicitly returns `no_admitted_street_economist_survey_source`; this is a real data-admission dependency, not a reason to manufacture input.
+
+MSC.6 remains in execution: exact-head CI, permitted source release, covering deployment/render and real consumer proof. The principal continues this lane; this checkpoint is not the parent stopping condition. Preserve all original held PRs, old accepted runs and effect fences.
+
+## Release preflight delta
+
+Refreshed original-carrier `origin/main` to `3243f22de56cf1b53dde6c0ea3c34bae6248b7df`; zero of the 32 owned changed/new paths overlapped changes from the pinned base to that main head. Exact branch PR lookup returned none. Current main is not branch-protected; active ruleset `rotation-core-ledger-append-only` targets only `refs/heads/fable/rotation-core-20261110`, not this branch. The incumbent `can_arm_merge_on_green` requires a clean concluded binding verdict, so no merge label or native auto-merge is armed before proof.
+
+The full incumbent MRI core regression step additionally returned 490 passed / 20 skipped. It overlaps the 300-test focused run and is not an additional 490 unique tests. No skipped case is counted as executed. A bounded attempt to hydrate the committed 237021-byte legacy Claims fixture through `worktree_sparse.py add data/fred_vintage` was rejected before applying because the helper accepts tracked top-level directory names, not that nested directory. Same-carrier readback confirms no fixture/sparse change; no broad data-tree hydration or alternate effect was attempted. Source-level CI will see the tracked fixture normally.
+
+The older delivery guide mentions `scripts/ci_handoff.py`, but it is absent from this revision. Use the actually present merge-on-green controller and exact-head predicate, not a fabricated helper or parallel release mechanism.

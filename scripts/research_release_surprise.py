@@ -22,7 +22,7 @@ from engine.release_surprise_confirmation import (
 )
 from engine.release_surprise_study import (
     CONDITIONS, DEFAULT_HORIZONS, DEFAULT_SYMBOLS, FEATURES, SCHEMA,
-    evaluate_matrix, forward_outcomes, join_regime_features, walk_forward,
+    evaluate_matrix, evaluate_shadow_captures, forward_outcomes, join_regime_features, walk_forward, prepare_shadow_proposals,
 )
 from engine.trial_ledger import TrialLedger
 
@@ -79,7 +79,17 @@ def run_study(root: Path, dataset: dict, *, asof: str, trial_ledger: Path,
                                   round_trip_cost_bps=round_trip_cost_bps)
     matrix = evaluate_matrix(outcomes["rows"], symbols=symbols, horizons=horizons,
                              draws=draws, min_cell_n=min_cell_n)
+    family_trials = ledger.effective_n()
+    for cell in matrix["cells"]:
+        cell["p_family_conservative"] = min(1.0, cell["p_holm"] * family_trials) if cell["p_holm"] is not None else None
+    matrix["configuration_trials_seen"] = family_trials
+    matrix["cross_run_policy"] = "within_run_Holm_times_incumbent_family_trial_count; not a sequential_look_guarantee"
     challenger = walk_forward(outcomes["rows"], min_train=min_train, features=config["features"])
+    proposed = prepare_shadow_proposals(outcomes["rows"], pairs, dataset["session_closes"],
+        symbols=symbols, horizons=horizons, asof=asof, features=config["features"],
+        min_train=min_train, protocol_receipt=trial_receipt, evidence_class=dataset["evidence_class"])
+    forward_rows, forward_meta = read_jsonl(root / "data/release_forecast/forward_ledger.jsonl")
+    shadow_evaluation = evaluate_shadow_captures(forward_rows, outcomes["rows"], asof=asof) if forward_meta["status"] in {"ready", "empty", "missing"} else {"status": "forward_ledger_invalid", "authority": authority()}
     result = {"schema": SCHEMA, "asof": asof, "status": "evaluated_exploratory" if outcomes["rows"] else "insufficient_data",
               "authority": authority(), "research_status": "not_validated_for_live_use",
               "dataset_evidence_class": dataset["evidence_class"],
@@ -91,6 +101,7 @@ def run_study(root: Path, dataset: dict, *, asof: str, trial_ledger: Path,
               "history_quality": {k: v for k, v in history.items() if k != "events"},
               "paired_outcomes": outcomes, "individual_outcomes_descriptive_only": individual,
               "matrix": matrix, "walk_forward": challenger,
+              "shadow_proposals": proposed, "shadow_evaluation": shadow_evaluation,
               "limitations": ["Matched event-date baseline is not a continuous investable portfolio backtest.",
                               "Bootstrap mean-gap intervals are not individual outcome prediction intervals.",
                               "Costs are an explicit scenario; spread and execution feasibility need separate evidence.",
@@ -108,10 +119,14 @@ def main(argv=None) -> int:
     parser.add_argument("--trial-ledger", type=Path, required=True, help="Existing owner TrialLedger path; use a fixture path for synthetic runs")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--cost-bps", type=float, default=0)
+    parser.add_argument("--capture-shadow", action="store_true", help="Explicitly capture eligible current proposals through original MRI forward-ledger owner")
     parser.add_argument("--consensus-source-id")
     parser.add_argument("--regime", action="append", default=[], help="Predeclared existing-owner regime feature name")
     args = parser.parse_args(argv)
+    capture_result = None
     try:
+        if args.output and args.output.exists():
+            raise EvidenceError("output_already_exists")
         with args.dataset.open("rb") as handle:
             raw = handle.read(MAX_INPUT_BYTES + 1)
         if len(raw) > MAX_INPUT_BYTES:
@@ -120,6 +135,13 @@ def main(argv=None) -> int:
         result = run_study(args.root, dataset, asof=args.asof, trial_ledger=args.trial_ledger,
                            round_trip_cost_bps=args.cost_bps, regime_names=args.regime,
                            consensus_source_id=args.consensus_source_id)
+        if args.capture_shadow:
+            if dataset["evidence_class"] == "synthetic":
+                raise EvidenceError("synthetic_dataset_cannot_activate_capture")
+            from scripts.build_release_forecast import capture_macro_shadow
+            capture_result = capture_macro_shadow(args.root / "data/release_forecast/forward_ledger.jsonl", result["shadow_proposals"]["proposals"])
+            result["shadow_capture"] = capture_result
+            result["evidence_digest"] = digest({k: v for k, v in result.items() if k != "evidence_digest"})
         encoded = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -132,7 +154,7 @@ def main(argv=None) -> int:
             print(encoded)
         return 0
     except (OSError, ValueError, TypeError, KeyError) as exc:
-        print(json.dumps({"status": "refused", "reason": str(exc)}), file=sys.stderr)
+        print(json.dumps({"status": "not_completed", "reason": str(exc), "trial_registration_may_exist": True, "output_path": str(args.output) if args.output else None, "capture_result": capture_result, "capture_reconciliation_required": type(exc).__name__ == "MacroShadowCaptureUncertain"}), file=sys.stderr)
         return 1
 
 

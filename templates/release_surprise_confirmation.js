@@ -37,6 +37,7 @@
     bilingual(state, 'Forecast comparison unavailable.', '\u6682\u7f3a\u9884\u6d4b\u5bf9\u7167\u3002');
     bilingual(quality, 'Qualified pre-release forecast history is missing.', '\u6682\u7f3a\u53d1\u5e03\u524d\u7559\u5b58\u4e14\u6765\u6e90\u53ef\u6838\u9a8c\u7684\u9884\u6d4b\u6570\u636e\u3002');
     if (!evidence || evidence.schema !== 'release_surprise_confirmation.v1' || !boundedAuthority(evidence)) return;
+    if (['unavailable','partial','input_invalid','available_descriptive','historical_context_only'].indexOf(evidence.status) === -1) return;
     var produced = Date.parse(evidence.asof);
     var now = Date.now();
     if (!Number.isFinite(produced) || produced > now || now - produced > 72 * 3600000) {
@@ -53,12 +54,13 @@
       return p && Object.prototype.hasOwnProperty.call(labels, p.pair_id) &&
         Object.prototype.hasOwnProperty.call(quadrants, p.quadrant) &&
         p.display_derived_allowed === true && boundedAuthority({display_only: true, authority: p.authority}) &&
+        p.agreement === (p.quadrant === 'neutral_or_mixed_neutral' ? null : ['cpi_hot_ppi_hot','cpi_cold_ppi_cold'].indexOf(p.quadrant) !== -1) &&
         /^\d{4}-(0[1-9]|1[0-2])$/.test(p.period) &&
         Number.isFinite(Date.parse(p.known_at)) && Date.parse(p.known_at) <= now;
     }) : [];
     if (!pairs.length) {
       if (evidence.status === 'partial') bilingual(state, 'Waiting for both reports.', '\u7b49\u5f85\u4e24\u4efd\u62a5\u544a\u53ca\u5bf9\u5e94\u9884\u671f\u3002');
-      if ((evidence.reason_codes || []).indexOf('derived_display_rights_unavailable') !== -1) {
+      if ((Array.isArray(evidence.reason_codes) ? evidence.reason_codes : []).indexOf('derived_display_rights_unavailable') !== -1) {
         bilingual(quality, 'Forecast evidence exists, but display rights are not qualified.', '\u5df2\u6709\u9884\u6d4b\u8bb0\u5f55\uff0c\u4f46\u5c55\u793a\u6743\u9650\u5c1a\u672a\u786e\u8ba4\u3002');
       }
       return;
@@ -73,13 +75,14 @@
       row.className = 'rr-confirmation-row';
       var name = document.createElement('span');
       var outcome = document.createElement('strong');
-      bilingual(name, labels[pair.pair_id][0], labels[pair.pair_id][1]);
+      var historical = pair.freshness !== 'current' || now - Date.parse(pair.known_at) > 45 * 86400000;
+      bilingual(name, labels[pair.pair_id][0] + ' / ' + pair.period + (historical ? ' (previous)' : ''),
+        labels[pair.pair_id][1] + ' / ' + pair.period + (historical ? ' \u65e7\u6570\u636e' : ''));
       bilingual(outcome, quadrants[pair.quadrant][0], quadrants[pair.quadrant][1]);
       row.appendChild(name); row.appendChild(outcome); rows.appendChild(row);
     });
-    var period = pairs[0].period;
-    bilingual(quality, 'Reference month: ' + period + '. The entry clock begins after the second report is known; this is not a verified return forecast.',
-      '\u6570\u636e\u6240\u5c5e\u6708\u4efd\uff1a' + period + '\u3002\u7b2c\u4e8c\u4efd\u62a5\u544a\u5df2\u77e5\u540e\u624d\u5f00\u59cb\u8ba1\u7b97\u540e\u7eed\u8868\u73b0\uff1b\u8fd9\u4e0d\u662f\u5df2\u9a8c\u8bc1\u7684\u6536\u76ca\u9884\u6d4b\u3002');
+    bilingual(quality, 'Each row names its reference month. The entry clock begins after the second report is known; this is not a verified return forecast.',
+      '\u6bcf\u884c\u6807\u660e\u6240\u5c5e\u6708\u4efd\u3002\u7b2c\u4e8c\u4efd\u62a5\u544a\u5df2\u77e5\u540e\u624d\u8ba1\u7b97\u540e\u7eed\u8868\u73b0\uff1b\u8fd9\u4e0d\u662f\u5df2\u9a8c\u8bc1\u7684\u6536\u76ca\u9884\u6d4b\u3002');
   }
   global.MMXReleaseSurprise = Object.freeze({render: render});
 })(window);

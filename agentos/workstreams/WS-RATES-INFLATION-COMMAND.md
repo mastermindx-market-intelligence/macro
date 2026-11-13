@@ -16,6 +16,10 @@ blast_radius: user_facing
 ambiguity: scoped
 owns_paths:
   - engine/release_forecast*.py
+  - engine/release_surprise*.py
+  - scripts/ingest_release_consensus.py
+  - scripts/research_release_surprise.py
+  - tests/test_release_surprise*.py
   - engine/event_calendar.py
   - engine/event_window.py
   - engine/opex_risk.py
@@ -87,6 +91,9 @@ artifacts:
   - research/rates_inflation_command/seat_20261014/R0_CUSTODY_LEDGER.md
   - research/rates_inflation_command/seat_20261014/B0_BASIS_CONTRACT_FREEZE.md
   - research/rates_inflation_command/seat_20261014/F0_COVERAGE.md
+  - research/release_forecast/MACRO_SURPRISE_CONFIRMATION_MASTERPLAN_2026-11-13.md
+  - docs/RELEASE_SURPRISE_CONFIRMATION.md
+  - agentos/handoffs/RATES-INFLATION-COMMAND-2026-11-13-macro-surprise.md
 next_action: >
   E2E completion programme (Chairman masterplan 2026-10-13, Fable Meta-CEO seat fc3dfe4b). Wave 1 is
   merged: R0/B0 records #9206, E0+P0 #9212, F0 gap #9222, F1 #9232, B0 #9233, D0 #9252, T0 #9253,
@@ -94,6 +101,10 @@ next_action: >
   D1/Y1/I0, then C0 composition, then P1, X1, V0, A0, E1, P2, G0, S0, E2, B1, A1, Z0 per masterplan
   section 13. Latest handoff: agentos/handoffs/RATES-INFLATION-COMMAND-2026-10-14-e2e-seat-wave1.md.
   F0 (#6543, #9222) is reused, never redone; held #7909 and the GRI programme (#8317) are preserved.
+  Parallel Chairman-assigned MRI surprise/confirmation extension: qualify source branch
+  sol/web-macro-surprise-confirmation-20261113-sol, release through the existing controller,
+  then prove consumers and qualify the missing economist-consensus/vintage input. This does not
+  complete or reset the wider RIC waves; use the 2026-11-13 macro-surprise handoff for this lane.
 ---
 
 ## Why this workstream exists
@@ -111,3 +122,15 @@ integration waves and may not be treated as commissioned merely because this rec
 
 The complete capability ledger, exact first commission packets and production acceptance contract are
 in `research/RATES_INFLATION_COMMAND_RECOVERY_AND_COMPLETION_FREEZE_2026-08-27.md`.
+
+## Bounded macro-surprise extension, 2026-11-13
+
+The linked implementation plan and source-phase handoff add typed economist consensus, first-print
+joins, paired clocks, conditional-return research, locally observed pre-entry shadow capture and
+additive consumer context. All outputs remain descriptive/shadow, with no ranking, gating, sizing
+or trading authority. Source tests and browser fixtures are not production or statistical
+validation. The prior Alphatica QQQ transcription error is corrected in the plan.
+
+This bounded lane is part of F1/F6, not a new programme or a claim that those broader waves are
+complete. The current source explicitly lacks an admitted street-survey input; private data/rights
+qualification and real prospective outcomes remain separate from source delivery.

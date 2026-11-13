@@ -47,6 +47,25 @@ def authority() -> dict[str, bool]:
     return {name: False for name in ("can_score", "can_rank", "can_gate", "can_size", "can_trade")}
 
 
+def valid_authority(value: Any) -> bool:
+    return isinstance(value, dict) and set(value) == set(authority()) and all(v is False for v in value.values())
+
+
+def validate_pair_projection(pair: Any) -> None:
+    if not isinstance(pair, dict) or not valid_authority(pair.get("authority")) or pair.get("display_derived_allowed") is not True:
+        raise EvidenceError("pair_authority_or_rights_violation")
+    if pair.get("pair_id") not in {p[0] for p in PAIR_DEFINITIONS}:
+        raise EvidenceError("unknown_pair_definition")
+    cpi, ppi = finite(pair.get("cpi_surprise")), finite(pair.get("ppi_surprise"))
+    directions = tuple("hot" if x > 0 else "cold" if x < 0 else "neutral" for x in (cpi, ppi))
+    expected = "neutral_or_mixed_neutral" if "neutral" in directions else "cpi_" + directions[0] + "_ppi_" + directions[1]
+    agreement = None if "neutral" in directions else directions[0] == directions[1]
+    if pair.get("quadrant") != expected or pair.get("agreement") is not agreement:
+        raise EvidenceError("inconsistent_pair_semantics")
+    if instant(pair.get("known_at")) != max(instant(pair.get("cpi_known_at")), instant(pair.get("ppi_known_at"))):
+        raise EvidenceError("pair_clock_not_second_report")
+
+
 def instant(value: Any) -> datetime:
     if not isinstance(value, str) or not _INSTANT.fullmatch(value):
         raise EvidenceError("timestamp_requires_explicit_offset_and_seconds")
@@ -134,6 +153,8 @@ def normalize_consensus(raw: Mapping[str, Any]) -> dict[str, Any]:
     scopes = raw.get("use_scopes", [])
     if not isinstance(scopes, list) or any(not isinstance(x, str) or x not in _USE_SCOPES for x in scopes):
         raise EvidenceError("invalid_use_scopes")
+    if rights == "display_only" and "internal_research" in scopes:
+        raise EvidenceError("display_only_rights_block_research")
     result["rights"] = rights
     result["use_scopes"] = sorted(set(scopes))
     result["rights_ref"] = raw.get("rights_ref")
@@ -190,7 +211,7 @@ def _select_consensus(rows: list[dict], actual: dict, *, source_id: str | None) 
     latest = [r for r in latest if r["receipt_id"] not in superseded]
     if len({r["value"] for r in latest}) != 1:
         return None, "conflicting_consensus_snapshot"
-    return max(latest, key=lambda r: (r["recorded_at"], r["receipt_id"])), None
+    return max(latest, key=lambda r: (instant(r["recorded_at"]), r["receipt_id"])), None
 
 
 def build_surprise_history(
@@ -234,7 +255,10 @@ def build_surprise_history(
                     quarantined_targets.add(target)
     eligible_actuals: list[dict] = []
     for row in actual_rows:
-        errors = receipt_integrity_errors(row, defects_path=defects_path)
+        try:
+            errors = receipt_integrity_errors(row, defects_path=defects_path)
+        except (ValueError, TypeError, KeyError):
+            errors = ["malformed_actual_contract"]
         if errors:
             reasons["actual_invalid:" + errors[0]] += 1
             continue
@@ -295,7 +319,7 @@ def build_surprise_history(
             "rights": poll["rights"], "rights_ref": poll["rights_ref"],
             "authority": authority(),
         })
-    events.sort(key=lambda row: (row["known_at"], row["event_id"]))
+    events.sort(key=lambda row: (instant(row["known_at"]), row["event_id"]))
     normalization_history: dict[tuple, list] = defaultdict(list)
     for event in events:
         history_key = (event["release"], event["exact_target_id"], event["unit"], event["consensus_source_id"])
@@ -363,7 +387,7 @@ def build_confirmation_pairs(events: Iterable[dict]) -> list[dict]:
                 "source_refs": sorted(set(cpi["source_refs"] + ppi["source_refs"])),
                 "authority": authority(),
             })
-    return sorted(pairs, key=lambda row: (row["known_at"], row["pair_id"]))
+    return sorted(pairs, key=lambda row: (instant(row["known_at"]), row["pair_id"]))
 
 
 def read_jsonl(path: Path) -> tuple[list[dict], dict]:
@@ -389,7 +413,7 @@ def read_jsonl(path: Path) -> tuple[list[dict], dict]:
             if not isinstance(row, dict) or len(rows) >= MAX_INPUT_ROWS:
                 raise EvidenceError("invalid_jsonl_row_or_limit")
             rows.append(row)
-    except (UnicodeError, ValueError, TypeError):
+    except (UnicodeError, ValueError, TypeError, RecursionError):
         return [], {"status": "invalid", "sha256": signature, "rows": 0}
     return rows, {"status": "ready" if rows else "empty", "sha256": signature, "rows": len(rows)}
 
@@ -484,11 +508,15 @@ def read_consumer_context(root: str | Path, *, consumer: str, asof: str, max_age
         if len(raw) > MAX_INPUT_BYTES:
             raise EvidenceError("artifact_oversized")
         payload = json.loads(raw)
+        if not isinstance(payload, dict):
+            raise EvidenceError("release_forecast_invalid")
         evidence = payload.get("surprise_confirmation")
         if payload.get("schema") != "release_forecast.v2" or not isinstance(evidence, dict) or evidence.get("schema") != SCHEMA:
             raise EvidenceError("confirmation_artifact_unavailable")
-        if evidence.get("authority") != authority() or evidence.get("display_only") is not True:
+        if not valid_authority(evidence.get("authority")) or evidence.get("display_only") is not True:
             raise EvidenceError("authority_ceiling_violation")
+        if evidence.get("status") not in {"unavailable", "input_invalid", "partial", "available_descriptive", "historical_context_only"}:
+            raise EvidenceError("unknown_confirmation_status")
         produced = instant(evidence.get("asof"))
         if produced > cutoff or cutoff - produced > timedelta(hours=max_age_hours):
             raise EvidenceError("artifact_stale_or_future")
@@ -498,8 +526,7 @@ def read_consumer_context(root: str | Path, *, consumer: str, asof: str, max_age
         if not isinstance(pairs, list):
             raise EvidenceError("invalid_pair_projection")
         for pair in pairs:
-            if not isinstance(pair, dict) or pair.get("authority") != authority() or pair.get("display_derived_allowed") is not True:
-                raise EvidenceError("pair_authority_or_rights_violation")
+            validate_pair_projection(pair)
             if instant(pair.get("known_at")) > cutoff:
                 raise EvidenceError("future_pair")
             if cutoff - instant(pair["known_at"]) > timedelta(days=45):
