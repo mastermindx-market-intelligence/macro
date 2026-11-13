@@ -81,6 +81,12 @@ _LANE_LOBE_EXACT: dict[str, str] = {
     "altdata-brain": "Altdata", "influence-extract": "Altdata",
     "foresight-analyst": "Altdata",
     "earnings_qual": "Qual", "extraction-drift": "Qual",
+    # Capacity Fabric earnings-qual cutover (Chairman 2026-11-12, estate
+    # migration #3) books its rows under the hyphenated session/lane spelling
+    # "earnings-qual". Mapped to the same lobe as the legacy "earnings_qual"
+    # rows it replaces, for the reason the ai-desk note above gives: an unmapped
+    # lane would move this spend off the Qual row on the AI Cost page.
+    "earnings-qual": "Qual",
     "qual-extraction": "Qual",
     "earnings_event_compiler": "Qual",
     "commodity-news": "News", "news-llm": "News", "catalyst-tone": "News",

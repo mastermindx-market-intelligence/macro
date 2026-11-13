@@ -69,6 +69,7 @@ if str(_REPO_ROOT) not in sys.path:
 # of user-facing free text on the Earnings-Calls surfaces routes through it so no
 # "buy / sell / accumulate / price target / go long" language reaches the page.
 from engine._text_scrub import scrub_advice as _scrub_advice_text  # noqa: E402
+from lib import fabric_client  # noqa: E402
 
 log = logging.getLogger(__name__)
 
@@ -690,6 +691,101 @@ def _call_llm_auth(
     return text, reason
 
 
+# --------------------------------------------------------------------------- #
+# Capacity Fabric cutover (Chairman order 2026-11-12, estate migration #3)
+# --------------------------------------------------------------------------- #
+# ONE switch for the whole module ladder, taken at the ladder ENTRY in
+# score_text() — not per rung. When the router is configured the single fabric
+# call replaces the entire local→deepseek→kimi→anthropic walk for that item, so
+# neither the Ollama rung (_call_openai_compat_detailed) nor the Kimi rung
+# (_call_kimi) is ever reached. When it is not configured — no token, or
+# MACRO_EARNINGS_QUAL_FABRIC=0 — the legacy ladder below runs byte-identical.
+_FABRIC_KILL_ENV = "MACRO_EARNINGS_QUAL_FABRIC"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-earnings-qual"
+_FABRIC_LANE = "fast"
+_FABRIC_USAGE_LANE = "earnings-qual"
+
+
+def _fabric_enabled() -> bool:
+    """True when earnings_qual should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_EARNINGS_QUAL_FABRIC=0
+    is the operator kill-switch. No token → the legacy ladder runs unchanged.
+    """
+    if os.environ.get(_FABRIC_KILL_ENV, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _record_fabric_usage(comp: fabric_client.Completion) -> None:
+    """Book one fabric-served call in the AI cost ledger (provider="fabric").
+
+    The row keeps this module's usage lane so the spend drill-down stays
+    comparable with the legacy rows; the provider is the router and the model is
+    what it actually served. Never raises — a ledger miss must not break a
+    served call.
+    """
+    try:
+        from lib import ai_costs  # noqa: PLC0415
+
+        u = comp.usage or {}
+        ai_costs.record_usage(
+            lane=_FABRIC_USAGE_LANE,
+            provider="fabric",
+            model=comp.model_served,
+            input_tokens=int(u.get("input_tokens") or 0),
+            output_tokens=int(u.get("output_tokens") or 0),
+            cache_read_tokens=int(u.get("cache_read_input_tokens") or 0),
+            cache_creation_tokens=int(u.get("cache_creation_input_tokens") or 0),
+            stage="earnings_qual",
+        )
+    except Exception as e:  # noqa: BLE001 — telemetry only
+        log.debug("earnings_qual: fabric usage ledger failed (%s)", e)
+
+
+def _fabric_call(
+    system: str, user: str, *, max_tokens: int
+) -> tuple[str | None, str | None, str | None]:
+    """ONE qualification call through the router. Never retries, never fails over.
+
+    The router owns provider selection, cooldown and account pooling, so this
+    makes exactly one request: a raised SDK error degrades exactly as a legacy
+    ladder failure would, and a second attempt here would double-serve a call
+    the router already resolved. A refusal is a refusal even when the router
+    attached partial text, so it is dropped before the JSON parser sees it.
+
+    FabricUnavailable is the one exception and is re-raised: it means no request
+    ever left this host (no token, or the SDK will not import), so nothing was
+    served and nothing was billed. score_text() catches it and runs the legacy
+    ladder — blanking a score that a healthy legacy path could still produce
+    would be a regression, not a degradation.
+    """
+    try:
+        comp = fabric_client.complete(
+            [{"role": "user", "content": user}],
+            system=system,
+            lane=_FABRIC_LANE,
+            max_tokens=int(max_tokens),
+            client="Python client",
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=_FABRIC_SESSION_ID,
+        )
+    except fabric_client.FabricUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("earnings_qual: fabric call failed (%s)", e)
+        return None, "llm_error", "fabric"
+    if getattr(comp.raw, "stop_reason", None) == "refusal":
+        return None, "refusal", "fabric"
+    if not comp.text:
+        return None, "empty_reply", "fabric"
+    _record_fabric_usage(comp)
+    # The row's ``model`` column carries what the router actually served, not the
+    # lane name — the same attribution the ledger row above records.
+    return comp.text, None, (comp.model_served or "fabric")
+
+
 def _dispatch(
     system: str, user: str, cfg: dict, provider_cfg: dict, *, max_tokens: int
 ) -> tuple[str | None, str | None, str | None]:
@@ -967,6 +1063,7 @@ def score_text(
         or cfg.get("provider_order")
         or ["openai_compat", "deepseek", "anthropic"]
     )
+
     obj: dict | None = None
     provider_used: str | None = None
     last_reason: str | None = None
@@ -975,6 +1072,60 @@ def score_text(
     # Recorded on EVERY exit path, so a successful fallback is no longer
     # indistinguishable from a clean run on the primary provider.
     first_failed_rung: str | None = None
+
+    # Capacity Fabric cutover (Chairman order 2026-11-12): ONE switch for the
+    # whole module ladder, taken here at the ladder entry. When the router is
+    # configured, a single fabric call replaces the entire local→deepseek→kimi→
+    # anthropic walk for this item — so neither the Ollama rung nor the Kimi rung
+    # is ever reached, and MOONSHOT/LOCAL keys go unused. When it is not
+    # configured (no token, or MACRO_EARNINGS_QUAL_FABRIC=0) the legacy ladder
+    # below runs byte-identical. A router that cannot be reached at all
+    # (FabricUnavailable: no token after all, or the SDK will not import) also
+    # falls through here rather than blanking a score the legacy path could
+    # still produce.
+    if _fabric_enabled():
+        # The prompt is built once, at the global transcript bound: the router
+        # owns model selection, so there is no per-rung context window to fit.
+        fabric_body = _bounded_transcript_text(
+            raw_text,
+            max_chars=_int_or(cfg.get("max_chars"), 48000),
+            tail_chars=_int_or(cfg.get("tail_chars"), 16000),
+        )
+        fabric_user = _build_user_prompt(
+            base_row["ticker"], q_norm, y_norm, source, fabric_body
+        )
+        try:
+            reply, reason, used = _fabric_call(
+                _SYSTEM_PROMPT, fabric_user, max_tokens=max_tokens
+            )
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "earnings_qual: fabric router unavailable (%s); using the legacy ladder", e)
+        else:
+            if reply is None:
+                # Served failure / refusal / empty reply: degrade with the
+                # existing reason vocabulary. NEVER walk to a second provider —
+                # the router already walked its own ladder.
+                base_row["degraded_reason"] = reason or "llm_error"
+                base_row["model"] = used
+                return base_row
+            candidate = _extract_json(reply)
+            if _analysis_obj_complete(candidate):
+                obj = candidate
+                provider_used = used
+                # The router served this item: the legacy rung walk below must
+                # not run at all. Emptying the order is the whole skip — no
+                # legacy statement is edited, moved or re-indented.
+                order = []
+            else:
+                # A served reply that is not usable JSON is a served failure,
+                # not a reason to re-ask: the router's ladder is already spent.
+                base_row["degraded_reason"] = (
+                    "incomplete_schema" if candidate is not None else "invalid_json"
+                )
+                base_row["model"] = used
+                return base_row
+
     for provider_name in [str(name) for name in order if str(name).strip()]:
         rung_cfg = dict(provider_cfg)
         rung_cfg["provider_order"] = [provider_name]
