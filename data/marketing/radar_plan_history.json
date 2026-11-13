@@ -2,6 +2,37 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-11-13",
+      "tickers": [
+        "APP",
+        "ARGX",
+        "ASR",
+        "BKD",
+        "BNY",
+        "CAR",
+        "DAN",
+        "ECG",
+        "EEFT",
+        "FMC",
+        "GE",
+        "JLL",
+        "LBRT",
+        "LECO",
+        "LRMR",
+        "LSTR",
+        "MBGL",
+        "MRP",
+        "MRVL",
+        "NB",
+        "PAYO",
+        "SNA",
+        "STRC",
+        "TR",
+        "TRMK",
+        "UNH"
+      ]
+    },
+    {
       "as_of": "2026-11-12",
       "tickers": [
         "ADM",
@@ -159,18 +190,6 @@
         "RMBS",
         "VRT",
         "VYX"
-      ]
-    },
-    {
-      "as_of": "2026-11-06",
-      "tickers": [
-        "MRP",
-        "MTG",
-        "NB",
-        "NUE",
-        "OSK",
-        "UVV",
-        "XRAY"
       ]
     }
   ]
