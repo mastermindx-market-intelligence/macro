@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T20:40:06.280382+00:00",
-  "count": 3319,
+  "generated_at": "2026-11-13T21:09:35.046785+00:00",
+  "count": 3320,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1146,6 +1146,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wb4bgf7celx-da5ab5",
+      "title": "RBC NVIDIA Lowering PT on Potential CEO Transition Risk 12 Nov 2026",
+      "institution": "NVIDIA",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:58:56Z",
+      "summary_points": [
+        "Price Target Adjustment & Valuation Discount: Price target lowered to $230 (15x CY27 EPS) from $330 (20x), reflecting CEO transition risk but maintaining Outperform; stock trades at 60%-70% discount to Mag7/Semi peers, creating attractive risk/reward for 6-12 months.",
+        "Core Growth Catalysts & Competitive Moat: Cloud capex to grow ~90%+ in 2026 (driven by Big 4 hyperscalers’ $500b+ backlog), AI accelerator TAM at 35%+ CAGR through 2028; CUDA ecosystem and annual product launches sustain long-term market share.",
+        "Key Near-Term Risks: CEO succession uncertainty (no formal plan) and potential congressional hearings on export controls; limited near-term business impact due to minimal China exposure (1% of data center revenue).",
+        "Valuation Scenarios & Upside Drivers: Upside to $400 (25x EPS) on Blackwell/Rubin demand and sovereign opportunities; downside to $100 (6x EPS) from muted growth/supply chain constraints; $5T market cap not limiting upside.",
+        "Fundamental Resilience: Demand growth (next 3 years), supply tightness limiting competition, and NVIDIA’s technical vision ecosystem outweigh CEO uncertainty at 10x CY27 EPS, underpinning fundamentals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
