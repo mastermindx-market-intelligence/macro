@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-13T00:48:01.170984+00:00",
+  "generated_utc": "2026-11-13T04:57:03.793124+00:00",
   "as_of": "2026-11-13",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28410,14 +28410,6 @@
           "sellers": 179
         },
         {
-          "ticker": "CRWV",
-          "buy_usd": 0.0,
-          "sell_usd": 919971943.0,
-          "net_usd": -919971943.0,
-          "buyers": 0,
-          "sellers": 397
-        },
-        {
           "ticker": "INGM",
           "buy_usd": 0.0,
           "sell_usd": 736182275.0,
@@ -28432,6 +28424,14 @@
           "net_usd": -715460400.0,
           "buyers": 10,
           "sellers": 2
+        },
+        {
+          "ticker": "CRWV",
+          "buy_usd": 0.0,
+          "sell_usd": 688369988.0,
+          "net_usd": -688369988.0,
+          "buyers": 0,
+          "sellers": 373
         },
         {
           "ticker": "AUR",
