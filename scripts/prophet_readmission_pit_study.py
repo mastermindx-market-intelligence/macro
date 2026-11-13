@@ -16,6 +16,7 @@ Nothing here writes a file, regrades a return, ranks, vetoes or sizes a stock.
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import math
 import random
@@ -131,17 +132,28 @@ def study(doc: dict, *, seed: int = 20261112, draws: int = 2000) -> dict:
     if not isinstance(doc, dict) or doc.get("schema") != SCHEMA:
         raise ValueError("requires an existing prophet_postmortem/v1 artifact")
     as_of = doc.get("as_of")
-    if not isinstance(as_of, str) or len(as_of) != 10 or (
-        as_of[4:5], as_of[7:8]) != ("-", "-"):
+    if not isinstance(as_of, str) or len(as_of) != 10:
         raise ValueError("requires a canonical as_of date (YYYY-MM-DD)")
+    try:
+        if datetime.date.fromisoformat(as_of).isoformat() != as_of:
+            raise ValueError
+    except ValueError:
+        raise ValueError("requires a canonical as_of date (YYYY-MM-DD)") from None
     source_rows = doc.get("episodes")
     if not isinstance(source_rows, list) or not source_rows:
         raise ValueError("requires non-empty artifact episodes")
     matured = [r for r in source_rows
                if isinstance(r, dict) and r.get("maturity") == "matured"
                and isinstance(r.get("entry_date"), str)]
-    by_key = {(r.get("ticker"), r.get("entry_date")): r for r in source_rows
-              if isinstance(r, dict)}
+    # Select the nearest previous BOARD appearance by chronology, never the
+    # prior_episode.selected_by field: that pointer can be selected using a
+    # future *resolved* loss and would leak hindsight into a PIT candidate.
+    historical: dict[str, list[dict]] = {}
+    for row in source_rows:
+        if isinstance(row, dict) and isinstance(row.get("entry_date"), str):
+            historical.setdefault(str(row.get("ticker")), []).append(row)
+    for history in historical.values():
+        history.sort(key=lambda row: row["entry_date"])
     repeated = [r for r in matured if isinstance(r.get("prior_episode"), dict)]
     other = [r for r in matured if r.get("prior_episode") is None]
     marked = [r for r in repeated
@@ -153,8 +165,13 @@ def study(doc: dict, *, seed: int = 20261112, draws: int = 2000) -> dict:
     actionable = [r for r in repeated if _context(r)[1] == "buy_now"]
     sector_shift = []
     for r in sector:
-        prev = r["prior_episode"]
-        prev_row = by_key.get((r.get("ticker"), prev.get("entry_date")))
+        earlier = [
+            row for row in historical.get(str(r.get("ticker")), [])
+            if row["entry_date"] < r["entry_date"]
+            and isinstance(row.get("board_exit_date"), str)
+            and row["board_exit_date"] <= r["entry_date"]
+        ]
+        prev_row = earlier[-1] if earlier else None
         if prev_row and _context(prev_row)[0] is not None and (
             _context(prev_row)[0] not in HEADWINDS):
             sector_shift.append(r)
