@@ -175,3 +175,118 @@ def test_run_thesis_ids_carry_run_token(tmp_path):
     # ids are run-token-stamped (date-token-seq), so same-day re-runs can't collide
     assert all(len(i.split("-")) >= 3 for i in ids), ids
     assert len(set(ids)) == len(ids)
+
+
+# Exact source vintage is raw provenance, not a freshness qualification.
+from unittest.mock import patch
+
+def _provenance_fail(*args):
+    raise AssertionError('unexpected model call')
+
+def _provenance_brief(state=None, call=_fake_call):
+    state = {'as_of': '2026-11-08', 'intel_asof': '2026-07-13'} if state is None else state
+    with patch.object(pid, '_now_iso', return_value='2026-11-08T09:00:00+00:00'):
+        return pid.synthesize(state, pid._cfg(), call=call)
+
+def test_intel_asof_source_clock_is_retained_without_replacing_run_clock(tmp_path):
+    brief = _provenance_brief()
+    assert 'intel_asof' in brief
+    assert brief['intel_asof'] == '2026-07-13'
+    assert brief['state_asof'] == '2026-11-08'
+    assert brief['schema'] == 'policy_intent_desk.v1'
+
+def test_intel_asof_all_synthesis_return_paths_retain_provenance(tmp_path):
+    for reply, reason in [(None, 'no_client_or_key'), ('not JSON', None), (_REPLY, 'partial')]:
+        brief = _provenance_brief(call=lambda *args: (reply, reason))
+        assert 'intel_asof' in brief
+        assert brief['intel_asof'] == '2026-07-13'
+
+def test_intel_asof_missing_and_null_are_unknown(tmp_path):
+    state = {'as_of': '2026-11-08', 'intel_asof': '2026-07-13'}
+    for state in [{'as_of': '2026-11-08'}, {'as_of': '2026-11-08', 'intel_asof': None}]:
+        brief = _provenance_brief(state)
+        assert 'intel_asof' in brief
+        assert brief['intel_asof'] is None
+
+def test_intel_asof_raw_json_provenance_is_not_normalized(tmp_path):
+    state = {'as_of': '2026-11-08', 'intel_asof': '2026-07-13'}
+    for value in [' 2026-07-13 ', 'not-a-date', '', 0, False, ['unknown'], {'raw': 'date'}]:
+        brief = _provenance_brief({**state, 'intel_asof': value})
+        assert 'intel_asof' in brief
+        assert brief['intel_asof'] == value
+        assert type(brief['intel_asof']) is type(value)
+
+def test_intel_asof_gather_persist_and_new_ledger_rows_retain_source(tmp_path):
+    (tmp_path / 'data/policy').mkdir(parents=True)
+    (tmp_path / 'site').mkdir()
+    (tmp_path / 'data/policy/intel.json').write_text(json.dumps({'as_of': '2026-07-13', 'thesis': {'en': 'synthetic'}}))
+    with patch.dict('os.environ', {'COLLECT_LANE': 'nightly', 'US_LANE': ''}):
+        brief = pid.run(persist=True, root=tmp_path, force=True, call=_fake_call)
+    assert brief['intel_asof'] == '2026-07-13'
+    for path in ['data/regime/policy_intent.json', 'site/policy_intent.json']:
+        obj = json.loads((tmp_path / path).read_text())
+        assert obj['intel_asof'] == '2026-07-13'
+    assert 'raw_text' not in json.loads((tmp_path / 'site/policy_intent.json').read_text())
+    rows = [json.loads(line) for line in (tmp_path / 'data/policy_intent/theses.jsonl').read_text().splitlines()]
+    assert len(rows) == 2
+    assert all((row['intel_asof'] == '2026-07-13' for row in rows))
+
+def test_intel_asof_direct_legacy_brief_appends_unknown_without_backfill(tmp_path):
+    brief = _provenance_brief()
+    brief.pop('intel_asof', None)
+    with patch.dict('os.environ', {'COLLECT_LANE': 'nightly', 'US_LANE': ''}):
+        pid._append_ledger(brief, tmp_path)
+    rows = [json.loads(line) for line in (tmp_path / 'data/policy_intent/theses.jsonl').read_text().splitlines()]
+    assert len(rows) == 2
+    for row in rows:
+        assert 'intel_asof' in row
+        assert row['intel_asof'] is None
+
+def test_intel_asof_legacy_bytes_and_duplicate_id_are_preserved(tmp_path):
+    brief = _provenance_brief()
+    ledger = tmp_path / 'data/policy_intent/theses.jsonl'
+    ledger.parent.mkdir(parents=True)
+    old = (json.dumps({'id': brief['theses'][0]['id'], 'legacy': True}, separators=(',', ':')) + '\n').encode()
+    ledger.write_bytes(old)
+    with patch.dict('os.environ', {'COLLECT_LANE': 'nightly', 'US_LANE': ''}):
+        pid._append_ledger(brief, tmp_path)
+        first = ledger.read_bytes()
+        pid._append_ledger(brief, tmp_path)
+    assert first.startswith(old)
+    assert ledger.read_bytes() == first
+    rows = [json.loads(line) for line in first.splitlines()]
+    assert len(rows) == 2
+    assert 'intel_asof' not in rows[0]
+    assert rows[1]['intel_asof'] == '2026-07-13'
+
+def test_intel_asof_off_lane_gate_precedes_argument_access(tmp_path):
+
+    class Trip:
+
+        def get(self, *args):
+            raise AssertionError('off-lane brief accessed')
+
+        def __fspath__(self):
+            raise AssertionError('off-lane root accessed')
+    with patch.dict('os.environ', {'COLLECT_LANE': '', 'US_LANE': ''}):
+        pid._append_ledger(Trip(), Trip())
+
+def test_intel_asof_cached_legacy_brief_is_not_backfilled_or_resynthesized(tmp_path):
+    cfg = {**pid._cfg(), 'enabled': True, 'interval_days': 3}
+    prior = {'generated_at': '2026-11-08T09:00:00+00:00', 'state_asof': '2026-11-08', 'theses': []}
+    path = tmp_path / 'data/regime/policy_intent.json'
+    path.parent.mkdir(parents=True)
+    original = json.dumps(prior, separators=(',', ':')).encode()
+    path.write_bytes(original)
+    with patch.object(pid, '_cfg', return_value=cfg), patch.object(pid, '_brief_age_days', return_value=0), patch.object(pid, 'gather_state', side_effect=AssertionError('cached input gathered')):
+        result = pid.run(root=tmp_path, call=lambda *a: _provenance_fail('model called'))
+    assert result == prior
+    assert 'intel_asof' not in result
+    assert path.read_bytes() == original
+
+def test_intel_asof_persist_false_writes_nothing(tmp_path):
+    state = {'as_of': '2026-11-08', 'intel_asof': '2026-07-13'}
+    with patch.object(pid, 'gather_state', return_value=state):
+        result = pid.run(root=tmp_path, force=True, persist=False, call=_fake_call)
+    assert result['intel_asof'] == '2026-07-13'
+    assert list(tmp_path.iterdir()) == []
