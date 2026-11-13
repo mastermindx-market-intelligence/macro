@@ -864,3 +864,42 @@ class TestEdgeRulerH63:
                            classifications={}, price_loader=lambda t: None)
         assert res["components"]["edge_basis"] == "since_filing"
         assert res["components"]["edge"] < 50  # -15pp open-ended -> below neutral
+
+@pytest.mark.parametrize("later", [125., 200., 1000.])
+@pytest.mark.parametrize("horizon", [2, None])
+def test_reversed_benchmark_window_is_unpriceable(later, horizon):
+    stock = pd.Series([100., 105., 110.], index=pd.to_datetime(
+        ["2024-01-02", "2024-01-03", "2024-01-04"]))
+    spy = pd.Series([100., later], index=pd.to_datetime(["2024-01-01", "2024-01-05"]))
+    assert ff._excess("AAA", "2024-01-02", {"AAA": stock, "SPY": spy}.get, horizon) is None
+
+
+@pytest.mark.parametrize("dates,values,expected", [
+    (["2024-01-02", "2024-01-04"], [100., 110.], 0.1),
+    (["2024-01-02", "2024-01-03", "2024-01-04"], [100., 105., 110.], 0.1),
+    # Preserve incumbent ordered inward sampling; stricter same-endpoint policy
+    # is deliberately not adjudicated by the reversed-window repair.
+    (["2024-01-03", "2024-01-04"], [100., 110.], 0.1),
+    (["2024-01-03"], [100.], 0.2),
+])
+def test_ordered_benchmark_sampling_unchanged(dates, values, expected):
+    stock = pd.Series([100., 110., 120.], index=pd.to_datetime(
+        ["2024-01-02", "2024-01-03", "2024-01-04"]))
+    spy = pd.Series(values, index=pd.to_datetime(dates))
+    assert ff._excess("AAA", "2024-01-02", {"AAA": stock, "SPY": spy}.get, 2) == pytest.approx(expected)
+
+
+def test_public_scorer_withholds_disjoint_benchmark_sleeve():
+    books = {
+        "2022-09-30": _snap([], [], [], filing_date="2022-11-15", period_end="2022-09-30"),
+        "2022-12-31": _snap(["AAPL"], ["037833100"], [1000.],
+                            filing_date="2023-02-14", period_end="2022-12-31"),
+    }
+    stock = _close([100.] * 400)
+    disjoint = pd.Series([100., 200.], index=pd.to_datetime(["2022-01-01", "2025-01-01"]))
+    loader = {"AAPL": stock, "SPY": disjoint}.get
+    result = ff.compute_followability(
+        tracker=_make_tracker("fund_a", n_buys=5, median_buy_excess=0.05, quarter_history=[]),
+        books_by_fund={"fund_a": books}, classifications={}, price_loader=loader)
+    assert result["fund_a"]["sleeves"]["new"]["n"] == 0
+    assert result["fund_a"]["sleeves"]["new"]["median_excess"] is None
