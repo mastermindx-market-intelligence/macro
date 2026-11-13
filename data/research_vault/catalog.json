@@ -1,8 +1,9 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-12T23:43:44.354286+00:00",
-  "count": 3260,
+  "generated_at": "2026-11-13T01:23:19.818027+00:00",
+  "count": 3265,
   "institutions": [
+    "2027 Outlook",
     "ABN Amro",
     "ANZ",
     "Academy Securities",
@@ -163,6 +164,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-g0sbemctjhi-2000a8",
+      "title": "Macro Markets Outlook 2027 Growing Pains [PRESENTATION]",
+      "institution": "2027 Outlook",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:07:47Z",
+      "summary_points": [
+        "AI Growth Momentum Peak: AI's market value growth (92% vs YTD 41%) confirms maturing cycle, signaling rotation risks in AI-driven assets despite 62% US capex/earnings contribution.",
+        "US AI Investment Deceleration: US-led AI investment growth rate (vs global) peaks at +2.0pp in 2027 before sharp decline, indicating potential momentum shift or competitive dynamics.",
+        "Negative Beta Surge: S&P 500 negative beta stocks (3-month/daily and 1-year/weekly) rise sharply, mirroring Tech Bubble era, highlighting bond-like equities as hedging tools against tech volatility.",
+        "S&P/Treasury Correlation Inversion: 1-week S&P 500/10Y Treasury correlation turns negative (Nov-26), confirming bonds now hedge equities, enhancing macro hedging value.",
+        "Dollar Cyclicality: US equity inflows exceeding $1.4T by 2027 drive cyclical dollar strength, amplifying volatility via synchronized global capital flows during growth phases."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-nwddwoitkyu-5def51",
       "title": "Swisscom (SCMN.S) Data Update Changes to estimates",
       "institution": "Goldman Sachs",
@@ -281,6 +303,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ejlvgkklvmm-43c37d",
+      "title": "GS Crook GS MORNING 1 FX Trader Call Takeaways, 2 Trading Energy Relief, 3 2027 Capex Outlook, 4 The Upside to Inflation and 5 Equities Update 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:30:20Z",
+      "summary_points": [
+        "Inflation Dynamics: October CPI drop (30bps) signals less transitory inflation, increasing positioning risk; global upstream pressures imply 0.1-0.2pp inflation surprises over next 9 months, risking early 2027 central bank tightening.",
+        "Energy-FX Asymmetry: FX markets show greater sensitivity to oil price increases than decreases (e.g., NOKSEK stickier pass-through), sustaining energy-linked pairs (NOK/SEK, TTF) above Feb 27 levels despite oil declines.",
+        "AI Capex Structural Shift: US AI spending drives 5.3pp true capex growth (2027), with $1.4tn annualized by end-2027 (4% of GDP), representing a fundamental structural shift beyond short-term election risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
@@ -412,6 +453,26 @@
         "US Equities AI Catalysts: OpenAI’s $10bn Q3 revenue (+50% q/q) and CoreWeave’s \"beat-and-raise\" earnings drove NDX >2% gain; SPX CTAs target long flip above 7,676 amid AI-driven volatility and sentiment shifts.",
         "Japan Credit Stress & FX Risk: 10y JGB yield down 10.7bp and iTraxx Main down 2.44% signal steepening curve and rising credit risk; USD/JPY at 159.82 (2025 high) elevates intervention risk despite stronger yen trade-weighted basis.",
         "USD Strength & Policy Triggers: USD index at 2025 high (CPI beat), USDJPY near 160, and EURUSD at 18mo low; BoJ speech (01:30 GMT) and 5y JGB auction (03:35 GMT) key for FX flows and Fed rate hike probability (61% in January)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ay8c3xuac9h-0f5715",
+      "title": "Japan soft consumption constrains BoJ tightening",
+      "institution": "ANZ",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:32:59Z",
+      "summary_points": [
+        "Consumer Spending Weakness: Real household spending down 6.8% y/y (Kumamoto earthquake, energy shock), offsetting PMI strength (services 51.7, composite 52.1), creating critical near-term demand risk despite low unemployment (2.4%) and rising real cash earnings (2.2% y/y).",
+        "Core Inflation Persistence: Core ex-energy CPI at 2.4% y/y (highest in 9 months), confirming BoJ’s inflation target return (2.0-2.5%) but highlighting persistent underlying pressure from wage growth risks and energy distribution costs.",
+        "Policy Hike Path & Labor Market: BoJ confirms 25bp hikes in Dec 2026/March 2027 (target 1.75%) amid tight labor market (unemployment 2.4%, job-to-applicants ratio 1.19), with wage negotiations under close monitoring as key policy trigger.",
+        "Geopolitical Tailwind: Middle East conflict de-escalation expected to support consumer spending, partially countering natural disaster and energy shock headwinds, offering near-term demand catalyst."
       ],
       "tags": [],
       "tickers": [],
@@ -622,6 +683,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 35,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-o79vpxoen41-caa328",
+      "title": "JPM Flows Liquidity",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T10:40:34Z",
+      "summary_points": [
+        "Retail flows bullish, buying dips post-Oct inflows: Leveraged equity ETF inflows hit $30bn/day (vs $20bn for standard ETFs), with retail driving 90%+ of April-June peak levels; $5bn+ inflows Nov 5-6 equivalent to $15bn capital impact.",
+        "Oracle CDS subsiding signals neocloud fear easing: Oracle CDS trading volumes peaked Oct 23, subsided post-Oct 30 CMOS and CoreWeave earnings, indicating reduced neocloud funding fears.",
+        "QQQ Short Interest Surge: Short interest on QQQ ETF rose to 2023 highs, signaling heightened bearish sentiment or potential short squeeze risk in tech equities.",
+        "Volatility Mispricing Signal: Equity indices (S&P 500, EuroSTOXX) show implied volatility below realized (ratio <1), indicating cheapness; FX/credit markets exhibit implied volatility above realized (ratio >1), signaling upside risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 32,
       "language": "en",
       "needs_metadata": false
     },
@@ -889,6 +970,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-j2asn1omv3t-9b585b",
+      "title": "Global Economics Comment Should We Expect More Upside Inflation Surprises",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:42:33Z",
+      "summary_points": [
+        "Upstream Inflation Lag & Core Impact: 1% rise in producer/import prices drives core inflation by 0.1-0.2pp after 6-12 months; peak cumulative upstream pressures imply 0.8pp core inflation boost vs. pre-war baseline, sustaining inflation into 2027 H1.",
+        "Geopolitical Shock Driver: Iran war primary catalyst for upstream inflation (e.g., 10% shock causes 5-10bp monthly CPI surprise in 3-9 months), with cross-country exposure showing peak inflation surprises of 22.5bps (Canada), 17.5bps (Germany), and 12.5bps (US/UK).",
+        "AI Mismeasurement & Policy Risk: AI-related products drive ~0.1-0.2pp peak global core CPI boost in early 2027 (0.5pp US core PCE spike in Dec 2026); consensus underestimates inflation by 0.1-0.2pp over 9 months, skewing risks toward upside surprises and potential central bank tightening in early 2027."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },

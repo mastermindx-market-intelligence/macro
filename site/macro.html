@@ -5230,13 +5230,13 @@
       
       <div class="mx5-ai-ticker-pills">
         
-        <span class="mx5-ai-ticker-pill">NVDA</span>
-        
         <span class="mx5-ai-ticker-pill">QQQ</span>
         
-        <span class="mx5-ai-ticker-pill">IEF</span>
+        <span class="mx5-ai-ticker-pill">NVDA</span>
         
         <span class="mx5-ai-ticker-pill">XHB</span>
+        
+        <span class="mx5-ai-ticker-pill">IEF</span>
         
       </div>
       
@@ -6561,22 +6561,19 @@
   
 
 <section class="riskdlg-context" id="risk-envelope-band" aria-labelledby="gde-title"
-         data-bundle-id="a6544109efaaa86b" data-settled-session="2026-11-11" data-coherence="ALIGNED">
+         data-bundle-id="c7b2f2f809fa2c2b" data-settled-session="2026-11-11" data-coherence="MIXED">
   <div class="gde-head">
     <h3 id="gde-title"><span class="l-en">Market internals</span><span class="l-zh">市场内部</span></h3>
     <span class="gde-scope"><span class="l-en">Broad US market</span><span class="l-zh">美国大盘</span></span>
     <span class="gde-coherence">
-      <span class="l-en">Signals align</span><span class="l-zh">信号一致</span>
-      
+      <span class="l-en">Incomplete picture</span><span class="l-zh">信号不全</span>
     </span>
   </div>
   <div class="gde-reads">
-    <div class="gde-read" style="--gde-c: var(--ink-2)">
+    <div class="gde-read" style="--gde-c: var(--ink-3)">
       <span class="gde-q"><span class="l-en">Trend</span><span class="l-zh">趋势</span></span>
       <strong class="gde-a">
-        
-        <span class="l-en">Mixed</span><span class="l-zh">混合</span><span class="gde-arr" aria-hidden="true">▶</span>
-        
+        <span class="l-en">Unavailable</span><span class="l-zh">暂无读数</span>
       </strong>
     </div>
     <div class="gde-read" style="--gde-c: var(--ink-warn)">
@@ -6584,6 +6581,8 @@
       <strong class="gde-a"><span class="l-en">Fragile</span><span class="l-zh">脆弱</span></strong>
     </div>
   </div>
+  
+  <p class="gde-context-line"><span class="l-en">Some inputs are unavailable; this is not an all-clear.</span><span class="l-zh">部分数据缺失，不代表风险已解除。</span></p>
   
   
   
@@ -6599,7 +6598,7 @@
     
   
   <p class="gde-causes"><span class="l-en">AI-hardware leaders: damaged · Rates / inflation shock: building</span><span class="l-zh">AI硬件龙头：受损 · 利率/通胀冲击：积聚中</span></p>
-  
+  <p class="gde-input-caveat"><span class="l-en">Trend includes older inputs.</span><span class="l-zh">趋势读数含较早数据。</span></p>
   
   <div class="gde-ew" id="gde-ew" role="group" aria-labelledby="gde-ew-title" data-ew-state="stale" data-ew-scope="tech_leadership" data-observation-id="">
     <p class="gde-ew-head"><span class="gde-ew-scope" id="gde-ew-title"><span class="l-en">US Technology leadership</span><span class="l-zh">美国科技领涨</span></span> <span class="gde-ew-state"><span class="l-en">Stale</span><span class="l-zh">已过时</span></span></p>
@@ -6640,7 +6639,7 @@
           
           <div class="gde-ew-brief-h">
             <h4 class="gde-disc-h"><span class="l-en">Market trend</span><span class="l-zh">市场趋势</span></h4>
-            <p class="gde-context-line"><span class="l-en">Mixed · Broad US market · Source: Market state · Session 2026-11-11 · Quality: current session</span><span class="l-zh">混合 · 美国大盘 · 来源：市场状态 · 数据交易日2026-11-11 · 质量：本交易日</span></p>
+            <p class="gde-context-line"><span class="l-en">Unavailable · Broad US market · Source: Market state · Session 2026-11-11 · Quality: older read</span><span class="l-zh">暂无读数 · 美国大盘 · 来源：市场状态 · 数据交易日2026-11-11 · 质量：较早读数</span></p>
           </div>
           <div class="gde-ew-brief-h">
             <h4 class="gde-disc-h"><span class="l-en">Transition fragility</span><span class="l-zh">转折脆弱度</span></h4>
@@ -6694,7 +6693,7 @@
                   <td class="l" role="cell" data-label-en="Source" data-label-zh="来源"><span class="l-en">Market state</span><span class="l-zh">市场状态</span></td><td class="tnum" role="cell" data-label-en="Its own read" data-label-zh="自身读数"><span class="gde-cell">MIXED · 49</span></td>
                   <td class="tnum" role="cell" data-label-en="As of" data-label-zh="数据日期"><span class="gde-cell">2026-11-11</span></td>
                   <td role="cell" data-label-en="Freshness" data-label-zh="新鲜度">
-                    <span class="l-en">This session</span><span class="l-zh">本交易日</span>
+                    <span class="gde-warn"><span class="l-en">Older than this session</span><span class="l-zh">早于本交易日</span></span>
                      <span class="gde-req"><span class="l-en">required</span><span class="l-zh">必需</span></span>
                   </td>
                 </tr>
@@ -6733,9 +6732,9 @@
           
 
           <p class="gde-receipt tnum">
-            grey-deer-v1-2026-08-19 · bundle a6544109efaaa86b ·
-            coverage PARTIAL ·
-            coherence ALIGNED (scope market_reads) ·
+            grey-deer-v1-2026-08-19 · bundle c7b2f2f809fa2c2b ·
+            coverage DEGRADED ·
+            coherence MIXED (scope market_reads) ·
             stage FRAGILE (observed_settled_evidence) ·
             stage_since null (no_episode_lifecycle_in_v0) ·
             engine/risk_envelope.py
@@ -8533,6 +8532,24 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
+          <a class="nbx-item" href="https://www.rttnews.com/3713277/u-s-dollar-climbs-amid-rising-expectations-of-fed-rate-hike.aspx" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
+              <span class="nbx-title"><span class="l-en">U . S . Dollar Climbs Amid Rising Expectations Of Fed Rate Hike</span><span class="l-zh">美元在美联储加息预期升温中攀升</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">gdelt</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Nov 12</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
           <a class="nbx-item" href="https://www.marketwatch.com/story/nasdaq-futures-fall-as-nvidia-sinks-8-after-hours-on-report-board-may-oust-huang-e99b898d?mod=mw_rss_topstories" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
@@ -8554,30 +8571,12 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           <a class="nbx-item" href="https://www.cnbc.com/2026/11/11/anthopic-australian-retail-ipo-offering-.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Deals</span><span class="l-zh">并购/IPO</span></span>
-              <span class="nbx-title"><span class="l-en">Anthropic opens Australian retail IPO offering as AI scrutiny intensifies</span><span class="l-zh">Anthropic在AI审查加剧之际开放澳大利亚零售IPO认购</span></span>
+              <span class="nbx-title"><span class="l-en">Anthropic opens Australian retail IPO offering as AI scrutiny intensifies</span><span class="l-zh">Anthropic在AI审查加剧之际启动澳大利亚零售IPO发行</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
               <span class="nbx-date">Nov 11</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/11/07/berkshire-hathaway-q3-2026-earnings-buybacks.html" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">Berkshire Hathaway more than doubles buybacks in third quarter as earnings decline</span><span class="l-zh">伯克希尔·哈撒韦第三季度回购规模增加逾一倍，但盈利下滑</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 7</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -12110,9 +12109,9 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
     </table>
       </div>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-11-12 19:53 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-11-12 23:20 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-11-12 19:53 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-11-12 23:20 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
     </template>
   </details>

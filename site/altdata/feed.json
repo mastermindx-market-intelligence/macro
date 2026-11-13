@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-12T19:51:29.422727+00:00",
+  "generated_utc": "2026-11-12T23:18:12.598473+00:00",
   "as_of": "2026-11-12",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -28233,10 +28233,10 @@
         },
         {
           "ticker": "RSG",
-          "buy_usd": 1401482049.0,
+          "buy_usd": 1323152872.0,
           "sell_usd": 829600.0,
-          "net_usd": 1400652449.0,
-          "buyers": 87,
+          "net_usd": 1322323272.0,
+          "buyers": 80,
           "sellers": 1
         },
         {
@@ -28404,18 +28404,18 @@
         {
           "ticker": "SNOW",
           "buy_usd": 0.0,
-          "sell_usd": 970308039.0,
-          "net_usd": -970308039.0,
+          "sell_usd": 953523039.0,
+          "net_usd": -953523039.0,
           "buyers": 0,
-          "sellers": 180
+          "sellers": 179
         },
         {
           "ticker": "CRWV",
           "buy_usd": 0.0,
-          "sell_usd": 919972053.0,
-          "net_usd": -919972053.0,
+          "sell_usd": 919971943.0,
+          "net_usd": -919971943.0,
           "buyers": 0,
-          "sellers": 398
+          "sellers": 397
         },
         {
           "ticker": "INGM",
@@ -28434,12 +28434,12 @@
           "sellers": 2
         },
         {
-          "ticker": "ANET",
+          "ticker": "AUR",
           "buy_usd": 0.0,
-          "sell_usd": 675460918.0,
-          "net_usd": -675460918.0,
+          "sell_usd": 673748012.0,
+          "net_usd": -673748012.0,
           "buyers": 0,
-          "sellers": 211
+          "sellers": 4
         }
       ]
     },
