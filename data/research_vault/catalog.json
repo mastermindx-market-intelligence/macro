@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T12:53:29.436471+00:00",
-  "count": 3296,
+  "generated_at": "2026-11-13T13:08:32.589363+00:00",
+  "count": 3297,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -376,6 +376,24 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tmjv77ummcj-1aaa49",
+      "title": "Up and Adam",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-13T03:28:18Z",
+      "summary_points": [
+        "US Dollar Strength: US economic data beat (Citi index highest since Aug 2023) and hawkish Fed lifted USD to 20-month high; sustained US growth may prolong rally despite Fed rate expectations.",
+        "Anthropic IPO Catalyst: Oversubscribed $1.5T market cap IPO (second only to SpaceX) with strong AI sentiment; AI sector consensus EPS growth at 42% vs S&P 500’s 16% post-election."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
