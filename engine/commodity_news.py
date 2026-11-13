@@ -285,15 +285,21 @@ def _classify_cause(asset: str, move_desc: str, headlines: list[dict],
                 return None, degraded or "llm_error"
             try:
                 parsed = json.loads(text)
+                # A reply can be valid JSON and still not be an object (e.g.
+                # "[1,2,3]"); the legacy path only survives that because its
+                # parse sits inside the function's catch-all. Keep the module's
+                # "never raises into the pipeline" contract on this path too.
+                if not isinstance(parsed, dict):
+                    raise ValueError("reply is not a JSON object")
+                # auditable code-side confidence gate (not in the prompt)
+                thr = cfg.get("llm_min_confidence", "high")
+                if _CONF_RANK.get(parsed.get("confidence"), 0) < _CONF_RANK.get(thr, 2):
+                    parsed["cause"] = "unknown"
+                parsed["model"] = served.get("model") or cfg.get("llm_model", "claude-haiku-4-5")
+                parsed["applied_threshold"] = thr
             except Exception as e:  # noqa: BLE001 — degrade, never raise
-                log.warning("commodity_news: fabric reply was not JSON (%s)", e)
+                log.warning("commodity_news: fabric reply was unusable (%s)", e)
                 return None, "llm_error"
-            # auditable code-side confidence gate (not in the prompt)
-            thr = cfg.get("llm_min_confidence", "high")
-            if _CONF_RANK.get(parsed.get("confidence"), 0) < _CONF_RANK.get(thr, 2):
-                parsed["cause"] = "unknown"
-            parsed["model"] = served.get("model") or cfg.get("llm_model", "claude-haiku-4-5")
-            parsed["applied_threshold"] = thr
             return parsed, None
     try:
         from engine import llm_auth  # noqa: PLC0415

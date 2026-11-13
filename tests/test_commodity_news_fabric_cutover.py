@@ -207,6 +207,18 @@ def test_fabric_non_json_reply_degrades(monkeypatch):
     assert parsed is None and reason == "llm_error"
 
 
+def test_fabric_non_object_json_reply_degrades_without_raising(monkeypatch):
+    """Valid JSON that is not an object must degrade, not raise into the
+    pipeline — this module's standing contract is that it never raises."""
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete",
+                        lambda messages, **kw: _completion("[1, 2, 3]"))
+    monkeypatch.delenv("MACRO_COMMODITY_NEWS_FABRIC", raising=False)
+
+    parsed, reason = cn._classify_cause("oil", "moved -4%", _HEADLINES, dict(_CFG))
+    assert parsed is None and reason == "llm_error"
+
+
 # --------------------------------------------------------------------------- #
 # router-down (a SERVED failure) -> degrade, one attempt, no legacy call
 # --------------------------------------------------------------------------- #
