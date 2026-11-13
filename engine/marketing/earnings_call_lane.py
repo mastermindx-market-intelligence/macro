@@ -24,8 +24,8 @@ existing card family, and enters the canonical outbox.
 Public contract:
 
 ``compose_event``
-    Pure, deterministic native-post copy.  It never calls a model and always
-    labels the output as research context rather than trading advice.
+    Pure, deterministic native-post copy. It never calls a model. Research-only
+    authority stays in provenance; public copy contains the substantive read.
 
 ``build_outbox_item``
     Builds ``marketing.outbox/v1`` through ``outbox.make_item`` and stamps the
@@ -87,7 +87,6 @@ _ADVICE_RE = re.compile(
     re.I,
 )
 _TRAILING_PUNCT = ".!?;:,"
-_DISCLAIMER = "Research context only, not a trading recommendation."
 
 
 def _utc(now: datetime | None) -> datetime:
@@ -125,9 +124,10 @@ def _short_clause(value: object, max_chars: int) -> str:
     ).strip(_TRAILING_PUNCT + " ")
     if not text or _ADVICE_RE.search(text) or _NUMBER_RE.search(text):
         return ""
-    if len(text) > max_chars:
-        cut = text[: max_chars + 1].rsplit(" ", 1)[0].strip(_TRAILING_PUNCT + " ")
-        text = cut
+    if len(text) + 1 > max_chars:
+        # A word boundary is not a complete thought. Try another source clause
+        # rather than turning a cut-off qualification into a confident claim.
+        return ""
     return f"{text}." if text else ""
 
 
@@ -189,28 +189,24 @@ def _candidate_bodies(event: Mapping[str, Any]) -> list[str]:
     negatives = event.get("negative_highlights") or []
     def first_safe(items: Iterable[object]) -> str:
         for item in items:
-            clause = _short_clause(item, 82)
+            clause = _short_clause(item, 110)
             if clause:
                 return clause
         return ""
 
     pos = first_safe(positives)
     neg = first_safe(negatives)
-    summary = _short_clause(event.get("summary"), 145)
+    summary = _short_clause(event.get("summary"), 230)
 
     candidates: list[str] = []
     if pos and neg:
-        candidates.append(f"Strong point: {pos} Risk noted: {neg} {_DISCLAIMER}")
+        candidates.append(f"{pos} {neg}")
     if summary:
-        candidates.append(f"{summary} {_DISCLAIMER}")
+        candidates.append(summary)
     if pos:
-        candidates.append(f"Strong point: {pos} {_DISCLAIMER}")
+        candidates.append(pos)
     if neg:
-        candidates.append(f"Risk noted: {neg} {_DISCLAIMER}")
-    candidates.append(
-        "Management's remarks are saved as research context only, not a trading "
-        "recommendation."
-    )
+        candidates.append(neg)
     return list(dict.fromkeys(candidates))
 
 
@@ -226,15 +222,17 @@ def compose_event(
     ticker = str(event["ticker"]).upper()
     quarter = str(event["quarter"]).upper()
     year = int(event["year"])
-    tone = _safe_tone(event.get("tone_word"))
-    headline = f"${ticker} {quarter} FY{year} call: {tone} tone."
+    headline = f"${ticker} {quarter} FY{year} earnings call."
     as_of = as_of or str(event["call_date"])
 
     from engine.marketing.copywriter import validate_copy
 
     last_violations: list[str] = []
     numbers = _structured_numbers(event)
-    for body in _candidate_bodies(event):
+    candidates = _candidate_bodies(event)
+    if not candidates:
+        raise ValueError("earnings-call copy has no usable editorial content")
+    for body in candidates:
         ctx = {
             "ticker": ticker,
             "cashtag": f"${ticker}",
@@ -247,7 +245,7 @@ def compose_event(
             "persona_name": "The Scorekeeper",
         }
         violations = validate_copy(headline, body, ctx)
-        if not violations and not _ADVICE_RE.search(f"{headline} {body}".replace(_DISCLAIMER, "")):
+        if not violations and not _ADVICE_RE.search(f"{headline} {body}"):
             return {
                 "headline": headline,
                 "body": body,

@@ -49,5 +49,8 @@ P1 and P2 can proceed independently of the held editorial/compiler carriers. P3 
 
 Fabric capability read reports `adapter_available=false`; no worker request was submitted and no modifying worker started. Direct implementation reason: `NO_ELIGIBLE_PRE_EFFECT_WORKER` with lawful isolated GitHub source access. Native children are read-only editorial/systems architecture critics, not substitute implementation workers. WHY NOT FABLE: no additional principal or account is needed; the current assigned session integrates bounded judgment and source changes.
 
-Initial milestone: source/collision census complete. No source code or live configuration changed yet.
-Next: implement P1 and the existing-review improvements, then compose the admin consumer fixes and verify them.
+P1/P2 source milestone: removed the automatic earnings-call disclaimer, tone-only headline and empty-content fallback; long clauses are refused intact instead of truncated into false complete assertions. The existing cold-reader and batch auditor now distinguish a useful supported takeaway from a stat dump or slogan, with actionable reasons and a breaking-news exception. No extra model calls or provider changes were added.
+
+Executed proof: `python -m pytest -q tests/test_marketing_earnings_call_lane.py tests/test_marketing_copy_auditor.py tests/test_marketing_copy_v2.py --tb=short` returned **376 passed, 2 skipped**. An initial sparse-source run lacked root `config.yml`; after materializing that committed dependency, the identical focused set passed. No provider/LLM call or live publication occurred. These tests prove source behavior and compatibility, not prospective post quality or engagement.
+
+Next: compose P3/P4 admin delivery evidence, independent stage counts, review visibility and readable media, then validate their real UI consumer.
