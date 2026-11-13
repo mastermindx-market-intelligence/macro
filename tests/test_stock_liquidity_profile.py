@@ -48,6 +48,33 @@ def test_existing_writer_emits_unknown_without_altering_legacy_fields(tmp_path):
     assert not (tmp_path / "data").exists()  # no implicit source restoration
 
 
+@pytest.mark.parametrize("bad", [float("nan"), float("inf"), -float("inf")])
+def test_writer_rejects_non_finite_json_without_overwriting_last_good_record(tmp_path, bad):
+    out = tmp_path / "MU.json"
+    before = '{"ticker":"MU","asof":"2026-10-14","price":123}'
+    out.write_text(before)
+    with pytest.raises(ValueError, match="Out of range float"):
+        write_record(out, {"ticker": "MU", "post_earnings_move": {"day0_move_pct": bad}},
+                     data_root=tmp_path / "data", recorded_at=NOW)
+    assert out.read_text() == before
+
+
+@pytest.mark.parametrize("bad", [float("inf"), "nan", True, -1])
+def test_earnings_invalid_close_reaches_the_real_writer_as_disclosed_null(tmp_path, bad):
+    from datetime import date
+    from engine.earnings_catalyst import board_row_fields
+
+    fields = board_row_fields(
+        {"next_date": "2026-08-03", "next_time": "time-pre-market",
+         "in_blackout": False}, date(2026, 8, 3),
+        closes={"2026-07-31": 100.0, "2026-08-03": bad})
+    out = tmp_path / "MU.json"
+    write_record(out, {"ticker": "MU", **fields}, data_root=tmp_path / "data", recorded_at=NOW)
+    emitted = json.loads(out.read_text(), parse_constant=lambda token: pytest.fail(token))
+    assert emitted["post_earnings_move"]["day0_move_pct"] is None
+    assert emitted["post_earnings_move"]["basis"] == "invalid_close_for_day0"
+
+
 @pytest.mark.parametrize("ticker", ["../MU", "/MU", "MU/OTHER", "", "MU\\OTHER"])
 def test_no_ticker_path_traversal(tmp_path, ticker):
     result = read_profile(ticker, data_root=tmp_path, recorded_at=NOW)
@@ -308,3 +335,4 @@ def test_native_adoption_preserves_unverified_write_as_unknown(native_adoption, 
     assert result["reason"] == "ATOMIC_PUBLISH_NOT_VERIFIED"
     assert result["active_target"] == "native" and result["published"] == []
     assert len(calls) == 1 and result["planned_records"]["native"]["candidate_sha256"]
+

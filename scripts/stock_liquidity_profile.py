@@ -140,7 +140,9 @@ def write_record(path: Path, rec: dict, *, data_root: Path,
     """
     rec["liquidity_profile"] = read_profile(
         rec.get("ticker", ""), data_root=data_root, recorded_at=recorded_at)
-    path.write_text(json.dumps(rec, default=str))
+    # Serialize before opening the existing record: an invalid numeric value
+    # must leave the last good file intact, never emit bare NaN/Infinity.
+    path.write_text(json.dumps(rec, default=str, allow_nan=False))
 
 
 def adopt_native_profile(ticker: str, *, data_root: Path, site_root: Path,
@@ -271,3 +273,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

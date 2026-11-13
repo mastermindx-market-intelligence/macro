@@ -391,6 +391,104 @@ class TestReactionConvention:
             CASE_DAY) == date(2026, 8, 1)
 
 
+class TestReactionIntegrity:
+    """#11023: a one-session reaction must use the event's actual session pair."""
+
+    @pytest.mark.parametrize("last,missing", [("2026-07-30", 1), ("2026-07-29", 2)])
+    def test_missing_predecessor_never_widens_the_reaction(self, last, missing):
+        rx = ec.reaction(CASE_DAY, None, {last: 100.0, CASE_DAY: 120.0}, CASE_DAY)
+        assert rx["day0_move_pct"] is None
+        assert rx["basis"] == "close_missing_for_prior_session"
+        assert rx["prev_session"] == "2026-07-31"
+        assert rx["prior_available_session"] == last
+        assert rx["missing_session_count"] == missing
+
+    def test_no_observed_predecessor_discloses_unknown_gap_extent(self):
+        rx = ec.reaction(CASE_DAY, None, {CASE_DAY: 120.0}, CASE_DAY)
+        assert rx["day0_move_pct"] is None
+        assert rx["prev_session"] == "2026-07-31"
+        assert rx["prior_available_session"] is None
+        assert rx["missing_session_count"] is None
+
+    @pytest.mark.parametrize("report,day0,previous", [
+        ("2026-08-02", "2026-08-03", "2026-07-31"),
+        ("2026-11-26", "2026-11-27", "2026-11-25"),
+    ])
+    @pytest.mark.parametrize("token", [None, "time-pre-market", "time-after-hours"])
+    def test_non_session_report_waits_for_the_first_post_event_close(
+            self, report, day0, previous, token):
+        prices = {previous: 100.0, day0: 110.0}
+        pending = ec.reaction(report, token, prices, date.fromisoformat(report))
+        assert pending["day0"] == day0
+        assert pending["day0_move_pct"] is None
+        assert pending["basis"] == "day0_not_yet_traded"
+        traded = ec.reaction(report, token, prices, date.fromisoformat(day0))
+        assert traded["prev_session"] == previous
+        assert traded["day0_move_pct"] == 10.0
+
+    def test_exchange_holiday_is_not_a_missing_price_session(self):
+        day0 = date(2026, 11, 27)
+        rx = ec.reaction(day0, None, {"2026-11-25": 100.0, day0: 110.0}, day0)
+        assert rx["basis"] == "close_vs_prior_close"
+        assert rx["prev_session"] == "2026-11-25"
+        assert rx["day0_move_pct"] == 10.0
+
+    def test_weekend_price_cannot_replace_the_calendar_predecessor(self):
+        rx = ec.reaction(CASE_DAY, None, {
+            "2026-07-31": 100.0, "2026-08-02": 999.0, CASE_DAY: 110.0}, CASE_DAY)
+        assert rx["prev_session"] == "2026-07-31"
+        assert rx["day0_move_pct"] == 10.0
+
+    @pytest.mark.parametrize("bad", [float("inf"), -float("inf"), float("nan"),
+                                     "nan", "120", True, False, 0, -100, None, pd.NA])
+    @pytest.mark.parametrize("endpoint", ["2026-07-31", "2026-08-03"])
+    def test_unusable_required_price_is_a_disclosed_json_safe_null(self, bad, endpoint):
+        prices = {"2026-07-31": 100.0, "2026-08-03": 110.0}
+        prices[endpoint] = bad
+        rx = ec.reaction(CASE_DAY, None, prices, CASE_DAY)
+        assert rx["day0_move_pct"] is None
+        assert rx["basis"] == ("invalid_close_for_day0" if endpoint == "2026-08-03"
+                               else "invalid_close_for_prior_session")
+        json.dumps(rx, allow_nan=False)
+
+    def test_numpy_panel_scalars_are_still_prices(self):
+        import numpy as np
+
+        rx = ec.reaction(CASE_DAY, None, {
+            "2026-07-31": np.int64(100), CASE_DAY: np.float32(110)}, CASE_DAY)
+        assert rx["day0_move_pct"] == 10.0
+        json.dumps(rx, allow_nan=False)
+
+    def test_finite_prices_cannot_publish_an_overflowed_return(self):
+        rx = ec.reaction(CASE_DAY, None, {
+            "2026-07-31": 1e-308, CASE_DAY: 1e308}, CASE_DAY)
+        assert rx["day0_move_pct"] is None
+        assert rx["basis"] == "non_finite_price_move"
+        json.dumps(rx, allow_nan=False)
+
+    def test_unrelated_bad_or_missing_price_does_not_poison_the_two_endpoints(self):
+        rx = ec.reaction(CASE_DAY, None, {
+            "2026-07-29": float("inf"), "2026-07-31": 100.0, CASE_DAY: 110.0}, CASE_DAY)
+        assert rx["day0_move_pct"] == 10.0
+
+    @pytest.mark.parametrize("calendar_date,report,expected_day0,expected_after", [
+        ("2026-08-10", "2026-08-03", "2026-08-03", False),
+        ("2026-07-30", "2026-08-03", "2026-08-03", False),
+        ("2026-08-03", "2026-08-03", "2026-08-04", True),
+    ])
+    def test_time_token_is_bound_to_the_selected_event(
+            self, calendar_date, report, expected_day0, expected_after):
+        payload = ec.board_row_fields(
+            {"next_date": calendar_date, "next_time": "time-after-hours",
+             "in_blackout": False}, date(2026, 8, 4),
+            surprises=[{"reported": report}],
+            closes={"2026-07-31": 100.0, "2026-08-03": 110.0, "2026-08-04": 121.0})
+        rx = payload["post_earnings_move"]
+        assert rx["day0"] == expected_day0
+        assert rx["after_hours"] is expected_after
+        assert rx["day0_move_pct"] == 10.0
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # 5. SCHEMA — us_standouts rows carry the new keys, and nothing gates on them
 # ═══════════════════════════════════════════════════════════════════════════
@@ -730,3 +828,4 @@ class TestNothingGatesOnTheNewFields:
         assert eb.surprise_history("BBB", p) == []
         assert eb.surprise_history("NOPE", p) == []
         eb.clear_cache()
+
