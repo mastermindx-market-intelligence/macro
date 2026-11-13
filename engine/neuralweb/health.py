@@ -467,9 +467,10 @@ def _cortex_section(root: Path, cortex_source: str = "previous_run", *, artifact
 
     memo = _read_json(memo_path)
     if isinstance(memo, dict) and memo:
-        out["memo_as_of"] = memo.get("as_of") or memo.get("generated_at")
+        memo_clock = memo.get("as_of") or memo.get("generated_at")
         try:
-            stamp = datetime.fromisoformat(out["memo_as_of"].replace("Z", "+00:00"))
+            stamp = datetime.fromisoformat(memo_clock.replace("Z", "+00:00"))
+            out["memo_as_of"] = memo_clock
             if stamp.tzinfo is None:
                 stamp = stamp.replace(tzinfo=timezone.utc)  # bus convention
             age = (datetime.now(timezone.utc) - stamp).total_seconds() / 3600
@@ -1008,8 +1009,10 @@ def build(root: Path | None = None, cortex_source: str = "previous_run") -> dict
         and r.get("path") not in _SELF_MONITOR_PATHS
         and r.get("cadence") != "collect"
         and not r.get("staleness_from")
+        # Cortex and its mirror share the canonical content-clock check below.
+        and r.get("id") not in ("cortex-memo", "site-cortex-memo")
     ]
-    if cortex.get("memo_as_of"):
+    if cortex.get("memo_as_of") and cortex.get("freshness_status") == "fresh":
         fresh_times.append(cortex["memo_as_of"])
     as_of = min(fresh_times) if fresh_times else now
 
