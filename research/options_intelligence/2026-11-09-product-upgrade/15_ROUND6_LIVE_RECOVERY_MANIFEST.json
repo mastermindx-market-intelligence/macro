@@ -1,0 +1,505 @@
+{
+  "schema": "mastermind.options.paper_live_recovery.v1",
+  "recorded_date": "2026-11-10",
+  "source": "live Paper get_basic_info exact file/page reads",
+  "historical_export_recovered": false,
+  "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "board_count": 49,
+  "boards": [
+    {
+      "id": "2B8P-0",
+      "name": "B01 · Start here & preservation map",
+      "childCount": 5,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1R-0"
+    },
+    {
+      "id": "2BAQ-0",
+      "name": "B02 · Source, action & authority bindings",
+      "childCount": 10,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1R-0"
+    },
+    {
+      "id": "2BCJ-0",
+      "name": "B03 · Interaction & acceptance contract",
+      "childCount": 11,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1R-0"
+    },
+    {
+      "id": "2BEJ-0",
+      "name": "B04 · New Plan save contract · R6",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1R-0"
+    },
+    {
+      "id": "28VF-0",
+      "name": "O02 · Aggregate Flow · Dark EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "2918-0",
+      "name": "O03 · Exposure · Light EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "2973-0",
+      "name": "O04 · Volatility · Dark EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "29BT-0",
+      "name": "O07 · Plan · Light EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "29HR-0",
+      "name": "O01 · Overview · Light EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "29LI-0",
+      "name": "O05 · Opportunities · Dark EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "29PH-0",
+      "name": "O06 · Monitor · Light EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "29T4-0",
+      "name": "O08 · Case review · Dark EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "2BTZ-0",
+      "name": "O02X · Child evidence target · Dark EN",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 0,
+      "worldY": 0,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "2C2U-0",
+      "name": "O11 · Trade Lab · Light EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 3040,
+      "worldY": 0,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "2BZA-0",
+      "name": "O05M · Family maturity · Dark EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 1520,
+      "worldY": 0,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "2CO2-0",
+      "name": "O13 · Specialist tools · Dark EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 6080,
+      "worldY": 0,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "2C8A-0",
+      "name": "O12 · Outcome evidence · Dark EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 4560,
+      "worldY": 0,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "2AEX-0",
+      "name": "O09 · Compare assumptions · Light EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "2AIS-0",
+      "name": "O10 · Matched book comparison · Dark EN · 1440",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1O-0"
+    },
+    {
+      "id": "29XA-0",
+      "name": "M01 · Flow · Dark EN · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "29ZH-0",
+      "name": "M02 · Aggregate inspector · Dark EN · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2A1T-0",
+      "name": "M03 · 敞口 · Light ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2A48-0",
+      "name": "M04 · 合约详情 · Light ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2A5P-0",
+      "name": "M05 · Plan · Light EN · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2A81-0",
+      "name": "M06 · 复盘 · Dark ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2A9S-0",
+      "name": "M07 · 导航 · Light ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2ADC-0",
+      "name": "M08 · Watch preview · Dark EN · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2ANC-0",
+      "name": "T01 · Volatility · Light EN · 820",
+      "childCount": 2,
+      "width": 820,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2EE8-0",
+      "name": "D11 · Opportunities · Dark EN · 1280",
+      "childCount": 2,
+      "width": 1280,
+      "height": null,
+      "worldX": 2820,
+      "worldY": 0,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2E45-0",
+      "name": "W01 · Trade Lab · Light EN · 1920",
+      "childCount": 2,
+      "width": 1920,
+      "height": null,
+      "worldX": 4560,
+      "worldY": 0,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2DTB-0",
+      "name": "T03 · Trade Lab · Light EN · 820",
+      "childCount": 2,
+      "width": 820,
+      "height": null,
+      "worldX": 6080,
+      "worldY": 0,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2AQC-0",
+      "name": "T02 · 研究实验室 · Dark ZH · 820",
+      "childCount": 2,
+      "width": 820,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2BGP-0",
+      "name": "M09 · 概览 · Light ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2BII-0",
+      "name": "M10 · Aggregate inspector · Dark ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2BKM-0",
+      "name": "M11 · 波动率 · Light ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2BMJ-0",
+      "name": "M12 · 计划 · Light ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2BOO-0",
+      "name": "M13 · 已保存研究 · Light ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2D0A-0",
+      "name": "M15 · Opportunities · Dark EN · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": 0,
+      "worldY": 0,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2D3S-0",
+      "name": "M17 · Trade Lab · Light EN · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": 940,
+      "worldY": 0,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2D5U-0",
+      "name": "M18 · Trade Lab · Dark ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": 1410,
+      "worldY": 0,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2D7D-0",
+      "name": "M19 · Monitor · Dark EN · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": 1880,
+      "worldY": 0,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2D27-0",
+      "name": "M16 · Opportunities · Light ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": 470,
+      "worldY": 0,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2D8Q-0",
+      "name": "M20 · Monitor · Light ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": 2350,
+      "worldY": 0,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2BQK-0",
+      "name": "M14 · 观察条件预览 · Dark ZH · 390",
+      "childCount": 4,
+      "width": 390,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1P-0"
+    },
+    {
+      "id": "2ATC-0",
+      "name": "S01 · Evidence & selection states",
+      "childCount": 4,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1Q-0"
+    },
+    {
+      "id": "2CRM-0",
+      "name": "S05 · Sources and recovery · R6",
+      "childCount": 6,
+      "width": 1440,
+      "height": null,
+      "worldX": 0,
+      "worldY": 0,
+      "pageId": "p-1Q-0"
+    },
+    {
+      "id": "2AWP-0",
+      "name": "S02 · Drafts, save & revision states",
+      "childCount": 4,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1Q-0"
+    },
+    {
+      "id": "2B0G-0",
+      "name": "S03 · Watch, delivery & return states",
+      "childCount": 4,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1Q-0"
+    },
+    {
+      "id": "2B49-0",
+      "name": "S04 · Narrow, locale & accessibility",
+      "childCount": 3,
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "pageId": "p-1Q-0"
+    }
+  ],
+  "donor_files": [
+    "01M6Y2RQMB5WNV6DHHAY5PJVZS",
+    "01M6Y2X53ABR4MME4ATS15B8SH",
+    "01M6Y1NJ2SKGG89DZ13E4NVAE2"
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "kind": "read_only_review_coverage_gaps_not_task_or_control_plane",
+  "review_date": "2026-11-10",
+  "candidate_pr": 10898,
+  "governing_pin": "9e6659c4a49ee6f11a6f6ee690d222ce81d67b09",
+  "current_terminal_pin": "d15741d452403594a4ddb540a97b9a981c2a62ca",
+  "recovered_traceability": {
+    "EXEC": 35,
+    "AC": 60,
+    "R2": 76,
+    "SUP": 123,
+    "OPT": 104,
+    "OPR": 130,
+    "total_reference_rows_not_unique_acceptance_count": 528,
+    "prior_294_rows_all_original_fields_preserved": true,
+    "current_adjudication_columns": "round5_status, round5_adjudication, round5_next_proof"
+  },
+  "paper": {
+    "boards": 34,
+    "state_components": 44,
+    "runtime_acceptance_proven_by_design": false
+  },
+  "namespace_disambiguation": {
+    "Paper.S02/P01-P12": "Local state specimens",
+    "R2.P01-P76": "Inherited product requirements",
+    "Pilot.P1-P6": "Research pilots",
+    "FrozenEnrollment.P09": "Original #1182 operation owner, not R2 calendar charm or Paper leave-draft",
+    "EXEC.R01-R05": "Execution work breakdown",
+    "R1.W1-W5": "Rotation/continuity waves",
+    "SUP.1-119+suffixes": "Historical claim disposition rows"
+  },
+  "supersession_status_counts": {
+    "ACCEPTED_DO_NOT_REDO": 75,
+    "HELD": 17,
+    "RETAINED_OPEN": 13,
+    "SUPERSEDED_OBSOLETE": 17,
+    "UNKNOWN": 1
+  },
+  "round4_root_adjudications": {
+    "plan_bridge_domain": "New research draft only; new case revision 1. B04 existing-case revision-2 attachment is not implemented by held #804.",
+    "paper_artifact_status": "34 boards and 44 states retained unchanged in this round; B04 requires a later actual Paper correction or admitted owner extension.",
+    "review_input_hash_scope": "Hashes identify the local pre-round4 review inputs materialized from 626715ab; terminal-newline normalization can differ from source bytes. 01 and 02 now carry dated round4 amendments. The historical 03 manifest is unchanged in GitHub and the local deliverable is normalized to its exact canonical bytes."
+  },
+  "historical_round4_recovery_search": {
+    "status_at_round4": "UNRECOVERED; superseded by exact Round 5 recovery",
+    "attestation_repository": "mastermindx-market-intelligence/macro",
+    "attestation_pin": "2aec75a534c26522642bd5dd432802760f5fdcfc",
+    "attestation_path": "research/OPTIONS_INTELLIGENCE_CONTINUATION_HANDOFF_2026-10-11.md",
+    "attestation_locator": "D86, line 2210 at the attestation pin",
+    "search_bounds": [
+      "Provided scratch source files and candidate §14 links",
+      "Exact canonical continuation D86 and surrounding lines2180–2245",
+      "GitHub code search OPR-001 in macro returned no results",
+      "Exact ZIP title search scoped to macro and mastermind-terminal returned only supersession reference",
+      "Parent reported connected Library exact-title/broader Options/OPR and first200 metadata search without packet; not independently rerun by child"
+    ],
+    "non_authority": "Historical failed census retry_allowed=false and explicit verification denials remain fenced; packet recovery does not authorize replay."
+  },
+  "review_round": 5,
+  "historical_round4_candidate_head": "626715ab73e3a0f9413c69faabd8a2a5030227de",
+  "carrier_head_at_round5_integration": "ae6da70390a7574f87eb44a730ad31105dbcf598",
+  "current_macro_pin": "e1e4552be495ea53ff804c58f76dce1500836223",
+  "original_packet_recovery": {
+    "status": "RECOVERED_AND_STRUCTURALLY_VALIDATED_NOT_RUNTIME_ACCEPTED",
+    "name": "TERMINAL_OPTIONS_FABLE_MASTERPLAN_PACKET_2026-10-21.zip",
+    "size_bytes": 189700,
+    "sha256": "f08759dc8755000dcf8fcf335a1ca409fa6dd796dd757c8d29f2f3330ddba0ad",
+    "zip_crc_pass": true,
+    "archive_members": 17,
+    "manifest_entries": 16,
+    "all_manifest_checksums_match": true,
+    "original_OPT_count": 104,
+    "original_OPR_count": 130,
+    "OPR_competitor_referenced": 112,
+    "OPR_product": 18,
+    "competitor_entries": 11,
+    "feature_rows": 60,
+    "source_register_rows": 92,
+    "all_original_task_status": "PLANNED_NOT_DISPATCHED",
+    "original_requirement_status_prefix": "REQUIREMENT_DEFINED_NOT_ACCEPTED",
+    "competitor_status": "NOT_ACCEPTED_AS_FULL_PARITY",
+    "recovery_receipt": "12_PACKET_RECOVERY.json",
+    "original_files": "original_2026-10-21/",
+    "historical_instructions_are_current_authority": false,
+    "whole_suite_dispatch_scope_recovery_gap_closed": true,
+    "implementation_and_full_parity_acceptance_proven": false
+  },
+  "historical_round4_review_input_hashes": {
+    "01_MASTERPLAN.md": "3391f1b5b1f0c96efe4c086ed63199f4b71ded2ee92c60d1e9d2d61120755865",
+    "02_PAPER_DESIGN.md": "60839d4066893e5c10dc2905e7acf67b046a5b4baffb4557dbe832c35f1e2c57",
+    "03_PAPER_MANIFEST.json": "e622912dd71ddd92ef7fc0b08521f84bf847c4dd7b9127682de4a95da6e314a5"
+  },
+  "current_validation": "24_PACKAGE_VALIDATION.json",
+  "round5_open_obligations": [
+    {
+      "id": "source_consumer_proof",
+      "owner": "Original source/publisher/API/Terminal owners",
+      "status": "OPEN",
+      "next": "Natural artifact to installed entitled consumer with exact identities; source-only review is not this proof."
+    },
+    {
+      "id": "flow_terms_children_lineage",
+      "owner": "live_flow classifier/capture and canonical terms owners",
+      "status": "PARTIAL_SOURCE",
+      "next": "Use measured aggregates now; qualify exact terms, children, packages/corrections before stronger claims."
+    },
+    {
+      "id": "exposure_source_domain",
+      "owner": "Original dated-Gamma/DEX supplier and ExposureMap owners",
+      "status": "PARTIAL_HELD",
+      "next": "Qualified natural dated artifact, explicit missingness, DEX producer witness and same-session correction semantics where claimed."
+    },
+    {
+      "id": "volatility_semantics",
+      "owner": "compute_vol and VolView owners",
+      "status": "SOURCE_REPAIR_REQUIRED",
+      "next": "Actual tenor/method, percentile/rank, observed history window, historical eligibility and actual expiry receiver."
+    },
+    {
+      "id": "matrix_wire",
+      "owner": "Macro #10866 original root; sole Lab adapter",
+      "status": "HELD",
+      "next": "Original current-base conflict/CI qualification, lossless schema-specific admission and real consumer proof."
+    },
+    {
+      "id": "native_case_plan",
+      "owner": "Terminal #804/IW2/Matrix admission original owners",
+      "status": "HELD_ORIGINAL_EFFECTS",
+      "next": "Native operation reconciliation; 0047/0043 forward composition on actual installed predicate; original0030/activation/customer proof."
+    },
+    {
+      "id": "retained_original_sources",
+      "owner": "Original evidence/P052 source retention owners",
+      "status": "DOMAIN_LIMITED",
+      "next": "Exact source/rights-qualified resolver; distinguish original/current/comparable/unavailable and retain moves refusal."
+    },
+    {
+      "id": "watch_review",
+      "owner": "Ordinary alerts/outbox/receipts, P09 enrollment and outcome owners",
+      "status": "PARTIAL",
+      "next": "Creation-operation reconciliation, exact selected firing and history scope; original selected-node and outcome obligations remain."
+    },
+    {
+      "id": "deep_paper",
+      "owner": "Existing Terminal Paper custody",
+      "status": "ROUND6_NEXT",
+      "next": "11 section8 exact deltas and five-job mapping; manifest remains unchanged in Round5."
+    },
+    {
+      "id": "complete_first_vertical",
+      "owner": "Original OPT-100 and its receipt owners",
+      "status": "NOT_ACCEPTED",
+      "next": "15 direct/36 unconditional transitive prerequisites and applicable conditional bindings; full journey plus frozen usefulness."
+    },
+    {
+      "id": "science_sleeves",
+      "owner": "Original IOB/OA/FS-5/family formation/evaluation/promotion owners",
+      "status": "ORIGINAL_STAGE_DEPENDENCIES_RETAINED",
+      "next": "Round7 exact claim/maturity map and only actually ready empirical stages; no invented result or activation."
+    },
+    {
+      "id": "full_suite_parity",
+      "owner": "Original OPT-103 and all accountable OPR tasks",
+      "status": "NOT_ACCEPTED",
+      "next": "All original accepted scope and current feature-specific consumer proof; historical catalogue not full current parity."
+    }
+  ],
+  "round5_release_boundary": {
+    "observational_precursor_closes_OPT100": false,
+    "ordinary_saved_case_increment_closes_OPT100": false,
+    "core_trade_lab_preexpiry_comparison_required_for_original_vertical": true,
+    "paper_design_alone_proves_production": false,
+    "next_round": 6,
+    "implementation_dispatch_sent": false
+  },
+  "historical_round5_current_validation": "13_ROUND5_VALIDATION.json",
+  "current_entry": "00_START_HERE_FABLE_HANDOFF.md",
+  "consolidation_c1": {
+    "date": "2026-11-10",
+    "planning_design_status": "COMPLETE_SPECIFICATION_NOT_IMPLEMENTATION_ACCEPTANCE",
+    "original_task_count": 104,
+    "original_opr_count": 130,
+    "original_crosswalk_rows": 528,
+    "counts_overlap": true,
+    "feature_dispositions": 55,
+    "paper_recovered_round6_boards": 49,
+    "paper_new_consolidation_boards": 9,
+    "paper_total_snapshotted_boards": 58,
+    "source_contract": "18_CONSOLIDATION_SOURCE_AND_INTERACTION_CONTRACTS.md",
+    "execution_commission": "19_FABLE_T3_EXECUTION_COMMISSION.md",
+    "conditional_bindings": "20_COHORT_AND_CONDITIONAL_BINDINGS.json",
+    "paper_manifest": "21_CONSOLIDATION_PAPER_MANIFEST.json",
+    "migration_contract": "22_MIGRATION_AND_RETIREMENT_ACCEPTANCE.md",
+    "current_continuation": "23_CURRENT_CONTINUATION.md",
+    "terminal_source_pin": "abd68886b86713b2b0ac7f5a50fe7c0417a26662",
+    "macro_source_pin": "7e115b6f1f10832b4b123149215ea7a041279753",
+    "governing_pin": "76cca6bf0d4f54c1c4a732726a16c70dbe8ed679",
+    "history_note": "Other unprefixed Round 4/5 fields retain their dated historical meaning. No runtime, scientific or production acceptance is inferred from planning completion.",
+    "remaining_execution": [
+      "affected implementation and source/access admission",
+      "held Plan/F01/retained-selection gates",
+      "original full vertical and deeper mandatory scope",
+      "natural installed consumer proof",
+      "user usefulness and performance/accessibility/isolation",
+      "family-specific scientific and consumer qualification",
+      "per-donor cutover/retirement/rollback"
+    ]
+  }
+}

@@ -1,0 +1,733 @@
+{
+  "schema": "mastermind.options.paper_consolidation_snapshot.v1",
+  "captured_date": "2026-11-10",
+  "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "recovered_boards": 49,
+  "added_boards": 9,
+  "total_boards": 58,
+  "original_historical_round6_export_claim": "NOT_RECREATED_OR_RELABELED",
+  "capture": "Fresh read-only get_jsx snapshots; UTF-8 with final newline. Added native JPEG screenshots are unmodified tool-returned bytes.",
+  "original_donor_boards": "READ_ONLY_PRESERVED",
+  "new_pages": {
+    "product": "p-1S-0",
+    "contracts": "p-1T-0"
+  },
+  "design_not_production_acceptance": true,
+  "handoff_ready_at_this_checkpoint": false,
+  "fixture": {
+    "id": "options-consolidation-synthetic-20261109-v1",
+    "session": "2026-11-09T10:35:00-05:00",
+    "equity": {
+      "root": "SPY",
+      "date": "2026-11-06",
+      "participationPct": 48.6,
+      "priorPct": 42,
+      "shares": 48600000,
+      "eligibleShares": 100000000,
+      "median20Pct": 43,
+      "shortMarkedPct": 41.5,
+      "priceChangePct": 0.8
+    },
+    "options": {
+      "root": "SPY",
+      "expiry": "2026-11-20",
+      "strike": 600,
+      "right": "call",
+      "premium": 224000,
+      "contracts": 400,
+      "prints": 6,
+      "through": "2026-11-09T10:20:00-05:00"
+    },
+    "structure": {
+      "root": "SPX",
+      "date": "2026-11-06",
+      "spot": 6024,
+      "flip": 6100,
+      "gexBillionPer1Pct": -1.8
+    },
+    "venue": {
+      "reportingWeek": "2026-10-26",
+      "available": "2026-11-09",
+      "atsShares": 6200000,
+      "nonAtsShares": 17800000
+    }
+  },
+  "source_pins": {
+    "mastermind": "76cca6bf0d4f54c1c4a732726a16c70dbe8ed679",
+    "macroInitial": "8f12b4e2a16068cf280d6cbfd33c735b56233dd3",
+    "macroRefreshed": "7e115b6f1f10832b4b123149215ea7a041279753",
+    "terminalInitial": "6694f9bab28fa3c950c7bd5ec0a5957e736a4708",
+    "terminalRefreshed": "abd68886b86713b2b0ac7f5a50fe7c0417a26662",
+    "f01Candidate": "dce261d07ebc993e8a9579cca2200e445b6636d4"
+  },
+  "boards": [
+    {
+      "node_id": "2B8P-0",
+      "name": "B01 · Start here & preservation map",
+      "page_id": "p-1R-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2B8P-0.jsx",
+      "jsx_sha256": "a6bfe0fc2b49f59f9e69406330445e3af3ade3f10b6eb75e139fe9de95e4fa9b",
+      "jsx_bytes": 18811,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2BAQ-0",
+      "name": "B02 · Source, action & authority bindings",
+      "page_id": "p-1R-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2BAQ-0.jsx",
+      "jsx_sha256": "b5c84c7108751cb1f647b9c6ab9913939072fc354f52a33248067ab2e88ce45a",
+      "jsx_bytes": 16393,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2BCJ-0",
+      "name": "B03 · Interaction & acceptance contract",
+      "page_id": "p-1R-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2BCJ-0.jsx",
+      "jsx_sha256": "19ed3cffb301f633b20c40cfbd877e20c1d2cae7b6cbf85e777898d74b041e21",
+      "jsx_bytes": 18812,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2BEJ-0",
+      "name": "B04 · New Plan save contract · R6",
+      "page_id": "p-1R-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2BEJ-0.jsx",
+      "jsx_sha256": "842e4d318f15e7bc40c59c9f7a23d5a400e9236cb3898001b7470cd1eeadd3bd",
+      "jsx_bytes": 14799,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "28VF-0",
+      "name": "O02 · Aggregate Flow · Dark EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/28VF-0.jsx",
+      "jsx_sha256": "5c10d39183bb8fede69996b9c155c1e2cc2555f551dd193becb95469479c4600",
+      "jsx_bytes": 41258,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2918-0",
+      "name": "O03 · Exposure · Light EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2918-0.jsx",
+      "jsx_sha256": "0ffa7302a42c3894574c8c4affd782edc3d2666585f44bd70e002c40141ddf75",
+      "jsx_bytes": 36668,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2973-0",
+      "name": "O04 · Volatility · Dark EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2973-0.jsx",
+      "jsx_sha256": "3ddc25316d6c3b48f8767dcd63c5e8348a809b0eca8c9e31f774002d29f76ac0",
+      "jsx_bytes": 33523,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "29BT-0",
+      "name": "O07 · Plan · Light EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/29BT-0.jsx",
+      "jsx_sha256": "7689718d6cde356404f569b42820d082a404ad123372b9467e3ca50ea804f004",
+      "jsx_bytes": 42023,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "29HR-0",
+      "name": "O01 · Overview · Light EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/29HR-0.jsx",
+      "jsx_sha256": "478a1e45637a914fd379089b7a4c11ca251168363c5f3a8555b1c39d379e08aa",
+      "jsx_bytes": 30142,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "29LI-0",
+      "name": "O05 · Opportunities · Dark EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/29LI-0.jsx",
+      "jsx_sha256": "a34b16a954d2149cd92f24ca25538bc3a3067f59656e85ad388cf06bcadd7340",
+      "jsx_bytes": 37308,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "29PH-0",
+      "name": "O06 · Monitor · Light EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/29PH-0.jsx",
+      "jsx_sha256": "0ecc4759cb9028493f0bed29d83235daef3478858400dd39154126d8edb72b98",
+      "jsx_bytes": 32653,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "29T4-0",
+      "name": "O08 · Case review · Dark EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/29T4-0.jsx",
+      "jsx_sha256": "501a9b9a970477295f0b67354705aeb817df1b4ac55dac380cda60b6955fb152",
+      "jsx_bytes": 31739,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2BTZ-0",
+      "name": "O02X · Child evidence target · Dark EN",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2BTZ-0.jsx",
+      "jsx_sha256": "7e1cab8dbcb4c75780cb25d1172e67c6f2f62da67d8cc6e66a506731f77998d8",
+      "jsx_bytes": 45579,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2C2U-0",
+      "name": "O11 · Trade Lab · Light EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2C2U-0.jsx",
+      "jsx_sha256": "b94389a9c999e9dce150f3ec85cee5769c8c63fd4334f74020931cb89a589062",
+      "jsx_bytes": 52445,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2BZA-0",
+      "name": "O05M · Family maturity · Dark EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2BZA-0.jsx",
+      "jsx_sha256": "4bc85548c405a3fb222d7b4b5a757695dacf9e7a3fc5408d79e2b3f623331449",
+      "jsx_bytes": 31431,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2CO2-0",
+      "name": "O13 · Specialist tools · Dark EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2CO2-0.jsx",
+      "jsx_sha256": "cc9a3cf9a81bd238ba94210c65621aab856905412898f5f5a045f431cbeca3d7",
+      "jsx_bytes": 49695,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2C8A-0",
+      "name": "O12 · Outcome evidence · Dark EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2C8A-0.jsx",
+      "jsx_sha256": "3d649a658f0074ca81acf38e57c7ce65af48aca90d43d44f3435f0ddd7c4637b",
+      "jsx_bytes": 32183,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2AEX-0",
+      "name": "O09 · Compare assumptions · Light EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2AEX-0.jsx",
+      "jsx_sha256": "ef50a834f52c5ba64d6cf0a6f0d888750570b93878aef6d2d6b95ecb1eb0d0fd",
+      "jsx_bytes": 30865,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2AIS-0",
+      "name": "O10 · Matched book comparison · Dark EN · 1440",
+      "page_id": "p-1O-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2AIS-0.jsx",
+      "jsx_sha256": "e94798de42c9bd9312babfd7dbfe23a3f8039b1087fdd90925105668615c2ba8",
+      "jsx_bytes": 37320,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "29XA-0",
+      "name": "M01 · Flow · Dark EN · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/29XA-0.jsx",
+      "jsx_sha256": "155d725be9643fa65b9de1f9ed7fbb4dc2b3bb84360ac14452cd02f71e336dbf",
+      "jsx_bytes": 17056,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "29ZH-0",
+      "name": "M02 · Aggregate inspector · Dark EN · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/29ZH-0.jsx",
+      "jsx_sha256": "8be7705dd09ae2fef2a5991d2bbbf7ca8ff57fdd28f3c4de3adfdbceca9d9d77",
+      "jsx_bytes": 12256,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2A1T-0",
+      "name": "M03 · 敞口 · Light ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2A1T-0.jsx",
+      "jsx_sha256": "b5cba0788578b9cad2ee1fcaaf574d5151e90c88bbc01aee32096ed32bb9cb9c",
+      "jsx_bytes": 19782,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2A48-0",
+      "name": "M04 · 合约详情 · Light ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2A48-0.jsx",
+      "jsx_sha256": "f8b7d8a36e53423f8053270e386c1f44f024a06e89ee73bf652d9404132b6c25",
+      "jsx_bytes": 12040,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2A5P-0",
+      "name": "M05 · Plan · Light EN · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2A5P-0.jsx",
+      "jsx_sha256": "5952034592cd463598896b6bd886c1d0b259d34e6618fc7d269a1affdf55777a",
+      "jsx_bytes": 18113,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2A81-0",
+      "name": "M06 · 复盘 · Dark ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2A81-0.jsx",
+      "jsx_sha256": "0664c539ba13e6f2e05c9abedbe481aff0097c754cc126848a1ecedcfc63366d",
+      "jsx_bytes": 14667,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2A9S-0",
+      "name": "M07 · 导航 · Light ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2A9S-0.jsx",
+      "jsx_sha256": "4ac303f5cf9e511b188bf8f06747132bff11a2e6a5b59a5b178d221c8a97018d",
+      "jsx_bytes": 16343,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2ADC-0",
+      "name": "M08 · Watch preview · Dark EN · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2ADC-0.jsx",
+      "jsx_sha256": "ec18732117ed644b06d11d524ec08736ed349997b7ef8937cb0ab27bf836333e",
+      "jsx_bytes": 12771,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2ANC-0",
+      "name": "T01 · Volatility · Light EN · 820",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2ANC-0.jsx",
+      "jsx_sha256": "223d5c8ac10008eb001b7f034a46fbfdff436836f07d5e9bd52490cfff264095",
+      "jsx_bytes": 22864,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2EE8-0",
+      "name": "D11 · Opportunities · Dark EN · 1280",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2EE8-0.jsx",
+      "jsx_sha256": "a9aaabb1c114668f1300a926024b1ddf3a3fb3e8fc0379bef9a5d05f6c02c45f",
+      "jsx_bytes": 29329,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2E45-0",
+      "name": "W01 · Trade Lab · Light EN · 1920",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2E45-0.jsx",
+      "jsx_sha256": "de6869cdf94b0229e6e12041f5502a592b680ef74db3cad37d6a49a1bcc32b60",
+      "jsx_bytes": 53503,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2DTB-0",
+      "name": "T03 · Trade Lab · Light EN · 820",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2DTB-0.jsx",
+      "jsx_sha256": "28f65cfab7e435a37e350af3f793235ee07a7d71ec88233269cd109f9d0b4088",
+      "jsx_bytes": 38212,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2AQC-0",
+      "name": "T02 · 研究实验室 · Dark ZH · 820",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2AQC-0.jsx",
+      "jsx_sha256": "e513e25663324dd0f220a4fb676daa8c02f95c0ec594ab8b272cf31a17d9f902",
+      "jsx_bytes": 23645,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2BGP-0",
+      "name": "M09 · 概览 · Light ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2BGP-0.jsx",
+      "jsx_sha256": "496349292bfff7046c66d47770acb23c351b8f8d705d8b6725ff9a86f6267ed1",
+      "jsx_bytes": 15266,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2BII-0",
+      "name": "M10 · Aggregate inspector · Dark ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2BII-0.jsx",
+      "jsx_sha256": "4be735b13afa9b35fffb3a3644c7f24ac0c6b8d250ae37a3dcbba63895c9937a",
+      "jsx_bytes": 12464,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2BKM-0",
+      "name": "M11 · 波动率 · Light ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2BKM-0.jsx",
+      "jsx_sha256": "64fafc5a3027fdaa9772d4c148258cb01b73c87d8bb1fb1aa847653139f709d1",
+      "jsx_bytes": 16544,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2BMJ-0",
+      "name": "M12 · 计划 · Light ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2BMJ-0.jsx",
+      "jsx_sha256": "e30bc8bc5fe05870da3a5063fee34ee8933f89bad414f3322e31bdbdc1eefef6",
+      "jsx_bytes": 17601,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2BOO-0",
+      "name": "M13 · 已保存研究 · Light ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2BOO-0.jsx",
+      "jsx_sha256": "8e34aa19c7aceef617ec652dcc7e7eb01c297111b4886ef7c2d687ae3164d003",
+      "jsx_bytes": 16085,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2D0A-0",
+      "name": "M15 · Opportunities · Dark EN · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2D0A-0.jsx",
+      "jsx_sha256": "38bbd154f938ae66a2449b3a5a335e47d8a7d77cf319eb0ba76a1820f2ba3199",
+      "jsx_bytes": 14597,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2D3S-0",
+      "name": "M17 · Trade Lab · Light EN · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2D3S-0.jsx",
+      "jsx_sha256": "2199993adc01c3d7def801a66d76e6479dc49a88d4b6f83731e7afea997829d7",
+      "jsx_bytes": 20800,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2D5U-0",
+      "name": "M18 · Trade Lab · Dark ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2D5U-0.jsx",
+      "jsx_sha256": "7b9a2252c8ad445d519d8c1397d958509be80c9a2f328b6fec066c6e99b28014",
+      "jsx_bytes": 21265,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2D7D-0",
+      "name": "M19 · Monitor · Dark EN · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2D7D-0.jsx",
+      "jsx_sha256": "7586442a32a66eb636fdad54149f13c2f4017554c76af62504e0e126576ef16f",
+      "jsx_bytes": 14230,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2D27-0",
+      "name": "M16 · Opportunities · Light ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2D27-0.jsx",
+      "jsx_sha256": "a5e220814a03f30f0c91374c26b38f2eceeb3cd20246504f83c5221228b15975",
+      "jsx_bytes": 14953,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2D8Q-0",
+      "name": "M20 · Monitor · Light ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2D8Q-0.jsx",
+      "jsx_sha256": "ec5a24d4826b7bf38b379c90235efdc737fff96ca47df60da4440ba87a729967",
+      "jsx_bytes": 14546,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2BQK-0",
+      "name": "M14 · 观察条件预览 · Dark ZH · 390",
+      "page_id": "p-1P-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2BQK-0.jsx",
+      "jsx_sha256": "fa04eda0c2b2aed03a198433e473a0bdcdb71038c76e3b3db80e496961d8d07c",
+      "jsx_bytes": 12772,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2ATC-0",
+      "name": "S01 · Evidence & selection states",
+      "page_id": "p-1Q-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2ATC-0.jsx",
+      "jsx_sha256": "5f6753fe32bd4c9a7f7c7df2da866ee5d4994d2a397cd50e35020b9e82612878",
+      "jsx_bytes": 28385,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2CRM-0",
+      "name": "S05 · Sources and recovery · R6",
+      "page_id": "p-1Q-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2CRM-0.jsx",
+      "jsx_sha256": "58b1f1238ff8977ea15af32bb883c1eb5d0401c69e7ea06dd37e7d552cd032a2",
+      "jsx_bytes": 46870,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2AWP-0",
+      "name": "S02 · Drafts, save & revision states",
+      "page_id": "p-1Q-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2AWP-0.jsx",
+      "jsx_sha256": "a877b46c6bda44b7d21df39c0fe31805e3d6b98dbb10537b7c62888f74804a8d",
+      "jsx_bytes": 30167,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2B0G-0",
+      "name": "S03 · Watch, delivery & return states",
+      "page_id": "p-1Q-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2B0G-0.jsx",
+      "jsx_sha256": "09d656b776682e9e70e71204cedeba7877a65cfb5b6ae61ed6e2836c75eee1d7",
+      "jsx_bytes": 30964,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2B49-0",
+      "name": "S04 · Narrow, locale & accessibility",
+      "page_id": "p-1Q-0",
+      "scope": "recovered_round6",
+      "jsx_path": "recovered_round6/2B49-0.jsx",
+      "jsx_sha256": "de63c219d1deaf24941616647952cf431ae0006d1622e9abd323f1bbac43425c",
+      "jsx_bytes": 19617,
+      "visual_review_this_session": false
+    },
+    {
+      "node_id": "2EL7-0",
+      "name": "C01 · Consolidated Desk · Light EN · 1440",
+      "page_id": "p-1S-0",
+      "scope": "consolidation_c1",
+      "jsx_path": "consolidation_c1/2EL7-0.jsx",
+      "jsx_sha256": "c773be80e8eefb1981c943f62af55a855a6ea68d1fb41da0e8538ae927593c7d",
+      "jsx_bytes": 27345,
+      "visual_review_this_session": true,
+      "screenshot": {
+        "path": "consolidation_c1/2EL7-0.jpg",
+        "sha256": "18c56f57bfd29fde355f06d45c033aaf0d920aae127d624f5946c1261b84745e",
+        "bytes": 144226,
+        "width": 1440,
+        "height": 960,
+        "format": "JPEG"
+      }
+    },
+    {
+      "node_id": "2EOJ-0",
+      "name": "C02 · Off-Exchange · Dark EN · 1440",
+      "page_id": "p-1S-0",
+      "scope": "consolidation_c1",
+      "jsx_path": "consolidation_c1/2EOJ-0.jsx",
+      "jsx_sha256": "51369f94f30c0e2db0af21092d969679425d78d00e6e01000bc604cd7e42984f",
+      "jsx_bytes": 29386,
+      "visual_review_this_session": true,
+      "screenshot": {
+        "path": "consolidation_c1/2EOJ-0.jpg",
+        "sha256": "2774ae424348eb62964d9424ba47e4b0694030c265e567d152861a5cedf4be5a",
+        "bytes": 139105,
+        "width": 1440,
+        "height": 1024,
+        "format": "JPEG"
+      }
+    },
+    {
+      "node_id": "2ET5-0",
+      "name": "C03 · Market Structure · Light EN · 1440",
+      "page_id": "p-1S-0",
+      "scope": "consolidation_c1",
+      "jsx_path": "consolidation_c1/2ET5-0.jsx",
+      "jsx_sha256": "accbb0f8c87193d4ea4655967e33e4d847d0696e11f13469c77c8e3c00539608",
+      "jsx_bytes": 32994,
+      "visual_review_this_session": true,
+      "screenshot": {
+        "path": "consolidation_c1/2ET5-0.jpg",
+        "sha256": "3728420f71063dd301f11eec94df52aef3df84b6973e60d9376933672699aa9b",
+        "bytes": 155150,
+        "width": 1440,
+        "height": 1147,
+        "format": "JPEG"
+      }
+    },
+    {
+      "node_id": "2EXR-0",
+      "name": "C04 · Venue Reports · Dark EN · 1440",
+      "page_id": "p-1S-0",
+      "scope": "consolidation_c1",
+      "jsx_path": "consolidation_c1/2EXR-0.jsx",
+      "jsx_sha256": "b24356e7c52d5721036298057ae462e1ef766fff22b49f0c325355f393e1dfd7",
+      "jsx_bytes": 28287,
+      "visual_review_this_session": true,
+      "screenshot": {
+        "path": "consolidation_c1/2EXR-0.jpg",
+        "sha256": "3e06340350a93822bbf5a9669947cb3d1a3dc617de209d7a393be5f81ff27026",
+        "bytes": 125655,
+        "width": 1440,
+        "height": 960,
+        "format": "JPEG"
+      }
+    },
+    {
+      "node_id": "2F22-0",
+      "name": "C05 · 场外成交 · Light ZH · 390",
+      "page_id": "p-1S-0",
+      "scope": "consolidation_c1",
+      "jsx_path": "consolidation_c1/2F22-0.jsx",
+      "jsx_sha256": "821641f095b9a4d2e7725fb29f1677ad81f5d26025f4178da291cc0de10bf2bd",
+      "jsx_bytes": 15075,
+      "visual_review_this_session": true,
+      "screenshot": {
+        "path": "consolidation_c1/2F22-0.jpg",
+        "sha256": "4cb2a52a8fb1d5d40c724a04ae55d3b901de47abf99f9400a402cfc474ae10c0",
+        "bytes": 62129,
+        "width": 390,
+        "height": 1129,
+        "format": "JPEG"
+      }
+    },
+    {
+      "node_id": "2F3N-0",
+      "name": "C06 · 市场结构 · Light ZH · 390",
+      "page_id": "p-1S-0",
+      "scope": "consolidation_c1",
+      "jsx_path": "consolidation_c1/2F3N-0.jsx",
+      "jsx_sha256": "a24dbd7fa25844a63d251bcc1af7ff0aa12995a2abc6b346deac8a7eb2a0486e",
+      "jsx_bytes": 15202,
+      "visual_review_this_session": true,
+      "screenshot": {
+        "path": "consolidation_c1/2F3N-0.jpg",
+        "sha256": "338e215a57a3d92838864ad0fd1865e6de478faa191300a1fa7ee158ff522c00",
+        "bytes": 57368,
+        "width": 390,
+        "height": 1133,
+        "format": "JPEG"
+      }
+    },
+    {
+      "node_id": "2FL2-0",
+      "name": "S06 · Migration and Evidence States · 1440",
+      "page_id": "p-1T-0",
+      "scope": "consolidation_c1",
+      "jsx_path": "consolidation_c1/2FL2-0.jsx",
+      "jsx_sha256": "ca40d8e31e37aee874c1dba2ff0da3ffaec532a5213f90f8274a90215431465d",
+      "jsx_bytes": 28424,
+      "visual_review_this_session": true,
+      "screenshot": {
+        "path": "consolidation_c1/2FL2-0.jpg",
+        "sha256": "90e1e901379390ab8be10a76ee8ab29f916cf53f65dbd12b45bc8081e24b5178",
+        "bytes": 232311,
+        "width": 1440,
+        "height": 1089,
+        "format": "JPEG"
+      }
+    },
+    {
+      "node_id": "2FNY-0",
+      "name": "B05 · Consolidation Build Contract · 1440",
+      "page_id": "p-1T-0",
+      "scope": "consolidation_c1",
+      "jsx_path": "consolidation_c1/2FNY-0.jsx",
+      "jsx_sha256": "4566d7e1f0f305b96907e0677d9d79e43f2edc6ba2a09158e84dfa6fd811c4d5",
+      "jsx_bytes": 19219,
+      "visual_review_this_session": true,
+      "screenshot": {
+        "path": "consolidation_c1/2FNY-0.jpg",
+        "sha256": "b2b3588e25967700a95d8b6800884ba3738b15e5e5183c90f423264dd6d5917d",
+        "bytes": 236359,
+        "width": 1440,
+        "height": 1078,
+        "format": "JPEG"
+      }
+    },
+    {
+      "node_id": "2FPT-0",
+      "name": "C07 · Direct Market Entry · Light EN · 1440",
+      "page_id": "p-1S-0",
+      "scope": "consolidation_c1",
+      "jsx_path": "consolidation_c1/2FPT-0.jsx",
+      "jsx_sha256": "ab5d7cc00ad18c518aa3a7ee5031836c2576470a233743d239966c3102d9aa19",
+      "jsx_bytes": 31333,
+      "visual_review_this_session": true,
+      "screenshot": {
+        "path": "consolidation_c1/2FPT-0.jpg",
+        "sha256": "60fb05cfe25da32ef7fbb82e1139a6fdda2cefd5ab7277fdc410c28972cf0a71",
+        "bytes": 151770,
+        "width": 1440,
+        "height": 1153,
+        "format": "JPEG"
+      }
+    }
+  ],
+  "operation_reconciliation": {
+    "same": true,
+    "original": "2983-0",
+    "target": "2EXT-0",
+    "originalOperation": "options-consolidation-20261110-c4-body-4-v1",
+    "result": "NOT_APPLIED_BY_EXACT_TARGET_SUBTREE",
+    "originalFile": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "cause": "Response was not retained by the initial parser; cause not proven. Exact original target and mapped descendant JSX remain unchanged after completion and subsequent same-carrier reads."
+  },
+  "archive": {
+    "path": "evidence/consolidation_2026-11-10/options_paper_58board_snapshot.zip",
+    "sha256": "024e2f2b3b1261f40ae02c9ecc79200363dc09e7c976bc6e6b75803790f4ba52",
+    "bytes": 1283076,
+    "member_count": 70,
+    "crc": "PASS"
+  }
+}

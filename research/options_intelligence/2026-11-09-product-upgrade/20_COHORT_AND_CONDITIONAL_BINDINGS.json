@@ -1,0 +1,2002 @@
+{
+  "kind": "planning_binding_specification_not_dispatch_or_runtime_control_plane",
+  "version": "consolidation-c1",
+  "date": "2026-11-10",
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "ref": "554e809c62da95e96dcfbbd3bd9a990b4f0f053b",
+    "path": "research/options_intelligence/2026-11-09-product-upgrade/original_2026-10-21/TERMINAL_OPTIONS_EXECUTION_TASKS.json",
+    "blob_sha": "277370cf4a49c17eafa0b9bccde6f3d26102effb"
+  },
+  "original_task_count": 104,
+  "original_conditional_rule_count": 39,
+  "binding_fields": [
+    "consumer_claims",
+    "consumer_scope",
+    "expression_policy",
+    "iv_source_method",
+    "optimization_claim",
+    "population_context_contract",
+    "population_identity",
+    "probability_endpoint",
+    "quote_ruler",
+    "quote_scope",
+    "release_data_scope",
+    "release_features",
+    "release_source_features",
+    "selected_family",
+    "selected_pilot",
+    "source_scope",
+    "structure_scope"
+  ],
+  "field_policy": {
+    "consumer_claims": "Bind all actual score/rank/probability/economic/sizing/recommendation/hedge/fill claims for that consumer. Apply every matching rule and the exact OPT-094 consumer verdict. Do not globally declare claims empty.",
+    "consumer_scope": "Standalone scientific audit, Prophet candidate and Prophet outcome review have different consumers. prophet_candidate adds OPT-070; prophet_outcome_review adds OPT-079 where the original rule applies.",
+    "expression_policy": "Use the existing admitted deterministic prospective policy when instantiated. sparse_selector triggers OPT-075; constrained_optimizer triggers OPT-063. Freeze before outcomes.",
+    "iv_source_method": "Qualified matched-quote IV and fitted surface are distinct. fitted_surface requires OPT-055. Select by the actual input; neither is a nominal bypass.",
+    "optimization_claim": "The first user-authored comparison needs no optimizer. A later constrained-search task must bind its actual objective. Physical-probability expected utility triggers OPT-091; do not relabel delta/risk-neutral density as physical probability.",
+    "population_context_contract": "Bind exact source lineage for OPT-085; context_audit_v2 triggers OPT-019 when actually consumed. Unrelated admitted populations do not inherit a blanket gate.",
+    "population_identity": "Bind separately for OA candidate/expression/outcome, actual order/fills, known-book hedge or another explicitly admitted population. Preserve every matching original formation/publication/cost/chronology receipt.",
+    "probability_endpoint": "Bind the exact event and horizon. target_before_stop requires the original additional path/barrier/censoring/calibration receipt even when requires is empty.",
+    "quote_ruler": "Bind separately for Trade Lab long/vertical cost context and OA-3 long-option outcome review. The latter uses the actual oa3_long_option trigger. Never globally apply the one-long-contract ruler to a spread.",
+    "quote_scope": "Bind the actual OPT-064 cost/search population. Selected-contract quotes can support that narrower comparison. Full-chain consumption triggers OPT-018.",
+    "release_data_scope": "Initial consolidated release is qualified aggregates and settled books/reports. Any included intraday_full_chain lens triggers OPT-025/046; actual equity print streaming alone is a different source family.",
+    "release_features": "Settled consolidation and the integrated vertical include reachable reproducible_exports, so OPT-040 plus its original dependencies apply. Add saved_layouts/sharing only when actually included. A narrower precursor must prove the excluded controls are outside its scope.",
+    "release_source_features": "Derive from full lineage, including filter/selection and background inputs. prior_session_moneyness and ad1_producer trigger their original source/consumer receipts. False requires affirmative unused-lineage evidence; unknown blocks affected dispatch.",
+    "selected_family": "Bind the exact directional/range/variance/hedge_utility/execution_cost family and horizon. Only its applicable original verdicts apply; sibling success is not a universal dependency.",
+    "selected_pilot": "Only the original supported pilot for the instantiated task. P1/P2/P3/P4/P5/P6 preserve their registered domains/endpoints. P5's call-and-put SPY/QQQ/IWM book cannot be silently reduced to current call-only pricing.",
+    "source_scope": "Bind the actual OPT-060 repricing population. Exact selected expression is the initial policy; every required leg must be complete. Full-book/full-chain use triggers OPT-018; do not shrink the declared scope to evade consumed membership.",
+    "structure_scope": "Initial core comparison: stock, qualified long call, qualified same-expiry defined-risk call vertical, wait. Additional templates trigger OPT-065 for that actual domain."
+  },
+  "original_dispatch_contract": {
+    "unconditional_dependencies": "Every dependencies item needs its accepted receipt before the bounded build task proceeds.",
+    "conditional_dependencies": "Evaluate every rule against explicit frozen bindings. Matching rules are cumulative AND requirements; list membership within one rule is OR. Unbound or unknown is BLOCKED, not false.",
+    "binding_receipt": "Opus freezes release/cohort, source/quote scope, selected pilot/family, structure/expression policy, model objective and exact consumer claims before dispatch and before relevant outcomes are inspected. Record nonapplicable values explicitly with reason.",
+    "supported_pilots": {
+      "OPT-087": [
+        "P2",
+        "P4"
+      ],
+      "OPT-088": [
+        "P1",
+        "P3",
+        "P5"
+      ],
+      "OPT-090": [
+        "P6"
+      ]
+    },
+    "supported_promoted_families": [
+      "directional",
+      "range",
+      "variance",
+      "hedge_utility",
+      "execution_cost"
+    ],
+    "rule_operators": {
+      "in": "Scalar binding must equal one listed value.",
+      "contains_any": "Set-valued binding intersects listed values."
+    },
+    "additional_receipts": "Every matched rule additional_receipt is mandatory, including path-specific probability experiments not represented by a separate parent row.",
+    "build_vs_activation": "Research construction may precede scientific promotion. Any score, rank, recommendation, issue or action effect requires its exact accepted OPT-094 successor/consumer contract; do not add a cyclic build dependency to manufacture authority.",
+    "closeout": "OPT-103 requires dispositions for every OPT-001..102. OPT-104 is continuing operation. Negative science is a valid terminal research return; a missing product/parity obligation precludes unqualified full completion."
+  },
+  "binding_procedure": [
+    "Choose the exact original task and bounded consumer; retain every unconditional dependency.",
+    "Read actual source/capability/rights/quote/model/release lineage before choosing values.",
+    "Materialize all fields referenced by that task's conditional rules through the current owner's accepted binding representation. This file's prose policies are not invented runtime enum values.",
+    "Record exact values, meaning, input artifact/revision, evidence for each nonmatching value, matched rules and every additional receipt before dispatch and before relevant outcomes.",
+    "Apply matching rules cumulatively, including their requires and additional_receipt. An empty requires list is not an empty gate.",
+    "Treat unknown, unbound, contradictory or out-of-domain values as blocked for that dispatch. Continue independent ready work.",
+    "Do not instantiate a deferred research task with a fake nonmatching value such as later; keep it explicitly not dispatched.",
+    "Reuse unchanged accepted receipts only within their actual head/domain. Record new source/policy changes under the original owner."
+  ],
+  "first_vertical": {
+    "task": "OPT-100",
+    "direct_unconditional": [
+      "OPT-011",
+      "OPT-017",
+      "OPT-028",
+      "OPT-029",
+      "OPT-032",
+      "OPT-034",
+      "OPT-035",
+      "OPT-037",
+      "OPT-041",
+      "OPT-062",
+      "OPT-079",
+      "OPT-096",
+      "OPT-097",
+      "OPT-098",
+      "OPT-101"
+    ],
+    "direct_count": 15,
+    "transitive_unconditional": [
+      "OPT-001",
+      "OPT-002",
+      "OPT-003",
+      "OPT-004",
+      "OPT-005",
+      "OPT-006",
+      "OPT-007",
+      "OPT-009",
+      "OPT-011",
+      "OPT-014",
+      "OPT-015",
+      "OPT-017",
+      "OPT-023",
+      "OPT-026",
+      "OPT-027",
+      "OPT-028",
+      "OPT-029",
+      "OPT-030",
+      "OPT-031",
+      "OPT-032",
+      "OPT-034",
+      "OPT-035",
+      "OPT-037",
+      "OPT-041",
+      "OPT-054",
+      "OPT-060",
+      "OPT-062",
+      "OPT-064",
+      "OPT-068",
+      "OPT-079",
+      "OPT-083",
+      "OPT-095",
+      "OPT-096",
+      "OPT-097",
+      "OPT-098",
+      "OPT-101"
+    ],
+    "transitive_count": 36,
+    "with_reproducible_export_receipt_minimum_closure": [
+      "OPT-001",
+      "OPT-002",
+      "OPT-003",
+      "OPT-004",
+      "OPT-005",
+      "OPT-006",
+      "OPT-007",
+      "OPT-009",
+      "OPT-011",
+      "OPT-014",
+      "OPT-015",
+      "OPT-016",
+      "OPT-017",
+      "OPT-018",
+      "OPT-023",
+      "OPT-026",
+      "OPT-027",
+      "OPT-028",
+      "OPT-029",
+      "OPT-030",
+      "OPT-031",
+      "OPT-032",
+      "OPT-034",
+      "OPT-035",
+      "OPT-036",
+      "OPT-037",
+      "OPT-040",
+      "OPT-041",
+      "OPT-047",
+      "OPT-054",
+      "OPT-060",
+      "OPT-062",
+      "OPT-064",
+      "OPT-068",
+      "OPT-079",
+      "OPT-083",
+      "OPT-095",
+      "OPT-096",
+      "OPT-097",
+      "OPT-098",
+      "OPT-101"
+    ],
+    "with_reproducible_export_receipt_minimum_count": 41,
+    "conditional_additions_are_cumulative": true,
+    "outcome_integrity": "OPT-079 unconditionally requires OPT-015/027/068. A non-OA comparison ruler does not remove OPT-015.",
+    "opportunity_constraint": "OPR-110: two distinct supported opportunity dossiers plus no-trade; two expressions of one observation are not automatically two opportunities.",
+    "not_substitutes": [
+      "read-only Flow→Gamma precursor",
+      "Flow→participation context",
+      "Flow→market-wide structure context",
+      "ordinary case Save/price watch/assessment",
+      "expiry payoff without qualified pre-expiry repricing"
+    ]
+  },
+  "release_profiles": [
+    {
+      "id": "original_observational_precursor",
+      "status": "PLANNED_NOT_DISPATCHED",
+      "proof": "Natural aggregate Flow→independently qualified dated Gamma→exact original context",
+      "claims": [
+        "observations",
+        "dated sensitivity within admitted domain"
+      ],
+      "original_vertical_closed": false,
+      "conditional_fields": "Only for instantiated original tasks. Do not inherit global unproven defaults.",
+      "new_source_cohort": "Select from actual capability manifest; synthetic Paper values are not inputs."
+    },
+    {
+      "id": "settled_consolidation",
+      "status": "PLANNED_NOT_DISPATCHED",
+      "proof": "All scoped settled donor capabilities, direct/legacy entry, exact source inspection, current rights, reproducible exports and qualified research continuity",
+      "export_binding": {
+        "task": "OPT-098",
+        "field": "release_features",
+        "required_included_values": [
+          "reproducible_exports"
+        ],
+        "required_task": "OPT-040",
+        "original_dependencies": [
+          "OPT-027",
+          "OPT-034",
+          "OPT-036"
+        ]
+      },
+      "original_vertical_closed": false,
+      "source_clock_families": [
+        "daily",
+        "weekly_report",
+        "modeled_snapshot",
+        "locked_range"
+      ]
+    },
+    {
+      "id": "first_complete_vertical",
+      "status": "PLANNED_NOT_DISPATCHED",
+      "proof": "Original OPT-100 and OPR-110/128/129 complete journey; all dependencies plus matched conditional additions",
+      "planning_candidate_roots": [
+        "SPY"
+      ],
+      "second_root_policy": "Qualify a second root such as QQQ if two useful distinct dossiers cannot be supplied inside the initial admitted domain. Do not fabricate data or reduce the requirement.",
+      "instruments": [
+        "stock",
+        "qualified ordinary long call",
+        "qualified same-expiry defined-risk call vertical",
+        "wait"
+      ],
+      "quotes": "Separate existing admitted comparison convention and original long-option outcome ruler.",
+      "export_binding": "Includes reproducible_exports if the consolidated export controls are reachable; this is the default integrated-release policy.",
+      "source_features_binding": "Derived from actual source/filter/selection lineage before dispatch; no implicit false."
+    },
+    {
+      "id": "advanced_and_whole_suite",
+      "status": "RETAINED_ORIGINAL_SCOPE_NOT_DISPATCHED",
+      "proof": "All remaining OPT-001..102 and mandatory OPR capabilities; family-specific science and consumer receipts",
+      "no_unqualified_parity_claim_with_missing_mandatory_capability": true
+    }
+  ],
+  "study_policy": {
+    "source_requirements": [
+      "OPR-110",
+      "OPR-128",
+      "OPR-129",
+      "OPT-005",
+      "OPT-101"
+    ],
+    "chosen_planning_sample": "30 independent participants per declared persona-language cohort; guided/expert × EN/ZH initial design, device crossover",
+    "sample_is_not_inherited_mandatory_n": true,
+    "new_recruitment_spend_authorized": false,
+    "freeze_before_study": [
+      "participants/cohort",
+      "device/language",
+      "tasks and loss cases",
+      "counterbalanced baselines",
+      "scoring and critical errors",
+      "sample and uncertainty rule"
+    ],
+    "observed_release_set_gates": {
+      "task_success_per_cohort_minimum": 0.9,
+      "critical_risk_or_semantic_misreads": 0,
+      "orientation_seconds_max": 90,
+      "candidate_risk_comparison_seconds_max": 180
+    },
+    "population_claim_limit": "Observed thresholds and zero observed errors are not a 90% population lower bound or zero-risk guarantee; report participant-level uncertainty."
+  },
+  "original_conditional_rules": [
+    {
+      "task_id": "OPT-060",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "source_scope",
+          "operator": "in",
+          "values": [
+            "full_book",
+            "full_chain"
+          ]
+        },
+        "requires": [
+          "OPT-018"
+        ],
+        "additional_receipt": "Complete membership and scenario-supported terms for exactly the selected book; do not infer unsupported contracts from a partial admitted cohort",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-063",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "optimization_claim",
+          "operator": "in",
+          "values": [
+            "physical_probability_expected_utility"
+          ]
+        },
+        "requires": [
+          "OPT-091"
+        ],
+        "additional_receipt": "Accepted physical-probability model for this horizon and policy; risk-neutral density or option delta is not a substitute",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-063",
+      "rule_index": 2,
+      "rule": {
+        "when": {
+          "field": "structure_scope",
+          "operator": "in",
+          "values": [
+            "additional_templates"
+          ]
+        },
+        "requires": [
+          "OPT-065"
+        ],
+        "additional_receipt": "Selected additional structure lifecycle, model and package-cost qualification",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-064",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "quote_ruler",
+          "operator": "in",
+          "values": [
+            "oa3_long_option"
+          ]
+        },
+        "requires": [
+          "OPT-015"
+        ],
+        "additional_receipt": "Original OA-3 expression publication, retained quote ruler and integrity receipt. A separate actual-order or known-book population uses its own exact decision/quote/fill identity instead",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-064",
+      "rule_index": 2,
+      "rule": {
+        "when": {
+          "field": "quote_scope",
+          "operator": "in",
+          "values": [
+            "full_chain"
+          ]
+        },
+        "requires": [
+          "OPT-018"
+        ],
+        "additional_receipt": "Complete chain coverage only when the chosen search or cost claim actually consumes that population; exact-contract quote evidence is sufficient for its narrower ruler",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-076",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "expression_policy",
+          "operator": "in",
+          "values": [
+            "sparse_selector"
+          ]
+        },
+        "requires": [
+          "OPT-075"
+        ],
+        "additional_receipt": "Frozen eligible selection policy and exact decision availability",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-076",
+      "rule_index": 2,
+      "rule": {
+        "when": {
+          "field": "expression_policy",
+          "operator": "in",
+          "values": [
+            "constrained_optimizer"
+          ]
+        },
+        "requires": [
+          "OPT-063"
+        ],
+        "additional_receipt": "Accepted objective and all applicable selected-structure/probability receipts",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-076",
+      "rule_index": 3,
+      "rule": {
+        "when": {
+          "field": "structure_scope",
+          "operator": "in",
+          "values": [
+            "additional_templates"
+          ]
+        },
+        "requires": [
+          "OPT-065"
+        ],
+        "additional_receipt": "Only the selected additional template must qualify; no waiting for unrelated template families",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-085",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "population_context_contract",
+          "operator": "in",
+          "values": [
+            "context_audit_v2"
+          ]
+        },
+        "requires": [
+          "OPT-019"
+        ],
+        "additional_receipt": "This population actually consumes the v2 successor and has its accepted integrity/capacity receipt; unrelated qualified populations do not inherit this gate",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-085",
+      "rule_index": 2,
+      "rule": {
+        "when": {
+          "field": "population_identity",
+          "operator": "in",
+          "values": [
+            "oa_candidate_expression_outcome"
+          ]
+        },
+        "requires": [
+          "OPT-015"
+        ],
+        "additional_receipt": "Exact candidate/expression publication seal, original B5 integrity and outcome availability",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-087",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "selected_pilot",
+          "operator": "in",
+          "values": [
+            "P2"
+          ]
+        },
+        "requires": [
+          "OPT-047",
+          "OPT-054"
+        ],
+        "additional_receipt": "Signed-delta flow and residual-return target with causal controls; raw classification coverage and uncertainty measured",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-087",
+      "rule_index": 2,
+      "rule": {
+        "when": {
+          "field": "selected_pilot",
+          "operator": "in",
+          "values": [
+            "P4"
+          ]
+        },
+        "requires": [
+          "OPT-014",
+          "OPT-023",
+          "OPT-054"
+        ],
+        "additional_receipt": "Matched call/put IV spread, carry/borrow/dividend/spread controls, causal nuisance fitting and one-session skip; source-matched IV admissibility",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-087",
+      "rule_index": 3,
+      "rule": {
+        "when": {
+          "field": "iv_source_method",
+          "operator": "in",
+          "values": [
+            "fitted_surface"
+          ]
+        },
+        "requires": [
+          "OPT-055"
+        ],
+        "additional_receipt": "Required only when the pilot consumes fitted IV, rather than independently qualified matched quote IV",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-087",
+      "rule_index": 4,
+      "rule": {
+        "when": {
+          "field": "consumer_scope",
+          "operator": "in",
+          "values": [
+            "prophet_candidate"
+          ]
+        },
+        "requires": [
+          "OPT-070"
+        ],
+        "additional_receipt": "Selected evidence-family lineage, contradictions and incremental information accounting",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-088",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "selected_pilot",
+          "operator": "in",
+          "values": [
+            "P1"
+          ]
+        },
+        "requires": [
+          "OPT-011"
+        ],
+        "additional_receipt": "Frozen 15-minute activity and next-30-minute range population; baseline and units from original pilot; no unrelated surface/HAR gate",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-088",
+      "rule_index": 2,
+      "rule": {
+        "when": {
+          "field": "selected_pilot",
+          "operator": "in",
+          "values": [
+            "P3"
+          ]
+        },
+        "requires": [
+          "OPT-014",
+          "OPT-023",
+          "OPT-054",
+          "OPT-055",
+          "OPT-056"
+        ],
+        "additional_receipt": "Forward ATM IV versus causal HAR realized-risk forecast over the original 20-session horizon; retain volatility-spread units, not OIF20 variance-risk-premium relabeling",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-088",
+      "rule_index": 3,
+      "rule": {
+        "when": {
+          "field": "selected_pilot",
+          "operator": "in",
+          "values": [
+            "P5"
+          ]
+        },
+        "requires": [
+          "OPT-014",
+          "OPT-018",
+          "OPT-023",
+          "OPT-054",
+          "OPT-060",
+          "OPT-061"
+        ],
+        "additional_receipt": "Original complete same-day SPY/QQQ/IWM call-and-put book, -1% spot/+1 vol point/10-minute scenario and next-10-minute variance; #9927 call-only domain cannot qualify this population. Explicit amendment before outcomes if scope changes",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-091",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "population_identity",
+          "operator": "in",
+          "values": [
+            "oa_candidate_expression_outcome"
+          ]
+        },
+        "requires": [
+          "OPT-069"
+        ],
+        "additional_receipt": "Original prospective candidate formation and its authentic availability; non-OA probabilities require their own exact prospective observation/policy receipt",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-091",
+      "rule_index": 2,
+      "rule": {
+        "when": {
+          "field": "selected_family",
+          "operator": "in",
+          "values": [
+            "directional"
+          ]
+        },
+        "requires": [
+          "OPT-087"
+        ],
+        "additional_receipt": "Qualified exact directional family; a return forecast alone does not qualify a target-before-stop probability",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-091",
+      "rule_index": 3,
+      "rule": {
+        "when": {
+          "field": "selected_family",
+          "operator": "in",
+          "values": [
+            "range",
+            "variance"
+          ]
+        },
+        "requires": [
+          "OPT-088"
+        ],
+        "additional_receipt": "Qualified exact range or variance family; distribution/probability calibration must still match its claimed event",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-091",
+      "rule_index": 4,
+      "rule": {
+        "when": {
+          "field": "probability_endpoint",
+          "operator": "in",
+          "values": [
+            "target_before_stop"
+          ]
+        },
+        "requires": [],
+        "additional_receipt": "Own preregistered path-aware endpoint, barriers/horizon, competing risks/censoring, untouched evaluation and prospective probability-calibration receipts within this task",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-092",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "population_identity",
+          "operator": "in",
+          "values": [
+            "oa_candidate_expression_outcome"
+          ]
+        },
+        "requires": [
+          "OPT-015"
+        ],
+        "additional_receipt": "Original OA/B5 prefix, publication and incident/quarantine integrity; no requirement to build a Prophet review UI merely to audit a separate study",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-092",
+      "rule_index": 2,
+      "rule": {
+        "when": {
+          "field": "consumer_scope",
+          "operator": "in",
+          "values": [
+            "prophet_outcome_review"
+          ]
+        },
+        "requires": [
+          "OPT-079"
+        ],
+        "additional_receipt": "Actual observation/plan/outcome consumer reconciliation for the integrated Prophet review journey",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-093",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "population_identity",
+          "operator": "in",
+          "values": [
+            "oa_candidate_expression_outcome"
+          ]
+        },
+        "requires": [
+          "OPT-069",
+          "OPT-076"
+        ],
+        "additional_receipt": "Original prospective candidate and exact expression. Compare macro_base/macro_plus_options/options_originated only where those lanes are the registered comparable population",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-093",
+      "rule_index": 2,
+      "rule": {
+        "when": {
+          "field": "population_identity",
+          "operator": "in",
+          "values": [
+            "actual_order_fills"
+          ]
+        },
+        "requires": [
+          "OPT-064"
+        ],
+        "additional_receipt": "Own actual-order decision, side, quantity, quote, fill and fee chronology; actual-fill/nonfill denominators; frozen cost baseline rather than unrelated Prophet lanes",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-093",
+      "rule_index": 3,
+      "rule": {
+        "when": {
+          "field": "population_identity",
+          "operator": "in",
+          "values": [
+            "known_book_hedge"
+          ]
+        },
+        "requires": [
+          "OPT-064"
+        ],
+        "additional_receipt": "Own complete supported book, frozen incumbent/challenger policies, observed or explicitly conditional execution and cost receipts, matched prospective horizon and independent decision denominator",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-093",
+      "rule_index": 4,
+      "rule": {
+        "when": {
+          "field": "consumer_claims",
+          "operator": "contains_any",
+          "values": [
+            "economic_decision",
+            "net_economic_value",
+            "sizing",
+            "trade_recommendation",
+            "hedge_utility"
+          ]
+        },
+        "requires": [
+          "OPT-064"
+        ],
+        "additional_receipt": "Registered economic endpoint, feasible execution/fees/nonfills/lifecycle, correct incumbent and material net value for the exact policy. Forecast-only qualification cannot be relabeled as trade or profit qualification",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-093",
+      "rule_index": 5,
+      "rule": {
+        "when": {
+          "field": "selected_family",
+          "operator": "in",
+          "values": [
+            "directional"
+          ]
+        },
+        "requires": [
+          "OPT-087"
+        ],
+        "additional_receipt": "Independent selected-family forecast verdict on its registered endpoint",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-093",
+      "rule_index": 6,
+      "rule": {
+        "when": {
+          "field": "selected_family",
+          "operator": "in",
+          "values": [
+            "range",
+            "variance"
+          ]
+        },
+        "requires": [
+          "OPT-088"
+        ],
+        "additional_receipt": "Independent selected-family verdict on its registered range or variance endpoint",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-093",
+      "rule_index": 7,
+      "rule": {
+        "when": {
+          "field": "selected_family",
+          "operator": "in",
+          "values": [
+            "hedge_utility"
+          ]
+        },
+        "requires": [
+          "OPT-089"
+        ],
+        "additional_receipt": "Costed known-book incumbent/challenger result in the exact selected domain",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-093",
+      "rule_index": 8,
+      "rule": {
+        "when": {
+          "field": "selected_family",
+          "operator": "in",
+          "values": [
+            "execution_cost"
+          ]
+        },
+        "requires": [
+          "OPT-090"
+        ],
+        "additional_receipt": "Actual-fill calibration and partial/nonfill accounting in the claimed population",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-093",
+      "rule_index": 9,
+      "rule": {
+        "when": {
+          "field": "consumer_claims",
+          "operator": "contains_any",
+          "values": [
+            "physical_probability"
+          ]
+        },
+        "requires": [
+          "OPT-091"
+        ],
+        "additional_receipt": "Probability and abstention evidence for the exact event and horizon",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-093",
+      "rule_index": 10,
+      "rule": {
+        "when": {
+          "field": "consumer_claims",
+          "operator": "contains_any",
+          "values": [
+            "actual_fill_prediction",
+            "actual_fill_policy"
+          ]
+        },
+        "requires": [
+          "OPT-090"
+        ],
+        "additional_receipt": "Observed lawful fills and nonfill model; admitted conservative quote-based research economics do not need an unrelated actual-fill prediction study",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-094",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "consumer_claims",
+          "operator": "contains_any",
+          "values": [
+            "physical_probability"
+          ]
+        },
+        "requires": [
+          "OPT-091"
+        ],
+        "additional_receipt": "Promote only the exact qualified probability event/horizon",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-094",
+      "rule_index": 2,
+      "rule": {
+        "when": {
+          "field": "consumer_claims",
+          "operator": "contains_any",
+          "values": [
+            "actual_fill_prediction",
+            "actual_fill_policy"
+          ]
+        },
+        "requires": [
+          "OPT-090"
+        ],
+        "additional_receipt": "Actual-fill-specific evidence applies only to these claims",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-097",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "release_data_scope",
+          "operator": "in",
+          "values": [
+            "intraday_full_chain"
+          ]
+        },
+        "requires": [
+          "OPT-025",
+          "OPT-046"
+        ],
+        "additional_receipt": "Measure accepted chain/interval source-to-screen latency and load for releases that actually include those lenses",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-098",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "release_features",
+          "operator": "contains_any",
+          "values": [
+            "saved_layouts",
+            "sharing",
+            "reproducible_exports"
+          ]
+        },
+        "requires": [
+          "OPT-040"
+        ],
+        "additional_receipt": "Rights, content and isolation tests for the precise added feature",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-100",
+      "rule_index": 1,
+      "rule": {
+        "when": {
+          "field": "release_source_features",
+          "operator": "contains_any",
+          "values": [
+            "prior_session_moneyness"
+          ]
+        },
+        "requires": [
+          "OPT-012"
+        ],
+        "additional_receipt": "Original prior-session source, natural startup and consumer witness",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    },
+    {
+      "task_id": "OPT-100",
+      "rule_index": 2,
+      "rule": {
+        "when": {
+          "field": "release_source_features",
+          "operator": "contains_any",
+          "values": [
+            "ad1_producer"
+          ]
+        },
+        "requires": [
+          "OPT-016"
+        ],
+        "additional_receipt": "Original producer and daily-brief consumer acceptance",
+        "unbound_policy": "BLOCK_DISPATCH_UNTIL_EXPLICITLY_BOUND",
+        "binding_time": "Before dispatch and before relevant outcomes are inspected"
+      }
+    }
+  ],
+  "task_coverage": [
+    {
+      "task_id": "OPT-001",
+      "domain": "G",
+      "accountable_lead": "Fable Meta-CEO",
+      "dependencies": "",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-002",
+      "domain": "G",
+      "accountable_lead": "Fable Meta-CEO",
+      "dependencies": "OPT-001",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-003",
+      "domain": "G",
+      "accountable_lead": "Fable Meta-CEO",
+      "dependencies": "OPT-001",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-004",
+      "domain": "G",
+      "accountable_lead": "Fable Meta-CEO",
+      "dependencies": "OPT-001;OPT-095",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-005",
+      "domain": "G",
+      "accountable_lead": "Fable Meta-CEO",
+      "dependencies": "OPT-001;OPT-003",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-006",
+      "domain": "G",
+      "accountable_lead": "Fable Meta-CEO",
+      "dependencies": "OPT-001;OPT-003",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-007",
+      "domain": "G",
+      "accountable_lead": "Fable Meta-CEO",
+      "dependencies": "OPT-001",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-008",
+      "domain": "G",
+      "accountable_lead": "Fable Meta-CEO",
+      "dependencies": "OPT-001",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-009",
+      "domain": "G",
+      "accountable_lead": "Fable Meta-CEO",
+      "dependencies": "OPT-003;OPT-004;OPT-005",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-010",
+      "domain": "G",
+      "accountable_lead": "Fable Meta-CEO",
+      "dependencies": "OPT-005;OPT-095;OPT-101",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-011",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-001;OPT-003",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-012",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-011",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-013",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-011",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-014",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-011;OPT-004",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-015",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-011;OPT-014",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-016",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-011",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-017",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-004;OPT-006;OPT-011",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-018",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-011;OPT-014;OPT-016",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-019",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-001;OPT-011",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-020",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-018;OPT-019",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-021",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-004;OPT-011",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-022",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-011",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-023",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-011;OPT-014",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-024",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-018;OPT-025",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-025",
+      "domain": "D",
+      "accountable_lead": "Opus Source and Temporal Data",
+      "dependencies": "OPT-011;OPT-018",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-026",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-005;OPT-007;OPT-095",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-027",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-006;OPT-026",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-028",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-026;OPT-027",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-029",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-011;OPT-026",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-030",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-026;OPT-068",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-031",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-026",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-032",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-001;OPT-002",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-033",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-028;OPT-031",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-034",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-006;OPT-017;OPT-027;OPT-032",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-035",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-006;OPT-017;OPT-027",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-036",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-027;OPT-047",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-037",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-034;OPT-035;OPT-079",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-038",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-027;OPT-041;OPT-044",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-039",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-030;OPT-031",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-040",
+      "domain": "X",
+      "accountable_lead": "Opus Product and Experience",
+      "dependencies": "OPT-027;OPT-034;OPT-036",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-041",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-001;OPT-011",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-042",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-001;OPT-003;OPT-011",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-043",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-001;OPT-011",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-044",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-011;OPT-043",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-045",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-020;OPT-041;OPT-042",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-046",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-018;OPT-020;OPT-025;OPT-028",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-047",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-011;OPT-018",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-048",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-047;OPT-020",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-049",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-047;OPT-048",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-050",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-047;OPT-048;OPT-054;OPT-086",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-051",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-004;OPT-014;OPT-047;OPT-048;OPT-054",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-052",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-018;OPT-023;OPT-046;OPT-057",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-053",
+      "domain": "M",
+      "accountable_lead": "Opus Market Microstructure",
+      "dependencies": "OPT-014;OPT-042;OPT-054",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-054",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-003;OPT-014",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-055",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-014;OPT-018;OPT-023;OPT-054",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-056",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-011;OPT-083;OPT-085",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-057",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-022;OPT-023;OPT-055;OPT-056",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-058",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-020;OPT-055;OPT-056;OPT-057",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-059",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-055;OPT-057",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-060",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-014;OPT-023;OPT-054",
+      "conditional_rule_count": 1,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-061",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-014;OPT-023;OPT-054;OPT-060",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-062",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-026;OPT-027;OPT-054;OPT-060;OPT-064",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-063",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-062;OPT-064;OPT-086",
+      "conditional_rule_count": 2,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-064",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-011;OPT-014",
+      "conditional_rule_count": 2,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-065",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-061;OPT-062;OPT-064",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-066",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-061;OPT-063;OPT-089",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-067",
+      "domain": "V",
+      "accountable_lead": "Opus Valuation and Trade Lab",
+      "dependencies": "OPT-033;OPT-055;OPT-060",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-068",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-003;OPT-005;OPT-009;OPT-083",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-069",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-015;OPT-017;OPT-068",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-070",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-003;OPT-068;OPT-085",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-071",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-011;OPT-068;OPT-070",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-072",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-021;OPT-068;OPT-070",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-073",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-022;OPT-023;OPT-068;OPT-070",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-074",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-011;OPT-068;OPT-070",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-075",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-069;OPT-070;OPT-086;OPT-092",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-076",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-062;OPT-064;OPT-069",
+      "conditional_rule_count": 3,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-077",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-068;OPT-075;OPT-076;OPT-094",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-078",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-068;OPT-076;OPT-077",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-079",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-015;OPT-027;OPT-068",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-080",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-027;OPT-062;OPT-068;OPT-070",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-081",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-035;OPT-075;OPT-078",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-082",
+      "domain": "P",
+      "accountable_lead": "Opus Prophet and Portfolio",
+      "dependencies": "OPT-030;OPT-062;OPT-069;OPT-075;OPT-076;OPT-077;OPT-078;OPT-079;OPT-094",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-083",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-001;OPT-003",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-084",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-083",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-085",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-011;OPT-083;OPT-084",
+      "conditional_rule_count": 2,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-086",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-083;OPT-085",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-087",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-085;OPT-086",
+      "conditional_rule_count": 4,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-088",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-085;OPT-086",
+      "conditional_rule_count": 3,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-089",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-014;OPT-054;OPT-060;OPT-064;OPT-085;OPT-086",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-090",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-064;OPT-085;OPT-086",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-091",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-085;OPT-086;OPT-092",
+      "conditional_rule_count": 4,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-092",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-085",
+      "conditional_rule_count": 2,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-093",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-085;OPT-086;OPT-092",
+      "conditional_rule_count": 10,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-094",
+      "domain": "Q",
+      "accountable_lead": "Opus Independent Evaluation",
+      "dependencies": "OPT-003;OPT-086;OPT-092;OPT-093",
+      "conditional_rule_count": 2,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-095",
+      "domain": "R",
+      "accountable_lead": "Opus Integration and Production",
+      "dependencies": "OPT-001;OPT-003;OPT-007",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-096",
+      "domain": "R",
+      "accountable_lead": "Opus Integration and Production",
+      "dependencies": "OPT-031",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-097",
+      "domain": "R",
+      "accountable_lead": "Opus Integration and Production",
+      "dependencies": "OPT-011;OPT-028",
+      "conditional_rule_count": 1,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-098",
+      "domain": "R",
+      "accountable_lead": "Opus Integration and Production",
+      "dependencies": "OPT-004;OPT-017;OPT-034;OPT-035",
+      "conditional_rule_count": 1,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-099",
+      "domain": "R",
+      "accountable_lead": "Opus Integration and Production",
+      "dependencies": "OPT-004;OPT-027;OPT-053;OPT-054",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-100",
+      "domain": "R",
+      "accountable_lead": "Opus Integration and Production",
+      "dependencies": "OPT-011;OPT-017;OPT-028;OPT-029;OPT-032;OPT-034;OPT-035;OPT-037;OPT-041;OPT-062;OPT-079;OPT-096;OPT-097;OPT-098;OPT-101",
+      "conditional_rule_count": 2,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-101",
+      "domain": "R",
+      "accountable_lead": "Opus Integration and Production",
+      "dependencies": "OPT-005;OPT-029;OPT-030;OPT-037;OPT-062;OPT-079;OPT-096",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-102",
+      "domain": "R",
+      "accountable_lead": "Opus Integration and Production",
+      "dependencies": "OPT-025;OPT-082;OPT-094;OPT-100",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-103",
+      "domain": "R",
+      "accountable_lead": "Opus Integration and Production",
+      "dependencies": "OPT-001;OPT-002;OPT-003;OPT-004;OPT-005;OPT-006;OPT-007;OPT-008;OPT-009;OPT-010;OPT-011;OPT-012;OPT-013;OPT-014;OPT-015;OPT-016;OPT-017;OPT-018;OPT-019;OPT-020;OPT-021;OPT-022;OPT-023;OPT-024;OPT-025;OPT-026;OPT-027;OPT-028;OPT-029;OPT-030;OPT-031;OPT-032;OPT-033;OPT-034;OPT-035;OPT-036;OPT-037;OPT-038;OPT-039;OPT-040;OPT-041;OPT-042;OPT-043;OPT-044;OPT-045;OPT-046;OPT-047;OPT-048;OPT-049;OPT-050;OPT-051;OPT-052;OPT-053;OPT-054;OPT-055;OPT-056;OPT-057;OPT-058;OPT-059;OPT-060;OPT-061;OPT-062;OPT-063;OPT-064;OPT-065;OPT-066;OPT-067;OPT-068;OPT-069;OPT-070;OPT-071;OPT-072;OPT-073;OPT-074;OPT-075;OPT-076;OPT-077;OPT-078;OPT-079;OPT-080;OPT-081;OPT-082;OPT-083;OPT-084;OPT-085;OPT-086;OPT-087;OPT-088;OPT-089;OPT-090;OPT-091;OPT-092;OPT-093;OPT-094;OPT-095;OPT-096;OPT-097;OPT-098;OPT-099;OPT-100;OPT-101;OPT-102",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    },
+    {
+      "task_id": "OPT-104",
+      "domain": "R",
+      "accountable_lead": "Opus Integration and Production",
+      "dependencies": "OPT-010;OPT-103",
+      "conditional_rule_count": 0,
+      "source_task_status": "PLANNED_NOT_DISPATCHED",
+      "local_execution_state": "NOT_DISPATCHED_BY_THIS_PLANNING_SESSION"
+    }
+  ]
+}
