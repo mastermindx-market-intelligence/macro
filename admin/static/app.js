@@ -14228,8 +14228,11 @@ RENDER.mastermind_logs = async () => {
 };
 
 async function mmlLoad() {
+  if (CURRENT !== "mastermind_logs") return;
   const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
+  MML.rows = [];
+  v.innerHTML = '<div class="spin" role="status">Loading responses for the selected filters…</div>';
   const qs = new URLSearchParams();
   qs.set("limit", "300");
   const f = MML.filters;
@@ -14250,7 +14253,6 @@ async function mmlLoad() {
   ]);
   if (CURRENT !== "mastermind_logs" || MML.filters !== f || epoch !== ADMIN_RENDER_EPOCH) return;
   if (!d || d.ok === false || d.error) {
-    MML.rows = [];
     v.innerHTML = `<div class="banner show" role="alert" style="position:static;display:block">Could not read the response log${d && d.error ? ": " + esc(d.error) : ""}. <button type="button" class="btn" id="mmlRetry">Retry with these filters</button></div>`;
     $("#mmlRetry").onclick = mmlLoad;
     return;
