@@ -7,10 +7,34 @@ import os
 from pathlib import Path
 import stat
 import time
+import copy
+import threading
+
+from . import capacity_history
 
 from .capacity_fabric_schema import MAX_BYTES, TOKEN_FIELDS, clean_snapshot
 
 DEFAULT_PATH = Path("/var/lib/macro-admin/capacity-router.json")
+_HISTORY_CACHE = {}
+_HISTORY_LOCK = threading.Lock()
+
+
+def historical(minutes=1440, *, path=None, now=None, start=None, end=None, resolution="auto"):
+    """Small shared cache: historical scans never run for every SSE client frame."""
+    now = time.time() if now is None else now
+    target = capacity_history.database_path(path)
+    key = (str(target), str(minutes), str(start), str(end), str(resolution))
+    with _HISTORY_LOCK:
+        cached = _HISTORY_CACHE.get(key)
+        if cached and 0 <= now - cached[0] < 10:
+            return copy.deepcopy(cached[1])
+    result = capacity_history.query(minutes, path=target, now=now, start=start, end=end, resolution=resolution)
+    with _HISTORY_LOCK:
+        if len(_HISTORY_CACHE) >= 32:
+            _HISTORY_CACHE.pop(next(iter(_HISTORY_CACHE)))
+        _HISTORY_CACHE[key] = (now, result)
+    return copy.deepcopy(result)
+
 
 
 def _percentile(values, p):
@@ -25,10 +49,10 @@ def _percentile(values, p):
 def panel(minutes=15, *, path=None, now=None):
     now = time.time() if now is None else now
     try:
-        minutes = int(minutes)
+        minutes = 0 if str(minutes) == "all" else int(minutes)
     except (ValueError, TypeError):
         minutes = 15
-    minutes = minutes if minutes in (5, 15, 60, 120) else 15
+    minutes = minutes if 0 <= minutes <= 10 * 366 * 1440 else 15
     path = Path(path or os.environ.get("CAPACITY_OBSERVATORY_PATH", str(DEFAULT_PATH)))
     unavailable = {"ok": False, "state": "disconnected", "generated_at": None, "age_s": None,
         "message": "Waiting for Capacity Fabric telemetry. The router may still be serving requests.",
@@ -53,7 +77,7 @@ def panel(minutes=15, *, path=None, now=None):
     age = max(0, age)
     data.update(ok=True, state="live" if age <= 15 else "stale", age_s=round(age, 1),
                 window_minutes=minutes, received_at=decoded.get("received_at"))
-    start = now - minutes * 60
+    start = data["generated_at"] - minutes * 60 if minutes else data["started_at"]
     recent = [r for r in data["recent"] if (r["ended_at"] or 0) >= start]
     data["recent"] = recent
     data["series"] = [b for b in data["series"] if b["at"] + 60 > start]
@@ -61,10 +85,10 @@ def panel(minutes=15, *, path=None, now=None):
     failed = sum(b["failed"] for b in data["series"])
     known = sum(b["usage_known"] for b in data["series"])
     totals = {k: sum(b[k] for b in data["series"]) for k in TOKEN_FIELDS}
-    observed_s = max(1, min(minutes * 60, data["generated_at"] - data["started_at"]))
+    observed_s = max(1, min((minutes or 120) * 60, data["generated_at"] - data["started_at"]))
     latencies = [(r["first_content_at"] - r["started_at"]) * 1000 for r in recent
                  if r["first_content_at"] is not None and r["started_at"] is not None]
-    consumers = {r["agent_id"] or r["session_id"] for r in data["active"] if r["agent_id"] or r["session_id"]}
+    consumers = {("agent", r["agent_id"]) if r["agent_id"] else ("session", r["session_id"]) for r in data["active"] if r["agent_id"] or r["session_id"]}
     active_unknown = sum(not (r["agent_id"] or r["session_id"]) for r in data["active"])
     data["summary"] = {
         "active_requests": len(data["active"]) + data["totals"]["overflow_active"],
@@ -93,4 +117,22 @@ def panel(minutes=15, *, path=None, now=None):
             if lane["cooldown_until"] is not None and lane["cooldown_until"] > now),
         "peak_active": bool((data.get("peak") or {}).get("active")),
     }
+    data["window_start"] = max(start, data["started_at"])
+    data["window_end"] = data["generated_at"]
+    if minutes == 0 or minutes > 120:
+        history = historical(minutes, path=path, now=data["generated_at"])
+        data["history"] = {k: v for k, v in history.items() if k not in {"demand", "models", "pools", "series"}}
+        if history.get("ok"):
+            h = history["summary"]
+            data["series"] = history["series"]
+            for k in ("completed", "failed", "usage_known", *TOKEN_FIELDS, "observed_s"):
+                data["summary"][k] = h.get(k)
+            data["summary"]["usage_coverage_pct"] = h.get("output_tokens_coverage_pct")
+            data["summary"]["output_tokens_per_s"] = round(h["output_tokens"] / max(1, h["observed_s"]), 2) if h.get("output_tokens") is not None else None
+            data["window_start"], data["window_end"] = history["start"], history["end"]
+        else:
+            # A longer selector never turns a two-hour buffer into long history.
+            for k in ("completed", "failed", "usage_known", *TOKEN_FIELDS, "output_tokens_per_s", "usage_coverage_pct"):
+                data["summary"][k] = None
+            data["series"] = []
     return data

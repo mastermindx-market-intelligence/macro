@@ -192,6 +192,41 @@ def clean_request(raw):
     }
 
 
+def _clean_controls(raw):
+    if not isinstance(raw, dict):
+        return None
+    revision = raw.get("revision")
+    effective = raw.get("effective_revision")
+    revision = revision if isinstance(revision, str) and re.fullmatch(r"[a-f0-9]{64}", revision) else None
+    effective = effective if isinstance(effective, str) and re.fullmatch(r"[a-f0-9]{64}", effective) else None
+    rows = raw.get("routes") if isinstance(raw.get("routes"), list) else []
+    routes = []
+    for r in rows[:MAX_ROUTES]:
+        if not isinstance(r, dict):
+            continue
+        routes.append({"id": label(r.get("id")), "provider": label(r.get("provider")),
+            "models": [label(m) for m in (r.get("models") or [])[:64]],
+            "priority": count(r.get("priority")), "weight": number(r.get("weight"), 0),
+            "model_priority": {label(k): count(v) for k,v in list((r.get("model_priority") if isinstance(r.get("model_priority"), dict) else {}).items())[:64]},
+            "model_weight": {label(k): number(v, 0) for k,v in list((r.get("model_weight") if isinstance(r.get("model_weight"), dict) else {}).items())[:64]}})
+    receipts = []
+    for r in (raw.get("receipts") or [])[-8:]:
+        if not isinstance(r, dict) or not identifier(r.get("operation_id")):
+            continue
+        if r.get("state") not in {"VALIDATED", "APPLIED", "NOT_APPLIED", "CONFLICT", "ROLLED_BACK", "PREPARED", "EFFECT_UNKNOWN"}:
+            continue
+        receipts.append({"operation_id": r["operation_id"], "state": r["state"],
+            "code": label(r.get("code")), "at": number(r.get("at")),
+            **{k: identifier(r.get(k)) for k in ("before_revision", "after_revision", "effective_revision")}})
+    aliases = raw.get("aliases") if isinstance(raw.get("aliases"), dict) else {}
+    interval = number(raw.get("interval_s"))
+    return {"ok": raw.get("ok") is True, "writable": raw.get("writable") is True and bool(revision) and revision==effective,
+        "revision": revision, "effective_revision": effective, "scope": "future_admissions_only",
+        "interval_s": interval if interval in {.25, .5, 1, 2, 5} else 2,
+        "routes": routes, "aliases": {label(k): [label(m) for m in v[:32]] for k,v in list(aliases.items())[:32] if isinstance(v,list)},
+        "receipts": receipts, "message": "Native configuration owner connected; only allowlisted future-admission settings and telemetry cadence are exposed." if raw.get("ok") and raw.get("writable") else "Live configuration is read-only or unavailable; no writable control owner is established."}
+
+
 def clean_snapshot(raw):
     """Drop every unrecognized field; reject ambiguous identity and unbounded shapes."""
     if not isinstance(raw, dict) or raw.get("schema") != SCHEMA:
@@ -227,6 +262,7 @@ def clean_snapshot(raw):
         "schema": SCHEMA, "epoch": raw["epoch"], "sequence": count(raw.get("sequence")),
         "started_at": raw["started_at"], "generated_at": raw["generated_at"],
         "source": "Capacity Fabric / M2", "version": "1.0",
+        "history_state": raw.get("history_state") if raw.get("history_state") in {"recorded", "degraded"} else "unavailable",
         "routes": routes,
         "aliases": {label(k): [label(v) for v in values[:32]] for k, values in list(aliases.items())[:32]
                     if isinstance(values, list)},
@@ -236,11 +272,13 @@ def clean_snapshot(raw):
         "totals": {k: count(totals.get(k)) for k in ("started", "completed", "failed", "cancelled",
             "usage_known", "attributed", "overflow_active", "dropped_requests", "observer_errors",
             "router_served", "router_refused", "router_attempts", "router_failovers", *TOKEN_FIELDS)},
+        "total_field_coverage": {k: count((raw.get("total_field_coverage") or {}).get(k), None) for k in TOKEN_FIELDS},
         "limits": {"active": MAX_ACTIVE, "recent": MAX_RECENT, "history_minutes": 120},
         "truncated": {k: count(truncated.get(k)) for k in ("recent", "attempts", "models")},
         "peak": _clean_peak(raw.get("peak")),
         "overflow": _clean_overflow(raw.get("overflow")),
         "claude": _clean_claude(raw.get("claude")),
+        "controls": _clean_controls(raw.get("controls")),
         "semantics": {
             "tokens": "Provider-reported cumulative usage; cache tokens are separate, never added to input totals.",
             "flow": "Particles indicate observed response activity, not individual tokens.",
