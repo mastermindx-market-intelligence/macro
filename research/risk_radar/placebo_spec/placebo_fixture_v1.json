@@ -1,0 +1,280 @@
+{
+ "version": "placebo_fixture_v1",
+ "status": "expected outputs generated once under Rule A (co-signed); bm_ref reproduces independently before any re-score; any mismatch stops both sides",
+ "seed": 0,
+ "n_draws": 20,
+ "cap": 200,
+ "cases": [
+  {
+   "id": "F1_short",
+   "n": 40,
+   "runs_index_order": [
+    10,
+    3,
+    1
+   ],
+   "eligible": "all"
+  },
+  {
+   "id": "F2_right_edge",
+   "n": 40,
+   "runs_index_order": [
+    10
+   ],
+   "eligible": {
+    "from": 28,
+    "to": 39
+   }
+  },
+  {
+   "id": "F3_crowded",
+   "n": 40,
+   "runs_index_order": [
+    6,
+    6,
+    6,
+    6
+   ],
+   "eligible": {
+    "from": 0,
+    "to": 24
+   }
+  },
+  {
+   "id": "F4_empty",
+   "n": 40,
+   "runs_index_order": [
+    5
+   ],
+   "eligible": "none",
+   "expect": "not defined, 0 attempts"
+  },
+  {
+   "id": "F5_cap_hit",
+   "n": 40,
+   "runs_index_order": [
+    6,
+    6,
+    6,
+    6
+   ],
+   "eligible": {
+    "from": 0,
+    "to": 21
+   },
+   "expect": "not defined"
+  }
+ ],
+ "compare": "first 3 kept draws' run starts, attempts, discarded, defined",
+ "rule": "A (start-only eligibility, random order), cap = cap field",
+ "generator": "rule_a_reference.py",
+ "expected": {
+  "F1_short": {
+   "attempts": 20,
+   "discarded": 0,
+   "kept": 20,
+   "defined": true,
+   "first3_runs_start_len": [
+    [
+     [
+      0,
+      10
+     ],
+     [
+      12,
+      1
+     ],
+     [
+      15,
+      3
+     ]
+    ],
+    [
+     [
+      15,
+      3
+     ],
+     [
+      25,
+      10
+     ],
+     [
+      37,
+      1
+     ]
+    ],
+    [
+     [
+      10,
+      3
+     ],
+     [
+      17,
+      1
+     ],
+     [
+      22,
+      10
+     ]
+    ]
+   ]
+  },
+  "F2_right_edge": {
+   "attempts": 20,
+   "discarded": 0,
+   "kept": 20,
+   "defined": true,
+   "first3_runs_start_len": [
+    [
+     [
+      30,
+      10
+     ]
+    ],
+    [
+     [
+      29,
+      10
+     ]
+    ],
+    [
+     [
+      29,
+      10
+     ]
+    ]
+   ]
+  },
+  "F3_crowded": {
+   "attempts": 98,
+   "discarded": 78,
+   "kept": 20,
+   "defined": true,
+   "first3_runs_start_len": [
+    [
+     [
+      0,
+      6
+     ],
+     [
+      7,
+      6
+     ],
+     [
+      14,
+      6
+     ],
+     [
+      21,
+      6
+     ]
+    ],
+    [
+     [
+      1,
+      6
+     ],
+     [
+      8,
+      6
+     ],
+     [
+      15,
+      6
+     ],
+     [
+      22,
+      6
+     ]
+    ],
+    [
+     [
+      0,
+      6
+     ],
+     [
+      7,
+      6
+     ],
+     [
+      17,
+      6
+     ],
+     [
+      24,
+      6
+     ]
+    ]
+   ]
+  },
+  "F4_empty": {
+   "attempts": 0,
+   "discarded": 0,
+   "kept": 0,
+   "defined": false,
+   "first3_runs_start_len": []
+  },
+  "F5_cap_hit": {
+   "attempts": 200,
+   "discarded": 193,
+   "kept": 7,
+   "defined": false,
+   "first3_runs_start_len": [
+    [
+     [
+      0,
+      6
+     ],
+     [
+      7,
+      6
+     ],
+     [
+      14,
+      6
+     ],
+     [
+      21,
+      6
+     ]
+    ],
+    [
+     [
+      0,
+      6
+     ],
+     [
+      7,
+      6
+     ],
+     [
+      14,
+      6
+     ],
+     [
+      21,
+      6
+     ]
+    ],
+    [
+     [
+      0,
+      6
+     ],
+     [
+      7,
+      6
+     ],
+     [
+      14,
+      6
+     ],
+     [
+      21,
+      6
+     ]
+    ]
+   ]
+  }
+ }
+}

@@ -1,0 +1,43 @@
+{
+ "hy_pre_bb856951_reproduces_published": {
+  "hy_oas_top_decile|None": true,
+  "hy_oas_top_decile|high": true,
+  "hy_oas_top_decile|low": true
+ },
+ "pivot radar_loud|None": {
+  "mass": 270,
+  "mean_placed": 263.8,
+  "draws_short": 62,
+  "n_draws": 300
+ },
+ "pivot hy (pre-bb856951 input)|None": {
+  "mass": 189,
+  "mean_placed": 187.9,
+  "draws_short": 29,
+  "n_draws": 300
+ },
+ "pivot hy (pre-bb856951 input)|high": {
+  "mass": 189,
+  "mean_placed": 188.6,
+  "draws_short": 21,
+  "n_draws": 300
+ },
+ "pivot hy (pre-bb856951 input)|low": {
+  "mass": 189,
+  "mean_placed": 187.4,
+  "draws_short": 48,
+  "n_draws": 300
+ },
+ "pivot vix_ge_20|None": {
+  "mass": 710,
+  "mean_placed": 498.7,
+  "draws_short": 284,
+  "n_draws": 300
+ },
+ "pivot spy_below_200|None": {
+  "mass": 333,
+  "mean_placed": 323.9,
+  "draws_short": 75,
+  "n_draws": 300
+ }
+}

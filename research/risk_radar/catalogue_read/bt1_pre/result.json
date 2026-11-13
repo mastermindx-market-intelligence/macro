@@ -1,0 +1,4570 @@
+{
+ "runs": [
+  {
+   "id": "rr-bt1-rate-response-pre-desc",
+   "spec_sha256": "d80306439c57cdc945d27055551647b329bce5e1987ea6e623d7b1effc4f276a",
+   "role": "DESCRIPTION only",
+   "family": "R-off",
+   "direction": "top",
+   "post": 5
+  },
+  {
+   "id": "rr-bt1-rate-response-pre-dgs10-desc",
+   "spec_sha256": "63a0ce44d5df9fa85ea83d88c3d4468e7fbc5c94be0090f3120f624daa876235",
+   "role": "DESCRIPTION only (DGS10 substitute line)"
+  }
+ ],
+ "pins": {
+  "start": {
+   "bm_ref.py": "f7350e6e3f5a022a80aa2e9907f0b37cfc256fa8249960557798f50873467c76",
+   "adapter.py": "504257977843e0894a97ed53415475eab76d8fc91fa9fc9cb0bbdcb9d24929c1"
+  },
+  "end": {
+   "bm_ref.py": "f7350e6e3f5a022a80aa2e9907f0b37cfc256fa8249960557798f50873467c76",
+   "adapter.py": "504257977843e0894a97ed53415475eab76d8fc91fa9fc9cb0bbdcb9d24929c1"
+  }
+ },
+ "scorer_module": "<desk>/pivot/radar_eval/engine/risk_radar_eval/pivots.py",
+ "window": {
+  "start": "2006-01-03",
+  "end": "2019-12-31",
+  "pre": 21,
+  "post": 5,
+  "n_draws": 2000,
+  "seed": 20261112,
+  "tol": 0.01,
+  "min_off": 10,
+  "control_seed": 20261113,
+  "control_keep": 2000,
+  "control_max": 200000,
+  "dry": false
+ },
+ "rate_rules": {
+  "dfii10": "engine availability.release_dates('DFII10') + ALFRED overrides (pit_signals)",
+  "dgs10": "next-business-day (obs t usable from t+1 business day, US federal holiday calendar); no ALFRED first-release overrides exist for DGS10 in FRED_FIRST_RELEASE_DATES_v1.csv"
+ },
+ "date_guard": {
+  "all_le_2019_12_31": true,
+  "all_scored_turns_ge_2006_01_03": true,
+  "min_scored_turn": "2006-01-11",
+  "max": {
+   "turns": "2019-12-31",
+   "levels": "2019-12-31",
+   "outcomes_through": "2019-12-31",
+   "engine_calendar_used": "2019-12-31",
+   "episodes": "2019-12-31"
+  }
+ },
+ "dfii10": {
+  "tag": "dfii10",
+  "label": "DESCRIPTION only; never a nomination; one set read in the chance account",
+  "candidate": {
+   "turns_scored": 471,
+   "turns_flagged": 51,
+   "turn_share": 0.1083,
+   "turn_share_ci90": [
+    0.086,
+    0.135
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 22,
+   "cluster_share": 0.1732,
+   "cluster_share_ci90": [
+    0.12,
+    0.238
+   ],
+   "median_delay": -12.0,
+   "censored": 1,
+   "false_per_asset_year": 0.8262,
+   "alert_budget": 0.015033693168304163,
+   "caught_cluster_ids": [
+    "risk_off:peak:1292",
+    "risk_off:peak:1295",
+    "risk_off:peak:1296",
+    "risk_off:peak:1299",
+    "risk_off:peak:1302",
+    "risk_off:peak:1303",
+    "risk_off:peak:1327",
+    "risk_off:peak:1336",
+    "risk_off:peak:1337",
+    "risk_off:peak:1342",
+    "risk_off:peak:1349",
+    "risk_off:peak:1351",
+    "risk_off:peak:1383",
+    "risk_off:peak:1388",
+    "risk_off:peak:1390",
+    "risk_off:peak:1393",
+    "risk_off:trough:2357",
+    "risk_off:trough:2368",
+    "risk_off:trough:2371",
+    "risk_off:trough:2376",
+    "risk_off:trough:2384",
+    "risk_off:trough:2392"
+   ]
+  },
+  "p90": {
+   "kind": "top",
+   "near": "high",
+   "post": 5,
+   "n_draws": 2000,
+   "n_valid_draws": 2000,
+   "observed_cluster_share": 0.1732,
+   "placebo_mean": 0.28918330000000003,
+   "placebo_median": 0.2913,
+   "p90": 0.3071,
+   "_runtime_s": 30.7,
+   "_equivalence_50_draws": {
+    "matches_bm_ref": true,
+    "p90": 0.3071,
+    "n_valid_draws": 50
+   }
+  },
+  "references": {
+   "dd": {
+    "turns_scored": 471,
+    "turns_flagged": 16,
+    "turn_share": 0.034,
+    "turn_share_ci90": [
+     0.021,
+     0.051
+    ],
+    "clusters_scored": 127,
+    "clusters_flagged": 6,
+    "cluster_share": 0.0472,
+    "cluster_share_ci90": [
+     0.021,
+     0.091
+    ],
+    "median_delay": -15.5,
+    "censored": 1,
+    "false_per_asset_year": 0.1527,
+    "alert_budget": 0.01504720978698683
+   },
+   "near": {
+    "turns_scored": 471,
+    "turns_flagged": 93,
+    "turn_share": 0.1975,
+    "turn_share_ci90": [
+     0.168,
+     0.23
+    ],
+    "clusters_scored": 127,
+    "clusters_flagged": 41,
+    "cluster_share": 0.3228,
+    "cluster_share_ci90": [
+     0.254,
+     0.398
+    ],
+    "median_delay": -11.0,
+    "censored": 1,
+    "false_per_asset_year": 2.9542,
+    "alert_budget": 0.03761558386734393
+   }
+  },
+  "reference_match": {
+   "dd": {
+    "x": {
+     "BAA_10Y": 0.7126623376623377,
+     "CYC/DEF": 0.4691858376691848,
+     "DIA": 0.41065029272414527,
+     "EEM/SPY": 0.650257152943525,
+     "HYG/IEF": 0.3902438221740356,
+     "HY_OAS": 0.8455545371219066,
+     "IGV/EWDEF": 0.44492033838305217,
+     "IWM": 0.4601186217918169,
+     "IWM/SPY": 0.2323172774056256,
+     "MDY": 0.447838947055994,
+     "QQQ": 0.7452046782410359,
+     "QQQ/EWDEF": 0.803149603658017,
+     "RSP": 0.49581727882262366,
+     "RSP/SPY": 0.11924252712371299,
+     "RSPT/EWDEF": 0.355466604305914,
+     "SMH/EWDEF": 0.8558890678879502,
+     "SPHB/SPLV": 0.3622046236379645,
+     "SPY": 0.4470230753979561,
+     "SPY/GLD": 0.7190427857790198,
+     "SPY/TLT": 0.5917144075662304,
+     "XLK/EWDEF": 0.8026649070808475
+    },
+    "achieved_share": {
+     "BAA_10Y": 0.015043996593812092,
+     "CYC/DEF": 0.014954853273137697,
+     "DIA": 0.014954853273137697,
+     "EEM/SPY": 0.014954853273137697,
+     "HYG/IEF": 0.016536661466458658,
+     "HY_OAS": 0.01442569406641263,
+     "IGV/EWDEF": 0.014954853273137697,
+     "IWM": 0.014954853273137697,
+     "IWM/SPY": 0.014954853273137697,
+     "MDY": 0.014954853273137697,
+     "QQQ": 0.014954853273137697,
+     "QQQ/EWDEF": 0.014954853273137697,
+     "RSP": 0.014954853273137697,
+     "RSP/SPY": 0.014954853273137697,
+     "RSPT/EWDEF": 0.016021765417170496,
+     "SMH/EWDEF": 0.014954853273137697,
+     "SPHB/SPLV": 0.014685635612666361,
+     "SPY": 0.014954853273137697,
+     "SPY/GLD": 0.014954853273137697,
+     "SPY/TLT": 0.014954853273137697,
+     "XLK/EWDEF": 0.014954853273137697
+    },
+    "target_budget": {
+     "BAA_10Y": 0.014760147601476014,
+     "CYC/DEF": 0.014954853273137697,
+     "DIA": 0.014954853273137697,
+     "EEM/SPY": 0.014954853273137697,
+     "HYG/IEF": 0.016536661466458658,
+     "HY_OAS": 0.01442569406641263,
+     "IGV/EWDEF": 0.014954853273137697,
+     "IWM": 0.014954853273137697,
+     "IWM/SPY": 0.014954853273137697,
+     "MDY": 0.014954853273137697,
+     "QQQ": 0.014954853273137697,
+     "QQQ/EWDEF": 0.014954853273137697,
+     "RSP": 0.014954853273137697,
+     "RSP/SPY": 0.014954853273137697,
+     "RSPT/EWDEF": 0.016021765417170496,
+     "SMH/EWDEF": 0.014954853273137697,
+     "SPHB/SPLV": 0.014685635612666361,
+     "SPY": 0.014954853273137697,
+     "SPY/GLD": 0.014954853273137697,
+     "SPY/TLT": 0.014954853273137697,
+     "XLK/EWDEF": 0.014954853273137697
+    }
+   },
+   "near": {
+    "x": {
+     "BAA_10Y": 0.021103896103896513,
+     "CYC/DEF": 0.052200558345888326,
+     "DIA": -0.0,
+     "EEM/SPY": -0.0,
+     "HYG/IEF": -0.0,
+     "HY_OAS": 0.03688280785246856,
+     "IGV/EWDEF": 0.016438930840318555,
+     "IWM": -0.0,
+     "IWM/SPY": 0.003482694410888998,
+     "MDY": 0.0,
+     "QQQ": -0.0,
+     "QQQ/EWDEF": 0.601011778707698,
+     "RSP": 0.0,
+     "RSP/SPY": -0.0,
+     "RSPT/EWDEF": 0.008381257483098481,
+     "SMH/EWDEF": 0.6849568470820773,
+     "SPHB/SPLV": 0.05364540045505295,
+     "SPY": 0.0,
+     "SPY/GLD": 0.004530805082282541,
+     "SPY/TLT": -0.0,
+     "XLK/EWDEF": 0.6556025087299198
+    },
+    "achieved_share": {
+     "BAA_10Y": 0.014760147601476014,
+     "CYC/DEF": 0.014954853273137697,
+     "DIA": 0.11681715575620767,
+     "EEM/SPY": 0.02200902934537246,
+     "HYG/IEF": 0.018408736349453978,
+     "HY_OAS": 0.01442569406641263,
+     "IGV/EWDEF": 0.014954853273137697,
+     "IWM": 0.07279909706546275,
+     "IWM/SPY": 0.014954853273137697,
+     "MDY": 0.0894469525959368,
+     "QQQ": 0.05163656884875847,
+     "QQQ/EWDEF": 0.014954853273137697,
+     "RSP": 0.10750564334085778,
+     "RSP/SPY": 0.022855530474040632,
+     "RSPT/EWDEF": 0.016021765417170496,
+     "SMH/EWDEF": 0.014954853273137697,
+     "SPHB/SPLV": 0.014685635612666361,
+     "SPY": 0.1012979683972912,
+     "SPY/GLD": 0.014954853273137697,
+     "SPY/TLT": 0.022573363431151242,
+     "XLK/EWDEF": 0.014954853273137697
+    },
+    "target_budget": {
+     "BAA_10Y": 0.014760147601476014,
+     "CYC/DEF": 0.014954853273137697,
+     "DIA": 0.014954853273137697,
+     "EEM/SPY": 0.014954853273137697,
+     "HYG/IEF": 0.016536661466458658,
+     "HY_OAS": 0.01442569406641263,
+     "IGV/EWDEF": 0.014954853273137697,
+     "IWM": 0.014954853273137697,
+     "IWM/SPY": 0.014954853273137697,
+     "MDY": 0.014954853273137697,
+     "QQQ": 0.014954853273137697,
+     "QQQ/EWDEF": 0.014954853273137697,
+     "RSP": 0.014954853273137697,
+     "RSP/SPY": 0.014954853273137697,
+     "RSPT/EWDEF": 0.016021765417170496,
+     "SMH/EWDEF": 0.014954853273137697,
+     "SPHB/SPLV": 0.014685635612666361,
+     "SPY": 0.014954853273137697,
+     "SPY/GLD": 0.014954853273137697,
+     "SPY/TLT": 0.014954853273137697,
+     "XLK/EWDEF": 0.014954853273137697
+    }
+   }
+  },
+  "better_reference": "near",
+  "alert_share_pooled": 0.01502899728623972,
+  "alert_share_by_year": {
+   "2006": 0.0,
+   "2007": 0.008,
+   "2008": 0.0553,
+   "2009": 0.0198,
+   "2010": 0.0,
+   "2011": 0.0159,
+   "2012": 0.012,
+   "2013": 0.0159,
+   "2014": 0.0119,
+   "2015": 0.0198,
+   "2016": 0.0079,
+   "2017": 0.0,
+   "2018": 0.0359,
+   "2019": 0.0079
+  },
+  "on_starts_canonical": 31,
+  "on_days_canonical": 53,
+  "rule_2b": {
+   "target_alert_share": 0.01502899728623972,
+   "parts": {
+    "Rplus": {
+     "threshold": 0.9980158730158731,
+     "target_share": 0.01502899728623972,
+     "achieved_share_finite_sessions": 0.01507996953541508,
+     "achieved_share_all_sessions": 0.015001446420453762,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    },
+    "B20_SPY": {
+     "threshold": 0.01656344671480003,
+     "target_share": 0.01502899728623972,
+     "achieved_share_finite_sessions": 0.014969189226614969,
+     "achieved_share_all_sessions": 0.014891242957309933,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    },
+    "B20_QQQ": {
+     "threshold": 0.01951210093369861,
+     "target_share": 0.01502899728623972,
+     "achieved_share_finite_sessions": 0.014941494149414942,
+     "achieved_share_all_sessions": 0.014863692091523975,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    },
+    "response_only": {
+     "threshold": 0.013730833093959031,
+     "target_share": 0.01502899728623972,
+     "achieved_share_finite_sessions": 0.015052274458215052,
+     "achieved_share_all_sessions": 0.014973895554667806,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    },
+    "Q5": {
+     "threshold": 0.9980158730158731,
+     "target_share": 0.01502899728623972,
+     "achieved_share_finite_sessions": 0.01507996953541508,
+     "achieved_share_all_sessions": 0.015001446420453762,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    },
+    "D5": {
+     "threshold": 0.3300000000000001,
+     "target_share": 0.01502899728623972,
+     "achieved_share_finite_sessions": 0.0148999515336149,
+     "achieved_share_all_sessions": 0.01482236579284504,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    }
+   },
+   "rows": {
+    "Rplus": {
+     "turns_scored": 471,
+     "turns_flagged": 34,
+     "turn_share": 0.0722,
+     "turn_share_ci90": [
+      0.054,
+      0.095
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 13,
+     "cluster_share": 0.1024,
+     "cluster_share_ci90": [
+      0.062,
+      0.158
+     ],
+     "median_delay": -7.5,
+     "censored": 1,
+     "false_per_asset_year": 0.3263,
+     "alert_budget": 0.014972200852220523,
+     "caught_cluster_ids": [
+      "risk_off:peak:1291",
+      "risk_off:peak:1294",
+      "risk_off:peak:1295",
+      "risk_off:peak:1299",
+      "risk_off:peak:1302",
+      "risk_off:peak:1342",
+      "risk_off:peak:1371",
+      "risk_off:peak:1372",
+      "risk_off:peak:1396",
+      "risk_off:trough:2356",
+      "risk_off:trough:2357",
+      "risk_off:trough:2374",
+      "risk_off:trough:2399"
+     ]
+    },
+    "B20_SPY": {
+     "turns_scored": 471,
+     "turns_flagged": 83,
+     "turn_share": 0.1762,
+     "turn_share_ci90": [
+      0.148,
+      0.208
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 35,
+     "cluster_share": 0.2756,
+     "cluster_share_ci90": [
+      0.211,
+      0.348
+     ],
+     "median_delay": -16.0,
+     "censored": 1,
+     "false_per_asset_year": 0.8436,
+     "alert_budget": 0.014827714672211164,
+     "caught_cluster_ids": [
+      "risk_off:peak:1281",
+      "risk_off:peak:1288",
+      "risk_off:peak:1291",
+      "risk_off:peak:1292",
+      "risk_off:peak:1295",
+      "risk_off:peak:1296",
+      "risk_off:peak:1299",
+      "risk_off:peak:1301",
+      "risk_off:peak:1302",
+      "risk_off:peak:1303",
+      "risk_off:peak:1304",
+      "risk_off:peak:1305",
+      "risk_off:peak:1312",
+      "risk_off:peak:1314",
+      "risk_off:peak:1315",
+      "risk_off:peak:1322",
+      "risk_off:peak:1326",
+      "risk_off:peak:1327",
+      "risk_off:peak:1346",
+      "risk_off:peak:1369",
+      "risk_off:peak:1383",
+      "risk_off:peak:1384",
+      "risk_off:peak:1388",
+      "risk_off:peak:1389",
+      "risk_off:peak:1390",
+      "risk_off:peak:1395",
+      "risk_off:trough:2349",
+      "risk_off:trough:2351",
+      "risk_off:trough:2357",
+      "risk_off:trough:2358",
+      "risk_off:trough:2362",
+      "risk_off:trough:2366",
+      "risk_off:trough:2368",
+      "risk_off:trough:2384",
+      "risk_off:trough:2392"
+     ]
+    },
+    "B20_QQQ": {
+     "turns_scored": 471,
+     "turns_flagged": 76,
+     "turn_share": 0.1614,
+     "turn_share_ci90": [
+      0.134,
+      0.192
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 29,
+     "cluster_share": 0.2283,
+     "cluster_share_ci90": [
+      0.168,
+      0.298
+     ],
+     "median_delay": -15.0,
+     "censored": 1,
+     "false_per_asset_year": 0.7637,
+     "alert_budget": 0.014794241075466109,
+     "caught_cluster_ids": [
+      "risk_off:peak:1281",
+      "risk_off:peak:1294",
+      "risk_off:peak:1295",
+      "risk_off:peak:1296",
+      "risk_off:peak:1299",
+      "risk_off:peak:1301",
+      "risk_off:peak:1302",
+      "risk_off:peak:1303",
+      "risk_off:peak:1305",
+      "risk_off:peak:1312",
+      "risk_off:peak:1314",
+      "risk_off:peak:1315",
+      "risk_off:peak:1322",
+      "risk_off:peak:1326",
+      "risk_off:peak:1327",
+      "risk_off:peak:1383",
+      "risk_off:peak:1384",
+      "risk_off:peak:1388",
+      "risk_off:peak:1389",
+      "risk_off:peak:1390",
+      "risk_off:peak:1395",
+      "risk_off:trough:2357",
+      "risk_off:trough:2358",
+      "risk_off:trough:2362",
+      "risk_off:trough:2366",
+      "risk_off:trough:2368",
+      "risk_off:trough:2381",
+      "risk_off:trough:2384",
+      "risk_off:trough:2392"
+     ]
+    },
+    "response_only": {
+     "turns_scored": 471,
+     "turns_flagged": 83,
+     "turn_share": 0.1762,
+     "turn_share_ci90": [
+      0.148,
+      0.208
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 31,
+     "cluster_share": 0.2441,
+     "cluster_share_ci90": [
+      0.182,
+      0.315
+     ],
+     "median_delay": -14.0,
+     "censored": 1,
+     "false_per_asset_year": 0.8227,
+     "alert_budget": 0.014937386136991512,
+     "caught_cluster_ids": [
+      "risk_off:peak:1292",
+      "risk_off:peak:1294",
+      "risk_off:peak:1295",
+      "risk_off:peak:1296",
+      "risk_off:peak:1299",
+      "risk_off:peak:1301",
+      "risk_off:peak:1302",
+      "risk_off:peak:1303",
+      "risk_off:peak:1305",
+      "risk_off:peak:1312",
+      "risk_off:peak:1314",
+      "risk_off:peak:1315",
+      "risk_off:peak:1322",
+      "risk_off:peak:1326",
+      "risk_off:peak:1327",
+      "risk_off:peak:1369",
+      "risk_off:peak:1383",
+      "risk_off:peak:1384",
+      "risk_off:peak:1388",
+      "risk_off:peak:1389",
+      "risk_off:peak:1390",
+      "risk_off:peak:1395",
+      "risk_off:trough:2356",
+      "risk_off:trough:2357",
+      "risk_off:trough:2358",
+      "risk_off:trough:2362",
+      "risk_off:trough:2366",
+      "risk_off:trough:2368",
+      "risk_off:trough:2381",
+      "risk_off:trough:2384",
+      "risk_off:trough:2392"
+     ]
+    },
+    "Q5": {
+     "turns_scored": 471,
+     "turns_flagged": 34,
+     "turn_share": 0.0722,
+     "turn_share_ci90": [
+      0.054,
+      0.095
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 13,
+     "cluster_share": 0.1024,
+     "cluster_share_ci90": [
+      0.062,
+      0.158
+     ],
+     "median_delay": -7.5,
+     "censored": 1,
+     "false_per_asset_year": 0.3263,
+     "alert_budget": 0.014972200852220523,
+     "caught_cluster_ids": [
+      "risk_off:peak:1291",
+      "risk_off:peak:1294",
+      "risk_off:peak:1295",
+      "risk_off:peak:1299",
+      "risk_off:peak:1302",
+      "risk_off:peak:1342",
+      "risk_off:peak:1371",
+      "risk_off:peak:1372",
+      "risk_off:peak:1396",
+      "risk_off:trough:2356",
+      "risk_off:trough:2357",
+      "risk_off:trough:2374",
+      "risk_off:trough:2399"
+     ]
+    },
+    "D5": {
+     "turns_scored": 471,
+     "turns_flagged": 19,
+     "turn_share": 0.0403,
+     "turn_share_ci90": [
+      0.027,
+      0.059
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 7,
+     "cluster_share": 0.0551,
+     "cluster_share_ci90": [
+      0.026,
+      0.101
+     ],
+     "median_delay": -13.0,
+     "censored": 1,
+     "false_per_asset_year": 0.2777,
+     "alert_budget": 0.014670318667477165,
+     "caught_cluster_ids": [
+      "risk_off:peak:1302",
+      "risk_off:peak:1303",
+      "risk_off:peak:1304",
+      "risk_off:peak:1320",
+      "risk_off:peak:1342",
+      "risk_off:trough:2357",
+      "risk_off:trough:2376"
+     ]
+    }
+   },
+   "verdict_mandatory_parts": {
+    "a": false,
+    "b": false,
+    "c": false,
+    "criteria_met": [],
+    "nomination": false,
+    "parts_checked": 4
+   },
+   "nomination": false,
+   "nomination_note": "forced False: fixed rule read as a description after earlier reads; never a nomination"
+  },
+  "diagnosis": {
+   "sign_gate_Rplus_vs_Q5": {
+    "candidate_cluster_share": 0.1024,
+    "other_cluster_share": 0.1024,
+    "candidate_false": 0.3263,
+    "other_false": 0.3263,
+    "false_lower": false,
+    "catch_higher": false,
+    "catch_delta": 0.0,
+    "false_delta": 0.0
+   },
+   "response_condition_A_R_vs_Rplus": {
+    "candidate_cluster_share": 0.1732,
+    "other_cluster_share": 0.1024,
+    "candidate_false": 0.8262,
+    "other_false": 0.3263,
+    "false_lower": false,
+    "catch_higher": true,
+    "catch_delta": 0.0708,
+    "false_delta": 0.4999
+   },
+   "A_R_vs_response_only": {
+    "candidate_cluster_share": 0.1732,
+    "other_cluster_share": 0.2441,
+    "candidate_false": 0.8262,
+    "other_false": 0.8227,
+    "false_lower": false,
+    "catch_higher": false,
+    "catch_delta": -0.0709,
+    "false_delta": 0.0035
+   },
+   "rows": {
+    "A_R": {
+     "turns_scored": 471,
+     "turns_flagged": 51,
+     "turn_share": 0.1083,
+     "turn_share_ci90": [
+      0.086,
+      0.135
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 22,
+     "cluster_share": 0.1732,
+     "cluster_share_ci90": [
+      0.12,
+      0.238
+     ],
+     "median_delay": -12.0,
+     "censored": 1,
+     "false_per_asset_year": 0.8262,
+     "alert_budget": 0.015033693168304163
+    },
+    "Rplus": {
+     "turns_scored": 471,
+     "turns_flagged": 34,
+     "turn_share": 0.0722,
+     "turn_share_ci90": [
+      0.054,
+      0.095
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 13,
+     "cluster_share": 0.1024,
+     "cluster_share_ci90": [
+      0.062,
+      0.158
+     ],
+     "median_delay": -7.5,
+     "censored": 1,
+     "false_per_asset_year": 0.3263,
+     "alert_budget": 0.014972200852220523
+    },
+    "Q5": {
+     "turns_scored": 471,
+     "turns_flagged": 34,
+     "turn_share": 0.0722,
+     "turn_share_ci90": [
+      0.054,
+      0.095
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 13,
+     "cluster_share": 0.1024,
+     "cluster_share_ci90": [
+      0.062,
+      0.158
+     ],
+     "median_delay": -7.5,
+     "censored": 1,
+     "false_per_asset_year": 0.3263,
+     "alert_budget": 0.014972200852220523
+    },
+    "D5": {
+     "turns_scored": 471,
+     "turns_flagged": 19,
+     "turn_share": 0.0403,
+     "turn_share_ci90": [
+      0.027,
+      0.059
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 7,
+     "cluster_share": 0.0551,
+     "cluster_share_ci90": [
+      0.026,
+      0.101
+     ],
+     "median_delay": -13.0,
+     "censored": 1,
+     "false_per_asset_year": 0.2777,
+     "alert_budget": 0.014670318667477165
+    },
+    "response_only": {
+     "turns_scored": 471,
+     "turns_flagged": 83,
+     "turn_share": 0.1762,
+     "turn_share_ci90": [
+      0.148,
+      0.208
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 31,
+     "cluster_share": 0.2441,
+     "cluster_share_ci90": [
+      0.182,
+      0.315
+     ],
+     "median_delay": -14.0,
+     "censored": 1,
+     "false_per_asset_year": 0.8227,
+     "alert_budget": 0.014937386136991512
+    }
+   }
+  },
+  "native_leg": {
+   "recorded_aggregate": ".795 / 4.97 (not re-read)",
+   "n_caught_clusters": 101,
+   "n_clusters": 127,
+   "retained_by_candidate": [
+    "risk_off:peak:1292",
+    "risk_off:peak:1295",
+    "risk_off:peak:1296",
+    "risk_off:peak:1299",
+    "risk_off:peak:1302",
+    "risk_off:peak:1303",
+    "risk_off:peak:1327",
+    "risk_off:peak:1336",
+    "risk_off:peak:1337",
+    "risk_off:peak:1342",
+    "risk_off:peak:1349",
+    "risk_off:peak:1351",
+    "risk_off:peak:1383",
+    "risk_off:peak:1388",
+    "risk_off:peak:1390",
+    "risk_off:peak:1393",
+    "risk_off:trough:2357",
+    "risk_off:trough:2368",
+    "risk_off:trough:2371",
+    "risk_off:trough:2376",
+    "risk_off:trough:2384",
+    "risk_off:trough:2392"
+   ],
+   "lost_by_candidate": [
+    "risk_off:peak:1280",
+    "risk_off:peak:1281",
+    "risk_off:peak:1284",
+    "risk_off:peak:1286",
+    "risk_off:peak:1291",
+    "risk_off:peak:1293",
+    "risk_off:peak:1294",
+    "risk_off:peak:1298",
+    "risk_off:peak:1300",
+    "risk_off:peak:1301",
+    "risk_off:peak:1304",
+    "risk_off:peak:1305",
+    "risk_off:peak:1306",
+    "risk_off:peak:1307",
+    "risk_off:peak:1310",
+    "risk_off:peak:1312",
+    "risk_off:peak:1313",
+    "risk_off:peak:1320",
+    "risk_off:peak:1321",
+    "risk_off:peak:1322",
+    "risk_off:peak:1323",
+    "risk_off:peak:1325",
+    "risk_off:peak:1326",
+    "risk_off:peak:1329",
+    "risk_off:peak:1330",
+    "risk_off:peak:1333",
+    "risk_off:peak:1334",
+    "risk_off:peak:1338",
+    "risk_off:peak:1339",
+    "risk_off:peak:1345",
+    "risk_off:peak:1347",
+    "risk_off:peak:1348",
+    "risk_off:peak:1350",
+    "risk_off:peak:1354",
+    "risk_off:peak:1355",
+    "risk_off:peak:1356",
+    "risk_off:peak:1359",
+    "risk_off:peak:1360",
+    "risk_off:peak:1361",
+    "risk_off:peak:1364",
+    "risk_off:peak:1365",
+    "risk_off:peak:1366",
+    "risk_off:peak:1369",
+    "risk_off:peak:1370",
+    "risk_off:peak:1371",
+    "risk_off:peak:1372",
+    "risk_off:peak:1379",
+    "risk_off:peak:1380",
+    "risk_off:peak:1384",
+    "risk_off:peak:1385",
+    "risk_off:peak:1386",
+    "risk_off:peak:1389",
+    "risk_off:peak:1395",
+    "risk_off:peak:1396",
+    "risk_off:peak:1397",
+    "risk_off:trough:2349",
+    "risk_off:trough:2352",
+    "risk_off:trough:2353",
+    "risk_off:trough:2356",
+    "risk_off:trough:2358",
+    "risk_off:trough:2359",
+    "risk_off:trough:2360",
+    "risk_off:trough:2361",
+    "risk_off:trough:2362",
+    "risk_off:trough:2365",
+    "risk_off:trough:2366",
+    "risk_off:trough:2369",
+    "risk_off:trough:2373",
+    "risk_off:trough:2374",
+    "risk_off:trough:2379",
+    "risk_off:trough:2382",
+    "risk_off:trough:2385",
+    "risk_off:trough:2387",
+    "risk_off:trough:2389",
+    "risk_off:trough:2391",
+    "risk_off:trough:2395",
+    "risk_off:trough:2396",
+    "risk_off:trough:2397",
+    "risk_off:trough:2399"
+   ],
+   "new_by_candidate": [],
+   "counts": {
+    "native": 101,
+    "candidate": 22,
+    "retained": 22,
+    "lost": 79,
+    "new": 0
+   }
+  },
+  "control": {
+   "status": "ESTIMABLE",
+   "reason": null,
+   "seed": 20261113,
+   "offset_vectors_generated": 43125,
+   "draws_generated": 43125,
+   "draws_accepted": 2000,
+   "draws_required": 2000,
+   "max_offset_vectors": 200000,
+   "shift_bounds_per_year": {
+    "2006": [
+     27,
+     224
+    ],
+    "2007": [
+     27,
+     224
+    ],
+    "2008": [
+     27,
+     226
+    ],
+    "2009": [
+     27,
+     225
+    ],
+    "2010": [
+     27,
+     225
+    ],
+    "2011": [
+     27,
+     225
+    ],
+    "2012": [
+     27,
+     223
+    ],
+    "2013": [
+     27,
+     225
+    ],
+    "2014": [
+     27,
+     225
+    ],
+    "2015": [
+     27,
+     225
+    ],
+    "2016": [
+     27,
+     225
+    ],
+    "2017": [
+     27,
+     224
+    ],
+    "2018": [
+     27,
+     224
+    ],
+    "2019": [
+     27,
+     225
+    ]
+   },
+   "acceptance_rate": 0.046377,
+   "observed_on_days": 53,
+   "observed_starts": 31,
+   "observed_run_lengths": {
+    "n": 31,
+    "lengths": [
+     2,
+     2,
+     2,
+     1,
+     6,
+     1,
+     2,
+     3,
+     1,
+     1,
+     1,
+     2,
+     1,
+     2,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     4,
+     1,
+     2,
+     1,
+     1,
+     2,
+     1,
+     4,
+     1,
+     1
+    ],
+    "median": 1.0,
+    "max": 6
+   },
+   "count_matching": {
+    "observed_on_days": 53,
+    "observed_starts": 31,
+    "tolerance": 1,
+    "generated_start_count_histogram": {
+     "15": 3,
+     "16": 5,
+     "17": 13,
+     "18": 31,
+     "19": 55,
+     "20": 105,
+     "21": 203,
+     "22": 397,
+     "23": 601,
+     "24": 944,
+     "25": 1402,
+     "26": 1905,
+     "27": 2344,
+     "28": 2820,
+     "29": 3332,
+     "30": 3619,
+     "31": 3728,
+     "32": 3762,
+     "33": 3478,
+     "34": 3201,
+     "35": 2759,
+     "36": 2294,
+     "37": 1789,
+     "38": 1361,
+     "39": 1046,
+     "40": 709,
+     "41": 470,
+     "42": 288,
+     "43": 185,
+     "44": 128,
+     "45": 75,
+     "46": 35,
+     "47": 22,
+     "48": 7,
+     "49": 4,
+     "50": 2,
+     "51": 2,
+     "54": 1
+    },
+    "generated_on_day_histogram": {
+     "23": 2,
+     "24": 4,
+     "25": 4,
+     "26": 9,
+     "27": 8,
+     "28": 21,
+     "29": 24,
+     "30": 36,
+     "31": 75,
+     "32": 106,
+     "33": 161,
+     "34": 225,
+     "35": 311,
+     "36": 389,
+     "37": 522,
+     "38": 660,
+     "39": 821,
+     "40": 937,
+     "41": 1177,
+     "42": 1362,
+     "43": 1562,
+     "44": 1676,
+     "45": 1849,
+     "46": 2082,
+     "47": 2139,
+     "48": 2229,
+     "49": 2304,
+     "50": 2260,
+     "51": 2247,
+     "52": 2151,
+     "53": 2041,
+     "54": 1935,
+     "55": 1817,
+     "56": 1534,
+     "57": 1501,
+     "58": 1260,
+     "59": 1103,
+     "60": 945,
+     "61": 767,
+     "62": 654,
+     "63": 513,
+     "64": 428,
+     "65": 320,
+     "66": 222,
+     "67": 190,
+     "68": 149,
+     "69": 97,
+     "70": 86,
+     "71": 67,
+     "72": 51,
+     "73": 32,
+     "74": 19,
+     "75": 20,
+     "76": 8,
+     "77": 3,
+     "78": 3,
+     "79": 1,
+     "80": 2,
+     "82": 1,
+     "84": 2,
+     "88": 1
+    },
+    "accepted_run_length_histogram": {
+     "1": 37445,
+     "2": 14360,
+     "3": 5690,
+     "4": 2720,
+     "5": 1438,
+     "6": 743
+    },
+    "accepted_on_day_range": [
+     52,
+     54
+    ],
+    "accepted_start_range": [
+     30,
+     32
+    ]
+   },
+   "displaced_starts": {
+    "min": 30,
+    "median": 31.0,
+    "max": 32,
+    "mean": 31.198
+   },
+   "displaced_on_days": {
+    "min": 52,
+    "max": 54
+   },
+   "catch_share_observed": 0.1732,
+   "catch_share_displaced_mean": 0.1794026,
+   "catch_share_displaced_median": 0.1811,
+   "catch_difference_p10": -0.0315,
+   "catch_difference_p50": -0.007900000000000018,
+   "false_rate_observed": 0.8262,
+   "false_rate_displaced_mean": 0.6598857499999999,
+   "false_rate_displaced_median": 0.6561,
+   "false_difference_p90": 0.27080000000000004,
+   "false_difference_p50": 0.17010000000000003,
+   "n_scored_draws": 2000,
+   "note": "description line, not a gate on this read"
+  },
+  "fragmentation": {
+   "n_parent_episodes": 163,
+   "n_parent_episodes_in_window": 147,
+   "n_candidate_decision_starts": 31,
+   "n_retained_starts": 24,
+   "n_removed_fragmented_starts": 7,
+   "n_unassigned_starts": 0,
+   "retained_first_starts": [
+    "2007-08-14",
+    "2008-01-04",
+    "2008-06-23",
+    "2008-09-29",
+    "2008-10-24",
+    "2008-11-19",
+    "2009-02-27",
+    "2011-10-03",
+    "2011-11-18",
+    "2012-10-23",
+    "2012-12-28",
+    "2013-06-05",
+    "2013-06-20",
+    "2013-06-24",
+    "2013-08-27",
+    "2014-09-25",
+    "2014-12-12",
+    "2015-08-20",
+    "2015-12-18",
+    "2016-06-24",
+    "2018-02-05",
+    "2018-10-10",
+    "2018-12-17",
+    "2019-05-09"
+   ],
+   "cluster_share_retained": 0.16535433070866143,
+   "false_per_asset_year_retained": 0.6630391360048491,
+   "n_clusters": 127,
+   "per_asset": {
+    "BAA_10Y": {
+     "starts": 24,
+     "false": 15
+    },
+    "CYC/DEF": {
+     "starts": 24,
+     "false": 6
+    },
+    "DIA": {
+     "starts": 24,
+     "false": 7
+    },
+    "EEM/SPY": {
+     "starts": 24,
+     "false": 9
+    },
+    "HYG/IEF": {
+     "starts": 24,
+     "false": 9
+    },
+    "HY_OAS": {
+     "starts": 24,
+     "false": 18
+    },
+    "IGV/EWDEF": {
+     "starts": 24,
+     "false": 10
+    },
+    "IWM": {
+     "starts": 24,
+     "false": 7
+    },
+    "IWM/SPY": {
+     "starts": 24,
+     "false": 11
+    },
+    "MDY": {
+     "starts": 24,
+     "false": 8
+    },
+    "QQQ": {
+     "starts": 24,
+     "false": 8
+    },
+    "QQQ/EWDEF": {
+     "starts": 24,
+     "false": 6
+    },
+    "RSP": {
+     "starts": 24,
+     "false": 8
+    },
+    "RSP/SPY": {
+     "starts": 24,
+     "false": 10
+    },
+    "RSPT/EWDEF": {
+     "starts": 24,
+     "false": 9
+    },
+    "SMH/EWDEF": {
+     "starts": 24,
+     "false": 11
+    },
+    "SPHB/SPLV": {
+     "starts": 24,
+     "false": 15
+    },
+    "SPY": {
+     "starts": 24,
+     "false": 7
+    },
+    "SPY/GLD": {
+     "starts": 24,
+     "false": 7
+    },
+    "SPY/TLT": {
+     "starts": 24,
+     "false": 6
+    },
+    "XLK/EWDEF": {
+     "starts": 24,
+     "false": 4
+    }
+   },
+   "pre_shock_equity_break": {
+    "n_episodes": 147,
+    "n_either_already": 38,
+    "n_spy_already": 31,
+    "n_qqq_already": 33,
+    "episodes": [
+     {
+      "episode": 16,
+      "episode_start": "2006-03-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 17,
+      "episode_start": "2006-04-03",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 18,
+      "episode_start": "2006-04-27",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 19,
+      "episode_start": "2006-06-20",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 20,
+      "episode_start": "2006-09-12",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 21,
+      "episode_start": "2006-10-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 22,
+      "episode_start": "2006-12-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 23,
+      "episode_start": "2006-12-19",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 24,
+      "episode_start": "2007-01-03",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 25,
+      "episode_start": "2007-01-16",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 26,
+      "episode_start": "2007-05-16",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 27,
+      "episode_start": "2007-05-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 28,
+      "episode_start": "2007-05-30",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 29,
+      "episode_start": "2007-06-08",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 30,
+      "episode_start": "2007-08-09",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 31,
+      "episode_start": "2007-08-13",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 32,
+      "episode_start": "2007-09-24",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 33,
+      "episode_start": "2007-10-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 34,
+      "episode_start": "2007-12-04",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 35,
+      "episode_start": "2007-12-07",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 36,
+      "episode_start": "2007-12-27",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 37,
+      "episode_start": "2008-01-31",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 38,
+      "episode_start": "2008-02-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 39,
+      "episode_start": "2008-02-19",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 40,
+      "episode_start": "2008-03-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 41,
+      "episode_start": "2008-03-25",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 42,
+      "episode_start": "2008-04-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 43,
+      "episode_start": "2008-04-17",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 44,
+      "episode_start": "2008-04-25",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 45,
+      "episode_start": "2008-05-29",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 46,
+      "episode_start": "2008-06-16",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 47,
+      "episode_start": "2008-07-18",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 48,
+      "episode_start": "2008-07-28",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 49,
+      "episode_start": "2008-08-12",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 50,
+      "episode_start": "2008-09-17",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 51,
+      "episode_start": "2008-09-19",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 52,
+      "episode_start": "2008-09-23",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 53,
+      "episode_start": "2008-10-07",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 54,
+      "episode_start": "2008-10-09",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 55,
+      "episode_start": "2008-10-28",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 56,
+      "episode_start": "2008-11-14",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 57,
+      "episode_start": "2008-11-20",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 58,
+      "episode_start": "2008-11-24",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 59,
+      "episode_start": "2008-12-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 60,
+      "episode_start": "2008-12-26",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 61,
+      "episode_start": "2009-01-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 62,
+      "episode_start": "2009-01-22",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 63,
+      "episode_start": "2009-02-25",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 64,
+      "episode_start": "2009-04-09",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 65,
+      "episode_start": "2009-05-04",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 66,
+      "episode_start": "2009-05-29",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 67,
+      "episode_start": "2009-06-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 68,
+      "episode_start": "2009-06-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 69,
+      "episode_start": "2009-10-27",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 70,
+      "episode_start": "2009-12-28",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 71,
+      "episode_start": "2010-03-25",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 72,
+      "episode_start": "2010-11-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 73,
+      "episode_start": "2010-12-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 74,
+      "episode_start": "2011-01-21",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 75,
+      "episode_start": "2011-01-27",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 76,
+      "episode_start": "2011-02-07",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 77,
+      "episode_start": "2011-03-28",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 78,
+      "episode_start": "2011-07-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 79,
+      "episode_start": "2011-08-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 80,
+      "episode_start": "2011-08-25",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 81,
+      "episode_start": "2011-08-29",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 82,
+      "episode_start": "2011-09-16",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 83,
+      "episode_start": "2011-09-29",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 84,
+      "episode_start": "2011-10-12",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 85,
+      "episode_start": "2011-11-16",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 86,
+      "episode_start": "2012-01-24",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 87,
+      "episode_start": "2012-02-10",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 88,
+      "episode_start": "2012-03-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 89,
+      "episode_start": "2012-08-16",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 90,
+      "episode_start": "2012-10-18",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 91,
+      "episode_start": "2012-12-14",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 92,
+      "episode_start": "2013-01-04",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 93,
+      "episode_start": "2013-01-30",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 94,
+      "episode_start": "2013-03-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 95,
+      "episode_start": "2013-05-06",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 96,
+      "episode_start": "2013-05-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 97,
+      "episode_start": "2013-05-20",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 98,
+      "episode_start": "2013-05-23",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 99,
+      "episode_start": "2013-05-29",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 100,
+      "episode_start": "2013-06-11",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 101,
+      "episode_start": "2013-06-21",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 102,
+      "episode_start": "2013-07-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 103,
+      "episode_start": "2013-07-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 104,
+      "episode_start": "2013-07-29",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 105,
+      "episode_start": "2013-08-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 106,
+      "episode_start": "2013-09-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 107,
+      "episode_start": "2013-11-04",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 108,
+      "episode_start": "2013-12-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 109,
+      "episode_start": "2014-03-21",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 110,
+      "episode_start": "2014-06-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 111,
+      "episode_start": "2014-09-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 112,
+      "episode_start": "2014-09-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 113,
+      "episode_start": "2014-09-19",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 114,
+      "episode_start": "2014-12-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 115,
+      "episode_start": "2015-02-09",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 116,
+      "episode_start": "2015-02-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 117,
+      "episode_start": "2015-03-09",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 118,
+      "episode_start": "2015-05-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 119,
+      "episode_start": "2015-05-07",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 120,
+      "episode_start": "2015-05-12",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 121,
+      "episode_start": "2015-06-04",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 122,
+      "episode_start": "2015-06-29",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 123,
+      "episode_start": "2015-07-14",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 124,
+      "episode_start": "2015-08-19",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 125,
+      "episode_start": "2015-09-28",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 126,
+      "episode_start": "2015-11-09",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 127,
+      "episode_start": "2015-12-16",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 128,
+      "episode_start": "2016-03-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 129,
+      "episode_start": "2016-04-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 130,
+      "episode_start": "2016-05-19",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 131,
+      "episode_start": "2016-06-23",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 132,
+      "episode_start": "2016-07-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 133,
+      "episode_start": "2016-08-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 134,
+      "episode_start": "2016-09-14",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 135,
+      "episode_start": "2016-10-12",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 136,
+      "episode_start": "2016-11-10",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 137,
+      "episode_start": "2016-12-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 138,
+      "episode_start": "2017-03-03",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 139,
+      "episode_start": "2017-03-14",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 140,
+      "episode_start": "2017-05-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 141,
+      "episode_start": "2017-07-03",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 142,
+      "episode_start": "2017-07-07",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 143,
+      "episode_start": "2017-10-03",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 144,
+      "episode_start": "2018-02-02",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 145,
+      "episode_start": "2018-02-08",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 146,
+      "episode_start": "2018-02-13",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 147,
+      "episode_start": "2018-04-25",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 148,
+      "episode_start": "2018-05-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 149,
+      "episode_start": "2018-07-24",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 150,
+      "episode_start": "2018-07-27",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 151,
+      "episode_start": "2018-10-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 152,
+      "episode_start": "2018-10-11",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 153,
+      "episode_start": "2018-11-05",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 154,
+      "episode_start": "2018-12-13",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 155,
+      "episode_start": "2019-04-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 156,
+      "episode_start": "2019-05-03",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 157,
+      "episode_start": "2019-06-17",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 158,
+      "episode_start": "2019-08-23",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 159,
+      "episode_start": "2019-09-06",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 160,
+      "episode_start": "2019-10-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 161,
+      "episode_start": "2019-11-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 162,
+      "episode_start": "2019-11-12",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     }
+    ]
+   },
+   "note": "retained event list only; the daily candidate remains frozen"
+  },
+  "runtime_s": 44.5
+ },
+ "dgs10": {
+  "tag": "dgs10",
+  "label": "DESCRIPTION only; never a nomination; one set read in the chance account",
+  "candidate": {
+   "turns_scored": 471,
+   "turns_flagged": 45,
+   "turn_share": 0.0955,
+   "turn_share_ci90": [
+    0.074,
+    0.121
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 18,
+   "cluster_share": 0.1417,
+   "cluster_share_ci90": [
+    0.094,
+    0.203
+   ],
+   "median_delay": -17.0,
+   "censored": 1,
+   "false_per_asset_year": 0.6839,
+   "alert_budget": 0.007542295030186572,
+   "caught_cluster_ids": [
+    "risk_off:peak:1293",
+    "risk_off:peak:1294",
+    "risk_off:peak:1295",
+    "risk_off:peak:1296",
+    "risk_off:peak:1299",
+    "risk_off:peak:1302",
+    "risk_off:peak:1304",
+    "risk_off:peak:1305",
+    "risk_off:peak:1327",
+    "risk_off:peak:1342",
+    "risk_off:peak:1351",
+    "risk_off:peak:1383",
+    "risk_off:peak:1388",
+    "risk_off:trough:2357",
+    "risk_off:trough:2358",
+    "risk_off:trough:2368",
+    "risk_off:trough:2376",
+    "risk_off:trough:2392"
+   ]
+  },
+  "p90": {
+   "kind": "top",
+   "near": "high",
+   "post": 5,
+   "n_draws": 2000,
+   "n_valid_draws": 2000,
+   "observed_cluster_share": 0.1417,
+   "placebo_mean": 0.2514548,
+   "placebo_median": 0.252,
+   "p90": 0.2756,
+   "_runtime_s": 15.5,
+   "_equivalence_50_draws": {
+    "matches_bm_ref": true,
+    "p90": 0.2835,
+    "n_valid_draws": 50
+   }
+  },
+  "references": {
+   "dd": {
+    "turns_scored": 471,
+    "turns_flagged": 10,
+    "turn_share": 0.0212,
+    "turn_share_ci90": [
+     0.012,
+     0.036
+    ],
+    "clusters_scored": 127,
+    "clusters_flagged": 5,
+    "cluster_share": 0.0394,
+    "cluster_share_ci90": [
+     0.016,
+     0.081
+    ],
+    "median_delay": -15.0,
+    "censored": 1,
+    "false_per_asset_year": 0.1527,
+    "alert_budget": 0.007556367176746509
+   },
+   "near": {
+    "turns_scored": 471,
+    "turns_flagged": 89,
+    "turn_share": 0.189,
+    "turn_share_ci90": [
+     0.16,
+     0.221
+    ],
+    "clusters_scored": 127,
+    "clusters_flagged": 38,
+    "cluster_share": 0.2992,
+    "cluster_share_ci90": [
+     0.233,
+     0.373
+    ],
+    "median_delay": -12.0,
+    "censored": 1,
+    "false_per_asset_year": 2.9507,
+    "alert_budget": 0.03373516791335342
+   }
+  },
+  "reference_match": {
+   "dd": {
+    "x": {
+     "BAA_10Y": 0.7256493506493509,
+     "CYC/DEF": 0.5038301126752998,
+     "DIA": 0.43451580625099234,
+     "EEM/SPY": 0.6537776079423789,
+     "HYG/IEF": 0.4210157236592788,
+     "HY_OAS": 0.8478460128322641,
+     "IGV/EWDEF": 0.45878957685818195,
+     "IWM": 0.4966801353596076,
+     "IWM/SPY": 0.2383641205339632,
+     "MDY": 0.47547586380422185,
+     "QQQ": 0.7508672810085146,
+     "QQQ/EWDEF": 0.8089139882261933,
+     "RSP": 0.5208990578959396,
+     "RSP/SPY": 0.1252215628154071,
+     "RSPT/EWDEF": 0.37041365302587087,
+     "SMH/EWDEF": 0.8611829107028883,
+     "SPHB/SPLV": 0.3772007987755304,
+     "SPY": 0.4730816687820076,
+     "SPY/GLD": 0.7331797553125392,
+     "SPY/TLT": 0.6106559194702351,
+     "XLK/EWDEF": 0.807335161642421
+    },
+    "achieved_share": {
+     "BAA_10Y": 0.00823162077774624,
+     "CYC/DEF": 0.007618510158013544,
+     "DIA": 0.007618510158013544,
+     "EEM/SPY": 0.007618510158013544,
+     "HYG/IEF": 0.008112324492979718,
+     "HY_OAS": 0.007076755579749592,
+     "IGV/EWDEF": 0.007618510158013544,
+     "IWM": 0.007618510158013544,
+     "IWM/SPY": 0.007618510158013544,
+     "MDY": 0.007618510158013544,
+     "QQQ": 0.007618510158013544,
+     "QQQ/EWDEF": 0.007618510158013544,
+     "RSP": 0.007618510158013544,
+     "RSP/SPY": 0.007618510158013544,
+     "RSPT/EWDEF": 0.007859733978234583,
+     "SMH/EWDEF": 0.007618510158013544,
+     "SPHB/SPLV": 0.005507113354749885,
+     "SPY": 0.007618510158013544,
+     "SPY/GLD": 0.007618510158013544,
+     "SPY/TLT": 0.007618510158013544,
+     "XLK/EWDEF": 0.007618510158013544
+    },
+    "target_budget": {
+     "BAA_10Y": 0.007663922793074085,
+     "CYC/DEF": 0.007618510158013544,
+     "DIA": 0.007618510158013544,
+     "EEM/SPY": 0.007618510158013544,
+     "HYG/IEF": 0.008112324492979718,
+     "HY_OAS": 0.007348938486663037,
+     "IGV/EWDEF": 0.007618510158013544,
+     "IWM": 0.007618510158013544,
+     "IWM/SPY": 0.007618510158013544,
+     "MDY": 0.007618510158013544,
+     "QQQ": 0.007618510158013544,
+     "QQQ/EWDEF": 0.007618510158013544,
+     "RSP": 0.007618510158013544,
+     "RSP/SPY": 0.007618510158013544,
+     "RSPT/EWDEF": 0.007859733978234583,
+     "SMH/EWDEF": 0.007618510158013544,
+     "SPHB/SPLV": 0.005507113354749885,
+     "SPY": 0.007618510158013544,
+     "SPY/GLD": 0.007618510158013544,
+     "SPY/TLT": 0.007618510158013544,
+     "XLK/EWDEF": 0.007618510158013544
+    }
+   },
+   "near": {
+    "x": {
+     "BAA_10Y": 0.0024937655860350905,
+     "CYC/DEF": 0.029584612888264084,
+     "DIA": -0.0,
+     "EEM/SPY": -0.0,
+     "HYG/IEF": -0.0,
+     "HY_OAS": -0.0,
+     "IGV/EWDEF": 0.007763828877200507,
+     "IWM": -0.0,
+     "IWM/SPY": -0.0,
+     "MDY": 0.0,
+     "QQQ": -0.0,
+     "QQQ/EWDEF": 0.5974065012526042,
+     "RSP": 0.0,
+     "RSP/SPY": -0.0,
+     "RSPT/EWDEF": 0.0007516770350513013,
+     "SMH/EWDEF": 0.6814839335274788,
+     "SPHB/SPLV": 0.029651594254744618,
+     "SPY": 0.0,
+     "SPY/GLD": 0.0,
+     "SPY/TLT": -0.0,
+     "XLK/EWDEF": 0.6535695033956889
+    },
+    "achieved_share": {
+     "BAA_10Y": 0.007380073800738007,
+     "CYC/DEF": 0.007618510158013544,
+     "DIA": 0.11681715575620767,
+     "EEM/SPY": 0.02200902934537246,
+     "HYG/IEF": 0.018408736349453978,
+     "HY_OAS": 0.008165487207403375,
+     "IGV/EWDEF": 0.007618510158013544,
+     "IWM": 0.07279909706546275,
+     "IWM/SPY": 0.007900677200902935,
+     "MDY": 0.0894469525959368,
+     "QQQ": 0.05163656884875847,
+     "QQQ/EWDEF": 0.007618510158013544,
+     "RSP": 0.10750564334085778,
+     "RSP/SPY": 0.022855530474040632,
+     "RSPT/EWDEF": 0.007859733978234583,
+     "SMH/EWDEF": 0.007618510158013544,
+     "SPHB/SPLV": 0.005507113354749885,
+     "SPY": 0.1012979683972912,
+     "SPY/GLD": 0.008182844243792325,
+     "SPY/TLT": 0.022573363431151242,
+     "XLK/EWDEF": 0.007618510158013544
+    },
+    "target_budget": {
+     "BAA_10Y": 0.007663922793074085,
+     "CYC/DEF": 0.007618510158013544,
+     "DIA": 0.007618510158013544,
+     "EEM/SPY": 0.007618510158013544,
+     "HYG/IEF": 0.008112324492979718,
+     "HY_OAS": 0.007348938486663037,
+     "IGV/EWDEF": 0.007618510158013544,
+     "IWM": 0.007618510158013544,
+     "IWM/SPY": 0.007618510158013544,
+     "MDY": 0.007618510158013544,
+     "QQQ": 0.007618510158013544,
+     "QQQ/EWDEF": 0.007618510158013544,
+     "RSP": 0.007618510158013544,
+     "RSP/SPY": 0.007618510158013544,
+     "RSPT/EWDEF": 0.007859733978234583,
+     "SMH/EWDEF": 0.007618510158013544,
+     "SPHB/SPLV": 0.005507113354749885,
+     "SPY": 0.007618510158013544,
+     "SPY/GLD": 0.007618510158013544,
+     "SPY/TLT": 0.007618510158013544,
+     "XLK/EWDEF": 0.007618510158013544
+    }
+   }
+  },
+  "better_reference": "near",
+  "alert_share_pooled": 0.007576488091138264,
+  "alert_share_by_year": {
+   "2006": 0.004,
+   "2007": 0.004,
+   "2008": 0.0277,
+   "2009": 0.0238,
+   "2010": 0.0,
+   "2011": 0.004,
+   "2012": 0.0,
+   "2013": 0.0159,
+   "2014": 0.0079,
+   "2015": 0.0,
+   "2016": 0.004,
+   "2017": 0.0,
+   "2018": 0.0159,
+   "2019": 0.0
+  },
+  "on_starts_canonical": 21,
+  "on_days_canonical": 27,
+  "rule_2b": {
+   "target_alert_share": 0.007576488091138264,
+   "parts": {
+    "Rplus": {
+     "threshold": 0.9980158730158731,
+     "target_share": 0.007576488091138264,
+     "achieved_share_finite_sessions": 0.013016686284013017,
+     "achieved_share_all_sessions": 0.012948906919399943,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    },
+    "B20_SPY": {
+     "threshold": 0.024554281179301515,
+     "target_share": 0.007576488091138264,
+     "achieved_share_finite_sessions": 0.007643841307207644,
+     "achieved_share_all_sessions": 0.007604038956924222,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    },
+    "B20_QQQ": {
+     "threshold": 0.026292347062725777,
+     "target_share": 0.007576488091138264,
+     "achieved_share_finite_sessions": 0.00762999376860763,
+     "achieved_share_all_sessions": 0.007590263524031243,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    },
+    "response_only": {
+     "threshold": 0.021545302657309546,
+     "target_share": 0.007576488091138264,
+     "achieved_share_finite_sessions": 0.007643841307207644,
+     "achieved_share_all_sessions": 0.007604038956924222,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    },
+    "Q5": {
+     "threshold": 0.9980158730158731,
+     "target_share": 0.007576488091138264,
+     "achieved_share_finite_sessions": 0.013016686284013017,
+     "achieved_share_all_sessions": 0.012948906919399943,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    },
+    "D5": {
+     "threshold": 0.42,
+     "target_share": 0.007576488091138264,
+     "achieved_share_finite_sessions": 0.0062452399086062454,
+     "achieved_share_all_sessions": 0.0062127202347333765,
+     "n_observations": 72215,
+     "n_window_sessions": 72593,
+     "n_nonfinite_sessions": 0
+    }
+   },
+   "rows": {
+    "Rplus": {
+     "turns_scored": 471,
+     "turns_flagged": 50,
+     "turn_share": 0.1062,
+     "turn_share_ci90": [
+      0.084,
+      0.132
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 13,
+     "cluster_share": 0.1024,
+     "cluster_share_ci90": [
+      0.062,
+      0.158
+     ],
+     "median_delay": -9.5,
+     "censored": 1,
+     "false_per_asset_year": 0.1875,
+     "alert_budget": 0.012881068918058517,
+     "caught_cluster_ids": [
+      "risk_off:peak:1291",
+      "risk_off:peak:1298",
+      "risk_off:peak:1299",
+      "risk_off:peak:1301",
+      "risk_off:peak:1302",
+      "risk_off:peak:1327",
+      "risk_off:peak:1371",
+      "risk_off:peak:1372",
+      "risk_off:peak:1396",
+      "risk_off:trough:2356",
+      "risk_off:trough:2357",
+      "risk_off:trough:2368",
+      "risk_off:trough:2399"
+     ]
+    },
+    "B20_SPY": {
+     "turns_scored": 471,
+     "turns_flagged": 46,
+     "turn_share": 0.0977,
+     "turn_share_ci90": [
+      0.076,
+      0.123
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 19,
+     "cluster_share": 0.1496,
+     "cluster_share_ci90": [
+      0.1,
+      0.212
+     ],
+     "median_delay": -14.5,
+     "censored": 1,
+     "false_per_asset_year": 0.3714,
+     "alert_budget": 0.007562655350911248,
+     "caught_cluster_ids": [
+      "risk_off:peak:1296",
+      "risk_off:peak:1301",
+      "risk_off:peak:1302",
+      "risk_off:peak:1303",
+      "risk_off:peak:1305",
+      "risk_off:peak:1314",
+      "risk_off:peak:1315",
+      "risk_off:peak:1326",
+      "risk_off:peak:1327",
+      "risk_off:peak:1388",
+      "risk_off:peak:1389",
+      "risk_off:peak:1390",
+      "risk_off:peak:1395",
+      "risk_off:trough:2357",
+      "risk_off:trough:2358",
+      "risk_off:trough:2362",
+      "risk_off:trough:2368",
+      "risk_off:trough:2384",
+      "risk_off:trough:2392"
+     ]
+    },
+    "B20_QQQ": {
+     "turns_scored": 471,
+     "turns_flagged": 33,
+     "turn_share": 0.0701,
+     "turn_share_ci90": [
+      0.052,
+      0.093
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 14,
+     "cluster_share": 0.1102,
+     "cluster_share_ci90": [
+      0.068,
+      0.167
+     ],
+     "median_delay": -18.0,
+     "censored": 1,
+     "false_per_asset_year": 0.3124,
+     "alert_budget": 0.0075580312658467845,
+     "caught_cluster_ids": [
+      "risk_off:peak:1294",
+      "risk_off:peak:1301",
+      "risk_off:peak:1302",
+      "risk_off:peak:1303",
+      "risk_off:peak:1314",
+      "risk_off:peak:1326",
+      "risk_off:peak:1383",
+      "risk_off:peak:1384",
+      "risk_off:peak:1388",
+      "risk_off:peak:1390",
+      "risk_off:peak:1395",
+      "risk_off:trough:2357",
+      "risk_off:trough:2362",
+      "risk_off:trough:2384"
+     ]
+    },
+    "response_only": {
+     "turns_scored": 471,
+     "turns_flagged": 49,
+     "turn_share": 0.104,
+     "turn_share_ci90": [
+      0.082,
+      0.13
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 20,
+     "cluster_share": 0.1575,
+     "cluster_share_ci90": [
+      0.107,
+      0.221
+     ],
+     "median_delay": -17.0,
+     "censored": 1,
+     "false_per_asset_year": 0.3992,
+     "alert_budget": 0.0075715478845294545,
+     "caught_cluster_ids": [
+      "risk_off:peak:1299",
+      "risk_off:peak:1301",
+      "risk_off:peak:1302",
+      "risk_off:peak:1303",
+      "risk_off:peak:1305",
+      "risk_off:peak:1314",
+      "risk_off:peak:1315",
+      "risk_off:peak:1326",
+      "risk_off:peak:1327",
+      "risk_off:peak:1383",
+      "risk_off:peak:1388",
+      "risk_off:peak:1389",
+      "risk_off:peak:1390",
+      "risk_off:peak:1395",
+      "risk_off:trough:2357",
+      "risk_off:trough:2358",
+      "risk_off:trough:2362",
+      "risk_off:trough:2368",
+      "risk_off:trough:2384",
+      "risk_off:trough:2392"
+     ]
+    },
+    "Q5": {
+     "turns_scored": 471,
+     "turns_flagged": 50,
+     "turn_share": 0.1062,
+     "turn_share_ci90": [
+      0.084,
+      0.132
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 13,
+     "cluster_share": 0.1024,
+     "cluster_share_ci90": [
+      0.062,
+      0.158
+     ],
+     "median_delay": -9.5,
+     "censored": 1,
+     "false_per_asset_year": 0.1875,
+     "alert_budget": 0.012881068918058517,
+     "caught_cluster_ids": [
+      "risk_off:peak:1291",
+      "risk_off:peak:1298",
+      "risk_off:peak:1299",
+      "risk_off:peak:1301",
+      "risk_off:peak:1302",
+      "risk_off:peak:1327",
+      "risk_off:peak:1371",
+      "risk_off:peak:1372",
+      "risk_off:peak:1396",
+      "risk_off:trough:2356",
+      "risk_off:trough:2357",
+      "risk_off:trough:2368",
+      "risk_off:trough:2399"
+     ]
+    },
+    "D5": {
+     "turns_scored": 471,
+     "turns_flagged": 38,
+     "turn_share": 0.0807,
+     "turn_share_ci90": [
+      0.061,
+      0.104
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 8,
+     "cluster_share": 0.063,
+     "cluster_share_ci90": [
+      0.032,
+      0.111
+     ],
+     "median_delay": -8.0,
+     "censored": 1,
+     "false_per_asset_year": 0.0764,
+     "alert_budget": 0.006187226839182799,
+     "caught_cluster_ids": [
+      "risk_off:peak:1302",
+      "risk_off:peak:1307",
+      "risk_off:peak:1327",
+      "risk_off:peak:1371",
+      "risk_off:peak:1372",
+      "risk_off:trough:2357",
+      "risk_off:trough:2359",
+      "risk_off:trough:2368"
+     ]
+    }
+   },
+   "verdict_mandatory_parts": {
+    "a": false,
+    "b": false,
+    "c": false,
+    "criteria_met": [],
+    "nomination": false,
+    "parts_checked": 4
+   },
+   "nomination": false,
+   "nomination_note": "forced False: fixed rule read as a description after earlier reads; never a nomination"
+  },
+  "diagnosis": {
+   "sign_gate_Rplus_vs_Q5": {
+    "candidate_cluster_share": 0.1024,
+    "other_cluster_share": 0.1024,
+    "candidate_false": 0.1875,
+    "other_false": 0.1875,
+    "false_lower": false,
+    "catch_higher": false,
+    "catch_delta": 0.0,
+    "false_delta": 0.0
+   },
+   "response_condition_A_R_vs_Rplus": {
+    "candidate_cluster_share": 0.1417,
+    "other_cluster_share": 0.1024,
+    "candidate_false": 0.6839,
+    "other_false": 0.1875,
+    "false_lower": false,
+    "catch_higher": true,
+    "catch_delta": 0.0393,
+    "false_delta": 0.4964
+   },
+   "A_R_vs_response_only": {
+    "candidate_cluster_share": 0.1417,
+    "other_cluster_share": 0.1575,
+    "candidate_false": 0.6839,
+    "other_false": 0.3992,
+    "false_lower": false,
+    "catch_higher": false,
+    "catch_delta": -0.0158,
+    "false_delta": 0.2847
+   },
+   "rows": {
+    "A_R": {
+     "turns_scored": 471,
+     "turns_flagged": 45,
+     "turn_share": 0.0955,
+     "turn_share_ci90": [
+      0.074,
+      0.121
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 18,
+     "cluster_share": 0.1417,
+     "cluster_share_ci90": [
+      0.094,
+      0.203
+     ],
+     "median_delay": -17.0,
+     "censored": 1,
+     "false_per_asset_year": 0.6839,
+     "alert_budget": 0.007542295030186572
+    },
+    "Rplus": {
+     "turns_scored": 471,
+     "turns_flagged": 50,
+     "turn_share": 0.1062,
+     "turn_share_ci90": [
+      0.084,
+      0.132
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 13,
+     "cluster_share": 0.1024,
+     "cluster_share_ci90": [
+      0.062,
+      0.158
+     ],
+     "median_delay": -9.5,
+     "censored": 1,
+     "false_per_asset_year": 0.1875,
+     "alert_budget": 0.012881068918058517
+    },
+    "Q5": {
+     "turns_scored": 471,
+     "turns_flagged": 50,
+     "turn_share": 0.1062,
+     "turn_share_ci90": [
+      0.084,
+      0.132
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 13,
+     "cluster_share": 0.1024,
+     "cluster_share_ci90": [
+      0.062,
+      0.158
+     ],
+     "median_delay": -9.5,
+     "censored": 1,
+     "false_per_asset_year": 0.1875,
+     "alert_budget": 0.012881068918058517
+    },
+    "D5": {
+     "turns_scored": 471,
+     "turns_flagged": 38,
+     "turn_share": 0.0807,
+     "turn_share_ci90": [
+      0.061,
+      0.104
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 8,
+     "cluster_share": 0.063,
+     "cluster_share_ci90": [
+      0.032,
+      0.111
+     ],
+     "median_delay": -8.0,
+     "censored": 1,
+     "false_per_asset_year": 0.0764,
+     "alert_budget": 0.006187226839182799
+    },
+    "response_only": {
+     "turns_scored": 471,
+     "turns_flagged": 49,
+     "turn_share": 0.104,
+     "turn_share_ci90": [
+      0.082,
+      0.13
+     ],
+     "clusters_scored": 127,
+     "clusters_flagged": 20,
+     "cluster_share": 0.1575,
+     "cluster_share_ci90": [
+      0.107,
+      0.221
+     ],
+     "median_delay": -17.0,
+     "censored": 1,
+     "false_per_asset_year": 0.3992,
+     "alert_budget": 0.0075715478845294545
+    }
+   }
+  },
+  "native_leg": null,
+  "control": {
+   "status": "NOT_ESTIMABLE",
+   "reason": "only 730 qualifying draws in 200000 offset vectors (need 2000)",
+   "seed": 20261113,
+   "offset_vectors_generated": 200000,
+   "draws_generated": 200000,
+   "draws_accepted": 730,
+   "draws_required": 2000,
+   "max_offset_vectors": 200000,
+   "shift_bounds_per_year": {
+    "2006": [
+     27,
+     224
+    ],
+    "2007": [
+     27,
+     224
+    ],
+    "2008": [
+     27,
+     226
+    ],
+    "2009": [
+     27,
+     225
+    ],
+    "2010": [
+     27,
+     225
+    ],
+    "2011": [
+     27,
+     225
+    ],
+    "2012": [
+     27,
+     223
+    ],
+    "2013": [
+     27,
+     225
+    ],
+    "2014": [
+     27,
+     225
+    ],
+    "2015": [
+     27,
+     225
+    ],
+    "2016": [
+     27,
+     225
+    ],
+    "2017": [
+     27,
+     224
+    ],
+    "2018": [
+     27,
+     224
+    ],
+    "2019": [
+     27,
+     225
+    ]
+   },
+   "acceptance_rate": 0.00365,
+   "observed_on_days": 27,
+   "observed_starts": 21,
+   "observed_run_lengths": {
+    "n": 21,
+    "lengths": [
+     1,
+     1,
+     2,
+     2,
+     1,
+     1,
+     1,
+     1,
+     3,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     2,
+     1,
+     1,
+     1,
+     2
+    ],
+    "median": 1.0,
+    "max": 3
+   },
+   "count_matching": {
+    "observed_on_days": 27,
+    "observed_starts": 21,
+    "tolerance": 1,
+    "generated_start_count_histogram": {
+     "10": 1,
+     "11": 4,
+     "12": 7,
+     "13": 8,
+     "14": 30,
+     "15": 69,
+     "16": 173,
+     "17": 287,
+     "18": 574,
+     "19": 995,
+     "20": 1692,
+     "21": 2671,
+     "22": 4005,
+     "23": 5686,
+     "24": 7593,
+     "25": 9977,
+     "26": 12070,
+     "27": 14092,
+     "28": 15609,
+     "29": 16629,
+     "30": 16942,
+     "31": 16417,
+     "32": 15243,
+     "33": 13500,
+     "34": 11858,
+     "35": 9417,
+     "36": 7521,
+     "37": 5526,
+     "38": 4129,
+     "39": 2654,
+     "40": 1814,
+     "41": 1172,
+     "42": 742,
+     "43": 402,
+     "44": 239,
+     "45": 132,
+     "46": 56,
+     "47": 39,
+     "48": 14,
+     "49": 7,
+     "51": 2,
+     "52": 1,
+     "58": 1
+    },
+    "generated_on_day_histogram": {
+     "15": 2,
+     "16": 1,
+     "17": 4,
+     "18": 11,
+     "19": 19,
+     "20": 29,
+     "21": 44,
+     "22": 71,
+     "23": 95,
+     "24": 135,
+     "25": 204,
+     "26": 337,
+     "27": 449,
+     "28": 684,
+     "29": 937,
+     "30": 1152,
+     "31": 1568,
+     "32": 1976,
+     "33": 2446,
+     "34": 2996,
+     "35": 3670,
+     "36": 4546,
+     "37": 5085,
+     "38": 5811,
+     "39": 6597,
+     "40": 7248,
+     "41": 8045,
+     "42": 8449,
+     "43": 8814,
+     "44": 9156,
+     "45": 9776,
+     "46": 9789,
+     "47": 9576,
+     "48": 9338,
+     "49": 9271,
+     "50": 8932,
+     "51": 8413,
+     "52": 7712,
+     "53": 7101,
+     "54": 6274,
+     "55": 5604,
+     "56": 4922,
+     "57": 4181,
+     "58": 3650,
+     "59": 3033,
+     "60": 2573,
+     "61": 2133,
+     "62": 1702,
+     "63": 1330,
+     "64": 1093,
+     "65": 815,
+     "66": 631,
+     "67": 459,
+     "68": 331,
+     "69": 249,
+     "70": 165,
+     "71": 122,
+     "72": 74,
+     "73": 61,
+     "74": 42,
+     "75": 19,
+     "76": 20,
+     "77": 7,
+     "78": 6,
+     "79": 4,
+     "80": 4,
+     "81": 3,
+     "82": 3,
+     "92": 1
+    },
+    "accepted_run_length_histogram": {
+     "1": 11660,
+     "2": 2735,
+     "3": 640,
+     "4": 166,
+     "5": 25,
+     "6": 14
+    },
+    "accepted_on_day_range": [
+     26,
+     28
+    ],
+    "accepted_start_range": [
+     20,
+     22
+    ]
+   },
+   "displaced_starts": {
+    "min": 20,
+    "median": 21.0,
+    "max": 22,
+    "mean": 20.876712328767123
+   },
+   "displaced_on_days": {
+    "min": 26,
+    "max": 28
+   },
+   "catch_share_observed": 0.1417,
+   "catch_share_displaced_mean": 0.12275123287671232,
+   "catch_share_displaced_median": 0.126,
+   "catch_difference_p10": -0.007900000000000018,
+   "catch_difference_p50": 0.015699999999999992,
+   "false_rate_observed": 0.6839,
+   "false_rate_displaced_mean": 0.48520068493150686,
+   "false_rate_displaced_median": 0.4825,
+   "false_difference_p90": 0.2986,
+   "false_difference_p50": 0.20139999999999997,
+   "n_scored_draws": 730,
+   "note": "description line, not a gate on this read"
+  },
+  "fragmentation": {
+   "n_parent_episodes": 173,
+   "n_parent_episodes_in_window": 158,
+   "n_candidate_decision_starts": 21,
+   "n_retained_starts": 18,
+   "n_removed_fragmented_starts": 3,
+   "n_unassigned_starts": 0,
+   "retained_first_starts": [
+    "2006-02-07",
+    "2007-11-08",
+    "2008-01-04",
+    "2008-06-23",
+    "2008-09-29",
+    "2008-10-24",
+    "2009-01-14",
+    "2009-02-27",
+    "2009-03-05",
+    "2011-10-03",
+    "2013-06-05",
+    "2013-06-20",
+    "2013-06-24",
+    "2013-08-27",
+    "2014-12-12",
+    "2016-06-27",
+    "2018-02-05",
+    "2018-10-10"
+   ],
+   "cluster_share_retained": 0.13385826771653545,
+   "false_per_asset_year_retained": 0.6074965905803591,
+   "n_clusters": 127,
+   "per_asset": {
+    "BAA_10Y": {
+     "starts": 18,
+     "false": 9
+    },
+    "CYC/DEF": {
+     "starts": 18,
+     "false": 7
+    },
+    "DIA": {
+     "starts": 18,
+     "false": 7
+    },
+    "EEM/SPY": {
+     "starts": 18,
+     "false": 7
+    },
+    "HYG/IEF": {
+     "starts": 18,
+     "false": 9
+    },
+    "HY_OAS": {
+     "starts": 18,
+     "false": 12
+    },
+    "IGV/EWDEF": {
+     "starts": 18,
+     "false": 9
+    },
+    "IWM": {
+     "starts": 18,
+     "false": 7
+    },
+    "IWM/SPY": {
+     "starts": 18,
+     "false": 8
+    },
+    "MDY": {
+     "starts": 18,
+     "false": 8
+    },
+    "QQQ": {
+     "starts": 18,
+     "false": 7
+    },
+    "QQQ/EWDEF": {
+     "starts": 18,
+     "false": 8
+    },
+    "RSP": {
+     "starts": 18,
+     "false": 8
+    },
+    "RSP/SPY": {
+     "starts": 18,
+     "false": 8
+    },
+    "RSPT/EWDEF": {
+     "starts": 18,
+     "false": 12
+    },
+    "SMH/EWDEF": {
+     "starts": 18,
+     "false": 9
+    },
+    "SPHB/SPLV": {
+     "starts": 18,
+     "false": 15
+    },
+    "SPY": {
+     "starts": 18,
+     "false": 7
+    },
+    "SPY/GLD": {
+     "starts": 18,
+     "false": 5
+    },
+    "SPY/TLT": {
+     "starts": 18,
+     "false": 8
+    },
+    "XLK/EWDEF": {
+     "starts": 18,
+     "false": 5
+    }
+   },
+   "pre_shock_equity_break": {
+    "n_episodes": 158,
+    "n_either_already": 33,
+    "n_spy_already": 28,
+    "n_qqq_already": 23,
+    "episodes": [
+     {
+      "episode": 15,
+      "episode_start": "2006-01-26",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 16,
+      "episode_start": "2006-03-07",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 17,
+      "episode_start": "2006-04-03",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 18,
+      "episode_start": "2006-04-13",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 19,
+      "episode_start": "2006-05-02",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 20,
+      "episode_start": "2006-06-19",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 21,
+      "episode_start": "2006-10-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 22,
+      "episode_start": "2006-12-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 23,
+      "episode_start": "2007-01-03",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 24,
+      "episode_start": "2007-01-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 25,
+      "episode_start": "2007-01-30",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 26,
+      "episode_start": "2007-05-21",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 27,
+      "episode_start": "2007-05-23",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 28,
+      "episode_start": "2007-06-08",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 29,
+      "episode_start": "2007-07-10",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 30,
+      "episode_start": "2007-09-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 31,
+      "episode_start": "2007-10-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 32,
+      "episode_start": "2007-11-01",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 33,
+      "episode_start": "2007-12-10",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 34,
+      "episode_start": "2007-12-13",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 35,
+      "episode_start": "2007-12-19",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 36,
+      "episode_start": "2007-12-27",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 37,
+      "episode_start": "2008-01-30",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 38,
+      "episode_start": "2008-02-20",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 39,
+      "episode_start": "2008-02-26",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 40,
+      "episode_start": "2008-03-25",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 41,
+      "episode_start": "2008-03-28",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 42,
+      "episode_start": "2008-04-17",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 43,
+      "episode_start": "2008-04-28",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 44,
+      "episode_start": "2008-05-29",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 45,
+      "episode_start": "2008-06-11",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 46,
+      "episode_start": "2008-06-13",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 47,
+      "episode_start": "2008-07-18",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 48,
+      "episode_start": "2008-09-23",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 49,
+      "episode_start": "2008-10-10",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 50,
+      "episode_start": "2008-10-30",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 51,
+      "episode_start": "2009-01-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 52,
+      "episode_start": "2009-01-22",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 53,
+      "episode_start": "2009-01-30",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 54,
+      "episode_start": "2009-02-04",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 55,
+      "episode_start": "2009-02-09",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 56,
+      "episode_start": "2009-02-26",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 57,
+      "episode_start": "2009-03-02",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 58,
+      "episode_start": "2009-03-26",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 59,
+      "episode_start": "2009-04-07",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 60,
+      "episode_start": "2009-05-01",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 61,
+      "episode_start": "2009-05-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 62,
+      "episode_start": "2009-05-22",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 63,
+      "episode_start": "2009-06-02",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 64,
+      "episode_start": "2009-06-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 65,
+      "episode_start": "2009-06-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 66,
+      "episode_start": "2009-07-16",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 67,
+      "episode_start": "2009-07-20",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 68,
+      "episode_start": "2009-08-10",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 69,
+      "episode_start": "2009-10-16",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 70,
+      "episode_start": "2009-12-07",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 71,
+      "episode_start": "2009-12-28",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 72,
+      "episode_start": "2010-10-28",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 73,
+      "episode_start": "2010-11-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 74,
+      "episode_start": "2010-11-19",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 75,
+      "episode_start": "2010-12-02",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 76,
+      "episode_start": "2010-12-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 77,
+      "episode_start": "2011-02-07",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 78,
+      "episode_start": "2011-07-01",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 79,
+      "episode_start": "2011-08-30",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 80,
+      "episode_start": "2011-09-30",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 81,
+      "episode_start": "2011-10-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 82,
+      "episode_start": "2011-10-28",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 83,
+      "episode_start": "2011-12-02",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 84,
+      "episode_start": "2011-12-27",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 85,
+      "episode_start": "2012-01-24",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 86,
+      "episode_start": "2012-02-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 87,
+      "episode_start": "2012-02-10",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 88,
+      "episode_start": "2012-03-14",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 89,
+      "episode_start": "2012-06-11",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 90,
+      "episode_start": "2012-08-10",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 91,
+      "episode_start": "2012-08-21",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 92,
+      "episode_start": "2012-09-13",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 93,
+      "episode_start": "2012-09-17",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 94,
+      "episode_start": "2012-12-14",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 95,
+      "episode_start": "2012-12-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 96,
+      "episode_start": "2013-01-04",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 97,
+      "episode_start": "2013-01-30",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 98,
+      "episode_start": "2013-03-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 99,
+      "episode_start": "2013-05-09",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 100,
+      "episode_start": "2013-05-24",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 101,
+      "episode_start": "2013-05-29",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 102,
+      "episode_start": "2013-06-13",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 103,
+      "episode_start": "2013-06-21",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 104,
+      "episode_start": "2013-07-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 105,
+      "episode_start": "2013-07-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 106,
+      "episode_start": "2013-08-16",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 107,
+      "episode_start": "2013-08-22",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 108,
+      "episode_start": "2013-09-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 109,
+      "episode_start": "2013-11-06",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 110,
+      "episode_start": "2013-11-13",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 111,
+      "episode_start": "2014-03-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 112,
+      "episode_start": "2014-06-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 113,
+      "episode_start": "2014-09-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 114,
+      "episode_start": "2014-12-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 115,
+      "episode_start": "2014-12-24",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 116,
+      "episode_start": "2015-02-09",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 117,
+      "episode_start": "2015-02-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 118,
+      "episode_start": "2015-02-23",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 119,
+      "episode_start": "2015-03-04",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 120,
+      "episode_start": "2015-03-09",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 121,
+      "episode_start": "2015-05-04",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 122,
+      "episode_start": "2015-06-03",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 123,
+      "episode_start": "2015-06-29",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 124,
+      "episode_start": "2015-07-14",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 125,
+      "episode_start": "2015-08-31",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 126,
+      "episode_start": "2015-10-13",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 127,
+      "episode_start": "2015-10-30",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 128,
+      "episode_start": "2015-11-03",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 129,
+      "episode_start": "2015-11-09",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 130,
+      "episode_start": "2016-02-22",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 131,
+      "episode_start": "2016-03-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 132,
+      "episode_start": "2016-03-16",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 133,
+      "episode_start": "2016-04-25",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 134,
+      "episode_start": "2016-05-19",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 135,
+      "episode_start": "2016-05-23",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": false,
+      "either_already": true
+     },
+     {
+      "episode": 136,
+      "episode_start": "2016-06-24",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 137,
+      "episode_start": "2016-07-13",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 138,
+      "episode_start": "2016-07-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 139,
+      "episode_start": "2016-08-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 140,
+      "episode_start": "2016-09-14",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 141,
+      "episode_start": "2016-10-06",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 142,
+      "episode_start": "2016-10-12",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 143,
+      "episode_start": "2016-11-10",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 144,
+      "episode_start": "2016-12-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 145,
+      "episode_start": "2017-01-25",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 146,
+      "episode_start": "2017-02-16",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 147,
+      "episode_start": "2017-03-06",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 148,
+      "episode_start": "2017-04-26",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 149,
+      "episode_start": "2017-07-03",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 150,
+      "episode_start": "2017-07-07",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 151,
+      "episode_start": "2017-09-15",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 152,
+      "episode_start": "2017-10-27",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 153,
+      "episode_start": "2017-12-21",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 154,
+      "episode_start": "2018-02-02",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 155,
+      "episode_start": "2018-04-23",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 156,
+      "episode_start": "2018-05-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 157,
+      "episode_start": "2018-06-06",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 158,
+      "episode_start": "2018-07-27",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 159,
+      "episode_start": "2018-10-05",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 160,
+      "episode_start": "2018-11-05",
+      "B20_SPY_already": true,
+      "B20_QQQ_already": true,
+      "either_already": true
+     },
+     {
+      "episode": 161,
+      "episode_start": "2019-01-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 162,
+      "episode_start": "2019-03-04",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 163,
+      "episode_start": "2019-04-04",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 164,
+      "episode_start": "2019-04-18",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 165,
+      "episode_start": "2019-07-12",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 166,
+      "episode_start": "2019-08-23",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 167,
+      "episode_start": "2019-09-06",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 168,
+      "episode_start": "2019-09-10",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 169,
+      "episode_start": "2019-10-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 170,
+      "episode_start": "2019-11-08",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 171,
+      "episode_start": "2019-12-11",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     },
+     {
+      "episode": 172,
+      "episode_start": "2019-12-19",
+      "B20_SPY_already": false,
+      "B20_QQQ_already": false,
+      "either_already": false
+     }
+    ]
+   },
+   "note": "retained event list only; the daily candidate remains frozen"
+  },
+  "runtime_s": 53.1
+ },
+ "cluster_overlap_dfii10_vs_dgs10": {
+  "n_dfii10": 22,
+  "n_dgs10": 18,
+  "both": [
+   "risk_off:peak:1295",
+   "risk_off:peak:1296",
+   "risk_off:peak:1299",
+   "risk_off:peak:1302",
+   "risk_off:peak:1327",
+   "risk_off:peak:1342",
+   "risk_off:peak:1351",
+   "risk_off:peak:1383",
+   "risk_off:peak:1388",
+   "risk_off:trough:2357",
+   "risk_off:trough:2368",
+   "risk_off:trough:2376",
+   "risk_off:trough:2392"
+  ],
+  "only_dfii10": [
+   "risk_off:peak:1292",
+   "risk_off:peak:1303",
+   "risk_off:peak:1336",
+   "risk_off:peak:1337",
+   "risk_off:peak:1349",
+   "risk_off:peak:1390",
+   "risk_off:peak:1393",
+   "risk_off:trough:2371",
+   "risk_off:trough:2384"
+  ],
+  "only_dgs10": [
+   "risk_off:peak:1293",
+   "risk_off:peak:1294",
+   "risk_off:peak:1304",
+   "risk_off:peak:1305",
+   "risk_off:trough:2358"
+  ],
+  "counts": {
+   "both": 13,
+   "only_dfii10": 9,
+   "only_dgs10": 5
+  }
+ },
+ "deviations": [
+  "The two rate legs: DFII10 qR is the engine's own pit_signals('rates_realrate') series; dy5 is the same PIT replay's DFII10.diff(5) (released observations only, ffilled onto the engine sessions), verified to reproduce qR to 1e-12 on 2004+ replay vs the engine leg.",
+  "The PIT helper has no DGS10 rule: availability.release_dates accepts DEXJPUS / DFII10 / BAMLH0A0HYM2 only, and FRED_FIRST_RELEASE_DATES_v1.csv contains no DGS10 rows. The DGS10 line therefore uses the DFII10 branch's documented rule verbatim: observation t is usable from the next business day (US federal holiday calendar), with the same trailing-504 pct_rank_window of diff(5) applied to released observations only.",
+  "Price predicates: B20 is computed on the desk level series (bm_ref.level_series of the catalogue specs SPY and QQQ, adjusted closes truncated at 2019-12-31), reindexed onto the engine SPY-session calendar with ffill so the three operands share one clock.",
+  "Market-level alert broadcast: A_R is one series built on the engine calendar, shifted t+1 on the full series, then reindexed onto every panel series with ffill (the k3 follow-up convention).",
+  "Rplus validity: an observation is valid when qR and dy5 are both present at s; Rplus is 0 when all five are valid and none has dy5>0, and undefined (NaN, not alerting) otherwise.",
+  "Parts at matched share follow the rev1 shift order: the t+1 shift is applied to the full part score series and the window taken afterwards; part_at_matched_share then takes one pooled threshold per part. For scoring, each part's alert is rebuilt on the full windowed index with a non-finite session counting as not alerting (asserted equal to the function's own alert where both are defined).",
+  "Criterion (c) uses the four mandatory parts (Rplus, B20_SPY, B20_QQQ, response-only min(B20_SPY,B20_QQQ)); Q5 and D5 are reported as adversaries in the diagnosis table and are not part of the pass call.",
+  "Displaced-clock control: one market-level Rplus exists, so each year's single drawn shift is trivially the same for every target asset; the price predicates are unchanged.",
+  "Displaced-clock control: the ON-day/start-count match is evaluated on the engine-calendar windowed candidate alert (the fixed scored support), not on the pooled 21-series panel support; the two differ only by ffill edge sessions. Rplus outside PRE years 2006-2019 is left genuine (only PRE calendar years are circularly shifted), so the first sessions of 2006 can read unshifted 2005 values; declared, not smoothed.",
+  "Displaced-clock control: a draw is scored only after the within-one count filter; catch differences are observed cluster share minus displaced, false differences observed false/asset-yr minus displaced. Fewer than 2,000 qualifying draws = NOT_ESTIMABLE.",
+  "Fragmentation: starts are taken from the unshifted decision series A_R inside the scored support, assigned to the parent J episode containing the most recent qualifying session in t-5..t-1, first start per episode retained at its original published (t+1) date, unassigned starts retained. The retained list is evaluated against the same top windows and episode exemptions; no daily alert array is rebuilt.",
+  "Native comparator cluster ids come from a scoring call on the same window; its aggregate is reported only as the recorded .795 / 4.97 and is NOT re-read or re-verdict.",
+  "Both blocks are DESCRIPTION only: nomination is forced False regardless of any figure."
+ ],
+ "runtime_s": 120.8
+}

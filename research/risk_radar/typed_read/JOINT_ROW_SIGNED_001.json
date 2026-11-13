@@ -1,0 +1,76 @@
+{
+  "id": "rr-typed-read-flags-001",
+  "card": "Risk Radar typed read: each leg's decline-confirmation by channel-flag state (description only)",
+  "family": "R-off",
+  "direction": "top",
+  "role": "description",
+  "typed_read_joint": true,
+  "approved_by_rd": true,
+  "nomination_possible": false,
+  "counts_in_chance_account": true,
+  "chance_account_note": "one set for the whole read; the account goes from 13 to 14 when this row is written",
+  "question": "On which channel-flag states does each leg's decline-confirmation catch hold, and where do its false calls fall?",
+  "type_input": {
+    "file": "regime/types/out/type_history_v1.parquet",
+    "sha256": "d6e77b7cce550f9b295009decdb9f2c5f22637af4b64565d8c323812113bddc5",
+    "format_note_sha256": "bee6728f2af5538f17a380c91128e80739e1a199fe14a74b113c5e2d740963db",
+    "description_sha256": "b8295dfb3174421d220f4c906b1fda673fad204497ce9eb6a7d14a8f434f8565",
+    "rulings": "FORMAT_RULINGS_001 (111b469f) rulings 1, 2, 4 + AMENDMENT_1 (c3154dd1)",
+    "read_only": true
+  },
+  "conditioning": {
+    "both_eras": [
+      "flag_rate",
+      "flag_easing"
+    ],
+    "D_only": [
+      "flag_real_rate",
+      "flag_credit_pressure",
+      "flag_credit_level",
+      "flag_dollar"
+    ],
+    "states": "present | absent | unavailable, each its own cell; unavailable never read as absent; easing PRICE_STRESS_EASING_PARTIAL its own row",
+    "core_label": "pub_label B/N/D/S/U printed as description only, with its U share and source era; never a conditioning cell",
+    "turn_type": "a cluster takes the flag state of its earliest turn's session (ruling 4); count of clusters whose turns carry more than one state is reported",
+    "false_call_type": "a false call takes the flag state of its alert-start session",
+    "PRE_description_group": {
+      "flags": [
+        "flag_real_rate",
+        "flag_credit_pressure",
+        "flag_credit_level",
+        "flag_dollar"
+      ],
+      "label": "description; fails the coverage line in PRE (Addendum A §2)"
+    },
+    "D_usable": "all six flags",
+    "no_rewindowing": "Addendum A §2 was applied once over PRE through 2019-12-31; no 2006-2019 unavailable shares are printed to re-rule",
+    "easing": "kept; counts only under the under-8 rule"
+  },
+  "legs": "the 12 scored legs, each alone at its engine thr_pct as coded (ledger_rows.LEGS); the Radar loud state (elevated|risk-off) as a 13th row labelled 'incumbent (object scored, not a feature)', never combined with any leg or flag into a new rule; no threshold chosen or moved",
+  "signals": "inputs.incumbent_signals() (FRED legs point in time via availability.pit_signals, start 2006-01-03), t+1 shift on the full series before windowing",
+  "scorer": "bm_ref rev1 (f7350e6e) build_context / score_alerts on the 21 desk series, swing episodes, post 5, outcomes_through = era end; adapter 50425797; the harness (typed_read.py, sha recorded at write) only partitions bm_ref's per-turn and per-false-call rows by flag state",
+  "windows": {
+    "PRE": [
+      "2006-01-03",
+      "2019-12-31"
+    ],
+    "D": [
+      "2020-01-02",
+      "2023-12-29"
+    ]
+  },
+  "report_per_cell": "clusters, clusters caught, catch share, false calls per asset-year of sessions in that state, alert share in that state, share of era sessions in that state",
+  "small_cells": "fewer than 8 clusters: counts only, no share",
+  "edge_sensitivity": {
+    "D": "the edge-turns line (last two confirmed turns per series in 2020-23 removed), pending until SA-1 2c lands",
+    "PRE": "a line with the SA-1 2c PRE-differing turns removed, pending until 2c lands",
+    "rule": "if 2c is still out at run time the read goes ahead with both lines marked pending and they are rerun when 2c lands; description, no new row"
+  },
+  "no_gate": "no placebo, reference or (a)-(c) verdict per cell; nothing is declared from a cell; a pattern may only motivate a later separately declared row",
+  "seal": "nothing dated 2024-01-02 or later is loaded; type file ends 2023-12-29",
+  "rd_signature": "RD signed 2026-11-12 with amendments 1-6 (below)",
+  "verbatim_lines": [
+    "An idea first seen in a D cell is forward-only.",
+    "The plain type table found flag-present days do not concentrate turns strongly (rate ratio 1.17–1.38 PRE, 0.88–1.11 D); this read asks a different question (catch and false calls by flag) and is description."
+  ]
+}

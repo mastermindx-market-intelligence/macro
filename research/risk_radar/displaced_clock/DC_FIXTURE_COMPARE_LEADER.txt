@@ -1,0 +1,66 @@
+OK  F1_short/P observed: desk=[[0, 10], [11, 3], [15, 1]] leader=[[0, 10], [11, 3], [15, 1]]
+OK  F1_short/P #adm: desk=24 leader=24
+OK  F1_short/P excluded: desk=[27, 28, 31, 32, 33, 34, 35] leader=[27, 28, 31, 32, 33, 34, 35]
+OK  F1_short/P k_nearest_half: desk=20 leader=20
+OK  F1_short/P runs_nearest_half: desk=[[20, 10], [31, 3], [35, 1]] leader=[[20, 10], [31, 3], [35, 1]]
+OK  F1_short/P runs_at_kmin: desk=[[5, 10], [16, 3], [20, 1]] leader=[[5, 10], [16, 3], [20, 1]]
+OK  F1_short/R observed: desk=[[0, 10], [12, 1], [15, 3]] leader=[[0, 10], [12, 1], [15, 3]]
+OK  F1_short/R #adm: desk=24 leader=24
+OK  F1_short/R excluded: desk=[23, 24, 31, 32, 33, 34, 35] leader=[23, 24, 31, 32, 33, 34, 35]
+OK  F1_short/R k_nearest_half: desk=20 leader=20
+OK  F1_short/R runs_nearest_half: desk=[[20, 10], [32, 1], [35, 3]] leader=[[20, 10], [32, 1], [35, 3]]
+OK  F1_short/R runs_at_kmin: desk=[[5, 10], [17, 1], [20, 3]] leader=[[5, 10], [17, 1], [20, 3]]
+OK  F2_right_edge/P observed: desk=[[0, 10]] leader=[[0, 10]]
+OK  F2_right_edge/P #adm: desk=26 leader=26
+OK  F2_right_edge/P excluded: desk=[31, 32, 33, 34, 35] leader=[31, 32, 33, 34, 35]
+OK  F2_right_edge/P k_nearest_half: desk=20 leader=20
+OK  F2_right_edge/P runs_nearest_half: desk=[[20, 10]] leader=[[20, 10]]
+OK  F2_right_edge/P runs_at_kmin: desk=[[5, 10]] leader=[[5, 10]]
+OK  F2_right_edge/R observed: desk=[[30, 10]] leader=[[30, 10]]
+OK  F2_right_edge/R #adm: desk=26 leader=26
+OK  F2_right_edge/R excluded: desk=[5, 6, 7, 8, 9] leader=[5, 6, 7, 8, 9]
+OK  F2_right_edge/R k_nearest_half: desk=20 leader=20
+OK  F2_right_edge/R runs_nearest_half: desk=[[10, 10]] leader=[[10, 10]]
+NOTE F2_right_edge/R K_min=5 not admissible on both? desk flag False, leader first admissible k=10 (5 in leader excluded: True)
+OK  F3_crowded/P observed: desk=[[0, 6], [7, 6], [14, 6], [21, 6]] leader=[[0, 6], [7, 6], [14, 6], [21, 6]]
+OK  F3_crowded/P #adm: desk=15 leader=15
+OK  F3_crowded/P excluded: desk=[14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 35] leader=[14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 35]
+OK  F3_crowded/P k_nearest_half: desk=20 leader=20
+OK  F3_crowded/P runs_nearest_half: desk=[[1, 6], [20, 6], [27, 6], [34, 6]] leader=[[1, 6], [20, 6], [27, 6], [34, 6]]
+OK  F3_crowded/P runs_at_kmin: desk=[[5, 6], [12, 6], [19, 6], [26, 6]] leader=[[5, 6], [12, 6], [19, 6], [26, 6]]
+OK  F3_crowded/R observed: desk=[[0, 6], [7, 6], [14, 6], [21, 6]] leader=[[0, 6], [7, 6], [14, 6], [21, 6]]
+OK  F3_crowded/R #adm: desk=15 leader=15
+OK  F3_crowded/R excluded: desk=[14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 35] leader=[14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 35]
+OK  F3_crowded/R k_nearest_half: desk=20 leader=20
+OK  F3_crowded/R runs_nearest_half: desk=[[1, 6], [20, 6], [27, 6], [34, 6]] leader=[[1, 6], [20, 6], [27, 6], [34, 6]]
+OK  F3_crowded/R runs_at_kmin: desk=[[5, 6], [12, 6], [19, 6], [26, 6]] leader=[[5, 6], [12, 6], [19, 6], [26, 6]]
+OK  F4_empty/P observed: desk=[[0, 5]] leader=[[0, 5]]
+OK  F4_empty/P #adm: desk=31 leader=31
+OK  F4_empty/P excluded: desk=[] leader=[]
+OK  F4_empty/P k_nearest_half: desk=20 leader=20
+OK  F4_empty/P runs_nearest_half: desk=[[20, 5]] leader=[[20, 5]]
+OK  F4_empty/P runs_at_kmin: desk=[[5, 5]] leader=[[5, 5]]
+OK  F4_empty/R defined: desk=False leader=False
+OK  F5_cap_hit/P observed: desk=[[0, 6], [7, 6], [14, 6], [21, 6]] leader=[[0, 6], [7, 6], [14, 6], [21, 6]]
+OK  F5_cap_hit/P #adm: desk=15 leader=15
+OK  F5_cap_hit/P excluded: desk=[14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 35] leader=[14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 35]
+OK  F5_cap_hit/P k_nearest_half: desk=20 leader=20
+OK  F5_cap_hit/P runs_nearest_half: desk=[[1, 6], [20, 6], [27, 6], [34, 6]] leader=[[1, 6], [20, 6], [27, 6], [34, 6]]
+OK  F5_cap_hit/P runs_at_kmin: desk=[[5, 6], [12, 6], [19, 6], [26, 6]] leader=[[5, 6], [12, 6], [19, 6], [26, 6]]
+OK  F5_cap_hit/R observed: desk=[[0, 6], [7, 6], [14, 6], [21, 6]] leader=[[0, 6], [7, 6], [14, 6], [21, 6]]
+OK  F5_cap_hit/R #adm: desk=15 leader=15
+OK  F5_cap_hit/R excluded: desk=[14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 35] leader=[14, 15, 16, 17, 18, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 35]
+OK  F5_cap_hit/R k_nearest_half: desk=20 leader=20
+OK  F5_cap_hit/R runs_nearest_half: desk=[[1, 6], [20, 6], [27, 6], [34, 6]] leader=[[1, 6], [20, 6], [27, 6], [34, 6]]
+OK  F5_cap_hit/R runs_at_kmin: desk=[[5, 6], [12, 6], [19, 6], [26, 6]] leader=[[5, 6], [12, 6], [19, 6], [26, 6]]
+leader cases with no desk row: []
+OK  e observed: desk=[[4, 32]] leader=[[4, 32]]
+OK  e #adm: desk=0 leader=0
+OK  e excluded: desk=[5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35] leader=[5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+OK  prod n=40: desk=0 leader=0
+OK  prod n=100: desk=0 leader=0
+OK  prod n=125: desk=0 leader=0
+OK  prod n=126: desk=1 leader=1
+OK  prod n=127: desk=2 leader=2
+OK  prod n=200: desk=75 leader=75
+FIELDS 63 DIFF 0 []
