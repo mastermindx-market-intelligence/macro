@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T15:39:49.931722+00:00",
-  "count": 3304,
+  "generated_at": "2026-11-13T15:53:59.560909+00:00",
+  "count": 3305,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-024xcdlxcoe-4ac8c2",
+      "title": "Americas Business & Information Services Key takeaways, themes and stock picks in Business & Info Services post 3Q results",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:35:00Z",
+      "summary_points": [
+        "AI Monetization vs Disruption: Proprietary data/workflows (VRSK, EFX, MSCI) outperformed LLM disruption (ROL, PXED); AI viewed as revenue driver (monetization) or threat (disruption), critical for sector differentiation.",
+        "Hyperscaler Debt Issuance: $240bn YTD investment grade issuance (50% AI-related) fueled sector growth; SPGI raised revenue outlook to 6.5-8.0%, MCO’s MIS revenue fell 1.0% y/y.",
+        "KLC EPS Cut as Critical Risk: KLC’s 65% EPS reduction (64.8% EPS variance) drove largest revenue cuts (84%+) and margin contraction (64.8%), distorting sector averages.",
+        "CTAS Buy Catalyst: Cintas (CTAS) accelerated organic revenue growth (8.9% y/y), raised F2027 outlook (8.4%), expanded margins (23.6%), and near-completion of UNF acquisition.",
+        "Info Services Margin Expansion: 42.9% CY3Q EBITDA margin (150bps y/y expansion), driven by pricing power (FICO), data center solutions (IRM), and credit activity (EFX/TRU)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 40,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-hn9vqaixlbm-1f8404",
       "title": "GS Bartlett GS TMT TODAY 11.13.26 13 Nov 2026",
