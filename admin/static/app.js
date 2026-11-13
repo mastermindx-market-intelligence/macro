@@ -5368,7 +5368,7 @@ RENDER.prophet = async () => {
   const llHtml = ll
     ? `<div class="section">Learning loop — postmortem <span class="cnt">${esc(ll.as_of || "—")}</span></div>
        <div class="card">
-         <div class="note" role="status" style="padding:8px 10px;border-left:3px solid var(--warn);background:var(--warn-bg);margin-bottom:10px">
+         <div class="note" role="status" style="padding:8px 10px;border:1px solid var(--border);background:var(--warn-bg);margin-bottom:10px">
            <b>Historical snapshot — as of ${esc(llAsOf || "unknown")}</b>${llAgeDays == null ? " · age unknown" : " · " + llAgeDays + " calendar days old"}. This panel reads a committed artifact; its numbers are NOT a live board verdict or an executable trading policy.
          </div>
          <div class="sub">${Number(ll.n_episodes || 0)} episodes · ${Number(ll.n_matured || 0)} matured across ${Number(ll.n_board_dates || 0)} board dates · ${Number(ll.n_in_flight || 0)} in flight (counted in no rate) · <b>${Number(ll.n_losers || 0)}</b> losers · <b>${Number(ll.n_winners || 0)}</b> winners · H=${esc(String(ll.horizon ?? "—"))}${ll.llm_used === false ? " · no LLM in the classification path" : ""}</div>
