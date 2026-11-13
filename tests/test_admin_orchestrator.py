@@ -25,7 +25,6 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from admin import mastermind_proxy, neural_web, orchestrator_chat, server
-from admin import intelligence_estate_context as estate_context
 
 
 @pytest.fixture(autouse=True)
@@ -64,7 +63,7 @@ def _estate_panel(count=2):
 
 
 def test_estate_context_preserves_blindness_nulls_and_owner_qualifications():
-    result = estate_context.project(_estate_panel())
+    result = orchestrator_chat._project_estate_context(_estate_panel())
     row = result["engines"][0]
     assert result["available"] is True
     assert row["worst_state"] == "fresh" and row["n_blind"] == 1
@@ -81,16 +80,16 @@ def test_estate_context_preserves_blindness_nulls_and_owner_qualifications():
 def test_estate_context_change_key_covers_omitted_engines_but_not_observation_time():
     import copy
     panel = _estate_panel(15)
-    initial = estate_context.project(panel)
+    initial = orchestrator_chat._project_estate_context(panel)
     assert len(initial["engines"]) == 12
     assert initial["coverage"]["engines_omitted"] == 3
     later = copy.deepcopy(panel)
     later["generated"].update(observed_at="2026-11-12T01:00:00Z", cache="hit", compute_seconds=2)
-    observation = estate_context.project(later)
+    observation = orchestrator_chat._project_estate_context(later)
     assert observation["change_key"] == initial["change_key"]
     assert observation["snapshot_digest"] != initial["snapshot_digest"]
     later["engines"][14]["owner_program"] = "owner-b"
-    changed = estate_context.project(later)
+    changed = orchestrator_chat._project_estate_context(later)
     assert changed["engines"] == initial["engines"]
     assert changed["change_key"] != initial["change_key"]
 
@@ -98,28 +97,28 @@ def test_estate_context_change_key_covers_omitted_engines_but_not_observation_ti
 def test_estate_context_caps_complete_json_and_keeps_intact_rows():
     panel = _estate_panel(20)
     panel["engines"][0]["evidence_refs"] = ["证据" * 8000]
-    result = estate_context.project(panel)
-    assert len(json.dumps(result).encode("utf-8")) <= estate_context.MAX_CONTEXT_BYTES
+    result = orchestrator_chat._project_estate_context(panel)
+    assert len(json.dumps(result).encode("utf-8")) <= orchestrator_chat._ESTATE_MAX_CONTEXT_BYTES
     assert result["engines"][0]["engine_id"] == "engine-01"
     assert result["coverage"]["engines_omitted"] == 8
     assert result["coverage"]["limited"] is True
     panel["generated"]["source_generation"] = {"oversized": "x" * 40000}
-    failed = estate_context.project(panel)
+    failed = orchestrator_chat._project_estate_context(panel)
     assert failed["available"] is False
     assert failed["error_code"] == "estate_context_budget_exceeded"
-    assert len(json.dumps(failed).encode("utf-8")) <= estate_context.MAX_CONTEXT_BYTES
+    assert len(json.dumps(failed).encode("utf-8")) <= orchestrator_chat._ESTATE_MAX_CONTEXT_BYTES
 
 
 def test_estate_context_findings_are_bounded_with_unknowns_distinct_from_empty():
     panel = _estate_panel()
     panel["typed_findings"].update(status="recorded", records=[{"id": str(i)} for i in range(5)], gaps=[])
-    result = estate_context.project(panel)
+    result = orchestrator_chat._project_estate_context(panel)
     assert result["finding_records"] == [{"id": "0"}, {"id": "1"}, {"id": "2"}]
     assert result["finding_gaps"] == []
     assert result["coverage"]["finding_records_omitted"] == 2
     before = result["change_key"]
     panel["typed_findings"]["records"][4]["id"] = "changed-omitted"
-    assert estate_context.project(panel)["change_key"] != before
+    assert orchestrator_chat._project_estate_context(panel)["change_key"] != before
 
 
 @pytest.mark.parametrize("code", ["changed_during_read", "evidence_deadline_exceeded",
@@ -129,17 +128,17 @@ def test_estate_context_freezes_owner_failure_without_retry(tmp_path, monkeypatc
     def owner(operation, **kwargs):
         calls.append((operation, kwargs))
         return {"ok": False, "error_code": code, "error": "private diagnostic"}
-    monkeypatch.setattr(estate_context.intelligence_execution, "response", owner)
-    @estate_context.within_invocation
+    monkeypatch.setattr(orchestrator_chat.intelligence_execution, "response", owner)
+    @orchestrator_chat._with_estate_invocation
     def ask():
-        a = estate_context.read(tmp_path, {})
+        a = orchestrator_chat._read_estate_context(tmp_path, {})
         a["error_code"] = "caller-mutated"
-        return estate_context.read(tmp_path, {})
+        return orchestrator_chat._read_estate_context(tmp_path, {})
     result = ask()
     assert result["available"] is False and result["error_code"] == code
     assert calls == [("panel", {"root": tmp_path.resolve(), "force": False})]
     assert "private diagnostic" not in json.dumps(result)
-    assert estate_context.read(tmp_path, {})["error_code"] == "estate_invocation_required"
+    assert orchestrator_chat._read_estate_context(tmp_path, {})["error_code"] == "estate_invocation_required"
 
 
 def test_estate_context_refuses_model_options_and_cross_root_reads(tmp_path, monkeypatch):
@@ -147,13 +146,13 @@ def test_estate_context_refuses_model_options_and_cross_root_reads(tmp_path, mon
     def owner(*args, **kwargs):
         calls.append(kwargs["root"])
         return _estate_panel()
-    monkeypatch.setattr(estate_context.intelligence_execution, "response", owner)
-    @estate_context.within_invocation
+    monkeypatch.setattr(orchestrator_chat.intelligence_execution, "response", owner)
+    @orchestrator_chat._with_estate_invocation
     def ask():
         for params in ({"force": True}, {"root": "/arbitrary"}, [], None):
-            assert estate_context.read(tmp_path, params)["error_code"] == "evidence_request_invalid"
-        first = estate_context.read(tmp_path, {})
-        other = estate_context.read(tmp_path / "other", {})
+            assert orchestrator_chat._read_estate_context(tmp_path, params)["error_code"] == "evidence_request_invalid"
+        first = orchestrator_chat._read_estate_context(tmp_path, {})
+        other = orchestrator_chat._read_estate_context(tmp_path / "other", {})
         assert other["error_code"] == "evidence_binding_not_transferable"
         return first
     assert ask()["available"] is True
@@ -166,7 +165,7 @@ def test_operator_chat_reuses_one_canonical_estate_read_across_rounds_and_turns(
     def collect(command, *, cwd, seconds, limit):
         calls.append((command, seconds, limit))
         return json.dumps({"complete": True, "result": _estate_panel()}).encode()
-    monkeypatch.setattr(estate_context.intelligence_execution, "_collect", collect)
+    monkeypatch.setattr(orchestrator_chat.intelligence_execution, "_collect", collect)
     monkeypatch.setattr(orchestrator_chat, "_resolve_candidates", lambda: [("api_key", "synthetic", "fixture", "fixture")])
     monkeypatch.setattr(orchestrator_chat, "_rate_ok", lambda: True)
     monkeypatch.setattr(orchestrator_chat, "_advice_filter", lambda text: (text, False))
@@ -204,13 +203,13 @@ def test_private_estate_tool_does_not_enter_customer_or_public_cortex_catalogs()
 
 def test_estate_context_complete_result_can_fill_byte_budget_exactly():
     panel = _estate_panel(1)
-    initial = estate_context.project(panel)
-    room = estate_context.MAX_CONTEXT_BYTES - len(json.dumps(initial).encode("utf-8"))
+    initial = orchestrator_chat._project_estate_context(panel)
+    room = orchestrator_chat._ESTATE_MAX_CONTEXT_BYTES - len(json.dumps(initial).encode("utf-8"))
     panel["engines"][0]["evidence_refs"][0] += "x" * room
-    result = estate_context.project(panel)
+    result = orchestrator_chat._project_estate_context(panel)
     assert len(result["engines"]) == 1
     assert result["coverage"]["limited"] is False
-    assert len(json.dumps(result).encode("utf-8")) == estate_context.MAX_CONTEXT_BYTES
+    assert len(json.dumps(result).encode("utf-8")) == orchestrator_chat._ESTATE_MAX_CONTEXT_BYTES
 
 
 def test_operator_estate_observation_survives_existing_provider_retry(tmp_path, monkeypatch):
@@ -219,7 +218,7 @@ def test_operator_estate_observation_survives_existing_provider_retry(tmp_path, 
     def owner(*args, **kwargs):
         owner_calls.append(kwargs)
         return _estate_panel()
-    monkeypatch.setattr(estate_context.intelligence_execution, "response", owner)
+    monkeypatch.setattr(orchestrator_chat.intelligence_execution, "response", owner)
     monkeypatch.setattr(orchestrator_chat, "_resolve_candidates", lambda: [
         ("api_key", "synthetic-a", "a", "a"), ("api_key", "synthetic-b", "b", "b")])
     monkeypatch.setattr(orchestrator_chat, "_build_client", lambda *args: object())
@@ -236,7 +235,7 @@ def test_operator_estate_observation_survives_existing_provider_retry(tmp_path, 
     result = orchestrator_chat.chat("Explain the evidence gap", root=tmp_path)
     assert result["ok"] and not result["degraded"]
     assert snapshots[0] == snapshots[1] and len(owner_calls) == 1
-    assert estate_context.read(tmp_path, {})["error_code"] == "estate_invocation_required"
+    assert orchestrator_chat._read_estate_context(tmp_path, {})["error_code"] == "estate_invocation_required"
 
 @pytest.fixture()
 def orch_repo(tmp_path):
