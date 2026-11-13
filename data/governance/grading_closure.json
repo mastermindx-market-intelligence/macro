@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-11-12T07:21:01.135798+00:00",
+  "generated_at": "2026-11-13T06:12:18.654760+00:00",
   "n_ledgers": 35,
   "n_closed": 28,
   "n_grader_starved": 7,
@@ -15,8 +15,8 @@
         "scripts/grade_qledger.py"
       ],
       "n_logged": 118465,
-      "n_graded": 220286,
-      "last_graded_at": "2026-11-12T07:15:34.090868+00:00",
+      "n_graded": 220621,
+      "last_graded_at": "2026-11-13T06:07:30.695254+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -28,9 +28,9 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 220286,
-      "n_graded": 220286,
-      "last_graded_at": "2026-11-12T07:15:34.090868+00:00",
+      "n_logged": 220621,
+      "n_graded": 220621,
+      "last_graded_at": "2026-11-13T06:07:30.695254+00:00",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -84,8 +84,8 @@
       "graders": [
         "engine/track_record.py"
       ],
-      "n_logged": 62463,
-      "n_graded": 62087,
+      "n_logged": 62473,
+      "n_graded": 62139,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -155,8 +155,8 @@
       "graders": [
         "scripts/grade_breadth_divergence.py"
       ],
-      "n_logged": 682,
-      "n_graded": 377,
+      "n_logged": 684,
+      "n_graded": 382,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -169,8 +169,8 @@
       "graders": [
         "engine/risk_radar_audit.py"
       ],
-      "n_logged": 79,
-      "n_graded": 65,
+      "n_logged": 80,
+      "n_graded": 66,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -339,8 +339,8 @@
       "graders": [
         "engine/market_state_audit.py"
       ],
-      "n_logged": 78,
-      "n_graded": 63,
+      "n_logged": 79,
+      "n_graded": 64,
       "last_graded_at": null,
       "tune_step": "Y",
       "verdict": "CLOSED"
@@ -409,9 +409,9 @@
       "graders": [
         "engine/foresight_grader.py"
       ],
-      "n_logged": 371,
-      "n_graded": 138,
-      "last_graded_at": "2026-11-09",
+      "n_logged": 373,
+      "n_graded": 144,
+      "last_graded_at": "2026-11-12",
       "tune_step": "N",
       "verdict": "CLOSED"
     },
@@ -423,7 +423,7 @@
       "graders": [
         "scripts/grade_policy_calendar.py"
       ],
-      "n_logged": 1455,
+      "n_logged": 1472,
       "n_graded": 1316,
       "last_graded_at": "2026-11-12",
       "tune_step": "N",
@@ -437,7 +437,7 @@
       "graders": [
         "engine/froth_fragility.py"
       ],
-      "n_logged": 76,
+      "n_logged": 77,
       "n_graded": 45,
       "last_graded_at": null,
       "tune_step": "N",
@@ -465,7 +465,7 @@
       "graders": [
         "engine/species_registry.py"
       ],
-      "n_logged": 6409,
+      "n_logged": 6526,
       "n_graded": 0,
       "last_graded_at": null,
       "tune_step": "N",
@@ -479,7 +479,7 @@
       "graders": [
         "engine/species_registry.py"
       ],
-      "n_logged": 6409,
+      "n_logged": 6526,
       "n_graded": 0,
       "last_graded_at": null,
       "tune_step": "N",
