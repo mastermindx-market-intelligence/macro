@@ -63,6 +63,9 @@ from engine.earnings_narrative.story_packets import (  # noqa: E402
     validate_story_packet_manifest,
 )
 from lib.pages import write_page  # noqa: E402
+from scripts.earnings_route_shards import (  # noqa: E402
+    SHARD_DIRNAME, EarningsRouteShardError, build_route_shards,
+)
 from lib.seo import BRAND_NAME, SITE_BASE, page_url  # noqa: E402
 from engine.neuralweb import company_intelligence_reader as _company_reader  # noqa: E402
 from engine.earnings_narrative.private_economic_stage import (  # noqa: E402
@@ -1620,19 +1623,26 @@ def publish_public_wire(
     _atomic_write(out_dir / FEED_FILENAME, _feed(views))
     _atomic_write(out_dir / WIRE_SITEMAP_FILENAME, _wire_sitemap(manifest, weekly=weekly))
     verified_at = (now or datetime.now(timezone.utc)).astimezone(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-    _atomic_write(
-        out_dir / ROUTE_CATALOG_FILENAME,
-        _route_catalog(
-            manifest, alignment=alignment, verified_at=verified_at,
-            company_generation_id=company_generation_id,
-            forward_selection_floor_date=(
-                str(prior_state["forward_selection_floor_date"])
-                if prior_state is not None and prior_state.get("forward_selection_floor_date") is not None
-                else None
-            ),
-            deferred_packet_keys=deferred_packet_keys,
+    route_catalog_bytes = _route_catalog(
+        manifest, alignment=alignment, verified_at=verified_at,
+        company_generation_id=company_generation_id,
+        forward_selection_floor_date=(
+            str(prior_state["forward_selection_floor_date"])
+            if prior_state is not None and prior_state.get("forward_selection_floor_date") is not None
+            else None
         ),
+        deferred_packet_keys=deferred_packet_keys,
     )
+    # The redacted v2 catalog remains authoritative; these small lookup shards
+    # are complete, deterministic projections of the SAME verified generation.
+    # Validate every shard before publishing any route-catalog bytes.
+    try:
+        route_shards = build_route_shards(route_catalog_bytes)
+    except EarningsRouteShardError as exc:
+        raise PublicWireBuildError("public earnings wire route shards are invalid") from exc
+    _atomic_write(out_dir / ROUTE_CATALOG_FILENAME, route_catalog_bytes)
+    for filename, shard_bytes in route_shards.items():
+        _atomic_write(out_dir / SHARD_DIRNAME / filename, shard_bytes)
     _remove_legacy_public_state(out_dir)
 
     current_paths = {_route_path(out_dir, route) for route in manifest["routes"]}
