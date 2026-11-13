@@ -3439,6 +3439,83 @@ def _intel_deliver_via_git(item_id: str) -> tuple[bool, str]:
                    f"it does: {why}.")
 
 
+def _intel_media_readiness(item: dict, cfg: dict, repo: Path) -> dict:
+    """Read the publisher's actual media decision without dispatching anything."""
+    from scripts.marketing_media_backfill import load_sidecar
+    from scripts.marketing_publisher import (
+        _bare_cashtag_post, _card_withheld_for_value, _media_paths_for, _publish_cfg,
+    )
+    pub_cfg = _publish_cfg(cfg)
+    paths = _media_paths_for(item, pub_cfg, load_sidecar(repo))
+    withheld = not item.get("media") and _card_withheld_for_value(item)
+    return {"urls": paths, "blocked": _bare_cashtag_post(item, pub_cfg, paths),
+            "withheld": withheld,
+            "state": "attached" if paths else "withheld" if withheld else "text_only"}
+
+
+def _intel_prepare_media(item: dict, story: dict, draft: dict, *,
+                         repo: Path, cfg: dict) -> dict:
+    """Adapt reviewed story evidence to the incumbent render/judge/host contract."""
+    readiness = _intel_media_readiness(item, cfg, repo)
+    if not readiness["blocked"]:
+        return {"ok": True, "state": readiness["state"]}
+    from engine.marketing.breaking_summary import card_earns_attachment, _card_param_violations
+    from engine.marketing.chart_render import (
+        chart_cta_enabled, derive_card_headline, render_breaking_card,
+    )
+    from engine.marketing.media_publish import publish_card
+
+    evidence = next((row for row in (story.get("evidence") or [])
+                     if isinstance(row, dict) and row.get("url") == draft.get("source_url")), {})
+    card_kwargs = {
+        "headline": derive_card_headline(str(story.get("headline") or "")),
+        "summary": str(story.get("brief") or "").strip() or None,
+        "source_name": str(evidence.get("name") or ""),
+        # The packet's human source-quality label does not distinguish an
+        # official release from a newswire. Unknown prints no authority badge.
+        "source_tier": "unknown",
+        "published_at": str(evidence.get("published_at") or ""),
+        "tickers": None,
+        "event_class": story.get("event_class"),
+        "logo_root": repo,
+        "cta": chart_cta_enabled(cfg),
+    }
+    if _card_param_violations(card_kwargs):
+        return _intel_refuse("card_policy_refused",
+                            "The source text could not be admitted to the card. Nothing was queued.")
+    fit: dict = {}
+    svg = render_breaking_card(fit=fit, **card_kwargs)
+    if not svg or not str(fit.get("headline_drawn") or "").strip():
+        return _intel_refuse("card_render_degraded",
+                            "The card could not be rendered. Nothing was queued; the draft is still available.")
+    attach, why = card_earns_attachment(
+        item["text"], str(fit.get("headline_drawn") or ""),
+        str(fit.get("summary_drawn") or ""), [],
+    )
+    source = item["source"]
+    source["card_fit"] = dict(fit)
+    if not attach:
+        source["card_withheld_for_value"] = True
+        source["card_dropped"] = why
+        return {"ok": True, "state": "withheld"}
+    # A changed source card may accompany identical copy. Content binding keeps
+    # that render from overwriting the image of an already queued item.
+    digest = hashlib.sha256(svg.encode("utf-8")).hexdigest()[:20]
+    chart_id = f"intelligence-{item['id']}-{digest}"
+    published = publish_card(svg, chart_id=chart_id, as_of=item["as_of"], root=repo) or {}
+    entry = {"kind": "chart_svg", "chart_id": chart_id,
+             "path": published.get("svg_path") or
+                     f"data/marketing/outbox/media/{item['as_of']}/{chart_id}.svg"}
+    for key in ("media_url", "media_png_path", "media_render"):
+        if published.get(key):
+            entry[key] = published[key]
+    item["media"] = [entry]
+    if _intel_media_readiness(item, cfg, repo)["blocked"]:
+        return _intel_refuse("media_unhosted",
+                            "The publisher cannot resolve this card. Nothing was queued.")
+    return {"ok": True, "state": "attached"}
+
+
 def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
     """Queue ONE Intelligence Desk draft into the outbox. The click IS the gate.
 
@@ -3448,12 +3525,13 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
     snapshot server-side and the text that reaches the outbox is the desk's own,
     so a tampered or merely stale browser payload cannot post copy no gate saw.
 
-    The chain is the CANONICAL one ``engine/marketing/press_lane.py`` runs, in
-    its order, because a second emission path with its own gate order is how a
-    lane quietly ends up with weaker guards than the one it copied:
+    The existing outbox remains the queue owner. The card decision uses the
+    same render/value/hosting seams as the press lane and is reconciled with
+    the publisher's actual media predicates before any item is queued:
 
-        language law -> value gate stamp -> make_item -> validate_item
-        -> one-owner story lock -> enqueue (id / text / near-dup / cap guards)
+        language law -> canonical item / queue preflight -> media decision
+        -> value gate stamp -> validate_item -> one-owner story lock
+        -> enqueue (id / text / near-dup / cap guards)
 
     A successful enqueue is then DELIVERED (``_intel_deliver``): the outbox the
     publisher reads is the one on MAIN, not this checkout, so the approve click
@@ -3594,6 +3672,57 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
             "story_key": lock_key,
         }
 
+        try:
+            item = _ob.make_item(
+                account=account, kind="breaking", text=text, as_of=as_of,
+                media=[], scheduled_at="immediate", priority=1,
+                provenance=_INTEL_LANE, source=source, now=ts,
+            )
+        except ValueError as exc:
+            return _intel_refuse("item_invalid", str(exc))
+
+        preflight = _ob.preflight_enqueue(
+            account=account, kind="breaking", text=text, as_of=as_of, root=repo, cfg=cfg)
+        original = None
+        if preflight == "duplicate":
+            original = next((row for row in _ob.read_items_all(repo)
+                             if row.get("id") == item["id"] and row.get("text") == text
+                             and (row.get("source") or {}).get("story_id") == sid
+                             and (row.get("source") or {}).get("draft_id") == did), None)
+            if original is None:
+                return _intel_refuse("duplicate",
+                                    "A similar post already exists. Nothing new was queued or delivered.")
+            item = original
+        elif preflight != "ok":
+            return _intel_refuse(preflight, _INTEL_ENQUEUE_DETAIL.get(
+                preflight, f"the outbox refused this item ({preflight})"))
+
+        try:
+            if original is not None:
+                # Delivery retries use the persisted row, never a freshly
+                # generated image or a new withholding flag for the same id.
+                media_ready = _intel_media_readiness(item, cfg, repo)
+                if media_ready["blocked"]:
+                    return _intel_refuse("existing_media_unavailable",
+                        "The existing queued item still needs a usable image. "
+                        "No duplicate or replacement was created; review it in the Outbox.",
+                        item_id=item["id"])
+                media_state = media_ready["state"]
+            else:
+                prepared = _intel_prepare_media(item, story, draft, repo=repo, cfg=cfg)
+                if not prepared.get("ok"):
+                    return prepared
+                media_ready = _intel_media_readiness(item, cfg, repo)
+                media_state = media_ready["state"]
+        except Exception as exc:  # noqa: BLE001 — unavailable is never withheld
+            log.warning("intelligence_approve: media preparation unavailable: %s", exc)
+            return _intel_refuse("media_unavailable",
+                                "The media check could not finish. Nothing new was queued; the draft is still available.")
+
+        # Check current value policy without changing a persisted duplicate's
+        # byte-identical delivery representation.
+        gate_source = dict(item.get("source") or {})
+
         # Gift-Grip-Proof verdict rides on every emission (charter §0). The gate
         # must score the STRING THAT SHIPS (review N4): make_item posts `text`
         # alone — there is no headline+body composition on this lane — so
@@ -3602,16 +3731,17 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
         # is the upstream wire line the informational-surplus test compares
         # against ("we rewrote the headline" is not an answer).
         would_block = _ob.stamp_value_gate(
-            source,
+            gate_source,
             headline="",
             body=text,
             kind="breaking",
-            has_media=False,
+            has_media=bool(media_ready["urls"]),
+            media_withheld=bool(media_ready["withheld"]),
             source_headline=headline,
             citation=source_url,
             cfg=cfg,
         )
-        verdict = source.get("value_gate") or {}
+        verdict = gate_source.get("value_gate") or {}
         if _ob._value_gate_enforced(cfg):
             # stamp_value_gate is fail-soft by design (a downed gate must not
             # silence the automated desks). With enforcement ARMED that softness
@@ -3629,21 +3759,8 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
                        or "no reason recorded"),
                     violations=[str(r) for r in (verdict.get("reasons") or [])])
 
-        try:
-            item = _ob.make_item(
-                account=account,
-                kind="breaking",
-                text=text,
-                as_of=as_of,
-                media=[],
-                scheduled_at="immediate",
-                priority=1,
-                provenance=_INTEL_LANE,
-                source=source,
-                now=ts,
-            )
-        except ValueError as exc:
-            return _intel_refuse("item_invalid", str(exc))
+        if original is None:
+            item["source"] = gate_source
 
         errors = _ob.validate_item(item)
         if errors:
@@ -3680,6 +3797,23 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
                 return _intel_refuse("item_invalid", result.split(":", 1)[1])
             return _intel_refuse(result, _INTEL_ENQUEUE_DETAIL.get(
                 result, f"the outbox refused this item ({result})"))
+        if duplicate_requeue:
+            # A concurrent enqueue can win after the preflight. Its original
+            # bytes own delivery; the losing candidate's media never replaces it.
+            persisted = next((row for row in _ob.read_items_all(repo)
+                              if row.get("id") == item["id"] and row.get("text") == text
+                              and (row.get("source") or {}).get("story_id") == sid
+                              and (row.get("source") or {}).get("draft_id") == did), None)
+            if persisted is None:
+                return _intel_refuse("duplicate",
+                                    "The queue retained another post. No replacement was delivered.")
+            item = persisted
+            media_ready = _intel_media_readiness(item, cfg, repo)
+            if media_ready["blocked"]:
+                return _intel_refuse("existing_media_unavailable",
+                    "The existing queued item still needs a usable image. Review it in the Outbox.",
+                    item_id=item["id"])
+            media_state = media_ready["state"]
 
         # The note says what happens NEXT. Naming the item and the desk is the
         # caller's job (the admin card prints both), so this does not repeat it.
@@ -3689,15 +3823,10 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
             note = ("This draft was already queued on this machine, so the "
                     "click queued nothing twice; delivery was re-checked. "
                     + note)
-        # HONEST ABOUT THE PICTURE. `breaking` sits OUTSIDE the publisher's
-        # _CHART_BEARING_KINDS, so a ticker-bearing item on this lane is not
-        # deferred for a missing chart the way a signal/watchlist post is — it
-        # ships bare. Say so rather than let the operator assume the
-        # every-ticker-post-is-charted law covers this queue.
-        if [t for t in (story.get("tickers") or []) if str(t or "").strip()]:
-            note += (" This one names tickers and will go out as text only: "
-                     "breaking sits outside the publisher's chart-bearing "
-                     "kinds, so no chart is attached.")
+        if media_state == "attached":
+            note += " The card is hosted and attached."
+        elif media_state == "withheld":
+            note += " The rendered card repeated the post, so it was deliberately omitted."
 
         payload = {
             "ok": True,
@@ -3705,6 +3834,7 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
             "account": account,
             "story_id": sid,
             "draft_id": did,
+            "media_state": media_state,
         }
         if duplicate_requeue:
             payload["reason"] = "duplicate"

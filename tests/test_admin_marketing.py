@@ -2870,8 +2870,8 @@ INTEL_SNAPSHOT = {
     "health": {"active_stories": 3, "draft_ready": 2},
     "stories": [
         {
-            # Builder A's machine field present. Carries tickers, so the success
-            # note must be honest about shipping without a chart.
+            # Story metadata carries a ticker; the wire copy has no cashtag.
+            # The media rule must follow the reviewed text, not this metadata.
             "id": "story-alpha",
             "stage": "confirmed",
             "lane": "wire",
@@ -3040,14 +3040,12 @@ class TestIntelligenceApproveSuccess:
         # Every emission carries its Gift-Grip-Proof verdict (charter §0).
         assert "value_gate" in src
 
-    def test_success_note_is_honest_about_the_missing_chart(self, intel_root):
-        """`breaking` sits outside the publisher's _CHART_BEARING_KINDS, so a
-        ticker-bearing item on this lane ships bare instead of deferring. The
-        operator is told, not left to assume the every-ticker-post-is-charted
-        law covers this queue."""
+    def test_story_metadata_does_not_promise_text_only_ticker_delivery(self, intel_root):
+        """Media requirements follow the exact post, not story ticker metadata."""
         r = marketing.intelligence_approve("story-alpha", "draft-wire-1",
                                            root=intel_root)
-        assert "text only" in r["note"]
+        assert r["media_state"] == "text_only"
+        assert "will go out as text only" not in r["note"]
         assert "nothing posts now" in r["note"].lower()
         # A story with no tickers gets the plain note, no chart sentence.
         r2 = marketing.intelligence_approve("story-beta", "draft-beta-1",
@@ -4631,3 +4629,201 @@ class TestPublishingEvidence:
         assert retry_freshness(row)["state"] == "unknown"
         row["provenance"] = "independent_lane"
         assert retry_freshness(row)["state"] == "unscoped"
+
+
+class TestIntelligenceApproveMedia:
+    """The real approved item must agree with the publisher's media decision."""
+
+    @pytest.fixture()
+    def media_root(self, tmp_path, monkeypatch):
+        import copy
+        snapshot = copy.deepcopy(INTEL_SNAPSHOT)
+        story = snapshot['stories'][0]
+        story['brief'] = 'The buyer must sell its European cloud unit before the transaction can close.'
+        story['drafts'][0]['text'] = _INTEL_WIRE_TEXT.replace('Aldon Systems', '$ALD')
+        root = _write_intel_root(tmp_path, snapshot,
+            _INTEL_CFG + 'publish:\n  media_enabled: true\n')
+        monkeypatch.setattr(marketing, '_default_root', lambda: root)
+        monkeypatch.setattr(marketing, '_INTELLIGENCE_LIVE', root / 'no-live-snapshot')
+        return root
+
+    @staticmethod
+    def _wire(monkeypatch, *, drawn='Aldon must sell its European cloud unit.',
+              degraded=False, hosted=True):
+        from engine.marketing import chart_render, media_publish
+        seen = {'renders': [], 'uploads': [], 'deliveries': []}
+
+        def render(*, fit, **kwargs):
+            seen['renders'].append(kwargs)
+            if not degraded:
+                fit.update(headline_drawn=drawn, summary_drawn='',
+                           headline_chars_dropped=0, summary_chars_dropped=0)
+            return '<svg xmlns="http://www.w3.org/2000/svg"><text>' + drawn + '</text></svg>'
+
+        def publish(svg, *, chart_id, as_of, root):
+            seen['uploads'].append({'svg': svg, 'chart_id': chart_id, 'as_of': as_of})
+            receipt = {'svg_path': f'data/marketing/outbox/media/{as_of}/{chart_id}.svg'}
+            if hosted:
+                receipt.update(media_url=f'https://cdn.example.com/{chart_id}.png',
+                    media_png_path=f'data/marketing/outbox/media/{as_of}/{chart_id}.png',
+                    media_render={'renderer': 'isolated-test'})
+            return receipt
+
+        def deliver(item):
+            seen['deliveries'].append(json.loads(json.dumps(item)))
+            return True, 'Reached the shared queue.'
+
+        monkeypatch.setattr(chart_render, 'render_breaking_card', render)
+        monkeypatch.setattr(media_publish, 'publish_card', publish)
+        monkeypatch.setattr(marketing, '_intel_deliver', deliver)
+        return seen
+
+    @staticmethod
+    def _now():
+        from datetime import datetime, timezone
+        return datetime(2026, 7, 29, 14, 30, tzinfo=timezone.utc)
+
+    def test_hosted_card_reaches_real_publisher_media_predicates(self, media_root, monkeypatch):
+        from scripts import marketing_publisher as publisher
+        seen = self._wire(monkeypatch)
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['media_state'] == 'attached', result
+        item = _intel_items(media_root)[0]
+        assert item['text'] == _INTEL_WIRE_TEXT.replace('Aldon Systems', '$ALD')
+        pub_cfg = {'media_enabled': True}
+        paths = publisher._media_paths_for(item, pub_cfg, {})
+        assert paths == [item['media'][0]['media_url']]
+        assert publisher._bare_cashtag_post(item, pub_cfg, paths) == ''
+        assert item['media'][0]['media_render'] == {'renderer': 'isolated-test'}
+        assert item['source']['card_fit']['headline_drawn'] == 'Aldon must sell its European cloud unit.'
+        assert seen['renders'][0]['published_at'] == INTEL_SNAPSHOT['stories'][0]['evidence'][0]['published_at']
+        assert seen['renders'][0]['source_tier'] == 'unknown'
+        assert seen['renders'][0]['tickers'] is None
+        assert seen['deliveries'] == [item]
+
+    def test_redundant_render_gets_the_real_scoped_withholding_receipt(self, media_root, monkeypatch):
+        from scripts import marketing_publisher as publisher
+        text = _INTEL_WIRE_TEXT.replace('Aldon Systems', '$ALD')
+        seen = self._wire(monkeypatch, drawn=text)
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['media_state'] == 'withheld', result
+        item = _intel_items(media_root)[0]
+        assert item['media'] == [] and item['source']['card_withheld_for_value'] is True
+        assert item['source']['card_dropped']
+        assert publisher._bare_cashtag_post(item, {'media_enabled': True}, []) == ''
+        assert seen['uploads'] == [] and len(seen['renders']) == 1
+        # The supplied brief adds information, but only the rendered words count.
+        assert seen['renders'][0]['summary'] and item['source']['card_fit']['summary_drawn'] == ''
+
+    @pytest.mark.parametrize('degraded,hosted,reason', [
+        (True, True, 'card_render_degraded'), (False, False, 'media_unhosted'),
+    ])
+    def test_unavailable_media_refuses_before_enqueue_or_delivery(
+            self, media_root, monkeypatch, degraded, hosted, reason):
+        seen = self._wire(monkeypatch, degraded=degraded, hosted=hosted)
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] is False and result['reason'] == reason, result
+        assert _intel_items(media_root) == [] and seen['deliveries'] == []
+        if degraded:
+            assert seen['uploads'] == []
+
+    def test_repeat_approval_delivers_original_bytes_without_another_render(self, media_root, monkeypatch):
+        from datetime import timedelta
+        seen = self._wire(monkeypatch)
+        first = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        original = _intel_items(media_root)[0]
+        second = marketing.intelligence_approve('story-alpha', 'draft-wire-1',
+                                                 now=self._now() + timedelta(minutes=1))
+        assert first['ok'] and second['ok'] and second['reason'] == 'duplicate'
+        assert seen['deliveries'] == [original, original]
+        assert len(seen['renders']) == len(seen['uploads']) == 1
+        assert _intel_items(media_root) == [original]
+
+    def test_enqueue_race_uses_the_winning_persisted_media(self, media_root, monkeypatch):
+        from engine.marketing import outbox
+        seen = self._wire(monkeypatch)
+        enqueue = outbox.enqueue
+
+        def racing_enqueue(item, root, *, cfg):
+            winner = json.loads(json.dumps(item))
+            winner['media'][0]['media_url'] = 'https://cdn.example.com/winning-card.png'
+            assert enqueue(winner, root, cfg=cfg) == 'queued'
+            return enqueue(item, root, cfg=cfg)
+
+        monkeypatch.setattr(outbox, 'enqueue', racing_enqueue)
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['reason'] == 'duplicate', result
+        original = _intel_items(media_root)[0]
+        assert seen['deliveries'] == [original]
+        assert original['media'][0]['media_url'].endswith('/winning-card.png')
+
+    def test_a_prior_day_duplicate_does_not_deliver_an_unpersisted_candidate(self, media_root, monkeypatch):
+        from datetime import timedelta
+        seen = self._wire(monkeypatch)
+        assert marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())['ok']
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1',
+                                                 now=self._now() + timedelta(days=1))
+        assert result['ok'] is False and result['reason'] == 'duplicate', result
+        assert len(_intel_items(media_root)) == len(seen['deliveries']) == len(seen['uploads']) == 1
+
+    def test_legacy_missing_media_is_not_rewritten_into_an_exemption(self, media_root, monkeypatch):
+        from engine.marketing import outbox
+        seen = self._wire(monkeypatch)
+        original = outbox.make_item(account='mastermind_news', kind='breaking',
+            text=_INTEL_WIRE_TEXT.replace('Aldon Systems', '$ALD'), as_of='2026-07-29',
+            media=[], provenance='intelligence_desk', now=self._now(),
+            source={'story_id': 'story-alpha', 'draft_id': 'draft-wire-1'})
+        assert outbox.enqueue(original, media_root, cfg={'sentinel': {'max_posts_per_account_per_day': -1}}) == 'queued'
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] is False and result['reason'] == 'existing_media_unavailable', result
+        assert result['item_id'] == original['id']
+        assert _intel_items(media_root) == [original]
+        assert seen['renders'] == seen['uploads'] == seen['deliveries'] == []
+
+    def test_disabled_media_does_not_invent_a_render_or_withholding_receipt(self, media_root, monkeypatch):
+        seen = self._wire(monkeypatch)
+        (media_root / 'config/marketing.yml').write_text(
+            _INTEL_CFG + 'publish:\n  media_enabled: false\n', encoding='utf-8')
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['media_state'] == 'text_only', result
+        item = _intel_items(media_root)[0]
+        assert item['media'] == [] and not item['source'].get('card_withheld_for_value')
+        assert seen['renders'] == seen['uploads'] == []
+
+    def test_retry_after_media_disabled_credits_only_current_publishable_evidence(self, media_root, monkeypatch):
+        from engine.marketing import outbox
+        seen = self._wire(monkeypatch)
+        flags = []
+        stamp = outbox.stamp_value_gate
+
+        def observed_stamp(source, **kwargs):
+            flags.append(kwargs['has_media'])
+            return stamp(source, **kwargs)
+
+        monkeypatch.setattr(outbox, 'stamp_value_gate', observed_stamp)
+        assert marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())['ok']
+        original = _intel_items(media_root)[0]
+        (media_root / 'config/marketing.yml').write_text(
+            _INTEL_CFG + 'publish:\n  media_enabled: false\n', encoding='utf-8')
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['media_state'] == 'text_only', result
+        assert 'hosted and attached' not in result['note']
+        assert flags == [True, False]
+        assert seen['deliveries'] == [original, original]
+        assert len(seen['renders']) == len(seen['uploads']) == 1
+
+    def test_actual_renderer_fit_is_the_attached_cards_evidence(self, media_root, monkeypatch):
+        from xml.etree import ElementTree
+        from engine.marketing import chart_render
+        actual_render = chart_render.render_breaking_card
+        seen = self._wire(monkeypatch)
+        monkeypatch.setattr(chart_render, 'render_breaking_card', actual_render)
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['media_state'] == 'attached', result
+        item = _intel_items(media_root)[0]
+        fit = item['source']['card_fit']
+        assert fit['headline_drawn'] and 'European cloud unit' in fit['summary_drawn']
+        drawn_text = ' '.join(' '.join(ElementTree.fromstring(
+            seen['uploads'][0]['svg']).itertext()).split())
+        assert fit['headline_drawn'] in drawn_text
+        assert len(seen['uploads']) == 1
