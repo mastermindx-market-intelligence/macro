@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T06:22:59.831101+00:00",
-  "count": 3279,
+  "generated_at": "2026-11-13T06:40:20.818645+00:00",
+  "count": 3280,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -642,6 +642,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tpqq0dvb1ex-038b67",
+      "title": "eTrading Update London Morning",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:47:16Z",
+      "summary_points": [
+        "Positioning Shift: EUR buying by investors vs USD selling; leveraged positions favoring USD/JPY over EUR/AUD/CAD/CHF/CNH/NZD/SEK; corporates selling EUR—critical directional signal.",
+        "Liquidity Stress: Interbank volumes 15% below 30d avg; G10 drops (EURNOK↓65%, USDCHF↓40%) indicate severe liquidity constraints.",
+        "Market Structure Anomaly: EURCZK volume ↑100% outlier amid EM volume shifts—signals potential structural break in EM currency flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
