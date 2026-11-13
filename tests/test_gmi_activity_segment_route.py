@@ -637,7 +637,7 @@ def test_loss_profit_ix_shape_carries_sign_and_omits_profit_share(tmp_path):
     # The inline-XBRL loss shape keeps its parentheses outside the tag, so "(54,602)"
     # is never contiguous; the digits are pinned literally and the sign is declared.
     ix_loss = '(<ix:nonFraction name="us-gaap:OperatingIncomeLoss" sign="-">54,602</ix:nonFraction>)'
-    body = (SEG_BODY_BASE + " revenue: 30 revenue_denominator: 100 "
+    body = (SEG_BODY_BASE + " revenue: 30 revenue_denominator: 100 profit: "
             + ix_loss + " profit_denominator: 100").encode("utf-8")
     source = body.decode("utf-8")
     pos = source.index(ix_loss)
@@ -753,7 +753,7 @@ def test_operator_role_refused_for_planned_product_integration():
 
 def _profit_expression_case(tmp_path, expression, *, profit, sign, text="54,602", scale="units"):
     """A case whose profit figure is pinned to a custom printed expression."""
-    body = (SEG_BODY_BASE + " revenue: 30 revenue_denominator: 100 "
+    body = (SEG_BODY_BASE + " revenue: 30 revenue_denominator: 100 profit: "
             + expression + " profit_denominator: 100").encode("utf-8")
     source = body.decode("utf-8")
     pos = source.index(expression)
@@ -955,6 +955,17 @@ _MINUS = "−"
 _FW_OPEN = "（"
 _FW_CLOSE = "）"
 
+# Addendum (ruling 42): invisible and non-Pd sign characters, written as explicit
+# code points so no look-alike or zero-width byte can slip into the source.
+_THIN_SPACE = chr(0x2009)
+_ZWSP = chr(0x200B)
+_BOM = chr(0xFEFF)
+_SUP_MINUS = chr(0x207B)
+_HEAVY_MINUS = chr(0x2796)
+_MOD_MINUS = chr(0x02D7)
+_PLUS_MINUS = chr(0x00B1)
+_TILDE_OP = chr(0x223C)
+
 # Table A: one parametrised test straight on _verify_figure_span. Each row is
 # (id, raw, span, text, sign, whole_document, expected_code); expected_code None
 # means ADMIT. The span is the whole raw string unless a cut is named (then the
@@ -1029,6 +1040,75 @@ _TABLE_A = [
      "FIGURE_SIGN_UNSUPPORTED"),
     ("A44_cut_comma_group", "54,602", "4,602", "4,602", "+", True, "FIGURE_SPAN_MISMATCH"),
     ("A45_cut_decimal", "54,602.5", "54,602", "54,602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    # --- Addendum (ruling 42): every row of the COO's coo_split.py probe. Each
+    # cut occurs once in its raw, so index == rfind == find and the span matches
+    # the probe. Fragments / malformed text -> FIGURE_SPAN_MISMATCH; invisible
+    # characters and non-allowlisted sign marks -> FIGURE_SIGN_UNSUPPORTED. ---
+    ("S01_space_tail", "54 602", "602", "602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("S02_space_head", "54 602", "54", "54", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("S03_nbsp_entity_tail", "54&#160;602", "602", "602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("S04_nbsp_named_head", "54&nbsp;602", "54", "54", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("S05_thin_entity_tail", "54&#8239;602", "602", "602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("S06_thin_char_tail", "54" + _THIN_SPACE + "602", "602", "602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("S07_inline_tag_comma_tail", "<b>54</b>,602", "602", "602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("S08_comma_inline_tag_tail", "54,<span>602</span>", "602", "602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("S09_inline_tag_head", "<b>54</b>,602", "54", "54", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("S10_apostrophe_tail", "54'602", "602", "602", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("S11_decimal_after_tag", "54,602<span>.5</span>", "54,602", "54,602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("S12_year_in_prose", "in 2024 54,602 was", "54,602", "54,602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("S13_superscript_digit", "54,602<sup>1</sup>", "54,602", "54,602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("S14_cell_neighbour", "<td>48,310</td><td>54,602</td>", "54,602", "54,602", "+", True, None),
+    ("S15_cell_neighbour_upper", "<TD>48,310</TD><TD>54,602</TD>", "54,602", "54,602", "+", True,
+     None),
+    ("S16_br_neighbour", "48,310<br/>54,602", "54,602", "54,602", "+", True, None),
+    ("S17_paragraph_neighbour", "<p>48,310</p><p>54,602</p>", "54,602", "54,602", "+", True, None),
+    ("S18_sentence_end_then_cell", "<td>of 54,602.</td><td>5</td>", "54,602", "54,602", "+", True,
+     None),
+    ("S19_word_neighbours", "Revenue 54,602 thousand", "54,602", "54,602", "+", True, None),
+    ("S20_footnote_in_brackets", "<td>54,602 (1)</td>", "54,602", "54,602", "+", True, None),
+    ("S21_zwsp_hides_paren", "(" + _ZWSP + "54,602" + _ZWSP + ")", "54,602", "54,602", "+", True,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("S22_soft_hyphen_hides_paren", "(&shy;54,602)", "54,602", "54,602", "+", True,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("S23_zwsp_entity_right", "x 54,602&#8203;)", "54,602", "54,602", "+", True,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("S24_bom_hides_dash", "x -" + _BOM + "54,602", "54,602", "54,602", "+", True,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("S25_superscript_minus", "x " + _SUP_MINUS + "54,602", "54,602", "54,602", "+", True,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("S26_heavy_minus", "x " + _HEAVY_MINUS + "54,602", "54,602", "54,602", "+", True,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("S27_modifier_minus", "x " + _MOD_MINUS + "54,602", "54,602", "54,602", "+", True,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("S28_plus_minus", "x " + _PLUS_MINUS + "54,602", "54,602", "54,602", "+", True,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("S29_tilde_operator", "x " + _TILDE_OP + "54,602", "54,602", "54,602", "+", True,
+     "FIGURE_SIGN_UNSUPPORTED"),
+    ("S30_trailing_comma_text", "x 54, y", "54,", "54,", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("S31_double_comma_text", "x 54,,602 y", "54,,602", "54,,602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("S32_bad_grouping_text", "x 5,46,02 y", "5,46,02", "5,46,02", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("S33_leading_zero_text", "x 054,602 y", "054,602", "054,602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("S34_plain_digits_text", "x 54602 y", "54602", "54602", "+", True, None),
+    ("S35_zero_text", "x 0 y", "0", "0", "+", True, None),
+    # --- Addendum: figure-text grammar (Change 1) on whole spans. ---
+    ("G01_grammar_zero", "0", "0", "0", "+", True, None),
+    ("G02_grammar_double_zero", "00", "00", "00", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("G03_grammar_trailing_comma", "54,", "54,", "54,", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("G04_grammar_double_comma", "54,,602", "54,,602", "54,,602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("G05_grammar_bad_group", "5,46,02", "5,46,02", "5,46,02", "+", True, "FIGURE_SPAN_MISMATCH"),
+    ("G06_grammar_four_digit_lead", "1234,602", "1234,602", "1234,602", "+", True,
+     "FIGURE_SPAN_MISMATCH"),
+    ("G07_grammar_plain", "54602", "54602", "54602", "+", True, None),
+    ("G08_grammar_grouped", "1,254,602", "1,254,602", "1,254,602", "+", True, None),
 ]
 
 
