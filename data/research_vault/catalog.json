@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T08:08:54.738611+00:00",
-  "count": 3284,
+  "generated_at": "2026-11-13T08:24:17.731539+00:00",
+  "count": 3285,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1106,6 +1106,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mlxnwbeldee-27bc5c",
+      "title": "Americas Utilities Takeaways from EEI Conference Constructive tone despite investor concern post midterms",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:45:26Z",
+      "summary_points": [
+        "Nuclear Cost Overrun Risk & Stakeholder Gaps: Critical valuation risk as management pushes for cost overrun backstops (e.g., PEG’s Salem uprate), but stakeholders remain underinformed on consequences of no backstops.",
+        "Reduced Equity Needs in Outer Years: Utilities (SO, AEE, XEL, WEC) project 30-50% lower equity needs via cash flow, hybrid structures, and tax credits, altering capital allocation assumptions.",
+        "Transmission Investment Upside: Key growth driver with projects like Propel NY ($2.2bn, 3GW), WEC’s ATC integration, and SRE’s Batch Zero plan, prioritizing resiliency amid PJM’s RTEM timing.",
+        "Target Price vs Closing Price Discrepancy: Utilities (ED, AEE, SRE) show targets below current prices (e.g., ED: $102 vs $109.86), signaling potential outperformance or analyst underestimation in defensive sectors.",
+        "State & Regulatory Risks: GA leadership transitions (no data center pause), OH election outcomes (pro-business), and rate stability plans (XEL, PEG, DUK) to manage affordability amid regulatory/policy risks for EIX, PCG, ES, EXC, NEE."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
