@@ -107,9 +107,12 @@ def _legacy_sentinel(monkeypatch, text="legacy brief"):
 
     The legacy branch does `import anthropic` INSIDE the function, so a fake
     module in sys.modules is enough — and it keeps this suite runnable on the
-    thin CI runner that does not install the SDK.
+    thin CI runner that does not install the SDK. Returns the kwargs dict the
+    legacy call hands `messages.create` (so prompt parity can be asserted).
     """
     import types
+
+    captured: dict = {}
 
     class _Block:
         type = "text"
@@ -122,6 +125,7 @@ def _legacy_sentinel(monkeypatch, text="legacy brief"):
 
     class _Messages:
         def create(self, **kwargs):
+            captured.update(kwargs)
             return _Resp()
 
     class _Client:
@@ -132,7 +136,7 @@ def _legacy_sentinel(monkeypatch, text="legacy brief"):
     fake.Anthropic = _Client
     monkeypatch.setitem(sys.modules, "anthropic", fake)
     monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
-    return text
+    return captured
 
 
 # --------------------------------------------------------------------------- #
@@ -200,6 +204,37 @@ def test_fabric_serves_without_a_legacy_provider_key(fabric_on, monkeypatch):
     assert out is not None
     assert out["text"] == "The macro tape is quiet; inflation is cooling."
     assert len(fabric_on) == 1
+
+
+def test_fabric_and_legacy_send_the_same_prompt(monkeypatch):
+    """Provider is the ONLY thing the cutover changes.
+
+    The fabric branch builds its user turn through _brief_user() while the legacy
+    path keeps the original inline string. If those two ever drift, the brief's
+    narration silently starts answering a different question than it did before
+    the cutover — invisible in every other test here, which only checks one path.
+    """
+    sent: dict = {}
+
+    def capture_fabric(messages, **kw):
+        sent["fabric"] = (kw.get("system"), messages[0]["content"])
+        return _completion("x")
+
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete", capture_fabric)
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    mn.macro_brief(_HEADLINES, "Goldilocks", "optimistic (z=+1.0)",
+                   "CPI prints Thursday")
+    fabric_system, fabric_user = sent["fabric"]
+
+    # Same inputs down the legacy path, capturing the kwargs it hands the SDK.
+    monkeypatch.setattr(fc, "is_configured", lambda: False)
+    legacy_kw = _legacy_sentinel(monkeypatch, "legacy brief")
+    mn.macro_brief(_HEADLINES, "Goldilocks", "optimistic (z=+1.0)",
+                   "CPI prints Thursday")
+
+    assert fabric_user == legacy_kw["messages"][0]["content"]
+    assert fabric_system == legacy_kw["system"]
 
 
 # --------------------------------------------------------------------------- #
