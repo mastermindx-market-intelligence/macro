@@ -33052,7 +33052,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: ad plane O + persona model + reply-desk arming
-        run: python -m pytest tests/test_marketing_ad_plane_o.py tests/test_marketing_persona_model.py tests/test_marketing_reply_arming.py tests/test_marketing_copy_v2.py -q
+        run: python -m pytest tests/test_marketing_ad_plane_o.py tests/test_marketing_persona_model.py tests/test_marketing_reply_arming.py tests/test_marketing_copy_v2.py tests/test_marketing_mover_stance.py tests/test_marketing_publish_time_content.py tests/test_copywriter.py -q
       - name: X ad-campaign asset manifests (desktop + mobile)
         run: python -m pytest tests/test_x_ad_campaign_assets.py tests/test_x_mobile_campaign_assets.py -q
 

@@ -267,8 +267,7 @@ def test_theme_copy_names_at_most_the_cap_and_ends_on_the_breadth_fact(tmp_path)
     cashtags = set(re.findall(r"\$[A-Z]{1,5}", tl["text"]))
     assert 0 < len(cashtags) <= pt._DEFAULTS["max_theme_cashtags_in_text"], tl["text"]
     assert not tl["text"].rstrip().endswith("?"), tl["text"]
-    assert tl["text"].rstrip().endswith(
-        tuple(movers_source._TAIL_UP) + tuple(movers_source._TAIL_DOWN)), tl["text"]
+    assert tl["text"].rstrip().endswith("All 5 tracked names advanced."), tl["text"]
 
 
 def test_copy_differs_across_accounts_same_slot(tmp_path):
@@ -644,6 +643,7 @@ def _theme_candidate(direction: str) -> dict:
     # failure a fixture copied out of a bank always has.
     tail = movers_source._TAIL_UP[0] if direction == "up" else movers_source._TAIL_DOWN[0]
     tl = {"theme": "Artificial Intelligence", "direction": direction,
+          "asof": "2026-07-31",
           "tone": "ripping" if direction == "up" else "selling off",
           "members": members, "agg_pct": round(sign * 3.1, 2),
           "question": tail}
@@ -1352,8 +1352,7 @@ def test_generated_theme_copy_never_ends_on_reader_bait(tmp_path, monkeypatch,
     assert rep["generated"], rep["dropped"]
     tl = next(i for i in outbox.read_items(tmp_path) if i["kind"] == "theme_list")
     assert not tl["text"].rstrip().endswith("?"), tl["text"]
-    assert tl["text"].rstrip().endswith(
-        tuple(movers_source._TAIL_UP) + tuple(movers_source._TAIL_DOWN)), tl["text"]
+    assert tl["text"].rstrip().endswith("All 5 tracked names advanced."), tl["text"]
     assert not pt._tail_is_bait(tl["text"]), tl["text"]
 
 
@@ -1904,10 +1903,9 @@ def test_the_breadth_gate_is_no_longer_exempt_for_theme_list(tmp_path):
     assert "8 >" in breadth[0]["detail"], breadth[0]
 
 
-def test_the_card_and_the_text_still_agree_on_theme_count_and_average(
+def test_the_card_and_the_text_agree_on_measured_full_universe_participation(
         tmp_path, monkeypatch, real_card):
-    """Naming 3 of 8 is a summary; the two halves must still agree on the facts
-    that are NOT the enumeration — the theme, the breadth count and the average.
+    """Naming 3 of 8 is a summary; the participation still covers all eight.
 
     The subtitle is generated from the same theme item the copy's breadth fact
     is, so this pins that the cap did not quietly truncate `_theme_data`.
@@ -1924,11 +1922,9 @@ def test_the_card_and_the_text_still_agree_on_theme_count_and_average(
     assert rep["generated"], rep["dropped"]
     tl = next(i for i in outbox.read_items(tmp_path) if i["kind"] == "theme_list")
 
-    assert seen["sub"].startswith("8 names higher"), seen["sub"]
-    assert "8 names higher" in tl["text"], tl["text"]
-    # the average appears in both, to the same precision
-    avg = seen["sub"].split("average ")[1].rstrip("%")
-    assert f"{avg}%" in tl["text"], (avg, tl["text"])
+    assert seen["sub"] == "All 8 tracked names advanced."
+    assert seen["sub"] in tl["text"], tl["text"]
+    assert "average" not in seen["sub"]  # a selected count cannot label the universe mean
 
 
 def test_a_theme_post_still_ships_rather_than_going_dark_under_the_cap(tmp_path):

@@ -80,7 +80,8 @@ S&P claims with it).
 from __future__ import annotations
 
 import json
-import zlib
+import math
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Union
@@ -129,9 +130,9 @@ _EMPTY_FACTS: dict = {"facts": [], "numbers_whitelist": []}
 #      trade; the subject of a v5 sentence is the MARKET. The read is in the
 #      SELECTION — this lane already decided which group was worth a post — not
 #      in a narrator reacting to it.
-#   3. NO numbers. copywriter._NUMBER_RE screens every numeric token against the
-#      facts whitelist, so a tail inventing "two closes" or "3 days" is a copy
-#      violation that drops the whole candidate.
+#   3. No uncomputed numbers in the legacy fallback banks. A computed breadth
+#      tail carries its exact full-universe counts into theme_facts and the
+#      existing number whitelist; it cannot borrow the selected list's count.
 #   4. Direction-keyed, and the key is the SIGN OF THE AGGREGATE (see
 #      _direction_of) — never a `direction` string a caller may have set
 #      independently of the number it labels.
@@ -179,36 +180,65 @@ _EMPTY_FACTS: dict = {"facts": [], "numbers_whitelist": []}
 #      the live queue, first person was 25.8% of the corpus and it is the single
 #      biggest v5 scrub.
 #
-#      v5 removes the narrator entirely. The tail states something the theme
-#      item ALREADY COMPUTED and the member list already proves: every listed
-#      name moved the group's way (``in_dir`` filters to the direction before
-#      the top-n slice), the aggregate is a group average over ≥ min_members
-#      names, and the move is therefore breadth rather than one story. That is
-#      the doctrine's material — breadth inside the group — and it is the only
-#      material a crc32 of the theme name is entitled to: no streak, no rank, no
-#      volume multiple, because nothing in this lane measured one. A tail
-#      asserting "second straight session" here would be constraint 6's defect
-#      wearing a fact's costume.
+#      v5 removes the narrator entirely. Selection of the strongest winners
+#      does NOT establish participation across the group. theme_lists measures
+#      breadth over every distinct finite member before selecting leaders and
+#      states that measured count. Legacy banks below refer only to the list.
+#      No streak, rank, cause or volume claim is licensed by this computation.
 #
 #      Direction-keying (constraint 4) does the rest of the work: a heavy group
 #      and a bid group get different words for the same structural claim.
 # ─────────────────────────────────────────────────────────────────────────────
 _TAIL_DOWN = [
     "Every name on the list is lower.",
-    "The whole group is heavy, not one name.",
-    "Breadth inside the group, not one loser.",
-    "A group this wide is not one story.",
+    "These are the group's declining names.",
+    "The displayed names all declined.",
+    "The list shows the downside leaders.",
 ]
 _TAIL_UP = [
     "Every name on the list is higher.",
-    "The whole group is bid, not one name.",
-    "Breadth inside the group, not one leader.",
-    "The group moved together, not one name.",
+    "These are the group's advancing names.",
+    "The displayed names all advanced.",
+    "The list shows the upside leaders.",
 ]
 
 #: Hard ceiling every tail must satisfy — pinned in tests so a future "better"
 #: line cannot quietly reintroduce the 282-char drop. See constraint 5 above.
 _TAIL_MAX_CHARS = 48
+
+
+def _breadth_note(breadth: dict, direction: str) -> str:
+    """A measured participation statement, never a claim from selected winners."""
+    total = breadth["total"]
+    count = breadth["decliners" if direction == "down" else "advancers"]
+    verb = "declined" if direction == "down" else "advanced"
+    if count == total:
+        return f"All {total} tracked names {verb}."
+    only = "Only " if count * 2 < total else ""
+    return f"{only}{count} of {total} tracked names {verb}."
+
+
+def _validated_breadth(theme_item: dict) -> dict | None:
+    members = theme_item.get("members") or []
+    breadth = theme_item.get("breadth")
+    keys = ("total", "advancers", "decliners", "unchanged")
+    try:
+        average = float(theme_item.get("agg_pct"))
+        returns = [float(m["pct"]) for m in members]
+        if (not math.isfinite(average) or average == 0 or
+                not all(math.isfinite(p) and (p < 0 if average < 0 else p > 0)
+                        for p in returns)):
+            return None
+    except (TypeError, ValueError, KeyError):
+        return None
+    direction = _direction_of(theme_item.get("agg_pct"), theme_item.get("direction", "down"))
+    if (isinstance(breadth, dict)
+            and all(type(breadth.get(k)) is int and breadth[k] >= 0 for k in keys)
+            and breadth["total"] >= len(members) > 0
+            and sum(breadth[k] for k in keys[1:]) == breadth["total"]
+            and breadth["decliners" if direction == "down" else "advancers"] >= len(members)):
+        return breadth
+    return None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -601,6 +631,8 @@ def theme_lists(
           "tone": str,             # plain-English tone
           "members": [{ticker, pct}, ...],  # top N by abs move in direction
           "agg_pct": float,        # average of member pcts
+          "breadth": dict,         # full distinct finite universe: total,
+                                   # advancers, decliners, unchanged
           "question": str,         # the direction-keyed structural tail. The KEY
                                    # name is v4 vintage and load-bearing across
                                    # content_studio / the outbox rows / the
@@ -633,7 +665,7 @@ def theme_lists(
         for m in members:
             if not isinstance(m, dict):
                 continue
-            ticker = m.get("t", "")
+            ticker = str(m.get("t") or "").strip().upper()
             perf = m.get("perf") or {}
             pct = perf.get(tf)
             if not ticker or pct is None:
@@ -641,6 +673,8 @@ def theme_lists(
             try:
                 pct = float(pct)
             except (TypeError, ValueError):
+                continue
+            if not math.isfinite(pct):
                 continue
             # First occurrence wins if ticker appears in multiple subsectors of same theme
             if ticker not in theme_members[theme_name]:
@@ -657,6 +691,12 @@ def theme_lists(
             continue
         pcts = list(member_map.values())
         agg_pct = sum(pcts) / len(pcts)
+        if not math.isfinite(agg_pct):
+            continue
+        breadth = {"total": len(member_map),
+                   "advancers": sum(p > 0 for p in pcts),
+                   "decliners": sum(p < 0 for p in pcts),
+                   "unchanged": sum(p == 0 for p in pcts)}
 
         if abs(agg_pct) < min_abs_theme:
             continue
@@ -680,16 +720,9 @@ def theme_lists(
             continue
         top_n_members = in_dir[:n]
 
-        # Pick the tail deterministically (theme name hash for stability).
-        # THE POOL IS KEYED ON THE RECOMPUTED SIGN, never on a stored label: an
-        # "up" tail welded onto a negative aggregate is the direction-mismatch
-        # defect, and routing the choice through _direction_of(agg_pct) makes it
-        # unrepresentable rather than merely unlikely.
-        q_pool = _TAIL_DOWN if _direction_of(agg_pct) == "down" else _TAIL_UP
-        # crc32 (NOT builtin hash(), which is PYTHONHASHSEED-salted per process
-        # → the tail would flip run-to-run, breaking artifact reproducibility).
-        q_idx = zlib.crc32(theme_name.encode("utf-8")) % len(q_pool)
-        question = q_pool[q_idx]
+        # A positive average can be carried by a small minority of large moves.
+        # Measure the full tracked group before filtering the displayed list.
+        question = _breadth_note(breadth, direction)
 
         tone = "selling off" if direction == "down" else "ripping"
 
@@ -713,6 +746,7 @@ def theme_lists(
             "all_members": dict(top_n_members),   # before dedup
             "agg_pct": round(agg_pct, 2),
             "question": question,
+            "breadth": breadth,
             # One session or nothing: a set of size 1 dates the whole aggregate;
             # anything else averages two sessions and gets no date, so the
             # consumer refuses it instead of publishing a claim it cannot anchor.
@@ -747,6 +781,7 @@ def theme_lists(
             "members": members_deduped,
             "agg_pct": item["agg_pct"],
             "question": item["question"],
+            "breadth": dict(item["breadth"]),
             "asof": item["asof"],
         })
 
@@ -1150,6 +1185,8 @@ def mover_facts(mover: dict, data: dict | None = None, *,
         pct = float(pct)
     except (TypeError, ValueError):
         return dict(_EMPTY_FACTS)
+    if not math.isfinite(pct):
+        return dict(_EMPTY_FACTS)
 
     pct_str = _fmt_pct(pct)
     direction = "up" if pct >= 0 else "down"
@@ -1221,6 +1258,59 @@ def mover_facts(mover: dict, data: dict | None = None, *,
     return {"facts": facts, "numbers_whitelist": list(dict.fromkeys(whitelist))}
 
 
+def mover_copy(mover: dict, fact_packet: dict) -> dict[str, str]:
+    """Present each computed observation once, without an invented trading stance."""
+    ticker = str(mover.get("ticker") or "").strip()
+    facts = [f for f in fact_packet.get("facts", []) if isinstance(f, dict)]
+    primary = next((str(f.get("text") or "").strip() for f in facts
+                    if f.get("id") == "mover_pct"), "")
+    if not ticker or not primary:
+        return {"headline": "", "body": ""}
+    headline = re.sub(rf"^{re.escape(ticker)}(?=\s)", lambda _m: "$" + ticker, primary)
+    state = next((str(f.get("text") or "").strip() for f in facts
+                  if f.get("id") == "mover_state"), "")
+    body = re.sub(rf"^{re.escape(ticker)}(?=\s)", "It", state) if state else ""
+    return {"headline": headline, "body": body}
+
+
+def _theme_when(theme_item: dict, *, now: datetime | None = None,
+                asof: object | None = None) -> str | None:
+    """Date the measured universe, never infer its session from the clock."""
+    clock = now or datetime.now(timezone.utc)
+    vocab = _clock.temporal_vocab(clock, theme_item.get("asof"))
+    if vocab.fact_session is None or not vocab.phrase:
+        return None
+    if asof is not None and _clock.temporal_vocab(clock, asof).fact_session != vocab.fact_session:
+        return None
+    return vocab.phrase
+
+
+def theme_copy(theme_item: dict, *, now: datetime | None = None) -> dict[str, str]:
+    """Interpret measured participation; the existing card carries member returns."""
+    breadth = _validated_breadth(theme_item)
+    theme = str(theme_item.get("theme") or "").strip()
+    when = _theme_when(theme_item, now=now)
+    if not breadth or not theme or when is None:
+        return {"headline": "", "body": ""}
+    direction = _direction_of(theme_item.get("agg_pct"))
+    count = breadth["decliners" if direction == "down" else "advancers"]
+    total = breadth["total"]
+    verb = "declined" if direction == "down" else "advanced"
+    if count * 2 < total:
+        move = "the decline" if direction == "down" else "gains"
+        thesis = f"{theme}: {move} came from a minority"
+    elif count == total:
+        thesis = f"Every tracked {theme} name {verb}"
+    elif count * 2 == total:
+        thesis = f"Half the tracked {theme} names {verb}"
+    else:
+        thesis = f"Most tracked {theme} names {verb}"
+    headline = " ".join(p for p in (thesis, when) if p) + "."
+    cashtags = " ".join(f"${m['ticker']}" for m in theme_item.get("members", [])[:8])
+    statement = _breadth_note(breadth, direction)
+    return {"headline": headline, "body": f"{cashtags}\n{statement}", "statement": statement}
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # theme_facts
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1233,27 +1323,39 @@ def theme_facts(theme_item: dict, *, now: datetime | None = None,
     The whitelist MUST cover every member % AND the aggregate pct.
     No invented numbers.
 
-    asof: the SESSION THE MEMBERS ARE FROM (``theme_item["asof"]`` — the one
-        session all members agree on, None when they do not). Defaults to None,
-        which keeps the legacy clock-inferred reading for the nightly desk.
-        The publish-time lane passes it; see :func:`session_phrase` for the
-        Monday-live post whose body said "on Friday" while its own headline and
-        card said today.
+    The theme's own ``asof`` must identify the common measured session. Missing,
+    mixed, unparseable or future sessions are ineligible. An explicit ``asof``
+    must agree with that source stamp; neither path infers a date from the clock.
     """
     theme_name = theme_item.get("theme", "")
     members = theme_item.get("members") or []
-    agg_pct = theme_item.get("agg_pct")
+    _when = _theme_when(theme_item, now=now, asof=asof)
+    if not theme_name or not members or _when is None:
+        return dict(_EMPTY_FACTS)
+    try:
+        agg_pct = float(theme_item.get("agg_pct"))
+        member_pcts = [float(m["pct"]) for m in members]
+        if not math.isfinite(agg_pct) or not all(math.isfinite(p) for p in member_pcts):
+            return dict(_EMPTY_FACTS)
+        if not all(str(m.get("ticker") or "").strip() for m in members):
+            return dict(_EMPTY_FACTS)
+    except (KeyError, TypeError, ValueError):
+        return dict(_EMPTY_FACTS)
     # THE NUMBER DECIDES. This was `theme_item.get("direction", "down")`, and the
     # default is what shipped the defect: a theme item built without an explicit
     # `direction` key printed "+7.7% on average today (8 names lower)" — a
-    # sentence contradicting the figure it was quoting, welded on by a default
-    # nobody could see. _direction_of recomputes from agg_pct and only falls back
-    # to the stored label when the aggregate itself is missing or unparseable.
-    direction = _direction_of(agg_pct, theme_item.get("direction", "down"))
-    question = theme_item.get("question", "")
-
-    if not theme_name or not members:
-        return dict(_EMPTY_FACTS)
+    # sentence contradicting the figure it was quoting, welded on by a default.
+    direction = _direction_of(agg_pct)
+    aligned = all(p < 0 if direction == "down" else p > 0 for p in member_pcts)
+    breadth = _validated_breadth(theme_item)
+    valid_breadth = breadth is not None
+    if valid_breadth:
+        question = _breadth_note(breadth, direction)
+    else:
+        # Old free-text tails are not evidence of whole-group participation.
+        # A legacy item can support only the direction of its displayed names.
+        question = ((_TAIL_DOWN if direction == "down" else _TAIL_UP)[0]
+                    if aligned else "")
 
     # Build whitelist: every member pct + agg
     whitelist: list[str] = []
@@ -1265,58 +1367,40 @@ def theme_facts(theme_item: dict, *, now: datetime | None = None,
             whitelist.append(s)
 
     member_pct_strs: list[str] = []
-    for m in members:
-        pct = m.get("pct")
-        if pct is not None:
-            try:
-                s = _fmt_pct(float(pct))
-                member_pct_strs.append(s)
-                _add_wl(s)
-            except (TypeError, ValueError):
-                pass
+    for pct in member_pcts:
+        s = _fmt_pct(pct)
+        member_pct_strs.append(s)
+        _add_wl(s)
 
-    agg_pct_str: str | None = None
-    if agg_pct is not None:
-        try:
-            agg_pct_str = _fmt_pct(float(agg_pct))
-            _add_wl(agg_pct_str)
-        except (TypeError, ValueError):
-            pass
+    agg_pct_str = _fmt_pct(agg_pct)
+    _add_wl(agg_pct_str)
 
     facts = []
 
     # Primary fact: the theme's aggregate move
     direction_word = "lower" if direction == "down" else "higher"
     n_members_str = str(len(members))
-    _when = session_phrase(now, asof=asof)
-    if agg_pct_str:
-        _avg = " ".join(
-            p for p in (f"{theme_name} is {agg_pct_str} on average", _when) if p)
-        text = f"{_avg} ({n_members_str} names {direction_word})."
-        facts.append({
-            "id": "theme_agg",
-            "text": text,
-            "salience": 10,
-            "numbers": [agg_pct_str, n_members_str],
-        })
-        _add_wl(n_members_str)
+    _avg = f"{theme_name} is {agg_pct_str} on average {_when}"
+    total = str(breadth["total"]) if valid_breadth else n_members_str
+    if valid_breadth:
+        text = f"{theme_name}: {total} tracked names averaged {agg_pct_str} {_when}."
+    elif aligned:
+        text = f"{_avg} ({n_members_str} listed names {direction_word})."
     else:
-        _moving = " ".join(
-            p for p in (f"{theme_name}: {n_members_str} names are moving", _when) if p)
-        text = f"{_moving}."
-        facts.append({
-            "id": "theme_agg",
-            "text": text,
-            "salience": 8,
-            "numbers": [n_members_str],
-        })
-        _add_wl(n_members_str)
+        text = f"{_avg}."
+    facts.append({
+        "id": "theme_agg",
+        "text": text,
+        "salience": 10,
+        "numbers": [agg_pct_str, total] if valid_breadth or aligned else [agg_pct_str],
+    })
+    if valid_breadth or aligned:
+        _add_wl(total)
 
     # Member listing fact
     if members:
         ticker_list = ", ".join(
-            f"{m['ticker']} {_fmt_pct(m['pct'])}" if m.get("pct") is not None else m["ticker"]
-            for m in members
+            f"{m['ticker']} {_fmt_pct(pct)}" for m, pct in zip(members, member_pcts)
         )
         facts.append({
             "id": "theme_members",
@@ -1327,11 +1411,15 @@ def theme_facts(theme_item: dict, *, now: datetime | None = None,
 
     # The structural tail (v5: a declarative breadth note, never a question).
     if question:
+        breadth_numbers = ([str(breadth["decliners" if direction == "down" else "advancers"]),
+                            str(breadth["total"])] if valid_breadth else [])
+        for number in breadth_numbers:
+            _add_wl(number)
         facts.append({
             "id": "theme_question",
             "text": question,
             "salience": 7,
-            "numbers": [],
+            "numbers": list(dict.fromkeys(breadth_numbers)),
         })
 
     facts.sort(key=lambda x: (-x["salience"], x["id"]))

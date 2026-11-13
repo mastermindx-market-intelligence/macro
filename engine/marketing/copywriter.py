@@ -23,6 +23,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import os
 import re
 import threading
@@ -913,6 +914,14 @@ def build_context(
 
     plan = item.get("_plan") or {}
     receipt = item.get("_receipt") or {}
+    theme_data = item.get("_theme_data") or {}
+    safe_theme_facts = {"facts": [], "numbers_whitelist": []}
+    if item.get("type") == "theme_list":
+        from engine.marketing.movers_source import theme_copy, theme_facts
+        # Saved caller packets can contain an obsolete whole-group assertion.
+        # Canonicalize before either deterministic copy or model evidence sees it.
+        safe_theme_facts = theme_facts(theme_data, asof=theme_data.get("asof"))
+        facts = safe_theme_facts
 
     # Top 3 chart facts — POLARITY-AWARE for directional posts. A bullish signal
     # post must never lead with a bearish fact ("lost its 50-day — that's why
@@ -1033,41 +1042,35 @@ def build_context(
         else:
             emoji_budget = 1
 
-    # For theme_list items: add member cashtag % strings to whitelist
-    # (these appear in the body as "$NVDA -2.1% $AMD -4.3% ...")
-    theme_data = item.get("_theme_data") or {}
-    theme_members = theme_data.get("members") or []
-    _theme_member_pcts: list[str] = []
-    for _tm in theme_members:
-        _tm_pct = _tm.get("pct")
-        if _tm_pct is not None:
-            try:
-                _tm_s = f"{float(_tm_pct):+.1f}%"
-                if _tm_s not in whitelist:
-                    whitelist.append(_tm_s)
-                _theme_member_pcts.append(_tm_s)
-            except (TypeError, ValueError):
-                pass
-    # Also add agg_pct for theme
-    _agg = theme_data.get("agg_pct")
-    if _agg is not None:
-        try:
-            _agg_s = f"{float(_agg):+.1f}%"
-            if _agg_s not in whitelist:
-                whitelist.append(_agg_s)
-        except (TypeError, ValueError):
-            pass
+    # Theme prose, model facts and numbers all use the same validated packet.
+    theme_thesis = ""
+    theme_question = ""
+    theme_direction = ""
+    _agg = None
+    if item.get("type") == "theme_list" and safe_theme_facts["facts"]:
+        editorial = theme_copy(theme_data)
+        theme_thesis = editorial.get("headline", "")
+        question_fact = next((f for f in safe_theme_facts["facts"]
+                              if f.get("id") == "theme_question"), {})
+        theme_question = str(question_fact.get("text") or "")
+        if not theme_thesis and theme_question:
+            theme_thesis = f"{theme_data.get('theme', '')}: selected names"
+        _agg = float(theme_data["agg_pct"])
+        theme_direction = "down" if _agg < 0 else ("up" if _agg > 0 else "flat")
 
     # For mover items: add mover pct to whitelist
     mover_data = item.get("_mover_data") or {}
     _mv_pct = mover_data.get("pct")
     if _mv_pct is not None:
         try:
-            _mv_s = f"{float(_mv_pct):+.1f}%"
-            if _mv_s not in whitelist:
+            _mv_pct = float(_mv_pct)
+            if not math.isfinite(_mv_pct):
+                _mv_pct = None
+            _mv_s = f"{_mv_pct:+.1f}%" if _mv_pct is not None else ""
+            if _mv_s and _mv_s not in whitelist:
                 whitelist.append(_mv_s)
         except (TypeError, ValueError):
-            pass
+            _mv_pct = None
 
     # ── Whitelist finishing pass (contract §Rounding, §Writer API) ────────────
     # (a) Every percent is also licensed in its DISPLAY spelling. The producers
@@ -1191,8 +1194,9 @@ def build_context(
         "signal_date": effective_public_plan_date(plan) or "",
         # Theme/mover extras
         "theme_name": theme_data.get("theme", ""),
-        "theme_direction": theme_data.get("direction", ""),
-        "theme_question": theme_data.get("question", ""),
+        "theme_direction": theme_direction,
+        "theme_question": theme_question,
+        "theme_thesis": theme_thesis,
         "theme_agg_pct": (f"{float(_agg):+.1f}%" if _agg is not None else ""),
         "mover_pct": (f"{float(_mv_pct):+.1f}%" if _mv_pct is not None else ""),
         # "" whenever the engines did not supply a state. See the block above.
@@ -5509,147 +5513,27 @@ _TEMPLATES: dict[tuple[str, str], list[tuple[str, str]]] = {
         ),
     ],
 
-    # ── theme_list (all voices) — the multi-cashtag group post ────────────────
-    # MUST contain ≥4 cashtags from {cashtag_list}.
-    # {cashtag_list} = "$NVDA $AMD $SMCI $AVGO"
-    # {theme_name} = "Artificial Intelligence"
-    # {theme_direction} = "down" | "up"
-    # {theme_agg_pct} = "-2.1%"
-    # {theme_question} = the structural tail from movers_source. THE NAME IS
-    #   HISTORICAL: under voice doctrine v5 that bank is fact-forward statements
-    #   (a volume multiple, a gap rank, a streak), never a question. The token
-    #   keeps its name because movers_source builds the key; the CONTENT law is
-    #   in movers_source._TAIL_UP/_TAIL_DOWN and in `voice_v5_violations`, which
-    #   rejects any post that ends on "?" whatever produced it.
-    # {top_fact} = theme aggregate text
-    # Optional 3rd element = applicability tags (see _variant_allowed): a
-    # down-flavored headline must never ship on an up-tape theme.
+    # ── theme_list — one measured participation argument ───────────────────
+    # The source owner supplies a conditional minority/majority/unanimity thesis.
+    # Keep its numerator and denominator together; member returns live in the
+    # existing chart. No template may invent group unanimity, cause or precedent.
     ("theme_list", "authoritative desk"): [
-        (
-            "{theme_name} names all getting hit today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "The whole {theme_name} group moved together",
-            "{cashtag_list}\nOne name is noise. This many is a message. "
-            "{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name}, {theme_agg_pct} average today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} tape, worst first",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "{theme_name} moved as one group",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} is {theme_direction} across the board today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
     ("theme_list", "dry, receipts-forward"): [
-        (
-            "{theme_name} | {theme_agg_pct} average",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} ranked by today's move",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | the whole list",
-            "{cashtag_list}\nNumbers below, commentary optional. {top_fact} "
-            "{theme_question}",
-        ),
-        (
-            "{theme_name} tape today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
     ("theme_list", "specialist"): [
-        (
-            "{theme_name} does not move like this on nothing",
-            "{cashtag_list}\nBreadth, not one name: the whole group printed "
-            "the same direction. {top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | pressure across the group",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "Every {theme_name} name on the list moved today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | breadth did the work",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
     ("theme_list", "educational"): [
-        (
-            "A whole group moving at once is the signal",
-            "{cashtag_list}\nA group-wide move says more than any single name. "
-            "{top_fact} {theme_question}",
-        ),
-        (
-            "This is what group-wide selling looks like",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "{theme_name} | a group move in real time",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "The {theme_name} tape is one lesson today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
     ("theme_list", "fast, reactive"): [
-        (
-            "{theme_name} names getting hit 👀",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "Every {theme_name} name is {theme_direction} right now",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | tape check",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | moving as one",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
     ("theme_list", "pattern/history"): [
-        (
-            "{theme_name} has moved this cleanly before",
-            "{cashtag_list}\nGroup moves this clean have marked turns before. "
-            "{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} under pressure | a familiar shape",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "{theme_name} | a rhyme with a precedent",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | the old pattern is back",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
 
     # ── mover (all voices) — biggest single mover, charted ────────────────────
@@ -6550,6 +6434,7 @@ def _render_template(template: str, ctx: dict) -> str:
         "{theme_direction}": ctx.get("theme_direction", ""),
         "{theme_agg_pct}": ctx.get("theme_agg_pct", ""),
         "{theme_question}": ctx.get("theme_question", ""),
+        "{theme_thesis}": ctx.get("theme_thesis", ""),
         "{mover_pct}": ctx.get("mover_pct", ""),
         # The COMPUTED technical state (defect 4). Only the "needs_state" mover
         # variants carry this token and _variant_allowed makes those unselectable

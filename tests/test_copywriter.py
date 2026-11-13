@@ -1651,6 +1651,7 @@ def _movers_desk_items(monkeypatch, tmp_path, tiles, themes) -> list[dict]:
                    "perf": {"1D": pct}} for t, pct in tiles],
     }), encoding="utf-8")
     (md / "themes_heatmap.json").write_text(json.dumps({
+        "asof": "2026-07-31",
         "tiles": [{"t": name[:3].upper(), "name": name, "sector": name,
                    "perf": {"1D": 0.0},
                    "members": [{"t": t, "perf": {"1D": p}} for t, p in members.items()]}
@@ -1898,6 +1899,7 @@ def test_headline_fragments_clean_on_the_whole_curated_bank():
         "cashtag_list": "$NVDA $AMD $SMCI $ON",
         "theme_name": "Artificial Intelligence", "theme_direction": "down",
         "theme_agg_pct": "-3.4%", "theme_question": "Which one holds?",
+        "theme_thesis": "Most tracked Artificial Intelligence names declined.",
         "mover_pct": "-14.2%", "voice": "authoritative desk", "type": "chart",
     }
     checked, bad = 0, []

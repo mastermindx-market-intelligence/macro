@@ -132,7 +132,9 @@ def _synthetic_movers_data() -> dict:
             ],
         },
     ]
-    return {"sp500_tiles": sp500_tiles, "theme_tiles": theme_tiles, "asof": None}
+    for tile in theme_tiles:
+        tile["asof"] = "2026-07-31"
+    return {"sp500_tiles": sp500_tiles, "theme_tiles": theme_tiles, "asof": "2026-07-31"}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -300,8 +302,9 @@ def test_theme_lists_tail_present_and_is_a_statement():
         assert "?" not in tail, f"Theme {ti['theme']} tail asks a question: {tail!r}"
         assert not re.search(r"\bI\b|I'm|I'd|I'll|I've|\b(?:my|we|our|us|me)\b",
                              tail), f"Theme {ti['theme']} tail is first person: {tail!r}"
-        pool = ms._TAIL_DOWN if ti["direction"] == "down" else ms._TAIL_UP
-        assert tail in pool, f"Theme {ti['theme']} drew a {ti['direction']} tail from the other pool"
+        verb = "declined" if ti["direction"] == "down" else "advanced"
+        assert tail.endswith(f"tracked names {verb}.")
+        assert len(tail) <= ms._TAIL_MAX_CHARS
 
 
 def test_theme_lists_min_members_filter():
@@ -363,6 +366,7 @@ def test_theme_facts_whitelist_covers_every_member_pct_and_agg():
     from engine.marketing.movers_source import theme_facts
     theme_item = {
         "theme": "Artificial Intelligence",
+        "asof": "2026-07-31",
         "direction": "down",
         "tone": "selling off",
         "members": [
@@ -388,6 +392,7 @@ def test_theme_facts_no_indicator_vocab():
     from engine.marketing.movers_source import theme_facts
     theme_item = {
         "theme": "FinTech",
+        "asof": "2026-07-31",
         "direction": "up",
         "tone": "ripping",
         "members": [
@@ -799,7 +804,7 @@ def test_theme_facts_direction_word_follows_the_number_not_a_default():
     which used to default to "down" — so a +7.7% theme printed "(4 names lower)",
     a sentence contradicting the figure inside it, on a live account."""
     from engine.marketing.movers_source import theme_facts
-    item = {"theme": "Crypto & Blockchain", "agg_pct": 7.7,
+    item = {"theme": "Crypto & Blockchain", "agg_pct": 7.7, "asof": "2026-07-31",
             "members": [{"ticker": t, "pct": 7.0}
                         for t in ("RIOT", "MARA", "HUT", "CLSK")]}
     text = next(f["text"] for f in theme_facts(item)["facts"] if f["id"] == "theme_agg")
@@ -813,7 +818,7 @@ def test_a_direction_label_cannot_override_the_sign():
     assert _direction_of(7.7, "down") == "up"
     assert _direction_of(-1.0, "up") == "down"
     assert _direction_of(None, "up") == "up"          # unparseable → the label
-    item = {"theme": "X", "agg_pct": 7.7, "direction": "down",
+    item = {"theme": "X", "agg_pct": 7.7, "direction": "down", "asof": "2026-07-31",
             "members": [{"ticker": "A", "pct": 7.0}]}
     text = next(f["text"] for f in theme_facts(item)["facts"] if f["id"] == "theme_agg")
     assert "higher" in text, text
@@ -874,8 +879,8 @@ def test_theme_tail_pool_is_keyed_to_the_aggregate_sign():
 
     up = ms.theme_lists({"theme_tiles": _tiles(1.0)}, min_members=4)
     down = ms.theme_lists({"theme_tiles": _tiles(-1.0)}, min_members=4)
-    assert up and up[0]["direction"] == "up" and up[0]["question"] in ms._TAIL_UP
-    assert down and down[0]["direction"] == "down" and down[0]["question"] in ms._TAIL_DOWN
+    assert up and up[0]["direction"] == "up" and up[0]["question"] == "All 4 tracked names advanced."
+    assert down and down[0]["direction"] == "down" and down[0]["question"] == "All 4 tracked names declined."
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -908,7 +913,7 @@ def _reach_root(tmp_path, *, n_themes: int = 3):
         "asof": "2026-07-31",
         "tiles": [{"t": t, "name": t, "sector": "Tech", "perf": {"1D": p}}
                   for t, p in _REACH_MEMBERS]}), encoding="utf-8")
-    (md / "themes_heatmap.json").write_text(json.dumps({"tiles": [
+    (md / "themes_heatmap.json").write_text(json.dumps({"asof": "2026-07-31", "tiles": [
         {"t": f"T{i}", "name": f"Theme {i}", "sector": f"Theme {i}",
          "perf": {"1D": -1.2 - i},
          "members": [{"t": f"{t}{i}", "perf": {"1D": p}} for t, p in _REACH_MEMBERS]}
