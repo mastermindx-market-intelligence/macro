@@ -49,6 +49,15 @@ def test_logs_empty_root_is_valid(tmp_path):
     assert out["stats"]["total"] == 0
 
 
+def test_unreadable_response_log_reports_failure_for_list_and_export(tmp_path):
+    _seed(tmp_path, [])
+    ml._log_path(tmp_path).write_bytes(bytes([255]))
+    assert ml.logs(root=tmp_path)["error"] == "The local ledger could not be read."
+    exported = ml.export(root=tmp_path)
+    assert exported["ok"] is False
+    assert exported["error"] == "The local ledger could not be read."
+
+
 def test_logs_reads_and_counts(tmp_path):
     _seed(tmp_path, [
         _row("a", surface="macro"),

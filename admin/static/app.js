@@ -14245,11 +14245,11 @@ async function mmlLoad() {
      a small static file — awaiting it serially would add a needless hop, and it
      must never be able to stop the row list rendering, hence the catch. */
   const [d, evs] = await Promise.all([
-    api("/api/mastermind_ai/response_logs?" + qs.toString()),
+    api("/api/mastermind_ai/response_logs?" + qs.toString()).catch(() => ({ error: "Request failed" })),
     api("/api/mastermind_ai/response_logs/eval_summary").catch(() => ({ ok: false })),
   ]);
   if (CURRENT !== "mastermind_logs" || MML.filters !== f || epoch !== ADMIN_RENDER_EPOCH) return;
-  if (!d || d.error) {
+  if (!d || d.ok === false || d.error) {
     v.innerHTML = `<div class="banner show" style="position:static;display:block">Could not read the response log${d && d.error ? ": " + esc(d.error) : ""}.</div>`;
     return;
   }
@@ -14262,7 +14262,7 @@ async function mmlLoad() {
   const bySurf = Object.entries(st.by_surface || {}).map(([k, n]) => `${esc(k)} ${n}`).join(" · ") || "none yet";
   /* Ingest health — an empty/aging ledger used to look identical to a quiet week. */
   const ing = d.ingest || {};
-  const darkHtml = ing.dark ? `<div class="banner show" style="position:static;display:block;margin-top:10px">⚠️ Ingest dark${ing.last_ts ? ` since ${esc(String(ing.last_ts).slice(0, 10))}` : ""} — ${ing.last_ts ? `no new AI responses in ${ing.dark_days} day${ing.dark_days === 1 ? "" : "s"}` : "no AI responses have ever been ingested"}. Both surfaces write straight to R2: check the plain R2_* creds in /etc/macro-api.env on the VPS (macro brain) and the Terminal copilot env, then hit “⟳ Refresh from R2”.</div>` : "";
+  const darkHtml = ing.dark ? `<div class="banner show" style="position:static;display:block;margin-top:10px">⚠️ Ingest dark${ing.last_ts ? ` since ${esc(String(ing.last_ts).slice(0, 10))}` : ""} — ${ing.last_ts ? `no new AI responses in ${ing.dark_days} day${ing.dark_days === 1 ? "" : "s"}` : "the local response log contains no rows"}. Both surfaces write straight to R2: check the plain R2_* creds in /etc/macro-api.env on the VPS (macro brain) and the Terminal copilot env, then hit “⟳ Refresh from R2”.</div>` : "";
   /* Asymmetric case: overall ledger looks alive because ONE surface still writes. */
   const surfDarkHtml = ing.dark ? "" : Object.entries(ing.last_by_surface || {}).map(([s, ts]) => {
     const days = (Date.now() - Date.parse(ts)) / 86400e3;
@@ -14319,7 +14319,10 @@ async function mmlLoad() {
     <span class="sub muted">${d.matched || 0} match</span>
   </div>`;
 
-  const rowsHtml = MML.rows.length ? MML.rows.map(mmlRowHtml).join("") : `<tr><td colspan="6" class="sub muted" style="padding:18px">No responses logged yet. Once the brain chat or Terminal copilot answers a user (and R2 is configured), hit “Refresh from R2”.</td></tr>`;
+  const emptyMessage = st.total > 0
+    ? "No responses match these filters. Adjust the filters and apply again."
+    : "The local response log is empty.";
+  const rowsHtml = MML.rows.length ? MML.rows.map(mmlRowHtml).join("") : `<tr><td colspan="6" class="sub muted" style="padding:18px">${emptyMessage}</td></tr>`;
   const tableHtml = `<table style="margin-top:12px"><thead><tr>
     <th style="width:130px">When</th><th style="width:90px">Surface</th><th>Question → answer</th>
     <th style="width:120px">Model</th><th class="r" style="width:70px">Tokens</th><th style="width:130px">Eval</th>

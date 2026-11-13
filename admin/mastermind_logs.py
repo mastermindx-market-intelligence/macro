@@ -141,8 +141,10 @@ def _tail_lines(p: Path, n: int) -> list[str]:
     """Last n lines of a file — bounds the request path as the ledger accrues."""
     try:
         lines = p.read_text(encoding="utf-8").splitlines()
-    except Exception:  # noqa: BLE001
+    except FileNotFoundError:
         return []
+    except (OSError, UnicodeError) as exc:
+        raise ValueError("The local ledger could not be read.") from exc
     return lines[-n:] if len(lines) > n else lines
 
 

@@ -467,3 +467,34 @@ assert(chronicle({rows:[{event_id:'evt-1', direct_tickers:['ABC']}]}).includes('
 assert(chronicle({reason_en:'No direct tickers in this window.'}).includes('No direct tickers in this window.'));
 assert(chronicle({error:'failed'}).includes('unavailable'));
 """)
+
+
+
+def test_response_log_explains_empty_filter_results_and_read_failures():
+    _node_assert("""
+const render = block('async function mmlLoad()', '/* Weekly answer-quality summary');
+const view = {innerHTML: ''};
+const MML = {filters: {provider: 'retired'}};
+let payload, rejectRead = false;
+const api = async path => {
+  if (path.endsWith('/eval_summary')) return {};
+  if (rejectRead) throw new Error('transport');
+  return payload;
+};
+const load = new Function('api', '$', 'MML', 'fmtNum', 'esc', 'mmlEvalSummaryHtml', 'mmlWire',
+  'const CURRENT="mastermind_logs", ADMIN_RENDER_EPOCH=1;' + render + ';return mmlLoad;'
+)(api, () => view, MML, String, String, () => '', () => {});
+payload = {rows: [], matched: 0, stats: {total: 2}};
+await load();
+assert.match(view.innerHTML, /No responses match these filters/);
+assert.doesNotMatch(view.innerHTML, /local response log is empty/);
+payload = {rows: [], matched: 0, stats: {total: 0}};
+await load();
+assert.match(view.innerHTML, /local response log is empty/);
+payload = {ok: false};
+await load();
+assert.match(view.innerHTML, /Could not read the response log/);
+rejectRead = true;
+await load();
+assert.match(view.innerHTML, /Could not read the response log/);
+""")
