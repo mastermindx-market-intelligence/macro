@@ -8536,17 +8536,18 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     job-count ceiling, selector or ten-pack bound is changed by this branch.
     Planning weights are not measured execution times.
 
-    2026-11-13 (Sector Intelligence train under #11174, carrying #11146,
-    #11158, #11171, #11107, #11215, #11110 and #11128): the paragraphs above
-    are kept whole; the carried suites ride the same unrun-site-surfaces
-    breadth pytest command, now one union line. Re-measured once on the
-    combined train tree (main 1c06e78a21e2 included) with
-    packing_probe_measurements over its .github/ci/legacy-jobs.yml: index 137
-    jobs / 10,949, free-content 138 jobs / 11,453, plan-book 132 jobs / 10,922,
-    ten packs each, all within main's ceilings 11,465 / 11,538 / 11,018,
-    which stay pinned to rescale_legacy_weight of the legacy ceilings. No
-    ceiling, job-count ceiling, selector or ten-pack bound is changed by
-    this train. Planning weights are not measured execution times.
+    2026-11-13 (Sector Intelligence train under #11174, COO rulings 96/97,
+    carrying #11146, #11158, #11171, #11107, #11215, #11110, #11128, #11167,
+    #11024 and #11168): the paragraphs above are kept whole; the carried
+    suites ride the same unrun-site-surfaces breadth pytest command, now one
+    union line. Re-measured on the final train tree (main 2ca0e09e01af,
+    carrying 797b4ad55048, included) with packing_probe_measurements over its
+    .github/ci/legacy-jobs.yml: index 137 jobs / 10,954, free-content 138
+    jobs / 11,458, plan-book 132 jobs / 10,927, ten packs each, all within
+    main's ceilings 11,469 / 11,542 / 11,022, which stay pinned to
+    rescale_legacy_weight of the legacy ceilings. No ceiling, job-count
+    ceiling, selector or ten-pack bound is changed by this train. Planning
+    weights are not measured execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
