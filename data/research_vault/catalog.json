@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T16:54:06.906490+00:00",
-  "count": 3308,
+  "generated_at": "2026-11-13T17:24:07.495069+00:00",
+  "count": 3309,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -204,6 +204,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 40,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-s07uzd1yoek-59b5e1",
+      "title": "Synspective (290A)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:33:46Z",
+      "summary_points": [
+        "Revenue/EBITDA Surge & Valuation Shift: Projected revenue (2.4B → 32.0B) and EBITDA (1.1B → 19.7B) expansion drives EPS growth; EV/EBITDA collapses from 188.3 to 7.7, signaling exceptional relative value improvement.",
+        "Satellite Fleet & Utilization Recovery: Full-year guidance maintained via satellite utilization recovery and fleet expansion, mitigating 3Q transitory maintenance miss; secured launch slots for 63 satellites prevent supply bottlenecks.",
+        "Defense Growth Catalysts: 4Q revenue +150% qoq driven by fleet expansion; ¥6.2bn subsidy income to net profit; Synspective OMNIA program accelerates sovereign demand from 2029.",
+        "Critical Risk Exposure: Simultaneous satellite failures, intensifying competition, engineering bottlenecks, and delayed defense/international project wins pose material downside risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
