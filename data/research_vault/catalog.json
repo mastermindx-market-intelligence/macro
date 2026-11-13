@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T22:54:47.474472+00:00",
-  "count": 3325,
+  "generated_at": "2026-11-13T23:10:03.906417+00:00",
+  "count": 3326,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -2433,6 +2433,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-i3ii5mwqvsk-b845b0",
+      "title": "er20261111BullHousingFinanceQ3",
+      "institution": "Westpac",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T01:31:46Z",
+      "summary_points": [
+        "Australian dwelling finance approvals plunge: Q3 value down 15.5% qtr (largest decline since 1991), annual growth -18.1% vs. median forecast -8.5%, driven by investor segment (volumes down 30% qtr, value off 33%) and owner occupiers (volume/value down 5.3% qtr).",
+        "Policy-driven investor collapse: Investor loans for existing dwellings drop 30% qtr amid tax concessions and rising rates, with new construction loans falling 8.7% qtr, deepening Q3 weakness.",
+        "SME credit surge signals structural shift: SME loans as share of housing credit surged from ~15bn to ~45bn, indicating a material reallocation toward business-oriented lending in housing credit allocation.",
+        "Q4 weakness expected: Persistent downward trend in dwelling finance approvals (25% ytd decline) and investor segment deterioration point to continued contraction in housing credit flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
