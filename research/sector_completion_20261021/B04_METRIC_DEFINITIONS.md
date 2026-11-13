@@ -124,6 +124,30 @@ under `by_score_version` (`engine/sector_central_grader.py:575-579`,
 `engine/sector_central_grader.py:592-597`).
 
 
+### L1-FO1 Brief breadth-change frame (COO ruling 26, #11094 carry) — 2026-11-12
+
+The lane 1 generation carries #11094's ALREADY-COMPUTED current weekly fixed-set
+breadth frame plus each member's own `above_200` flag as the `sector_breadth`
+row block under `sector_central.json` `carried`. PURE carry: the producer
+(`engine.group_breadth_history.weekly_fixed_set` / `member_rows`) applies both
+`MIN_MEMBERS`=10 floors and this carry copies its floored values verbatim — no
+signal is recomputed, rounded, rescaled or defaulted. The full daily/weekly
+history stays off-git in `data/breadth/history/`; the generation carries only the
+current frame. The wire names are snake_case, exactly Terminal #1483's
+`SectorBreadthChangeRow` type. An absent/unreadable source yields no block (the
+generation reads `not_produced`); a dated-basis artifact is a different
+measurement and is refused.
+
+| field | artifact | writer / value as implemented (file:line) | units | window | kind |
+|---|---|---|---|---|---|
+| `sector_breadth` (carried row block) | `sector_central.json` `carried.sector_breadth` | `sector_breadth(breadth_dir)` reads #11094's weekly fixed-set frame + meta sidecar + nightly member ledger and re-expresses them as one bounded, finite, dated row block; registered in `build_carry` and `_DATED_BLOCKS`; over the 512 KiB row cap a `block_too_large` stub is served, never a silent vanish — `lib/sector_central_carry.py:945-957`, stub `lib/sector_central_carry.py:1037-1038` | row block (sectors[] + members[]) | current weekly session | **measured** (carry of #11094's computed frame) |
+| `pct_above_200` (current share) | `carried.sector_breadth.sectors[].pct_above_200` | current share of members above their own 200-session average; null ONLY when fewer than 10 members are counted today (`MIN_MEMBERS` floor); carried verbatim from the producer column, float dtype — `lib/sector_central_carry.py:99`, floor constant `lib/sector_central_carry.py:92`, floor docstring `lib/sector_central_carry.py:95-96`, float dtype `lib/sector_central_carry.py:941` | percent in [0,100], float | current weekly session (200-session average) | **measured** |
+| `fix_chg_pct_above_200_13w` (13-week change) | `carried.sector_breadth.sectors[].fix_chg_pct_above_200_13w` | like-for-like 13-week change on the fixed membership set; null when `n_fixed_200_13w` < 10 (the producer's second floor); carried verbatim, float dtype — `lib/sector_central_carry.py:100`, fixed-set count `lib/sector_central_carry.py:105`, floor docstring `lib/sector_central_carry.py:96` | percentage points, float | 13 weeks, fixed membership set | **measured** |
+| `rank_fix_chg_pct_above_200_13w` / `n_ranked_fix_chg_pct_above_200_13w` (rank) | `carried.sector_breadth.sectors[]` | cross-sector rank of the 13-week change and the number of sectors ranked; null when `n_fixed_200_13w` < 10; integer carried verbatim — `lib/sector_central_carry.py:101-102`, int dtype `lib/sector_central_carry.py:937` | integer rank / count | 13 weeks | **measured** |
+| `above_200` / `has_200_sessions` (per-member flag) | `carried.sector_breadth.members[]` | the member's own `above_200` flag and whether it has 200 sessions of history, from the nightly ledger's latest session (one row per member); absent ledger -> no `members` key (the flag is then not carried) — `lib/sector_central_carry.py:1013-1014`, latest-session cut + flag docstring `lib/sector_central_carry.py:995-996` | boolean flag | latest ledger session (200-session average) | **measured** |
+| `basis` / `first_valid_date` / `min_members` (disclosure) | `carried.sector_breadth` | `basis` is the producer's #11095 label `reconstructed_current_membership` (a dated-basis artifact is refused); `first_valid_date` is the meta's `first_valid_pct_above_200`; `min_members` is the producer's `MIN_MEMBERS`=10 floor — `lib/sector_central_carry.py:88`, basis gate `lib/sector_central_carry.py:966-968`, first-valid `lib/sector_central_carry.py:970-971`, block stamp `lib/sector_central_carry.py:1021-1022` | labels / ISO date / integer | n/a | **disclosure** |
+
+
 ## Lane 8 boundary register (P04 / B04) — 2026-11-09
 
 The tables above stay the accepted base census (SIC-D-B04 r3). This section adds what the frozen

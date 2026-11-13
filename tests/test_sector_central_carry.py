@@ -796,8 +796,12 @@ def test_generation_projects_carried_blocks_available_and_hazard_unavailable(tmp
 
 def test_builder_wires_the_carry_before_publication():
     source = (REPO / "scripts/build_sector_central.py").read_text()
-    assert source.index("build_carry(site, data, _membership(), sector_flow_periods())") < source.index(
+    assert source.index("build_carry(site, data, _membership(), sector_flow_periods(),") < source.index(
         'data["publication"] = {')
+    # L1-FO1 (COO ruling 26): the carry is wired with the repo data/breadth directory
+    # (#11094's off-git history + nightly member ledger) so the sector_breadth frame
+    # is carried nightly; an absent source still fail-softs to no block.
+    assert 'breadth_dir=root / "data" / "breadth"' in source
 
 
 # --- lane 1 v1.1 row blocks (wire /tmp/si_plan/v11/LANE1_WIRE_V11_ROWS.md) ------

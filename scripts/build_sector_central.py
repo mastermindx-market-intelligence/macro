@@ -692,7 +692,8 @@ def main(*, strict: bool = False) -> int:
         from collectors.sponsors import sector_flow_periods
         from engine.baskets import _membership
         from lib.sector_central_carry import build_carry
-        data["carried"] = build_carry(site, data, _membership(), sector_flow_periods())
+        data["carried"] = build_carry(site, data, _membership(), sector_flow_periods(),
+                                      breadth_dir=root / "data" / "breadth")
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("sector_central: carried blocks skipped (%s)", e)
         data["carried"] = {}
