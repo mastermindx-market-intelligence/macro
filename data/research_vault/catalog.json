@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T19:39:25.725753+00:00",
-  "count": 3316,
+  "generated_at": "2026-11-13T21:39:49.780660+00:00",
+  "count": 3322,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -167,6 +167,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-w1gx0qfg6cl-b8d851",
+      "title": "UBS S&T UBS TECH DAILY CURT COMMENT Nvidia, ams, CBRS, AMAT, Wise Darren Curtis 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:23:10Z",
+      "summary_points": [
+        "NVIDIA Leadership Risk: Jensen resignation triggers 20% cut to 2028 targets; sell-side numbers require flawless execution amid 18-month negative product effect timeline.",
+        "MSFT Cloud Deal Catalyst: New cloud-based MSFT deal confirmed; hardware sales offset data center delays driving results above expectations.",
+        "Guidance Resilience: Solid guidance validated as hardware revenue compensates for data center timing issues, signaling operational stability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-6vchuar8n9p-c9e78c",
       "title": "UBS S&T UBS Macro Equity Navigator Favorable AI Asymmetry Justinus Steinhorst 2026 11 13",
       "institution": "UBS",
@@ -205,6 +224,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pxjimzanoh2-1d7269",
+      "title": "UBS S&T Fed's Williams Nvidia Impacts Japan's Katayama Microsoft Outage Wayne Gouro 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:22:29Z",
+      "summary_points": [
+        "Fed's Williams Policy Shift: Williams signals inflation persistence, reversing prior \"no further hikes\" stance; senior role change may alter Fed direction toward data-driven rate adjustments.",
+        "Australia CPI Surges to 4.7%: Headline CPI hits 4.7% y/y (new cycle high), signaling peak inflation and shifting RBA policy toward prolonged restrictive rates with earlier/larger easing risks.",
+        "Iran Nuclear Proliferation Risk: IAEA loses track of Iran’s uranium stocks, escalating proliferation concerns and heightening geopolitical tensions threatening market stability.",
+        "U.S.-China AI Chip Controls: OpenAI backs proposals restricting China’s access to AI chips and ASML machinery, targeting Nvidia sales and blocking chipmaking equipment access."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -1071,6 +1110,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-oh9q2smdy3m-c5c295",
+      "title": "GS Arruda What Matters Today Capex Outlook How Much of an AI Boost, Should We Expect More Upside Inflation Surprises, US Vol Views 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T19:36:13Z",
+      "summary_points": [
+        "2027 Capex AI Boost: AI-related hardware/IP spending to exceed $900bn annually by end-2026 ($1.4tn by 2027), ~4% of US GDP, with Q4 2026 capex growth at 8.4%.",
+        "AI GDP Growth Impact: AI investment to boost true GDP growth by 0.6pp in 2026/2027 (Goldman Sachs analysis), factoring direct/indirect effects and spillovers.",
+        "Geopolitical/Capex Risks: Iran war-driven oil prices (0.5pp GDP impact in 2024) offset by declining manufacturing capex from IRA/CHIPS Act subsidies, critical for GDP forecasts.",
+        "AI Sector Volatility Risk: AI data center basket (GSTMTDAT) volatility at 80v (vs 44v SPX), VIX realized vol at ATHs, and Vol of Vol 2nd largest single-day increase—key technical/flow risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xyjt4ov1gma-2cfab0",
       "title": "GS Stankard Vol Views 11 Nov 2026",
       "institution": "S&T",
@@ -1087,6 +1146,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wb4bgf7celx-da5ab5",
+      "title": "RBC NVIDIA Lowering PT on Potential CEO Transition Risk 12 Nov 2026",
+      "institution": "NVIDIA",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:58:56Z",
+      "summary_points": [
+        "Price Target Adjustment & Valuation Discount: Price target lowered to $230 (15x CY27 EPS) from $330 (20x), reflecting CEO transition risk but maintaining Outperform; stock trades at 60%-70% discount to Mag7/Semi peers, creating attractive risk/reward for 6-12 months.",
+        "Core Growth Catalysts & Competitive Moat: Cloud capex to grow ~90%+ in 2026 (driven by Big 4 hyperscalers’ $500b+ backlog), AI accelerator TAM at 35%+ CAGR through 2028; CUDA ecosystem and annual product launches sustain long-term market share.",
+        "Key Near-Term Risks: CEO succession uncertainty (no formal plan) and potential congressional hearings on export controls; limited near-term business impact due to minimal China exposure (1% of data center revenue).",
+        "Valuation Scenarios & Upside Drivers: Upside to $400 (25x EPS) on Blackwell/Rubin demand and sovereign opportunities; downside to $100 (6x EPS) from muted growth/supply chain constraints; $5T market cap not limiting upside.",
+        "Fundamental Resilience: Demand growth (next 3 years), supply tightness limiting competition, and NVIDIA’s technical vision ecosystem outweigh CEO uncertainty at 10x CY27 EPS, underpinning fundamentals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
@@ -1565,6 +1645,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-hnbfwh1baqe-5ae0b1",
+      "title": "GS Ambrose GWIS Buy the GS China Go Global Biotech basket ahead of catalysts 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:10:33Z",
+      "summary_points": [
+        "FDA Catalysts: Near-term performance driven by U.S.",
+        "FDA decisions (e.g., Ivonescimab approval for mutated lung cancer) and HARMONI-3 trial results critical for displacing global standards of care.",
+        "2027 Strategic Shift: Sector transitioning from re-entry to 2027 positioning, with key trials (e.g., Zai Lab’s Phase 3 for small cell lung cancer by 2026) targeting accelerated global approvals via H1 2027 results.",
+        "Ivonescimab FDA Decision: Imminent U.S.",
+        "FDA approval decision for Ivonescimab (Akeso/Summit) in genetically mutated lung cancer patients, pivotal for sector leadership."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-sqknr2az3qn-e69374",
       "title": "JPM Retail Radar",
       "institution": "J.P. Morgan",
@@ -1828,6 +1929,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 28,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-frvmkx5lzqy-e48337",
+      "title": "Nuclear Nuggets Global reactor tracker November edition",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:44:04Z",
+      "summary_points": [
+        "US Regulatory Milestone: NRC approves Xe-100 Construction Permit (first high-temp gas-cooled reactor permit in 60 years, 11/9/2026), accelerating SMR commercialization and private capital deployment.",
+        "Uranium Pricing Shift: Spot U₃O₈ spiked to $92.50/lb (late Oct), term prices rose to $97/lb; term volumes trend toward 5-year average, signaling supply-demand tension amid utility solicitations.",
+        "EU/China Capital Allocation: EU’s €400mn Innovation Fund for France’s CAL30 reactor (11/6/2026) and China’s 7+ nuclear construction starts (incl.",
+        "Haiyang 5, Tianwan-7) reflect accelerated capital flows and supply chain expansion.",
+        "UEC Supply Agreement: UEC signed long-term U₃O₈ sales agreements (1.1M lbs 2027-2032) with U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
