@@ -333,3 +333,46 @@ def test_token_only_host_never_builds_a_legacy_client(tmp_path, monkeypatch):
     df = ss.enrich_classify().set_index("id")
     assert df.loc["e1", "llm_category"] == "Acquisitions"
     assert df.loc["e1", "llm_role"] == "target"
+
+
+def test_unavailable_router_with_no_legacy_client_degrades_not_crashes(monkeypatch):
+    """The realistic degraded host: router token present but the anthropic SDK is
+    not importable, so client is None and every fabric call raises
+    FabricUnavailable. _llm_call must return {} — never raise.
+
+    This matters because the nightly builder wraps the whole refresh
+    (build_special_situations.py:374-389) in one try/except: an exception here
+    would abandon text/filer extraction, news, intl and price enrichment too,
+    not just the LLM step.
+    """
+    def unavailable(messages, **kwargs):
+        raise fc.FabricUnavailable("the anthropic SDK is not importable")
+
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete", unavailable)
+
+    # client=None is exactly what the two lanes pass on a fabric-enabled host.
+    assert ss._llm_call(None, None, "SYS", "PROMPT") == {}
+
+
+def test_unavailable_router_survives_a_full_enrich_classify_sweep(tmp_path, monkeypatch):
+    """Same edge through the real entry point the nightly builder calls."""
+    monkeypatch.setattr(ss.config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(ss.config, "secret", lambda n: None)
+    monkeypatch.setattr(ss, "_cfg", lambda: {"enabled": True, "llm_brief": True})
+    monkeypatch.setattr(ss, "_fetch_filing_text", lambda cik, acc, **kw: "filing body")
+    monkeypatch.setattr(ss, "_llm_client",
+                        lambda cfg: pytest.fail("legacy client built on a token-only host"))
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(
+        fc, "complete",
+        lambda messages, **kw: (_ for _ in ()).throw(fc.FabricUnavailable("no sdk")))
+
+    (tmp_path / "special_situations").mkdir()
+    pd.DataFrame([{"id": "e1", "form_type": "8-K", "company": "Acme Inc", "cik": "10",
+                   "accession": "acc1", "items": "8.01", "date_filed": "2026-06-12",
+                   "source_url": "u"}]
+                 ).to_parquet(tmp_path / "special_situations" / "events.parquet")
+
+    df = ss.enrich_classify()          # must not raise
+    assert df.loc[df["id"] == "e1", "llm_category"].isna().all()
