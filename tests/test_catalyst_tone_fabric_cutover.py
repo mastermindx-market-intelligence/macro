@@ -54,6 +54,18 @@ class _Raw:
         self.stop_reason = stop_reason
 
 
+class _FakeSdk:
+    """Stands in for `_client(cfg)` on the legacy ladder; never actually used,
+    because make_call is stubbed to return a ready reply."""
+
+    class _Messages:
+        def create(self, **_kw):
+            raise AssertionError("the stubbed make_call should not reach the SDK")
+
+    def __init__(self):
+        self.messages = self._Messages()
+
+
 def _completion(text, model="deepseek-v4.1-flash", stop_reason="end_turn"):
     return fc.Completion(text=text, model_served=model, route_id="r-1",
                          provider="deepseek", usage={"output_tokens": 5},
@@ -345,6 +357,48 @@ def test_failed_fabric_call_writes_no_cache_entry(monkeypatch, cfg):
     phash = ct._prompt_hash(ct._extraction_model(cfg), ct.CATALYST_SYSTEM,
                             ct._user_prompt(_DOC, "ctx"))
     assert ct._reply_cache_get(phash, cfg) is None
+
+
+# --------------------------------------------------------------------------- #
+# no token / kill-switch -> the legacy path is BYTE-IDENTICAL
+#
+# The prompt is what the reply cache is keyed on, so "the legacy path is
+# unchanged" is provable exactly: same prompt bytes -> same prompt hash -> same
+# cache entry -> same graded record.
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("source,context", [
+    ("The Committee decided to raise rates.", "FOMC statement"),
+    ("", "empty"),
+    ("unicode — “quotes” and\nnewlines\t", "ctx with spaces"),
+    ("x" * 5000, "long document"),
+])
+def test_prompt_bytes_are_unchanged_from_the_legacy_shape(source, context):
+    """The fabric refactor extracted the prompt into _user_prompt(); the bytes it
+    produces must be exactly the ones the inline legacy expression produced, or
+    every existing reply-cache entry would be invalidated by the cutover."""
+    legacy = (f"Document context: {context}\n\n"
+              f"Document text follows between <doc> tags.\n<doc>\n{source}\n</doc>")
+    assert ct._user_prompt(source, context) == legacy
+
+
+def test_legacy_path_produces_the_same_digest_as_before_the_cutover(cfg,
+                                                                   monkeypatch):
+    """Kill-switch ON through the legacy ladder: the graded record still renders."""
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete",
+                        lambda messages, **kw: pytest.fail("fabric must not run"))
+    monkeypatch.setattr(ct, "_client", lambda _cfg: _FakeSdk())
+    monkeypatch.setattr(llm_auth_mod, "make_call",
+                        lambda *a, **kw: (_FABRIC_REPLY, None, "deepseek"))
+    monkeypatch.setenv("MACRO_CATALYST_TONE_FABRIC", "0")
+    monkeypatch.setattr(ct, "_cfg",
+                        lambda: {**cfg, "enabled": True,
+                                 "llm_min_confidence": "medium"})
+
+    rec = ct.digest_document(_DOC, kind="fomc_statement", context="FOMC")
+    assert rec["degraded_reason"] is None
+    assert rec["guidance_direction"] == "tightening"
+    assert rec["confidence_gated"] is False
 
 
 # --------------------------------------------------------------------------- #
