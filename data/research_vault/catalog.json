@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T06:40:20.818645+00:00",
-  "count": 3280,
+  "generated_at": "2026-11-13T07:09:57.111681+00:00",
+  "count": 3281,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -656,6 +656,26 @@
         "Positioning Shift: EUR buying by investors vs USD selling; leveraged positions favoring USD/JPY over EUR/AUD/CAD/CHF/CNH/NZD/SEK; corporates selling EUR—critical directional signal.",
         "Liquidity Stress: Interbank volumes 15% below 30d avg; G10 drops (EURNOK↓65%, USDCHF↓40%) indicate severe liquidity constraints.",
         "Market Structure Anomaly: EURCZK volume ↑100% outlier amid EM volume shifts—signals potential structural break in EM currency flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jb9z7n08q60-8613a5",
+      "title": "DeskTalk US equity check Back on script",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:47:05Z",
+      "summary_points": [
+        "CoreWeave AI Demand Catalyst: CoreWeave +26% surge (168% YoY revenue growth) validates AI demand narrative, with hyperscalers as primary beneficiaries.",
+        "Technical Breakout Levels: NDX reclaiming 200dma ($28,017) and SPX approaching $7,676 (key systematic buying level).",
+        "Upcoming AI Reports Validation: Cisco/Applied Materials reports (Thu) to confirm AI demand cycle strength.",
+        "SOX Options Positioning Shift: Steepened put skew (1M normalized) favors hyperscaler vs. semis trade in SOX."
       ],
       "tags": [],
       "tickers": [],
