@@ -1,9 +1,9 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-11-13T14:38:45.853240+00:00",
+  "produced_at": "2026-11-13T16:52:15.401109+00:00",
   "as_of": "2026-11-12T13:54:53Z",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
     "cortex_status": "degraded",
     "tool_call_batches": 0,
@@ -833,9 +833,9 @@
   },
   "china_market_state": {
     "available": true,
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-13",
     "phase": "REPAIR",
-    "phase_confidence": 0.8,
+    "phase_confidence": 0.667,
     "who_controls": "mixed",
     "policy_impulse": "neutral",
     "top_contradiction": null,
