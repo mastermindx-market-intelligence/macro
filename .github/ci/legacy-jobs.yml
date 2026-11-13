@@ -17054,6 +17054,7 @@ jobs:
       - "engine/pit.py"
       - "engine/pit_lag_recorder.py"
       - "engine/rate_inflation_transmission.py"
+      - "engine/rate_inflation_receipt.py"
       - "engine/seasonality/contracts.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/identity.py"
