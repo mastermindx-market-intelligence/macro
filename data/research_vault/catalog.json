@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T07:23:11.844706+00:00",
-  "count": 3282,
+  "generated_at": "2026-11-13T07:53:15.730422+00:00",
+  "count": 3283,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-nixyupxhrja-fe14cb",
+      "title": "JPM International Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T07:29:32Z",
+      "summary_points": [
+        "Geopolitical Fragility & Rate Sell-off: Trump’s Iran comments trigger market repricing; global rates face sell-off post-US CPI/Fed speak with knee-jerk reactions.",
+        "NVDA Leadership & Retail Flows: CEO resignation contained; retail buying (+10z) drives intraday recovery; trade sustainability hinges on geopolitical stability (EU beneficiary).",
+        "EU Outperformance & Labor Weakness: EU outperforms US due to US recession L/S and EMEA healthcare/staples; Eurozone employment deceleration signals weakening labor market fundamentals.",
+        "Hormuz Security Risk: 34+ vessel attacks in Oct (10+ Nov) amplify oil supply chain disruption and energy volatility.",
+        "Key Catalysts: Next week’s ECB bulletin, UK GDP/IP, US Federal Budget Balance (12/11); EA GDP, FR CPI, US PPI (13/11) critical for market direction."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-p2orjrkzdbd-63b5be",
       "title": "nb.com AI Data Centers and the New Compute of Politics Power and Capex",
