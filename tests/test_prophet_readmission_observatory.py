@@ -11,11 +11,12 @@ import pandas as pd
 import pytest
 
 from admin.prophet import _learning_loop, _reentry_case_rows
-from scripts.prophet_postmortem import _mark_at
+from scripts.prophet_postmortem import _mark_at, _mark_with_observation_date
 
 
 def _prior(series, entry=100.0):
-    return {"sc": {"entry": entry}, "series": series}
+    return {"sc": {"entry": entry, "entry_date": str(series.index[0].date())},
+            "series": series}
 
 
 def test_prior_mark_never_reads_a_future_close():
@@ -27,6 +28,13 @@ def test_prior_mark_never_reads_a_future_close():
     # Friday 07-03 has no bar: use Thursday's known close, not Monday's -21%.
     assert _mark_at(_prior(closes), "2026-07-03") == pytest.approx(0.0)
     assert _mark_at(_prior(closes), "2026-07-06") == pytest.approx(-21.0)
+    assert _mark_with_observation_date(_prior(closes), "2026-07-03") == (
+        pytest.approx(0.0), "2026-07-02",
+    )
+    # A previous signal with an unfilled position has no meaningful P/L.
+    pending = {"sc": {"entry": 100.0, "entry_date": "2026-07-06"},
+               "series": closes}
+    assert _mark_with_observation_date(pending, "2026-07-03") == (None, None)
 
 
 @pytest.mark.parametrize("prices", [[float("nan")], [0.0], [-1.0]])
