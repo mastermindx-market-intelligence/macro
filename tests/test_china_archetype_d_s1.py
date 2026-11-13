@@ -142,6 +142,18 @@ def test_synthesized_reason_receipts_use_the_shared_lens_plane() -> None:
     assert "e.preventDefault();card.click();" in TPL
 
 
+def test_driver_rail_suppresses_missing_driver_noise() -> None:
+    assert "{% set _driver_policy = I.pboc or _credit_impulse is not none %}" in TPL
+    assert "{% set _driver_flows = I.southbound and I.southbound.net is defined %}" in TPL
+    assert "{% set _driver_risk = _risk_state_driver in ('calm','caution','elevated','risk-off') %}" in TPL
+    assert "{% set _driver_property = P and P.regime %}" in TPL
+    assert "{% if _driver_policy or _driver_flows or _driver_risk or _driver_property %}" in TPL
+
+    driver = TPL.split('data-cn-driver-rail', 1)[1].split("</div>", 1)[0]
+    assert "Unavailable" not in driver
+    assert "暂不可用" not in driver
+
+
 def test_regime_watch_stays_quiet_until_a_transition_is_building() -> None:
     assert "{% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}" in TPL
     assert "watch →" in TPL
@@ -174,6 +186,33 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "if c.importance != 'high'" in TPL
     assert "{% set _ev_shown = _ev_pool[:4] %}" in TPL
     assert "ROW 1: What To Do + Upcoming Events" in TPL
+
+
+def test_mobile_section_index_improves_scanability_without_collapsing_depth() -> None:
+    assert 'class="cnx-links cnx-mobile-index"' in TPL
+    assert 'aria-label="China dashboard sections / 中国看板分区"' in TPL
+    for target in (
+        "cnx-focus-action",
+        "cnx-focus-markets",
+        "cnx-focus-drivers",
+        "cnx-focus-deep",
+        "cnx-focus-research",
+    ):
+        assert f'href="#{target}"' in TPL
+        assert f'id="{target}"' in TPL
+
+    for marker in (
+        "{{ t('Action & calendar','操作与日历') }}",
+        "{{ t('Markets & risk','市场与风险') }}",
+        "{{ t('Drivers & news','驱动与新闻') }}",
+        "{{ t('Deep context','深层背景') }}",
+    ):
+        assert marker in TPL
+
+    # Scanability is additive: the macro dashboard does not introduce a new
+    # cnx-* disclosure/collapse layer; unrelated stock-depth details may exist.
+    assert '<details class="cnx-' not in TPL
+    assert "ROW 4: Property + AI Brief + Alerts Centre" in TPL
 
 
 def test_deep_link_rail_avoids_redundant_news_and_alert_shortcuts() -> None:

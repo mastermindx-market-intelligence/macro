@@ -1055,6 +1055,13 @@
   .cnx-wrap .cnx-hero-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px}
   .cnx-wrap .cnx-live-freshness{margin-left:3px;opacity:.78}
   .cnx-wrap .cnx-playbook-context{font-size:10.5px;line-height:1.35;color:var(--muted);margin:2px 0 0}
+  body.page-china .cnx-links.cnx-mobile-index{display:none}
+  .cnx-wrap [id^="cnx-focus-"]{scroll-margin-top:84px}
+  @media (max-width:760px){
+    body.page-china .cnx-links.cnx-mobile-index{display:flex;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;margin:0 0 10px;padding-bottom:2px}
+    body.page-china .cnx-links.cnx-mobile-index a{flex:0 0 auto;scroll-snap-align:start}
+    body.page-china .cnx-links.cnx-mobile-index::-webkit-scrollbar{display:none}
+  }
   .cnx-wrap .cnx-reason-row{position:relative}
   .cnx-wrap .cnx-lens{flex:none;width:26px;height:26px;margin-left:auto;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:help;line-height:1;position:relative}
   .cnx-wrap .cnx-change-list{display:grid;gap:0}
@@ -2135,14 +2142,31 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {% set _credit_impulse = I.credit.credit_impulse if I.credit and I.credit.credit_impulse is defined and I.credit.credit_impulse is not none else none %}
   {% set _risk_state_driver = (latest.risk_radar.state if latest.risk_radar else 'unknown') %}
   {% set _risk_face = {'calm':['Calm','平稳'],'caution':['Caution','谨慎'],'elevated':['Elevated','偏高'],'risk-off':['Risk-off','避险']}.get(_risk_state_driver, ['Unclear','待确认']) %}
+  {% set _driver_policy = I.pboc or _credit_impulse is not none %}
+  {% set _driver_flows = I.southbound and I.southbound.net is defined %}
+  {% set _driver_risk = _risk_state_driver in ('calm','caution','elevated','risk-off') %}
+  {% set _driver_property = P and P.regime %}
+  {% if _driver_policy or _driver_flows or _driver_risk or _driver_property %}
   <div class="cnx-lbl">{{ t('Why this regime','为什么这样判断') }}</div>
   <div class="cnx-links" data-cn-driver-rail>
-    <a href="#cnx-dlg-policy" onclick="cnxOpenDlg('cnx-dlg-policy');return false;">{{ t('Policy','政策') }} · {% if I.pboc %}{{ t((I.pboc.bias or 'unknown')|title, {'easing':'宽松','neutral':'中性','tightening':'收紧'}.get(I.pboc.bias,'待确认')) }}{% elif _credit_impulse is not none %}{{ '%+.1f'|format(_credit_impulse) }}%{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
-    <a href="#cnx-dlg-flows" onclick="cnxOpenDlg('cnx-dlg-flows');return false;">{{ t('Flows','资金') }} · {% if I.southbound and I.southbound.net is defined %}{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}{{ t('bn','亿') }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
-    <a href="#cnx-dlg-risk" onclick="cnxOpenDlg('cnx-dlg-risk');return false;">{{ t('Internals','内部结构') }} · <span class="l-en">{{ _risk_face[0] }}</span><span class="l-zh">{{ _risk_face[1] }}</span></a>
-    <a href="#cnx-dlg-property" onclick="cnxOpenDlg('cnx-dlg-property');return false;">{{ t('Property','房地产') }} · {% if P and P.regime %}{{ t(P.regime.label_en, P.regime.label_zh) }}{% else %}{{ t('Unavailable','暂不可用') }}{% endif %}</a>
+    {% if _driver_policy %}<a href="#cnx-dlg-policy" onclick="cnxOpenDlg('cnx-dlg-policy');return false;">{{ t('Policy','政策') }} · {% if I.pboc %}{{ t((I.pboc.bias or 'unknown')|title, {'easing':'宽松','neutral':'中性','tightening':'收紧'}.get(I.pboc.bias,'待确认')) }}{% else %}{{ '%+.1f'|format(_credit_impulse) }}%{% endif %}</a>{% endif %}
+    {% if _driver_flows %}<a href="#cnx-dlg-flows" onclick="cnxOpenDlg('cnx-dlg-flows');return false;">{{ t('Flows','资金') }} · {{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}{{ t('bn','亿') }}</a>{% endif %}
+    {% if _driver_risk %}<a href="#cnx-dlg-risk" onclick="cnxOpenDlg('cnx-dlg-risk');return false;">{{ t('Internals','内部结构') }} · <span class="l-en">{{ _risk_face[0] }}</span><span class="l-zh">{{ _risk_face[1] }}</span></a>{% endif %}
+    {% if _driver_property %}<a href="#cnx-dlg-property" onclick="cnxOpenDlg('cnx-dlg-property');return false;">{{ t('Property','房地产') }} · {{ t(P.regime.label_en, P.regime.label_zh) }}</a>{% endif %}
   </div>
+  {% endif %}
 
+  {# Mobile scanability without compression: a tiny jump rail exposes the deep
+     dashboard's major zones without hiding or collapsing any accepted content. #}
+  <nav class="cnx-links cnx-mobile-index" aria-label="China dashboard sections / 中国看板分区">
+    <a href="#cnx-focus-action">{{ t('Action','操作') }}</a>
+    <a href="#cnx-focus-markets">{{ t('Markets','市场') }}</a>
+    <a href="#cnx-focus-drivers">{{ t('Drivers','驱动') }}</a>
+    <a href="#cnx-focus-deep">{{ t('Deep read','深入解读') }}</a>
+    <a href="#cnx-focus-research">{{ t('Research','研究') }}</a>
+  </nav>
+
+  <div class="cnx-lbl" id="cnx-focus-action">{{ t('Action & calendar','操作与日历') }}</div>
   <!-- =============== ROW 1: What To Do + Upcoming Events =============== -->
   <div class="cnx-rack2">
     {# What To Do card — keep the deep-card interaction, but use the retired
@@ -2191,6 +2215,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </div>
 
+  <div class="cnx-lbl" id="cnx-focus-markets">{{ t('Markets & risk','市场与风险') }}</div>
   <!-- =============== ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature =============== -->
   <div class="cnx-rack3">
     {# Pullback Risk vs Top Stocks conditional #}
@@ -2351,6 +2376,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </div>
 
+  <div class="cnx-lbl" id="cnx-focus-drivers">{{ t('Drivers & news','驱动与新闻') }}</div>
   <!-- =============== ROW 3: Policy Monitor + Connect Flows + Macro News =============== -->
   <div class="cnx-rack3">
     {# Policy Monitor card #}
@@ -2417,6 +2443,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </div>
 
+  <div class="cnx-lbl" id="cnx-focus-deep">{{ t('Deep context','深层背景') }}</div>
   <!-- =============== ROW 4: Property + AI Brief + Alerts Centre =============== -->
   <div class="cnx-rack3">
     {# Property card #}
@@ -2491,7 +2518,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   </div>
 
   <!-- =============== FOOTER: Links pill row + Data health strip =============== -->
-  <div class="cnx-lbl">{{ t('Go deeper','深入研究') }}</div>
+  <div class="cnx-lbl" id="cnx-focus-research">{{ t('Go deeper','深入研究') }}</div>
   <div class="cnx-links">
     <a href="china_stocks.html">{{ t('A-Share Stocks','A股个股') }}</a>
     <a href="china_heatmap.html">{{ t('Market Heatmap','市场热力图') }}</a>
