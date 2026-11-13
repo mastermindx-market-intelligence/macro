@@ -197,19 +197,6 @@ def _regime_anchor_projection(d: dict, *, macro_risk_reader, market_state_reader
     }
 
 
-def regime_anchor_from_inputs(latest: dict | None, *, macro_risk: dict | None,
-                              market_state: dict | None) -> dict:
-    """Project captured resolved readings; no persisted-state read or recomputation.
-
-    The capture adapter resolves persisted MarketState versus its existing-owner
-    fallback. None means that resolution is unavailable, not permission to load.
-    """
-    from copy import deepcopy
-    data, risk, state = deepcopy((latest if latest is not None else {}, macro_risk, market_state))
-    return _regime_anchor_projection(data, macro_risk_reader=lambda value: risk,
-                                    market_state_reader=lambda value: state)
-
-
 def _aggregate_heat(hm: dict) -> dict:
     """Pure aggregate of the Sector Heatmap feed: per-(Finviz)-sector cap-weighted heat +
     breadth, plus the SIC-D-B03 coverage counts — how many tiles the sector has, how many
@@ -297,34 +284,6 @@ def market_context() -> dict:
     except Exception as e:  # noqa: BLE001
         log.debug("central: compute_fragility failed: %s", e)
     return {**anc, "heat": _heat_table(), "_crowd_by_ticker": crowd}
-
-
-def market_context_from_inputs(*, latest: dict | None, macro_overlay: dict | None,
-                               market_state: dict | None, heatmap: dict | None,
-                               closes, short_interest, benchmark) -> dict:
-    """Compute existing Central context from one captured source set.
-
-    MarketState must already be resolved by its incumbent owner. Price/FINRA
-    inputs retain the complete broad cross-sections; theme-only subsets would
-    change the original percentile calculation. No None argument permits reads.
-    """
-    from copy import deepcopy
-    from engine.conditions import macro_risk_score_from_inputs
-    from engine.crowding import compute_fragility_from_inputs
-    latest, macro_overlay, market_state, heatmap = deepcopy((latest, macro_overlay, market_state, heatmap))
-    try:
-        risk = macro_risk_score_from_inputs(latest if latest is not None else {}, macro_overlay=macro_overlay)
-    except Exception as exc:  # noqa: BLE001 — preserve the incumbent persisted-risk fallback
-        log.warning("central: macro_risk_score failed: %s", exc)
-        risk = None
-    anchor = regime_anchor_from_inputs(latest, macro_risk=risk, market_state=market_state)
-    crowd = compute_fragility_from_inputs(closes=closes, si=short_interest, bench=benchmark)
-    try:
-        heat = _aggregate_heat(heatmap) if heatmap is not None else {}
-    except Exception as exc:  # noqa: BLE001 — same optional heat context contract
-        log.debug("central: heatmap aggregate failed: %s", exc)
-        heat = {}
-    return {**anchor, "heat": heat, "_crowd_by_ticker": crowd}
 
 
 # =========================================================================== #
@@ -474,30 +433,6 @@ def _fusion_calibration_values(rec, *, beta_reader, risk_reader):
     except Exception:  # noqa: BLE001
         size_mult = 1.0
     return beta, size_mult
-
-
-def fusion_calibration_from_inputs(rec, *, macro_beta_table, risk_calibration):
-    """Original independent beta/risk lookups using captured owner values."""
-    from copy import deepcopy
-    from engine.conditions import sector_macro_beta_from_inputs
-    from engine.cycles import risk_size_mult_from_inputs
-    rec, table, risk = deepcopy((rec, macro_beta_table, risk_calibration))
-    return _fusion_calibration_values(rec,
-        beta_reader=lambda key: sector_macro_beta_from_inputs(key, table=table),
-        risk_reader=lambda state, family: risk_size_mult_from_inputs(
-            state, family, risk_calibration=risk))
-
-
-def fusion_calibrations_from_inputs(cycle_spine, *, macro_beta_table, risk_calibration):
-    """Derive the actual Central lookup keys from the already computed cycle spine."""
-    result = {}
-    for rec in [*cycle_spine["sectors"], *cycle_spine.get("baskets", [])]:
-        key = fusion_calibration_key(rec)
-        if key not in result:
-            result[key] = fusion_calibration_from_inputs(rec, macro_beta_table=macro_beta_table,
-                                                        risk_calibration=risk_calibration)
-    return result
-
 
 
 def _fuse(rec: dict, mkt: dict, n_peers: int, trend: dict | None = None,

@@ -40,10 +40,6 @@ sys.path.insert(0, str(ROOT))
 SNAPSHOT_WORK_SECONDS = 400.0
 BARS_WORK_SECONDS = 880.0  # 20s below the incumbent bars service ceiling.
 COMMAND_CLEANUP_SECONDS = 3.0
-SECTOR_PREPARE_SECONDS = 80.0
-SECTOR_PUBLICATION_RESERVE_SECONDS = 15.0
-NATIVE_PUBLICATION_RESERVE_SECONDS = 30.0
-NATIVE_PHASE_SECONDS = {"capture": 30, "yahoo": 180, "breadth": 420, "member": 180}
 
 
 class ProcessGroupCleanupUnconfirmed(RuntimeError):
@@ -2662,153 +2658,59 @@ class Orchestrator:
             )
 
     def snapshot(self) -> None:
-        """One source-fenced deadline for quotes, pulses and Sector calculation."""
-        prior_deadline = self._command_deadline
-        self._command_deadline = (prior_deadline if prior_deadline is not None
-                                  else time.monotonic() + SNAPSHOT_WORK_SECONDS)
-        state, previous = _read_json_state(self.state_dir / "status-snapshot.json")
-        self._prior_snapshot = previous if state == "ok" else None
-        self._prior_snapshot_error = None if state in {"ok", "absent"} else state
-        if self._prior_snapshot is not None:
-            for task in self._prior_snapshot.get("tasks", []):
-                group = task.get("cleanup_group_id")
-                if type(group) is int and group > 0 and _process_group_exists(group):
-                    self._cleanup_group_id = group
-                    break
-        reserve = SECTOR_PREPARE_SECONDS + SECTOR_PUBLICATION_RESERVE_SECONDS
-        try:
-            snapshot_stage = self.stage_dir / "quotes_full.json"
-            snapshot_live = self.state_dir / "quotes_full.json"
-            quote_result = self.module(
-                "full_quotes", "scripts.build_live_quotes",
-                ["--private-provenance", "--out", str(snapshot_stage)],
-                outputs=((snapshot_stage, snapshot_live),), timeout=170, reserve_s=reserve,
-                validator=lambda path: quote_snapshot_error(
-                    path, min_resolved=50, min_coverage=0.10))
-            if quote_result.status == "ok" and snapshot_live.exists():
-                intraday_quote_stage = self.stage_dir / "intraday_quotes.json"
-                self.module(
-                    "intraday_quotes", "scripts.build_intraday_flow_quotes",
-                    ["--base", str(ROOT / "site" / "flowtracker" / "base.json"),
-                     "--quotes", str(snapshot_live), "--out", str(intraday_quote_stage)],
-                    outputs=self._publish_pairs(("intraday_quotes.json",)),
-                    timeout=20, reserve_s=reserve,
-                    validator=lambda path: quote_snapshot_error(
-                        path, min_resolved=80, min_coverage=0.90, require_source_clock=True))
-                for market, filename in (("us", "basket_pulse.json"), ("hk", "basket_pulse_hk.json")):
-                    sidecar = filename.replace(".json", "_lastgood.json")
-                    self.module(f"basket_{market}", "scripts.build_basket_pulse",
-                        ["--market", market, "--quotes", str(snapshot_live),
-                         "--out", str(self.stage_dir / filename)],
-                        outputs=self._publish_pairs((filename, sidecar)),
-                        timeout=55, reserve_s=reserve)
-            else:
-                for name in ("intraday_quotes", "basket_us", "basket_hk"):
-                    self.results.append(TaskResult(name, "dependency_blocked", 0.0,
-                        detail="this invocation did not publish a qualified full quote snapshot"))
-            # Sector depends on the strict native chain, not on quotes_full.json.
-            self.sector_snapshot(timeout=SECTOR_PREPARE_SECONDS)
-        finally:
-            self._command_deadline = prior_deadline
-
-    def sector_snapshot(self, *, timeout=SECTOR_PREPARE_SECONDS) -> TaskResult:
-        """Prepare in a child, then validate and publish once in this parent."""
-        started = time.monotonic()
-        def blocked(status, detail, *, publication=None):
-            result = TaskResult("sector_generation", status,
-                round(time.monotonic() - started, 3), detail=detail,
-                cleanup_group_id=self._cleanup_group_id, generation_publication=publication)
-            self.results.append(result)
-            return result
-
-        if self._cleanup_group_id is not None:
-            return blocked("cleanup_unconfirmed", "original child group remains unresolved")
-        if self._prior_snapshot_error:
-            return blocked("dependency_blocked", "previous snapshot receipt " + self._prior_snapshot_error)
-        for task in (self._prior_snapshot or {}).get("tasks", []):
-            publication = task.get("generation_publication")
-            if (task.get("name") == "sector_generation" and isinstance(publication, dict)
-                    and (publication.get("status") == "uncertain"
-                         or publication.get("durability") == "unconfirmed")):
-                return blocked("publication_unconfirmed",
-                    "reconcile the original publication through its incumbent generation owner",
-                    publication=publication)
-        if (not isinstance(self.source_revision, str)
-                or re.fullmatch(r"[0-9a-f]{40}", self.source_revision) is None):
-            return blocked("dependency_blocked", "source owner release revision required")
-        if self._command_deadline is not None and time.monotonic() >= self._command_deadline:
-            return blocked("budget_exhausted", "shared snapshot deadline exhausted")
-        generation_id = "sector-" + uuid.uuid4().hex
-        publication_started = False
-        try:
-            root = self._yahoo_private_root()
-            _private_dir(Path(self.state_dir))
-            with tempfile.TemporaryDirectory(prefix=".sector-prepare-", dir=self.state_dir) as temporary:
-                stage = Path(temporary)
-                args = ["--repository-root", str(ROOT), "--theme-root", str(ROOT),
-                        "--generations-root", str(root), "--stage", str(stage),
-                        "--generation-id", generation_id, "--source-revision", self.source_revision]
-                if self._publication_now is not None:
-                    args.extend(["--now", self._publication_now.isoformat()])
-                result = self.module("sector_generation", "scripts.prepare_sector_snapshot", args,
-                    timeout=timeout, reserve_s=SECTOR_PUBLICATION_RESERVE_SECONDS)
-                if result.status != "ok":
-                    return result
-                from scripts.prepare_sector_snapshot import read_prepared
-                composition, metadata = read_prepared(stage,
-                    generation_id=generation_id, source_revision=self.source_revision)
-                if (self._command_deadline is not None
-                        and self._command_deadline - time.monotonic() < SECTOR_PUBLICATION_RESERVE_SECONDS):
-                    result.status = "budget_exhausted"
-                    result.detail = "insufficient shared budget before parent publication"
-                    return result
-                publication_started = True
-                publication = self.publish_sector_documents(composition,
-                    input_identity=metadata["input_identity"], generation_id=generation_id,
-                    source_revision=self.source_revision,
-                    expected_current_content_id=metadata["expected_current_content_id"])
-                result.generation_publication = {**asdict(publication),
-                    "source_revision": self.source_revision,
-                    "expected_current_content_id": metadata["expected_current_content_id"]}
-                if publication.status == "uncertain" or publication.durability == "unconfirmed":
-                    result.status = "publication_unconfirmed"
-                elif publication.status in {"published", "unchanged"}:
-                    result.status = "ok"
-                    result.published = publication.artifacts
-                    result.publication_sha256 = dict(composition.evidence["member_sha256"])
-                else:
-                    result.status = "failed"
-                result.detail = publication.detail or ("sector generation " + publication.status)
-                result.elapsed_s = round(time.monotonic() - started, 3)
-                return result
-        except Exception as exc:
-            detail = f"{type(exc).__name__}: {exc}"[:800]
-            if "result" in locals():
-                if publication_started and result.generation_publication is None:
-                    result.generation_publication = asdict(GenerationPublishResult(
-                        status="uncertain", generation_id=generation_id,
-                        detail="publisher raised after invocation: " + detail))
-                    result.generation_publication.update(source_revision=self.source_revision,
-                        expected_current_content_id=metadata["expected_current_content_id"])
-                    result.status = "publication_unconfirmed"
-                else:
-                    result.status = "error"
-                result.detail = detail
-                result.elapsed_s = round(time.monotonic() - started, 3)
-                return result
-            return blocked("error", detail)
+        """Five-minute, network-heavy full snapshot followed by both basket pulses."""
+        snapshot_stage = self.stage_dir / "quotes_full.json"
+        snapshot_live = self.state_dir / "quotes_full.json"
+        quote_result = self.module(
+            "full_quotes",
+            "scripts.build_live_quotes",
+            ["--private-provenance", "--out", str(snapshot_stage)],
+            outputs=((snapshot_stage, snapshot_live),),
+            timeout=230,
+            validator=lambda path: quote_snapshot_error(
+                path, min_resolved=50, min_coverage=0.10
+            ),
+        )
+        if quote_result.status != "ok" or not snapshot_live.exists():
+            return
+        intraday_quote_stage = self.stage_dir / "intraday_quotes.json"
+        self.module(
+            "intraday_quotes",
+            "scripts.build_intraday_flow_quotes",
+            [
+                "--base", str(ROOT / "site" / "flowtracker" / "base.json"),
+                "--quotes", str(snapshot_live),
+                "--out", str(intraday_quote_stage),
+            ],
+            outputs=self._publish_pairs(("intraday_quotes.json",)),
+            timeout=30,
+            validator=lambda path: quote_snapshot_error(
+                path, min_resolved=80, min_coverage=0.90, require_source_clock=True,
+            ),
+        )
+        for market, filename in (
+            ("us", "basket_pulse.json"),
+            ("hk", "basket_pulse_hk.json"),
+        ):
+            args = [
+                "--market",
+                market,
+                "--quotes",
+                str(snapshot_live),
+                "--out",
+                str(self.stage_dir / filename),
+            ]
+            sidecar = filename.replace(".json", "_lastgood.json")
+            self.module(
+                f"basket_{market}",
+                "scripts.build_basket_pulse",
+                args,
+                outputs=self._publish_pairs((filename, sidecar)),
+                timeout=90,
+            )
 
     def bars(self) -> None:
-        """Incumbent bars/flow first; native refresh uses only actual remainder."""
-        prior_deadline = self._command_deadline
-        self._command_deadline = prior_deadline if prior_deadline is not None else time.monotonic() + BARS_WORK_SECONDS
-        try:
-            self._bars_and_flow()
-            self.sector_inputs(allow_bootstrap=False)
-        finally:
-            self._command_deadline = prior_deadline
-
-    def _bars_and_flow(self) -> None:
+        """Hourly low-priority bar accrual followed by the site-only flow pulse."""
         intraday_dir = self.data_dir / "intraday"
         symbols = intraday_flow_symbols(ROOT / "site" / "flowtracker" / "base.json")
         bars = self.module(
@@ -2822,8 +2724,6 @@ class Orchestrator:
             timeout=720,
         )
         if bars.status != "ok":
-            self.results.append(TaskResult("intraday_flow", "dependency_blocked", 0.0,
-                detail="this invocation did not complete Polygon bar accrual"))
             return
         self.module(
             "intraday_flow",
@@ -2834,195 +2734,6 @@ class Orchestrator:
             timeout=180,
             validator=lambda path: flow_pulse_error(path, min_coverage=0.80),
         )
-
-    def sector_inputs(self, *, allow_bootstrap=False) -> TaskResult:
-        """One request, original fences, sequential parent publications/readback.
-
-        Both the manual entry and bars remainder hold the same native lane lock.
-        The existing private lane receipt preserves pending/uncertain boundaries;
-        it is never a retry queue or a substitute for the generation owner's proof.
-        """
-        started, started_at = time.monotonic(), self._yahoo_clock()
-        result = TaskResult("sector_inputs", "running", 0.0)
-        self.results.append(result)
-        lane, temporary, publication_started, entered = "sector-inputs", None, False, False
-        prior_deadline = self._command_deadline
-        self._command_deadline = prior_deadline if prior_deadline is not None else started + BARS_WORK_SECONDS
-        native_lock = None
-
-        def stop(status, detail):
-            result.status, result.detail = status, detail
-            result.cleanup_group_id = self._cleanup_group_id
-            return result
-
-        def checkpoint(*, finished=False):
-            try:
-                self.write_status(lane, started_at, finished=finished,
-                    private_only=not finished, require_durable=True)
-            except Exception:
-                self._status_write_blocked.add(lane)
-                raise
-
-        try:
-            if type(allow_bootstrap) is not bool:
-                return stop("dependency_blocked", "explicit bootstrap policy required")
-            if not isinstance(self.source_revision, str) or not re.fullmatch(r"[0-9a-f]{40}", self.source_revision):
-                return stop("dependency_blocked", "source owner release revision required")
-            if self._cleanup_group_id is not None:
-                return stop("cleanup_unconfirmed", "original command group remains unresolved")
-            if self._command_deadline - time.monotonic() <= NATIVE_PUBLICATION_RESERVE_SECONDS + COMMAND_CLEANUP_SECONDS:
-                return stop("budget_exhausted", "insufficient remaining source budget before native capture")
-            root = self._yahoo_private_root()
-            _private_dir(Path(self.state_dir))
-            native_lock = _lock_lane(self.state_dir, lane)
-            if native_lock is None:
-                return stop("deferred", "native-input owner already active; no work enqueued")
-            self._native_lock_fd = native_lock.fileno()
-            state, previous = _read_json_state(self.state_dir / f"status-{lane}.json")
-            if state not in {"ok", "absent"}:
-                return stop("dependency_blocked", "previous native receipt " + state)
-            if previous is not None and (previous.get("schema") != "vps_live_lane.v1"
-                    or previous.get("lane") != lane or type(previous.get("tasks")) is not list
-                    or any(type(task) is not dict for task in previous["tasks"])
-                    or len([task for task in previous["tasks"] if task.get("name") == "sector_inputs"]) != 1):
-                return stop("dependency_blocked", "previous native receipt shape invalid")
-            for task in (previous or {}).get("tasks", []):
-                group = task.get("cleanup_group_id")
-                if type(group) is int and group > 0 and _process_group_exists(group):
-                    self._cleanup_group_id = group
-                    return stop("cleanup_unconfirmed", "original native command group remains unresolved")
-                attempt = task.get("native_input_attempt")
-                if task.get("name") != "sector_inputs":
-                    continue
-                if (type(attempt) is not dict or type(attempt.get("phases")) is not dict
-                        or any(type(phase) is not dict for phase in attempt["phases"].values())):
-                    return stop("dependency_blocked", "previous native attempt shape invalid")
-                for phase in attempt.get("phases", {}).values():
-                    publication = phase.get("publication") or {}
-                    if (phase.get("publication_state") == "invocation_pending"
-                            or publication.get("status") == "uncertain"
-                            or publication.get("durability") == "unconfirmed"):
-                        result.native_input_attempt = attempt
-                        return stop("publication_unconfirmed", "reconcile the original native publication through its generation owner")
-                if attempt.get("cold_timeout") is not None:
-                    result.native_input_attempt = attempt
-                    return stop("cold_timeout_held", "original cold timeout requires resource qualification and receipt disposition")
-            _private_dir(root)
-            attempt_id = "native-" + uuid.uuid4().hex
-            temporary = Path(tempfile.mkdtemp(prefix=".sector-inputs-", dir=self.state_dir))
-            request_stage = _private_dir(temporary / "request")
-            result.native_input_attempt = {"attempt_id": attempt_id, "source_revision": self.source_revision,
-                "allow_bootstrap": allow_bootstrap, "stage": str(temporary), "request_fingerprint": None,
-                "original_priors": None, "phases": {}, "cold_timeout": None, "current_chain": None}
-            attempt = result.native_input_attempt
-            entered = True
-            checkpoint()
-            common = ["--repository-root", str(ROOT), "--generations-root", str(root),
-                      "--attempt-id", attempt_id, "--source-revision", self.source_revision]
-            if self._publication_now is not None:
-                common += ["--now", self._publication_now.isoformat()]
-            capture_args = [*common, "--phase", "capture", "--stage", str(request_stage)]
-            if allow_bootstrap:
-                capture_args.append("--allow-bootstrap")
-            child = self.module("native_capture", "scripts.prepare_sector_native_inputs", capture_args,
-                timeout=NATIVE_PHASE_SECONDS["capture"], reserve_s=NATIVE_PUBLICATION_RESERVE_SECONDS)
-            attempt["phases"]["capture"] = {"preparation": asdict(child)}
-            if child.status != "ok":
-                return stop(child.status, "native capture " + child.status)
-            from scripts import prepare_sector_native_inputs as prepare
-            raw, request = prepare.read_request(request_stage, attempt_id=attempt_id, source_revision=self.source_revision)
-            attempt["request_fingerprint"] = request["fingerprint"]
-            attempt["original_priors"] = request["priors"]
-            checkpoint()
-            dependencies = {}
-            publishers = {"yahoo": self.publish_yahoo_inputs, "breadth": self.publish_breadth_member_inputs,
-                          "member": self.publish_member_ohlcv_inputs}
-            for kind in prepare.KINDS:
-                stage = _private_dir(temporary / kind)
-                phase = {"generation_id": attempt_id + "-" + kind,
-                    "expected_current_content_id": request["priors"][kind]["content_id"],
-                    "dependencies": dict(dependencies), "publication_state": "not_invoked"}
-                attempt["phases"][kind] = phase
-                args = [*common, "--phase", kind, "--request-stage", str(request_stage), "--stage", str(stage)]
-                for name, reference in dependencies.items():
-                    args += ["--" + name + "-generation-id", reference["generation_id"],
-                             "--" + name + "-content-id", reference["content_id"]]
-                checkpoint()
-                child = self.module("native_" + kind, "scripts.prepare_sector_native_inputs", args,
-                    timeout=NATIVE_PHASE_SECONDS[kind], reserve_s=NATIVE_PUBLICATION_RESERVE_SECONDS)
-                phase["preparation"] = asdict(child)
-                if child.status != "ok":
-                    if child.timed_out and phase["expected_current_content_id"] is None:
-                        attempt["cold_timeout"] = {"phase": kind, "generation_id": phase["generation_id"],
-                            "expected_current_content_id": None}
-                    return stop(child.status, "native " + kind + " preparation " + child.status)
-                encoded, metadata, selected = prepare.read_prepared(stage, kind=kind, request=request,
-                    request_members=raw, generations_root=root, dependencies=dict(dependencies), clock=self._yahoo_clock)
-                if encoded is None:
-                    phase["publication_state"] = "reused"
-                else:
-                    if self._command_deadline - time.monotonic() < NATIVE_PUBLICATION_RESERVE_SECONDS:
-                        return stop("budget_exhausted", "insufficient source budget before " + kind + " publication")
-                    phase["publication_state"] = "invocation_pending"
-                    checkpoint()
-                    publication_started = True
-                    publication = publishers[kind](encoded, generation_id=metadata["generation_id"],
-                        source_revision=self.source_revision,
-                        expected_current_content_id=metadata["expected_current_content_id"], lane=lane)
-                    publication_started = False
-                    phase["publication"] = asdict(publication)
-                    phase["publication_state"] = "returned"
-                    checkpoint()
-                    if publication.status == "uncertain" or publication.durability == "unconfirmed":
-                        return stop("publication_unconfirmed", "native " + kind + " publication requires reconciliation")
-                    if publication.status not in {"published", "unchanged"}:
-                        return stop("failed", "native " + kind + " publication " + publication.status)
-                    domain, names = prepare._contract(kind)
-                    selected = read_selected_generation(generations_root=root, domain=domain, members=names)
-                    if selected.content_id != publication.content_id or selected.generation_id != publication.generation_id:
-                        return stop("dependency_blocked", "native " + kind + " selection changed before readback")
-                reference = {"generation_id": selected.generation_id, "content_id": selected.content_id}
-                phase["selected"] = reference
-                dependencies[kind] = reference
-                # Verify this actual selected dependency before any next acquisition.
-                if kind == "yahoo":
-                    captured_yahoo = prepare._captured_yahoo(dependencies, root, self._yahoo_clock)
-                elif kind == "breadth":
-                    captured_breadth = prepare._captured_breadth(dependencies, root, captured_yahoo, self._yahoo_clock)
-                else:
-                    prepare.candles.read_verified_member_ohlcv_inputs(generations_root=root,
-                        breadth=captured_breadth, yahoo=captured_yahoo, now=self._yahoo_clock(), require_current=True)
-                checkpoint()
-            # Reopen all three current selections; retained bytes alone cannot
-            # establish that the final chain is still selected.
-            for kind, reference in dependencies.items():
-                domain, names = prepare._contract(kind)
-                selected = read_selected_generation(generations_root=root, domain=domain, members=names)
-                if (selected.generation_id, selected.content_id) != (reference["generation_id"], reference["content_id"]):
-                    return stop("dependency_blocked", "native current chain changed during final readback")
-            attempt["current_chain"] = dependencies
-            return stop("ok", "current native dependency chain published or verified; provider gaps remain explicit")
-        except Exception as exc:
-            detail = f"{type(exc).__name__}: {exc}"[:800]
-            if publication_started:
-                phase["publication"] = asdict(GenerationPublishResult(status="uncertain",
-                    generation_id=phase["generation_id"], detail="publisher raised after invocation: " + detail))
-                return stop("publication_unconfirmed", detail)
-            return stop("receipt_unconfirmed" if lane in self._status_write_blocked else "error", detail)
-        finally:
-            result.elapsed_s = round(time.monotonic() - started, 3)
-            if entered and lane not in self._status_write_blocked:
-                try:
-                    checkpoint(finished=True)
-                except Exception as exc:
-                    result.status, result.detail = "receipt_unconfirmed", f"private native receipt write failed: {exc}"[:800]
-            # Retain uncertain handoffs for original-effect reconciliation.
-            if temporary is not None and result.status not in {"cleanup_unconfirmed", "publication_unconfirmed", "receipt_unconfirmed"}:
-                shutil.rmtree(temporary)
-            self._native_lock_fd = None
-            if native_lock is not None:
-                native_lock.close()
-            self._command_deadline = prior_deadline
 
     def write_status(self, lane: str, started_at: datetime, *, finished=True,
                      private_only=False, require_durable=False) -> None:
@@ -3079,313 +2790,6 @@ class Orchestrator:
             },
             mode=0o644,
         )
-
-    def _yahoo_private_root(self) -> Path:
-        """Use the incumbent private state root; never a checkout/public tree."""
-        from lib.yahoo_generation_contract import YahooGenerationContractError
-        state = Path(self.state_dir)
-        if not state.is_absolute():
-            raise YahooGenerationContractError("absolute_private_root_required")
-        try:
-            if any(path.is_symlink() for path in (state, *state.parents)):
-                raise YahooGenerationContractError("private_root_symlink")
-            resolved = state.resolve()
-            forbidden = (ROOT.resolve(), Path(self.public_dir).resolve())
-            if any(resolved == root or root in resolved.parents for root in forbidden):
-                raise YahooGenerationContractError("private_root_inside_source_or_public")
-            if state.exists() and not state.is_dir():
-                raise YahooGenerationContractError("private_root_not_directory")
-            root = state / "generations"
-            if root.is_symlink():
-                raise YahooGenerationContractError("private_root_symlink")
-            if root.exists() and not root.is_dir():
-                raise YahooGenerationContractError("private_root_not_directory")
-        except OSError:
-            raise YahooGenerationContractError("private_root_unavailable") from None
-        return root
-
-    def _yahoo_clock(self, clock: Callable[[], datetime] | None = None) -> datetime:
-        from lib.yahoo_generation_contract import _instant
-        return _instant(clock() if clock is not None else
-                        self._publication_now if self._publication_now is not None else
-                        datetime.now(timezone.utc))
-
-    def capture_yahoo_bootstrap(
-        self, *, sources: Mapping[str, Path | None], source_ref: str,
-        source_revision: str, clock: Callable[[], datetime] | None = None,
-    ):
-        """Capture explicit legacy files once; missing is explicit, never fallback.
-
-        This is read-only byte capture, not proof that legacy writers have drained.
-        Deployment must supply the source/capture identity and operational fence.
-        """
-        from lib.yahoo_generation_contract import (
-            MAX_YAHOO_MEMBER_BYTES, YahooBootstrapCapture, YahooGenerationContractError,
-            decode_bootstrap_capture,
-        )
-        from lib.yahoo_runtime_profile import SECTOR_CLOSE_TICKERS
-        self._yahoo_private_root()
-        if not isinstance(sources, Mapping) or set(sources) != set(SECTOR_CLOSE_TICKERS):
-            raise YahooGenerationContractError("invalid_bootstrap_capture")
-        selected = dict(sources)
-        if any(path is not None and (not isinstance(path, Path) or not path.is_absolute())
-               for path in selected.values()):
-            raise YahooGenerationContractError("absolute_bootstrap_sources_required")
-        try:
-            if any(parent.is_symlink() for path in selected.values() if path is not None
-                   for parent in path.parents):
-                raise YahooGenerationContractError("bootstrap_source_ancestor_symlink")
-        except OSError:
-            raise YahooGenerationContractError("bootstrap_source_unavailable") from None
-        raw = {ticker: _read_source_bytes(selected[ticker], limit=MAX_YAHOO_MEMBER_BYTES)
-               if selected[ticker] is not None else None for ticker in SECTOR_CLOSE_TICKERS}
-        capture = YahooBootstrapCapture(MappingProxyType(raw), source_ref,
-                                        source_revision, self._yahoo_clock(clock))
-        # Validate captured bytes now, and derive values again at refresh from
-        # those same immutable bytes. No source pathname survives in the object.
-        decode_bootstrap_capture(capture)
-        return capture
-
-    def refresh_yahoo_inputs(
-        self, *, adapter, generation_id: str, source_revision: str,
-        bootstrap=None, clock: Callable[[], datetime] | None = None,
-        period: str = "1mo", lane: str = "snapshot",
-    ) -> GenerationPublishResult:
-        """One acquisition/publication attempt over one captured prior and fence.
-
-        No implicit bootstrap, current-fence refresh, provider restart or retry of
-        uncertain publication occurs here. This method installs no scheduling or
-        ownership transfer and returns the incumbent publication result unchanged.
-        """
-        from lib.yahoo_generation_contract import (
-            YAHOO_GENERATION_DOMAIN, YahooGenerationContractError, decode_bootstrap_capture,
-            encode_yahoo_acquisition, read_verified_yahoo_cohort, _instant,
-        )
-        from lib.yahoo_runtime_profile import SECTOR_CLOSE_TICKERS
-        root = self._yahoo_private_root()
-        if bootstrap is None:
-            selected = read_verified_yahoo_cohort(generations_root=root, now=self._yahoo_clock(clock))
-            prior = selected.prior_identity(captured_at=self._yahoo_clock(clock))
-            frames = selected.cohort.frames
-            expected = selected.snapshot.content_id
-        else:
-            domain = root / YAHOO_GENERATION_DOMAIN
-            if domain.is_symlink() or (domain.exists() and not domain.is_dir()):
-                raise YahooGenerationContractError("bootstrap_selection_not_absent")
-            state, _ = _read_json_state(domain / _GENERATION_SELECTION_NAME)
-            if state != "absent":
-                raise YahooGenerationContractError("bootstrap_selection_not_absent")
-            frames, prior = decode_bootstrap_capture(bootstrap)
-            expected = None
-        evaluation = self._yahoo_clock(clock)
-        if _instant(prior["captured_at"]) > evaluation:
-            raise YahooGenerationContractError("evaluation_before_prior_capture")
-        acquisition = adapter.acquire_cycle_benchmarks(SECTOR_CLOSE_TICKERS,
-            prior_frames=frames, evaluation_instant=evaluation,
-            completed_sessions_only=True, period=period)
-        prepared = self._yahoo_clock(clock)
-        if acquisition.accepted is not True:
-            return GenerationPublishResult(status="rejected", generation_id=generation_id,
-                                           detail="yahoo acquisition did not qualify the complete cohort")
-        encoded = encode_yahoo_acquisition(acquisition, prior_identity=prior,
-            prepared_at=prepared, source_revision=source_revision)
-        return self.publish_yahoo_inputs(encoded, generation_id=generation_id,
-            source_revision=source_revision, expected_current_content_id=expected, lane=lane)
-
-    @contextmanager
-    def yahoo_calculation_scope(
-        self, *, profile, expected_content_id: str,
-        clock: Callable[[], datetime] | None = None,
-    ):
-        """Verify and bind inside this calculation process at an explicit fence.
-
-        Coupled products should run within this one scope. A child process must
-        enter its own scope with the parent's captured content ID; a different
-        selection refuses instead of mixing dependent output generations.
-        """
-        from lib.yahoo_generation_contract import YahooGenerationContractError, read_verified_yahoo_cohort
-        from lib.yahoo_runtime_profile import bind_snapshot
-        if not isinstance(expected_content_id, str) or not _GENERATION_SHA256_RE.fullmatch(expected_content_id):
-            raise YahooGenerationContractError("expected_yahoo_content_id_required")
-        selected = read_verified_yahoo_cohort(generations_root=self._yahoo_private_root(),
-                                              now=self._yahoo_clock(clock))
-        if selected.snapshot.content_id != expected_content_id:
-            raise YahooGenerationContractError("yahoo_calculation_generation_changed")
-        with bind_snapshot(profile, selected.cohort):
-            yield selected
-
-    def publish_yahoo_inputs(
-        self, encoded, *, generation_id: str, source_revision: str,
-        expected_current_content_id: str | None, lane: str = "snapshot",
-    ) -> GenerationPublishResult:
-        """Stage explicit encoded inputs privately, then call the sole publisher.
-
-        This method does not acquire data, bootstrap from a checkout, resolve a
-        prior, bind a child process, or retry an uncertain publication. The caller
-        supplies the observed selection fence and reconciles the returned effect.
-        """
-        from lib.yahoo_generation_contract import (
-            EncodedYahooInputs, MAX_YAHOO_MEMBER_BYTES, YAHOO_GENERATION_MEMBERS,
-            YahooGenerationContractError, prepare_yahoo_generation_request,
-        )
-        if not isinstance(encoded, EncodedYahooInputs):
-            raise YahooGenerationContractError("encoded_inputs_required")
-        if not isinstance(encoded.members, Mapping) or len(encoded.members) != len(YAHOO_GENERATION_MEMBERS):
-            raise YahooGenerationContractError("invalid_yahoo_member_set")
-        captured = dict(encoded.members)
-        if set(captured) != set(YAHOO_GENERATION_MEMBERS):
-            raise YahooGenerationContractError("invalid_yahoo_member_set")
-        if any(type(raw) is not bytes or not 0 < len(raw) <= MAX_YAHOO_MEMBER_BYTES
-               for raw in captured.values()):
-            raise YahooGenerationContractError("history_bytes_invalid")
-        root = self._yahoo_private_root()
-        # Request preparation detaches/validates identity before any disk effect.
-        # These logical names are replaced with the private staged paths below;
-        # no validator opens a file during request preparation.
-        prepared_request = prepare_yahoo_generation_request(
-            sources={name: Path(name) for name in YAHOO_GENERATION_MEMBERS},
-            input_identity=encoded.input_identity, generation_id=generation_id,
-            source_revision=source_revision, lane=lane)
-        return self._publish_private_members(captured, prepared_request,
-            expected_current_content_id=expected_current_content_id, generations_root=root)
-
-    def publish_breadth_member_inputs(
-        self, encoded, *, generation_id: str, source_revision: str,
-        expected_current_content_id: str | None, lane: str = "snapshot",
-    ) -> GenerationPublishResult:
-        """Publish one explicit broad/member cohort through the same owner."""
-        from lib.breadth_member_generation_contract import (
-            EncodedBreadthMemberInputs, BreadthMemberContractError, MEMBERS,
-            MAX_MEMBER_BYTES, MAX_BUNDLE_BYTES, prepare_breadth_member_generation_request,
-        )
-        if not isinstance(encoded, EncodedBreadthMemberInputs):
-            raise BreadthMemberContractError("encoded_inputs_required")
-        if not isinstance(encoded.members, Mapping) or set(encoded.members) != set(MEMBERS):
-            raise BreadthMemberContractError("invalid_breadth_member_set")
-        captured = dict(encoded.members)
-        if (any(type(raw) is not bytes or not 0 < len(raw) <= MAX_MEMBER_BYTES for raw in captured.values())
-                or sum(map(len, captured.values())) > MAX_BUNDLE_BYTES):
-            raise BreadthMemberContractError("invalid_breadth_member_bytes")
-        root = self._yahoo_private_root()
-        request = prepare_breadth_member_generation_request(
-            sources={name: Path(name) for name in MEMBERS}, input_identity=encoded.input_identity,
-            yahoo=encoded.yahoo, generation_id=generation_id, source_revision=source_revision, lane=lane)
-        return self._publish_private_members(captured, request,
-            expected_current_content_id=expected_current_content_id, generations_root=root)
-
-    def publish_member_ohlcv_inputs(
-        self, encoded, *, generation_id: str, source_revision: str,
-        expected_current_content_id: str | None, lane: str = "snapshot",
-    ) -> GenerationPublishResult:
-        """Stage genuine captured member candles through the sole private owner."""
-        from lib.member_ohlcv_generation_contract import (
-            EncodedMemberOHLCVInputs, MemberOHLCVContractError, MEMBERS,
-            MAX_MEMBER_BYTES, MAX_BUNDLE_BYTES, prepare_member_ohlcv_generation_request,
-        )
-        if not isinstance(encoded, EncodedMemberOHLCVInputs):
-            raise MemberOHLCVContractError("encoded_ohlcv_inputs_required")
-        if not isinstance(encoded.members, Mapping) or set(encoded.members) != set(MEMBERS):
-            raise MemberOHLCVContractError("invalid_ohlcv_member_set")
-        captured = dict(encoded.members)
-        if (any(type(raw) is not bytes or not 0 < len(raw) <= MAX_MEMBER_BYTES for raw in captured.values())
-                or sum(map(len, captured.values())) > MAX_BUNDLE_BYTES):
-            raise MemberOHLCVContractError("invalid_ohlcv_member_bytes")
-        root = self._yahoo_private_root()
-        request = prepare_member_ohlcv_generation_request(
-            sources={name: Path(name) for name in MEMBERS}, input_identity=encoded.input_identity,
-            breadth=encoded.breadth, yahoo=encoded.yahoo, prior=encoded.prior,
-            generation_id=generation_id, source_revision=source_revision, lane=lane)
-        return self._publish_private_members(captured, request,
-            expected_current_content_id=expected_current_content_id, generations_root=root)
-
-    def publish_sector_documents(
-        self, composition, *, input_identity: Mapping[str, Any],
-        generation_id: str, source_revision: str,
-        expected_current_content_id: str | None, lane: str = "snapshot",
-    ) -> GenerationPublishResult:
-        """Stage one completed calculation through the sole private publisher.
-
-        This bridge acquires nothing and applies no deferred ledger effects. The
-        capture adapter owns source provenance and supplies the observed selection
-        fence. The existing domain factory decides admission at publication time.
-        """
-        from copy import deepcopy
-        from engine.sector_basket_documents import SectorDocumentComposition
-        from lib.sector_generation_contract import (
-            SECTOR_GENERATION_MEMBERS, SectorGenerationContractError,
-            _decode_member, prepare_sector_generation_request,
-        )
-        if not isinstance(composition, SectorDocumentComposition):
-            raise SectorGenerationContractError("completed_composition_required")
-        if (not isinstance(composition.member_bytes, Mapping)
-                or set(composition.member_bytes) != set(SECTOR_GENERATION_MEMBERS)):
-            raise SectorGenerationContractError("invalid_member_set")
-        captured = dict(composition.member_bytes)
-        if (any(type(raw) is not bytes or not 0 < len(raw) <= MAX_GENERATION_ARTIFACT_BYTES
-                for raw in captured.values()) or sum(map(len, captured.values())) > MAX_GENERATION_BYTES):
-            raise SectorGenerationContractError("invalid_member_bytes")
-        evidence = deepcopy(composition.evidence)
-        if (not isinstance(evidence, dict)
-                or evidence.get("member_sha256") != {name: hashlib.sha256(raw).hexdigest()
-                                                    for name, raw in captured.items()}
-                or evidence.get("member_bytes") != {name: len(raw) for name, raw in captured.items()}):
-            raise SectorGenerationContractError("composition_bytes_changed")
-        if not isinstance(input_identity, Mapping):
-            raise SectorGenerationContractError("missing_sector_identity")
-        identity = deepcopy(dict(input_identity))
-        view = identity.get("sector_view")
-        if (not isinstance(view, Mapping)
-                or view.get("source_session") != evidence.get("core_source_session")
-                or (view.get("baseline_session") or view.get("source_session")) != evidence.get("baseline_session")):
-            raise SectorGenerationContractError("composition_identity_mismatch")
-        computed_at = evidence.get("built_at")
-        # Bind the two ISO build fields actually emitted by this composition.
-        # Minute-resolution compact-handoff display text remains display-only.
-        try:
-            computed = datetime.fromisoformat(computed_at)
-            if computed.tzinfo is None or computed.utcoffset() is None:
-                raise ValueError
-            central = _decode_member(captured[SECTOR_GENERATION_MEMBERS[0]])
-            board = _decode_member(captured[SECTOR_GENERATION_MEMBERS[4]])
-            if (central.get("publication", {}).get("built_utc") != computed.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-                    or board.get("generated_utc") != computed_at):
-                raise ValueError
-        except (TypeError, ValueError, AttributeError, OverflowError):
-            raise SectorGenerationContractError("composition_build_clock_mismatch") from None
-        root = self._yahoo_private_root()
-        request = prepare_sector_generation_request(
-            sources={name: Path(name) for name in SECTOR_GENERATION_MEMBERS},
-            input_identity=identity, generation_id=generation_id,
-            source_revision=source_revision, lane=lane, computed_at=computed_at)
-        return self._publish_private_members(captured, request,
-            expected_current_content_id=expected_current_content_id, generations_root=root)
-
-    def _publish_private_members(
-        self, captured: Mapping[str, bytes], request: GenerationRequest, *,
-        expected_current_content_id: str | None, generations_root: Path,
-    ) -> GenerationPublishResult:
-        """Ephemeral sources for the incumbent publisher; never another selection."""
-        from dataclasses import replace
-        _private_dir(Path(self.state_dir))
-        with tempfile.TemporaryDirectory(prefix=".private-input-", dir=self.state_dir) as temporary:
-            stage = Path(temporary)
-            sources = {}
-            for name, raw in captured.items():
-                if _artifact_name_error(name):
-                    raise GenerationRejected("invalid private member name")
-                path = stage / name
-                _private_dir(path.parent)
-                fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-                with os.fdopen(fd, "wb") as output:
-                    output.write(raw)
-                    output.flush()
-                    os.fsync(output.fileno())
-                sources[name] = path
-            staged = replace(request, artifacts=tuple(
-                replace(artifact, source=sources[artifact.name]) for artifact in request.artifacts))
-            return self.publish_generation(staged,
-                expected_current_content_id=expected_current_content_id,
-                generations_root=generations_root)
 
     def publish_generation(
         self,
@@ -3456,7 +2860,7 @@ def _lock_lane(state_dir: Path, lane: str):
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--lane", choices=("fast", "snapshot", "bars", "sector-inputs"), required=True)
+    parser.add_argument("--lane", choices=("fast", "snapshot", "bars"), required=True)
     parser.add_argument(
         "--live-dir",
         default=os.environ.get("MACRO_LIVE_DIR", "/var/lib/macro-live/public/live"),
@@ -3470,18 +2874,13 @@ def main() -> int:
         default=os.environ.get("MACRO_LIVE_DATA_DIR", "/var/lib/macro-live/data"),
     )
     parser.add_argument("--now", default=None, help="test override: ISO-8601 UTC timestamp")
-    parser.add_argument("--source-revision", default=None, help="Full release SHA from live source owner")
-    parser.add_argument("--deadline-monotonic", type=float, default=None)
-    parser.add_argument("--source-lock-fd", type=int, choices=(8,), default=None)
     args = parser.parse_args()
 
     live_dir, state_dir, data_dir = map(
         Path, (args.live_dir, args.state_dir, args.data_dir)
     )
-    # Manual native work obtains exactly the same lock inside sector_inputs as
-    # the bars continuation; no caller boolean can bypass that owner.
-    lock_file = None if args.lane == "sector-inputs" else _lock_lane(state_dir, args.lane)
-    if lock_file is None and args.lane != "sector-inputs":
+    lock_file = _lock_lane(state_dir, args.lane)
+    if lock_file is None:
         log.info("%s lane already active; coalescing timer tick", args.lane)
         return 0
     try:
@@ -3492,20 +2891,13 @@ def main() -> int:
             now = now.replace(tzinfo=timezone.utc)
         started_at = datetime.now(timezone.utc)
         orchestrator = Orchestrator(
-            live_dir=live_dir, state_dir=state_dir, data_dir=data_dir, now=now,
-            source_revision=args.source_revision, deadline_monotonic=args.deadline_monotonic,
-            source_lock_fd=args.source_lock_fd,
-            work_budget_seconds=BARS_WORK_SECONDS if args.lane in {"bars", "sector-inputs"} else SNAPSHOT_WORK_SECONDS,
+            live_dir=live_dir, state_dir=state_dir, data_dir=data_dir, now=now
         )
-        if args.lane == "sector-inputs":
-            orchestrator.sector_inputs(allow_bootstrap=True)
-        else:
-            getattr(orchestrator, args.lane)()
-            orchestrator.write_status(args.lane, started_at)
+        getattr(orchestrator, args.lane)()
+        orchestrator.write_status(args.lane, started_at)
         return 0 if all(result.status == "ok" for result in orchestrator.results) else 1
     finally:
-        if lock_file is not None:
-            lock_file.close()
+        lock_file.close()
 
 
 if __name__ == "__main__":
