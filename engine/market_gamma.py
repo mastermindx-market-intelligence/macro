@@ -231,3 +231,22 @@ def snapshot(now: "datetime | None" = None) -> dict | None:
     verdict["context"] = _history_context(verdict.get("net_gex_bn"),
                                           verdict.get("regime"), now)
     return verdict
+
+
+def fragility_snapshot(now: "datetime | None" = None) -> dict:
+    """Additive, non-directional observation from the incumbent SPX source.
+
+    Kept separate from legacy snapshot()/view() so existing risk consumers and
+    missing-flip behavior do not change. This observation can describe a known
+    gamma sign without a flip. No SPY reconstruction or cross-product percentile
+    enters it. No new store, collection job or trading authority is created.
+    """
+    from engine.market_fragility import observe
+
+    try:
+        frame = store.read("cboe", "gex_SPX")
+    except Exception:  # noqa: BLE001 - source failure is explicit, never benign
+        result = observe(None, now=now)
+        result["quality"]["reasons"] = ["source_read_error"]
+        return result
+    return observe(frame, now=now)

@@ -3,7 +3,7 @@
 Operation: `web-market-fragility-20261113`.
 Assignment: Chris's 2026-11-13 request in the VolSignals discussion to research, implement and verify the complete fragility capability. This is not an instruction to replace T3 or the risk control plane.
 Source: Macro `f3a162741e2d6e57be19febf2e7e9799e39be6d8`; governing Mastermind `fc91f33ccce3e8f18c78546f03c955c2ced0c704`, Sol Skillpack 1.0.1.
-Related owner: `WS:GREY-DEER-RISK-INTELLIGENCE`. This source plan transfers no live writer, release hold or unfinished program acceptance. Organizational linkage is pending (`PLAN_NOT_ORG_LINKED`).
+Related owner: `WS:GREY-DEER-RISK-INTELLIGENCE`. This source plan transfers no live writer, release hold or unfinished program acceptance. Organizational link: the workstream's 2026-11-13 additive gamma-fragility section points to this plan. This is a knowledge link, not a new execution admission or program takeover.
 
 ## Outcome / DONE_WHEN
 
@@ -43,3 +43,14 @@ No replacement gamma engine/calendar/history/risk envelope/provider router. No l
 - VolSignals official documentation: https://vs3d.volsignals.com/home/getting-started
 
 Add actual code revisions, evidence and remaining acceptance at material milestones.
+
+
+## Material milestone: source, research and pre-release consumer
+
+P1 source research is complete for the bounded observation: Cboe mechanics/counterevidence, VolSignals' own platform basis, the original 2025 inventory study and VVIX definition are reconciled in `RESEARCH_AND_VALIDATION_PROTOCOL.md`. P2 source implementation is complete locally: strict `engine.market_fragility`, additive canonical gamma/regime/market-structure adapters and separately dated existing VIX/VVIX/realized-vol/macro-liquidity context. Unsupported depth and spot-scenario sensitivity remain explicitly unavailable.
+
+P3 has deterministic, adverse-input, real-parquet and existing-consumer regression coverage. Self-review found and repaired optional-observer errors leaking into legacy publication; unavailable optional context now preserves the core. The paired Mastermind source is isolated on operation/branch `web-market-fragility-consumer-20261113` / `sol/web-web-market-fragility-consumer-20261113`, based on the governing SHA above. It validates schema, source, units, authority and validation claims, re-ages data at read time, and preserves qualifiers over actual SDK MCP transport. This is author SELF_REVIEWED work, not a claim that an independent worker ran.
+
+A read-only production-source capture is recorded in `PRODUCTION_SOURCE_AUDIT_2026-11-13.json`: 95 rows, source session 2026-11-12, SHA-256 `39a0ea3a33dabde22aefa65bcb5aa465e916bcdc95898773aea3410b46edda1c`. The trailing 20-session window has 15 known and five missing observations. The existing validator remains building-history, and no historical availability clocks exist in the summary. This blocks predictive promotion, not truthful current observation.
+
+P4 remains open at this milestone: publish qualified owned PRs through each repository's existing release owner, reconcile merge/deployment, then verify the actual published artifact and actual Brain `get_regime` response. Never substitute a local test fixture, green CI or a merge for that live proof. Exact release results belong in the original PR receipts and the final delivery record. No provider configuration, trading policy, production data correction, collector or scheduler has been changed.

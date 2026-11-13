@@ -494,6 +494,15 @@ def run(force: bool = False) -> dict:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("market-gamma layer failed: %s", e)
         latest["market_gamma"] = None
+    # Additive gamma-structure observation, not another risk score. The incumbent
+    # SPX source owns sign; this publishes explicit assumption/freshness/history
+    # limitations without changing market_gamma or any sizing/ranking authority.
+    try:
+        from engine.market_gamma import fragility_snapshot
+        latest["market_fragility"] = fragility_snapshot()
+    except Exception as e:  # noqa: BLE001 - missing is not a benign regime
+        log.error("market-fragility observation failed: %s", e)
+        latest["market_fragility"] = None
     # Market-driver attribution: WHICH cross-asset force is moving the tape this
     # week (Fed repricing / real-rate / USD / credit / liquidity / China / oil /
     # AI-semis / crypto) + evidence + invalidation. Deterministic fingerprints over
@@ -746,6 +755,15 @@ def run(force: bool = False) -> dict:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("vol-regime mirror failed: %s", e)
         latest["vol_regime"] = None
+    # Reuse sibling observations with their own clocks; never turn stale VVIX,
+    # macro liquidity, or shared inputs into independent confirmation votes.
+    if isinstance(latest.get("market_fragility"), dict):
+        try:
+            from engine.market_fragility import published_context
+            latest["market_fragility"]["context"] = published_context(latest)
+        except Exception as e:  # noqa: BLE001 - optional context cannot abort the core
+            log.error("market-fragility context failed: %s", e)
+            latest["market_fragility"]["context"] = {"status": "unavailable", "reason": "context_error"}
     # Fused equity-internal RISK STATE (engine/risk_state.py): the loud, EARLY
     # drawdown-risk gauge that leads the credit-weighted macro_risk above. Fuses the
     # orphaned detectors (complacency/hidden-fragility, breadth divergence, dealer GEX
