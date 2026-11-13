@@ -30,6 +30,18 @@ already-filtered headlines:
 
 Nothing it produces is ever a scoring/trade input.
 
+Capacity Fabric (Chairman order 2026-11-12, Mastermind #983)
+-----------------------------------------------------------
+When the Capacity Fabric router is configured (``FABRIC_ROUTER_TOKEN`` present) the
+annotator makes ONE ``fabric_client.complete(..., lane="fast")`` call per batch
+instead of walking the local ladder — the router owns provider selection, cooldown
+and fallback, so this module never retries and never walks a second provider.
+``MACRO_NEWS_LLM_FABRIC=0`` is the per-writer kill-switch. With no token, or with
+the switch off, the legacy ladder below runs byte-identically. A router that cannot
+be reached at all (``FabricUnavailable``: no token after all, or the SDK will not
+import) also falls through to that unchanged ladder, because nothing was served and
+nothing was billed.
+
 Provider order (first that has a credential wins; override via config):
   1. Claude Haiku via the Claude subscription OAuth token  (CLAUDE_CODE_OAUTH_TOKEN)
         — Authorization: Bearer + the oauth-2025-04-20 beta header.
@@ -49,6 +61,7 @@ import logging
 import os
 
 from lib import config
+from lib import fabric_client
 
 log = logging.getLogger(__name__)
 
@@ -222,6 +235,126 @@ def _summarise_batch_raw(items: list[dict], client, model: str):
 _summarise_batch = _summarise_batch_raw
 
 
+# --------------------------------------------------------------------------- #
+# Capacity Fabric cutover (Chairman order 2026-11-12, Mastermind #983)
+# --------------------------------------------------------------------------- #
+#: Per-writer kill-switch. "0" forces the legacy ladder even when the router is
+#: configured; unset/anything else means ON whenever a router token is present.
+_FABRIC_KILL_ENV = "MACRO_NEWS_LLM_FABRIC"
+#: The annotator is mechanical JSON extraction for a whole batch of headlines —
+#: fast-class work by the standing token-economy order.
+_FABRIC_LANE = "fast"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-news-llm"
+
+
+def _fabric_enabled() -> bool:
+    """True when this writer should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_NEWS_LLM_FABRIC=0 is
+    the operator kill-switch. With no token the legacy ladder runs unchanged.
+    """
+    if os.environ.get(_FABRIC_KILL_ENV, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _fabric_stop_reason(comp) -> str:
+    """The completion's stop reason. The frozen adapter carries it on ``raw``."""
+    reason = getattr(comp, "stop_reason", None)
+    if reason is None:
+        reason = getattr(getattr(comp, "raw", None), "stop_reason", None)
+    return str(reason or "")
+
+
+def _usage_tokens(comp) -> tuple[int, int]:
+    """(input_tokens, output_tokens) from a Completion, defensively."""
+    usage = getattr(comp, "usage", None) or {}
+    try:
+        return (int(usage.get("input_tokens", 0) or 0),
+                int(usage.get("output_tokens", 0) or 0))
+    except (AttributeError, TypeError, ValueError):
+        return (0, 0)
+
+
+def _record_fabric_usage(comp) -> None:
+    """Record one router-served call to the ai_costs ledger.
+
+    provider="fabric" with the model the router actually served keeps the spend
+    drill-down intact. NEVER raises — the ledger is telemetry and must never
+    break a call that otherwise worked.
+    """
+    try:
+        from lib import ai_costs as _ac
+        in_tok, out_tok = _usage_tokens(comp)
+        _ac.record_usage(
+            lane=_FABRIC_LANE,
+            provider="fabric",
+            model=getattr(comp, "model_served", None),
+            input_tokens=in_tok,
+            output_tokens=out_tok,
+            cost_basis="metered",
+            stage="news_llm",
+        )
+    except Exception as e:  # noqa: BLE001 — telemetry only
+        log.debug("news_llm: fabric usage record failed (%s)", e)
+
+
+def _fabric_call(items: list[dict], cfg: dict):
+    """ONE router call for up to len(items) headlines.
+
+    Returns ``(results_dict, Completion)``; the results dict has the same shape
+    as ``_summarise_batch_raw`` so the caller's application loop is unchanged.
+
+    Raises ``fabric_client.FabricUnavailable`` when the router cannot be reached
+    AT ALL (no token, or the SDK will not import) — nothing left this host, so
+    the caller runs the unchanged legacy ladder. Every other error propagates
+    too: the router owns provider selection, cooldown and fallback, so a local
+    retry or a second provider here would double-serve a call the router already
+    resolved. The caller degrades on it.
+    """
+    lines = []
+    for it in items:
+        blurb = (it.get("blurb") or "").strip()
+        lines.append(f'{it["i"]}. HEADLINE: {it.get("title","")}'
+                     + (f' | BLURB: {blurb[:240]}' if blurb else ""))
+    user = "Items:\n" + "\n".join(lines)
+    max_tok = min(4000, 90 * len(items) + 200)
+    comp = fabric_client.complete(
+        [{"role": "user", "content": user}],
+        system=SYSTEM,
+        lane=_FABRIC_LANE,
+        max_tokens=max_tok,
+        client="Python client",
+        project_id=_FABRIC_PROJECT_ID,
+        session_id=_FABRIC_SESSION_ID,
+    )
+    if _fabric_stop_reason(comp) == "refusal":
+        return {}, comp
+    if not comp.text:
+        return {}, comp
+    parsed = _xjson(comp.text)
+    if not isinstance(parsed, list):
+        return {}, comp
+    out: dict[int, dict] = {}
+    for row in parsed:
+        if not isinstance(row, dict) or "i" not in row:
+            continue
+        try:
+            idx = int(row["i"])
+        except (ValueError, TypeError):
+            continue
+        summ = str(row.get("summary", "")).strip()[:200]
+        try:
+            imp = max(0, min(100, int(row.get("importance", 50))))
+        except (ValueError, TypeError):
+            imp = 50
+        tone = str(row.get("tone", "neutral")).lower()
+        tone = tone if tone in ("pos", "neg", "neutral") else "neutral"
+        out[idx] = {"summary": summ, "importance": imp, "tone": tone}
+    return out, comp
+
+
 def annotate(headlines: list[dict], batch_size: int | None = None,
              max_batches: int | None = None) -> list[dict]:
     """Attach `summary`, `llm_importance`, `llm_tone` to each headline in place-ish
@@ -249,7 +382,11 @@ def annotate(headlines: list[dict], batch_size: int | None = None,
                "oauth_pool_lane": cfg.get("oauth_pool_lane", "news-llm"),
                "usage_lane": cfg.get("usage_lane", "news-llm")}
     providers = llm_auth.build_providers(cfg_aug, opus_model=haiku, deepseek_model=ds_model)
-    if not providers:
+    # Capacity Fabric (Chairman order 2026-11-12): the router is a complete
+    # alternative to the local ladder, so an empty ladder must not end the run
+    # when the fabric is on. With the fabric off this is the original check.
+    use_fabric = _fabric_enabled()
+    if not providers and not use_fabric:
         return headlines
 
     bs = int(batch_size or cfg.get("batch_size", 12))
@@ -269,11 +406,35 @@ def annotate(headlines: list[dict], batch_size: int | None = None,
             result_dict, resp = _summarise_batch_raw(items, client, model)
             return result_dict, None, resp
 
-        try:
-            raw_res, _, pused = llm_auth.make_call(providers, _do_call, context="news_llm")
-        except Exception as e:  # noqa: BLE001
-            log.warning("news_llm batch call error (%s)", e)
-            raw_res, pused = None, None
+        if use_fabric:
+            # ONE router call. The router owns provider selection, cooldown and
+            # fallback, so there is no local retry and no second provider here.
+            try:
+                raw_res, comp = _fabric_call(items, cfg)
+            except fabric_client.FabricUnavailable as e:
+                # Nothing left this host (no token after all, or the SDK will not
+                # import): run the unchanged legacy ladder rather than blanking
+                # enrichment a healthy local path could still produce.
+                log.warning(
+                    "news_llm: fabric router unavailable (%s); using the legacy ladder", e)
+                try:
+                    raw_res, _, pused = llm_auth.make_call(
+                        providers, _do_call, context="news_llm")
+                except Exception as e2:  # noqa: BLE001
+                    log.warning("news_llm batch call error (%s)", e2)
+                    raw_res, pused = None, None
+            except Exception as e:  # noqa: BLE001 — degrade, never retry
+                log.warning("news_llm: fabric batch call failed (%s)", e)
+                raw_res, pused = None, None
+            else:
+                _record_fabric_usage(comp)
+                pused = "fabric"
+        else:
+            try:
+                raw_res, _, pused = llm_auth.make_call(providers, _do_call, context="news_llm")
+            except Exception as e:  # noqa: BLE001
+                log.warning("news_llm batch call error (%s)", e)
+                raw_res, pused = None, None
 
         res = raw_res or {}
         if pused:
