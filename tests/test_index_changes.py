@@ -297,3 +297,67 @@ def test_rss_xml_to_native_writer(monkeypatch, tmp_path, phrase, amp, mode, warm
     assert B.main() == 0
     assert cache.read_bytes() == before
     assert calls == [C._RSS, url, C._RSS]
+
+
+@pytest.mark.parametrize('failure', ['rss_http', 'rss_exception', 'rss_xml', 'page_http',
+                                     'page_exception', 'page_empty', 'partial'])
+@pytest.mark.parametrize('warm', [False, True])
+@pytest.mark.parametrize('published', [False, True])
+def test_incomplete_poll_never_replaces_publication(monkeypatch, tmp_path, failure, warm, published):
+    import requests
+    from types import SimpleNamespace
+    from lib import config
+    from scripts import build_index_changes as B
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path / 'data')
+    monkeypatch.setattr(config, 'load', lambda: {'storage': {'site_dir': 'site'}})
+    out = tmp_path / 'site/index_changes/latest.json'
+    original = b'{"as_of":"2020-01-01","known":"last-good"}\n'
+    if published:
+        out.parent.mkdir(parents=True)
+        out.write_bytes(original)
+    cache = C._cache_path()
+    if warm:
+        pd.DataFrame([{'ticker':'OLD','index':'sp600','action':'addition','effective_date':'2020-01-01','announce_date':'2019-12-20','company':'Old','announce_url':'https://old','_seen':'old'}]).to_parquet(cache)
+    before = cache.read_bytes() if cache.exists() else None
+    class Session:
+        def __init__(self): self.headers = {}
+        def get(self, url, timeout):
+            if url == C._RSS:
+                if failure == 'rss_exception': raise requests.Timeout('fixture')
+                rss = '<rss><channel><item>' if failure == 'rss_xml' else _RSS
+                if failure == 'partial':
+                    rss = rss.replace('</channel>', '<item><title>New Set to Join S&amp;P</title><link>http://bad</link></item></channel>')
+                return SimpleNamespace(status_code=503 if failure == 'rss_http' else 200, text=rss)
+            if failure == 'page_exception': raise requests.Timeout('fixture')
+            return SimpleNamespace(status_code=404 if failure == 'page_http' or url == 'http://bad' else 200,
+                                   text='<html>unparseable</html>' if failure == 'page_empty' else _PAGE)
+    monkeypatch.setattr(requests, 'Session', Session)
+    assert B.main() == 1
+    assert out.read_bytes() == original if published else not out.exists()
+    if failure == 'partial':
+        rows = pd.read_parquet(cache)
+        assert set(rows.ticker) == ({'FA', 'KW', 'OLD'} if warm else {'FA', 'KW'})
+        assert 'index_changes_poll' not in rows.attrs  # poll status is not historical cache truth
+    else:
+        assert (cache.read_bytes() if cache.exists() else None) == before
+
+
+def test_verified_empty_poll_can_publish_and_missing_poll_cannot(monkeypatch, tmp_path):
+    import requests
+    from types import SimpleNamespace
+    from lib import config
+    from scripts import build_index_changes as B
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path / 'data')
+    monkeypatch.setattr(config, 'load', lambda: {'storage': {'site_dir': 'site'}})
+    class Session:
+        def __init__(self): self.headers = {}
+        def get(self, url, timeout): return SimpleNamespace(status_code=200, text='<rss><channel/></rss>')
+    monkeypatch.setattr(requests, 'Session', Session)
+    assert B.main() == 0
+    out = tmp_path / 'site/index_changes/latest.json'
+    before = out.read_bytes()
+    monkeypatch.setattr(B, 'fetch_index_changes', lambda: pd.DataFrame())
+    assert B.main() == 1
+    assert out.read_bytes() == before
