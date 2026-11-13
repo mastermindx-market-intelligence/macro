@@ -42,7 +42,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
 
-from lib import config, store
+from lib import config, fabric_client, store
 
 log = logging.getLogger(__name__)
 
@@ -1437,11 +1437,113 @@ def _llm_ready(cfg: dict) -> bool:
         return False
 
 
+# --- Capacity Fabric cutover (Chairman estate migration, outcome #3) ---------- #
+# The brief routes through the Capacity Fabric unified_router whenever a router
+# token is present; MACRO_CHINA_NEWS_FABRIC=0 is the operator kill-switch. With
+# no token (or the switch off) the legacy direct-SDK path below runs unchanged.
+_FABRIC_KILL_ENV = "MACRO_CHINA_NEWS_FABRIC"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-china-news"
+_FABRIC_LANE = "fast"
+_FABRIC_USAGE_LANE = "china-news"
+
+
+def _fabric_enabled() -> bool:
+    """True when the brief should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_CHINA_NEWS_FABRIC=0 is
+    the operator kill-switch. No token -> the legacy direct-SDK path runs
+    unchanged. The brief's own feature flags (enabled + llm_brief) still gate it;
+    the provider API key does not, because the router owns the credential.
+    """
+    if os.environ.get(_FABRIC_KILL_ENV, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _record_fabric_usage(comp: "fabric_client.Completion") -> None:
+    """Book one fabric-served brief in the AI cost ledger (provider="fabric").
+
+    Lane continuity: the row keeps this site's usage lane ("china-news") so the
+    spend drill-down stays comparable with the legacy rows; the provider is the
+    router and the model is what it actually served. Never raises — a ledger
+    miss must not break a served call.
+    """
+    try:
+        from lib import ai_costs as _ac  # noqa: PLC0415
+
+        u = comp.usage or {}
+        _ac.record_usage(
+            lane=_FABRIC_USAGE_LANE,
+            provider="fabric",
+            model=comp.model_served,
+            input_tokens=int(u.get("input_tokens") or 0),
+            output_tokens=int(u.get("output_tokens") or 0),
+            cache_read_tokens=int(u.get("cache_read_input_tokens") or 0),
+            cache_creation_tokens=int(u.get("cache_creation_input_tokens") or 0),
+            stage="china_news",
+        )
+    except Exception as e:  # noqa: BLE001 — telemetry only
+        log.debug("china news brief: fabric usage ledger failed (%s)", e)
+
+
+def _fabric_brief(cfg: dict, headlines: list[dict], tone_line: str) -> dict | None:
+    """ONE brief call through the router. Never retries, never fails over.
+
+    The router owns provider selection, cooldown and account pooling, so this
+    makes exactly one request: a raised error degrades the brief exactly as a
+    legacy failure would, and a second attempt here would double-serve a call
+    the router already resolved. A refusal is a refusal even when the router
+    attached partial text, so it is dropped before anything is returned.
+
+    FabricUnavailable is the one exception and is re-raised: it means no request
+    ever left this host (no token, or the SDK will not import), so nothing was
+    served or billed. news_brief catches it and runs the legacy path.
+    """
+    lines = "\n".join(f"- [{h.get('theme', '')}] {h['title']}" for h in headlines[:12])
+    user = (f"Policy tone: {tone_line or 'n/a'}\n"
+            f"Filtered macro flashes:\n{lines}")
+    try:
+        comp = fabric_client.complete(
+            [{"role": "user", "content": user}],
+            system=BRIEF_SYSTEM,
+            lane=_FABRIC_LANE,
+            max_tokens=220,
+            client="Python client",
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=_FABRIC_SESSION_ID,
+        )
+    except fabric_client.FabricUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("china news brief: fabric call failed (%s)", e)
+        return None
+    if getattr(comp.raw, "stop_reason", None) == "refusal":
+        return None
+    if not comp.text:
+        return None
+    _record_fabric_usage(comp)
+    return {"text": comp.text,
+            "model": comp.model_served or cfg.get("llm_model", "deepseek-chat"),
+            "is_context_only": True}
+
+
 def news_brief(headlines: list[dict] | None, tone_line: str = "") -> dict | None:
     """OPTIONAL one-paragraph narration of the filtered flashes + the policy-tone
     state. Default-off, gated on key, provider-agnostic (DeepSeek/Anthropic), degrade
     to None. Labeled context; never scored."""
     cfg = _cfg()
+    # Capacity Fabric cutover: taken only when the router is configured and the
+    # kill-switch is not "0". The feature flags still gate the brief; the
+    # provider key does not (the router owns the credential). FabricUnavailable
+    # means nothing left the host, so the legacy path below still runs.
+    if (_fabric_enabled() and headlines
+            and cfg.get("enabled", False) and cfg.get("llm_brief", False)):
+        try:
+            return _fabric_brief(cfg, headlines, tone_line)
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "china news brief: fabric router unavailable (%s); using the legacy path", e)
     if not _llm_ready(cfg) or not headlines:
         return None
     try:
