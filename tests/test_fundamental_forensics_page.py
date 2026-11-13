@@ -477,8 +477,16 @@ def test_anonymous_preview_prints_counts_supplied_by_the_build(tmp_path: Path):
     assert "读取 1,240 家公司，排出 3,417 项值得一看的变化" in html
 
 
-def test_disk_summary_prints_the_count_day(tmp_path: Path):
+def test_disk_summary_prints_the_count_day(tmp_path: Path, monkeypatch):
     """build_site renders with no in-memory summary, so the file stamp must show."""
+    import scripts.build_fundamental_forensics as bff
+
+    # Exercise the real freshness guard with a fixed fresh clock, regardless of CI's date.
+    real_read = bff.read_public_summary
+    monkeypatch.setattr(
+        bff, "read_public_summary",
+        lambda root, **kw: real_read(root, now=datetime(2026, 10, 13, tzinfo=timezone.utc)),
+    )
     root = Path(__file__).resolve().parents[1]
     (tmp_path / "templates").symlink_to(root / "templates")
     _write_public_summary(
