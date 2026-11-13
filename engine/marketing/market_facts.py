@@ -634,7 +634,7 @@ _NAMED_PRINT_SALIENCE: tuple[int, ...] = (11, 10)
 _ANCHORED_LEAD_SALIENCE = 12
 
 
-def _named_prints(regime: object) -> list[dict]:
+def _named_prints(regime: object, *, preferred: str | None = None) -> list[dict]:
     """Ranked, de-duplicated named prints available from a regime artifact.
 
     Returns at most :data:`_NAMED_PRINT_MAX` entries, each
@@ -643,12 +643,16 @@ def _named_prints(regime: object) -> list[dict]:
     A builder that raises is skipped rather than allowed to take the packet
     down: one missing anchor costs a post its digit, a traceback costs the
     plan every non-ticker post it had.
+
+    A recognized event may prefer its own print before the three-fact cap.
+    The general macro order and fallback stay stable; unselected prints never
+    enter the packet or its numeric whitelist.
     """
     if not isinstance(regime, dict):
         return []
     out: list[dict] = []
     for build in _NAMED_PRINT_BUILDERS:
-        if len(out) >= _NAMED_PRINT_MAX:
+        if not preferred and len(out) >= _NAMED_PRINT_MAX:
             break
         try:
             p = build(regime)
@@ -656,7 +660,9 @@ def _named_prints(regime: object) -> list[dict]:
             p = None
         if p and p.get("text"):
             out.append(p)
-    return out
+    if preferred:
+        out.sort(key=lambda p: p.get("id") != preferred)
+    return out[:_NAMED_PRINT_MAX]
 
 
 def named_print_facts(root: PathLike) -> dict:
@@ -1233,7 +1239,8 @@ def event_facts(root: PathLike, *, now: datetime | None = None) -> dict:
     # vocabulary the operator killed ("carrying the tape", "liquidity is doing
     # the lifting"). Folding a named print onto it is what turns "credit is the
     # story today" into a claim a reader can check.
-    _prints = _named_prints(_load_json(root / "data" / "regime" / "latest.json"))
+    _regime = _load_json(root / "data" / "regime" / "latest.json")
+    _prints: list[dict] = []
 
     facts: list[dict] = []
 
@@ -1242,8 +1249,17 @@ def event_facts(root: PathLike, *, now: datetime | None = None) -> dict:
         if isinstance(tape, dict) and tape.get("available"):
             primary = tape.get("primary") or {}
             coherence = str(primary.get("coherence") or "").lower()
-            plain = _plain_driver_read(primary.get("direction"))
+            direction = " ".join(str(primary.get("direction") or "").strip().lower().split())
+            plain = _plain_driver_read(direction)
             if plain:
+                # Credit is fifth in the generic inventory. Selecting before
+                # reading the driver made credit stories quote jobless claims
+                # even when the relevant spread and comparison were available.
+                preferred = "print_hy_spread" if direction in {
+                    "credit spreads widening — stress",
+                    "credit spreads compressing — risk-on",
+                } else None
+                _prints = _named_prints(_regime, preferred=preferred)
                 _text = plain + _COHERENCE_PLAIN.get(coherence, "")
                 _nums: list[str] = []
                 _sal = 10

@@ -383,6 +383,80 @@ def test_the_event_driver_read_is_anchored_too(tmp_path):
     assert cw.anchorless_macro_violations(lead["text"], "event") == []
 
 
+def test_credit_event_anchor_reaches_writer_before_generic_prints(tmp_path):
+    for driver, change, word in (
+        ("credit spreads widening — stress", 0.30, "up"),
+        (" CREDIT SPREADS COMPRESSING — RISK-ON ", -0.30, "down"),
+    ):
+        regime = json.loads(json.dumps(FULL_REGIME))
+        regime["liquidity_quality"]["stress_overlay"] = {
+            "hy_oas_pct": 3.6, "hy_oas_chg_20d": change}
+        _write(tmp_path, "data/regime/latest.json", regime)
+        _write(tmp_path, "site/neuralwebdata/daily_brief.json", {
+            "why_the_tape_moved": {"available": True,
+                "primary": {"direction": driver, "coherence": "supported"}}})
+        packet = mf.event_facts(tmp_path, now=FRIDAY_NIGHT)
+        assert len(packet["facts"]) == 3
+        assert [f["id"] for f in packet["facts"]] == [
+            "event_catalyst", "print_jobless_claims", "print_gdpnow"]
+        lead = packet["facts"][0]
+        assert f"3.6%, {word} 30 basis points over the past month" in lead["text"]
+        assert "Jobless" not in lead["text"]
+        assert lead["numbers"] == ["3.6%", "30"]
+        ctx = cw.build_context({"ticker": "", "type": "event", "account": "flagship"},
+                               facts=packet)
+        assert ctx["top_facts"][0]["text"] == lead["text"]
+        assert "3.6%" in ctx["numbers_whitelist"] and "30" in ctx["numbers_whitelist"]
+        assert "2.1%" not in ctx["numbers_whitelist"]  # displaced median-CPI print
+        assert "4.6%" not in ctx["numbers_whitelist"]  # unselected Michigan print
+        assert cw.validate_copy(lead["text"], "", ctx) == []
+        assert cw.number_soup_violations(lead["text"], kind="event") == []
+        assert cw.queued_voice_violations(lead["text"], kind="event") == []
+
+
+def test_credit_event_missing_level_keeps_existing_anchor_fallback(tmp_path):
+    for level in (None, "invalid", float("nan"), float("inf"), 0, -1):
+        regime = json.loads(json.dumps(FULL_REGIME))
+        regime["liquidity_quality"]["stress_overlay"] = {
+            "hy_oas_pct": level, "hy_oas_chg_20d": 0.30}
+        _write(tmp_path, "data/regime/latest.json", regime)
+        _write(tmp_path, "site/neuralwebdata/daily_brief.json", {
+            "why_the_tape_moved": {"available": True,
+                "primary": {"direction": "credit spreads widening — stress"}}})
+        packet = mf.event_facts(tmp_path, now=FRIDAY_NIGHT)
+        assert packet["facts"][0]["text"].endswith(EXPECTED_PRINTS["print_jobless_claims"])
+        assert len(packet["facts"]) == 3
+        assert "30" not in packet["numbers_whitelist"]
+        assert "basis points" not in packet["facts"][0]["text"]
+
+
+def test_credit_event_missing_change_does_not_invent_a_comparison(tmp_path):
+    for change in (None, "invalid", float("nan"), float("inf")):
+        regime = json.loads(json.dumps(FULL_REGIME))
+        regime["liquidity_quality"]["stress_overlay"] = {
+            "hy_oas_pct": 3.6, "hy_oas_chg_20d": change}
+        _write(tmp_path, "data/regime/latest.json", regime)
+        _write(tmp_path, "site/neuralwebdata/daily_brief.json", {
+            "why_the_tape_moved": {"available": True,
+                "primary": {"direction": "credit spreads widening — stress"}}})
+        lead = mf.event_facts(tmp_path, now=FRIDAY_NIGHT)["facts"][0]
+        assert lead["text"].endswith("High-yield credit spreads are at 3.6%.")
+        assert lead["numbers"] == ["3.6%"]
+        assert "roughly flat" not in lead["text"] and "basis points" not in lead["text"]
+
+
+def test_event_preference_preserves_generic_macro_order_and_unknown_driver_fallback(tmp_path):
+    _write(tmp_path, "data/regime/latest.json", FULL_REGIME)
+    default_ids = ["print_jobless_claims", "print_gdpnow", "print_median_cpi"]
+    assert [f["id"] for f in mf.named_print_facts(tmp_path)["facts"]] == default_ids
+    assert [f["id"] for f in mf._named_prints(FULL_REGIME, preferred="unknown")] == default_ids
+    _write(tmp_path, "site/neuralwebdata/daily_brief.json", {
+        "why_the_tape_moved": {"available": True,
+            "primary": {"direction": "credit moved for an unknown reason"}}})
+    assert mf.event_facts(tmp_path, now=FRIDAY_NIGHT) == mf.macro_facts(
+        tmp_path, now=FRIDAY_NIGHT, kind="event")
+
+
 def test_the_unanchored_event_read_is_exactly_the_post_that_was_killed(tmp_path):
     """MUTATION CHECK on the test above: without the fold, that same driver
     read is a violation. If this ever goes green with an empty regime, the fold
