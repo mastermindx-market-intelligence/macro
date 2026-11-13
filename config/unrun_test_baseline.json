@@ -418,7 +418,6 @@
     "tests/test_index_hazard_panel.py",
     "tests/test_indexnow.py",
     "tests/test_indicators_m2.py",
-    "tests/test_insider_factor.py",
     "tests/test_insider_fire_context.py",
     "tests/test_insider_power_signals.py",
     "tests/test_institutional_13f_aggregate.py",

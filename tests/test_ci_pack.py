@@ -6040,6 +6040,38 @@ def test_probe_weight_ceilings_follow_the_weight_rescale() -> None:
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    Historical measurements from PR #10966 before the current main integration:
+    2026-11-11 (PR #10966, measured current-main composition):
+    After #10211 landed, its Synapse owner and this Insider factor owner each
+    contribute four weight units to every probe. Their identical prior
+    ceiling edits coalesce in Git. Preserve both measured contributions at
+    5979/6003/5737, with the same job counts and ten-pack limit.
+    Receiving main cdb3144ea48f retains landed V91, both complete #9230
+    histories, the AI Brief flow-surface closure and all 401 owner IDs.
+    Exact candidate 8a9f91899e29 preserves all four Insider postimages;
+    only this measurement paragraph is added after its execution.
+    Unchanged scripts/check_contract_delta.py --base cdb3144ea48f
+    completed in 470.9s with zero introduced and zero inherited findings.
+    Actual base/head probes: index 137/5966 -> 137/5970,
+    free-content 137/5989 -> 137/5993, Prophet 131/5724 -> 131/5728;
+    all remain ten packs within jobs137/138/131 and the original +4.
+    The unchanged study command passed453 cases; its11 artifact-gated
+    cases then passed using the exact committed JSON/Parquet inputs.
+    All464 distinct cases passed with normal guards, without regenerating
+    data. Keep every selector, assertion, timeout and admission limit.
+    This is local exact-tree source proof; fresh hosted CI and the
+    incumbent controller's latest-main checks remain required.
+
+    2026-11-10 (Insider research issue #10955): enroll the unchanged native
+    collector/signal suite and the new filing-window/rebalance suite in
+    unrun-factor-research's existing study command. Its clean environment
+    also declares the accepted project requirement yfinance>=0.2.50 for
+    the existing membership test's unconditional breadth-module import.
+    Five commands remain; test tokens26->28, command text remains in the
+    same 800-character bucket: canonical weight58->62. This always-on
+    code owner adds exactly4 to all three probe allowances. Preserve
+    every existing owner, selector, job/pack cap, timeout and history.
+
     2026-11-12 (PR #11094, merge of main a07e3fe4ce0c / #11041 weight refresh):
     main moved planner weights to measured hosted seconds and pins each live
     ceiling to PACK.rescale_legacy_weight(legacy). This branch's legacy

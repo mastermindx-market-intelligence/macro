@@ -65,9 +65,12 @@ def long_only_tilt(R, sig, grid, membership, *, top: float, n_trials: int,
     universe. Returns the ACTIVE (port − benchmark) return stats — the honest read
     for a one-sided long signal. Port charged COST_BPS on turnover; benchmark is the
     costless passive reference. If `sec` given, rank within-sector (|SN)."""
-    wp = pd.DataFrame(0.0, index=R.index, columns=R.columns)
-    wb = pd.DataFrame(0.0, index=R.index, columns=R.columns)
+    wp = pd.DataFrame(np.nan, index=R.index, columns=R.columns)
+    wb = pd.DataFrame(np.nan, index=R.index, columns=R.columns)
     for d in grid:
+        # A missing or ineligible rebalance clears both complete target books.
+        wp.loc[d] = 0.0
+        wb.loc[d] = 0.0
         s = sig.loc[d].dropna() if d in sig.index else pd.Series(dtype=float)
         elig = _eligible_mask(membership, d, s.index)
         s = s.loc[elig]
@@ -81,10 +84,10 @@ def long_only_tilt(R, sig, grid, membership, *, top: float, n_trials: int,
         if len(longs):
             wp.loc[d, longs] = 1.0 / len(longs)
     def _ret(w, cost):
-        w = w.replace(0.0, np.nan).ffill().fillna(0.0)
+        w = w.ffill().fillna(0.0)
         pos = w.shift(1)
         gross = (pos * R.clip(-0.5, 0.5)).sum(axis=1)
-        turn = w.diff().abs().sum(axis=1)
+        turn = w.diff().fillna(w).abs().sum(axis=1)
         return (gross - (cost / 1e4) * turn).loc[grid[0]:]
     port = _ret(wp, COST_BPS)
     bench = _ret(wb, 0.0)
@@ -250,19 +253,11 @@ def render(lo: dict, orth: dict, grid) -> str:
           f"| orthogonalised | {o.get('mean_ic')} | {o.get('ic_ir')} | {o.get('t_hac')} "
           f"| {o.get('p_hac')} | {o.get('hit')} | {o.get('n')} |",
           "", "---", "",
-          "**Verdict.** (1) LONG-ONLY beats L/S decisively — active Sharpe ~0.70–0.73 with "
-          "bootstrap **P(SR>0)≈0.997** and a 95% Sharpe CI clear of zero, vs the dollar-neutral "
-          "L/S which failed at DSR≈0.53. The weak short leg (least-buying / net sellers) was the "
-          "drag; the long tilt is the real economic object. But it sits on the Deflated-Sharpe "
-          "BOUNDARY: it FAILS at the conservative whole-program haircut (n_trials=12 → DSR~0.85) "
-          "and only clears at a lenient long-only-family haircut (n_trials≈4 → DSR~0.95). So: a "
-          "robustly-positive long tilt, borderline as a standalone sizer. (2) ORTHOGONALITY is "
-          "the robust win — near-zero correlation with momentum/size/reversal and an IC that is "
-          "UNATTENUATED after orthogonalisation (raw≈orth) ⇒ distinct alpha, safe to add alongside "
-          "the existing value/quality/momentum/residual-alpha legs without double-counting (the "
-          "t~1.3 here is on the control-restricted, full-history subset; phase-0's full |SN cross-"
-          "section was t=2.9). Net: ship as an ORTHOGONAL conviction/confirmer leg expressed "
-          "LONG-ONLY; do not size it as a standalone dollar-neutral alpha.", ""]
+          "**Interpretation pending requalification.** Use the active returns, Deflated Sharpe, "
+          "bootstrap intervals and orthogonality estimates reported above for this run. "
+          "Requalify Phase-0 and Phase-1 conclusions on the frozen filing panel, point-in-time "
+          "membership and prices under the existing multiplicity and economic gates before "
+          "changing an accepted signal tier or sizing conclusion.", ""]
     return "\n".join(L)
 
 

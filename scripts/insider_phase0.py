@@ -109,8 +109,10 @@ def month_grid(index, horizon):
 
 def quintile_ls(R, sig, grid, n_trials, membership=None):
     """Long top-quintile / short bottom-quintile, EW, monthly rebalance, net of cost."""
-    w = pd.DataFrame(0.0, index=R.index, columns=R.columns)
+    w = pd.DataFrame(np.nan, index=R.index, columns=R.columns)
     for d in grid:
+        # Every scheduled rebalance is a complete target, including exits to cash.
+        w.loc[d] = 0.0
         s = sig.loc[d].dropna() if d in sig.index else pd.Series(dtype=float)
         s = s[s != 0.0]                                  # only names with a signal
         if membership is not None:
@@ -122,10 +124,10 @@ def quintile_ls(R, sig, grid, n_trials, membership=None):
         if len(top) and len(bot) and hi > lo:
             w.loc[d, top] = 1.0 / len(top)
             w.loc[d, bot] = -1.0 / len(bot)
-    w = w.replace(0.0, np.nan).ffill().fillna(0.0)
+    w = w.ffill().fillna(0.0)
     pos = w.shift(1)
     gross = (pos * R.clip(-0.5, 0.5)).sum(axis=1)
-    turn = w.diff().abs().sum(axis=1)
+    turn = w.diff().fillna(w).abs().sum(axis=1)
     net = (gross - (COST_BPS / 1e4) * turn).loc[grid[0]:]
     net = net[net.index <= grid[-1]]
     mom = ret_moments(net)
