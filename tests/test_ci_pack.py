@@ -6000,16 +6000,149 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_979),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 6_003),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_737),
+    ("templates/index.html", 137, 11_431),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 11_504),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 10_969),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
+# The weight ceilings above as they stood on the pre-2026-11-11 weight scale.
+# Each live ceiling must equal its legacy value rescaled by run_ci_pack's one
+# WEIGHT_RESCALE ratio (see test_probe_weight_ceilings_follow_the_weight_rescale);
+# job-count ceilings and PACKING_PROBE_MAX_PACKS are not weight-denominated and
+# did not move.
+LEGACY_PACKING_PROBE_WEIGHT_CEILINGS = {
+    "templates/index.html": 5_984,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    "scripts/build_free_content.py": 6_022,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    "engine/prophet/plan_book.py": 5_742,
+}
+
+
+def test_probe_weight_ceilings_follow_the_weight_rescale() -> None:
+    """2026-11-11: weights moved to measured hosted seconds (PACK.WEIGHT_RESCALE_*).
+
+    The probe ratchet must move by the same derived ratio as the weights and
+    the pack target, never by a hand-picked number, so a probe still reds on
+    the same relative growth it did before the refresh.
+    """
+    assert {probe for probe, _jobs, _weight in PACKING_PROBES} == set(
+        LEGACY_PACKING_PROBE_WEIGHT_CEILINGS
+    )
+    for probe, _max_jobs, max_weight in PACKING_PROBES:
+        assert max_weight == PACK.rescale_legacy_weight(
+            LEGACY_PACKING_PROBE_WEIGHT_CEILINGS[probe]
+        ), probe
+    assert PACK.PACK_TARGET_SECONDS == PACK.rescale_legacy_weight(
+        PACK.LEGACY_PACK_TARGET_SECONDS
+    )
 
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Historical measurements from PR #10966 before the current main integration:
+    2026-11-11 (PR #10966, measured current-main composition):
+    After #10211 landed, its Synapse owner and this Insider factor owner each
+    contribute four weight units to every probe. Their identical prior
+    ceiling edits coalesce in Git. Preserve both measured contributions at
+    5979/6003/5737, with the same job counts and ten-pack limit.
+    Receiving main cdb3144ea48f retains landed V91, both complete #9230
+    histories, the AI Brief flow-surface closure and all 401 owner IDs.
+    Exact candidate 8a9f91899e29 preserves all four Insider postimages;
+    only this measurement paragraph is added after its execution.
+    Unchanged scripts/check_contract_delta.py --base cdb3144ea48f
+    completed in 470.9s with zero introduced and zero inherited findings.
+    Actual base/head probes: index 137/5966 -> 137/5970,
+    free-content 137/5989 -> 137/5993, Prophet 131/5724 -> 131/5728;
+    all remain ten packs within jobs137/138/131 and the original +4.
+    The unchanged study command passed453 cases; its11 artifact-gated
+    cases then passed using the exact committed JSON/Parquet inputs.
+    All464 distinct cases passed with normal guards, without regenerating
+    data. Keep every selector, assertion, timeout and admission limit.
+    This is local exact-tree source proof; fresh hosted CI and the
+    incumbent controller's latest-main checks remain required.
+
+    2026-11-10 (Insider research issue #10955): enroll the unchanged native
+    collector/signal suite and the new filing-window/rebalance suite in
+    unrun-factor-research's existing study command. Its clean environment
+    also declares the accepted project requirement yfinance>=0.2.50 for
+    the existing membership test's unconditional breadth-module import.
+    Five commands remain; test tokens26->28, command text remains in the
+    same 800-character bucket: canonical weight58->62. This always-on
+    code owner adds exactly4 to all three probe allowances. Preserve
+    every existing owner, selector, job/pack cap, timeout and history.
+
+    2026-11-12 (PR #11094, merge of main a07e3fe4ce0c / #11041 weight refresh):
+    main moved planner weights to measured hosted seconds and pins each live
+    ceiling to PACK.rescale_legacy_weight(legacy). This branch's legacy
+    ceilings 5,984/6,022/5,742 (dated paragraph below) are carried into
+    LEGACY_PACKING_PROBE_WEIGHT_CEILINGS and rescaled by that function to
+    11,431/11,504/10,969; no hand-picked number. Re-measured on the merged
+    tree with packing_probe_measurements: index 137/10,869, free-content
+    138/11,373, plan_book 131/10,828, 10 packs each at PACK_TARGET_SECONDS
+    1,146 (main alone: 10,859/11,241/10,818). The pack ceiling returns to
+    main's 10: the eleventh pack approved on 2026-11-11 is no longer needed
+    on the measured-seconds scale. Job ceilings stay 137/138/131; every
+    selector and assertion is unchanged; main's #11041 paragraph is kept
+    verbatim.
+
+    2026-11-12 (PR #11094, merge of main 41c920d8d9a4 / #10211): re-measured
+    on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged .github/ci/legacy-jobs.yml),
+    not summed by hand: index 137/5,984, free-content 138/6,022, plan_book
+    131/5,742. That equals main's 5,975/5,999/5,733 (its #10211 +4 recorded
+    in its own paragraph) plus #10924's measured +5/+19/+5 plus #11094's
+    measured +4 on each probe. Free-content packs into 11 packs at
+    PACK_TARGET_SECONDS 600, at the existing parent-approved pack ceiling 11
+    (dated 2026-11-11 below); the other two pack into 10. Job ceilings stay
+    137/138/131. Every selector and every assertion is unchanged; main's
+    #10211 provenance paragraphs are kept verbatim.
+
+    2026-11-12 (PR #11094 carrying PR #10924, COO ruling 25): the #11094
+    branch (head abae99b163ee) merged #10924's head 877e4845e1e5, then
+    main e7f8565ca26b (#11101). Re-measured on that merged tree with the
+    same probe measurement (packing_probe_measurements over the merged
+    .github/ci/legacy-jobs.yml), not summed by hand: index 137/5,980,
+    free-content 138/6,018, plan_book 131/5,738. That equals main's
+    5,971/5,995/5,729 plus #10924's previously measured +5/+19/+5 plus
+    #11094's measured +4 on each probe. Free-content packs into 11 packs
+    at PACK_TARGET_SECONDS 600, at the existing parent-approved pack
+    ceiling 11; the other two probes pack into 10. Job ceilings stay
+    137/138/131. Every selector and every assertion is unchanged; the
+    provenance paragraphs from main (#11101), #10924 and #11094 below
+    are kept verbatim.
+
+    2026-11-12 (PR #10924, merge of main 9d8a0c8be5bb / #11051):
+    re-measured on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged .github/ci/legacy-jobs.yml).
+    Main's #11051 bounded browser-only Chromium fallback raises its own
+    composition to 5,969/5,993/5,727 (its measured +1/+2/+1 over #11019's
+    5,968/5,991/5,726, recorded in its playwright apt-outage paragraph
+    below); this PR's own jobs still add exactly their previously measured
+    excess over main (+5/+19/+5), so the merged ceilings are index
+    137/5,974, free-content 138/6,012, plan_book 131/5,732 — measured on
+    the merged tree, not smeared. Job ceilings stay 137/138/131; the
+    free-content weight 6,012 packs into 11 packs at
+    PACK_TARGET_SECONDS 600, at the existing parent-approved pack ceiling
+    11 — no pack change. Every selector and every assertion is unchanged;
+    main's #11051 playwright apt-outage paragraph and every prior
+    provenance paragraph below are kept verbatim.
+
+    2026-11-12 (PR #10924, merge of main e752cc8a98a8 / #11019):
+    re-measured on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged .github/ci/legacy-jobs.yml).
+    Main's #11019 Start-page regression adds tests/test_hub_glance_copy.py
+    to the existing data-base-shim builder step, so its own composition
+    carries 5,968/5,991/5,726 (its +2 on every probe, recorded in the
+    two-line comment above); this PR's own jobs still add exactly their
+    previously measured excess over main (+5/+19/+5), so the merged
+    ceilings are index 137/5,973, free-content 138/6,010, plan_book
+    131/5,731 — measured on the merged tree, not smeared. Job ceilings
+    stay 137/138/131; the free-content weight 6,010 packs into 11 packs
+    at PACK_TARGET_SECONDS 600, at the existing parent-approved pack
+    ceiling 11 — no pack change. Every selector and every assertion is
+    unchanged; main's #11019 two-line comment is kept, and every prior
+    provenance paragraph below is kept verbatim.
 
     2026-11-12 (PR #11101, runtime-adapter closure): wiring
     tools/xguerrilla/tests/test_runtime_adapter.py into
@@ -6118,36 +6251,53 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     is measured planner accounting, not an execution-time estimate; natural
     successor CI must qualify the repaired source.
 
-    2026-11-11 (PR #10966, measured current-main composition):
-    After #10211 landed, its Synapse owner and this Insider factor owner each
-    contribute four weight units to every probe. Their identical prior
-    ceiling edits coalesce in Git. Preserve both measured contributions at
-    5979/6003/5737, with the same job counts and ten-pack limit.
-    Receiving main cdb3144ea48f retains landed V91, both complete #9230
-    histories, the AI Brief flow-surface closure and all 401 owner IDs.
-    Exact candidate 8a9f91899e29 preserves all four Insider postimages;
-    only this measurement paragraph is added after its execution.
-    Unchanged scripts/check_contract_delta.py --base cdb3144ea48f
-    completed in 470.9s with zero introduced and zero inherited findings.
-    Actual base/head probes: index 137/5966 -> 137/5970,
-    free-content 137/5989 -> 137/5993, Prophet 131/5724 -> 131/5728;
-    all remain ten packs within jobs137/138/131 and the original +4.
-    The unchanged study command passed453 cases; its11 artifact-gated
-    cases then passed using the exact committed JSON/Parquet inputs.
-    All464 distinct cases passed with normal guards, without regenerating
-    data. Keep every selector, assertion, timeout and admission limit.
-    This is local exact-tree source proof; fresh hosted CI and the
-    incumbent controller's latest-main checks remain required.
+    2026-11-11 (PR #10924, second main conflict 82930233f83a / #9230):
+    re-measured on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged .github/ci/legacy-jobs.yml).
+    Main's #9230 composition carries 5,966/5,989/5,724 (its own +2 on
+    free-content only); this PR's own jobs still add exactly their
+    previously measured excess (+5/+19/+5), so the merged ceilings are
+    index 137/5,971, free-content 138/6,008, plan_book 131/5,729 —
+    measured on the merged tree, not smeared. Only the free-content
+    weight ceiling moves (6,006 -> 6,008, main's +2 composed with this
+    PR's already-recorded +19); index and plan_book land on the values
+    both prior measurements already composed. The free-content weight
+    6,008 packs into 11 packs at PACK_TARGET_SECONDS 600, at the
+    existing parent-approved pack ceiling 11 — no pack change. Job
+    ceilings stay 137/138/131; every selector and every assertion is
+    unchanged; main's #9230 provenance paragraphs and its
+    CURATED_EXCLUSIVE entry are kept verbatim.
 
-    2026-11-10 (Insider research issue #10955): enroll the unchanged native
-    collector/signal suite and the new filing-window/rebalance suite in
-    unrun-factor-research's existing study command. Its clean environment
-    also declares the accepted project requirement yfinance>=0.2.50 for
-    the existing membership test's unconditional breadth-module import.
-    Five commands remain; test tokens26->28, command text remains in the
-    same 800-character bucket: canonical weight58->62. This always-on
-    code owner adds exactly4 to all three probe allowances. Preserve
-    every existing owner, selector, job/pack cap, timeout and history.
+    2026-11-11 (packs ceiling re-based 10 -> 11, parent-approved): the
+    merged-tree free-content probe measures 6,006 weight-seconds = 11 packs
+    at PACK_TARGET_SECONDS 600; main #10571 (+8) and this pull request
+    (+19) each measure under the 6,000 line alone, so the eleventh pack is
+    the measured cost of their composition, accepted per the recorded packs
+    rule (V11 17.3: "11 packs is the measured cost and is accepted with the
+    reason recorded"). No selector, assertion or job ceiling changed.
+
+    2026-11-11 (PR #10924, merge of main 9d9aac1bf323 / #10571):
+    re-measured on the merged tree with the same probe measurement
+    (packing_probe_measurements over the merged .github/ci/legacy-jobs.yml).
+    Main's #10571 composition carries 5,966/5,987/5,724; this PR's own
+    jobs add exactly their previously measured excess: index 137/5,966 ->
+    137/5,971, free-content 138/5,987 -> 138/6,006, plan_book 131/5,724 ->
+    131/5,729 — measured, not smeared. Weight ceilings re-based by exactly
+    that excess; job ceilings stay 137/138/131; every selector and every
+    assertion is unchanged. The free-content weight 6,006 packs into 11
+    packs at PACK_TARGET_SECONDS 600; at resolution time this breach was
+    reported to the commissioning parent rather than waived, and the
+    parent's 2026-11-11 ruling approved the measured pack-ceiling re-base
+    recorded in the dated line above.
+
+    2026-11-11 (planner weight refresh to measured hosted seconds):
+    OBSERVED_COMMAND_SECONDS now prices every code job from 17 ci.yml runs, so
+    the whole manifest moved 15,670 -> 29,934 weight-seconds. The three weight
+    ceilings move by exactly that ratio (PACK.rescale_legacy_weight):
+    5,966 -> 11,397, 5,987 -> 11,437, 5,724 -> 10,934; PACK_TARGET_SECONDS moves
+    600 -> 1,146 by the same function. Measured on the refreshed weights:
+    10,859 / 11,241 / 10,818 weight and 10 / 10 / 10 packs. Job ceilings,
+    selection and the ten-pack limit are unchanged.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
@@ -6160,6 +6310,20 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     admission limits. Preserve both entire provenance histories.
     This is owner-estimator execution and source conservation, not
     a new full-tree planner or hosted pass; successor CI is required.
+
+    2026-11-10 (PR #10924, SI lane 8 CI registration): wired the two new
+    sector-analytics suites (tests/test_sector_analytics_boundaries.py,
+    tests/test_sector_forecast_heads.py) into cycle-forward-log as a real
+    run step, and widened 21 legacy jobs' paths for engine/sector_heads.py
+    and the B12 v1.1 research artifacts. Measured at head d70025383c2d by
+    scripts/check_contract_delta.py against base e11afd6d8549: index
+    137 jobs / 5,963 s, free-content 138 jobs / 5,998 s (cycle-forward-log
+    newly selected — the boundaries suite's engine/sector_central.py
+    closure reaches scripts/build_free_content.py, so the wider selection
+    is the true cost of running it, not smear), plan_book 131 jobs /
+    5,721 s; ten packs on every probe. Fund only the measured excess:
+    5,958 -> 5,963, 5,979 -> 5,998, 5,716 -> 5,721. Job ceilings, the
+    pack ceiling, every selector and every assertion are unchanged.
 
     2026-11-09 (PR #6867, preserve lifecycle and landed ownership-ledger steps):
     both contributions share data-base-shim. Keep all original command bytes,
@@ -8245,6 +8409,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,909 / 5,924 / 5,665 with job sets identical to the branch tree (no job
     enters or leaves any probe). Fund exactly the measured values:
     5,906 -> 5,909, 5,921 -> 5,924, 5,662 -> 5,665; job-count ceilings,
+    selectors and the ten-pack bound stay unchanged. Planning weights are not
+    measured execution times.
+
+    Sector Intelligence breadth history (2026-11-12, #11094): the two new
+    suites tests/test_group_breadth_history.py and
+    tests/test_member_breadth_ledger.py join the existing pytest command of
+    unrun-site-surfaces (the step that already runs test_advanced_breadth /
+    test_breadth_panel), which rides all three probes. Measured locally on the
+    branch merged with main 4 commits past 4869c78575b9: main's
+    legacy-jobs.yml passes at 5,969 / 5,993 / 5,727; with the two suites the
+    probes measure 5,973 / 5,997 / 5,731 on the same job counts and ten packs
+    (no job enters or leaves). Fund exactly the measured +4 per probe:
+    5,969 -> 5,973, 5,993 -> 5,997, 5,727 -> 5,731; job-count ceilings,
     selectors and the ten-pack bound stay unchanged. Planning weights are not
     measured execution times.
     """
