@@ -1,15 +1,17 @@
 """Prove native writer adaptation and installed-control enrollment, without services."""
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from admin.capacity_config_transaction import configuration_writer
 from admin.capacity_fabric_observer import control_writers_ready
-from admin.deploy.stage_capacity_observer import native_writer_candidate
+from admin.deploy.stage_capacity_observer import native_writer_candidate, native_maintenance_candidate
 
 HELPER=Path(__file__).resolve().parents[1]/'capacity_config_transaction.py'
 
@@ -53,5 +55,32 @@ class NativeWriterAdapters(unittest.TestCase):
         self.assertEqual(twice.count('def guard_routes()'),1)
         self.assertEqual(twice.count('def _capacity_unlocked_guard_routes()'),1)
         self.assertIn('return "native policy retained"',twice)
+
+
+class MaintenanceStartupFence(unittest.TestCase):
+    def setUp(self):
+        self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name).resolve()
+        self.source=native_maintenance_candidate('service.py','def main():\n    return "APP_CREATED"\n')
+        self.base=self.root/'releases/base';self.candidate=self.root/'releases/candidate'
+        self.path=self.candidate/'ops/native_fabric/unified_router/service.py';self.path.parent.mkdir(parents=True);self.path.write_text(self.source)
+        self.marker=self.root/'.local/share/mastermind/fabric-router/state/reload.lock/maintenance.json';self.marker.parent.mkdir(parents=True)
+        self.receipt={'schema':'mastermind.capacity_router.maintenance.v1','target_job':'ai.mastermind.fabric-router','operation_id':'qualification','base_release':str(self.base),'candidate_release':str(self.candidate),'candidate_service_sha256':hashlib.sha256(self.path.read_bytes()).hexdigest(),'phase':'STOPPING_OLD'}
+        self.ns={'__file__':str(self.path),'__name__':'qualification'};exec(compile(self.source,str(self.path),'exec'),self.ns)
+    def tearDown(self):self.tmp.cleanup()
+    def invoke(self,job='ai.mastermind.fabric-router'):
+        with patch.dict(os.environ,{'XPC_SERVICE_NAME':job}),patch('pathlib.Path.home',return_value=self.root):return self.ns['main']()
+    def persist(self):self.marker.write_text(json.dumps(self.receipt));self.marker.chmod(0o600)
+    def test_only_exact_candidate_and_phase_can_create_application(self):
+        self.assertEqual(self.invoke(),'APP_CREATED')
+        self.persist();self.assertIsNone(self.invoke())
+        self.receipt['phase']='STARTING_CANDIDATE';self.persist();self.assertEqual(self.invoke(),'APP_CREATED')
+        self.receipt['candidate_service_sha256']='0'*64;self.persist();self.assertIsNone(self.invoke())
+    def test_unrelated_job_is_preserved_and_unexpected_release_is_held(self):
+        self.persist();self.assertEqual(self.invoke('another.native.owner'),'APP_CREATED')
+        self.receipt.update(phase='STARTING_CANDIDATE',candidate_release=str(self.root/'unexpected'));self.persist();self.assertIsNone(self.invoke())
+        self.receipt['phase']='COMPLETED';self.persist();self.assertEqual(self.invoke(),'APP_CREATED')
+    def test_corrupt_marker_never_opens_targeted_admission(self):
+        self.marker.write_text('{interrupted');self.assertIsNone(self.invoke())
+        self.assertEqual(self.invoke('another.native.owner'),'APP_CREATED')
 
 if __name__=='__main__':unittest.main()

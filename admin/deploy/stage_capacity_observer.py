@@ -74,10 +74,12 @@ def native_writer_candidate(name, source, helper):
     raise ValueError("unsupported native writer")
 
 
-def native_maintenance_candidate(name, source):
+def native_maintenance_candidate(name, source, *, target_label="ai.mastermind.fabric-router"):
     """Fence an unfinished attended transaction inside the existing owners."""
     marker = "CAPACITY_ATTENDED_MAINTENANCE"
     if marker in source:
+        if name == "service.py" and "CAPACITY_ATTENDED_MAINTENANCE_V2" not in source:
+            raise ValueError("installed startup fence requires explicit migration")
         return source
     if name == "reload.sh":
         needle = 'if ! mkdir "$LOCK" 2>/dev/null; then\n'
@@ -95,14 +97,18 @@ def native_maintenance_candidate(name, source):
                  '      return 0\n'
                  '    fi\n')
     elif name == "service.py":
-        guard = r'''# BEGIN CAPACITY_ATTENDED_MAINTENANCE
+        guard = r'''# BEGIN CAPACITY_ATTENDED_MAINTENANCE_V2
 
 def _capacity_startup_held():
     """A retiring release cannot reopen admission during attended maintenance."""
     import json as _capacity_json
+    import hashlib as _capacity_hashlib
     import os as _capacity_os
     import stat as _capacity_stat
     from pathlib import Path as _CapacityPath
+    job = _capacity_os.environ.get("XPC_SERVICE_NAME")
+    if job != __CAPACITY_TARGET_JOB__:
+        return False
     marker = _CapacityPath.home() / ".local/share/mastermind/fabric-router/state/reload.lock/maintenance.json"
     fd = None
     try:
@@ -114,10 +120,15 @@ def _capacity_startup_held():
         if not _capacity_stat.S_ISREG(meta.st_mode) or meta.st_uid != _capacity_os.geteuid() or meta.st_nlink != 1 or not 0 < meta.st_size <= 65536:
             return True
         receipt = _capacity_json.loads(_capacity_os.read(fd, 65537))
-        if receipt.get("schema") != "mastermind.capacity_router.maintenance.v1":
+        if receipt.get("schema") != "mastermind.capacity_router.maintenance.v1" or receipt.get("target_job") != job or not isinstance(receipt.get("operation_id"), str):
             return True
         release = str(_CapacityPath(__file__).resolve().parents[3])
-        held = receipt.get("base_release") == release and receipt.get("phase") not in {"COMPLETED", "ROLLED_BACK"}
+        if receipt.get("phase") in {"COMPLETED", "ROLLED_BACK"}:
+            return False
+        candidate_allowed = (receipt.get("candidate_release") == release
+            and receipt.get("phase") in {"STARTING_CANDIDATE", "VERIFYING_CANDIDATE"}
+            and receipt.get("candidate_service_sha256") == _capacity_hashlib.sha256(_CapacityPath(__file__).read_bytes()).hexdigest())
+        held = not candidate_allowed
         if held:
             print(_capacity_json.dumps({"capacity_maintenance_startup_held": True, "pid": _capacity_os.getpid(), "release": release, "operation_id": receipt.get("operation_id")}), flush=True)
         return held
@@ -130,6 +141,9 @@ def _capacity_startup_held():
 # END CAPACITY_ATTENDED_MAINTENANCE
 
 '''
+        if not re.fullmatch(r"[A-Za-z0-9.-]{1,128}", target_label):
+            raise ValueError("invalid native job label")
+        guard = guard.replace("__CAPACITY_TARGET_JOB__", repr(target_label))
         lines = source.splitlines(keepends=True)
         functions = [n for n in ast.parse(source).body if isinstance(n, ast.FunctionDef) and n.name == "main"]
         if len(functions) != 1:

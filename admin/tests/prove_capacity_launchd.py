@@ -71,7 +71,7 @@ def main():
            'service_sha256':hashlib.sha256(source.encode()).hexdigest(),
            'signal_handler_sha256':hashlib.sha256(handler.encode()).hexdigest(),'label':label}
     with tempfile.TemporaryDirectory(prefix='capacity-launchd-11194-') as temp:
-        root=Path(temp);fake_home=root/'fixture-home'
+        root=Path(temp).resolve();fake_home=root/'fixture-home'
         old=root/'releases/old';new=root/'releases/new';package=Path('ops/native_fabric/unified_router')
         (old/package).mkdir(parents=True);(new/package).mkdir(parents=True)
         marker=fake_home/'.local/share/mastermind/fabric-router/state/reload.lock/maintenance.json'
@@ -90,7 +90,7 @@ def main():
     app.state.model_policy=SimpleNamespace(draining=False,changed=asyncio.Event())
     @app.get('/healthz')
     async def health():
-        return {'ok':True,'generation':sys.argv[2],'pid':os.getpid()}
+        return {'ok':True,'generation':sys.argv[2],'pid':os.getpid(),'xpc_service_name':os.environ.get('XPC_SERVICE_NAME')}
     @app.get('/stream')
     async def stream():
         async def body():
@@ -111,7 +111,7 @@ def main():
 if __name__=='__main__': main()
 '''
         fixture=old/package/'service.py';fixture.write_text(app_source)
-        gated=native_maintenance_candidate('service.py',app_source)
+        gated=native_maintenance_candidate('service.py',app_source,target_label=label)
         candidate=new/package/'service.py';candidate.write_text(gated)
         proof['prepared_startup_guard_sha256']=hashlib.sha256(gated.encode()).hexdigest()
         plist=root/(label+'.plist')
@@ -135,11 +135,14 @@ if __name__=='__main__': main()
         try:
             command('launchctl','bootstrap',domain,str(plist))
             first=until(health);pid,description=loaded(target)
+            assert first['xpc_service_name']==label
+            proof['launchd_job_identity_verified']=True
             assert pid==first['pid'] and str(old) in description and 'exit timeout = 1' in description
             proof.update(loaded_original_timeout_s=1,original_pid=pid)
             thread=threading.Thread(target=consume,daemon=True);thread.start();assert started.wait(8)
             marker.parent.mkdir(parents=True,mode=0o700)
-            marker.write_text(json.dumps({'schema':'mastermind.capacity_router.maintenance.v1','operation_id':'closed-launchd-proof','base_release':str(old),'phase':'STOPPING_OLD'}));marker.chmod(0o600)
+            maintenance={'schema':'mastermind.capacity_router.maintenance.v1','operation_id':'closed-launchd-proof','target_job':label,'base_release':str(old),'candidate_release':str(new),'candidate_service_sha256':hashlib.sha256(candidate.read_bytes()).hexdigest(),'phase':'STOPPING_OLD'}
+            marker.write_text(json.dumps(maintenance));marker.chmod(0o600)
             prepared=fixture.with_suffix('.next');prepared.write_text(gated);os.replace(prepared,fixture)
             assert alive(pid) and health()['pid']==pid
             signalled=time.monotonic();os.kill(pid,signal.SIGTERM)
@@ -164,6 +167,7 @@ if __name__=='__main__': main()
             proof['successful_fence_exit_stops_keepalive']=True
             command('launchctl','bootout',target)
             assert command('launchctl','print',target,check=False).returncode!=0
+            maintenance['phase']='STARTING_CANDIDATE';marker.write_text(json.dumps(maintenance))
             definition.update(WorkingDirectory=str(new),ExitTimeOut=19)
             definition['ProgramArguments']=[str(args.python),str(candidate),str(port),'second']
             plist.write_bytes(plistlib.dumps(definition));command('launchctl','bootstrap',domain,str(plist))
@@ -177,6 +181,8 @@ if __name__=='__main__': main()
         finally:
             command('launchctl','bootout',target,check=False)
             if thread:thread.join(2)
+            end=time.monotonic()+8
+            while time.monotonic()<end and command('launchctl','print',target,check=False).returncode==0:time.sleep(.1)
             proof['fixture_job_removed']=command('launchctl','print',target,check=False).returncode!=0
             args.output.parent.mkdir(parents=True,exist_ok=True);args.output.write_text(json.dumps(proof,indent=2)+'\n')
     print(json.dumps(proof,indent=2))
