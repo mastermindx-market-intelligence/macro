@@ -1,0 +1,23 @@
+{
+  "source_commit": "88804ed7079700c598bb8e04aa64307d1335402d",
+  "additional_unchanged_dependency": {
+    "path": "engine/tech_confluence.py",
+    "blob": "cf2640d407a452ce07d6a5a76f9affe9bc52832e",
+    "sha256": "0a58e55b4a624879127f624c75e1b8a92ad3f9d9a90587efce19f95b377d2958"
+  },
+  "argv": [
+    "python3",
+    "-m",
+    "pytest",
+    "tests/test_confluence_screener_page.py",
+    "-k",
+    "not test_shipped_shell_and_protected_payload_are_paired"
+  ],
+  "exit": 0,
+  "stdout": "................................                                         [100%]\n32 passed, 1 deselected in 1.08s\n",
+  "stderr": "",
+  "excluded_test": "test_shipped_shell_and_protected_payload_are_paired",
+  "excluded_reason": "Requires committed market-statistical HTML/payload. Those were not acquired while outcome access remains held; no synthetic replacement was supplied to make this production-artifact test pass.",
+  "previous_full_attempt": "31 passed; shipped-artifact test FileNotFoundError; native MinerConfig dependency missing. Both failures retained in FULL_SUITE_RECEIPT.json. The unchanged native configuration module is now supplied.",
+  "scope": "Complete synthetic/source-only part of the dedicated test file, not full repository, committed production artifact, live browser or scientific proof."
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "toi.w2_corporate_action_source_boundary.v1",
+  "observed_at": "2026-10-06T07:36:38.362188+00:00",
+  "macro_source": {
+    "commit": "0f575e51469fc66fa9fd326022ac2d7eee814926",
+    "massive_entitlement_blob": "3969a9aae918141b51baffbb0e17d8a2ec2485a0",
+    "data_contracts_blob": "46306c7f9421237655f6f1200d9c67f59592a0b0",
+    "heuristic_splitter_blob": "1f60faf4d71b851e855eda640ed5e600d160f05a"
+  },
+  "existing_owner": {
+    "dataset": "reference.corporate_actions",
+    "status": "PROPOSED_NOT_BUILT",
+    "required_fields": "effective/ex date, action type, factor plus source/vintage/identity binding",
+    "no_parallel_store": true
+  },
+  "official_massive_sources": {
+    "splits": {
+      "endpoint": "GET /stocks/v1/splits",
+      "docs": "https://massive.com/docs/rest/stocks/corporate-actions/splits",
+      "needed_fields": [
+        "id",
+        "ticker",
+        "execution_date",
+        "adjustment_type",
+        "split_from",
+        "split_to",
+        "historical_adjustment_factor"
+      ]
+    },
+    "dividends": {
+      "endpoint": "GET /stocks/v1/dividends",
+      "docs": "https://massive.com/docs/rest/stocks/corporate-actions/dividends",
+      "needed_only_for_total_return_secondary": [
+        "id",
+        "ticker",
+        "ex_dividend_date",
+        "cash_amount",
+        "currency",
+        "split_adjusted_cash_amount",
+        "historical_adjustment_factor"
+      ]
+    }
+  },
+  "access_observation": {
+    "current_m2_env_has_massive_or_polygon_api_key": false,
+    "anonymous_split_probe_http_status": 401,
+    "anonymous_response_class": "API Key was not provided",
+    "credential_search_or_mapping_performed": false,
+    "reason": "Do not map/search secrets or bypass the existing data owner. A previous credential-mapping refusal remains a fence."
+  },
+  "rights": "Existing Massive enterprise entitlement explicitly covers corporate actions, non-display research, derived materials and retention; rights do not create signal authority.",
+  "evidence_ceiling": "A current-vintage corporate-action pull would support RETROSPECTIVE historical derivation unless accepted historical first-receipt/correction vintages are separately available.",
+  "source_or_production_mutation": false
+}

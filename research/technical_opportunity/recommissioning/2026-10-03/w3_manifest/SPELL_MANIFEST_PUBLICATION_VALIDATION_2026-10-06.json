@@ -1,0 +1,186 @@
+{
+  "schema": "toi.spell_manifest_publication_validation.v1",
+  "docs_base_head": "c5f1427dfc55895814e8cd108cf7154560b48749",
+  "protected_procedure": "a6d40ff648671b03bd4d829d84dd066b58ea8c3f",
+  "macro_source_at_freshness_fence": "eae8baa8d3d4db35d5c9ac4f8e292143cf620854",
+  "source_blobs": {
+    "membership": "ec7085bc7460aca4a07661fa5983c424e1559be8",
+    "calendar": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3",
+    "inventory": "76db520ab00d8948ca558520c9345c08267b8040"
+  },
+  "spell_results": {
+    "tickers": 1924,
+    "vendor_key_unresolved": 2,
+    "read_errors": 0,
+    "membership_multi_episode_tickers": 7,
+    "total_spells": 3024,
+    "spell_length_sessions": {
+      "min": 1,
+      "median": 572.0,
+      "p90": 1285.0,
+      "max": 1318
+    },
+    "spells_meeting_generic_session_lengths": {
+      "20": 3017,
+      "60": 1914,
+      "126": 1869,
+      "200": 1802,
+      "252": 1767
+    },
+    "tickers_with_at_least_one_spell_meeting_length": {
+      "20": 1918,
+      "60": 1900,
+      "126": 1857,
+      "200": 1794,
+      "252": 1760
+    },
+    "bounded_transport_recovery": [
+      {
+        "ticker": "AMAT",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "ARR",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "AVAV",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "AVB",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "AVGO",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "CNS",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "EHAB",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "ESS",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "ETRN",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "KNTK",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "MSEX",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "PFS",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "PG",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "RITM",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "SEDG",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "SMG",
+        "status": "RECOVERED",
+        "attempts": 1
+      },
+      {
+        "ticker": "SWI",
+        "status": "RECOVERED",
+        "attempts": 1
+      }
+    ]
+  },
+  "manifest_validation": {
+    "schema": "toi.r0.daily_first_22_manifest_validation.v1",
+    "manifest_sha256": "e80f3c69325eb99de081fcc5dd86462a137fd4f47d419b4012b166caa3d4609a",
+    "objects": 22,
+    "directions": {
+      "UP": 11,
+      "DOWN": 11
+    },
+    "kinds": {
+      "core_construction": 4,
+      "simple_breakout_comparator": 2,
+      "near_boundary_placebo": 2,
+      "confirmation_policy_application": 4,
+      "activation_model_specification": 4,
+      "post_trigger_model_specification": 6
+    },
+    "primary_contrasts": 8,
+    "planning_fingerprints_unique": true,
+    "selected": 0,
+    "registered": 0,
+    "outcomes_read": false,
+    "all_material_blocks_content_hashed": true,
+    "unresolved_fields_fail_closed": true,
+    "native_trial_hashes_written": 0,
+    "admission": false
+  },
+  "outcomes_read": false,
+  "source_or_production_paths_changed": false,
+  "w3_opened": false,
+  "files": [
+    {
+      "path": "w2_daily_first/README.md",
+      "bytes": 2641,
+      "sha256": "015249dd74cc8f4fe1329cc543a85720b512b00ec78249176cc5e7f6c62e944c"
+    },
+    {
+      "path": "w2_daily_first/TICKER_SPELL_CENSUS_SUMMARY_2026-10-06.json",
+      "bytes": 481396,
+      "sha256": "ca5b4313ad5c201529673ef57c068c764d00e94e4001f4c3bee7934f47eedc8e"
+    },
+    {
+      "path": "w2_daily_first/W2_TICKER_SPELL_UNIT_RULING_2026-10-06.md",
+      "bytes": 4160,
+      "sha256": "040211d4edfd92dd876f7357ca9c8ce0c0b8dd8008b4224d141f4d279d085c81"
+    },
+    {
+      "path": "w3_manifest/R0_22_CONFIG_MANIFEST_DRAFT_V1.json",
+      "bytes": 49596,
+      "sha256": "e80f3c69325eb99de081fcc5dd86462a137fd4f47d419b4012b166caa3d4609a"
+    },
+    {
+      "path": "w3_manifest/R0_22_CONFIG_MANIFEST_VALIDATION.json",
+      "bytes": 734,
+      "sha256": "f118ac659dfbaf2e0a5ad638f1cf3ccd7b3b3c80524b9acec1876e7b2d14522e"
+    },
+    {
+      "path": "w3_manifest/README.md",
+      "bytes": 1143,
+      "sha256": "b3c2a3922326b255e9106df69b9ee8689d08820e7fdc3f585af5900b33ff4802"
+    }
+  ]
+}

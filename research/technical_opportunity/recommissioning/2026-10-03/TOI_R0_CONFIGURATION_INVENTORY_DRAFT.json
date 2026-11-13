@@ -1,0 +1,4216 @@
+{
+  "kind": "report_R0_configuration_ceiling_inventory",
+  "status": "DRAFT_NOT_ADMITTED",
+  "is_executable_preregistration": false,
+  "is_trial_ledger": false,
+  "planning_labels_are_not_native_ids": true,
+  "source_packet_commit": "e668e7139377c1d122fe1a9bc79d755760e5dc94",
+  "source_section": "TOI full report K4-K8",
+  "configuration_ceiling": 147,
+  "enumerated_configuration_slots": 147,
+  "selected_for_execution_count": 0,
+  "registered_by_this_initiation_count": 0,
+  "research_admitted_count": 0,
+  "counts_by_kind": {
+    "core_construction": 32,
+    "simple_breakout_comparator": 8,
+    "near_boundary_placebo": 8,
+    "compression_sensor_substitution": 16,
+    "confirmation_policy_application": 24,
+    "activation_model_specification": 24,
+    "post_trigger_model_specification": 24,
+    "remaining_path_specification": 8,
+    "combo_incumbent_comparator": 2,
+    "s16_incumbent_comparator": 1
+  },
+  "recipe_notes": {
+    "DAILY": "Daily study requires exact panel admission; 13-completed-Weekly context requires its own qualified join.",
+    "WEEKLY": "Standalone compression uses 252 Weekly distribution observations plus native warm-up, training and evaluation; no support assumed from the post-July-2021 panel.",
+    "4H-CLOCK": "Session-open anchored 240-minute RTH bars with terminal stubs, not provider-hour or extended-hours substitutes.",
+    "195M-RTH": "Fixed 195-minute RTH bars with terminal stubs, not normalized half-session bars."
+  },
+  "unresolved_owner_decisions": [
+    "R0 eight proposed primary contrasts versus retained Seat B/R2 single proposed .01 upside-confirmation claim; adopt or amend before any registration or outcomes.",
+    "S16 identity, DNR disposition, inherited 12-trial history and permitted comparator relationship.",
+    "Native grader fill-relative H versus retained R2 original-trigger+21-session common terminal; freeze exact estimands and explicitly label distinct secondary rulers.",
+    "Exact active subset, native registry IDs, seeds, software and solver settings, calibration cuts, context interaction, endpoints/result columns, chronological folds, inference/multiplicity method and support gates.",
+    "Historical design exposure and genuinely untouched holdout or prospective accrual receipts.",
+    "No held clock slots may be reassigned to extra Daily searches."
+  ],
+  "proposed_primary_contrasts": [
+    {
+      "planning_label": "R0-UP-A1_vs_A0",
+      "direction": "UP",
+      "clock": "DAILY",
+      "question": "activation log-loss",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-UP-P1_vs_P0",
+      "direction": "UP",
+      "clock": "DAILY",
+      "question": "conditional-path log-loss",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-UP-Q1_vs_Q0",
+      "direction": "UP",
+      "clock": "DAILY",
+      "question": "joint confirmation claim: fakeout reduction, capture noninferiority, price-cost bound",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-UP-P2_vs_P1",
+      "direction": "UP",
+      "clock": "DAILY",
+      "question": "Weekly-context conditional-path increment",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-DOWN-A1_vs_A0",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "question": "activation log-loss",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-DOWN-P1_vs_P0",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "question": "conditional-path log-loss",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-DOWN-Q1_vs_Q0",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "question": "joint confirmation claim: fakeout reduction, capture noninferiority, price-cost bound",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-DOWN-P2_vs_P1",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "question": "Weekly-context conditional-path increment",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    }
+  ],
+  "objects": [
+    {
+      "planning_slot": "PLAN-001",
+      "configuration_kind": "core_construction",
+      "specification": "C0",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-002",
+      "configuration_kind": "core_construction",
+      "specification": "C1",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-003",
+      "configuration_kind": "core_construction",
+      "specification": "C2",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-004",
+      "configuration_kind": "core_construction",
+      "specification": "C3",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry.",
+        "Report proposes prior 13 completed Weekly directional log-return context for Daily/4H/195M only."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-005",
+      "configuration_kind": "simple_breakout_comparator",
+      "specification": "FROZEN_PRIOR_RANGE",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": []
+    },
+    {
+      "planning_slot": "PLAN-006",
+      "configuration_kind": "near_boundary_placebo",
+      "specification": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5,K8",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Exact seed and matching procedure remain unbound; no outcome access."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-007",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "NATR14_TRAILING_PERCENTILE",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-008",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "HVR20_120",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-009",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q0",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-010",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q1",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-011",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q2",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-012",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A0",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-013",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A1",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-014",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A2",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates.",
+        "Exact owner-adopted context interaction remains unbound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-015",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P0",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-016",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P1",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-017",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P2",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-018",
+      "configuration_kind": "remaining_path_specification",
+      "specification": "EMPIRICAL_SHRUNK_DISTRIBUTIONAL",
+      "direction": "UP",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5,I",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "One configuration slot, not permission for free separate endpoint/model searches; exact outputs and settings must be counted."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-019",
+      "configuration_kind": "core_construction",
+      "specification": "C0",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-020",
+      "configuration_kind": "core_construction",
+      "specification": "C1",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-021",
+      "configuration_kind": "core_construction",
+      "specification": "C2",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-022",
+      "configuration_kind": "core_construction",
+      "specification": "C3",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry.",
+        "Report proposes prior 13 completed Weekly directional log-return context for Daily/4H/195M only."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-023",
+      "configuration_kind": "simple_breakout_comparator",
+      "specification": "FROZEN_PRIOR_RANGE",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": []
+    },
+    {
+      "planning_slot": "PLAN-024",
+      "configuration_kind": "near_boundary_placebo",
+      "specification": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5,K8",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Exact seed and matching procedure remain unbound; no outcome access."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-025",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "NATR14_TRAILING_PERCENTILE",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-026",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "HVR20_120",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-027",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q0",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-028",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q1",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-029",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q2",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-030",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A0",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-031",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A1",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-032",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A2",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates.",
+        "Exact owner-adopted context interaction remains unbound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-033",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P0",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-034",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P1",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-035",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P2",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-036",
+      "configuration_kind": "remaining_path_specification",
+      "specification": "EMPIRICAL_SHRUNK_DISTRIBUTIONAL",
+      "direction": "DOWN",
+      "clock_scope": "DAILY",
+      "source_basis": "Report K5,I",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "One configuration slot, not permission for free separate endpoint/model searches; exact outputs and settings must be counted."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-037",
+      "configuration_kind": "core_construction",
+      "specification": "C0",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-038",
+      "configuration_kind": "core_construction",
+      "specification": "C1",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-039",
+      "configuration_kind": "core_construction",
+      "specification": "C2",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-040",
+      "configuration_kind": "core_construction",
+      "specification": "C3",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry.",
+        "Report proposes prior 13 completed Weekly directional log-return context for Daily/4H/195M only.",
+        "Explicitly held: no Monthly context substitution is authorized."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-041",
+      "configuration_kind": "simple_breakout_comparator",
+      "specification": "FROZEN_PRIOR_RANGE",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": []
+    },
+    {
+      "planning_slot": "PLAN-042",
+      "configuration_kind": "near_boundary_placebo",
+      "specification": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5,K8",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Exact seed and matching procedure remain unbound; no outcome access."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-043",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "NATR14_TRAILING_PERCENTILE",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-044",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "HVR20_120",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-045",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q0",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-046",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q1",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-047",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q2",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-048",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A0",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-049",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A1",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-050",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A2",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates.",
+        "Exact owner-adopted context interaction remains unbound.",
+        "Weekly context mapping not invented; retain HOLD pending native specification."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-051",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P0",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-052",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P1",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-053",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P2",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound.",
+        "Weekly context mapping not invented; retain HOLD pending native specification."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-054",
+      "configuration_kind": "remaining_path_specification",
+      "specification": "EMPIRICAL_SHRUNK_DISTRIBUTIONAL",
+      "direction": "UP",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5,I",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "One configuration slot, not permission for free separate endpoint/model searches; exact outputs and settings must be counted."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-055",
+      "configuration_kind": "core_construction",
+      "specification": "C0",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-056",
+      "configuration_kind": "core_construction",
+      "specification": "C1",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-057",
+      "configuration_kind": "core_construction",
+      "specification": "C2",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-058",
+      "configuration_kind": "core_construction",
+      "specification": "C3",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry.",
+        "Report proposes prior 13 completed Weekly directional log-return context for Daily/4H/195M only.",
+        "Explicitly held: no Monthly context substitution is authorized."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-059",
+      "configuration_kind": "simple_breakout_comparator",
+      "specification": "FROZEN_PRIOR_RANGE",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": []
+    },
+    {
+      "planning_slot": "PLAN-060",
+      "configuration_kind": "near_boundary_placebo",
+      "specification": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5,K8",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Exact seed and matching procedure remain unbound; no outcome access."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-061",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "NATR14_TRAILING_PERCENTILE",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-062",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "HVR20_120",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-063",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q0",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-064",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q1",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-065",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q2",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-066",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A0",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-067",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A1",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-068",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A2",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates.",
+        "Exact owner-adopted context interaction remains unbound.",
+        "Weekly context mapping not invented; retain HOLD pending native specification."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-069",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P0",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-070",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P1",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-071",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P2",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound.",
+        "Weekly context mapping not invented; retain HOLD pending native specification."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-072",
+      "configuration_kind": "remaining_path_specification",
+      "specification": "EMPIRICAL_SHRUNK_DISTRIBUTIONAL",
+      "direction": "DOWN",
+      "clock_scope": "WEEKLY",
+      "source_basis": "Report K5,I",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "standalone_weekly_history_and_warmup_support"
+      ],
+      "notes": [
+        "One configuration slot, not permission for free separate endpoint/model searches; exact outputs and settings must be counted."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-073",
+      "configuration_kind": "core_construction",
+      "specification": "C0",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-074",
+      "configuration_kind": "core_construction",
+      "specification": "C1",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-075",
+      "configuration_kind": "core_construction",
+      "specification": "C2",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-076",
+      "configuration_kind": "core_construction",
+      "specification": "C3",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry.",
+        "Report proposes prior 13 completed Weekly directional log-return context for Daily/4H/195M only."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-077",
+      "configuration_kind": "simple_breakout_comparator",
+      "specification": "FROZEN_PRIOR_RANGE",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": []
+    },
+    {
+      "planning_slot": "PLAN-078",
+      "configuration_kind": "near_boundary_placebo",
+      "specification": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5,K8",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Exact seed and matching procedure remain unbound; no outcome access."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-079",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "NATR14_TRAILING_PERCENTILE",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-080",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "HVR20_120",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-081",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q0",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-082",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q1",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-083",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q2",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-084",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A0",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-085",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A1",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-086",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A2",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates.",
+        "Exact owner-adopted context interaction remains unbound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-087",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P0",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-088",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P1",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-089",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P2",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-090",
+      "configuration_kind": "remaining_path_specification",
+      "specification": "EMPIRICAL_SHRUNK_DISTRIBUTIONAL",
+      "direction": "UP",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5,I",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "One configuration slot, not permission for free separate endpoint/model searches; exact outputs and settings must be counted."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-091",
+      "configuration_kind": "core_construction",
+      "specification": "C0",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-092",
+      "configuration_kind": "core_construction",
+      "specification": "C1",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-093",
+      "configuration_kind": "core_construction",
+      "specification": "C2",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-094",
+      "configuration_kind": "core_construction",
+      "specification": "C3",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry.",
+        "Report proposes prior 13 completed Weekly directional log-return context for Daily/4H/195M only."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-095",
+      "configuration_kind": "simple_breakout_comparator",
+      "specification": "FROZEN_PRIOR_RANGE",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": []
+    },
+    {
+      "planning_slot": "PLAN-096",
+      "configuration_kind": "near_boundary_placebo",
+      "specification": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5,K8",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Exact seed and matching procedure remain unbound; no outcome access."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-097",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "NATR14_TRAILING_PERCENTILE",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-098",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "HVR20_120",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-099",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q0",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-100",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q1",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-101",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q2",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-102",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A0",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-103",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A1",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-104",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A2",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates.",
+        "Exact owner-adopted context interaction remains unbound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-105",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P0",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-106",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P1",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-107",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P2",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-108",
+      "configuration_kind": "remaining_path_specification",
+      "specification": "EMPIRICAL_SHRUNK_DISTRIBUTIONAL",
+      "direction": "DOWN",
+      "clock_scope": "4H-CLOCK",
+      "source_basis": "Report K5,I",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "One configuration slot, not permission for free separate endpoint/model searches; exact outputs and settings must be counted."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-109",
+      "configuration_kind": "core_construction",
+      "specification": "C0",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-110",
+      "configuration_kind": "core_construction",
+      "specification": "C1",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-111",
+      "configuration_kind": "core_construction",
+      "specification": "C2",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-112",
+      "configuration_kind": "core_construction",
+      "specification": "C3",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry.",
+        "Report proposes prior 13 completed Weekly directional log-return context for Daily/4H/195M only."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-113",
+      "configuration_kind": "simple_breakout_comparator",
+      "specification": "FROZEN_PRIOR_RANGE",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": []
+    },
+    {
+      "planning_slot": "PLAN-114",
+      "configuration_kind": "near_boundary_placebo",
+      "specification": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5,K8",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Exact seed and matching procedure remain unbound; no outcome access."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-115",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "NATR14_TRAILING_PERCENTILE",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-116",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "HVR20_120",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-117",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q0",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-118",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q1",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-119",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q2",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-120",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A0",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-121",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A1",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-122",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A2",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates.",
+        "Exact owner-adopted context interaction remains unbound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-123",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P0",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-124",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P1",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-125",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P2",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-126",
+      "configuration_kind": "remaining_path_specification",
+      "specification": "EMPIRICAL_SHRUNK_DISTRIBUTIONAL",
+      "direction": "UP",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5,I",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "One configuration slot, not permission for free separate endpoint/model searches; exact outputs and settings must be counted."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-127",
+      "configuration_kind": "core_construction",
+      "specification": "C0",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-128",
+      "configuration_kind": "core_construction",
+      "specification": "C1",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-129",
+      "configuration_kind": "core_construction",
+      "specification": "C2",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-130",
+      "configuration_kind": "core_construction",
+      "specification": "C3",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Common master at-risk cohort; compression cannot reset episode geometry.",
+        "Report proposes prior 13 completed Weekly directional log-return context for Daily/4H/195M only."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-131",
+      "configuration_kind": "simple_breakout_comparator",
+      "specification": "FROZEN_PRIOR_RANGE",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": []
+    },
+    {
+      "planning_slot": "PLAN-132",
+      "configuration_kind": "near_boundary_placebo",
+      "specification": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5,K8",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Exact seed and matching procedure remain unbound; no outcome access."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-133",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "NATR14_TRAILING_PERCENTILE",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-134",
+      "configuration_kind": "compression_sensor_substitution",
+      "specification": "HVR20_120",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K4-K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "C1 only; no C2/C3 cross-product; exact native formula and threshold adoption required."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-135",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q0",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-136",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q1",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-137",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q2",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5,K7",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Frozen common C1 trigger cohort; all no-entry outcomes retained.",
+        "Common-terminal versus fill-relative terminal must be explicitly adjudicated."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-138",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A0",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-139",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A1",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-140",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A2",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Landmark-available covariates only; no realized future covariates.",
+        "Exact owner-adopted context interaction remains unbound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-141",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P0",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-142",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P1",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-143",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P2",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5-K6",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "Same C1 trigger cohort; native fit/calibration conventions must be bound."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-144",
+      "configuration_kind": "remaining_path_specification",
+      "specification": "EMPIRICAL_SHRUNK_DISTRIBUTIONAL",
+      "direction": "DOWN",
+      "clock_scope": "195M-RTH",
+      "source_basis": "Report K5,I",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts",
+        "independent_intraday_basis_finality_fallback_and_duration_qualification"
+      ],
+      "notes": [
+        "One configuration slot, not permission for free separate endpoint/model searches; exact outputs and settings must be counted."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-145",
+      "configuration_kind": "combo_incumbent_comparator",
+      "specification": "EXACT_NATIVE_FROZEN",
+      "direction": "UP",
+      "clock_scope": "NATIVE_DW_SCOPE_UNBOUND",
+      "source_basis": "Report K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "No new selected winner; exact existing comparator/population/clock must be frozen."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-146",
+      "configuration_kind": "combo_incumbent_comparator",
+      "specification": "EXACT_NATIVE_FROZEN",
+      "direction": "DOWN",
+      "clock_scope": "NATIVE_DW_SCOPE_UNBOUND",
+      "source_basis": "Report K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "No new selected winner; exact existing comparator/population/clock must be frozen."
+      ]
+    },
+    {
+      "planning_slot": "PLAN-147",
+      "configuration_kind": "s16_incumbent_comparator",
+      "specification": "EXACT_NATIVE_S16_UPSIDE",
+      "direction": "UP",
+      "clock_scope": "NATIVE_S16_RECIPE_UNBOUND",
+      "source_basis": "Report K1,K5",
+      "status": "DRAFT_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_scientific_or_trial_id": null,
+      "settings_receipt": null,
+      "endpoint_and_result_column_manifest": null,
+      "source_and_holdout_receipts": null,
+      "owner_adoption_receipt": null,
+      "gates": [
+        "scientific_identity_and_DNR",
+        "W1_acceptance",
+        "exact_source_recipe_admission",
+        "Evaluation_owner_adoption",
+        "native_manifest_and_prior_exposure",
+        "holdout_and_inference_receipts"
+      ],
+      "notes": [
+        "Preserve existing 12-trial lineage and native non-volume-gated FIRED_UP population.",
+        "No invented downside twin; not a formula-equivalent replication of the proposed frozen-range detector."
+      ]
+    }
+  ]
+}

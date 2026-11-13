@@ -1,0 +1,25 @@
+{
+  "kind": "supplied-source-packet-integrity",
+  "original_content_unchanged": true,
+  "filename_normalization": "Removed duplicate-download suffix (1) only",
+  "files": [
+    {
+      "name": "TOI_Next_Owner_Handoff_2026-10-03.md",
+      "bytes": 9526,
+      "sha256": "fee1ed8fb6f8c4e7fad810947f14665fe93397411bdaa0ab7465bdb2c7454c95",
+      "git_blob": "485e91f3a64e6bd9fcf2ed10835c3e6cd989b92f"
+    },
+    {
+      "name": "TOI_Research_and_Recommissioning_Report_2026-10-03.html",
+      "bytes": 210539,
+      "sha256": "707e28fc1f9a30e261204e20d6d2f38fb75dc1eac5627fb175c0f3de92f58b28",
+      "git_blob": "56ce3bb1a84768b3af124ba728cdf23eb7a68045"
+    },
+    {
+      "name": "TOI_Research_and_Recommissioning_Report_2026-10-03.md",
+      "bytes": 146788,
+      "sha256": "4f7f594ee237d88dd517460eeb6f8e5b493c464ad9f05515c1af70c4d0d24d9e",
+      "git_blob": "697135eea5fcead3bc013c5b610329ea3255c9ba"
+    }
+  ]
+}

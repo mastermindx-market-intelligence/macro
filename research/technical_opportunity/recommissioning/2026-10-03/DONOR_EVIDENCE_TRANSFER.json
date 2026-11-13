@@ -1,0 +1,43 @@
+{
+  "scope": "Seven unchanged evidence/continuation files extracted from the supplied 23-file ZIP; not a complete ZIP upload",
+  "archive_sha256": "4645f09417e546e8666c928e6dcc1e340da1ff47e386e6fa76374c681568198f",
+  "transfer_sha256": "b6b58766c6e786acf53ad6dead5d34328d34b17d7ce00688286fb2774f42c4c7",
+  "all_selected_source_hashes_match": true,
+  "files": [
+    {
+      "path": "SHA256_MANIFEST.json",
+      "bytes": 4092,
+      "sha256": "6e05a66c7c3404177b38ac50f435a1600601a5db0f7dc6df380d3bbf71ad09d5"
+    },
+    {
+      "path": "TOI_Continuation_Brief_2026-10-03.md",
+      "bytes": 14405,
+      "sha256": "b5d0660ae71f6ff60a5b16fe5b6b53e34f9cdd90ccdb75c9f2673c454b4a63ee"
+    },
+    {
+      "path": "evidence/TOI_Terminal_Parity_2026-10-03.json",
+      "bytes": 21933,
+      "sha256": "bccaf82ec084bfeebb2468f213d0d05f35d05b2c10b35ca3324122836eee1099"
+    },
+    {
+      "path": "evidence/TOI_Terminal_Fallback_2026-10-03.json",
+      "bytes": 8354,
+      "sha256": "1d5c23c3792dc23b39d7f82a02d4a5588af2abc21d7b6be2ed17d7b5c380b34c"
+    },
+    {
+      "path": "evidence/TOI_W3_Proposal_Validation_2026-10-03.json",
+      "bytes": 4730,
+      "sha256": "2c736317df752c44d7914c8653167e6dbe05f2cbb668900b0afcab9f0464c8d1"
+    },
+    {
+      "path": "evidence/06_Historical_Trial_Accounting.md",
+      "bytes": 11411,
+      "sha256": "74cd80f4d66f5b5b47aef0058aba93f567ab81eec8a9c2fd8ee04c3e5c046f99"
+    },
+    {
+      "path": "evidence/05_Independent_Design_Audit.md",
+      "bytes": 7875,
+      "sha256": "a925d4d87e4b8f4c9f92efdf8551ff0f2e43c671c63121fa4081381fc21738be"
+    }
+  ]
+}

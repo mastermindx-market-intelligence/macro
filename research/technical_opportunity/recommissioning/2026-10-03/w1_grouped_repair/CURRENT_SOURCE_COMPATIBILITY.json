@@ -1,0 +1,106 @@
+{
+  "observed_at": "2026-10-05T09:52:10.497428+00:00",
+  "source_head": "15e4dfb0c9ddc788127d0954fd7d92414eefdcbf",
+  "current_main": "f0e501324a5fca5541f57ef6f26bdf1133ec2d82",
+  "scope": "All sixteen directly cited native engine sources. Does not prove whole repository integration, current source custody, runtime or production/data parity.",
+  "comparisons": [
+    {
+      "path": "engine/adaptive_trend_signals.py",
+      "candidate_source_blob": "70572d9bfba27c390f7afe578b934565a3e20027",
+      "current_main_blob": "70572d9bfba27c390f7afe578b934565a3e20027",
+      "unchanged": true
+    },
+    {
+      "path": "engine/bar_structure_signals.py",
+      "candidate_source_blob": "b14731ca0372d8425cdd277efee5db4da99b1ec0",
+      "current_main_blob": "b14731ca0372d8425cdd277efee5db4da99b1ec0",
+      "unchanged": true
+    },
+    {
+      "path": "engine/bollinger_event_signals.py",
+      "candidate_source_blob": "8a23cadad538e25fb45398def287fc47c89a3d85",
+      "current_main_blob": "8a23cadad538e25fb45398def287fc47c89a3d85",
+      "unchanged": true
+    },
+    {
+      "path": "engine/compression_signals.py",
+      "candidate_source_blob": "31b22d5b864cd1da2c6517b93f9f379db82b209c",
+      "current_main_blob": "31b22d5b864cd1da2c6517b93f9f379db82b209c",
+      "unchanged": true
+    },
+    {
+      "path": "engine/formations.py",
+      "candidate_source_blob": "2f9328420aca1bae959697c5c982ae02f0cf07a0",
+      "current_main_blob": "2f9328420aca1bae959697c5c982ae02f0cf07a0",
+      "unchanged": true
+    },
+    {
+      "path": "engine/fractal_pivot_signals.py",
+      "candidate_source_blob": "88aba6431507546c81305bd0f554b936a567fd5f",
+      "current_main_blob": "88aba6431507546c81305bd0f554b936a567fd5f",
+      "unchanged": true
+    },
+    {
+      "path": "engine/ma_crosses.py",
+      "candidate_source_blob": "af1fbb1ea000598f3b357c357be75f2d8d3519fc",
+      "current_main_blob": "af1fbb1ea000598f3b357c357be75f2d8d3519fc",
+      "unchanged": true
+    },
+    {
+      "path": "engine/momentum_context_signals.py",
+      "candidate_source_blob": "fad32727ed02ca295ed5d548b4c9df4fc594f67f",
+      "current_main_blob": "fad32727ed02ca295ed5d548b4c9df4fc594f67f",
+      "unchanged": true
+    },
+    {
+      "path": "engine/momentum_events.py",
+      "candidate_source_blob": "32076d6b4bcfcfce4130efe93c04a6501a686c14",
+      "current_main_blob": "32076d6b4bcfcfce4130efe93c04a6501a686c14",
+      "unchanged": true
+    },
+    {
+      "path": "engine/path_risk_signals.py",
+      "candidate_source_blob": "e1e574f6fab16520583447522cef6d52ae8f7886",
+      "current_main_blob": "e1e574f6fab16520583447522cef6d52ae8f7886",
+      "unchanged": true
+    },
+    {
+      "path": "engine/rank_momentum_signals.py",
+      "candidate_source_blob": "541c8de7721ebd06b3db0b26effad893c80cd890",
+      "current_main_blob": "541c8de7721ebd06b3db0b26effad893c80cd890",
+      "unchanged": true
+    },
+    {
+      "path": "engine/rsi_signals.py",
+      "candidate_source_blob": "cabbf74c71a225e45ac187bc16fc5745908a7b2f",
+      "current_main_blob": "cabbf74c71a225e45ac187bc16fc5745908a7b2f",
+      "unchanged": true
+    },
+    {
+      "path": "engine/trend_ribbon_signals.py",
+      "candidate_source_blob": "ba19b3ba5a3a2f7b0a36adb47a79728ff6d6b8ee",
+      "current_main_blob": "ba19b3ba5a3a2f7b0a36adb47a79728ff6d6b8ee",
+      "unchanged": true
+    },
+    {
+      "path": "engine/trend_strength_signals.py",
+      "candidate_source_blob": "e2f4f8e7e2e22b5ab2d710e70fbde74bd492ad5f",
+      "current_main_blob": "e2f4f8e7e2e22b5ab2d710e70fbde74bd492ad5f",
+      "unchanged": true
+    },
+    {
+      "path": "engine/volume_flow_signals.py",
+      "candidate_source_blob": "f21307f5eea9a967eceb3e7581e1233ebc943bf1",
+      "current_main_blob": "f21307f5eea9a967eceb3e7581e1233ebc943bf1",
+      "unchanged": true
+    },
+    {
+      "path": "engine/stock_technicals.py",
+      "candidate_source_blob": "ca33b18252eb5f08feb5646e0fb904039d80629b",
+      "current_main_blob": "ca33b18252eb5f08feb5646e0fb904039d80629b",
+      "unchanged": true
+    }
+  ],
+  "all_same": true,
+  "source_or_runtime_mutation": false
+}

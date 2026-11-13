@@ -1,0 +1,91 @@
+{
+  "observed_at": "2026-10-03T10:23:55.235437+00:00",
+  "kind": "bounded-initiation-metadata-not-source-or-data-admission",
+  "source_packet_commit": "e668e7139377c1d122fe1a9bc79d755760e5dc94",
+  "source_packet_pr": 8332,
+  "carriers": [
+    {
+      "pr": 7107,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7107",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "head": "15e4dfb0c9ddc788127d0954fd7d92414eefdcbf",
+      "branch": "sol/toi-w1-evidence-census-20260913",
+      "base_observed": "aa6750b68ccefeb17043e590b61e8a00565d1837",
+      "mergeable": true,
+      "body_sha256": "9fef41ed651a6801ef7b561e1460f6057efdea57b9d316464ad559c5cbcc6674",
+      "latest_comment_identities": [
+        {
+          "id": 5651872844,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7107#issuecomment-5651872844",
+          "created_at": "2026-09-13T07:12:58Z",
+          "updated_at": "2026-09-13T07:12:58Z",
+          "body_sha256": "40d706b5353eb7ffbfd4118520b0ecb035c62f6530ba16d299aff379c839f948"
+        },
+        {
+          "id": 5654190342,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7107#issuecomment-5654190342",
+          "created_at": "2026-09-13T15:26:30Z",
+          "updated_at": "2026-09-13T19:42:50Z",
+          "body_sha256": "0c00e077a3220c0c783d78358fdc5ed55ce6d7bbaf20ab591aa1779aa64356fe"
+        },
+        {
+          "id": 5863266019,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7107#issuecomment-5863266019",
+          "created_at": "2026-09-28T04:18:44Z",
+          "updated_at": "2026-09-29T08:35:46Z",
+          "body_sha256": "dfdbad2e4da378d248abd0784b381fda53845ec575f81f839e018dda8a1219c6"
+        },
+        {
+          "id": 5865508898,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7107#issuecomment-5865508898",
+          "created_at": "2026-09-28T07:35:58Z",
+          "updated_at": "2026-09-28T07:35:58Z",
+          "body_sha256": "e2188c98fcb5cdff1ac29aa24ac4524929018f3863dde40dc4958802edbcedbb"
+        }
+      ],
+      "native_tests_reexecuted": false,
+      "positive_custody_receipt_obtained": false,
+      "acceptance_changed": false
+    },
+    {
+      "pr": 7094,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7094",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "head": "5bb1bc68c99146fab040aade04bbf1903c51e5b7",
+      "branch": "sol/toi-w2-0-data-clock-20260912",
+      "base_observed": "b09718104a3ff8727cdb0ee8c93f8187c7e80453",
+      "mergeable": true,
+      "body_sha256": "4502d9b550b6ba5526f241c5ea02d70626a9d25a94cae69566564f1811fd9cd4",
+      "latest_comment_identities": [
+        {
+          "id": 5650110200,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7094#issuecomment-5650110200",
+          "created_at": "2026-09-13T02:03:29Z",
+          "updated_at": "2026-09-13T02:03:29Z",
+          "body_sha256": "40d706b5353eb7ffbfd4118520b0ecb035c62f6530ba16d299aff379c839f948"
+        },
+        {
+          "id": 5651413983,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7094#issuecomment-5651413983",
+          "created_at": "2026-09-13T05:33:51Z",
+          "updated_at": "2026-09-13T05:37:19Z",
+          "body_sha256": "4a2438ef477bdf3918ed07b1ce553d90b986ed7b756c1d66cf44357cfff53fad"
+        },
+        {
+          "id": 5654462686,
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7094#issuecomment-5654462686",
+          "created_at": "2026-09-13T16:16:07Z",
+          "updated_at": "2026-09-13T16:16:07Z",
+          "body_sha256": "f2711bc0ba929c687d650ed86d0e1bd7f370c386c6a02284ca4d87db9622e67b"
+        }
+      ],
+      "native_tests_reexecuted": false,
+      "positive_custody_receipt_obtained": false,
+      "acceptance_changed": false
+    }
+  ]
+}

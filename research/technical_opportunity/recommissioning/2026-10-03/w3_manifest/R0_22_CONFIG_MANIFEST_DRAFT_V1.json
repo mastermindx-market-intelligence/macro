@@ -1,0 +1,1260 @@
+{
+  "schema": "toi.r0.daily_first_22_manifest_draft.v1",
+  "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+  "is_executable": false,
+  "is_preregistration": false,
+  "is_trial_ledger_write": false,
+  "generated_at": "2026-10-06T07:57:31.305724+00:00",
+  "source_report": {
+    "blob": "697135eea5fcead3bc013c5b610329ea3255c9ba",
+    "sections": [
+      "K3",
+      "K4",
+      "K5",
+      "K6",
+      "K7",
+      "K8",
+      "K9"
+    ]
+  },
+  "inventory": {
+    "blob": "76db520ab00d8948ca558520c9345c08267b8040",
+    "source_head": "c5f1427dfc55895814e8cd108cf7154560b48749"
+  },
+  "block_digests": {
+    "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+    "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+    "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+    "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+    "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+    "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+  },
+  "common_blocks": {
+    "population": {
+      "id": "toi_r0_population_ticker_spell_v1",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "population_parent": "PIT S&P1500 membership x dates >= 2021-07-06",
+      "observational_unit": "membership-bounded vendor-ticker spell = maximal run of observed Daily rows on every expected NYSE session inside one continuous UNION-S&P1500 membership episode. Missing expected source session or a real S&P1500 non-membership hiatus terminates the spell. A continuous S&P600->S&P400->S&P500 promotion does not reset the spell.",
+      "identity_claim": "Observable vendor-ticker spell only, not issuer/security continuity. Exact dot-to-dash vendor normalization is permitted; ambiguous/unresolved keys yield zero spells. Current aliases are never backdated.",
+      "spell_census_sha256": "1b399d9d74a2c6737c20e92b9de8ba39779900ea574db6e8ada5de97fe911249",
+      "spell_census_results": {
+        "tickers": 1924,
+        "vendor_key_unresolved": 2,
+        "read_errors": 0,
+        "membership_multi_episode_tickers": 7,
+        "total_spells": 3024,
+        "spell_length_sessions": {
+          "min": 1,
+          "median": 572.0,
+          "p90": 1285.0,
+          "max": 1318
+        },
+        "spells_meeting_generic_session_lengths": {
+          "20": 3017,
+          "60": 1914,
+          "126": 1869,
+          "200": 1802,
+          "252": 1767
+        },
+        "tickers_with_at_least_one_spell_meeting_length": {
+          "20": 1918,
+          "60": 1900,
+          "126": 1857,
+          "200": 1794,
+          "252": 1760
+        },
+        "bounded_transport_recovery": [
+          {
+            "ticker": "AMAT",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "ARR",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "AVAV",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "AVB",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "AVGO",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "CNS",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "EHAB",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "ESS",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "ETRN",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "KNTK",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "MSEX",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "PFS",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "PG",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "RITM",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "SEDG",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "SMG",
+            "status": "RECOVERED",
+            "attempts": 1
+          },
+          {
+            "ticker": "SWI",
+            "status": "RECOVERED",
+            "attempts": 1
+          }
+        ]
+      },
+      "unresolved_vendor_keys": [
+        "BPFH",
+        "UAA/UA"
+      ],
+      "security_identity_claim": false,
+      "issuer_identity_claim": false,
+      "member_date_missingness_retained": true,
+      "gap_join_after_outcomes_forbidden": true
+    },
+    "source": {
+      "id": "toi_r0_source_daily_r2_v1",
+      "status": "HOLD_OWNER_ADOPTION_REQUIRED",
+      "raw_price_plane": "massive_stock_day",
+      "raw_basis": "RAW_UNADJUSTED",
+      "historical_evidence_class": "RETROSPECTIVE",
+      "runtime_source_snapshot_digest": null,
+      "snapshot_transport_contract": "enumerate used R2 objects; record path, ETag, length; conditional If-Match GET; unchanged manifest fence",
+      "daily_volume_representation": "persisted int64 shares",
+      "corporate_action_owner": "reference.corporate_actions",
+      "corporate_action_snapshot_digest": null,
+      "geometry_basis": "SPLIT_ADJUSTED_PRICE_ONLY_FROM_AUTHORITATIVE_EFFECTIVE_SPLIT_EVENTS",
+      "total_return_basis": null,
+      "weekly_context_source": "same Daily source after causal decision-cutoff transform",
+      "weekly_completion": "W-FRI label plus actual last Daily known_date plus no remaining canonical US cash-equity session through label",
+      "first_original_receipt_claim": false,
+      "source_ruling_commit": "c5f1427dfc55895814e8cd108cf7154560b48749",
+      "corporate_action_ruling_commit": "c5f1427dfc55895814e8cd108cf7154560b48749"
+    },
+    "detector": {
+      "id": "toi_r0_daily_detector_grammar_v1",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "range_lookback_completed_bars": 20,
+      "range_freeze": "highest high and lowest low of the 20 completed bars preceding first eligible near-boundary landmark; current bar excluded",
+      "compression_sensor": {
+        "name": "bollinger_bandwidth",
+        "length": 20,
+        "stdev": 2.0,
+        "reference_observations": 252,
+        "threshold_quantile": 0.25,
+        "reference_excludes_current": true
+      },
+      "formation_persistence_completed_bars": 5,
+      "arming_distance_frozen_atr_min": 0.0,
+      "arming_distance_frozen_atr_max": 1.0,
+      "frozen_atr_definition": null,
+      "trigger": "first completed close strictly outside frozen boundary while episode valid",
+      "structural_invalidation": "opposite frozen boundary",
+      "activation_expiry_completed_bars": 10,
+      "participation": "current completed-bar volume / prior 20 comparable completed bars; current excluded",
+      "weekly_context": "directional log return over prior 13 completed Weekly bars",
+      "rearm": "only after prior episode terminates and new qualifying formation/range is frozen",
+      "unresolved": [
+        "exact frozen ATR recipe",
+        "exact native C0/C1 source function and content hash",
+        "exact liquidity feature definition"
+      ]
+    },
+    "labels": {
+      "id": "toi_r0_daily_labels_v1",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "primary_path": {
+        "favorable_atr": 2.0,
+        "adverse_atr": 1.0,
+        "horizon_trading_sessions": 21,
+        "origin": "first lawful next-observation reference",
+        "structural_invalidation_separate": true
+      },
+      "fakeout": {
+        "rule": "completed close back inside original frozen range within three recipe bars after trigger, before favorable primary barrier"
+      },
+      "dead_money": {
+        "horizon": "common 21-session terminal",
+        "max_abs_net_displacement_atr": 0.5,
+        "neither_side_reaches_atr": 1.0
+      },
+      "same_bar_barrier_order": "AMBIGUOUS_UNLESS_FINER_ADMITTED_SOURCE",
+      "missing_halt_delist_immature": "typed separate outcomes, never silently imputed"
+    },
+    "models": {
+      "id": "toi_r0_model_contract_v1",
+      "status": "PROPOSED_SETTINGS_PARTIAL",
+      "activation": {
+        "class": "multinomial competing-event logit",
+        "targets": [
+          "trigger",
+          "structural_invalidation",
+          "continued_risk"
+        ],
+        "A0_features": [
+          "log1p_setup_age",
+          "signed_normalized_trigger_distance",
+          "normalized_invalidation_distance",
+          "log_prior_dollar_volume",
+          "trailing_volatility"
+        ],
+        "A1_add": [
+          "primary_compression_measurement"
+        ],
+        "ridge_penalty_mean_nll": 1.0,
+        "l2_form": "0.5 * squared coefficient norm",
+        "intercept_penalized": false,
+        "continuous_training_standardized": true
+      },
+      "post_trigger": {
+        "class": "binary_logit",
+        "P0_features": [
+          "geometry",
+          "volatility_liquidity",
+          "observed_extension",
+          "primary_compression_measurement"
+        ],
+        "P1_add": [
+          "participation"
+        ],
+        "P2_add": [
+          "qualified_completed_weekly_context"
+        ],
+        "ridge_penalty_mean_nll": 1.0,
+        "intercept_penalized": false,
+        "continuous_training_standardized": true
+      },
+      "calibration": "one declared logistic recalibration procedure on separate chronological calibration slice; withhold numeric probabilities if not estimable",
+      "solver": null,
+      "optimization_tolerance": null,
+      "software_version": null,
+      "zero_variance_policy": null,
+      "calibration_cut": null
+    },
+    "evaluation": {
+      "id": "toi_r0_evaluation_contract_v1",
+      "status": "HOLD_OWNER_ADOPTION_REQUIRED",
+      "chronological_nested_walk_forward": true,
+      "purge_overlapping_labels": true,
+      "embargo_rule": null,
+      "fold_boundaries": null,
+      "inference_method": null,
+      "calendar_block_rule": null,
+      "episode_cluster_rule": null,
+      "placebo_seed": null,
+      "placebo_matching": [
+        "date",
+        "liquidity",
+        "volatility",
+        "distance"
+      ],
+      "cost_spread_impact_proxy": null,
+      "prior_exposure_receipt": null,
+      "untouched_holdout_or_prospective_receipt": null,
+      "primary_Q1_joint_claim": {
+        "fakeout_rate": "lower",
+        "opportunity_capture_noninferiority_pp": 5.0,
+        "mean_confirmation_price_cost_upper_confidence_bound_atr": 0.25,
+        "all_components_required": true
+      },
+      "familywise_control_required": true,
+      "familywise_control_exact_method": null
+    }
+  },
+  "trial_accounting_if_adopted": {
+    "family": "toi_w3_r0",
+    "itemized_configs": 22,
+    "declared_budget_floor": 22,
+    "effective_expected_after_itemization_and_floor": 22,
+    "planning_ids_are_native_ids": false
+  },
+  "objects": [
+    {
+      "planning_slot": "PLAN-001",
+      "configuration_kind": "core_construction",
+      "specification": "C0",
+      "direction": "UP",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "construction": "C0",
+        "compression_required": false,
+        "participation_feature": false,
+        "weekly_context": false
+      },
+      "unresolved_owner_fields": [
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "1d45ecba4651cee5d329fc449df322234354a1bac3726e29d872f0414c90e82f"
+    },
+    {
+      "planning_slot": "PLAN-002",
+      "configuration_kind": "core_construction",
+      "specification": "C1",
+      "direction": "UP",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "construction": "C1",
+        "compression_required": true,
+        "participation_feature": false,
+        "weekly_context": false
+      },
+      "unresolved_owner_fields": [
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "fbfdb06d438e6b97b4dcf5e1fe5cf18857108efe64839db89bb0ea379ca46b7a"
+    },
+    {
+      "planning_slot": "PLAN-005",
+      "configuration_kind": "simple_breakout_comparator",
+      "specification": "FROZEN_PRIOR_RANGE",
+      "direction": "UP",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "construction": "FROZEN_PRIOR_RANGE",
+        "compression_required": false,
+        "control": "simple breakout with same frozen geometry"
+      },
+      "unresolved_owner_fields": [
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "25a8b12baeb37b4d4671e0cf6889cee005b40104ac866d4f2dcbf9095c32f71d"
+    },
+    {
+      "planning_slot": "PLAN-006",
+      "configuration_kind": "near_boundary_placebo",
+      "specification": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+      "direction": "UP",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "construction": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+        "matching": [
+          "date",
+          "liquidity",
+          "volatility",
+          "distance"
+        ],
+        "seed": null
+      },
+      "unresolved_owner_fields": [
+        "placebo_seed",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "3044a545483a71b5004f2e78077a494b29e5df98b43b27a2c2e18532f973aacd"
+    },
+    {
+      "planning_slot": "PLAN-009",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q0",
+      "direction": "UP",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "cohort": "same original C1 trigger cohort",
+        "policy": "first lawful post-trigger reference",
+        "no_entry_retained": true
+      },
+      "unresolved_owner_fields": [
+        "exact first lawful price reference",
+        "spread impact cost proxy",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "6907876c1f132f18f8d448cfe6537a4a746a7f4c80d1e7d73664e85177e1fa34"
+    },
+    {
+      "planning_slot": "PLAN-010",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q1",
+      "direction": "UP",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "cohort": "same original C1 trigger cohort",
+        "policy": "next completed Daily bar remains outside original boundary, then next lawful reference",
+        "no_entry_retained": true,
+        "terminal": "common original-cohort terminal"
+      },
+      "unresolved_owner_fields": [
+        "exact first lawful price reference",
+        "spread impact cost proxy",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "95605cedbffae7008caa5e4c084db5b4a7b731704a49e728997f3d6151cd8913"
+    },
+    {
+      "planning_slot": "PLAN-012",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A0",
+      "direction": "UP",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "model": "A0",
+        "cohort": "master at-risk landmarks",
+        "feature_contract": "A0"
+      },
+      "unresolved_owner_fields": [
+        "solver",
+        "optimization_tolerance",
+        "software_version",
+        "folds",
+        "calibration_cut",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "0753b528b243ad35153500faa595ad8a64a6b7d78fc2f75349709104a0b0c853"
+    },
+    {
+      "planning_slot": "PLAN-013",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A1",
+      "direction": "UP",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "model": "A1",
+        "cohort": "master at-risk landmarks",
+        "feature_contract": "A1"
+      },
+      "unresolved_owner_fields": [
+        "solver",
+        "optimization_tolerance",
+        "software_version",
+        "folds",
+        "calibration_cut",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "a01b67ff8843cde7f0ddb5e52de876de273e2cdbbbda642b83e96a7b0a2ff981"
+    },
+    {
+      "planning_slot": "PLAN-015",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P0",
+      "direction": "UP",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "model": "P0",
+        "cohort": "same C1 trigger cohort",
+        "feature_contract": "P0"
+      },
+      "unresolved_owner_fields": [
+        "solver",
+        "optimization_tolerance",
+        "software_version",
+        "folds",
+        "calibration_cut",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "8cd70997a70ab4a0f5b28f6e5437312e93186094c294687cf74320ba5116f23d"
+    },
+    {
+      "planning_slot": "PLAN-016",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P1",
+      "direction": "UP",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "model": "P1",
+        "cohort": "same C1 trigger cohort",
+        "feature_contract": "P1"
+      },
+      "unresolved_owner_fields": [
+        "solver",
+        "optimization_tolerance",
+        "software_version",
+        "folds",
+        "calibration_cut",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "83b9de6842ce4e71eb13d08292a4ee305cb165b4258882c8cd12a8bcd39a92df"
+    },
+    {
+      "planning_slot": "PLAN-017",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P2",
+      "direction": "UP",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "model": "P2",
+        "cohort": "same C1 trigger cohort",
+        "feature_contract": "P2"
+      },
+      "unresolved_owner_fields": [
+        "solver",
+        "optimization_tolerance",
+        "software_version",
+        "folds",
+        "calibration_cut",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "50a0e1d668706704366fe03499ce3dcf7919e87fd6fd278959235315ac331aeb"
+    },
+    {
+      "planning_slot": "PLAN-019",
+      "configuration_kind": "core_construction",
+      "specification": "C0",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "construction": "C0",
+        "compression_required": false,
+        "participation_feature": false,
+        "weekly_context": false
+      },
+      "unresolved_owner_fields": [
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "f1e8cc53f8e81c047f77cdaeff4a7bc39ddb9d3f2928d1034a5fb68766d2b2a1"
+    },
+    {
+      "planning_slot": "PLAN-020",
+      "configuration_kind": "core_construction",
+      "specification": "C1",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "construction": "C1",
+        "compression_required": true,
+        "participation_feature": false,
+        "weekly_context": false
+      },
+      "unresolved_owner_fields": [
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "0b465aa6747f333896c4fb5bd431f57c3bc0a6431f99d275b7de765807d04d72"
+    },
+    {
+      "planning_slot": "PLAN-023",
+      "configuration_kind": "simple_breakout_comparator",
+      "specification": "FROZEN_PRIOR_RANGE",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "construction": "FROZEN_PRIOR_RANGE",
+        "compression_required": false,
+        "control": "simple breakout with same frozen geometry"
+      },
+      "unresolved_owner_fields": [
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "e865da704739631f94355e05cd796828c06e49f0c8364557ee5bc36af55cd28a"
+    },
+    {
+      "planning_slot": "PLAN-024",
+      "configuration_kind": "near_boundary_placebo",
+      "specification": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "construction": "FIXED_SEED_ELIGIBILITY_PRESERVING",
+        "matching": [
+          "date",
+          "liquidity",
+          "volatility",
+          "distance"
+        ],
+        "seed": null
+      },
+      "unresolved_owner_fields": [
+        "placebo_seed",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "af76ef9aae67285a48a218ee283e22ad7df79be13e8c5788cee3bb8c604cc702"
+    },
+    {
+      "planning_slot": "PLAN-027",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q0",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "cohort": "same original C1 trigger cohort",
+        "policy": "first lawful post-trigger reference",
+        "no_entry_retained": true
+      },
+      "unresolved_owner_fields": [
+        "exact first lawful price reference",
+        "spread impact cost proxy",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "c1e4d3179926e0f9ccd387f8d4f767342c1097e9af308f5f537c7c8efcdf1543"
+    },
+    {
+      "planning_slot": "PLAN-028",
+      "configuration_kind": "confirmation_policy_application",
+      "specification": "Q1",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "cohort": "same original C1 trigger cohort",
+        "policy": "next completed Daily bar remains outside original boundary, then next lawful reference",
+        "no_entry_retained": true,
+        "terminal": "common original-cohort terminal"
+      },
+      "unresolved_owner_fields": [
+        "exact first lawful price reference",
+        "spread impact cost proxy",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "0d4f238bde097ea56dd2f7661f55db897888f737301761cc14c0223c98667e22"
+    },
+    {
+      "planning_slot": "PLAN-030",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A0",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "model": "A0",
+        "cohort": "master at-risk landmarks",
+        "feature_contract": "A0"
+      },
+      "unresolved_owner_fields": [
+        "solver",
+        "optimization_tolerance",
+        "software_version",
+        "folds",
+        "calibration_cut",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "437bbd496d60560cd5667ffd4264642055540eb9a7cd500875d1ab18298e8301"
+    },
+    {
+      "planning_slot": "PLAN-031",
+      "configuration_kind": "activation_model_specification",
+      "specification": "A1",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "model": "A1",
+        "cohort": "master at-risk landmarks",
+        "feature_contract": "A1"
+      },
+      "unresolved_owner_fields": [
+        "solver",
+        "optimization_tolerance",
+        "software_version",
+        "folds",
+        "calibration_cut",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "fe11827174121cf942fe18652ab64f4ef50a8e6602e5c821660f53a0a0f0ff76"
+    },
+    {
+      "planning_slot": "PLAN-033",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P0",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "model": "P0",
+        "cohort": "same C1 trigger cohort",
+        "feature_contract": "P0"
+      },
+      "unresolved_owner_fields": [
+        "solver",
+        "optimization_tolerance",
+        "software_version",
+        "folds",
+        "calibration_cut",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "f155c15c3d7678074969a6b41dc6fdbce634e2a22df71b21d853155fa70aff9b"
+    },
+    {
+      "planning_slot": "PLAN-034",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P1",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "model": "P1",
+        "cohort": "same C1 trigger cohort",
+        "feature_contract": "P1"
+      },
+      "unresolved_owner_fields": [
+        "solver",
+        "optimization_tolerance",
+        "software_version",
+        "folds",
+        "calibration_cut",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "61ba2cc8e02d40bea604a0ee6cc6c6e45e60ba6d4a3e216577610a5244c5bb18"
+    },
+    {
+      "planning_slot": "PLAN-035",
+      "configuration_kind": "post_trigger_model_specification",
+      "specification": "P2",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "status": "DRAFT_SOURCE_BOUND_NOT_ADMITTED",
+      "selected_for_execution": false,
+      "registered": false,
+      "native_trial_hash": null,
+      "trial_family_if_adopted": "toi_w3_r0",
+      "block_digests": {
+        "population": "40c82f46a5fb7fe2f5e2e0bb8536fe4a995e5af71b4dd01cf434d74c4b185fe8",
+        "source": "321b73898eb880772af642589a0fb0a2d27804e7439a1417a14cae985bddd2f9",
+        "detector": "bd117ba9a8ca07a3bb6442ba9920be79268205cf05420b30dbdc16a0d3965c8b",
+        "labels": "d0e0312785352fb4bd5dbf418fa6c56cc82f80647a93a9793a422e9d7c474a7f",
+        "models": "538f08c6ca64b5a87b451c9848afec8208a868fd5d79842c6a21e51dffc41732",
+        "evaluation": "7c168a843ed9dc77c7f301214a096abaf87c2b98018ecd121c7047302fde9e68"
+      },
+      "per_object": {
+        "model": "P2",
+        "cohort": "same C1 trigger cohort",
+        "feature_contract": "P2"
+      },
+      "unresolved_owner_fields": [
+        "solver",
+        "optimization_tolerance",
+        "software_version",
+        "folds",
+        "calibration_cut",
+        "population owner adoption",
+        "authoritative corporate-action snapshot",
+        "runtime R2 source snapshot digest",
+        "frozen ATR exact recipe",
+        "exact native source/function hashes",
+        "inference method",
+        "prior exposure and holdout receipt"
+      ],
+      "planning_fingerprint": "ecaa0392f9776022db4fabbb29950baf704271024a7ed8faa99d7f248852c334"
+    }
+  ],
+  "primary_contrasts": [
+    {
+      "planning_label": "R0-UP-A1_vs_A0",
+      "direction": "UP",
+      "clock": "DAILY",
+      "question": "activation log-loss",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-UP-P1_vs_P0",
+      "direction": "UP",
+      "clock": "DAILY",
+      "question": "conditional-path log-loss",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-UP-Q1_vs_Q0",
+      "direction": "UP",
+      "clock": "DAILY",
+      "question": "joint confirmation claim: fakeout reduction, capture noninferiority, price-cost bound",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-UP-P2_vs_P1",
+      "direction": "UP",
+      "clock": "DAILY",
+      "question": "Weekly-context conditional-path increment",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-DOWN-A1_vs_A0",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "question": "activation log-loss",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-DOWN-P1_vs_P0",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "question": "conditional-path log-loss",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-DOWN-Q1_vs_Q0",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "question": "joint confirmation claim: fakeout reduction, capture noninferiority, price-cost bound",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    },
+    {
+      "planning_label": "R0-DOWN-P2_vs_P1",
+      "direction": "DOWN",
+      "clock": "DAILY",
+      "question": "Weekly-context conditional-path increment",
+      "status": "PROPOSED_OWNER_ADOPTION_REQUIRED",
+      "native_claim_id": null
+    }
+  ],
+  "held_outside_first_wave": [
+    "C2",
+    "C3",
+    "NATR/HVR sensor substitutions",
+    "Q2",
+    "A2",
+    "remaining-path distribution specs",
+    "standalone Weekly",
+    "4H-CLOCK",
+    "195M-RTH",
+    "Combo-v1",
+    "S16 comparator"
+  ],
+  "global_gates": [
+    "W1 acceptance",
+    "W2 records acceptance",
+    "population-unit scientific adoption",
+    "authoritative corporate-action snapshot",
+    "source snapshot digest",
+    "exact native source/function/settings bindings",
+    "exact solver/calibration/folds/inference",
+    "prior exposure and untouched/prospective receipt",
+    "independent acceptance"
+  ],
+  "selection_count": 0,
+  "registration_count": 0,
+  "outcomes_read": false
+}

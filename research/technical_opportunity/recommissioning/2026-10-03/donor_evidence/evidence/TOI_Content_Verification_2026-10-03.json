@@ -1,0 +1,31 @@
+{
+  "A_through_P_present": true,
+  "unresolved_reference_labels": [],
+  "reference_definitions": 88,
+  "report_words": 18587,
+  "TOI_Method_Ontology_2026-10-03.csv": {
+    "rows": 45,
+    "columns": 29,
+    "empty_column_names": []
+  },
+  "TOI_Catalog_Crosswalk_2026-10-03.csv": {
+    "rows": 195,
+    "columns": 36,
+    "empty_column_names": []
+  },
+  "TOI_Source_Register_2026-10-03.csv": {
+    "rows": 147,
+    "columns": 9,
+    "empty_column_names": []
+  },
+  "TOI_W3_Configuration_Proposal_2026-10-03.csv": {
+    "rows": 218,
+    "columns": 32,
+    "empty_column_names": []
+  },
+  "TOI_W3_Hypothesis_Proposal_2026-10-03.csv": {
+    "rows": 201,
+    "columns": 35,
+    "empty_column_names": []
+  }
+}

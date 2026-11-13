@@ -1,0 +1,76 @@
+"""Synthetic TOI corporate-action transform contract.
+No market data, production store, outcome, or model is touched.
+"""
+import unittest
+import pandas as pd
+
+def validate_events(events):
+    seen=set(); out=[]
+    for e in sorted(events,key=lambda x:(x["execution_date"],x["id"])):
+        if e["id"] in seen: raise ValueError("duplicate corporate action id")
+        seen.add(e["id"])
+        frm=float(e["split_from"]); to=float(e["split_to"])
+        if frm<=0 or to<=0: raise ValueError("nonpositive split ratio")
+        out.append({**e,"split_from":frm,"split_to":to,"execution_date":pd.Timestamp(e["execution_date"])})
+    by={}
+    for e in out:
+        k=(e["ticker"],e["execution_date"]); ratio=e["split_from"]/e["split_to"]
+        if k in by and abs(by[k]-ratio)>1e-12: raise ValueError("conflicting same-date split ratios")
+        by[k]=ratio
+    return out
+
+def factor(index,ticker,events,cutoff):
+    ev=validate_events([e for e in events if e["ticker"]==ticker and pd.Timestamp(e["execution_date"])<=pd.Timestamp(cutoff)])
+    f=pd.Series(1.0,index=index,dtype=float)
+    for e in ev:
+        f.loc[f.index < e["execution_date"]] *= e["split_from"]/e["split_to"]
+    return f
+
+def derive(raw,ticker,events,cutoff):
+    raw=raw.loc[:pd.Timestamp(cutoff)].copy(); f=factor(raw.index,ticker,events,cutoff)
+    out=raw.copy()
+    for c in ("open","high","low","close"): out[c]=raw[c]*f
+    out["volume"]=raw["volume"]/f; out["split_price_factor"]=f
+    return out
+
+class Contract(unittest.TestCase):
+    def setUp(self):
+        idx=pd.to_datetime(["2026-01-05","2026-01-06","2026-01-07","2026-01-08","2026-01-09"])
+        self.raw=pd.DataFrame({"open":[100,102,51,52,53],"high":[101,103,52,53,54],"low":[99,101,50,51,52],"close":[100,102,51,52,53],"volume":[1000,1200,2400,2500,2600]},index=idx)
+        self.ev=[{"id":"S1","ticker":"XYZ","execution_date":"2026-01-07","split_from":1,"split_to":2,"adjustment_type":"forward_split"}]
+    def test_no_action_identity(self):
+        out=derive(self.raw,"XYZ",[],"2026-01-09")
+        pd.testing.assert_series_equal(out.close,self.raw.close.astype(float),check_names=False)
+    def test_forward_split_continuity(self):
+        out=derive(self.raw,"XYZ",self.ev,"2026-01-09")
+        self.assertEqual(out.loc[pd.Timestamp("2026-01-06"),"close"],51)
+        self.assertEqual(out.loc[pd.Timestamp("2026-01-07"),"close"],51)
+    def test_volume_reciprocal_and_dollar_volume_invariance(self):
+        out=derive(self.raw,"XYZ",self.ev,"2026-01-09")
+        self.assertEqual(out.loc[pd.Timestamp("2026-01-06"),"volume"],2400)
+        for d in out.index:self.assertAlmostEqual(self.raw.loc[d,"close"]*self.raw.loc[d,"volume"],out.loc[d,"close"]*out.loc[d,"volume"])
+    def test_future_event_excluded_from_prior_cutoff(self):
+        future=self.ev+[{"id":"S2","ticker":"XYZ","execution_date":"2026-02-02","split_from":1,"split_to":3}]
+        pd.testing.assert_frame_equal(derive(self.raw,"XYZ",future,"2026-01-06"),derive(self.raw,"XYZ",self.ev,"2026-01-06"))
+    def test_execution_date_is_post_split_scale(self):
+        out=derive(self.raw,"XYZ",self.ev,"2026-01-09")
+        self.assertEqual(out.loc[pd.Timestamp("2026-01-07"),"split_price_factor"],1.0)
+    def test_reverse_split(self):
+        idx=pd.to_datetime(["2026-03-02","2026-03-03"]); raw=pd.DataFrame({"open":[2,10],"high":[2,10],"low":[2,10],"close":[2,10],"volume":[5000,1000]},index=idx)
+        out=derive(raw,"REV",[{"id":"R","ticker":"REV","execution_date":"2026-03-03","split_from":5,"split_to":1}],"2026-03-03")
+        self.assertEqual(list(out.close),[10,10]); self.assertEqual(list(out.volume),[1000,1000])
+    def test_serial_splits(self):
+        idx=pd.to_datetime(["2026-01-02","2026-01-05","2026-01-06","2026-01-07"]); raw=pd.DataFrame({"open":[120,60,60,20],"high":[120,60,60,20],"low":[120,60,60,20],"close":[120,60,60,20],"volume":[100,200,200,600]},index=idx)
+        ev=[{"id":"A","ticker":"ABC","execution_date":"2026-01-05","split_from":1,"split_to":2},{"id":"B","ticker":"ABC","execution_date":"2026-01-07","split_from":1,"split_to":3}]
+        out=derive(raw,"ABC",ev,"2026-01-07"); self.assertEqual(list(out.close),[20,20,20,20]); self.assertEqual(list(out.volume),[600,600,600,600])
+    def test_nonaction_large_move_is_not_rewritten(self):
+        raw=self.raw.copy(); raw.loc[pd.Timestamp("2026-01-07"),"close"]=25
+        self.assertEqual(derive(raw,"XYZ",[],"2026-01-09").loc[pd.Timestamp("2026-01-07"),"close"],25)
+    def test_conflicting_same_date_refuses(self):
+        with self.assertRaisesRegex(ValueError,"conflicting"):
+            validate_events([{"id":"A","ticker":"X","execution_date":"2026-01-02","split_from":1,"split_to":2},{"id":"B","ticker":"X","execution_date":"2026-01-02","split_from":1,"split_to":3}])
+    def test_duplicate_and_invalid_event_refuse(self):
+        with self.assertRaisesRegex(ValueError,"duplicate"): validate_events([{"id":"A","ticker":"X","execution_date":"2026-01-02","split_from":1,"split_to":2},{"id":"A","ticker":"X","execution_date":"2026-02-02","split_from":1,"split_to":2}])
+        with self.assertRaisesRegex(ValueError,"nonpositive"): validate_events([{"id":"Z","ticker":"X","execution_date":"2026-01-02","split_from":0,"split_to":2}])
+
+if __name__=="__main__": unittest.main(verbosity=2)

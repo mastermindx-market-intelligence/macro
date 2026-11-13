@@ -1,0 +1,32 @@
+{
+  "admission": false,
+  "checks": {
+    "corporate_action_still_fail_closed": true,
+    "cost_proxy_not_invented": true,
+    "directions_11_each": true,
+    "folds_three": true,
+    "mature_2026_end": true,
+    "native_trial_hashes_zero": true,
+    "objects_22": true,
+    "outcomes_false": true,
+    "planning_fingerprints_unique": true,
+    "primary_contrasts_8": true,
+    "prospective_results_not_claimed": true,
+    "registered_zero": true,
+    "runtime_source_still_fail_closed": true,
+    "selected_zero": true,
+    "solver_pinned": true
+  },
+  "generated_at": "2026-10-07T01:54:36.329029+00:00",
+  "manifest_sha256": "76795b39910762e068f48c6c05920d3da2d200f254e147941de17422607af099",
+  "model_evaluation_freeze_digest_sha256": "1d138c68167a5a92777abf4b0ebb270bfcdb0a742aca55436e02da781658b196",
+  "native_trial_hashes_written": 0,
+  "objects": 22,
+  "outcomes_read": false,
+  "primary_contrasts": 8,
+  "registered": 0,
+  "schema": "toi.r0.daily_first_22_manifest_validation.v3",
+  "selected": 0,
+  "solver_sha256": "d19fef5fe7429d92f05ef6edc0cd5face490355c2ecfe213d9ff0ceaf69ac7ce",
+  "synthetic_validation_sha256": "dc2812c8709e0579e6b065f79985a9a918fd942800eb5efd74e79818cb02bc5c"
+}

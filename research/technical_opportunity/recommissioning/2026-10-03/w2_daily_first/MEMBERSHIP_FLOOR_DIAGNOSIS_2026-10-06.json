@@ -1,0 +1,27 @@
+{
+  "schema": "toi.w2_daily_first_membership_floor_diagnosis.v1",
+  "source_floors": {
+    "sp400": "2012-01-13",
+    "sp500": "1996-01-02",
+    "sp600": "2019-12-17"
+  },
+  "corrected_missing_member_session_cells": 33908,
+  "counts": {
+    "floor_seeded_pre_first_cells": 28765,
+    "nonfloor_pre_first_cells": 180,
+    "post_last_cells": 1673,
+    "interior_cells": 2165,
+    "object_absent_cells": 1125
+  },
+  "shares_of_corrected_missing": {
+    "floor_seeded_pre_first_cells": 0.8483248790845818,
+    "nonfloor_pre_first_cells": 0.0053084817742125754,
+    "post_last_cells": 0.04933938893476466,
+    "interior_cells": 0.06384923911761237,
+    "object_absent_cells": 0.0331780110888286
+  },
+  "floor_suspect_tickers": 52,
+  "interpretation": "Most missingness is produced by reconstruction floor starts for membership intervals whose true historical start is unknown. These cells are membership/identity-unresolved, not evidence that the R2 price store randomly lost those sessions. Earliest price must not be substituted as a listing or membership start date.",
+  "market_outcomes_read": false,
+  "source_or_production_mutation": false
+}
