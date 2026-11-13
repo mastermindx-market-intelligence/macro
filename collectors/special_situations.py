@@ -552,6 +552,12 @@ def _llm_ready(cfg: dict) -> bool:
         return False
     if os.environ.get("DISABLE_SPECIAL_SITUATIONS_LLM"):
         return False
+    # Capacity Fabric cutover (2026-11-12): the router is a complete credential
+    # substitute, so a token-only host must reach the extraction call. This
+    # returns True early ONLY when the fabric branch is actually enabled — with
+    # the router off (or killed) the legacy key requirement below is unchanged.
+    if _fabric_enabled():
+        return True
     return bool(config.secret(cfg.get("api_key_env", "DEEPSEEK_API_KEY")))
 
 
@@ -744,7 +750,10 @@ def enrich_summaries(limit: int | None = None) -> pd.DataFrame:
 
     cache_dir = config.data_dir() / GROUP / "digest_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
-    client, model = _llm_client(cfg)
+    # Capacity Fabric cutover (2026-11-12): a token-only host has no DeepSeek key
+    # to build the legacy client from, and _llm_call never uses it on the fabric
+    # branch. Legacy hosts still construct it exactly as before.
+    client, model = (None, None) if _fabric_enabled() else _llm_client(cfg)
 
     # only situations our classifier accepts and that have no summary yet
     need = []
@@ -1036,7 +1045,8 @@ def enrich_classify(limit: int | None = None) -> pd.DataFrame:
 
     cache_dir = config.data_dir() / GROUP / "classify_cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
-    client, model = _llm_client(cfg)
+    # Capacity Fabric cutover (2026-11-12): see the summary lane above.
+    client, model = (None, None) if _fabric_enabled() else _llm_client(cfg)
 
     # candidates: filings the deterministic classifier could not resolve (status=defer)
     # and which we have not already asked the LLM about.

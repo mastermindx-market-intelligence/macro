@@ -26,6 +26,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -280,3 +281,55 @@ def test_ledger_failure_never_breaks_a_served_call(fabric_on, monkeypatch):
     obj = ss._llm_call(legacy, "deepseek-chat", "SYS", "PROMPT")
     assert obj["category"] == _CLEAN_REPLY["category"]
     assert legacy.calls == []
+
+
+# --------------------------------------------------------------------------- #
+# token-only host: the router is a complete credential substitute
+#
+# The migration target has FABRIC_ROUTER_TOKEN and no DEEPSEEK_API_KEY. The
+# outer _llm_ready gate must let that host through, and the lane must not try to
+# build a legacy client it has no key for.
+# --------------------------------------------------------------------------- #
+def test_llm_ready_accepts_a_token_only_host(monkeypatch):
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(ss.config, "secret", lambda n: None)   # no DeepSeek key
+
+    assert ss._llm_ready({"enabled": True, "llm_brief": True}) is True
+
+
+def test_llm_ready_still_requires_a_key_when_fabric_is_off(monkeypatch):
+    monkeypatch.setattr(ss.config, "secret", lambda n: None)
+
+    assert ss._llm_ready({"enabled": True, "llm_brief": True}) is False
+
+
+def test_llm_ready_still_honors_the_disable_switch_on_a_token_only_host(monkeypatch):
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(ss.config, "secret", lambda n: None)
+    monkeypatch.setenv("DISABLE_SPECIAL_SITUATIONS_LLM", "1")
+
+    assert ss._llm_ready({"enabled": True, "llm_brief": True}) is False
+
+
+def test_token_only_host_never_builds_a_legacy_client(tmp_path, monkeypatch):
+    """End-to-end through enrich_classify: no key, router configured -> the
+    extraction is served by fabric and _llm_client is never called."""
+    monkeypatch.setattr(ss.config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(ss.config, "secret", lambda n: None)
+    monkeypatch.setattr(ss, "_cfg", lambda: {"enabled": True, "llm_brief": True})
+    monkeypatch.setattr(ss, "_fetch_filing_text", lambda cik, acc, **kw: "filing body")
+    monkeypatch.setattr(ss, "_llm_client",
+                        lambda cfg: pytest.fail("legacy client built on a token-only host"))
+    monkeypatch.setattr(fc, "is_configured", lambda: True)
+    monkeypatch.setattr(fc, "complete",
+                        lambda messages, **kw: _completion(json.dumps(_CLEAN_REPLY)))
+
+    (tmp_path / "special_situations").mkdir()
+    pd.DataFrame([{"id": "e1", "form_type": "8-K", "company": "Acme Inc", "cik": "10",
+                   "accession": "acc1", "items": "8.01", "date_filed": "2026-06-12",
+                   "source_url": "u"}]
+                 ).to_parquet(tmp_path / "special_situations" / "events.parquet")
+
+    df = ss.enrich_classify().set_index("id")
+    assert df.loc["e1", "llm_category"] == "Acquisitions"
+    assert df.loc["e1", "llm_role"] == "target"
