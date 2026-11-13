@@ -67,7 +67,6 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-warnings.filterwarnings("ignore")
 
 # ── run-time opened-file instrumentation (installed BEFORE engine import so spawned
 #    workers, which re-import this module, inherit it). Records every repository file
@@ -1452,4 +1451,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    # Mute library warnings for the CLI run only; importing this module leaves
+    # the caller's warning filters alone (import-hygiene ratchet, COO ruling 100).
+    warnings.filterwarnings("ignore")
     raise SystemExit(main())
