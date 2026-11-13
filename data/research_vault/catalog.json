@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T15:53:59.560909+00:00",
-  "count": 3305,
+  "generated_at": "2026-11-13T16:09:10.161606+00:00",
+  "count": 3306,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-gobxvme2usm-c1b717",
+      "title": "GS Codacci Pisanelli Macro Roadmap 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T15:55:01Z",
+      "summary_points": [
+        "Year-End Squeeze Catalysts: Equity sell-off, re-rated multiples, and lighter positioning enable risk squeeze; MSCI P/E at 35y avg (derated), with quarterly earnings key amid AI sector deleveraging (Nasdaq ~5 sigma move).",
+        "Earnings Revisions Momentum: Consensus EPS revisions (MSCI AC World) show sustained positive momentum since 2022, with 2027-2028 projections significantly above historical averages.",
+        "Inflation Pass-Through Q1 Test: Broad CPI surprise (Sept/Oct), producer/import price acceleration (chemicals, plastics), with Q1 critical for price resets/wage negotiations; labor market may absorb heat if demand weakens.",
+        "EUR 10s30s Technical Signal: EUR 10s30s at multi-year lows vs USD (sustained downtrend 2024–2025), signaling potential value/technical weakness in Eurozone debt.",
+        "Geopolitical Resilience: Middle East re-escalation absorbed amid stronger CPI, hawkish Fed, oil rally, and Nvidia news, indicating supportive market structure for year-end risk squeeze."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-024xcdlxcoe-4ac8c2",
       "title": "Americas Business & Information Services Key takeaways, themes and stock picks in Business & Info Services post 3Q results",
