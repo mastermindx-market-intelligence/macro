@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T00:20:40.634604+00:00",
-  "count": 3261,
+  "generated_at": "2026-11-13T00:38:43.483299+00:00",
+  "count": 3262,
   "institutions": [
     "ABN Amro",
     "ANZ",
@@ -412,6 +412,26 @@
         "US Equities AI Catalysts: OpenAI’s $10bn Q3 revenue (+50% q/q) and CoreWeave’s \"beat-and-raise\" earnings drove NDX >2% gain; SPX CTAs target long flip above 7,676 amid AI-driven volatility and sentiment shifts.",
         "Japan Credit Stress & FX Risk: 10y JGB yield down 10.7bp and iTraxx Main down 2.44% signal steepening curve and rising credit risk; USD/JPY at 159.82 (2025 high) elevates intervention risk despite stronger yen trade-weighted basis.",
         "USD Strength & Policy Triggers: USD index at 2025 high (CPI beat), USDJPY near 160, and EURUSD at 18mo low; BoJ speech (01:30 GMT) and 5y JGB auction (03:35 GMT) key for FX flows and Fed rate hike probability (61% in January)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ay8c3xuac9h-0f5715",
+      "title": "Japan soft consumption constrains BoJ tightening",
+      "institution": "ANZ",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:32:59Z",
+      "summary_points": [
+        "Consumer Spending Weakness: Real household spending down 6.8% y/y (Kumamoto earthquake, energy shock), offsetting PMI strength (services 51.7, composite 52.1), creating critical near-term demand risk despite low unemployment (2.4%) and rising real cash earnings (2.2% y/y).",
+        "Core Inflation Persistence: Core ex-energy CPI at 2.4% y/y (highest in 9 months), confirming BoJ’s inflation target return (2.0-2.5%) but highlighting persistent underlying pressure from wage growth risks and energy distribution costs.",
+        "Policy Hike Path & Labor Market: BoJ confirms 25bp hikes in Dec 2026/March 2027 (target 1.75%) amid tight labor market (unemployment 2.4%, job-to-applicants ratio 1.19), with wage negotiations under close monitoring as key policy trigger.",
+        "Geopolitical Tailwind: Middle East conflict de-escalation expected to support consumer spending, partially countering natural disaster and energy shock headwinds, offering near-term demand catalyst."
       ],
       "tags": [],
       "tickers": [],
