@@ -9805,6 +9805,8 @@ jobs:
       - "scripts/build_options_prophet.py"
       - "scripts/build_options_screener.py"
       - "scripts/build_options_scenario_surface.py"
+      # Skylit R2 Stage 0 research analyzer; construction cases have their own suite.
+      - "scripts/research_skylit_r2_exposure_decomposition.py"
       - "scripts/build_options_signal_campaign.py"
       - "scripts/build_options_signal_episode.py"
       - "scripts/build_options_sparse_selector_prereg.py"
@@ -31035,6 +31037,10 @@ jobs:
       - "scripts/build_options_command.py"
       - "scripts/build_options_intel_brief.py"
       - "scripts/build_options_screener.py"
+      # Skylit R2 Stage 0 construction tests retain their existing DATA coverage.
+      # Keep the exclusive options owner closed over the research analyzer.
+      - "scripts/research_skylit_r2_exposure_decomposition.py"
+      - "tests/test_research_skylit_r2_exposure_decomposition.py"
       - "scripts/validate_gex.py"
       - "site/altdata/**"
       - "site/basketdata/**"
@@ -31119,7 +31125,7 @@ jobs:
       # ceiling.  No dependency widened: probed at RUN time it loads only pandas/numpy/
       # pyarrow/pyyaml, and blocking openpyxl leaves it 38-passed.
       - name: options-screener builder suite (denominator pins)
-        run: python -m pytest tests/test_build_options_screener.py tests/test_options_gap_discipline.py -q
+        run: python -m pytest tests/test_build_options_screener.py tests/test_options_gap_discipline.py tests/test_research_skylit_r2_exposure_decomposition.py -q
       - name: options workspace suite (OEU M-CMD — 4 modes, close-line honesty, payload law)
         # AD-1 joins this step (not a new job — the manifest is at the narrow-diff
         # ceiling and a step is the masking unit): the intel-brief engine/producer
@@ -53428,6 +53434,13 @@ jobs:
       - "scripts/build_options_scenario_surface.py"
       - "tests/__init__.py"
       - "tests/test_options_scenario_surface.py"
+      - "scripts/research_skylit_r2_exposure_decomposition.py"
+      - "tests/test_research_skylit_r2_exposure_decomposition.py"
+      - "engine/thetadata_store.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "config.yml"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -53436,9 +53449,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install scenario contract dependencies
-        run: pip install pytest numpy scipy
-      - name: conditional scenario and hedge-target contract regressions
-        run: python -m pytest tests/test_options_scenario_surface.py -q
+        run: pip install pytest numpy scipy pandas pyyaml
+      - name: conditional scenario, hedge-target and R2 construction regressions
+        run: python -m pytest tests/test_options_scenario_surface.py tests/test_research_skylit_r2_exposure_decomposition.py -q
   institutional-13f-ingestion-contracts:
     # 13F census ingestion: the SEC source parser and the bounded rolling ingest.
     # Both suites were grandfathered dark in config/unrun_test_baseline.json while
