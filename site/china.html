@@ -353,10 +353,6 @@
   
   
   
-  <div class="panel span12" style="border-left:3px solid var(--warn);background:color-mix(in srgb,var(--warn) 7%,var(--panel));padding:9px 13px;font-size:12px;line-height:1.55">
-    <span class="l-en"><strong>⚠ BOARD DELAYED</strong> — prices as of 2026-11-10 (3d behind). Data is stale; readings on this page may not reflect latest prices. Check a live quote before acting.</span><span class="l-zh"><strong>⚠ 数据延迟</strong> — 价格截至 2026-11-10（落后 3 天）。当前数据过期，本页读数可能不反映最新价格，操作前请确认最新报价。</span>
-  </div>
-  
 
   
 
@@ -942,7 +938,35 @@
     <div class="cnx-card">
       <div class="cnx-ctitle"><span class="l-en">Top Stock Setups</span><span class="l-zh">精选买点</span> <span style="margin-left:auto;font-size:10px;color:var(--muted)"><span class="l-en">FROM THE STOCK BOARD</span><span class="l-zh">来自股票看板</span></span></div>
       
-      <div style="font-size:12px;color:var(--muted);padding:8px 0"><span class="l-en">No active setups right now.</span><span class="l-zh">暂无有效买点。</span></div>
+      <div class="cnx-stk">
+        <span class="tkr"><a class="cnx-tkr-btn" href="https://app.mastermind-x.com/terminal?symbol=002965.SZ" target="_blank" rel="noopener">祥鑫科技</a></span>
+        <div class="meta"><b>002965.SZ</b> · Industrials</div>
+        <span class="cnx-stage"><span class="l-en">ENTRY</span><span class="l-zh">ENTRY</span></span>
+      </div>
+      
+      <div class="cnx-stk">
+        <span class="tkr"><a class="cnx-tkr-btn" href="https://app.mastermind-x.com/terminal?symbol=301392.SZ" target="_blank" rel="noopener">汇成真空</a></span>
+        <div class="meta"><b>301392.SZ</b> · Industrials</div>
+        <span class="cnx-stage"><span class="l-en">ENTRY</span><span class="l-zh">ENTRY</span></span>
+      </div>
+      
+      <div class="cnx-stk">
+        <span class="tkr"><a class="cnx-tkr-btn" href="https://app.mastermind-x.com/terminal?symbol=688503.SS" target="_blank" rel="noopener">聚和材料</a></span>
+        <div class="meta"><b>688503.SS</b> · Technology</div>
+        <span class="cnx-stage"><span class="l-en">ENTRY</span><span class="l-zh">ENTRY</span></span>
+      </div>
+      
+      <div class="cnx-stk">
+        <span class="tkr"><a class="cnx-tkr-btn" href="https://app.mastermind-x.com/terminal?symbol=688347.SS" target="_blank" rel="noopener">华虹宏力</a></span>
+        <div class="meta"><b>688347.SS</b> · Technology</div>
+        <span class="cnx-stage"><span class="l-en">ENTRY</span><span class="l-zh">ENTRY</span></span>
+      </div>
+      
+      <div class="cnx-stk">
+        <span class="tkr"><a class="cnx-tkr-btn" href="https://app.mastermind-x.com/terminal?symbol=002378.SZ" target="_blank" rel="noopener">章源钨业</a></span>
+        <div class="meta"><b>002378.SZ</b> · Basic Materials</div>
+        <span class="cnx-stage"><span class="l-en">ENTRY</span><span class="l-zh">ENTRY</span></span>
+      </div>
       
       <a class="cnx-screener-btn" href="china_stocks.html"><span class="l-en">Stock Screener →</span><span class="l-zh">选股看板 →</span></a>
     </div>
@@ -1700,8 +1724,44 @@
       
       <div class="rrd-ldr-line"><span class="l-en">Today 5 names hit their daily limit, none for a second day.</span><span class="l-zh">今日 5 只个股涨停，无连板。</span></div>
       
-      
-      <div class="rrd-absent"><span class="l-en">Coverage building — no names on the standout board today.</span><span class="l-zh">数据积累中 — 今日标的板暂无名单。</span></div>
+      <div class="rrd-ldr-rows">
+        
+        <div class="rrd-ldr-row is-plain tone-muted">
+          <span class="rrd-ldr-tkr">002965.SZ</span>
+          <span class="rrd-ldr-name"><span class="l-en">Lucky Harvest Co., Ltd.</span><span class="l-zh">祥鑫科技</span></span>
+          
+          <span class="rrd-ldr-val">#1</span>
+        </div>
+        
+        <div class="rrd-ldr-row is-plain tone-muted">
+          <span class="rrd-ldr-tkr">301392.SZ</span>
+          <span class="rrd-ldr-name"><span class="l-en">Guangdong Huicheng Vacuum Technology Co., Ltd.</span><span class="l-zh">汇成真空</span></span>
+          
+          <span class="rrd-ldr-val">#2</span>
+        </div>
+        
+        <div class="rrd-ldr-row is-plain tone-muted">
+          <span class="rrd-ldr-tkr">688503.SS</span>
+          <span class="rrd-ldr-name"><span class="l-en">Changzhou Fusion New Material Co., Ltd.</span><span class="l-zh">聚和材料</span></span>
+          
+          <span class="rrd-ldr-val">#3</span>
+        </div>
+        
+        <div class="rrd-ldr-row is-plain tone-muted">
+          <span class="rrd-ldr-tkr">688347.SS</span>
+          <span class="rrd-ldr-name"><span class="l-en">Hua Hong Grace Semiconductor Limited</span><span class="l-zh">华虹宏力</span></span>
+          
+          <span class="rrd-ldr-val">#4</span>
+        </div>
+        
+        <div class="rrd-ldr-row is-plain tone-muted">
+          <span class="rrd-ldr-tkr">002378.SZ</span>
+          <span class="rrd-ldr-name"><span class="l-en">Chongyi Zhangyuan Tungsten Co., Ltd.</span><span class="l-zh">章源钨业</span></span>
+          
+          <span class="rrd-ldr-val">#5</span>
+        </div>
+        
+      </div>
       
       
 
@@ -2496,7 +2556,7 @@ Hong Kong sits near Reflation, but conviction is weak. Mainland selling is the m
 </div>
 
 <div class="foot">
-  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-11-13 16:57 UTC<br>
+  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-11-13 18:41 UTC<br>
   <span class="made">© 2026 Mastermind Inc</span>
 </div>
 

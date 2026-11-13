@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T19:24:26.024889+00:00",
-  "count": 3315,
+  "generated_at": "2026-11-13T19:39:25.725753+00:00",
+  "count": 3316,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -184,6 +184,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-m4rbv1gg3jo-6e6a77",
+      "title": "UBS S&T The Bullion Report Gold $3,900 In Focus Jonathan Garber 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:22:57Z",
+      "summary_points": [
+        "Gold Macro-ETF Tension: Fed hawkishness (50bp tightening risk) vs.",
+        "ETF support; geopolitical catalyst required for sustained rally.",
+        "Singapore Hub Structural Risk: 500-tonne potential scale threatens London liquidity and regional premiums; official buyer price signals (SG vs.",
+        "HK/London/NY) critical.",
+        "Precious Metals Liquidity Risk: Non-fundamental price moves (e.g., PGMs 40koz cut = 0.3% global supply); banks drove 50%+ XAUUSD Nov 12 volume, signaling acute liquidity vulnerability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
