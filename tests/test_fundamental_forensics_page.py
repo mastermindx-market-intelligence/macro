@@ -477,8 +477,13 @@ def test_anonymous_preview_prints_counts_supplied_by_the_build(tmp_path: Path):
     assert "读取 1,240 家公司，排出 3,417 项值得一看的变化" in html
 
 
-def test_disk_summary_prints_the_count_day(tmp_path: Path):
-    """build_site renders with no in-memory summary, so the file stamp must show."""
+def test_disk_summary_prints_the_count_day(tmp_path: Path, monkeypatch):
+    """Render the fresh disk projection one day after it was written."""
+    rendered_at = datetime(2026, 10, 13, tzinfo=timezone.utc)
+    monkeypatch.setattr(
+        "scripts.build_fundamental_forensics.read_public_summary",
+        lambda root, **kwargs: read_public_summary(root, now=rendered_at),
+    )
     root = Path(__file__).resolve().parents[1]
     (tmp_path / "templates").symlink_to(root / "templates")
     _write_public_summary(
