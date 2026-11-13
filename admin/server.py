@@ -1331,6 +1331,9 @@ class Handler(BaseHTTPRequestHandler):
         try:
             g = self._guard(write=True)
             if g:
+                # The rejected body's bytes are unread. Closing prevents them
+                # being parsed as another request on a persistent connection.
+                self.close_connection = True
                 return self._json({"ok": False, "error": g[0]}, g[1])
             b = self._body()
 

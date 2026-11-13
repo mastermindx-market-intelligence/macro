@@ -12,6 +12,7 @@ from unittest.mock import patch
 
 from admin import capacity_control_owner as owner
 from admin import capacity_control_transport as transport
+from admin.capacity_config_transaction import configuration_writer, WriterBusy, PendingConfiguration
 from admin.capacity_fabric_schema import clean_snapshot
 from admin.tests.test_capacity_history import snapshot, NOW
 
@@ -144,6 +145,88 @@ class OwnerControls(unittest.TestCase):
         r=self.handle(self.intent({'interval_s':.5}),refresh_owner=refresh)
         self.assertEqual(r['state'],'APPLIED');self.assertEqual(len(calls),2)
 
+    def reconciliation(self, original, observed_epoch=EPOCH):
+        return {'action':'reconcile','operation_id':original['operation_id'],'epoch':observed_epoch,
+                'request_id':'e'*32,'original':original}
+    def test_busy_writer_is_known_no_effect(self):
+        before=self.path.read_bytes()
+        with configuration_writer(self.path):
+            r=self.handle(self.intent({'interval_s':.5}))
+        self.assertEqual(r['state'],'NOT_APPLIED');self.assertEqual(r['code'],'CONTROL_OWNER_BUSY')
+        self.assertEqual(self.path.read_bytes(),before)
+        self.assertFalse(self.path.with_name('routes.json.admin-receipts.json').exists())
+    def test_shared_writer_cannot_enter_after_final_revision_check(self):
+        request=self.intent({'interval_s':.5});actual=owner.atomic_private;blocked=[]
+        def competing(path,body):
+            if path==self.path:
+                with self.assertRaises(WriterBusy):
+                    with configuration_writer(self.path):
+                        self.fail('competing native writer entered the transaction')
+                blocked.append(True)
+            return actual(path,body)
+        with patch.object(owner,'atomic_private',side_effect=competing):r=self.handle(request)
+        self.assertEqual(r['state'],'APPLIED');self.assertEqual(blocked,[True])
+        with configuration_writer(self.path):
+            document,_=read_document(self.path);document['external_writer']='preserved'
+            actual(self.path,owner._bytes(document))
+        document,_=read_document(self.path)
+        self.assertEqual(document['observability']['interval_s'],.5)
+        self.assertEqual(document['external_writer'],'preserved')
+    def test_uncertain_adoption_reconciles_without_second_config_write(self):
+        original=self.intent({'interval_s':.5});actual=owner.atomic_private;writes=[]
+        def pause_adoption(path,body):
+            result=actual(path,body)
+            if path==self.path:writes.append(True);self.native.reject=True
+            return result
+        with patch.object(owner,'atomic_private',side_effect=pause_adoption):first=self.handle(original)
+        self.assertEqual(first['state'],'EFFECT_UNKNOWN')
+        with self.assertRaises(PendingConfiguration):
+            with configuration_writer(self.path):pass
+        self.native.reject=False;stamp=self.path.stat().st_mtime_ns
+        with patch.object(owner,'atomic_private',side_effect=pause_adoption):
+            second=self.handle(self.reconciliation(original))
+        self.assertEqual(second['state'],'APPLIED');self.assertEqual(len(writes),1)
+        self.assertEqual(self.path.stat().st_mtime_ns,stamp)
+        with configuration_writer(self.path):pass
+    def test_old_epoch_apply_refused_but_reconcile_only_observes(self):
+        original=self.intent({'interval_s':.5});self.handle(original);stamp=self.path.stat().st_mtime_ns
+        self.assertEqual(owner.handle(original,self.app,self.gateway,epoch='b'*32,enabled=True,now=NOW)['state'],'NOT_APPLIED')
+        request=self.reconciliation(original,'b'*32)
+        r=owner.handle(request,self.app,self.gateway,epoch='b'*32,enabled=False,now=NOW)
+        self.assertEqual(r['state'],'APPLIED');self.assertEqual(r['origin_epoch'],EPOCH)
+        self.assertEqual(r['epoch'],'b'*32);self.assertEqual(self.path.stat().st_mtime_ns,stamp)
+    def test_prepared_fences_later_writers_until_no_effect_reconciled(self):
+        original=self.intent({'interval_s':.5});actual=owner.atomic_private
+        def stop(path,body):
+            if path==self.path:raise OSError('interrupted before configuration write')
+            return actual(path,body)
+        with patch.object(owner,'atomic_private',side_effect=stop):r=self.handle(original)
+        self.assertEqual(r['state'],'EFFECT_UNKNOWN')
+        with self.assertRaises(PendingConfiguration):
+            with configuration_writer(self.path):pass
+        stamp=self.path.stat().st_mtime_ns;r=self.handle(self.reconciliation(original))
+        self.assertEqual(r['state'],'NOT_APPLIED');self.assertEqual(self.path.stat().st_mtime_ns,stamp)
+        with configuration_writer(self.path):pass
+    def test_unqualified_aba_does_not_invent_no_effect(self):
+        original=self.intent({'interval_s':.5});actual=owner.atomic_private;before=self.path.read_bytes()
+        def stop(path,body):
+            if path==self.path:raise OSError('interrupted')
+            return actual(path,body)
+        with patch.object(owner,'atomic_private',side_effect=stop):self.handle(original)
+        actual(self.path,before)
+        r=self.handle(self.reconciliation(original))
+        self.assertEqual(r['state'],'EFFECT_UNKNOWN');self.assertEqual(r['code'],'PREIMAGE_WRITER_CONTINUITY_UNKNOWN')
+    def test_missing_receipt_history_stays_uncertain(self):
+        original=self.intent({'interval_s':.5});stamp=self.path.stat().st_mtime_ns
+        r=self.handle(self.reconciliation(original))
+        self.assertEqual(r['state'],'EFFECT_UNKNOWN');self.assertEqual(r['code'],'RECEIPT_STORE_CONTINUITY_UNKNOWN')
+        self.assertEqual(self.path.stat().st_mtime_ns,stamp)
+    def test_reconcile_cannot_substitute_intent(self):
+        original=self.intent({'interval_s':.5});self.handle(original);stamp=self.path.stat().st_mtime_ns
+        altered=copy.deepcopy(original);altered['patch']['interval_s']=1
+        r=self.handle(self.reconciliation(altered))
+        self.assertEqual(r['code'],'OPERATION_ID_CONFLICT');self.assertEqual(self.path.stat().st_mtime_ns,stamp)
+
 class TransportControls(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.path=Path(self.tmp.name)/'snapshot.json'
@@ -185,5 +268,37 @@ class TransportControls(unittest.TestCase):
     def test_control_schema_drops_unknowns(self):
         s=json.loads(self.path.read_text());s['controls']['token']='PRIVATE';s['controls']['routes'][0]['secret']='PRIVATE'
         clean=clean_snapshot(s);self.assertNotIn('PRIVATE',json.dumps(clean))
+
+    def test_native_terminal_receipt_supersedes_cached_unknown(self):
+        result,_=transport.submit(self.body,path=self.path,now=NOW,timeout=0)
+        receipt={'operation_id':result['operation_id'],'epoch':EPOCH,'state':'EFFECT_UNKNOWN','at':NOW}
+        transport.accept_result(receipt,path=self.path)
+        s=json.loads(self.path.read_text());s['controls']['receipts']=[dict(receipt,state='APPLIED',at=NOW+1)]
+        self.path.write_text(json.dumps(s))
+        effective=transport.settings(path=self.path,now=NOW+1)
+        self.assertTrue(effective['writable']);self.assertEqual(effective['last_operation']['state'],'APPLIED')
+    def test_explicit_reconciliation_uses_new_delivery_not_new_apply(self):
+        result,_=transport.submit(self.body,path=self.path,now=NOW,timeout=0)
+        original=transport.next_request(EPOCH,path=self.path)
+        transport.accept_result({'operation_id':result['operation_id'],'epoch':EPOCH,'state':'EFFECT_UNKNOWN','at':NOW},path=self.path)
+        response,status=transport.submit({'action':'reconcile','operation_id':result['operation_id']},path=self.path,now=NOW,timeout=0)
+        self.assertEqual(status,202);request=transport.next_request(EPOCH,path=self.path)
+        self.assertEqual(request['action'],'reconcile');self.assertEqual(request['original'],original)
+        receipt={'operation_id':result['operation_id'],'request_id':request['request_id'],'epoch':EPOCH,'state':'APPLIED','at':NOW+1}
+        self.assertTrue(transport.accept_result(receipt,path=self.path));self.assertIsNone(transport.next_request(EPOCH,path=self.path))
+        self.assertTrue(transport.settings(path=self.path,now=NOW+1)['writable'])
+    def test_reconciliation_after_epoch_change_preserves_original_epoch(self):
+        result,_=transport.submit(self.body,path=self.path,now=NOW,timeout=0)
+        s=json.loads(self.path.read_text());s['epoch']='c'*32;self.path.write_text(json.dumps(s))
+        self.assertIsNone(transport.next_request('c'*32,path=self.path))
+        response,status=transport.submit({'action':'reconcile','operation_id':result['operation_id']},path=self.path,now=NOW,timeout=0)
+        self.assertEqual(status,202);request=transport.next_request('c'*32,path=self.path)
+        self.assertEqual(request['epoch'],'c'*32);self.assertEqual(request['original']['epoch'],EPOCH)
+    def test_late_uncertainty_cannot_downgrade_terminal_result(self):
+        result,_=transport.submit(self.body,path=self.path,now=NOW,timeout=0)
+        receipt={'operation_id':result['operation_id'],'epoch':EPOCH,'state':'APPLIED','at':NOW}
+        self.assertTrue(transport.accept_result(receipt,path=self.path))
+        self.assertFalse(transport.accept_result(dict(receipt,state='EFFECT_UNKNOWN',at=NOW+1),path=self.path))
+        self.assertTrue(transport.settings(path=self.path,now=NOW+1)['writable'])
 
 if __name__=='__main__':unittest.main()

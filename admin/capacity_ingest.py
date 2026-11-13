@@ -92,11 +92,12 @@ def main():
                 accepted = ingest(raw, recorder=recorder, _decoded=decoded)
                 if accepted:
                     request = capacity_control_transport.next_request(decoded["epoch"])
-                    if request and request["operation_id"] not in delivered:
+                    identity = (request.get("request_id") or request["operation_id"]) if request else None
+                    if request and identity not in delivered:
                         print(json.dumps({"control_request": request}, separators=(",", ":")), flush=True)
-                        delivered.add(request["operation_id"])
+                        delivered.add(identity)
                         if len(delivered) > 128:
-                            delivered = {request["operation_id"]}
+                            delivered = {identity}
             except (ValueError, TypeError, KeyError, OSError):
                 # Never echo a rejected payload or an exception containing source data.
                 print("observation frame rejected", file=sys.stderr)

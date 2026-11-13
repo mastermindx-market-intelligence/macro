@@ -35113,7 +35113,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn jsonschema fastapi httpx
       - name: admin health, feature flags and the config store
         run: python -m pytest tests/test_admin_health.py tests/test_admin_flags.py tests/test_admin_config_store.py -q
       # Wired 2026-07-26: run by ZERO workflows before this step — the same orphan class
@@ -35144,6 +35144,8 @@ jobs:
       # step red the day the operator does the work the panel exists to prompt.
       - name: admin server HTTP surface + private project runtime truth
         run: python -m pytest tests/test_admin_server.py tests/test_admin_program_watch.py tests/test_project_runtime_state.py -q
+      - name: capacity observatory telemetry, control recovery and HTTP integration
+        run: python -m unittest admin.tests.test_capacity_router admin.tests.test_capacity_history admin.tests.test_capacity_intelligence admin.tests.test_capacity_stream admin.tests.test_capacity_controls admin.tests.test_capacity_api admin.tests.test_capacity_staging
       - name: brain SSE keepalive + tape decode
         run: python -m pytest tests/test_brain_sse_keepalive.py tests/test_tape_decode.py -q
 
@@ -51675,6 +51677,12 @@ jobs:
       - "admin/brain_guest.py"
       - "admin/brief.py"
       - "admin/capacity_fabric_schema.py"
+      - "admin/capacity_config_transaction.py"
+      - "admin/capacity_control_owner.py"
+      - "admin/capacity_control_transport.py"
+      - "admin/capacity_history.py"
+      - "admin/capacity_intelligence.py"
+      - "admin/capacity_stream.py"
       - "admin/capacity_router.py"
       - "admin/causal_lab.py"
       - "admin/chronicle.py"

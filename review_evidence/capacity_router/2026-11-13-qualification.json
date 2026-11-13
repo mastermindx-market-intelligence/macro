@@ -1,0 +1,188 @@
+{
+  "schema": "mastermind.capacity_router.qualification.v1",
+  "recorded_at": "2026-11-13T02:57:51.910910+00:00",
+  "status": "SOURCE_QUALIFICATION_IN_PROGRESS",
+  "mission_complete": false,
+  "recovered_head": "f77fc850b38491207043bc100fde253c84f6a528",
+  "branch": "sol/web-capacity-router-upgrade-20261113-pro",
+  "operation_id": "capacity-router-upgrade-20261113-pro",
+  "source_law_pin": "c0b30b422d2310e614f91faed49a4adbce4291f0",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "bfa5954b09d3a65283418fd2becbe8de0958229026c719334bef4890b1fbffa4",
+    "admin/CAPACITY_ROUTER.md": "48d4d698e792f516422c06274bd7b3129da430d0b9a43333a97dbc017f393278",
+    "admin/capacity_control_owner.py": "393d95d2a384de5dbb946522920960b39d04f71911695bb23ff76e463a0fab21",
+    "admin/capacity_control_transport.py": "5d88dbb8d3e50a09973aee7ed6512eed4b8ca64bd0f5621d9c8f51146a39e30d",
+    "admin/capacity_fabric_observer.py": "e6b6ff5f50a4c1cc6dd1cab6f336f634d1f23704df7204fef84839ac5628871a",
+    "admin/capacity_ingest.py": "a392ccce54d1dd055a22a4286d329369f697bde69fca94273c1a4abe789b5d7b",
+    "admin/deploy/stage_capacity_observer.py": "69eeb53a4e44f7bf56451d2854b846a41e05c27faeb4cf3659681f8e1e615e08",
+    "admin/server.py": "0d115596f4ce7760c072fec19e34b37cd8966486c28ba50adbe40b0646d51e84",
+    "admin/static/capacity-router.js": "277f8aa9698890e09ba85ed05732733f823d504b429642fee2d69537a4d239fc",
+    "admin/tests/prove_capacity_router_ui.py": "c759ed9edcfe4077fd04c272a7d69dde552ac85a5ea0feac76ac64cbf4f46483",
+    "admin/tests/test_capacity_controls.py": "61b87adf75d9f0ec555d336387562935a67e72dd8dd8b46d1dc1e7f88bc66d88",
+    "admin/tests/test_capacity_history.py": "16639444c47277a26cd5a8c43b84587b14622e1c6a91a1bb38bea77df66b5a52",
+    "admin/capacity_config_transaction.py": "a829a0cfa7b3157ea7b8db3ea10bdf1159d39dedd40da4e5eb83e4ba0546d292",
+    "admin/tests/test_capacity_api.py": "cf0a8a5f733a58e6ca5cf052f7189c3c984c27ea509ac64f7f1db257455778dd",
+    "admin/tests/test_capacity_staging.py": "a19a406d8cde710df77a610c7a2669a99a61339208e36bd10275f409236d84e4",
+    "research/CAPACITY_ROUTER_OBSERVATORY_2026-11-10.md": "8bc4df119079253ef5407236a0ba19cce3f16122e9fa4aa8454faa2fc2474af8",
+    "admin/tests/prove_capacity_launchd.py": "ec7e3914dbfeb0804934b5e40ceceb4f67aeaa96d83c8002fc36729178649329"
+  },
+  "source_diff_sha256": "ad881b102ed9bceee8c0171637ae07e19ce325a3c82e8f2bf9dac331742e6357",
+  "changes": [
+    "Closed the warning-producing test SQLite connection explicitly.",
+    "Shared native configuration writer lock and unresolved-receipt fence.",
+    "Same-operation reconcile-only delivery with current and origin epoch identity; no apply replay.",
+    "Exact installed writer fingerprints gate native controls.",
+    "Complete runtime overlay dependencies and preservation of incumbent export/source manifests.",
+    "Real HTTP auth, CSRF, SSE/reconnect, controls and persisted-history restart proof.",
+    "Rejected POST connections close before unread bytes can be reused.",
+    "Existing CI owner enrolled with complete dependency closure."
+  ],
+  "local_proof": {
+    "history": {
+      "cases": 15,
+      "result": "PASS",
+      "resource_warning_after_fix": false
+    },
+    "controls": {
+      "cases": 34,
+      "result": "PASS"
+    },
+    "api_isolated": {
+      "cases": 6,
+      "result": "PASS"
+    },
+    "staging": {
+      "cases": 4,
+      "result": "PASS"
+    },
+    "ui": {
+      "topology_nodes": 209,
+      "topology_edges": 318,
+      "incremental_node_identity": true,
+      "incremental_row_identity": true,
+      "settings_validation_and_explicit_apply": true,
+      "settings_uncertainty_reconciled_without_apply_replay": true,
+      "mobile_overflow": false,
+      "page_errors": [],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "viewports": [
+        1440,
+        390
+      ],
+      "source": "deterministic synthetic telemetry; not production"
+    },
+    "ui_artifact_sha256": {
+      "dark-settings.png": "2d5e7abbbbb0b19a992f7bd17d71b1dd459c66772a3f7e2bae27943a4af141e1",
+      "dark-topology.png": "dec522df78f20cce5adaa70cbe0049437fa81e25e817ba242096ce4f6cc5cdeb",
+      "dark-requests.png": "744023d55f7fd13e77b4c557be13ce8afda2deae1afe86fabf2faaddb82cb95b",
+      "mobile-light-topology.png": "6f00e57027f4e435773f56ffb127ce181020fef4ef14a8ca14b580c9d358128e",
+      "light-topology.png": "d7c661221e4c1a70243f3f73c0d0548d05d0b59303e637a0ec3152af915bafe4",
+      "dark-intelligence.png": "fa422575ca365a9f985f0ff5c879be3f441e7087955359305216c4fa7ba80c24",
+      "dark-history.png": "9bccc37ea941669a4270556414b8eef397106567b67ebf9c0fe7122548691389",
+      "proof.json": "7c4a6dcf71f1bfbd7a4422cc4e244cd08ba2bde714a7aedca4f6467dc5b39858"
+    },
+    "composition_first": {
+      "cases": 99,
+      "result": "FAIL",
+      "detail": "One HTTP client timeout; all other cases passed. Failure-path client cleanup subsequently repaired."
+    },
+    "composition_diagnostic": {
+      "result": "INTERPRETER_CRASH",
+      "exit_code": 139,
+      "detail": "Conda Python 3.12 process crashed while faulthandler emitted a timed stack. Not accepted as a test pass; root cause not established."
+    },
+    "api_timed_recheck": {
+      "cases": 1,
+      "result": "PASS",
+      "detail": "Actual HTTP validation/apply passed; atomic file synchronization observed at 0.031\u20130.129 seconds."
+    },
+    "linux_composition": {
+      "cases": 99,
+      "result": "PASS",
+      "seconds": 7.971,
+      "environment": "Isolated /tmp source fixture with incumbent VPS application dependencies; served checkout and services untouched",
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "resource_warning": false,
+      "log_sha256": "162f338db6e6bb76127f7253ca334e41dc51cc72b245d94bbb2e5090a1f7c6fc"
+    },
+    "homebrew_composition": {
+      "cases": 99,
+      "result": "PASS",
+      "seconds": 36.084,
+      "python": "Homebrew 3.14.7, explicit /opt/homebrew/bin/python3",
+      "resource_warning": false,
+      "log_sha256": "caa4b482fd9e5b717e6108626ad5412c4ce6315fab0c0665269e1db92f161972"
+    },
+    "ui_capture_note": "Capture returns to the page top before full-page screenshots, so the sticky header is shown at its real initial position.",
+    "mac_environment_diagnosis": "The login shell resolved python3 to Conda 3.12 with a different Playwright build. Explicit Homebrew 3.14.7 runs the entire composition and current browser proof successfully. This does not establish the root cause of the earlier Conda interpreter crash."
+  },
+  "logs": {
+    "sqlite-before": {
+      "sha256": "3e2f18865fda1a4bf64a56d9c1762d635b6287e460308d685b266901f2888f62",
+      "bytes": 1072
+    },
+    "sqlite-after": {
+      "sha256": "cd2fd8cc326cfc7dc973734ebded2cfc695f6b9ff66cf2dafd7d0abb4def26cf",
+      "bytes": 115
+    },
+    "controls-adversarial": {
+      "sha256": "0ffe5980fc5216bde6c002ca7214f5988e79ebe6ea51172838f33a3f16bca523",
+      "bytes": 133
+    },
+    "ui-controls": {
+      "sha256": "7c4a6dcf71f1bfbd7a4422cc4e244cd08ba2bde714a7aedca4f6467dc5b39858",
+      "bytes": 437
+    },
+    "api-fixed": {
+      "sha256": "6f546ddeb990f48573c83d1bc4557176caa82c5ace7e7e3a877f86acb58e21f1",
+      "bytes": 104
+    },
+    "api-timing": {
+      "sha256": "750b010162baa37ead4c2e1a85bf958772c9e71b49ca1c674b2b67a43450cb12",
+      "bytes": 573
+    },
+    "staging": {
+      "sha256": "d307313b5f6871f06ba443b5c5960522d29e58efcd8c519cb461908839046b34",
+      "bytes": 102
+    },
+    "composed": {
+      "sha256": "f30b22cea312d77961a200baeab400ca8721f3752d483c38d42d70c35f5a169a",
+      "bytes": 2545
+    },
+    "composed-timed": {
+      "sha256": "1725cf34a04b8cfb5eafabda42d9d3327cd3b0bf0e6934abecc16f23287f76b8",
+      "bytes": 27317
+    }
+  },
+  "ci_repair": {
+    "failed_job": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/43351141062/job/131642215095",
+    "introduced_missing_paths": 5,
+    "repaired_declared_paths": 6,
+    "hosted_final_head_proof_pending": true
+  },
+  "production_effects": {
+    "vps_deployed": false,
+    "router_restarted": false,
+    "native_writers_installed": false,
+    "router_configuration_changed": false,
+    "browser": "Existing saved browser credential signed into the real admin; upgraded live-dashboard acceptance remains pending."
+  },
+  "runtime_findings": {
+    "installed_gateway_advanced_independently": true,
+    "loaded_launchd_exit_timeout_s": 60,
+    "disk_plist_exit_timeout_s": 1860,
+    "application_graceful_timeout_s": 960,
+    "existing_forced_reload_not_qualified": true
+  },
+  "pending": [
+    "Qualify exact installed runtime overlay and native control owner.",
+    "Publish exact same branch, consume binding CI, Ready and merge-on-green through existing controller.",
+    "Deploy exact accepted source through incumbent VPS owner.",
+    "Qualified native activation with active-work preservation.",
+    "Live browser, SSE/history restart, effective settings and reversible observation-cadence proof.",
+    "Update existing Agent OS continuity and production receipts with readback."
+  ]
+}

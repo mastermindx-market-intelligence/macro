@@ -1,4 +1,5 @@
 import copy
+from contextlib import closing
 import json
 import os
 from pathlib import Path
@@ -145,7 +146,7 @@ class HistoryTests(unittest.TestCase):
         s['prompt'] = 'PRIVATE SECRET PROMPT'
         s['recent'][0]['completion'] = 'PRIVATE SECRET COMPLETION'
         self.write(s)
-        with sqlite3.connect(self.path) as db:
+        with closing(sqlite3.connect(self.path)) as db:
             text = ' '.join(db.iterdump())
         self.assertNotIn('PRIVATE SECRET', text)
 

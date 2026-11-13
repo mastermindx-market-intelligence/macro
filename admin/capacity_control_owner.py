@@ -19,10 +19,11 @@ import stat
 import tempfile
 import time
 
+from .capacity_config_transaction import acquire_writer, WriterBusy, PendingConfiguration, TERMINAL
+
 MAX_CONTROL_BYTES = 64 * 1024
 _SHA = re.compile(r"^[a-f0-9]{64}$")
 _ID = re.compile(r"^[a-f0-9]{32}$")
-TERMINAL = {"VALIDATED", "APPLIED", "NOT_APPLIED", "CONFLICT", "ROLLED_BACK"}
 
 
 def _bytes(value):
@@ -73,6 +74,18 @@ def atomic_private(path, raw):
 
 
 def validate_intent(value):
+    if isinstance(value, dict) and value.get("action") == "reconcile":
+        if set(value) != {"operation_id", "action", "epoch", "request_id", "original"}:
+            raise ValueError("invalid reconciliation envelope")
+        if not _ID.fullmatch(str(value["epoch"])) or not _ID.fullmatch(str(value["request_id"])):
+            raise ValueError("invalid reconciliation identity")
+        original = value["original"]
+        if not isinstance(original, dict) or original.get("action") not in {"apply", "validate"}:
+            raise ValueError("invalid original intent")
+        validate_intent(original)
+        if original["operation_id"] != value["operation_id"]:
+            raise ValueError("reconciliation operation mismatch")
+        return value
     if not isinstance(value, dict) or set(value) != {"operation_id", "action", "epoch", "expires_at", "expected_revision", "patch"}:
         raise ValueError("invalid control envelope")
     if not _ID.fullmatch(str(value["operation_id"])) or not _ID.fullmatch(str(value["epoch"])):
@@ -187,7 +200,8 @@ def projection(app, gateway, *, enabled=False):
         document, revision = gateway.read_document(path)
         rows = _journal(path.with_name(path.name + ".admin-receipts.json"))
         cfg = app.state.settings
-        return {"ok": True, "writable": bool(enabled and revision == owner.digest and not owner.error),
+        return {"ok": True, "writable": bool(enabled and revision == owner.digest and not owner.error
+                                               and all(r.get("state") in TERMINAL for r in rows)),
             "revision": revision, "effective_revision": owner.digest,
             "interval_s": (document.get("observability") or {}).get("interval_s", 2),
             "scope": "future_admissions_only", "aliases": {a: list(m) for a, m in cfg.aliases},
@@ -209,17 +223,16 @@ def handle(request, app, gateway, *, epoch, enabled=False, now=None, refresh_own
     lock_fd = None
     try:
         validate_intent(request)
+        if request["action"] == "reconcile":
+            return reconcile(request, app, gateway, epoch=epoch, now=now, refresh_owner=refresh_owner)
         if not enabled or request["epoch"] != epoch:
             return dict(result, code="CONTROL_NOT_ENABLED_OR_EPOCH_CHANGED")
         owner, path = _owner(app, gateway)
         refresh = refresh_owner or (lambda: owner.refresh(app, gateway._routes_from_document, force=True))
-        lock_fd = os.open(path.with_name(path.name + ".admin-control.lock"), os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
-        if not stat.S_ISREG(os.fstat(lock_fd).st_mode):
-            raise ValueError("invalid owner lock")
         try:
-            fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
-            return dict(result, state="EFFECT_UNKNOWN", code="CONTROL_OWNER_BUSY")
+            lock_fd = acquire_writer(path, operation_id=operation)
+        except (WriterBusy, PendingConfiguration):
+            return dict(result, state="NOT_APPLIED", code="CONTROL_OWNER_BUSY")
         journal_path = path.with_name(path.name + ".admin-receipts.json")
         receipts = _journal(journal_path)
         intent_hash = _digest(_bytes(request))
@@ -228,18 +241,13 @@ def handle(request, app, gateway, *, epoch, enabled=False, now=None, refresh_own
         if prior:
             if prior.get("intent_hash") != intent_hash:
                 return dict(result, code="OPERATION_ID_CONFLICT", state="CONFLICT")
-            if prior["state"] != "PREPARED":
+            if prior["state"] in TERMINAL:
                 return {**prior, "epoch": epoch}
-            if revision == prior["after_revision"]:
-                effective = refresh()
-                prior.update(state="APPLIED" if effective and owner.digest == revision else "EFFECT_UNKNOWN",
-                             code="RECONCILED_AFTER_INTERRUPTION", effective_revision=owner.digest, at=now)
-            elif revision == prior["before_revision"]:
-                prior.update(state="NOT_APPLIED", code="INTERRUPTED_BEFORE_WRITE", at=now)
-            else:
-                prior.update(state="EFFECT_UNKNOWN", code="CONFIGURATION_CHANGED_DURING_INTERRUPTION", at=now)
-            atomic_private(journal_path, _bytes(receipts))
-            return {**prior, "epoch": epoch}
+            os.close(lock_fd)
+            lock_fd = None
+            return reconcile({"operation_id": operation, "action": "reconcile", "epoch": epoch,
+                              "request_id": operation, "original": request},
+                             app, gateway, epoch=epoch, now=now, refresh_owner=refresh_owner)
         if request["expires_at"] < now or request["expires_at"] > now + 60:
             return dict(result, code="CONTROL_EXPIRED")
         if revision != request["expected_revision"]:
@@ -256,7 +264,9 @@ def handle(request, app, gateway, *, epoch, enabled=False, now=None, refresh_own
         if candidate == document:
             # A no-op is readback, not fabricated write proof.
             return dict(receipt, state="NOT_APPLIED", code="NO_CHANGES", after_revision=revision)
-        receipt.update(state="PREPARED", code="PREPARED")
+        meta = path.stat()
+        receipt.update(state="PREPARED", code="PREPARED",
+                       before_file_identity=[meta.st_dev, meta.st_ino, meta.st_size, meta.st_mtime_ns, meta.st_ctime_ns])
         receipts = (receipts + [receipt])[-100:]
         atomic_private(journal_path, _bytes(receipts))
         # Recheck under the same writer lock immediately before atomic replacement.
@@ -284,3 +294,65 @@ def handle(request, app, gateway, *, epoch, enabled=False, now=None, refresh_own
     finally:
         if lock_fd is not None:
             os.close(lock_fd)
+
+
+def reconcile(request, app, gateway, *, epoch, now=None, refresh_owner=None):
+    """Observe/fence one original operation; never write its configuration patch."""
+    now = time.time() if now is None else now
+    original = request["original"]
+    result = {"operation_id": request["operation_id"], "request_id": request["request_id"],
+              "epoch": epoch, "origin_epoch": original["epoch"], "at": now,
+              "state": "EFFECT_UNKNOWN", "code": "CONTROL_RECONCILIATION_REQUIRED"}
+    if request["epoch"] != epoch:
+        return dict(result, code="OBSERVED_EPOCH_CHANGED")
+    fd = None
+    try:
+        owner, path = _owner(app, gateway)
+        fd = acquire_writer(path, operation_id=original["operation_id"])
+        journal_path = path.with_name(path.name + ".admin-receipts.json")
+        rows = _journal(journal_path)
+        prior = next((r for r in rows if r["operation_id"] == original["operation_id"]), None)
+        intent_hash = _digest(_bytes(original))
+        if prior is None:
+            if not journal_path.is_file():
+                return dict(result, code="RECEIPT_STORE_CONTINUITY_UNKNOWN")
+            # No prepared write exists. Fence a late original delivery with a durable
+            # terminal receipt under the same lock before releasing this operation.
+            # A changed configuration cannot establish that history was intact.
+            document, revision = gateway.read_document(path)
+            if revision != original["expected_revision"]:
+                return dict(result, code="MISSING_RECEIPT_CONFIGURATION_CHANGED")
+            prior = {**result, "epoch": original["epoch"], "intent_hash": intent_hash,
+                     "state": "NOT_APPLIED", "code": "NO_PREPARED_WRITE_FENCED",
+                     "before_revision": revision, "after_revision": revision,
+                     "effective_revision": owner.digest}
+            rows = (rows + [prior])[-100:]
+        elif prior.get("intent_hash") != intent_hash:
+            return dict(result, code="OPERATION_ID_CONFLICT")
+        elif prior["state"] in TERMINAL:
+            return {**prior, **{k: result[k] for k in ("request_id", "epoch", "origin_epoch")}}
+        else:
+            document, revision = gateway.read_document(path)
+            refresh = refresh_owner or (lambda: owner.refresh(app, gateway._routes_from_document, force=True))
+            if revision == prior["after_revision"]:
+                effective = refresh()
+                if effective and owner.digest == revision and gateway.read_document(path)[1] == revision:
+                    prior.update(state="APPLIED", code="RECONCILED_EFFECTIVE_REVISION", effective_revision=owner.digest, at=now)
+                else:
+                    prior.update(state="EFFECT_UNKNOWN", code="NATIVE_ADOPTION_NOT_CONFIRMED", at=now)
+            elif revision == prior["before_revision"]:
+                meta = path.stat()
+                identity = [meta.st_dev, meta.st_ino, meta.st_size, meta.st_mtime_ns, meta.st_ctime_ns]
+                if identity == prior.get("before_file_identity"):
+                    prior.update(state="NOT_APPLIED", code="INTERRUPTED_BEFORE_WRITE", at=now)
+                else:
+                    prior.update(state="EFFECT_UNKNOWN", code="PREIMAGE_WRITER_CONTINUITY_UNKNOWN", at=now)
+            else:
+                prior.update(state="EFFECT_UNKNOWN", code="CONFIGURATION_CHANGED_DURING_INTERRUPTION", at=now)
+        atomic_private(journal_path, _bytes(rows))
+        return {**prior, **{k: result[k] for k in ("request_id", "epoch", "origin_epoch")}}
+    except (WriterBusy, PendingConfiguration, OSError, ValueError, TypeError, KeyError, AttributeError):
+        return result
+    finally:
+        if fd is not None:
+            os.close(fd)

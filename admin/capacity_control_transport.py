@@ -44,7 +44,7 @@ def clean_receipt(value):
     for key in ("before_revision", "after_revision", "effective_revision"):
         item = value.get(key)
         result[key] = item if isinstance(item, str) and _SHA.fullmatch(item) else None
-    for key in ("epoch",):
+    for key in ("epoch", "origin_epoch", "request_id"):
         item = value.get(key)
         result[key] = item if isinstance(item, str) and _ID.fullmatch(item) else None
     code = value.get("code", "")
@@ -54,6 +54,24 @@ def clean_receipt(value):
     result["retry_allowed"] = False
     return result
 
+
+
+def _matching_receipt(pending, cached, projected):
+    """Native terminal evidence outranks a stale cached uncertain transport reply."""
+    candidates = [r for r in [cached, *projected] if isinstance(r, dict)
+                  and r.get("operation_id") == pending["operation_id"]]
+    terminal = [r for r in candidates if r.get("state") in TERMINAL]
+    return max(terminal or candidates, key=lambda r: r.get("at") or 0, default=None)
+
+
+def _request_identity(request):
+    return request.get("request_id") or request["operation_id"]
+
+
+def _response_matches(response, request):
+    return (isinstance(response, dict) and response.get("operation_id") == request["operation_id"]
+            and (response.get("request_id") or response["operation_id"]) == _request_identity(request)
+            and response.get("epoch") == request["epoch"])
 
 def settings(*, path=None, now=None):
     live = capacity_router.panel(15, path=path, now=now)
@@ -69,8 +87,7 @@ def settings(*, path=None, now=None):
         pending, receipt = _read(request_path), _read(result_path)
         if pending:
             validate_intent(pending)
-            matching = receipt if receipt and receipt.get("operation_id") == pending["operation_id"] else next(
-                (r for r in controls.get("receipts", []) if r.get("operation_id") == pending["operation_id"]), None)
+            matching = _matching_receipt(pending, receipt, controls.get("receipts", []))
             if matching:
                 result["last_operation"] = clean_receipt(matching)
                 if matching.get("state") not in TERMINAL:
@@ -85,6 +102,8 @@ def settings(*, path=None, now=None):
 
 def submit(body, *, path=None, now=None, timeout=8):
     now = time.time() if now is None else now
+    if isinstance(body, dict) and body.get("action") == "reconcile":
+        return reconcile_pending(body, path=path, now=now, timeout=timeout)
     if not isinstance(body, dict) or set(body) != {"action", "expected_revision", "patch"}:
         return {"ok": False, "state": "NOT_APPLIED", "error": "Invalid settings request"}, 400
     live = settings(path=path, now=now)
@@ -119,8 +138,7 @@ def submit(body, *, path=None, now=None, timeout=8):
         old, receipt = _read(request_path), _read(result_path)
         if old:
             validate_intent(old)
-            matched = receipt if receipt and receipt.get("operation_id") == old["operation_id"] else next(
-                (r for r in live.get("receipts", []) if r.get("operation_id") == old["operation_id"]), None)
+            matched = _matching_receipt(old, receipt, live.get("receipts", []))
             if not matched or matched.get("state") not in TERMINAL:
                 return {"ok": False, "state": "EFFECT_UNKNOWN", "operation_id": old["operation_id"],
                         "retry_allowed": False, "error": "Reconcile the existing operation before another write"}, 409
@@ -128,7 +146,7 @@ def submit(body, *, path=None, now=None, timeout=8):
         deadline = time.monotonic() + min(10, max(0, timeout))
         while time.monotonic() < deadline:
             response = _read(result_path)
-            if response and response.get("operation_id") == intent["operation_id"]:
+            if _response_matches(response, intent):
                 response = clean_receipt(response)
                 response["ok"] = response["state"] in {"VALIDATED", "APPLIED"}
                 return response, 200 if response["ok"] else 409
@@ -153,7 +171,7 @@ def next_request(epoch, *, path=None):
         if request["epoch"] != epoch:
             return None
         receipt = _read(result_path)
-        if receipt and receipt.get("operation_id") == request["operation_id"]:
+        if _response_matches(receipt, request):
             return None
         return request
     except (OSError, ValueError, TypeError):
@@ -164,7 +182,58 @@ def accept_result(value, *, path=None):
     request_path, result_path, _ = paths(path)
     receipt = clean_receipt(value)
     request = _read(request_path)
-    if not request or receipt["operation_id"] != request.get("operation_id") or receipt["epoch"] != request.get("epoch"):
+    if not request or not _response_matches(receipt, request):
+        return False
+    previous = _read(result_path)
+    if (previous and previous.get("operation_id") == receipt["operation_id"]
+            and previous.get("state") in TERMINAL and receipt["state"] not in TERMINAL):
         return False
     atomic_private(result_path, (json.dumps(receipt, separators=(",", ":"))+"\n").encode())
     return True
+
+
+def reconcile_pending(body, *, path=None, now=None, timeout=8):
+    """Explicit read/adopt reconciliation of the original operation, never apply."""
+    now = time.time() if now is None else now
+    if set(body) != {"action", "operation_id"} or not _ID.fullmatch(str(body.get("operation_id", ""))):
+        return {"ok": False, "error": "Invalid reconciliation request", "state": "NOT_APPLIED"}, 400
+    live = capacity_router.panel(15, path=path, now=now)
+    if live.get("state") != "live" or not (live.get("controls") or {}).get("ok"):
+        return {"ok": False, "error": "Live native ownership is required for reconciliation", "state": "EFFECT_UNKNOWN"}, 503
+    request_path, result_path, lock_path = paths(path)
+    fd = None
+    try:
+        fd = os.open(lock_path, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return {"ok": False, "error": "The original operation is still being observed", "state": "EFFECT_UNKNOWN"}, 409
+        pending = _read(request_path)
+        if not pending or pending.get("operation_id") != body["operation_id"]:
+            return {"ok": False, "error": "No matching pending operation", "state": "NOT_APPLIED"}, 409
+        validate_intent(pending)
+        matched = _matching_receipt(pending, _read(result_path), live["controls"].get("receipts", []))
+        if matched and matched.get("state") in TERMINAL:
+            result = clean_receipt(matched)
+            return {**result, "ok": True, "reconciled": True}, 200
+        original = pending["original"] if pending["action"] == "reconcile" else pending
+        request = {"operation_id": original["operation_id"], "action": "reconcile", "epoch": live["epoch"],
+                   "request_id": uuid.uuid4().hex, "original": original}
+        validate_intent(request)
+        atomic_private(request_path, (json.dumps(request, separators=(",", ":"))+"\n").encode())
+        deadline = time.monotonic() + min(10, max(0, timeout))
+        while time.monotonic() < deadline:
+            response = _read(result_path)
+            if _response_matches(response, request):
+                result = clean_receipt(response)
+                terminal = result["state"] in TERMINAL
+                return {**result, "ok": terminal, "reconciled": terminal}, 200 if terminal else 409
+            time.sleep(.1)
+        return {"ok": False, "state": "EFFECT_UNKNOWN", "operation_id": original["operation_id"],
+                "retry_allowed": False, "error": "Reconciliation pending; no configuration patch was replayed."}, 202
+    except (OSError, ValueError, TypeError, KeyError):
+        return {"ok": False, "state": "EFFECT_UNKNOWN", "operation_id": body["operation_id"],
+                "retry_allowed": False, "error": "Original operation remains fenced."}, 503
+    finally:
+        if fd is not None:
+            os.close(fd)

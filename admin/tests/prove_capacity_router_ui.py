@@ -17,7 +17,7 @@ from admin.capacity_intelligence import analyze
 from admin.capacity_stream import delta
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / 'verify_shots/capacity-router-upgrade-20261113'
+OUT = Path(__import__('os').environ.get('CAPACITY_UI_PROOF_DIR', str(ROOT / 'verify_shots/capacity-router-upgrade-20261113')))
 
 
 def fixture():
@@ -53,6 +53,10 @@ def fixture():
 def run():
     OUT.mkdir(parents=True,exist_ok=True)
     data,history=fixture();errors=[];proof={}
+    controls={'ok':True,'writable':False,'routes':data['routes'],'aliases':data['aliases'],
+              'epoch':data['epoch'],'revision':'b'*64,'effective_revision':'b'*64,'interval_s':2,
+              'message':'Fixture: native configuration owner.'}
+    control_calls=[];uncertain_apply=[False]
     with sync_playwright() as p:
         browser=p.chromium.launch(headless=True)
         context=browser.new_context(viewport={'width':1440,'height':1080},device_scale_factor=1,timezone_id='America/Los_Angeles')
@@ -66,7 +70,25 @@ def run():
             if path=='/api/capacity-router':return route.fulfill(json=data)
             if path=='/api/capacity-router/history':return route.fulfill(json=history)
             if path=='/api/capacity-router/intelligence':return route.fulfill(json=analyze(data,history,now=data['generated_at']))
-            if path=='/api/capacity-router/settings':return route.fulfill(json={'ok':True,'writable':False,'routes':data['routes'],'message':'Fixture: read-only live configuration.'})
+            if path=='/api/capacity-router/settings':
+                if route.request.method=='GET':return route.fulfill(json=controls)
+                body=route.request.post_data_json;control_calls.append(body)
+                operation=f'{len(control_calls):032x}'
+                if body['action']=='reconcile':
+                    assert body['operation_id']==controls['last_operation']['operation_id']
+                    receipt=dict(controls['last_operation'],state='APPLIED',ok=True)
+                    controls.update(writable=True,last_operation=receipt)
+                    return route.fulfill(json=receipt)
+                if body['expected_revision']!=controls['revision']:
+                    return route.fulfill(status=409,json={'ok':False,'state':'CONFLICT','code':'CONFIGURATION_REVISION_CHANGED'})
+                if body['action']=='validate':return route.fulfill(json={'ok':True,'state':'VALIDATED','operation_id':operation})
+                controls['interval_s']=body['patch'].get('interval_s',controls['interval_s'])
+                controls['revision']=controls['effective_revision']=f'{len(control_calls):064x}'
+                if uncertain_apply[0]:
+                    receipt={'ok':False,'state':'EFFECT_UNKNOWN','operation_id':operation}
+                    controls.update(writable=False,last_operation=receipt)
+                    return route.fulfill(status=202,json=receipt)
+                return route.fulfill(json={'ok':True,'state':'APPLIED','operation_id':operation})
             return route.fulfill(status=404,json={'error':'fixture route not provided'})
         context.route('https://capacity.test/**',respond)
         page=context.new_page();page.on('pageerror',lambda e:(errors.append(str(e)),print('BROWSER_ERROR',str(e),flush=True)))
@@ -74,32 +96,78 @@ def run():
         proof['topology_nodes']=page.locator('.cf-node').count();proof['topology_edges']=page.locator('.cf-edge').count()
         assert proof['topology_nodes']>=36+37+60+4+72,proof
         assert page.locator('.cf-overflow').count()==0
+        page.evaluate('window.retainedNode=document.querySelector(".cf-node")')
+        topology_changed=copy.deepcopy(data);topology_changed['sequence']=2;topology_changed['active'][1]['content_events']+=1
+        event,body=delta(data,topology_changed)
+        page.evaluate('([event,body])=>window.__streams.at(-1).emit(event,body)',[event,body])
+        assert page.evaluate('window.retainedNode===document.querySelector(".cf-node")'),'topology node replaced'
+        proof['incremental_node_identity']=True;data=topology_changed
+        page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
         page.screenshot(path=str(OUT/'dark-topology.png'),full_page=True)
         page.locator('.cf-tabs [data-view=requests]').click();page.wait_for_selector('.cf-request-panel tbody tr')
         page.evaluate('window.retainedRow=document.querySelector(".cf-request-panel tbody tr")')
-        changed=copy.deepcopy(data);changed['sequence']=2;changed['active'][0]['content_events']+=9;changed['active'][0]['usage']['output_tokens']=33
+        changed=copy.deepcopy(data);changed['sequence']=3;changed['active'][0]['content_events']+=9;changed['active'][0]['usage']['output_tokens']=33
         event,body=delta(data,changed)
         page.evaluate('([event,body])=>window.__streams.at(-1).emit(event,body)',[event,body])
         assert page.evaluate('window.retainedRow===document.querySelector(".cf-request-panel tbody tr")'),'request row replaced'
         assert page.locator('.cf-request-panel tbody tr').first.get_attribute('data-version').endswith(':33')
         proof['incremental_row_identity']=True
+        page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
         page.screenshot(path=str(OUT/'dark-requests.png'),full_page=True)
         page.locator('.cf-tabs [data-view=history]').click();page.wait_for_selector('.cf-history-metrics')
         page.locator('[data-field=window]').select_option('0');page.wait_for_selector('.cf-history-metrics')
         assert 'All recorded consumption' in page.locator('.cf-view').inner_text()
+        page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
         page.screenshot(path=str(OUT/'dark-history.png'),full_page=True)
         page.locator('.cf-tabs [data-view=intelligence]').click();page.wait_for_selector('.cf-intelligence-table')
         assert page.locator('.cf-intelligence-table tbody tr').count()==60
+        page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
         page.screenshot(path=str(OUT/'dark-intelligence.png'),full_page=True)
         page.locator('.cf-tabs [data-view=settings]').click();page.wait_for_selector('.cf-settings-form')
         assert page.locator('[data-action=apply-settings]').is_disabled()
+        controls['writable']=True
+        page.locator('[data-action=discard-settings]').click()
+        page.wait_for_function('!document.querySelector("[data-setting=interval]").disabled')
+        priority=page.locator('input[data-setting=priority]').first
+        priority.fill('-1');page.locator('[data-action=preview-settings]').click()
+        assert not control_calls,'invalid value reached transport'
+        priority.fill('10')
+        page.locator('[data-setting=interval]').select_option('0.5')
+        page.locator('[data-action=preview-settings]').click()
+        page.wait_for_function('!document.querySelector("[data-action=apply-settings]").disabled')
+        page.locator('[data-setting=interval]').select_option('1')
+        assert page.locator('[data-action=apply-settings]').is_disabled(),'edited form retained stale validation'
+        page.locator('[data-setting=interval]').select_option('0.5')
+        page.locator('[data-action=preview-settings]').click()
+        page.wait_for_function('!document.querySelector("[data-action=apply-settings]").disabled')
+        page.locator('[data-action=apply-settings]').click()
+        page.wait_for_function('window.fixtureState.settings?.interval_s===0.5&&!window.fixtureState.settingsPending')
+        assert controls['interval_s']==.5
+        proof['settings_validation_and_explicit_apply']=True
+        uncertain_apply[0]=True
+        page.locator('[data-setting=interval]').select_option('1')
+        page.locator('[data-action=preview-settings]').click()
+        page.wait_for_function('!document.querySelector("[data-action=apply-settings]").disabled')
+        page.locator('[data-action=apply-settings]').click()
+        page.wait_for_function('window.fixtureState.settingsEffectUnknown&&!window.fixtureState.settingsPending')
+        assert page.locator('[data-action=apply-settings]').is_disabled()
+        count=sum(c['action']=='apply' for c in control_calls)
+        page.locator('[data-action=discard-settings]').click()
+        page.wait_for_function('window.fixtureState.settings?.writable&&!window.fixtureState.settingsPending')
+        assert sum(c['action']=='apply' for c in control_calls)==count
+        assert control_calls[-1]['action']=='reconcile'
+        proof['settings_uncertainty_reconciled_without_apply_replay']=True
+        page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
+        page.screenshot(path=str(OUT/'dark-settings.png'),full_page=True)
         page.evaluate('document.documentElement.dataset.theme="light"')
         page.locator('.cf-tabs [data-view=flow]').click();page.wait_for_selector('.cf-topology')
+        page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
         page.screenshot(path=str(OUT/'light-topology.png'),full_page=True)
         page.set_viewport_size({'width':390,'height':844});page.emulate_media(reduced_motion='reduce')
         page.evaluate('window.fixtureState.visibility()');page.wait_for_timeout(100)
         proof['mobile_overflow']=page.evaluate('document.documentElement.scrollWidth>innerWidth+1')
         assert not proof['mobile_overflow'],'page overflows at 390px'
+        page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
         page.screenshot(path=str(OUT/'mobile-light-topology.png'),full_page=True)
         assert not errors,errors
         proof['page_errors']=errors;proof['themes']=['dark','light'];proof['viewports']=[1440,390];proof['source']='deterministic synthetic telemetry; not production'

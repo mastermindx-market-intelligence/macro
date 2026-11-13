@@ -694,6 +694,25 @@ async def poll_claude_lanes(store, config):
         await asyncio.sleep(30)
 
 
+
+def control_writers_ready(config):
+    """Enrollment proves the actual installed native writers share one transaction."""
+    rows = config.get("control_writers")
+    if not isinstance(rows, list) or not 1 <= len(rows) <= 16:
+        return False
+    try:
+        for row in rows:
+            if not isinstance(row, dict) or set(row) != {"path", "sha256"}:
+                return False
+            path = Path(row["path"])
+            if not path.is_absolute() or path.is_symlink() or not path.is_file() or path.stat().st_size > 256 * 1024:
+                return False
+            if hashlib.sha256(path.read_bytes()).hexdigest() != row["sha256"]:
+                return False
+        return True
+    except (OSError, ValueError, TypeError, KeyError):
+        return False
+
 async def publish_snapshots(app, store, config, *, gateway=None):
     """Coalesced latest-value observation and bounded RPC on the same SSH pipe.
 
@@ -708,7 +727,7 @@ async def publish_snapshots(app, store, config, *, gateway=None):
     send_lock = asyncio.Lock()
     delay, last_controls = 2, 0.0
     loop = asyncio.get_running_loop()
-    enabled = config.get("controls_enabled") is True and gateway is not None
+    controls_requested = config.get("controls_enabled") is True and gateway is not None
 
     def refresh_on_loop():
         future = concurrent.futures.Future()
@@ -734,7 +753,7 @@ async def publish_snapshots(app, store, config, *, gateway=None):
             raw = await target.stdout.readline()
             if not raw:
                 return
-            if len(raw) > capacity_control_owner.MAX_CONTROL_BYTES or not enabled:
+            if len(raw) > capacity_control_owner.MAX_CONTROL_BYTES or gateway is None:
                 continue
             try:
                 envelope = json.loads(raw)
@@ -744,10 +763,12 @@ async def publish_snapshots(app, store, config, *, gateway=None):
                 capacity_control_owner.validate_intent(request)
                 if operation_task and not operation_task.done():
                     await asyncio.shield(operation_task)
+                enabled = controls_requested and await asyncio.to_thread(control_writers_ready, config)
                 operation_task = asyncio.create_task(asyncio.to_thread(capacity_control_owner.handle,
                     request, app, gateway, epoch=store.epoch, enabled=enabled, refresh_owner=refresh_on_loop))
                 result = await asyncio.shield(operation_task)
                 result["epoch"] = store.epoch
+                result["request_id"] = request.get("request_id") or request["operation_id"]
                 body = (json.dumps({"control_result": result}, separators=(",", ":"), allow_nan=False)+"\n").encode()
                 await send(target, body)
                 last_controls = 0.0
@@ -771,6 +792,7 @@ async def publish_snapshots(app, store, config, *, gateway=None):
                 if reader is not None and reader.done():
                     raise ConnectionError("observation control reader exited")
                 if gateway is not None and time.monotonic()-last_controls >= 1:
+                    enabled = controls_requested and await asyncio.to_thread(control_writers_ready, config)
                     store._control_cache = await asyncio.to_thread(capacity_control_owner.projection, app, gateway, enabled=enabled)
                     last_controls = time.monotonic()
                 interval = (store._control_cache or {}).get("interval_s", 2)

@@ -462,7 +462,7 @@
     const d=s.settings;
     if(!d)return `<section class="cf-panel cf-initial" data-key="settings">${empty("Reading live router controls","Checking the incumbent configuration owner and its effective revision.")}</section>`;
     const routes=d.routes||s.data.routes||[],editable=!!d.writable;
-    return `<section class="cf-panel" data-key="settings"><div class="cf-panel-heading"><div><span class="cf-section-kicker">LIVE ROUTER SETTINGS</span><h2>Explicit changes. Verified application.</h2></div><span class="cf-state ${editable?"completed":"waiting"}">${editable?"Connected control owner":"Read-only until control owner is connected"}</span></div><p class="cf-history-foot">${escape(d.message||"Changes target the existing router configuration and affect future admissions. Credentials, provider enrollment and paid-routing permissions are not editable here.")}</p><div class="cf-settings-revision"><span>Configured revision <code>${escape(d.revision||"Not reported")}</code></span><span>Effective revision <code>${escape(d.effective_revision||"Not reported")}</code></span></div><div class="cf-settings-form"><div class="cf-settings-global"><label>Telemetry update interval <select data-setting="interval" ${!editable?"disabled":""}>${[.25,.5,1,2,5].map(v=>`<option value="${v}" ${v===(d.interval_s||2)?"selected":""}>${v} seconds</option>`).join("")}</select><small>Observation only; does not change inference limits.</small></label><label>Apply safety <strong>Compare-and-swap revision</strong><small>A stale form cannot overwrite a newer configuration.</small></label></div><div class="cf-table-scroll"><table class="cf-history-table"><thead><tr><th>Route</th><th>Pool</th><th>Base priority</th><th>Base weight</th><th>Effective models</th></tr></thead><tbody>${routes.map(r=>`<tr data-key="setting:${escape(r.id)}"><td><b>${escape(r.id)}</b></td><td>${escape(r.provider||"")}</td><td><input type="number" min="0" max="100000" step="1" data-route="${escape(r.id)}" data-setting="priority" aria-label="Priority for ${escape(r.id)}" value="${r.priority}" ${!editable?"disabled":""}></td><td><input type="number" min="0" max="1000" step="0.1" data-route="${escape(r.id)}" data-setting="weight" aria-label="Weight for ${escape(r.id)}" value="${r.weight}" ${!editable?"disabled":""}></td><td><details class="cf-route-overrides"><summary>${(r.models||[]).length} models / per-model overrides</summary>${(r.models||[]).map(m=>`<div class="cf-override-row"><b>${escape(m)}</b><label>Priority <input type="number" min="0" max="100000" step="1" data-route="${escape(r.id)}" data-model="${escape(m)}" data-setting="model_priority" aria-label="${escape(m)} priority on ${escape(r.id)}" value="${(r.model_priority||{})[m]??r.priority}" ${!editable?"disabled":""}></label><label>Weight <input type="number" min="0" max="1000" step="0.1" data-route="${escape(r.id)}" data-model="${escape(m)}" data-setting="model_weight" aria-label="${escape(m)} weight on ${escape(r.id)}" value="${(r.model_weight||{})[m]??r.weight}" ${!editable?"disabled":""}></label></div>`).join("")}</details></td></tr>`).join("")}</tbody></table></div><div class="cf-settings-actions"><button type="button" class="cf-button" data-action="preview-settings" ${!editable?"disabled":""}>Validate changes</button><button type="button" class="cf-button" data-action="apply-settings" disabled>Apply validated changes</button><button type="button" class="cf-text-button" data-action="discard-settings">Reload effective settings</button><span class="cf-settings-result" role="status">${d.last_operation?"Last operation: "+escape(d.last_operation.state)+" / "+escape(d.last_operation.operation_id):s.lastSettingsReceipt?"Verified operation: "+escape(s.lastSettingsReceipt.state)+" / "+escape(s.lastSettingsReceipt.operation_id):"No changes applied."}</span></div></div></section>`;
+    return `<section class="cf-panel" data-key="settings"><div class="cf-panel-heading"><div><span class="cf-section-kicker">LIVE ROUTER SETTINGS</span><h2>Explicit changes. Verified application.</h2></div><span class="cf-state ${editable?"completed":"waiting"}">${editable?"Connected control owner":"Read-only until control owner is connected"}</span></div><p class="cf-history-foot">${escape(d.message||"Changes target the existing router configuration and affect future admissions. Credentials, provider enrollment and paid-routing permissions are not editable here.")}</p><div class="cf-settings-revision"><span>Configured revision <code>${escape(d.revision||"Not reported")}</code></span><span>Effective revision <code>${escape(d.effective_revision||"Not reported")}</code></span></div><div class="cf-settings-form"><div class="cf-settings-global"><label>Telemetry update interval <select data-setting="interval" ${!editable?"disabled":""}>${[.25,.5,1,2,5].map(v=>`<option value="${v}" ${v===(d.interval_s||2)?"selected":""}>${v} seconds</option>`).join("")}</select><small>Observation only; does not change inference limits.</small></label><label>Apply safety <strong>Shared writer lock + revision check</strong><small>The native writers serialize changes and reject stale revisions.</small></label></div><div class="cf-table-scroll"><table class="cf-history-table"><thead><tr><th>Route</th><th>Pool</th><th>Base priority</th><th>Base weight</th><th>Effective models</th></tr></thead><tbody>${routes.map(r=>`<tr data-key="setting:${escape(r.id)}"><td><b>${escape(r.id)}</b></td><td>${escape(r.provider||"")}</td><td><input type="number" min="0" max="100000" step="1" data-route="${escape(r.id)}" data-setting="priority" aria-label="Priority for ${escape(r.id)}" value="${r.priority}" ${!editable?"disabled":""}></td><td><input type="number" min="0" max="1000" step="0.1" data-route="${escape(r.id)}" data-setting="weight" aria-label="Weight for ${escape(r.id)}" value="${r.weight}" ${!editable?"disabled":""}></td><td><details class="cf-route-overrides"><summary>${(r.models||[]).length} models / per-model overrides</summary>${(r.models||[]).map(m=>`<div class="cf-override-row"><b>${escape(m)}</b><label>Priority <input type="number" min="0" max="100000" step="1" data-route="${escape(r.id)}" data-model="${escape(m)}" data-setting="model_priority" aria-label="${escape(m)} priority on ${escape(r.id)}" value="${(r.model_priority||{})[m]??r.priority}" ${!editable?"disabled":""}></label><label>Weight <input type="number" min="0" max="1000" step="0.1" data-route="${escape(r.id)}" data-model="${escape(m)}" data-setting="model_weight" aria-label="${escape(m)} weight on ${escape(r.id)}" value="${(r.model_weight||{})[m]??r.weight}" ${!editable?"disabled":""}></label></div>`).join("")}</details></td></tr>`).join("")}</tbody></table></div><div class="cf-settings-actions"><button type="button" class="cf-button" data-action="preview-settings" ${!editable?"disabled":""}>Validate changes</button><button type="button" class="cf-button" data-action="apply-settings" disabled>Apply validated changes</button><button type="button" class="cf-text-button" data-action="discard-settings">Reload effective settings</button><span class="cf-settings-result" role="status">${d.last_operation?"Last operation: "+escape(d.last_operation.state)+" / "+escape(d.last_operation.operation_id):s.lastSettingsReceipt?"Verified operation: "+escape(s.lastSettingsReceipt.state)+" / "+escape(s.lastSettingsReceipt.operation_id):"No changes applied."}</span></div></div></section>`;
   }
 
   function markSettingsEdited(s) {
@@ -515,7 +515,7 @@
       } else {
         s.validatedSettings=null;result.textContent=(data.error||data.code||data.state||"No application confirmed")+operation;
         if(data.state==="EFFECT_UNKNOWN"||response.status===202){
-          s.settings.writable=false;s.settingsEffectUnknown=true;
+          s.settings.writable=false;s.settingsEffectUnknown=true;s.settings.last_operation=data;
           result.textContent+=" Do not repeat the write. Reload effective settings to reconcile the receipt.";
         }
       }
@@ -532,6 +532,42 @@
     }
   }
 
+  async function reloadSettings(s) {
+    if(s.settingsPending)return;
+    s.settingsPending=true;s.validatedSettings=null;
+    const terminal=new Set(["VALIDATED","APPLIED","NOT_APPLIED","CONFLICT","ROLLED_BACK"]);
+    const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
+    const options={credentials:"same-origin",cache:"no-store",signal:controller.signal};
+    try {
+      let response=await fetch("/api/capacity-router/settings",options);
+      if(response.status===401){unmount();if(s.options.onAuthFailure)s.options.onAuthFailure();return;}
+      if(!response.ok)throw new Error("Effective settings are unavailable.");
+      let current=await response.json();
+      const pending=current.last_operation;
+      if(pending&&pending.operation_id&&!terminal.has(pending.state)) {
+        const cookie=document.cookie.split(';').map(v=>v.trim()).find(v=>v.startsWith('admin_csrf='));
+        const headers={'Content-Type':'application/json'};
+        if(cookie)headers['X-CSRF-Token']=decodeURIComponent(cookie.slice('admin_csrf='.length));
+        response=await fetch('/api/capacity-router/settings',{...options,method:'POST',headers,
+          body:JSON.stringify({action:'reconcile',operation_id:pending.operation_id})});
+        if(response.status===401){unmount();if(s.options.onAuthFailure)s.options.onAuthFailure();return;}
+        const receipt=await response.json();
+        if(terminal.has(receipt.state))s.lastSettingsReceipt=receipt;
+        response=await fetch('/api/capacity-router/settings',options);
+        if(!response.ok)throw new Error('Settings readback is unavailable. The original operation remains fenced.');
+        current=await response.json();
+      }
+      if(s.disposed)return;
+      s.settings=current;s.settingsEditing=false;
+      s.settingsEffectUnknown=!!(current.last_operation&&!terminal.has(current.last_operation.state));
+    } catch(error) {
+      if(!s.disposed&&s.settings){s.settings.writable=false;s.settings.message='Unable to reconcile the native owner. No configuration write was repeated.';}
+    } finally {
+      clearTimeout(timeout);s.settingsPending=false;
+      if(!s.disposed&&s.root.isConnected)renderView(s);
+    }
+  }
+
   function handleClick(s,e) {
     const selected=e.target.closest("[data-select]");
     if(selected) {if(selected.dataset.revealParent){s.query="";s.model="all";s.status="all";s.root.querySelector("[data-field=search]").value="";s.root.querySelector("[data-field=model]").value="all";s.root.querySelector("[data-field=status]").value="all";}s.selected={kind:selected.dataset.select,id:selected.dataset.id};s.page=0;renderView(s);renderInspector(s);return;}
@@ -541,7 +577,7 @@
     switch(action.dataset.action) {
       case "preview-settings":changeSettings(s,"validate");break;
       case "apply-settings":changeSettings(s,"apply");break;
-      case "discard-settings":if(!s.settingsPending){s.settingsEditing=false;s.validatedSettings=null;s.settingsEffectUnknown=false;s.settings=null;renderView(s);loadSupplement(s);}break;
+      case "discard-settings":reloadSettings(s);break;
       case "pause": s.paused=!s.paused;action.innerHTML=icon(s.paused?"play":"pause")+`<span>${s.paused?"Resume":"Pause"}</span>`;updateConnection(s);if(s.paused){closeStream(s);clearTimeout(s.timer);}else{restartConnection(s);loadSupplement(s);}break;
       case "refresh": if(!s.paused){restartConnection(s);loadSupplement(s);}break;
       case "fullscreen": if(document.fullscreenElement)document.exitFullscreen();else if(s.root.requestFullscreen)s.root.requestFullscreen().catch(()=>{});break;
