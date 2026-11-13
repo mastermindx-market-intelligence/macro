@@ -36988,6 +36988,7 @@ jobs:
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_site.py"
+      - "scripts/build_aibrief.py"  # #11075: consumer freshness import closure reaches build_aibrief (_lens_freshness)
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_theme_tree_page.py"
