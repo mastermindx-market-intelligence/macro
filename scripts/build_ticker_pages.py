@@ -1822,6 +1822,7 @@ def _build_hub_context(site: Path, rows: list[dict],
             return ctx
 
         payload = _load_json(site / "marketdata" / "sp500_heatmap.json")
+        payload = _hub.normalize_us_sector_payload(payload)
         summary = None
         try:
             summary = _hm.page_summary(payload) if payload else None

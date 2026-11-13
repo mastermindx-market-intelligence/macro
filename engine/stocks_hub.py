@@ -1209,3 +1209,36 @@ def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
         "stance_zh": "观察为主，不急于跟进。",
         "warm_en": None, "warm_zh": None,
     }
+
+
+# This adapter is called only at the Stock Dossiers S&P payload load boundary.
+# Do not infer US geography from a missing payload.market field in shared readers.
+def normalize_us_sector_payload(payload: Mapping | None) -> dict | None:
+    """Copy US sector identities before aggregation; retain all observation fields."""
+    if not payload:
+        return payload
+    from engine.spotlight import GICS_TO_ETF
+
+    canonical = {}
+    for label, etf in GICS_TO_ETF.items():
+        canonical.setdefault(etf, label)
+
+    def key(label):
+        return canonical.get(GICS_TO_ETF.get(label), label)
+
+    labels = {}
+    for row in payload.get("sectors") or []:
+        original = row["key"]
+        k = key(original)
+        if original not in GICS_TO_ETF:
+            labels[k] = dict(row)
+            continue
+        merged = dict(labels.get(k, {}))
+        for field, value in row.items():
+            if value not in (None, "") and (original == k or not merged.get(field)):
+                merged[field] = value
+        labels[k] = {**merged, "key": k, "en": k}
+    return {**payload,
+            "sectors": list(labels.values()),
+            "tiles": [{**row, "sector": key(row.get("sector"))}
+                      for row in payload.get("tiles") or []]}
