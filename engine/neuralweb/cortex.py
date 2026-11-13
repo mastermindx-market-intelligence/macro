@@ -63,6 +63,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import os
 import time
 from datetime import datetime, timezone
@@ -3405,16 +3406,36 @@ def _completed_memo_clock(root: Path) -> str | None:
     return None
 
 
-def _can_reuse_memo(root: Path, last_state: dict) -> bool:
-    from engine.neuralweb.health import cortex_memo_age_hours, cortex_memo_sla_hours
+def _registered_memo_sla(root: Path) -> float | None:
+    """Read the canonical memo cadence without loading the health publisher."""
+    try:
+        import yaml
 
+        registry = yaml.safe_load((root / "config" / "synapse.yml").read_text(encoding="utf-8"))
+        hours = registry["artifacts"]["cortex-memo"]["freshness_sla_hours"]
+        if type(hours) in (int, float) and hours > 0 and math.isfinite(hours):
+            return hours
+    except (ImportError, OSError, KeyError, TypeError, ValueError, OverflowError):
+        return None
+    except yaml.YAMLError:
+        return None
+    return None
+
+
+def _can_reuse_memo(root: Path, last_state: dict) -> bool:
     clock = _completed_memo_clock(root)
     if not clock or ("memo_as_of" in last_state and clock != last_state["memo_as_of"]):
         return False
-    age = cortex_memo_age_hours(clock)
-    if age is None or age < 0:
+    try:
+        stamp = datetime.fromisoformat(clock.replace("Z", "+00:00"))
+        if stamp.tzinfo is None:
+            stamp = stamp.replace(tzinfo=timezone.utc)
+        age = (datetime.now(timezone.utc) - stamp).total_seconds() / 3600
+    except (ValueError, OverflowError):
         return False
-    sla = cortex_memo_sla_hours(root)
+    if age < 0:
+        return False
+    sla = _registered_memo_sla(root)
     if sla is None:
         # A missing cadence policy alone should not repeatedly spend on an
         # unchanged input and its previously verified, exactly bound output.

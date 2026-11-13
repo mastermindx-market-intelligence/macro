@@ -1632,6 +1632,24 @@ def test_failed_forced_attempt_cannot_reuse_its_previous_success(repo, no_provid
     assert json.loads(gate.read_text())["memo_as_of"] != clock
 
 
+@pytest.mark.parametrize(("policy", "bound", "reusable"), [
+    ("1", True, False), ("4", True, True), ("4", False, True),
+    ("true", False, False), (".inf", False, False), ("[]", False, False),
+    ("[", False, False), ("[", True, True),
+])
+def test_memo_gate_uses_registered_hours_and_handles_invalid_policy(repo, policy, bound, reusable):
+    from datetime import timedelta
+    from engine.neuralweb.cortex import _can_reuse_memo
+
+    clock = (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat()
+    _write_completed_memo(repo, clock)
+    (repo / "config" / "synapse.yml").write_text(
+        f"artifacts:\n  cortex-memo:\n    freshness_sla_hours: {policy}\n",
+        encoding="utf-8",
+    )
+    assert _can_reuse_memo(repo, {"memo_as_of": clock} if bound else {}) is reusable
+
+
 def test_corrupt_gate_shape_and_missing_policy_do_not_create_a_spend_loop(repo):
     from engine.neuralweb.cortex import run
 
