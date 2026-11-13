@@ -29,6 +29,7 @@ import os
 from datetime import date, datetime, timedelta, timezone
 
 from lib import config
+from lib import fabric_client
 
 log = logging.getLogger(__name__)
 
@@ -75,6 +76,96 @@ CLASSIFY_SYSTEM = (
     "cannot quote a supporting phrase, the cause is \"unknown\".\n"
     "- Report \"confidence\". Prefer \"unknown\" over a low-confidence guess."
 )
+
+
+# --------------------------------------------------------------------------- #
+# Capacity Fabric branch (estate AI-routing migration; Mastermind #983)
+#
+# ADDITIVE branch at this writer's own call site. It is taken only when a
+# FABRIC_ROUTER_TOKEN is present AND the per-vertical kill-switch is not "0".
+# When it is off — no token, or MACRO_COMMODITY_NEWS_FABRIC=0 — the legacy
+# llm_auth ladder below runs exactly as it always has: not one legacy line is
+# edited, moved or re-indented.
+#
+# ONE fabric attempt per logical call. The router owns provider selection,
+# cooldown and pooling, so there is no local retry and no second provider here;
+# a served failure degrades exactly like a legacy failure. FabricUnavailable is
+# the one exception: nothing left this host, so the caller falls through to the
+# legacy ladder instead of blanking an annotation the ladder could still write.
+# --------------------------------------------------------------------------- #
+_FABRIC_KILL_ENV = "MACRO_COMMODITY_NEWS_FABRIC"
+_FABRIC_LANE = "fast"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-commodity-news"
+_FABRIC_MAX_TOKENS = 256          # same budget the legacy _call_fn sends
+
+
+def _fabric_enabled() -> bool:
+    """Router configured AND the kill-switch is not "0". Never raises."""
+    if os.environ.get(_FABRIC_KILL_ENV, "").strip() == "0":
+        return False
+    try:
+        return fabric_client.is_configured()
+    except Exception:  # noqa: BLE001 — a capability probe must never break annotation
+        return False
+
+
+def _fabric_stop_reason(comp) -> str | None:
+    """The stop reason for a router reply. Never raises.
+
+    The frozen Completion (lib/fabric_client.py) carries the SDK message in
+    ``raw``, and does NOT expose ``stop_reason`` itself; a bare attribute is
+    honoured first in case the adapter grows one."""
+    stop = getattr(comp, "stop_reason", None)
+    if stop is None:
+        stop = getattr(getattr(comp, "raw", None), "stop_reason", None)
+    return stop
+
+
+def _fabric_call(asset: str, move_desc: str, headlines: list[dict],
+                 served: dict | None = None) -> tuple[str | None, str | None, str | None]:
+    """ONE router completion for the cause classifier.
+
+    Returns the same ``(text, degraded_reason, provider)`` triple that
+    ``llm_auth.make_call`` yields, so ``_classify_cause`` maps it unchanged.
+
+    Raises ``fabric_client.FabricUnavailable`` when the router cannot be reached
+    at all (no token, or the SDK will not import) — the caller then runs the
+    unchanged legacy ladder. Any OTHER exception means the router's own ladder
+    was already walked: one attempt, then the caller degrades.
+
+    ``served`` is the repo's out-param convention (see llm_auth.make_call): when
+    a dict is passed it receives ``provider``/``model`` for the servable
+    attribution the annotation records."""
+    lines = "\n".join(f"- {h['title']} ({h['domain']}, {h['seendate'][:10]})" for h in headlines)
+    user = f"Commodity: {asset}\nDetected move: {move_desc}\nHeadlines:\n{lines}"
+    comp = fabric_client.complete(          # <- the single attempt
+        [{"role": "user", "content": user}],
+        system=CLASSIFY_SYSTEM,
+        lane=_FABRIC_LANE,
+        max_tokens=_FABRIC_MAX_TOKENS,
+        client="Python client",
+        project_id=_FABRIC_PROJECT_ID,
+        session_id=_FABRIC_SESSION_ID,
+    )
+    if served is not None:
+        served["provider"] = "fabric"
+        served["model"] = comp.model_served
+    try:  # ledger continuity — telemetry must never break a served call
+        from lib import ai_costs  # noqa: PLC0415
+        _usage = comp.usage if isinstance(comp.usage, dict) else {}
+        ai_costs.record_usage(
+            lane=_FABRIC_LANE, provider="fabric", model=comp.model_served,
+            input_tokens=int(_usage.get("input_tokens") or 0),
+            output_tokens=int(_usage.get("output_tokens") or 0),
+        )
+    except Exception:  # noqa: BLE001
+        pass
+    if _fabric_stop_reason(comp) == "refusal":
+        return None, "llm_refusal", "fabric"
+    if not comp.text:
+        return None, "llm_error", "fabric"
+    return comp.text, None, "fabric"
 
 
 def _cfg() -> dict:
@@ -176,6 +267,34 @@ def _classify_cause(asset: str, move_desc: str, headlines: list[dict],
         return None, None
     if not headlines:
         return None, None
+    # Capacity Fabric branch — taken only when the router is configured and the
+    # kill-switch is not "0". Everything below this block is the untouched
+    # legacy ladder, which also runs when the router is unreachable.
+    if _fabric_enabled():
+        served: dict = {}
+        try:
+            text, degraded, _ = _fabric_call(asset, move_desc, headlines, served=served)
+        except fabric_client.FabricUnavailable as e:
+            # No request left this host — the legacy ladder can still serve.
+            log.info("commodity_news: fabric router unavailable (%s); using legacy ladder", e)
+        except Exception as e:  # noqa: BLE001 — one attempt, then degrade
+            log.warning("commodity_news: fabric classify failed (%s)", e)
+            return None, "llm_error"
+        else:
+            if not text:
+                return None, degraded or "llm_error"
+            try:
+                parsed = json.loads(text)
+            except Exception as e:  # noqa: BLE001 — degrade, never raise
+                log.warning("commodity_news: fabric reply was not JSON (%s)", e)
+                return None, "llm_error"
+            # auditable code-side confidence gate (not in the prompt)
+            thr = cfg.get("llm_min_confidence", "high")
+            if _CONF_RANK.get(parsed.get("confidence"), 0) < _CONF_RANK.get(thr, 2):
+                parsed["cause"] = "unknown"
+            parsed["model"] = served.get("model") or cfg.get("llm_model", "claude-haiku-4-5")
+            parsed["applied_threshold"] = thr
+            return parsed, None
     try:
         from engine import llm_auth  # noqa: PLC0415
     except ImportError:
