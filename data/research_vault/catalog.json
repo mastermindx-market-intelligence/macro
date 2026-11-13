@@ -1,8 +1,9 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T00:54:41.049854+00:00",
-  "count": 3263,
+  "generated_at": "2026-11-13T01:23:19.818027+00:00",
+  "count": 3265,
   "institutions": [
+    "2027 Outlook",
     "ABN Amro",
     "ANZ",
     "Academy Securities",
@@ -163,6 +164,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-g0sbemctjhi-2000a8",
+      "title": "Macro Markets Outlook 2027 Growing Pains [PRESENTATION]",
+      "institution": "2027 Outlook",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:07:47Z",
+      "summary_points": [
+        "AI Growth Momentum Peak: AI's market value growth (92% vs YTD 41%) confirms maturing cycle, signaling rotation risks in AI-driven assets despite 62% US capex/earnings contribution.",
+        "US AI Investment Deceleration: US-led AI investment growth rate (vs global) peaks at +2.0pp in 2027 before sharp decline, indicating potential momentum shift or competitive dynamics.",
+        "Negative Beta Surge: S&P 500 negative beta stocks (3-month/daily and 1-year/weekly) rise sharply, mirroring Tech Bubble era, highlighting bond-like equities as hedging tools against tech volatility.",
+        "S&P/Treasury Correlation Inversion: 1-week S&P 500/10Y Treasury correlation turns negative (Nov-26), confirming bonds now hedge equities, enhancing macro hedging value.",
+        "Dollar Cyclicality: US equity inflows exceeding $1.4T by 2027 drive cyclical dollar strength, amplifying volatility via synchronized global capital flows during growth phases."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-nwddwoitkyu-5def51",
       "title": "Swisscom (SCMN.S) Data Update Changes to estimates",
       "institution": "Goldman Sachs",
@@ -281,6 +303,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ejlvgkklvmm-43c37d",
+      "title": "GS Crook GS MORNING 1 FX Trader Call Takeaways, 2 Trading Energy Relief, 3 2027 Capex Outlook, 4 The Upside to Inflation and 5 Equities Update 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:30:20Z",
+      "summary_points": [
+        "Inflation Dynamics: October CPI drop (30bps) signals less transitory inflation, increasing positioning risk; global upstream pressures imply 0.1-0.2pp inflation surprises over next 9 months, risking early 2027 central bank tightening.",
+        "Energy-FX Asymmetry: FX markets show greater sensitivity to oil price increases than decreases (e.g., NOKSEK stickier pass-through), sustaining energy-linked pairs (NOK/SEK, TTF) above Feb 27 levels despite oil declines.",
+        "AI Capex Structural Shift: US AI spending drives 5.3pp true capex growth (2027), with $1.4tn annualized by end-2027 (4% of GDP), representing a fundamental structural shift beyond short-term election risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
