@@ -470,31 +470,53 @@ assert(chronicle({error:'failed'}).includes('unavailable'));
 
 
 
-def test_response_log_explains_empty_filter_results_and_read_failures():
+def test_response_log_explains_empty_filter_results_and_retries_the_selected_filters():
     _node_assert("""
 const render = block('async function mmlLoad()', '/* Weekly answer-quality summary');
-const view = {innerHTML: ''};
-const MML = {filters: {provider: 'retired'}};
+const apply = block('function mmlApplyFilters()', 'function mmlToggle(');
+const view = {innerHTML: ''}, retry = {}, controls = {};
+const $ = selector => {
+  if (selector === '#view') return view;
+  if (selector === '#mmlRetry') return retry;
+  return controls[selector] || (controls[selector] = {value: '', checked: false});
+};
+const MML = {filters: {}, rows: []};
 let payload, rejectRead = false;
+const reads = [];
 const api = async path => {
   if (path.endsWith('/eval_summary')) return {};
+  reads.push(path);
   if (rejectRead) throw new Error('transport');
   return payload;
 };
-const load = new Function('api', '$', 'MML', 'fmtNum', 'esc', 'mmlEvalSummaryHtml', 'mmlWire',
-  'const CURRENT="mastermind_logs", ADMIN_RENDER_EPOCH=1;' + render + ';return mmlLoad;'
-)(api, () => view, MML, String, String, () => '', () => {});
+const wire = new Function('api', '$', 'MML', 'fmtNum', 'esc', 'mmlEvalSummaryHtml',
+  'mmlWire', 'mmlRowHtml', 'const CURRENT="mastermind_logs", ADMIN_RENDER_EPOCH=1;' +
+  render + apply + ';return {load:mmlLoad,apply:mmlApplyFilters};'
+)(api, $, MML, String, String, () => '', () => {}, row => row.id);
+payload = {rows: [{id: 'previous-provider-row'}], matched: 1, stats: {total: 2}};
+await wire.load();
+assert.match(view.innerHTML, /previous-provider-row/);
+$('#mmlProvider').value = 'retired';
+rejectRead = true;
+wire.apply();
+await new Promise(resolve => setImmediate(resolve));
+assert.match(reads.at(-1), /provider=retired/);
+assert.match(view.innerHTML, /Could not read the response log/);
+assert.doesNotMatch(view.innerHTML, /previous-provider-row|mmlExportJ/);
+assert.equal(MML.rows.length, 0);
+assert.match(view.innerHTML, /Retry with these filters/);
+const rejectedPath = reads.at(-1);
+rejectRead = false;
 payload = {rows: [], matched: 0, stats: {total: 2}};
-await load();
+await retry.onclick();
+assert.equal(reads.at(-1), rejectedPath);
 assert.match(view.innerHTML, /No responses match these filters/);
+assert.match(view.innerHTML, /mmlExportJ/);
 assert.doesNotMatch(view.innerHTML, /local response log is empty/);
 payload = {rows: [], matched: 0, stats: {total: 0}};
-await load();
+await wire.load();
 assert.match(view.innerHTML, /local response log is empty/);
 payload = {ok: false};
-await load();
-assert.match(view.innerHTML, /Could not read the response log/);
-rejectRead = true;
-await load();
+await wire.load();
 assert.match(view.innerHTML, /Could not read the response log/);
 """)
