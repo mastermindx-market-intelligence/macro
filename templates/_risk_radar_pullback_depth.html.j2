@@ -1,0 +1,239 @@
+{# Paper-derived content only. Existing page/modal and observation expiry owners
+   retain navigation, timers and state. v is the native pullback present() result;
+   the caller must qualify market, source clocks and trusted SSR chart provenance.
+   No forecast payload or risk score is accepted as an estimate by this fragment. #}
+{% macro t(en, zh) -%}<span class="l-en">{{ en|e }}</span><span class="l-zh">{{ zh|e }}</span>{%- endmacro %}
+{# ISO day, or empty. Character positions only — no regex. #}
+{% macro iso_day(value) -%}
+{%- if value is string and value|length == 10 and value[4] == '-' and value[7] == '-' -%}
+{%- set ns = namespace(ok=true) -%}
+{%- for ch in value[0:4] ~ value[5:7] ~ value[8:10] -%}
+{%- if ch not in '0123456789' %}{% set ns.ok = false %}{% endif -%}
+{%- endfor -%}
+{%- if ns.ok %}{{ value }}{% endif -%}
+{%- endif -%}
+{%- endmacro %}
+{# Non-negative integer count, or empty. Booleans are not integers here. #}
+{% macro count_text(value) -%}
+{%- if value is integer and value >= 0 %}{{ value }}{% endif -%}
+{%- endmacro %}
+{# 0..100 finite share, printed as a whole percent, or empty. #}
+{% macro recovered_text(value) -%}
+{%- if (value is integer or value is float) and value - value == 0 and value >= 0 and value <= 100 -%}
+{{- '%.0f%%'|format(value) -}}
+{%- endif -%}
+{%- endmacro %}
+{% macro ma_side(value) -%}
+{%- if value is sameas true %}below{% elif value is sameas false %}above{% endif -%}
+{%- endmacro %}
+{% macro gap_count(value) -%}
+{%- if value is integer and value > 0 %}{{ value }}{% endif -%}
+{%- endmacro %}
+{# Ordered phase trail, or empty unless every item is a dated known phase. #}
+{% macro phase_trail(rows, labels) -%}
+{%- if rows is sequence and rows is not string and rows is not mapping and rows|length > 0 -%}
+{%- set bad = namespace(v=false) -%}
+{%- for item in rows -%}
+{%- if item is not mapping -%}
+{%- set bad.v = true -%}
+{%- else -%}
+{%- set day = iso_day(item.get('date'))|trim -%}
+{%- set ph = item.get('phase') -%}
+{%- if (not day) or ph is not string or ph not in labels %}{% set bad.v = true %}{% endif -%}
+{%- endif -%}
+{%- endfor -%}
+{%- if not bad.v -%}
+<ol class="rrp-phase-trail">{%- for item in rows -%}<li>{{ iso_day(item.get('date'))|trim|e }} · {{ t(*labels[item.get('phase')]) }}</li>{%- endfor -%}</ol>
+{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
+{# YYYY-MM-DD HH:MM UTC[offset] when valid_until matches the zoned stamp, else empty.
+   Shapes: YYYY-MM-DDTHH:MMZ, ...THH:MM:SSZ, ...THH:MM±HH:MM, ...THH:MM:SS±HH:MM. #}
+{% macro valid_until_display(value) -%}
+{%- if value is string -%}
+{%- set n = value|length -%}
+{%- if n == 17 or n == 20 or n == 22 or n == 25 -%}
+{%- set digits = '0123456789' -%}
+{%- set ns = namespace(ok=true) -%}
+{%- for ch in value[0:4] ~ value[5:7] ~ value[8:10] ~ value[11:13] ~ value[14:16] -%}
+{%- if ch not in digits %}{% set ns.ok = false %}{% endif -%}
+{%- endfor -%}
+{%- if ns.ok and value[4] == '-' and value[7] == '-' and value[10] == 'T' and value[13] == ':' -%}
+{%- if n == 17 and value[16] == 'Z' -%}
+{{- value[0:10] ~ ' ' ~ value[11:16] ~ ' UTC' -}}
+{%- elif n == 20 and value[16] == ':' and value[17] in digits and value[18] in digits and value[19] == 'Z' -%}
+{{- value[0:10] ~ ' ' ~ value[11:16] ~ ' UTC' -}}
+{%- elif n == 22 and (value[16] == '+' or value[16] == '-') and value[17] in digits and value[18] in digits and value[19] == ':' and value[20] in digits and value[21] in digits -%}
+{{- value[0:10] ~ ' ' ~ value[11:16] ~ ' UTC' ~ value[16:22] -}}
+{%- elif n == 25 and value[16] == ':' and value[17] in digits and value[18] in digits and (value[19] == '+' or value[19] == '-') and value[20] in digits and value[21] in digits and value[22] == ':' and value[23] in digits and value[24] in digits -%}
+{{- value[0:10] ~ ' ' ~ value[11:16] ~ ' UTC' ~ value[19:25] -}}
+{%- endif -%}
+{%- endif -%}
+{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
+{# The one qualification rule. detail() renders by it and a page's lead gate
+   asks lead(), so a view this fragment rejects never displaces the page's own
+   popup content. Results go into the caller's namespace. #}
+{% macro assess(mkt, view, ns) -%}
+{% set v = view if view is mapping else {} %}
+{% set o = v.get('observation') if v.get('observation') is mapping else {} %}
+{% set labels = ('monitoring','developing','underway','stabilizing','recovering','repaired') %}
+{% set phase = v.get('phase') %}
+{% set p = o.get('close') %}{% set h = o.get('peak_close') %}{% set low = o.get('low_close') %}
+{# Monitoring may sit at the retained high (a new high). Otherwise a close at or
+   above it is the owner's reclaim, which it only reports as recovering (or
+   repaired); in any other phase it is contradictory. #}
+{% set price_ok = (p is float or p is integer) and (h is float or h is integer)
+   and p-p == 0 and h-h == 0 and p > 0 and h > 0
+   and (p < h or phase in ('recovering','repaired') or (phase == 'monitoring' and p <= h)) %}
+{% set low_ok = (low is float or low is integer) and low-low == 0
+   and low > 0 and price_ok and low <= p and low <= h %}
+{% set ns.low_ok = low_ok %}
+{% set ns.current = mkt in ('cn','us') and o.get('market') == mkt
+   and o.get('schema') == 'pullback_observation.v1'
+   and o.get('available') is sameas true and o.get('quality') == 'current'
+   and o.get('clock') == 'settled_close' and o.get('asof') is string and o.get('asof')
+   and o.get('valid_until') is string and o.get('valid_until')
+   and phase in labels and phase == o.get('phase') and price_ok
+   and ((phase in ('underway','stabilizing','recovering') and o.get('active') is sameas true)
+        or (phase in ('monitoring','developing','repaired') and o.get('active') is sameas false))
+   and (low_ok or phase in ('monitoring','developing')) %}
+{%- endmacro %}
+{# '1' when the measured section may lead the popup: qualified and an active episode. #}
+{% macro lead(mkt, view) -%}
+{% set ns = namespace(current=false, low_ok=false) %}{{ assess(mkt, view, ns) }}
+{{- '1' if ns.current and (view if view is mapping else {}).get('phase') in ('underway','stabilizing','recovering') else '' -}}
+{%- endmacro %}
+{% macro detail(mkt, view) -%}
+{% set v = view if view is mapping else {} %}
+{% set o = v.get('observation') if v.get('observation') is mapping else {} %}
+{% set labels = {
+  'monitoring': ('Pullback monitor','回撤观察'),
+  'developing': ('Pullback developing','回撤形成中'),
+  'underway': ('Pullback underway','回撤进行中'),
+  'stabilizing': ('Stabilization watch','止跌观察'),
+  'recovering': ('Watching price repair','价格修复观察'),
+  'repaired': ('Pullback repaired','本轮回撤已修复')
+} %}
+{% set phase = v.get('phase') %}
+{% set p = o.get('close') %}{% set h = o.get('peak_close') %}{% set low = o.get('low_close') %}
+{% set q = namespace(current=false, low_ok=false) %}{{ assess(mkt, view, q) }}
+{% set current = q.current %}{% set low_ok = q.low_ok %}
+{% set phase = phase if current else 'unavailable' %}
+<section class="rrp pbx" data-pb-phase="{{ phase|e }}"
+         data-pb-valid-until="{{ (o.get('valid_until') or '')|e }}"
+         data-pb-asof="{{ (o.get('asof') or '')|e }}"
+         data-pb-digest="{{ (o.get('source_digest') or '')|e }}">
+  <header class="rrp-heading pbx-heading">
+    <div>
+      <div class="rrp-eyebrow">{{ t('OBSERVED PRICE','已观测价格') }}</div>
+      <h2>{{ t(*labels[phase]) if current else t('Price update needed','价格数据待更新') }}</h2>
+      <p class="rrp-sub">{{ t('A rebound alone does not confirm recovery; that takes closes back at or above the reference high.', '仅有价格回升不足以确认修复；需收盘价重回参考高点或以上。') if current else t('A current closing-price assessment is not available.', '当前收盘价评估暂不可用。') }}</p>
+    </div>
+    <div class="rrp-stamp">{{ t(o.get('benchmark_en') or '', o.get('benchmark_zh') or '') }}<br>
+      {{ t('Settled close','收盘价') }} {% if o.get('asof') %}<time datetime="{{ o.get('asof')|e }}">{{ o.get('asof')|e }}</time>{% else %}—{% endif %}
+      {%- set _vu_disp = valid_until_display(o.get('valid_until'))|trim -%}
+      {%- if current and _vu_disp %}<span class="rrp-until"><br>
+      {{ t('Current until','有效至') }} <time datetime="{{ o.get('valid_until')|e }}">{{ _vu_disp|e }}</time></span>{% endif %}
+    </div>
+  </header>
+  <div class="pbx-expiry" role="status" aria-live="polite" aria-atomic="true"><template class="pbx-expiry-msg">{{ t('Awaiting a newer close. This assessment is no longer current.', '等待更新的收盘价。此评估已过时。') }}</template></div>
+  <div class="pbx-current">
+    {% if current %}{# Each metric prints the tenth of its ratio at four places, the
+        owner's precision for every history row, so a low or close on an exact
+        half prints the same tenth in the metric, the history and the end tag. #}
+    <div class="rrp-metrics">
+      <div><div class="rrp-label">{{ t('Above the reference high','高于参考高点') if p > h else t('From the reference high','距参考高点') }}</div>
+        {% if p > h %}{% set up_s = '%.1f'|format((100*(p/h-1))|round(4)) %}<strong class="rrp-primary" data-metric="current">{{ '+' if up_s != '0.0' else '' }}{{ up_s }}%</strong>
+        {% else %}{% set dd = [0, (100*(1-p/h))|round(4)]|max %}{% set dd_s = '%.1f'|format(dd) %}<strong class="rrp-primary" data-metric="current">{{ '−' if dd_s != '0.0' else '' }}{{ dd_s }}%</strong>{% endif %}
+        <div class="rrp-note">{{ t('Reference high','参考高点') }} {{ (o.get('peak_session') or '—')|e }}</div>
+      </div>
+      <div><div class="rrp-label">{{ t('Worst drawdown so far','已发生的最深回撤') }}</div>
+        <strong data-metric="worst">{% if low_ok %}{% set worst_s = '%.1f'|format((100*(1-low/h))|round(4)) %}{{ '−' if worst_s != '0.0' else '' }}{{ worst_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</strong>
+        <div class="rrp-note">{{ t('Measured at the lowest close so far','按本轮最低收盘价计算') }}</div>
+      </div>
+      <div><div class="rrp-label">{{ t('Rebound from the low','自低点回升') }}</div>
+        <strong class="rrp-rebound" data-metric="rebound">{% if low_ok and p/low-p/low == 0 %}{% set rebound_s = '%.1f'|format((100*(p/low-1))|round(4)) %}{{ '+' if rebound_s != '0.0' else '' }}{{ rebound_s }}%{% else %}{{ t('Unavailable','暂无') }}{% endif %}</strong>
+        <div class="rrp-note">{{ t('Not recovery odds','并非修复概率') }}</div>
+      </div>
+    </div>
+    {% if o.get('observed_closes_since_onset') is integer and o.get('observed_closes_since_onset') > 0 %}
+    <div class="rrp-age" data-metric="age">{{ o.observed_closes_since_onset }} {{ t('observed close' ~ ('' if o.observed_closes_since_onset == 1 else 's') ~ ' since the pullback was confirmed','个已观测收盘（自回撤确认起）') }}</div>
+    {% endif %}{% set onset = iso_day(o.get('onset_session'))|trim %}{% set low_s = iso_day(o.get('low_session'))|trim %}{% set streak = count_text(o.get('no_new_low_closes'))|trim %}{% set recovered = recovered_text(o.get('loss_recovered_pct'))|trim %}{% set ma = ma_side(o.get('below_20_close_average'))|trim %}{% set gaps = gap_count(o.get('history_gap_count'))|trim %}{% set trail = phase_trail(o.get('price_transitions'), labels)|trim %}{% set show_ev = onset or low_s or streak or recovered or ma or gaps or trail or phase in ('underway', 'stabilizing', 'recovering') %}{% if show_ev %}
+    <div class="rrp-signals" data-evidence>
+      {# Raw owner counts only. rules may carry cutoffs; they are not copied here. #}
+      {% if onset or low_s or streak or recovered or ma %}<dl>
+        {%- if onset %}<dt data-signal="onset">{{ t('Pullback confirmed','回撤确认') }}</dt><dd>{{ onset|e }}</dd>{% endif -%}
+        {%- if low_s %}<dt data-signal="low">{{ t('Lowest close','最低收盘价') }}</dt><dd>{{ low_s|e }}</dd>{% endif -%}
+        {%- if streak %}<dt data-signal="no-new-low">{{ t('Closes without a new low','未创新低的收盘数') }}</dt><dd>{{ streak|e }}</dd>{% endif -%}
+        {%- if recovered %}<dt data-signal="recovered">{{ t('Portion of the high-to-low drop regained','高点到低点的跌幅中已收回的比例') }}</dt><dd>{{ recovered|e }}</dd>{% endif -%}
+        {%- if ma == 'below' %}<dt data-signal="ma20">{{ t('Against the 20-close average','相对近20个收盘价的均值') }}</dt><dd>{{ t('Below','低于') }}</dd>{% endif -%}
+        {%- if ma == 'above' %}<dt data-signal="ma20">{{ t('Against the 20-close average','相对近20个收盘价的均值') }}</dt><dd>{{ t('Above or at','不低于') }}</dd>{% endif -%}
+      </dl>{% endif %}
+      {% set _nnl = o.get('no_new_low_closes') %}{% set _early = (_nnl is integer and _nnl > 0) or (recovered and recovered != '0%') %}
+      {% if phase == 'underway' and _early %}<p class="rrp-verdict" data-signal="verdict">{{ t('Pullback still active: early repair signs are not confirmed','回撤仍在进行：初步修复迹象尚未确认') }}</p>
+      {% elif phase == 'underway' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Deterioration: no repair evidence yet','恶化：尚无修复证据') }}</p>
+      {% elif phase == 'stabilizing' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Early repair evidence: the low is holding','初步修复证据：低点守住') }}</p>
+      {% elif phase == 'recovering' %}<p class="rrp-verdict" data-signal="verdict">{{ t('Repair evidence building; not a confirmed recovery','修复证据增加中，尚未确认修复') }}</p>{% endif %}
+      {% if trail %}{{ trail|safe }}{% endif %}
+      {% if gaps %}<p class="rrp-gaps" data-signal="gaps">{{ t(gaps ~ (' session' if gaps == '1' else ' sessions') ~ ' missing from the closes used for this assessment', '本次评估所用收盘价缺少' ~ gaps ~ '个交易日') }}</p>{% endif %}
+    </div>{% endif %}
+    {% endif %}
+  </div>
+  <div class="rrp-study">
+    <div class="rrp-evidence pbx-current">
+      <h3>{{ t('The observed path','已观测走势') }}</h3>
+      {% if current and v.get('detail_chart_html') %}
+      {#- illus emits one English aria-label and never an aria_zh. One clipped
+         name owns both languages. html[data-lang] sets display:none on the
+         other .l-en/.l-zh span. A display:none node is dropped from the name
+         unless aria-labelledby points at it directly, so the labelledby target
+         is the parent and the hidden language is only a child. The figure
+         stays inside aria-hidden .rrp-chart so its English label is not read
+         again. The parent is clipped, not display:none, so the visible
+         language stays in the name. The whitespace control keeps the
+         unlabelled branch byte-identical to the fragment before the wrapper. -#}
+      {%- set _chart_en = v.get('chart_label_en') -%}
+      {%- set _chart_zh = v.get('chart_label_zh') -%}
+      {%- if _chart_en is string and _chart_zh is string and _chart_en and _chart_zh -%}
+      {%- set _vh = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0' %}
+      <div role="img" aria-labelledby="{{ mkt|e }}-rrp-chart-name" style="position:relative">
+        <span id="{{ mkt|e }}-rrp-chart-name" style="{{ _vh }}"><span class="l-en">{{ _chart_en|e }}</span><span class="l-zh">{{ _chart_zh|e }}</span></span>
+        <div class="rrp-chart" aria-hidden="true">{{ v.detail_chart_html|safe }}</div>
+      </div>
+      {%- else %}
+      <div class="rrp-chart" aria-hidden="true">{{ v.detail_chart_html|safe }}</div>
+      {%- endif %}
+      <p class="rrp-chart-caption">{{ t('Observed closing drawdown from the reference high.', '相对参考高点的已观测收盘回撤。') }}</p>
+      {# Only the presenter's checked window; the raw path can predate the peak. #}
+      {% set path = v.get('detail_path') if v.get('detail_path') is mapping else {} %}
+      {% set dates = path.get('dates', []) %}{% set vals = path.get('vals', []) %}
+      {% if dates is sequence and dates is not string and vals is sequence and vals is not string and dates|length == vals|length and dates|length > 0 %}
+      <details class="rrp-method rrp-history"><summary>{{ t('View price history','查看历史价格') }}</summary>
+        <table><caption>{{ t('Closing drawdown from the reference high by session','各交易日相对参考高点的收盘回撤') }}</caption><thead><tr><th scope="col">{{ t('Session','交易日') }}</th><th scope="col">{{ t('From the reference high','距参考高点') }}</th></tr></thead><tbody>
+        {% for day in dates %}{% set value = vals[loop.index0] %}
+        <tr><td>{{ day|e }}</td><td>{% if (value is float or value is integer) and value-value == 0 and -100 <= value <= 100 %}{% if value > 0 %}{% set value_s = '%.1f'|format(value) %}{{ '+' if value_s != '0.0' else '' }}{{ value_s }}%{% else %}{% set value_s = '%.1f'|format(0 - value) %}{{ '−' if value_s != '0.0' else '' }}{{ value_s }}%{% endif %}{% else %}{{ t('Unavailable','暂无') }}{% endif %}</td></tr>
+        {% endfor %}</tbody></table>
+      </details>{% endif %}
+      {#- Copy says why only when the presenter says why; otherwise it stays neutral. #}
+      {% elif current and v.get('detail_withheld') == 'short' %}<p>{{ t('Too few closes since the reference high to draw a chart yet.', '自参考高点以来的收盘价尚少，暂不绘制图表。') }}</p>
+      {% elif current and v.get('detail_withheld') == 'uncovered' %}<p>{{ t('Chart not shown: the closing history on record does not fully support these figures.', '暂不显示图表：现有收盘历史无法完整支持上述数据。') }}</p>
+      {% elif current %}<p>{{ t('No chart is shown for this assessment.', '本次评估不显示图表。') }}</p>
+      {% else %}<p>{{ t('A chart appears once current, usable price data is on record.', '待有当前可用的价格数据后再显示图表。') }}</p>{% endif %}
+      <p class="rrp-note">{{ t('The chart is price history, not a forecast path.', '图表呈现历史价格，并非预测路径。') }}</p>
+    </div>
+    <div class="rrp-forecast" data-forecast-status="unavailable">
+      <div class="rrp-eyebrow">{{ t('FURTHER DOWNSIDE','进一步跌幅') }}</div>
+      <h3>{{ t('Estimate unavailable','估计暂不可用') }}</h3>
+      <p>{{ t('We can measure the decline that has already happened. A reliable range for the next low is not yet available.', '可以测量已发生的跌幅，但下一低点的可靠区间尚不可用。') }}</p>
+      <div class="rrp-forecast-row"><span>{{ t('Further decline from the latest close','自最新收盘价起的进一步跌幅') }}</span><strong>—</strong></div>
+      <div class="rrp-forecast-row"><span>{{ t('Total pullback depth','回撤总深度') }}</span><strong>—</strong></div>
+      <details class="rrp-method"><summary>{{ t('Why no estimate?','为什么暂无估计？') }}</summary>
+        <p>{{ t('Publishing a range takes historical tests for this market, benchmark, price measurement and time window. Risk level and existing pullback probabilities are not a forecast of the remaining drop.', '发布区间需要针对本市场、基准、价格衡量方式和时间范围的历史检验。风险水平与现有回撤概率并非对剩余跌幅的预测。') }}</p>
+      </details>
+    </div>
+  </div>
+  <footer class="rrp-limit">{{ t('This is not a new-entry signal. Use the separate risk and entry checks.', '这不是新开仓信号。请另行查看风险与入场检查。') }}</footer>
+</section>
+{%- endmacro %}

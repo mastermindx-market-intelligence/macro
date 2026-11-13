@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
+  "source_revision": "df18f0c276f688c7d237a6dee3fe7c5bdb15e180",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "The unchanged existing probe actually recaptured all 68 static cases at source_revision after the one-line bilingual Risk Radar disclaimer repair. The probe records the exact capture source; all 31 render/fixture paths were compared to both that commit and the current workspace. This static evidence does not replace the separately retained original 175-check workspace and 32-cell visual evidence, or either live-site acceptance.",
-    "pr_branch": "sol/web-risk-radar-paper-live-20261104-c3",
-    "pr_parent_of_evidence_commit": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
+    "note": "The existing probe actually recaptured all 68 synthetic cases and five contact sheets at source_revision. All 73 actual PNGs are byte-identical to both original-head and receiving-main donors. The 48 named render/fixture/helper inputs are an explicit verified inventory, not an exhaustive dependency claim. The direct child evidence commit changes only the five listed evidence JSON outputs and the separately named non-capture-input test clock. Every other tracked path, mode and object identity is unchanged. All production, probe, template, asset and capture-fixture objects remain those actually exercised at source_revision. The final commit and full-diff readback are recorded in the canonical PR publication receipt. Static fixture proof does not replace live-site, require-active or production acceptance.",
+    "pr_branch": "sol/risk-radar-pullback-depth-20261009",
+    "pr_parent_of_evidence_commit": "df18f0c276f688c7d237a6dee3fe7c5bdb15e180",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2148,8 +2148,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
-        "blob_on_pr_branch": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
+        "blob_at_source_revision": "b16cc7c59f66efbebe7739105f1567478246ae2d",
+        "blob_on_pr_branch": "b16cc7c59f66efbebe7739105f1567478246ae2d",
         "equal": true
       },
       {
@@ -2181,8 +2181,136 @@
         "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
         "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
         "equal": true
+      },
+      {
+        "path": "templates/_aibrief_css.j2",
+        "blob_at_source_revision": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+        "blob_on_pr_branch": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+        "equal": true
+      },
+      {
+        "path": "templates/_risk_radar_card.css.j2",
+        "blob_at_source_revision": "73d27c46f9bf2a4e007babca63d4eba654431202",
+        "blob_on_pr_branch": "73d27c46f9bf2a4e007babca63d4eba654431202",
+        "equal": true
+      },
+      {
+        "path": "templates/_risk_radar_pullback_depth.css.j2",
+        "blob_at_source_revision": "3e462266d03f291ba7cb5cdda8c52dda0f1bed88",
+        "blob_on_pr_branch": "3e462266d03f291ba7cb5cdda8c52dda0f1bed88",
+        "equal": true
+      },
+      {
+        "path": "templates/_macro_attio_type.css.j2",
+        "blob_at_source_revision": "009b5f0588ab774b46e0f59ec5136c89945bf030",
+        "blob_on_pr_branch": "009b5f0588ab774b46e0f59ec5136c89945bf030",
+        "equal": true
+      },
+      {
+        "path": "templates/_prophet_workspace.css.j2",
+        "blob_at_source_revision": "7f50c64ed7856f72c016cdca37c11139cd765154",
+        "blob_on_pr_branch": "7f50c64ed7856f72c016cdca37c11139cd765154",
+        "equal": true
+      },
+      {
+        "path": "tests/test_macro_risk_dialog.py",
+        "blob_at_source_revision": "0ec6f1855687734b52bf1cfe9c8bf099b88fff02",
+        "blob_on_pr_branch": "0ec6f1855687734b52bf1cfe9c8bf099b88fff02",
+        "equal": true
+      },
+      {
+        "path": "tests/test_dashboard_template_render.py",
+        "blob_at_source_revision": "eb57e958917d9118833cac67229e6779afee237e",
+        "blob_on_pr_branch": "eb57e958917d9118833cac67229e6779afee237e",
+        "equal": true
+      },
+      {
+        "path": "engine/i18n.py",
+        "blob_at_source_revision": "d3b240fa5e9b91b3e8070ae372c294c897e37464",
+        "blob_on_pr_branch": "d3b240fa5e9b91b3e8070ae372c294c897e37464",
+        "equal": true
+      },
+      {
+        "path": "scripts/build_site.py",
+        "blob_at_source_revision": "f7f72907efa7c8a726d99e6b4b114bad9071209f",
+        "blob_on_pr_branch": "f7f72907efa7c8a726d99e6b4b114bad9071209f",
+        "equal": true
+      },
+      {
+        "path": "engine/macro_news.py",
+        "blob_at_source_revision": "b2bf356a8cb90c3c2b7f98646ab2c33d58eda5d1",
+        "blob_on_pr_branch": "b2bf356a8cb90c3c2b7f98646ab2c33d58eda5d1",
+        "equal": true
+      },
+      {
+        "path": "templates/_risk_radar_card.html.j2",
+        "blob_at_source_revision": "940e21d75dfb611175943b6bd0f5dbfa7eb8406c",
+        "blob_on_pr_branch": "940e21d75dfb611175943b6bd0f5dbfa7eb8406c",
+        "equal": true
+      },
+      {
+        "path": "templates/_risk_radar_pullback_depth.html.j2",
+        "blob_at_source_revision": "42a7ab2923fca3c9d84eeb807ce47ea2f5624ee1",
+        "blob_on_pr_branch": "42a7ab2923fca3c9d84eeb807ce47ea2f5624ee1",
+        "equal": true
+      },
+      {
+        "path": "templates/_risk_radar_pullback_depth.js.j2",
+        "blob_at_source_revision": "bfba5e1e3d392af0182eed1786cbd3233011a4ca",
+        "blob_on_pr_branch": "bfba5e1e3d392af0182eed1786cbd3233011a4ca",
+        "equal": true
+      },
+      {
+        "path": "templates/_aibrief_body.html.j2",
+        "blob_at_source_revision": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+        "blob_on_pr_branch": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+        "equal": true
+      },
+      {
+        "path": "templates/_prophet_card.html.j2",
+        "blob_at_source_revision": "2f2c2fe8b7e5d63ac271a89e12c699ac0da2a2f7",
+        "blob_on_pr_branch": "2f2c2fe8b7e5d63ac271a89e12c699ac0da2a2f7",
+        "equal": true
+      },
+      {
+        "path": "templates/_prophet_receipts.html.j2",
+        "blob_at_source_revision": "08c34e7330fa725a51ba9ebac7f3fc150a0cb9ff",
+        "blob_on_pr_branch": "08c34e7330fa725a51ba9ebac7f3fc150a0cb9ff",
+        "equal": true
+      },
+      {
+        "path": "templates/_decision_card.html.j2",
+        "blob_at_source_revision": "2727299dbaf6356852640bb925713a266bc2738c",
+        "blob_on_pr_branch": "2727299dbaf6356852640bb925713a266bc2738c",
+        "equal": true
       }
     ],
-    "all_equal": true
+    "all_equal": true,
+    "tracked_source_boundary": {
+      "source_commit": "df18f0c276f688c7d237a6dee3fe7c5bdb15e180",
+      "source_tree": "72d0a38fed824beb7afb0a70343c7568b962224b",
+      "allowed_evidence_output_paths": [
+        "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "research/evidence/ew_p4_descriptive_ui_20261031/receipt.json"
+      ],
+      "all_other_tracked_postimages_unchanged": true,
+      "non_capture_input_test_changes": [
+        "tests/test_aibrief_page.py"
+      ],
+      "test_change_qualification": "Only test_main_writes_freshness_receipt_and_stale_page gains a test-local datetime.now clock fixed to its existing _NOW, plus an exact built_at assertion. Every existing assertion and fixture value is preserved. This test module is not consumed by either actual capture/render recipe; all 48 explicit inputs and all other tracked non-evidence paths are unchanged."
+    },
+    "capture_execution": {
+      "playwright": "1.62.0",
+      "browser_version": "Google Chrome for Testing 151.0.7922.34",
+      "browser_executable_sha256": "7687bff7cb2db075f250e6d5848bbc8838cac3802ac3952a899c574f8eccab45",
+      "log_sha256": "c605e3796041f549ba0157171b26ef49c1dab10729bb775ecf85ce6f3736f687",
+      "positive_browser_exit_code": 0,
+      "browser_cleanup_completed": true,
+      "case_pngs": 68,
+      "contact_sheet_pngs": 5
+    }
   }
 }
