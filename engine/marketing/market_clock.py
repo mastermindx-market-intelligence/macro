@@ -186,26 +186,27 @@ def last_completed_session(now: datetime) -> date:
 
 
 def live_session(now: datetime) -> date:
-    """The most recent session that has OPENED at `now`. The freshness clock.
+    """The ET trading-date reference used for tape freshness at `now`.
 
     THE OPERATOR'S LAW (2026-08-06): "you can post about tickers during market
     hours and after market closes anytime and say oh this went up or this went
     down, but you cant post yesterdays action today, or todays action tomorrow."
-    So the window a tape claim is publishable in is exactly ONE session, and it
-    closes when the NEXT session opens — not at the bell, not at midnight.
+    The existing contract uses the whole ET calendar date of a trading day,
+    including premarket, as :func:`current_session` does. The reference advances
+    at the start of the next trading date, before the regular-market open.
 
     Distinct from both of its neighbours, and the difference is the whole point:
 
       * :func:`current_session` returns None off-session, which would make a
-        Saturday post about Friday's close "stale" — wrong, no new session has
-        opened, Friday is still the live tape;
+        Saturday post about Friday's close "stale" — wrong, Friday remains the
+        trading-date reference throughout the weekend;
       * :func:`last_completed_session` returns the PRIOR session all morning,
         which would make a 10:00 ET post about this morning's move "stale" —
         also wrong, and it is the same post the operator explicitly blesses
         ("during market hours").
 
     Falls back through the weekend/holiday to the session before, so this is
-    total: there is always a most-recent open session.
+    total: there is always a most-recent trading date.
     """
     return current_session(now) or last_completed_session(now)
 
@@ -909,16 +910,16 @@ def stale_session_violations(text: str, *, now: datetime, fact_asof: object,
 
       * SAME-DAY AFTER-CLOSE SHIPS. :func:`live_session` spans the whole ET
         calendar day of a session, so a 21:00 ET post about that afternoon's
-        close is current, not stale. The window closes when the NEXT session
-        opens, exactly as the operator stated it.
+        close is current, not stale. The reference advances at the start of
+        the next ET trading date, including its premarket hours.
       * A MISSING OR MALFORMED ``as_of`` IS NOT STALE. `fact_asof` that will not
         parse yields no fact session, and leg one simply does not run — a
         garbled stamp must never be the reason a good post dies. Leg two still
         applies, because it reads the copy rather than the stamp.
       * WEEKENDS AND HOLIDAYS SHIP. `live_session` walks back to Friday, so a
         Friday-stamped post published on Saturday is current all weekend and
-        dies on Monday's open. That is the honest reading of "the next session
-        kills it".
+        becomes stale on the next ET trading date. Full-day holidays retain
+        the previous trading date as the reference.
       * A POST THAT CLAIMS NO MARKET ACTION IS NOT JUDGED **BY LEG ONE**. An
         education post or a filing summary has no session to be stale about —
         and neither is any kind in :data:`NON_ACTION_KINDS`, whatever numbers
@@ -951,7 +952,7 @@ def stale_session_violations(text: str, *, now: datetime, fact_asof: object,
         if fact_session < live:
             out.append(
                 f"stale_session:{fact_session.isoformat()}!={live.isoformat()} "
-                f"({why}; the {weekday_name(live)} session has opened)")
+                f"({why}; freshness uses the {weekday_name(live)} trading date in ET)")
 
     claimed = _stale_claim_in_copy(body, now=now, live=live)
     if claimed is not None:
@@ -1182,7 +1183,7 @@ def session_language_violations(text: str, *, now: datetime, fact_asof: object,
     # ── Rule B3 — "yesterday" is exactly one calendar day back ────────────────
     # CALENDAR days, not sessions: Friday genuinely was yesterday when read on
     # Saturday, and it stops being yesterday on Sunday. Session arithmetic would
-    # keep calling Friday "yesterday" until Monday's open.
+    # keep calling Friday "yesterday" until the next ET trading date.
     if sess_day is None or (post_day - sess_day).days != 1:
         for m in _YESTERDAY_RE.finditer(body):
             out.append(f"yesterday_word_off_session:{m.group(1).lower()}")
