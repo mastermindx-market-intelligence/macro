@@ -30,9 +30,20 @@ class PermissionPromptBoundaryTests(unittest.TestCase):
             with self.subTest(surface=name):
                 text = normalized(ROOT / name)
                 self.assertIn('administrative blockers are self-remedied', text)
-                self.assertIn('an explicit safety/permission refusal still ends that effect', text)
+                self.assertIn('classify the observed error before declaring a refusal', text)
                 self.assertIn('a permissive local setting does not authorize bypassing', text)
 
+
+
+    def test_technical_error_is_not_reclassified_as_a_global_retry_ban(self):
+        for name in ('AGENTS.md', 'CLAUDE.md'):
+            with self.subTest(surface=name):
+                text = normalized(ROOT / name)
+                self.assertIn('classify the observed error before declaring a refusal', text)
+                self.assertNotIn('an explicit safety/permission refusal ends', text)
+        skill = normalized(ROOT / '.claude/skills/fable-mode/SKILL.md')
+        self.assertIn('a tool failure is not a universal stop', skill)
+        self.assertNotIn('never change accounts, tools, models or carriers', skill)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EMN-BULL-20261026",
-  "asof": "2026-11-08",
+  "asof": "2026-11-13",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 48.4,
-  "raw_confidence": 46.1,
-  "delta_vs_base": -11.6,
+  "management_confidence": 46.8,
+  "raw_confidence": 46.7,
+  "delta_vs_base": -13.2,
   "recommended_action": "hold",
-  "human_state": "Needs Follow-Through",
+  "human_state": "Stalling",
   "components": {
-    "validity": 57.4,
+    "validity": 80.8,
     "progress": 0.0,
-    "pace": 81.1,
+    "pace": 52.8,
     "retention": 50.0,
-    "overlay": 33.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.663,
+    "dist_to_stop_r": 0.854,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 20.0,
-    "p1": -0.2247,
-    "p2": -0.1123,
+    "horizon_pct_used": 31.1,
+    "p1": -0.0975,
+    "p2": -0.0488,
     "p3": null,
-    "move_r": -0.337,
+    "move_r": -0.146,
     "mfe_r": 0.04,
     "mae_r": -0.337
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-11-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 9,
-  "tau": 0.2
+  "days_elapsed": 14,
+  "tau": 0.3111
 }
