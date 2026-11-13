@@ -683,12 +683,12 @@
     if (FILT.side && x.side !== FILT.side) return false;
     if (FILT.theme && x.tags.indexOf(FILT.theme) < 0) return false;
     if (FILT.q) {
-      // when the server search has resolved, restrict to its hit ids; otherwise
-      // fall back to a client-side substring over the baked fields (instant).
-      // Exact catalog IDs are not indexed by full-text search. Match only
-      // records already present in this viewer's catalog; never widen access.
+      // Union search-index body hits with already-visible catalog metadata:
+      // a missing or lagging corpus must not hide an indexed report's title.
+      // Exact catalog IDs also remain addressable without indexing private text.
+      // Visibility remains bounded by the current catalog, lane and facets.
       if (x.id && x.id.toLowerCase() === FILT.q.toLowerCase()) return true;
-      if (SEARCH_HITS) return !!SEARCH_HITS[x.id];
+      if (SEARCH_HITS && SEARCH_HITS[x.id]) return true;
       var hay = (x.title + ' ' + x.inst + ' ' + x.desk + ' ' + x.points.join(' ') + ' ' + x.tags.join(' ') + ' ' + x.tickers.join(' ')).toLowerCase();
       if (hay.indexOf(FILT.q.toLowerCase()) < 0) return false;
     }
