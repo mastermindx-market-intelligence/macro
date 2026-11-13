@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T04:37:53.865405+00:00",
-  "count": 3274,
+  "generated_at": "2026-11-13T04:53:01.966486+00:00",
+  "count": 3275,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -179,6 +179,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-69cxorqfuvw-505dc2",
+      "title": "VON32632483",
+      "institution": "Vontobel",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T03:27:36Z",
+      "summary_points": [
+        "No Earnings Catalysts: Absence of scheduled results limits fundamental-driven market volatility this week.",
+        "Targeted Corporate Events: SGS (Capital Market Day), dormakaba (CMD), Inficon/Schindler (Analyst Meeting + CMD) drive specific stock flow shifts.",
+        "Swiss Data & Policy Focus: Critical CPI, industrial production data and SNB policy signals (16-20 Nov 2026) amid EU-Swiss trade tensions and energy volatility risk factors."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
