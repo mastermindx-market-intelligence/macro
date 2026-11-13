@@ -1,4 +1,5 @@
 # Legacy CI job manifest executed by scripts/run_ci_pack.py.
+# Under-index acceptance has a dedicated synthetic-data job below.
 # This file is deliberately outside .github/workflows so GitHub does not
 # publish one skipped check run for every logical job on every PR.
 #
@@ -27,6 +28,32 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  prophet-under-index:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - engine/__init__.py
+      - engine/prophet_under_index.py
+      - scripts/__init__.py
+      - scripts/build_prophet_under_index.py
+      - scripts/ci/daily_engine_prophet_nightly.sh
+      - scripts/ci/daily_engine_prophet_checkpoint.sh
+      - lib/__init__.py
+      - lib/nyse_calendar.py
+      - tests/__init__.py
+      - tests/test_prophet_under_index.py
+      - tests/fixtures/prophet_under_index_sample.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install synthetic feed test dependencies
+        run: pip install pytest pandas numpy pyarrow
+      - name: under-index definitions publication and fixed sample
+        run: python -m pytest tests/test_prophet_under_index.py -q
   stock-identity-method-projection:
     if: ${{ false }}  # executed inside the ordinary PR code pack
     gate: code
