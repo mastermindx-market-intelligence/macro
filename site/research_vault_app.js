@@ -685,7 +685,10 @@
     if (FILT.q) {
       // when the server search has resolved, restrict to its hit ids; otherwise
       // fall back to a client-side substring over the baked fields (instant).
-      if (SEARCH_HITS) return SEARCH_HITS[x.id];
+      // Exact catalog IDs are not indexed by full-text search. Match only
+      // records already present in this viewer's catalog; never widen access.
+      if (x.id && x.id.toLowerCase() === FILT.q.toLowerCase()) return true;
+      if (SEARCH_HITS) return !!SEARCH_HITS[x.id];
       var hay = (x.title + ' ' + x.inst + ' ' + x.desk + ' ' + x.points.join(' ') + ' ' + x.tags.join(' ') + ' ' + x.tickers.join(' ')).toLowerCase();
       if (hay.indexOf(FILT.q.toLowerCase()) < 0) return false;
     }
