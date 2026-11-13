@@ -153,3 +153,76 @@ The browser is now connected. The two existing admin control-room tabs are owned
 At the last read, independent primary PR #11196 is on `f23648f4ed863f2fd41412da5e9d1387ef2113f5`: its contract checks pass and its four natural CI packs are still executing. Its P11 admin-restart dependency repair separately passed 514 tests with 3 skips. It has no release opt-in yet. Only concluded clean binding exact-head CI and the incumbent `merge-on-green` admission can release that lane.
 
 Next: publish and read back this P12 source on #7493 using expected-head CAS; consume its natural exact-head CI; preserve `merge-blocked` and the genuine prior CHANGES_REQUESTED review until the existing authority resolves them. The original private replay's SETTLEMENT_UNKNOWN state, controller refusal and provider/B2/B3/publication holds remain untouched. Continue the independent primary release and live admin proof where their own gates permit. No source or test result is treated as permission to clear those holds.
+
+## P15 — earnings integration and offline consumer verification
+
+### Exact-head CI exposed a producer/validator dependency
+
+P12 was published and read back at `e70cb16b2f5d9188c2de75cae6d6d90719f39495`, tree `178c1ea42663363bae65e595792a6f7334d80840`. Its natural [run 43401306637](https://github.com/mastermindx-market-intelligence/macro/actions/runs/43401306637) passed contract-delta and several packs, but [pack 9, job 131805832099](https://github.com/mastermindx-market-intelligence/macro/actions/runs/43401306637/job/131805832099) failed the existing `marketing-social-publisher` step "approval desk, card pixels, wire expiry and synthetic harness boundaries": **4 failed, 661 passed**. The four earnings/card cases received invalid copy, or saw an empty render/gate order, because this branch still appended the phrases P12 now rejects before any card rendering occurred.
+
+The primary carrier already owns the coherent producer repair. P15 carries its exact accepted files from [primary source `0e1d47386bfd71bb52659afa9e15c36dc6793a80`](https://github.com/mastermindx-market-intelligence/macro/pull/11196), without a broad branch merge or a second implementation:
+
+| File | Compiler preimage blob | Carried primary blob |
+| --- | --- | --- |
+| `engine/marketing/earnings_call_lane.py` | `6e2561a56b5e9e783de54dba6d0d086b6b9002a9` | `d6c53cf3e2a83742e147f507e6ecd782f10130b8` |
+| `tests/test_marketing_earnings_call_lane.py` | `57d0b85ed385283ec0c299282388f17204c278ff` | `fa240fc67833d1e46ddbbc9b0f746a365c91494b` |
+
+Both carried files were verified byte for byte against that immutable primary source. The producer removes the appended disclaimer and empty-content fallback, retains complete substantive clauses, refuses truncation that could cut off a qualification, and preserves research-only authority in its existing provenance. Its media, hosting, enqueue and provenance code is unchanged. P12's machine-language gate remains unchanged. The old producer tests explicitly required the unwanted disclaimer; its matching accepted tests therefore travel with it.
+
+### A rejected broader test exposed a separate fixture defect
+
+An attempted local run of the broader existing publisher step plus the earnings suite was stopped by **automatic approval review**. The reported reason was attempted HTTPS access to `api.buffer.com` without authorization for live provider access or a disclosed request payload. That command is not a passing check and was not replayed. A read-only process check found no remaining matching pytest process. No provider was queried to infer an external delivery result.
+
+Source-only diagnosis located a genuine provider-capable fixture: `TestTheSweepRunsTheReaperAndReportsIt._run` set the live sentinel and a synthetic `test-token`, then called `pub.main` without substituting `_make_publisher`. The post-now case could reach the real `BufferPublisher.publish` and its post-creation transport. A dummy token does not make an HTTP request offline. This source path establishes the fixture defect; it does not establish how far the stopped request reached or that Buffer accepted anything. The original denied external effect is not retried or treated as authorized.
+
+The wire-expiry fixture now supplies an in-memory publisher. The actual reaper, post-now exemption, sibling control, ledger folding and activity annotations still execute. An autouse transport tripwire records attempted crossings, raises before HTTP and asserts zero attempts at teardown. The final assertion matters because the production provider adapter intentionally catches transport exceptions. The fixture records no credentials or payloads. Production publisher code is unchanged.
+
+A bounded source review also found two card helpers whose `dry_run=True` disabled publishing but did not disable model summarization. Both now pass the existing explicit `llm_override=lambda *_a, **_k: None` seam. Card geometry, withholding, refusal and render-before-judge assertions remain intact. No production provider route or model policy is altered.
+
+### Executed offline proof
+
+The final bounded run passed **283 tests, zero skips**, one dependency deprecation, in 30.39 seconds. The process-level tripwire reported **`network_attempts: 0`** and **`pytest_exit: 0`**. It covered the actual earnings producer, all four previously failing card consumers, and the repaired expiry fixture. The earlier run after the Buffer fixture repair also passed 283 tests with zero network attempts; the final run includes both explicit model overrides.
+
+The exact final verification used in-process DNS/socket denial and explicit disabled provider-generation flags. Any attempted connection would fail the command even if production code caught the exception:
+
+```python
+import json
+import os
+import socket
+import sys
+
+os.environ["MARKETING_LLM_ENABLED"] = "0"
+os.environ["CODEX_PROVIDER_ENABLED"] = "0"
+blocked = []
+
+def deny_network(*args, **kwargs):
+    blocked.append(True)
+    raise RuntimeError("Offline verification forbids network access")
+
+socket.getaddrinfo = deny_network
+socket.create_connection = deny_network
+socket.socket.connect = deny_network
+socket.socket.connect_ex = deny_network
+socket.socket.sendto = deny_network
+if hasattr(socket.socket, "sendmsg"):
+    socket.socket.sendmsg = deny_network
+
+import pytest
+rc = pytest.main([
+    "tests/test_marketing_earnings_call_lane.py",
+    "tests/test_marketing_card_earns_pixels.py",
+    "tests/test_marketing_wire_expiry.py",
+    "-q", "--tb=short",
+])
+print(json.dumps({"pytest_exit": int(rc), "network_attempts": len(blocked),
+                  "offline_verification": True}))
+sys.exit(int(rc) or (1 if blocked else 0))
+```
+
+This is an isolated local consumer result with synthetic delivery/hosting receipts. It does not qualify the interrupted broader command, a provider effect, live generated writing, media hosting or X delivery. No new CI job, selector, timeout, budget or packing change is introduced: the incumbent code-gated publisher step already executes the card and wire suites. The separate primary carrier retains the code-gated producer-suite enrollment. P12's unchanged writer/validator qualification is reused; ordinary fresh binding CI is still owed on the published P15 head.
+
+### Current release and acceptance boundaries
+
+Primary PR #11196 is now Ready at `0e1d47386bfd71bb52659afa9e15c36dc6793a80`, tree `4e893f5d3ad8a0721d6415e4d499d241f0d22e6c`. Its full source and docket were read back exactly. P13 revalidates frozen evidence and the persisted winner at approval; P14 prevents composite growth/inflation scores from being handed to the writer as measured release trends and corrects the claims reference period. Its latest affected editorial command passed 626 tests with zero skips. Natural [CI run 43405954455](https://github.com/mastermindx-market-intelligence/macro/actions/runs/43405954455) has started all four packs; it is not presumed green or released.
+
+Publish/read back this P15 integration on the original compiler branch with expected-head CAS and restore Ready for its existing review. Preserve `merge-blocked`, the genuine prior CHANGES_REQUESTED review, the original private replay's SETTLEMENT_UNKNOWN state, controller refusal, and all provider/B2/B3/publication fences. No stopped command or private replay is rerun through another carrier. The current browser tab still needs an authenticated session available to this conversation. Production installation, browser acceptance, live model quality and prospective engagement remain unproven; parent completion remains open.
