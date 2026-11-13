@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T14:53:53.550639+00:00",
-  "count": 3302,
+  "generated_at": "2026-11-13T15:08:50.052498+00:00",
+  "count": 3303,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -202,6 +202,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mwlkl8xgwsu-b781d8",
+      "title": "GS Blekos Marketcolour + Global 2027 Outlooks Nvidia Siemens Richemont Hermes Wise 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T13:33:02Z",
+      "summary_points": [
+        "GDP Forecast Beat: 2027 GDP forecast at 2.8% (vs potential 2.7%) driven by lower energy prices and strong AI capex, supporting growth equity allocation.",
+        "EM Equity Upside: MSCI EM forecasts 21% total returns and 26% EPS growth, fueled by emerging markets earnings strength despite slower US growth.",
+        "Growth Scarcity Theme: Core investment theme centered on US Hyperscalers/AI and Japan AI Semiconductors, with Nvidia (25% upside) and Siemens (10% upside) as key catalysts.",
+        "Defensive Shift: Equities favor Growth balanced with Defensives amid lower bond yields, inflation, and oil prices, prioritizing healthcare/buybacks and long-duration growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
