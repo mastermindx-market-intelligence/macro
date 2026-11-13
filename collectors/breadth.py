@@ -516,6 +516,29 @@ class BreadthAdapter(Adapter):
         if live_cols < len(tickers) * 0.8:
             raise RuntimeError(f"breadth closes too sparse: {live_cols}/{len(tickers)}")
 
+        if not full_history:
+            # Width alone does not qualify a replacement adjustment vintage.
+            # Keep the existing 80% population policy, but require that population
+            # to support every configured metric at the returned window's tip.
+            required = max(*self.cfg["ma_windows"], self.cfg["nhnl_window"])
+            qualified = int(closes.tail(required).notna().sum().ge(required).sum())
+            if qualified < len(tickers) * 0.8:
+                raise RuntimeError(
+                    f"breadth temporal coverage too sparse: {qualified}/{len(tickers)} over {required} rows"
+                )
+            # A new vintage must not roll back the retained observation clock.
+            # An unreadable cache may be healed, never used as fallback output.
+            prior = None
+            if self.cache_path.exists():
+                try:
+                    prior = pd.read_parquet(self.cache_path)
+                except Exception as e:  # noqa: BLE001
+                    log.warning("breadth prior cache unreadable; qualifying replacement alone (%s)", e)
+            if prior is not None and not prior.dropna(how="all").empty:
+                prior_tip = prior.dropna(how="all").index.max()
+                if closes.dropna(how="all").index.max() < prior_tip:
+                    raise RuntimeError("breadth returned tip precedes retained cache tip")
+
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
         if not full_history:
             closes.to_parquet(self.cache_path)
@@ -684,4 +707,5 @@ def breadth_summary(br: pd.DataFrame | None, full: bool) -> dict | None:
         "state": state, "tone": tone, "full": bool(full),
         "asof": pd.Timestamp(last.name).strftime("%Y-%m-%d"),
     }
+
 
