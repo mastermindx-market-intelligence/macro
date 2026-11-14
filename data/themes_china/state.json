@@ -25,7 +25,7 @@
     "label": "neutral",
     "name": "Home Appliances",
     "name_zh": "\u5bb6\u7535",
-    "rank": 9,
+    "rank": 10,
     "reco": "hold",
     "score": 43
   },
@@ -81,7 +81,7 @@
     "label": "fading",
     "name": "Consumer Electronics",
     "name_zh": "\u6d88\u8d39\u7535\u5b50",
-    "rank": 14,
+    "rank": 15,
     "reco": "trim",
     "score": 32
   },
@@ -89,9 +89,9 @@
     "label": "neutral",
     "name": "Defense & Aerospace",
     "name_zh": "\u519b\u5de5\u822a\u5929",
-    "rank": 10,
+    "rank": 8,
     "reco": "hold",
-    "score": 41
+    "score": 44
   },
   "cn_food_bev": {
     "label": "neutral",
@@ -161,7 +161,7 @@
     "label": "deteriorating",
     "name": "Semiconductors",
     "name_zh": "\u534a\u5bfc\u4f53",
-    "rank": 13,
+    "rank": 14,
     "reco": "avoid",
     "score": 32
   },
@@ -169,7 +169,7 @@
     "label": "neutral",
     "name": "SOE Blue Chips (\u4e2d\u7279\u4f30)",
     "name_zh": "\u4e2d\u7279\u4f30\u00b7\u592e\u4f01",
-    "rank": 8,
+    "rank": 9,
     "reco": "hold",
     "score": 44
   },
@@ -185,8 +185,8 @@
     "label": "neutral",
     "name": "Solar / Photovoltaics",
     "name_zh": "\u5149\u4f0f",
-    "rank": 15,
+    "rank": 13,
     "reco": "hold",
-    "score": 32
+    "score": 33
   }
 }

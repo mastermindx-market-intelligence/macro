@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-11-13",
+  "as_of": "2026-11-14",
   "coverage": {
-    "end": "2026-11-13",
+    "end": "2026-11-14",
     "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W46; 14 week(s) have events so far; chronicle event store begins 2008-03-25; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-08-14"
+    "start": "2026-08-15"
   },
   "iso_week": "2026-W46",
   "schema": "chronicle.rollup.weekly/v1",
@@ -11,19 +11,19 @@
     {
       "clusters": [
         {
-          "n_events": 192,
-          "source": "research_vault",
-          "theme": null,
-          "top_events": []
-        },
-        {
-          "n_events": 117,
+          "n_events": 303,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 19,
+          "n_events": 247,
+          "source": "research_vault",
+          "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 20,
           "source": "prophet_ledger",
           "theme": null,
           "top_events": []
@@ -422,7 +422,7 @@
           "top_events": []
         },
         {
-          "n_events": 24,
+          "n_events": 25,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -592,6 +592,16 @@
           "theme": null,
           "top_events": [
             {
+              "date": "2026-08-19",
+              "id": "cev-research_vault-8d809004022b",
+              "kind": "report",
+              "source": "research_vault",
+              "source_ref": "marketdesk-iufhbreqa5u-c4615f",
+              "tickers": [],
+              "title": "Goldman Sachs: GS Early Morning Research Recap Ratings and Target Price Changes August 19, 2026 as of 5 30 AM ET",
+              "weight_hint": 3
+            },
+            {
               "date": "2026-08-22",
               "id": "cev-research_vault-a45893b7bba7",
               "kind": "report",
@@ -688,27 +698,9 @@
     {
       "clusters": [
         {
-          "n_events": 153,
+          "n_events": 38,
           "source": "research_vault",
           "theme": null,
-          "top_events": []
-        },
-        {
-          "n_events": 37,
-          "source": "earnings_call",
-          "theme": "earnings",
-          "top_events": []
-        },
-        {
-          "n_events": 7,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "research_vault",
-          "theme": "McElligott",
           "top_events": []
         }
       ],

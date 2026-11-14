@@ -3493,6 +3493,10 @@ on:
       - "tests/test_calibrate_stage.py"
       - "tests/test_cctv_finalize_watcher.py"
       - "tests/test_collect_lane_gate.py"
+      # The rotation-context capture suite (2026-11-11) and its subject — same
+      # store-writer-behind-the-nightly-lane class as the lane-gate suite above.
+      - "tests/test_rotation_context_capture.py"
+      - "engine/rotation_context_capture.py"
       - "tests/test_context_candidates.py"
       - "tests/test_context_index_eval.py"
       - "tests/test_deploy_update_self_heal.py"

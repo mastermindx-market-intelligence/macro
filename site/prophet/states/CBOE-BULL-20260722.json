@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CBOE-BULL-20260722",
-  "asof": "2026-11-13",
+  "asof": "2026-11-14",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 49.0,
@@ -11,21 +11,21 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 64.0,
+    "progress": 67.7,
     "pace": 0.0,
     "retention": 100.0,
-    "overlay": 56.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.384,
-    "dist_to_t1_r": 0.116,
-    "dist_to_t2_r": 1.616,
-    "horizon_pct_used": 246.7,
-    "p1": 0.9227,
-    "p2": 0.4613,
+    "dist_to_stop_r": 2.492,
+    "dist_to_t1_r": 0.008,
+    "dist_to_t2_r": 1.508,
+    "horizon_pct_used": 248.9,
+    "p1": 0.9946,
+    "p2": 0.4973,
     "p3": null,
-    "move_r": 1.384,
-    "mfe_r": 1.384,
+    "move_r": 1.492,
+    "mfe_r": 1.492,
     "mae_r": -0.473
   },
   "rr_ratio": 1.5,
@@ -39,14 +39,14 @@
     "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 83.79001464843748,
+  "_mfe": 90.32001342773435,
   "_mae": -28.624993896484398,
-  "_max_p1": 0.9226958996634453,
+  "_max_p1": 0.9946042663554052,
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 111,
-  "tau": 2.4667,
+  "days_elapsed": 112,
+  "tau": 2.4889,
   "closed": true,
   "outcome": "EXPIRED"
 }
