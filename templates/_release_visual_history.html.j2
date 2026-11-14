@@ -8,7 +8,7 @@
 #rr-visual-history .rrh-intro{margin:0;color:var(--muted);font-size:11px;line-height:1.5;max-width:550px}
 #rr-visual-history .rrh-controls{display:flex;align-items:flex-end;flex-wrap:wrap;gap:8px}
 #rr-visual-history .rrh-controls label{display:flex;flex-direction:column;gap:3px;font-size:10px;font-weight:600;color:var(--muted)}
-#rr-visual-history .rrh-controls select{min-height:44px;min-width:86px;padding:8px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);font:inherit;font-size:12px;max-width:100%}
+#rr-visual-history .rrh-controls select{min-height:44px;min-width:86px;padding:8px 9px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);color:var(--text);font:inherit;font-size:12px;max-width:100%}
 #rr-visual-history .rrh-controls select:focus-visible{outline:2px solid var(--link);outline-offset:2px}
 #rr-visual-history .rrh-body{padding:10px 18px 15px}
 #rr-visual-history .rrh-headline{display:flex;gap:10px 20px;align-items:baseline;flex-wrap:wrap}
@@ -27,14 +27,14 @@
 #rr-visual-history .rrh-fact-value{font-size:18px;font-weight:750;line-height:1.35;font-variant-numeric:tabular-nums;word-break:break-word}
 #rr-visual-history .rrh-fact-note{font-size:10px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
 #rr-visual-history .rrh-foot{padding:10px 16px 12px;background:var(--panel)}
-#rr-visual-history .rrh-foot .mx-disc{background:transparent;border:1px solid var(--line);border-radius:8px}
+#rr-visual-history .rrh-foot .mx-disc{background:transparent;border:1px solid var(--line);border-radius:var(--r-ctl,8px)}
 #rr-visual-history .rrh-foot summary{cursor:pointer;font-weight:650;font-size:12px;min-height:44px;display:flex;align-items:center;padding:8px 12px}
 #rr-visual-history .rrh-foot summary:focus-visible{outline:2px solid var(--link);outline-offset:2px}
 #rr-visual-history .rrh-foot .mx-disc-body{padding:0 12px 12px;font-size:11px;line-height:1.6;color:var(--muted)}
 #rr-visual-history .rrh-foot table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
 #rr-visual-history .rrh-foot th,#rr-visual-history .rrh-foot td{padding:5px 9px;text-align:left;border-bottom:1px solid var(--line)}
 #rr-visual-history .rrh-foot a{color:var(--link)}
-@media(max-width:850px){#rr-visual-history .rrh-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:850px){ #rr-visual-history .rrh-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){
   #rr-visual-history .rrh-top{padding:12px}
   #rr-visual-history .rrh-body{padding:10px 12px}

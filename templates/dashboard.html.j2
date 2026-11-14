@@ -11689,7 +11689,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     var _rrForecastSignature = null;
     var _rrForecastFetching = false;
     function _rrRefreshForecast(){
-      if (_rrForecastFetching || document.hidden) return;
+      if (document.hidden) return;
+      // Revalidate time-sensitive chart copy even for identical or failed responses.
+      // This remains inside the incumbent timer/focus/visibility refresh owner.
+      if (window.MMXReleaseVisualHistory) window.MMXReleaseVisualHistory.refresh();
+      if (_rrForecastFetching) return;
       _rrForecastFetching = true;
       var controller = typeof AbortController === 'function' ? new AbortController() : null;
       var watchdog = setTimeout(function(){ if (controller) controller.abort(); }, 10000);

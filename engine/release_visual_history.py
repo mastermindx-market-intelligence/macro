@@ -74,18 +74,26 @@ def _month_before(ym: str, lag: int) -> str:
     return f"{index // 12:04d}-{index % 12 + 1:02d}"
 
 
-def _change(levels: dict[str, float], lag: int) -> list[dict[str, Any]]:
+def _change(levels: dict[str, float], lag: int, *,
+            withheld: list[str] | None = None) -> list[dict[str, Any]]:
     points = []
     for period in sorted(levels):
         previous = levels.get(_month_before(period, lag))
         current = levels[period]
         if previous is None or previous <= 0 or not math.isfinite(current):
             continue
-        points.append({"period": period, "value": round(100 * (current / previous - 1), 3)})
+        rate = 100 * (current / previous - 1)
+        # Finite index levels can overflow either division or percentage scaling.
+        # Preserve the gap; never poison the shared forecast JSON or invent a rate.
+        if not math.isfinite(rate):
+            if withheld is not None:
+                withheld.append(period)
+            continue
+        points.append({"period": period, "value": round(rate, 3)})
     return points[-MAX_HISTORY:]
 
 
-def _frame_points(frame: Any, snapshot_date: date) -> dict[str, list[dict[str, Any]]]:
+def _frame_points(frame: Any, snapshot_date: date) -> dict[str, Any]:
     """Choose each observation from exactly one active vintage at collection time."""
     mask = (
         frame["realtime_start"].dt.date.le(snapshot_date)
@@ -100,7 +108,14 @@ def _frame_points(frame: Any, snapshot_date: date) -> dict[str, list[dict[str, A
         value = float(row.value)
         if math.isfinite(value) and value > 0:
             levels[period] = value
-    return {"yoy": _change(levels, 12), "mom": _change(levels, 1)}
+    withheld: dict[str, list[str]] = {"yoy": [], "mom": []}
+    curves: dict[str, Any] = {
+        "yoy": _change(levels, 12, withheld=withheld["yoy"]),
+        "mom": _change(levels, 1, withheld=withheld["mom"]),
+    }
+    if any(withheld.values()):
+        curves["withheld_periods"] = withheld
+    return curves
 
 
 def _receipt_groups(root: Path, asof: datetime) -> dict[str, list[dict[str, Any]]]:
@@ -198,6 +213,7 @@ def build_release_visual_history(root: str | Path, *, asof: str) -> dict[str, An
             "name_en": name_en, "name_zh": name_zh,
             "source_url": f"https://fred.stlouisfed.org/series/{series_id}",
             "status": "unavailable", "yoy": [], "mom": [],
+            "withheld_periods": {"yoy": [], "mom": []},
             "basis_metadata": {
                 "yoy": {"series_id": series_id, "seasonal_adjustment": "SA",
                         "official_reported_basis_comparable": release.startswith("pce_"),
@@ -227,6 +243,8 @@ def build_release_visual_history(root: str | Path, *, asof: str) -> dict[str, An
                     if not headline_curves["yoy"]:
                         raise ValueError("official_nsa_yoy_observations_missing")
                     item["yoy"] = headline_curves["yoy"]
+                    item["withheld_periods"]["yoy"] = headline_curves.get(
+                        "withheld_periods", {}).get("yoy", [])
                     item["basis_metadata"]["yoy"] = {
                         "series_id": headline_id,
                         "seasonal_adjustment": "NSA",
@@ -238,16 +256,22 @@ def build_release_visual_history(root: str | Path, *, asof: str) -> dict[str, An
                     result["reason_codes"].append(f"{release}:nsa:{str(nsa_error)}")
             else:
                 item["basis_metadata"]["yoy"]["basis_note"] = "BEA_SA_index_derived_yoy"
-            item["status"] = "available" if item["yoy"] or item["mom"] else "history_insufficient"
+            incomplete = any(item["withheld_periods"].values())
+            item["status"] = (("partial" if incomplete else "available")
+                              if item["yoy"] or item["mom"] else "history_insufficient")
+            for basis, periods in item["withheld_periods"].items():
+                if periods:
+                    result["reason_codes"].append(f"{release}:{basis}:derived_rate_nonfinite")
             item["last_observation"] = max(
-                (p["period"] for p in (curves["yoy"] + curves["mom"])), default=None
+                (p["period"] for p in (item["yoy"] + item["mom"])), default=None
             )
         except (OSError, ValueError, TypeError, KeyError, ImportError) as exc:
             result["reason_codes"].append(f"{release}:{str(exc)}")
         result["series"].append(item)
     available = sum(s["status"] == "available" for s in result["series"])
+    usable = sum(s["status"] in ("available", "partial") for s in result["series"])
     result["status"] = ("available" if available == len(TARGETS) else
-                        "partial" if available else "unavailable")
+                        "partial" if usable else "unavailable")
     if result["source_status"] == "stale":
         result["reason_codes"].append("source_history_collection_stale")
     return result

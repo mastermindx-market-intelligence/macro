@@ -10,7 +10,7 @@
     ['pce_core', 'Core PCE', '\u6838\u5fc3 PCE']
   ];
   var target = 'ppi_finaldemand', basis = 'yoy', windowMonths = 36;
-  var snapshot = null, comparison = null;
+  var snapshot = null, comparison = null, languageConnected = false;
   function byRole(host, selector) { return host.querySelector(selector); }
   function bilingual(node, en, zh) {
     if (!node) return;
@@ -185,6 +185,14 @@
       var option=selector.querySelector('option[value="'+s[0]+'"]');
       if (option) option.textContent=s[language==='zh'?2:1];
     });
+    [[selectBasis,[['yoy','YoY','同比'],['mom','MoM','环比']]],
+     [selectWindow,[['12','1 year','1 年'],['36','3 years','3 年'],['60','5 years','5 年']]]
+    ].forEach(function (control) {
+      control[1].forEach(function (label) {
+        var option=control[0].querySelector('option[value="'+label[0]+'"]');
+        if (option) option.textContent=label[language==='zh'?2:1];
+      });
+    });
     selector.value=target;selectBasis.value=basis;selectWindow.value=String(windowMonths);
     var series=(history && Array.isArray(history.series) && history.series.length<=10)
       ? history.series.find(function (s) { return s && s.release===target; }) : null;
@@ -193,10 +201,13 @@
       Number.isFinite(Date.parse(history.asof)) && Date.parse(history.asof)<=Date.now() &&
       Number.isFinite(Date.parse(history.source_collected_at)) &&
       Date.parse(history.source_collected_at)<=Date.parse(history.asof) &&
-      series && series.status==='available' &&
+      series && ['available','partial'].includes(series.status) &&
       SERIES.some(function (s) { return s[0]===series.release && s[0]===target; });
     var all=valid?points(series[basis],72):[];
-    var selected=all.slice(-windowMonths);
+    // Windows are calendar months ending at the last qualified observation.
+    // Missing months remain gaps; they must not extend a labelled 1y/3y/5y span.
+    var endMonth=all.length?all[all.length-1].month:NaN;
+    var selected=all.filter(function (point) { return point.month>endMonth-windowMonths; });
     var latest=selected[selected.length-1],prev=selected[selected.length-2];
     var consecutive=prev && latest.month-prev.month===1;
     var delta=consecutive?latest.value-prev.value:null;
@@ -232,8 +243,17 @@
         String(new Date(history.asof).getUTCMonth()+1).padStart(2,'0'))-latest.month>2)
     );
     bilingual(state,
-      !valid?'Historical series unavailable.':stale?'Archived history — not a current release.':'Historical series available.',
-      !valid?'\u5386\u53f2\u5e8f\u5217\u4e0d\u53ef\u7528\u3002':stale?'\u5df2\u5b58\u6863\u5386\u53f2\uff0c\u975e\u5f53\u524d\u53d1\u5e03\u3002':'\u5386\u53f2\u5e8f\u5217\u5df2\u53ef\u7528\u3002');
+      !valid || !selected.length?'Historical series unavailable.':stale?'Archived history — not a current release.':
+        series.status==='partial'?'Historical series partially available.':'Historical series available.',
+      !valid || !selected.length?'\u5386\u53f2\u5e8f\u5217\u4e0d\u53ef\u7528\u3002':stale?'\u5df2\u5b58\u6863\u5386\u53f2\uff0c\u975e\u5f53\u524d\u53d1\u5e03\u3002':
+        series.status==='partial'?'历史序列部分可用。':'\u5386\u53f2\u5e8f\u5217\u5df2\u53ef\u7528\u3002');
+    if (valid && series.status==='partial') {
+      var withheldNote=textNode('span','rrh-history-gap');
+      bilingual(withheldNote,
+        ' Some historical rates are unavailable; gaps are preserved.',
+        ' 部分历史变化率不可用，缺口已保留。');
+      state.appendChild(withheldNote);
+    }
     bilingual(valueNode,latest?fmt(latest.value)+'%':'\u2014',latest?fmt(latest.value)+'%':'\u2014');
     bilingual(deltaNode,
       delta===null?'Monthly change unavailable.':(delta>0?'Up ':delta<0?'Down ':'Unchanged · ')+signed(delta)+' percentage points from previous month.',
@@ -303,6 +323,10 @@
   function connect(host) {
     if (!host || host.dataset.rrhConnected==='yes') return;
     host.dataset.rrhConnected='yes';
+    if (!languageConnected) {
+      document.addEventListener('langchange',refresh);
+      languageConnected=true;
+    }
     [['[data-rrh-target]',function (v) { if(SERIES.some(function (s) {return s[0]===v;}))target=v; }],
      ['[data-rrh-basis]',function (v) { if(v==='yoy'||v==='mom')basis=v; }],
      ['[data-rrh-window]',function (v) { if(['12','36','60'].includes(v))windowMonths=Number(v); }]
@@ -313,7 +337,12 @@
       });
     });
   }
+  function refresh() {
+    var host=document.getElementById('rr-visual-history');
+    if (host && host.dataset.rrhConnected==='yes') render(host,snapshot,comparison);
+  }
   global.MMXReleaseVisualHistory=Object.freeze({
+    refresh:refresh,
     render:function (host, history, surprise) {
       connect(host);render(host,history,surprise);
     },

@@ -318,3 +318,199 @@ def test_ui_always_discloses_sa_proxy_and_official_nsa_basis():
                      "official_reported_basis_comparable"):
         assert expected in script
     assert "BLS CPI/PPI" in partial and "October 2025 CPI" in partial
+
+
+@pytest.mark.parametrize("release", tuple(visual.TARGETS))
+@pytest.mark.parametrize("basis,lag", [("mom", 1), ("yoy", 12)])
+@pytest.mark.parametrize("previous,current", [(1e-308, 1e308), (1.0, 1e307)])
+def test_finite_inputs_cannot_publish_nonfinite_rates(
+    tmp_path, monkeypatch, release, basis, lag, previous, current
+):
+    """Real sealed Parquets/manifest/builder; only the provider and clock are synthetic."""
+    import requests
+    from scripts import collect_release_target_vintages as collector
+
+    def no_network(*args, **kwargs):
+        raise AssertionError("unexpected provider request in offline source qualification")
+
+    monkeypatch.setattr(requests.Session, "request", no_network)
+    monkeypatch.setattr(collector, "_utc_now", lambda: "2026-11-13T14:00:00+00:00")
+    series_id = (visual.YOY_HEADLINE_SERIES[release] if basis == "yoy"
+                 else visual.TARGETS[release][0])
+    end = 2026 * 12 + 9  # October 2026, before the fixed collection clock.
+
+    def provider(**kwargs):
+        rows = []
+        for month in range(end - 33, end + 1):
+            value = 100.0 + (month - (end - 33)) / 10.0
+            if kwargs["series_id"] == series_id:
+                if month == end - lag:
+                    value = previous
+                elif month == end:
+                    value = current
+            rows.append({"period": f"{month // 12:04d}-{month % 12 + 1:02d}-01",
+                         "realtime_start": "2026-11-01", "realtime_end": "9999-12-31",
+                         "value": value})
+        return pd.DataFrame(rows)
+
+    receipt = collector.collect_release_target_vintages(
+        repo_root=tmp_path, api_key="synthetic-test-key", fetcher=provider)
+    assert receipt["status"] == "ok"
+    before = {p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
+    result = visual.build_release_visual_history(tmp_path, asof=NOW)
+    json.dumps({"release_visual_history": result}, allow_nan=False)
+    assert {p.relative_to(tmp_path): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()} == before
+    row = next(item for item in result["series"] if item["release"] == release)
+    assert "2026-10" not in {p["period"] for p in row[basis]}
+    assert "2026-08" in {p["period"] for p in row[basis]}
+    assert "2026-10" in row["withheld_periods"][basis]
+    assert row["status"] == "partial" and result["status"] == "partial"
+    assert f"{release}:{basis}:derived_rate_nonfinite" in result["reason_codes"]
+    assert all(item["status"] == "available" for item in result["series"] if item is not row)
+    assert result["display_only"] is True and not any(result["authority"].values())
+
+
+def test_all_unrepresentable_rates_remain_unavailable():
+    levels = {"2025-01": 1e-308, "2026-01": 1e308}
+    assert visual._change(levels, 12) == []
+
+
+# Executes the complete committed controller and the actual parent refresh function.
+# DOM, response and clock are synthetic; this is not browser/visual acceptance.
+_NATIVE_VISUAL_PROBE = r"""
+const fs=require('fs'), path=require('path'), vm=require('vm'), assert=require('assert/strict');
+const root=process.argv[1], scenario=process.argv[2], span=Number(process.argv[3]);
+class Element {
+  constructor(tag) { this.tagName=tag; this.children=[]; this.attrs={}; this.dataset={}; this.events={}; this.value=''; this.text=''; }
+  set textContent(value) { this.text=String(value); this.children=[]; }
+  get textContent() { return this.text+this.children.map(n=>n.textContent).join(''); }
+  appendChild(node) { this.children.push(node); return node; }
+  setAttribute(key,value) { this.attrs[key]=String(value); }
+  getAttribute(key) { return this.attrs[key]||null; }
+  addEventListener(name,fn) { (this.events[name] ||= []).push(fn); }
+  dispatchEvent(event) { (this.events[event.type]||[]).forEach(fn=>fn(event)); }
+  querySelector(selector) {
+    const option=selector.match(/^option\[value="([^"]+)"\]$/);
+    return option ? (this.options||{})[option[1]]||null : (this.roles||{})[selector]||null;
+  }
+}
+const host=new Element('section'); host.roles={};
+for(const role of ['target','basis','window','state','value','delta','interpretation','meta','chart','facts','table','chart-title','source'])
+  host.roles['[data-rrh-'+role+']']=new Element(role==='chart'?'svg':'div');
+function role(name) { return host.roles['[data-rrh-'+name+']']; }
+for(const [name,values] of [['target',['ppi_finaldemand','cpi_headline','cpi_core','pce_headline','pce_core']],['basis',['yoy','mom']],['window',['12','36','60']]]) {
+  role(name).options={}; for(const value of values) role(name).options[value]=new Element('option');
+}
+const docEvents={};
+const document={hidden:false, documentElement:new Element('html'),
+  createElement:tag=>new Element(tag), createElementNS:(_ns,tag)=>new Element(tag),
+  getElementById:id=>id==='rr-visual-history'?host:null,
+  addEventListener:(name,fn)=>(docEvents[name] ||= []).push(fn),
+  dispatchEvent:event=>(docEvents[event.type]||[]).forEach(fn=>fn(event))};
+document.documentElement.setAttribute('lang','en');
+let clock=Date.parse('2026-11-13T15:00:00Z'), fetches=0, failed=false, radarRenders=0;
+class ClockDate extends Date { constructor(...args) { super(...(args.length?args:[clock])); } static now() { return clock; } }
+const window={};
+const denied={can_score:false,can_rank:false,can_gate:false,can_size:false,can_trade:false};
+function fixture(points) {
+  return {schema:'release_visual_history.v1', display_only:true, authority:denied, status:'available',
+    asof:'2026-11-13T15:00:00Z',source_collected_at:'2026-11-13T14:00:00Z',source_status:'recent',
+    series:['ppi_finaldemand','cpi_headline','cpi_core','pce_headline','pce_core'].map(release=>({
+      release,status:'available',yoy:points,mom:points,first_prints:[],
+      basis_metadata:{yoy:{series_id:'PPIFID',seasonal_adjustment:'NSA',official_reported_basis_comparable:true},
+                      mom:{series_id:'PPIFIS',seasonal_adjustment:'SA',official_reported_basis_comparable:true}}}))};
+}
+let payload={upcoming:[],asof:'2026-11-13T15:00:00Z',release_visual_history:fixture([
+  {period:'2026-08',value:2.1},{period:'2026-09',value:2.2},{period:'2026-10',value:2.3}])};
+const context=vm.createContext({window,document,Date:ClockDate,console,
+  setTimeout:()=>1,clearTimeout:()=>{},AbortController,
+  fetch:()=>{fetches++;return failed?Promise.reject(new Error('offline fixture')):
+    Promise.resolve({ok:true,json:()=>Promise.resolve(payload)});},
+  _rrForecastAsOf:'',_rrForecastFailed:false,_rrUpdateCountdowns:()=>{},_rrUpdateSnapshotNotice:()=>{},
+  renderRadar:data=>{radarRenders++;window.MMXReleaseVisualHistory.render(host,data&&data.release_visual_history,data&&data.release_surprise_confirmation);}});
+vm.runInContext(fs.readFileSync(path.join(root,'templates/release_visual_history.js'),'utf8'),context);
+function render(history) { window.MMXReleaseVisualHistory.render(host,history,null); }
+function change(name,value) { role(name).value=String(value);role(name).dispatchEvent({type:'change'}); }
+function plotted() { return role('chart').children.filter(n=>n.tagName==='circle'&&n.children[0]?.tagName==='title').map(n=>n.children[0].textContent.slice(0,7)); }
+function finiteSvg() { for(const node of role('chart').children) for(const value of Object.values(node.attrs)) assert(!/NaN|Infinity/.test(value),value); }
+async function main() {
+  if(scenario==='window') {
+    const end=2029*12+11, rows=[];
+    for(let month=end-71;month<=end;month++) if(month!==end-2)
+      rows.push({period:String(Math.floor(month/12))+'-'+String(month%12+1).padStart(2,'0'),value:1+(month-(end-71))/100});
+    const history=fixture(rows);history.asof='2030-01-02T15:00:00Z';history.source_collected_at=history.asof;
+    clock=Date.parse(history.asof);render(history);change('window',span);
+    const observed=plotted(), start=end-span+1;
+    assert.equal(observed[0],String(Math.floor(start/12))+'-'+String(start%12+1).padStart(2,'0'));
+    assert.equal(observed.length,span-1);assert(!observed.includes('2029-10'));
+    assert.equal(role('chart').children.filter(n=>n.tagName==='path'&&n.attrs.fill==='none').length,2);
+    finiteSvg();
+  } else if(scenario==='language') {
+    render(payload.release_visual_history);render(payload.release_visual_history);
+    change('target','cpi_core');change('basis','mom');change('window',12);
+    document.documentElement.setAttribute('data-lang','zh');document.documentElement.setAttribute('lang','zh');
+    document.dispatchEvent({type:'langchange'});
+    assert.equal(role('target').options.cpi_core.textContent,'核心 CPI');
+    assert.equal(role('basis').options.mom.textContent,'环比');assert.equal(role('window').options['12'].textContent,'1 年');
+    assert.equal(role('target').value,'cpi_core');assert.equal(role('basis').value,'mom');assert.equal(role('window').value,'12');
+    assert.equal(docEvents.langchange.length,1);assert.equal(fetches,0);
+    render(null);document.documentElement.setAttribute('lang','en');document.documentElement.setAttribute('data-lang','en');
+    document.dispatchEvent({type:'langchange'});assert.equal(role('target').options.cpi_core.textContent,'Core CPI');
+  } else if(scenario==='refresh_same'||scenario==='refresh_error') {
+    const dashboard=fs.readFileSync(path.join(root,'templates/dashboard.html.j2'),'utf8');
+    const start=dashboard.indexOf('    var _rrForecastSignature = null;');
+    const end=dashboard.indexOf('    _rrRefreshForecast();',start);
+    assert(start>=0&&end>start);vm.runInContext(dashboard.slice(start,end),context);
+    context._rrRefreshForecast();await new Promise(resolve=>setImmediate(resolve));
+    assert(role('state').textContent.includes('Historical series available.'));assert.equal(radarRenders,1);
+    clock+=73*3600000;failed=scenario==='refresh_error';
+    context._rrRefreshForecast();await new Promise(resolve=>setImmediate(resolve));
+    assert(role('state').textContent.includes('Archived history — not a current release.'));
+    assert.equal(radarRenders,1);assert.equal(fetches,2);assert.deepEqual(plotted(),['2026-08','2026-09','2026-10']);
+    document.hidden=true;context._rrRefreshForecast();assert.equal(fetches,2);
+  } else if(scenario==='partial') {
+    const history=payload.release_visual_history;history.status='partial';history.series[0].status='partial';
+    history.series[0].withheld_periods={yoy:['2026-09'],mom:[]};history.series[0].yoy=history.series[0].yoy.filter(p=>p.period!=='2026-09');
+    render(history);assert.deepEqual(plotted(),['2026-08','2026-10']);
+    assert(role('state').textContent.includes('Some historical rates are unavailable'));
+    assert(role('state').textContent.includes('部分历史变化率不可用'));
+    assert(role('delta').textContent.includes('Monthly change unavailable.'));finiteSvg();
+  } else if(scenario==='empty_basis') {
+    const history=payload.release_visual_history;history.status='partial';history.series[0].status='partial';
+    history.series[0].withheld_periods={yoy:['2026-10'],mom:[]};history.series[0].yoy=[];
+    render(history);assert.equal(plotted().length,0);assert(role('state').textContent.includes('Historical series unavailable.'));
+    change('basis','mom');assert.equal(plotted().length,3);assert(role('state').textContent.includes('Historical series partially available.'));
+  } else if(scenario==='controls') {
+    const one=fixture([{period:'2026-10',value:2.3}]);render(one);assert.deepEqual(plotted(),['2026-10']);finiteSvg();
+    render({...one,asof:'2026-11-14T15:00:00Z'});assert.equal(plotted().length,0);
+    const duplicate=fixture([{period:'2026-10',value:2.3},{period:'2026-10',value:2.4}]);render(duplicate);assert.equal(plotted().length,0);
+    assert(role('state').textContent.includes('Historical series unavailable.'));
+    render(fixture([{period:'2026-10',value:501}]));assert.equal(plotted().length,0);
+    assert(role('state').textContent.includes('Historical series unavailable.'));
+    render({...one,authority:{...denied,can_trade:true}});assert.equal(plotted().length,0);assert.equal(fetches,0);
+  } else throw new Error('unknown scenario');
+  console.log(JSON.stringify({scenario,span,fetches,radarRenders,status:'passed'}));
+}
+main().catch(error=>{console.error(error.stack);process.exitCode=1;});
+"""
+
+
+def _native_visual_case(scenario, window=0):
+    import shutil
+    import subprocess
+    if not shutil.which("node"):
+        pytest.skip("Node unavailable in this CI image")
+    run = subprocess.run(["node", "-e", _NATIVE_VISUAL_PROBE, str(ROOT), scenario, str(window)],
+                         capture_output=True, text=True, timeout=15)
+    assert run.returncode == 0, run.stdout + run.stderr
+    assert json.loads(run.stdout)["status"] == "passed"
+
+
+@pytest.mark.parametrize("window", [12, 36, 60])
+def test_native_calendar_windows_preserve_missing_months(window):
+    _native_visual_case("window", window)
+
+
+@pytest.mark.parametrize("scenario", ["language", "refresh_same", "refresh_error", "partial", "empty_basis", "controls"])
+def test_native_visual_lifecycle_and_data_controls(scenario):
+    _native_visual_case(scenario)
