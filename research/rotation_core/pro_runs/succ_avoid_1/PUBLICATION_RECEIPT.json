@@ -1,0 +1,86 @@
+{
+  "run_id": "SUCC-AVOID-1",
+  "ledger_row": "successor-avoid-1",
+  "finalization": "PROVEN_OUTCOME",
+  "commission_complete": true,
+  "outcome": "Complete eight-part discovery report posted to Macro issue 11014 and every comment body read back exactly. No candidate qualifies as an accepted avoid-side successor.",
+  "protocol_commit": "2a1924f0092a4bb0f4a3f4d85d129b9eaf2c3c6e",
+  "results_commit": "7a020ce5ce50b5329d6dddbb01016e8b2e2453b7",
+  "report_commit": "b6b775508e7641bf8ab82098ebb93cb1ead3701c",
+  "source_branch": "astra/succ-avoid-1-20261113",
+  "comments": [
+    {
+      "part": 1,
+      "id": 6870012433,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/issues/11014#issuecomment-6870012433",
+      "characters": 9655,
+      "verified": true
+    },
+    {
+      "part": 2,
+      "id": 6870023928,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/issues/11014#issuecomment-6870023928",
+      "characters": 13725,
+      "verified": true
+    },
+    {
+      "part": 3,
+      "id": 6870024379,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/issues/11014#issuecomment-6870024379",
+      "characters": 14873,
+      "verified": true
+    },
+    {
+      "part": 4,
+      "id": 6870024800,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/issues/11014#issuecomment-6870024800",
+      "characters": 11828,
+      "verified": true
+    },
+    {
+      "part": 5,
+      "id": 6870025249,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/issues/11014#issuecomment-6870025249",
+      "characters": 8114,
+      "verified": true
+    },
+    {
+      "part": 6,
+      "id": 6870025680,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/issues/11014#issuecomment-6870025680",
+      "characters": 8630,
+      "verified": true
+    },
+    {
+      "part": 7,
+      "id": 6870026162,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/issues/11014#issuecomment-6870026162",
+      "characters": 46293,
+      "verified": true
+    },
+    {
+      "part": 8,
+      "id": 6870026648,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/issues/11014#issuecomment-6870026648",
+      "characters": 12194,
+      "verified": true
+    }
+  ],
+  "candidate_outcome_runs": 1,
+  "threshold_tuning_runs": 0,
+  "post_outcome_signal_changes": 0,
+  "best_two_reporting_candidates": [
+    "C2",
+    "C6"
+  ],
+  "unresolved_effects": [],
+  "research_limits": [
+    "Current-vintage historical inputs, not proven point-in-time vintages",
+    "FF12 member breadth/drawdown uses an explicit economic FF49 proxy mapping",
+    "Common scored panel begins after in-block oscillator warm-up",
+    "Month bootstrap and overlapping groups do not establish independent confirmation",
+    "Continuous exit diagnostics are not matched on time flat and omit costs/cash interest"
+  ],
+  "next_action": "A separate, newly frozen research commission is needed before testing additional candidates, outcomes or confirmation periods. No production promotion is supported by this run.",
+  "do_not_redo": "Preserve the eight fixed definitions, all outcomes and no-winner ruling; do not relabel this discovery sample as untouched evidence."
+}
