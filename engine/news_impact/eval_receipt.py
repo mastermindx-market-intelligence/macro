@@ -119,6 +119,7 @@ CODES: frozenset[str] = frozenset(
         "DUPLICATE_GRADED_ITEM",
         "BAD_REGISTRY",
         "BAD_REGISTRATION",
+        "BAD_ACCOUNTING_MAP",
         "BAD_COVERAGE",
         "BAD_METRIC_VALUE",
         "DISPLAY_FORBIDDEN_WORD",
@@ -1301,6 +1302,7 @@ def build_receipt(
     issuer_map: Mapping[str, str],
     accounting: AccountingInput,
     registration: Mapping[str, Any],
+    accounting_by_construction: Mapping[tuple[str, str], AccountingInput] | None = None,
     costs: Iterable[CostRecord] = (),
     injection_findings: Iterable[Mapping[str, str]] = (),
     fold_slices: Sequence[str] = FOLD_SLICES,
@@ -1314,7 +1316,12 @@ def build_receipt(
     notes: str | None = None,
 ) -> dict[str, Any]:
     """Assemble an eval_receipt.v1 dict. Pure: every ledger/manifest/cost input
-    is injected as data (W3-R4); no clock, no network, no subprocess."""
+    is injected as data (W3-R4); no clock, no network, no subprocess.
+
+    Optional construction accounting changes only each construction's metrics.
+    The scalar accounting remains the legacy envelope summary, and costs are
+    still evaluated jointly across the complete construction set.
+    """
     registry = load_registry(registry_path)
     if "endpoints_sha256" not in registration or "mode" not in registration or "t_prospective" not in registration:
         raise EvalReceiptError("BAD_REGISTRATION", "missing endpoints_sha256/mode/t_prospective")
@@ -1355,13 +1362,26 @@ def build_receipt(
     ablations = sorted(ablations_run if ablations_run is not None else {a for _, a in cleaned})
     constructions = [(b, a) for b in baselines for a in ablations]
 
+    if accounting_by_construction is None:
+        construction_accounting = {key: accounting for key in constructions}
+    else:
+        if not isinstance(accounting_by_construction, Mapping):
+            raise EvalReceiptError("BAD_ACCOUNTING_MAP", "expected construction mapping")
+        construction_accounting = dict(accounting_by_construction)
+        if set(construction_accounting) != set(constructions) or any(
+            not isinstance(value, AccountingInput) for value in construction_accounting.values()
+        ):
+            raise EvalReceiptError(
+                "BAD_ACCOUNTING_MAP", "expected one AccountingInput per emitted construction"
+            )
+
     metrics: list[dict[str, Any]] = []
     for key in constructions:
         metrics.extend(
             _metric_rows_for_construction(
                 key,
                 cleaned.get(key, []),
-                accounting,
+                construction_accounting[key],
                 cluster_map,
                 issuer_map,
                 registry,
