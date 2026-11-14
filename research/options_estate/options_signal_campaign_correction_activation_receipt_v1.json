@@ -1,0 +1,20 @@
+{
+  "schema": "options.signal_campaign_correction_activation/v1",
+  "receipt_id": "ocact_sep03_correction_20261019_01a152ce",
+  "activated_at": "2026-10-19T07:57:40Z",
+  "policy": {
+    "policy_id": "sep03_mixed_generation_outcome_quarantine/v1",
+    "policy_version": 1,
+    "path": "research/options_estate/options_signal_campaign_outcome_correction_prereg_v1.json",
+    "file_sha256": "7e6710c8b1ce65f1307f450e50829280548fcd62bd3521c2acf7a5b4ec6ef2ad"
+  },
+  "activation_preconditions": {
+    "macro_7265_durability_and_campaign_runtime_protected": true,
+    "macro_7263_shared_publisher_recovery_protected_and_real_publication_loop_proven": true,
+    "macro_7193_broad_writer_exclusion_protected_and_natural_non_sweep_proven": true,
+    "campaign_correction_reader_implementation_reviewed_on_existing_owner": true,
+    "incident_and_lawful_prefix_identities_match_with_append_only_extension_allowed": true,
+    "current_explicit_source_owner_activation_authorization_and_applicable_effect_gates": true
+  },
+  "receipt_sha256": "3aa281806a2476d40b7474cf4fefd0f8435a36046944fa601e9aa1838d1c4d11"
+}
