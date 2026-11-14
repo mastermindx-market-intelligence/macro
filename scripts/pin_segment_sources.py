@@ -157,16 +157,28 @@ def _canonical(value) -> bytes:
 # the owner's 16 KB object cap does not bound them: a 51-target pin report is
 # larger than that. Same canonical encoding, a separate fixed ceiling.
 MAX_REPORT_BYTES = 1024 * 1024
+# Room kept for the two snapshot fields a pin report gains only after the sync
+# (a fixed-width snapshot id and a UTC clock, ~130 bytes encoded).
+REPORT_SNAPSHOT_ALLOWANCE = 256
 
 
-def report_bytes(report: dict) -> bytes:
+class ReportRefused(ValueError):
+    """A run report is refused (hard ceiling or invalid JSON); nothing more is written."""
+
+    def __init__(self, code: str) -> None:
+        self.code = code
+        super().__init__(code)
+
+
+def report_bytes(report: dict, *, ceiling: int | None = None) -> bytes:
+    limit = MAX_REPORT_BYTES if ceiling is None else ceiling
     try:
         raw = json.dumps(report, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
                          allow_nan=False).encode("utf-8")
     except (TypeError, ValueError, UnicodeError):
-        raise ValueError("REPORT_JSON_INVALID") from None
-    if not 0 < len(raw) <= MAX_REPORT_BYTES:
-        raise ValueError("REPORT_TOO_LARGE")
+        raise ReportRefused("REPORT_JSON_INVALID") from None
+    if not 0 < len(raw) <= limit:
+        raise ReportRefused("REPORT_TOO_LARGE")
     return raw
 
 
@@ -328,6 +340,10 @@ def run_pin(targets_path, raw_root, archive_root, out, *, local_store=None,
         max_document_bytes=n.MAX_SEC_SOURCE_BYTES,
     )
     rows = [_pin_one(target, forensics, archive, raw_root, archive_root, now) for target in targets]
+    # Size-check the report BEFORE the sync: a report that would be refused must
+    # leave nothing in the store. Only the snapshot fields are added afterwards.
+    report_bytes({"schema": PIN_REPORT_SCHEMA, "targets": rows},
+                 ceiling=MAX_REPORT_BYTES - REPORT_SNAPSHOT_ALLOWANCE)
     snapshot = sync_source_roots(
         raw_root=raw_root, archive_root=archive_root, store=store,
         snapshot_at=now, publish_latest=False,
@@ -692,7 +708,7 @@ def main(argv=None) -> int:
             report = run_propose(args.manifest, args.out)
             refused = sum(1 for r in report["rows"] if r["exit_code"] != 0)
             print(f"propose: {report['outcome']}: {len(report['rows'])} rows, {refused} refused")
-    except (ManifestRowRefused, PacketRequestRefused) as exc:
+    except (ManifestRowRefused, PacketRequestRefused, ReportRefused) as exc:
         # Names the row and a fixed code only; nothing was written.
         print(f"REFUSED: {exc}", file=sys.stderr)
         return 2

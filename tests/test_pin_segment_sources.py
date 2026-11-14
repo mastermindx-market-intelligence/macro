@@ -369,10 +369,28 @@ def test_pin_report_for_the_full_target_list_is_written_past_the_owner_object_ca
 
 def test_report_bytes_is_canonical_and_bounded():
     assert m.report_bytes({"b": 1, "a": "é"}) == '{"a":"é","b":1}'.encode("utf-8")
-    with pytest.raises(ValueError, match="REPORT_JSON_INVALID"):
+    with pytest.raises(m.ReportRefused, match="REPORT_JSON_INVALID"):
         m.report_bytes({"a": float("nan")})
-    with pytest.raises(ValueError, match="REPORT_TOO_LARGE"):
+    with pytest.raises(m.ReportRefused, match="REPORT_TOO_LARGE"):
         m.report_bytes({"a": "x" * m.MAX_REPORT_BYTES})
+
+
+def test_pin_report_over_the_ceiling_is_refused_before_the_sync_writes_anything(
+        tmp_path, monkeypatch):
+    # A report that cannot be written must leave no object or snapshot in the store.
+    monkeypatch.setattr(m, "MAX_REPORT_BYTES", 2048)
+    with pytest.raises(m.ReportRefused, match="REPORT_TOO_LARGE"):
+        _pin(tmp_path, SEG_BODY, tickers=tuple(f"T{i:02d}" for i in range(20)))
+    store = tmp_path / "store"
+    assert not store.exists() or not any(p.is_file() for p in store.rglob("*"))
+    assert not (tmp_path / "out" / "pin_report.json").exists()
+
+
+def test_pin_report_at_the_preflight_edge_still_fits_with_its_snapshot_fields(tmp_path):
+    pin = _pin(tmp_path, SEG_BODY)
+    head = len(m.report_bytes(pin.report)) - len(
+        m.report_bytes({"schema": pin.report["schema"], "targets": pin.report["targets"]}))
+    assert 0 < head <= m.REPORT_SNAPSHOT_ALLOWANCE
 
 
 def test_pin_leaves_an_existing_latest_pointer_byte_identical(tmp_path):
