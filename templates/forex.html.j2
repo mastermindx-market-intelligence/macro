@@ -533,24 +533,24 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
             {% if r.unstable %}<span class="unstable-tag">{{ t('less reliable lately', '近期不稳定') }}</span>{% endif %}
           </td>
           <td>
-            {% set _eff = r.effect or 'neutral' %}
+            {% set _eff = (r.effect or 'neutral') if r.corr_fast is not none else 'neutral' %}
             <span class="eff-chip {{ _eff }}" tabindex="0"
               data-tip-en="." data-tip-zh=".">
-              {% if _eff == 'headwind' %}{{ t('Leaning on it', '压制中') }}
+              {% if r.corr_fast is none %}{{ t('Link unavailable', '联动读数不可用') }}{% elif _eff == 'headwind' %}{{ t('Leaning on it', '压制中') }}
               {% elif _eff == 'tailwind' %}{{ t('Giving it a lift', '提振中') }}
               {% else %}{{ t('Not linked now', '暂无联动') }}{% endif %}
               <div class="tip-pop">
                 {# D7: plain EN tip — map stability enums to plain words #}
                 {% set _stab_en = {'stable':'steady','flipping':'flipping','decoupled':'decoupled'} %}
-                <div class="l-en">Moves together over {{ transmission.fast_d }} days: {{ '%+.2f'|format(r.corr_fast) if r.corr_fast is not none else '—' }} ({{ transmission.slow_d }} days: {{ '%+.2f'|format(r.corr_slow) if r.corr_slow is not none else '—' }}) · link: {{ _stab_en.get(r.stability, r.stability or '—') }}</div>
-                <div class="l-zh">{{ transmission.fast_d }}日相关：{{ '%+.2f'|format(r.corr_fast) if r.corr_fast is not none else '—' }} · {{ transmission.slow_d }}日：{{ '%+.2f'|format(r.corr_slow) if r.corr_slow is not none else '—' }} · 稳定性：{{ {'stable':'稳定','flipping':'翻转','decoupled':'脱钩'}.get(r.stability, r.stability or '—') }}</div>
+                <div class="l-en">Moves together over {{ transmission.fast_d }} days: {{ '%+.2f'|format(r.corr_fast) if r.corr_fast is not none else '—' }} ({{ transmission.slow_d }} days: {{ '%+.2f'|format(r.corr_slow) if r.corr_slow is not none else '—' }}) · link: {{ _stab_en.get(r.stability, r.stability or '—') if r.corr_fast is not none and r.corr_slow is not none else 'unavailable' }}</div>
+                <div class="l-zh">{{ transmission.fast_d }}日相关：{{ '%+.2f'|format(r.corr_fast) if r.corr_fast is not none else '—' }} · {{ transmission.slow_d }}日：{{ '%+.2f'|format(r.corr_slow) if r.corr_slow is not none else '—' }} · 稳定性：{{ {'stable':'稳定','flipping':'翻转','decoupled':'脱钩'}.get(r.stability, r.stability or '—') if r.corr_fast is not none and r.corr_slow is not none else '不可用' }}</div>
               </div>
             </span>
           </td>
           <td>
-            <div class="str-bar" aria-hidden="true">
+            {% if r.corr_fast is none %}<span class="muted">{{ t('Unavailable', '不可用') }}</span>{% else %}<div class="str-bar" aria-hidden="true">
               <div class="fill" style="width:{{ ((r.corr_fast or 0)|abs * 100)|round(0)|int }}%"></div>
-            </div>
+            </div>{% endif %}
           </td>
           <td></td>
         </tr>

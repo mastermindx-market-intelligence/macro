@@ -1285,3 +1285,60 @@ if __name__ == "__main__":
         fn()
         print(f"PASS {fn.__name__}")
     print("all forex engine tests passed")
+
+
+
+def _render_transmission_rows(rows):
+    from jinja2 import Environment
+    text = (Path(__file__).resolve().parent.parent / 'templates/forex.html.j2').read_text()
+    a = text.index('      {% for r in transmission.rows %}')
+    b = text.index('      {% endfor %}', a) + len('      {% endfor %}')
+    # Match build_forex's Undefined behavior; native rows have no `unstable` key.
+    macro_end = text.index('{%- endmacro %}') + len('{%- endmacro %}')
+    return Environment(autoescape=True).from_string(text[:macro_end] + text[a:b]).render(
+        transmission={'rows': rows, 'fast_d': 63, 'slow_d': 252})
+
+
+@pytest.mark.parametrize('fast,slow', [(None, -1.), (None, None), (.5, None)])
+def test_transmission_missing_correlation_disclosure(fast, slow):
+    row = dict(key='SPY', label='US equities', effect='neutral', stability='stable',
+               corr_fast=fast, corr_slow=slow)
+    html = _render_transmission_rows([row])
+    assert 'link: unavailable' in html and '稳定性：不可用' in html
+    if fast is None:
+        assert 'Link unavailable' in html and '联动读数不可用' in html
+        assert 'class="fill"' not in html and 'Not linked now' not in html
+    if slow == -1.:
+        assert '-1.00' in html
+
+
+def test_transmission_measured_zero_retains_neutral_and_zero_bar():
+    row = dict(key='SPY', label='US equities', effect='neutral', stability='stable',
+               corr_fast=0., corr_slow=0.)
+    html = _render_transmission_rows([row])
+    assert 'Not linked now' in html and '暂无联动' in html
+    assert 'width:0%' in html and 'class="fill"' in html
+    assert 'link: steady' in html and '稳定性：稳定' in html
+    assert 'unavailable' not in html
+
+
+def test_transmission_native_flat_window_to_compact_and_disclosure():
+    import ast
+    import json
+    idx = _idx(600)
+    ret = pd.Series(np.random.default_rng(18).normal(0, .004, len(idx)), index=idx)
+    broad, asset = np.exp(ret.cumsum()) * 100, np.exp((-ret).cumsum()) * 100
+    broad.iloc[-81:], asset.iloc[-81:] = broad.iloc[-81], asset.iloc[-81]
+    result = FT.transmission(broad, {'SPY': asset}, None, None, CFG['transmission'])
+    source = (Path(__file__).resolve().parent.parent / 'scripts/build_forex.py').read_text()
+    fn = next(n for n in ast.parse(source).body
+              if isinstance(n, ast.FunctionDef) and n.name == '_transmission_latest')
+    ns = {}
+    exec(compile(ast.Module(body=[fn], type_ignores=[]), 'native_compact', 'exec'), ns)
+    compact = ns['_transmission_latest'](result)
+    assert compact['assets']['SPY']['corr_fast'] is None
+    assert compact['assets']['SPY']['corr_slow'] == pytest.approx(-1.)
+    json.dumps(compact, allow_nan=False)
+    html = _render_transmission_rows(result['rows'])
+    assert '-1.00' in html and 'Link unavailable' in html and 'link: unavailable' in html
+    assert 'class="fill"' not in html
