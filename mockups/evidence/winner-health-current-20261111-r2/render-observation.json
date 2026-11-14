@@ -1,0 +1,31 @@
+{
+  "schema": "macro.winner_health.render_observation.v1",
+  "source_commit": "c7a2f293f810d433f5f600904894edfd37645998",
+  "source_tree": "e854773c1b9f5f636651a4a612756aa4406e77c4",
+  "kind": "FROZEN_INPUT_REPLAY",
+  "production": false,
+  "fixture_bypasses_staleness": true,
+  "data_blob": "aa4e3dc091b7bca9e0133c721ff97d49a94cb7b1",
+  "data_sha256": "9c4375c68f93e36bc3550335fd4ed8d124f87f3b64c5657b3d22eab301e7610e",
+  "data_asof": "2026-11-09",
+  "injected_members_are_synthetic": true,
+  "injected_members_sha256": "584e51a7b11bc53ed69916757ab2a04230f36f25d0cfc8590b51100631730f03",
+  "source_blobs": {
+    "scripts/build_winner_health_page.py": "439d845362a1d6d284fc34e9dce5df9fc8219c67",
+    "templates/winner_health.html.j2": "3f45be05359354482f153394256943b37a67b579",
+    "engine/i18n.py": "d3b240fa5e9b91b3e8070ae372c294c897e37464",
+    "templates/_lens.html.j2": "c2748c591a4fb184c2e8159a38e26f50764f5ad1",
+    "templates/_site_nav.html.j2": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+    "templates/_navlinks.html.j2": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+    "templates/_all_tools_menu.html.j2": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+    "templates/_seo_head.html.j2": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+    "templates/_interfonts.html.j2": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+    "templates/theme.css": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+    "templates/theme.js": "21a1fb1627ac34badc6078cff486f98486e9b773"
+  },
+  "html_sha256": {
+    "frozen-replay": "75bd7620566880cb66e5d4cb21263f4f9b53754b466aba7a0af20feb818ecd5e",
+    "members-fixture": "c06796b18431791b61706a083db40f2a322eed33bdf82ee71080bbaed22280a2"
+  },
+  "utc": "2026-11-11T11:10:19.637628+00:00"
+}

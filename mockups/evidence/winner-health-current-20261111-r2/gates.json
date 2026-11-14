@@ -1,0 +1,23 @@
+{
+  "pr": 7073,
+  "source": "c7a2f293f810d433f5f600904894edfd37645998",
+  "base": "71405417a0ff9dfc615654deea6ea44a5305f735",
+  "directory": "/tmp/pr7073-gates-full-_uoo7tut",
+  "results": [
+    {
+      "gate": "design",
+      "exit_code": 0,
+      "output": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25303 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25303)\n"
+    },
+    {
+      "gate": "visual",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "gate": "p0b",
+      "exit_code": 0,
+      "output": ""
+    }
+  ]
+}

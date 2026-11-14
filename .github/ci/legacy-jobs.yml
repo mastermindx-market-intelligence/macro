@@ -44049,6 +44049,8 @@ jobs:
       - scripts/build_top_maturation.py
       - scripts/build_vector.py
       - scripts/build_winner_health_page.py
+      - scripts/capture_winner_health_w15_evidence.py
+      - tests/fixtures/winner_health/m714-top-maturation.json
       - scripts/export_top_anatomy_library.py
       - scripts/run_thesis_condition_monitor.py
       - tests/test_alert_zh_completeness.py
