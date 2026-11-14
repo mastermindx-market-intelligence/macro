@@ -87,6 +87,8 @@ from engine.entry_primitives import (
     time_underwater_series,
 )
 from engine.neuralweb.sector_map import SectorMapping, build_sector_map
+from engine.neuralweb.pivot_context import compose_pivot_context
+from engine.neuralweb.pivot_source_adapter import build_pivot_observations
 from engine.stock_fundamentals import (
     _leverage_ratios,
     _load_factors,
@@ -719,6 +721,8 @@ def _build_row(
     sector_mapping: SectorMapping | None = None,
     panel_s: "pd.DataFrame | None" = None,
     panel_m: "pd.DataFrame | None" = None,
+    standouts_as_of: str = "",
+    decision_at: str | None = None,
 ) -> dict[str, Any]:
     """Assemble one bottom-sensor row for a ticker.
 
@@ -863,6 +867,37 @@ def _build_row(
         knife_available=knife_available,
     )
 
+    # Additive evidence, not a replacement for the frozen labels_v2 table.
+    # Bind original source fields rather than the legacy false/default values.
+    # Dates describe actual per-name vintages; no first-seen clock is invented.
+    price_context = None
+    if close is not None and not close.empty:
+        price_context = {
+            "as_of": close.index[-1].date().isoformat(),
+            "dist_21d_low_pct": dist_21,
+            "dist_126d_high_pct": dist_126,
+            "available_at": None,
+        }
+    observations = build_pivot_observations(
+        ticker, signal_gate=sg_verdict, standout=standout_row,
+        standouts_as_of=standouts_as_of, price_context=price_context,
+    )
+    context = compose_pivot_context(
+        ticker, observations, decision_at=decision_at or "",
+        evidence_mode="current_snapshot",
+    )
+    observed_dates = {e.get("as_of") for e in context.get("evidence", [])
+                      if e.get("state") == "observed" and e.get("as_of")}
+    if len(observed_dates) > 1:
+        context.setdefault("limitations", []).append("mixed_source_dates")
+    # Current filesystem snapshots do not prove original vintages. The writer
+    # will retain this exact composed context prospectively in the incumbent book.
+    context.setdefault("limitations", []).append("source_revision_not_attested")
+    # A stable string column preserves the incumbent flat parquet schema. The
+    # existing JSON publisher decodes it into an object, never Python repr text.
+    row["pivot_context_json"] = json.dumps(
+        context, ensure_ascii=False, separators=(",", ":"), allow_nan=False
+    )
     return row
 
 
@@ -871,6 +906,8 @@ def _build_row(
 def assemble(
     root: Path | None = None,
     today: datetime.date | None = None,
+    *,
+    decision_at: str | None = None,
 ) -> pd.DataFrame:
     """Assemble the bottom-sensor envelope for all US board names.
 
@@ -889,6 +926,9 @@ def assemble(
     root = Path(root)
     if today is None:
         today = datetime.date.today()
+    # Build clock is only the evaluation cutoff, never source availability.
+    if decision_at is None:
+        decision_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     log.info("bottom_sensors.assemble: root=%s, today=%s", root, today)
 
@@ -969,6 +1009,8 @@ def assemble(
                 sector_mapping=s_mapping,
                 panel_s=panel_s,
                 panel_m=panel_m,
+                standouts_as_of=standouts.get("as_of") or "",
+                decision_at=decision_at,
             )
             # ── Bottom-survival-quality leverage ratios (FR-9/FR-10) ──────────
             # Additive per-ticker columns: None when statements absent or ratio

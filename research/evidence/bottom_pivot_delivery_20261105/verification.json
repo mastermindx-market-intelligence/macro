@@ -1,0 +1,238 @@
+{
+  "schema": "bottom_pivot_engineering_verification.v1",
+  "operation": "bottom-pivot-delivery-20261105",
+  "pr": 10785,
+  "recorded_at": "2026-11-06T01:08:15.365985+00:00",
+  "source_parent": "d4ff67a0542d22fac40890e9ace9c7fb523c2717",
+  "source_sha256": {
+    "engine/neuralweb/pivot_context.py": "85f3dbbfb3dacd4e73e7b2d6082cc7ddda420d637dd5e5596e6213144eb56045",
+    "engine/neuralweb/pivot_source_adapter.py": "9704c60641e1db1c814f3c0bd19b02415e98a1497d296d209bade01ab31e62d5",
+    "engine/neuralweb/bottom_sensors.py": "3ff68031220561c2b7aec73a8b2bbab94b87df979e31f69bad4322d2ce568166",
+    "engine/neuralweb/bottom_sensors_shadow.py": "d843c6fccd9e9b92666795be40da29e5a97de70c50b05e03b02c3fb9f936df3f",
+    "engine/neuralweb/mastermind_context.py": "095b78427579c60bb5f6184cc203ea89fd0b79242692a4e8ed938b39b7260aec",
+    "scripts/build_bottom_sensors.py": "3f2a3a35d143debff681ffd2140e1bffebc5760359f5c6f648c571ef2e18652a",
+    "scripts/build_qa_bottom_sensors.py": "9891e55967eb858da703b63524c289654e93abe43a8e537d3eab020703042679",
+    "research/signal_engine/pivot_replay.py": "371c0aedd94577f35f2ed7328e142b1de9cf69fffe57a0344efa97c4802051d5",
+    "templates/qa_bottom_sensors.html.j2": "84537b9361a97b96994bafab153dd0474aa38c014889417521eeeec1482f8e9b",
+    ".github/ci/legacy-jobs.yml": "6e90ba61917502baba4d5d08f56de41bca63903a905587be649f793547d4b121",
+    "tests/test_mastermind_context.py": "000bcbcaa81218668391a46ef071fdd4bd2805ceb508da35c32acf3c3a861ebb",
+    "tests/test_pivot_capture.py": "866baa49cfcd883daad2eccf1b109d93d9f153cfa60480e8645124efe6eb83a0",
+    "tests/test_pivot_context.py": "5a9c68a3d71b8e3716e78d0e15a7335204e816c9e989f4758b6249f2a16ba957",
+    "tests/test_pivot_context_ui.py": "eb2f95631fe2c6102d8c182e9578ea0c01e500f154d89a9df596d349e6771051",
+    "tests/test_pivot_mastermind_bridge.py": "0b7dcc16a9b52604032a19c0792367c133c224138c90ac24da7dac255bfd5504",
+    "tests/test_pivot_producer_integration.py": "890ce4f1545cbb955fe7981ac98f41c44bafdfd33e885fd332b0d4b2d8e59d8f",
+    "tests/test_pivot_replay.py": "57669999fa6db2ba3095c05b9c8e2b530b34bc959ebe1f4b6dd5061d92b44f97",
+    "tests/test_pivot_source_adapter.py": "481406b6b18d396aa8cd7acddbda707c0129cba889a88139555e1e906e6bbeb6"
+  },
+  "tests": {
+    "command": "python3 -m pytest tests/test_signal_gate_coherence.py tests/test_signal_gate_validity_contract.py tests/test_pivot_context.py tests/test_pivot_source_adapter.py tests/test_pivot_replay.py tests/test_pivot_capture.py tests/test_pivot_context_ui.py tests/test_pivot_producer_integration.py tests/test_pivot_mastermind_bridge.py tests/test_mastermind_context.py tests/test_bottom_sensors.py tests/test_bottom_sensors_a3.py -q --override-ini addopts= --basetemp <isolated-cache>",
+    "passed": 453,
+    "exit_code": 0,
+    "log_sha256": "3b6c55f903ae31c1b851a53a630f94ed292973dc0662abaafd636b3d9c75109b",
+    "data_guard": "enabled; no repository data/site mutations in final run"
+  },
+  "browser": [
+    {
+      "fixture": true,
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "filter": true,
+      "sort": true,
+      "keyboard_expand": true,
+      "single_language_select": true,
+      "no_page_errors": true,
+      "viewport": 1440,
+      "document": 1440
+    },
+    {
+      "fixture": true,
+      "width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "filter": true,
+      "sort": true,
+      "keyboard_expand": true,
+      "single_language_select": true,
+      "no_page_errors": true,
+      "viewport": 1440,
+      "document": 1440
+    },
+    {
+      "fixture": true,
+      "width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "filter": true,
+      "sort": true,
+      "keyboard_expand": true,
+      "single_language_select": true,
+      "no_page_errors": true,
+      "viewport": 1440,
+      "document": 1440
+    },
+    {
+      "fixture": true,
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "filter": true,
+      "sort": true,
+      "keyboard_expand": true,
+      "single_language_select": true,
+      "no_page_errors": true,
+      "viewport": 1440,
+      "document": 1440
+    },
+    {
+      "fixture": true,
+      "width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "filter": true,
+      "sort": true,
+      "keyboard_expand": true,
+      "single_language_select": true,
+      "no_page_errors": true,
+      "viewport": 390,
+      "document": 390
+    },
+    {
+      "fixture": true,
+      "width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "filter": true,
+      "sort": true,
+      "keyboard_expand": true,
+      "single_language_select": true,
+      "no_page_errors": true,
+      "viewport": 390,
+      "document": 390
+    },
+    {
+      "fixture": true,
+      "width": 390,
+      "theme": "light",
+      "lang": "en",
+      "filter": true,
+      "sort": true,
+      "keyboard_expand": true,
+      "single_language_select": true,
+      "no_page_errors": true,
+      "viewport": 390,
+      "document": 390
+    },
+    {
+      "fixture": true,
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "filter": true,
+      "sort": true,
+      "keyboard_expand": true,
+      "single_language_select": true,
+      "no_page_errors": true,
+      "viewport": 390,
+      "document": 390
+    }
+  ],
+  "real_saved_input_pipeline": {
+    "scope": "real saved inputs, isolated local producer and page; not production or historical foresight",
+    "inputs": [
+      {
+        "path": "site/factordata/signal_gate.json",
+        "sha256": "dc96496e3b3ca0c4eb1c58ac926920c6be8765f0d1f1af135d0b032125ffd988"
+      },
+      {
+        "path": "site/factordata/us_standouts.json",
+        "sha256": "ea8c0ce1be123bae704e795d1a05f6ca4c6b9a86350265727e6c6c12c0490089"
+      },
+      {
+        "path": "data/stocks/AAPL.parquet",
+        "sha256": "1ef2f425538e68c5f8761a9c97cd9dfb094838348f5b4ee6b5662f4b4abc1047"
+      }
+    ],
+    "source_board_as_of": "2026-10-22",
+    "rows": [
+      {
+        "symbol": "AAPL",
+        "legacy_as_of": "2026-10-22",
+        "quality": "unavailable",
+        "decision_at": "2026-11-06T00:49:50.641368+00:00",
+        "states": [
+          "invalid",
+          "missing",
+          "stale"
+        ]
+      },
+      {
+        "symbol": "DAN",
+        "legacy_as_of": "2026-10-22",
+        "quality": "unavailable",
+        "decision_at": "2026-11-06T00:49:50.641368+00:00",
+        "states": [
+          "invalid",
+          "missing",
+          "stale"
+        ]
+      },
+      {
+        "symbol": "USFD",
+        "legacy_as_of": "2026-10-22",
+        "quality": "unavailable",
+        "decision_at": "2026-11-06T00:49:50.641368+00:00",
+        "states": [
+          "invalid",
+          "missing",
+          "stale"
+        ]
+      }
+    ],
+    "page_bytes": 89742,
+    "new_context_in_json": true,
+    "shadow_capture_local_only": true,
+    "production_mutations": false
+  },
+  "briefing_budget": {
+    "case": "saved production-context baseline plus synthetic optional evidence",
+    "base_bytes": 280608,
+    "result_bytes": 303003,
+    "cap_bytes": 307200,
+    "candidates_preserved": 250,
+    "coverage": {
+      "eligible": 250,
+      "included": 27,
+      "omitted_for_size": 223,
+      "selection": "symbol_order_not_signal_rank",
+      "full_source": "site/neuralwebdata/bottom_sensors.json"
+    }
+  },
+  "fabric": {
+    "bp1": "terminal rc0; source hashes verified; parent repaired zero-value crash, calendar duplication and historical-correction issue",
+    "bp1_response_sha256": "ead48eca69a8d4d2a5b51da3a371da456f2e1ede37fbc27871a0faad244c8431",
+    "bp2_bp3": "thermal admission refusal, no worker execution or retry",
+    "original_bp1_acceptance": "not accepted as independently complete; parent-qualified modified source"
+  },
+  "production": {
+    "deployed": false,
+    "authenticated_user_path_proven": false,
+    "status_endpoint": "HTTP200; health only",
+    "private_payload": "HTTP401 without authentication; not bypassed",
+    "browser_connector": "originating browser context unavailable"
+  },
+  "science": {
+    "new_predictive_edge_proven": false,
+    "calibrated_probability": false,
+    "trading_authority": false,
+    "existing_completed_study_reused": "research/durable_pivots_20261021",
+    "historical_ledgers_have_original_issuance_proof": false
+  },
+  "limitations": [
+    "Internal QA surface and source-level AI consumer only; not full public pivot workspace acceptance",
+    "Eight browser states use explicit synthetic fixtures",
+    "Real-input pipeline tested stale/missing degradation, not a fresh production pivot",
+    "Inline AI context bounded: all original candidates preserved; omitted evidence explicitly counted",
+    "Formal source release, live authenticated consumer, broader market/group/intraday integration and prospective science remain owed"
+  ]
+}

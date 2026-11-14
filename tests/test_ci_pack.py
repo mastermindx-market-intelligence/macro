@@ -4547,6 +4547,8 @@ CURATED_EXCLUSIVE = {
     "earnings-worker-systemd",
     # Actual page-query import/read closure; no unrelated fallback ownership.
     "admin-analytics-pages",
+    # PR10785: hermetic pivot integration; exact read closure, unchanged ceilings.
+    "signal-gate-pair-coherence",
     # Paid Fabric source-only guidance and deterministic attribution tests are
     # exclusively scoped; do not widen unrelated ordinary-code packing probes.
     "meta-ceo-fabric-contracts",
@@ -10527,3 +10529,40 @@ def test_fastship_invalid_base_reference_remains_refused(monkeypatch, base):
         PACK.build_plan(jobs, ["engine/example.py"], changed_from=base,
                         scope_mode="active", pack_count=12,
                         event="pull_request", role="pr_head")
+
+
+@pytest.mark.parametrize("dependency", [
+    "engine/neuralweb/pivot_context.py",  # ci-trigger-closure: data
+    "engine/neuralweb/pivot_source_adapter.py",  # ci-trigger-closure: data
+    "engine/neuralweb/mastermind_context.py",  # ci-trigger-closure: data
+    "research/signal_engine/pivot_replay.py",  # ci-trigger-closure: data
+    "templates/qa_bottom_sensors.html.j2",  # ci-trigger-closure: data
+    "site/factordata/signal_gate.json",  # ci-trigger-closure: data
+    "site/factordata/us_standouts.json",  # ci-trigger-closure: data
+    "tests/test_pivot_producer_integration.py",  # ci-trigger-closure: data
+])
+def test_pivot_integration_retains_its_real_ci_dependencies(dependency):
+    job = next(j for j in PACK.load_legacy_jobs(MANIFEST)
+               if j.job_id == "signal-gate-pair-coherence")
+    assert job.exclusive
+    selected, reason = PACK.select_jobs([job], [dependency])
+    assert [j.job_id for j in selected] == [job.job_id], reason
+
+
+@pytest.mark.parametrize("unrelated", [
+    "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+    "scripts/build_free_content.py",  # ci-trigger-closure: data
+    "templates/index.html",  # ci-trigger-closure: data
+])
+def test_pivot_integration_does_not_expand_unrelated_ci_selection(unrelated):
+    job = next(j for j in PACK.load_legacy_jobs(MANIFEST)
+               if j.job_id == "signal-gate-pair-coherence")
+    selected, reason = PACK.select_jobs([job], [unrelated])
+    assert not selected, reason
+
+
+@pytest.mark.parametrize("job_id", ["regime-outlook-mapping", "transmission-chains"])
+def test_pivot_context_selects_its_transitive_consumers(job_id):
+    job = next(j for j in PACK.load_legacy_jobs(MANIFEST) if j.job_id == job_id)
+    selected, reason = PACK.select_jobs([job], ["engine/neuralweb/pivot_context.py"])  # ci-trigger-closure: data
+    assert [j.job_id for j in selected] == [job_id], reason

@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime as _UtcDateTime, timezone as _UtcTimezone
 import logging
 import sys
 import time
@@ -101,6 +102,15 @@ def build(root: Path) -> int:
                 clean[k] = v
             else:
                 clean[k] = str(v)
+        encoded_context = clean.pop("pivot_context_json", None)
+        try:
+            context = json.loads(encoded_context) if isinstance(encoded_context, str) else None
+        except (ValueError, TypeError):
+            context = None
+        clean["pivot_context"] = (
+            context if isinstance(context, dict)
+            and context.get("schema") == "bottom_pivot_context.v1" else None
+        )
         clean_records.append(clean)
 
     payload = {
@@ -132,11 +142,15 @@ def build(root: Path) -> int:
                     "decline_herf": rec.get("decline_herf"),
                     "underwater_state": rec.get("underwater_state"),
                     "underwater_bars": rec.get("underwater_bars"),
+                    "pivot_context": rec.get("pivot_context"),
                 }
                 for rec in clean_records
             ]
             book_path = root / _bss.BOOK_PATH
-            n_appended = _bss.snapshot(ledger_date, recs, path=str(book_path))
+            n_appended = _bss.snapshot(
+                ledger_date, recs, path=str(book_path),
+                recorded_at=_UtcDateTime.now(_UtcTimezone.utc).isoformat(),
+            )
             log.info("shadow-ledger: appended %d rows for %s", n_appended, ledger_date)
             print(f"[bottom_sensors shadow-ledger] +{n_appended} rows @ {ledger_date}", flush=True)
     except Exception as exc:  # noqa: BLE001

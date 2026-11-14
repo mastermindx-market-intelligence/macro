@@ -40,6 +40,8 @@ from __future__ import annotations
 
 import json
 import os
+import hashlib
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -54,7 +56,32 @@ _STATE_FIELDS = ("decline_geometry", "decline_herf", "underwater_state", "underw
 # --------------------------------------------------------------------------- #
 # snapshot (append-only, frozen at build time)
 # --------------------------------------------------------------------------- #
-def snapshot(date, recs, *, horizons=HORIZONS, path: str = BOOK_PATH) -> int:
+def _pivot_receipt(rec: dict, symbol: str, recorded_at: str | None) -> dict:
+    """Optional immutable evidence in the existing book; never backfill first seen.
+
+    The capture clock is THIS writer's receipt, not original exchange/vendor
+    availability, public delivery or proof of a calibrated forecast.
+    """
+    context = rec.get("pivot_context")
+    if not isinstance(context, dict) or context.get("schema") != "bottom_pivot_context.v1" or context.get("symbol") != symbol:
+        return {}
+    try:
+        if not isinstance(recorded_at, str) or not isinstance(context.get("decision_at"), str):
+            return {}
+        captured = datetime.fromisoformat(recorded_at.replace("Z", "+00:00"))
+        cutoff = datetime.fromisoformat(context["decision_at"].replace("Z", "+00:00"))
+        if captured.tzinfo is None or cutoff.tzinfo is None or captured < cutoff:
+            return {}
+        if context.get("is_display_only") is not True or context.get("action_authority") != "none" or context.get("probability") is not None:
+            return {}
+        encoded = json.dumps(context, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    except (ValueError, TypeError, OverflowError):
+        return {}
+    return {"pivot_context": json.loads(encoded), "pivot_recorded_at": recorded_at,
+            "pivot_context_sha256": hashlib.sha256(encoded.encode("utf-8")).hexdigest()}
+
+
+def snapshot(date, recs, *, horizons=HORIZONS, path: str = BOOK_PATH, recorded_at: str | None = None) -> int:
     """Append frozen descriptor rows for `date`.  `recs` = iterable of dicts
     carrying at least `symbol` and the descriptor fields.  Returns rows written.
     Idempotent per (date, symbol): re-running a build does not duplicate or
@@ -76,6 +103,7 @@ def snapshot(date, recs, *, horizons=HORIZONS, path: str = BOOK_PATH) -> int:
                     v = None
                 row[f] = v
             row["horizons"] = list(horizons)
+            row.update(_pivot_receipt(r, t, recorded_at))
             fh.write(json.dumps(row, default=str) + "\n")
             seen.add((d, t))
             n += 1

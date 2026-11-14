@@ -67,6 +67,7 @@ from typing import Any
 import pandas as pd
 
 from engine.government_revenue.federation import reviewed_award_change_context
+from engine.neuralweb.pivot_context import compact_pivot_context
 from engine.government_revenue.freshness import effective_freshness
 from engine.neuralweb.options_plane import (
     options_structure_block as _options_structure_block,
@@ -2392,6 +2393,43 @@ def _load_rpo_map(repo: Path, gap_notes: list[str]) -> dict[str, dict]:
 # Candidate context builder
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _bound_pivot_evidence(payload: dict) -> None:
+    """Bound only this additive context within the incumbent briefing budget.
+
+    Original candidates, original fields and ordering are never removed. The
+    complete evidence remains in bottom_sensors.json; omitted means byte budget,
+    not weak evidence. Alphabetic inclusion is not a signal ranking.
+    """
+    candidates = payload.get("candidate_context", {})
+    optional = [(symbol, row.pop("pivot_evidence"))
+                for symbol, row in sorted(candidates.items())
+                if isinstance(row, dict) and "pivot_evidence" in row]
+    if not optional:
+        return
+    coverage = {"eligible": len(optional), "included": 0, "omitted_for_size": len(optional),
+                "selection": "symbol_order_not_signal_rank",
+                "full_source": "site/neuralwebdata/bottom_sensors.json"}
+    payload["pivot_evidence_coverage"] = coverage
+    note = "pivot_evidence: optional inline context limited by briefing size; use the full bottom-sensors source."
+    gaps = payload.setdefault("gap_notes", [])
+    gaps.append(note)
+    # Preserve room for the existing envelope stamp; no larger global cap.
+    limit = CONTEXT_SIZE_CAP_BYTES - 4096
+    size = len(json.dumps(payload, ensure_ascii=False, separators=(",", ":"), default=str).encode())
+    n = len(optional)
+    for symbol, pivot in optional:
+        addition = len(json.dumps({"pivot_evidence": pivot}, ensure_ascii=False,
+                                  separators=(",", ":"), default=str).encode()) - 1
+        # Two integer counters can gain digits. Budget a conservative margin.
+        if size + addition + 16 <= limit:
+            candidates[symbol]["pivot_evidence"] = pivot
+            size += addition
+            coverage["included"] += 1
+    coverage["omitted_for_size"] = n - coverage["included"]
+    if not coverage["omitted_for_size"]:
+        gaps.remove(note)
+
+
 def _build_candidate_context(
     repo: Path,
     gap_notes: list[str],
@@ -2586,6 +2624,11 @@ def _build_candidate_context(
             br_full = bottom_map[ticker]
             br = {k: br_full[k] for k in _BOTTOM_CONTEXT_COLS if k in br_full}
             row["bottom"] = _sparse(br)
+            pivot = compact_pivot_context(
+                br_full.get("pivot_context"), symbol=ticker, decision_at=asof.isoformat()
+            )
+            if pivot is not None:
+                row["pivot_evidence"] = pivot
             # Valuation context slice — display/annotate only; no origination.
             # Pulled from the SAME bottom_sensors row (no new source) so size budget
             # and null hygiene are maintained.  Whole key omitted when all values
@@ -2979,6 +3022,7 @@ def build_context(
         "inputs_hash": "",
         "tier": "display",
     }
+    _bound_pivot_evidence(payload)
     return payload
 
 

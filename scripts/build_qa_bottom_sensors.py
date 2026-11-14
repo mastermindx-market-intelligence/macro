@@ -99,11 +99,23 @@ def _load_payload(root: Path) -> dict:
 
 def build(root: Path | None = None) -> Path:
     """Render qa_bottom_sensors.html and return the output path."""
+    explicit_root = root is not None
     if root is None:
         root = config.ROOT
+    root = Path(root)
 
     payload = _load_payload(root)
     rows = payload.get("rows", [])
+    for row in rows:
+        # Parquet fallback retains the flat JSON-string column; browser gets
+        # the same typed contract as the ordinary JSON publisher.
+        if not isinstance(row.get("pivot_context"), dict):
+            try:
+                encoded = row.get("pivot_context_json")
+                decoded = json.loads(encoded) if isinstance(encoded, str) else None
+                row["pivot_context"] = decoded if isinstance(decoded, dict) else None
+            except (ValueError, TypeError):
+                row["pivot_context"] = None
     n_rows = payload.get("n_rows", len(rows))
     as_of = payload.get("as_of", "")
     labels_version = payload.get("labels_version", "labels_v1")
@@ -175,7 +187,8 @@ def build(root: Path | None = None) -> Path:
         sponsorship_unavailable=sponsorship_unavailable,
     )
 
-    site = _site_dir()
+    # A supplied root must not write through to the configured production site.
+    site = (root / "site") if explicit_root else _site_dir()
     site.mkdir(parents=True, exist_ok=True)
     out = site / PAGE_OUT
     write_page(out, html)
@@ -189,7 +202,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Build bottom-sensor QA page")
     ap.add_argument("--root", default=None, help="Repo root (default: inferred)")
     args = ap.parse_args()
-    root = Path(args.root) if args.root else _REPO_ROOT
+    root = Path(args.root) if args.root else None
     try:
         out = build(root)
         print(f"OK: {out}")

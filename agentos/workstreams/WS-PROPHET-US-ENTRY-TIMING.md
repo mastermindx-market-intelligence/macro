@@ -19,6 +19,8 @@ artifacts:
   - research/prophet_v4/PROPHET_US_ENTRY_TIMING_COMPLETION_BRIEF_2026-10-31.md
   - research/prophet_v4/PROPHET_US_ENTRY_TIMING_SOURCE_CENSUS_2026-10-31.md
   - agentos/handoffs/PROPHET-US-ENTRY-TIMING-2026-10-31.md
+  - research/signal_engine/BOTTOM_PIVOT_DELIVERY_2026_11_05.md
+  - research/evidence/bottom_pivot_delivery_20261105/verification.json
 waves:
   - id: W0
     title: Queue drain + backfill
@@ -43,6 +45,9 @@ do_not_redo:
 next_action: >
   Reconcile W1 using the October 31 handoff. In parallel qualify the prospective
   same-read identity and denominator before opening any W2 outcome.
+  Continue Chairman-assigned bottom-pivot delivery on PR 10785: qualify source release,
+  then authenticated real-path proof and existing research integration. Preserve the
+  separate historical W1 bake verification; no wave completion inferred.
 ---
 
 ## Context
@@ -50,3 +55,14 @@ next_action: >
 One of five active company P0 objectives (`US_PROPHET_ENTRY_TIMING` in Mastermind
 `config/strategic_state.yml`). The backfill completed and the queue drained on 2026-08-11;
 the October 31 audit records the missed bake and the later source receipts separately.
+
+
+## November 5 Chairman-directed bottom-pivot increment
+
+The active assigned Web principal owns `bottom-pivot-delivery-20261105` / PR10785 and
+its continuation, not an archived author session. The source plan and latest dated
+handoff describe a built, locally tested evidence/replay/AI-context vertical whose
+release, live proof and predictive extension remain incomplete. Existing W0/W1/W2
+are not retroactively completed or replaced. No new workstream, runtime, collector,
+outcome ledger, ranking or trading authority is created. This source linkage is not
+protected-release acceptance.

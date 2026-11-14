@@ -89,6 +89,22 @@ def _patch(path: Path, old: str, new: str) -> None:
     path.write_text(text.replace(old, new, 1), encoding="utf-8")
 
 
+def _rename_top_level_key(path: Path, old: str, new: str) -> None:
+    """Mutate a root YAML key without touching an identically named nested key.
+
+    Keep the existing scalar (including any folded multiline body) unchanged.
+    """
+    lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+    anchor = f"{old}:"
+    matches = [i for i, line in enumerate(lines) if line.startswith(anchor)]
+    assert len(matches) == 1, (
+        f"mutation anchor missing or ambiguous in {path.name}: top-level {anchor!r}"
+    )
+    index = matches[0]
+    lines[index] = f"{new}:" + lines[index][len(anchor):]
+    path.write_text("".join(lines), encoding="utf-8")
+
+
 def _findings(
     result: subprocess.CompletedProcess[str], rule: str, *, on: str
 ) -> list[str]:
@@ -190,15 +206,13 @@ def test_fast_yaml_loader_preserves_historical_malformed_diagnostic() -> None:
 # (rule, relative path, anchor, replacement)
 # Mutate the top-level status prefix; its current valid value becomes a comment.
 # Workstreams may legitimately advance from active to done without hiding bad enums.
-# Rename the required top-level next_action key without depending on its prose.
-# Scalar and folded values stay valid YAML; nested wave actions remain untouched.
 MUTATIONS: list[tuple[str, str, str, str]] = [
     ("bad-enum", "workstreams/WS-AGENT-OS.md", "\nstatus:", "\nstatus: humming #"),
     (
         "required-field",
         "workstreams/WS-PROPHET-US-ENTRY-TIMING.md",
-        "\nnext_action:",
-        "\nremoved_next_action:",
+        "next_action",
+        "omitted_next_action",
     ),
     (
         "unknown-program",
@@ -271,10 +285,30 @@ MUTATIONS: list[tuple[str, str, str, str]] = [
 @pytest.mark.parametrize("rule,rel,anchor,replacement", MUTATIONS, ids=[m[0] for m in MUTATIONS])
 def test_hard_rule_fires(store: Path, rule: str, rel: str, anchor: str, replacement: str) -> None:
     """Each hard rule must reject a record that violates it."""
-    _patch(store / rel, anchor, replacement)
+    if rule == "required-field":
+        _rename_top_level_key(store / rel, anchor, replacement)
+    else:
+        _patch(store / rel, anchor, replacement)
     result = _validate(store)
     assert result.returncode == 1, f"{rule} did not fail the run:\n{result.stdout}"
     assert rule in result.stdout, f"{rule} not named in output:\n{result.stdout}"
+
+
+@pytest.mark.parametrize("value", [
+    "Current action.",
+    ">-\n  Current action has a folded body.\n  The complete body stays intact.",
+])
+def test_required_field_mutation_is_scalar_style_independent(tmp_path: Path, value: str) -> None:
+    """The nested historical wave key and root value survive the mutation."""
+    path = tmp_path / "WS-PROPHET-US-ENTRY-TIMING.md"
+    source = "waves:\n  - id: W1\n    next_action: historical W1\nnext_action: " + value + "\nstatus: active\n"
+    path.write_text(source, encoding="utf-8")
+    _rename_top_level_key(path, "next_action", "omitted_next_action")
+    changed = path.read_text(encoding="utf-8")
+    assert "    next_action: historical W1\n" in changed
+    assert "omitted_next_action: " + value + "\n" in changed
+    assert not re.search(r"^next_action:", changed, flags=re.MULTILINE)
+    assert changed.endswith("status: active\n")
 
 
 def test_duplicate_key_is_rejected(store: Path) -> None:
