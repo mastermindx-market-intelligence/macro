@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T07:41:13.704497+00:00",
-  "count": 3351,
+  "generated_at": "2026-11-14T08:11:20.117250+00:00",
+  "count": 3352,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1244,6 +1244,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-x1smpygjmx0-663658",
+      "title": "US Economics Analyst 2027 Capex Outlook How Much of an AI Boost",
+      "institution": "2027 Outlook",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:07:52Z",
+      "summary_points": [
+        "AI Capex True Impact: AI-driven investment to boost true 2027 capex growth by 5.3pp (vs. measured 4.3pp), adding 0.6pp to real GDP, with $1.4tn US AI investment forecast by 2027 (4% of GDP).",
+        "IRA/CHIPS Subsidy Drag: Declining IRA/CHIPS-subsidized manufacturing construction (2026 YTD: -$14bn) will drag 2027 capex growth by 0.4pp, offset partially by data center spending.",
+        "Geopolitical Oil Price Risk: Iran war-driven oil prices ($90/barrel) add 0.5pp to 2027 capex growth; risk of prices falling below $70/barrel negates this boost, impacting energy investment.",
+        "Capex Growth Outperformance: Real business fixed investment growth forecast at 8% Q4/Q4 2027 (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
