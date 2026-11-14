@@ -142,6 +142,49 @@ def test_key_travels_as_bearer_header_and_never_as_a_query_param():
         assert FAKE_KEY not in json.dumps(c["params"])
 
 
+def test_futures_battery_uses_massive_host_bearer_and_tiny_queries():
+    def handler(url, params, n):
+        if url.endswith("/futures/v1/contracts"):
+            return _FakeResponse(200, {"results": [{
+                "ticker": "ESU6", "product_code": "ES", "trading_venue": "XCME",
+                "date": "2026-05-22",
+            }]})
+        return _FakeResponse(200, {"results": [{
+            "ticker": "ESU6", "session_end_date": "2026-05-22",
+            "window_start": 1,
+        }]})
+
+    p = mep.RestProber(
+        FAKE_KEY,
+        base_url=mep.FUTURES_BASE_URL,
+        timeout=1.0,
+        session=_FakeSession(handler),
+    )
+    out = mep.run_futures_rest_battery(p)
+
+    assert set(out) == {"futures_contracts_es", "futures_aggs_minute_es"}
+    assert len(p.session.calls) == 2
+    for call in p.session.calls:
+        assert call["url"].startswith("https://api.massive.com/futures/v1/")
+        assert call["headers"].get("Authorization") == f"Bearer {FAKE_KEY}"
+        assert "apiKey" not in call["params"]
+        assert "api_key" not in call["params"]
+    assert p.session.calls[0]["params"] == {
+        "product_code": "ES",
+        "ticker": "ESU6",
+        "date": "2026-05-22",
+        "limit": 1,
+    }
+    assert p.session.calls[1]["params"] == {
+        "resolution": "1min",
+        "window_start.gte": "2026-05-22",
+        "sort": "window_start.asc",
+        "limit": 1,
+    }
+    assert out["futures_contracts_es"]["evidence"]["api_host"] == "api.massive.com"
+    assert out["futures_aggs_minute_es"]["evidence"]["api_host"] == "api.massive.com"
+
+
 def test_no_auth_header_when_there_is_no_key():
     p = _prober(lambda url, params, n: _FakeResponse(200, {}), key=None)
     p.probe("x", "/v3/thing")
@@ -227,6 +270,39 @@ def test_end_to_end_run_leaks_the_key_to_neither_manifest_nor_stdout(
     assert rc == 0                                               # non-strict tolerates errors
 
 
+def test_main_never_probes_futures_without_explicit_rights_gate_flag(
+        monkeypatch, tmp_path):
+    monkeypatch.setenv("POLYGON_API_KEY", FAKE_KEY)
+    monkeypatch.delenv("MASSIVE_API_KEY", raising=False)
+    monkeypatch.setattr(mep, "resolve_key", lambda key_env: (FAKE_KEY, "POLYGON_API_KEY"))
+    monkeypatch.setattr(mep, "_base_url", lambda: mep.DEFAULT_BASE_URL)
+    monkeypatch.setattr(mep, "run_rest_battery", lambda prober: {})
+    seen = []
+
+    def futures(prober):
+        seen.append(prober.base_url)
+        return {}
+
+    monkeypatch.setattr(mep, "run_futures_rest_battery", futures)
+
+    rc = mep.main([
+        "--out", str(tmp_path / "default.json"),
+        "--skip-ws",
+        "--timeout", "1",
+    ])
+    assert rc == 0
+    assert seen == []
+
+    rc = mep.main([
+        "--out", str(tmp_path / "futures.json"),
+        "--skip-ws",
+        "--probe-futures",
+        "--timeout", "1",
+    ])
+    assert rc == 0
+    assert seen == [mep.FUTURES_BASE_URL]
+
+
 def test_strict_exits_one_when_a_probe_errored(monkeypatch, tmp_path):
     monkeypatch.setenv("POLYGON_API_KEY", FAKE_KEY)
     monkeypatch.setattr(mep.requests, "Session",
@@ -253,7 +329,9 @@ def test_manifest_shape_is_the_v1_schema():
     assert m["probed_at_utc"].endswith("Z")
     assert set(m["derived"]) == {
         "realtime_trades", "realtime_quotes", "second_aggs", "tick_history_depth",
-        "options_entitled", "options_realtime", "indices_entitled", "plan_guess", "notes"}
+        "options_entitled", "options_realtime", "indices_entitled",
+        "futures_contracts_entitled", "futures_minute_history_entitled",
+        "plan_guess", "notes"}
     assert isinstance(m["derived"]["notes"], list)
     assert isinstance(m["derived"]["plan_guess"], str)
 
@@ -310,6 +388,42 @@ def test_exchange_evidence_extracts_the_finra_trf_mapping():
 
 
 # --------------------------------------------------------------------------- derivation
+def test_derive_futures_requires_nonempty_rows_not_just_http_200():
+    rest = {
+        "futures_contracts_es": _rec(
+            "entitled", non_empty=True, results_count=1
+        ),
+        "futures_aggs_minute_es": _rec(
+            "entitled", non_empty=True, results_count=1
+        ),
+    }
+    d = mep.derive(rest, {})
+    assert d["futures_contracts_entitled"] is True
+    assert d["futures_minute_history_entitled"] is True
+
+    rest["futures_aggs_minute_es"] = _rec(
+        "entitled", non_empty=False, results_count=0
+    )
+    d = mep.derive(rest, {})
+    assert d["futures_contracts_entitled"] is True
+    assert d["futures_minute_history_entitled"] is None
+    assert any("200+empty" in note for note in d["notes"])
+
+
+def test_derive_futures_preserves_explicit_plan_refusal():
+    rest = {
+        "futures_contracts_es": _rec(
+            "not_entitled", non_empty=False, results_count=0
+        ),
+        "futures_aggs_minute_es": _rec(
+            "not_entitled", non_empty=False, results_count=0
+        ),
+    }
+    d = mep.derive(rest, {})
+    assert d["futures_contracts_entitled"] is False
+    assert d["futures_minute_history_entitled"] is False
+
+
 @pytest.mark.parametrize("recent,y2015,y2005,expected", [
     (("entitled", True), ("entitled", True), ("entitled", True), "20y+"),
     (("entitled", True), ("entitled", True), ("not_entitled", False), "10y"),
@@ -542,3 +656,125 @@ def test_rest_battery_probes_exact_gold_cny_minute_endpoint_used_by_product():
     ]
     assert len(calls) == 1
     assert calls[0]["params"]["limit"] == 5
+
+
+# --------------------------------------------------------------------------- Futures row-shape truth
+
+def _futures_synthetic_result(contract_payload, aggregate_payload, status=200):
+    def handler(url, params, n):
+        if url.endswith("/futures/v1/contracts"):
+            return _FakeResponse(status, contract_payload)
+        assert url.endswith("/futures/v1/aggs/ESU6")
+        return _FakeResponse(status, aggregate_payload)
+
+    session = _FakeSession(handler)
+    prober = mep.RestProber(
+        FAKE_KEY, base_url=mep.FUTURES_BASE_URL, timeout=1.0, session=session
+    )
+    records = mep.run_futures_rest_battery(prober)
+    return records, mep.derive(records, {}), session
+
+
+@pytest.mark.parametrize("target", ["contract", "aggregate"])
+@pytest.mark.parametrize(
+    "rows",
+    [
+        [None],
+        [False],
+        [0],
+        [""],
+        ["not an object"],
+        [[]],
+        [{}],
+        [{"ticker": "ESU6"}, None],
+        [None, {"ticker": "ESU6"}],
+        [{"ticker": "ESU6"}, {}],
+    ],
+)
+def test_futures_malformed_row_lists_remain_unknown_through_transport_and_derive(target, rows):
+    valid_contract = {"results": [{
+        "ticker": "ESU6", "product_code": "ES", "trading_venue": "XCME",
+        "date": "2026-05-22",
+    }]}
+    valid_aggregate = {"results": [{
+        "ticker": "ESU6", "session_end_date": "2026-05-22", "window_start": 1,
+    }]}
+    malformed = {"results": rows}
+    contract = malformed if target == "contract" else valid_contract
+    aggregate = malformed if target == "aggregate" else valid_aggregate
+    records, derived, session = _futures_synthetic_result(contract, aggregate)
+    affected = "futures_contracts_es" if target == "contract" else "futures_aggs_minute_es"
+    field = "futures_contracts_entitled" if target == "contract" else "futures_minute_history_entitled"
+    other = "futures_minute_history_entitled" if target == "contract" else "futures_contracts_entitled"
+
+    assert derived[field] is None
+    assert derived[other] is True
+    assert records[affected]["verdict"] == "entitled"
+    assert records[affected]["evidence"]["non_empty"] is False
+    assert records[affected]["evidence"]["results_count"] == len(rows)
+    assert "evidence_error" not in records[affected]["evidence"]
+    assert len(session.calls) == 2
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        None,
+        [],
+        {},
+        {"results": None},
+        {"results": []},
+        {"results": {}},
+        {"results": "not a list"},
+    ],
+)
+def test_futures_empty_missing_or_non_list_results_remain_unknown(payload):
+    records, derived, session = _futures_synthetic_result(payload, payload)
+    assert derived["futures_contracts_entitled"] is None
+    assert derived["futures_minute_history_entitled"] is None
+    assert len(session.calls) == 2
+
+
+def test_futures_valid_object_rows_reach_the_positive_derivation_unchanged():
+    contract_row = {
+        "ticker": "ESU6", "product_code": "ES", "trading_venue": "XCME",
+        "date": "2026-05-22",
+    }
+    aggregate_row = {
+        "ticker": "ESU6", "session_end_date": "2026-05-22", "window_start": 1,
+    }
+    records, derived, session = _futures_synthetic_result(
+        {"results": [contract_row]}, {"results": [aggregate_row]}
+    )
+    assert derived["futures_contracts_entitled"] is True
+    assert derived["futures_minute_history_entitled"] is True
+    assert records["futures_contracts_es"]["evidence"] == {
+        "results_count": 1, "non_empty": True, **contract_row,
+        "api_host": "api.massive.com",
+    }
+    assert records["futures_aggs_minute_es"]["evidence"] == {
+        "results_count": 1, "non_empty": True, "ticker": "ESU6",
+        "session_end_date": "2026-05-22", "window_start_present": True,
+        "api_host": "api.massive.com",
+    }
+    assert len(session.calls) == 2
+    for call in session.calls:
+        assert call["headers"]["Authorization"] == f"Bearer {FAKE_KEY}"
+        assert "apiKey" not in call["params"] and "api_key" not in call["params"]
+
+
+@pytest.mark.parametrize(
+    ("status", "payload", "expected"),
+    [
+        (401, {"results": [None]}, None),
+        (403, {"results": [None]}, False),
+        (404, {"results": [None]}, None),
+        (429, {"results": [None]}, None),
+        (200, {"status": "NOT_AUTHORIZED", "results": [None]}, False),
+    ],
+)
+def test_futures_row_shape_does_not_erase_explicit_refusal_or_ambiguous_http(status, payload, expected):
+    records, derived, session = _futures_synthetic_result(payload, payload, status=status)
+    assert derived["futures_contracts_entitled"] is expected
+    assert derived["futures_minute_history_entitled"] is expected
+    assert len(session.calls) == 2
