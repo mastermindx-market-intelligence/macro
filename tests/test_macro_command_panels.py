@@ -442,7 +442,13 @@ def test_e2_figure_prints_the_e2_stance_not_the_structural_null(
     assert "Today's number didn't arrive" not in rates
     assert "No single reading is published here" not in rates
     assert "Each row shows the last two readings" not in rates
-    assert "hasn't arrived" in unescape(html)  # strip chip stays the transient voice
+    rates_chip = re.search(
+        r'<li\b[^>]*\bdata-mc-topic="rates"[^>]*>(.*?)</li>', html, re.S)
+    assert rates_chip, "the rates summary chip must remain present"
+    chip_copy = unescape(rates_chip.group(1))
+    assert "The source data are older than allowed for this reading." in chip_copy
+    assert "源数据已超过此读数允许的时效。" in chip_copy
+    assert "hasn't arrived" not in chip_copy
     live_html, live_out = built
     live_snap = _workspace_snapshot("rates_curves")
     live_state = (live_snap.get("availability") or {}).get("state")

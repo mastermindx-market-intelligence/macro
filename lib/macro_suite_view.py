@@ -2434,30 +2434,42 @@ def _snapshot_figure_populated(snapshot: Mapping[str, Any] | None) -> bool:
 
 
 def _chip_null_cause(entry: Mapping[str, Any] | None, null_reason: Any) -> str:
-    """The one typed cause a null chip's note is selected from (design pin
-    §6.8). Checked in this order: a workspace this build could not even
-    read; a source that has not published yet; a source that is late, stale
-    or failed today; a rights/coverage gate; and only then the structural
-    absence of a state_id at all (`status=ABSENT`, `null_reason=
-    NOT_APPLICABLE` — a workspace that publishes numbers, not a state).
+    """Select presentation copy from the producer's actual absence reason.
 
-    Freshness trouble is checked BEFORE the structural cause because it is
-    the more urgent, more actionable fact: `rates_curves` publishes no axes
-    (structurally state-less, same as `monetary_policy`) AND its source
-    failed to arrive today — a reader needs "today's reading hasn't
-    arrived", not "this section never has a one-word read". Measured against
-    the live artifact in the design pin §11.2's frame observations.
+    Hard availability conditions take precedence over a structural absence
+    of a summary. A permitted reporting lag does not imply a missed release,
+    and an unknown reason does not establish that a section is state-less.
+    This changes neither the producer's freshness state nor its market read.
     """
+    hard_causes = {
+        "SOURCE_FAILED": "source_failed",
+        "STALE_SOURCE": "stale",
+        "RIGHTS_BLOCKED": "rights",
+        "NOT_COVERED": "not_covered",
+        "NOT_YET_RELEASED": "not_released",
+    }
     if entry is None or not entry.get("snapshot"):
+        failure = entry.get("failure") if entry else None
+        kind = failure.get("kind") if isinstance(failure, Mapping) else None
+        if isinstance(kind, str):
+            if kind in hard_causes:
+                return hard_causes[kind]
+            if kind == "COMPUTATION_REFUSED":
+                return "calculation_refused"
         return "no_snapshot"
     freshness = _freshness_state(entry["snapshot"])
-    if freshness == "NOT_YET_RELEASED":
-        return "not_released"
-    if freshness in ("LATE_WITHIN_TOLERANCE", "STALE_SOURCE", "SOURCE_FAILED"):
+    if isinstance(freshness, str) and freshness in hard_causes:
+        return hard_causes[freshness]
+    if isinstance(null_reason, str):
+        if null_reason in hard_causes:
+            return hard_causes[null_reason]
+        if null_reason == "COMPUTATION_REFUSED":
+            return "calculation_refused"
+        if null_reason == "NOT_APPLICABLE":
+            return "no_state"
+    if freshness == "LATE_WITHIN_TOLERANCE":
         return "late"
-    if freshness == "RIGHTS_BLOCKED" or null_reason in ("RIGHTS_BLOCKED", "NOT_COVERED"):
-        return "rights"
-    return "no_state"
+    return "unavailable"
 
 
 def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
@@ -2478,8 +2490,8 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
                       else L.FRESHNESS_NOTE.get(str(freshness)))
 
     if state_id is None:
-        if (headline.get("null_reason") == "NOT_APPLICABLE"
-                and _snapshot_figure_populated(snapshot)):
+        cause = _chip_null_cause(entry, headline.get("null_reason"))
+        if cause == "no_state" and _snapshot_figure_populated(snapshot):
             cause = "see_curve"
             chip = {
                 "id": chip_id, "section": section_id, "label": label,
@@ -2489,11 +2501,10 @@ def _chip_and_clause(chip_id: str, workspace_id: str, section_id: str,
                 "as_of_display": (
                     L.date_display_pair(effective_date) if effective_date else None),
                 "as_of_omitted": False,
-                "note": None,
+                "note": freshness_note,
                 "meaning": meaning,
             }
             return chip, None
-        cause = _chip_null_cause(entry, headline.get("null_reason"))
         chip = {
             "id": chip_id, "section": section_id, "label": label,
             "value": None, "tone": "neutral", "null": True,
