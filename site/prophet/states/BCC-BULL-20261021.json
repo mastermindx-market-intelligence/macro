@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BCC-BULL-20261021",
-  "asof": "2026-11-13",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.3,
@@ -17,16 +17,16 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.08,
+    "dist_to_stop_r": -0.135,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 48.9,
-    "p1": -0.7201,
-    "p2": -0.3601,
+    "horizon_pct_used": 51.1,
+    "p1": -0.7569,
+    "p2": -0.3785,
     "p3": null,
-    "move_r": -1.08,
+    "move_r": -1.135,
     "mfe_r": 0.169,
-    "mae_r": -1.08
+    "mae_r": -1.135
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.6200036621093687,
-  "_mae": -10.370001831054694,
+  "_mae": -10.900000610351569,
   "_max_p1": 0.11250025431315068,
   "_first_trigger_ts": "2026-10-31",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 22,
-  "tau": 0.4889,
+  "days_elapsed": 23,
+  "tau": 0.5111,
   "closed": true,
   "outcome": "INVALIDATED"
 }

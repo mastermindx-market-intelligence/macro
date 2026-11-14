@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-11-14",
-  "n_events_logged": 1958,
+  "n_events_logged": 1957,
   "n_events_graded": 1569,
   "classes": [
     {
@@ -138,7 +138,7 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 398,
+      "n": 397,
       "n_graded": 343,
       "hit_5d": 0.47230320699708456,
       "hit_21d": 0.5218855218855218,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 2425,
+    "n_sampled": 2426,
     "n_graded": 0,
     "classes": []
   }

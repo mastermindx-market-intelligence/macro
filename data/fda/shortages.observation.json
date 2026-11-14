@@ -25,12 +25,12 @@
     ]
   },
   "last_refresh": {
-    "attempted_at": "2026-11-14T10:32:27.450418+00:00",
-    "failure_code": null,
+    "attempted_at": "2026-11-14T11:12:24.303930+00:00",
+    "failure_code": "FIRST_PAGE_OUTAGE",
     "partial_rows_observed": 0,
-    "qualified": true
+    "qualified": false
   },
-  "parquet_sha256": "0c65d1cadb88d03aaf630e209b3e01c70535f3c561fa0654bdf983feeb5e7966",
+  "parquet_sha256": "f3e17c9281c155d6ae99363d43ab4f414cb55dea3fb5b8f6454926d664b27af3",
   "predecessor": "46d671710fb21860d037b3e110859618d036dc506e82eb581bda9679bb37514f",
   "retention": {
     "absent_generations_kept": 90,
