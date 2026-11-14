@@ -1,0 +1,9 @@
+{
+  "base_sha": "745478c52ca86df4be1f1aec910a38287ba8a7fc",
+  "duration_seconds": 439.47,
+  "exit_code": 0,
+  "proof_kind": "WORKING_TREE_PREFLIGHT_NOT_HOSTED_EXACT_HEAD_CI",
+  "stderr": "",
+  "stdout": "contract-delta: probe templates/index.html: head 137 jobs / 10,954 s / 10 packs; base 137 jobs / 10,954 s / 10 packs; ceilings 137 / 11,469 / 10\ncontract-delta: probe scripts/build_free_content.py: head 138 jobs / 11,458 s / 10 packs; base 138 jobs / 11,458 s / 10 packs; ceilings 138 / 11,542 / 10\ncontract-delta: probe engine/prophet/plan_book.py: head 132 jobs / 10,927 s / 10 packs; base 132 jobs / 10,927 s / 10 packs; ceilings 132 / 11,022 / 10\ncontract-delta: head census seconds: closure_and_suites 243.4, probes 49.3, skip_only 45.1, trigger_gaps 69.9\ncontract-delta: base census seconds: closure_and_suites 238.0, probes 49.1, skip_only 44.1, trigger_gaps 71.0\ncontract-delta: 0 introduced, 0 inherited (base 745478c52ca8)\ncontract-delta: wall 439.1 s\n",
+  "working_tree_head": "745478c52ca86df4be1f1aec910a38287ba8a7fc"
+}

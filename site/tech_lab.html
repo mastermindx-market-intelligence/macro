@@ -33,10 +33,411 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Technical Lab — Macro Dashboard</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=9bd171a6">
-<link rel="stylesheet" href="assets/css/ce97faa0.css?v=ce97faa0">
-<link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
-<link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
+<link rel="stylesheet" href="theme.css">
+<style>
+  /* ---------- shared Research-Reports chrome ---------- */
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font:14px/1.6 -apple-system,"Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:18px 18px 60px; }
+  @media(min-width:1100px){ body{ padding-left:max(18px,calc((100vw - 1096px)/2)); padding-right:max(18px,calc((100vw - 1096px)/2)); } }
+  a { color:var(--ink-link, var(--link)); text-decoration:none; }
+  .wrap { max-width:1060px; margin:0 auto; }
+  /* unambiguous move colours (NOT tied to the zh red=up swap) */
+  .r-neg { color:#d23f3f; font-weight:600; }
+  .r-pos { color:#1f9a55; font-weight:600; }
+  html[data-theme="dark"] .r-neg { color:#ef6a6a; }
+  html[data-theme="dark"] .r-pos { color:#3fc07e; }
+  .mut { color:var(--muted); }
+  /* tags / chips */
+  .chip { display:inline-flex; align-items:center; gap:5px; font-size:11.5px; line-height:1; padding:5px 10px; border-radius:999px;
+          background:var(--panel2); border:1px solid var(--line); color:var(--muted); white-space:nowrap; }
+  .chip.tag-macro   { color:#5b8def; border-color:#5b8def55; }
+  .chip.tag-fed     { color:#c77dff; border-color:#c77dff55; }
+  .chip.tag-rates   { color:#3fb6c0; border-color:#3fb6c055; }
+  .chip.tag-equities{ color:#46b87a; border-color:#46b87a55; }
+  .chip.tag-crypto  { color:#e0973a; border-color:#e0973a55; }
+  .chip.tag-energy  { color:#cf7b3a; border-color:#cf7b3a55; }
+  .chip.tag-event   { color:#e0607a; border-color:#e0607a55; }
+  .chip.tag-ai      { color:#b48ead; border-color:#b48ead55; }
+  .chip.tag-china   { color:#d0554f; border-color:#d0554f55; }
+  .chip.tag-credit  { color:#d08770; border-color:#d0877055; }
+  footer.rfoot { color:var(--muted); font-size:11.5px; margin:46px auto 0; max-width:1060px; border-top:1px solid var(--line); padding-top:14px; }
+  /* XG-W7 follow line — its own row, never appended to the disclaimer sentence:
+     a legal notice and a marketing CTA must not read as one thought. */
+  footer.rfoot .rf-x { display:inline-flex; align-items:center; gap:6px; margin-top:11px; padding:4px 10px;
+    border-radius:100px; border:1px solid var(--line); color:var(--muted); font-size:11px; font-weight:600;
+    transition:color .16s, border-color .16s; }
+  footer.rfoot .rf-x:hover { color:var(--text); border-color:color-mix(in srgb,var(--text) 26%,transparent); }
+
+/* ── Four-tab workbench layout ── */
+.tl-page { max-width:1080px; margin:0 auto; padding:0 20px 48px; }
+.tl-hero { margin:24px 0 0; }
+.eyebrow { font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px; }
+.tl-hero h1 { font-size:26px;font-weight:800;margin-bottom:6px; }
+.tl-sub { color:var(--muted);font-size:13px;max-width:820px;line-height:1.6; }
+.tl-meta { display:flex;gap:7px;flex-wrap:wrap;margin-top:12px; }
+.chip { display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:var(--panel2);color:var(--muted);border:1px solid var(--line); }
+.chip.tag-equities { background:rgba(91,155,240,.15);color:var(--ink-info, var(--info));border-color:rgba(91,155,240,.3); }
+.chip.tag-warn { background:rgba(224,160,48,.12);color:var(--ink-warn, var(--warn));border-color:rgba(224,160,48,.25); }
+
+/* ── Display-only banner ── */
+.display-banner { margin:14px 0 0;padding:12px 16px;background:rgba(224,160,48,.08);border:1px solid rgba(224,160,48,.25);border-radius:10px;font-size:12.5px;color:var(--ink-warn, var(--warn));display:flex;align-items:flex-start;gap:10px;line-height:1.6; }
+.display-banner .icon { font-size:16px;flex:none;margin-top:1px; }
+.display-banner strong { color:var(--text); }
+.hb-dots { display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px; }
+.hb-dot::before { content:"·";margin-right:5px; }
+.hb-dot { font-size:11.5px;color:var(--ink-warn, var(--warn)); }
+
+/* ── Sample banner ── */
+.tl-sample-banner { margin:10px 0 0;background:rgba(224,151,58,.13);border:1px solid rgba(224,151,58,.35);border-radius:10px;padding:10px 14px;font-size:12.5px;color:#c77a1f; }
+html[data-theme="dark"] .tl-sample-banner { color:#e0973a; }
+
+/* ── Tab bar ── */
+.tab-bar { display:flex;gap:2px;margin:20px 0 0;border-bottom:2px solid var(--line);overflow-x:auto;scrollbar-width:none; }
+.tab-bar::-webkit-scrollbar { display:none; }
+.tbl-scroll { overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch; }
+.tab-btn { padding:10px 20px;font-size:13px;font-weight:600;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:color .15s;position:relative;white-space:nowrap; }
+.tab-btn:hover { color:var(--text); }
+.tab-btn.active { color:var(--ink-link, var(--link)); }
+.tab-btn.active::after { content:"";position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--link);border-radius:2px 2px 0 0; }
+.tab-badge { display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;background:var(--panel2);border-radius:9px;font-size:10px;font-weight:700;color:var(--muted);margin-left:6px; }
+.tab-btn.active .tab-badge { background:rgba(122,167,224,.2);color:var(--ink-link, var(--link)); }
+.tab-panel { display:none;padding-top:20px; }
+.tab-panel.active { display:block; }
+
+/* ── Section card ── */
+.tl-card { background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0;box-sizing:border-box; }
+.tl-card-header { display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap; }
+.tl-card-header h2 { font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px; }
+.h-note { font-size:11px;color:var(--muted);font-weight:400; }
+
+/* ── Table ── */
+.tbl-wrap { overflow-x:auto;-webkit-overflow-scrolling:touch; }
+table.tl { width:100%;border-collapse:collapse;font-size:12.5px;min-width:480px; }
+table.tl th { text-align:left;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line);padding:7px 9px;white-space:nowrap;font-size:11px;letter-spacing:.03em; }
+table.tl th.sortable { cursor:pointer;user-select:none; }
+table.tl th.sortable:hover { color:var(--text); }
+table.tl th.sorted { color:var(--ink-link, var(--link)); }
+table.tl td { padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:middle; }
+table.tl tr:last-child td { border-bottom:none; }
+table.tl tbody tr { cursor:pointer;transition:background .1s; }
+table.tl tbody tr:hover { background:var(--panel2); }
+table.tl tbody tr.selected { background:rgba(122,167,224,.08); }
+td.tl-num,th.tl-num { text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap; }
+.tl-tk { font-weight:700;font-size:13px; }
+.tl-name { color:var(--muted);font-size:10.5px;display:block;margin-top:1px; }
+.tbl-footer { display:flex;align-items:center;justify-content:space-between;padding-top:10px;font-size:11.5px;color:var(--muted);flex-wrap:wrap;gap:8px; }
+.tbl-page-btns { display:flex;gap:4px; }
+.tbl-page-btn { width:28px;height:28px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer; }
+.tbl-page-btn.active { background:var(--link);color:#fff;border-color:var(--link); }
+
+/* ── Color helpers ── */
+.r-pos { color:#1f9a55;font-weight:600; } html[data-theme="dark"] .r-pos { color:#3fc07e; }
+.r-neg { color:#d23f3f;font-weight:600; } html[data-theme="dark"] .r-neg { color:#ef6a6a; }
+.r-neu { color:var(--muted); }
+
+/* ── Score gauge ── */
+.gauge-wrap { display:inline-flex;align-items:center;gap:7px;min-width:100px; }
+.gauge { flex:1;min-width:52px;height:6px;border-radius:3px;background:var(--panel2);overflow:hidden; }
+.gauge i { display:block;height:100%;border-radius:3px; }
+.g-hi i  { background:#1f9a55; } html[data-theme="dark"] .g-hi i { background:#3fc07e; }
+.g-mod i { background:#5b8def; }
+.g-lo i  { background:var(--muted); }
+.g-neg i { background:#d23f3f; } html[data-theme="dark"] .g-neg i { background:#ef6a6a; }
+.gauge-score { font-variant-numeric:tabular-nums;font-weight:700;font-size:12.5px;min-width:36px;text-align:right; }
+
+/* ── Band chips ── */
+.band-chip { display:inline-block;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.03em;white-space:nowrap; }
+.band-Buy  { background:rgba(31,154,85,.18);color:#1f9a55; } html[data-theme="dark"] .band-Buy { color:#3fc07e; }
+.band-Hold { background:rgba(91,141,239,.15);color:#5b8def; }
+.band-Sell { background:rgba(210,63,63,.18);color:#d23f3f; } html[data-theme="dark"] .band-Sell { color:#ef6a6a; }
+
+/* ── Signal dots ── */
+.sig-dots { display:flex;gap:3px;flex-wrap:wrap;max-width:96px; }
+.sig-dot { width:7px;height:7px;border-radius:50%; }
+.dot-buy { background:var(--up); }
+.dot-sell { background:var(--down); }
+.dot-off { background:var(--line); }
+
+/* ═══ TAB 1: SCREENER ═══ */
+.screener-layout { display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px; }
+@media(max-width:900px){ .screener-layout { grid-template-columns:minmax(0,1fr); } }
+.screener-controls { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px; }
+.sc-input { padding:7px 11px;font-size:12.5px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);outline:none;transition:border-color .15s;flex:1;min-width:120px; }
+.sc-input:focus { border-color:var(--link); }
+.sc-select { padding:7px 10px;font-size:12.5px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);cursor:pointer;outline:none; }
+
+/* ── Confluence builder ── */
+.confl-builder { background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0;max-width:100%;box-sizing:border-box; }
+.confl-title { font-size:13px;font-weight:700;margin-bottom:2px; }
+.confl-desc { font-size:11.5px;color:var(--muted);line-height:1.5; }
+.confl-section-label { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px; }
+.confl-chips { display:flex;flex-wrap:wrap;gap:6px; }
+.confl-chip { padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:600;border:1px solid var(--line);background:var(--panel2);color:var(--muted);cursor:pointer;transition:all .13s;user-select:none; }
+.confl-chip:hover { border-color:var(--link);color:var(--text); }
+.confl-chip.active { background:rgba(122,167,224,.18);border-color:var(--link);color:var(--ink-link, var(--link)); }
+.confl-chip.buy-chip.active { background:rgba(31,154,85,.15);border-color:var(--up);color:var(--ink-up, var(--up)); } html[data-theme="dark"] .confl-chip.buy-chip.active { color:#3fc07e;border-color:#3fc07e; }
+.confl-count-label { font-size:11px;color:var(--muted);margin-top:2px; }
+.tl-empty { color:var(--muted);font-size:13px;padding:20px 0;text-align:center; }
+
+/* ═══ TAB 2: SIGNAL LAB ═══ */
+.lab-layout { display:grid;grid-template-columns:280px 1fr;gap:16px; }
+@media(max-width:800px){ .lab-layout { grid-template-columns:1fr; } }
+
+/* Signal browser picker */
+.sig-picker-wrap { display:flex;flex-direction:column;gap:0; }
+.sig-family-label { font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:10px 4px 4px; }
+.sig-row { width:100%;text-align:left;padding:7px 8px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-size:12px;transition:all .13s;cursor:pointer;display:flex;align-items:center;gap:8px; }
+.sig-row:hover { background:var(--panel2);color:var(--text); }
+.sig-row.active { background:rgba(122,167,224,.12);border:1px solid rgba(122,167,224,.3);color:var(--text);font-weight:600; }
+.sig-dir-badge { width:16px;height:16px;border-radius:4px;flex:none;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800; }
+.dir-up   { background:rgba(31,154,85,.2);color:var(--ink-up, var(--up)); } html[data-theme="dark"] .dir-up { color:#3fc07e; }
+.dir-down { background:rgba(210,63,63,.2);color:var(--ink-down, var(--down)); } html[data-theme="dark"] .dir-down { color:#ef6a6a; }
+.dir-neu  { background:var(--panel2);color:var(--muted); }
+.sig-row-name { flex:1;font-size:11.5px;text-align:left; }
+.wr-bar-mini { display:flex;align-items:center;gap:4px;flex:none; }
+.wr-track { width:36px;height:5px;background:var(--panel2);border-radius:3px;overflow:hidden;flex:none; }
+.wr-fill  { height:100%;border-radius:3px; }
+.wr-val   { font-size:10px;font-variant-numeric:tabular-nums;min-width:30px;text-align:right; }
+.fire-badge { font-size:9.5px;color:var(--muted);white-space:nowrap;min-width:20px;text-align:right; }
+.fire-badge.active { color:var(--ink-up, var(--up)); } html[data-theme="dark"] .fire-badge.active { color:#3fc07e; }
+
+/* Signal catalog (sortable table) */
+.catalog-table-wrap { overflow-x:auto; }
+.tl-edge-chip { display:inline-block;padding:1px 7px;border-radius:5px;font-size:10px;font-weight:700;white-space:nowrap; }
+.edge-strong { background:rgba(31,154,85,.18);color:#1f9a55; } html[data-theme="dark"] .edge-strong { color:#3fc07e; }
+.edge-pos    { background:rgba(91,155,240,.15);color:var(--ink-info, var(--info)); }
+.edge-neu    { background:var(--panel2);color:var(--muted);border:1px solid var(--line); }
+.edge-neg    { background:rgba(210,63,63,.15);color:#d23f3f; } html[data-theme="dark"] .edge-neg { color:#ef6a6a; }
+.era-badge2  { display:inline-block;padding:1px 7px;border-radius:5px;font-size:9.5px;font-weight:700;white-space:nowrap; }
+.era-stable  { background:rgba(91,155,240,.12);color:var(--ink-info, var(--info)); }
+.era-post    { background:rgba(224,160,48,.12);color:var(--ink-warn, var(--warn)); }
+.era-divg    { background:rgba(210,63,63,.12);color:#d23f3f; }
+
+/* Signal profile (detail pane) */
+.sig-profile { padding-left:2px; }
+.sig-profile h2 { font-size:18px;font-weight:800;margin-bottom:4px; }
+.sig-profile-sub { font-size:12px;color:var(--muted);margin-bottom:14px; }
+.stat-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px; }
+@media(max-width:600px){ .stat-grid { grid-template-columns:repeat(2,1fr); } }
+.stat-cell { background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px; }
+.stat-cell .sk { font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted); }
+.stat-cell .sv { font-size:22px;font-weight:750;font-variant-numeric:tabular-nums;margin-top:4px;line-height:1; }
+.stat-cell .sb { font-size:10.5px;color:var(--muted);margin-top:3px; }
+.sv-up  { color:#1f9a55; } html[data-theme="dark"] .sv-up { color:#3fc07e; }
+.sv-neg { color:#d23f3f; } html[data-theme="dark"] .sv-neg { color:#ef6a6a; }
+.sv-neu { color:var(--text); }
+
+/* Era split 3-row table */
+.era-table-wrap { margin-bottom:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden; }
+.era-table-wrap table { width:100%;border-collapse:collapse;font-size:12px; }
+.era-table-wrap th { text-align:left;color:var(--muted);font-weight:600;padding:8px 12px;border-bottom:1px solid var(--line);font-size:10.5px; }
+.era-table-wrap td { padding:8px 12px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums; }
+.era-table-wrap tr:last-child td { border-bottom:none; }
+.era-tag { display:inline-block;padding:1px 7px;border-radius:4px;font-size:9.5px;font-weight:700;white-space:nowrap; }
+.era-pre  { background:rgba(224,160,48,.12);color:var(--ink-warn, var(--warn)); }
+.era-post { background:rgba(91,155,240,.12);color:var(--ink-info, var(--info)); }
+.era-pool { background:var(--panel2);color:var(--muted);border:1px solid var(--line); }
+
+/* Chart area */
+.mini-chart-wrap { background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px; }
+.mini-chart-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px; }
+.mini-chart-title { font-size:12.5px;font-weight:700; }
+.chart-note { font-size:10.5px;color:var(--muted);margin-top:6px;font-style:italic; }
+.chart-ctrl { display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px; }
+.chart-ctrl select { padding:5px 8px;font-size:11.5px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);color:var(--text);cursor:pointer;outline:none; }
+.chart-container { width:100%;height:220px;position:relative; }
+.chart-fallback { display:flex;align-items:center;justify-content:center;min-height:220px;color:var(--muted);font-size:12px;font-style:italic;border:1px dashed var(--line);border-radius:8px; }
+
+/* null caveat */
+.null-banner { padding:10px 14px;border-radius:9px;background:rgba(139,147,161,.1);border:1px solid rgba(139,147,161,.25);font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px; }
+.null-banner strong { color:var(--text); }
+
+/* ═══ TAB 3: STOCK PROFILE ═══ */
+.stock-profile-layout { display:grid;grid-template-columns:1fr 300px;gap:16px; }
+@media(max-width:860px){ .stock-profile-layout { grid-template-columns:1fr; } }
+.profile-header { display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px; }
+.profile-ticker { font-size:32px;font-weight:900;line-height:1; }
+.profile-name { font-size:15px;color:var(--muted);margin-bottom:4px; }
+.profile-price { font-size:22px;font-weight:700;font-variant-numeric:tabular-nums; }
+.profile-actions { display:flex;gap:8px;align-items:flex-start;margin-left:auto; }
+.open-terminal-btn { display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:9px;font-size:12.5px;font-weight:700;background:var(--link);color:#fff;border:none;cursor:pointer;transition:opacity .13s; }
+.open-terminal-btn:hover { opacity:.88; }
+.perf-row { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px; }
+.perf-cell { background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 14px;min-width:90px; }
+.pk { font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted); }
+.pv { font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px; }
+.confl-callout { display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;background:rgba(122,167,224,.08);border:1px solid rgba(122,167,224,.2);margin-bottom:16px;flex-wrap:wrap; }
+.confl-n { font-size:36px;font-weight:900;color:var(--ink-link, var(--link));line-height:1; }
+.confl-label { font-size:12px;color:var(--muted);line-height:1.5; }
+.confl-label strong { color:var(--text); }
+.stock-chart-card { background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px; }
+.chart-ticker-label { font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px; }
+.stock-chart-container { width:100%;height:240px;position:relative; }
+.sig-state-list { display:flex;flex-direction:column;gap:4px; }
+.sig-state-row { display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:12.5px;transition:background .1s; }
+.sig-state-row:hover { background:var(--panel2); }
+.sig-state-row.on { background:rgba(31,154,85,.08); } html[data-theme="dark"] .sig-state-row.on { background:rgba(63,192,126,.08); }
+.sig-state-row.off { opacity:.5; }
+.sig-state-name { flex:1; }
+.sig-state-age { font-size:10.5px;color:var(--muted);margin-left:auto;white-space:nowrap; }
+.sig-on-mark  { color:var(--ink-up, var(--up));font-size:13px; } html[data-theme="dark"] .sig-on-mark { color:#3fc07e; }
+.sig-off-mark { color:var(--muted);font-size:13px; }
+.family-divider { font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:10px 0 4px;margin-top:4px; }
+.ticker-search-card { background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px; }
+.ts-input { width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--text);font-size:14px;outline:none;transition:border-color .15s; }
+.ts-input:focus { border-color:var(--link); }
+.ts-results { display:flex;flex-direction:column;gap:3px;margin-top:8px; }
+.ts-result-row { display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .1s; }
+.ts-result-row:hover,.ts-result-row.sel { background:var(--panel2); }
+.ts-tk { font-weight:700;font-size:13px;min-width:44px; }
+.ts-name { font-size:12px;color:var(--muted);flex:1; }
+
+/* ═══ TAB 4: HOW TO TEST ═══ */
+.how-grid { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
+@media(max-width:700px){ .how-grid { grid-template-columns:1fr; } }
+.how-card { background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px; }
+.how-card h3 { font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px; }
+.how-card p,.how-card li { font-size:12.5px;color:var(--muted);line-height:1.7; }
+.how-card ul { padding-left:16px;margin-top:6px; }
+.code-block { margin-top:10px;padding:12px 14px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;font-family:var(--font-mono,ui-monospace,"SF Mono","Fira Code","JetBrains Mono",Consolas,monospace);font-size:11.5px;color:var(--text);line-height:1.7;overflow-x:auto;white-space:pre;position:relative; }
+.code-block-wrap { position:relative;max-width:100%; }
+.how-grid > * { min-width:0; }
+.how-card h3, .how-card p { overflow-wrap:anywhere; }
+.copy-btn { position:absolute;top:8px;right:8px;padding:3px 8px;font-size:10px;font-weight:600;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--muted);cursor:pointer;transition:all .12s;z-index:1; }
+.copy-btn:hover { color:var(--text);border-color:var(--muted); }
+.copy-btn.copied { color:var(--ink-ok, var(--ok));border-color:var(--ok); }
+.code-comment { color:var(--muted); }
+.code-kw { color:var(--ink-link, var(--link)); }
+.code-str { color:#1f9a55; } html[data-theme="dark"] .code-str { color:#3fc07e; }
+
+/* ═══ TAB: COMBOS ═══ */
+.cb-stance { margin:0 0 16px;padding:12px 16px;border-radius:10px;background:rgba(122,167,224,.07);border:1px solid rgba(122,167,224,.18);font-size:12.5px;line-height:1.65;color:var(--text); }
+.cb-stance .muted { color:var(--muted); }
+.cb-toolbar { display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px; }
+.cb-side-toggle { display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden; }
+.cb-side-btn { padding:6px 16px;font-size:12px;font-weight:700;border:none;background:var(--panel2);color:var(--muted);cursor:pointer;transition:all .12s; }
+.cb-side-btn.active-long { background:rgba(31,154,85,.16);color:#1f9a55; } html[data-theme="dark"] .cb-side-btn.active-long { color:#3fc07e; }
+.cb-side-btn.active-short { background:rgba(210,63,63,.14);color:#d23f3f; } html[data-theme="dark"] .cb-side-btn.active-short { color:#ef6a6a; }
+.cb-name { font-weight:700;font-size:12.5px;line-height:1.35; }
+.cb-legs { display:flex;flex-wrap:wrap;gap:4px;margin-top:4px; }
+.cb-leg-chip { display:inline-flex;align-items:center;gap:4px;padding:1px 7px;border-radius:5px;font-size:9.5px;font-weight:600;background:var(--panel2);border:1px solid var(--line);color:var(--muted);white-space:nowrap; }
+.cb-leg-chip .tfb { font-weight:800;font-size:8.5px;padding:0 3px;border-radius:3px;background:rgba(122,167,224,.18);color:var(--ink-link, var(--link)); }
+.cb-leg-chip .tfb.w { background:rgba(224,160,48,.16);color:var(--ink-warn, var(--warn)); }
+.wrbar { display:inline-flex;align-items:center;gap:6px; }
+.wrbar svg { flex:none; }
+.wr-of10 { font-weight:750;font-variant-numeric:tabular-nums;font-size:13px; }
+.cons-chip { display:inline-block;padding:1px 7px;border-radius:5px;font-size:9.5px;font-weight:700;white-space:nowrap; }
+.cons-yes { background:rgba(31,154,85,.14);color:#1f9a55; } html[data-theme="dark"] .cons-yes { color:#3fc07e; }
+.cons-no  { background:rgba(224,160,48,.12);color:var(--ink-warn, var(--warn)); }
+.match-now-btn { display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(122,167,224,.12);border:1px solid rgba(122,167,224,.3);color:var(--ink-link, var(--link));cursor:pointer;white-space:nowrap; }
+.match-now-btn.zero { background:var(--panel2);border-color:var(--line);color:var(--muted); }
+
+/* combo detail drawer */
+.cbd-header { display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px; }
+.cbd-title { font-size:17px;font-weight:800;line-height:1.3;flex:1;min-width:200px; }
+.cbd-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px; }
+@media(max-width:640px){ .cbd-grid { grid-template-columns:repeat(2,1fr); } }
+.cbd-htable-wrap { background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px; }
+.cbd-htable-wrap table { width:100%;border-collapse:collapse;font-size:12px; }
+.cbd-htable-wrap th { text-align:right;color:var(--muted);font-weight:600;padding:8px 12px;border-bottom:1px solid var(--line);font-size:10.5px; }
+.cbd-htable-wrap th:first-child { text-align:left; }
+.cbd-htable-wrap td { padding:7px 12px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;text-align:right; }
+.cbd-htable-wrap td:first-child { text-align:left;font-weight:600; }
+.cbd-htable-wrap tr:last-child td { border-bottom:none; }
+.cbd-matches { display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px; }
+.cbd-match-tk { padding:3px 10px;border-radius:7px;font-size:12px;font-weight:700;background:var(--panel2);border:1px solid var(--line);cursor:pointer;transition:all .12s; }
+.cbd-match-tk:hover,.cbd-match-tk.sel { border-color:var(--link);color:var(--ink-link, var(--link)); }
+
+/* custom combo builder */
+.cb-builder-grid { display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px; }
+@media(max-width:860px){ .cb-builder-grid { grid-template-columns:minmax(0,1fr); } }
+.cb-pick-search { width:100%;padding:7px 11px;font-size:12.5px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);outline:none;margin-bottom:8px;box-sizing:border-box; }
+.cb-pick-area { max-height:340px;overflow-y:auto;padding-right:4px; }
+.cb-result-card { background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;position:sticky;top:12px;align-self:start; }
+.cbr-count { font-size:30px;font-weight:800;color:var(--ink-link, var(--link));line-height:1;font-variant-numeric:tabular-nums; }
+.cbr-stats { margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;line-height:1.7; }
+.cbr-stats .row { display:flex;justify-content:space-between;gap:8px; }
+.cbr-stats .k { color:var(--muted); }
+.cbr-note { font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5; }
+.cbr-names { display:flex;flex-wrap:wrap;gap:5px;margin-top:8px; }
+
+/* screener right rail — top combos now */
+.rail-combo-card { padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);cursor:pointer;transition:border-color .12s; }
+.rail-combo-card:hover { border-color:var(--link); }
+.rail-combo-name { font-size:12px;font-weight:700;line-height:1.35; }
+.rail-combo-sub { font-size:10.5px;color:var(--muted);margin-top:3px; }
+.rail-combo-tks { font-size:11px;color:var(--ink-link, var(--link));font-weight:600;margin-top:5px; }
+
+/* help tip (Tier-2 receipt popover) */
+.tl-help { position:relative;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);color:var(--muted);font-size:10px;font-weight:700;cursor:default; }
+.tl-help:hover::before { content:attr(data-tip-en);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);min-width:230px;max-width:300px;padding:9px 11px;border-radius:8px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:11px;font-weight:400;color:var(--text);line-height:1.55;white-space:normal;z-index:50;text-align:left;padding-bottom:13px; }
+html[data-lang="zh"] .tl-help:hover::before { content:attr(data-tip-zh); }
+/* Entry-timing badge hover (W-LAB-1): reuse the tl-help tooltip look on the
+   reset-confirmer / early-window chips. No translated text in title= (CI). */
+.tl-badge-tip { position:relative;cursor:help; }
+.tl-badge-tip:hover::before { content:attr(data-tip-en);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);min-width:200px;max-width:280px;padding:9px 11px;border-radius:8px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:11px;font-weight:400;color:var(--text);line-height:1.55;white-space:normal;z-index:50;text-align:left; }
+html[data-lang="zh"] .tl-badge-tip:hover::before { content:attr(data-tip-zh); }
+
+/* scrollbar */
+::-webkit-scrollbar { width:6px;height:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--line);border-radius:3px; }
+
+/* ── 红涨绿跌: directional colour flips for Chinese mode ── */
+/* Bullish-green → red in zh (light: #1f9a55→#cf4040; dark: #3fc07e→#e06464) */
+html[data-lang="zh"] .r-pos { color:#cf4040; }
+html[data-theme="dark"][data-lang="zh"] .r-pos { color:#e06464; }
+html[data-lang="zh"] .g-hi i { background:#cf4040; }
+html[data-theme="dark"][data-lang="zh"] .g-hi i { background:#e06464; }
+html[data-lang="zh"] .band-Buy { color:#cf4040; }
+html[data-theme="dark"][data-lang="zh"] .band-Buy { color:#e06464; }
+html[data-lang="zh"] .edge-strong { color:#cf4040; }
+html[data-theme="dark"][data-lang="zh"] .edge-strong { color:#e06464; }
+html[data-lang="zh"] .sv-up { color:#cf4040; }
+html[data-theme="dark"][data-lang="zh"] .sv-up { color:#e06464; }
+html[data-lang="zh"] .cb-side-btn.active-long { color:#cf4040; }
+html[data-theme="dark"][data-lang="zh"] .cb-side-btn.active-long { color:#e06464; }
+/* These use var(--up) which auto-flips, but have a dark override; dark zh must use red */
+html[data-theme="dark"][data-lang="zh"] .confl-chip.buy-chip.active { color:#e06464; border-color:#e06464; }
+html[data-theme="dark"][data-lang="zh"] .dir-up { color:#e06464; }
+/* Bearish-red dark override → green in zh (dark: #ef6a6a→#45b873) */
+html[data-theme="dark"][data-lang="zh"] .dir-down { color:#45b873; }
+
+
+/* Pinned entry/cohort research — static evidence, independent of live fetches. */
+.er-workbench{display:grid;gap:20px;min-width:0}
+.er-heading,.er-section-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.er-heading h2{font-size:25px;line-height:1.2;margin:4px 0 10px}
+.er-heading p,.er-workbench p{line-height:1.65}
+.er-heading p{max-width:72ch;color:var(--muted)}
+.er-workbench h3{font-size:18px;margin:0 0 8px}
+.er-verdict{font-size:18px;font-weight:650;border-left:3px solid var(--ink-info,var(--info));padding-left:14px}
+.er-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:18px 0}
+.er-metrics>div{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.er-metrics span,.er-metrics small{display:block;color:var(--muted);font-size:11.5px;line-height:1.5}
+.er-metrics strong{display:block;font-size:26px;line-height:1.4;font-variant-numeric:tabular-nums}
+.er-note{font-size:12px;color:var(--muted);line-height:1.65;overflow-wrap:anywhere}
+.er-details{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.er-details summary{cursor:pointer;font-weight:650;line-height:1.5;padding:3px 0}
+.er-details li{line-height:1.65;margin:8px 0}
+.er-table-wrap{max-width:100%;overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:9px}
+table.er-table{margin:0;min-width:700px}
+.er-cohort table.er-table{min-width:480px}
+.er-table caption{text-align:left;padding:12px;font-size:11px;color:var(--muted)}
+.er-table tbody tr{cursor:default}
+.er-table tbody th{font-weight:500;white-space:normal;min-width:200px;max-width:360px;color:var(--text)}
+.er-table th small{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:3px}
+.er-horizon{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:22px 0 12px}
+.er-horizon>span{font-size:12px;font-weight:600;margin-right:4px}
+.er-horizon-btn{border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);padding:9px 12px;cursor:pointer;font:inherit;font-size:12px}
+.er-horizon-btn[aria-pressed="true"]{border-color:var(--link);box-shadow:inset 0 0 0 1px var(--link);font-weight:700}
+.er-horizon-btn:focus-visible,.er-table-wrap:focus-visible,.er-details summary:focus-visible,.tab-btn:focus-visible{outline:2px solid var(--link);outline-offset:3px}
+[data-er-view][hidden],#tl-legacy-data-note[hidden],[data-tl-live-note][hidden]{display:none!important}
+.er-source{display:inline-block;font-size:12px;line-height:1.6;margin-top:10px}
+@media(max-width:600px){.er-heading h2{font-size:22px}.er-workbench .tl-card{padding:14px}.er-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.er-metrics strong{font-size:23px}.er-horizon>span{flex-basis:100%}}
+
+
+</style>
 
 </head>
 <body>
@@ -46,9 +447,9 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=edfd821b">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
-    
+
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
       <svg class="brand-glyph" width="29" height="29" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
@@ -73,24 +474,24 @@
       </svg>
       <span class="brand-word">MASTERMINDX</span>
     </a>
-    
+
     <div class="nav-dd">
       <a class="nav-link" href="macro.html"><span class="menu-icon menu-icon-flag menu-icon-us" aria-hidden="true"></span><span class="l-en">United States</span><span class="l-zh">美国</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu" role="menu">
         <a href="macro.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">Regime · growth · inflation · nowcast</span><span class="l-zh">市况 · 增长 · 通胀 · 实时测算</span></span></a>
         <a href="us_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · sectors · flows</span><span class="l-zh">Prophet · 板块 · 资金</span></span></a>
-        
+
         <a href="intraday_flow.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Intraday Flow Tracker</span><span class="l-zh">盘中资金流追踪</span><span class="d"><span class="l-en">Live session board — volume, tape and stance lanes · ≈15-min delayed</span><span class="l-zh">盘中实时看板 — 量能、盘面与操作分级 · 约延迟15分钟</span></span></a>
         <a href="stage_analysis.html"><span class="submenu-icon submenu-icon-stage" aria-hidden="true"></span><span class="l-en">Stage Analysis</span><span class="l-zh">阶段分析</span><span class="d"><span class="l-en">Stage 1-4 cycle · fresh breakouts · earnings tone</span><span class="l-zh">阶段1-4周期 · 新突破 · 财报语气</span></span></a>
-        
+
         <a href="winner_health.html"><span class="submenu-icon submenu-icon-leader" aria-hidden="true"></span><span class="l-en">Winner Health</span><span class="l-zh">持仓健康度</span><span class="d"><span class="l-en">Big gains near their highs · how the move is aging · what similar past runs did</span><span class="l-zh">涨幅可观且仍在高位 · 行情老化到什么程度 · 相似历史行情走过的路</span></span></a>
-        
+
         <a href="sector_central.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Sectors, themes & rotation in one read · lanes · cycle map · graded</span><span class="l-zh">板块·主题·轮动一页读 · 操作清单 · 周期图谱 · 自评分</span></span></a>
         <a href="sector_central.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now S&P 500 subsectors · T1-T4 tiers · two-way confirmed stocks · basket charts</span><span class="l-zh">S&P 500 现可入场子行业 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
         <a href="strategies.html"><span class="submenu-icon submenu-icon-strategy" aria-hidden="true"></span><span class="l-en">Strategies</span><span class="l-zh">策略</span><span class="d"><span class="l-en">Tactical strategy scorecards</span><span class="l-zh">战术策略记分卡</span></span></a>
         <a href="news.html"><span class="submenu-icon submenu-icon-news" aria-hidden="true"></span><span class="l-en">News Feed</span><span class="l-zh">新闻流</span><span class="d"><span class="l-en">Macro headlines · catalysts · sentiment</span><span class="l-zh">宏观头条 · 日程 · 情绪</span></span></a>
         <a href="alerts.html"><span class="submenu-icon submenu-icon-alert" aria-hidden="true"></span><span class="l-en">Alert Center</span><span class="l-zh">警报中心</span><span class="d"><span class="l-en">Ranked & triaged alerts</span><span class="l-zh">分级分诊的警报</span></span></a>
-        
+
         <div class="nav-dd nav-sub">
           <a class="nav-sub-trig" href="options.html"><span class="nav-sub-text"><span class="submenu-icon submenu-icon-options" aria-hidden="true"></span><span class="l-en">Options & Market Structure</span><span class="l-zh">期权与市场结构</span><span class="d"><span class="l-en">Workspace · dark pool · index regime</span><span class="l-zh">工作台 · 暗池 · 指数结构</span></span></span><span class="caret-r">▸</span></a>
           <div class="nav-dd-menu" role="menu">
@@ -107,7 +508,7 @@
       <div class="nav-dd-menu" role="menu">
         <a href="china.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">A-share regime · sectors · flows</span><span class="l-zh">A股周期 · 板块 · 资金</span></span></a>
         <a href="china_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet · alpha · setups</span><span class="l-zh">Prophet · 超额收益 · 买点</span></span></a>
-        
+
         <a href="sector_central_china.html"><span class="submenu-icon submenu-icon-intelligence" aria-hidden="true"></span><span class="l-en">Sector Intelligence</span><span class="l-zh">行业情报</span><span class="d"><span class="l-en">Gated board · cycle map · whole-market rotation · theme baskets — one page</span><span class="l-zh">门控研判 · 周期图谱 · 全市场轮动 · 主题篮子 — 一页尽览</span></span></a>
         <a href="sector_central_china.html#confluence"><span class="submenu-icon submenu-icon-confluence" aria-hidden="true"></span><span class="l-en">Subsector Confluence</span><span class="l-zh">子行业汇聚</span><span class="d"><span class="l-en">Entry-now 同花顺 concepts · T1-T4 tiers · two-way confirmed A-shares · basket charts</span><span class="l-zh">同花顺现可入场概念 · T1-T4 分层 · 两道确认的选股 · 篮子走势图</span></span></a>
         <a href="china_heatmap.html"><span class="submenu-icon submenu-icon-heatmap" aria-hidden="true"></span><span class="l-en">Market Heatmap</span><span class="l-zh">市场热力图</span><span class="d"><span class="l-en">Every A-share · sector treemap · market-cap</span><span class="l-zh">全部A股 · 板块树图 · 按市值</span></span></a>
@@ -154,7 +555,7 @@
       <a class="nav-link" href="intl.html"><span class="menu-icon menu-icon-intl" aria-hidden="true"></span><span class="l-en">International</span><span class="l-zh">国际</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu" role="menu">
         <a href="intl.html"><span class="submenu-icon submenu-icon-dashboard" aria-hidden="true"></span><span class="l-en">Macro Dashboard</span><span class="l-zh">宏观仪表盘</span><span class="d"><span class="l-en">JP · KR · TW · UK · EU compared</span><span class="l-zh">日 · 韩 · 台 · 英 · 欧 对比</span></span></a>
-        
+
         <div class="nav-dd nav-sub">
           <a class="nav-sub-trig" href="japan.html"><span class="nav-sub-text"><span aria-hidden="true">🌐</span> <span class="l-en">Country Dashboards</span><span class="l-zh">国家看板</span><span class="d"><span class="l-en">Japan · Korea · Euro Area · UK · India</span><span class="l-zh">日本 · 韩国 · 欧元区 · 英国 · 印度</span></span></span><span class="caret-r">▸</span></a>
           <div class="nav-dd-menu" role="menu">
@@ -185,7 +586,7 @@
         <a href="bonds.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Bonds</span><span class="l-zh">债券</span><span class="d"><span class="l-en">Curve · credit · duration compass</span><span class="l-zh">曲线 · 信用 · 久期罗盘</span></span></a>
       </div>
     </div>
-    
+
     <div class="nav-dd nav-mega-dd">
       <a class="nav-link" href="intelligence_hub.html"><span class="menu-icon menu-icon-research" aria-hidden="true"></span><span class="l-en">Research</span><span class="l-zh">研究</span> <span class="caret">▾</span></a>
       <div class="nav-dd-menu nav-mega mega-menu" role="menu">
@@ -194,9 +595,9 @@
             <h2 class="section-label nav-mega-h"><span class="l-en">Core Research</span><span class="l-zh">核心研究</span></h2>
             <div class="item-grid nav-mega-item-grid">
               <a class="mega-item nm-feat" href="intelligence_hub.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 12 24 3l18 9v23l-18 10L6 35Z"/><path d="m24 9 12 7v15l-12 7-12-7V16Z"/><circle class="soft-fill" cx="24" cy="24" r="4"/><path class="accent" d="M24 20V9M28 24h8M24 28v10M20 24h-8M21 21l-6-5M27 21l6-5M21 27l-6 5M27 27l6 5"/><circle cx="24" cy="9" r="1.5"/><circle cx="36" cy="24" r="1.5"/><circle cx="24" cy="38" r="1.5"/><circle cx="12" cy="24" r="1.5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Intelligence Hub</span><span class="l-zh">情报中心</span></span><span class="item-desc d"><span class="l-en">Your complete market command center</span><span class="l-zh">你的完整市场指挥中心</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="watchlist.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M25 7a17 17 0 0 1 16 16"/><circle cx="21" cy="26" r="14"/><circle class="ghost" cx="21" cy="26" r="6"/><path class="accent" d="M21 12a14 14 0 0 1 12.1 7L21 26Z"/><path d="M21 12v14l12.1-7"/><circle class="soft-fill" cx="21" cy="26" r="3.2"/><path class="accent" d="M39 41v-9M44 41v-15"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Portfolio</span><span class="l-zh">Mastermind 组合</span></span><span class="item-desc d"><span class="l-en">Your holdings with tonight’s signals</span><span class="l-zh">你的持仓与今晚信号</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="https://bot.mastermind-x.com" target="_blank" rel="noopener"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M17 11V6M24 11V6M31 11V6M17 37v5M24 37v5M31 37v5M11 17H6M11 24H6M11 31H6M37 17h5M37 24h5M37 31h5"/><rect x="11" y="11" width="26" height="26" rx="5"/><path class="accent" d="m15 29 4-4 3.5 2.5 3.5-5.5"/><circle class="soft-fill" cx="26" cy="22" r="2.4"/><path class="ghost" d="m28 20.5 6-5"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Mastermind Bot</span><span class="l-zh">Mastermind 交易机器人</span><span class="nm-tier">PRO</span></span><span class="item-desc d"><span class="l-en">The AI’s own paper account — every trade explained</span><span class="l-zh">AI 自己的模拟账户，每笔交易都附理由</span></span></span></a>
               <a class="mega-item nm-feat" href="reports.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M13 7h22l6 6v28H13z"/><path d="M9 4h22l6 6v28H9z"/><path d="M31 4v7h6"/><path class="accent" d="M15 29h16M15 33h12M15 16h16"/><path d="m15 25 4-4 4 2 6-7 3 3"/><circle class="soft-fill" cx="29" cy="16" r="2"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Reports</span><span class="l-zh">研究报告</span></span><span class="item-desc d"><span class="l-en">Deep dives and market calls</span><span class="l-zh">深度研究与市场判断</span></span></span></a>
               <a class="mega-item nm-feat" href="research_vault.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="m7 14 17-9 17 9v23l-17 8-17-8Z"/><path d="m10 16 14-7 14 7v19l-14 7-14-7Z"/><path d="M10 16l14 7 14-7M24 23v19"/><circle class="soft-fill" cx="24" cy="27" r="6"/><path class="accent" d="M24 24v6M21 27h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Research Vault</span><span class="l-zh">研报库</span></span><span class="item-desc d"><span class="l-en">Search every published research note</span><span class="l-zh">搜索所有已发布研究</span></span></span></a>
@@ -205,7 +606,7 @@
               <a class="mega-item nm-feat" href="neural_web.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 24h36M24 6v36"/><circle class="soft-fill" cx="24" cy="24" r="5"/><circle cx="11" cy="12" r="3"/><circle cx="37" cy="12" r="3"/><circle cx="9" cy="34" r="3"/><circle cx="39" cy="34" r="3"/><path class="accent" d="M20 21 13 14M28 21l7-7M20 27l-8 5M28 27l8 5M14 12h20M11 15l-2 16M37 15l2 16M12 34h24"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Neural Web</span><span class="l-zh">智脑</span></span><span class="item-desc d"><span class="l-en">See how every signal votes</span><span class="l-zh">查看每个信号如何投票</span></span></span></a>
               <a class="mega-item nm-feat" href="market_memory.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 10h32v28H8z"/><path d="M7 8h14c5 0 8 3 8 8v24c0-5-3-8-8-8H7zM41 8H27v32c0-5 3-8 8-8h6z"/><path class="accent" d="M13 16h9M13 21h7M33 15h4M33 20h4"/><circle class="soft-fill" cx="27" cy="29" r="4"/><path d="M24 29h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Memory</span><span class="l-zh">市场记忆</span></span><span class="item-desc d"><span class="l-en">Put today beside comparable episodes</span><span class="l-zh">将今天与可比历史片段并排</span></span></span></a>
               <a class="mega-item nm-feat" href="reference.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M10 14h28v26H10z"/><path d="M7 12h28a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3Z"/><path class="accent" d="M16 12V8h12v4"/><path d="M11 22h18M11 28h13"/><circle class="soft-fill" cx="33" cy="28" r="3"/><path class="accent" d="M11 34h9"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Reference</span><span class="l-zh">市场参考</span></span><span class="item-desc d"><span class="l-en">Look up any indicator or term</span><span class="l-zh">查询任意指标与术语</span></span></span></a>
-              
+
               <a class="mega-item nm-feat" href="am_edition.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 32h36M9 26h30"/><path class="accent" d="M24 22V8M24 8l-7 7M24 8l7 7"/><circle class="soft-fill" cx="24" cy="28" r="6"/><path d="M14 32v3M34 32v3M9 35v3M39 35v3"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Morning Edition</span><span class="l-zh">早间版</span></span><span class="item-desc d"><span class="l-en">Tape, session clock, regime and watch — before the open</span><span class="l-zh">开盘前 — 盘面、交易时段、周期与观察</span></span></span></a>
             </div>
           </section>
@@ -265,11 +666,11 @@
       </div>
     </div>
   </div>
-  
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f8cda39d" defer></script>
+
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -278,7 +679,7 @@
     <div class="nav-sugg"></div>
   </div>
   <div class="nav-ctrls">
-    
+
     <a class="ai-brief-link terminal-link" href="https://app.mastermind-x.com" target="_blank" rel="noopener"><span class="product-icon product-icon-terminal" aria-hidden="true"></span><span class="l-en">Terminal</span><span class="l-zh">终端</span></a>
     <button class="theme-switch" aria-label="Toggle dark / light mode">
       <span class="ic sun">☀️</span><span class="ic moon">🌙</span><span class="knob"></span>
@@ -306,14 +707,14 @@
     <span class="chip" id="hero-ts">2026-11-13 17:27 UTC</span>
     <span class="chip" id="hero-n-signals">195 <span class="l-en">signals</span><span class="l-zh">信号</span></span>
     <span class="chip" id="hero-n-stocks">256 <span class="l-en">universe</span><span class="l-zh">覆盖标的</span></span>
-    
+
   </div>
 </section>
 
 
 
 
-<div class="display-banner">
+<div class="display-banner" id="tl-legacy-data-note">
   <span class="icon">&#9432;</span>
   <div>
     <strong><span class="l-en">Descriptive · Survivor Universe · Not a Verdict.</span><span class="l-zh">描述性 · 幸存者宇宙 · 非结论。</span></strong>
@@ -327,7 +728,7 @@
 </div>
 
 
-<div class="tab-bar" id="tab-bar">
+<div class="tab-bar" id="tab-bar" role="tablist" aria-label="Technical Lab views">
   <button class="tab-btn" data-tab="screener" id="tb-screener">
     <span class="l-en">Screener</span><span class="l-zh">筛选器</span>
     <span class="tab-badge" id="badge-screener">256</span>
@@ -335,6 +736,9 @@
   <button class="tab-btn" data-tab="combos" id="tb-combos">
     <span class="l-en">Combos</span><span class="l-zh">信号组合</span>
     <span class="tab-badge" id="badge-combos">—</span>
+  </button>
+  <button class="tab-btn" data-tab="entry-evidence" id="tb-entry-evidence">
+    <span class="l-en">Entry &amp; cohort evidence</span><span class="l-zh">入场与群体证据</span>
   </button>
   <button class="tab-btn" data-tab="siglab" id="tb-siglab">
     <span class="l-en">Signal Lab</span><span class="l-zh">信号实验室</span>
@@ -914,6 +1318,441 @@
 </div>
 
 
+<div class="tab-panel" id="tab-entry-evidence">
+
+
+
+
+<section class="er-workbench" aria-labelledby="er-title">
+  <header class="er-heading">
+    <div>
+      <p class="eyebrow"><span class="l-en">ENTRY & COHORT EVIDENCE</span><span class="l-zh">入场与群体证据</span></p>
+      <h2 id="er-title"><span class="l-en">What the research can support</span><span class="l-zh">研究目前能支持什么</span></h2>
+      <p><span class="l-en">Inspect the original populations, context coverage and negative findings before considering a new hypothesis.</span><span class="l-zh">先查看原始样本、背景数据覆盖及负面结果，再考虑新的假设。</span></p>
+    </div>
+    <span class="chip"><span class="l-en">RESEARCH ONLY · Not promoted</span><span class="l-zh">仅供研究 · 未晋升实盘</span></span>
+  </header>
+
+
+
+  <section class="tl-card er-cohort" aria-labelledby="er-cohort-title" data-er-cohort="available">
+    <div class="er-section-heading">
+      <h3 id="er-cohort-title"><span class="l-en">Grey dots in their market context</span><span class="l-zh">市场背景下的灰点</span></h3>
+      <span class="chip"><span class="l-en">2013–2019 · Original Prophet archive</span><span class="l-zh">2013–2019 · Prophet原始档案</span></span>
+    </div>
+    <p><span class="l-en">The original grey-dot events are connected to the preceding trading session’s VIX and implied VVIX trajectories. This verifies context coverage; it does not test a predictive improvement.</span><span class="l-zh">原始灰点事件已连接到前一个交易日的VIX及隐含VVIX走势。这里验证的是背景数据覆盖，尚未检验预测能力是否改善。</span></p>
+    <div class="er-metrics">
+      <div><span><span class="l-en">Original events retained</span><span class="l-zh">保留的原始事件</span></span><strong>23,065</strong></div>
+      <div><span><span class="l-en">Prior-session context joined</span><span class="l-zh">已连接前一交易日背景</span></span><strong>22,860</strong></div>
+      <div><span><span class="l-en">Context unavailable</span><span class="l-zh">背景数据不可用</span></span><strong>205</strong></div>
+    </div>
+    <details class="er-details">
+      <summary><span class="l-en">How the original gate populations differ</span><span class="l-zh">原始门槛样本的背景构成</span></summary>
+      <p><span class="l-en">These are event counts, not success rates. “At least one gate met” and “No gates met” partition only the original primary analysis. A direction is a description, not a bullish or bearish verdict.</span><span class="l-zh">以下是事件数，不是成功率。“至少一项条件满足”和“全部条件未满足”只划分原始主要分析样本。方向仅为描述，不代表看涨或看跌判断。</span></p>
+      <div class="er-table-wrap" tabindex="0" role="region" aria-label="Original gate populations by VIX and VVIX direction">
+        <table class="tl er-table">
+          <caption><span class="l-en">Prior-session MA direction · original primary sample</span><span class="l-zh">前一交易日均线方向 · 原始主要样本</span></caption>
+          <thead><tr>
+            <th scope="col"><span class="l-en">VIX / implied VVIX</span><span class="l-zh">VIX / 隐含VVIX</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">At least one gate met</span><span class="l-zh">至少一项条件满足</span> · 14,441</th>
+            <th scope="col" class="tl-num"><span class="l-en">No gates met</span><span class="l-zh">全部条件未满足</span> · 7,332</th>
+          </tr></thead>
+          <tbody><tr>
+            <th scope="row"><span class="l-en">Both falling</span><span class="l-zh">两者下降</span></th>
+            <td class="tl-num">3,871</td><td class="tl-num">3,240</td>
+          </tr><tr>
+            <th scope="row"><span class="l-en">Both rising</span><span class="l-zh">两者上升</span></th>
+            <td class="tl-num">7,580</td><td class="tl-num">2,377</td>
+          </tr><tr>
+            <th scope="row"><span class="l-en">VIX falling · VVIX rising</span><span class="l-zh">VIX下降 · VVIX上升</span></th>
+            <td class="tl-num">648</td><td class="tl-num">874</td>
+          </tr><tr>
+            <th scope="row"><span class="l-en">VIX rising · VVIX falling</span><span class="l-zh">VIX上升 · VVIX下降</span></th>
+            <td class="tl-num">2,229</td><td class="tl-num">754</td>
+          </tr><tr>
+            <th scope="row"><span class="l-en">Flat or mixed</span><span class="l-zh">持平或混合</span></th>
+            <td class="tl-num">0</td><td class="tl-num">0</td>
+          </tr><tr>
+            <th scope="row"><span class="l-en">Context unavailable</span><span class="l-zh">背景数据不可用</span></th>
+            <td class="tl-num">113</td><td class="tl-num">87</td>
+          </tr></tbody>
+        </table>
+      </div>
+      <p class="er-note">1,292 <span class="l-en">additional events remain outside the original primary analysis and are not reclassified as “No gates met.” Historical SCREEN80 cuts were fitted over the full development window.</span><span class="l-zh">个额外事件仍在原始主要分析之外，不会被归入“全部条件未满足”。历史SCREEN80阈值使用了整个开发窗口拟合。</span></p>
+    </details>
+    <p class="er-note"><span class="l-en">Timing limit: retained dots were verified visible on their own date. This does not establish the first live observation or include every delayed live dot. Context uses a reconstructed data vintage, not original release receipts.</span><span class="l-zh">时间限制：保留的灰点已验证在各自日期可见，但不证明实盘首次观测时刻，也不涵盖所有延迟出现的灰点。背景数据为重建版本，并非当时的发布凭据。</span></p>
+    <p class="er-note">15,876 <span class="l-en">events carry the original survivor-biased grade; </span><span class="l-zh">个事件保留原始幸存者偏差评级；</span>7,189 <span class="l-en">carry the source’s “usable” grade. Later split/issuer exclusions are not silently applied to this original archive.</span><span class="l-zh">个事件保留来源的“可用”评级。后续拆股及发行人排除不会被静默套用于这个原始档案。</span></p>
+    <a class="er-source" href="https://github.com/mastermindx-market-intelligence/macro/blob/745478c52ca86df4be1f1aec910a38287ba8a7fc/research/prophet_fusion/prophet_screen_2026_11_14/README.md" target="_blank" rel="noopener"><span class="l-en">Read the recovered source and timing contract ↗</span><span class="l-zh">查看恢复的来源及时间约定 ↗</span></a>
+  </section>
+
+
+
+  <section class="tl-card" data-er-state="available" aria-labelledby="er-pilot-title">
+    <div class="er-section-heading">
+      <h3 id="er-pilot-title"><span class="l-en">Frozen entry-mechanism pilot</span><span class="l-zh">冻结的入场机制试验</span></h3>
+      <span class="chip">2015-01-02 – 2026-05-29</span>
+    </div>
+    <p class="er-verdict">
+
+      <span class="l-en">The registered primary comparison does not establish an improvement.</span><span class="l-zh">预登记的主要比较未能证明有所改善。</span>
+
+    </p>
+    <p><span class="l-en">Four entry mechanisms, each unfiltered or paired with one of two simple market contexts. This fixed survivor-panel pilot is a different population from the grey-dot archive above.</span><span class="l-zh">四种入场机制，分别不加筛选或搭配两种简单市场背景之一。这项固定幸存者样本试验，与上方灰点档案的样本不同。</span></p>
+    <div class="er-metrics">
+      <div><span><span class="l-en">Registered arms</span><span class="l-zh">登记的分支</span></span><strong>12</strong></div>
+      <div><span><span class="l-en">Adjusted intervals excluding zero</span><span class="l-zh">调整后不含零的区间</span></span><strong>0 / 11</strong></div>
+      <div><span><span class="l-en">Mechanism events</span><span class="l-zh">机制事件</span></span><strong>2,851</strong><small><span class="l-en">Not independent stock opportunities</span><span class="l-zh">并非独立股票机会</span></small></div>
+      <div><span><span class="l-en">Fixed survivor names</span><span class="l-zh">固定幸存标的</span></span><strong>11</strong></div>
+    </div>
+
+    <div class="er-horizon" role="group" aria-label="Research horizon">
+      <span><span class="l-en">Holding horizon</span><span class="l-zh">持有期</span></span>
+      <button type="button" class="er-horizon-btn" data-er-horizon="21" aria-pressed="true"><span class="l-en">21 sessions · primary</span><span class="l-zh">21个交易日 · 主要</span></button>
+      <button type="button" class="er-horizon-btn" data-er-horizon="63" aria-pressed="false"><span class="l-en">63 sessions · secondary</span><span class="l-zh">63个交易日 · 次要</span></button>
+    </div>
+
+    <div data-er-view="21">
+      <p class="er-note">
+
+        <span class="l-en">Primary assessment: equal-decision-date mean net excess versus the same-window SPY return.</span><span class="l-zh">主要评估：按决策日等权的平均净超额收益，相对同窗口SPY收益。</span>
+
+        <span class="l-en">Next-session-close entry; </span><span class="l-zh">下一交易日收盘入场；</span>25 <span class="l-en">bps round-trip cost.</span><span class="l-zh">基点往返成本。</span>
+      </p>
+      <div class="er-table-wrap" tabindex="0" role="region" aria-label="21-session registered research arms">
+        <table class="tl er-table" data-er-results="21">
+          <caption>21 <span class="l-en">session outcomes · date-weighted research averages</span><span class="l-zh">个交易日结果 · 按决策日等权的研究均值</span></caption>
+          <thead><tr>
+            <th scope="col"><span class="l-en">Mechanism / context</span><span class="l-zh">机制 / 背景</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Events / dates</span><span class="l-zh">事件 / 日期</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Net return</span><span class="l-zh">净收益</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Excess vs SPY</span><span class="l-zh">相对SPY超额</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Positive-net frequency</span><span class="l-zh">净收益为正频率</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Signal retention</span><span class="l-zh">信号保留率</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Winner retention</span><span class="l-zh">盈利样本保留率</span></th>
+          </tr></thead>
+          <tbody><tr>
+            <th scope="row"><strong><span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span></strong><small><span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+            <td class="tl-num">480 / 410</td>
+            <td class="tl-num">+0.99%</td>
+            <td class="tl-num">-0.37 pp</td>
+            <td class="tl-num">56.16%</td>
+            <td class="tl-num">100.00%</td>
+            <td class="tl-num">100.00%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span></strong><small><span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span></small></th>
+            <td class="tl-num">372 / 329</td>
+            <td class="tl-num">+0.71%</td>
+            <td class="tl-num">-0.35 pp</td>
+            <td class="tl-num">54.69%</td>
+            <td class="tl-num">77.50%</td>
+            <td class="tl-num">74.82%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span></strong><small><span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span></small></th>
+            <td class="tl-num">415 / 360</td>
+            <td class="tl-num">+1.12%</td>
+            <td class="tl-num">-0.21 pp</td>
+            <td class="tl-num">56.92%</td>
+            <td class="tl-num">86.46%</td>
+            <td class="tl-num">87.23%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span></strong><small><span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+            <td class="tl-num">351 / 319</td>
+            <td class="tl-num">+0.92%</td>
+            <td class="tl-num">-0.04 pp</td>
+            <td class="tl-num">60.01%</td>
+            <td class="tl-num">100.00%</td>
+            <td class="tl-num">100.00%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span></strong><small><span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span></small></th>
+            <td class="tl-num">281 / 253</td>
+            <td class="tl-num">+1.11%</td>
+            <td class="tl-num">+0.10 pp</td>
+            <td class="tl-num">61.82%</td>
+            <td class="tl-num">80.06%</td>
+            <td class="tl-num">82.78%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span></strong><small><span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span></small></th>
+            <td class="tl-num">325 / 297</td>
+            <td class="tl-num">+1.18%</td>
+            <td class="tl-num">+0.18 pp</td>
+            <td class="tl-num">61.03%</td>
+            <td class="tl-num">92.59%</td>
+            <td class="tl-num">94.26%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span></strong><small><span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+            <td class="tl-num">987 / 786</td>
+            <td class="tl-num">+0.76%</td>
+            <td class="tl-num">+0.05 pp</td>
+            <td class="tl-num">57.26%</td>
+            <td class="tl-num">100.00%</td>
+            <td class="tl-num">100.00%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span></strong><small><span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span></small></th>
+            <td class="tl-num">858 / 682</td>
+            <td class="tl-num">+1.02%</td>
+            <td class="tl-num">+0.23 pp</td>
+            <td class="tl-num">58.16%</td>
+            <td class="tl-num">86.93%</td>
+            <td class="tl-num">88.46%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span></strong><small><span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span></small></th>
+            <td class="tl-num">949 / 755</td>
+            <td class="tl-num">+0.86%</td>
+            <td class="tl-num">+0.08 pp</td>
+            <td class="tl-num">57.60%</td>
+            <td class="tl-num">96.15%</td>
+            <td class="tl-num">96.85%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span></strong><small><span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+            <td class="tl-num">1,033 / 809</td>
+            <td class="tl-num">+1.03%</td>
+            <td class="tl-num">+0.01 pp</td>
+            <td class="tl-num">57.53%</td>
+            <td class="tl-num">100.00%</td>
+            <td class="tl-num">100.00%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span></strong><small><span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span></small></th>
+            <td class="tl-num">892 / 690</td>
+            <td class="tl-num">+1.07%</td>
+            <td class="tl-num">+0.12 pp</td>
+            <td class="tl-num">57.16%</td>
+            <td class="tl-num">86.35%</td>
+            <td class="tl-num">85.88%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span></strong><small><span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span></small></th>
+            <td class="tl-num">944 / 746</td>
+            <td class="tl-num">+1.03%</td>
+            <td class="tl-num">+0.02 pp</td>
+            <td class="tl-num">57.12%</td>
+            <td class="tl-num">91.38%</td>
+            <td class="tl-num">90.82%</td>
+          </tr></tbody>
+        </table>
+      </div>
+      <p class="er-note"><span class="l-en">Returns and positive-net frequency are date-weighted at the fixed horizon; signal retention is the fraction of original events retained. These overlapping observations are not a compounded or capital-constrained portfolio. Missing values remain unavailable.</span><span class="l-zh">收益和净收益为正频率按决策日等权，并使用固定持有期；信号保留率是原始事件中被保留的比例。这些重叠观察不是复利或受资金约束的投资组合。缺失值保持不可用。</span></p>
+
+      <details class="er-details">
+        <summary><span class="l-en">All 11 primary contrasts and adjusted uncertainty</span><span class="l-zh">全部11项主要比较及调整后不确定性</span></summary>
+        <div class="er-table-wrap" tabindex="0" role="region" aria-label="Primary comparison intervals">
+          <table class="tl er-table er-contrasts">
+            <caption><span class="l-en">Left minus right · net excess difference in percentage points</span><span class="l-zh">左侧减右侧 · 净超额差异（百分点）</span></caption>
+            <thead><tr><th scope="col"><span class="l-en">Comparison</span><span class="l-zh">比较</span></th><th scope="col" class="tl-num"><span class="l-en">Difference</span><span class="l-zh">差异</span></th><th scope="col" class="tl-num"><span class="l-en">Adjusted interval</span><span class="l-zh">调整后区间</span></th><th scope="col"><span class="l-en">Sample floor</span><span class="l-zh">样本门槛</span></th></tr></thead>
+            <tbody><tr>
+              <th scope="row"><span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span> · <span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span><small><span class="l-en">versus</span><span class="l-zh">对比</span> <span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+              <td class="tl-num">+0.02 pp</td>
+              <td class="tl-num">[-0.28 pp, +0.38 pp]</td>
+              <td><span class="l-en">Met</span><span class="l-zh">达到</span></td>
+            </tr><tr>
+              <th scope="row"><span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span> · <span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span><small><span class="l-en">versus</span><span class="l-zh">对比</span> <span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+              <td class="tl-num">+0.16 pp</td>
+              <td class="tl-num">[-0.04 pp, +0.48 pp]</td>
+              <td><span class="l-en">Met</span><span class="l-zh">达到</span></td>
+            </tr><tr>
+              <th scope="row"><span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span> · <span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span><small><span class="l-en">versus</span><span class="l-zh">对比</span> <span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+              <td class="tl-num">+0.14 pp</td>
+              <td class="tl-num">[-0.28 pp, +0.61 pp]</td>
+              <td><span class="l-en">Met</span><span class="l-zh">达到</span></td>
+            </tr><tr>
+              <th scope="row"><span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span> · <span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span><small><span class="l-en">versus</span><span class="l-zh">对比</span> <span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+              <td class="tl-num">+0.22 pp</td>
+              <td class="tl-num">[-0.04 pp, +0.63 pp]</td>
+              <td><span class="l-en">Met</span><span class="l-zh">达到</span></td>
+            </tr><tr>
+              <th scope="row"><span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span> · <span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span><small><span class="l-en">versus</span><span class="l-zh">对比</span> <span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+              <td class="tl-num">+0.18 pp</td>
+              <td class="tl-num">[-0.12 pp, +0.61 pp]</td>
+              <td><span class="l-en">Met</span><span class="l-zh">达到</span></td>
+            </tr><tr>
+              <th scope="row"><span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span> · <span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span><small><span class="l-en">versus</span><span class="l-zh">对比</span> <span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+              <td class="tl-num">+0.02 pp</td>
+              <td class="tl-num">[-0.14 pp, +0.20 pp]</td>
+              <td><span class="l-en">Met</span><span class="l-zh">达到</span></td>
+            </tr><tr>
+              <th scope="row"><span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span> · <span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span><small><span class="l-en">versus</span><span class="l-zh">对比</span> <span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+              <td class="tl-num">+0.10 pp</td>
+              <td class="tl-num">[-0.10 pp, +0.44 pp]</td>
+              <td><span class="l-en">Met</span><span class="l-zh">达到</span></td>
+            </tr><tr>
+              <th scope="row"><span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span> · <span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span><small><span class="l-en">versus</span><span class="l-zh">对比</span> <span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+              <td class="tl-num">+0.01 pp</td>
+              <td class="tl-num">[-0.18 pp, +0.18 pp]</td>
+              <td><span class="l-en">Met</span><span class="l-zh">达到</span></td>
+            </tr><tr>
+              <th scope="row"><span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span><small><span class="l-en">versus</span><span class="l-zh">对比</span> <span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+              <td class="tl-num">+0.33 pp</td>
+              <td class="tl-num">[-0.55 pp, +1.21 pp]</td>
+              <td><span class="l-en">Met</span><span class="l-zh">达到</span></td>
+            </tr><tr>
+              <th scope="row"><span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span><small><span class="l-en">versus</span><span class="l-zh">对比</span> <span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+              <td class="tl-num">+0.42 pp</td>
+              <td class="tl-num">[-0.74 pp, +1.42 pp]</td>
+              <td><span class="l-en">Met</span><span class="l-zh">达到</span></td>
+            </tr><tr>
+              <th scope="row"><span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span><small><span class="l-en">versus</span><span class="l-zh">对比</span> <span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span> · <span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+              <td class="tl-num">+0.38 pp</td>
+              <td class="tl-num">[-0.35 pp, +1.23 pp]</td>
+              <td><span class="l-en">Met</span><span class="l-zh">达到</span></td>
+            </tr></tbody>
+          </table>
+        </div>
+        <p class="er-note"><span class="l-en">Intervals are taken from the frozen research report. The arithmetic receipt checks outcomes and point estimates; this display does not independently recompute bootstrap uncertainty.</span><span class="l-zh">区间取自冻结的研究报告。算术凭据检查结果与点估计；本展示不会独立重算自助法不确定性。</span></p>
+      </details>
+
+    </div>
+
+    <div data-er-view="63" hidden>
+      <p class="er-note">
+
+        <span class="l-en">Secondary description. A longer window does not replace the registered 21-session primary assessment.</span><span class="l-zh">次要描述。更长窗口不会替代登记的21个交易日主要评估。</span>
+
+        <span class="l-en">Next-session-close entry; </span><span class="l-zh">下一交易日收盘入场；</span>25 <span class="l-en">bps round-trip cost.</span><span class="l-zh">基点往返成本。</span>
+      </p>
+      <div class="er-table-wrap" tabindex="0" role="region" aria-label="63-session registered research arms">
+        <table class="tl er-table" data-er-results="63">
+          <caption>63 <span class="l-en">session outcomes · date-weighted research averages</span><span class="l-zh">个交易日结果 · 按决策日等权的研究均值</span></caption>
+          <thead><tr>
+            <th scope="col"><span class="l-en">Mechanism / context</span><span class="l-zh">机制 / 背景</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Events / dates</span><span class="l-zh">事件 / 日期</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Net return</span><span class="l-zh">净收益</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Excess vs SPY</span><span class="l-zh">相对SPY超额</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Positive-net frequency</span><span class="l-zh">净收益为正频率</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Signal retention</span><span class="l-zh">信号保留率</span></th>
+            <th scope="col" class="tl-num"><span class="l-en">Winner retention</span><span class="l-zh">盈利样本保留率</span></th>
+          </tr></thead>
+          <tbody><tr>
+            <th scope="row"><strong><span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span></strong><small><span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+            <td class="tl-num">480 / 410</td>
+            <td class="tl-num">+4.06%</td>
+            <td class="tl-num">+0.62 pp</td>
+            <td class="tl-num">64.04%</td>
+            <td class="tl-num">100.00%</td>
+            <td class="tl-num">100.00%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span></strong><small><span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span></small></th>
+            <td class="tl-num">372 / 329</td>
+            <td class="tl-num">+3.53%</td>
+            <td class="tl-num">+0.59 pp</td>
+            <td class="tl-num">61.20%</td>
+            <td class="tl-num">77.50%</td>
+            <td class="tl-num">72.93%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span></strong><small><span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span></small></th>
+            <td class="tl-num">415 / 360</td>
+            <td class="tl-num">+4.09%</td>
+            <td class="tl-num">+0.81 pp</td>
+            <td class="tl-num">63.63%</td>
+            <td class="tl-num">86.46%</td>
+            <td class="tl-num">85.03%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span></strong><small><span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+            <td class="tl-num">351 / 319</td>
+            <td class="tl-num">+3.58%</td>
+            <td class="tl-num">+0.26 pp</td>
+            <td class="tl-num">63.61%</td>
+            <td class="tl-num">100.00%</td>
+            <td class="tl-num">100.00%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span></strong><small><span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span></small></th>
+            <td class="tl-num">281 / 253</td>
+            <td class="tl-num">+3.59%</td>
+            <td class="tl-num">+0.33 pp</td>
+            <td class="tl-num">63.60%</td>
+            <td class="tl-num">80.06%</td>
+            <td class="tl-num">80.09%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span></strong><small><span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span></small></th>
+            <td class="tl-num">325 / 297</td>
+            <td class="tl-num">+3.99%</td>
+            <td class="tl-num">+0.67 pp</td>
+            <td class="tl-num">64.45%</td>
+            <td class="tl-num">92.59%</td>
+            <td class="tl-num">94.12%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span></strong><small><span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+            <td class="tl-num">987 / 786</td>
+            <td class="tl-num">+3.16%</td>
+            <td class="tl-num">+0.36 pp</td>
+            <td class="tl-num">61.21%</td>
+            <td class="tl-num">100.00%</td>
+            <td class="tl-num">100.00%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span></strong><small><span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span></small></th>
+            <td class="tl-num">858 / 682</td>
+            <td class="tl-num">+3.46%</td>
+            <td class="tl-num">+0.75 pp</td>
+            <td class="tl-num">61.66%</td>
+            <td class="tl-num">86.93%</td>
+            <td class="tl-num">87.69%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span></strong><small><span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span></small></th>
+            <td class="tl-num">949 / 755</td>
+            <td class="tl-num">+3.23%</td>
+            <td class="tl-num">+0.45 pp</td>
+            <td class="tl-num">61.58%</td>
+            <td class="tl-num">96.15%</td>
+            <td class="tl-num">96.84%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span></strong><small><span class="l-en">No regime filter</span><span class="l-zh">无状态筛选</span></small></th>
+            <td class="tl-num">1,033 / 809</td>
+            <td class="tl-num">+3.87%</td>
+            <td class="tl-num">+0.46 pp</td>
+            <td class="tl-num">61.92%</td>
+            <td class="tl-num">100.00%</td>
+            <td class="tl-num">100.00%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span></strong><small><span class="l-en">Market uptrend</span><span class="l-zh">市场上行趋势</span></small></th>
+            <td class="tl-num">892 / 690</td>
+            <td class="tl-num">+3.79%</td>
+            <td class="tl-num">+0.74 pp</td>
+            <td class="tl-num">62.02%</td>
+            <td class="tl-num">86.35%</td>
+            <td class="tl-num">86.43%</td>
+          </tr><tr>
+            <th scope="row"><strong><span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span></strong><small><span class="l-en">No volatility stress</span><span class="l-zh">无波动压力</span></small></th>
+            <td class="tl-num">944 / 746</td>
+            <td class="tl-num">+3.88%</td>
+            <td class="tl-num">+0.60 pp</td>
+            <td class="tl-num">61.96%</td>
+            <td class="tl-num">91.38%</td>
+            <td class="tl-num">91.11%</td>
+          </tr></tbody>
+        </table>
+      </div>
+      <p class="er-note"><span class="l-en">Returns and positive-net frequency are date-weighted at the fixed horizon; signal retention is the fraction of original events retained. These overlapping observations are not a compounded or capital-constrained portfolio. Missing values remain unavailable.</span><span class="l-zh">收益和净收益为正频率按决策日等权，并使用固定持有期；信号保留率是原始事件中被保留的比例。这些重叠观察不是复利或受资金约束的投资组合。缺失值保持不可用。</span></p>
+
+    </div>
+
+
+
+    <details class="er-details">
+      <summary><span class="l-en">Auxiliary timing description</span><span class="l-zh">辅助入场时机描述</span></summary>
+      <p><span class="l-en">A descriptive control uses the same stock and calendar month to separate general opportunity from the event date. No significance or promotion is claimed.</span><span class="l-zh">描述性对照使用同一股票及同一日历月，区分一般机会与事件日期的影响。不声称统计显著性或实盘晋升。</span></p>
+      <div class="er-table-wrap" tabindex="0" role="region" aria-label="Descriptive timing control">
+        <table class="tl er-table">
+          <caption><span class="l-en">21 sessions · unfiltered mechanisms · descriptive only</span><span class="l-zh">21个交易日 · 无筛选机制 · 仅作描述</span></caption>
+          <thead><tr><th scope="col"><span class="l-en">Mechanism</span><span class="l-zh">机制</span></th><th scope="col" class="tl-num"><span class="l-en">Event excess</span><span class="l-zh">事件超额</span></th><th scope="col" class="tl-num"><span class="l-en">Matched control excess</span><span class="l-zh">匹配对照超额</span></th><th scope="col" class="tl-num"><span class="l-en">Timing residual</span><span class="l-zh">时机残差</span></th></tr></thead>
+          <tbody><tr><th scope="row"><span class="l-en">T1/T2 technical core</span><span class="l-zh">T1/T2 技术核心</span></th><td class="tl-num">-0.37 pp</td><td class="tl-num">+0.52 pp</td><td class="tl-num">-0.89 pp</td></tr><tr><th scope="row"><span class="l-en">Trend-state onset</span><span class="l-zh">趋势状态初现</span></th><td class="tl-num">-0.04 pp</td><td class="tl-num">+0.86 pp</td><td class="tl-num">-0.90 pp</td></tr><tr><th scope="row"><span class="l-en">Prior-high breakout</span><span class="l-zh">突破前高</span></th><td class="tl-num">+0.05 pp</td><td class="tl-num">+1.18 pp</td><td class="tl-num">-1.13 pp</td></tr><tr><th scope="row"><span class="l-en">Pullback and reclaim</span><span class="l-zh">回调后重新站上</span></th><td class="tl-num">+0.01 pp</td><td class="tl-num">+0.24 pp</td><td class="tl-num">-0.23 pp</td></tr></tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="er-details">
+      <summary><span class="l-en">Population, clocks and interpretation</span><span class="l-zh">样本、时钟及解读</span></summary>
+      <ul>
+        <li><span class="l-en">This fixed panel contains selected survivors; it is not a survivorship-clean market population. Prices use reconstructed vendor history with an unaudited adjustment basis.</span><span class="l-zh">固定样本包含选定的幸存标的，并非无幸存者偏差的市场总体。价格使用重建的供应商历史，调整基础未获审计。</span></li>
+        <li>368 / 480 <span class="l-en">technical-core events carry provisional flags. Prefix replay is not proof of historical live-board availability.</span><span class="l-zh">个技术核心事件带有暂定标记。前缀重放不证明历史实盘榜单当时可用。</span></li>
+        <li><span class="l-en">A filtered arm can improve its observed rate by dropping opportunities. Read event counts, date counts, signal retention and winner retention together.</span><span class="l-zh">筛选后的分支可能通过放弃机会改善观察频率。应同时查看事件数、日期数、信号保留率与盈利样本保留率。</span></li>
+        <li><span class="l-en">Nonoverlapping episodes within one name are not independent market episodes. Market-date dependence remains relevant.</span><span class="l-zh">单个标的内不重叠的片段，不等于独立市场片段。市场日期依赖仍需考虑。</span></li>
+        <li><span class="l-en">No result changes a live candidate, ranking, position size, entry gate or order. The original holdouts remain separate.</span><span class="l-zh">任何结果都不会改变实盘候选、排名、仓位、入场门槛或订单。原始保留样本保持独立。</span></li>
+      </ul>
+      <p class="er-note"><span class="l-en">Report date:</span><span class="l-zh">报告日期：</span> 2026-11-14 · <span class="l-en">Arithmetic-checked outcome rows:</span><span class="l-zh">已检查算术的结果行：</span> 5,702</p>
+      <a class="er-source" href="https://github.com/mastermindx-market-intelligence/macro/blob/745478c52ca86df4be1f1aec910a38287ba8a7fc/research/prophet_fusion/ENTRY_REGIME_PILOT_VERDICT_2026-11-14.md" target="_blank" rel="noopener"><span class="l-en">Read the frozen pilot verdict and method ↗</span><span class="l-zh">查看冻结试验结论及方法 ↗</span></a>
+    </details>
+  </section>
+
+</section>
+</div>
+
 <div class="tab-panel" id="tab-test">
   <div style="margin-bottom:16px;">
     <h2 style="font-size:16px;font-weight:700;margin-bottom:6px;">
@@ -1058,17 +1897,17 @@
 
 <footer class="rfoot">
   <span class="l-en">Research Reports are read-only analysis for informational purposes only — not investment advice. Figures are point-in-time and may change.</span><span class="l-zh">研究报告仅为信息性分析，不构成投资建议。数据为特定时点快照，可能调整。</span>
-  
-  
+
+
   <div><a class="rf-x" href="https://x.com/mastermindx001" target="_blank" rel="noopener"
      data-tip-en="The evidence desk on X — charts, state changes and receipts from the engines that build these pages."
      data-tip-zh="X 上的证据台——图表、状态变化与依据，来自构建这些页面的引擎。">
     <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor" aria-hidden="true"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.22-6.82-5.97 6.82H1.66l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.11l11.97 15.64Z"/></svg>
     <span class="l-en">Follow @mastermindx001</span><span class="l-zh">关注 @mastermindx001</span></a></div>
-  
+
 </footer>
 
-<script src="lightweight-charts.js?v=46fc6953" defer></script>
+<script src="lightweight-charts.js"></script>
 <script>
 (function () {
 'use strict';
@@ -1121,14 +1960,27 @@ var _profChart = null;
 var _profChartSeries = null;
 
 /* ─── Tab router (hash-based) ─────────────────────────────────────────── */
-var TABS = ['screener','combos','siglab','stock','test'];
+var TABS = ['screener','combos','entry-evidence','siglab','stock','test'];
 function tlSwitchTab(id) {
   TABS.forEach(function(t) {
     var el = document.getElementById('tab-' + t);
     var btn = document.getElementById('tb-' + t);
-    if (el) el.classList.toggle('active', t === id);
-    if (btn) btn.classList.toggle('active', t === id);
+    if (el) {
+      el.classList.toggle('active', t === id);
+      el.setAttribute('role','tabpanel');
+      el.setAttribute('aria-labelledby','tb-'+t);
+    }
+    if (btn) {
+      btn.classList.toggle('active', t === id);
+      btn.setAttribute('role','tab');
+      btn.setAttribute('aria-controls','tab-'+t);
+      btn.setAttribute('aria-selected',t === id ? 'true':'false');
+      btn.tabIndex=t === id ? 0 : -1;
+    }
   });
+  var legacyNote=document.getElementById('tl-legacy-data-note');
+  if(legacyNote) legacyNote.hidden=id==='entry-evidence';
+  document.querySelectorAll('[data-tl-live-note]').forEach(function(note){note.hidden=id==='entry-evidence';});
   try { localStorage.setItem('tl_tab', id); } catch(e){}
   if (history.replaceState) history.replaceState(null,'','#'+id);
 }
@@ -1151,6 +2003,28 @@ document.querySelectorAll('.tab-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
     var t = btn.getAttribute('data-tab');
     if (t) tlSwitchTab(t);
+  });
+});
+
+document.getElementById('tab-bar').addEventListener('keydown',function(event){
+  var button=event.target.closest('[data-tab]');
+  if(!button || ['ArrowLeft','ArrowRight','Home','End'].indexOf(event.key)<0) return;
+  event.preventDefault();
+  var index=TABS.indexOf(button.getAttribute('data-tab'));
+  var next=event.key==='Home'?0:event.key==='End'?TABS.length-1:
+    (index+(event.key==='ArrowRight'?1:-1)+TABS.length)%TABS.length;
+  tlSwitchTab(TABS[next]);
+  document.getElementById('tb-'+TABS[next]).focus();
+});
+document.querySelectorAll('[data-er-horizon]').forEach(function(button){
+  button.addEventListener('click',function(){
+    var horizon=button.getAttribute('data-er-horizon');
+    document.querySelectorAll('[data-er-horizon]').forEach(function(item){
+      item.setAttribute('aria-pressed',item.getAttribute('data-er-horizon')===horizon?'true':'false');
+    });
+    document.querySelectorAll('[data-er-view]').forEach(function(view){
+      view.hidden=view.getAttribute('data-er-view')!==horizon;
+    });
   });
 });
 
@@ -2299,6 +3173,9 @@ document.addEventListener('langchange', function(e) {
   tlRefreshCandleColors();   // 红涨绿跌: re-apply swapped --up/--down to live candle charts
 });
 
+// Static research and keyboard navigation work even while live fetches wait.
+tlInitTab();
+
 /* ─── Data load ─────────────────────────────────────────────────────────── */
 Promise.all([
   fetch('factordata/tech_screener.json').then(function(r){ if(!r.ok) throw new Error('screener '+r.status); return r.json(); }),
@@ -2384,6 +3261,6 @@ Promise.all([
 })();
 </script>
 
-<script src="theme.js?v=aa83d371" defer></script>
+<script src="theme.js"></script>
 </body>
 </html>

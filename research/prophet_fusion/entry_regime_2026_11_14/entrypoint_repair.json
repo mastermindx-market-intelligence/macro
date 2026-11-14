@@ -1,0 +1,38 @@
+{
+  "source_head": "833419fb4152669c01cffb19ae4a87a49ded9e73",
+  "failure_run": 43564999606,
+  "failure_job": 132357916904,
+  "repair": "Pin the repository root before own-package imports for direct CLI execution. No guard waiver.",
+  "checks": {
+    "owned_tests": 83,
+    "import_pin_tests": 11,
+    "total_passed": 94
+  },
+  "source_proof": [
+    {
+      "path": "scripts/prophet_fusion_input_readiness.py",
+      "functions_and_classes_ast_unchanged": true,
+      "before_sha256": "9db58e03259345fd7ed916584cb60366320967d6369e898950ec9459c91941f2",
+      "after_sha256": "85018a5a75d5cc6f7b5ce7c7a6c2ff9efddcd6d5d6824e873437aed489eaf8ab"
+    },
+    {
+      "path": "scripts/prophet_fusion_mechanism_study.py",
+      "functions_and_classes_ast_unchanged": true,
+      "before_sha256": "77c8143b83647981427b988a19402116a1c10a69a5ff0360f678d25e6a74e0d3",
+      "after_sha256": "f8144cc1d42c2d0065aebcd676c8412ac0c1a6cb7b510b56d0a9136456bb49e1"
+    },
+    {
+      "path": "scripts/prophet_fusion_mechanism_verify.py",
+      "functions_and_classes_ast_unchanged": true,
+      "before_sha256": "7eac2854e30383d976cb0d65f5981fbadcc52e62300faef2ac0ed817a4d3aca3",
+      "after_sha256": "21f0f74e51bbdbe9a7148eca91c74d01caf144cf30019feaa3010a9beb163ce6"
+    },
+    {
+      "path": "scripts/prophet_fusion_timing_attribution.py",
+      "functions_and_classes_ast_unchanged": true,
+      "before_sha256": "5abfe0e54c1a044e4955e08365a5f19588ef209a9d64cb99de307e45b4c160cd",
+      "after_sha256": "ad2a55f0680041359939b1d3ef616346fe06b51240492c7948a955945340f42e"
+    }
+  ],
+  "frozen_evidence_regenerated": false
+}

@@ -1,0 +1,51 @@
+{
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_tech_lab_entry_evidence.py",
+        "tests/test_tech_lab_entry_evidence_browser.py",
+        "-q"
+      ],
+      "elapsed_seconds": 8.54,
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": ".......................................................                  [100%]\n55 passed in 6.43s\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/build_tech_lab.py"
+      ],
+      "elapsed_seconds": 0.73,
+      "exit_code": 0,
+      "stderr": "2026-11-14 02:46:17,825 build_tech_lab INFO wrote site/tech_lab.html (195 signals, sample=None, 211 KB)\n",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "elapsed_seconds": 0.44,
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "proof_kind": "WORKING_TREE_QUALIFICATION_NOT_HOSTED_CI",
+  "sha256": {
+    ".github/ci/legacy-jobs.yml": "3f2b3a6469527fbc7f60b50309193421cb1ac7a0b1bf5f65f79b8ad602bdf0e3",
+    "scripts/build_tech_lab.py": "6fe1948e9f1954f8081b0b37e8c44b757d74ed7dc931b3d6dda2e57b04044a4e",
+    "scripts/tech_lab_entry_evidence.py": "9415756cb8d0ead6baec57a5fb67f885a36aa75f08ff1a26a6a38829d06aa3d6",
+    "site/tech_lab.html": "02d0df0ff1680fdc11c6acfa4cd245548a2d7a9d148719749cfd416dd7ef17e3",
+    "templates/partials/entry_regime_evidence.html.j2": "78c7869e6c2e45fab2d29847143c99ce360bfa7ccd2f03e4990a26f51b368526",
+    "templates/tech_lab.html.j2": "8b4bfb7f347fd92c2937c72472b055ebf03de34a0529dcee0d99470e9cd20f8d",
+    "tests/test_tech_lab_entry_evidence.py": "82b0f5f61271ab1577d1623de9e836e97761ec5bcc64d48e2b6cb3ebab823c63",
+    "tests/test_tech_lab_entry_evidence_browser.py": "5ba1fcefbc3ffa8a50ae9d14583c5cd85ac837126cf0c9479f88fcd941162d87"
+  },
+  "source_parent": "745478c52ca86df4be1f1aec910a38287ba8a7fc"
+}

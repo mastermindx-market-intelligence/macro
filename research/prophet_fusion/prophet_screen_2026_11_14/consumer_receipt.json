@@ -1,0 +1,12 @@
+{
+  "extractor_sha256": "3d941c53d67bea6c8e0938e8d8cc61b70e8d7967c9c7a676e70f143974ce7689",
+  "new_outcome_tests_executed": false,
+  "qualified_metadata_path": "/tmp/entry-screen-20261114-rraopg6h/qualified",
+  "receipt_sha256": "2e486b65dfe5d6d10625cb0c88d3db4b9cc5e350c26cbbe4893916fb30cb1786",
+  "remote_temporary_export": "/tmp/entry-screen-20261114.wGGFZ2/export-v2",
+  "report_sha256": "c87dad6e7fd62c5771ea995b8f74981fa4bdbbf5978d0c9ef4101e939845e634",
+  "source_archive_modified": false,
+  "source_head_before_commit": "d9fc281bae0b9b380870a4f14fe555737e918343",
+  "source_manifest_sha256": "6215ac12fa47ab594f424295365e72c6e71865d5c7a6bd9986df23b6f9aada6c",
+  "tests": "91 passed; synthetic source/context contracts"
+}

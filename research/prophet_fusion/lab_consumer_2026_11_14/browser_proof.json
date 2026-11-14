@@ -1,0 +1,50 @@
+{
+  "browser_version": "151.0.7922.34",
+  "proof_kind": "ACTUAL_BUILDER_LOCAL_BROWSER_NOT_DEPLOYMENT",
+  "rendered_html_sha256": "02d0df0ff1680fdc11c6acfa4cd245548a2d7a9d148719749cfd416dd7ef17e3",
+  "screenshot_sha256": {
+    "desktop-secondary.png": "f41e6becc082359f3625a3adf30dfaa81e47c4b10a1824956c14936bc0f5925d",
+    "desktop.png": "e7bf949433008f34b71891a98a1d910ae18505b0fd49312286966643a50bffe5",
+    "mobile-secondary.png": "16be379c81165a731fedc661ffd01804b51bd97e54ef13ea1a35b1672caaf0af",
+    "mobile.png": "6d97c401813b444fbd4461c772619d583f80249d7f1aa395594d6d2420106721"
+  },
+  "source_parent": "745478c52ca86df4be1f1aec910a38287ba8a7fc",
+  "viewports": [
+    {
+      "active_tab": "true",
+      "height": 1000,
+      "horizontal_page_overflow": false,
+      "name": "desktop",
+      "page_errors": [],
+      "primary_arm_rows": 12,
+      "primary_contrast_rows": 11,
+      "primary_hidden": true,
+      "screenshots": [
+        "desktop.png",
+        "desktop-secondary.png"
+      ],
+      "secondary_arm_rows": 12,
+      "secondary_visible": true,
+      "source_count_visible": true,
+      "width": 1440
+    },
+    {
+      "active_tab": "true",
+      "height": 844,
+      "horizontal_page_overflow": false,
+      "name": "mobile",
+      "page_errors": [],
+      "primary_arm_rows": 12,
+      "primary_contrast_rows": 11,
+      "primary_hidden": true,
+      "screenshots": [
+        "mobile.png",
+        "mobile-secondary.png"
+      ],
+      "secondary_arm_rows": 12,
+      "secondary_visible": true,
+      "source_count_visible": true,
+      "width": 390
+    }
+  ]
+}

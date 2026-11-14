@@ -1,0 +1,174 @@
+{% macro er_pct(value, signed=false) -%}{% if value is none %}—{% elif signed %}{{ "%+.2f%%"|format(value * 100) }}{% else %}{{ "%.2f%%"|format(value * 100) }}{% endif %}{%- endmacro %}
+{% macro er_pp(value) -%}{% if value is none %}—{% else %}{{ "%+.2f pp"|format(value * 100) }}{% endif %}{%- endmacro %}
+{% macro er_int(value) -%}{{ "{:,}".format(value) }}{%- endmacro %}
+
+<section class="er-workbench" aria-labelledby="er-title">
+  <header class="er-heading">
+    <div>
+      <p class="eyebrow">{{ t('ENTRY & COHORT EVIDENCE', '入场与群体证据') }}</p>
+      <h2 id="er-title">{{ t('What the research can support', '研究目前能支持什么') }}</h2>
+      <p>{{ t('Inspect the original populations, context coverage and negative findings before considering a new hypothesis.', '先查看原始样本、背景数据覆盖及负面结果，再考虑新的假设。') }}</p>
+    </div>
+    <span class="chip">{{ t('RESEARCH ONLY · Not promoted', '仅供研究 · 未晋升实盘') }}</span>
+  </header>
+
+  {% set cohort = entry_evidence.get('cohort', {}) %}
+  {% if cohort.get('available') %}
+  <section class="tl-card er-cohort" aria-labelledby="er-cohort-title" data-er-cohort="available">
+    <div class="er-section-heading">
+      <h3 id="er-cohort-title">{{ t('Grey dots in their market context', '市场背景下的灰点') }}</h3>
+      <span class="chip">{{ t('2013–2019 · Original Prophet archive', '2013–2019 · Prophet原始档案') }}</span>
+    </div>
+    <p>{{ t('The original grey-dot events are connected to the preceding trading session’s VIX and implied VVIX trajectories. This verifies context coverage; it does not test a predictive improvement.', '原始灰点事件已连接到前一个交易日的VIX及隐含VVIX走势。这里验证的是背景数据覆盖，尚未检验预测能力是否改善。') }}</p>
+    <div class="er-metrics">
+      <div><span>{{ t('Original events retained', '保留的原始事件') }}</span><strong>{{ er_int(cohort.screen_retained) }}</strong></div>
+      <div><span>{{ t('Prior-session context joined', '已连接前一交易日背景') }}</span><strong>{{ er_int(cohort.joined) }}</strong></div>
+      <div><span>{{ t('Context unavailable', '背景数据不可用') }}</span><strong>{{ er_int(cohort.unavailable) }}</strong></div>
+    </div>
+    <details class="er-details">
+      <summary>{{ t('How the original gate populations differ', '原始门槛样本的背景构成') }}</summary>
+      <p>{{ t('These are event counts, not success rates. “At least one gate met” and “No gates met” partition only the original primary analysis. A direction is a description, not a bullish or bearish verdict.', '以下是事件数，不是成功率。“至少一项条件满足”和“全部条件未满足”只划分原始主要分析样本。方向仅为描述，不代表看涨或看跌判断。') }}</p>
+      <div class="er-table-wrap" tabindex="0" role="region" aria-label="Original gate populations by VIX and VVIX direction">
+        <table class="tl er-table">
+          <caption>{{ t('Prior-session MA direction · original primary sample', '前一交易日均线方向 · 原始主要样本') }}</caption>
+          <thead><tr>
+            <th scope="col">{{ t('VIX / implied VVIX', 'VIX / 隐含VVIX') }}</th>
+            <th scope="col" class="tl-num">{{ t('At least one gate met', '至少一项条件满足') }} · {{ er_int(cohort.primary_any) }}</th>
+            <th scope="col" class="tl-num">{{ t('No gates met', '全部条件未满足') }} · {{ er_int(cohort.primary_none) }}</th>
+          </tr></thead>
+          <tbody>{% for row in cohort.directions %}<tr>
+            <th scope="row">{{ t(row.label_en, row.label_zh) }}</th>
+            <td class="tl-num">{{ er_int(row.any) }}</td><td class="tl-num">{{ er_int(row.none) }}</td>
+          </tr>{% endfor %}</tbody>
+        </table>
+      </div>
+      <p class="er-note">{{ er_int(cohort.outside_primary_analytic) }} {{ t('additional events remain outside the original primary analysis and are not reclassified as “No gates met.” Historical SCREEN80 cuts were fitted over the full development window.', '个额外事件仍在原始主要分析之外，不会被归入“全部条件未满足”。历史SCREEN80阈值使用了整个开发窗口拟合。') }}</p>
+    </details>
+    <p class="er-note">{{ t('Timing limit: retained dots were verified visible on their own date. This does not establish the first live observation or include every delayed live dot. Context uses a reconstructed data vintage, not original release receipts.', '时间限制：保留的灰点已验证在各自日期可见，但不证明实盘首次观测时刻，也不涵盖所有延迟出现的灰点。背景数据为重建版本，并非当时的发布凭据。') }}</p>
+    <p class="er-note">{{ er_int(cohort.survivor_biased_events) }} {{ t('events carry the original survivor-biased grade; ', '个事件保留原始幸存者偏差评级；') }}{{ er_int(cohort.usable_source_events) }} {{ t('carry the source’s “usable” grade. Later split/issuer exclusions are not silently applied to this original archive.', '个事件保留来源的“可用”评级。后续拆股及发行人排除不会被静默套用于这个原始档案。') }}</p>
+    <a class="er-source" href="https://github.com/mastermindx-market-intelligence/macro/blob/745478c52ca86df4be1f1aec910a38287ba8a7fc/research/prophet_fusion/prophet_screen_2026_11_14/README.md" target="_blank" rel="noopener">{{ t('Read the recovered source and timing contract ↗', '查看恢复的来源及时间约定 ↗') }}</a>
+  </section>
+  {% else %}
+  <section class="tl-card" data-er-cohort="unavailable">
+    <h3>{{ t('Grey-dot context evidence unavailable', '灰点背景证据不可用') }}</h3>
+    <p>{{ t('The original cohort report could not be verified. No substitute context counts are shown.', '无法验证原始群体报告，因此不显示替代背景统计。') }}</p>
+  </section>
+  {% endif %}
+
+  {% if not entry_evidence.get('available') %}
+  <section class="tl-card er-unavailable" data-er-state="unavailable" role="status">
+    <h3>{{ t('Mechanism evidence unavailable', '机制证据不可用') }}</h3>
+    <p>{{ t('No statistics, sample results or synthetic success are substituted for missing or unverified research.', '缺失或未经验证的研究不会被统计、样本结果或模拟成功替代。') }}</p>
+    <p class="er-note">{{ t('Evidence check:', '证据检查：') }} <code>{{ entry_evidence.get('reason_code', 'UNAVAILABLE') }}</code></p>
+  </section>
+  {% else %}
+  <section class="tl-card" data-er-state="available" aria-labelledby="er-pilot-title">
+    <div class="er-section-heading">
+      <h3 id="er-pilot-title">{{ t('Frozen entry-mechanism pilot', '冻结的入场机制试验') }}</h3>
+      <span class="chip">{{ entry_evidence.window_start }} – {{ entry_evidence.window_end }}</span>
+    </div>
+    <p class="er-verdict">
+      {% if entry_evidence.adjusted_intervals_excluding_zero == 0 %}
+      {{ t('The registered primary comparison does not establish an improvement.', '预登记的主要比较未能证明有所改善。') }}
+      {% else %}
+      {{ t('Inspect the adjusted intervals and sample floors; this study remains research only.', '请检查调整后的区间及样本门槛；本研究仍仅供研究。') }}
+      {% endif %}
+    </p>
+    <p>{{ t('Four entry mechanisms, each unfiltered or paired with one of two simple market contexts. This fixed survivor-panel pilot is a different population from the grey-dot archive above.', '四种入场机制，分别不加筛选或搭配两种简单市场背景之一。这项固定幸存者样本试验，与上方灰点档案的样本不同。') }}</p>
+    <div class="er-metrics">
+      <div><span>{{ t('Registered arms', '登记的分支') }}</span><strong>{{ entry_evidence.arm_count }}</strong></div>
+      <div><span>{{ t('Adjusted intervals excluding zero', '调整后不含零的区间') }}</span><strong>{{ entry_evidence.adjusted_intervals_excluding_zero }} / {{ entry_evidence.comparison_count }}</strong></div>
+      <div><span>{{ t('Mechanism events', '机制事件') }}</span><strong>{{ er_int(entry_evidence.unique_events) }}</strong><small>{{ t('Not independent stock opportunities', '并非独立股票机会') }}</small></div>
+      <div><span>{{ t('Fixed survivor names', '固定幸存标的') }}</span><strong>{{ entry_evidence.universe_count }}</strong></div>
+    </div>
+
+    <div class="er-horizon" role="group" aria-label="Research horizon">
+      <span>{{ t('Holding horizon', '持有期') }}</span>
+      <button type="button" class="er-horizon-btn" data-er-horizon="21" aria-pressed="true">{{ t('21 sessions · primary', '21个交易日 · 主要') }}</button>
+      <button type="button" class="er-horizon-btn" data-er-horizon="63" aria-pressed="false">{{ t('63 sessions · secondary', '63个交易日 · 次要') }}</button>
+    </div>
+    {% for horizon in [21, 63] %}
+    <div data-er-view="{{ horizon }}"{% if horizon != 21 %} hidden{% endif %}>
+      <p class="er-note">
+        {% if horizon == 21 %}
+        {{ t('Primary assessment: equal-decision-date mean net excess versus the same-window SPY return.', '主要评估：按决策日等权的平均净超额收益，相对同窗口SPY收益。') }}
+        {% else %}
+        {{ t('Secondary description. A longer window does not replace the registered 21-session primary assessment.', '次要描述。更长窗口不会替代登记的21个交易日主要评估。') }}
+        {% endif %}
+        {{ t('Next-session-close entry; ', '下一交易日收盘入场；') }}{{ entry_evidence.cost_bps|int }} {{ t('bps round-trip cost.', '基点往返成本。') }}
+      </p>
+      <div class="er-table-wrap" tabindex="0" role="region" aria-label="{{ horizon }}-session registered research arms">
+        <table class="tl er-table" data-er-results="{{ horizon }}">
+          <caption>{{ horizon }} {{ t('session outcomes · date-weighted research averages', '个交易日结果 · 按决策日等权的研究均值') }}</caption>
+          <thead><tr>
+            <th scope="col">{{ t('Mechanism / context', '机制 / 背景') }}</th>
+            <th scope="col" class="tl-num">{{ t('Events / dates', '事件 / 日期') }}</th>
+            <th scope="col" class="tl-num">{{ t('Net return', '净收益') }}</th>
+            <th scope="col" class="tl-num">{{ t('Excess vs SPY', '相对SPY超额') }}</th>
+            <th scope="col" class="tl-num">{{ t('Positive-net frequency', '净收益为正频率') }}</th>
+            <th scope="col" class="tl-num">{{ t('Signal retention', '信号保留率') }}</th>
+            <th scope="col" class="tl-num">{{ t('Winner retention', '盈利样本保留率') }}</th>
+          </tr></thead>
+          <tbody>{% for row in entry_evidence.rows_by_horizon[horizon] %}<tr>
+            <th scope="row"><strong>{{ t(row.label_en, row.label_zh) }}</strong><small>{{ t(row.context_en, row.context_zh) }}</small></th>
+            <td class="tl-num">{{ er_int(row.events) }} / {{ er_int(row.dates) }}</td>
+            <td class="tl-num">{{ er_pct(row.net_return, true) }}</td>
+            <td class="tl-num">{{ er_pp(row.net_excess) }}</td>
+            <td class="tl-num">{{ er_pct(row.positive_net_rate) }}</td>
+            <td class="tl-num">{{ er_pct(row.retention) }}</td>
+            <td class="tl-num">{{ er_pct(row.winner_retention) }}</td>
+          </tr>{% endfor %}</tbody>
+        </table>
+      </div>
+      <p class="er-note">{{ t('Returns and positive-net frequency are date-weighted at the fixed horizon; signal retention is the fraction of original events retained. These overlapping observations are not a compounded or capital-constrained portfolio. Missing values remain unavailable.', '收益和净收益为正频率按决策日等权，并使用固定持有期；信号保留率是原始事件中被保留的比例。这些重叠观察不是复利或受资金约束的投资组合。缺失值保持不可用。') }}</p>
+      {% if horizon == 21 %}
+      <details class="er-details">
+        <summary>{{ t('All 11 primary contrasts and adjusted uncertainty', '全部11项主要比较及调整后不确定性') }}</summary>
+        <div class="er-table-wrap" tabindex="0" role="region" aria-label="Primary comparison intervals">
+          <table class="tl er-table er-contrasts">
+            <caption>{{ t('Left minus right · net excess difference in percentage points', '左侧减右侧 · 净超额差异（百分点）') }}</caption>
+            <thead><tr><th scope="col">{{ t('Comparison', '比较') }}</th><th scope="col" class="tl-num">{{ t('Difference', '差异') }}</th><th scope="col" class="tl-num">{{ t('Adjusted interval', '调整后区间') }}</th><th scope="col">{{ t('Sample floor', '样本门槛') }}</th></tr></thead>
+            <tbody>{% for row in entry_evidence.comparisons %}<tr>
+              <th scope="row">{{ t(row.left.label_en, row.left.label_zh) }} · {{ t(row.left.context_en, row.left.context_zh) }}<small>{{ t('versus', '对比') }} {{ t(row.right.label_en, row.right.label_zh) }} · {{ t(row.right.context_en, row.right.context_zh) }}</small></th>
+              <td class="tl-num">{{ er_pp(row.delta) }}</td>
+              <td class="tl-num">{% if row.adjusted_ci is none %}—{% else %}[{{ er_pp(row.adjusted_ci[0]) }}, {{ er_pp(row.adjusted_ci[1]) }}]{% endif %}</td>
+              <td>{{ t('Met', '达到') if row.sample_floor_met else t('Not met', '未达到') }}</td>
+            </tr>{% endfor %}</tbody>
+          </table>
+        </div>
+        <p class="er-note">{{ t('Intervals are taken from the frozen research report. The arithmetic receipt checks outcomes and point estimates; this display does not independently recompute bootstrap uncertainty.', '区间取自冻结的研究报告。算术凭据检查结果与点估计；本展示不会独立重算自助法不确定性。') }}</p>
+      </details>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    {% if entry_evidence.auxiliary_available %}
+    <details class="er-details">
+      <summary>{{ t('Auxiliary timing description', '辅助入场时机描述') }}</summary>
+      <p>{{ t('A descriptive control uses the same stock and calendar month to separate general opportunity from the event date. No significance or promotion is claimed.', '描述性对照使用同一股票及同一日历月，区分一般机会与事件日期的影响。不声称统计显著性或实盘晋升。') }}</p>
+      <div class="er-table-wrap" tabindex="0" role="region" aria-label="Descriptive timing control">
+        <table class="tl er-table">
+          <caption>{{ t('21 sessions · unfiltered mechanisms · descriptive only', '21个交易日 · 无筛选机制 · 仅作描述') }}</caption>
+          <thead><tr><th scope="col">{{ t('Mechanism', '机制') }}</th><th scope="col" class="tl-num">{{ t('Event excess', '事件超额') }}</th><th scope="col" class="tl-num">{{ t('Matched control excess', '匹配对照超额') }}</th><th scope="col" class="tl-num">{{ t('Timing residual', '时机残差') }}</th></tr></thead>
+          <tbody>{% for row in entry_evidence.auxiliary_rows %}<tr><th scope="row">{{ t(row.label_en, row.label_zh) }}</th><td class="tl-num">{{ er_pp(row.event_excess) }}</td><td class="tl-num">{{ er_pp(row.control_excess) }}</td><td class="tl-num">{{ er_pp(row.timing_residual) }}</td></tr>{% endfor %}</tbody>
+        </table>
+      </div>
+    </details>
+    {% else %}
+    <p class="er-note">{{ t('The optional timing control is unavailable. The primary research remains visible.', '可选的时机对照不可用，主要研究仍然可见。') }}</p>
+    {% endif %}
+    <details class="er-details">
+      <summary>{{ t('Population, clocks and interpretation', '样本、时钟及解读') }}</summary>
+      <ul>
+        <li>{{ t('This fixed panel contains selected survivors; it is not a survivorship-clean market population. Prices use reconstructed vendor history with an unaudited adjustment basis.', '固定样本包含选定的幸存标的，并非无幸存者偏差的市场总体。价格使用重建的供应商历史，调整基础未获审计。') }}</li>
+        <li>{{ entry_evidence.t12_provisional_events }} / {{ entry_evidence.t12_events }} {{ t('technical-core events carry provisional flags. Prefix replay is not proof of historical live-board availability.', '个技术核心事件带有暂定标记。前缀重放不证明历史实盘榜单当时可用。') }}</li>
+        <li>{{ t('A filtered arm can improve its observed rate by dropping opportunities. Read event counts, date counts, signal retention and winner retention together.', '筛选后的分支可能通过放弃机会改善观察频率。应同时查看事件数、日期数、信号保留率与盈利样本保留率。') }}</li>
+        <li>{{ t('Nonoverlapping episodes within one name are not independent market episodes. Market-date dependence remains relevant.', '单个标的内不重叠的片段，不等于独立市场片段。市场日期依赖仍需考虑。') }}</li>
+        <li>{{ t('No result changes a live candidate, ranking, position size, entry gate or order. The original holdouts remain separate.', '任何结果都不会改变实盘候选、排名、仓位、入场门槛或订单。原始保留样本保持独立。') }}</li>
+      </ul>
+      <p class="er-note">{{ t('Report date:', '报告日期：') }} {{ entry_evidence.generated_date }} · {{ t('Arithmetic-checked outcome rows:', '已检查算术的结果行：') }} {{ er_int(entry_evidence.verified_rows) }}</p>
+      <a class="er-source" href="https://github.com/mastermindx-market-intelligence/macro/blob/745478c52ca86df4be1f1aec910a38287ba8a7fc/research/prophet_fusion/ENTRY_REGIME_PILOT_VERDICT_2026-11-14.md" target="_blank" rel="noopener">{{ t('Read the frozen pilot verdict and method ↗', '查看冻结试验结论及方法 ↗') }}</a>
+    </details>
+  </section>
+  {% endif %}
+</section>

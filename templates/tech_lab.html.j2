@@ -341,6 +341,39 @@ html[data-theme="dark"][data-lang="zh"] .dir-up { color:#e06464; }
 /* Bearish-red dark override → green in zh (dark: #ef6a6a→#45b873) */
 html[data-theme="dark"][data-lang="zh"] .dir-down { color:#45b873; }
 
+
+/* Pinned entry/cohort research — static evidence, independent of live fetches. */
+.er-workbench{display:grid;gap:20px;min-width:0}
+.er-heading,.er-section-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.er-heading h2{font-size:25px;line-height:1.2;margin:4px 0 10px}
+.er-heading p,.er-workbench p{line-height:1.65}
+.er-heading p{max-width:72ch;color:var(--muted)}
+.er-workbench h3{font-size:18px;margin:0 0 8px}
+.er-verdict{font-size:18px;font-weight:650;border-left:3px solid var(--ink-info,var(--info));padding-left:14px}
+.er-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:18px 0}
+.er-metrics>div{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.er-metrics span,.er-metrics small{display:block;color:var(--muted);font-size:11.5px;line-height:1.5}
+.er-metrics strong{display:block;font-size:26px;line-height:1.4;font-variant-numeric:tabular-nums}
+.er-note{font-size:12px;color:var(--muted);line-height:1.65;overflow-wrap:anywhere}
+.er-details{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.er-details summary{cursor:pointer;font-weight:650;line-height:1.5;padding:3px 0}
+.er-details li{line-height:1.65;margin:8px 0}
+.er-table-wrap{max-width:100%;overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:9px}
+table.er-table{margin:0;min-width:700px}
+.er-cohort table.er-table{min-width:480px}
+.er-table caption{text-align:left;padding:12px;font-size:11px;color:var(--muted)}
+.er-table tbody tr{cursor:default}
+.er-table tbody th{font-weight:500;white-space:normal;min-width:200px;max-width:360px;color:var(--text)}
+.er-table th small{display:block;font-size:11px;font-weight:400;color:var(--muted);margin-top:3px}
+.er-horizon{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:22px 0 12px}
+.er-horizon>span{font-size:12px;font-weight:600;margin-right:4px}
+.er-horizon-btn{border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);padding:9px 12px;cursor:pointer;font:inherit;font-size:12px}
+.er-horizon-btn[aria-pressed="true"]{border-color:var(--link);box-shadow:inset 0 0 0 1px var(--link);font-weight:700}
+.er-horizon-btn:focus-visible,.er-table-wrap:focus-visible,.er-details summary:focus-visible,.tab-btn:focus-visible{outline:2px solid var(--link);outline-offset:3px}
+[data-er-view][hidden],#tl-legacy-data-note[hidden],[data-tl-live-note][hidden]{display:none!important}
+.er-source{display:inline-block;font-size:12px;line-height:1.6;margin-top:10px}
+@media(max-width:600px){.er-heading h2{font-size:22px}.er-workbench .tl-card{padding:14px}.er-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.er-metrics strong{font-size:23px}.er-horizon>span{flex-basis:100%}}
+
 {% endblock %}
 
 {% block content %}
@@ -360,13 +393,13 @@ html[data-theme="dark"][data-lang="zh"] .dir-down { color:#45b873; }
     <span class="chip" id="hero-n-signals">{{ n_signals }} {{ t('signals', '信号') }}</span>
     <span class="chip" id="hero-n-stocks">{{ universe_n_screener or '—' }} {{ t('universe', '覆盖标的') }}</span>
     {% if is_sample %}
-    <span class="chip tag-warn">{{ t('Sample data — nightly pending', '样本数据 — 等待夜间生成') }}</span>
+    <span class="chip tag-warn" data-tl-live-note>{{ t('Sample data — nightly pending', '样本数据 — 等待夜间生成') }}</span>
     {% endif %}
   </div>
 </section>
 
 {% if is_sample %}
-<div class="tl-sample-banner">
+<div class="tl-sample-banner" data-tl-live-note>
   &#9888; {{ t(
     'Data files (tech_screener.json, tech_lab.json) are absent — showing sample fixture. Real data populates after the first nightly run.',
     '数据文件（tech_screener.json, tech_lab.json）尚未生成，当前显示样本。首次夜间运行后将填充真实数据。'
@@ -375,7 +408,7 @@ html[data-theme="dark"][data-lang="zh"] .dir-down { color:#45b873; }
 {% endif %}
 
 {# ── Display-only banner (four structural dot-chips from v2) ── #}
-<div class="display-banner">
+<div class="display-banner" id="tl-legacy-data-note">
   <span class="icon">&#9432;</span>
   <div>
     <strong>{{ t('Descriptive · Survivor Universe · Not a Verdict.', '描述性 · 幸存者宇宙 · 非结论。') }}</strong>
@@ -389,7 +422,7 @@ html[data-theme="dark"][data-lang="zh"] .dir-down { color:#45b873; }
 </div>
 
 {# ── Tab bar ── #}
-<div class="tab-bar" id="tab-bar">
+<div class="tab-bar" id="tab-bar" role="tablist" aria-label="Technical Lab views">
   <button class="tab-btn" data-tab="screener" id="tb-screener">
     <span class="l-en">Screener</span><span class="l-zh">筛选器</span>
     <span class="tab-badge" id="badge-screener">{{ universe_n_screener or '—' }}</span>
@@ -397,6 +430,9 @@ html[data-theme="dark"][data-lang="zh"] .dir-down { color:#45b873; }
   <button class="tab-btn" data-tab="combos" id="tb-combos">
     <span class="l-en">Combos</span><span class="l-zh">信号组合</span>
     <span class="tab-badge" id="badge-combos">—</span>
+  </button>
+  <button class="tab-btn" data-tab="entry-evidence" id="tb-entry-evidence">
+    <span class="l-en">Entry &amp; cohort evidence</span><span class="l-zh">入场与群体证据</span>
   </button>
   <button class="tab-btn" data-tab="siglab" id="tb-siglab">
     <span class="l-en">Signal Lab</span><span class="l-zh">信号实验室</span>
@@ -986,6 +1022,10 @@ html[data-theme="dark"][data-lang="zh"] .dir-down { color:#45b873; }
 {# ═══════════════════════════════════════════
    TAB 4: HOW TO TEST
 ═══════════════════════════════════════════ #}
+<div class="tab-panel" id="tab-entry-evidence">
+  {% include "partials/entry_regime_evidence.html.j2" %}
+</div>
+
 <div class="tab-panel" id="tab-test">
   <div style="margin-bottom:16px;">
     <h2 style="font-size:16px;font-weight:700;margin-bottom:6px;">
@@ -1182,14 +1222,27 @@ var _profChart = null;
 var _profChartSeries = null;
 
 /* ─── Tab router (hash-based) ─────────────────────────────────────────── */
-var TABS = ['screener','combos','siglab','stock','test'];
+var TABS = ['screener','combos','entry-evidence','siglab','stock','test'];
 function tlSwitchTab(id) {
   TABS.forEach(function(t) {
     var el = document.getElementById('tab-' + t);
     var btn = document.getElementById('tb-' + t);
-    if (el) el.classList.toggle('active', t === id);
-    if (btn) btn.classList.toggle('active', t === id);
+    if (el) {
+      el.classList.toggle('active', t === id);
+      el.setAttribute('role','tabpanel');
+      el.setAttribute('aria-labelledby','tb-'+t);
+    }
+    if (btn) {
+      btn.classList.toggle('active', t === id);
+      btn.setAttribute('role','tab');
+      btn.setAttribute('aria-controls','tab-'+t);
+      btn.setAttribute('aria-selected',t === id ? 'true':'false');
+      btn.tabIndex=t === id ? 0 : -1;
+    }
   });
+  var legacyNote=document.getElementById('tl-legacy-data-note');
+  if(legacyNote) legacyNote.hidden=id==='entry-evidence';
+  document.querySelectorAll('[data-tl-live-note]').forEach(function(note){note.hidden=id==='entry-evidence';});
   try { localStorage.setItem('tl_tab', id); } catch(e){}
   if (history.replaceState) history.replaceState(null,'','#'+id);
 }
@@ -1212,6 +1265,28 @@ document.querySelectorAll('.tab-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
     var t = btn.getAttribute('data-tab');
     if (t) tlSwitchTab(t);
+  });
+});
+
+document.getElementById('tab-bar').addEventListener('keydown',function(event){
+  var button=event.target.closest('[data-tab]');
+  if(!button || ['ArrowLeft','ArrowRight','Home','End'].indexOf(event.key)<0) return;
+  event.preventDefault();
+  var index=TABS.indexOf(button.getAttribute('data-tab'));
+  var next=event.key==='Home'?0:event.key==='End'?TABS.length-1:
+    (index+(event.key==='ArrowRight'?1:-1)+TABS.length)%TABS.length;
+  tlSwitchTab(TABS[next]);
+  document.getElementById('tb-'+TABS[next]).focus();
+});
+document.querySelectorAll('[data-er-horizon]').forEach(function(button){
+  button.addEventListener('click',function(){
+    var horizon=button.getAttribute('data-er-horizon');
+    document.querySelectorAll('[data-er-horizon]').forEach(function(item){
+      item.setAttribute('aria-pressed',item.getAttribute('data-er-horizon')===horizon?'true':'false');
+    });
+    document.querySelectorAll('[data-er-view]').forEach(function(view){
+      view.hidden=view.getAttribute('data-er-view')!==horizon;
+    });
   });
 });
 
@@ -2359,6 +2434,9 @@ document.addEventListener('langchange', function(e) {
   if (_cbActiveCombo) tlOpenCombo(_cbActiveCombo.id);
   tlRefreshCandleColors();   // 红涨绿跌: re-apply swapped --up/--down to live candle charts
 });
+
+// Static research and keyboard navigation work even while live fetches wait.
+tlInitTab();
 
 /* ─── Data load ─────────────────────────────────────────────────────────── */
 Promise.all([
