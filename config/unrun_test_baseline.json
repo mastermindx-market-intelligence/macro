@@ -596,7 +596,6 @@
     "tests/test_policy_dates.py",
     "tests/test_policy_layer_leaves.py",
     "tests/test_policy_summary.py",
-    "tests/test_portfolio.py",
     "tests/test_postcross.py",
     "tests/test_prediction_markets.py",
     "tests/test_price_ladder.py",

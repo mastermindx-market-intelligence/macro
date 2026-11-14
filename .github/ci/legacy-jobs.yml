@@ -21165,7 +21165,7 @@ jobs:
         # prove an undefined context still emits `{}` rather than a bare `=`.
         run: pip install pytest pandas numpy pyarrow pyyaml markupsafe jinja2
       - name: complete existing wri-risk-core contracts
-        run: python -m pytest tests/test_risk_core_js.py tests/test_watchlist_chains_js.py tests/test_watchlist_books_js.py tests/test_watchstore_multilist_js.py tests/test_watchlist_workspace_js.py tests/test_stockdata_consumer_recovery_js.py tests/test_watchlist_sector_i18n.py tests/test_watchlist_drawer_js.py tests/test_portfolio_state_js.py tests/test_portfolio_truth_a1a_js.py tests/test_portfolio_auth_transition_js.py tests/test_portfolio_import_a1b_js.py tests/test_no_absolute_path_symlinks.py tests/test_factor_exposure.py tests/test_factor_exposure_stress.py -q
+        run: python -m pytest tests/test_risk_core_js.py tests/test_watchlist_chains_js.py tests/test_watchlist_books_js.py tests/test_watchstore_multilist_js.py tests/test_watchlist_workspace_js.py tests/test_stockdata_consumer_recovery_js.py tests/test_watchlist_sector_i18n.py tests/test_watchlist_drawer_js.py tests/test_portfolio_state_js.py tests/test_portfolio_truth_a1a_js.py tests/test_portfolio_auth_transition_js.py tests/test_portfolio_import_a1b_js.py tests/test_portfolio.py tests/test_no_absolute_path_symlinks.py tests/test_factor_exposure.py tests/test_factor_exposure_stress.py -q
       # UWP/W1a: the watchlist+portfolio STORE (templates/watchstore.js), same
       # node-shelling idiom as the two steps above. test_watchlist_books_js.py was
       # named by no run: step in any workflow since it landed (P5 in
