@@ -24,6 +24,15 @@ def test_rank_ic_thin_overlap_is_nan():
     assert np.isnan(rank_ic(pd.Series([1, 2, 3]), pd.Series([3, 2, 1])))  # <10 joint
 
 
+def test_rank_ic_min_names_keyword_default_is_byte_compatible():
+    sig = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    fwd = pd.Series([9, 8, 7, 6, 5, 4, 3, 2, 1])
+    assert np.isnan(rank_ic(sig, fwd))
+    assert np.isnan(rank_ic(sig, fwd, min_names=10))
+    two = rank_ic(pd.Series([1, 2]), pd.Series([2, 1]), min_names=2)
+    assert abs(two + 1.0) < 1e-12
+
+
 def test_newey_west_inflates_se_under_autocorrelation():
     rng = np.random.default_rng(1)
     raw = rng.normal(0.05, 1.0, 400)
@@ -32,6 +41,20 @@ def test_newey_west_inflates_se_under_autocorrelation():
     plain_se = smooth.std(ddof=0) / np.sqrt(len(smooth))
     assert nw["se"] > plain_se                       # HAC se must exceed the naive se
     assert 0.0 <= nw["p"] <= 1.0
+
+
+def test_newey_west_unrounded_keyword_default_is_byte_compatible():
+    x = pd.Series([0.10, 0.11, 0.09, 0.12, 0.08, 0.10, 0.13, 0.07, 0.11, 0.09])
+    rounded = newey_west_tstat(x, lags=4)
+    explicit = newey_west_tstat(x, lags=4, unrounded=False)
+    assert rounded == explicit
+    raw = newey_west_tstat(x, lags=4, unrounded=True)
+    assert raw["n"] == rounded["n"]
+    assert raw["lags"] == rounded["lags"]
+    assert rounded["mean"] == round(raw["mean"], 5)
+    assert rounded["se"] == round(raw["se"], 5)
+    assert rounded["t"] == round(raw["t"], 3)
+    assert rounded["p"] == round(raw["p"], 4)
 
 
 def test_ic_summary_fields_and_annualization():

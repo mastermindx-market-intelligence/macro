@@ -832,14 +832,31 @@ _K6_REVIEWED_READER_FILES: dict[str, tuple[tuple[str, ...], str]] = {
     )),
 }
 
+#: {file: (allowed form names, reason)} — NEW files whose 'prophet_shadow'
+#: substring is a reviewed US persisted-key collision, not a pre-existing
+#: coincidence (so not _K6_PREEXISTING_UNRELATED_FILES) and not a
+#: contract-sanctioned HK receipt reader (so not _K6_REVIEWED_READER_FILES).
+#: Per-file named forms still apply; this is not a blanket filename exemption.
+_K6_REVIEWED_UNRELATED_US_FIELD_FILES: dict[str, tuple[tuple[str, ...], str]] = {
+    "scripts/report_us_prophet_w3_guardrail.py": (("prefixed_identifier",), (
+        "US W3 paired-row persisted keys prophet_shadow_definition / "
+        "prophet_shadow_score / prophet_shadow_score_rank on the read-only "
+        "guardrail reader. Independent Astra review: every occurrence in this "
+        "file is the existing prefixed_identifier form. The file does not "
+        "import engine.board_shadow and does not read HK/CA "
+        "data/prophet_shadow storage."
+    )),
+}
+
 #: The fence's actual per-file lookup — every file excused from the raw K6
-#: walk, regardless of WHY (pre-existing-unrelated vs. reviewed-reader). Never
-#: read _K6_PREEXISTING_UNRELATED_FILES or _K6_REVIEWED_READER_FILES directly
+#: walk, regardless of WHY (pre-existing-unrelated vs. reviewed-reader vs.
+#: reviewed-unrelated-US-field). Never read the three source dicts directly
 #: at the scan site below; this union is the one source of truth for "is this
 #: file excused, and under which forms".
 _K6_ALL_ALLOWLISTED_FILES: dict[str, tuple[tuple[str, ...], str]] = {
     **_K6_PREEXISTING_UNRELATED_FILES,
     **_K6_REVIEWED_READER_FILES,
+    **_K6_REVIEWED_UNRELATED_US_FIELD_FILES,
 }
 
 
@@ -889,8 +906,11 @@ def test_k6_prophet_shadow_literal_is_confined_to_its_own_module_and_tests():
     separately in _K6_REVIEWED_READER_FILES (build commission R10/F13): it is
     a REVIEWED READER this contract itself sanctions, not a pre-existing
     coincidence, so it does not belong in the "pre-existing, unrelated" dict
-    above. Both dicts merge into _K6_ALL_ALLOWLISTED_FILES, which is what the
-    scan below actually reads.
+    above. scripts/report_us_prophet_w3_guardrail.py is a third taxonomy
+    (_K6_REVIEWED_UNRELATED_US_FIELD_FILES): a new US W3 paired-row field
+    collision reviewed onto prefixed_identifier, not a pre-existing file and
+    not the HK receipt-reader class. All three dicts merge into
+    _K6_ALL_ALLOWLISTED_FILES, which is what the scan below actually reads.
 
     MUTATION THIS KILLS: any production module importing
     engine.board_shadow / referencing 'prophet_shadow' by name (e.g. a
@@ -934,6 +954,31 @@ def test_k6_prophet_shadow_literal_is_confined_to_its_own_module_and_tests():
                 continue
             offenders.append(rel)
     assert not offenders, f"'prophet_shadow' literal leaked outside its owning module: {offenders}"
+
+
+def test_k6_reviewed_us_w3_prefixed_identifier_does_not_excuse_hk_store_path():
+    """K6 mutation: the US W3 reader's declared prefixed_identifier forms
+    accept frame["prophet_shadow_score_rank"] and still reject a HK Lane A
+    parquet path. A blanket filename exemption would pass both.
+
+    MUTATION THIS KILLS: filing scripts/report_us_prophet_w3_guardrail.py as
+    an unclassified-shape free pass, or widening prefixed_identifier so a
+    data/prophet_shadow path-segment literal classifies."""
+    rel = "scripts/report_us_prophet_w3_guardrail.py"
+    assert rel in _K6_REVIEWED_UNRELATED_US_FIELD_FILES
+    assert rel not in _K6_PREEXISTING_UNRELATED_FILES
+    assert rel not in _K6_REVIEWED_READER_FILES
+    allowed_forms, _reason = _K6_ALL_ALLOWLISTED_FILES[rel]
+    assert allowed_forms == ("prefixed_identifier",)
+    accepted = 'frame["prophet_shadow_score_rank"]'
+    rejected = (
+        'pd.read_parquet(config.data_dir() / "prophet_shadow" / "hk_lane_a.parquet")'
+    )
+    assert _k6_unclassified_occurrences(accepted, allowed_forms) == []
+    unclassified = _k6_unclassified_occurrences(rejected, allowed_forms)
+    assert unclassified, (
+        "HK Lane A parquet path must remain unclassified under prefixed_identifier"
+    )
 
 
 # ---------------------------------------------------------------------------
