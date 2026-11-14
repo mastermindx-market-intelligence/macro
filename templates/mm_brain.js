@@ -1042,6 +1042,10 @@
     #mmb-root[data-reading] .mmb-main:has(.mmb-empty) .mmb-comp{margin-bottom:auto}
   }
   #mmb-root[data-reading] .mmb-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 10px;margin:0}
+  #mmb-root[data-reading] .mmb-comp > .mmb-cards{margin:12px auto 0;max-width:100%}
+  #mmb-root[data-reading] .mmb-comp .mmb-cardp{flex-direction:row;align-items:center;justify-content:center;
+    border-color:transparent;background:none;box-shadow:none;animation:none}
+  #mmb-root[data-reading] .mmb-comp .mmb-cardp:hover{background:var(--mmb-panel2);border-color:var(--mmb-line)}
   #mmb-root[data-reading] .mmb-cardp{border-radius:10px;min-height:44px;padding:7px 10px;
     background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
   #mmb-root[data-reading] .mmb-cardp .ci{width:18px;background:transparent}
@@ -1058,7 +1062,7 @@
   #mmb-root[data-focus] #mmb-panel.max{inset:0;margin:0;width:100%;height:100vh;height:100dvh;
     max-width:none;max-height:none;border:0;border-radius:0;box-shadow:none;background:var(--mmb-reading-plane)}
   #mmb-root[data-focus] .mmb-head [data-act="close"]{display:none}
-  #mmb-root[data-focus] .mmb-chart-return,#mmb-root[data-hosted]:not([data-workspace]) .mmb-head [data-act="max"]{
+  #mmb-root[data-focus] .mmb-head [data-act="return-host"],#mmb-root[data-hosted]:not([data-workspace]) .mmb-head [data-act="max"]{
     width:auto;min-height:44px;padding:0 10px;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
   #mmb-root[data-hosted]:not([data-workspace]) .mmb-expand-label{display:inline;font:500 12px/1 var(--mmb-font)}
   @media(max-width:560px){
@@ -1074,6 +1078,29 @@
   .mmb-depth-review{width:min(420px,calc(100vw - 32px));box-sizing:border-box;padding:clamp(20px,4vw,32px);
     color:var(--mmb-text);background:var(--mmb-panel);border:1px solid var(--mmb-line);border-radius:16px;
     box-shadow:var(--mmb-shadow-panel);font:15px/1.5 var(--mmb-font)}
+  .mmb-sources-trigger{display:none}
+  #mmb-root[data-reading] .mmb-source-group>.mmb-cites{display:none}
+  #mmb-root[data-reading] .mmb-sources-trigger{display:inline-flex;align-items:center;gap:8px;min-height:44px;
+    background:transparent;color:var(--mmb-text);border:0;padding:4px 0;cursor:pointer;font:500 13px/1.4 var(--mmb-font)}
+  .mmb-source-sheet{position:fixed;box-sizing:border-box;inset:16px 16px 16px auto;margin:0;width:min(460px,calc(100% - 32px));
+    height:calc(100% - 32px);max-height:none;max-width:none;padding:0;border:1px solid var(--mmb-line);border-radius:16px;
+    color:var(--mmb-text);background:var(--mmb-panel);font:15px/1.5 var(--mmb-font);box-shadow:var(--mmb-shadow-panel)}
+  .mmb-source-sheet[open]{display:flex;flex-direction:column}
+  .mmb-source-sheet::backdrop{background:rgba(0,0,0,.58)}
+  .mmb-source-sheet header,.mmb-source-sheet footer{padding:12px 20px}
+  .mmb-source-sheet header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--mmb-line)}
+  .mmb-source-sheet h2{margin:0;font:600 22px/1.3 var(--mmb-font);letter-spacing:-.025em;color:var(--mmb-text)}
+  .mmb-source-sheet button{min-width:44px;min-height:44px;border:1px solid var(--mmb-line);border-radius:9px;
+    background:transparent;color:var(--mmb-text);font:500 14px var(--mmb-font);cursor:pointer}
+  .mmb-source-sheet header button{border:0;font-size:22px}
+  .mmb-source-sheet ol{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;margin:0;padding:4px 24px 12px 54px}
+  .mmb-source-sheet li{padding:16px 0;border-bottom:1px solid var(--mmb-line);overflow-wrap:anywhere}
+  .mmb-source-sheet a{color:var(--mmb-info);text-decoration:underline;text-underline-offset:3px}
+  .mmb-source-sheet footer button{width:100%}
+  @media(max-width:560px){
+    .mmb-source-sheet{inset:auto 0 0;width:100%;height:auto;max-height:calc(100dvh - 44px);border-radius:18px 18px 0 0}
+    .mmb-source-sheet footer{padding-bottom:max(12px,env(safe-area-inset-bottom))}
+  }
   .mmb-depth-review::backdrop{background:rgba(0,0,0,.55)}
   .mmb-depth-review h2{margin:0 0 14px;font:600 24px/1.2 var(--mmb-font)}
   .mmb-depth-review .mmb-depth-question{font-weight:600;color:var(--mmb-text);overflow-wrap:anywhere}
@@ -1089,7 +1116,8 @@
   @media(max-width:560px){
     #mmb-root[data-workspace] .mmb-scroll{padding:16px;gap:16px}
     #mmb-root[data-workspace] .mmb-comp{padding:8px 10px max(10px,env(safe-area-inset-bottom))}
-    #mmb-root[data-workspace] .mmb-cards{gap:6px}
+    #mmb-root[data-reading] .mmb-comp > .mmb-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+    #mmb-root[data-reading] .mmb-comp .mmb-cardp{justify-content:flex-start;padding-inline:12px}
     #mmb-root[data-workspace] .mmb-cardp{padding:5px 8px}
     #mmb-root[data-workspace] .mmb-actions{opacity:1}
     #mmb-root[data-hosted]:not([data-workspace]) #mmb-panel.mmb-top:not(.max){width:100%}
@@ -2483,7 +2511,7 @@
             !d.messages.every(function (m) { return m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string'; })) throw new Error('invalid history');
         threadId = id;
         root.querySelectorAll('.mmb-ti').forEach(function (node) { node.classList.toggle('on', node.dataset.id === id); });
-        clearMsgs(); scroll.textContent = '';
+        clearMsgs();
         var lastDay = '';
         d.messages.forEach(function (m) {
           var ms = 0; try { ms = m.created_at ? new Date(m.created_at).getTime() : 0; } catch (e) {}
@@ -2556,7 +2584,8 @@
     for (var i = 0; i < msgs.length; i++) msgs[i].classList.toggle('mmb-last', i === msgs.length - 1);
   }
   function appendMsg(role, content, ts) {
-    var es = $('#mmb-emptystate'); if (es) es.remove();
+    var es = $('#mmb-emptystate');
+    if (es) { es.remove(); clearComposerStarters(); }
     var d = el('div', 'mmb-msg ' + role);
     var b = el('div', 'mmb-bub');
     if (role === 'user') {
@@ -2612,7 +2641,12 @@
     ['M12 3a9 9 0 1 0 9 9|M12 7v5l3 2', 'What should I be watching this week?', '这周该关注什么？'],
     ['M4 5h16M4 12h16M4 19h10', 'How is my watchlist doing?', '我的自选股表现如何？']
   ];
+  function clearComposerStarters() {
+    var starters = $('.mmb-comp > .mmb-cards');
+    if (starters) starters.remove();
+  }
   function renderEmpty() {
+    clearComposerStarters();
     var name = '';
     try { var u = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user(); if (u) { name = (u.user_metadata && (u.user_metadata.display_name || u.user_metadata.name)) || (u.email ? u.email.split('@')[0] : ''); } } catch (e) {}
     name = name ? (name.charAt(0).toUpperCase() + name.slice(1)) : '';
@@ -2628,7 +2662,8 @@
       '<div class="mmb-cards">' + cards + '</div></div>';
     if (root.hasAttribute('data-reading')) {
       hero = '<div class="mmb-empty" id="mmb-emptystate"><div class="mmb-hero"><h1>' +
-        LB('What would you like to know?', '你想了解什么？') + '</h1></div><div class="mmb-cards">' + cards + '</div></div>';
+        LB('What would you like to know?', '你想了解什么？') + '</h1></div></div>';
+      boxEl.insertAdjacentHTML('afterend', '<div class="mmb-cards">' + cards + '</div>');
     }
     scroll.innerHTML = hero;
   }
@@ -3520,8 +3555,7 @@
     var details = el('details', 'mmb-answer-context');
     var summary = el('summary'); summary.textContent = L('Context used', '回答使用的上下文');
     var explanation = el('p');
-    var label = context.source === 'active' && context.page === 'brain'
-      ? L('Selected symbol', '所选标的') : ctxSourceLabel(context.source);
+    var label = ctxSourceLabel(context.source, context.page);
     explanation.textContent = [label, context.symbols.join(', ')].filter(Boolean).join(' · ');
     details.appendChild(summary); details.appendChild(explanation);
     insertBeforeActions(bub, details);
@@ -3541,7 +3575,45 @@
       var page = citeToPage(c); if (page) { a.href = page; a.target = '_blank'; a.rel = 'noopener noreferrer'; }
       wrap.appendChild(a);
     });
-    insertBeforeActions(bub, wrap); stickAfter();
+    if (ANCHOR !== 'top' && !workspaceHost) { insertBeforeActions(bub, wrap); stickAfter(); return; }
+    var group = el('div', 'mmb-source-group');
+    var trigger = el('button', 'mmb-sources-trigger'); trigger.type = 'button';
+    trigger.setAttribute('aria-haspopup', 'dialog');
+    trigger.innerHTML = LB('Sources', '来源') + ' · ' + wrap.childElementCount + ' <span aria-hidden="true">›</span>';
+    trigger.addEventListener('click', function () { showAnswerSources(group, trigger, wrap); });
+    group.appendChild(trigger); group.appendChild(wrap);
+    insertBeforeActions(bub, group); stickAfter();
+  }
+
+  // The citation row and the reader share the exact same bounded, resolved sources.
+  // Keeping the dialog under its answer removes it on a thread or principal change.
+  function showAnswerSources(group, trigger, citations) {
+    if (group.querySelector('dialog')) return;
+    var dialog = el('dialog', 'mmb-source-sheet');
+    var title = L('Sources', '来源');
+    dialog.setAttribute('aria-label', title);
+    var header = el('header'); var heading = el('h2'); heading.textContent = title;
+    var dismiss = el('button'); dismiss.type = 'button'; dismiss.textContent = '×';
+    dismiss.setAttribute('aria-label', L('Close sources', '关闭来源'));
+    header.appendChild(heading); header.appendChild(dismiss); dialog.appendChild(header);
+    var list = el('ol');
+    Array.prototype.forEach.call(citations.children, function (cite) {
+      var item = el('li');
+      if (cite.hasAttribute('href')) {
+        var link = cite.cloneNode(true); link.classList.remove('mmb-cite'); item.appendChild(link);
+      } else item.textContent = cite.textContent;
+      list.appendChild(item);
+    });
+    dialog.appendChild(list);
+    var footer = el('footer'); var back = el('button'); back.type = 'button';
+    back.textContent = L('Back to answer', '返回回答'); footer.appendChild(back); dialog.appendChild(footer);
+    dismiss.addEventListener('click', function () { dialog.close(); });
+    back.addEventListener('click', function () { dialog.close(); });
+    dialog.addEventListener('keydown', function (e) { if (e.key === 'Escape') e.stopPropagation(); });
+    dialog.addEventListener('close', function () {
+      dialog.remove(); if (trigger.isConnected && trigger.getClientRects().length) trigger.focus();
+    }, {once:true});
+    group.appendChild(dialog); dialog.showModal(); dismiss.focus();
   }
   /* BEGIN retained source citation parser (pure URL validation). */
 
@@ -3778,6 +3850,8 @@
      the answer keeps painting into it. Re-opening shows the finished reply. */
   function close() {
     if (workspaceHost) return;
+    var sourceSheet = root.querySelector('.mmb-source-sheet[open]');
+    if (sourceSheet) sourceSheet.close();
     if (depthReview) depthReview.close();
     stopVoice();
     if (panel._morph) { try { panel._morph.cancel(); } catch (e) {} }
@@ -3957,7 +4031,7 @@
   function paintGuestThreads() {
     if (!tlist) return;
     tlist.innerHTML = '<div class="mmb-th-empty" style="display:flex;flex-direction:column;gap:10px;align-items:flex-start">' +
-      '<span>' + (ANCHOR === 'top'
+      '<span>' + (ANCHOR === 'top' && !workspaceHost
         ? LB('Sign in to connect this chart and save your conversations.', '登录后可连接此图表并保存对话记录。')
         : LB('Sign in to save your conversations.', '登录后可保存对话记录。')) + '</span>' +
       '<button class="mmb-signin" data-act="signin" style="margin-top:0;padding:9px 18px;font-size:13px">' + LB('Sign in', '登录') + '</button></div>';
@@ -4283,10 +4357,13 @@
      research/DEEPVUE_W1C_CONTEXT_ENVELOPE_CONTRACT_2026-08-25.md
      Frozen source-phrase vocabulary (bilingual, plain words, never an internal
      schema slug or falsifier/refutation term). */
-  function ctxSourceLabel(source) {
+  function ctxSourceLabel(source, page) {
     if (source === 'explicit') return L('From your question', '来自提问');
     if (source === 'pinned') return L('Pinned', '已固定');
-    if (source === 'active') return L('Active chart', '当前图表');
+    if (source === 'active') {
+      if (page === 'brain' || (!page && workspaceHost)) return L('Selected symbol', '所选标的');
+      return L('Active chart', '当前图表');
+    }
     if (source === 'ambient') return L('From your screen', '来自当前页面');
     return '';
   }
@@ -4568,7 +4645,7 @@
     var rows = [
       { key: 'explicit', label: L('From your question', '来自提问'), entities: (receipt && receipt.explicit_entities) || [] },
       { key: 'pinned', label: L('Pinned', '已固定'), entities: (receipt && receipt.pinned_context) || ctxState.pinned },
-      { key: 'active', label: L('Active chart', '当前图表'), entities: (receipt && receipt.active_selection) || (ctxSymbol ? [{ id: ctxSymbol }] : []) },
+      { key: 'active', label: ctxSourceLabel('active'), entities: (receipt && receipt.active_selection) || (ctxSymbol ? [{ id: ctxSymbol }] : []) },
       { key: 'ambient', label: L('From your screen', '来自当前页面'),
         entities: (receipt && receipt.ambient_widget_context && receipt.ambient_widget_context.symbol)
           ? [{ id: receipt.ambient_widget_context.symbol }] : [] }

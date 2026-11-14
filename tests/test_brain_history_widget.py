@@ -514,6 +514,7 @@ def test_native_workspace_keeps_one_chat_in_host_bounds(page, width):
     page.evaluate("""() => {
       document.body.insertAdjacentHTML('beforeend',
         '<main id="brain-slot" style="display:flex;position:absolute;inset:52px 0 0 32px"></main>');
+      MM_BRAIN_CFG.getAiContext = () => ({active:{id:'AAPL',type:'security'},ambient:{page:'brain'}});
       window.releaseWorkspace = MMBrain.mountWorkspace(document.querySelector('#brain-slot'));
     }""")
     panel = page.locator("#brain-slot #mmb-panel")
@@ -525,6 +526,16 @@ def test_native_workspace_keeps_one_chat_in_host_bounds(page, width):
     for key in ("x", "y", "width", "height"):
         assert abs(rect[key] - slot[key]) <= 1
 
+    expect(page.locator("#mmb-ctx .src")).to_have_text("Selected symbol")
+    starters = page.locator(".mmb-comp > .mmb-cards .mmb-cardp")
+    expect(starters).to_have_count(3)
+    assert page.locator(".mmb-box").evaluate("""box => {
+      const bottom = box.getBoundingClientRect().bottom;
+      return [...box.nextElementSibling.querySelectorAll('button')].every(action => {
+        const rect = action.getBoundingClientRect();
+        return rect.top >= bottom && rect.left >= 0 && rect.right <= innerWidth && rect.height >= 44;
+      });
+    }""")
     prompt = page.get_by_role("button", name="What changed today?")
     prompt.click()
     expect(page.locator("#mmb-ta")).to_have_value("What changed today?")
@@ -537,6 +548,7 @@ def test_native_workspace_keeps_one_chat_in_host_bounds(page, width):
     page.locator(f'.mmb-ti[data-id="{A}"] .mmb-ti-body').click()
     expect(page.locator(".mmb-msg")).to_contain_text("Exact retained answer A")
     expect(page.locator(".mmb-answer-context")).to_have_count(0)
+    expect(starters).to_have_count(0)
     page.locator(".mmb-head [data-act=new]").click()
     expect(page.locator(".mmb-msg")).to_have_count(0)
 
@@ -583,7 +595,13 @@ def test_workspace_binds_receipt_to_answer_and_confirms_research_once(page):
     expect(evidence).to_have_count(1)
     evidence.locator("summary").click()
     expect(evidence).to_contain_text("AAPL")
-    expect(page.locator(".mmb-cites")).to_contain_text("macro")
+    sources = page.get_by_role("button", name="Sources · 1")
+    sources.click()
+    reader = page.get_by_role("dialog", name="Sources", exact=True)
+    expect(reader.get_by_role("listitem")).to_have_text("macro")
+    expect(reader.get_by_role("link")).to_have_count(0)
+    reader.get_by_role("button", name="Back to answer").click()
+    expect(sources).to_be_focused()
 
     deepen = page.get_by_role("button", name="Go deeper…")
     deepen.click()
@@ -618,7 +636,14 @@ def test_chart_focus_preserves_draft_selection_and_returns_to_chart(page, width)
     if width > 560:
         page.get_by_role("button", name="Focus view").click()
     expect(page.locator("#mmb-root[data-focus] #mmb-panel.max")).to_be_visible()
-    expect(page.get_by_role("button", name="Back to chart")).to_be_visible()
+    expect(page.locator("#mmb-ctx .src")).to_have_text("Active chart")
+    return_action = page.get_by_role("button", name="Back to chart")
+    expect(return_action).to_be_visible()
+    assert return_action.evaluate("""button => {
+      const label = button.querySelector('span').getBoundingClientRect();
+      const next = button.parentElement.querySelector('[data-act="new"]').getBoundingClientRect();
+      return label.right <= button.getBoundingClientRect().right + 1 && label.right <= next.left;
+    }""")
     expect(page.locator("#mmb-ta")).to_have_value("Examine support on this chart")
     assert page.evaluate("MM_BRAIN_CFG.getAiContext() === window.fixtureChartContext")
     assert page.locator("#mmb-root").count() == 1
@@ -631,3 +656,39 @@ def test_chart_focus_preserves_draft_selection_and_returns_to_chart(page, width)
     expect(page.locator("#mmb-panel")).to_be_hidden()
     expect(page.locator("#chart-entry-fixture")).to_be_focused()
     assert all(item["method"] == "GET" for item in page.evaluate("window.__requests"))
+
+@pytest.mark.parametrize("width", [1440, 390])
+def test_workbench_source_reader_uses_this_answers_citations(page, width):
+    page.set_viewport_size({"width": width, "height": 844})
+    page.evaluate(r"""() => {
+      const slot = document.body.appendChild(document.createElement('main'));
+      slot.style.cssText = 'position:absolute;inset:0;display:flex';
+      window.releaseWorkbench = MMBrain.mountWorkspace(slot);
+      const old = fetch;
+      window.fetch = (url, opts = {}) => {
+        if (opts.method !== 'POST' || !url.endsWith('/stream')) return old(url, opts);
+        const events = [{type:'delta',text:'Reported breadth'}, {type:'done',
+          citations:['world_state.json', 'independent_observations.parquet']}];
+        return Promise.resolve(new Response(events.map(e => 'data: '+JSON.stringify(e)+'\n\n').join('')));
+      };
+    }""")
+    page.locator('#mmb-ta').fill('Show breadth')
+    page.locator('#mmb-send').click()
+    trigger = page.get_by_role('button', name='Sources · 2')
+    trigger.click()
+    dialog = page.get_by_role('dialog', name='Sources', exact=True)
+    expect(dialog.get_by_role('listitem')).to_have_text(['world_state', 'independent_observations'])
+    expect(dialog.get_by_role('link')).to_have_attribute('href', 'https://www.mastermind-x.com/macro.html')
+    expect(dialog.get_by_role('button', name='Close sources')).to_be_focused()
+    box = dialog.bounding_box()
+    if width == 390:
+        assert box['x'] == 0 and abs(box['y'] + box['height'] - 844) <= 1
+    else:
+        assert box['x'] > width / 2
+    page.keyboard.press('Escape')
+    expect(dialog).to_have_count(0)
+    expect(trigger).to_be_focused()
+    trigger.click()
+    page.evaluate("window.__onAuth({id:'another-account'})")
+    expect(dialog).to_have_count(0)
+    expect(trigger).to_have_count(0)
