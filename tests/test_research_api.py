@@ -1233,7 +1233,17 @@ def test_search_restricts_visibility_before_ranking_and_limit(client, monkeypatc
     preview document and an ahead-of-catalog document. LIMIT=1 must apply
     AFTER membership, not to a global BM25 list filtered afterward.
     """
+    import app.research as research_mod
+
     c, ctl = client
+    # Search resolves optional auth directly, outside FastAPI dependency overrides.
+    monkeypatch.setattr(
+        research_mod,
+        "_optional_tier",
+        lambda authorization: (
+            ctl["tier"] if authorization == _AUTH["Authorization"] else "anon"
+        ),
+    )
     store = _seeded_store(client)
     older_id = "catalog-older-indexed-hit"
     ahead_id = "corpus-ahead-not-yet-admitted"
