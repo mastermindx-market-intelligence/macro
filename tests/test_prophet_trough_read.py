@@ -158,4 +158,8 @@ def test_nightly_publication_closure():
     checkpoint = (root / "scripts/ci/daily_engine_prophet_checkpoint.sh").read_text()
     assert nightly.count('"site/prophet/trough_read.json"') == 2
     assert "site/prophet/trough_read.json|" in checkpoint
-    assert "python -m scripts.build_prophet_trough_read 2>&1; rc=$?" in nightly
+    # Description-only feed: it runs after build_prophet succeeds, and its own
+    # failure is a warning that can never change rc (plan binding/ledger).
+    assert "if ! python -m scripts.build_prophet_trough_read 2>&1; then" in nightly
+    assert "scripts.build_prophet_trough_read 2>&1; rc=$?" not in nightly
+    assert "build_prophet_trough_read failed; site/prophet/trough_read.json not refreshed" in nightly

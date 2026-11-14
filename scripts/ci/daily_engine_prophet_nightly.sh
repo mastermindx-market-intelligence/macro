@@ -166,7 +166,11 @@ fi
 echo "::group::build_prophet (plan refresh + ledger advancement)"
 python -m scripts.build_prophet 2>&1; rc=$?
 if [ "$rc" -eq 0 ]; then
-  python -m scripts.build_prophet_trough_read 2>&1; rc=$?
+  # Description-only feed: a failure here must never block plan binding or
+  # ledger advancement. It is reported and the previous file stays in place.
+  if ! python -m scripts.build_prophet_trough_read 2>&1; then
+    echo "::warning::build_prophet_trough_read failed; site/prophet/trough_read.json not refreshed"
+  fi
 fi
 echo "::endgroup::"
 if [ "$rc" -eq 0 ]; then
