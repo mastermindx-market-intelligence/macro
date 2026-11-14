@@ -39,6 +39,7 @@ import subprocess
 import tempfile
 import time
 import zlib
+from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -3805,9 +3806,9 @@ def render_earnings_card(
 #   thin vertical accent SPINE tinted to that row's direction (up green / down
 #   red), while the panel title carries the house indigo→blue gradient of the
 #   _brand_bar laser. The spines rhyme with the footer laser and bind the rows
-#   into a single "watchlist object". Per-row 10-session sparklines (direction-
-#   colored) are what actually sell "live watchlist, not a text post"; a row
-#   with no price history degrades to no sparkline — never a broken glyph.
+#   into a single "watchlist object". Per-row sourced-close sparklines carry
+#   actual observation counts and end dates; missing history gets a distinctly
+#   labeled 1D move, never an invented multi-session path or an empty slot.
 #
 # Palette is 100% inherited (no invented colors): family up #4CAF50 / down
 #   #E23B3B, base #0E1420, header #0A1020, hairline #232A3D, muted ink #6b7a99,
@@ -3840,6 +3841,30 @@ def _wl_valid_closes(closes: list[float] | None) -> list[float]:
     if not closes:
         return []
     return [v for raw in closes if (v := _wl_finite(raw)) is not None and v > 0]
+
+
+def _wl_dated_observations(
+    dates: list[str], closes: list[float]
+) -> list[tuple[str, float]]:
+    """Keep aligned, dated positive closes; reject non-monotonic history.
+
+    A request for ten bars is not proof that ten *usable* sessions were returned.
+    Retain the actual date of each observation so the image can disclose its
+    source window rather than silently calling three points a 10-day chart.
+    """
+    observed: list[tuple[str, float]] = []
+    for raw_date, raw_close in zip(dates or [], closes or []):
+        close = _wl_finite(raw_close)
+        if close is None or close <= 0:
+            continue
+        try:
+            observed_date = date.fromisoformat(str(raw_date)[:10]).isoformat()
+        except (TypeError, ValueError):
+            continue
+        if observed and observed_date <= observed[-1][0]:
+            return []  # duplicate/out-of-order rows must not become a timeline
+        observed.append((observed_date, close))
+    return observed[-10:]
 
 
 def _wl_sparkline(
@@ -4146,8 +4171,8 @@ def render_watchlist_card(
     $SNAP -3.4% $RBLX -4.3% …") as a screenshot of a premium SaaS watchlist
     panel on a phone: dark #0E1420 base, favicon lockup + wordmark, a titled
     panel with a column-label header, one raised cell per ticker (rank rail +
-    color-logo avatar chip + ticker/name + a verified 10-session sparkline (or
-    clearly marked 1D close-to-close move when history is missing) + optional
+    color-logo avatar chip + ticker/name + an observed-close sparkline with
+    source count/end-date (or a marked 1D move when history is missing) + optional
     right-aligned price + colored % pill), and the shared _brand_bar CTA footer.
     The third member of the earnings / breaking card family.
 
@@ -4454,31 +4479,44 @@ def render_watchlist_card(
                 f'letter-spacing="0.005em">{_xesc(ticker)}</text>'
             )
 
-        # Genuine 10-session history if available. The chart color describes
+        # Genuine dated close observations if available. The chart color describes
         # THAT period, independently of the one-day % pill; those signs can
         # legitimately differ. Missing history gets a labeled 1D endpoint
-        # move from the provided percentage, never a made-up wiggle/path.
+        # move from the provided percentage, never a made-up wiggle/path. Three
+        # observations are NOT "10D": show actual coverage and source end date.
         spark = ""
         if logo_root is not None:
             closes = load_closes(ticker, logo_root, n=10)
             if closes is not None:
-                cvals = _wl_valid_closes(closes[1])
-                if len(cvals) >= 3:
+                observed = _wl_dated_observations(*closes)
+                if len(observed) >= 3:
+                    cvals = [v for _, v in observed]
+                    first_date, last_date = observed[0][0], observed[-1][0]
+                    last_day = date.fromisoformat(last_date)
+                    date_label = f"{last_day:%b} {last_day.day} '{last_day.year % 100:02d}"
                     trend_color = UP if cvals[-1] > cvals[0] else (
                         DOWN if cvals[-1] < cvals[0] else FLAT)
                     spark = _wl_sparkline(
-                        cvals, spark_l, ry + 26, spark_w - 44,
-                        ROW_H - 52, trend_color, ruid
+                        cvals, spark_l, ry + 18, spark_w - 70,
+                        ROW_H - 66, trend_color, ruid
                     )
                     if spark:
                         spark = (
-                            '<g data-wl-trend="10d-closes">'
-                            '<title>Last 10 available daily closes</title>'
+                            f'<g data-wl-trend="observed-closes" '
+                            f'data-wl-observations="{len(observed)}">'
+                            f'<title>{len(observed)} observed daily closes of up to 10 '
+                            f'requested, {first_date} to {last_date}; missing '
+                            'observations are not fabricated</title>'
                             + spark
-                            + f'<text x="{spark_l + spark_w - 29:.1f}" '
-                            f'y="{row_cy + 6:.1f}" fill="#98a7c1" '
+                            + f'<text x="{spark_l + spark_w - 35:.1f}" '
+                            f'y="{row_cy + 2:.1f}" fill="#98a7c1" '
                             f'font-size="18" text-anchor="middle" '
-                            f'font-weight="700" font-family="sans-serif">10D</text></g>'
+                            f'font-weight="700" font-family="sans-serif">'
+                            f'{len(observed)}/10</text>'
+                            + f'<text x="{spark_l + spark_w / 2:.1f}" '
+                            f'y="{ry + ROW_H - 9:.1f}" fill="#7e8ba5" '
+                            f'font-size="18" text-anchor="middle" '
+                            f'font-family="sans-serif">{date_label}</text></g>'
                         )
         if not spark and has_pct:
             spark = _wl_one_day_move(
