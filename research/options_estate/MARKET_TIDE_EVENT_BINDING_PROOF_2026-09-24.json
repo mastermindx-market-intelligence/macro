@@ -1,0 +1,124 @@
+{
+  "operation": "market-tide-research-20260924-sol-001",
+  "source_carrier": "macro#7929 / claude/market-tide-research-20260924-sol-001",
+  "source_commit_before_proof": "f038f682731a579eba066c879629a0c8166f12f4",
+  "procedure_pin": "Mastermind@a0779abef1a3d872d060657a1b54318db9dffab3",
+  "kind": "research_consumer_boundary_rehearsal",
+  "verification_scope": "Sandbox consumer behavioral tests using source-extracted owner boundary functions. This is not a full repository module import, native test suite, CI result or production proof.",
+  "owner_sources": {
+    "event_constructor": {
+      "path": "engine/event_calendar.py",
+      "blob": "ef9ebd3c380da1d81411dd62fc4b2885b231fafe",
+      "functions": ["_event"],
+      "metadata_scope": ["CPI", "NFP", "FOMC"]
+    },
+    "public_time": {
+      "path": "lib/dataos/temporal.py",
+      "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+      "functions": ["utc", "known_at", "as_of_filter", "assert_pit_readable", "pit_refusal_reason"],
+      "profile": "EVENT"
+    }
+  },
+  "owner_excerpts_committed": false,
+  "full_repository_verification": false,
+  "verification": {
+    "python": "3.13.5",
+    "executed_test_command": "python -S -m unittest test_market_tide_event_binding",
+    "tests_passed": 31,
+    "test_exit": 0,
+    "red_green_evidence": [
+      "Missing consumer failed before implementation",
+      "Unknown-time lexical ordering failed before correction",
+      "Cancelled individual plan failed before active-plan validation",
+      "Visible cancellation plus older active notice failed before cancellation was retained for conflict grouping"
+    ],
+    "executed_sandbox_consumer_command": "python -S market_tide_event_binding.py --input reviewed_advance_notices.json --decision-at 2017-03-14T20:15:00Z --window-end 2017-03-15T20:00:00Z",
+    "consumer_exit": 0,
+    "equivalent_repository_consumer_command_not_yet_run": "python -m research.options_estate.market_tide_event_binding --input research/options_estate/MARKET_TIDE_REVIEWED_ADVANCE_NOTICES_2017.json --decision-at 2017-03-14T20:15:00Z --window-end 2017-03-15T20:00:00Z",
+    "repository_test_command_not_yet_run": "python -m unittest discover -s research/options_estate -p test_market_tide_event_binding.py",
+    "python_ast_parse": "passed",
+    "trailing_whitespace": "none"
+  },
+  "artifacts": [
+    {
+      "path": "research/options_estate/market_tide_event_binding.py",
+      "bytes": 8878,
+      "sha256": "c30cdf600fcdb0bdf16a370ccef59714ee1ee035b6975b1013cc69ea13def19a",
+      "git_blob": "cd851591e942d4e5ef9fb0f7455b4021370d1ddf"
+    },
+    {
+      "path": "research/options_estate/test_market_tide_event_binding.py",
+      "bytes": 9560,
+      "sha256": "70b5b3890b3258f719c0235348aa72b27b957939cdb655fb607a7838c654b847",
+      "git_blob": "d0e159001496352b66e584c89cd32579e3b8854b"
+    },
+    {
+      "path": "research/options_estate/MARKET_TIDE_REVIEWED_ADVANCE_NOTICES_2017.json",
+      "bytes": 8594,
+      "sha256": "fd5254f21c0f40c3ebdabbe792910c6785cf2ba85a29ed6c4560bf7cde435714",
+      "git_blob": "e1177e3623f0554eb2fefc4fc19a6b69a4d30bc1"
+    }
+  ],
+  "actual_documentary_result": {
+    "source_rows": 12,
+    "source_documents": 5,
+    "decision_at": "2017-03-14T20:15:00+00:00",
+    "window_end": "2017-03-15T20:00:00+00:00",
+    "events": [
+      {
+        "type": "CPI",
+        "date": "2017-03-15",
+        "time_et": "08:30",
+        "precision": "instant",
+        "event_at": "2017-03-15T12:30:00+00:00",
+        "published_at": "2017-02-15T13:30:00+00:00",
+        "reference_period": "2017-02",
+        "plan_status": "scheduled",
+        "documented_plan_in_window": true,
+        "source_ref": "https://www.bls.gov/news.release/archives/cpi_02152017.htm"
+      },
+      {
+        "type": "FOMC",
+        "date": "2017-03-15",
+        "time_et": "",
+        "precision": "date",
+        "event_at": null,
+        "published_at": "2016-06-28T18:00:00+00:00",
+        "reference_period": null,
+        "plan_status": "tentative",
+        "documented_plan_in_window": null,
+        "source_ref": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20160628a.htm"
+      }
+    ],
+    "outside_window": 10,
+    "ordering": "date_then_known_time_unknown_times_last_not_actual_event_sequence",
+    "c1_event_features": {"E_CPI": null, "E_NFP": null, "E_FOMC": null},
+    "primary_cohort_eligible": false,
+    "eligibility_reason": "schedule_update_and_negative_coverage_unverified",
+    "system_replay": false,
+    "can_publish_forecast": false,
+    "full_stdout_bytes": 3557,
+    "full_stdout_sha256": "51430b85bd63b4f424d06c567d6cc99be01750f0d33759f7478ac2e9ec00537a"
+  },
+  "price_trace": {
+    "source_commit": "c210dcacc9fb4242d87355820d2c227b697fd717",
+    "runner_path": "collectors/base.py",
+    "runner_blob": "420f96134b7835987d5e0d9a48ee52ac2c4f0148",
+    "runner_scope": "run_adapter calls validate/upsert and returns source status, row count, last_date and notes. This inspected function does not bind historical row versions to first availability.",
+    "outer_path": "scripts/collect.py",
+    "outer_blob": "cfc49059f287daf12f325f071aecae59f2a022a3",
+    "outer_scope": "Inspected entrypoint and indexed source-summary assignment add checked_at and elapsed_sec to source health. These are not automatically per-row version/publication receipts.",
+    "separate_archive_or_manifest": "not verified"
+  },
+  "limits": [
+    "Schedule-only documentary claims; no prices, release values, consensus or surprise observations",
+    "Five current archive reads do not prove complete historical schedule revisions or known-negative coverage",
+    "Raw-document hashes and original system-ingestion evidence remain unavailable",
+    "C1-M1 functional, score, features, chronology, validation and promotion conditions remain unchanged",
+    "No admitted primary cohort, fitted model, empirical timing result, portfolio policy, page, deployment or prospective forecast",
+    "No native acquisition or metadata/hash action was retried; no alternate carrier or delegated replacement",
+    "No worker, watcher or autonomous wake",
+    "Source-extracted dependencies were only sandbox rehearsal aids and were not committed as replacement owners",
+    "Full repository validation, test enrollment/CI, independent review and production proof remain separate gates"
+  ]
+}
