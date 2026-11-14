@@ -4,9 +4,12 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import logging
+import os
 import re
 from typing import Any, Callable
 
+from lib import fabric_client
 from engine.qual_extraction import quote_span_verified
 from .schema import SCHEMA, claim_statement_supported, thesis_direction_values, validate_rio
 from .selection import (
@@ -24,6 +27,104 @@ from .selection import (
 _FENCE = re.compile(r"^\s*```(?:json)?\s*|\s*```\s*$", re.I)
 PROMPT_VERSION = "mastermind.research_intelligence.extractor.v3"
 SYSTEM_PROMPT = SELECTOR_SYSTEM_PROMPT
+
+log = logging.getLogger(__name__)
+
+# --------------------------------------------------------------------------- #
+# Capacity Fabric cutover — the DEEP-READ WRITER only (Chairman order 2026-11-12)
+# --------------------------------------------------------------------------- #
+#: Operator kill-switch. "0" disables the fabric lane even when a token exists.
+_FABRIC_KILL_SWITCH = "MACRO_RESEARCH_INTEL_FABRIC"
+#: Attribution project id — the same constant the AI Brief writer uses.
+_FABRIC_PROJECT_ID = "macro-dashboard"
+#: Attribution session id for this vertical.
+_FABRIC_SESSION_ID = "macro-research-intel"
+#: Ledger lane — unchanged from the legacy descriptor's ``usage_lane`` so the
+#: spend drill-down keeps one research-intelligence series.
+_FABRIC_LEDGER_LANE = "research-intelligence"
+
+
+def _fabric_research_intel_enabled() -> bool:
+    """True when this writer should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; ``MACRO_RESEARCH_INTEL_FABRIC=0``
+    is the operator kill-switch. With no token this is False and the legacy
+    ladder below runs byte-identically.
+    """
+    if os.environ.get(_FABRIC_KILL_SWITCH, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _book_fabric_usage(comp: Any) -> None:
+    """Append one ``lib.ai_costs`` row for a router-served call. NEVER raises.
+
+    The SDK reports ``cache_read_input_tokens`` / ``cache_creation_input_tokens``;
+    ``record_usage`` expects ``cache_read_tokens`` / ``cache_creation_tokens``.
+    Attribution, not billing: the consumer must not book router spend as Claude
+    OAuth, so the row names ``provider="fabric"`` and the model the router
+    actually served.
+    """
+    try:
+        from lib import ai_costs  # noqa: PLC0415 — optional at import time
+
+        usage = getattr(comp, "usage", None) or {}
+        if not isinstance(usage, dict):
+            try:
+                usage = dict(usage)
+            except Exception:  # noqa: BLE001
+                usage = {}
+
+        def _int(key: str) -> int:
+            try:
+                return int(usage.get(key) or 0)
+            except Exception:  # noqa: BLE001
+                return 0
+
+        ai_costs.record_usage(
+            lane=_FABRIC_LEDGER_LANE,
+            provider="fabric",
+            model=getattr(comp, "model_served", None) or None,
+            input_tokens=_int("input_tokens"),
+            output_tokens=_int("output_tokens"),
+            cache_read_tokens=_int("cache_read_input_tokens"),
+            cache_creation_tokens=_int("cache_creation_input_tokens"),
+            stage="research_intelligence",
+        )
+    except Exception as exc:  # noqa: BLE001 — usage accounting must never break a served call
+        log.debug("research_intelligence: fabric usage capture failed (%s)", exc)
+
+
+def _fabric_default_call(system: str, user: str, *, max_tokens: int) -> tuple[str, str, str]:
+    """ONE extraction call through the router. Never retries, never fails over.
+
+    The router owns provider selection, cooldown and account pooling, so this
+    makes exactly one request: a raised transport error is left to propagate to
+    the caller's existing ``except Exception`` handler, which degrades it to
+    ``call_failed`` exactly as a legacy ladder failure would. A local retry or a
+    second provider would double-serve a call the router already resolved.
+
+    ``FabricUnavailable`` is the one exception and is re-raised: it means no
+    request ever left this host (no token, or the SDK will not import), so
+    nothing was served and nothing was billed. ``_default_call`` catches it and
+    runs the unchanged legacy ladder.
+
+    A refusal is a refusal even when it carries partial text: ``""`` is returned
+    so the fail-closed selector parser never sees a complete-looking object.
+    """
+    comp = fabric_client.complete(
+        [{"role": "user", "content": user}],
+        system=system,
+        lane="balanced",
+        max_tokens=int(max_tokens),
+        project_id=_FABRIC_PROJECT_ID,
+        session_id=_FABRIC_SESSION_ID,
+    )
+    _book_fabric_usage(comp)
+    served_model = str(comp.model_served or "")
+    if getattr(comp.raw, "stop_reason", None) == "refusal":
+        return "", "fabric", served_model
+    return str(comp.text or ""), "fabric", served_model
 
 
 class _ProvidersUnavailable(RuntimeError):
@@ -179,6 +280,18 @@ def parse_model_output(
 
 
 def _default_call(system: str, user: str, *, model_id: str, max_tokens: int) -> tuple[str, str, str]:
+    # Capacity Fabric first (Chairman order 2026-11-12). FabricUnavailable means
+    # no request ever left the host, so the legacy ladder below runs unchanged;
+    # any other router error propagates to _analyze_document_selector_v3's
+    # existing handler and degrades to call_failed, never retried.
+    if _fabric_research_intel_enabled():
+        try:
+            return _fabric_default_call(system, user, max_tokens=max_tokens)
+        except fabric_client.FabricUnavailable as exc:
+            log.warning(
+                "research_intelligence: fabric router unavailable (%s); "
+                "using the legacy ladder", exc)
+
     from engine import llm_auth
 
     providers = llm_auth.build_providers({"usage_lane": "research-intelligence"}, opus_model=model_id)
