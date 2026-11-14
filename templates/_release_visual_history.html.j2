@@ -1,0 +1,113 @@
+{# Additive MRI projection. Same release_forecast.json fetch, no second source/clock/collector. #}
+<style>
+#rr-visual-history{margin:16px 0 20px;color:var(--text);font-size:13px}
+#rr-visual-history *{box-sizing:border-box}
+#rr-visual-history .rrh-shell{border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);overflow:hidden}
+#rr-visual-history .rrh-top{padding:16px 18px 12px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#rr-visual-history h3{font-size:15px;font-weight:700;margin:0 0 4px}
+#rr-visual-history .rrh-intro{margin:0;color:var(--muted);font-size:11px;line-height:1.5;max-width:550px}
+#rr-visual-history .rrh-controls{display:flex;align-items:flex-end;flex-wrap:wrap;gap:8px}
+#rr-visual-history .rrh-controls label{display:flex;flex-direction:column;gap:3px;font-size:10px;font-weight:600;color:var(--muted)}
+#rr-visual-history .rrh-controls select{min-height:44px;min-width:86px;padding:8px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);font:inherit;font-size:12px;max-width:100%}
+#rr-visual-history .rrh-controls select:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+#rr-visual-history .rrh-body{padding:10px 18px 15px}
+#rr-visual-history .rrh-headline{display:flex;gap:10px 20px;align-items:baseline;flex-wrap:wrap}
+#rr-visual-history .rrh-value{font-size:clamp(28px,4.8vw,46px);letter-spacing:-.04em;line-height:1.1;font-variant-numeric:tabular-nums;font-weight:750}
+#rr-visual-history .rrh-delta{font-size:12px;color:var(--muted);font-weight:600}
+#rr-visual-history .rrh-interpretation{font-size:12px;line-height:1.55;min-height:19px;margin:8px 0}
+#rr-visual-history .rrh-state{font-size:11px;color:var(--muted);margin:4px 0;min-height:14px}
+#rr-visual-history .rrh-chart-title{font-size:11px;font-weight:700;color:var(--muted);margin:14px 0 0}
+#rr-visual-history .rrh-chart{display:block;width:100%;height:auto;min-height:160px;max-height:285px;overflow:visible}
+#rr-visual-history .rrh-chart text{font-variant-numeric:tabular-nums}
+#rr-visual-history .rrh-meta{font-size:10px;color:var(--muted);line-height:1.5;margin:6px 0 0;overflow-wrap:anywhere}
+#rr-visual-history .rrh-facts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line)}
+#rr-visual-history .rrh-fact{background:var(--panel);padding:12px 13px;display:flex;flex-direction:column;gap:5px;min-width:0}
+#rr-visual-history .rrh-fact-name{font-size:10px;font-weight:700;color:var(--muted);line-height:1.35}
+#rr-visual-history .rrh-fact-value{font-size:18px;font-weight:750;line-height:1.35;font-variant-numeric:tabular-nums;word-break:break-word}
+#rr-visual-history .rrh-fact-note{font-size:10px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
+#rr-visual-history .rrh-foot{padding:10px 16px 12px;background:var(--panel)}
+#rr-visual-history .rrh-foot .mx-disc{background:transparent;border:1px solid var(--line);border-radius:8px}
+#rr-visual-history .rrh-foot summary{cursor:pointer;font-weight:650;font-size:12px;min-height:44px;display:flex;align-items:center;padding:8px 12px}
+#rr-visual-history .rrh-foot summary:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+#rr-visual-history .rrh-foot .mx-disc-body{padding:0 12px 12px;font-size:11px;line-height:1.6;color:var(--muted)}
+#rr-visual-history .rrh-foot table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+#rr-visual-history .rrh-foot th,#rr-visual-history .rrh-foot td{padding:5px 9px;text-align:left;border-bottom:1px solid var(--line)}
+#rr-visual-history .rrh-foot a{color:var(--link)}
+@media(max-width:850px){#rr-visual-history .rrh-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){
+  #rr-visual-history .rrh-top{padding:12px}
+  #rr-visual-history .rrh-body{padding:10px 12px}
+  #rr-visual-history .rrh-controls{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  #rr-visual-history .rrh-controls select{min-width:0;width:100%;padding:8px 4px;font-size:11px}
+  #rr-visual-history .rrh-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #rr-visual-history .rrh-fact{padding:11px 9px}
+  #rr-visual-history .rrh-fact-value{font-size:16px}
+  #rr-visual-history .rrh-chart{min-height:135px}
+}
+</style>
+<section id="rr-visual-history" aria-labelledby="rrh-title">
+  <div class="rrh-shell">
+    <div class="rrh-top">
+      <div>
+        <h3 id="rrh-title"><span class="l-en">Release history at a glance</span><span class="l-zh">数据发布历史速览</span></h3>
+        <p class="rrh-intro"><span class="l-en">Real historical levels, verified first prints and expectations — kept on separate bases.</span><span class="l-zh">历史指数、经核验的首次公布值与市场预期，口径清晰区分。</span></p>
+      </div>
+      <div class="rrh-controls">
+        <label><span class="l-en">Measure</span><span class="l-zh">指标</span>
+          <select data-rrh-target aria-label="Inflation measure">
+            <option value="ppi_finaldemand">PPI final demand</option><option value="cpi_headline">CPI</option>
+            <option value="cpi_core">Core CPI</option><option value="pce_headline">PCE</option>
+            <option value="pce_core">Core PCE</option>
+          </select>
+        </label>
+        <label><span class="l-en">Basis</span><span class="l-zh">比较口径</span>
+          <select data-rrh-basis aria-label="History comparison basis">
+            <option value="yoy">YoY</option><option value="mom">MoM</option>
+          </select>
+        </label>
+        <label><span class="l-en">Window</span><span class="l-zh">时间窗口</span>
+          <select data-rrh-window aria-label="History window">
+            <option value="12">1 year</option><option value="36" selected>3 years</option><option value="60">5 years</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="rrh-body">
+      <div class="rrh-headline"><strong data-rrh-value class="rrh-value">—</strong>
+        <span data-rrh-delta class="rrh-delta"><span class="l-en">Monthly change unavailable.</span><span class="l-zh">月度变化暂不可用。</span></span>
+      </div>
+      <p data-rrh-interpretation class="rrh-interpretation"><span class="l-en">Awaiting a qualified history snapshot.</span><span class="l-zh">等待来源合格的历史数据快照。</span></p>
+      <p data-rrh-state class="rrh-state" role="status" aria-live="polite"><span class="l-en">Loading historical context.</span><span class="l-zh">加载历史背景中。</span></p>
+      <h4 data-rrh-chart-title id="rrh-chart-title" class="rrh-chart-title"><span class="l-en">Historical inflation</span><span class="l-zh">历史通胀</span></h4>
+      <svg data-rrh-chart class="rrh-chart" viewBox="0 0 720 260" role="img" aria-labelledby="rrh-chart-title" preserveAspectRatio="xMidYMid meet"></svg>
+      <p data-rrh-meta class="rrh-meta"><span class="l-en">Source details pending.</span><span class="l-zh">等待来源详情。</span></p>
+    </div>
+    <div data-rrh-facts class="rrh-facts" aria-label="Release context">
+      <div class="rrh-fact"><span class="l-en">Expectations and official prints appear here only when source-qualified.</span><span class="l-zh">仅在来源核验合格后显示预期和官方首次公布值。</span></div>
+    </div>
+    <div class="rrh-foot">
+      <details class="mx-disc">
+        <summary><span class="l-en">Data, revisions and last 12 readings</span><span class="l-zh">数据口径、修订与最近 12 期</span></summary>
+        <div class="mx-disc-body">
+          <p><span class="l-en">The chart derives YoY/MoM from one ALFRED snapshot of currently revised index levels. It is not an archive of what economists knew on every original release date. First-print values are separately verified official MoM receipts. Surprise requires independently captured pre-release economist consensus; model estimates are never relabelled as Street consensus.</span>
+            <span class="l-zh">图表基于同一时点的 ALFRED 修订后指数计算同比和环比，并非当年每次发布的首次值。官方首次公布环比值单独验证；意外幅度必须使用发布前独立采集的经济学家共识，不会将模型预测误称市场共识。</span></p>
+          <p><span class="l-en">A rising inflation series is descriptive, not a prediction of yields or stock performance. Missing months remain gaps; stale collections are labelled.</span>
+            <span class="l-zh">通胀上行仅为描述，不代表利率或股价预测。缺失月份保留空缺，过期采集明确标识。</span></p>
+          <table>
+            <thead><tr><th><span class="l-en">Reference month</span><span class="l-zh">统计月份</span></th>
+              <th><span class="l-en">Revised reading</span><span class="l-zh">修订后数值</span></th></tr></thead>
+            <tbody data-rrh-table></tbody>
+          </table>
+          <p><a href="https://fred.stlouisfed.org/" target="_blank" rel="noopener noreferrer">
+            <span class="l-en">FRED/ALFRED series source</span><span class="l-zh">FRED/ALFRED 数据来源</span></a>
+          </p>
+          <p><span class="l-en">Display-only research context. No forecast-validation, risk gate, position sizing or trading permission.</span>
+            <span class="l-zh">仅供研究展示，不授权预测验证、风控门槛、仓位配置或交易。</span></p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+<script>
+{% include "release_visual_history.js" %}
+</script>

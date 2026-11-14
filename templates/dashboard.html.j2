@@ -11356,6 +11356,14 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       /* GDP → PCE → claims on one date is one selection, not three fake refreshes.
          The payload signature still allows a future intraday forecast refresh. */
       if (!immediate && unchanged) return;
+      var visualMatch = items.find(function(item) {
+        return ['ppi_finaldemand','cpi_headline','cpi_core','pce_headline','pce_core']
+          .indexOf(item.release_type) !== -1;
+      });
+      if (visualMatch && window.MMXReleaseVisualHistory &&
+          typeof window.MMXReleaseVisualHistory.selectRelease === 'function') {
+        window.MMXReleaseVisualHistory.selectRelease(visualMatch.release_type);
+      }
       var covered = items.length > 0;
       var bodyHTML;
       if (covered){
@@ -11511,6 +11519,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
 
     /* main render */
     function renderRadar(d){
+      if (window.MMXReleaseVisualHistory) window.MMXReleaseVisualHistory.render(
+        document.getElementById("rr-visual-history"), d && d.release_visual_history,
+        d && d.surprise_confirmation);
       if (!d || typeof d !== 'object') {
         RR_EL.innerHTML = '<div class="rr-placeholder">'
           +'<span class="l-en">Release Radar data not yet available — nightly producer accruing.</span>'
@@ -11728,6 +11739,17 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if (!document.hidden) _rrRefreshForecast();
     });
 
+    /* The Events dialog follows this script in source order. A cached fast fetch
+       can land before its DOM exists; reuse its existing snapshot at DOM ready. */
+    document.addEventListener('DOMContentLoaded', function(){
+      if (!_rrForecastSignature || !window.MMXReleaseVisualHistory) return;
+      try {
+        var payload = JSON.parse(_rrForecastSignature);
+        window.MMXReleaseVisualHistory.render(
+          document.getElementById('rr-visual-history'), payload.release_visual_history,
+          payload.surprise_confirmation);
+      } catch(e){ /* keep existing forecast failure state, never invent data */ }
+    }, {once:true});
     /* Deep-link hook: jump the inline Release Radar panel to its default covered date
        (the "Open Release Radar" button was retired — the panel is always visible in
        dlg-events). Kept as the stable RR-script tail symbol. */
@@ -12914,6 +12936,8 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           </div>
         </div>
         {% endif %}
+        {# Release Radar: visible inside the Events dialog, not the offscreen modal host. #}
+        {% include "_release_visual_history.html.j2" %}
 
         {# — W4 EVW collision chip (display-only, RIC program) — #}
         {# Shown ONLY when a collision state is active: plain-word copy, no scoring, no internal state names. #}
