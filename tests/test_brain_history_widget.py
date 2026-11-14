@@ -506,3 +506,128 @@ def test_saved_response_has_accessible_heading_hierarchy_without_executable_mark
     expect(page.locator('.mmb-txt')).to_contain_text('<script>window.headingInjected=true</script>')
     assert page.evaluate('window.headingInjected === undefined')
     assert page.locator('.mmb-txt script').count() == 0
+
+
+@pytest.mark.parametrize("width", [1440, 820, 390, 320])
+def test_native_workspace_keeps_one_chat_in_host_bounds(page, width):
+    page.set_viewport_size({"width": width, "height": 844})
+    page.evaluate("""() => {
+      document.body.insertAdjacentHTML('beforeend',
+        '<main id="brain-slot" style="display:flex;position:absolute;inset:52px 0 0 32px"></main>');
+      window.releaseWorkspace = MMBrain.mountWorkspace(document.querySelector('#brain-slot'));
+    }""")
+    panel = page.locator("#brain-slot #mmb-panel")
+    expect(panel).to_be_visible()
+    assert page.locator("#mmb-root").count() == 1
+    expect(page.locator("#mmb-launch")).to_have_count(0)
+    slot = page.locator("#brain-slot").bounding_box()
+    rect = panel.bounding_box()
+    for key in ("x", "y", "width", "height"):
+        assert abs(rect[key] - slot[key]) <= 1
+
+    prompt = page.get_by_role("button", name="What changed today?")
+    prompt.click()
+    expect(page.locator("#mmb-ta")).to_have_value("What changed today?")
+    assert all(item["method"] == "GET" for item in page.evaluate("window.__requests"))
+    page.keyboard.press("Escape")
+    expect(panel).to_be_visible()
+    page.locator(".mmb-menu").click()
+    expect(page.locator("#mmb-search-in")).to_be_focused()
+    page.locator("#mmb-search-in").fill("investigation A")
+    page.locator(f'.mmb-ti[data-id="{A}"] .mmb-ti-body').click()
+    expect(page.locator(".mmb-msg")).to_contain_text("Exact retained answer A")
+    expect(page.locator(".mmb-answer-context")).to_have_count(0)
+    page.locator(".mmb-head [data-act=new]").click()
+    expect(page.locator(".mmb-msg")).to_have_count(0)
+
+    page.evaluate("""() => {
+      const next = document.body.appendChild(document.createElement('div'));
+      const release = MMBrain.mountWorkspace(next);
+      window.releaseWorkspace();
+      if (!next.contains(document.querySelector('#mmb-root'))) throw new Error('stale release');
+      release();
+    }""")
+    expect(page.locator("body > #mmb-root #mmb-panel")).to_be_hidden()
+    page.evaluate("MMBrain.open()")
+    expect(page.locator("body > #mmb-root #mmb-panel")).to_be_visible()
+
+
+def test_workspace_binds_receipt_to_answer_and_confirms_research_once(page):
+    page.evaluate(r"""() => {
+      const slot = document.body.appendChild(document.createElement('main'));
+      slot.style.cssText = 'position:absolute;inset:0;display:flex';
+      MM_BRAIN_CFG.getAiContext = () => ({
+        schema: 'ai_context_client.v1', origin_id: 'workbench', context_revision: 2,
+        active: {type:'security', id:'AAPL'}, pinned: [], ambient: {page:'brain', symbol:'AAPL'}
+      });
+      window.releaseWorkspace = MMBrain.mountWorkspace(slot);
+      const previous = window.fetch;
+      window.__posts = [];
+      window.fetch = (url, options={}) => {
+        if (options.method !== 'POST' || !url.endsWith('/stream')) return previous(url, options);
+        const sent = JSON.parse(options.body);
+        window.__posts.push(sent);
+        const receipt = {
+          type:'context_receipt', request_id:'question-1',
+          origin:{origin_id:'workbench',context_revision:2},
+          effective_context:{source:'active',entities:[{id:'AAPL'}]}
+        };
+        const events = [{type:'meta',thread_id:'11111111-1111-1111-1111-111111111111'}, receipt,
+          {type:'delta', text:'Example answer'}, {type:'done', context_receipt:receipt, citations:['macro.json']}];
+        return Promise.resolve(new Response(events.map(e => 'data: '+JSON.stringify(e)+'\n\n').join('')));
+      };
+    }""")
+    page.locator("#mmb-ta").fill("What changed?")
+    page.locator("#mmb-send").click()
+    evidence = page.locator(".mmb-answer-context")
+    expect(evidence).to_have_count(1)
+    evidence.locator("summary").click()
+    expect(evidence).to_contain_text("AAPL")
+    expect(page.locator(".mmb-cites")).to_contain_text("macro")
+
+    deepen = page.get_by_role("button", name="Go deeper…")
+    deepen.click()
+    expect(page.get_by_role("dialog", name="Research depth")).to_be_visible()
+    page.get_by_role("button", name="Cancel", exact=True).click()
+    assert len(page.evaluate("window.__posts")) == 1
+    deepen.click()
+    page.get_by_role("button", name="Start research", exact=True).click()
+    page.wait_for_function("window.__posts.length === 2")
+    original, followup = page.evaluate("window.__posts")
+    assert followup["mode"] == "research"
+    assert followup["lane"] == "pro"
+    assert followup["context"] == original["context"]
+
+
+@pytest.mark.parametrize("width", [1440, 390])
+def test_chart_focus_preserves_draft_selection_and_returns_to_chart(page, width):
+    page.set_viewport_size({"width": width, "height": 844})
+    page.evaluate("""() => {
+      MMBrain.close();
+      window.fixtureChartContext = {
+        schema:'ai_context_client.v1',origin_id:'chart-owner',context_revision:7,
+        active:{id:'AAPL',type:'security'},pinned:[],ambient:{page:'terminal',timeframe:'1D'}
+      };
+      MM_BRAIN_CFG.getAiContext = () => window.fixtureChartContext;
+      const chartEntry = document.createElement('button');
+      chartEntry.id = 'chart-entry-fixture'; chartEntry.textContent = 'Open chart assistant';
+      chartEntry.addEventListener('click', () => MMBrain.open()); document.body.prepend(chartEntry);
+    }""")
+    page.locator("#chart-entry-fixture").click()
+    page.locator("#mmb-ta").fill("Examine support on this chart")
+    if width > 560:
+        page.get_by_role("button", name="Focus view").click()
+    expect(page.locator("#mmb-root[data-focus] #mmb-panel.max")).to_be_visible()
+    expect(page.get_by_role("button", name="Back to chart")).to_be_visible()
+    expect(page.locator("#mmb-ta")).to_have_value("Examine support on this chart")
+    assert page.evaluate("MM_BRAIN_CFG.getAiContext() === window.fixtureChartContext")
+    assert page.locator("#mmb-root").count() == 1
+    assert page.locator("#mmb-launch").count() == 0
+    if width > 560:
+        page.get_by_role("button", name="Compact view").click()
+        expect(page.locator("#mmb-panel.open:not(.max)")).to_be_visible()
+        page.get_by_role("button", name="Focus view").click()
+    page.get_by_role("button", name="Back to chart").click()
+    expect(page.locator("#mmb-panel")).to_be_hidden()
+    expect(page.locator("#chart-entry-fixture")).to_be_focused()
+    assert all(item["method"] == "GET" for item in page.evaluate("window.__requests"))
