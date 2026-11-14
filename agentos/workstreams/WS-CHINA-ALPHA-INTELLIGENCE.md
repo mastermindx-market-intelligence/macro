@@ -416,6 +416,7 @@ next_action: >
   separate from engineering completion.
 
 artifacts:
+  - research/cn_prophet_v4/SECTOR_PEER_CONTEXT.md
   - research/CHINA_ALPHA_INTELLIGENCE_MASTERPLAN.md
   - research/china_alpha_intelligence/commissions/PR-0B_v4_telemetry.md
   - research/china_alpha_intelligence/commissions/RIGHTS-0_source_entitlement_audit.md
