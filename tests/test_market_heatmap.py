@@ -108,6 +108,30 @@ def test_unknown_market_raises():
         mh.build_market_heatmap("japan", _constituents(), _closes())
 
 
+def test_hk_majority_empty_perf_flags_low_coverage():
+    """HK members with empty perf are dropped from tiles (display) but MUST still
+    count against the MIN_COVERAGE gate — else a mostly-dead feed reports the
+    surviving tiles' coverage as the whole board's (the denominator defect)."""
+    closes = _closes()
+    closes["600519.SS"] = None        # 2 of 3 members carry no perf
+    closes["000001.SZ"] = None
+    p = mh.build_market_heatmap("hk", _constituents(), closes)
+    assert p["n_tiles"] == 1          # display-level drop still applies
+    avail = {tf["key"]: tf["available"] for tf in p["timeframes"]}
+    assert not avail["1D"] and not avail["1Y"]   # 1/3 < MIN_COVERAGE 0.5
+
+
+def test_canada_majority_empty_perf_flags_low_coverage():
+    """Same contract for Canada: the gate denominator is the full member set."""
+    closes = _closes()
+    closes["600519.SS"] = None
+    closes["000001.SZ"] = None
+    p = mh.build_market_heatmap("canada", _constituents(), closes)
+    assert p["n_tiles"] == 1
+    avail = {tf["key"]: tf["available"] for tf in p["timeframes"]}
+    assert not avail["1D"] and not avail["1Y"]
+
+
 def test_hk_name_zh_map_wellformed():
     import re
     m = mh.HK_NAME_ZH
