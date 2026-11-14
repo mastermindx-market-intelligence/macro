@@ -465,7 +465,8 @@ def buyback() -> dict[str, dict]:
         pct = _num(getattr(r, "pct_shares", None)) or 0.0
         done = _num(getattr(r, "done_amt_yi", None)) or 0.0
         prog = str(getattr(r, "progress", "") or "")
-        in_prog = ("实施" in prog) or ("完成" in prog)
+        # Preserve the stopped plan as context without treating it as active.
+        in_prog = prog.strip() != "停止实施" and (("实施" in prog) or ("完成" in prog))
         score = 0.0
         if in_prog:
             score = min(0.40, 0.6 * _clip01(pct / 3.0)
