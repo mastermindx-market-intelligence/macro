@@ -5,3 +5,8 @@
 # The admin core needs nothing beyond the root deps (stdlib http.server + requests +
 # pyyaml, which are already installed). These are ONLY for reading live GA4 traffic.
 google-analytics-data>=0.18   # GA4 Data API client (real-time users + reports)
+# Capacity Fabric consumer adapter (lib/fabric_client.py) — the contradiction
+# classifier's fabric branch (MACRO_LOGS_CLASSIFY_FABRIC) is an anthropic.Anthropic
+# client pointed at the unified_router. Without this the adapter raises
+# FabricUnavailable and the classifier silently keeps its raw-urllib legacy path.
+anthropic>=0.40               # fabric router client (lib/fabric_client.py)
