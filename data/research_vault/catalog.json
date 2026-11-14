@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T01:10:12.304556+00:00",
-  "count": 3332,
+  "generated_at": "2026-11-14T01:40:22.852586+00:00",
+  "count": 3333,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1988,6 +1988,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ygjievcdrs3-939e25",
+      "title": "European Economics Analyst Euro Area 2027 Consumer Outlook—Winter Bills, Delayed Chills",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:45:03Z",
+      "summary_points": [
+        "Real Income Growth Slowdown: Real income growth slowed to 0.1% yoy in 2026Q2 due to energy inflation, with household saving rate decline temporarily offsetting spending pressure; winter energy bill resets (Germany) and Italy’s 35.6% YoY gas price surge exacerbate cash-flow strain.",
+        "Wage & Property Income Dynamics: Wage growth stabilizes at 3.4% yoy through 2027 before falling below 3% in 2028; property income reversal (higher rates lifting savers’ income) drives 3.4% yoy household gross disposable income growth forecast for 2027.",
+        "Consumption Growth Forecast: Real consumption growth slows to ~0% qoq in 2026Q4–2027Q1, rebounding to 0.7% (2027) and 1.3% (2028) as inflation moderates, real income improves, and consumer confidence recovers.",
+        "Critical Growth Drivers: Inflation moderation, real disposable income growth, consumer confidence rebound, and reduction in inflation-related real financial wealth losses are key to accelerating growth beyond 2027.",
+        "Winter Energy & Cash Flow Risk: Germany’s annual utility bill resets and Italy’s seasonal heating demand amplify winter budget pressures amid energy price spikes (e.g., 35.6% gas HICP rise), worsening household financial strain."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
