@@ -261,6 +261,7 @@ class ImpliedLeg:
         if self.measure_kind not in MEASURE_KINDS:
             raise ValueError(f"measure_kind must be one of {MEASURE_KINDS}")
         _require_coverage(self.coverage, ("tail_strikes", "overnight"))
+        _require_variance(self.value)
 
 
 def strip_leg(result: StripVarianceResult, basis: HorizonBasis, asof: int) -> ImpliedLeg:
@@ -385,6 +386,22 @@ class PhysicalLeg:
         if self.kind not in PHYSICAL_KINDS:
             raise ValueError(f"kind must be one of {PHYSICAL_KINDS}")
         _require_coverage(self.coverage, ("overnight", "sampling"))
+        _require_variance(self.value)
+
+
+def _require_variance(value: float) -> None:
+    """Require a scalar variance measurement before admitting a premium leg."""
+    try:
+        valid = (
+            not isinstance(value, (bool, np.bool_))
+            and np.isscalar(value)
+            and math.isfinite(value)
+            and value >= 0
+        )
+    except (TypeError, ValueError, OverflowError):
+        valid = False
+    if not valid:
+        raise ValueError("variance must be finite, non-negative and non-boolean")
 
 
 def _require_coverage(cov: Mapping[str, Any] | None, keys: Sequence[str]) -> None:
@@ -458,6 +475,13 @@ def _check_basis(implied: ImpliedLeg, physical: PhysicalLeg, acknowledge_session
     return f"same session close {a.session_close}"
 
 
+def _variance_difference(left: float, right: float) -> float:
+    """Subtract integral legs without fixed-width wrapping or float promotion."""
+    if isinstance(left, (int, np.integer)) and isinstance(right, (int, np.integer)):
+        return float(int(left) - int(right))
+    return float(left - right)
+
+
 def build_premium(implied: ImpliedLeg, physical: PhysicalLeg, *,
                   acknowledge_session_offset: bool = False) -> PremiumRecord:
     """Ex-ante premium estimate IV2_h - F_h. Refuses a forward label or a forecast that
@@ -472,7 +496,7 @@ def build_premium(implied: ImpliedLeg, physical: PhysicalLeg, *,
     return PremiumRecord(
         asof=implied.asof, implied_variance=float(implied.value),
         physical_variance=float(physical.value),
-        premium_variance=float(implied.value - physical.value),
+        premium_variance=_variance_difference(implied.value, physical.value),
         horizon_calendar_days=implied.basis.horizon_calendar_days,
         day_count=implied.basis.day_count, units=implied.basis.units,
         measure_kind=implied.measure_kind, physical_kind="forecast", timing="ex_ante",
@@ -494,7 +518,7 @@ def ex_post_premium(implied: ImpliedLeg, label: PhysicalLeg, *,
     return PremiumRecord(
         asof=implied.asof, implied_variance=float(implied.value),
         physical_variance=float(label.value),
-        premium_variance=float(implied.value - label.value),
+        premium_variance=_variance_difference(implied.value, label.value),
         horizon_calendar_days=implied.basis.horizon_calendar_days,
         day_count=implied.basis.day_count, units=implied.basis.units,
         measure_kind=implied.measure_kind, physical_kind="forward_label", timing="ex_post",

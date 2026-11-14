@@ -322,3 +322,184 @@ def test_no_silent_activation_module_contract():
     for name in ("register", "REGISTRY", "schedule", "main", "run", "activate", "publish"):
         assert not hasattr(mod, name)
     assert mod.AUTHORITY == "none"
+
+
+# Public-leg measurement admission. Synthetic inputs only; no frozen trial rerun.
+def _admission_record(route, implied=0.004, physical=0.003):
+    basis = _basis()
+    implied_leg = vp.ImpliedLeg(
+        implied, basis, "strip", 100,
+        {"tail_strikes": "synthetic", "overnight": "included"},
+    )
+    physical_leg = _phys(
+        physical, basis, "forecast" if route == "ante" else "forward_label",
+        info=100 if route == "ante" else 130,
+    )
+    builder = vp.build_premium if route == "ante" else vp.ex_post_premium
+    return builder(implied_leg, physical_leg)
+
+
+@pytest.mark.parametrize("route", ["ante", "post"])
+@pytest.mark.parametrize("slot", ["implied", "physical"])
+@pytest.mark.parametrize(
+    "value",
+    [np.nan, np.inf, -np.inf, -0.004, True, False, np.bool_(True),
+     np.bool_(False), None, "0.004", complex(0.004, 0), [0.004],
+     np.array([0.004]), np.array(0.004), 10 ** 400],
+    ids=["nan", "inf", "negative-inf", "negative", "true", "false",
+         "numpy-true", "numpy-false", "none", "numeric-string", "complex",
+         "list", "array", "zero-dim-array", "overflowing-integer"],
+)
+def test_variance_admission_refuses_invalid_measurement(route, slot, value):
+    with pytest.raises(ValueError):
+        _admission_record(route, **{slot: value})
+
+
+@pytest.mark.parametrize("leg", ["implied", "physical"])
+@pytest.mark.parametrize("value", [np.nan, np.inf, -0.004, False])
+def test_variance_admission_is_at_constructor_not_only_builder(leg, value):
+    with pytest.raises(ValueError, match="variance must be"):
+        if leg == "implied":
+            vp.ImpliedLeg(value, _basis(), "strip", 100,
+                          {"tail_strikes": "synthetic", "overnight": "included"})
+        else:
+            _phys(value)
+
+
+@pytest.mark.parametrize("route", ["ante", "post"])
+@pytest.mark.parametrize("slot", ["implied", "physical"])
+@pytest.mark.parametrize("value", [0.0, -0.0, 0.004, 1, np.float64(0.004), np.int64(0)])
+def test_variance_admission_preserves_measured_nonnegative_value(route, slot, value):
+    import json
+
+    record = _admission_record(route, **{slot: value})
+    assert record.authority == "none"
+    actual = record.implied_variance if slot == "implied" else record.physical_variance
+    assert actual == float(value)
+    assert math.copysign(1.0, actual) == math.copysign(1.0, float(value))
+    json.dumps(vp.assemble_history([record])[0].to_dict(), allow_nan=False)
+
+
+@pytest.mark.parametrize("route", ["ante", "post"])
+def test_variance_admission_keeps_negative_premium_valid(route):
+    record = _admission_record(route, implied=0.001, physical=0.004)
+    assert record.premium_variance == -0.003
+    assert record.authority == "none"
+
+
+@pytest.mark.parametrize("ask", [np.nan, np.inf, -100.0])
+def test_variance_admission_refuses_invalid_native_strip_leg(ask):
+    raw = vp.strip_variance(
+        [90.0, 100.0, 110.0], [12.0, 4.0, 1.0], [12.0, 4.0, 1.0],
+        [1.0, 4.0, 12.0], [ask, 4.0, 12.0], 100.0, 0.0, 30 / 365,
+    )
+    with pytest.raises(ValueError, match="variance must be"):
+        vp.strip_leg(raw, _basis(), 100)
+
+
+def test_variance_admission_preserves_valid_native_strip_leg():
+    raw = vp.strip_variance(
+        [90.0, 100.0, 110.0], [12.0, 4.0, 1.0], [12.0, 4.0, 1.0],
+        [1.0, 4.0, 12.0], [1.0, 4.0, 12.0], 100.0, 0.0, 30 / 365,
+    )
+    leg = vp.strip_leg(raw, _basis(), 100)
+    assert leg.value == pytest.approx(0.012122028364452607)
+
+
+# Admitted integral legs must retain signed differences through real consumers.
+def _assert_premium_scalar_consumer(route, left, right, expected):
+    import json
+
+    record = _admission_record(route, implied=left, physical=right)
+    payload = json.loads(json.dumps(
+        vp.assemble_history([record])[0].to_dict(), allow_nan=False,
+    ))
+    assert record.premium_variance == expected
+    assert payload["premium_variance"] == expected
+    assert payload["implied_variance"] == float(left)
+    assert payload["physical_variance"] == float(right)
+    assert payload["authority"] == "none"
+    assert payload["timing"] == ("ex_ante" if route == "ante" else "ex_post")
+    assert payload["physical_kind"] == ("forecast" if route == "ante" else "forward_label")
+    assert payload["horizon_calendar_days"] == 30
+    assert payload["day_count"] == "calendar365"
+    assert payload["units"] == "horizon_variance"
+    view = record.annualized_vol_view()
+    assert all(math.isfinite(value) for value in view.values())
+    assert view["premium_variance_ann"] == pytest.approx(expected * 365 / 30, rel=1e-14, abs=0)
+    if expected == 0:
+        for actual in (record.premium_variance, payload["premium_variance"],
+                       view["premium_variance_ann"]):
+            assert math.copysign(1.0, actual) == math.copysign(1.0, expected)
+
+
+_INTEGRAL_SCALAR_TYPES = (
+    int, np.int8, np.int16, np.int32, np.int64,
+    np.uint8, np.uint16, np.uint32, np.uint64,
+)
+
+
+@pytest.mark.parametrize("route", ["ante", "post"])
+@pytest.mark.parametrize("left_type", _INTEGRAL_SCALAR_TYPES)
+@pytest.mark.parametrize("right_type", _INTEGRAL_SCALAR_TYPES)
+@pytest.mark.parametrize("left,right", [(0, 0), (1, 2), (2, 1)])
+def test_premium_integral_scalar_sign_survives_consumers(route, left_type, right_type, left, right):
+    # The independent expected operands are Python integer fixtures.
+    _assert_premium_scalar_consumer(
+        route, left_type(left), right_type(right), float(left - right),
+    )
+
+
+@pytest.mark.parametrize("route", ["ante", "post"])
+@pytest.mark.parametrize("dtype", [np.uint8, np.uint16, np.uint32, np.uint64])
+@pytest.mark.parametrize("gap", ["unit", "full_range"])
+@pytest.mark.parametrize("reverse", [False, True])
+def test_premium_integral_unsigned_boundaries_survive_consumers(route, dtype, gap, reverse):
+    left = int(np.iinfo(dtype).max)
+    right = left - 1 if gap == "unit" else 0
+    if reverse:
+        left, right = right, left
+    _assert_premium_scalar_consumer(route, dtype(left), dtype(right), float(left - right))
+
+
+@pytest.mark.parametrize("route", ["ante", "post"])
+@pytest.mark.parametrize(
+    "left,right,expected",
+    [
+        (np.uint64(2 ** 63), np.int64(2 ** 63 - 1), 1.0),
+        (np.int64(2 ** 63 - 1), np.uint64(2 ** 63), -1.0),
+        (256, np.uint8(1), 255.0),
+        (np.uint8(1), 256, -255.0),
+        (2 ** 64 - 1, np.uint64(2 ** 64 - 2), 1.0),
+        (np.uint64(2 ** 64 - 2), 2 ** 64 - 1, -1.0),
+        (np.uint64(2 ** 64 - 1), 2 ** 64 - 2, 1.0),
+        (2 ** 64 - 2, np.uint64(2 ** 64 - 1), -1.0),
+    ],
+    ids=["mixed64-plus-one", "mixed64-minus-one", "python-wide-minus-uint8",
+         "uint8-minus-python-wide", "python-max-minus-uint64",
+         "uint64-minus-python-max", "uint64-max-minus-python",
+         "python-minus-uint64-max"],
+)
+def test_premium_integral_mixed_boundaries_survive_consumers(route, left, right, expected):
+    _assert_premium_scalar_consumer(route, left, right, expected)
+
+
+@pytest.mark.parametrize("route", ["ante", "post"])
+@pytest.mark.parametrize(
+    "left_type,right_type",
+    [
+        (float, float), (np.float32, np.float32), (np.float64, np.float64),
+        (float, np.float32), (np.float32, float),
+        (int, np.float32), (np.float32, int),
+        (np.uint64, np.float32), (np.float64, np.uint64),
+        (np.int64, np.float64), (np.float64, np.int64),
+    ],
+)
+@pytest.mark.parametrize("left,right", [(0.004, 0.003), (1.0, 1e-8), (-0.0, 0.0)])
+def test_premium_nonintegral_scalar_arithmetic_and_zero_are_preserved(
+    route, left_type, right_type, left, right,
+):
+    left, right = left_type(left), right_type(right)
+    # Preserve the established typed real-number operation, including float32
+    # rounding and signed zero; converting both legs to float first is different.
+    _assert_premium_scalar_consumer(route, left, right, float(left - right))
