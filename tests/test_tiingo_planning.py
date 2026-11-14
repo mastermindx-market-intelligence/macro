@@ -91,3 +91,49 @@ def test_plan_cli_page_never_invokes_collector(monkeypatch, capsys):
 def test_iex_historical_volume_is_explicitly_requested():
     tasks = ing.plan(["iex-bars"], ["AMD"], D0, D1)
     assert all(t.params["columns"] == "open,high,low,close,volume" for t in tasks)
+
+
+@pytest.mark.parametrize("source", ["equity-intraday-bars", "iex-bars", "boats-bars"])
+def test_all_equity_history_plans_request_explicit_ohlcv(source):
+    # Tiingo historical volume is opt-in, including consolidated equity bars.
+    tasks = ing.plan([source], ["GLD", "AEM"], D0, D1)
+    assert len(tasks) == 4  # Preserve bounded seven-day chunks and both symbols.
+    for task in tasks:
+        assert task.params["columns"] == "open,high,low,close,volume"
+        assert task.params["resampleFreq"] == "1min"
+        assert task.source == source
+
+
+def test_commodity_probe_uses_24_distinct_offline_ohlcv_requests(monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail("planning attempted credentials or network")
+
+    monkeypatch.setattr(ing, "collect_one", forbidden)
+    monkeypatch.setattr(ing, "read_key", forbidden)
+    symbols = ["GLD", "AEM", "SLV", "PAAS", "USO", "COP", "COPX", "FCX"]
+    windows = [date(2025, 11, 28), date(2026, 1, 30), date(2026, 10, 8)]
+    tasks = [task for day in windows
+             for task in ing.plan(["equity-intraday-bars"], symbols, day, day)]
+    assert len(tasks) == 24
+    assert len({(task.symbol, task.params["startDate"]) for task in tasks}) == 24
+    assert all(task.params["columns"] == "open,high,low,close,volume" for task in tasks)
+    page = ing.plan_page(tasks, limit=24)
+    assert page["total_tasks"] == 24
+    assert page["execution_authorized"] is False
+    assert all("columns=open,high,low,close,volume" in row["request_path"]
+               for row in page["items"])
+
+
+def test_equity_ohlcv_fix_preserves_other_feed_parameters():
+    # The correction must not silently change session, fill, or other source policy.
+    equity = ing.plan(["equity-intraday-bars"], ["GLD"], D0, D0)[0]
+    assert equity.params == {
+        "startDate": D0.isoformat(), "endDate": D0.isoformat(),
+        "resampleFreq": "1min", "columns": "open,high,low,close,volume",
+    }
+    for source, symbol in [("eod-bars", "GLD"), ("forex-bars", "eurusd"),
+                           ("crypto-bars", "btcusd")]:
+        task = ing.plan([source], [symbol], D0, D0)[0]
+        assert "columns" not in task.params
+        assert "afterHours" not in task.params
+        assert "forceFill" not in task.params

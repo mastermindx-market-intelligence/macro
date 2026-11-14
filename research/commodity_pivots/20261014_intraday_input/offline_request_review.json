@@ -1,0 +1,362 @@
+{
+  "schema": "commodity_intraday_qualification_offline_request_review/v1",
+  "status": "NOT_DISPATCHED",
+  "execution_authorized": false,
+  "credentials_read": false,
+  "provider_requests": 0,
+  "collector_owner_issue": "macro#9235",
+  "original_symbols": [
+    "GLD",
+    "AEM",
+    "SLV",
+    "PAAS",
+    "USO",
+    "COP",
+    "COPX",
+    "FCX"
+  ],
+  "original_sessions": [
+    "2025-11-28",
+    "2026-01-30",
+    "2026-10-08"
+  ],
+  "plan_basis": "Existing scripts.tiingo_ingest.plan plus original issue9235 session/fill constraints. Not source or rights admission.",
+  "requests": [
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "GLD",
+      "params": {
+        "startDate": "2025-11-28",
+        "endDate": "2025-11-28",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/GLD/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2025-11-28&forceFill=false&resampleFreq=1min&startDate=2025-11-28",
+      "request_identity_sha256": "cd52c555f68dcba7a660721f07792c303166d5a11c9a65e8c75a98898abcf63a"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "AEM",
+      "params": {
+        "startDate": "2025-11-28",
+        "endDate": "2025-11-28",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/AEM/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2025-11-28&forceFill=false&resampleFreq=1min&startDate=2025-11-28",
+      "request_identity_sha256": "2ae840e7d8c98401a6b6a2f2cf1cce86fccea6149c5cfe7fac536d7af3292931"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "SLV",
+      "params": {
+        "startDate": "2025-11-28",
+        "endDate": "2025-11-28",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/SLV/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2025-11-28&forceFill=false&resampleFreq=1min&startDate=2025-11-28",
+      "request_identity_sha256": "47e087faa3e368913d6f2dddb7526a289fe6ac32198f5b73eb0b2ee19680d8ab"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "PAAS",
+      "params": {
+        "startDate": "2025-11-28",
+        "endDate": "2025-11-28",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/PAAS/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2025-11-28&forceFill=false&resampleFreq=1min&startDate=2025-11-28",
+      "request_identity_sha256": "306d7cbe41d1fe806e68bb433b045dba1e239bae2bb2b5dc96a093ca84d085d6"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "USO",
+      "params": {
+        "startDate": "2025-11-28",
+        "endDate": "2025-11-28",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/USO/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2025-11-28&forceFill=false&resampleFreq=1min&startDate=2025-11-28",
+      "request_identity_sha256": "228f1c40ef8135a67067c6b0bab5ef2eb433e1be431e902b9912bea110abbd21"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "COP",
+      "params": {
+        "startDate": "2025-11-28",
+        "endDate": "2025-11-28",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/COP/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2025-11-28&forceFill=false&resampleFreq=1min&startDate=2025-11-28",
+      "request_identity_sha256": "7d12f31efbf08ad30f9773cd32fc1cc6c394a9e295d96b9f96643402bbcfa2ff"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "COPX",
+      "params": {
+        "startDate": "2025-11-28",
+        "endDate": "2025-11-28",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/COPX/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2025-11-28&forceFill=false&resampleFreq=1min&startDate=2025-11-28",
+      "request_identity_sha256": "103a5f702f73216fe596bc0b146d7e73fb0d97e371e27b18dfa67f96c9c15d02"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "FCX",
+      "params": {
+        "startDate": "2025-11-28",
+        "endDate": "2025-11-28",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/FCX/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2025-11-28&forceFill=false&resampleFreq=1min&startDate=2025-11-28",
+      "request_identity_sha256": "8dd487c1af0a22e68d1470fd549efc8b059398f8d33121ee1af1f6b83fdc9182"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "GLD",
+      "params": {
+        "startDate": "2026-01-30",
+        "endDate": "2026-01-30",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/GLD/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-01-30&forceFill=false&resampleFreq=1min&startDate=2026-01-30",
+      "request_identity_sha256": "7ee12334d72475a035830dcef18aa1cd1d97fd8c6fe495a3f7abe7d75f0a4870"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "AEM",
+      "params": {
+        "startDate": "2026-01-30",
+        "endDate": "2026-01-30",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/AEM/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-01-30&forceFill=false&resampleFreq=1min&startDate=2026-01-30",
+      "request_identity_sha256": "67b71ac2ae0f1c49e250fe303199612a1d68069aad794d881d6b6c6fe9c8ff0c"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "SLV",
+      "params": {
+        "startDate": "2026-01-30",
+        "endDate": "2026-01-30",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/SLV/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-01-30&forceFill=false&resampleFreq=1min&startDate=2026-01-30",
+      "request_identity_sha256": "14b0a62efde75eb792bf2024ce0a87bd768a7796541ac14b4a9be6006cec3d9f"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "PAAS",
+      "params": {
+        "startDate": "2026-01-30",
+        "endDate": "2026-01-30",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/PAAS/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-01-30&forceFill=false&resampleFreq=1min&startDate=2026-01-30",
+      "request_identity_sha256": "9dcd5f4f8effde56125fd8bbaf8dba9a8cc14cebfd4daf005feb0e065d948e49"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "USO",
+      "params": {
+        "startDate": "2026-01-30",
+        "endDate": "2026-01-30",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/USO/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-01-30&forceFill=false&resampleFreq=1min&startDate=2026-01-30",
+      "request_identity_sha256": "0b024329887a7a574f4e58e4ce221437d2c37dc8a57c4da20b5ba371cbedb311"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "COP",
+      "params": {
+        "startDate": "2026-01-30",
+        "endDate": "2026-01-30",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/COP/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-01-30&forceFill=false&resampleFreq=1min&startDate=2026-01-30",
+      "request_identity_sha256": "c0b16fa3c4f97d175c9d29565e22ffa0a1a407ead022f1830989118455fa7f6f"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "COPX",
+      "params": {
+        "startDate": "2026-01-30",
+        "endDate": "2026-01-30",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/COPX/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-01-30&forceFill=false&resampleFreq=1min&startDate=2026-01-30",
+      "request_identity_sha256": "f3088d60e5768698a88f5df43ac6659083b467978f1870084d1c83cfb92642be"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "FCX",
+      "params": {
+        "startDate": "2026-01-30",
+        "endDate": "2026-01-30",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/FCX/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-01-30&forceFill=false&resampleFreq=1min&startDate=2026-01-30",
+      "request_identity_sha256": "c43ac271c3cafb5de88d30256d74de4794f94b0eebc15a814731bb40362def24"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "GLD",
+      "params": {
+        "startDate": "2026-10-08",
+        "endDate": "2026-10-08",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/GLD/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-10-08&forceFill=false&resampleFreq=1min&startDate=2026-10-08",
+      "request_identity_sha256": "2e3607f862c653f8be36edb84e7ceec0ef5a3c26b317d57b6742b00b2a4ffc66"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "AEM",
+      "params": {
+        "startDate": "2026-10-08",
+        "endDate": "2026-10-08",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/AEM/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-10-08&forceFill=false&resampleFreq=1min&startDate=2026-10-08",
+      "request_identity_sha256": "0b6842a5cbdd37df7c66c301329a7cb1b7f9c19aaedac444c7e846857ecb1f8b"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "SLV",
+      "params": {
+        "startDate": "2026-10-08",
+        "endDate": "2026-10-08",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/SLV/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-10-08&forceFill=false&resampleFreq=1min&startDate=2026-10-08",
+      "request_identity_sha256": "27c937ddcb7f1a94b91943d7cf2cca032fef185b5310ae52970c0674d5eceb68"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "PAAS",
+      "params": {
+        "startDate": "2026-10-08",
+        "endDate": "2026-10-08",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/PAAS/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-10-08&forceFill=false&resampleFreq=1min&startDate=2026-10-08",
+      "request_identity_sha256": "cd4239f816a054338f16c0b93d408830f268e3dc081399806e2c1e713e3ea799"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "USO",
+      "params": {
+        "startDate": "2026-10-08",
+        "endDate": "2026-10-08",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/USO/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-10-08&forceFill=false&resampleFreq=1min&startDate=2026-10-08",
+      "request_identity_sha256": "1794d070ebbb8305d7bd315abddb2eec9798deb691f87d476c58517935b82d0f"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "COP",
+      "params": {
+        "startDate": "2026-10-08",
+        "endDate": "2026-10-08",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/COP/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-10-08&forceFill=false&resampleFreq=1min&startDate=2026-10-08",
+      "request_identity_sha256": "75e56823e290161c8677ad269db5b9e28016e95069a9ea5cdcb97a1b64ac1d88"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "COPX",
+      "params": {
+        "startDate": "2026-10-08",
+        "endDate": "2026-10-08",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/COPX/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-10-08&forceFill=false&resampleFreq=1min&startDate=2026-10-08",
+      "request_identity_sha256": "9487357e2a54146e074780b9f597ff7518fc1798bd142e6b7d184c9963afbf14"
+    },
+    {
+      "source": "equity-intraday-bars",
+      "symbol": "FCX",
+      "params": {
+        "startDate": "2026-10-08",
+        "endDate": "2026-10-08",
+        "resampleFreq": "1min",
+        "columns": "open,high,low,close,volume",
+        "afterHours": "false",
+        "forceFill": "false"
+      },
+      "request_path": "/tiingo/equity/intraday/FCX/prices?afterHours=false&columns=open,high,low,close,volume&endDate=2026-10-08&forceFill=false&resampleFreq=1min&startDate=2026-10-08",
+      "request_identity_sha256": "12103c8b80e9ef316cf1d8960f64ca61b6aef9020139a87026a8e0dbf5e68850"
+    }
+  ]
+}
