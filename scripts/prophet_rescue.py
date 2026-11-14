@@ -1078,16 +1078,17 @@ def decide(state: WatchdogState) -> list[Action]:
                 f"reports eligible_after_skips={eligible}"
             )
         if intake_breach:
-            reasons.append(f"intake identity check failed: {intake_breach}")
+            reasons.append(f"intake identity monitor condition: {intake_breach}")
         actions.append(Action(
             ALERT, NO_COHORT,
             f"source_asof is current ({src.isoformat() if src else '?'}) but "
             + "; and ".join(reasons)
-            + ". The store advanced and origination still produced nothing or lied "
-            "about its own bookkeeping — a selection/vintage-gate wedge or a "
-            "bookkeeping defect, not a missing bake. A re-dispatch cannot fix "
-            "either, so this alerts only. Read `source_mixed_vintage` and "
-            "`gate_go` in the index.",
+            + ". Zero new plans can reflect explicit validation refusals; it does "
+            "not by itself prove lost intake or an empty session cohort. Inspect "
+            "the reported intake counts and validation stages in this receipt, then the "
+            "bound source and `intake.validation_failures` in the index. This "
+            "alerts only; a re-dispatch is not a remedy for an intake refusal or "
+            "accounting defect. Preserve the temporal and data gates.",
         ))
 
     # ── publish lag: main is the truth, the health receipt only proves publication ──
@@ -1733,6 +1734,56 @@ def annotate(actions: list[Action]) -> None:
               flush=True)
 
 
+def _intake_receipt_lines(index: object) -> list[str]:
+    """Reported diagnostic detail only; never a verdict or dispatch input.
+
+    Counts are copied from the existing index, not a second accounting audit.
+    Missing/malformed values stay unavailable, never measured zero. Do not echo
+    tickers, error text or arbitrary stage strings into the machine-token ledger.
+    """
+    intake = index.get("intake") if isinstance(index, dict) else None
+    if not isinstance(intake, dict):
+        return []
+    fields = (
+        "admitted", "duplicate_id_blocked", "reorigination_blocked",
+        "eligible_after_skips", "validation_failed", "originated",
+        "unaccounted", "truncated",
+    )
+    counts = []
+    for key in fields:
+        value = intake.get(key)
+        shown = value if type(value) is int and 0 <= value <= 2**63 - 1 else "unavailable"
+        counts.append(f"`{key}={shown}`")
+    lossless = intake.get("lossless")
+    shown_lossless = str(lossless).lower() if type(lossless) is bool else "unavailable"
+    lines = [
+        "- Intake counts (reported, not independently audited): "
+        + " · ".join(counts) + f" · `lossless={shown_lossless}`",
+    ]
+    failures = intake.get("validation_failures")
+    if not isinstance(failures, list) or len(failures) > 1000:
+        lines.append("- Validation-stage detail: unavailable (missing, malformed or oversized list).")
+        return lines
+    # Fixed vocabulary from the incumbent originator. Unknown stages remain
+    # visible as a count without allowing prose/newlines to mint ledger tokens.
+    stages = dict.fromkeys((
+        "candidate_identity", "clock_provenance", "entry_price", "plan_inputs",
+        "stale_entry_basis", "geometry", "trade_plan_schema", "unknown_or_malformed",
+    ), 0)
+    for failure in failures:
+        stage = failure.get("stage") if isinstance(failure, dict) else None
+        if not isinstance(stage, str) or stage not in stages:
+            stage = "unknown_or_malformed"
+        stages[stage] += 1
+    detail = " · ".join(f"`{key}={n}`" for key, n in stages.items() if n)
+    lines.append(
+        f"- Validation-stage detail: `{len(failures)}` listed record(s)"
+        + (f" · {detail}" if detail else " · no records listed")
+        + "; compare with reported `validation_failed` above."
+    )
+    return lines
+
+
 def receipt(actions: list[Action], state: WatchdogState, session: date,
             results: list[str], dispatched_at: datetime | None = None, *,
             anchor: date | None = None, day: int = 1) -> str:
@@ -1778,6 +1829,7 @@ def receipt(actions: list[Action], state: WatchdogState, session: date,
         f"- VPS `checks.site.commit_time` (context, not a verdict): "
         f"`{vps.isoformat() if vps else state.vps_error or 'unreadable'}`",
     ]
+    lines += _intake_receipt_lines(state.main_index)
     if facts.anomalies:
         lines.append("- ⚠ run-list parse anomalies: " + "; ".join(facts.anomalies))
     # Info-only detail, never a verdict: the health receipt's source_asof already
