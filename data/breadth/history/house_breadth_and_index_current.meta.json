@@ -1,0 +1,698 @@
+{
+ "rights_class": "house",
+ "relationship_families": {
+  "families": [
+   "rel_customers_of",
+   "rel_suppliers_of"
+  ],
+  "basis": "proposed_relationships_unadmitted",
+  "precision": {
+   "value": 0.6621,
+   "basis": "stratum-weighted, 100-item owner sample, Wilson 95% [0.5596, 0.7646]",
+   "source": "research/theme_graph/GMI_O5_VERIFICATION_VERDICTS_2026-11-02.md:210"
+  },
+  "recall": {
+   "value": 0.3487,
+   "basis": "83/238, 31 issuers, Wilson 95% [0.291, 0.4113]",
+   "source": "research/theme_graph/GMI_O5_VERIFICATION_VERDICTS_2026-11-02.md:201"
+  },
+  "sentence": "About one member in three may be wrong, and about two in three true members are missing. Today's proposed edges are applied to the past.",
+  "hubs_note": "All seven hubs are chips and hardware companies.",
+  "hub_rule": "hubs are the companies with 5 or more counterparties (ruling 32); no further relationship series until the edge set grows"
+ },
+ "basis": "reconstructed_current_membership",
+ "basis_note": "today's members applied to the past; not point-in-time; survivors only",
+ "families": {
+  "basket": {
+   "registry": "data/baskets/membership.json",
+   "registry_sha256": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae",
+   "rights_class": "house",
+   "outputs": [
+    "index"
+   ],
+   "label": "baskets, active members (basket breadth stays in basket_breadth_*_current.parquet on archive prices)",
+   "basis": "reconstructed_current_membership"
+  },
+  "sector": {
+   "registry": "data/breadth/constituents.parquet",
+   "registry_sha256": "99f071b19a24cb6783e8ff061d07ae3006fb833af595602425e2a1eebc5aec2f",
+   "rights_class": "house",
+   "outputs": [
+    "index"
+   ],
+   "label": "S&P 500 GICS sectors (sector breadth stays in group_breadth_*_current.parquet on archive prices)",
+   "basis": "reconstructed_current_membership"
+  },
+  "gmi_theme": {
+   "registry": "data/breadth/history/registry/gmi_theme.csv",
+   "registry_sha256": "e9ad58dba267ab4b4aba63dfc67644a86f3632aa641bbc566048fdf677ebe2c3",
+   "rights_class": "house",
+   "outputs": [
+    "breadth",
+    "index"
+   ],
+   "label": "GMI house themes (18 themes, 15 with US-listed members): open latest-belief company->basket->theme edges of data/theme_graph, US-listed resolved identities; exported by scripts/export_gmi_history_registry.py at the commit in group_links_current.meta.json",
+   "basis": "reconstructed_current_membership"
+  },
+  "gmi_macro_category": {
+   "registry": "data/breadth/history/registry/gmi_macro_category.csv",
+   "registry_sha256": "ebc26de45fc609fa6917968260ee9e79d2713dff72ddb66831dca9d92d1eb254",
+   "rights_class": "house",
+   "outputs": [
+    "breadth",
+    "index"
+   ],
+   "label": "GMI macro categories (10 macro categories, 7 with US-listed members): gmi_theme members rolled up through open PARENT_OF edges",
+   "basis": "reconstructed_current_membership"
+  },
+  "rel_customers_of": {
+   "registry": "data/breadth/history/registry/rel_customers_of.csv",
+   "registry_sha256": "355acfc4f50174dbe1d1847a79f9fd1f88d1df36b0f6ea13462841118bc760fc",
+   "rights_class": "house",
+   "outputs": [
+    "breadth",
+    "index"
+   ],
+   "label": "customers of a supplier hub (group = the supplier: TSM, UMC, AMKR, GFS), from the proposed edges of relationship_edges.json, roles normalised",
+   "basis": "proposed_relationships_unadmitted"
+  },
+  "rel_suppliers_of": {
+   "registry": "data/breadth/history/registry/rel_suppliers_of.csv",
+   "registry_sha256": "47cbf49afa853bd7913d866afbdaf7485bcf53579184ce2e5876788cb7c30a92",
+   "rights_class": "house",
+   "outputs": [
+    "breadth",
+    "index"
+   ],
+   "label": "suppliers of a customer hub (group = the customer: AAPL, FTNT, INTC), from the proposed edges of relationship_edges.json, roles normalised",
+   "basis": "proposed_relationships_unadmitted"
+  }
+ },
+ "multi_group": "a name in several groups counts in each",
+ "group_ids": "gmi_theme and gmi_macro_category group ids are the theme graph's own node ids, unchanged; macro categories are graph nodes of kind theme at tier macro_category, so they carry the theme: prefix too",
+ "price_source": "yfinance yf.download(auto_adjust=True, period='max'), one single-vintage download, held off git; never the collector cache or data/yahoo",
+ "price_vintage": "2026-11-12T07:33:42.601690+00:00",
+ "price_retry": {
+  "vintage": "2026-11-12T07:36:21.718194+00:00",
+  "requested": [
+   "PG",
+   "PK",
+   "PKG",
+   "POOL",
+   "QCOM",
+   "QRVO",
+   "YYGH"
+  ],
+  "served": [
+   "PG",
+   "PK",
+   "PKG",
+   "POOL",
+   "QCOM",
+   "QRVO"
+  ]
+ },
+ "price_topup": {
+  "vintage": "2026-11-12T09:39:20Z",
+  "names": 4,
+  "tickers": [
+   "ALGM",
+   "CRUS",
+   "MXL",
+   "SITM"
+  ],
+  "call": "yf.download(<one ticker>, period='max', auto_adjust=True), one call per ticker",
+  "library": "yfinance 1.4.1",
+  "rule": "each name's full history is from a single download; no ticker has history from two downloads (COO 2026-11-12 09:39Z)",
+  "reason": "members of the relationship-hub families absent from the first download"
+ },
+ "aliases": {
+  "MMC": "MRSH",
+  "FI": "FISV"
+ },
+ "data_end": "2026-11-11",
+ "last_week": "2026-11-06",
+ "source_sentence": "These series sit on a different price source from the sector breadth history (group_breadth_*_current.parquet, Tiingo archive); the two are never joined or mixed.",
+ "start": {
+  "date": "2000-01-01",
+  "reason_before": "second_source_disagreement",
+  "rule": "first January 1 from which every later calendar year has name-week above-200 flag disagreement against the Tiingo archive of 0.5% or less (S&P 500 members priced in both, weeks where both hold 200 sessions)",
+  "note": "200-session averages use the full download, so the first weeks after the start read flags from late in the prior year"
+ },
+ "second_source_disagreement_by_year": {
+  "1962": {
+   "name_weeks": 77,
+   "disagree": 1,
+   "rate": 0.01299
+  },
+  "1963": {
+   "name_weeks": 364,
+   "disagree": 3,
+   "rate": 0.00824
+  },
+  "1964": {
+   "name_weeks": 371,
+   "disagree": 33,
+   "rate": 0.08895
+  },
+  "1965": {
+   "name_weeks": 364,
+   "disagree": 9,
+   "rate": 0.02473
+  },
+  "1966": {
+   "name_weeks": 364,
+   "disagree": 11,
+   "rate": 0.03022
+  },
+  "1967": {
+   "name_weeks": 364,
+   "disagree": 17,
+   "rate": 0.0467
+  },
+  "1968": {
+   "name_weeks": 364,
+   "disagree": 20,
+   "rate": 0.05495
+  },
+  "1969": {
+   "name_weeks": 364,
+   "disagree": 5,
+   "rate": 0.01374
+  },
+  "1970": {
+   "name_weeks": 551,
+   "disagree": 7,
+   "rate": 0.0127
+  },
+  "1971": {
+   "name_weeks": 1144,
+   "disagree": 54,
+   "rate": 0.0472
+  },
+  "1972": {
+   "name_weeks": 1144,
+   "disagree": 79,
+   "rate": 0.06906
+  },
+  "1973": {
+   "name_weeks": 1747,
+   "disagree": 69,
+   "rate": 0.0395
+  },
+  "1974": {
+   "name_weeks": 2107,
+   "disagree": 47,
+   "rate": 0.02231
+  },
+  "1975": {
+   "name_weeks": 2132,
+   "disagree": 75,
+   "rate": 0.03518
+  },
+  "1976": {
+   "name_weeks": 2173,
+   "disagree": 100,
+   "rate": 0.04602
+  },
+  "1977": {
+   "name_weeks": 2198,
+   "disagree": 157,
+   "rate": 0.07143
+  },
+  "1978": {
+   "name_weeks": 2444,
+   "disagree": 200,
+   "rate": 0.08183
+  },
+  "1979": {
+   "name_weeks": 2493,
+   "disagree": 228,
+   "rate": 0.09146
+  },
+  "1980": {
+   "name_weeks": 2595,
+   "disagree": 153,
+   "rate": 0.05896
+  },
+  "1981": {
+   "name_weeks": 2983,
+   "disagree": 258,
+   "rate": 0.08649
+  },
+  "1982": {
+   "name_weeks": 3266,
+   "disagree": 147,
+   "rate": 0.04501
+  },
+  "1983": {
+   "name_weeks": 3940,
+   "disagree": 201,
+   "rate": 0.05102
+  },
+  "1984": {
+   "name_weeks": 4895,
+   "disagree": 276,
+   "rate": 0.05638
+  },
+  "1985": {
+   "name_weeks": 5874,
+   "disagree": 251,
+   "rate": 0.04273
+  },
+  "1986": {
+   "name_weeks": 7133,
+   "disagree": 195,
+   "rate": 0.02734
+  },
+  "1987": {
+   "name_weeks": 8025,
+   "disagree": 222,
+   "rate": 0.02766
+  },
+  "1988": {
+   "name_weeks": 8466,
+   "disagree": 147,
+   "rate": 0.01736
+  },
+  "1989": {
+   "name_weeks": 9332,
+   "disagree": 90,
+   "rate": 0.00964
+  },
+  "1990": {
+   "name_weeks": 9614,
+   "disagree": 98,
+   "rate": 0.01019
+  },
+  "1991": {
+   "name_weeks": 11155,
+   "disagree": 53,
+   "rate": 0.00475
+  },
+  "1992": {
+   "name_weeks": 11821,
+   "disagree": 68,
+   "rate": 0.00575
+  },
+  "1993": {
+   "name_weeks": 12463,
+   "disagree": 117,
+   "rate": 0.00939
+  },
+  "1994": {
+   "name_weeks": 13165,
+   "disagree": 127,
+   "rate": 0.00965
+  },
+  "1995": {
+   "name_weeks": 13817,
+   "disagree": 112,
+   "rate": 0.00811
+  },
+  "1996": {
+   "name_weeks": 14459,
+   "disagree": 543,
+   "rate": 0.03755
+  },
+  "1997": {
+   "name_weeks": 15040,
+   "disagree": 58,
+   "rate": 0.00386
+  },
+  "1998": {
+   "name_weeks": 15923,
+   "disagree": 90,
+   "rate": 0.00565
+  },
+  "1999": {
+   "name_weeks": 16338,
+   "disagree": 104,
+   "rate": 0.00637
+  },
+  "2000": {
+   "name_weeks": 16803,
+   "disagree": 82,
+   "rate": 0.00488
+  },
+  "2001": {
+   "name_weeks": 17453,
+   "disagree": 71,
+   "rate": 0.00407
+  },
+  "2002": {
+   "name_weeks": 18065,
+   "disagree": 47,
+   "rate": 0.0026
+  },
+  "2003": {
+   "name_weeks": 18429,
+   "disagree": 26,
+   "rate": 0.00141
+  },
+  "2004": {
+   "name_weeks": 18944,
+   "disagree": 56,
+   "rate": 0.00296
+  },
+  "2005": {
+   "name_weeks": 18896,
+   "disagree": 62,
+   "rate": 0.00328
+  },
+  "2006": {
+   "name_weeks": 19271,
+   "disagree": 39,
+   "rate": 0.00202
+  },
+  "2007": {
+   "name_weeks": 19633,
+   "disagree": 23,
+   "rate": 0.00117
+  },
+  "2008": {
+   "name_weeks": 20100,
+   "disagree": 12,
+   "rate": 0.0006
+  },
+  "2009": {
+   "name_weeks": 20817,
+   "disagree": 34,
+   "rate": 0.00163
+  },
+  "2010": {
+   "name_weeks": 20557,
+   "disagree": 13,
+   "rate": 0.00063
+  },
+  "2011": {
+   "name_weeks": 21047,
+   "disagree": 14,
+   "rate": 0.00067
+  },
+  "2012": {
+   "name_weeks": 21487,
+   "disagree": 50,
+   "rate": 0.00233
+  },
+  "2013": {
+   "name_weeks": 21813,
+   "disagree": 13,
+   "rate": 0.0006
+  },
+  "2014": {
+   "name_weeks": 22260,
+   "disagree": 11,
+   "rate": 0.00049
+  },
+  "2015": {
+   "name_weeks": 23064,
+   "disagree": 22,
+   "rate": 0.00095
+  },
+  "2016": {
+   "name_weeks": 22942,
+   "disagree": 19,
+   "rate": 0.00083
+  },
+  "2017": {
+   "name_weeks": 23267,
+   "disagree": 14,
+   "rate": 0.0006
+  },
+  "2018": {
+   "name_weeks": 23587,
+   "disagree": 13,
+   "rate": 0.00055
+  },
+  "2019": {
+   "name_weeks": 23789,
+   "disagree": 37,
+   "rate": 0.00156
+  },
+  "2020": {
+   "name_weeks": 24588,
+   "disagree": 17,
+   "rate": 0.00069
+  },
+  "2021": {
+   "name_weeks": 24362,
+   "disagree": 5,
+   "rate": 0.00021
+  },
+  "2022": {
+   "name_weeks": 24676,
+   "disagree": 3,
+   "rate": 0.00012
+  },
+  "2023": {
+   "name_weeks": 24711,
+   "disagree": 12,
+   "rate": 0.00049
+  },
+  "2024": {
+   "name_weeks": 24779,
+   "disagree": 7,
+   "rate": 0.00028
+  },
+  "2025": {
+   "name_weeks": 24992,
+   "disagree": 10,
+   "rate": 0.0004
+  },
+  "2026": {
+   "name_weeks": 19782,
+   "disagree": 9,
+   "rate": 0.00045
+  }
+ },
+ "dividend_sentence": "Before about 2000 the two price vendors (this download and the Tiingo archive behind the sector history) apply dividend adjustment differently in old history; neither is shown to be right. The yearly name-week disagreement table below states the rate.",
+ "group_size_sentence": "In a group of n members the share moves in steps of 100/n; read a small group's share as a count (n_above_200 of n_counted_200). A 13-week change differences two such shares, so in a small group one name moves it a lot.",
+ "floors": {
+  "share_change_rank_state": 2,
+  "index": 2,
+  "counts": "any size",
+  "single_name": "a one-member group has no series; the links table marks it single_name (the stock is the series)",
+  "size_class": "small under 10 counted members on that date, else standard",
+  "rank": "within the same family and size class on each date; no rank across classes",
+  "source": "COO ruling 34 s2 (replaces the floors of rulings 27, 31 and 32 for these files); the live engine's floor is unchanged"
+ },
+ "single_name_groups": {},
+ "index": {
+  "rebalance_rule": "engine.baskets._ew_level: each session the index return is the plain mean of the daily total returns of the members priced that session (daily rebalance to equal weight), chained from 1.0 on the group's first valid session",
+  "return": "total return (auto_adjust closes)",
+  "floor_gap": "On a session with fewer than 2 priced members the level is missing (reason below_index_member_floor) and that session carries no return; the chain resumes from the last valid level.",
+  "dividend_effect": "A difference in dividend method shifts the long-run level of a total-return index, not the timing of its turns.",
+  "survivors_only_effect": "The index holds only names alive today, so its past returns are overstated, more so the further back and in themes with high failure rates; relative turns between groups are less affected than levels, and that is not tested here.",
+  "daily_committed": true,
+  "daily_note": null
+ },
+ "members": {
+  "basket": {
+   "groups": 49,
+   "tickers": 702,
+   "slots": 1020,
+   "tickers_priced": 702,
+   "unpriced": []
+  },
+  "sector": {
+   "groups": 11,
+   "tickers": 503,
+   "slots": 503,
+   "tickers_priced": 503,
+   "unpriced": []
+  },
+  "gmi_theme": {
+   "groups": 15,
+   "tickers": 201,
+   "slots": 235,
+   "tickers_priced": 201,
+   "unpriced": []
+  },
+  "gmi_macro_category": {
+   "groups": 7,
+   "tickers": 201,
+   "slots": 267,
+   "tickers_priced": 201,
+   "unpriced": []
+  },
+  "rel_customers_of": {
+   "groups": 4,
+   "tickers": 22,
+   "slots": 36,
+   "tickers_priced": 22,
+   "unpriced": []
+  },
+  "rel_suppliers_of": {
+   "groups": 3,
+   "tickers": 18,
+   "slots": 19,
+   "tickers_priced": 18,
+   "unpriced": []
+  }
+ },
+ "valid_last_week": {
+  "gmi_theme": 15,
+  "gmi_macro_category": 7,
+  "rel_customers_of": 4,
+  "rel_suppliers_of": 3
+ },
+ "valid_last_week_by_size_class": {
+  "gmi_macro_category": {
+   "standard": 7
+  },
+  "gmi_theme": {
+   "standard": 13,
+   "small": 2
+  },
+  "rel_customers_of": {
+   "small": 3,
+   "standard": 1
+  },
+  "rel_suppliers_of": {
+   "small": 3
+  }
+ },
+ "index_valid_last_week": {
+  "basket": 49,
+  "gmi_macro_category": 7,
+  "gmi_theme": 15,
+  "rel_customers_of": 4,
+  "rel_suppliers_of": 3,
+  "sector": 11
+ },
+ "first_valid_breadth": {
+  "gmi_macro_category/theme:energy_power": "2000-01-07",
+  "gmi_macro_category/theme:financial_services": "2000-01-07",
+  "gmi_macro_category/theme:healthcare_lifesciences": "2000-01-07",
+  "gmi_macro_category/theme:industrials_defense": "2000-01-07",
+  "gmi_macro_category/theme:materials_mining": "2000-01-07",
+  "gmi_macro_category/theme:semiconductors_hardware": "2000-01-07",
+  "gmi_macro_category/theme:technology_software": "2000-01-07",
+  "gmi_theme/theme:ai_semiconductors": "2000-01-07",
+  "gmi_theme/theme:copper_steel_electrify": "2000-01-07",
+  "gmi_theme/theme:cybersecurity": "2013-08-09",
+  "gmi_theme/theme:data_center_power": "2000-01-07",
+  "gmi_theme/theme:defense_aerospace": "2000-01-07",
+  "gmi_theme/theme:fintech_payments": "2000-01-07",
+  "gmi_theme/theme:glp1_obesity": "2000-01-07",
+  "gmi_theme/theme:grid_electrification": "2000-01-07",
+  "gmi_theme/theme:medical_devices": "2000-01-07",
+  "gmi_theme/theme:memory_storage": "2000-01-07",
+  "gmi_theme/theme:nuclear_power": "2000-01-07",
+  "gmi_theme/theme:rare_earth_critical_min": "2001-03-09",
+  "gmi_theme/theme:robotics_automation": "2000-01-07",
+  "gmi_theme/theme:semicap_equipment": "2000-01-07",
+  "gmi_theme/theme:space_satellite": "2000-11-24",
+  "rel_customers_of/AMKR": "2000-01-07",
+  "rel_customers_of/GFS": "2000-01-07",
+  "rel_customers_of/TSM": "2000-01-07",
+  "rel_customers_of/UMC": "2000-01-07",
+  "rel_suppliers_of/AAPL": "2000-01-07",
+  "rel_suppliers_of/FTNT": "2000-01-07",
+  "rel_suppliers_of/INTC": "2000-01-07"
+ },
+ "first_valid_index": {
+  "basket/ai_agents": "2012-06-29",
+  "basket/ai_infra": "2000-01-07",
+  "basket/ai_neoclouds": "2016-04-01",
+  "basket/ai_semiconductors": "2000-01-07",
+  "basket/ai_software": "2000-01-07",
+  "basket/big_pharma": "2000-01-07",
+  "basket/critical_minerals": "2000-02-25",
+  "basket/crypto": "2012-05-04",
+  "basket/crypto_rails": "2000-01-07",
+  "basket/cybersecurity": "2012-07-20",
+  "basket/data_center_power": "2000-01-07",
+  "basket/defense": "2000-01-07",
+  "basket/defensives": "2000-01-07",
+  "basket/energy_complex": "2000-01-07",
+  "basket/gold_miners": "2000-01-07",
+  "basket/housing": "2000-01-07",
+  "basket/industrial_distribution": "2000-01-07",
+  "basket/insurance": "2000-01-07",
+  "basket/mag7": "2000-01-07",
+  "basket/managed_care": "2000-01-07",
+  "basket/memory_storage": "2000-01-07",
+  "basket/non_ai_software": "2000-01-07",
+  "basket/non_ai_tech": "2000-01-07",
+  "basket/nuclear_power": "2010-08-06",
+  "basket/obesity_glp1": "2000-01-07",
+  "basket/payments_fintech": "2000-01-07",
+  "basket/pgm_miners": "2002-01-04",
+  "basket/power_grid": "2000-01-07",
+  "basket/quantum_computing": "2000-01-07",
+  "basket/regional_banks": "2000-01-07",
+  "basket/reshoring": "2000-01-07",
+  "basket/retail": "2000-01-07",
+  "basket/robotics_automation": "2000-01-07",
+  "basket/semicap_equipment": "2000-01-07",
+  "basket/silver_miners": "2000-01-07",
+  "basket/space_economy": "2000-01-07",
+  "basket/travel": "2000-01-07",
+  "basket/uranium_miners": "2000-01-07",
+  "basket/us_sector_comm": "2000-01-07",
+  "basket/us_sector_discretionary": "2000-01-07",
+  "basket/us_sector_energy": "2000-01-07",
+  "basket/us_sector_financials": "2000-01-07",
+  "basket/us_sector_health": "2000-01-07",
+  "basket/us_sector_industrials": "2000-01-07",
+  "basket/us_sector_materials": "2000-01-07",
+  "basket/us_sector_realestate": "2000-01-07",
+  "basket/us_sector_staples": "2000-01-07",
+  "basket/us_sector_tech": "2000-01-07",
+  "basket/us_sector_utilities": "2000-01-07",
+  "gmi_macro_category/theme:energy_power": "2000-01-07",
+  "gmi_macro_category/theme:financial_services": "2000-01-07",
+  "gmi_macro_category/theme:healthcare_lifesciences": "2000-01-07",
+  "gmi_macro_category/theme:industrials_defense": "2000-01-07",
+  "gmi_macro_category/theme:materials_mining": "2000-01-07",
+  "gmi_macro_category/theme:semiconductors_hardware": "2000-01-07",
+  "gmi_macro_category/theme:technology_software": "2000-01-07",
+  "gmi_theme/theme:ai_semiconductors": "2000-01-07",
+  "gmi_theme/theme:copper_steel_electrify": "2000-01-07",
+  "gmi_theme/theme:cybersecurity": "2012-07-20",
+  "gmi_theme/theme:data_center_power": "2000-01-07",
+  "gmi_theme/theme:defense_aerospace": "2000-01-07",
+  "gmi_theme/theme:fintech_payments": "2000-01-07",
+  "gmi_theme/theme:glp1_obesity": "2000-01-07",
+  "gmi_theme/theme:grid_electrification": "2000-01-07",
+  "gmi_theme/theme:medical_devices": "2000-01-07",
+  "gmi_theme/theme:memory_storage": "2000-01-07",
+  "gmi_theme/theme:nuclear_power": "2000-01-07",
+  "gmi_theme/theme:rare_earth_critical_min": "2000-02-25",
+  "gmi_theme/theme:robotics_automation": "2000-01-07",
+  "gmi_theme/theme:semicap_equipment": "2000-01-07",
+  "gmi_theme/theme:space_satellite": "2000-01-07",
+  "rel_customers_of/AMKR": "2000-01-07",
+  "rel_customers_of/GFS": "2000-01-07",
+  "rel_customers_of/TSM": "2000-01-07",
+  "rel_customers_of/UMC": "2000-01-07",
+  "rel_suppliers_of/AAPL": "2000-01-07",
+  "rel_suppliers_of/FTNT": "2000-01-07",
+  "rel_suppliers_of/INTC": "2000-01-07",
+  "sector/Communication Services": "2000-01-07",
+  "sector/Consumer Discretionary": "2000-01-07",
+  "sector/Consumer Staples": "2000-01-07",
+  "sector/Energy": "2000-01-07",
+  "sector/Financials": "2000-01-07",
+  "sector/Health Care": "2000-01-07",
+  "sector/Industrials": "2000-01-07",
+  "sector/Information Technology": "2000-01-07",
+  "sector/Materials": "2000-01-07",
+  "sector/Real Estate": "2000-01-07",
+  "sector/Utilities": "2000-01-07"
+ },
+ "files": [
+  "house_breadth_weekly_current.parquet",
+  "house_ew_index_daily_current.parquet",
+  "house_ew_index_weekly_current.parquet"
+ ],
+ "rows": {
+  "house_breadth_weekly_current.parquet": 40629,
+  "house_ew_index_weekly_current.parquet": 124689,
+  "house_ew_index_daily_current.parquet": 601284
+ },
+ "engine": "engine.group_breadth_history.weekly_fixed_set; engine.baskets._ew_level",
+ "no_outcomes": "no forward returns, no outcome relation, no threshold, no signal"
+}

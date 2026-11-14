@@ -472,6 +472,107 @@ class TestDeadConstantsDeleted:
 _EVENT_LIFECYCLE_READ = "appendLine(grid,'Lifecycle',contextText(body.lifecycle_state));"
 
 
+_RELATED_PLAN_LIFECYCLE_READ = "plan.get('lifecycle_state')"
+
+
+def _qualified_related_plan_lifecycle(text):
+    """Exclude only the existing presenter of independently supplied plan records."""
+    from jinja2 import Environment, nodes
+
+    env = Environment()
+    tree = env.parse(text)
+
+    def expr(source):
+        return env.parse("{{ " + source + " }}").body[0].nodes[0]
+
+    labels = {"life_label_en", "life_label_zh"}
+    shared_import = env.parse(
+        "{% from '_us_prophet_plan_cards.html.j2' import life_label_en, life_label_zh %}"
+    ).body[0]
+    assert list(tree.find_all(nodes.FromImport)) == [shared_import]
+    assert not list(tree.find_all(nodes.Import))
+    assert not any(m.name in labels for m in tree.find_all(nodes.Macro))
+    assert not any(
+        n.name in labels and n.ctx in {"store", "param"}
+        for n in tree.find_all(nodes.Name)
+    )
+
+    bodies = [m for m in tree.find_all(nodes.Macro) if m.name == "body"]
+    assert len(bodies) == 1
+    body = bodies[0]
+    args = [a.name for a in body.args]
+    assert "row" in args and args.count("plan_rel") == 1
+    defaults = dict(zip(args[-len(body.defaults):], body.defaults))
+    assert defaults.get("plan_rel") == expr("{'state': 'none', 'plans': []}")
+
+    # These four bindings and the positive branch establish the actual record
+    # source and gated-state exclusion. A filename or token count alone cannot.
+    definitions = {
+        "_plan_state": "(plan_rel.get('state') if plan_rel is mapping else none) or 'none'",
+        "_plan_rows": "(plan_rel.get('plans') or []) if plan_rel is mapping else []",
+        "_one": "_plan_rows[0] if _plan_rows|length == 1 else none",
+        "_plan_gated": (
+            "_plan_state == 'related_security' and _one is mapping "
+            "and _one.get('shell_state') == 'gated' and not _one.get('id')"
+        ),
+    }
+    assignments = []
+    for name, source in definitions.items():
+        found = [
+            n for n in body.body
+            if isinstance(n, nodes.Assign)
+            and isinstance(n.target, nodes.Name) and n.target.name == name
+        ]
+        assert len(found) == 1 and found[0].node == expr(source), name
+        assignments.append(found[0])
+    branches = [
+        n for n in body.body if isinstance(n, nodes.If)
+        and n.test == expr("_plan_state == 'related_security' and not _plan_gated")
+    ]
+    assert len(branches) == 1
+    branch = branches[0]
+    positions = [body.body.index(n) for n in [*assignments, branch]]
+    assert positions == sorted(positions)
+
+    loops = [
+        n for n in branch.body if isinstance(n, nodes.For)
+        and isinstance(n.target, nodes.Name) and n.target.name == "plan"
+    ]
+    assert len(loops) == 1
+    loop = loops[0]
+    assert loop.iter == expr("plan_rel.get('plans') or []")
+    assert loop.test is None and not loop.recursive and not loop.else_
+    protected = {"plan", "plan_rel", *definitions}
+    allowed_bindings = {
+        id(next(a for a in body.args if a.name == "plan_rel")),
+        id(loop.target),
+        *(id(n.target) for n in assignments),
+    }
+    assert not any(
+        n.name in protected and n.ctx in {"store", "param"}
+        and id(n) not in allowed_bindings
+        for n in body.find_all(nodes.Name)
+    )
+    assert not any(m.name in protected for m in body.find_all(nodes.Macro))
+
+    read = expr(_RELATED_PLAN_LIFECYCLE_READ)
+    reads = [n for n in tree.find_all(nodes.Call) if n == read]
+    loop_calls = list(loop.find_all(nodes.Call))
+    assert text.count("lifecycle_state") == text.count(_RELATED_PLAN_LIFECYCLE_READ) == 3
+    assert len(reads) == 3
+    assert all(any(n is call for call in loop_calls) for n in reads)
+    label_calls = [
+        n for n in tree.find_all(nodes.Call)
+        if isinstance(n.node, nodes.Name) and n.node.name in labels
+    ]
+    assert len(label_calls) == 2
+    for name in labels:
+        expected = expr(name + "(" + _RELATED_PLAN_LIFECYCLE_READ + ")")
+        calls = [n for n in label_calls if n == expected]
+        assert len(calls) == 1 and any(calls[0] is n for n in loop_calls)
+    return text.replace(_RELATED_PLAN_LIFECYCLE_READ, "")
+
+
 def _plan_lifecycle_consumers(root):
     hits = []
     for path in sorted((root / "templates").rglob("*")):
@@ -484,6 +585,10 @@ def _plan_lifecycle_consumers(root):
             assert "event_workspace_public_glance.v1" in text
             assert "context_only" in text
             text = text.replace(_EVENT_LIFECYCLE_READ, "", 1)
+        if relative == "templates/_prophet_setup_detail.html.j2":
+            text = _qualified_related_plan_lifecycle(text)
+        if relative == "templates/_us_prophet_plan_cards.html.j2":
+            assert text.count("lifecycle_state") == text.count("p.get('lifecycle_state')") == 1
         if "prophet" in text.lower() and "lifecycle_state" in text:
             hits.append(relative)
     return hits
@@ -495,8 +600,9 @@ def test_prophet_lifecycle_surface_adoption_is_scoped_to_plan_records():
     The old PR-0(c) guard required the field to stay dark until a surface adopted it
     together with the record-card rail retirement.  That migration is now present on
     the US plan-record partial: it reads `lifecycle_state` and opts into the shared
-    card's `record_only` anatomy.  Keep the consumer closed to that one surface so a
-    second Prophet template cannot silently start a competing lifecycle vocabulary.
+    card's `record_only` anatomy. It owns the shared vocabulary. The related-record
+    presenter delegates to its labels only for independently supplied plan records;
+    candidate state and additional readers remain outside this migration.
     """
     assert _plan_lifecycle_consumers(_REPO) == ["templates/_us_prophet_plan_cards.html.j2"]
 
@@ -546,3 +652,125 @@ def test_article_setup_does_not_promote_candidate_into_plan_record():
             assert (root.get("data-record-only") == "1") is record
             if record:
                 assert not root.select(".nb-px,.pv-edge,.pv-trg,.pv-live")
+
+
+def _related_plan_guard_fixture(tmp_path):
+    templates = tmp_path / "templates"
+    templates.mkdir()
+    for name in (
+        "_us_candidate_pool.html.j2",
+        "_us_prophet_plan_cards.html.j2",
+        "_prophet_setup_detail.html.j2",
+    ):
+        (templates / name).write_text(
+            (_REPO / "templates" / name).read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
+    assert _plan_lifecycle_consumers(tmp_path) == ["templates/_us_prophet_plan_cards.html.j2"]
+    return templates
+
+
+@pytest.mark.parametrize("old,new", [
+    ("", "\n{{ plan.get('lifecycle_state') }}"),
+    ("plan.get('lifecycle_state')", "row.get('lifecycle_state')"),
+    ("for plan in (plan_rel.get('plans') or [])", "for plan in (row.get('plans') or [])"),
+    ('<div class="pvs-plan-rec"', '{% set plan = row %}<div class="pvs-plan-rec"'),
+    ("{% set _plan_state =", "{% set plan_rel = row %}{% set _plan_state ="),
+    ("{% if _plan_state == 'related_security' and not _plan_gated %}",
+     "{% set _one = row %}{% if _plan_state == 'related_security' and not _plan_gated %}"),
+    ("{% if _plan_state == 'related_security' and not _plan_gated %}",
+     "{% if _plan_state == 'related_security' %}"),
+    ("set _plan_state = (plan_rel.get('state')",
+     "set _plan_state = (row.get('state')"),
+    ("from '_us_prophet_plan_cards.html.j2'", "from '_other_plan_labels.html.j2'"),
+    ("import life_label_en, life_label_zh", "import life_label_en as other_label, life_label_zh"),
+    ("{% macro value(v,", "{% macro life_label_en(v,"),
+    ("{% macro body(", "{% set life_label_zh = status_name %}{% macro body("),
+    ("{% for plan in (plan_rel.get('plans') or []) %}",
+     "{% set plan_rel = row %}{% for plan in (plan_rel.get('plans') or []) %}"),
+    ("plan_rel={'state': 'none', 'plans': []}", "plan_rel=row"),
+], ids=[
+    "extra-read", "candidate-state", "candidate-records", "shadow-plan",
+    "shadow-relation", "shadow-gating-record", "removed-gate", "candidate-relation-state",
+    "other-vocabulary", "aliased-vocabulary", "local-vocabulary-macro",
+    "local-vocabulary-binding", "nested-relation-binding", "candidate-default",
+])
+def test_related_plan_consumer_guard_rejects_unqualified_reads(tmp_path, old, new):
+    templates = _related_plan_guard_fixture(tmp_path)
+    path = templates / "_prophet_setup_detail.html.j2"
+    source = path.read_text(encoding="utf-8")
+    if old:
+        assert old in source
+        mutation = source.replace(old, new, 1)
+    else:
+        mutation = source + new
+    path.write_text(mutation, encoding="utf-8")
+    with pytest.raises(AssertionError):
+        _plan_lifecycle_consumers(tmp_path)
+
+
+def test_plan_vocabulary_owner_does_not_hide_an_additional_reader(tmp_path):
+    templates = _related_plan_guard_fixture(tmp_path)
+    path = templates / "_us_prophet_plan_cards.html.j2"
+    path.write_text(path.read_text(encoding="utf-8") + "\n{{ row.lifecycle_state }}",
+                    encoding="utf-8")
+    with pytest.raises(AssertionError):
+        _plan_lifecycle_consumers(tmp_path)
+
+
+def _render_related_plan(plan_rel, candidate_lifecycle="ready"):
+    from bs4 import BeautifulSoup
+    from jinja2 import Environment, FileSystemLoader
+
+    env = Environment(loader=FileSystemLoader(_REPO / "templates"), autoescape=True)
+    presenter = env.get_template("_prophet_setup_detail.html.j2").module
+    row = {"ticker": "CANDIDATE", "lifecycle_state": candidate_lifecycle}
+    html = presenter.body(row, "pool", plan_rel=plan_rel)
+    section = BeautifulSoup(str(html), "html5lib").select_one(".pvs-plan-relation")
+    assert section is not None
+    assert section["data-plan-exact"] == "unavailable"
+    return section
+
+
+@pytest.mark.parametrize("candidate,fields,code,en,zh", [
+    ("ready", {"lifecycle_state": "entered"}, "entered", "Entered", "入场"),
+    ("entered", {"lifecycle_state": "ready"}, "ready", "Ready", "就绪"),
+    ("entered", {}, "", "Unmapped status", "状态未映射"),
+    ("entered", {"lifecycle_state": None}, "", "Unmapped status", "状态未映射"),
+], ids=["plan-entered", "plan-ready", "plan-state-absent", "plan-state-null"])
+def test_related_plan_renders_its_own_shared_lifecycle(candidate, fields, code, en, zh):
+    section = _render_related_plan(
+        {"state": "related_security", "plans": [{"id": "MODEL-001", **fields}]},
+        candidate,
+    )
+    assert section["data-plan-relation"] == "related_security"
+    records = section.select(".pvs-plan-rec")
+    assert len(records) == 1
+    record = records[0]
+    assert record["data-plan-id"] == "MODEL-001"
+    assert record.select_one("code").get_text(strip=True) == "MODEL-001"
+    assert record["data-plan-lifecycle"] == code
+    status = record.find_all("p", recursive=False)[1]
+    assert [s.get_text(strip=True) for s in status.select(".l-en")] == ["Status", en]
+    assert [s.get_text(strip=True) for s in status.select(".l-zh")] == ["状态", zh]
+    assert "It is not this candidate's plan and not a position you hold." in section.get_text()
+    assert "不是此候选的计划，也不是您持有的仓位" in section.get_text()
+
+
+@pytest.mark.parametrize("relation,en,zh", [
+    ({"state": "none", "plans": []},
+     "No open same-security model record found. No plan or position is created here.",
+     "未找到同一证券的未平仓模型记录，不在此创建计划或持仓。"),
+    ({"state": "unknown", "plans": []},
+     "Plan records could not be read for this candidate.", "无法读取此候选的计划记录。"),
+    ({"state": "related_security",
+      "plans": [{"shell_state": "gated", "lifecycle_state": "entered"}]},
+     "A related model record is available with full access.",
+     "完整访问权限可查看相关模型记录。"),
+], ids=["none", "unavailable", "gated"])
+def test_related_plan_without_a_visible_record_has_no_lifecycle(relation, en, zh):
+    section = _render_related_plan(relation)
+    assert section["data-plan-relation"] == relation["state"]
+    assert not section.select(".pvs-plan-rec,[data-plan-lifecycle]")
+    assert en in [s.get_text(strip=True) for s in section.select(".l-en")]
+    assert zh in [s.get_text(strip=True) for s in section.select(".l-zh")]

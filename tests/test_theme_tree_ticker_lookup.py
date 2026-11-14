@@ -668,3 +668,40 @@ def test_template_no_cjk_in_title_attrs():
 def test_template_has_no_inline_style_attributes():
     src = (REPO / "templates" / "theme_tree.html.j2").read_text(encoding="utf-8")
     assert 'style="' not in src
+
+
+# ---------------------------------------------------------------------------
+# W-C2b tier guard: activity-route members of sub/micro themes never change
+# the ticker lookup (SI curation pilot, #11150)
+# ---------------------------------------------------------------------------
+
+
+def test_activity_membership_into_hierarchy_tier_never_changes_lookup():
+    nodes, edges = _fixtures_full()
+    base = _records(nodes, edges)
+    extra_nodes = _mk_nodes(
+        {"node_id": "theme:sub_ai_accel", "name_en": "AI accelerators",
+         "name_zh": "AI加速器", "tier": "sub_theme",
+         "provenance": "crosswalk:config/theme_crosswalk.yml",
+         "computed_at": "2025-01-01T00:00:00Z"},
+        {"node_id": "theme:micro_hbm", "name_en": "HBM",
+         "name_zh": "HBM", "tier": "micro_theme",
+         "provenance": "crosswalk:config/theme_crosswalk.yml",
+         "computed_at": "2025-01-01T00:00:00Z"},
+    )
+    extra_edges = _mk_edges(
+        {"src": "theme:ai_semiconductors", "dst": "theme:sub_ai_accel"},
+        {"src": "theme:sub_ai_accel", "dst": "theme:micro_hbm"},
+        {"type": "MEMBER_OF", "src": "co:us:NVDA", "dst": "theme:sub_ai_accel",
+         "edge_id": "MEMBER_OF:NVDA->sub_ai_accel"},
+        {"type": "MEMBER_OF", "src": "co:us:NOMEMB", "dst": "theme:micro_hbm",
+         "edge_id": "MEMBER_OF:NOMEMB->micro_hbm"},
+    )
+    pilot = _records(pd.concat([nodes, extra_nodes], ignore_index=True),
+                     pd.concat([edges, extra_edges], ignore_index=True))
+    # A company whose only membership is a micro-theme stays "not in graph".
+    assert pilot["us:NOMEMB"] == base["us:NOMEMB"]
+    assert pilot["us:NOMEMB"]["not_in_graph"] is True
+    # A basket member gains no path, abstention or state from a sub-theme row.
+    assert pilot["us:NVDA"] == base["us:NVDA"]
+    assert pilot == base

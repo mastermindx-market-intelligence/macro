@@ -35,6 +35,11 @@ _CTX_FALLBACK = DATA / "neuralweb" / "mastermind_context.json"
 
 # Cap candidate rows for display
 _CANDIDATE_CAP = 25
+_CANDIDATE_EVIDENCE_BLOCKS = (
+    "bottom", "options", "valuation", "leverage", "structural", "dilution",
+    "earnings_ctx", "visibility", "analyst", "government_revenue",
+    "seasonality", "graph_conflicts",
+)
 
 
 # ---------------------------------------------------------------------------
@@ -201,6 +206,10 @@ def _candidate_block(raw: dict) -> list:
 
             rows.append({
                 "ticker":                  ticker,
+                "evidence_blocks": {
+                    key: row[key] for key in _CANDIDATE_EVIDENCE_BLOCKS
+                    if isinstance(row.get(key), (dict, list)) and row[key]
+                },
                 # bottom
                 "bottom_state":            bottom.get("bottom_state"),
                 "trigger_age_ticks":       bottom.get("trigger_age_ticks"),
