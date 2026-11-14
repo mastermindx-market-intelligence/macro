@@ -122,7 +122,7 @@ class _FakeSession:
         return _FakeResponse(url, body, status, headers)
 
 
-def _pin(tmp_path, body, *, primary_headers=None):
+def _pin(tmp_path, body, *, primary_headers=None, tickers=(TICKER,)):
     """Drive run_pin end to end through a fake session into a LocalStore."""
     manifest = build_filing_manifests(SUBMISSIONS, cik=CIK, ticker=TICKER,
                                       recorded_at=RECORDED)[0]
@@ -140,7 +140,7 @@ def _pin(tmp_path, body, *, primary_headers=None):
     targets_path = tmp_path / "targets.json"
     targets_path.write_text(json.dumps({
         "schema": m.TARGETS_SCHEMA,
-        "targets": [{"ticker": TICKER, "cik": CIK, "forms": ["10-K", "10-K/A"]}],
+        "targets": [{"ticker": t, "cik": CIK, "forms": ["10-K", "10-K/A"]} for t in tickers],
     }), encoding="utf-8")
     out = tmp_path / "out"
     store = tmp_path / "store"
@@ -341,7 +341,7 @@ def test_pin_writes_report_snapshot_and_never_creates_latest_pointer(tmp_path):
     assert re.fullmatch(r"ffsecsrc_[0-9a-f]{64}", report["snapshot_id"])
     # The snapshot clock is the injected now (owner may normalize microseconds).
     assert report["snapshot_at"].startswith("2024-03-01T12:00:00")
-    assert (pin.out / "pin_report.json").read_bytes() == n._canonical(report)
+    assert (pin.out / "pin_report.json").read_bytes() == m.report_bytes(report)
     row = pin.row
     assert row["ticker"] == TICKER and row["cik"] == CIK
     assert row["form"] == "10-K" and row["accession"] == ACCESSION
@@ -353,6 +353,44 @@ def test_pin_writes_report_snapshot_and_never_creates_latest_pointer(tmp_path):
     # The shared filing-forensics latest pointer is NEVER published by this lane.
     latest = pin.store / "fundamental_forensics" / "sec-source" / "v1" / "latest.json"
     assert not latest.exists() and not latest.is_symlink()
+
+
+def test_pin_report_for_the_full_target_list_is_written_past_the_owner_object_cap(tmp_path):
+    # Run 43564756554 (51 targets) crashed writing its report: the owner's 16 KB
+    # object cap applies to disclosure objects, not to this lane's run report.
+    tickers = tuple(f"T{i:02d}" for i in range(60))
+    pin = _pin(tmp_path, SEG_BODY, tickers=tickers)
+    raw = (pin.out / "pin_report.json").read_bytes()
+    assert len(raw) > n.MAX_OBJECT_BYTES
+    assert raw == m.report_bytes(pin.report)
+    assert [r["ticker"] for r in json.loads(raw)["targets"]] == list(tickers)
+    assert all("refusal" not in r for r in pin.report["targets"])
+
+
+def test_report_bytes_is_canonical_and_bounded():
+    assert m.report_bytes({"b": 1, "a": "é"}) == '{"a":"é","b":1}'.encode("utf-8")
+    with pytest.raises(m.ReportRefused, match="REPORT_JSON_INVALID"):
+        m.report_bytes({"a": float("nan")})
+    with pytest.raises(m.ReportRefused, match="REPORT_TOO_LARGE"):
+        m.report_bytes({"a": "x" * m.MAX_REPORT_BYTES})
+
+
+def test_pin_report_over_the_ceiling_is_refused_before_the_sync_writes_anything(
+        tmp_path, monkeypatch):
+    # A report that cannot be written must leave no object or snapshot in the store.
+    monkeypatch.setattr(m, "MAX_REPORT_BYTES", 2048)
+    with pytest.raises(m.ReportRefused, match="REPORT_TOO_LARGE"):
+        _pin(tmp_path, SEG_BODY, tickers=tuple(f"T{i:02d}" for i in range(20)))
+    store = tmp_path / "store"
+    assert not store.exists() or not any(p.is_file() for p in store.rglob("*"))
+    assert not (tmp_path / "out" / "pin_report.json").exists()
+
+
+def test_pin_report_at_the_preflight_edge_still_fits_with_its_snapshot_fields(tmp_path):
+    pin = _pin(tmp_path, SEG_BODY)
+    head = len(m.report_bytes(pin.report)) - len(
+        m.report_bytes({"schema": pin.report["schema"], "targets": pin.report["targets"]}))
+    assert 0 < head <= m.REPORT_SNAPSHOT_ALLOWANCE
 
 
 def test_pin_leaves_an_existing_latest_pointer_byte_identical(tmp_path):
@@ -379,6 +417,38 @@ def test_pin_row_carries_an_empty_later_amendments_list_when_none_exist(tmp_path
     assert _pin(tmp_path, SEG_BODY).row["later_amendments"] == []
 
 
+def test_pin_streamed_over_cap_row_records_bytes_at_cut_and_amendments(tmp_path):
+    body = b"x" * (n.MAX_SEC_SOURCE_BYTES + 1)
+    row = _pin(tmp_path, body, primary_headers={"ETag": '"synthetic"'}).row
+    assert row["refusal"] == "DOCUMENT_OVER_CAP"
+    # The stream was cut one byte past the limit; that is all the run knows.
+    assert row["size_bytes"] == n.MAX_SEC_SOURCE_BYTES + 1
+    assert row["size_basis"] == m.SIZE_BASIS_CUT
+    # Refused rows carry the later-amendment list too.
+    assert row["later_amendments"] == []
+    # The refusal message (which names the URL) is never written into the row.
+    assert all("http" not in str(value) for value in row.values())
+
+
+def test_pin_declared_over_cap_row_records_the_declared_size_without_download(tmp_path):
+    declared = n.MAX_SEC_SOURCE_BYTES + 5000
+    headers = {"ETag": '"synthetic"', "Content-Length": str(declared)}
+    pin = _pin(tmp_path, SEG_BODY, primary_headers=headers)
+    assert pin.row["refusal"] == "DOCUMENT_OVER_CAP"
+    assert pin.row["size_bytes"] == declared
+    assert pin.row["size_basis"] == m.SIZE_BASIS_DECLARED
+    # One request for the refused primary; nothing is fetched to measure it.
+    assert pin.session.calls.count(pin.primary_url) == 1
+
+
+def test_over_cap_size_reads_only_the_collector_refusal_shape():
+    limit = n.MAX_SEC_SOURCE_BYTES
+    msg = "SEC archive response exceeds bounded ingest limit ({} > {}) for https://example.test/a.htm"
+    assert m.over_cap_size(ValueError(msg.format(limit + 1, limit))) == (limit + 1, m.SIZE_BASIS_CUT)
+    assert m.over_cap_size(ValueError(msg.format(limit + 9, limit))) == (limit + 9, m.SIZE_BASIS_DECLARED)
+    assert m.over_cap_size(ValueError("SEC archive response has invalid Content-Length")) == (None, None)
+
+
 def test_pin_over_cap_document_is_typed_refusal_skipped_without_retry(tmp_path):
     headers = {"ETag": '"synthetic"', "Content-Length": str(n.MAX_SEC_SOURCE_BYTES + 1)}
     pin = _pin(tmp_path, SEG_BODY, primary_headers=headers)
@@ -400,8 +470,8 @@ def test_packet_owner_decision_and_policy_are_accepted_by_qualify_records(tmp_pa
     pin = _pin(tmp_path, SEG_BODY)
     packet = _run_packet(tmp_path, pin, _packet_request(pin))
     assert packet.report["rows"][0]["status"] == "ADOPTED"
-    stem = f"{TICKER}_{ACCESSION}"
-    spec_raw = (packet.out / f"{stem}_SEGMENT_OWNER_DECISION.json").read_bytes()
+    stem = m.packet_output_stem(_packet_request(pin)["rows"][0])
+    spec_raw =(packet.out / f"{stem}_SEGMENT_OWNER_DECISION.json").read_bytes()
     policy_raw = (packet.out / f"{stem}_SOURCE_POLICY.json").read_bytes()
     registry = (ROOT / o.REGISTRY_PATH).read_bytes()
     snapshot = o.qualify_records("a" * 40, spec_raw, policy_raw, registry,
@@ -426,9 +496,69 @@ def test_packet_missing_anchor_is_typed_row_refusal(tmp_path):
     packet = _run_packet(tmp_path, pin, request)
     row = packet.report["rows"][0]
     assert row["status"] == "REFUSED" and row["refusal"] == "ANCHOR_MISSING"
-    stem = f"{TICKER}_{ACCESSION}"
+    stem = m.packet_output_stem(request["rows"][0])
     assert not (packet.out / f"{stem}_SEGMENT_OWNER_DECISION.json").exists()
     assert not (packet.out / f"{stem}_SOURCE_POLICY.json").exists()
+
+
+def test_packet_two_lines_of_one_filing_produce_four_distinct_files(tmp_path):
+    pin = _pin(tmp_path, SEG_BODY)
+    first = _packet_request(pin)["rows"][0]
+    # A second line of the SAME filing, present in the same span text.
+    second = {**first, "disclosed_line": "Data Center Storage segment"}
+    request = {"schema": m.REQUEST_SCHEMA, "rows": [first, second]}
+    packet = _run_packet(tmp_path, pin, request)
+    assert [r["status"] for r in packet.report["rows"]] == ["ADOPTED", "ADOPTED"]
+    assert packet.report["outcome"] == "complete"
+    stems = [m.packet_output_stem(first), m.packet_output_stem(second)]
+    assert stems[0] != stems[1]
+    assert [r["stem"] for r in packet.report["rows"]] == stems
+    written = sorted(p.name for p in packet.out.iterdir() if p.name != "packet_report.json")
+    assert written == sorted(f"{s}_{kind}.json" for s in stems
+                             for kind in ("SEGMENT_OWNER_DECISION", "SOURCE_POLICY"))
+    lines = {json.loads((packet.out / f"{s}_SEGMENT_OWNER_DECISION.json").read_bytes())["fact"]["disclosed_line"]
+             for s in stems}
+    assert lines == {first["disclosed_line"], second["disclosed_line"]}
+
+
+def test_packet_request_with_colliding_output_names_is_refused_before_any_write(tmp_path):
+    pin = _pin(tmp_path, SEG_BODY)
+    row = _packet_request(pin)["rows"][0]
+    request_path = tmp_path / "request.json"
+    request_path.write_text(json.dumps({"schema": m.REQUEST_SCHEMA, "rows": [row, dict(row)]}),
+                            encoding="utf-8")
+    out = tmp_path / "packet_out"
+    with pytest.raises(m.PacketRequestRefused) as caught:
+        m.run_packet(request_path, pin.report["snapshot_id"], out, local_store=pin.store,
+                     identity_reader=_identity_reader, theme_sources_raw=THEME,
+                     now="2024-03-03T10:00:00Z")
+    assert caught.value.code == "PACKET_OUTPUT_NAME_COLLISION_ROWS_0_1"
+    # Nothing at all was written: not even the output directory or a report.
+    assert not out.exists()
+
+
+def test_packet_cli_names_a_collision_and_exits_two(tmp_path, capsys):
+    pin = _pin(tmp_path, SEG_BODY)
+    row = _packet_request(pin)["rows"][0]
+    request_path = tmp_path / "request.json"
+    request_path.write_text(json.dumps({"schema": m.REQUEST_SCHEMA, "rows": [row, dict(row)]}),
+                            encoding="utf-8")
+    out = tmp_path / "cli_out"
+    code = m.main(["packet", "--request", str(request_path), "--snapshot-id", pin.report["snapshot_id"],
+                   "--out", str(out), "--local-store", str(pin.store)])
+    assert code == 2
+    assert "REFUSED: PACKET_OUTPUT_NAME_COLLISION_ROWS_0_1" in capsys.readouterr().err
+    assert not out.exists()
+
+
+def test_packet_report_says_partial_when_some_rows_are_refused(tmp_path):
+    pin = _pin(tmp_path, SEG_BODY)
+    good = _packet_request(pin)["rows"][0]
+    bad = {**good, "disclosed_line": "Data Center Storage segment",
+           "span_start_anchor": "THIS ANCHOR IS NOT IN THE BODY"}
+    packet = _run_packet(tmp_path, pin, {"schema": m.REQUEST_SCHEMA, "rows": [good, bad]})
+    assert [r["status"] for r in packet.report["rows"]] == ["ADOPTED", "REFUSED"]
+    assert packet.report["outcome"] == "partial"
 
 
 def test_packet_non_unique_anchor_is_typed_row_refusal(tmp_path):
@@ -508,10 +638,29 @@ def _write_manifest(tmp_path, rows):
     return path
 
 
+# Exactly the line scripts/propose_activity_membership.py prints on success
+# (probation.activity_proposal_id = "actprop:" + 24 hex; status PROPOSED).
+REAL_PROPOSAL_ID = "actprop:287edbf7e04b8aba873b7493"
+REAL_WRITER_STDOUT = (
+    f'{{"proposal_id": "{REAL_PROPOSAL_ID}", "status": "PROPOSED", '
+    f'"appended": 1, "unchanged": 0, '
+    f'"ledger": "/home/runner/work/macro/out/activity_proposals.jsonl"}}\n')
+
+
 class _Proc:
     returncode = 0
-    stdout = '{"proposal_id": "actprop_x", "status": "proposed"}\n'
+    stdout = REAL_WRITER_STDOUT
     stderr = ""
+
+
+def test_writer_still_prints_the_shape_the_report_parser_reads():
+    # Guards the parser against drift in the writer's id format and print line.
+    source = (m.ROOT / "scripts" / "propose_activity_membership.py").read_text(encoding="utf-8")
+    assert '{{"proposal_id": "{row["proposal_id"]}", "status": "{row["status"]}", ' in source
+    probation_src = (m.ROOT / "engine" / "theme_graph" / "probation.py").read_text(encoding="utf-8")
+    assert 'return "actprop:" + hashlib.sha256(' in probation_src
+    assert '.hexdigest()[:24]' in probation_src
+    assert '"status": "PROPOSED",' in probation_src
 
 
 def test_run_propose_builds_the_unchanged_cli_argument_list(tmp_path):
@@ -537,7 +686,77 @@ def test_run_propose_builds_the_unchanged_cli_argument_list(tmp_path):
     assert calls[1][0][-1] == "--no-profit-driver"
     assert calls[0][1]["cwd"] == m.ROOT and "shell" not in calls[0][1]
     assert [r["exit_code"] for r in report["rows"]] == [0, 0]
+    assert report["outcome"] == "complete"
+    assert report["rows"][0]["proposal"] == {"proposal_id": REAL_PROPOSAL_ID, "status": "PROPOSED",
+                                             "appended": 1, "unchanged": 0}
+    assert "/home/runner" not in (out / "propose_report.json").read_text(encoding="utf-8")
     assert (out / "propose_report.json").exists()
+
+
+class _RefusedProc:
+    returncode = 2
+    stdout = ""
+    stderr = "REFUSED: SEGMENT_SHARE_INVALID\n"
+
+
+def test_run_propose_report_says_partial_when_the_writer_refuses_partway(tmp_path):
+    procs = iter([_Proc(), _RefusedProc()])
+    rows = [_propose_row(), _propose_row(ticker="BETA")]
+    report = m.run_propose(_write_manifest(tmp_path, rows), tmp_path / "out", python="PY",
+                           runner=lambda cmd, **kwargs: next(procs))
+    assert [r["exit_code"] for r in report["rows"]] == [0, 2]
+    assert report["outcome"] == "partial"
+    assert report["rows"][1]["refusal_codes"] == ["SEGMENT_SHARE_INVALID"]
+    assert report["rows"][1]["proposal"] is None
+
+
+class _ChattyProc:
+    returncode = 2
+    stdout = 'warning: something from a document\n' + REAL_WRITER_STDOUT
+    stderr = ("REFUSED: FACT_KIND_INVALID: unexpected kind 'Revenue from DRAM products'\n"
+              "REFUSED: oddly shaped line\nnoise\n")
+
+
+def test_run_propose_report_carries_only_fixed_shape_fields(tmp_path):
+    out = tmp_path / "out"
+    report = m.run_propose(_write_manifest(tmp_path, [_propose_row()]), out, python="PY",
+                           runner=lambda cmd, **kwargs: _ChattyProc())
+    row = report["rows"][0]
+    assert set(row) == {"ticker", "exit_code", "proposal", "refusal_codes"}
+    assert row["proposal"] == {"proposal_id": REAL_PROPOSAL_ID, "status": "PROPOSED",
+                               "appended": 1, "unchanged": 0}
+    assert row["refusal_codes"] == ["FACT_KIND_INVALID", "UNPARSED_REFUSAL"]
+    raw = (out / "propose_report.json").read_text(encoding="utf-8")
+    for leaked in ("DRAM", "warning", "/home/runner", "ledger", "oddly"):
+        assert leaked not in raw
+
+
+@pytest.mark.parametrize("line", [
+    '{"proposal_id": "actprop_abc123", "status": "PROPOSED"}',
+    '{"proposal_id": "actprop:287edbf7e04b8aba873b7493", "status": "ACCEPTED"}',
+    '{"proposal_id": "actprop:287EDBF7E04B8ABA873B7493", "status": "PROPOSED"}',
+    'actprop:287edbf7e04b8aba873b7493 PROPOSED',
+])
+def test_proposal_parser_refuses_anything_but_the_writer_contract(line):
+    assert m._proposal_result(line + "\n") is None
+
+
+def test_run_propose_refuses_a_manifest_ticker_that_is_not_a_ticker(tmp_path):
+    calls = []
+    with pytest.raises(m.ManifestRowRefused, match="INVALID_TICKER"):
+        m.run_propose(_write_manifest(tmp_path, [_propose_row(ticker="Revenue from DRAM")]),
+                      tmp_path / "out", python="PY", runner=lambda c, **k: calls.append(c))
+    assert calls == [] and not (tmp_path / "out").exists()
+
+
+def test_packet_request_with_an_over_long_disclosed_line_is_refused_before_any_write(tmp_path):
+    rows = [{"ticker": "AAA", "accession": "0000000000-26-000001",
+             "disclosed_line": "x" * (m.MAX_DISCLOSED_LINE_CHARS + 1)}]
+    with pytest.raises(m.PacketRequestRefused, match="PACKET_REQUEST_ROW_0_INVALID"):
+        m._validate_packet_rows(rows)
+    ok = [{"ticker": "AAA", "accession": "0000000000-26-000001",
+           "disclosed_line": "x" * m.MAX_DISCLOSED_LINE_CHARS}]
+    assert len(m._validate_packet_rows(ok)) == 1
 
 
 @pytest.mark.parametrize("bad, code", [
