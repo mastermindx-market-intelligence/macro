@@ -1,7 +1,7 @@
 # Research Explore — Paper design and shared-shell migration
 
 Status: IN PROGRESS. Design work is not implementation or production acceptance.
-Current design frontier: Milestone C7 below. Earlier C4/C5/C6 sections and their continuation boundary are historical; C7 and the linked native Paper inventory supersede their pending actions and counts.
+Current design frontier: Milestone C8 below. Earlier C4–C7 sections and continuation boundaries are historical; C8 and the linked native Paper inventory supersede their pending actions and counts.
 Chairman assignment: 14 November 2026, ChatGPT4; redesign the complete Research > Explore family in Paper, preserve and strengthen existing capabilities, then implement frontend and engines in the Terminal shared shell over subsequent phases.
 This is a scoped migration packet under research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md. It does not create a new shell, data authority, runtime, queue, watchlist, alert service, or publication owner.
 
@@ -298,3 +298,29 @@ All affected Bio and Government roots received guarded finish_working_on_nodes. 
 Start **D1-ALT** in existing file 01M2VWK62FA5S4VVF6G7SBPE5J: source-backed relationship inspection, provider availability and research-status evidence, with a specific engine upgrade contract. Preserve existing Companies/Evidence/mobile/Build roots and Hub/held pages. Then continue the scoped family follow-through and cross-product states in the index. This save is a material checkpoint, not an end to the authorized turn.
 
 No product source edits, merge opt-in, deployment, account action, watch enrollment, external message, trade or daemon was performed.
+
+## Milestone C8 — Alternative Data R2
+
+Disposition: **MORE_WORK_EXISTS**. Six new Paper views extend the design set from 62 to 68: 54 product/responsive/theme/locale views, 11 Build boards and three state sheets. Eleven mobile specimens, intermediate widths at 768 and 1024, and an additional English dark research view are present; systematic parity remains open.
+
+### Delivered and reviewed
+
+Existing file 01M2VWK62FA5S4VVF6G7SBPE5J now contains Relationships (p-P-1/AJA-1), Sources and coverage (p-Q-1/APO-1), dark Research status (p-R-1/AWC-1), unresolved association at 1024 (p-S-1/B7S-1), mobile filing evidence (p-T-1/BAO-1), and advanced Build contract (p-U-1/BC6-1). All are synthetic design fixtures. Existing Alternative Data, Hub and foreign p-O-0 content was preserved.
+
+The source-grounded contract distinguishes record lineage from channel-taxonomy co-firing, valid empty checks from missing/failed feeds, documentary relationship evidence from seed CONTROLS labels, and current scoped Article 3 verdicts from historical HOLD. Provider status requires new receipts from the existing producer; canonical relationship identity and source cuts remain build work.
+
+A bounded read-only visual review found three actionable issues: a 20-day empty card within an active five-day evaluation, wording that implied evaluation had not run, and social-status detail while congressional disclosures was selected. All were corrected. Other horizons now navigate explicitly, the sample floor is stated precisely, and only the selected source owns the inspector. Root review also removed a duplicate company action and moved an always-visible definition into the Coverage scope interaction contract. Final affected screenshots were inspected and all six roots received an observed guarded finish marker.
+
+### Durable evidence
+
+- Alternative Data R2 contract: commit c0d922c65cdad8101e066f2f5ce6eb19353025e1; blob 997e9edadcacb57307e004268eca5428e8ce1b98; exact byte readback matched.
+- 68-frame inventory: commit d3f9afc43d9e49b5a4b3e84f418a638ee8a74002; blob 595c02cea644ebc6f1be337e884c6eb665ea0960.
+- Index: commit b9c89c2fae90b30251fe526f280dbc62b76c17df; blob 14dd6778085334964539bb0233d1986bdaa279b8.
+- Blueprint: commit c9fbba83bfe309bce99aaf29d616fdbb32bcf3ad; blob cfdf03ac56fef3e4dd02b71d6030cc49ef6ef6ae.
+- Source carrier remains the same owned Draft PR #11271. C7 head was reconciled at 6147b0157ea19be7093f7a99ebaac4c1d36af6aa before C8 source writes. Inventory/index/blueprint and this plan must be read back at the resulting C8 head.
+
+### Next active design unit
+
+Start **D1-HUB Models/cohorts, evaluation and source disagreement**. A bounded read-only architecture review is complete. Root source reads confirm legacy calendar-day horizons versus unified trading-day horizons, dropped public cohort/rank fields, immature rows inside the grader's eligible prefilter, and accruing-like exception payloads. The new views must bind evaluator, horizon basis, exact cohort/version, denominator and original source clocks. Preserve named owner outputs/ranks; add no fused score, second ledger or evaluator. Policy remains contextual; a fallback ordering invariance concern needs a focused implementation test before claiming ordering independence.
+
+M1 is the sole qualified Paper carrier; M2 remains fenced. No modifying effect is pending or unknown. No product implementation, runtime collector, external message, watch enrollment, trade, merge or deployment occurred. Continue the next safe design phase in this attended turn; this milestone is not parent acceptance or an automatic stop.
