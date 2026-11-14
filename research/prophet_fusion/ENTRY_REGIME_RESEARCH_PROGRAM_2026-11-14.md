@@ -150,3 +150,15 @@ Initial source/owner recovery and isolated workspace acquisition are complete.
 No strategy performance study has yet run; no live score, order or risk changed.
 Next: save/read back this plan, implement the baseline/feature qualification adapter
 and tests, freeze the exact pilot specification, then execute qualified evidence.
+
+## Baseline qualification amendment before any outcome computation
+
+The live gate includes a separately owned basket-washout waiver and optional event
+latch. Replaying prices alone is not the full live board. P2 therefore explicitly
+names its baseline `technical_core_t12`: the supported research path
+`signal_gate.gate(..., washout_waiver=False, event_latch=None)` on each historical
+prefix. This is a counterfactual technical-core experiment, NOT current-board
+performance. The full board needs original context/latch receipts and its own
+qualified prospective comparison. The exact 12 arms and 11 primary contrasts,
+fixed dates/universe/costs, and non-promotion status are frozen in
+`entry_regime_v1_spec.json`. No candidate outcome has been read or calculated.
