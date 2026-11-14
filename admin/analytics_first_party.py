@@ -22,6 +22,7 @@ Surfaces (all return the {ok, …} / {ok:False, reason} envelope the SPA expects
 from __future__ import annotations
 
 import contextvars
+import copy
 import json
 import os
 import re
@@ -184,6 +185,106 @@ _DEFAULT_BOT_ASN = r"15169|396982"
 # still counted and revealable via 'show bots', so the detection stays auditable.
 _FP_FANOUT = 12
 
+# ── Classifier-set cache (farm fingerprints, operator-excluded cookies) ─────────
+# Two classifiers are properties of the WHOLE history, change slowly, and were being
+# recomputed inside every panel statement on a small, shared instance:
+#
+#   fp_farm   "how many cookies and IPs share this fingerprint, ever" — a handful of shared
+#             fingerprints carry most of the store (one alone: 82,680 events / 30,346
+#             cookies), so the group-by was ~3s of a ~5s 24h Visitors fold.
+#   excluded  the operator's own cookies + their fingerprint/IP-linked siblings — 2,152 ids,
+#             ~1-4s standalone and up to 6.3s of the 7-day Sessions fold.
+#
+# (production 2026-11-12). The background warmer recomputes both once per pass and the
+# panels inline the result as a literal. Row-identical to the live CTEs: `bots` only tests
+# the fingerprints of in-window identities, and a global farm set restricted to those IS the
+# windowed set; the global `excluded` set is a superset of the focused one whose extra
+# members have no in-window event, so they cannot change an in-window row (the argument
+# _cte(focus_excluded=) already rests on). Each entry is keyed on the exact live SQL it
+# replaces, so an exclusions-config edit misses the cache instead of serving the old set.
+# A miss, or an entry older than _CLASSIFIER_MAX_AGE_S (a local run, a fresh process, a
+# stalled warmer), falls back to the live CTE: a stale cache costs speed, never more than
+# one warm interval of lag.
+_CLASSIFIER_MAX_AGE_S = float(os.environ.get("ANALYTICS_CLASSIFIER_MAX_AGE_S") or 900)
+_CLASSIFIER_MAX_VALUES = 20000
+_SET_VALUE_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
+_CLASSIFIER_LOCK = threading.Lock()
+_CLASSIFIER_CACHE: dict = {}   # name -> {"key": str, "values": tuple, "at": float}
+
+
+def _cached_set(name: str, key: str):
+    """The cached value tuple for `name` computed from SQL `key`, or None when unusable."""
+    with _CLASSIFIER_LOCK:
+        c = _CLASSIFIER_CACHE.get(name)
+    if not c or c["key"] != key or time.monotonic() - c["at"] > _CLASSIFIER_MAX_AGE_S:
+        return None
+    return c["values"]
+
+
+def _classifier_values(rows, col: str) -> tuple[str, ...] | None:
+    """Accept a complete classifier result, including a genuine empty list."""
+    if not isinstance(rows, list):
+        return None
+    values: set[str] = set()
+    for row in rows:
+        value = row.get(col) if isinstance(row, dict) else None
+        if not isinstance(value, str) or not _SET_VALUE_RE.fullmatch(value):
+            return None
+        values.add(value)
+        if len(values) > _CLASSIFIER_MAX_VALUES:
+            return None
+    return tuple(sorted(values))
+
+
+def _refresh_set(name: str, key: str, sql: str, col: str) -> None:
+    rows = _query(sql)
+    if rows is None:
+        return
+    values = _classifier_values(rows, col)
+    with _CLASSIFIER_LOCK:
+        if values is None:
+            entry = _CLASSIFIER_CACHE.get(name)
+            if entry and entry["key"] == key:
+                del _CLASSIFIER_CACHE[name]
+            return
+        _CLASSIFIER_CACHE[name] = {"key": key, "values": values, "at": time.monotonic()}
+
+
+def _text_set_sql(values, col: str) -> str:
+    if not values:
+        return f"select null::text as {col} where false"
+    return f"select unnest(array[{','.join(_sql_str(v) for v in values)}]::text[]) as {col}"
+
+
+def _farm_fanout() -> int:
+    try:
+        return int(_load_exclusions()["bots"].get("fp_fanout", _FP_FANOUT))
+    except (TypeError, ValueError):
+        return _FP_FANOUT
+
+
+def _farm_body_sql(fanout: int, where: str = "where fp is not null") -> str:
+    return (f"select fp from public.analytics_events {where} group by fp "
+            f"having count(distinct visitor_id) >= {fanout} and count(distinct ip) >= {fanout}")
+
+
+def refresh_classifier_cache() -> None:
+    """Recompute the cached global classifier sets (full-store; warmer only — nobody waits
+    on it). Each set refreshes independently, so one failing leaves the other usable."""
+    fanout = _farm_fanout()
+    if fanout >= 2:
+        try:
+            body = _farm_body_sql(fanout)
+            _refresh_set("farm", body, body, "fp")
+        except Exception:  # noqa: BLE001 — a failed refresh leaves the live-CTE fallback
+            pass
+    try:
+        ctes = _excluded_cte(live=True)
+        _refresh_set("excluded", ctes, f"with {ctes} select visitor_id from excluded",
+                     "visitor_id")
+    except Exception:  # noqa: BLE001
+        pass
+
 
 def _sql_str(s) -> str:
     """A single-quoted SQL string literal with embedded quotes doubled (raw-SQL endpoint)."""
@@ -240,12 +341,23 @@ def _load_exclusions() -> dict:
             "bots": bots, "geo_overrides": geo}
 
 
-def _excluded_cte(*, focus_visitors: bool = False) -> str:
+def _excluded_cte(*, focus_visitors: bool = False, live: bool = False) -> str:
     """CTE bodies (excl_users, excl_geo_ips, excl_ips, excl_vids, excl_seed, excl_link,
     excluded) — always syntactically valid regardless of config. `excluded` is the set of
     visitor_id cookies to hide: the operator's own (via registered email, a home-location IP,
     a listed IP, a listed cookie id, or a loopback IP — see _LOOPBACK_IPS) PLUS the cookies
-    linked to them by shared device fingerprint or routable IP."""
+    linked to them by shared device fingerprint or routable IP.
+
+    When the warmer holds a fresh global `excluded` set for this exact config, `excluded`
+    is that literal (see _CLASSIFIER_CACHE); excl_seed/excl_link are then unreferenced and
+    Postgres never executes them. `live=True` forces the computed form (the warmer's own
+    refresh, and the cache key)."""
+    if not live:
+        global_sql = _excluded_cte(live=True)
+        cached = _cached_set("excluded", global_sql)
+        if cached is not None:
+            head = global_sql[:global_sql.index("excluded as (")]
+            return head + f"excluded as ({_text_set_sql(cached, 'visitor_id')})"
     cfg = _load_exclusions()
     # Only pages projects OUTPUT IDs; global seeds/anchors/customer history stay intact.
     target_focus = " and e2.visitor_id in (select visitor_id from focus_visitors)" if focus_visitors else ""
@@ -359,10 +471,7 @@ def _bot_cte(window_minutes: int | None = None, *, include_search: bool = False)
     bot_ips = _clean_ips(bots_cfg.get("ips"))
     ips_body = (f"select unnest(array[{','.join(_sql_str(i) for i in bot_ips)}]::text[]) as ip"
                 if bot_ips else "select null::text as ip where false")
-    try:
-        fanout = int(bots_cfg.get("fp_fanout", _FP_FANOUT))
-    except (TypeError, ValueError):
-        fanout = _FP_FANOUT
+    fanout = _farm_fanout()
     focus = ""
     focus_prefix = ""
     if window_minutes:
@@ -384,10 +493,13 @@ def _bot_cte(window_minutes: int | None = None, *, include_search: bool = False)
     farm_where = "where fp is not null"
     if window_minutes:
         farm_where += " and fp in (select fp from focus_fp)"
-    farm_body = (
-        f"select fp from public.analytics_events {farm_where} group by fp "
-        f"having count(distinct visitor_id) >= {fanout} and count(distinct ip) >= {fanout}"
-        if fanout >= 2 else "select null::text as fp where false")
+    cached = _cached_set("farm", _farm_body_sql(fanout)) if fanout >= 2 else None
+    if fanout < 2:
+        farm_body = "select null::text as fp where false"
+    elif cached is not None:
+        farm_body = _text_set_sql(cached, "fp")
+    else:
+        farm_body = _farm_body_sql(fanout, farm_where)
     # A prefix the operator manually relabelled (geo_overrides) is a curated REAL user —
     # never let the datacenter/org heuristic auto-flag it as a bot (e.g. a residential-VPN
     # exit read as datacenter).
@@ -398,27 +510,35 @@ def _bot_cte(window_minutes: int | None = None, *, include_search: bool = False)
         focus_prefix +
         f"bot_ips as ({ips_body}), "
         f"fp_farm as ({farm_body}), "
-        # Every signal below is a function of (visitor_id, ua, ip, fp) plus the ip_geo
-        # row that `ip` joins to, and the result is a DISTINCT visitor_id either way —
-        # so evaluating them once per EVENT was pure repetition. It made the 40-branch
-        # case-insensitive UA regex run 58,702 times instead of 8,189 (production
-        # 2026-08-26: 2.32s -> 0.72s, and the set is unchanged — symmetric difference 0
-        # against the old definition inside ONE snapshot, so live traffic between two
-        # round trips cannot be what made it look equal). Reducing to distinct
-        # identity tuples FIRST is what makes the regex affordable; it also
-        # keeps the cost tied to how many distinct devices exist rather than to how
-        # much they browsed.
-        "bot_sig as (select distinct visitor_id, ua, ip, fp from public.analytics_events "
-        f"  where visitor_id is not null{focus}), "
-        "bots as (select distinct e.visitor_id from bot_sig e "
-        "  left join public.ip_geo g on g.ip = e.ip "
-        "  where e.visitor_id is not null and ("
-        "    e.ip in (select ip from bot_ips) "
-        f"    or (e.ua is not null and e.ua ~* {_sql_str(ua)}) "
-        "    or (g.is_hosting is true and coalesce(g.is_vpn, false) = false) "
+        # Each signal is a function of ONE column, so classify that column's small set of
+        # distinct values once, then test events against the classified sets by hashed
+        # membership. The 40-branch case-insensitive UA regex runs once per distinct
+        # user-agent (not per event, nor per (visitor, ua, ip, fp) tuple), and the network
+        # rules run once per ip_geo row. The previous form distincted every wide
+        # (visitor_id, ua, ip, fp) tuple first; on the 7-day window that was 136k rows into
+        # 37k groups and 5.7s of a 10.7s Visitors fold (production 2026-11-12). Same set:
+        # `ip_geo.ip` is the primary key, so the old left join contributed at most one geo
+        # row per ip — exactly `e.ip in bot_net`; `ua in bot_ua` is `ua is not null and ua ~*`;
+        # and the keep-prefix guard still applies to the same event's ip.
+        # MATERIALIZED is load-bearing: without the fence the planner pushes the regex
+        # below the DISTINCT and evaluates it on every event row — 253k evaluations,
+        # 26s on the 7-day window (production 2026-11-12) — instead of ~330 distinct UAs.
+        "ua_seen as materialized (select distinct ua from public.analytics_events "
+        f"  where visitor_id is not null and ua is not null{focus}), "
+        f"bot_ua as (select ua from ua_seen where ua ~* {_sql_str(ua)}), "
+        "bot_net as (select ip from bot_ips union "
+        "  select g.ip from public.ip_geo g where "
+        "    (g.is_hosting is true and coalesce(g.is_vpn, false) = false) "
         f"    or (g.org is not null and g.org ~* {_sql_str(org)}) "
-        f"    or (g.asn is not null and g.asn::text ~* {_sql_str(asn)}) "
-        "    or (e.fp is not null and e.fp in (select fp from fp_farm)))"
+        f"    or (g.asn is not null and g.asn::text ~* {_sql_str(asn)})), "
+        # MATERIALIZED: computed once per statement. Inlined, the planner emitted it as two
+        # separate subplans in the Visitors/Sessions folds (the full-history fp_farm group-by
+        # twice) — measured 3.3s + 2.1s on the 24h Visitors statement, production 2026-11-12.
+        "bots as materialized (select distinct e.visitor_id from public.analytics_events e "
+        f"  where e.visitor_id is not null{focus} and ("
+        "    e.ip in (select ip from bot_net) "
+        "    or e.ua in (select ua from bot_ua) "
+        "    or e.fp in (select fp from fp_farm))"
         f"{keep_clause})"
     )
 
@@ -509,8 +629,23 @@ def _cte(include_ident: bool = False, include_candidate: bool = False,
 
 def _not_a_bot(alias: str = "e") -> str:
     """WHERE fragment that drops crawler/automation cookies. Null visitor_id is KEPT."""
-    col = f"{alias}.visitor_id" if alias else "visitor_id"
-    return f"({col} is null or {col} not in (select visitor_id from bots))"
+    if alias:
+        return _not_member(f"{alias}.visitor_id", "bots")
+    return "(visitor_id is null or visitor_id not in (select visitor_id from bots))"
+
+
+def _not_member(col: str, cte: str) -> str:
+    """`col` is NOT one of the visitor_ids in `cte` — as an anti-join, not `not in`.
+
+    `x not in (select ...)` can only be hashed when the planner believes the whole set fits
+    in hash memory; otherwise it re-scans the set once PER OUTER ROW. On the 30-day Sessions
+    fold the planner over-estimated `excluded` at 287k rows (actual: 797), chose the linear
+    form, and re-scanned it 210,022 times — 37s of a 67s statement (production 2026-11-12).
+    `not exists` plans as a hash anti-join regardless of that estimate. Row-identical here:
+    neither set ever holds a NULL visitor_id (every arm filters it), and a NULL `col` matches
+    nothing, so it is kept exactly as the `col is null or ...` guard kept it. Needs a
+    qualified `col`; an unaliased caller keeps the `not in` form."""
+    return f"not exists (select 1 from {cte} nx where nx.visitor_id = {col})"
 
 
 def _apply_geo_overrides(rows, ip_key: str = "ip"):
@@ -538,8 +673,9 @@ def _not_excluded(alias: str = "e") -> str:
     """WHERE fragment that drops the operator's hidden cookies. `alias` = table alias
     holding visitor_id ('' for an unaliased table). Null visitor_id is KEPT (it can't be a
     hidden cookie, and a bare `not in` would drop it via SQL three-valued logic)."""
-    col = f"{alias}.visitor_id" if alias else "visitor_id"
-    return f"({col} is null or {col} not in (select visitor_id from excluded))"
+    if alias:
+        return _not_member(f"{alias}.visitor_id", "excluded")
+    return "(visitor_id is null or visitor_id not in (select visitor_id from excluded))"
 
 
 def _not_excluded_search() -> str:
@@ -588,6 +724,17 @@ _OVERVIEW_ALLTIME_TIMEOUT_S = 0.75
 # 6 statements at once, so the worst case is ~192MB of transient sort memory on a box with
 # 224MB of shared_buffers; it is set per statement, not per session, and does not leak.
 _QUERY_PRELUDE = "set local work_mem = '16MB'; "
+
+# Server-side cancellation. The HTTP read timeout below only stops THIS process waiting;
+# Postgres keeps executing the statement until the role's own statement_timeout (2min on
+# this project). Measured on production 2026-11-12: six abandoned Visitors/Sessions folds
+# were still running 46s-1m53s after their panels had already reported the 9s timeout,
+# each retry and warm pass stacking another on a small instance — so a bare
+# `select count(*)` on the analytics table took 11.9s and every panel stayed cold and
+# slow. Bounding the statement to the same budget the caller waits for makes an
+# abandoned query die with its request instead of starving the next one.
+def _statement_timeout_sql(timeout_s: float) -> str:
+    return f"set local statement_timeout = '{max(500, int(timeout_s * 1000))}ms'; "
 
 # Whole-surface budget. Every panel here is a chain of round trips to the Supabase
 # Management API, and admin.mastermind-x.com is served THROUGH a CDN edge (see the
@@ -683,7 +830,8 @@ def _query(sql: str, timeout_cap_s: float | None = None):
         r = requests.post(
             f"{_API}/projects/{ref}/database/query",
             headers={"Authorization": f"Bearer {pat}", "Content-Type": "application/json"},
-            json={"query": _QUERY_PRELUDE + sql}, timeout=timeout)
+            json={"query": _statement_timeout_sql(timeout) + _QUERY_PRELUDE + sql},
+            timeout=timeout + 1.0)
     except requests.exceptions.Timeout:
         # urllib3's own wording ("HTTPSConnectionPool(host='api.supabase.com', port=443):
         # Read timed out. (read timeout=9.0)") was reaching the operator verbatim. It names
@@ -696,6 +844,12 @@ def _query(sql: str, timeout_cap_s: float | None = None):
             "(Supabase Management API) — a full-store scan outran the panel budget; "
             "narrow the window and retry") from None
     if not (200 <= r.status_code < 300):   # the query endpoint answers 201 on success
+        if "57014" in r.text or "statement timeout" in r.text:
+            # The server-side statement_timeout above fired: same budget, same honest message.
+            raise TimeoutError(
+                f"analytics query did not finish within {timeout:.1f}s "
+                "(Supabase Management API) — a full-store scan outran the panel budget; "
+                "narrow the window and retry")
         raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
     return r.json()
 
@@ -757,7 +911,13 @@ def _guard(fn):
     # ones _parallel runs on worker threads — shares one deadline rather than each
     # getting its own independent 20s.
     budget = _BUDGET_OVERRIDE.get() or _REQUEST_BUDGET_S
-    token = _DEADLINE.set(time.monotonic() + budget)
+    deadline = time.monotonic() + budget
+    # A warmer owns one entire-pass deadline. Nested panels may shorten it,
+    # but must not create four new independent 90-second allowances.
+    inherited = _DEADLINE.get()
+    if inherited is not None:
+        deadline = min(deadline, inherited)
+    token = _DEADLINE.set(deadline)
     try:
         return {"ok": True, **fn()}
     except Exception as e:  # noqa: BLE001
@@ -781,22 +941,116 @@ _WARM_QUERY_TIMEOUT_S = float(os.environ.get("ANALYTICS_WARM_QUERY_TIMEOUT_S") o
 _WARM_BUDGET_S = float(os.environ.get("ANALYTICS_WARM_BUDGET_S") or 90)
 
 
+# Successful, periodically recomputed operator snapshots. The full 30-day visit fold
+# cannot reliably finish inside an edge-facing 9s request even with indexed SQL.
+# The background warmer owns that work; an interactive request only reads a bounded,
+# config-keyed, deep-copied result. Never cache failures, searched/bot-included views
+# or explicit forced refreshes. The authenticated HTTP handler remains the access gate.
+_WARM_SNAPSHOT_MAX_AGE_S = float(os.environ.get("ANALYTICS_WARM_SNAPSHOT_MAX_AGE_S") or 900)
+_WARM_SNAPSHOT_LOCK = threading.Lock()
+_WARM_SNAPSHOT_CACHE: dict[tuple, tuple[float, dict]] = {}
+_WARM_COMPUTING: contextvars.ContextVar[bool] = contextvars.ContextVar(
+    "fp_warm_computing", default=False)
+
+
+def _snapshot_key(panel: str, n: int, m: int, gap: int, q: str = "",
+                  include_bots: bool = False) -> tuple | None:
+    if q or include_bots or m not in (1440, 43200):
+        return None
+    try:
+        # Exclusion, bot and geo override edits must never serve an old population.
+        policy = json.dumps(_load_exclusions(), sort_keys=True, ensure_ascii=True)
+    except Exception:  # noqa: BLE001 — never fail a live panel over a cache key
+        return None
+    return panel, n, m, gap, policy
+
+
+def _snapshot_read(panel: str, n: int, m: int, gap: int, q: str,
+                   include_bots: bool, force: bool = False) -> dict | None:
+    if force or _WARM_COMPUTING.get():
+        return None
+    key = _snapshot_key(panel, n, m, gap, q, include_bots)
+    if key is None:
+        return None
+    with _WARM_SNAPSHOT_LOCK:
+        entry = _WARM_SNAPSHOT_CACHE.get(key)
+        if entry and entry[0] > time.monotonic():
+            return copy.deepcopy(entry[1])
+        if entry:
+            _WARM_SNAPSHOT_CACHE.pop(key, None)
+    return None
+
+
+def _snapshot_store(panel: str, n: int, m: int, gap: int, result: dict,
+                    *, expected_key: tuple | None) -> None:
+    if not isinstance(result, dict) or result.get("ok") is not True:
+        return
+    # The SQL may have been built before an operator changed an exclusion or bot
+    # policy. Never store old-population rows under the *new* policy identity.
+    # Concurrent consumers compute their own current key, so an edit after this
+    # check also makes the old entry unreachable.
+    if expected_key is None or expected_key != _snapshot_key(panel, n, m, gap):
+        return
+    key = expected_key
+    now = time.monotonic()
+    with _WARM_SNAPSHOT_LOCK:
+        for old in [k for k, (until, _) in _WARM_SNAPSHOT_CACHE.items() if until <= now]:
+            _WARM_SNAPSHOT_CACHE.pop(old, None)
+        _WARM_SNAPSHOT_CACHE[key] = (now + _WARM_SNAPSHOT_MAX_AGE_S,
+                                     copy.deepcopy(result))
+        # Exactly four default window/panel variants are warmed. Bound retained PII.
+        while len(_WARM_SNAPSHOT_CACHE) > 8:
+            _WARM_SNAPSHOT_CACHE.pop(next(iter(_WARM_SNAPSHOT_CACHE)))
+
+
+def _panel_rows(sql: str) -> list:
+    """A panel fold's rows, admitted only as a well-formed row array.
+
+    The Management API answers 201 with a JSON array of row objects on success, but a
+    malformed body (null/object/scalar, or a list carrying null/string/number entries)
+    must never be served — or cached by the warmer — as a successful population. A
+    genuine empty list IS valid (a real empty window). Raising here makes _guard report
+    failure, so a malformed refresh neither replaces a known-good snapshot nor renews its
+    age (the snapshot cache would otherwise persist one bad upstream body for its whole
+    max age). Top-level row shape only; this is not a field-schema validator."""
+    rows = _query(sql)
+    if not isinstance(rows, list) or any(not isinstance(r, dict) for r in rows):
+        raise ValueError("malformed analytics row set")
+    return rows
+
+
 def warm_panels() -> None:
-    """One warm pass over the two heaviest panels. Never raises."""
+    """Rebuild default 24h and 30d snapshots, with a bounded global warm-pass cost."""
     try:
         if not status()["configured"]:
             return
-    except Exception:  # noqa: BLE001 — a warm pass must never take the server down
+    except Exception:  # noqa: BLE001 — never take the HTTP service down
         return
     t_base = _BASE_TIMEOUT.set(_WARM_QUERY_TIMEOUT_S)
     t_budget = _BUDGET_OVERRIDE.set(_WARM_BUDGET_S)
+    t_compute = _WARM_COMPUTING.set(True)
+    deadline = time.monotonic() + _WARM_BUDGET_S
+    t_deadline = _DEADLINE.set(deadline)
     try:
-        for fn in (visitors, sessions):
-            try:
-                fn(limit=100, minutes=1440)
-            except Exception:  # noqa: BLE001 — one panel failing must not stop the other
-                pass
+        refresh_classifier_cache()   # classifier queries share the same deadline
+        for minutes in (1440, 43200):
+            for panel, fn, limit in (("visitors", visitors, 250),
+                                     ("sessions", sessions, 100)):
+                if time.monotonic() >= deadline:
+                    return   # shed background work rather than contend with event writes
+                try:
+                    # Capture the source population identity BEFORE SQL construction;
+                    # a policy edited during its execution must never relabel the result.
+                    gap = _gap(None)
+                    source_key = _snapshot_key(panel, limit, minutes, gap)
+                    result = fn(limit=limit, minutes=minutes)
+                    _snapshot_store(panel, limit, minutes, gap, result,
+                                    expected_key=source_key)
+                except Exception:  # noqa: BLE001 — one failed warm pass is not a cached result
+                    pass
     finally:
+        _DEADLINE.reset(t_deadline)
+        _WARM_COMPUTING.reset(t_compute)
         _BUDGET_OVERRIDE.reset(t_budget)
         _BASE_TIMEOUT.reset(t_base)
 
@@ -958,7 +1212,7 @@ def geo(days=30, limit=200, minutes=None) -> dict:
     return _guard(run)
 
 
-def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=None) -> dict:
+def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=None, force=False) -> dict:
     """Recent VISITS — one row per continuous sitting, not per raw session_id.
 
     Rows still ship under the `sessions` key and still carry a `session_id` (the FIRST raw
@@ -985,7 +1239,10 @@ def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=N
         conds.append("s.is_bot = 0")          # crawlers hidden unless explicitly revealed
     where = ("where " + " and ".join(conds) + " ") if conds else ""
     def run():
-        rows = _query(_cte(include_ident=True, include_candidate=True, candidate_window=m,
+        cached = _snapshot_read("sessions", n, m, g, qq, include_bots, force)
+        if cached is not None:
+            return cached
+        rows = _panel_rows(_cte(include_ident=True, include_candidate=True, candidate_window=m,
                            bot_window=m, focus_excluded=True) +
             # ev: in-window, non-hidden events tagged with their canonical person, so a
             # signed-in visitor's separate macro/terminal cookies stitch into one visit.
@@ -1029,13 +1286,13 @@ def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=N
             "left join cand c on c.visitor_id = s.visitor_id "
             "left join auth.users cu on cu.id::text = c.uid "
             f"{where}"
-            f"order by s.started desc, s.session_id limit {n}") or []
+            f"order by s.started desc, s.session_id limit {n}")
         return {"sessions": _apply_geo_overrides(rows), "q": qq, "include_bots": include_bots,
                 "tz": _TZ, "tz_label": _tz_label(), "visit_gap_min": g}
     return _guard(run)
 
 
-def visitors(limit=250, q="", include_bots=False, minutes=None, days=None, gap=None) -> dict:
+def visitors(limit=250, q="", include_bots=False, minutes=None, days=None, gap=None, force=False) -> dict:
     """One row per PERSON — the 'Frequent Visitors' list.
 
     Identity resolution: any anonymous cookie (mm_aid) that ever appears on a signed-in
@@ -1062,7 +1319,10 @@ def visitors(limit=250, q="", include_bots=False, minutes=None, days=None, gap=N
         conds.append("v.is_bot = 0")           # crawlers hidden unless explicitly revealed
     where = ("where " + " and ".join(conds) + " ") if conds else ""
     def run():
-        rows = _query(
+        cached = _snapshot_read("visitors", n, m, g, qq, include_bots, force)
+        if cached is not None:
+            return cached
+        rows = _panel_rows(
             # ident: each mm_aid -> the user uuid it belongs to (if ever authenticated).
             # A cookie signed into by 2+ DIFFERENT accounts (shared/kiosk device) is
             # AMBIGUOUS — excluded from the auto-merge so one person's activity is never
@@ -1105,7 +1365,7 @@ def visitors(limit=250, q="", include_bots=False, minutes=None, days=None, gap=N
             "left join auth.users cu on cu.id::text = c.uid "
             "left join public.ip_geo g on g.ip = v.last_ip "
             f"{where}"
-            f"order by v.sessions desc, v.last_seen desc, v.canon limit {n}") or []
+            f"order by v.sessions desc, v.last_seen desc, v.canon limit {n}")
         return {"visitors": _apply_geo_overrides(rows, "last_ip"), "q": qq,
                 "include_bots": include_bots, "tz": _TZ, "tz_label": _tz_label(),
                 "visit_gap_min": g}

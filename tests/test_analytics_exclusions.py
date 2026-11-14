@@ -42,7 +42,7 @@ def test_routable_excludes_loopback():
 
 def test_not_excluded_keeps_null_visitor():
     # a bare `not in` would drop null rows via 3-valued logic — must be guarded
-    assert a._not_excluded("e") == "(e.visitor_id is null or e.visitor_id not in (select visitor_id from excluded))"
+    assert a._not_excluded("e") == "not exists (select 1 from excluded nx where nx.visitor_id = e.visitor_id)"
     assert a._not_excluded("") == "(visitor_id is null or visitor_id not in (select visitor_id from excluded))"
 
 
@@ -134,7 +134,7 @@ def test_visitors_applies_exclusion_and_filter(monkeypatch):
     assert out["ok"] is True and out["q"] == "a or 11"
     sql = seen["sql"]
     assert "with ident as" in sql and "excluded as" in sql
-    assert "not in (select visitor_id from excluded)" in sql       # ev filtered
+    assert "not exists (select 1 from excluded nx where nx.visitor_id = e.visitor_id)" in sql       # ev filtered
     assert "ilike '%a or 11%'" in sql                              # sanitized filter inlined
     assert "1=1" not in sql                                        # injection neutralised
     assert "limit 250" in sql
@@ -245,9 +245,12 @@ def test_session_and_visitor_profiles_select_names(monkeypatch):
 def test_overview_and_realtime_filter_excluded(monkeypatch):
     seen = _capture(monkeypatch)
     a.overview(days=7)
-    assert "not in (select visitor_id from excluded)" in seen["sql"]
-    a.realtime()
-    assert "not in (select visitor_id from excluded)" in seen["sql"]
+    assert "not exists (select 1 from excluded nx" in seen["sql"]
+    seen["all"].clear()
+    a.realtime()   # two concurrent statements: one unaliased, one aliased
+    joined = " ".join(seen["all"])
+    assert "not in (select visitor_id from excluded)" in joined
+    assert "not exists (select 1 from excluded nx" in joined
 
 
 def test_terminal_filters_search_events_by_operator(monkeypatch):
@@ -284,14 +287,15 @@ def test_bot_cte_signals_and_config_extension(monkeypatch):
     })
     cte = a._bot_cte()
     assert "'34.122.147.229'" in cte                        # config bot IP
-    assert "e.ua ~*" in cte and "Googlebot" in cte and "MyScanner" in cte   # default + extension
+    assert "from ua_seen where ua ~*" in cte and "Googlebot" in cte and "MyScanner" in cte   # default + extension
     assert "g.is_hosting is true and coalesce(g.is_vpn, false) = false" in cte  # datacenter-not-VPN
     assert "g.org ~*" in cte and "meta platforms" in cte and "acme labs" in cte
     assert "g.asn::text ~*" in cte and "396982" in cte and "64500" in cte  # Google ASN default + extension
 
 
 def test_not_a_bot_predicate_null_safe():
-    assert a._not_a_bot("e") == "(e.visitor_id is null or e.visitor_id not in (select visitor_id from bots))"
+    assert a._not_a_bot("e") == "not exists (select 1 from bots nx where nx.visitor_id = e.visitor_id)"
+    assert a._not_a_bot("") == "(visitor_id is null or visitor_id not in (select visitor_id from bots))"
 
 
 def test_geo_override_prefix_is_exempt_from_bot_detection(monkeypatch):
@@ -307,7 +311,7 @@ def test_geo_override_prefix_is_exempt_from_bot_detection(monkeypatch):
 def test_visitors_and_sessions_hide_bots_by_default(monkeypatch):
     seen = _capture(monkeypatch)
     a.visitors()
-    assert "v.is_bot = 0" in seen["sql"] and "bots as (" in seen["sql"]
+    assert "v.is_bot = 0" in seen["sql"] and "bots as materialized (" in seen["sql"]
     a.sessions()
     assert "s.is_bot = 0" in seen["sql"]
 
@@ -326,7 +330,7 @@ def test_overview_reports_bot_count_and_humans_only(monkeypatch):
     seen = _capture(monkeypatch)
     a.overview(days=7)
     joined = " ".join(seen["all"])
-    assert "not in (select visitor_id from bots)" in joined                     # humans-only counts
+    assert "not exists (select 1 from bots nx" in joined                        # humans-only counts
     assert "e.visitor_id in (select visitor_id from bots)" in joined            # bots counted separately
 
 
@@ -417,21 +421,28 @@ def test_excl_link_does_not_join_on_an_or_of_two_keys(monkeypatch):
 
 
 def test_bot_signals_are_evaluated_per_identity_not_per_event(monkeypatch):
-    """The bot predicates must read a DISTINCT (visitor_id, ua, ip, fp) set.
+    """The bot predicates must run once per distinct UA / IP / fp, not per event.
 
-    Every signal is a function of that tuple plus the ip_geo row `ip` joins to, and
-    the output is a distinct visitor_id either way — so running them per event just
-    re-ran the 40-branch case-insensitive UA regex on rows that could not change the
-    answer (production: 58,702 evaluations vs 8,189, 2.32s -> 0.72s, same 4,192 ids).
+    The UA regex is a function of `ua` alone and the network signals of `ip` (plus
+    the ip_geo row it joins to), so the regex runs over the DISTINCT ua set and the
+    network test over ip_geo; events then match by set membership. `ua_seen` must be
+    MATERIALIZED, or the planner pushes the 40-branch case-insensitive regex back
+    into the per-row scan (production: 253k evaluations, 26s). `bots` must be
+    MATERIALIZED so it is computed once even though two predicates reference it.
     """
     monkeypatch.setattr(a, "_load_exclusions", lambda: dict(_BARE_CFG))
     cte = a._bot_cte()
-    assert "bot_sig as (select distinct visitor_id, ua, ip, fp" in cte
-    bots = cte.split("bots as (", 1)[1]
-    assert "from bot_sig e" in bots, "bots must read the reduced set, not the event table"
-    assert "from public.analytics_events e " not in bots
+    assert "bot_sig" not in cte
+    assert "ua_seen as materialized (select distinct ua" in cte
+    assert "bot_ua as (select ua from ua_seen where ua ~*" in cte
+    net = cte.split("bot_net as (", 1)[1].split("bots as materialized (", 1)[0]
+    assert "from public.ip_geo g" in net and "g.is_hosting is true" in net
+    bots = cte.split("bots as materialized (", 1)[1]
     # The signals themselves are unchanged — this is a cost fix, not a policy change.
-    assert "e.ua ~*" in bots and "g.is_hosting is true" in bots and "e.fp in (select fp from fp_farm)" in bots
+    assert "e.ua in (select ua from bot_ua)" in bots
+    assert "e.ip in (select ip from bot_net)" in bots
+    assert "e.fp in (select fp from fp_farm)" in bots
+    assert " ~* " not in bots, "no regex may run per event"
 
 
 def test_request_budget_stays_under_the_edge_origin_pull_timeout():

@@ -1142,12 +1142,14 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(analytics_first_party.sessions(
                     limit=(q.get("limit") or ["100"])[0], q=(q.get("q") or [""])[0],
                     include_bots=(q.get("bots") or ["0"])[0] in ("1", "true", "yes"),
-                    minutes=(q.get("minutes") or [None])[0], gap=(q.get("gap") or [None])[0]))
+                    minutes=(q.get("minutes") or [None])[0], gap=(q.get("gap") or [None])[0],
+                    force=(q.get("force") or ["0"])[0].lower() in ("1", "true", "yes", "on")))
             if path == "/api/analytics/fp/visitors":
                 return self._json(analytics_first_party.visitors(
                     limit=(q.get("limit") or ["250"])[0], q=(q.get("q") or [""])[0],
                     include_bots=(q.get("bots") or ["0"])[0] in ("1", "true", "yes"),
-                    minutes=(q.get("minutes") or [None])[0], gap=(q.get("gap") or [None])[0]))
+                    minutes=(q.get("minutes") or [None])[0], gap=(q.get("gap") or [None])[0],
+                    force=(q.get("force") or ["0"])[0].lower() in ("1", "true", "yes", "on")))
             if path == "/api/analytics/fp/session":
                 return self._json(analytics_first_party.session(
                     (q.get("id") or [""])[0], gap=(q.get("gap") or [None])[0]))

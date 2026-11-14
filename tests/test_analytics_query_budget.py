@@ -98,7 +98,7 @@ def test_every_statement_carries_the_sort_memory_prelude(patched):
 
     assert a._query("select 1") == [{"n": 1}]
     assert "16MB" in a._QUERY_PRELUDE
-    assert sent["query"] == a._QUERY_PRELUDE + "select 1"
+    assert sent["query"] == a._statement_timeout_sql(a._QUERY_TIMEOUT_S) + a._QUERY_PRELUDE + "select 1"
 
 
 def test_timeout_cap_narrows_the_reported_budget(patched):
@@ -111,3 +111,348 @@ def test_timeout_cap_narrows_the_reported_budget(patched):
 
     with pytest.raises(TimeoutError, match=r"within 0\.8s"):
         a._query("select 1", timeout_cap_s=0.75)
+
+
+def test_every_statement_is_bounded_server_side_by_its_own_budget(patched):
+    """An abandoned HTTP request must not leave its statement running.
+
+    The role's statement_timeout is 2min, so before this every panel the client gave up on
+    kept scanning server-side for up to 1m53s (production 2026-11-12) and the stacked
+    orphans starved the next attempt. `set local statement_timeout` bounds the statement
+    to the same budget the client waits for.
+    """
+    sent = {}
+
+    class _Response:
+        status_code = 201
+        text = ""
+
+        @staticmethod
+        def json():
+            return []
+
+    def capture(url, headers=None, json=None, timeout=None):
+        sent.update(json, http_timeout=timeout)
+        return _Response()
+
+    patched.setattr(a.requests, "post", capture)
+    a._query("select 1", timeout_cap_s=3)
+    assert sent["query"].startswith("set local statement_timeout = '3000ms'; ")
+    assert sent["http_timeout"] > 3   # the server, not the socket, fires first
+    assert a._statement_timeout_sql(0.1) == "set local statement_timeout = '500ms'; "
+
+
+def test_server_side_statement_timeout_reads_as_the_panel_budget(patched):
+    class _Response:
+        status_code = 400
+        text = '{"message":"ERROR:  57014: canceling statement due to statement timeout"}'
+
+    patched.setattr(a.requests, "post", lambda *args, **kwargs: _Response())
+    with pytest.raises(TimeoutError, match=r"did not finish within 9\.0s"):
+        a._query("select 1")
+
+
+def test_other_upstream_errors_are_not_disguised_as_timeouts(patched):
+    class _Response:
+        status_code = 400
+        text = '{"message":"ERROR:  42P01: relation does not exist"}'
+
+    patched.setattr(a.requests, "post", lambda *args, **kwargs: _Response())
+    with pytest.raises(RuntimeError, match="HTTP 400"):
+        a._query("select 1")
+
+
+# ---- warmer-held classifier sets (farm fingerprints, excluded cookies) ------------
+# A fresh entry for the exact live SQL replaces the full-store CTE with a literal; a miss,
+# a stale entry, a config change or an unexpected value shape falls back to the live CTE.
+_CACHE_CFG = {"emails": [], "locations": [], "ips": [], "visitor_ids": [],
+        "bots": {}, "geo_overrides": []}
+
+
+@pytest.fixture
+def cache(monkeypatch):
+    monkeypatch.setattr(a, "_load_exclusions", lambda: dict(_CACHE_CFG))
+    monkeypatch.setattr(a, "_CLASSIFIER_CACHE", {})
+    return a._CLASSIFIER_CACHE
+
+
+def _refresh(monkeypatch, farm=("fp1",), excluded=("v1", "v2")):
+    def fake_query(sql, *args, **kwargs):
+        if sql.startswith("with "):
+            return [{"visitor_id": v} for v in excluded]
+        return [{"fp": f} for f in farm]
+    monkeypatch.setattr(a, "_query", fake_query)
+    a.refresh_classifier_cache()
+
+
+def test_cold_cache_uses_the_live_ctes(cache):
+    assert "excl_link" in a._excluded_cte().split("excluded as (", 1)[1]
+    assert "group by fp" in a._bot_cte()
+
+
+def test_fresh_cache_inlines_the_sets(monkeypatch, cache):
+    _refresh(monkeypatch)
+    excl = a._excluded_cte()
+    assert excl.split("excluded as (", 1)[1] == \
+        "select unnest(array['v1','v2']::text[]) as visitor_id)"
+    assert "excl_users" in excl          # siblings stay defined (other surfaces read them)
+    bots = a._bot_cte()
+    assert "group by fp" not in bots and "array['fp1']::text[]" in bots
+
+
+def test_empty_sets_stay_valid_sql(monkeypatch, cache):
+    _refresh(monkeypatch, farm=(), excluded=())
+    assert "select null::text as visitor_id where false" in a._excluded_cte()
+    assert "select null::text as fp where false" in a._bot_cte()
+
+
+def test_stale_entry_falls_back(monkeypatch, cache):
+    _refresh(monkeypatch)
+    monkeypatch.setattr(a, "_CLASSIFIER_MAX_AGE_S", -1)
+    assert "array['v1','v2']" not in a._excluded_cte()
+    assert "group by fp" in a._bot_cte()
+
+
+def test_config_change_misses_the_cache(monkeypatch, cache):
+    _refresh(monkeypatch)
+    monkeypatch.setattr(a, "_load_exclusions", lambda: dict(_CACHE_CFG, ips=["9.9.9.9"]))
+    assert "array['v1','v2']" not in a._excluded_cte()
+    monkeypatch.setattr(a, "_load_exclusions", lambda: dict(_CACHE_CFG, bots={"fp_fanout": 30}))
+    assert "array['fp1']" not in a._bot_cte()
+
+
+def test_unexpected_value_shape_is_never_cached(monkeypatch, cache):
+    _refresh(monkeypatch)
+    _refresh(monkeypatch, excluded=("v1", "it's odd"))
+    assert "excluded" not in cache               # old entry dropped, not served
+    assert "farm" in cache
+    assert "excl_link" in a._excluded_cte().split("excluded as (", 1)[1]
+
+
+@pytest.mark.parametrize("rows", [
+    {}, "v1", [None], [{}], [{"visitor_id": None}],
+    [{"visitor_id": False}], [{"visitor_id": 42}], [{"visitor_id": "v1\n"}],
+    [{"visitor_id": "v1"}, {"wrong_column": "v2"}],
+])
+def test_malformed_refresh_discards_only_the_affected_set(monkeypatch, cache, rows):
+    _refresh(monkeypatch)
+    peer = cache["farm"]
+    key = cache["excluded"]["key"]
+    monkeypatch.setattr(a, "_query", lambda sql: rows)
+    a._refresh_set("excluded", key, "query", "visitor_id")
+    assert "excluded" not in cache
+    assert cache["farm"] is peer
+    assert "excl_link" in a._excluded_cte().split("excluded as (", 1)[1]
+
+
+def test_malformed_old_refresh_keeps_a_newer_configuration(monkeypatch, cache):
+    _refresh(monkeypatch)
+    current = cache["excluded"]
+    monkeypatch.setattr(a, "_query", lambda sql: [{"visitor_id": None}])
+    a._refresh_set("excluded", "previous-config", "query", "visitor_id")
+    assert cache["excluded"] is current
+
+
+def test_refresh_caps_distinct_values_and_accepts_an_empty_result(monkeypatch, cache):
+    monkeypatch.setattr(a, "_CLASSIFIER_MAX_VALUES", 1)
+    _refresh(monkeypatch, excluded=("v1", "v1"))
+    assert cache["excluded"]["values"] == ("v1",)
+    _refresh(monkeypatch, excluded=("v1", "v2"))
+    assert "excluded" not in cache
+    _refresh(monkeypatch, excluded=())
+    assert cache["excluded"]["values"] == ()
+
+
+def test_one_failing_refresh_leaves_the_other(monkeypatch, cache):
+    def fake_query(sql, *args, **kwargs):
+        if sql.startswith("with "):
+            raise TimeoutError("slow")
+        return [{"fp": "fp1"}]
+    monkeypatch.setattr(a, "_query", fake_query)
+    a.refresh_classifier_cache()
+    assert set(cache) == {"farm"}
+
+
+# ---- Warmed 30-day snapshots: successful-only, population-keyed, force bypass ----
+
+@pytest.fixture
+def warm_snapshots(monkeypatch):
+    monkeypatch.setattr(a.settings, "supabase_pat", lambda: "sbp_test")
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_CACHE", {})
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_MAX_AGE_S", 900.0)
+    config = {"emails": [], "locations": [], "ips": [], "visitor_ids": [],
+              "bots": {}, "geo_overrides": []}
+    monkeypatch.setattr(a, "_load_exclusions", lambda: config)
+    monkeypatch.setattr(a, "refresh_classifier_cache", lambda: None)
+    calls = []
+    def query(sql, *args, **kwargs):
+        calls.append(sql)
+        return []
+    monkeypatch.setattr(a, "_query", query)
+    return config, calls
+
+
+def test_warmer_builds_correct_default_panel_windows(warm_snapshots):
+    _, calls = warm_snapshots
+    a.warm_panels()
+    assert len(calls) == 4  # Visitors/Sessions at 24h and 30d, one query each
+    assert len(a._WARM_SNAPSHOT_CACHE) == 4
+    for m in (1440, 43200):
+        assert a.visitors(limit=250, minutes=m)["ok"] is True
+        assert a.sessions(limit=100, minutes=m)["ok"] is True
+    assert len(calls) == 4, "dashboard defaults must use the warm snapshots"
+    a.sessions(minutes=10080)
+    assert len(calls) == 5, "the 7-day window must remain a live read"
+
+
+def test_snapshots_do_not_override_force_filters_or_policy_changes(warm_snapshots):
+    config, calls = warm_snapshots
+    a.warm_panels()
+    a.sessions(minutes=43200, force=True)
+    a.sessions(minutes=43200, q="search")
+    a.sessions(minutes=43200, include_bots=True)
+    a.sessions(minutes=43200, gap=60)
+    assert len(calls) == 8
+    config["ips"] = ["192.0.2.44"]
+    a.sessions(minutes=43200)
+    assert len(calls) == 9, "an exclusions edit must invalidate the prior snapshot"
+
+
+def test_snapshot_copy_staleness_and_failures(warm_snapshots, monkeypatch):
+    _, calls = warm_snapshots
+    a.warm_panels()
+    first = a.visitors(minutes=43200)
+    first["visitors"].append({"visitor_id": "made-up"})
+    assert a.visitors(minutes=43200)["visitors"] == []
+    assert len(calls) == 4
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_MAX_AGE_S", -1)
+    a._snapshot_store("sessions", 100, 43200, a._gap(None),
+                      {"ok": False, "error": "bad"},
+                      expected_key=a._snapshot_key("sessions", 100, 43200, a._gap(None)))
+    assert a.sessions(minutes=43200)["ok"] is True
+    assert len(calls) == 4, "a failed refresh must not overwrite a successful one"
+    a._snapshot_store("sessions", 100, 43200, a._gap(None),
+                      {"ok": True, "sessions": []},
+                      expected_key=a._snapshot_key("sessions", 100, 43200, a._gap(None)))
+    a.sessions(minutes=43200)
+    assert len(calls) == 5, "expired snapshots must fall back to an actual query"
+
+
+
+def test_policy_change_during_sql_never_relabels_warmed_rows(warm_snapshots, monkeypatch):
+    config, calls = warm_snapshots
+    original_query = a._query
+    changed = [False]
+
+    def intervening_query(sql, *args, **kwargs):
+        # First 24h Visitors SQL was authored for the old exclusion population.
+        # The operator changes it while the Management API request is outstanding.
+        if not changed[0]:
+            config["ips"] = ["192.0.2.44"]
+            changed[0] = True
+        return original_query(sql, *args, **kwargs)
+
+    monkeypatch.setattr(a, "_query", intervening_query)
+    a.warm_panels()
+    assert len(calls) == 4
+    assert len(a._WARM_SNAPSHOT_CACHE) == 3
+    a.visitors(minutes=1440)
+    assert len(calls) == 5, "old visitor result must not be cached under the new policy"
+
+
+def test_warmer_global_deadline_cannot_be_reset_by_each_panel(warm_snapshots, monkeypatch):
+    _, calls = warm_snapshots
+    clock = [1000.0]
+    seen_deadlines = []
+    monkeypatch.setattr(a.time, "monotonic", lambda: clock[0])
+    monkeypatch.setattr(a, "_WARM_BUDGET_S", 30.0)
+
+    def advancing_query(sql, *args, **kwargs):
+        seen_deadlines.append(a._DEADLINE.get())
+        calls.append(sql)
+        clock[0] += 20.0
+        return []
+
+    monkeypatch.setattr(a, "_query", advancing_query)
+    a.warm_panels()
+    assert seen_deadlines == [1030.0, 1030.0], (
+        "each panel must inherit the original 30-second warm-pass deadline")
+    assert len(calls) == 2, "do not start expensive 30d work beyond the global deadline"
+    assert a._DEADLINE.get() is None, "the global deadline must not leak into requests"
+
+
+# ---- Panel row-set admission: a malformed upstream body is never a population ----
+
+@pytest.mark.parametrize("payload", [
+    None, {}, False, 0, "", {"error": "synthetic"}, {"rows": []},
+    [None], ["synthetic"], [3], [{"visitor_id": "v"}, None],
+])
+def test_panel_rows_rejects_malformed_bodies(monkeypatch, payload):
+    monkeypatch.setattr(a, "_query", lambda sql, *args, **kwargs: payload)
+    with pytest.raises(ValueError, match="malformed analytics row set"):
+        a._panel_rows("select 1")
+
+
+def test_panel_rows_accepts_genuine_empty_and_row_arrays(monkeypatch):
+    monkeypatch.setattr(a, "_query", lambda sql, *args, **kwargs: [])
+    assert a._panel_rows("select 1") == []          # a real empty window is valid
+    rows = [{"visitor_id": "v", "session_id": "s", "events": 2}]
+    monkeypatch.setattr(a, "_query", lambda sql, *args, **kwargs: rows)
+    assert a._panel_rows("select 1") == rows
+
+
+@pytest.mark.parametrize("payload", [
+    None, {}, False, 0, "", {"error": "synthetic"}, {"rows": []},
+    [None], ["synthetic"], [3],
+])
+def test_malformed_warm_refresh_preserves_good_snapshot_and_age(monkeypatch, payload):
+    monkeypatch.setattr(a.settings, "supabase_pat", lambda: "sbp_test")
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_CACHE", {})
+    monkeypatch.setattr(a, "_CLASSIFIER_CACHE", {})
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_MAX_AGE_S", 900.0)
+    monkeypatch.setattr(a, "_load_exclusions", lambda: {
+        "emails": [], "locations": [], "ips": [], "visitor_ids": [],
+        "bots": {}, "geo_overrides": []})
+    monkeypatch.setattr(a, "refresh_classifier_cache", lambda: None)
+    clock = [1000.0]
+    monkeypatch.setattr(a.time, "monotonic", lambda: clock[0])
+    good = [{"visitor_id": "retained-v", "session_id": "retained-s", "events": 1}]
+    state = {"rows": good}
+    monkeypatch.setattr(a, "_query", lambda sql, *args, **kwargs: state["rows"])
+
+    a.warm_panels()
+    assert len(a._WARM_SNAPSHOT_CACHE) == 4
+    key = a._snapshot_key("visitors", 250, 1440, a._gap(None))
+    original_expiry = a._WARM_SNAPSHOT_CACHE[key][0]
+
+    clock[0] += 100.0
+    state["rows"] = payload                 # upstream returns a malformed 201 body
+    a.warm_panels()
+    assert a._WARM_SNAPSHOT_CACHE[key][0] == original_expiry, "must not renew the age"
+    for minutes in (1440, 43200):
+        v = a.visitors(minutes=minutes)
+        s = a.sessions(minutes=minutes)
+        assert v["ok"] is True and v["visitors"] == good
+        assert s["ok"] is True and s["sessions"] == good
+    clock[0] = original_expiry - 0.5        # still inside the ORIGINAL lifetime
+    assert a.visitors(minutes=1440)["visitors"] == good
+
+
+def test_genuine_empty_population_is_warmed_and_served(monkeypatch):
+    monkeypatch.setattr(a.settings, "supabase_pat", lambda: "sbp_test")
+    monkeypatch.setattr(a, "_WARM_SNAPSHOT_CACHE", {})
+    monkeypatch.setattr(a, "_CLASSIFIER_CACHE", {})
+    monkeypatch.setattr(a, "_load_exclusions", lambda: {
+        "emails": [], "locations": [], "ips": [], "visitor_ids": [],
+        "bots": {}, "geo_overrides": []})
+    monkeypatch.setattr(a, "refresh_classifier_cache", lambda: None)
+    calls = []
+    def query(sql, *args, **kwargs):
+        calls.append(sql)
+        return []                            # a genuine empty window
+    monkeypatch.setattr(a, "_query", query)
+    a.warm_panels()
+    assert len(a._WARM_SNAPSHOT_CACHE) == 4
+    assert a.visitors(minutes=43200)["visitors"] == []
+    assert a.sessions(minutes=43200)["sessions"] == []
+    assert len(calls) == 4, "a genuine empty population is a valid cached snapshot"
