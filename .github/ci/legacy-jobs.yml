@@ -12639,6 +12639,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - ".github/ci/legacy-jobs.yml"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -13949,6 +13950,9 @@ jobs:
         run: python -m pytest tests/test_fif_g_pack_gold.py tests/test_fif_g_pack_kernel.py -q -m "not data_gate"
       - name: FIF desk page health and financial compare Node regressions
         run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs tests/fundamental_forensics_a19_hostile.test.mjs tests/fundamental_forensics_a44_span.test.mjs tests/institutional_holding_research.test.mjs tests/fundamental_forensics_a24_error_leak.test.mjs
+      - name: FF-1 source correction and bounded poll contracts (hermetic half)
+        run: python -m pytest tests/test_fundamental_forensics_broad_sec.py -q -m "not data_gate"
+
   collector-registry:
     if: ${{ false }}
     gate: code
