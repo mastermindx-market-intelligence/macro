@@ -1126,6 +1126,9 @@ lanes:
       - id: checkpoint_core_commodity_recovery
         module: scripts.check_commodity_publication
         args: [--heal-from, "$COMMODITY_ACCEPTED"]
+      - id: checkpoint_core_postrebase_build_commodities
+        module: scripts.build_commodities
+        note: conditional rebuild when Gold material inputs change during rebase
       - id: checkpoint_core_postrebase_inject_data_base
         module: scripts.inject_data_base
       - id: checkpoint_core_postrebase_externalize_css
@@ -1135,6 +1138,10 @@ lanes:
       - id: checkpoint_core_postrebase_check_template_site_sync
         module: scripts.check_template_site_sync
         args: [--fix]
+      - id: checkpoint_core_postrebase_gold_render_audit
+        module: scripts.audit_china_gold_premium
+        args: [--strict-render]
+        note: conditional strict audit of the rebuilt post-normalization Gold tree
       - id: checkpoint_core_commodity_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$qledger_push_candidate"]
@@ -1872,6 +1879,9 @@ lanes:
       - id: publish_final_commodity_recovery
         module: scripts.check_commodity_publication
         args: [--heal-from, "$COMMODITY_ACCEPTED"]
+      - id: publish_final_postrebase_build_commodities
+        module: scripts.build_commodities
+        note: conditional rebuild when Gold material inputs change during rebase
       - id: publish_final_postrebase_inject_data_base
         module: scripts.inject_data_base
       - id: publish_final_postrebase_externalize_css
@@ -1881,6 +1891,10 @@ lanes:
       - id: publish_final_postrebase_check_template_site_sync
         module: scripts.check_template_site_sync
         args: [--fix]
+      - id: publish_final_postrebase_gold_render_audit
+        module: scripts.audit_china_gold_premium
+        args: [--strict-render]
+        note: conditional strict audit of the rebuilt post-normalization Gold tree
       - id: publish_final_commodity_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, "$qledger_push_candidate"]

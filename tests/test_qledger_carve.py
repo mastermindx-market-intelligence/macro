@@ -641,5 +641,5 @@ def test_engine_render_sync_readd_keeps_the_carved_planes_out():
     text = ENGINE.read_text()
     readd = text.index("      git add site/\n      git add templates/ 2>/dev/null || true\n")
     guard = text.index('if [ "${QLEDGER_CARVED:-false}" = true ]; then git reset -q -- site/qledger data/qledger')
-    clean = text.index("if push_staged_clean site/ templates/; then")
+    clean = text.index('if push_staged_clean site/ templates/ "${GOLD_FOLLOWUP_PATHS[@]}"; then')
     assert readd < guard < clean

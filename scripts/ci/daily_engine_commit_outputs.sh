@@ -10,6 +10,81 @@ set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declare
 . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
 git config user.name "dashboard-bot"
 git config user.email "actions@users.noreply.github.com"
+# Gold final-tree binding: the broad candidate is built from the engine checkout,
+# but origin/main can advance the two governed source stores (or the Gold render
+# closure) before the retry loop rebases. Fingerprint the exact material closure
+# around every rebase attempt; when it moves, rebuild the Gold consumer and
+# rewrite its existing quality receipt before the final push. This is not a new
+# publication or proof plane.
+GOLD_MATERIAL_PATHS=(
+  config.yml
+  config/dataset_registry.yml
+  data/gold_china_basis/sge_au9999.parquet
+  data/gold_china_basis/xaucny_spot.parquet
+  engine/china_gold_premium.py
+  lib/config.py
+  lib/dataos/registry.py
+  lib/pages.py
+  lib/store.py
+  scripts/audit_china_gold_premium.py
+  scripts/build_commodities.py
+  templates/_china_gold_premium.html.j2
+  templates/commodities.html.j2
+)
+GOLD_CANONICAL_OUTPUT_PATHS=(
+  data/commodity/latest.json
+  data/quality/china_gold_premium.json
+  site/commodities.html
+)
+GOLD_OPTIONAL_OUTPUT_PATHS=(
+  data/commodity/complex_latest.json
+  data/commodity/cycle_positions.json
+)
+GOLD_FOLLOWUP_PATHS=(
+  "${GOLD_CANONICAL_OUTPUT_PATHS[@]}"
+  "${GOLD_OPTIONAL_OUTPUT_PATHS[@]}"
+)
+gold_material_fingerprint() {
+  local path
+  {
+    for path in "${GOLD_MATERIAL_PATHS[@]}"; do
+      if [ -f "$path" ]; then
+        printf '%s\0%s\0' "$path" "$(git hash-object "$path")"
+      else
+        printf '%s\0MISSING\0' "$path"
+      fi
+    done
+  } | git hash-object --stdin
+}
+gold_restore_origin_main_outputs() {
+  local accepted_ref="${COMMODITY_ACCEPTED:?Gold fallback requires pinned accepted commit}"
+  local path ref
+  # A failed post-rebase rebuild/audit must remain lane-local without shipping a
+  # Gold page or machine projection that claims different source artifacts.
+  # Restore canonical Gold outputs from the accepted commit pinned for this
+  # attempt, even if origin/main moves again. Discard only optional side effects
+  # of the attempted second commodity build back to
+  # this candidate's already-committed HEAD. Write worktree bytes only; the
+  # existing follow-up staging/guard path remains the sole commit owner.
+  for path in "${GOLD_CANONICAL_OUTPUT_PATHS[@]}"; do
+    ref="$accepted_ref:$path"
+    mkdir -p "$(dirname "$path")"
+    if git cat-file -e "$ref" 2>/dev/null; then
+      git show "$ref" > "$path"
+    else
+      rm -f -- "$path"
+    fi
+  done
+  for path in "${GOLD_OPTIONAL_OUTPUT_PATHS[@]}"; do
+    ref="HEAD:$path"
+    mkdir -p "$(dirname "$path")"
+    if git cat-file -e "$ref" 2>/dev/null; then
+      git show "$ref" > "$path"
+    else
+      rm -f -- "$path"
+    fi
+  done
+}
 # normalize the EXACT tree this always() commit stages (P0 2026-08-04,
 # 9a997e9da3f): the engine job hit its 200m cap at 04:28Z; the cancel skipped
 # every success()-gated step INCLUDING the White House step above — the only
@@ -231,6 +306,7 @@ while push_attempt; do
   qledger_before_rebase=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
   push_qledger_guard pre-rebase --candidate "$qledger_before_rebase" \
     --target-ref refs/heads/main || exit $?
+  gold_material_before_rebase=$(gold_material_fingerprint)
   # Fetch the exact named ref before rebasing. The shared helper sees normal
   # AND ignored untracked collisions, quarantines only paths tracked by that
   # exact target under RUNNER_TEMP, and never removes unrelated runner data.
@@ -248,6 +324,18 @@ while push_attempt; do
     # A nightly may have rendered before a newer accepted workspace landed.
     COMMODITY_ACCEPTED=$(git rev-parse 'origin/main^{commit}') || exit 1
     python -m scripts.check_commodity_publication --heal-from "$COMMODITY_ACCEPTED" || exit 1
+    gold_material_after_rebase=$(gold_material_fingerprint)
+    gold_rebuilt_post_rebase=
+    gold_post_rebase_refresh_failed=
+    if [ "$gold_material_before_rebase" != "$gold_material_after_rebase" ]; then
+      echo "::notice title=China gold final-tree refresh::Gold material inputs moved during rebase; rebuilding the Commodity Vector against post-rebase source truth"
+      gold_rebuilt_post_rebase=1
+      if ! python -m scripts.build_commodities; then
+        echo "::error title=China gold post-rebase rebuild failed::serving the pinned accepted Gold outputs rather than pushing a receipt/page bound to stale source artifacts"
+        gold_post_rebase_refresh_failed=1
+        gold_restore_origin_main_outputs
+      fi
+    fi
     # post-rebase template↔site re-sync (ui.template_site_sync): -X theirs can
     # resurrect this run's checkout-time template copies over a reword that merged
     # mid-nightly (2026-07-07: engine-render commit 2ae709f9f0 reverted #1793's
@@ -283,21 +371,52 @@ while push_attempt; do
     bash "${GITHUB_WORKSPACE:-.}/scripts/ci/strip_conflict_markers.sh"
     python3 scripts/check_conflict_markers.py --file site/start.html
     python3 scripts/check_start_runtime.py --heal-from origin/main
-    if ! git diff --quiet -- site/ templates/; then
+    if [ -n "$gold_rebuilt_post_rebase" ] && [ -z "$gold_post_rebase_refresh_failed" ]; then
+      # The pre-stage audit cannot bind a source/config/code change inherited by
+      # the later rebase. Re-audit the normalized post-rebase page and overwrite
+      # the same receipt so artifact hashes, machine projection and HTML describe
+      # the exact tree about to be pushed. Preserve the established lane-local
+      # failure behavior: make a mismatch loud without suppressing every page.
+      set +e
+      python -m scripts.audit_china_gold_premium --strict-render
+      gold_post_rebase_audit_rc=$?
+      set -e
+      if [ "$gold_post_rebase_audit_rc" -ne 0 ]; then
+        echo "::error title=China gold premium post-rebase audit::rebuilt panel disagrees with current source/engine truth; restoring pinned accepted Gold outputs and continuing the unrelated nightly publication"
+        gold_post_rebase_refresh_failed=1
+      fi
+    fi
+    # Build failure restoration above protects the generic normalizers from a
+    # partial page. Restore once more at the final pre-stage boundary so neither
+    # those normalizers nor a failed strict audit can leak changed Gold bytes.
+    if [ -n "$gold_post_rebase_refresh_failed" ]; then
+      gold_restore_origin_main_outputs
+    fi
+    if ! git diff --quiet -- site/ templates/ "${GOLD_FOLLOWUP_PATHS[@]}"; then
       # push_staged_clean: never bake conflict markers into the follow-up
       # commit (P0 d29e4dd44d/#4167). On a dirty scan: unstage and push the
       # guarded engine commit alone — same forfeit as a failed render-sync.
       git add site/
       git add templates/ 2>/dev/null || true
+      if [ -n "$gold_rebuilt_post_rebase" ]; then
+        # Some commodity sidecars are fail-soft/optional. Stage every existing
+        # or tracked output independently so one absent optional path cannot
+        # prevent the required page, machine projection and receipt from landing.
+        for path in "${GOLD_FOLLOWUP_PATHS[@]}"; do
+          if [ -e "$path" ] || git ls-files --error-unmatch "$path" >/dev/null 2>&1; then
+            git add -A -- "$path"
+          fi
+        done
+      fi
       # the carved qledger planes stay out of the render-sync commit too: the
       # re-add above would re-stage a NEW site/qledger file the carve unstaged
       if [ "${QLEDGER_CARVED:-false}" = true ]; then git reset -q -- site/qledger data/qledger 2>/dev/null || true; fi
-      if push_staged_clean site/ templates/; then
+      if push_staged_clean site/ templates/ "${GOLD_FOLLOWUP_PATHS[@]}"; then
         bash scripts/ci/options_signal_nightly.sh commit-render-sync \
           "render-sync: post-rebase guards (template re-copy + ms-board coherence)" \
           || echo "::warning::render-sync commit failed (non-fatal — pages publish gate backstops divergence)"
       else
-        git reset -q -- site/ templates/ || true
+        git reset -q -- site/ templates/ "${GOLD_FOLLOWUP_PATHS[@]}" || true
         # restore the offenders' worktree bytes too — the always()
         # Pages artifact below ships the WORKING TREE, not the commit
         # (word-split is safe: no tracked path contains whitespace)
