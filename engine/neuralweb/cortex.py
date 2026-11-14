@@ -63,6 +63,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import os
 import time
 from datetime import datetime, timezone
@@ -318,7 +319,8 @@ def _compute_run_state_hash(root: Path) -> dict:
 def _load_last_run_state(root: Path) -> dict:
     p = _cortex_dir(root) / "last_run_state.json"
     try:
-        return json.loads(p.read_text(encoding="utf-8"))
+        state = json.loads(p.read_text(encoding="utf-8"))
+        return state if isinstance(state, dict) else {}
     except Exception:  # noqa: BLE001
         return {}
 
@@ -3388,11 +3390,64 @@ def _check_constitution(root: Path) -> dict:
 # Public entrypoint
 # ---------------------------------------------------------------------------
 
+def _completed_memo_clock(root: Path) -> str | None:
+    """Return the canonical clock only for a readable, explicitly completed memo."""
+    try:
+        memo = json.loads((_cortex_dir(root) / "memo.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(memo, dict) or memo.get("schema") != _SCHEMA_MEMO:
+        return None
+    status = memo.get("run_status")
+    clock = memo.get("as_of")
+    if (isinstance(status, dict) and status.get("status") in ("ok", "warn")
+            and status.get("degraded") is False and isinstance(clock, str)):
+        return clock
+    return None
+
+
+def _registered_memo_sla(root: Path) -> float | None:
+    """Read the canonical memo cadence without loading the health publisher."""
+    try:
+        import yaml
+
+        registry = yaml.safe_load((root / "config" / "synapse.yml").read_text(encoding="utf-8"))
+        hours = registry["artifacts"]["cortex-memo"]["freshness_sla_hours"]
+        if type(hours) in (int, float) and hours > 0 and math.isfinite(hours):
+            return hours
+    except (ImportError, OSError, KeyError, TypeError, ValueError, OverflowError):
+        return None
+    except yaml.YAMLError:
+        return None
+    return None
+
+
+def _can_reuse_memo(root: Path, last_state: dict) -> bool:
+    clock = _completed_memo_clock(root)
+    if not clock or ("memo_as_of" in last_state and clock != last_state["memo_as_of"]):
+        return False
+    try:
+        stamp = datetime.fromisoformat(clock.replace("Z", "+00:00"))
+        if stamp.tzinfo is None:
+            stamp = stamp.replace(tzinfo=timezone.utc)
+        age = (datetime.now(timezone.utc) - stamp).total_seconds() / 3600
+    except (ValueError, OverflowError):
+        return False
+    if age < 0:
+        return False
+    sla = _registered_memo_sla(root)
+    if sla is None:
+        # A missing cadence policy alone should not repeatedly spend on an
+        # unchanged input and its previously verified, exactly bound output.
+        return last_state.get("memo_as_of") == clock
+    return age <= sla
+
+
 def run(root: Path | None = None, force: bool = False) -> int:
     """Main cortex run.  Returns exit code (always 0 — degrade-never-raise)."""
     t0 = time.monotonic()
     root = _repo_root(root)
-    now_str = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    now_str = datetime.now(timezone.utc).isoformat(timespec="microseconds")
     cfg = _cfg(root)
 
     log.info("cortex: starting run (now=%s, root=%s)", now_str, root)
@@ -3401,13 +3456,22 @@ def run(root: Path | None = None, force: bool = False) -> int:
     current_state = _compute_run_state_hash(root)
     last_state = _load_last_run_state(root)
 
-    if not force and not _state_changed(current_state, last_state):
+    if not force and not _state_changed(current_state, last_state) and _can_reuse_memo(root, last_state):
         log.info(
             "cortex: inputs unchanged (ws_hash=%s, spine_rows=%s) — skipping LLM spend",
             current_state.get("ws_inputs_hash", "")[:8],
             current_state.get("spine_rows"),
         )
         return 0
+
+    # Retire the prior completion before the new attempt. A forced failure
+    # may leave the old memo untouched or take the no-provider early return.
+    if last_state:
+        try:
+            (_cortex_dir(root) / "last_run_state.json").unlink(missing_ok=True)
+        except OSError as exc:
+            log.warning("cortex: could not reopen the input gate (%s); deferring run", exc)
+            return 0
 
     # 2. Constitution wiring
     probation_status = _check_constitution(root)
@@ -3433,45 +3497,15 @@ def run(root: Path | None = None, force: bool = False) -> int:
         log.warning("cortex: tool loop raised (%s) — falling back to single-call", exc)
         _single_call_fallback(root, cfg, providers, now_str, probation_status, f"loop_error:{exc}")
 
-    # 5. Save run state only when memo is healthy (ok or warn).
-    # If run_status.status=='degraded', skip the save so the gate stays open and the
-    # next nightly sees unchanged inputs as still-stale, retrying the LLM call.
-    # On any read/parse failure, save conservatively — never crash.
-    _memo_run_status = "ok"  # conservative default
-    try:
-        _memo_path = _cortex_dir(root) / "memo.json"
-        _memo_doc = json.loads(_memo_path.read_text(encoding="utf-8"))
-        _raw_run_status = _memo_doc.get("run_status")
-        if isinstance(_raw_run_status, dict):
-            _memo_run_status = _raw_run_status.get("status", "ok")
-        elif _raw_run_status is None:
-            # Belt-and-suspenders: run_status absent means the stamping failed.
-            # Treat as degraded when the memo content indicates a failed run so
-            # the gate stays open and tonight retries.
-            _summary = _memo_doc.get("summary", "")
-            _census = _memo_doc.get("tool_call_census", {})
-            _degraded_summary = (
-                "Budget exhausted after 0" in _summary
-                or "Partial deliberation" in _summary
-                or "[DEGRADED:" in _summary
-            )
-            _empty_census = not _census or list(_census.values()) == [0] * len(_census)
-            if _degraded_summary or _empty_census:
-                log.warning(
-                    "cortex: memo has no run_status and degraded summary/census — "
-                    "treating as degraded so gate stays open"
-                )
-                _memo_run_status = "degraded"
-    except Exception:  # noqa: BLE001
-        pass  # read/parse failure → keep conservative default, save below
-
-    if _memo_run_status == "degraded":
+    # 5. A missing/corrupt/previous result is not completion. Leave the existing
+    # gate open until this run's stamped memo explicitly confirms ok or warn.
+    if _completed_memo_clock(root) != now_str:
         log.info(
-            "cortex: skipping last_run_state save (memo run_status=degraded) — "
+            "cortex: skipping last_run_state save (current memo not verified) — "
             "gate stays open so next nightly retries"
         )
     else:
-        _save_last_run_state(root, current_state)
+        _save_last_run_state(root, {**current_state, "memo_as_of": now_str})
 
     # 6. Write probation.json from the in-memory probation_status so data/neuralweb/cortex/
     #    probation.json and the memo's embedded probation block are always in sync.

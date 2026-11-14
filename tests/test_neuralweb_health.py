@@ -398,9 +398,104 @@ def test_legacy_memo_without_run_status(tmp_path):
     cortex = result["cortex"]
     assert cortex["run_status"] is not None
     assert cortex["run_status"].get("_legacy_memo") is True
-    # has_tools=True → legacy status is 'ok' (normal run, legacy format); lobe status 'fresh'
+    # A successful historical run does not establish current freshness when its
+    # registry SLA is unavailable. Keep the original run result separately.
     assert cortex["run_status"].get("status") == "ok"
-    assert cortex["status"] == "fresh"  # not degraded
+    assert cortex["status"] == "unknown"
+
+
+@pytest.mark.parametrize("age_hours, expected", [(1, "fresh"), (31, "stale"), (-1, "unknown")])
+def test_cortex_health_qualifies_content_clock_against_registry_sla(tmp_path, age_hours, expected):
+    from datetime import datetime, timedelta, timezone
+    from engine.neuralweb.health import _cortex_section, _overall_status
+
+    _make_repo(tmp_path, {"cortex-memo": _art(
+        "data/neuralweb/cortex/memo.json", freshness_sla_hours=30,
+    )})
+    stamp = (datetime.now(timezone.utc) - timedelta(hours=age_hours)).isoformat()
+    _nw_json_artifact(tmp_path, "data/neuralweb/cortex/memo.json", {
+        "as_of": stamp, "run_status": {"status": "ok", "degraded": False},
+    })
+    result = _cortex_section(tmp_path)
+    assert result["status"] == expected
+    assert result["freshness_status"] == expected
+    assert result["freshness_sla_hours"] == 30
+    assert result["memo_as_of"] == stamp
+    assert result["run_status"]["status"] == "ok"
+    assert _overall_status([{"id": "world-state", "status": "fresh"}], result) == (
+        "ok" if expected == "fresh" else "warn"
+    )
+
+
+@pytest.mark.parametrize("memo", [[], ["wrong-shape"], {}, {"as_of": "bad", "run_status": []},
+    {"run_status": {"status": "ok", "degraded": False}},
+    {"as_of": "2099-01-01T00:00:00Z", "run_status": {"status": "unknown"}},
+    {"tool_call_census": ["invalid"]}, {"tool_call_census": {"read_world_state": 10**400}}])
+def test_malformed_cortex_memo_cannot_be_fresh(tmp_path, memo):
+    from engine.neuralweb.health import _cortex_section
+    _make_repo(tmp_path, {"cortex-memo": _art("data/neuralweb/cortex/memo.json")})
+    _nw_json_artifact(tmp_path, "data/neuralweb/cortex/memo.json", memo)
+    assert _cortex_section(tmp_path)["status"] not in ("fresh", "warn")
+
+
+def test_cortex_freshness_uses_declared_sla_and_keeps_degradation(tmp_path):
+    from datetime import datetime, timedelta, timezone
+    from engine.neuralweb.health import _cortex_section
+    _make_repo(tmp_path, {"cortex-memo": _art(
+        "data/neuralweb/cortex/memo.json", freshness_sla_hours=2,
+    )})
+    _nw_json_artifact(tmp_path, "data/neuralweb/cortex/memo.json", {
+        "as_of": (datetime.now(timezone.utc) - timedelta(hours=3)).isoformat(),
+        "run_status": {"status": "degraded", "degraded": True, "degradation_reason": "model_unavailable"},
+    })
+    result = _cortex_section(tmp_path)
+    assert result["status"] == "degraded"
+    assert result["freshness_status"] == "stale"
+    assert result["freshness_sla_hours"] == 2
+    assert result["run_status"]["degradation_reason"] == "model_unavailable"
+
+
+@pytest.mark.parametrize("memo_clock", [None, {"bad": "clock"}, ["bad"], 123, True, "bad", "2099-01-01T00:00:00Z", "2000-01-01T00:00:00Z"])
+def test_build_excludes_unqualified_cortex_clock_from_rollup(tmp_path, memo_clock):
+    from datetime import datetime, timedelta, timezone
+
+    recent = (datetime.now(timezone.utc) - timedelta(hours=1)).isoformat()
+    _make_repo(tmp_path, {
+        "world-state": _art("data/neuralweb/world_state.json"),
+        "cortex-memo": _art("data/neuralweb/cortex/memo.json"),
+        "site-cortex-memo": _art("site/neuralweb/cortex_memo.json"),
+    })
+    _nw_json_artifact(tmp_path, "data/neuralweb/world_state.json", {"as_of": recent})
+    memo = {"as_of": memo_clock, "run_status": {"status": "ok", "degraded": False}}
+    _nw_json_artifact(tmp_path, "data/neuralweb/cortex/memo.json", memo)
+    _nw_json_artifact(tmp_path, "site/neuralweb/cortex_memo.json", memo)
+    result = build(root=tmp_path)
+    assert result["as_of"] == recent
+    assert result["cortex"]["freshness_status"] != "fresh"
+    assert result["cortex"]["memo_as_of"] is None or isinstance(result["cortex"]["memo_as_of"], str)
+
+
+def test_build_future_cortex_clock_cannot_advance_empty_rollup(tmp_path):
+    _make_repo(tmp_path, {"cortex-memo": _art("data/neuralweb/cortex/memo.json")})
+    _nw_json_artifact(tmp_path, "data/neuralweb/cortex/memo.json", {
+        "as_of": "2099-01-01T00:00:00Z", "run_status": {"status": "ok", "degraded": False},
+    })
+    result = build(root=tmp_path)
+    assert result["as_of"] == result["produced_at"]
+    assert result["cortex"]["status"] == "unknown"
+
+
+def test_build_uses_fresh_canonical_cortex_clock_once(tmp_path):
+    from datetime import datetime, timedelta, timezone
+
+    recent = (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat()
+    _make_repo(tmp_path, {"cortex-memo": _art("data/neuralweb/cortex/memo.json")})
+    _nw_json_artifact(tmp_path, "data/neuralweb/cortex/memo.json", {
+        "as_of": recent, "run_status": {"status": "ok", "degraded": False},
+    })
+    result = build(root=tmp_path)
+    assert result["as_of"] == recent
+    assert result["cortex"]["freshness_status"] == "fresh"
 
 
 # ---- test 7: workflow_conformance flags absent producer ---------------------

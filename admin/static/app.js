@@ -180,15 +180,29 @@ async function readJson(r) {
 /* Bound reads, never auto-retry or abort an operator write: a timed-out write
    may already have executed. Include body parsing in the read deadline. */
 const ADMIN_READ_TIMEOUT_MS = 30000;
+function adminReadTimeoutMs(path) {
+  // The owned evidence worker has 45s to derive and 2s to confirm cleanup.
+  // Leave a bounded response allowance; all other reads keep their deadline.
+  const endpoint = String(path).split("?", 1)[0];
+  return endpoint === "/api/intelligence_os" || endpoint === "/api/intelligence_os/engine"
+    ? 50000 : ADMIN_READ_TIMEOUT_MS;
+}
 async function readAdminResponse(path, opts) {
   const method = String((opts && opts.method) || "GET").toUpperCase();
   const controller = method === "GET" && !(opts && opts.signal) ? new AbortController() : null;
-  const timer = controller ? setTimeout(() => controller.abort(), ADMIN_READ_TIMEOUT_MS) : null;
+  const timer = controller ? setTimeout(() => controller.abort(), adminReadTimeoutMs(path)) : null;
   try {
     const response = await fetch(path, controller ? { ...opts, signal: controller.signal } : opts);
-    return { response, value: await readJson(response) };
+    const value = await readJson(response);
+    // readJson intentionally normalizes body-read failures. Preserve the owned
+    // deadline even when headers arrived before the body was aborted.
+    if (controller && controller.signal.aborted) throw new Error("Read aborted");
+    return { response, value };
   } catch (error) {
-    if (controller && controller.signal.aborted) throw new Error("The admin server took too long to respond. Try again.");
+    if (controller && controller.signal.aborted) throw Object.assign(
+      new Error("The admin server took too long to respond. Try again."),
+      { error_code: "admin_read_deadline_exceeded" }
+    );
     throw error;
   } finally { if (timer !== null) clearTimeout(timer); }
 }
@@ -4405,6 +4419,30 @@ function iosRowStateCell(r) {
 }
 
 /* IOS_EVIDENCE_CONTRACT_START */
+const IOS_FAILURE_COPY = {
+  changed_during_read: ["Evidence changed during this check. Retry to get a consistent view.", "检查期间证据发生了变化。请重试以获取一致的视图。", true],
+  evidence_estate_unavailable: ["Estate evidence is unavailable. Retry or inspect data health.", "系统证据暂不可用。请重试或检查数据健康状况。", true],
+  evidence_derivation_busy: ["Evidence is already being checked. Retry after that check finishes.", "证据正在检查中。请在本次检查完成后重试。", true],
+  evidence_deadline_exceeded: ["The evidence check reached its time limit. You can retry.", "证据检查已达到时间上限。您可以重试。", true],
+  admin_read_deadline_exceeded: ["The evidence response did not arrive in time. You can retry.", "未能及时收到证据响应。您可以重试。", true],
+  evidence_execution_unavailable: ["The evidence check could not complete. Retry or inspect system status.", "证据检查未能完成。请重试或查看系统状态。", true],
+  evidence_cleanup_unconfirmed: ["Worker cleanup is unconfirmed. Check system status before retrying.", "尚未确认工作进程已清理。请先检查系统状态。", false],
+  evidence_limits_unavailable: ["The evidence worker needs its configured execution environment. Check system status.", "证据工作进程需要已配置的运行环境。请检查系统状态。", false],
+  evidence_binding_not_transferable: ["The evidence source could not be verified for this worker. Check system status.", "无法为此工作进程确认该证据来源。请检查系统状态。", false],
+  evidence_request_invalid: ["This evidence request is invalid. Return to the engine list.", "此证据请求无效。请返回引擎列表。", false],
+  evidence_request_failed: ["The evidence request failed. You can retry.", "证据请求失败。您可以重试。", true],
+};
+function iosFailureNotice(result, title) {
+  const candidate = result && result.error_code;
+  const code = Object.prototype.hasOwnProperty.call(IOS_FAILURE_COPY, candidate) ? candidate : "evidence_request_failed";
+  const copy = IOS_FAILURE_COPY[code];
+  const unknownEngine = result && Array.isArray(result.known_ids_sample);
+  return `<div class="empty" role="alert"><div class="empty-icon">◍</div>
+    <div class="empty-text">${iosCopy(title)}</div>
+    <div class="empty-sub"><span class="l-en">${esc(unknownEngine ? "Return to the engine list and choose an available engine." : copy[0])}</span><span class="l-zh">${esc(unknownEngine ? "请返回引擎列表并选择可用引擎。" : copy[1])}</span></div>
+    ${copy[2] && !unknownEngine ? `<button type="button" class="btn" id="ios-retry"><span class="l-en">Retry</span><span class="l-zh">重试</span></button>` : ""}
+    ${unknownEngine ? "" : `<details class="sub"><summary><span class="l-en">Technical details</span><span class="l-zh">技术详情</span></summary><code>${esc(code)}</code></details>`}</div>`;
+}
 const IOS_EVIDENCE_STATUS_ORDER = [
   "Validated", "Accruing", "Ungraded by design", "Degraded", "Disproven",
 ];
@@ -4765,9 +4803,13 @@ RENDER.intelligence_os = async (snapshot = null) => {
   let d = snapshot;
   if (!d) {
     try { d = await api("/api/intelligence_os"); }
-    catch (_) { d = { ok: false, error: "Evidence request failed" }; }
+    catch (error) { d = { ok: false, error_code: error && error.error_code }; }
   }
-  if (!d || !d.ok) { v.innerHTML = nwEmpty(iosText("Could not derive the estate"), iosText("Evidence request failed")); return; }
+  if (!d || !d.ok) {
+    v.innerHTML = iosFailureNotice(d, "Could not derive the estate");
+    const retry = $("#ios-retry"); if (retry) retry.onclick = () => RENDER.intelligence_os();
+    return;
+  }
   IOS.data = d; IOS.rows = d.engines || []; IOS.page = 1;
   const c = d.census || {};
   v.innerHTML = iosHero(d) + iosReasonCard(c) + `
@@ -4878,10 +4920,11 @@ async function renderEngineDetail(id) {
   v.innerHTML = iosCrumbs(id) + `<div class="skeleton skeleton-title"></div><div class="skeleton skeleton-card" style="height:160px"></div>`;
   let d;
   try { d = await api("/api/intelligence_os/engine?id=" + encodeURIComponent(id)); }
-  catch (_) { d = { ok: false, error: "Evidence request failed" }; }
+  catch (error) { d = { ok: false, error_code: error && error.error_code }; }
   const wireBack = () => { const b = v.querySelector("[data-ios-back]"); if (b) b.onclick = (e) => { e.preventDefault(); backToIntelligenceOs(); }; };
   if (!d || !d.ok) {
-    v.innerHTML = iosCrumbs(id) + nwEmpty(iosText(d && Array.isArray(d.known_ids_sample) ? "Unknown engine" : "Could not read engine"), iosText("Evidence request failed"));
+    v.innerHTML = iosCrumbs(id) + iosFailureNotice(d, d && Array.isArray(d.known_ids_sample) ? "Unknown engine" : "Could not read engine");
+    const retry = $("#ios-retry"); if (retry) retry.onclick = () => renderEngineDetail(id);
     wireBack(); return;
   }
   const e = d.engine || {};
