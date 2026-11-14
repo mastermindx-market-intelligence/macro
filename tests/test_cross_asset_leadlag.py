@@ -68,3 +68,43 @@ def test_snapshot_shape_real_or_skips():
         assert {"leader", "follower", "r", "t", "q"} <= set(l)
     if snap["verdict"] in ("lead", "weak_lead"):
         assert snap["n_significant"] >= 1 and snap["lead_asset"]
+
+# Native section contract: absence is not an observed contemporaneous result.
+from pathlib import Path
+import pytest
+from jinja2 import Environment, StrictUndefined
+
+
+def _leadlag_section(snapshot, lang):
+    source = (Path(__file__).resolve().parents[1] / 'templates/crossasset.html.j2').read_text()
+    section = source[source.index('{# Plain-name maps'):source.index('{# ── §04')]
+    return Environment(autoescape=True, undefined=StrictUndefined).from_string(section).render(
+        leadlag=snapshot, t=lambda en, zh: en if lang == 'en' else zh)
+
+
+@pytest.mark.parametrize('snapshot', [None, {}, {'verdict': None}, {'verdict': 'unknown'}, {'verdict': 'unexpected'}, [], 'unknown'])
+@pytest.mark.parametrize('lang', ['en', 'zh'])
+def test_leadlag_unavailable_is_not_no_lead(snapshot, lang):
+    html = _leadlag_section(snapshot, lang)
+    assert ('reading unavailable' if lang == 'en' else '读数不可用') in html
+    assert 'No one leads' not in html and '当前无领先者' not in html
+    assert 'Mostly the clock' not in html and '主要是时区效应' not in html
+    assert 'flow-strip' not in html
+
+
+@pytest.mark.parametrize('lang', ['en', 'zh'])
+def test_leadlag_observed_contemporaneous_remains_distinct(lang):
+    html = _leadlag_section({'verdict': 'contemporaneous'}, lang)
+    assert ('No one leads' if lang == 'en' else '当前无领先者') in html
+    assert 'unavailable' not in html and '不可用' not in html
+
+
+@pytest.mark.parametrize('verdict', ['lead', 'weak_lead'])
+@pytest.mark.parametrize('lang', ['en', 'zh'])
+def test_leadlag_known_links_remain_visible(verdict, lang):
+    html = _leadlag_section({'verdict': verdict, 'stability': {'held_prior_window': True},
+                            'links': [{'leader': 'US', 'follower': 'HK', 'lag': 3, 'r': .6}]}, lang)
+    assert '3d' in html and '+0.60' in html
+    assert 'unavailable' not in html and '不可用' not in html
+    # Interval/stability semantics are not qualified by this missing-state repair.
+    assert ('tentative' if lang == 'en' else '暂定') in html
