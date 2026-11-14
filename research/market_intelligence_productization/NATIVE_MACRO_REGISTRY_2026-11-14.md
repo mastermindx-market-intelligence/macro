@@ -135,3 +135,90 @@ values except their explicit source-pin text, and --check passes. Full integrate
 source/type/browser execution remains the current Terminal head's hosted CI
 obligation. All original holds, publication and production acceptance limits above
 remain binding.
+
+
+## Successor source refresh — 2026-11-14
+
+The Chairman assigned the current session to resume “Design Macro Dashboard
+Pages” after the previous session reached its length limit. This is a bounded
+continuation of the existing registry qualification, not a new admission or
+release carrier. The original three published files were read at child head
+`609045aa5f1c3558f390bf491224e7e6aaf1d7c9` before preparing this new delta.
+The earlier native publication is preserved. This successor uses authorized
+GitHub-native authoring on the same branch, with exact-head CAS and blob
+readback; no old host worktree or uncommitted source is moved or modified.
+
+Current Mastermind law pin:
+`eeaf5eeec3f29b565bcc816db003706f429074fc`.
+
+| Input or result | Verified value |
+| --- | --- |
+| Terminal T | `0fe5166fc208b78f61ac906df624f616fd282055` |
+| T tree | `163df32f515fb97f9dea9521615a2e81ae2eafb9` |
+| Frozen protected registry B | `e62c54307664f9347a8a10cfa897e32e506ec264` |
+| B ancestry verified through observed main | `c29d10fd9f927a9ec50abfc97df9a7da7b181ef5` |
+| Generated at | `2026-11-14T15:52:10Z` |
+| Registry SHA256 | `9ac2f283c31ff5a5e760fa691bc872c1a5683f68462129d5e027b000da02eee0` |
+| Overlay SHA256 | `d71be5a98068cd13f5c86b94129e62f64989fb5d57cb650d5b19969d4772b057` |
+| Census | 377: 314 Macro, 56 Terminal, 7 Mastermind |
+
+### Reproduction and verification
+
+The unchanged generator (blob
+`326e5ba3ec7588a060c6eea8740e8d22ad6a4015`) ran its actual CLI with
+`--terminal-ref T --refresh-terminal-from B --as-of 2026-11-14T15:52:10Z`,
+the existing overlay/output paths and all sixteen existing native-migration
+arguments. The timestamp option is **--as-of**. The scoped generator's
+`--check` validates the resulting registry; the separate generation and input
+proof establish provenance.
+
+This run used temporary Git object mirrors assembled from authenticated,
+immutable GitHub API reads. All eighteen required commit objects, all 2,511
+Terminal trees and all 59 consumed Terminal source blobs reproduced their
+canonical Git object IDs before use. The actual `git ls-tree -r T` traversed
+26,304 paths; each source `git show T:path` read back the exact bytes. Actual
+`git merge-base --is-ancestor B origin/main` passed, and `git show B:...`
+reproduced the recorded frozen registry SHA256. No Git command was stubbed and
+no source identity was invented. Only the needed blobs were materialized;
+this is not a full repository checkout or a new full-suite claim.
+
+The canonical generator and `--check` pass. Structural comparison proves:
+
+- All 377 page IDs and rows are preserved. Against the previous candidate,
+  exactly 32 rows differ, and only in notes replacing the old Terminal pin
+  with T. Source metadata differs only in its honest input root, ref/SHA and
+  generation timestamp.
+- Every route, classification, lifecycle, access gate, design declaration and
+  source-evidence relationship is otherwise equal to the previous candidate.
+- Against B, exactly the same sixteen Macro predecessor rows differ, and only
+  in known_contracts, source_evidence and notes. Both non-Terminal source records
+  and every unrelated Macro/Mastermind row remain identical.
+- All sixteen migration mappings survive. The fifteen newly inventoried Economy
+  destinations, Brain and Market Reference retain compliant:false.
+- The generator, schema, exporter and all controller/workflow files are unchanged.
+
+The previous 276-test qualification remains tied to its recorded original
+source. It was not represented as a fresh run. This pin-only refresh is proved
+by actual generation, exact object/byte checks and full structural comparison.
+
+### Current programme state and next proof
+
+Paper's original route has recovered. Seven new editable Growth, payroll,
+evidence and Treasury screens are complete in file
+`01M6Y1NJ2SKGG89DZ13E4NVAE2`; the final map and illustrative-data limits are in
+[Terminal's current PLAN](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/0fe5166fc208b78f61ac906df624f616fd282055/terminal/docs/native-macro-integration-20261114/PLAN.md).
+Terminal #1524 remains Draft at T; its exact-head CI run43611980501 has started.
+Macro #11258 source/evidence repair is now
+`5f464a227fd33799210bcfca294b8b63099d5c4a`, with 95 publisher tests, four scanner
+regressions and 179 companion native tests passing; run43611854698 supplies its
+current-head hosted CI.
+
+**This registry child remains Draft, with no release request.** Parent #11253
+retains its own custody and controller hold. The feature-base authority rejection
+is not repaired by changing the allowlist or promoting this candidate. Only
+an actually protected registry R may feed the unchanged Terminal exporter with
+identical source bytes. No generated catalogue, production route, deployment
+or live acceptance changed. Continue the original publication, authenticated
+consumer and masterplan obligations through their existing owners.
+**MORE_WORK_EXISTS**.
+
