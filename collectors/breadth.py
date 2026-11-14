@@ -641,6 +641,11 @@ class BreadthAdapter(Adapter):
         if pd.isna(anchor) or not float("-inf") < float(anchor) < float("inf"):
             raise RuntimeError("breadth cumulative predecessor is invalid")
         frame = frame.copy()
+        # A rolling replacement has no NH/NL witness during its warm-up.
+        # Zero would overwrite qualified retained counts via combine_first.
+        # Leave those cells unavailable so the store retains prior evidence.
+        warmup = closes.index[:max(0, self.cfg["nhnl_window"] - 1)]
+        frame.loc[frame.index.isin(warmup), ["nh", "nl"]] = float("nan")
         target = float(anchor) + frame.iloc[0]["adv"] - frame.iloc[0]["dec"]
         frame["ad_line"] += target - frame.iloc[0]["ad_line"]
         return frame
