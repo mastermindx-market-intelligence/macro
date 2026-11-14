@@ -44,6 +44,8 @@ grep-separable.  The function stays :func:`reaction` — module-scoped, unambigu
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
+import math
+from numbers import Real
 
 from lib import nyse_calendar
 
@@ -219,20 +221,30 @@ def latest_report_date(next_date, surprises, today: date) -> date | None:
     return best
 
 
-def _close_map(closes) -> dict[date, float]:
-    """Normalise a pandas Series / dict of closes to ``{date: float}``."""
+def _close_map(closes) -> dict[date, float | None]:
+    """Keep valid prices and disclose unusable dated observations as ``None``.
+
+    Numeric strings and booleans are not prices. NumPy real scalars from the
+    existing pandas panel remain supported; every usable close is finite and
+    strictly positive.
+    """
     if closes is None:
         return {}
     items = closes.items() if hasattr(closes, "items") else []
-    out: dict[date, float] = {}
+    out: dict[date, float | None] = {}
     for k, v in items:
         d = as_date(k)
-        if d is None or v is None or v != v:      # NaN-safe
+        if d is None:
+            continue
+        out[d] = None
+        if isinstance(v, bool) or not isinstance(v, Real):
             continue
         try:
-            out[d] = float(v)
-        except (TypeError, ValueError):
+            price = float(v)
+        except (TypeError, ValueError, OverflowError):
             continue
+        if math.isfinite(price) and price > 0:
+            out[d] = price
     return out
 
 
@@ -246,9 +258,9 @@ def reaction(report_date, next_time, closes, today: date,
         day0 = the first session whose CLOSE can contain the market's verdict.
                  report after the close (``time-after-hours``) → the session AFTER
                      the report date
-                 report pre-market, or time not supplied      → the report date's
-                     own session (which is also the conservative default: an
-                     unknown-time print is treated as already in that day's close)
+                 report pre-market, or time not supplied      → the first session
+                     ON OR AFTER the report date (on a session day, an unknown-time
+                     print retains the existing same-close convention)
         day0_move_pct = 100 * (close[day0] / close[previous session] - 1)
 
     So an after-hours print on Monday is graded on Tuesday's close vs Monday's, and
@@ -274,12 +286,9 @@ def reaction(report_date, next_time, closes, today: date,
 
     token = str(next_time).strip().lower() if next_time is not None else ""
     after_hours = token in _AFTER_HOURS
-    if after_hours:
-        nxt = nyse_calendar.sessions_between(rd + timedelta(days=1),
-                                             rd + timedelta(days=10))
-        day0 = nxt[0] if nxt else None
-    else:
-        day0 = nyse_calendar.last_session_on_or_before(rd)
+    first = rd + timedelta(days=1) if after_hours else rd
+    nxt = nyse_calendar.sessions_between(first, rd + timedelta(days=10))
+    day0 = nxt[0] if nxt else None
 
     out: dict = {"date": rd.isoformat(),
                  "day0": day0.isoformat() if day0 else None,
@@ -290,21 +299,40 @@ def reaction(report_date, next_time, closes, today: date,
         out["basis"] = "day0_not_yet_traded"
         return out
 
+    prev = nyse_calendar.session_n_back(day0, 1)
+    if prev is None:
+        out["basis"] = "prior_session_unknown"
+        return out
+    out["prev_session"] = prev.isoformat()
     cmap = _close_map(closes)
     if not cmap:
         out["basis"] = "no_price_data"
         return out
-    prior = [d for d in cmap if d < day0]
-    if day0 not in cmap or not prior:
-        out["basis"] = "close_missing_for_day0" if day0 not in cmap else "no_prior_close"
+    if day0 not in cmap:
+        out["basis"] = "close_missing_for_day0"
         return out
-    prev = max(prior)
+    if cmap[day0] is None:
+        out["basis"] = "invalid_close_for_day0"
+        return out
+    if prev not in cmap or cmap[prev] is None:
+        out["basis"] = ("close_missing_for_prior_session" if prev not in cmap
+                        else "invalid_close_for_prior_session")
+        # The last available close is diagnostic only. It can never substitute
+        # for the exact calendar predecessor in a one-session reaction.
+        prior = [d for d, price in cmap.items()
+                 if d < day0 and price is not None and nyse_calendar.is_session(d)]
+        last = max(prior) if prior else None
+        out["prior_available_session"] = last.isoformat() if last else None
+        out["missing_session_count"] = (
+            len(nyse_calendar.sessions_strictly_between(last, day0))
+            if last is not None else None)
+        return out
     base = cmap[prev]
-    if not base:
-        out["basis"] = "prior_close_zero"
+    move = (cmap[day0] / base - 1.0) * 100.0
+    if not math.isfinite(move):
+        out["basis"] = "non_finite_price_move"
         return out
-    out["day0_move_pct"] = round((cmap[day0] / base - 1.0) * 100.0, 2)
-    out["prev_session"] = prev.isoformat()
+    out["day0_move_pct"] = round(move, 2)
     out["basis"] = "close_vs_prior_close"
     return out
 
@@ -390,5 +418,10 @@ def board_row_fields(assessment: dict | None, today: date,
 
     rd = latest_report_date(next_date, surprises, today)
     if rd is not None:
-        out["post_earnings_move"] = reaction(rd, assessment.get("next_time"), closes, today)
+        # A forward calendar token describes only its own event. Surprise
+        # history has no time token, so another report uses the unknown-time
+        # convention instead of borrowing an upcoming event's after-hours flag.
+        report_time = assessment.get("next_time") if as_date(next_date) == rd else None
+        out["post_earnings_move"] = reaction(rd, report_time, closes, today)
     return out
+
