@@ -65,7 +65,7 @@ from scipy.interpolate import PchipInterpolator
 from scipy.special import ndtr
 
 RESEARCH_ONLY = True
-SCHEMA = "options.rn_tail_density/research-v1"
+SCHEMA = "options.rn_tail_density/research-v2"
 VERDICT = "INSUFFICIENT_DATA"
 MEASURE = "Q"
 MEASURE_LABEL = (
@@ -101,10 +101,19 @@ MAX_DRAWS = 10000
 MAX_T_YEARS = 10.0
 DEFAULT_GRID_NODES = 1601
 DEFAULT_FWD_TOL_REL = 1e-3
+_ROUND_OFF = 64.0 * np.finfo(float).eps
 
 
 class MeasureError(Exception):
     """Raised when a caller asks for a physical-measure (P) quantity."""
+
+
+class ProbabilityUnavailableError(ValueError):
+    """A numerical measure or query does not identify a point probability."""
+
+    def __init__(self, reason: str) -> None:
+        self.reason = reason
+        super().__init__(reason)
 
 
 # ---------------------------------------------------------------------------
@@ -395,8 +404,9 @@ class RNDensity:
     """Discrete risk-neutral density of piecewise-linear calls on a grid.
 
     Interior atoms sit at ``K_1 .. K_{N-1}``. ``left_mass`` lies somewhere in
-    ``[0, K_0]`` and ``right_mass`` beyond ``K_N`` with mean ``right_mean``;
-    both are grid-truncation masses whose location is not identified.
+    ``[0, K_0]`` and ``right_mass`` in ``[K_N, infinity)`` with mean
+    ``right_mean``. A tail mean does not locate an atom. Only a forced support
+    endpoint or a zero component identifies queries cutting a tail.
     """
 
     grid: np.ndarray
@@ -423,11 +433,95 @@ class RNDensity:
     measure: str = MEASURE
 
     def cdf(self, K: Any) -> np.ndarray:
-        """``Q(S_T <= K) = 1 + s(K)/D`` with ``s`` interpolated between chord midpoints."""
+        """Right-continuous atom CDF ``Q(S_T <= K)`` where identified.
+
+        An invalid measure or any query cutting an unresolved tail raises
+        ``ProbabilityUnavailableError``; batches are never silently filtered.
+        """
+        return self._cdf(K, left_limit=False)
+
+    def cdf_left(self, K: Any) -> np.ndarray:
+        """Left limit ``Q(S_T < K)`` of the same atom CDF, where identified."""
+        return self._cdf(K, left_limit=True)
+
+    def _probability_moment(self) -> tuple[float, float, float]:
+        masses = np.concatenate(([self.left_mass], self.atom_masses, [self.right_mass]))
+        if not (np.all(np.isfinite(masses)) and np.all(np.isfinite(self.calls))
+                and np.all(np.isfinite(self.grid)) and math.isfinite(self.right_mean)):
+            raise ProbabilityUnavailableError("nonfinite_probability_measure")
+        if np.any(masses < 0):
+            raise ProbabilityUnavailableError("negative_probability_mass")
+        if self.grid[0] < 0 or np.any(self.atom_strikes < 0):
+            raise ProbabilityUnavailableError("negative_support")
+        if abs(math.fsum(masses) - 1.0) > _ROUND_OFF:
+            raise ProbabilityUnavailableError("nonunit_probability_mass")
+        terminal = float(self.calls[-1] / self.basis.discount)
+        if terminal < 0 or self.right_mean < self.grid[-1]:
+            raise ProbabilityUnavailableError("invalid_right_tail_moment")
+        if self.right_mass == 0 and terminal != 0:
+            raise ProbabilityUnavailableError("right_tail_without_mass")
+        known = math.fsum([float(x * m) for x, m in zip(self.atom_strikes, self.atom_masses)]
+                          + [float(self.grid[-1] * self.right_mass), terminal])
+        moment = self.basis.forward - known
+        capacity = float(self.grid[0] * self.left_mass)
+        tol = _ROUND_OFF * max(1.0, abs(self.basis.forward), float(np.max(np.abs(self.grid))),
+                               float(np.max(np.abs(self.calls / self.basis.discount))))
+        if not math.isfinite(known) or not (-tol <= moment <= capacity + tol):
+            raise ProbabilityUnavailableError("infeasible_forward_moment")
+        return moment, capacity, tol
+
+    def _left_endpoint(self, moment: float, capacity: float, tol: float) -> float | None:
+        if self.grid[0] == 0:
+            return 0.0
+        if min(abs(moment), abs(moment - capacity)) > tol:
+            return None
+        # Near-zero arithmetic is not an endpoint certificate. Products can
+        # already have rounded away a positive moment before even math.fsum.
+        # This bounded exact check is needed only for a query cutting a tail.
+        from fractions import Fraction
+
+        exact = Fraction.from_float
+        known = sum((exact(float(x)) * exact(float(m))
+                     for x, m in zip(self.atom_strikes, self.atom_masses)), Fraction(0))
+        known += exact(float(self.grid[-1])) * exact(self.right_mass)
+        known += exact(float(self.calls[-1])) / exact(self.basis.discount)
+        remaining = exact(self.basis.forward) - known
+        if remaining == 0:
+            return 0.0
+        if remaining == exact(float(self.grid[0])) * exact(self.left_mass):
+            return float(self.grid[0])
+        return None
+
+    def _cdf(self, K: Any, left_limit: bool) -> np.ndarray:
         Ka = _as_1d(K, "K", MAX_GRID)
-        mids = 0.5 * (self.grid[1:] + self.grid[:-1])
-        s = np.interp(Ka, mids, self.slopes)
-        return np.clip(1.0 + s / self.basis.discount, 0.0, 1.0)
+        moment, capacity, tol = self._probability_moment()
+        side = "left" if left_limit else "right"
+        cumulative = np.concatenate(([0.0], np.cumsum(self.atom_masses)))
+        values = cumulative[np.searchsorted(self.atom_strikes, Ka, side=side)]
+        endpoint = None
+        endpoint_checked = False
+        for i, x in enumerate(Ka):
+            if x < 0 or (x == 0 and left_limit):
+                values[i] = 0.0
+                continue
+            if x > self.grid[0] or (x == self.grid[0] and not left_limit):
+                values[i] += self.left_mass
+            elif self.left_mass > 0:
+                if not endpoint_checked:
+                    endpoint = self._left_endpoint(moment, capacity, tol)
+                    endpoint_checked = True
+                if endpoint is None:
+                    raise ProbabilityUnavailableError("unidentified_left_tail")
+                if x > endpoint or (x == endpoint and not left_limit):
+                    values[i] += self.left_mass
+            if x > self.grid[-1] or (x == self.grid[-1] and not left_limit):
+                if self.right_mass > 0 and self.calls[-1] != 0:
+                    raise ProbabilityUnavailableError("unidentified_right_tail")
+                values[i] += self.right_mass
+        if np.any(values < -_ROUND_OFF) or np.any(values > 1 + _ROUND_OFF):
+            raise ProbabilityUnavailableError("invalid_cumulative_probability")
+        # Only roundoff of an already validated unit, nonnegative measure.
+        return np.clip(values, 0.0, 1.0)
 
     def left_tail_probability(self, k_star: float) -> float:
         return float(self.cdf([k_star])[0])
@@ -481,10 +575,13 @@ def density_from_call_grid(
         Cu, s, max_change, shift = rep["C"], rep["slopes"], rep["max_abs_change"], rep["level_shift"]
     else:
         Cu, s, max_change, shift = Ca.copy(), _slopes(Ka, Ca), 0.0, 0.0
-    left, interior, right = _atom_masses(Ka, Cu, D)
+    # Use the canonical repaired slopes, not a second finite difference of
+    # reconstructed prices (which can introduce negative roundoff atoms).
+    left, interior, right = 1.0 + float(s[0]) / D, np.diff(s) / D, -float(s[-1]) / D
     total = left + float(np.sum(interior)) + right
     neg = float(np.sum(np.clip(-interior, 0.0, None)) + max(-left, 0.0) + max(-right, 0.0))
-    right_mean = float(Ka[-1] + Cu[-1] / (D * right)) if right > 1e-15 else float(Ka[-1])
+    with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
+        right_mean = float(Ka[-1] + (Cu[-1] / D) / right) if right > 0 else float(Ka[-1])
     tol = fwd_tol_rel * F
     f_lo, f_hi, ok_rep = _forward_check(float(Ka[0]), float(Cu[0]), left, D, F, tol)
     left_raw = 1.0 + float(_slopes(Ka, Ca)[0]) / D
@@ -526,7 +623,9 @@ def reintegrate_call_prices(density: RNDensity, K: Any) -> np.ndarray:
         raise ValueError("reintegration is identified only inside the grid")
     D = density.basis.discount
     pay = np.maximum(density.atom_strikes[None, :] - Ka[:, None], 0.0) @ density.atom_masses
-    pay = pay + density.right_mass * np.maximum(density.right_mean - Ka, 0.0)
+    # On this domain the right-tail excess first moment suffices. Its mean
+    # is not a point mass, and dividing then multiplying tiny mass loses it.
+    pay = pay + density.right_mass * (g[-1] - Ka) + density.calls[-1] / D
     return D * pay
 
 
@@ -555,16 +654,39 @@ def reintegration_check(
     }
 
 
-def extrapolation_mass(density: RNDensity, k_min_quoted: float, k_max_quoted: float) -> dict[str, float]:
-    """Mass outside the quoted strike range and outside the grid."""
-    if not (k_min_quoted <= k_max_quoted):
+def extrapolation_mass(density: RNDensity, k_min_quoted: float, k_max_quoted: float) -> dict[str, Any]:
+    """Strict mass outside closed ranges; unresolved components stay unavailable."""
+    if not (math.isfinite(k_min_quoted) and math.isfinite(k_max_quoted) and k_min_quoted <= k_max_quoted):
         raise ValueError("quoted range must have min <= max")
-    below = float(density.cdf([k_min_quoted])[0])
-    above = float(1.0 - density.cdf([k_max_quoted])[0])
+
+    def outside(a: float, b: float) -> tuple[float | None, float | None, dict[str, str]]:
+        reasons = {}
+        below = above = None
+        try:
+            below = float(density.cdf_left([a])[0])
+        except ProbabilityUnavailableError as exc:
+            reasons["below"] = exc.reason
+        try:
+            above = float(1.0 - density.cdf([b])[0])
+        except ProbabilityUnavailableError as exc:
+            reasons["above"] = exc.reason
+        return below, above, reasons
+
+    below, above, reasons = outside(k_min_quoted, k_max_quoted)
+    grid_below, grid_above, grid_reasons = outside(float(density.grid[0]), float(density.grid[-1]))
+    available = below is not None and above is not None
+    grid_available = grid_below is not None and grid_above is not None
     return {
         "mass_below_quoted": below,
         "mass_above_quoted": above,
-        "extrapolated_mass": below + above,
+        "mass_below_quoted_available": below is not None,
+        "mass_above_quoted_available": above is not None,
+        "extrapolated_mass": below + above if available else None,
+        "extrapolated_mass_available": available,
+        "unavailability_reasons": reasons,
+        "mass_strictly_outside_grid": grid_below + grid_above if grid_available else None,
+        "mass_strictly_outside_grid_available": grid_available,
+        "grid_unavailability_reasons": grid_reasons,
         "grid_truncation_mass": float(density.left_mass + density.right_mass),
         "left_truncation_mass": float(density.left_mass),
         "right_truncation_mass": float(density.right_mass),
@@ -819,7 +941,7 @@ def density_from_smile(
 
 
 def q_tail_probability(smile: Smile, basis: ForwardBasis, k_star: float, n_nodes: int = DEFAULT_GRID_NODES) -> float:
-    """``q_hat = 1 + s(K*)/D`` from the repaired grid density, clipped to ``[0, 1]``."""
+    """Identified ``Q(S_T <= K*)`` from the repaired discrete-atom measure."""
     if not (math.isfinite(k_star) and k_star > 0):
         raise ValueError("k_star must be finite and > 0")
     return density_from_smile(smile, basis, n_nodes).left_tail_probability(k_star)
@@ -828,6 +950,44 @@ def q_tail_probability(smile: Smile, basis: ForwardBasis, k_star: float, n_nodes
 # ---------------------------------------------------------------------------
 # Uncertainty and identification
 # ---------------------------------------------------------------------------
+
+
+def _numerical_probability_check(
+    density: RNDensity, k_star: float, K: np.ndarray, lo: np.ndarray, hi: np.ndarray,
+    bounds: dict[str, Any],
+) -> dict[str, Any]:
+    """Shared v2 prerequisites for the central point and every required draw."""
+    reasons: list[str] = []
+    q = None
+    try:
+        q = density.left_tail_probability(k_star)
+    except ProbabilityUnavailableError as exc:
+        reasons.append(exc.reason)
+    if not density.forward_ok_raw:
+        reasons.append("raw_forward_check_failed")
+    if not density.forward_ok_repaired:
+        reasons.append("repaired_forward_check_failed")
+    if q is not None:
+        if not math.isfinite(q) or not (0 <= q <= 1):
+            reasons.append("invalid_point_probability")
+        elif not (bounds.get("consistent", False) and math.isfinite(bounds["L"])
+                  and math.isfinite(bounds["U"]) and bounds["L"] - _ROUND_OFF <= q <= bounds["U"] + _ROUND_OFF):
+            reasons.append("point_outside_identified_bounds")
+    inside = (K >= density.grid[0]) & (K <= density.grid[-1])
+    checked = int(np.sum(inside))
+    if checked:
+        reint = reintegration_check(density, K[inside], lo[inside], hi[inside])
+    else:
+        reint = {"n": 0, "n_outside": 0, "max_excess": None,
+                 "max_excess_over_half_width": None, "within": None,
+                 "tolerance": 1e-6 * density.basis.forward}
+    reint.update(n_supplied=int(K.size), n_checked=checked,
+                 n_unchecked=int(K.size) - checked, complete_coverage=checked == K.size)
+    if checked != K.size:
+        reasons.append("incomplete_quote_coverage")
+    if reint["within"] is not True:
+        reasons.append("reintegration_outside_source_bands")
+    return {"q": q, "reasons": reasons, "reintegration": reint}
 
 
 def perturbation_interval(
@@ -843,9 +1003,9 @@ def perturbation_interval(
 ) -> dict[str, Any]:
     """Spread of ``q_hat`` when every quote's iv is drawn uniformly inside its band.
 
-    A wider band widens the interval; a zero band collapses it to one value.
-    The interval is a statement about quote uncertainty, never a sharper
-    probability.
+    Every draw must be identified and compatible with the original bands,
+    quote coverage and identified bounds. Any failed draw withholds all
+    interval summaries; quantiles are never conditioned on survivors.
     """
     ka = _as_1d(k, "k")
     iva = _as_1d(iv, "iv")
@@ -856,31 +1016,43 @@ def perturbation_interval(
         raise ValueError("half_width must be >= 0")
     if isinstance(n_draws, bool) or not (1 <= int(n_draws) <= MAX_DRAWS):
         raise ValueError(f"n_draws must lie in [1, {MAX_DRAWS}]")
+    if not (math.isfinite(k_star) and k_star > 0):
+        raise ValueError("k_star must be finite and > 0")
+    strikes = basis.forward * np.exp(ka)
+    _, price_lo, price_hi = call_equivalent_bands(basis, strikes, iva, True, hwa)
+    bounds = tail_probability_bounds(strikes, price_lo, price_hi, basis, k_star)
     rng = np.random.default_rng(int(seed))
     lo = np.maximum(iva - hwa, VOL_MIN)
     hi = iva + hwa
     vals = []
+    n_finite = 0
+    unavailable: dict[str, int] = {}
     for _ in range(int(n_draws)):
         u = rng.random(ka.size)
         draw = lo + u * (hi - lo)
-        q = q_tail_probability(fitter(ka, draw), basis, k_star, n_nodes)
-        vals.append(q)
-    v = np.asarray(vals, dtype=float)
-    fin = v[np.isfinite(v)]
-    if fin.size == 0:
-        return {"n_draws": int(n_draws), "n_finite": 0, "lo": None, "hi": None, "p05": None, "p95": None,
-                "width": None, "seed": int(seed), "measure": MEASURE}
-    return {
-        "n_draws": int(n_draws),
-        "n_finite": int(fin.size),
-        "lo": float(fin.min()),
-        "hi": float(fin.max()),
-        "p05": float(np.quantile(fin, 0.05)),
-        "p95": float(np.quantile(fin, 0.95)),
-        "width": float(fin.max() - fin.min()),
-        "seed": int(seed),
-        "measure": MEASURE,
-    }
+        try:
+            density = density_from_smile(fitter(ka, draw), basis, n_nodes)
+            check = _numerical_probability_check(density, k_star, strikes, price_lo, price_hi, bounds)
+            q, reasons = check["q"], check["reasons"]
+        except ProbabilityUnavailableError as exc:
+            q, reasons = None, [exc.reason]
+        if q is not None and math.isfinite(q):
+            n_finite += 1
+        if reasons:
+            for reason in reasons:
+                unavailable[reason] = unavailable.get(reason, 0) + 1
+        else:
+            vals.append(q)
+    qualified = len(vals)
+    result = {"n_draws": int(n_draws), "n_finite": n_finite, "n_qualified": qualified,
+              "n_unavailable": int(n_draws) - qualified, "unavailable_reasons": unavailable,
+              "available": qualified == int(n_draws), "lo": None, "hi": None,
+              "p05": None, "p95": None, "width": None, "seed": int(seed), "measure": MEASURE}
+    if result["available"]:
+        v = np.asarray(vals, dtype=float)
+        result.update(lo=float(v.min()), hi=float(v.max()), p05=float(np.quantile(v, 0.05)),
+                      p95=float(np.quantile(v, 0.95)), width=float(v.max() - v.min()))
+    return result
 
 
 def classify_identification(
@@ -948,6 +1120,8 @@ def rn_tail_report(
         raise ValueError("K and iv must be > 0")
     if not (math.isfinite(k_star_ratio) and 0.0 < k_star_ratio < 10.0):
         raise ValueError("k_star_ratio out of range")
+    if isinstance(n_draws, bool) or not (1 <= int(n_draws) <= MAX_DRAWS):
+        raise ValueError(f"n_draws must lie in [1, {MAX_DRAWS}]")
     F = basis.forward
     k_star = k_star_ratio * F
     k = np.log(Ka / F)
@@ -964,13 +1138,26 @@ def rn_tail_report(
     mode, reasons = classify_identification(
         bounds["n_quoted_at_or_below"], k_star_extrap, density.raw_negative_mass, bounds
     )
-    inside = (Ka >= density.grid[0]) & (Ka <= density.grid[-1])
-    reint = reintegration_check(density, Ka[inside], lo[inside], hi[inside]) if np.any(inside) else None
+    check = _numerical_probability_check(density, k_star, Ka, lo, hi, bounds)
+    numerical_reasons = check["reasons"].copy()
+    reasons.extend(numerical_reasons)
+    mode = IDENT_BOUNDS if reasons else IDENT_FULL
+    reint = check["reintegration"]
     extrap = extrapolation_mass(density, float(Ka.min()), float(Ka.max()))
-    q_hat = density.left_tail_probability(k_star)
+    q_hat = check["q"]
     pert = None
+    perturbation_diagnostics = None
     if mode == IDENT_FULL:
-        pert = perturbation_interval(basis, k, iva, hw, k_star, fitter, n_draws, seed, n_nodes)
+        candidate = perturbation_interval(basis, k, iva, hw, k_star, fitter, n_draws, seed, n_nodes)
+        perturbation_diagnostics = {key: candidate[key] for key in (
+            "n_draws", "n_finite", "n_qualified", "n_unavailable", "unavailable_reasons", "available", "seed", "measure"
+        )}
+        if candidate["available"]:
+            pert = candidate
+        else:
+            mode = IDENT_BOUNDS
+            numerical_reasons.append("uncertainty_draws_unavailable")
+            reasons.append("uncertainty_draws_unavailable")
     half = np.maximum((hi - lo) / 2.0, 1e-300)
     return {
         "schema": SCHEMA,
@@ -991,6 +1178,8 @@ def rn_tail_report(
                               "relative_width": bounds["relative_width"]},
         "point_estimate": float(q_hat) if mode == IDENT_FULL else None,
         "perturbation_interval": pert,
+        "perturbation_diagnostics": perturbation_diagnostics,
+        "numerical_validity": {"qualified": not numerical_reasons, "reasons": numerical_reasons},
         "density": {
             "total_mass": density.total_mass,
             "negative_mass_after_repair": density.negative_mass,
