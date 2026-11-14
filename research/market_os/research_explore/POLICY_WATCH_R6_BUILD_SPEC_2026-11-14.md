@@ -24,10 +24,15 @@ File: [Macro and Policy Watch](https://app.paper.design/file/01M6Y2X53ABR4MME4AT
 | Now, mobile 390 | p-7-1 | 272-1 | Single-column reading and full-page dossier entry |
 | State contact sheet | p-9-1 | 2PR-1 | No changes, delayed source, unavailable comparison, correction, follow conditions and research navigation |
 | Build contract | p-A-1 | 2SM-1 | Product, owners, evidence clocks, interaction contract and production proof |
+| Pipeline | p-B-1 | 32O-1 | Legal stage, next dated or undated step, source and dependencies |
+| Market Memory | p-C-1 | 39I-1 | ±20-session price comparison with explicit episode context |
+| Research calls | p-D-1 | 3GL-1 | Original criterion, resolution event, review date and pending evidence |
+| Transmission | p-E-1 | 3RK-1 | Selected connection, legal dependencies and exact source span |
+| Company exposure | p-F-1 | 3YR-1 | Reported business, product/destination mapping and unresolved revenue effect |
 
 All companies, policy notices, quotations, dates, rate paths and values in the new frames are **synthetic design fixtures**. They are not current market claims. Fixture identity is recorded in frame/build metadata rather than repeated as a product banner. Production must replace the fixture projection with provenance-bound owner data.
 
-The earlier R5 page p-2-0 remains reference for Pipeline, Market Memory, Calls and their additional states. Those flows still need the complete R6 treatment and route-level proof before the Policy design set can be called complete. This is not permission to erase their capabilities.
+The earlier R5 page p-2-0 remains reference for retained capabilities and additional states. Pipeline, Market Memory, Calls, Transmission and Company exposure now have R6 compositions. Complete state transitions, regional/world/people depth, language/theme/breakpoint parity and route-level proof remain open; this revision does not erase the existing capabilities.
 
 ## 2. Information architecture and discoverability
 
@@ -135,7 +140,7 @@ The state contact sheet and build page are internal design resources. They must 
 4. Implement source comparison, queue restoration and the complete mobile reading path.
 5. Connect supported follow conditions to the canonical Alerts owner with truthful persistence/delivery receipts.
 6. Upgrade missing lifecycle, versioning or exposure evidence in the existing engine, with explicit schema compatibility and replay checks.
-7. Complete Pipeline, Market Memory and Research R6 visual states, bilingual/narrow-screen behavior and their source-bound implementations.
+7. Verify the implemented Pipeline, Market Memory and Research journeys against their authored R6 compositions and completed design-state coverage, including bilingual/narrow-screen behavior and source-bound outcomes.
 8. Use permitted native PR delivery and actual required protections. A merge, deploy and user-path acceptance remain separate receipts.
 
 The current turn is design-first. No product release, production data mutation or alert enrollment is authorized merely by creating these design fixtures.
@@ -160,3 +165,18 @@ Production evidence must identify deployed version, real route, relevant data ve
 - [Current projection](https://github.com/mastermindx-market-intelligence/Macro/blob/e856ef0200a0c508c78ef9a6666116020e4835d1/engine/policy_watch_current.py)
 - [Lifecycle owner](https://github.com/mastermindx-market-intelligence/Macro/blob/e856ef0200a0c508c78ef9a6666116020e4835d1/engine/policy_intent_desk.py)
 - [Shared shell geometry](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/fe49f3b5765dd4e10721928716a6a730e78c7ae1/terminal/components/chrome/shared-shell/shared-shell.css)
+
+
+## 11. Deeper-view interaction bindings
+
+The R6 pipeline retains an All dates state with undated policy records. A future date filter must explicitly define whether undated rows are included, and its displayed count must match. Selecting a lifecycle item preserves jurisdiction, legal-stage filters, date mode, scroll and the selected policy version. Scheduled consultation or adoption dates are not completed events.
+
+Market Memory displays a ±20-session window. The blue SOXX fixture and dashed gray SPY fixture both index to 100 at the selected event; 41 trading sessions include the event session. Carry event timestamp, exchange calendar, asset identity, price adjustment basis, source history and selected comparison version. A calendar-day implementation cannot silently substitute for trading-session alignment. No observed price path establishes the policy's causal effect.
+
+The call inspector preserves the original statement and criterion. “Final rule publication” and “Official review notice” are resolution events; a recorded check-by/review date remains a separate field. The specimen explicitly says when that date was not recorded. Do not invent a deadline, classify an open call as successful, or exclude a losing/corrected result to improve an aggregate.
+
+Transmission opens the selected edge beside its precise source span. Product scope, licensing condition and company exposure retain different evidence classes. The current specimen remains a proposal; the route does not imply adoption. Source-dependent interpretation must reference its policy version and be recomputed or invalidated through the incumbent owner when that version changes.
+
+Company exposure is an evidence chain, not a ticker-impact score. Opening NVDA retains the same proposed policy and requires a product definition, destination mapping and reported-business source before a revenue effect can be established. Missing links remain visible. Company Intelligence owns the company filing destination; it must return to the same policy/issuer selection. The examples are fixtures and do not establish actual NVDA, AMD or ASML exposure.
+
+Keyboard selection, accessible source spans, mobile sheet behavior, Back/Forward and confirmed save/follow effects still require implementation proof. These contracts do not claim that static Paper buttons already execute.
