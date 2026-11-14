@@ -60,10 +60,23 @@ MOVED = [
     ("scripts.grade_prophet_doors", "Prophet doors — grade"),
     ("scripts.grade_us_prophet_candidates", "Prophet US full-population grades"),
     ("scripts.accrue_us_prophet_w3", "Prophet W3 paired-race ledger"),
+    ("scripts.capture_prophet_b4_same_read", "Prophet B4 — ingest"),
     ("scripts.run_prophet_miss_audit", "Prophet miss-audit"),
 ]
 
-#: The five whose forward advance ALSO gates on engine.ledger_lane (COLLECT_LANE=nightly)
+#: Modules whose nightly invocation carries a flag BEYOND --nightly.  The B4 capture's
+#: nightly home is the INGEST of the VPS spool (its live-plane read happens on the VPS
+#: under --spool); ``--nightly`` alone would demand /var/lib/macro-live on the runner.
+EXTRA_ARGS = {
+    "scripts.capture_prophet_b4_same_read": "--from-spool",
+}
+
+
+def _cmd(module: str) -> str:
+    extra = EXTRA_ARGS.get(module)
+    return f"python -m {module} --nightly" + (f" {extra}" if extra else "")
+
+#: The six whose forward advance ALSO gates on engine.ledger_lane (COLLECT_LANE=nightly)
 #: on top of --nightly.  run_prophet_miss_audit gates on --nightly alone (it threads
 #: `advance=` through instead), which is why it is deliberately absent here.
 LANE_GATED = [
@@ -72,6 +85,7 @@ LANE_GATED = [
     "scripts.grade_prophet_doors",
     "scripts.grade_us_prophet_candidates",
     "scripts.accrue_us_prophet_w3",
+    "scripts.capture_prophet_b4_same_read",
 ]
 
 
@@ -172,7 +186,7 @@ class TestLedgerLaneGate:
 
     def test_the_job_sets_the_nightly_lane_sentinel(self, job):
         assert (job.get("env") or {}).get("COLLECT_LANE") == "nightly", (
-            "five of the six moved advancers gate on "
+            "six of the seven moved advancers gate on "
             "engine.ledger_lane.nightly_advance_enabled(); without this env they run "
             "green and write NOTHING — a silently frozen ledger is worse than a slow one")
 
@@ -258,10 +272,12 @@ class TestLedgerLaneGate:
         from engine import prophet_doors, prophet_miss_audit
         from engine import us_prophet_grades as upg
         from engine import us_prophet_w3 as w3
+        from scripts import capture_prophet_b4_same_read as capture
         from scripts import grade_prophet_doors as gpd
 
         root = Path("/repo")
         written = {
+            capture.capture_dir(root),
             prophet_doors.flags_path(root),
             prophet_doors.status_path(root),
             gpd.grades_path(root),
@@ -301,7 +317,7 @@ class TestFailureIsolation:
                     if f"python -m {module} --nightly" in _runs(s))
         body = [ln.strip() for ln in _runs(step).splitlines()
                 if ln.strip() and not ln.strip().startswith("#")]
-        assert body == [f"python -m {module} --nightly"], (
+        assert body == [_cmd(module)], (
             f"{module} is masked again ({body}) — inside the deploy lane the `|| true` "
             "was necessary; here it turns the isolated job into a permanently green one")
 
@@ -361,7 +377,7 @@ class TestNoCascade:
 
 class TestDagDeclaration:
 
-    def test_the_new_lane_is_declared_with_the_six_modules_in_order(self):
+    def test_the_new_lane_is_declared_with_the_seven_modules_in_order(self):
         dag = yaml.safe_load(DAG.read_text(encoding="utf-8"))
         lane = next((l for l in dag["lanes"]
                      if l["workflow"] == ".github/workflows/daily.yml"
@@ -369,7 +385,9 @@ class TestDagDeclaration:
         assert lane is not None, f"config/dag.yml declares no lane for {JOB}"
         assert [s.get("module") for s in lane["steps"]] == [m for m, _ in MOVED]
         for step in lane["steps"]:
-            assert step.get("args") == ["--nightly"], (
+            expected = ["--nightly"] + (
+                [EXTRA_ARGS[step["module"]]] if step.get("module") in EXTRA_ARGS else [])
+            assert step.get("args") == expected, (
                 f"{step.get('id')}: the declared args lost --nightly, the sole-advancer flag")
 
     def test_the_engine_lane_no_longer_declares_them(self):

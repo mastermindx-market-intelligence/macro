@@ -865,3 +865,56 @@ def test_the_backstop_still_commits_nothing():
     for banned in ("git add", "git commit", "git push", "contents: write"):
         assert banned not in WORKFLOW, banned
     assert "contents: read" in WORKFLOW
+
+
+# ── The Prophet B4 capture pass: the VPS half of the two-host capture stream ─────
+
+B4_SERVICE = DEPLOY / "macro-live-b4capture.service"
+B4_TIMER = DEPLOY / "macro-live-b4capture.timer"
+
+
+def test_the_b4_capture_service_is_the_spool_pass_on_the_prophet_lanes_caps():
+    """The B4 capture reads the SAME live plane as macro-live-prophet and must sit on
+    the same (lowest) tier with no looser cap; its ExecStart is the ``--spool`` pass
+    and never the nightly writer flag."""
+    svc = _unit(B4_SERVICE)["Service"]
+    ref = _unit(SERVICE)["Service"]
+    assert svc["Type"] == "oneshot"
+    assert svc["ExecStart"].endswith("-m scripts.capture_prophet_b4_same_read --spool")
+    assert "--nightly" not in svc["ExecStart"]
+    assert svc["WorkingDirectory"] == "/opt/macro"
+    assert svc["EnvironmentFile"] == "-/etc/macro-live.env"
+    for key in ("Nice", "CPUWeight", "CPUQuota", "MemoryHigh", "MemoryMax", "IOWeight",
+                "TimeoutStartSec", "NoNewPrivileges", "PrivateTmp"):
+        assert svc[key] == ref[key], key
+
+
+def test_the_b4_capture_timer_fires_once_per_session_inside_both_dst_regimes():
+    tim = _unit(B4_TIMER)["Timer"]
+    m = re.fullmatch(r"Mon\.\.Fri \*-\*-\* (\d+):(\d+):(\d+) UTC", tim["OnCalendar"])
+    assert m, tim["OnCalendar"]
+    hour = int(m.group(1))
+    # 15:xxZ is 11:xx ET under EDT and 10:xx ET under EST — inside the session both ways,
+    # after the open, before the close.
+    assert 14 <= hour <= 19
+    assert tim["Persistent"] == "false"          # a missed observation is never replayed
+    assert tim["Unit"] == "macro-live-b4capture.service"
+
+
+def test_the_b4_capture_units_run_no_git_and_touch_no_data_path():
+    for path in (B4_SERVICE, B4_TIMER):
+        for section in _unit(path).sections():
+            for key, value in _unit(path)[section].items():
+                for banned in ("git ", "data/", "site.served", "/opt/macro/site"):
+                    assert banned not in value, f"{path.name}: {key}={value}"
+
+
+def test_live_setup_installs_verifies_and_arms_the_b4_capture_timer():
+    """Registration in all three lists: the unit-presence check, ``enable --now`` and
+    the final ``list-timers`` readback."""
+    assert "macro-live-b4capture.service macro-live-b4capture.timer" in LIVE_SETUP
+    enable = LIVE_SETUP.split("systemctl enable --now")[1].split(">/dev/null")[0]
+    assert "macro-live-b4capture.timer" in enable
+    readback = LIVE_SETUP.split("systemctl list-timers")[1].split("--no-pager")[0]
+    assert "macro-live-b4capture.timer" in readback
+    assert "macro-live-b4capture" in LIVE_SETUP.split("R2 credentials are INCOMPLETE")[1].split("\n")[0]
