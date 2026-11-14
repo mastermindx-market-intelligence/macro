@@ -684,14 +684,16 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
       <summary><span class="sh-ic">🇭🇰</span>{{ t('Hong Kong issuance backdrop','香港发行背景') }}<span class="sh-hint">{{ t(hk.verdict, hk.verdict_zh) }}</span><span class="sh-caret">▶</span></summary>
       <div class="sh-body">
         <div class="sec-sub" style="margin:10px 0">{{ t('Liquidity backdrop only. HK is structurally more retail-tradeable (a public-offer tranche with clawback, a published subscription multiple, a grey market) — but those deal-level demand feeds are keyless and currently blocked, so we show the liquidity that drives HK’s hot windows, not a deal signal. Never scored.','仅为流动性情况。香港在结构上更适合散户参与（公开发售部分＋回拨机制、公开的超额认购倍数、暗盘）—— 但这些交易级需求数据无密钥且目前受阻，故此处展示驱动香港热窗的流动性，而非交易信号。从不计分。') }}</div>
+        <div class="sec-sub" style="margin:10px 0">{{ t(hk.coverage_en, hk.coverage_zh) }} {{ t('Flow and funding show observation dates; peg and risk show the regime snapshot date.', '资金流及融资成本显示观测日期；汇率及风险偏好显示市场状态快照日期。') }}</div>
         {% if hk.missing_note_en %}<div class="note warn">{{ t(hk.missing_note_en, hk.missing_note_zh) }}</div>{% endif %}
+        {% for evidence in hk.excluded_evidence %}<div class="sec-sub" style="margin:6px 0">{{ t(evidence.en, evidence.zh) }}</div>{% endfor %}
         <div class="tbl-wrap">
           <table class="legtbl">
             <thead><tr><th class="l" scope="col">{{ t('Backdrop leg','背景分项') }}</th><th scope="col">{{ t('Reading','读数') }}</th><th scope="col">{{ t('State','状态') }}</th></tr></thead>
             <tbody>
             {% for l in hk.legs %}
             <tr>
-              <td class="l" scope="row">{{ t(l.label, l.label_zh) }}<div style="color:var(--faint);font-size:11.5px">{{ t(l.note, l.note_zh) }}</div></td>
+              <td class="l" scope="row">{{ t(l.label, l.label_zh) }}<div style="color:var(--faint);font-size:11.5px">{{ t(l.note, l.note_zh) }}</div><div style="color:var(--faint);font-size:11.5px">{{ t(l.evidence_en, l.evidence_zh) }}</div></td>
               <td><b style="color:var(--ink)">{{ t(l.value, l.value_zh) }}</b></td>
               <td><span class="chip" style="border-color:{{ l.color }};color:{{ l.color }}">{{ t(STATEW.get(l.state, l.state), l.state_zh) }}</span></td>
             </tr>

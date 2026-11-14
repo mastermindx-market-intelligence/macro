@@ -6331,6 +6331,16 @@ jobs:
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
       - "tests/test_ipo_prospectus_terms.py"
+      - "tests/test_ipo_hk_missing_copy.py"
+      - "tests/test_ipo_hk_evidence.py"
+      - "engine/fundamental_forensics/__init__.py"
+      - "engine/fundamental_forensics/detectors.py"
+      - "engine/fundamental_forensics/filing_attestation.py"
+      - "engine/fundamental_forensics/filing_package.py"
+      - "engine/fundamental_forensics/ixbrl_extraction.py"
+      - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/pipeline.py"
+      - "engine/fundamental_forensics/sec_companyfacts.py"
       - "data/ipo/lockups.parquet"
       - "data/ipo/calendar.parquet"
       - "data/yahoo/CRCL.parquet"
@@ -7052,7 +7062,7 @@ jobs:
         # tests also exercise the existing archive reader and an injected collector
         # with no network calls; their imports require beautifulsoup4 and requests.
         # Reported-input valuation remains pure and never fetches during computation.
-        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow beautifulsoup4 requests
+        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow beautifulsoup4 requests plotly
       - name: conviction profile honesty invariants + dossier reason codes
         run: python -m pytest tests/test_stock_score.py tests/test_stock_dossier.py -q
       # P1 unrun backfill 2026-08-19: tests/test_analyzer_i18n_percentile.py (#5980) was named
@@ -7130,7 +7140,7 @@ jobs:
           tests/test_guidance_source_evidence.py
           tests/test_china_archetype_d_s1.py -q
       - name: IPO retained-source identity, conditional terms and native price path
-        run: python -m pytest tests/test_ipo_prospectus_terms.py -q
+        run: python -m pytest tests/test_ipo_prospectus_terms.py tests/test_ipo_hk_missing_copy.py tests/test_ipo_hk_evidence.py -q
       # Gold China-premium core is a code contract, not merely a render/data
       # check. The full builder/template matrix remains on unrun-macro-panels;
       # this hermetic subset prevents the calculation or rights gate from
