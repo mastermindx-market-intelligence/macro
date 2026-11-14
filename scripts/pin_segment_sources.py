@@ -116,8 +116,10 @@ def packet_output_stem(row: dict) -> str:
 MAX_DISCLOSED_LINE_CHARS = 160
 
 _REFUSAL_CODE_RE = re.compile(r"REFUSED: ([A-Z0-9_]{1,80})(?::|$)")
-_PROPOSAL_ID_RE = re.compile(r"actprop_[A-Za-z0-9_]{1,128}")
-_PROPOSAL_STATUS_RE = re.compile(r"[a-z_]{1,40}")
+# The writer's contract: probation.activity_proposal_id is "actprop:" + 24 hex,
+# and a proposer only ever writes status PROPOSED.
+_PROPOSAL_ID_RE = re.compile(r"actprop:[0-9a-f]{24}")
+_PROPOSAL_STATUS_RE = re.compile(r"PROPOSED")
 
 
 def _refusal_codes(stderr: str) -> list[str]:
@@ -680,6 +682,10 @@ def _validate_manifest_rows(rows: list) -> None:
                 raise ManifestRowRefused(index, f"INVALID_{key.upper()}")
         if not isinstance(row["profit_driver"], bool):
             raise ManifestRowRefused(index, "PROFIT_DRIVER_NOT_BOOLEAN")
+        # Optional, but echoed in the report: when given it must be a ticker.
+        ticker = row.get("ticker")
+        if ticker is not None and not (isinstance(ticker, str) and _TICKER_RE.fullmatch(ticker)):
+            raise ManifestRowRefused(index, "INVALID_TICKER")
 
 
 def run_propose(manifest_path, out, *, python=None, runner=None) -> dict:

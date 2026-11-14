@@ -638,10 +638,29 @@ def _write_manifest(tmp_path, rows):
     return path
 
 
+# Exactly the line scripts/propose_activity_membership.py prints on success
+# (probation.activity_proposal_id = "actprop:" + 24 hex; status PROPOSED).
+REAL_PROPOSAL_ID = "actprop:287edbf7e04b8aba873b7493"
+REAL_WRITER_STDOUT = (
+    f'{{"proposal_id": "{REAL_PROPOSAL_ID}", "status": "PROPOSED", '
+    f'"appended": 1, "unchanged": 0, '
+    f'"ledger": "/home/runner/work/macro/out/activity_proposals.jsonl"}}\n')
+
+
 class _Proc:
     returncode = 0
-    stdout = '{"proposal_id": "actprop_x", "status": "proposed"}\n'
+    stdout = REAL_WRITER_STDOUT
     stderr = ""
+
+
+def test_writer_still_prints_the_shape_the_report_parser_reads():
+    # Guards the parser against drift in the writer's id format and print line.
+    source = (m.ROOT / "scripts" / "propose_activity_membership.py").read_text(encoding="utf-8")
+    assert '{{"proposal_id": "{row["proposal_id"]}", "status": "{row["status"]}", ' in source
+    probation_src = (m.ROOT / "engine" / "theme_graph" / "probation.py").read_text(encoding="utf-8")
+    assert 'return "actprop:" + hashlib.sha256(' in probation_src
+    assert '.hexdigest()[:24]' in probation_src
+    assert '"status": "PROPOSED",' in probation_src
 
 
 def test_run_propose_builds_the_unchanged_cli_argument_list(tmp_path):
@@ -668,6 +687,9 @@ def test_run_propose_builds_the_unchanged_cli_argument_list(tmp_path):
     assert calls[0][1]["cwd"] == m.ROOT and "shell" not in calls[0][1]
     assert [r["exit_code"] for r in report["rows"]] == [0, 0]
     assert report["outcome"] == "complete"
+    assert report["rows"][0]["proposal"] == {"proposal_id": REAL_PROPOSAL_ID, "status": "PROPOSED",
+                                             "appended": 1, "unchanged": 0}
+    assert "/home/runner" not in (out / "propose_report.json").read_text(encoding="utf-8")
     assert (out / "propose_report.json").exists()
 
 
@@ -690,9 +712,7 @@ def test_run_propose_report_says_partial_when_the_writer_refuses_partway(tmp_pat
 
 class _ChattyProc:
     returncode = 2
-    stdout = ('warning: something from a document\n'
-              '{"proposal_id": "actprop_abc123", "status": "proposed", "appended": 1, '
-              '"unchanged": 0, "ledger": "/home/runner/secret/path/activity_proposals.jsonl"}\n')
+    stdout = 'warning: something from a document\n' + REAL_WRITER_STDOUT
     stderr = ("REFUSED: FACT_KIND_INVALID: unexpected kind 'Revenue from DRAM products'\n"
               "REFUSED: oddly shaped line\nnoise\n")
 
@@ -703,12 +723,30 @@ def test_run_propose_report_carries_only_fixed_shape_fields(tmp_path):
                            runner=lambda cmd, **kwargs: _ChattyProc())
     row = report["rows"][0]
     assert set(row) == {"ticker", "exit_code", "proposal", "refusal_codes"}
-    assert row["proposal"] == {"proposal_id": "actprop_abc123", "status": "proposed",
+    assert row["proposal"] == {"proposal_id": REAL_PROPOSAL_ID, "status": "PROPOSED",
                                "appended": 1, "unchanged": 0}
     assert row["refusal_codes"] == ["FACT_KIND_INVALID", "UNPARSED_REFUSAL"]
     raw = (out / "propose_report.json").read_text(encoding="utf-8")
     for leaked in ("DRAM", "warning", "/home/runner", "ledger", "oddly"):
         assert leaked not in raw
+
+
+@pytest.mark.parametrize("line", [
+    '{"proposal_id": "actprop_abc123", "status": "PROPOSED"}',
+    '{"proposal_id": "actprop:287edbf7e04b8aba873b7493", "status": "ACCEPTED"}',
+    '{"proposal_id": "actprop:287EDBF7E04B8ABA873B7493", "status": "PROPOSED"}',
+    'actprop:287edbf7e04b8aba873b7493 PROPOSED',
+])
+def test_proposal_parser_refuses_anything_but_the_writer_contract(line):
+    assert m._proposal_result(line + "\n") is None
+
+
+def test_run_propose_refuses_a_manifest_ticker_that_is_not_a_ticker(tmp_path):
+    calls = []
+    with pytest.raises(m.ManifestRowRefused, match="INVALID_TICKER"):
+        m.run_propose(_write_manifest(tmp_path, [_propose_row(ticker="Revenue from DRAM")]),
+                      tmp_path / "out", python="PY", runner=lambda c, **k: calls.append(c))
+    assert calls == [] and not (tmp_path / "out").exists()
 
 
 def test_packet_request_with_an_over_long_disclosed_line_is_refused_before_any_write(tmp_path):
