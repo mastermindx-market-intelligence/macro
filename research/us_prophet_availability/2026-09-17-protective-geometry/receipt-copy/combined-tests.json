@@ -1,0 +1,24 @@
+{
+  "tree": "c748468aebd81340a241b97035f67327d9f9a5f7",
+  "geometry_candidate": "ff4edc2ba9023887617ddec75aca5ea6a387dca5",
+  "returncode": 0,
+  "summary": "518 passed in 17.49s",
+  "seconds": 18.36,
+  "suites": [
+    "tests/test_us_breadth_completed_close.py",
+    "tests/test_breadth_split_seam.py",
+    "tests/test_russell_breadth.py",
+    "tests/test_universe_split_seam.py",
+    "tests/test_prophet_bridge.py",
+    "tests/test_prophet_integrity.py",
+    "tests/test_prophet_arena.py",
+    "tests/test_prophet_arena_clock_parity.py",
+    "tests/test_prophet_plan_chronology_audit.py",
+    "tests/test_us_completed_session_panel.py",
+    "tests/test_prophet_whynot_receipts.py"
+  ],
+  "source_files": 6447,
+  "changed_source_files": [],
+  "production": false,
+  "provider_calls": 0
+}

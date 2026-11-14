@@ -1,0 +1,77 @@
+{
+  "proof_class": "full_saved_real_board_matched_context_origination_comparison",
+  "candidate_commit": "6af030bdd7777901b00c170d4014a168cf787731",
+  "baseline_tree": "24ce4b164fee0208345924ace3e1c4aad282cb5d",
+  "integrated_tree": "68e785e61c7778a2e7dbe464c89f044f1fef6078",
+  "preimage_bridge_sha256": "6b0ca5a3f3ce1f88e34cad807fc464cf4ab0fbe30a2b55884f6541f216b5c2dc",
+  "candidate_bridge_sha256": "7cef51f9303ce88d62248f141fbe9b0526a62954c0c5f00e73ccae81e152727b",
+  "board_sha256": "3cfa5b63b84b8010e53b17fef781ead9814083189fbf7d191f7b21e80a75588a",
+  "rows": 42,
+  "suppression_inputs": "empty existing IDs and active keys in both runs; isolates producer behavior",
+  "baseline_plans": 23,
+  "repaired_plans": 20,
+  "removed_ids": [
+    "HON-BULL-20260727",
+    "RBA-BULL-20260727",
+    "TRN-BULL-20260714"
+  ],
+  "new_ids": [],
+  "unchanged_shared_plans": 20,
+  "changed_shared": [],
+  "new_failures": [
+    {
+      "ticker": "HON",
+      "id": "HON-BULL-20260727",
+      "stage": "geometry",
+      "errors": [
+        "geometry: invalidation must be strictly on the entry's loss side"
+      ]
+    },
+    {
+      "ticker": "EBAY",
+      "id": "EBAY-BULL-20260914",
+      "stage": "clock_provenance",
+      "errors": [
+        "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+      ]
+    },
+    {
+      "ticker": "PG",
+      "id": "PG-BULL-20260914",
+      "stage": "clock_provenance",
+      "errors": [
+        "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+      ]
+    },
+    {
+      "ticker": "CPRI",
+      "id": "CPRI-BULL-20260914",
+      "stage": "clock_provenance",
+      "errors": [
+        "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+      ]
+    },
+    {
+      "ticker": "TRN",
+      "id": "TRN-BULL-20260714",
+      "stage": "geometry",
+      "errors": [
+        "geometry: invalidation must be strictly on the entry's loss side"
+      ]
+    },
+    {
+      "ticker": "RBA",
+      "id": "RBA-BULL-20260727",
+      "stage": "geometry",
+      "errors": [
+        "geometry: invalidation must be strictly on the entry's loss side"
+      ]
+    }
+  ],
+  "lossless": true,
+  "unaccounted": 0,
+  "intake_identity_breach": null,
+  "production": false,
+  "provider_requests": 0,
+  "source_carrier_unchanged_by_experiment": true
+}

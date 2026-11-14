@@ -31421,6 +31421,7 @@ jobs:
           CADDY_DIR="$(mktemp -d)"
           trap 'rm -rf "$CADDY_DIR"' EXIT
           curl --fail --silent --show-error --location \
+            --retry 3 --retry-max-time 120 --connect-timeout 15 --max-time 60 \
             --output "$CADDY_DIR/caddy.tar.gz" \
             https://github.com/caddyserver/caddy/releases/download/v2.11.4/caddy_2.11.4_linux_amd64.tar.gz
           printf '%s  %s\n' \
@@ -37519,6 +37520,7 @@ jobs:
       - "tests/test_p_mp1_shell_ladder_error_state.py"
       - "tests/test_prophet_arena.py"
       - "tests/test_prophet_b2_disposition.py"
+      - "tests/test_prophet_anticipation_intake.py"
       - "tests/test_prophet_bridge.py"
       - "tests/test_prophet_candidate_plan_return.py"
       - "tests/test_prophet_candidate_state.py"
@@ -37703,6 +37705,9 @@ jobs:
         run: >-
           python -m pytest tests/test_prophet_whynot_receipts.py -q
           -k "every_order_code_has_non_empty_bilingual_copy or template_copy_mirrors_the_engine_copy_exactly or plan_not_built_copy_never_claims_every_check_passed or validated_word_is_confined_to_the_exact_negative_disclaimer"
+      - name: Protective plan geometry and honest refusal (PR-time source contract)
+        run: >-
+          python -m pytest tests/test_prophet_bridge.py tests/test_prophet_anticipation_intake.py tests/test_prophet_whynot_receipts.py -q -k "protective_geometry or TestWaitResetAcceptance or unbuilt_plan_receipt_does_not_claim_all_plan_checks_passed"
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet R7 Wave A refusal receipts and design guards (A3)

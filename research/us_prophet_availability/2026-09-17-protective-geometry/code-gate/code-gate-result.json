@@ -1,0 +1,14 @@
+{
+  "preimage_head": "0a105d9a516ece178841aa20924fda581339e8a2",
+  "owner": "washout-turn-organ",
+  "gate": "code",
+  "previous_code_owner_for_geometry_suite": [],
+  "only_one_run_step_added": true,
+  "no_jobs_dependencies_timeouts_changed": true,
+  "returncode": 0,
+  "summary": "63 passed, 210 deselected in 3.11s",
+  "seconds": 3.61,
+  "command": "python -m pytest tests/test_prophet_bridge.py tests/test_prophet_anticipation_intake.py tests/test_prophet_whynot_receipts.py -q -k \"protective_geometry or TestWaitResetAcceptance or unbuilt_plan_receipt_does_not_claim_all_plan_checks_passed\"",
+  "collector_or_plan_semantics_changed": false,
+  "production": false
+}
