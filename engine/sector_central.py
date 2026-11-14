@@ -681,15 +681,15 @@ _SPLIT_COPY_ZH = {
 
 # Plain-word equivalents for the conviction labels in split copy
 _CONV_PLAIN_EN: dict[str, str] = {
-    "Accumulate":   "looking extended after the run",
-    "Constructive": "constructive on the trend",
+    "Accumulate":   "favorable on setup",
+    "Constructive": "constructive on setup",
     "Neutral":      "neutral, no strong lean",
     "Cautious":     "cautious",
     "Reduce":       "risk looks elevated",
 }
 _CONV_PLAIN_ZH: dict[str, str] = {
-    "Accumulate":   "强势延伸后偏高位",
-    "Constructive": "趋势建设性",
+    "Accumulate":   "形态条件有利",
+    "Constructive": "形态条件偏积极",
     "Neutral":      "中性，无明显倾向",
     "Cautious":     "偏谨慎",
     "Reduce":       "风险较高",
@@ -1046,6 +1046,54 @@ def _membership_coverage(spec, *, as_of, used_members, source_version) -> dict:
     return out
 
 
+def _attach_strength(records: list[dict], *, peer_group: str, as_of: str | None) -> None:
+    """Add observed RS thirds; never feed them into setup or ordering.
+
+    Rank finite price-ratio changes versus SPY within the complete, separate sector
+    or basket board. Average ties before splitting the normalized rank into thirds;
+    equal values never separate on input order or on the upstream ordinal RS rank.
+    Three measured peers is a display-coverage rule, not a validated signal gate.
+    The signed RS value remains available when there are too few peers to compare.
+    The legacy rs_63d field does not qualify a common session window or endpoint:
+    missing quotes can compress its retained series, and endpoints can be stale.
+    A board date is not a measurement date for these observations.
+    """
+    values = []
+    for rec in records:
+        value = (rec.get("momentum") or {}).get("rs_63d")
+        valid_type = (isinstance(value, (int, float, np.integer, np.floating))
+                      and not isinstance(value, (bool, np.bool_)))
+        try:
+            number = float(value) if valid_type else np.nan
+        except (OverflowError, ValueError, TypeError):
+            number = np.nan
+        values.append(number if np.isfinite(number) else np.nan)
+    series = pd.Series(values, dtype="float64")
+    ranks = series.rank(method="average", ascending=False)
+    n_measured = int(series.notna().sum())
+    for i, rec in enumerate(records):
+        value = values[i]
+        band = "unavailable"
+        reason = "missing_rs63" if not np.isfinite(value) else "insufficient_peers"
+        if np.isfinite(value) and n_measured >= 3:
+            # Compare unrounded rank positions; exact thirds must not drift on
+            # float subtraction (e.g. the lower boundary with four peers).
+            position = n_measured - ranks.iloc[i]
+            span = n_measured - 1
+            band = ("leading" if 3 * position >= 2 * span else
+                    "lagging" if 3 * position <= span else "mid-pack")
+            reason = None
+        rec["strength"] = {
+            "band": band, "reason": reason,
+            "rs_63d": float(value) if np.isfinite(value) else None,
+            "horizon_sessions": None, "benchmark": "SPY",
+            "peer_group": peer_group, "n_measured": n_measured,
+            "n_peers": len(records), "as_of": None, "board_as_of": as_of,
+            "window_status": "unqualified",
+            "method": "rs63-average-rank-thirds-v1",
+        }
+
+
 @dataclass(frozen=True)
 class SectorCentralInputs:
     """Declared inputs for display fusion; acquisition/publication stay with their owners.
@@ -1190,6 +1238,11 @@ def compute_from_inputs(inputs: SectorCentralInputs, *, evaluation_date: date) -
             as_of=(cyc.get("meta") or {}).get("asOf"), used_members=used,
             source_version=memb_version)
         baskets.append({**carried, **fused, "membership_coverage": cov})
+
+    # Strength describes peer leadership; conviction remains the existing setup read.
+    # Attach before display ordering, with sectors and baskets in separate peer sets.
+    for records, peer_group in ((sectors, "sectors"), (baskets, "baskets")):
+        _attach_strength(records, peer_group=peer_group, as_of=cyc["meta"]["asOf"])
 
     # XSR-R2: primary sort is conviction score (will be replaced by rotation rank below).
     # This establishes the fallback order used when rotation artifact is absent.
