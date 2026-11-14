@@ -327,3 +327,170 @@ def test_dominant_to_emerging_churn_fires_only_after_two_consecutive(tmp_path, m
                               "2026-06-22"))
     assert len(fired) == 1 and fired[0]["type"] == "theme_emerging"
     assert len(ta.load_events()) == 1   # exactly one alert despite 4 oscillation builds
+
+
+
+# Session-order regressions: constructive confirmation must move forward in time.
+import pytest
+
+
+def _ordered_payload(kind, day, changed=False):
+    if kind == 'lead':
+        rows = [_theme('a', 'dominant', 'hold', 2 if changed else 1, 65),
+                _theme('x', 'dominant', 'hold', 1 if changed else 2, 75 if changed else 60)]
+    else:
+        rows = [_ld(), _theme('x', 'emerging' if kind == 'label' and changed else 'neutral',
+                             'accumulate' if kind == 'reco' and changed else 'hold', 2, 60)]
+    return _intel(rows, day)
+
+
+def _state_bytes(region):
+    return (ta._state_path(region).read_bytes(), ta._path(region).read_bytes())
+
+
+@pytest.mark.parametrize('region', ['us', 'cn', 'hk', 'ca'])
+@pytest.mark.parametrize('kind', ['reco', 'label', 'lead'])
+def test_older_session_cannot_confirm_pending_flip(tmp_path, monkeypatch, region, kind):
+    _setup(tmp_path, monkeypatch)
+    ta.rebuild(_ordered_payload(kind, '2026-11-09'), region)
+    ta.rebuild(_ordered_payload(kind, '2026-11-11', True), region)
+    before = _state_bytes(region)
+    assert ta.rebuild(_ordered_payload(kind, '2026-11-10', True), region) == []
+    assert _state_bytes(region) == before
+    assert ta.load_events(region) == []
+    # A repeated current session is still one observation; a later session confirms.
+    assert ta.rebuild(_ordered_payload(kind, '2026-11-11', True), region) == []
+    events = ta.rebuild(_ordered_payload(kind, '2026-11-12', True), region)
+    assert len(events) == 1
+    assert events[0]['context']['held_sessions'] == 2
+    assert events[0]['ts'].startswith('2026-11-12')
+    assert len(ta.load_events(region)) == 1
+
+
+@pytest.mark.parametrize('region', ['us', 'cn', 'hk', 'ca'])
+@pytest.mark.parametrize('risk', ['reco', 'topping', 'deteriorating'])
+def test_stale_risk_snapshot_cannot_rollback_state_but_current_risk_is_immediate(
+        tmp_path, monkeypatch, region, risk):
+    _setup(tmp_path, monkeypatch)
+    seed = _intel([_ld(), _theme('x', 'dominant', 'accumulate', 2, 70)], '2026-11-11')
+    ta.rebuild(seed, region)
+    rows = [_ld(), _theme('x', {'reco':'dominant', 'topping':'fading',
+                              'deteriorating':'deteriorating'}[risk], 'trim', 2, 50)]
+    before = _state_bytes(region)
+    assert ta.rebuild(_intel(rows, '2026-11-10'), region) == []
+    assert _state_bytes(region) == before
+    current = _intel(rows, '2026-11-11')
+    raw = ta.compute_events(current, ta._snapshot(seed))
+    assert ta.rebuild(current, region) == raw  # exact unchanged event, no risk delay
+    assert len(raw) == 1
+
+
+@pytest.mark.parametrize('value', [None, '', 'not-a-date', 'NaT', 0, 1.5, True])
+def test_invalid_session_preserves_existing_files(tmp_path, monkeypatch, value):
+    _setup(tmp_path, monkeypatch)
+    ta.rebuild(_ordered_payload('reco', '2026-11-11'))
+    before = _state_bytes('us')
+    assert ta.rebuild(_ordered_payload('reco', value, True)) == []
+    assert _state_bytes('us') == before
+
+
+@pytest.mark.parametrize('value', [None, '', 'not-a-date', 'NaT', 0, 1.5, True])
+def test_invalid_seed_creates_no_state_or_history(tmp_path, monkeypatch, value):
+    _setup(tmp_path, monkeypatch)
+    assert ta.rebuild(_ordered_payload('reco', value)) == []
+    assert not ta._state_path().exists()
+    assert not ta._path().exists()
+
+
+@pytest.mark.parametrize('kind', ['reco', 'label', 'lead'])
+def test_legacy_pending_bucket_is_a_lower_bound(tmp_path, monkeypatch, kind):
+    _setup(tmp_path, monkeypatch)
+    ta.rebuild(_ordered_payload(kind, '2026-11-09'))
+    ta.rebuild(_ordered_payload(kind, '2026-11-11', True))
+    legacy = ta.load_state()
+    legacy.pop('_as_of', None)
+    ta.write_state(legacy)
+    before = _state_bytes('us')
+    assert ta.rebuild(_ordered_payload(kind, '2026-11-10', True)) == []
+    assert _state_bytes('us') == before
+    assert len(ta.rebuild(_ordered_payload(kind, '2026-11-12', True))) == 1
+    assert ta.load_state()['_as_of'] == '2026-11-12'
+
+
+def test_legacy_event_date_is_a_lower_bound(tmp_path, monkeypatch):
+    _setup(tmp_path, monkeypatch)
+    ta.rebuild(_ordered_payload('reco', '2026-11-09'))
+    ta.rebuild(_ordered_payload('reco', '2026-11-10', True))
+    ta.rebuild(_ordered_payload('reco', '2026-11-11', True))
+    legacy = ta.load_state()
+    legacy.pop('_as_of', None)
+    ta.write_state(legacy)
+    before = _state_bytes('us')
+    assert ta.rebuild(_ordered_payload('reco', '2026-11-10')) == []
+    assert _state_bytes('us') == before
+
+
+def test_legacy_undated_state_establishes_only_current_watermark(tmp_path, monkeypatch):
+    _setup(tmp_path, monkeypatch)
+    legacy = ta._snapshot(_ordered_payload('reco', '2026-11-09'))
+    ta.write_state(legacy)
+    assert ta.rebuild(_ordered_payload('reco', '2026-11-11', True)) == []
+    assert ta.load_state()['_as_of'] == '2026-11-11'
+    assert len(ta.rebuild(_ordered_payload('reco', '2026-11-12', True))) == 1
+
+
+def test_malformed_authoritative_watermark_is_not_reset(tmp_path, monkeypatch):
+    _setup(tmp_path, monkeypatch)
+    ta.rebuild(_ordered_payload('reco', '2026-11-11'))
+    state = ta.load_state()
+    state['_as_of'] = 'invalid'
+    ta.write_state(state)
+    before = _state_bytes('us')
+    assert ta.rebuild(_ordered_payload('reco', '2026-11-12', True)) == []
+    assert _state_bytes('us') == before
+
+
+def test_current_reversion_still_kills_streak(tmp_path, monkeypatch):
+    _setup(tmp_path, monkeypatch)
+    ta.rebuild(_ordered_payload('reco', '2026-11-09'))
+    ta.rebuild(_ordered_payload('reco', '2026-11-11', True))
+    assert ta.rebuild(_ordered_payload('reco', '2026-11-11')) == []
+    assert ta.rebuild(_ordered_payload('reco', '2026-11-12', True)) == []
+    assert len(ta.rebuild(_ordered_payload('reco', '2026-11-13', True))) == 1
+
+
+def test_region_watermarks_are_independent(tmp_path, monkeypatch):
+    _setup(tmp_path, monkeypatch)
+    ta.rebuild(_ordered_payload('reco', '2026-11-12'), 'us')
+    assert ta.rebuild(_ordered_payload('reco', '2026-11-09'), 'hk') == []
+    assert ta.load_state('us')['_as_of'] == '2026-11-12'
+    assert ta.load_state('hk')['_as_of'] == '2026-11-09'
+
+
+def test_state_stamp_is_session_date_not_build_instant(tmp_path, monkeypatch):
+    _setup(tmp_path, monkeypatch)
+    ta.rebuild(_ordered_payload('reco', '2026-11-11T15:30:00-05:00'))
+    assert ta.load_state()['_as_of'] == '2026-11-11'
+    assert ta.rebuild(_ordered_payload('reco', '2026-11-11T20:00:00-05:00', True)) == []
+    assert ta.rebuild(_ordered_payload('reco', '2026-11-11T21:00:00-05:00', True)) == []
+    assert len(ta.rebuild(_ordered_payload('reco', '2026-11-12', True))) == 1
+
+
+def test_complete_alert_reader_does_not_receive_backdated_confirmation(tmp_path, monkeypatch):
+    from datetime import date
+    from engine import alert_triage
+    _setup(tmp_path, monkeypatch)
+    ta.rebuild(_ordered_payload('reco', '2026-11-09'))
+    ta.rebuild(_ordered_payload('reco', '2026-11-11', True))
+    ta.rebuild(_ordered_payload('reco', '2026-11-10', True))
+    feed = alert_triage._jsonl_raw('themes', date(2026,11,11), date(2026,10,11),
+                                  alert_triage._THEMES_TIER)
+    assert feed['state'] == 'ok_zero_events' and feed['events'] == []
+    ta.rebuild(_ordered_payload('reco', '2026-11-12', True))
+    feed = alert_triage._jsonl_raw('themes', date(2026,11,12), date(2026,10,12),
+                                  alert_triage._THEMES_TIER)
+    assert feed['state'] == 'ok' and len(feed['events']) == 1
+    assert feed['events'][0]['event_date'] == '2026-11-12'
+    assert feed['events'][0]['tier'] == 'watch'
+    assert 'held 2 consecutive sessions' in feed['events'][0]['detail']
+    assert '连续 2 个交易日' in feed['events'][0]['detail_zh']
