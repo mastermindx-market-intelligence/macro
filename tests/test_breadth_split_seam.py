@@ -346,3 +346,55 @@ def test_window_admission_uses_config_and_preserves_full_history(tmp_path, monke
         assert a.fetch(full_history=True)['breadth'].empty
     assert a.cache_path.read_bytes()==b'original cache'
     assert calls==(['max'] if full_history else ['4y'])
+
+@pytest.mark.parametrize('case', ['short260', 'equal780', 'complete', 'calendar_roll', 'gap', 'anchor_missing', 'anchor_nan'])
+def test_native_replacement_preserves_cumulative_origin(tmp_path, monkeypatch, case):
+    from collectors import breadth as module, base
+    from lib import config, store
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: {'storage':{'run_status_file':'run_status.json'}})
+    names=[f'T{i:03}' for i in range(400)]
+    dates=pd.bdate_range(end=pd.Timestamp.now().normalize(),periods=901)
+    truth=pd.DataFrame(np.repeat((100+np.arange(901)*.1)[:,None],400,axis=1),index=dates,columns=names)
+    a=BreadthAdapter.__new__(BreadthAdapter)
+    a.cfg={'lookback_days_live':1100,'ma_windows':[50,200],'nhnl_window':252}
+    a.ycfg={'batch_size':80,'retries':2,'backoff_base_s':0}
+    a.cache_path=tmp_path/'breadth'/'_closes_cache.parquet'
+    a.cache_path.parent.mkdir(parents=True)
+    members=pd.DataFrame({'symbol':names,'name':names,'sector':['Synthetic']*400})
+    a.constituents=lambda:members.copy()
+    long=case in ('calendar_roll','anchor_missing','anchor_nan')
+    coherent=truth if long else truth.tail(781)
+    old=coherent.iloc[:-1]
+    old_cache=old.loc[old.index>=old.index.max()-pd.Timedelta(days=1130)]
+    old_cache.to_parquet(a.cache_path)
+    prior=a.compute(old)
+    response=coherent.copy()
+    if case=='short260':response=response.tail(260)
+    if case=='equal780':response=response.tail(780)
+    if case=='gap':response=response.drop(response.index[120])
+    if long:
+        clipped=coherent.loc[coherent.index>=coherent.index.max()-pd.Timedelta(days=1130)]
+        first=a.compute(clipped).index[0]
+        previous=clipped.index[clipped.index.get_loc(first)-1]
+        if case=='anchor_missing':prior=prior.drop(previous)
+        if case=='anchor_nan':prior.loc[previous,'ad_line']=np.nan
+    store.upsert(a.group,'breadth',prior)
+    aggregate=tmp_path/'breadth'/'breadth.parquet'
+    before_cache=a.cache_path.read_bytes();before_aggregate=aggregate.read_bytes()
+    def download(batch,**kw):
+        return pd.concat({'Close':response[batch]},axis=1)
+    monkeypatch.setattr(module.yf,'download',download)
+    monkeypatch.setattr(module.time,'sleep',lambda _:None)
+    result=base.run_adapter(a)
+    reject=case not in ('complete','calendar_roll')
+    assert result.status==('failed' if reject else 'ok')
+    if reject:
+        assert a.cache_path.read_bytes()==before_cache
+        assert aggregate.read_bytes()==before_aggregate
+    else:
+        published=store.read(a.group,'breadth')
+        assert published.ad_line.diff().dropna().eq(400).all()
+        expected=a.compute(coherent)
+        assert published.ad_line.iloc[-1]==expected.ad_line.iloc[-1]
