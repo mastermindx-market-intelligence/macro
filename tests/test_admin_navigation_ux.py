@@ -476,3 +476,109 @@ slowChannels=true;channels.innerHTML='waiting';const inverse=run();resolvePress(
 assert.equal(slot.innerHTML,'Press settled');assert.equal(channels.innerHTML,'waiting');
 resolveChannels({ok:true,note:'channels finally ready'});await inverse;assert(channels.innerHTML.includes('channels finally ready'));
 """)
+
+
+def test_late_research_responses_do_not_replace_the_selected_page():
+    _node_assert("""
+const group = new Function(block('const NAV_GROUPS = [', 'const TAB_LABELS = ') + ';return NAV_GROUPS;')().find(g => g.label === 'Intelligence & research');
+for (const [id] of group.items.filter(([id]) => !['research_tools', 'mastermind_logs'].includes(id))) {
+  const marker = 'RENDER.' + id + ' = async ';
+  const start = APP.indexOf(marker);
+  assert.notEqual(start, -1, id);
+  const source = APP.slice(start, APP.indexOf('\\n};', start) + 3);
+  const view = {innerHTML:'', isConnected:true};
+  const RENDER = {};
+  let finish;
+  const read = new Promise(resolve => { finish = resolve; });
+  const harness = new Function('RENDER', '$', 'api', 'nwCrumbs',
+    'let ADMIN_RENDER_EPOCH=0;' + source + ';return () => ++ADMIN_RENDER_EPOCH;');
+  const navigate = harness(RENDER, () => view, () => read);
+  const pending = RENDER[id]();
+  navigate();
+  view.innerHTML = 'new research page';
+  finish({ok:false, error:'old response'});
+  await pending;
+  assert.equal(view.innerHTML, 'new research page', id);
+}
+""")
+
+
+def test_long_hold_and_chronicle_render_existing_evidence_and_absence():
+    _node_assert("""
+const build = (start, end, name) => new Function('card', 'esc', 'fmtNum',
+  block(start, end) + ';return ' + name)((t, body) => t + body, String, n => n == null ? '—' : String(n));
+const longHold = build('function longHoldEvidence(', 'RENDER.long_hold =', 'longHoldEvidence');
+const render = longHold({available:true, counts:{n_ok:0, n_episodes:1, n_refused:1},
+  refused_examples:[{ticker:'EXAMPLE', t0:'2025-10-01', refusal_reasons:['missing_shares']}]},
+  {available:false, reason:'manifest missing'});
+for (const value of ['0 of 1', 'EXAMPLE', 'missing_shares', 'manifest missing']) assert(render.includes(value));
+const chronicle = build('function chronicleNamedExposures(', 'RENDER.chronicle =', 'chronicleNamedExposures');
+assert(chronicle({rows:[{event_id:'evt-1', direct_tickers:['ABC']}]}).includes('evt-1'));
+assert(chronicle({reason_en:'No direct tickers in this window.'}).includes('No direct tickers in this window.'));
+assert(chronicle({error:'failed'}).includes('unavailable'));
+""")
+
+
+
+def test_response_log_explains_empty_filter_results_and_retries_the_selected_filters():
+    _node_assert("""
+const render = block('async function mmlLoad()', '/* Weekly answer-quality summary');
+const apply = block('function mmlApplyFilters()', 'function mmlToggle(');
+const view = {innerHTML: ''}, retry = {}, controls = {};
+const $ = selector => {
+  if (selector === '#view') return view;
+  if (selector === '#mmlRetry') return retry;
+  return controls[selector] || (controls[selector] = {value: '', checked: false});
+};
+const MML = {filters: {}, rows: []};
+let payload, rejectRead = false, finishRead;
+let pendingRead = Promise.resolve();
+const reads = [];
+const api = async path => {
+  if (path.endsWith('/eval_summary')) return {};
+  reads.push(path);
+  await pendingRead;
+  if (rejectRead) throw new Error('transport');
+  return payload;
+};
+const wire = new Function('api', '$', 'MML', 'fmtNum', 'esc', 'mmlEvalSummaryHtml',
+  'mmlWire', 'mmlRowHtml', 'const CURRENT="mastermind_logs", ADMIN_RENDER_EPOCH=1;' +
+  render + apply + ';return {load:mmlLoad,apply:mmlApplyFilters};'
+)(api, $, MML, String, String, () => '', () => {}, row => row.id);
+payload = {rows: [{id: 'previous-provider-row'}], matched: 1, stats: {total: 2}};
+await wire.load();
+assert.match(view.innerHTML, /previous-provider-row/);
+$('#mmlProvider').value = 'retired';
+rejectRead = true;
+pendingRead = new Promise(resolve => { finishRead = resolve; });
+wire.apply();
+assert.match(view.innerHTML, /Loading responses for the selected filters/);
+assert.doesNotMatch(view.innerHTML, /previous-provider-row|mmlExportJ|mmlExportC/);
+assert.equal(MML.rows.length, 0);
+finishRead();
+await new Promise(resolve => setImmediate(resolve));
+assert.match(reads.at(-1), /provider=retired/);
+assert.match(view.innerHTML, /Could not read the response log/);
+assert.doesNotMatch(view.innerHTML, /previous-provider-row|mmlExportJ/);
+assert.equal(MML.rows.length, 0);
+assert.match(view.innerHTML, /Retry with these filters/);
+const rejectedPath = reads.at(-1);
+rejectRead = false;
+payload = {rows: [], matched: 0, stats: {total: 2}};
+pendingRead = new Promise(resolve => { finishRead = resolve; });
+const retrying = retry.onclick();
+assert.match(view.innerHTML, /Loading responses for the selected filters/);
+assert.doesNotMatch(view.innerHTML, /mmlExportJ|mmlExportC/);
+finishRead();
+await retrying;
+assert.equal(reads.at(-1), rejectedPath);
+assert.match(view.innerHTML, /No responses match these filters/);
+assert.match(view.innerHTML, /mmlExportJ/);
+assert.doesNotMatch(view.innerHTML, /local response log is empty/);
+payload = {rows: [], matched: 0, stats: {total: 0}};
+await wire.load();
+assert.match(view.innerHTML, /local response log is empty/);
+payload = {ok: false};
+await wire.load();
+assert.match(view.innerHTML, /Could not read the response log/);
+""")

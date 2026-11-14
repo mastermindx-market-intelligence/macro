@@ -52,7 +52,8 @@ _AUDIT_ANN_CAP = 5
 def _read_json(path: Path) -> dict | None:
     """Read + parse JSON from path. Returns None on any error."""
     try:
-        return json.loads(path.read_text())
+        value = json.loads(path.read_text())
+        return value if isinstance(value, dict) else None
     except Exception:  # noqa: BLE001
         return None
 
@@ -68,7 +69,9 @@ def _read_jsonl(path: Path) -> list[dict]:
             if not line:
                 continue
             try:
-                rows.append(json.loads(line))
+                row = json.loads(line)
+                if isinstance(row, dict):
+                    rows.append(row)
             except Exception:  # noqa: BLE001
                 pass
     except Exception:  # noqa: BLE001
@@ -76,16 +79,19 @@ def _read_jsonl(path: Path) -> list[dict]:
     return rows
 
 
-def _age_hours(stamp: str | None) -> float | None:
-    """Return hours since an ISO-8601 stamp, or None on any problem."""
-    if not stamp:
+def _utc_time(stamp: str | None) -> datetime | None:
+    if not isinstance(stamp, str):
         return None
     try:
-        s = str(stamp).replace("Z", "+00:00")
-        dt = datetime.fromisoformat(s[:19]).replace(tzinfo=timezone.utc)
-        return round((datetime.now(timezone.utc) - dt).total_seconds() / 3600, 1)
-    except Exception:  # noqa: BLE001
+        dt = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+        return dt.astimezone(timezone.utc) if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+    except (ValueError, OverflowError):
         return None
+
+
+def _age_hours(stamp: str | None) -> float | None:
+    dt = _utc_time(stamp)
+    return round((datetime.now(timezone.utc) - dt).total_seconds() / 3600, 1) if dt else None
 
 
 def _file_mtime_iso(path: Path) -> str | None:
@@ -170,21 +176,26 @@ def _llm_lane_block(lab: dict) -> dict:
 def _latest_edges(edges: list[dict]) -> list[dict]:
     """Return the latest _EDGE_CAP edges with verdict and concerns count."""
     try:
-        # Sort by scanned_at descending if available, else take last N
-        sorted_edges = sorted(
-            edges,
-            key=lambda e: e.get("scanned_at") or "",
-            reverse=True,
-        )
+        # The edge writer uses asof. Older ledgers can carry scanned_at instead.
+        dated_edges = []
+        for edge in reversed(edges):
+            stamp = edge.get("asof")
+            instant = _utc_time(stamp)
+            if instant is None:
+                stamp = edge.get("scanned_at")
+                instant = _utc_time(stamp)
+            dated_edges.append((instant, stamp if instant else "", edge))
+        floor = datetime.min.replace(tzinfo=timezone.utc)
+        dated_edges.sort(key=lambda item: item[0] or floor, reverse=True)
         rows = []
-        for e in sorted_edges[:_EDGE_CAP]:
+        for _, stamp, e in dated_edges[:_EDGE_CAP]:
             rows.append({
                 "edge_id": e.get("edge_id") or "?",
                 "cause_feature_id": e.get("cause_feature_id") or "?",
                 "target_id": e.get("target_id") or "?",
                 "verdict": e.get("verdict") or "?",
-                "n_concerns": len(e.get("concerns") or []),
-                "scanned_at": e.get("scanned_at") or "",
+                "n_concerns": len(e["concerns"]) if isinstance(e.get("concerns"), list) else None,
+                "scanned_at": stamp,
             })
         return rows
     except Exception:  # noqa: BLE001

@@ -646,3 +646,17 @@ def test_orch_load_reuses_engine_settings_without_second_config_parse(tmp_path, 
     out = neural_web._orch_load(tmp_path)
     assert out["settings"]["review_every_n_runs"] == 7
     assert out["settings"]["brief_attention_nudges"] is False
+
+
+def test_master_brain_suggestions_distinguish_unavailable_from_empty(tmp_path):
+    artifact = tmp_path / "data/neuralweb/prophet_suggestions.json"
+    artifact.parent.mkdir(parents=True)
+    assert neural_web.orchestrator_panel(tmp_path)["prophet_suggestions_available"] is False
+    for source, available in [({"suggestions": []}, True), ({"suggestions": [None]}, False)]:
+        artifact.write_text(json.dumps(source))
+        panel = neural_web.orchestrator_panel(tmp_path)
+        assert panel["ok"] and panel["prophet_suggestions"] == []
+        assert panel["prophet_suggestions_available"] is available
+    suggestions = [{"kind": str(i)} for i in range(12)]
+    artifact.write_text(json.dumps({"suggestions": suggestions}))
+    assert neural_web.orchestrator_panel(tmp_path)["prophet_suggestions"] == suggestions[:10]

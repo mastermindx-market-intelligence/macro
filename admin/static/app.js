@@ -370,7 +370,7 @@ const TAB_PREFETCH_PATHS = {
   content: ["/api/content"],
   neural_web: ["/api/neural_web/lobes"],
   intelligence_os: ["/api/intelligence_os"],
-  orchestrator: ["/api/orchestrator", "/api/prophet"],
+  orchestrator: ["/api/orchestrator"],
   prophet: ["/api/prophet", "/api/prophet/trade-memory"],
   macro_thesis: ["/api/macro-thesis"],
   marketing_overview: ["/api/marketing/overview"],
@@ -765,7 +765,9 @@ function adminPageFailure(id, error, retry) {
 }
 function runAdminRender(id, render) {
   const epoch = ++ADMIN_RENDER_EPOCH;
-  return Promise.resolve().then(render).catch(error => {
+  return Promise.resolve().then(() => {
+    if (epoch === ADMIN_RENDER_EPOCH) return render();
+  }).catch(error => {
     if (epoch === ADMIN_RENDER_EPOCH) adminPageFailure(id, error, () => route());
   });
 }
@@ -1481,10 +1483,12 @@ function wireRfDiagnosticModes(view, data) {
   });
 }
 RENDER.experiments = async () => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   const d = await api("/api/experiments");
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
   if (!d.ok) {
-    v.innerHTML = card("Experiments & data collection", `<div class="sub">${esc(d.reason || "not available")}</div>`) + rfDiagnosticSection(d);
+    v.innerHTML = card("Experiments & data collection", `<div class="sub">${esc(d.reason || d.error || "not available")}</div>`) + rfDiagnosticSection(d);
     wireRfDiagnosticModes(v, d);
     return;
   }
@@ -1492,9 +1496,9 @@ RENDER.experiments = async () => {
   const ready = exps.filter(e => e.ready);
   let html = `<div class="sub" style="margin-bottom:10px">Long-running tests and data collections, with the next review date and action.</div>
     <div class="grid">
-      ${card("Tracked", `<div class="big">${d.n}</div><div class="sub">experiments running</div>`)}
+      ${card("Tracked", `<div class="big">${d.n}</div><div class="sub">registry entries across all statuses</div>`)}
       ${card("Ready to review", `<div class="big" style="color:${d.ready_count ? "var(--ok)" : "var(--text)"}">${d.ready_count}</div><div class="sub">need a decision</div>`)}
-      ${card("Last updated", `<div class="big" style="font-size:18px" class="mono">${esc(d.as_of || "—")}</div><div class="sub">today ${esc(d.today || "")}</div>`)}
+      ${card("Last updated", `<div class="big mono" style="font-size:18px">${esc(d.as_of || "—")}</div><div class="sub">today ${esc(d.today || "")}</div>`)}
     </div>`;
   html += rfDiagnosticSection(d);
   if (ready.length) {
@@ -4009,10 +4013,12 @@ function mbHeroCard(o) {
 }
 
 RENDER.neural_web = async () => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   v.innerHTML = `<div class="skeleton skeleton-title"></div><div class="skeleton skeleton-card"></div>
     <div class="lobe-grid">${'<div class="skeleton skeleton-card"></div>'.repeat(8)}</div>`;
   const d = await api("/api/neural_web/lobes");
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
   if (!d.ok) { v.innerHTML = nwEmpty("Could not load the lobe map", d.error || "panel error"); return; }
   let html = nwHero(d) + mbHeroCard(d.orchestrator_hero) + nwMapSwitch(d);
   (d.groups || []).forEach(g => {
@@ -4223,6 +4229,7 @@ function nwCrumbs(current) {
   return `<div class="crumbs"><a href="#" data-back>← Neural Web</a><span class="crumbs-sep">/</span><span class="crumbs-current">${esc(current)}</span></div>`;
 }
 async function renderLobeDetail(id) {
+  const epoch = ADMIN_RENDER_EPOCH;
   CURRENT = "neural_web"; setActiveNav("neural_web");
   hideLobeTip();  // clear any map-node hover popup left over from the click that navigated here
   if (RT_TIMER)   { clearInterval(RT_TIMER);   RT_TIMER   = null; }
@@ -4234,6 +4241,7 @@ async function renderLobeDetail(id) {
     <div class="metric-tiles-row">${'<div class="skeleton skeleton-card" style="width:120px;height:70px"></div>'.repeat(4)}</div>
     <div class="skeleton skeleton-card" style="height:120px"></div>`;
   const d = await api("/api/neural_web/lobe?id=" + encodeURIComponent(id));
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
   const wireBack = () => { const b = v.querySelector("[data-back]"); if (b) b.onclick = (e) => { e.preventDefault(); backToObservatory(); }; };
   if (!d || !d.ok) {
     v.innerHTML = nwCrumbs(id) + nwEmpty("Unknown lobe", `No lobe with id “${id}”.`);
@@ -4760,6 +4768,7 @@ function iosReasonCard(c) {
 }
 
 RENDER.intelligence_os = async (snapshot = null) => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   v.innerHTML = `<div class="skeleton skeleton-title"></div><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card" style="height:220px"></div>`;
   let d = snapshot;
@@ -4767,6 +4776,7 @@ RENDER.intelligence_os = async (snapshot = null) => {
     try { d = await api("/api/intelligence_os"); }
     catch (_) { d = { ok: false, error: "Evidence request failed" }; }
   }
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
   if (!d || !d.ok) { v.innerHTML = nwEmpty(iosText("Could not derive the estate"), iosText("Evidence request failed")); return; }
   IOS.data = d; IOS.rows = d.engines || []; IOS.page = 1;
   const c = d.census || {};
@@ -4793,6 +4803,7 @@ RENDER.intelligence_os = async (snapshot = null) => {
     let fresh;
     try { fresh = await api("/api/intelligence_os?force=1", { cache: "no-store" }); }
     catch (_) { fresh = { ok: false }; }
+    if (epoch !== ADMIN_RENDER_EPOCH) return;
     if (fresh && fresh.ok) {
       clearApiCache();
       apiCacheStore("/api/intelligence_os", { value: fresh,
@@ -4867,6 +4878,7 @@ function iosOutputCard(o, lobeIds) {
 }
 
 async function renderEngineDetail(id) {
+  const epoch = ADMIN_RENDER_EPOCH;
   IOS.returnFocusId = id;
   CURRENT = "intelligence_os"; setActiveNav("intelligence_os");
   hideLobeTip();
@@ -4879,6 +4891,7 @@ async function renderEngineDetail(id) {
   let d;
   try { d = await api("/api/intelligence_os/engine?id=" + encodeURIComponent(id)); }
   catch (_) { d = { ok: false, error: "Evidence request failed" }; }
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
   const wireBack = () => { const b = v.querySelector("[data-ios-back]"); if (b) b.onclick = (e) => { e.preventDefault(); backToIntelligenceOs(); }; };
   if (!d || !d.ok) {
     v.innerHTML = iosCrumbs(id) + nwEmpty(iosText(d && Array.isArray(d.known_ids_sample) ? "Unknown engine" : "Could not read engine"), iosText("Evidence request failed"));
@@ -4904,6 +4917,7 @@ async function renderEngineDetail(id) {
       }
     } catch (err) { lobeIds = {}; }
   }
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
   lobeIds = lobeIds || {};
   const head = `<div class="nw-hero">
     <div class="nw-hero-row">
@@ -4962,9 +4976,11 @@ function orchChatMsgsHtml() {
 }
 
 RENDER.orchestrator = async () => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   v.innerHTML = `<div class="spin">loading…</div>`;
   const d = await api("/api/orchestrator");
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
   if (!d || !d.ok) { v.innerHTML = nwEmpty("Master Brain unavailable", (d && d.error) || "panel error"); return; }
   const hero = d.status_hero || {}, s = d.settings || {}, dia = d.dialogue || {}, cx = d.cortex || {};
   const st = hero.overall_status || "unknown";
@@ -5102,29 +5118,25 @@ RENDER.orchestrator = async () => {
       <div class="note muted" style="margin-top:6px">Read-only pipeline persona &mdash; never trading advice. Without an LLM key it degrades to a deterministic run-log digest.</div>
     </div>`;
 
-  /* Prophet suggestions compact block (PR-R4) — loaded from /api/prophet */
-  let prophetSuggestionsHtml = "";
-  try {
-    const pd = await api("/api/prophet");
-    const psug = (pd && pd.ok && Array.isArray(pd.suggestions)) ? pd.suggestions.slice(0, 10) : [];
-    if (psug.length) {
-      const SEV_CLS = { high: "s-bad", medium: "s-warn", low: "s-mut" };
-      prophetSuggestionsHtml = `<div class="section">Prophet suggestions <span class="cnt">${psug.length}</span></div>
-        <div class="sub muted" style="margin-bottom:8px">Cross-market accountability suggestions from the Prophet lobe. <a href="#" id="orchToProphet">View full Prophet page</a></div>
-        <table><thead><tr><th>Kind</th><th>Severity</th><th>Detail</th><th>Market</th><th>First seen</th></tr></thead><tbody>
-        ${psug.map(s => `<tr>
-          <td class="sub">${esc(s.kind || "—")}</td>
-          <td><span class="statpill ${SEV_CLS[s.severity] || "s-mut"}">${esc(s.severity || "—")}</span></td>
-          <td class="sub" style="max-width:320px">${esc(s.detail || "")}</td>
-          <td class="sub">${esc(s.market || "—")}</td>
-          <td class="sub mono">${esc(s.first_seen || "—")}</td>
-        </tr>`).join("")}
-        </tbody></table>`;
-    } else {
-      prophetSuggestionsHtml = `<div class="section">Prophet suggestions</div><div class="sub muted">No suggestions from the Prophet lobe yet — accruing.</div>`;
-    }
-  } catch (e) {
-    prophetSuggestionsHtml = `<div class="section">Prophet suggestions</div><div class="sub muted">Prophet page unavailable.</div>`;
+  const psug = d.prophet_suggestions || [];
+  let prophetSuggestionsHtml;
+  if (psug.length) {
+    const SEV_CLS = { high: "s-bad", medium: "s-warn", low: "s-mut" };
+    prophetSuggestionsHtml = `<div class="section">Prophet suggestions <span class="cnt">${psug.length}</span></div>
+      <div class="sub muted" style="margin-bottom:8px">Cross-market accountability suggestions from the Prophet lobe. <a href="#" id="orchToProphet">View full Prophet page</a></div>
+      <table><thead><tr><th>Kind</th><th>Severity</th><th>Detail</th><th>Market</th><th>First seen</th></tr></thead><tbody>
+      ${psug.map(s => `<tr>
+        <td class="sub">${esc(s.kind || "—")}</td>
+        <td><span class="statpill ${SEV_CLS[s.severity] || "s-mut"}">${esc(s.severity || "—")}</span></td>
+        <td class="sub" style="max-width:320px">${esc(s.detail || "")}</td>
+        <td class="sub">${esc(s.market || "—")}</td>
+        <td class="sub mono">${esc(s.first_seen || "—")}</td>
+      </tr>`).join("")}
+      </tbody></table>`;
+  } else if (d.prophet_suggestions_available === true) {
+    prophetSuggestionsHtml = `<div class="section">Prophet suggestions</div><div class="sub muted">No suggestions from the Prophet lobe yet — accruing.</div>`;
+  } else {
+    prophetSuggestionsHtml = '<div class="section">Prophet suggestions</div><div class="sub muted">Suggestion data unavailable.</div>';
   }
 
   v.innerHTML = heroHtml + settingsHtml + runlogHtml + reviewsHtml + dialogueHtml + prophetSuggestionsHtml + chatHtml;
@@ -5196,12 +5208,14 @@ RENDER.orchestrator = async () => {
 
 /* ---- PROPHET (NW lobe governor) ------------------------------------------ */
 RENDER.prophet = async () => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   v.innerHTML = `<div class="spin">loading…</div>`;
   const [d, tm] = await Promise.all([
     api("/api/prophet"),
     api("/api/prophet/trade-memory").catch(() => ({ ok:false, error:"Trade Memory unavailable" })),
   ]);
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
   if (!d || !d.ok) {
     v.innerHTML = nwEmpty("Prophet unavailable", (d && d.error) || "panel error");
     return;
@@ -5382,6 +5396,7 @@ RENDER.prophet = async () => {
 
   /* --- Owner-private episodic Trade Memory --- */
   const tmConfigured = !!(tm && tm.configured);
+  const tmReadable = tm?.ok === true;
   const tmEpisodeRows = tmEpisodes.length
     ? `<div class="tbl-scroll"><table><thead><tr><th>Ticker</th><th>Source</th><th>Trade</th><th>Result</th><th>Review</th><th>What Prophet learned</th></tr></thead><tbody>
        ${tmEpisodes.map(e => `<tr>
@@ -5393,7 +5408,7 @@ RENDER.prophet = async () => {
          <td class="sub" style="max-width:430px">${esc(e.autopsy_summary || e.lesson || "Awaiting nightly review")}</td>
        </tr>`).join("")}
        </tbody></table></div>`
-    : `<div class="sub muted">${tmConfigured ? "No trades recorded yet." : esc((tm && (tm.reason || tm.error)) || "Private store unavailable.")}</div>`;
+    : `<div class="sub muted">${tmReadable ? "No trades recorded yet." : "Episode history unavailable."}</div>`;
 
   const tmPatternRows = tmPatterns.length
     ? `<div class="tm-patterns">${tmPatterns.map(row => {
@@ -5407,9 +5422,9 @@ RENDER.prophet = async () => {
            <div class="note muted">${Number(p.support_n || 0)} supporting · ${Number(p.contradict_n || 0)} contradicting · ${Number(p.time_cluster_n || 0)} time clusters. Research only.</div>
          </div>`;
        }).join("")}</div>`
-    : `<div class="sub muted">No repeated pattern candidates yet. One anecdote stays one anecdote.</div>`;
+    : `<div class="sub muted">${tmReadable ? "No repeated pattern candidates yet." : "Pattern history unavailable."}</div>`;
 
-  const tradeMemoryHtml = `<div class="section">Trade Memory <span class="cnt">${Number(tmSummary.total || 0)} private episodes</span></div>
+  const tradeMemoryHtml = `<div class="section">Trade Memory <span class="cnt">${tmReadable ? fmtNum(tmSummary.total) + " private episodes" : "History unavailable"}</span></div>
     <div class="card tm-intro">
       <h3>Record what happened</h3>
       <div class="sub">Prophet reviews closed winners and losers overnight, separates market, sector, and stock effects, then looks for repeatable lessons.</div>
@@ -5428,8 +5443,9 @@ RENDER.prophet = async () => {
       <label class="tm-wide"><span>What happened</span><textarea name="observed_result" maxlength="8000" rows="4" placeholder="Describe the market, sector, company, catalyst, timing, and anything Prophet may have missed."></textarea></label>
       <label class="tm-wide"><span>Prophet pick reference <i>optional</i></span><input name="prophet_pick_ref" type="text" maxlength="240" placeholder="Board date or pick ID"></label>
       <div class="tm-wide"><button class="btn" type="submit">Save private episode</button><span id="tradeMemorySaveState" class="sub muted"></span></div>
-    </form>` : `<div class="card"><b>Private storage needs setup</b><div class="note muted">${esc((tm && (tm.reason || tm.error)) || "Supabase integration unavailable.")}</div></div>`}
-    <div class="section">Recent episodes <span class="cnt">${Number(tmSummary.autopsied || 0)} reviewed · ${Number(tmSummary.awaiting_review || 0)} waiting</span></div>
+    </form>` : `<div class="card"><b>${tm?.configured === false ? "Private storage needs setup" : "Private storage unavailable"}</b><div class="note muted">${esc((tm && (tm.reason || tm.error)) || "Supabase integration unavailable.")}</div></div>`}
+    ${tmConfigured && !tmReadable ? '<p class="note">Episode history could not be read.</p>' : ""}
+    <div class="section">Recent episodes <span class="cnt">${tmReadable ? fmtNum(tmSummary.autopsied) + " reviewed · " + fmtNum(tmSummary.awaiting_review) + " waiting" : "Counts unavailable"}</span></div>
     ${tmEpisodeRows}
     <div class="section">Pattern candidates <span class="cnt">research only</span></div>
     ${tmPatternRows}`;
@@ -5489,7 +5505,7 @@ RENDER.prophet = async () => {
       return;
     }
     toast(`${result.ticker || body.ticker} saved privately`);
-    await RENDER.prophet();
+    if (epoch === ADMIN_RENDER_EPOCH) await RENDER.prophet();
   };
 };
 
@@ -5605,9 +5621,11 @@ function mtSectionHtml(section, emptyMsg) {
 }
 
 RENDER.macro_thesis = async () => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   v.innerHTML = `<div class="spin">loading…</div>`;
   const d = await api("/api/macro-thesis");
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
   if (!d || !d.ok) {
     v.innerHTML = nwEmpty("Macro Thesis unavailable", (d && (d.error || d.reason)) || "panel error");
     return;
@@ -5668,7 +5686,7 @@ RENDER.macro_thesis = async () => {
       return;
     }
     toast(`${result.thesis_id} registered`);
-    await RENDER.macro_thesis();
+    if (epoch === ADMIN_RENDER_EPOCH) await RENDER.macro_thesis();
   };
 };
 
@@ -13782,10 +13800,12 @@ async function loadGuestAccessCard(mountSel) {
 }
 
 RENDER.mastermind_ai = async () => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   v.innerHTML = `<div class="spin">loading…</div>`;
   const d = await api("/api/mastermind_ai");
-  if (!d || d.error) {
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
+  if (!d || d.error || d.ok === false) {
     /* Prominent, honest unreachable banner per the operator-facing spec.
        Resolve the bot base URL from /api/live_runs so we show the actual
        configured address instead of a hardcoded fallback. */
@@ -13825,7 +13845,8 @@ RENDER.mastermind_ai = async () => {
      newest recorded cycle's timestamp and flag it stale (the loop-strip below shows the
      unrelated metabolism/codex pipelines, not the bot's own cadence). */
   const loopTs = lastLoop.ts || lastLoop.asof || null;
-  const loopAgeH = loopTs ? Math.max(0, (Date.now() - new Date(loopTs).getTime()) / 3.6e6) : null;
+  const elapsed = Date.now() - Date.parse(loopTs);
+  const loopAgeH = Number.isFinite(elapsed) && elapsed >= 0 ? elapsed / 3.6e6 : null;
   const loopStale = loopAgeH != null && loopAgeH > 48;   /* healthy cadence is at least every couple days */
   const loopAgeChip = loopAgeH == null
     ? `<span class="statpill s-mut">last cycle: unknown</span>`
@@ -14140,9 +14161,8 @@ function alertsCalCard(cal) {
 const MML = { filters: {}, rows: [], open: null };
 
 function mmlSurfacePill(s) {
-  const map = { macro: ["macro", "s-ok"], terminal: ["terminal", "s-warn"] };
-  const [txt, cls] = map[s] || [s || "?", "s-mut"];
-  return `<span class="statpill ${cls}">${esc(txt)}</span>`;
+  const cls = s === "macro" ? "s-ok" : s === "terminal" ? "s-warn" : "s-mut";
+  return `<span class="statpill ${cls}">${esc(s || "?")}</span>`;
 }
 function mmlEvalBadges(ev) {
   if (!ev) return "";
@@ -14208,11 +14228,15 @@ RENDER.mastermind_logs = async () => {
 };
 
 async function mmlLoad() {
+  if (CURRENT !== "mastermind_logs") return;
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
+  MML.rows = [];
+  v.innerHTML = '<div class="spin" role="status">Loading responses for the selected filters…</div>';
   const qs = new URLSearchParams();
   qs.set("limit", "300");
   const f = MML.filters;
-  ["surface", "lane", "model", "graded", "thumb", "search", "since", "verdict"].forEach(k => {
+  ["surface", "provider", "lane", "model", "graded", "thumb", "search", "since", "verdict"].forEach(k => {
     if (f[k] && f[k] !== "all") qs.set(k, f[k]);
   });
   if (f.starred) qs.set("starred", "1");
@@ -14224,20 +14248,25 @@ async function mmlLoad() {
      a small static file — awaiting it serially would add a needless hop, and it
      must never be able to stop the row list rendering, hence the catch. */
   const [d, evs] = await Promise.all([
-    api("/api/mastermind_ai/response_logs?" + qs.toString()),
+    api("/api/mastermind_ai/response_logs?" + qs.toString()).catch(() => ({ error: "Request failed" })),
     api("/api/mastermind_ai/response_logs/eval_summary").catch(() => ({ ok: false })),
   ]);
-  if (CURRENT !== "mastermind_logs") return;
-  if (!d || d.error) {
-    v.innerHTML = `<div class="banner show" style="position:static;display:block">Could not read the response log${d && d.error ? ": " + esc(d.error) : ""}.</div>`;
+  if (CURRENT !== "mastermind_logs" || MML.filters !== f || epoch !== ADMIN_RENDER_EPOCH) return;
+  if (!d || d.ok === false || d.error) {
+    v.innerHTML = `<div class="banner show" role="alert" style="position:static;display:block">Could not read the response log${d && d.error ? ": " + esc(d.error) : ""}. <button type="button" class="btn" id="mmlRetry">Retry with these filters</button></div>`;
+    $("#mmlRetry").onclick = mmlLoad;
     return;
   }
   MML.rows = d.rows || [];
   const st = d.stats || {};
+  const surfaces = [...new Set(["macro", "terminal", ...Object.keys(st.by_surface || {}), f.surface])]
+    .filter(s => s && s !== "?" && s !== "all");
+  const providers = Object.keys(st.by_provider || {}).filter(name => name !== "?" && name !== "all").sort();
+  if (f.provider && f.provider !== "all" && !providers.includes(f.provider)) providers.push(f.provider);
   const bySurf = Object.entries(st.by_surface || {}).map(([k, n]) => `${esc(k)} ${n}`).join(" · ") || "none yet";
   /* Ingest health — an empty/aging ledger used to look identical to a quiet week. */
   const ing = d.ingest || {};
-  const darkHtml = ing.dark ? `<div class="banner show" style="position:static;display:block;margin-top:10px">⚠️ Ingest dark${ing.last_ts ? ` since ${esc(String(ing.last_ts).slice(0, 10))}` : ""} — ${ing.last_ts ? `no new AI responses in ${ing.dark_days} day${ing.dark_days === 1 ? "" : "s"}` : "no AI responses have ever been ingested"}. Both surfaces write straight to R2: check the plain R2_* creds in /etc/macro-api.env on the VPS (macro brain) and the Terminal copilot env, then hit “⟳ Refresh from R2”.</div>` : "";
+  const darkHtml = ing.dark ? `<div class="banner show" style="position:static;display:block;margin-top:10px">⚠️ Ingest dark${ing.last_ts ? ` since ${esc(String(ing.last_ts).slice(0, 10))}` : ""} — ${ing.last_ts ? `no new AI responses in ${ing.dark_days} day${ing.dark_days === 1 ? "" : "s"}` : "the local response log contains no rows"}. Both surfaces write straight to R2: check the plain R2_* creds in /etc/macro-api.env on the VPS (macro brain) and the Terminal copilot env, then hit “⟳ Refresh from R2”.</div>` : "";
   /* Asymmetric case: overall ledger looks alive because ONE surface still writes. */
   const surfDarkHtml = ing.dark ? "" : Object.entries(ing.last_by_surface || {}).map(([s, ts]) => {
     const days = (Date.now() - Date.parse(ts)) / 86400e3;
@@ -14278,7 +14307,8 @@ async function mmlLoad() {
   </div>`;
 
   const filterHtml = `<div class="section" style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
-    <select id="mmlSurface" class="btn">${["all", "macro", "terminal"].map(o => `<option value="${o}"${f.surface === o ? " selected" : ""}>${o === "all" ? "all surfaces" : o}</option>`).join("")}</select>
+    <select id="mmlSurface" class="btn" aria-label="Response source"><option value="all">all surfaces</option>${surfaces.map(o => `<option value="${esc(o)}"${f.surface === o ? " selected" : ""}>${esc(o)}</option>`).join("")}</select>
+    <select id="mmlProvider" class="btn" aria-label="Response provider"><option value="all">all providers</option>${providers.map(name => `<option value="${esc(name)}"${f.provider === name ? " selected" : ""}>${esc(name)}</option>`).join("")}</select>
     <select id="mmlLane" class="btn">${["all", "fast", "pro"].map(o => `<option value="${o}"${f.lane === o ? " selected" : ""}>${o === "all" ? "all lanes" : o}</option>`).join("")}</select>
     <select id="mmlGraded" class="btn">${[["all", "graded + not"], ["no", "ungraded only"], ["yes", "graded only"]].map(([o, t]) => `<option value="${o}"${f.graded === o ? " selected" : ""}>${t}</option>`).join("")}</select>
     <select id="mmlThumb" class="btn">${[["all", "any 👍/👎"], ["up", "👍 up"], ["down", "👎 down"]].map(([o, t]) => `<option value="${o}"${f.thumb === o ? " selected" : ""}>${t}</option>`).join("")}</select>
@@ -14293,7 +14323,10 @@ async function mmlLoad() {
     <span class="sub muted">${d.matched || 0} match</span>
   </div>`;
 
-  const rowsHtml = MML.rows.length ? MML.rows.map(mmlRowHtml).join("") : `<tr><td colspan="6" class="sub muted" style="padding:18px">No responses logged yet. Once the brain chat or Terminal copilot answers a user (and R2 is configured), hit “Refresh from R2”.</td></tr>`;
+  const emptyMessage = st.total > 0
+    ? "No responses match these filters. Adjust the filters and apply again."
+    : "The local response log is empty.";
+  const rowsHtml = MML.rows.length ? MML.rows.map(mmlRowHtml).join("") : `<tr><td colspan="6" class="sub muted" style="padding:18px">${emptyMessage}</td></tr>`;
   const tableHtml = `<table style="margin-top:12px"><thead><tr>
     <th style="width:130px">When</th><th style="width:90px">Surface</th><th>Question → answer</th>
     <th style="width:120px">Model</th><th class="r" style="width:70px">Tokens</th><th style="width:130px">Eval</th>
@@ -14507,6 +14540,7 @@ function mmlStatus(msg) {
 function mmlApplyFilters() {
   MML.filters = {
     surface: $("#mmlSurface").value,
+    provider: $("#mmlProvider").value,
     lane: $("#mmlLane").value,
     graded: $("#mmlGraded").value,
     thumb: $("#mmlThumb").value,
@@ -14577,7 +14611,7 @@ async function mmlExport(fmt) {
   const qs = new URLSearchParams();
   qs.set("fmt", fmt);
   const f = MML.filters;
-  ["surface", "lane", "model", "graded", "thumb", "search", "since", "verdict"].forEach(k => { if (f[k] && f[k] !== "all") qs.set(k, f[k]); });
+  ["surface", "provider", "lane", "model", "graded", "thumb", "search", "since", "verdict"].forEach(k => { if (f[k] && f[k] !== "all") qs.set(k, f[k]); });
   if (f.starred) qs.set("starred", "1");
   if (f.error) qs.set("error", "1");
   if (f.thinking) qs.set("thinking", "1");
@@ -14594,10 +14628,12 @@ async function mmlExport(fmt) {
 }
 
 RENDER.alerts = async () => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   v.innerHTML = `<div class="sub" style="margin-bottom:12px">Recent alerts from the live site feed. Log your action against any alert — Acted, Dismissed, Overrode, or Snoozed — to build the operator capture ledger (L4 instrumentation). All writes go through /api/actions behind auth.</div>
     <div class="sub muted" style="margin-bottom:8px">Loading…</div>`;
   const d = await api("/api/alerts");
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
   if (!d.ok) {
     v.innerHTML = card("Alerts", `<div class="sub" style="color:var(--bad)">${esc(d.note || d.error || "error")}</div>`);
     return;
@@ -15248,10 +15284,36 @@ async function ecCampAct(id, action) {
 }
 
 /* ---- LONG-HOLD LOBE ----------------------------------------------------- */
+function longHoldEvidence(waterfall, packets) {
+  const w = waterfall || {}, f = packets || {};
+  const counts = w.counts || {};
+  const coverage = w.available
+    ? `<p class="sub">As of ${esc(w.as_of || "—")} · ${fmtNum(counts.n_ok)} of ${fmtNum(counts.n_episodes)} episodes attributed · ${fmtNum(counts.n_refused)} refused</p>`
+    : `<p class="sub">${esc(w.reason || "Delivery evidence unavailable.")}</p>`;
+  const rows = w.available ? (w.rows || []).map(row => {
+    const legs = Object.entries(row.legs_pct || {}).map(([key, val]) =>
+      `${esc(key.replace(/_/g, " "))}: ${Number.isFinite(val) ? esc(val.toFixed(2)) + "%" : "—"}`).join(" · ");
+    return `<tr><td>${esc(row.ticker)}</td><td>${esc(row.t0)}</td><td>${esc(row.path || "—")}</td><td>${esc(row.price_source || "—")}</td><td>${legs || "—"}</td><td>${(row.warnings || []).map(esc).join(", ") || "—"}</td></tr>`;
+  }).join("") : "";
+  const refused = w.available ? (w.refused_examples || []).map(row =>
+    `<li>${esc(row.ticker)} · ${esc(row.t0)} · ${(row.refusal_reasons || []).map(esc).join(", ") || "Reason unavailable"}</li>`).join("") : "";
+  const sensors = Object.entries(f.sensor_status_counts || {}).map(([name, count]) =>
+    `<div class="kv"><span>${esc(name.replace(/_/g, " "))}</span><b>${fmtNum(count)}</b></div>`).join("");
+  const packetHtml = f.available
+    ? `<p class="sub">Generated ${esc(f.generated_at || "—")} · ${fmtNum(f.n_tickers)} tickers · ${fmtNum(f.n_with_signal)} with sensor evidence · ${fmtNum(f.n_summary_only)} summary only</p>${sensors}<p class="note">${esc(f.ffb_r2_coverage_copy || "")}</p>`
+    : `<p class="sub">${esc(f.reason || "Falsifier manifest unavailable.")}</p>`;
+  return card("Delivery evidence", coverage +
+    (rows ? `<details><summary>Inspect attributed episodes</summary><table><thead><tr><th>Ticker</th><th>Start</th><th>Method</th><th>Price source</th><th>Components</th><th>Coverage notes</th></tr></thead><tbody>${rows}</tbody></table></details>` : "") +
+    (refused ? `<details><summary>Inspect refusal examples</summary><ul>${refused}</ul></details>` : "")) +
+    card("Falsifier coverage", packetHtml);
+}
+
 RENDER.long_hold = async () => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   v.innerHTML = `<div class="sub muted" style="margin-bottom:8px">Loading…</div>`;
   const d = await api("/api/long_hold");
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
   if (!d.ok) {
     v.innerHTML = card("Long-Hold Lobe", `<div class="sub" style="color:var(--bad)">${esc(d.reason || "not available")}</div>`);
     return;
@@ -15388,7 +15450,8 @@ RENDER.long_hold = async () => {
     <div class="section">Thesis Funnel</div>
     <div class="card">${tfHtml}</div>
     <div class="section">Label Distribution</div>
-    <div class="card">${lbHtml}</div>`;
+    <div class="card">${lbHtml}</div>
+    ${longHoldEvidence(d.delivery_waterfall, d.falsifier_packets)}`;
 };
 
 /* ---- Context Lobe ------------------------------------------------------- */
@@ -15411,9 +15474,11 @@ function contextCandidateEvidence(row, standingLaw) {
 }
 
 RENDER.context_lobe = async () => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   v.innerHTML = `<div class="sub muted" style="margin-bottom:8px">Loading…</div>`;
   const d = await api("/api/context_lobe");
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
 
   // always ok=true; error note signals artifact is absent
   const freshStr = d.freshness
@@ -15497,7 +15562,7 @@ RENDER.context_lobe = async () => {
         <td class="sub" style="max-width:240px">${esc(e.path || "—")}</td>
         <td>${esc(e.tier || "—")}</td>
         <td>${esc(e.horizon_role || "—")}</td>
-        <td><span class="statpill ${e.stale ? "s-warn" : "s-ok"}">${e.stale ? "stale" : "fresh"}</span></td>
+        <td><span class="statpill ${e.stale === true ? "s-warn" : e.stale === false ? "s-ok" : "s-mut"}">${e.stale === true ? "stale" : e.stale === false ? "fresh" : "unknown"}</span></td>
         <td>${esc(e.asof || "—")}</td>
       </tr>`
     ).join("");
@@ -15563,10 +15628,23 @@ RENDER.context_lobe = async () => {
 };
 
 /* ---- Chronicle (market context timeline) --------------------------------- */
+function chronicleNamedExposures(surface) {
+  if (!surface || surface.error) return card("Named exposures", esc(surface?.reason_en || "Consequence projection unavailable."));
+  const rows = (surface.rows || []).map(row =>
+    `<tr><td>${esc(row.event_time_en || row.event_time || "—")}</td><td>${esc(row.title_en || row.title || "—")}</td>
+      <td>${(row.direct_tickers || []).map(esc).join(", ") || "—"}</td><td>${esc(row.event_id || "—")}</td></tr>`).join("");
+  if (!rows) return card("Named exposures", esc(surface.reason_en || "No named exposures in this window."));
+  return card("Named exposures", `<p class="sub">${esc(surface.window_label_en || "")} · ${esc(surface.stance_en || "Direct mentions in recorded events.")}</p>
+    <details><summary>Inspect ${surface.rows.length} event records</summary>
+    <table><thead><tr><th>Event date</th><th>Record</th><th>Direct tickers</th><th>Event ID</th></tr></thead><tbody>${rows}</tbody></table></details>`);
+}
+
 RENDER.chronicle = async () => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   v.innerHTML = `<div class="sub muted" style="margin-bottom:8px">Loading…</div>`;
   const d = await api("/api/chronicle/overview");
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
 
   if (d.error) {
     v.innerHTML = card("Chronicle", `<div class="sub muted">${esc(d.error)}</div>`);
@@ -15578,13 +15656,9 @@ RENDER.chronicle = async () => {
     <span class="sub" style="margin-left:8px">Deterministic event history — no signals, no escalations, no scores originate here</span>
   </div>`;
 
-  if (!d.manifest) {
-    v.innerHTML = banner + card("Chronicle", nwEmpty("Accruing", d.note || "No Chronicle run yet."));
-    return;
-  }
 
   const cov = d.coverage || {};
-  const healthHtml = `
+  const healthHtml = !d.manifest ? nwEmpty("Manifest unavailable", d.note || "No Chronicle run yet.") : `
     <div class="kv"><span>As of</span><b>${esc(d.as_of || "—")}</b></div>
     <div class="kv"><span>Coverage window</span><b>${esc(cov.start || "—")} → ${esc(cov.end || "—")}</b></div>
     <div class="kv"><span>Coverage note</span><b class="sub">${esc(cov.note || "—")}</b></div>
@@ -15660,6 +15734,7 @@ RENDER.chronicle = async () => {
     ${gapHtml}
     <div class="section">Recent Events <span class="cnt">${events.length}</span></div>
     <div class="card">${eventsHtml}</div>
+    ${chronicleNamedExposures(d.impact_surface)}
     <div class="section">State Log Tail <span class="cnt">${stateLog.length}</span></div>
     <div class="card">${stateLogHtml}</div>`;
 };
@@ -15766,9 +15841,11 @@ RENDER.personas = async () => {
 
 /* ---- Causal Lab --------------------------------------------------------- */
 RENDER.causal_lab = async () => {
+  const epoch = ADMIN_RENDER_EPOCH;
   const v = $("#view");
   v.innerHTML = `<div class="sub muted" style="margin-bottom:8px">Loading…</div>`;
   const d = await api("/api/causal_lab");
+  if (epoch !== ADMIN_RENDER_EPOCH) return;
 
   const freshStr = d.freshness
     ? `produced ${esc(String(d.freshness).slice(0, 16).replace("T", " "))} UTC · ${fmtAge(d.age_hours)} old`
@@ -15848,7 +15925,7 @@ RENDER.causal_lab = async () => {
       <td class="sub">${esc(e.target_id || "—")}</td>
       <td><span class="statpill">${esc(e.verdict || "—")}</span></td>
       <td class="r">${e.n_concerns != null ? e.n_concerns : "—"}</td>
-      <td class="sub">${esc((e.scanned_at || "").slice(0, 10))}</td>
+      <td class="sub">${esc(e.scanned_at || "—")}</td>
     </tr>`).join("");
     edgesHtml = `<table><thead><tr>
       <th>Edge ID</th><th>Cause</th><th>Target</th><th>Verdict</th><th class="r">Concerns</th><th>Scanned</th>

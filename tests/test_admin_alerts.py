@@ -242,3 +242,12 @@ if __name__ == "__main__":
         else:
             fn()
         print("PASS", fn_name)
+
+
+def test_calibration_clock_preserves_offsets_and_legacy_utc():
+    from admin.alerts import _age_days
+    explicit = _age_days("2026-11-01T03:04:05+02:00")
+    assert explicit == pytest.approx(_age_days("2026-11-01T01:04:05Z"), abs=0.00001)
+    assert _age_days("2026-11-01 01:04 UTC") == pytest.approx(
+        _age_days("2026-11-01T01:04:00Z"), abs=0.00001)
+    assert _age_days("unknown") is None
