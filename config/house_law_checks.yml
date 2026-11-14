@@ -3293,22 +3293,25 @@ checks:
       instead of reporting the gap.
   - law_id: ui.p0b_receipt_closure
     summary: >
-      A change to any path pinned by the Prophet P0B browser receipts
-      (construction_inputs, loaded_assets, the verifier script, or
-      rendered-fixture.json's recipe inputs) must remint those receipts in the
-      same diff. #7603 changed templates/hk.html.j2 without reminting
-      mobile-layout*.json (still pinning 1ae1c8ed…); #7500 did the same with
-      site/navigation-refresh.css (healed by #7597). The class reddens
-      test_stock_dashboard_first_frame.py on every fresh merge-ref until the
-      closure is a GATE. The pin set is derived FROM the receipts at runtime
-      and is never hardcoded.
+      Changes to paths pinned by the Prophet P0B browser receipts require
+      same-diff receipt closure. Pins are derived from the receipts and their
+      fixture recipe. Construction inputs, verifier, fonts, CSS, callers and
+      unknown helper revisions remain strict. A digest sidecar may close only
+      one explicitly qualified complete helper source vector and exact raw
+      receipt scene from QUALIFIED_DIGEST_SCENES. The initial historical record
+      is captured-helper byte identity and grants no changed-helper exception.
+      Unknown scenes use strict current receipt bindings without an overlay.
+      Future qualification requires an ordinary source-policy amendment;
+      passing the finite diagnostic never grants eligibility.
     source_ref:
       - scripts/check_p0b_receipt_closure.py
       - tests/test_check_p0b_receipt_closure.py
+      - tests/test_stock_dashboard_first_frame.py
       - mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
       - mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
       - "PR #7597"
       - "PR #7603"
+      - "PR #8925"
     severity: hard
     check_script: scripts/check_p0b_receipt_closure.py
     ci_wiring:
@@ -3320,33 +3323,41 @@ checks:
     ratchet: null
     known_limits:
       - >-
-        File-list closure only: a receipt file present in the diff satisfies
-        the gate even if its hashes were not actually reminted. The receipt
-        tests in tests/test_stock_dashboard_first_frame.py still bind live
-        bytes and catch a touch-only companion.
+        File-list closure alone accepts a receipt path present in the diff;
+        tests/test_stock_dashboard_first_frame.py still bind the actual
+        current receipt, fixture, verifier, loaded inputs and font bytes.
+        A path touch does not establish a new browser execution.
       - >-
-        Derives pins from committed receipts at HEAD, not from the incoming
-        diff's new receipt bytes. A PR that adds a newly pinned path and the
-        receipts in the same diff is judged against the pre-change pin set
-        for that path (the new pin takes effect on the next PR).
+        The finite exact-source Node diagnostic checks its declared fixture
+        trace only. It does not replay browser screenshots or the 64-case
+        matrices and does not establish equivalence for future helper edits,
+        arbitrary event roots, unsupported APIs or asynchronous work.
+      - >-
+        A qualified digest sidecar explicitly says its new bytes were not
+        browser-measured. A changed scene deactivates the old exemption.
+        Strict retirement may only delete recognized owned sidecars after
+        every current strict binding and applicable loaded asset matches;
+        it cannot create an exemption or certify a new browser run.
+      - >-
+        Complete planning and immediate input/target rechecks precede refresh
+        effects, but are not an atomic filesystem transaction or a lock
+        against an uncontrolled concurrent writer.
       - >-
         REFUSES on a sparse checkout that omits mockups/ rather than reporting
         a vacuous pass over receipts it cannot see.
     owner_program: prophet-us-eyes-open
     notes: >
-      Its own legacy job, p0b-receipt-closure (gate: code, scope: exclusive,
-      fetch-depth 0), since the #6872 postmortem (2026-09-24). It first shipped
-      as trailing steps on design-governance (#7613), which failed twice on
-      #6872: run_ci_pack.py skips a logical job's remaining steps after the
-      first failing one, so the design ratchet's own red hid this verdict; and
-      "unscoped" is not always-on — inference derives a scope from the job's
-      commands and mockups/ sits outside every opaque scan root, so a diff
-      touching only the rendered fixture or a receipt input skipped the job.
-      The curated paths name the roots every pin lives under and are bound to
-      the committed receipts by tests/test_ci_pack.py::
-      test_p0b_receipt_closure_job_owns_every_receipt_pinned_path. The gate
-      step runs first in the job. The checker never shells out to git; the
-      caller hands it `git diff --name-only`.
+      The existing p0b-receipt-closure job remains a hard code gate with
+      exclusive scope, fetch-depth 0, its gate step first, its existing
+      selftest and unit command, and its ten-minute limit. Curated paths
+      cover every receipt pin and checker import. No path-only allowlist,
+      severity downgrade, browser-proof substitution or separate owner is
+      introduced. Tablesort remains strict. New helper eligibility requires
+      explicit complete-vector and raw-scene policy disposition. Fresh
+      receipt scenes can be strictly valid while the historical exemption
+      is inactive. The original two-argument file-list API is preserved.
+      A canonical sidecar identifies only its own asset and receipt scene;
+      sibling unions still require explicit complete-vector qualification.
   - law_id: data.append_only_assertions
     summary: >
       A historical assertion over an append-only store must not become false
