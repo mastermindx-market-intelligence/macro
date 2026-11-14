@@ -1097,3 +1097,23 @@ ROOT is sanitized to `[A-Z.]{1,8}` — invalid chars return 422.
 | tickers_published | 5 |
 | cycle_sec | < 60s |
 | dte buckets | 5 |
+
+### Exact prior-session price inputs
+
+At the existing natural `--rth-only` startup, after WAL and session checks, the
+poller reads the existing protected Macro Yahoo publication through its already
+configured Git origin. The bounded read updates only a private source ref and
+`data/live_flow_state/prior_close_inputs.json`; it does not check out new source,
+change the runtime index or configuration, collect prices, or start another job.
+`--once`, historical-date refusals, import/help, and outside-session exits do not
+perform this read. A transport failure leaves the retained file intact and lets
+Flow continue with unknown prices.
+
+The reader requires the exact previous NYSE session and `close_price` (the native
+split-adjusted, dividend-unadjusted price close). It never substitutes the
+total-return `close` column or an older available date. The derived input records
+Git publication identity, original parquet hash/length/path, source session and
+retrieval time separately. These are display reference inputs, not point-in-time
+research admission or an intraday underlying quote. Missing roots remain unknown.
+SLV and ARKK use the incumbent Yahoo collector universe; no additional collector
+or schedule is introduced.
