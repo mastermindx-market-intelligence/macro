@@ -12,7 +12,7 @@ import stat
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Request
 from fastapi.responses import JSONResponse
 
 router = APIRouter()
@@ -53,8 +53,16 @@ def _bounded_bytes(path: Path, root: Path, maximum: int) -> bytes:
 
 
 @router.get("/api/macro/command")
-def macro_command(_user: dict = Depends(require_user)) -> JSONResponse:
+def macro_command(request: Request, _user: dict = Depends(require_user)) -> JSONResponse:
     headers = {"Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, noarchive"}
+    # One closed, region-bound detail selection on the incumbent reader. Auth
+    # still runs first. No query chooses a path, region, filesystem or producer.
+    selections = request.query_params.getlist("workspace")
+    if (set(request.query_params) - {"workspace"}
+            or len(selections) > 1
+            or selections and selections[0] != "liquidity_regime"):
+        return JSONResponse({"error": "unsupported macro workspace"}, status_code=400, headers=headers)
+    selected = selections[0] if selections else None
     try:
         # Composition dependencies are request-scoped; auth and unrelated APIs
         # remain available while this artifact reader is unavailable.
@@ -94,8 +102,13 @@ def macro_command(_user: dict = Depends(require_user)) -> JSONResponse:
             except (OSError, ValueError) as exc:
                 raise builder.SnapshotRefused("SOURCE_FAILED", "published body unavailable") from exc
 
+        pages = (tuple(page for page in builder.SUITE_PAGES
+                       if page.workspace_id == selected and page.region == "US")
+                 if selected else builder.SUITE_PAGES)
+        if selected and len(pages) != 1:
+            raise ValueError("selected workspace is not uniquely admitted")
         entries = []
-        for page in builder.SUITE_PAGES:
+        for page in pages:
             entry = {
                 "workspace_id": page.workspace_id,
                 "region": page.region,
@@ -103,15 +116,45 @@ def macro_command(_user: dict = Depends(require_user)) -> JSONResponse:
                 "title": builder._identity(page)["title"],
                 "subtitle": builder._identity(page)["subtitle"],
                 "snapshot": None,
+                "artifact": None,
                 "failure": None,
             }
             try:
-                entry["snapshot"], _ = builder.read_workspace(data_root, page, read_json=read_json)
+                entry["snapshot"], entry["artifact"] = builder.read_workspace(data_root, page, read_json=read_json)
             except builder.SnapshotRefused as exc:
                 entry["failure"] = {"kind": exc.kind, "detail": "Published workspace could not be verified."}
             entries.append(entry)
 
         composed_at = datetime.now(timezone.utc).isoformat()
+        source = {
+            "served_root_qualified": True,
+            "manifest_generated_at": generated_at,
+            "manifest_sha256": hashlib.sha256(manifest_raw).hexdigest(),
+            "composed_at": composed_at,
+            "min_client_contract": builder.MIN_CLIENT_CONTRACT,
+        }
+        if selected:
+            entry = entries[0]
+            snapshot = entry["snapshot"]
+            view = (macro_suite_view.build_view(
+                snapshot, page_built_at=composed_at, artifact=entry["artifact"],
+                layout=macro_suite_view.LAYOUT_DECISION_FIRST,
+            ) if snapshot is not None else None)
+            # Bind the complete detail to the same manifest generation that
+            # admitted it. A healthy sibling cannot replace a refused selection.
+            if _bounded_bytes(manifest_path, root, MANIFEST_MAX_BYTES) != manifest_raw:
+                raise ValueError("manifest changed during selected read")
+            return JSONResponse({
+                "schema": "mastermind.macro_command_workspace_read.v1",
+                "source": source,
+                "selected_workspace": {
+                    "workspace_id": selected, "region": "US",
+                    "state": "ready" if view is not None else "unavailable",
+                    "generation_id": (snapshot or {}).get("generation", {}).get("generation_id"),
+                    "artifact": entry["artifact"], "view": view,
+                    "failure": entry["failure"],
+                },
+            }, headers=headers)
         header = macro_suite_view.build_command_header(entries, page_built_at=composed_at)
         sections = builder._macro_command_sections(entries, page_built_at=composed_at)
         builder._restrict_header_to_populated(header, entries, {section["id"] for section in sections})
@@ -136,13 +179,7 @@ def macro_command(_user: dict = Depends(require_user)) -> JSONResponse:
         body = {
             "schema": "mastermind.macro_command_read.v1",
             "state": "ready" if healthy == len(entries) else "partial" if healthy else "unavailable",
-            "source": {
-                "served_root_qualified": True,
-                "manifest_generated_at": generated_at,
-                "manifest_sha256": hashlib.sha256(manifest_raw).hexdigest(),
-                "composed_at": composed_at,
-                "min_client_contract": builder.MIN_CLIENT_CONTRACT,
-            },
+            "source": source,
             **header,
             "sections": [{
                 "id": section["id"], "label": section["label"],

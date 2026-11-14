@@ -771,3 +771,121 @@ assert response.headers['cache-control'] == 'private, no-store'
 '''
     subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True,
                    capture_output=True, text=True)
+
+
+# Native detail is a selection of the same served owner, never a new producer.
+DETAIL_PATH = COMMAND_PATH + "?workspace=liquidity_regime"
+
+
+def test_detail_is_exact_incumbent_view_and_receipt(client, served):
+    before = served.tree_digest()
+    response = client.get(DETAIL_PATH)
+    assert response.status_code == 200
+    _assert_private_output(response)
+    body = response.json()
+    assert set(body) == {"schema", "source", "selected_workspace"}
+    assert body["schema"] == "mastermind.macro_command_workspace_read.v1"
+    selected = body["selected_workspace"]
+    snapshot, artifact = builder.read_workspace(served.data_root, NARROW_PAGES[0])
+    assert selected == {
+        "workspace_id": "liquidity_regime", "region": "US", "state": "ready",
+        "generation_id": snapshot["generation"]["generation_id"],
+        "artifact": artifact, "failure": None,
+        "view": macro_suite_view.build_view(
+            snapshot, page_built_at=body["source"]["composed_at"], artifact=artifact,
+            layout=macro_suite_view.LAYOUT_DECISION_FIRST),
+    }
+    assert body["source"]["manifest_sha256"] == served.manifest_digest
+    assert selected["artifact"]["sha256"] == snapshot["generation"]["content_sha256"]
+    assert served.tree_digest() == before
+    # The default aggregate keeps its pre-existing shape and composition.
+    assert set(client.get(COMMAND_PATH).json()) == TOP_LEVEL_KEYS
+
+
+@pytest.mark.parametrize("query", [
+    "workspace=", "workspace=growth_real_economy", "workspace=LIQUIDITY_REGIME",
+    "workspace=liquidity_regime&workspace=liquidity_regime",
+    "workspace=liquidity_regime&region=CN", "workspace=../../private",
+    "workspace=liquidity_regime&path=/tmp/source.json",
+])
+def test_detail_rejects_non_admitted_query_before_read(client, monkeypatch, query):
+    reads = []
+    monkeypatch.setattr(mc, "_served_root", lambda: reads.append("read"))
+    response = client.get(COMMAND_PATH + "?" + query)
+    assert response.status_code == 400
+    _assert_private_output(response)
+    assert reads == []
+
+
+def test_detail_auth_precedes_selection_and_source_reads(monkeypatch):
+    from fastapi import HTTPException
+    application = FastAPI()
+    application.include_router(mc.router)
+    def deny():
+        raise HTTPException(status_code=401)
+    application.dependency_overrides[mc.require_user] = deny
+    reads = []
+    monkeypatch.setattr(mc, "_served_root", lambda: reads.append("read"))
+    with TestClient(application) as reader:
+        assert reader.get(DETAIL_PATH).status_code == 401
+        assert reader.get(COMMAND_PATH + "?workspace=unknown").status_code == 401
+    assert reads == []
+
+
+def test_detail_reads_only_selected_workspace(dual, monkeypatch):
+    served, client = dual
+    visited = []
+    original = builder.read_workspace
+    def observe(root, page, **kwargs):
+        visited.append((page.workspace_id, page.region))
+        return original(root, page, **kwargs)
+    monkeypatch.setattr(builder, "read_workspace", observe)
+    served.body_path("growth_real_economy").unlink()
+    response = client.get(DETAIL_PATH)
+    assert response.status_code == 200
+    assert response.json()["selected_workspace"]["state"] == "ready"
+    assert visited == [("liquidity_regime", "US")]
+
+
+@pytest.mark.parametrize("defect", ["missing", "tamper", "digest", "region"])
+def test_detail_refusal_never_substitutes_a_healthy_sibling(dual, defect):
+    served, client = dual
+    path = served.body_path("liquidity_regime")
+    if defect == "missing":
+        path.unlink()
+    elif defect == "digest":
+        served.rewrite_manifest(lambda doc: doc["workspaces"]["liquidity_regime/US"]
+                                .update({"content_sha256": "f" * 64}))
+    else:
+        snapshot = json.loads(path.read_text())
+        if defect == "tamper":
+            snapshot["headline"]["effective_date"] = "2000-01-01"
+        else:
+            snapshot["region"]["code"] = "CN"
+            snapshot = contract.finalize(snapshot)
+        payload = _snapshot_bytes(snapshot)
+        path.write_bytes(payload)
+        served.rewrite_manifest(lambda doc: doc["workspaces"]["liquidity_regime/US"]
+                                .update({"content_sha256": snapshot["generation"]["content_sha256"],
+                                         "bytes": len(payload)}))
+    response = client.get(DETAIL_PATH)
+    assert response.status_code == 200
+    _assert_private_output(response)
+    selected = response.json()["selected_workspace"]
+    assert selected["workspace_id"] == "liquidity_regime"
+    assert selected["region"] == "US"
+    assert selected["state"] == "unavailable"
+    assert selected["view"] is None and selected["artifact"] is None
+    assert selected["generation_id"] is None
+    assert selected["failure"]["kind"]
+    assert str(served.root) not in json.dumps(selected)
+
+
+def test_detail_manifest_move_withholds_the_whole_read(client, served, monkeypatch):
+    original = macro_suite_view.build_view
+    def move_manifest(*args, **kwargs):
+        view = original(*args, **kwargs)
+        served.rewrite_manifest(lambda doc: doc.update({"generated_at": "2026-09-05T00:00:00Z"}))
+        return view
+    monkeypatch.setattr(macro_suite_view, "build_view", move_manifest)
+    _assert_unavailable(client.get(DETAIL_PATH))
