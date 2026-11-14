@@ -13,6 +13,201 @@ APP = (ROOT / "admin" / "static" / "app.js").read_text(encoding="utf-8")
 CSS = (ROOT / "admin" / "static" / "styles.css").read_text(encoding="utf-8")
 
 
+_KEEPALIVE_HARNESS = r"""
+const sessionResponse = (value, ok = true) => ({ok, json: async () => value});
+const readHelper = block('const ADMIN_READ_TIMEOUT_MS = ', 'async function api(');
+const lifecycle = block('/* ---- session keepalive', '/* ---- sidebar nav');
+function sessionHarness(fetcher, postResult = async () => ({ok:true})) {
+  let now = 1800000000000;
+  const state = {shown:false, cleared:0, requests:[], posts:[], notices:[],
+                 deadlines:[], clearedDeadlines:[], intervals:[], events:{}};
+  const login = {classList:{
+    contains: name => name === 'show' && state.shown,
+    add: () => { state.shown = true; },
+    remove: () => { state.shown = false; },
+  }};
+  const nodes = {'#login':login, '#app':{style:{}}, '#pw':{value:'synthetic'},
+    '#loginErr':{textContent:''},
+    '#loginForm':{addEventListener:(event, fn) => { state.submit = fn; }}};
+  const document = {visibilityState:'visible',
+    addEventListener:(event, fn) => { state.events['document:' + event] = fn; }};
+  const window = {addEventListener:(event, fn) => { state.events['window:' + event] = fn; }};
+  const api = new Function('fetch', 'readJson', 'AbortController', 'setTimeout',
+    'clearTimeout', '$', 'document', 'window', 'Date', 'setInterval',
+    'clearApiCache', 'toast', 'post', 'boot',
+    readHelper + lifecycle +
+    ';return {keepAlive:keepAdminSessionAlive,showLogin,hideLogin,logout};')(
+      (path, opts) => { state.requests.push({path,opts}); return fetcher(path,opts); },
+      response => response.json(), AbortController,
+      (fn, delay) => { state.deadlines.push({fn,delay}); return state.deadlines.length; },
+      id => state.clearedDeadlines.push(id),
+      selector => nodes[selector], document, window, {now:() => now},
+      (fn, delay) => { state.intervals.push({fn,delay}); return state.intervals.length; },
+      () => { state.cleared += 1; },
+      (...args) => state.notices.push(args),
+      async (path, body) => { state.posts.push({path,body}); return postResult(path,body); },
+      () => {}
+    );
+  return {state, api, document, setFetch:fn => { fetcher = fn; }, advance:ms => { now += ms; }};
+}
+"""
+
+
+def test_keepalive_fences_old_negative_and_never_restores_login_from_a_positive():
+    _node_assert(_KEEPALIVE_HARNESS + r"""
+let finish;
+const h = sessionHarness(() => new Promise(resolve => { finish = resolve; }));
+const old = h.api.keepAlive();
+h.api.hideLogin(); // newer successful login/initial verification
+finish(sessionResponse({auth_enabled:true, authenticated:false}));
+await old;
+assert.equal(h.state.shown, false);
+assert.equal(h.state.cleared, 0);
+h.setFetch(async () => sessionResponse({auth_enabled:true, authenticated:false}));
+await h.api.keepAlive();
+assert.equal(h.state.shown, true);
+assert.equal(h.state.cleared, 1);
+
+h.api.hideLogin();
+h.setFetch(() => new Promise(resolve => { finish = resolve; }));
+const positive = h.api.keepAlive();
+h.api.showLogin(); // newer logout/login-required transition
+finish(sessionResponse({auth_enabled:true, authenticated:true}));
+await positive;
+assert.equal(h.state.shown, true);
+assert.equal(h.state.cleared, 1);
+""")
+
+
+def test_keepalive_reuses_deadline_and_recovers_after_fetch_or_body_stalls():
+    _node_assert(_KEEPALIVE_HARNESS + r"""
+for (const stage of ['fetch', 'body']) {
+  let signal; let entered;
+  const started = new Promise(resolve => { entered = resolve; });
+  const waitForAbort = () => new Promise((resolve, reject) => {
+    signal.addEventListener('abort', () => reject(new Error('aborted')), {once:true});
+    entered();
+  });
+  const h = sessionHarness(async (path, opts) => {
+    signal = opts.signal;
+    if (stage === 'fetch') return waitForAbort();
+    return {ok:true, json:waitForAbort};
+  });
+  const pending = h.api.keepAlive();
+  await started;
+  assert(signal instanceof AbortSignal);
+  assert.equal(h.state.deadlines[0].delay, 30000);
+  h.state.deadlines[0].fn();
+  await pending;
+  assert.equal(h.state.shown, false);
+  assert.equal(h.state.cleared, 0);
+  assert.deepEqual(h.state.clearedDeadlines, [1]);
+  h.setFetch(async () => sessionResponse({auth_enabled:true, authenticated:true}));
+  await h.api.keepAlive();
+  assert.equal(h.state.requests.length, 2);
+  assert.equal(h.state.requests[1].opts.credentials, 'same-origin');
+  assert.equal(h.state.requests[1].opts.cache, 'no-store');
+}
+""")
+
+
+def test_keepalive_errors_and_unqualified_responses_preserve_the_ui():
+    _node_assert(_KEEPALIVE_HARNESS + r"""
+const cases = [
+  async () => { throw new Error('offline'); },
+  async () => sessionResponse({auth_enabled:true, authenticated:false}, false),
+  async () => ({ok:true, json:async () => { throw new Error('invalid JSON'); }}),
+  async () => sessionResponse(null),
+  async () => sessionResponse({auth_enabled:'true', authenticated:false}),
+  async () => sessionResponse({auth_enabled:true, authenticated:null}),
+  async () => sessionResponse({auth_enabled:false, authenticated:false}),
+];
+for (const fetcher of cases) {
+  const h = sessionHarness(fetcher);
+  await h.api.keepAlive();
+  assert.equal(h.state.shown, false);
+  assert.equal(h.state.cleared, 0);
+  h.setFetch(async () => sessionResponse({auth_enabled:true, authenticated:true}));
+  await h.api.keepAlive();
+  assert.equal(h.state.requests.length, 2);
+}
+""")
+
+
+def test_keepalive_coalesces_events_and_skips_hidden_or_login_visible_tabs():
+    _node_assert(_KEEPALIVE_HARNESS + r"""
+let finish;
+const h = sessionHarness(() => new Promise(resolve => { finish = resolve; }));
+const pending = h.api.keepAlive();
+assert.strictEqual(h.api.keepAlive(), pending);
+assert.equal(h.state.intervals[0].delay, 30 * 60 * 1000);
+h.advance(30 * 60 * 1000);
+h.state.intervals[0].fn();
+h.state.events['window:focus']();
+h.state.events['document:visibilitychange']();
+assert.equal(h.state.requests.length, 1);
+finish(sessionResponse({auth_enabled:true, authenticated:true}));
+await pending;
+h.document.visibilityState = 'hidden';
+h.state.intervals[0].fn();
+assert.equal(h.state.requests.length, 1);
+h.document.visibilityState = 'visible';
+h.api.showLogin();
+h.state.events['window:focus']();
+assert.equal(h.state.requests.length, 1);
+h.api.hideLogin();
+h.advance(30 * 60 * 1000);
+h.state.events['document:visibilitychange']();
+assert.equal(h.state.requests.length, 2);
+const next = h.api.keepAlive();
+finish(sessionResponse({auth_enabled:true, authenticated:true}));
+await next;
+""")
+
+
+def test_logout_drains_this_tabs_probe_then_sends_one_write_without_retry():
+    _node_assert(_KEEPALIVE_HARNESS + r"""
+let finish;
+const h = sessionHarness(() => new Promise(resolve => { finish = resolve; }));
+const pending = h.api.keepAlive();
+const logout = h.api.logout();
+const duplicateLogout = h.api.logout();
+h.api.keepAlive();
+h.state.intervals[0].fn();
+assert.equal(h.state.requests.length, 1);
+assert.equal(h.state.posts.length, 0);
+finish(sessionResponse({auth_enabled:true, authenticated:false}));
+await pending; await logout; await duplicateLogout;
+assert.equal(h.state.cleared, 0); // obsolete negative cannot act during logout
+assert.deepEqual(h.state.posts, [{path:'/api/logout', body:{}}]);
+assert.equal(h.state.shown, true);
+h.api.keepAlive();
+assert.equal(h.state.requests.length, 1);
+
+let finishWrite;
+const writing = sessionHarness(async () => sessionResponse({auth_enabled:true,authenticated:true}),
+  () => new Promise(resolve => { finishWrite = resolve; }));
+const firstWrite = writing.api.logout();
+const sameWrite = writing.api.logout();
+assert.equal(writing.state.posts.length, 1);
+finishWrite({ok:true});
+await firstWrite; await sameWrite;
+assert.equal(writing.state.posts.length, 1);
+assert.equal(writing.state.shown, true);
+
+const failed = sessionHarness(async () => sessionResponse({auth_enabled:true,authenticated:true}),
+  async () => { throw new Error('write outcome unknown'); });
+await failed.api.logout();
+assert.equal(failed.state.posts.length, 1);
+assert.equal(failed.state.shown, true);
+assert.equal(failed.state.notices.length, 1);
+assert.match(failed.state.notices[0][0], /Could not confirm logout/);
+failed.api.keepAlive();
+assert.equal(failed.state.requests.length, 0);
+assert.equal(failed.state.posts.length, 1);
+""")
+
+
 def test_admin_navigation_has_search_and_keyboard_access():
     assert 'id="navSearch"' in APP
     assert 'placeholder="Find an admin page…"' in APP

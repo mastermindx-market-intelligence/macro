@@ -251,12 +251,76 @@ function toast(msg, err) {
   clearTimeout(TOAST_T); TOAST_T = setTimeout(() => t.className = "toast", 3000);
 }
 
+/* ---- session keepalive -------------------------------------------------- */
+const ADMIN_SESSION_INTERVAL_MS = 30 * 60 * 1000;
+let ADMIN_AUTH_GENERATION = 0;
+let ADMIN_AUTH_TRANSITION = false;
+let ADMIN_SESSION_PROBE = null;
+let ADMIN_LOGOUT_REQUEST = null;
+let ADMIN_LAST_SESSION_PROBE = Date.now();
+
+function beginAdminAuthTransition() {
+  ADMIN_AUTH_GENERATION += 1;
+  ADMIN_AUTH_TRANSITION = true;
+  return ADMIN_SESSION_PROBE;
+}
+
+function keepAdminSessionAlive() {
+  if (ADMIN_SESSION_PROBE) return ADMIN_SESSION_PROBE;
+  if (ADMIN_AUTH_TRANSITION || document.visibilityState === "hidden" ||
+      $("#login")?.classList.contains("show")) return;
+  const generation = ADMIN_AUTH_GENERATION;
+  ADMIN_LAST_SESSION_PROBE = Date.now();
+  const request = (async () => {
+    try {
+      // Reuse the existing deadline for both GET transport and response parsing.
+      // api() handles generic 401s before this probe's lifecycle fence can run.
+      const { response, value } = await readAdminResponse("/api/session", {
+        method: "GET", credentials: "same-origin", cache: "no-store",
+      });
+      if (generation !== ADMIN_AUTH_GENERATION || ADMIN_AUTH_TRANSITION) return;
+      if (response.ok && value && value.auth_enabled === true &&
+          value.authenticated === false) {
+        clearApiCache();
+        showLogin();
+      }
+    } catch (_) {
+      // Offline, deadline, proxy or malformed-body failures are not logout proof.
+    } finally {
+      if (ADMIN_SESSION_PROBE === request) ADMIN_SESSION_PROBE = null;
+    }
+  })();
+  ADMIN_SESSION_PROBE = request;
+  return request;
+}
+
+function onAdminSessionReturn() {
+  if (Date.now() - ADMIN_LAST_SESSION_PROBE >= ADMIN_SESSION_INTERVAL_MS) {
+    void keepAdminSessionAlive();
+  }
+}
+
+setInterval(() => { void keepAdminSessionAlive(); }, ADMIN_SESSION_INTERVAL_MS);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") onAdminSessionReturn();
+});
+window.addEventListener("focus", onAdminSessionReturn);
+
 /* ---- login -------------------------------------------------------------- */
-function showLogin() { $("#login").classList.add("show"); $("#app").style.display = "none"; }
-function hideLogin() { $("#login").classList.remove("show"); $("#app").style.display = ""; }
+function showLogin() {
+  beginAdminAuthTransition();
+  $("#login").classList.add("show"); $("#app").style.display = "none";
+}
+function hideLogin() {
+  ADMIN_AUTH_GENERATION += 1;
+  ADMIN_AUTH_TRANSITION = false;
+  ADMIN_LAST_SESSION_PROBE = Date.now();
+  $("#login").classList.remove("show"); $("#app").style.display = "";
+}
 
 $("#loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
+  beginAdminAuthTransition();
   $("#loginErr").textContent = "";
   const r = await fetch("/api/login", {
     method: "POST", headers: { "Content-Type": "application/json" },
@@ -267,8 +331,25 @@ $("#loginForm").addEventListener("submit", async (e) => {
 });
 
 async function logout() {
-  await post("/api/logout", {});
-  showLogin();
+  if (ADMIN_LOGOUT_REQUEST) return ADMIN_LOGOUT_REQUEST;
+  const pending = beginAdminAuthTransition();
+  const request = (async () => {
+    // Let this tab's bounded renewal finish before the final cookie-clearing write.
+    // This does not provide server revocation or order another tab's responses.
+    if (pending) await pending;
+    try {
+      const result = await post("/api/logout", {});
+      if (!result || result.ok !== true) throw new Error("logout unconfirmed");
+      showLogin();
+    } catch (_) {
+      showLogin();
+      toast("Could not confirm logout. Reload to check your session.", true);
+    }
+  })();
+  ADMIN_LOGOUT_REQUEST = request;
+  try { await request; } finally {
+    if (ADMIN_LOGOUT_REQUEST === request) ADMIN_LOGOUT_REQUEST = null;
+  }
 }
 
 /* ---- sidebar nav + router ----------------------------------------------- */
