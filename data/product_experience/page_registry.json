@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-11-14T11:35:00Z",
+  "generated_at": "2026-11-14T14:41:19Z",
   "sources": {
     "macro": {
       "available": true,
@@ -50,15 +50,30 @@
       ]
     },
     "terminal": {
-      "root": "../terminal-source",
-      "ref": "6aba1efb8dfe920a3b6e0fdc7616bde26f28474f",
+      "root": "/Users/chriswong/Documents/Cluade/charting-app",
+      "ref": "751fd566cf06d9a616ede61e6efb367197ef26f6",
       "available": true,
-      "sha": "6aba1efb8dfe920a3b6e0fdc7616bde26f28474f",
-      "page_modules": 39,
-      "registry_base_commit": "daec304a0d7582586dda975e4474bbaf5741cb17",
+      "sha": "751fd566cf06d9a616ede61e6efb367197ef26f6",
+      "page_modules": 56,
+      "registry_base_commit": "e62c54307664f9347a8a10cfa897e32e506ec264",
       "registry_base_sha256": "ee0708b3be98e37268af469bb67c936a7c3135eb6775388051078d90fe2484dd",
       "native_migrations": {
-        "macro:macro": "terminal:macrohtml"
+        "macro:macro": "terminal:macrohtml",
+        "macro:macro_monetary": "terminal:macro_monetaryhtml",
+        "macro:macro_liquidity_regime": "terminal:macro_liquidity_regimehtml",
+        "macro:macro_growth_real_economy": "terminal:macro_growth_real_economyhtml",
+        "macro:macro_business_activity": "terminal:macro_business_activityhtml",
+        "macro:macro_labor_markets": "terminal:macro_labor_marketshtml",
+        "macro:macro_inflation_system": "terminal:macro_inflation_systemhtml",
+        "macro:macro_monetary_policy": "terminal:macro_monetary_policyhtml",
+        "macro:macro_financial_conditions": "terminal:macro_financial_conditionshtml",
+        "macro:macro_liquidity_central_banks": "terminal:macro_liquidity_central_bankshtml",
+        "macro:macro_capital_structure": "terminal:macro_capital_structurehtml",
+        "macro:macro_housing_real_estate": "terminal:macro_housing_real_estatehtml",
+        "macro:macro_consumer_payments": "terminal:macro_consumer_paymentshtml",
+        "macro:macro_national_debt_liabilities": "terminal:macro_national_debt_liabilitieshtml",
+        "macro:macro_rates_curves": "terminal:macro_rates_curveshtml",
+        "macro:macro_trade_flows": "terminal:macro_trade_flowshtml"
       }
     },
     "mastermind": {
@@ -6583,17 +6598,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_business_activity.html",
-        "templates/macro_business_activity.html.j2"
+        "templates/macro_business_activity.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_business_activity.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -6626,17 +6645,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_capital_structure.html",
-        "templates/macro_capital_structure.html.j2"
+        "templates/macro_capital_structure.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_capital_structure.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -6669,17 +6692,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_consumer_payments.html",
-        "templates/macro_consumer_payments.html.j2"
+        "templates/macro_consumer_payments.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_consumer_payments.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -6756,17 +6783,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_financial_conditions.html",
-        "templates/macro_financial_conditions.html.j2"
+        "templates/macro_financial_conditions.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_financial_conditions.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -6799,17 +6830,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_growth_real_economy.html",
-        "templates/macro_growth_real_economy.html.j2"
+        "templates/macro_growth_real_economy.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_growth_real_economy.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -6842,17 +6877,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_housing_real_estate.html",
-        "templates/macro_housing_real_estate.html.j2"
+        "templates/macro_housing_real_estate.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_housing_real_estate.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -6885,17 +6924,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_inflation_system.html",
-        "templates/macro_inflation_system.html.j2"
+        "templates/macro_inflation_system.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_inflation_system.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -6928,17 +6971,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_labor_markets.html",
-        "templates/macro_labor_markets.html.j2"
+        "templates/macro_labor_markets.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_labor_markets.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -6971,17 +7018,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_liquidity_central_banks.html",
-        "templates/macro_liquidity_central_banks.html.j2"
+        "templates/macro_liquidity_central_banks.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_liquidity_central_banks.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -7014,17 +7065,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_liquidity_regime.html",
-        "templates/macro_liquidity_regime.html.j2"
+        "templates/macro_liquidity_regime.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_liquidity_regime.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -7057,17 +7112,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_monetary.html",
-        "templates/macro_monetary.html.j2"
+        "templates/macro_monetary.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_monetary.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -7100,17 +7159,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_monetary_policy.html",
-        "templates/macro_monetary_policy.html.j2"
+        "templates/macro_monetary_policy.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_monetary_policy.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -7143,17 +7206,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_national_debt_liabilities.html",
-        "templates/macro_national_debt_liabilities.html.j2"
+        "templates/macro_national_debt_liabilities.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_national_debt_liabilities.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -7186,17 +7253,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_rates_curves.html",
-        "templates/macro_rates_curves.html.j2"
+        "templates/macro_rates_curves.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_rates_curves.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -7272,17 +7343,21 @@
         "zh"
       ],
       "known_contracts": [
-        "site_access.v1:default_insider"
+        "site_access.v1:default_insider",
+        "shared_shell:admission_withheld"
       ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
         "site/macro_trade_flows.html",
-        "templates/macro_trade_flows.html.j2"
+        "templates/macro_trade_flows.html.j2",
+        "config/site_access.yml",
+        "terminal/app/(shell)/macro_trade_flows.html/page.tsx"
       ],
       "notes": [
         "template attributed by name match; no write_page() call site names it",
-        "no write_page() call site resolves to this route; builder unknown"
+        "no write_page() call site resolves to this route; builder unknown",
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6; release and consumer proof remain open."
       ]
     },
     {
@@ -13897,6 +13972,57 @@
       ]
     },
     {
+      "page_id": "terminal:brain",
+      "repo": "terminal",
+      "route": "/brain",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/brain/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "https://www.mastermind-x.com/mm_brain.js",
+        "/api/brain/*"
+      ],
+      "access_shell": "anonymous",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "app_nav.rail",
+      "archetype": "chart_workspace",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "What can I learn about this market from cited evidence and the existing research assistant?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Anonymous shell; existing Brain widget owns chat, history, usage and login requirements",
+        "Existing market and context owners; no second research or authentication service"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/brain/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/AppNav.tsx",
+        "terminal/components/BrainWidget.tsx",
+        "terminal/components/BrainWorkspace.tsx",
+        "terminal/components/chrome/shared-shell/SharedShellLaunchLinks.tsx",
+        "terminal/lib/i18n.tsx"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "Inherited source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6 from PR1501; anonymous shell is not guest access to private chat/history. Backend companion remains Macro PR11251. Registry qualification grants no deployment or visual acceptance."
+      ]
+    },
+    {
       "page_id": "terminal:briefs_deliveryid_sharing",
       "repo": "terminal",
       "route": "/briefs/<deliveryId>/sharing",
@@ -14680,6 +14806,866 @@
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
         "Native beta consumer of the incumbent Macro build. Registry admission is not a claim of deployed browser acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_business_activityhtml",
+      "repo": "terminal",
+      "route": "/macro_business_activity.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_business_activity.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=business_activity"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Are businesses producing, investing and ordering more or less?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_business_activity.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_capital_structurehtml",
+      "repo": "terminal",
+      "route": "/macro_capital_structure.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_capital_structure.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=capital_structure"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Where are leverage and refinancing pressures building?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_capital_structure.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_consumer_paymentshtml",
+      "repo": "terminal",
+      "route": "/macro_consumer_payments.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_consumer_payments.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=consumer_payments"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Are consumers continuing to spend, and where are they under pressure?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_consumer_payments.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_financial_conditionshtml",
+      "repo": "terminal",
+      "route": "/macro_financial_conditions.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_financial_conditions.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=financial_conditions"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Are credit and market conditions supporting or constraining the economy?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_financial_conditions.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_growth_real_economyhtml",
+      "repo": "terminal",
+      "route": "/macro_growth_real_economy.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_growth_real_economy.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=growth_real_economy"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Is the economy expanding or slowing, and how broad is the change?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_growth_real_economy.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_housing_real_estatehtml",
+      "repo": "terminal",
+      "route": "/macro_housing_real_estate.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_housing_real_estate.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=housing_real_estate"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "How are housing demand, supply and financing conditions changing?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_housing_real_estate.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_inflation_systemhtml",
+      "repo": "terminal",
+      "route": "/macro_inflation_system.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_inflation_system.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=inflation_system"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Is inflation cooling or accelerating, and where is pressure persistent?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_inflation_system.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_labor_marketshtml",
+      "repo": "terminal",
+      "route": "/macro_labor_markets.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_labor_markets.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=labor_markets"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Is demand for workers strengthening or weakening?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_labor_markets.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_liquidity_central_bankshtml",
+      "repo": "terminal",
+      "route": "/macro_liquidity_central_banks.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_liquidity_central_banks.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=liquidity_central_banks"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "How are central-bank balance sheets and funding flows changing liquidity?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_liquidity_central_banks.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_liquidity_regimehtml",
+      "repo": "terminal",
+      "route": "/macro_liquidity_regime.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_liquidity_regime.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=liquidity_regime"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Is money becoming easier or harder to access, and why?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_liquidity_regime.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_monetaryhtml",
+      "repo": "terminal",
+      "route": "/macro_monetary.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_monetary.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "command_center",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "What is the macro environment, what changed, and where should I investigate?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P0",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_monetary.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyOverview.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_monetary_policyhtml",
+      "repo": "terminal",
+      "route": "/macro_monetary_policy.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_monetary_policy.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=monetary_policy"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "How restrictive is monetary policy, and what could change it?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_monetary_policy.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_national_debt_liabilitieshtml",
+      "repo": "terminal",
+      "route": "/macro_national_debt_liabilities.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_national_debt_liabilities.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=national_debt_liabilities"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "How are public debt, financing needs and interest costs evolving?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_national_debt_liabilities.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_rates_curveshtml",
+      "repo": "terminal",
+      "route": "/macro_rates_curves.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_rates_curves.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=rates_curves"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "What is the yield curve saying about rates, growth and policy?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_rates_curves.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:macro_trade_flowshtml",
+      "repo": "terminal",
+      "route": "/macro_trade_flows.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro_trade_flows.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/today?workspace=trade_flows"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "How are trade flows and cross-border conditions changing?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member payload",
+        "United States coverage only; unsupported or invalid market selection does not mount the data reader",
+        "Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro_trade_flows.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro-economy/MacroEconomyReader.tsx",
+        "terminal/components/macro-economy/MacroEconomyRoute.tsx",
+        "terminal/components/macro-economy/MacroEconomyWorkspace.tsx",
+        "terminal/components/mounts/MacroEconomyMount.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/shared-shell/readingProxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+      ]
+    },
+    {
+      "page_id": "terminal:market_reference",
+      "repo": "terminal",
+      "route": "/market-reference",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/market-reference/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "terminal/lib/market-reference/registry.generated.json"
+      ],
+      "access_shell": "anonymous",
+      "payload_tier": "public",
+      "nav_family": "none",
+      "archetype": "editorial",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "What does this market term mean, and how should I interpret it?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P1",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Bundled public editorial registry; no private member payload read",
+        "Existing /reference.html alias retains the middleware route owner"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/market-reference/MarketReference.tsx",
+        "terminal/app/(shell)/market-reference/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/market-reference/registry.generated.json",
+        "terminal/lib/sharedShellMegaMenu.ts",
+        "terminal/proxy.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "Inherited source at Terminal 751fd566cf06d9a616ede61e6efb367197ef26f6 from PR1501. Tools-menu destination, not a top-level rail item. No macro:reference exact-path migration is declared because the existing alias has a different target path. Registry qualification is not production or visual acceptance."
       ]
     },
     {
