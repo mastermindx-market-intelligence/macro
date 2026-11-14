@@ -56,6 +56,7 @@ from engine.options_signal_episode import (
     load_session_outcomes,
     normalize_price_bars,
     prepare_price_bars,
+    schema_validation_session,
     validate_episode,
     validate_outcome,
     validate_outcome_against_episode,
@@ -493,6 +494,7 @@ class _BuildPhase:
         return False
 
 
+@schema_validation_session()
 def run(
     *,
     root_dir: Path | None = None,
