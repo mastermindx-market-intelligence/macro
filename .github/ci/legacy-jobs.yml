@@ -32924,6 +32924,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "tests/test_btc_deferred_legs.py"
+      - "engine/etf_perfund.py"
+      - "engine/btc_netliq.py"
+      - "tests/__init__.py"
+      - "config.yml"
       - "engine/us_board_snapshots.py"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
@@ -33373,6 +33378,8 @@ jobs:
         run: python -m pytest tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py tests/test_btc_intraday_cvd.py tests/test_crypto_collectors.py -q
       - name: crypto science contracts — causal integrity, look-ahead, prereg invariants, transfer, funding, scoring, eligibility, observations capture, on-chain families, rotation basis, T12/T15 scaffolds, scorecard gaps
         run: python -m pytest tests/test_btc_causal_integrity.py tests/test_btc_regime_lookahead.py tests/test_crypto_breadth_prereg_invariants.py tests/test_crypto_eth_sol_transfer.py tests/test_crypto_flow_funding_semantics.py tests/test_crypto_forecast_scoring_properties.py tests/test_crypto_input_eligibility.py tests/test_crypto_observations_capture.py tests/test_crypto_onchain_families.py tests/test_crypto_rotation_basis.py tests/test_crypto_t12_contract_invariants.py tests/test_crypto_t15_transition_scaffold.py tests/test_vector_scorecard_gap_semantics.py -q
+      - name: BTC deferred-context engines and accounting-sign cache corrections
+        run: python -m pytest tests/test_btc_deferred_legs.py -q
 
   unrun-oracle-desk:
     # oracle nightly + its gauntlet promotion gates.

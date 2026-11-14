@@ -30,6 +30,7 @@ Dependencies (stdlib + requests which is already in the repo):
 from __future__ import annotations
 
 import logging
+from io import StringIO
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -139,10 +140,10 @@ def _parse_farside_html(html: str) -> pd.DataFrame:
     Values are numeric (USD mn). Returns empty DataFrame on any parse failure.
     """
     try:
-        tables = pd.read_html(html, flavor="lxml")
+        tables = pd.read_html(StringIO(html), flavor="lxml")
     except Exception:
         try:
-            tables = pd.read_html(html)
+            tables = pd.read_html(StringIO(html))
         except Exception as e:
             log.warning("etf_perfund: HTML parse failed: %s", e)
             return pd.DataFrame()
@@ -169,8 +170,10 @@ def _parse_farside_html(html: str) -> pd.DataFrame:
     # Coerce fund columns to numeric (Farside sometimes has footnote text)
     fund_cols = [c for c in tbl.columns if c not in ("Total",)]
     for col in fund_cols:
-        tbl[col] = pd.to_numeric(tbl[col].astype(str).str.replace(",", ""),
-                                 errors="coerce")
+        tokens = tbl[col].astype(str).str.replace(",", "").str.strip()
+        # Complete accounting decimals are outflows, not missing observations.
+        tokens = tokens.str.replace(r"^\((\d+(?:\.\d*)?|\.\d+)\)$", r"-\1", regex=True)
+        tbl[col] = pd.to_numeric(tokens, errors="coerce")
     return tbl[fund_cols]
 
 
@@ -223,3 +226,4 @@ def scrape_and_append() -> dict:
         }
     except Exception as e:
         return {"ok": False, "reason": f"{type(e).__name__}: {e}"}
+

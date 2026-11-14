@@ -142,24 +142,36 @@ class TestEtfPerfund:
 
     def test_scrape_never_raises_on_bad_url(self, monkeypatch):
         _patch_store(monkeypatch)
-        # Monkeypatch config to enable scrape with a broken URL.
-        # We patch at the module level that etf_perfund imports from, so we
-        # don't need to worry about lru_cache on the original function.
+        # Exercise the native request-exception path without a real connection.
         import lib.config as cfg_mod
+        import requests
 
         base = dict(cfg_mod.load())
         base["btc_etf_perfund"] = {
             "scrape_enabled": True,
-            "url": "http://localhost:1",   # nothing listening
+            "url": "http://localhost:1",
             "timeout_s": 1,
         }
-        base.setdefault("sponsors", {}).setdefault("user_agent", "test/1.0")
+        base["sponsors"] = {**base.get("sponsors", {}), "user_agent": "test/1.0"}
         monkeypatch.setattr(cfg_mod, "load", lambda: base)
+
+        calls = []
+
+        def fail_get(url, **kwargs):
+            calls.append((url, kwargs))
+            raise requests.ConnectionError("synthetic connection failure")
+
+        monkeypatch.setattr(requests, "get", fail_get)
 
         from engine import etf_perfund
         result = etf_perfund.scrape_and_append()
         assert isinstance(result, dict)
         assert result["ok"] is False
+        assert result["reason"] == "ConnectionError: synthetic connection failure"
+        assert len(calls) == 1
+        assert calls[0][0] == "http://localhost:1"
+        assert calls[0][1]["timeout"] == 1
+        assert calls[0][1]["headers"]["User-Agent"] == "test/1.0"
 
     def test_read_perfund_with_synthetic_parquet(self, monkeypatch, tmp_path):
         """read_perfund works when the parquet exists."""
@@ -513,3 +525,50 @@ class TestBtcLeverageCascade:
         result = btc_leverage_cascade.compute(sig_df=df)
         assert result["ok"] is False
         assert "disabled" in result["reason"]
+
+
+import warnings
+from engine import etf_perfund as etf
+
+@pytest.fixture
+def accounting_store(tmp_path, monkeypatch):
+    monkeypatch.setattr(etf.config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(etf.config, "load", lambda: {"btc_etf_perfund": {"scrape_enabled": False}})
+
+def _accounting_table(token):
+    return '<table><tr><th>Date</th><th>IBIT</th><th>GBTC</th><th>Total</th></tr><tr><td>2026-11-11</td><td>100</td><td>'+token+'</td><td>0</td></tr></table>'
+def _accounting_parse(token):
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore');return etf._parse_farside_html(_accounting_table(token))
+
+@pytest.mark.parametrize('token,expected',[('(100)',-100),('(0)',0),('(0.0)',0),('(1,234.5)',-1234.5),(' (20.25) ',-20.25),('(0.01)',-.01),('-100',-100),('0',0),('100',100),('1,234.5',1234.5)])
+def test_accounting_value(token,expected,accounting_store):
+    assert _accounting_parse(token).iloc[0]['GBTC']==expected
+
+@pytest.mark.parametrize('token',['-','—','','N/A','pending','(oops)','(1.2.3)','(1)x'])
+def test_unreported_remains_missing(token,accounting_store):
+    assert pd.isna(_accounting_parse(token).iloc[0]['GBTC'])
+
+@pytest.mark.parametrize('token,expected',[('(300)',-200),('(100)',0),('(50)',50),('-300',-200),('0',100)])
+def test_native_parquet_reader_net(token,expected,accounting_store):
+    from lib import store
+    store.upsert('etf','perfund',_accounting_parse(token))
+    payload=etf.read_perfund()
+    assert payload['ok'] is True
+    assert payload['total_flow_5d']==expected
+    assert payload['ibit_share']==round(100/(100+abs(float(_accounting_parse(token).iloc[0]['GBTC']))),3)
+
+def test_native_correction_does_not_revive_positive(accounting_store):
+    from lib import store
+    store.upsert('etf','perfund',_accounting_parse('300'))
+    store.upsert('etf','perfund',_accounting_parse('(300)'))
+    payload=etf.read_perfund()
+    assert payload['per_fund']['GBTC']==-300
+    assert payload['total_flow_5d']==-200
+
+def test_total_column_excluded(accounting_store):
+    assert list(_accounting_parse('0').columns)==['IBIT','GBTC']
+
+def test_scrape_disabled_preserved(accounting_store):
+    assert etf.scrape_and_append()['ok'] is False
+
