@@ -226,6 +226,67 @@ def test_claims_identity_keeps_verified_facts_when_listing_rolls_forward(monkeyp
     assert payload2["publications"][0] == before
 
 
+def test_display_drops_unparsed_publications_past_retention(monkeypatch):
+    # Regression (2026-11-11 macro.html spam): withdrawn claims rows older than
+    # the retention window kept rendering as live "extracting" cards forever,
+    # one accumulated row per weekly release, because the sidecar re-appended
+    # every published_unparsed row on each tick.
+    dead = {
+        **_claims_identity_event("2026-08-13"),
+        "source_id": "dol_claims",
+        "status": "published_unparsed",
+        "data_ready": False,
+        "detected_at": "2026-08-13T12:30:53+00:00",
+        "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+        "note": "Release identity unverified; the previously displayed claims value has been withdrawn.",
+    }
+    fresh = {
+        **_claims_identity_event("2026-11-05"),
+        "source_id": "dol_claims",
+        "status": "published_unparsed",
+        "data_ready": False,
+        "detected_at": "2026-11-05T13:30:41+00:00",
+        "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta/eta20261105",
+    }
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *a, **k: [])
+    state = {
+        "coverage_started_at_by_type": {"CLAIMS": "2026-08-01T12:00:00+00:00"},
+        "sources": {},
+        "publications": {"claims:2026-08-13": dead, "claims:2026-11-05": fresh},
+    }
+    now = datetime(2026, 11, 11, 9, 30, tzinfo=timezone.utc)
+    new_state, payload = wrp.detect(
+        now=now, state=state, fetcher=lambda *a: _http_result(b"")
+    )
+    display_ids = {row.get("event_id") for row in payload["publications"]}
+    assert "claims:2026-08-13" not in display_ids
+    assert "claims:2026-11-05" in display_ids
+    # Display filtering only: the watcher's durable memory keeps both rows.
+    assert set(new_state["publications"]) == {"claims:2026-08-13", "claims:2026-11-05"}
+
+
+def test_display_drops_unparsed_row_without_event_time(monkeypatch):
+    malformed = {
+        "event_id": "claims:unknown",
+        "type": "CLAIMS",
+        "status": "published_unparsed",
+        "data_ready": False,
+        "detected_at": "2026-08-13T12:30:53+00:00",
+        "source_url": "https://www.dol.gov/index.php/newsroom/releases/eta",
+    }
+    monkeypatch.setattr(wrp, "scheduled_releases", lambda *a, **k: [])
+    state = {
+        "coverage_started_at_by_type": {"CLAIMS": "2026-08-01T12:00:00+00:00"},
+        "sources": {},
+        "publications": {"claims:unknown": malformed},
+    }
+    now = datetime(2026, 11, 11, 9, 30, tzinfo=timezone.utc)
+    _, payload = wrp.detect(now=now, state=state, fetcher=lambda *a: _http_result(b""))
+    assert "claims:unknown" not in {
+        row.get("event_id") for row in payload["publications"]
+    }
+
+
 def _bls_cpi_feed(*, event_date: str, content: str = CPI_ENTRY_TEXT) -> bytes:
     return f"""
     <feed xmlns="http://www.w3.org/2005/Atom">
