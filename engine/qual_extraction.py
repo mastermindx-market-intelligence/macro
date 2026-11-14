@@ -42,19 +42,26 @@ Drift protocol (P5):
 - sha-keyed reply cache for determinism (same body → same output).
 - jsonschema validation on every record; enum violations → unknown + schema-error note.
 - Anchor-set re-score monitoring is a separate scheduled job (not in this module).
+
+CAPACITY FABRIC: when a router token (FABRIC_ROUTER_TOKEN) is present and
+MACRO_QUAL_EXTRACTION_FABRIC is not "0", the extraction call goes through the
+Capacity Fabric unified_router via lib.fabric_client instead of the direct
+Anthropic-SDK client (Chairman order 2026-11-12, estate migration outcome #3).
+No token, or the kill-switch, -> the legacy client call runs unchanged.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 import logging
+import os
 import re
 import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from lib import config
+from lib import config, fabric_client
 
 log = logging.getLogger(__name__)
 
@@ -669,6 +676,101 @@ _EXTRACTION_SYSTEM = (
 
 
 # --------------------------------------------------------------------------- #
+# Capacity Fabric cutover (Chairman order 2026-11-12, estate migration #3)
+# --------------------------------------------------------------------------- #
+# The extraction call routes through the Capacity Fabric unified_router whenever a
+# router token is present; MACRO_QUAL_EXTRACTION_FABRIC=0 is the operator
+# kill-switch. Without a token — or with the kill-switch — this module's legacy
+# direct-client call runs unchanged.
+_FABRIC_KILL_ENV = "MACRO_QUAL_EXTRACTION_FABRIC"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-qual-extraction"
+_FABRIC_LANE = "fast"
+_FABRIC_USAGE_LANE = "qual-extraction"
+
+
+def _fabric_enabled() -> bool:
+    """True when qual extraction should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_QUAL_EXTRACTION_FABRIC=0
+    is the operator kill-switch. No token → the legacy client call runs unchanged.
+    """
+    if os.environ.get(_FABRIC_KILL_ENV, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _record_fabric_usage(comp: fabric_client.Completion) -> None:
+    """Book one fabric-served call in the AI cost ledger (provider="fabric").
+
+    Lane continuity: the row keeps this lane's usage_lane ("qual-extraction") so
+    the spend drill-down stays comparable with the legacy rows; the provider is
+    the router and the model is what it actually served. Never raises — a ledger
+    miss must not break a call that otherwise worked.
+    """
+    try:
+        from lib import ai_costs as _ac  # noqa: PLC0415
+
+        u = comp.usage or {}
+        _ac.record_usage(
+            lane=_FABRIC_USAGE_LANE,
+            provider="fabric",
+            model=comp.model_served,
+            input_tokens=int(u.get("input_tokens") or 0),
+            output_tokens=int(u.get("output_tokens") or 0),
+            cache_read_tokens=int(u.get("cache_read_input_tokens") or 0),
+            cache_creation_tokens=int(u.get("cache_creation_input_tokens") or 0),
+            stage="qual_extraction",
+        )
+    except Exception as e:  # noqa: BLE001 — telemetry only
+        log.debug("qual_extraction: fabric usage ledger failed (%s)", e)
+
+
+def _fabric_model_call(user: str, phash: str, cfg: dict) -> tuple[str | None, str | None]:
+    """Return (reply_text, degraded_reason) from ONE router request. Never raises
+    except FabricUnavailable, which the caller turns into the legacy client call.
+
+    The router owns provider selection, cooldown and account pooling, so this
+    makes exactly one request: a raised SDK error degrades exactly as a legacy
+    client failure would, and a second attempt here would double-serve a call the
+    router already resolved. A refusal is a refusal even when the router attached
+    partial text, so it is dropped before the JSON parser or the citation
+    verifier can ever see it.
+
+    FabricUnavailable is the one exception and is re-raised: it means no request
+    ever left this host (no token after all, or the SDK will not import), so
+    nothing was served and nothing was billed. _call_model catches it and runs
+    the legacy client call — degrading an extraction that the legacy path could
+    still produce would be a regression, not a degradation.
+    """
+    try:
+        comp = fabric_client.complete(
+            [{"role": "user", "content": user}],
+            system=_EXTRACTION_SYSTEM,
+            lane=_FABRIC_LANE,
+            max_tokens=int(cfg.get("max_tokens", 1500)),
+            client="Python client",
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=_FABRIC_SESSION_ID,
+        )
+    except fabric_client.FabricUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("qual_extraction: fabric call failed (%s)", e)
+        return None, "llm_error"
+    if getattr(getattr(comp, "raw", None), "stop_reason", None) == "refusal":
+        return None, "refusal"
+    text = comp.text or None
+    if not text:
+        return None, "empty_reply"
+    _record_fabric_usage(comp)
+    # Determinism kit unchanged: a served reply lands in the sha-keyed cache the
+    # legacy success path populates, so re-extracting the same body stays stable.
+    _cache_put(phash, text, cfg)
+    return text, None
+
+
+# --------------------------------------------------------------------------- #
 # model call
 # --------------------------------------------------------------------------- #
 def _call_model(body: str, context: str, cfg: dict, model: str) -> tuple[str | None, str | None]:
@@ -683,6 +785,18 @@ def _call_model(body: str, context: str, cfg: dict, model: str) -> tuple[str | N
     if cached is not None:
         log.debug("qual_extraction: reply cache HIT (%s)", phash[:12])
         return cached, None
+
+    # Capacity Fabric cutover (Chairman order 2026-11-12): when the router is
+    # configured the adapter above serves the call; when it is not — no token, or
+    # MACRO_QUAL_EXTRACTION_FABRIC=0 — the legacy client call below runs
+    # unchanged. A router that cannot be reached at all (FabricUnavailable) also
+    # falls through here rather than degrading an extraction it never requested.
+    if _fabric_enabled():
+        try:
+            return _fabric_model_call(user, phash, cfg)
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "qual_extraction: fabric router unavailable (%s); using the legacy client", e)
 
     client = _client(cfg)
     if client is None:
