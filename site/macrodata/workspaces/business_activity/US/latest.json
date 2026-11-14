@@ -136,8 +136,8 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": -0.3732256029497023,
-        "delta": -0.7805,
+        "current_value": -0.3362292373275153,
+        "delta": -0.7435,
         "metric_id": "leading_tier_momentum_6m",
         "note": "same method version; numeric comparison permitted when both values are present",
         "prior_value": 0.407313842140681
@@ -150,15 +150,15 @@
         "prior_value": -0.12432237847522742
       },
       {
-        "current_value": 0.6339425944115504,
-        "delta": 0.283,
+        "current_value": 0.6147915751338502,
+        "delta": 0.2638,
         "metric_id": "lagging_tier_momentum_6m",
         "note": "same method version; numeric comparison permitted when both values are present",
         "prior_value": 0.3509669328855409
       },
       {
-        "current_value": -0.6349654152298356,
-        "delta": -0.2316,
+        "current_value": -0.6235648043694653,
+        "delta": -0.2202,
         "metric_id": "coincident_lagging_ratio_momentum_6m",
         "note": "same method version; numeric comparison permitted when both values are present",
         "prior_value": -0.4033454193975601
@@ -172,24 +172,25 @@
   },
   "corrections": {
     "changed_fingerprints": [
-      "business_cycle:leading_tier_diffusion:bf9ff8d7242ce2cf",
-      "business_cycle:leading_tier_index:1a9117860f48388e",
-      "business_cycle:leading_tier_momentum_6m:ee913af1871c16ef"
+      "business_cycle:lagging_tier_index:c44bca43a25465fe",
+      "business_cycle:lagging_tier_momentum_6m:62e32272e0ac24c1",
+      "business_cycle:leading_tier_index:5fb6509f0aa91450",
+      "business_cycle:leading_tier_momentum_6m:9219c506fe82251a"
     ],
     "correction_state": "superseded",
     "note": "Same reference period as the predecessor print, but one or more owner-native tier fields changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "business_activity-US-ccaf7ba8aac29e7b"
+    "predecessor_generation_id": "business_activity-US-5b3d9540efd4d807"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-11-13T10:58:27Z",
+    "built_at": "2026-11-14T08:24:51Z",
     "calculation_as_of": "2026-11-30",
-    "code_version": "c6a766e889722b4e909e5fa73e1b3a7417f23525",
-    "content_sha256": "5b3d9540efd4d807add1da3de07ca20e0d0500734414d3077c6f000546d7fcdf",
-    "generation_id": "business_activity-US-5b3d9540efd4d807",
+    "code_version": "b6524ff299ef2dae2e6cebf181c5b70fd18a92a2",
+    "content_sha256": "01edbc47c6a29e7f9426a768bfc6a377c5b79bbab4e16dea39b083aed02f6948",
+    "generation_id": "business_activity-US-01edbc47c6a29e7f",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -287,8 +288,8 @@
         "horizon": "current",
         "implication_id": "leading_tier_read",
         "text": {
-          "en": "Leading tier: 6-month momentum -0.3732256029497023, direction falling, breadth 50.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "领先层：6个月动量 -0.3732256029497023，方向 falling，广度 50.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Leading tier: 6-month momentum -0.3362292373275153, direction falling, breadth 50.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 -0.3362292373275153，方向 falling，广度 50.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
       },
@@ -334,8 +335,8 @@
         "horizon": "current",
         "implication_id": "lagging_tier_read",
         "text": {
-          "en": "Lagging tier: 6-month momentum 0.6339425944115504, direction rising, breadth 100.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "滞后层：6个月动量 0.6339425944115504，方向 rising，广度 100.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Lagging tier: 6-month momentum 0.6147915751338502, direction rising, breadth 100.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "滞后层：6个月动量 0.6147915751338502，方向 rising，广度 100.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.lagging"
       },
@@ -483,7 +484,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 94.5094473092812,
+        "value": 94.54644367490339,
         "value_type": "index"
       },
       {
@@ -519,7 +520,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": -0.3732256029497023,
+        "value": -0.3362292373275153,
         "value_type": "number"
       },
       {
@@ -555,7 +556,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.43298568954599903,
+        "value": 0.44355607972376676,
         "value_type": "number"
       },
       {
@@ -888,7 +889,7 @@
         "basis": "rebased_100_composite",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.6,
+        "coverage": 0.8,
         "definition_id": "business_cycle.tiers.lagging.index",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
@@ -915,7 +916,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 93.10836438336956,
+        "value": 93.08921336409186,
         "value_type": "index"
       },
       {
@@ -924,7 +925,7 @@
         "basis": "6m_change",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.6,
+        "coverage": 0.8,
         "definition_id": "business_cycle.tiers.lagging.mom6",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_accelerating",
@@ -951,7 +952,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.6339425944115504,
+        "value": 0.6147915751338502,
         "value_type": "number"
       },
       {
@@ -960,7 +961,7 @@
         "basis": "ema_of_6m_change",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.6,
+        "coverage": 0.8,
         "definition_id": "business_cycle.tiers.lagging.trend",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_accelerating",
@@ -987,7 +988,7 @@
           "value": null
         },
         "unit": "index_pt",
-        "value": 0.3772217323904288,
+        "value": 0.37175128502084626,
         "value_type": "number"
       },
       {
@@ -996,7 +997,7 @@
         "basis": "share_of_legs_rising_6m",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.6,
+        "coverage": 0.8,
         "definition_id": "business_cycle.tiers.lagging.diffusion",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader",
@@ -1032,7 +1033,7 @@
         "basis": "sign_of_6m_momentum",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.6,
+        "coverage": 0.8,
         "definition_id": "business_cycle.tiers.lagging.direction",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
@@ -1068,7 +1069,7 @@
         "basis": "count_of_available_legs",
         "calculation_as_of": "2026-10-31",
         "collected_at": null,
-        "coverage": 0.6,
+        "coverage": 0.8,
         "definition_id": "business_cycle.tiers.lagging.n_legs",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader_input_coverage",
@@ -1095,7 +1096,7 @@
           "value": null
         },
         "unit": "legs",
-        "value": 3,
+        "value": 4,
         "value_type": "count"
       },
       {
@@ -1131,7 +1132,7 @@
           "value": null
         },
         "unit": "ratio_pt",
-        "value": -0.6349654152298356,
+        "value": -0.6235648043694653,
         "value_type": "number"
       },
       {

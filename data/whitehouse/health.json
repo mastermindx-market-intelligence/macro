@@ -1,17 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-13T16:21:29.833235+00:00",
-  "posts_seen": 25,
+  "as_of": "2026-11-14T11:29:24.249532+00:00",
+  "posts_seen": 22,
   "seen_total": 355,
-  "evaluated": 1,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-11-13-trump-administration-delivers-record-setting-results-through-executive-action",
-      "importance": 20,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }
