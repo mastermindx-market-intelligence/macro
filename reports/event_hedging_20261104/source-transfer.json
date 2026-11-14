@@ -1,0 +1,103 @@
+{
+  "source_workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/event-hedging-20261104-01",
+  "destination_workspace": "/Volumes/Mastermind/agent-workspaces/macro/web/event-hedging-diagnostics-20261104-01",
+  "common_base": "11600ba4bda1de8a7f6d1deb33394a65a0ba220b",
+  "purpose": "independent parent diagnostics/UI/evaluation; original EH1 reservation unchanged",
+  "files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha256": "05b1fc15dc06c5d66e6c30819161cf7ab9e2e8750c680a8189b6b101cd115283",
+      "bytes": 2592191
+    },
+    {
+      "path": "scripts/build_options_command.py",
+      "sha256": "2e65f45f86e81938545c99567ba1a84a50f0b8fda6e7df41f131f66b774fdce9",
+      "bytes": 136871
+    },
+    {
+      "path": "scripts/build_options_scenario_surface.py",
+      "sha256": "f21912f2b03c8f056ef2ce168308105851d0a4729de27fc7a757d5264fe2e32d",
+      "bytes": 2947
+    },
+    {
+      "path": "templates/options.html.j2",
+      "sha256": "c92a775b020445615c2d80658aa9508386ddaf1546d555948c830ca7053f23b8",
+      "bytes": 258493
+    },
+    {
+      "path": "engine/event_hedging_diagnostics.py",
+      "sha256": "bb768cd86d615dc74057799a9a02485f6f4f6dbdbe3c098676f5ec3407fac8fb",
+      "bytes": 12640
+    },
+    {
+      "path": "engine/event_hedging_evaluation.py",
+      "sha256": "fecb6d5905bd08b9ef9906ffd027b00ef6a78fd9adb5b4cd4b4d528487797744",
+      "bytes": 12983
+    },
+    {
+      "path": "scripts/options_event_hedging_view.py",
+      "sha256": "9a6d5d87d73d76a22d5255cdf26df95114abbe9a164edb854c6fbce583c2a25f",
+      "bytes": 7758
+    },
+    {
+      "path": "templates/_options_event_hedging.html.j2",
+      "sha256": "377ac23d7de5d4e718ca4449c6686f535e9fcb493090123d0b11754658a5de9c",
+      "bytes": 4879
+    },
+    {
+      "path": "tests/test_event_hedging_diagnostics.py",
+      "sha256": "38ec4f08cfe04b52c6633305e8b50b846b1ae137359f1043c2b98a3ff931adba",
+      "bytes": 10094
+    },
+    {
+      "path": "tests/test_event_hedging_delivery.py",
+      "sha256": "fcaf7832902a749b012c38453e6793b3f7b3f18cbdfd0950e72566de0d697139",
+      "bytes": 7562
+    },
+    {
+      "path": "tests/test_event_hedging_evaluation.py",
+      "sha256": "610054a692bf863a0ee7eac07dcb83640a93fb6b38f39a253136765c57d772c4",
+      "bytes": 8213
+    },
+    {
+      "path": "reports/event_hedging_20261104/options-variance.synthetic.html",
+      "sha256": "01c5ea26e22922ba615c35e48196ae1527289acab97bd2f1154cad0a07a45148",
+      "bytes": 523353
+    },
+    {
+      "path": "reports/event_hedging_20261104/browser-receipt.json",
+      "sha256": "eb82338e7cea3fa3d8bbc1e5051d54c5efafdd8b4d3de9383d6b6c0544842f1a",
+      "bytes": 1481
+    },
+    {
+      "path": "reports/event_hedging_20261104/variance-input.synthetic.json",
+      "sha256": "8edd42c017e00ec04049409411cbfc36f380af7e9e2f3ca28454577bb9605359",
+      "bytes": 1228
+    },
+    {
+      "path": "reports/event_hedging_20261104/variance-result.synthetic.json",
+      "sha256": "5b4d40bd24fc8dcf6abd8287e4c16e305fcb7c26cc48c7c7b7ed78d59acc6589",
+      "bytes": 2463
+    },
+    {
+      "path": "reports/event_hedging_20261104/options-event-hedging-1440-zh.png",
+      "sha256": "2035b3356686e36d92a0f0b3fd697da126829893d3bb6d1a7231efd37f21758d",
+      "bytes": 136866
+    },
+    {
+      "path": "reports/event_hedging_20261104/options-event-hedging-390-zh.png",
+      "sha256": "c5792d6bb7ec77b0e7d3af45eeb900f91bf773d6837d8fcfff595e23da337f68",
+      "bytes": 134432
+    },
+    {
+      "path": "reports/event_hedging_20261104/options-event-hedging-390-en.png",
+      "sha256": "6cbcefb501ac1ae803dc8b325486fec3ee310286523ebe35f13a5f1169841e98",
+      "bytes": 129606
+    },
+    {
+      "path": "reports/event_hedging_20261104/options-event-hedging-1440-en.png",
+      "sha256": "7b11931b63cc640d22c09909a712ee7eb4a61397334b31efdbbfe2161fe31eff",
+      "bytes": 126407
+    }
+  ]
+}

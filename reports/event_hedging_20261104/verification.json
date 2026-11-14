@@ -1,0 +1,23 @@
+{
+  "classification": "SELF_REVIEWED",
+  "release_scope": "backend analytical diagnostics, paired forecast scorecard and incumbent JSON CLI only",
+  "base": "affa0fd2e68723efc9e2cbc0e7c791ab70f5a53d",
+  "previous_candidate": "feaecca3d69e8296c350a9ec1676c585aad6f3a8",
+  "focused_tests": {
+    "passed": 399,
+    "skipped": 0,
+    "elapsed_seconds": 18.17,
+    "command": "python3 -m pytest tests/test_event_hedging_diagnostics.py tests/test_event_hedging_evaluation.py tests/test_event_hedging_cli.py tests/test_intraday_greeks.py tests/test_options_scenario_surface.py tests/test_options_scenario_admission.py -q"
+  },
+  "ui_release_diff": "none",
+  "ui_obligation": "unfinished; original candidate retained at previous_candidate; denied additional evidence preparation not replayed",
+  "source_sha256": {
+    "engine/event_hedging_diagnostics.py": "bb768cd86d615dc74057799a9a02485f6f4f6dbdbe3c098676f5ec3407fac8fb",
+    "engine/event_hedging_evaluation.py": "fecb6d5905bd08b9ef9906ffd027b00ef6a78fd9adb5b4cd4b4d528487797744",
+    "scripts/build_options_scenario_surface.py": "c4acf8ed3442c1f011b8f66400d4ff1698dc8611adec6418a164f16c2dc685f5",
+    ".github/ci/legacy-jobs.yml": "70b84fea228e961aab082875981f4290830b5ccbfd0d87203abe97fd775b7ac4",
+    "tests/test_event_hedging_diagnostics.py": "38ec4f08cfe04b52c6633305e8b50b846b1ae137359f1043c2b98a3ff931adba",
+    "tests/test_event_hedging_evaluation.py": "610054a692bf863a0ee7eac07dcb83640a93fb6b38f39a253136765c57d772c4",
+    "tests/test_event_hedging_cli.py": "e6c7cbae869e3250db9df7f6da49fadf907c32a8685f8cb6358ece5830210c39"
+  }
+}

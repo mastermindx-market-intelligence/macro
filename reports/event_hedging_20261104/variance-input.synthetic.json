@@ -1,0 +1,37 @@
+{
+  "event_id": "fixture:event",
+  "event_at": "2026-10-08T18:15:00Z",
+  "event_known_at": "2026-10-01T12:00:00Z",
+  "event_source_ref": "fixture:schedule-v1",
+  "as_of": "2026-10-08T18:00:02Z",
+  "observed": {
+    "security_id": "fixture:SPX",
+    "window_start": "2026-10-08T18:00:00Z",
+    "window_end": "2026-10-08T20:00:00Z",
+    "variance_basis": "risk_neutral_integrated_variance",
+    "unit": "return_decimal_squared",
+    "return_basis": "log_return",
+    "method_ref": "fixture:observed-method",
+    "value": 0.0009,
+    "source_ref": "fixture:observed",
+    "source_revision": "v1",
+    "observed_at": "2026-10-08T18:00:00Z",
+    "known_at": "2026-10-08T18:00:01Z"
+  },
+  "counterfactual": {
+    "security_id": "fixture:SPX",
+    "window_start": "2026-10-08T18:00:00Z",
+    "window_end": "2026-10-08T20:00:00Z",
+    "variance_basis": "risk_neutral_integrated_variance",
+    "unit": "return_decimal_squared",
+    "return_basis": "log_return",
+    "method_ref": "fixture:baseline-model",
+    "value": 0.0005,
+    "source_ref": "fixture:baseline",
+    "source_revision": "v1",
+    "observed_at": "2026-10-08T18:00:00Z",
+    "known_at": "2026-10-08T18:00:01Z"
+  },
+  "calendar_complete": true,
+  "overlap_event_ids": []
+}

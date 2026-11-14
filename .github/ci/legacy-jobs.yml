@@ -9469,6 +9469,12 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/event_hedging_diagnostics.py"
+      - "engine/event_hedging_evaluation.py"
+      - "engine/seasonality/multiplicity.py"
+      - "tests/test_event_hedging_diagnostics.py"
+      - "tests/test_event_hedging_evaluation.py"
+      - "tests/test_event_hedging_cli.py"
       - "engine/options_r5_shock.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
@@ -10209,7 +10215,7 @@ jobs:
       - name: AD-1T1 ThetaData T1 daily incremental maintainer (legacy characterization, --daily hostile suite, launchd scheduler)
         run: python -m pytest tests/test_topup_thetadata_legacy.py tests/test_topup_thetadata_daily.py tests/test_topup_thetadata_scheduler.py -q
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
-        run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py tests/test_options_scenario_admission.py -q
+        run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py tests/test_options_scenario_admission.py tests/test_event_hedging_diagnostics.py tests/test_event_hedging_evaluation.py tests/test_event_hedging_cli.py -q
       - name: qualified joint exposure and legacy Hub publication compatibility
         run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_gex_archive_correction.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
@@ -53926,12 +53932,16 @@ jobs:
 
   options-scenario-contract:
     # The existing flow-surface gate:data job does not run for ordinary code
-    # PRs. Keep the scenario contract and M02 endpoint regressions on gate:code
+    # PRs. Keep scenario, event-diagnostic and forecast regressions on gate:code
     # as well; use synthetic inputs and the existing CLI's stdout projection.
     if: ${{ false }}  # executed inside ci-pack, not as a standalone runner
     gate: code
     scope: exclusive
     paths:
+      - "engine/event_hedging_diagnostics.py"
+      - "engine/event_hedging_evaluation.py"
+      - "engine/k3e_eval1_forward.py"
+      - "engine/seasonality/multiplicity.py"
       - "engine/__init__.py"
       - "engine/intraday_greeks.py"
       - "engine/options_scenario_surface.py"
@@ -53939,6 +53949,18 @@ jobs:
       - "scripts/build_options_scenario_surface.py"
       - "tests/__init__.py"
       - "tests/test_options_scenario_surface.py"
+      - "engine/seasonality/__init__.py"
+      - "engine/seasonality/contracts.py"
+      - "engine/seasonality/event_clock.py"
+      - "engine/seasonality/model.py"
+      - "engine/seasonality/program_watch.py"
+      - "engine/seasonality/prophet_bridge.py"
+      - "engine/seasonality/regime.py"
+      - "engine/seasonality/screener.py"
+      - "engine/seasonality/universe.py"
+      - "tests/test_event_hedging_diagnostics.py"
+      - "tests/test_event_hedging_evaluation.py"
+      - "tests/test_event_hedging_cli.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -53949,7 +53971,7 @@ jobs:
       - name: install scenario contract dependencies
         run: pip install pytest numpy scipy
       - name: conditional scenario and hedge-target contract regressions
-        run: python -m pytest tests/test_options_scenario_surface.py -q
+        run: python -m pytest tests/test_options_scenario_surface.py tests/test_event_hedging_diagnostics.py tests/test_event_hedging_evaluation.py tests/test_event_hedging_cli.py -q
   institutional-13f-ingestion-contracts:
     # 13F census ingestion: the SEC source parser and the bounded rolling ingest.
     # Both suites were grandfathered dark in config/unrun_test_baseline.json while
