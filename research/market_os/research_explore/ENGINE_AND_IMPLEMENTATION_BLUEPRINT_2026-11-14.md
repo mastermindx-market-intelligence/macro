@@ -3,7 +3,7 @@
 Status: DESIGN CANDIDATE / IMPLEMENTATION NOT STARTED
 Owner: Chairman's 14 November 2026 Research Explore assignment.
 Parent: [Research Explore migration record](../RESEARCH_EXPLORE_SHARED_SHELL_2026-11-14.md).
-Detailed contracts: [Policy Watch R6](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md).
+Detailed contracts: [Policy Watch R6](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md) · [Research Hub R6](RESEARCH_HUB_R6_BUILD_SPEC_2026-11-14.md).
 
 ## 1. Objective and source binding
 
@@ -450,3 +450,17 @@ Six additional Paper views bring the native set to 68. The detailed [R2 contract
 - The Sources inspector follows the selected row. Advanced definitions are behind Coverage scope; technical details remain collapsed. Other horizons are explicit navigation without a conflicting verdict in the active scope.
 
 All six compositions were visually inspected. Three reviewer findings (horizon mixing, ambiguous sample wording, unselected source details) were corrected and affected final screenshots reinspected. This establishes design refinement, not runtime readiness. Next: D1-HUB models/cohorts, evaluation and disagreement using the incumbent ledger and evaluator owners.
+
+## 16. C9 — Research Hub R6
+
+Eight new views bring the native set to 76. The [R6 contract](RESEARCH_HUB_R6_BUILD_SPEC_2026-11-14.md) binds cohorts, source snapshots, owner rank, evaluation denominator and source return. Thirteen mobile specimens and three intermediate-width specimens are now present across the family; systematic parity remains open.
+
+Preserve the existing Hub score/rank and section stamps. Missing historical stamps mean unknown membership. Early MU may remain Command rank 2 while its recorded gate excludes it from Emerging. A source-capped score is labeled explicitly; it is not a probability.
+
+Legacy evaluation uses calendar-day offsets; the unified grader uses trading bars. The current adapter drops cohort/source/rank, and public hub.json strips track_rows. Cohort/date/version-filtered daily/HAC results and immutable intraday snapshots therefore need additive projections from the incumbent ledger. Existing pooled engine-version summaries cannot stand in for filtered daily statistics.
+
+Rows considered is the age-prefilter denominator, including some immature windows. Show covered, price-missing, immature and benchmark-missing counts. Preserve each metric's daily sample and velocity history sample. Ten usable pairs per date are required for daily IC: the Top 5 mobile state correctly displays no daily statistic despite accumulated graded rows. Error/accrual conflation and historical price-cutoff proof remain engine gaps.
+
+The four desk directions remain separate. Alt neutral is explicitly a neutral score range; absent sources remain unavailable. Policy stays outside the four-reading tally and remains accessible through a mobile disclosure. A Policy fallback/tie-break concern is recorded for a focused owner invariance test, not claimed repaired.
+
+Visual/source review corrected score units, neutral-versus-absent wording, missing mobile Policy access, shell-height parity and redundant lower-panel copy. All eight final compositions were inspected and owned roots finished through the guarded M1 adapter. Next: D1-SPECIAL activist, international and amended-consideration workflows.
