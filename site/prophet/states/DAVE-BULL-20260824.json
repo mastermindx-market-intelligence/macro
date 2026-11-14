@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DAVE-BULL-20260824",
-  "asof": "2026-11-13",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.2,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -2.073,
+    "dist_to_stop_r": -1.733,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 180.0,
-    "p1": -2.0484,
-    "p2": -1.0242,
+    "horizon_pct_used": 182.2,
+    "p1": -1.8218,
+    "p2": -0.9109,
     "p3": null,
-    "move_r": -3.073,
+    "move_r": -2.733,
     "mfe_r": 1.045,
     "mae_r": -3.073
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 81,
-  "tau": 1.8,
+  "days_elapsed": 82,
+  "tau": 1.8222,
   "closed": true,
   "outcome": "INVALIDATED"
 }

@@ -1,6 +1,6 @@
 {
   "organ": "credit_momentum.v1",
-  "as_of": "2026-11-13",
+  "as_of": "2026-11-14",
   "data_session": "2026-11-12",
   "authority": {
     "rank": false,
@@ -1929,16 +1929,16 @@
           "first_hy_date": "2026-10-02"
         },
         {
-          "isin": "US524660BA49",
-          "name": "LEGGETT + PLATT INC SR UNSECURED 11/51 3.5",
-          "last_ig_date": "2026-10-01",
-          "first_hy_date": "2026-10-06"
-        },
-        {
           "isin": "US343498AC58",
           "name": "FLOWERS FOODS INC SR UNSECURED 03/31 2.4",
           "last_ig_date": "2026-09-24",
           "first_hy_date": "2026-10-19"
+        },
+        {
+          "isin": "US524660BA49",
+          "name": "LEGGETT + PLATT INC SR UNSECURED 11/51 3.5",
+          "last_ig_date": "2026-10-01",
+          "first_hy_date": "2026-10-06"
         }
       ],
       "rising_star_candidates": [
@@ -2025,6 +2025,6 @@
       "note": null
     }
   ],
-  "_timing_s": 29.37,
+  "_timing_s": 30.81,
   "_n_ledger_new": 0
 }

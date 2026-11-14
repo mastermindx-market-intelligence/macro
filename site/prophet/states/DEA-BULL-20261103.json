@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DEA-BULL-20261103",
-  "asof": "2026-11-13",
+  "asof": "2026-11-14",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 55.9,
@@ -10,21 +10,21 @@
   "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
-    "validity": 68.1,
+    "validity": 71.6,
     "progress": 0.0,
-    "pace": 85.8,
+    "pace": 81.1,
     "retention": 50.0,
-    "overlay": 53.0
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.752,
+    "dist_to_stop_r": 0.781,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 17.8,
-    "p1": -0.1651,
-    "p2": -0.0825,
+    "horizon_pct_used": 20.0,
+    "p1": -0.146,
+    "p2": -0.073,
     "p3": null,
-    "move_r": -0.248,
+    "move_r": -0.219,
     "mfe_r": 0.0,
     "mae_r": -0.248
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-11-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 8,
-  "tau": 0.1778
+  "days_elapsed": 9,
+  "tau": 0.2
 }
