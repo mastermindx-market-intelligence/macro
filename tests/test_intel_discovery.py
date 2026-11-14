@@ -252,3 +252,88 @@ def test_build_recon_gate_controlled():
     on = D.build(None, None, bundle_universe=set(), today=_TODAY,
                  index_changes=chgs, recon_gate={"add_scored": True})
     assert on["sources"]["index_reconstitution"] == 1
+
+
+# Real parquet-to-reader regressions: pandas renames leading-underscore fields
+# in named tuples, so attribute access to a temporary `_d` silently lost all
+# events through the reader's degradation handler.
+def _write_pit(tmp_path, rows, columns=None):
+    pd = pytest.importorskip("pandas")
+    pytest.importorskip("pyarrow")
+    path = tmp_path / "data" / "breadth" / "sp1500_pit_membership.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    frame = pd.DataFrame(rows)
+    if columns is not None:
+        frame = frame[columns]
+    frame.to_parquet(path, index=False)
+    return path
+
+
+@pytest.mark.parametrize("columns", [None, ["src", "end_date", "ticker", "start_date"]])
+def test_recent_index_reader_preserves_adds_deletes_and_column_order(tmp_path, monkeypatch, columns):
+    _write_pit(tmp_path, [
+        {"ticker": "new", "start_date": "2026-06-16", "end_date": None, "src": "sp500"},
+        {"ticker": "OLD", "start_date": "2020-01-01", "end_date": "2026-06-18", "src": "sp400"},
+        {"ticker": "BOTH", "start_date": "2026-06-01", "end_date": "2026-06-20", "src": "sp600"},
+    ], columns)
+    monkeypatch.setattr(D.config, "ROOT", tmp_path)
+    assert D._read_recent_index_changes(_TODAY) == [
+        {"ticker": "NEW", "d": "2026-06-16", "kind": "add", "index": "sp500"},
+        {"ticker": "BOTH", "d": "2026-06-01", "kind": "add", "index": "sp600"},
+        {"ticker": "OLD", "d": "2026-06-18", "kind": "delete", "index": "sp400"},
+        {"ticker": "BOTH", "d": "2026-06-20", "kind": "delete", "index": "sp600"},
+    ]
+
+
+@pytest.mark.parametrize("lookback_days,expected", [(0, ["TODAY"]), (21, ["EDGE", "TODAY"])])
+def test_recent_index_reader_keeps_cutoff_and_ignores_invalid_dates(tmp_path, monkeypatch, lookback_days, expected):
+    _write_pit(tmp_path, [
+        {"ticker": ticker, "start_date": started, "end_date": None, "src": "sp500"}
+        for ticker, started in [("BEFORE", "2026-05-30"), ("EDGE", "2026-05-31"),
+                                ("TODAY", "2026-06-21"), ("BAD", "not-a-date"), ("NULL", None)]
+    ])
+    monkeypatch.setattr(D.config, "ROOT", tmp_path)
+    assert [r["ticker"] for r in D._read_recent_index_changes(_TODAY, lookback_days)] == expected
+
+
+@pytest.mark.parametrize("store_state", ["absent", "empty", "corrupt", "missing_column"])
+def test_recent_index_reader_retains_fail_open_degradation(tmp_path, monkeypatch, store_state):
+    monkeypatch.setattr(D.config, "ROOT", tmp_path)
+    if store_state != "absent":
+        path = _write_pit(tmp_path, [
+            {"ticker": "NEW", "start_date": "2026-06-16", "end_date": None, "src": "sp500"}
+        ])
+        pd = pytest.importorskip("pandas")
+        if store_state == "empty":
+            pd.read_parquet(path).iloc[:0].to_parquet(path, index=False)
+        elif store_state == "corrupt":
+            path.write_bytes(b"not a parquet file")
+        else:
+            pd.read_parquet(path).drop(columns=["start_date"]).to_parquet(path, index=False)
+    assert D._read_recent_index_changes(_TODAY) == []
+
+
+@pytest.mark.parametrize("gate", [None, {"add_scored": False}, {"add_scored": True}])
+def test_load_and_build_reads_native_index_store_but_preserves_gate(tmp_path, monkeypatch, gate):
+    import json
+    _write_pit(tmp_path, [
+        {"ticker": "NEW", "start_date": "2026-06-16", "end_date": None, "src": "sp500"},
+        {"ticker": "DEL", "start_date": "2020-01-01", "end_date": "2026-06-18", "src": "sp400"},
+        {"ticker": "FUT", "start_date": "2026-06-22", "end_date": None, "src": "sp600"},
+    ])
+    if gate is not None:
+        path = tmp_path / "data" / "index_reconstitution" / "validation_gate.json"
+        path.parent.mkdir(parents=True)
+        path.write_text(json.dumps(gate))
+    monkeypatch.setattr(D.config, "ROOT", tmp_path)
+    result = D.load_and_build(bundle_universe={"NEW"}, today=_TODAY)
+    enabled = bool((gate or {}).get("add_scored"))
+    assert result["sources"]["index_reconstitution"] == int(enabled)
+    assert set(result["by_ticker"]) == ({"NEW"} if enabled else set())
+    assert result["off_desk"] == []
+    assert result["is_context_only"] is True
+    if enabled:
+        row = result["by_ticker"]["NEW"]
+        assert row["age_days"] == 5 and row["index"] == "sp500"
+        assert row["off_desk"] is False and row["disc_score"] <= D._RECON_CAP
+
