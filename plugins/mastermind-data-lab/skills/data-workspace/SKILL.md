@@ -68,6 +68,37 @@ Report dates, source symbols and speaker names are source labels, not verified p
 
 The existing CLI `transcripts-catalog` creates a bounded metadata-only snapshot through the same configured source descriptor; it does not copy the multi-gigabyte call-text corpus. `export --transcripts-catalog ... --transcripts-catalog-sha256 ...` adds that catalogue to a private offline history browser. Its button shows an exact Data & Lab read request; it does not fetch or embed the text. Use only accepted installed source, retain the catalogue hash and underlying source version, and do not publish the private corpus.
 
+
+## Inspect recorded PAYEMS revisions by historical date
+
+Use the optional `history_dossier` PAYEMS binding **only when the installed**
+`history.payems_vintages` capability is present. An updated skill or a merged
+source file does not prove that the installed runtime can execute this action.
+Keep the previous installed Lab, transcript, and Tiingo statement-comparison
+capabilities unchanged.
+
+First `describe` the exact existing source
+`macro_snapshot:fred_vintage/payems_all_vintages.parquet`, retain its observed
+`file_version`, and use a separately verified original-file SHA256. The
+request must pair `payems_ref`, `payems_version`, and `payems_sha256`.
+The existing source descriptor and mutation guard perform the real version and
+content validation; do not substitute the file-version token for a hash or
+select a source merely because a similar filename exists elsewhere.
+
+The projection uses the incumbent PAYEMS release-revision selector and returns
+up to 24 recorded economic periods for an exact date. It excludes revisions
+whose recorded vintage starts later than the selected date and does not show
+future supersession end dates. The whole retained source, the selected as-of
+snapshot, and its original-observation clock are distinct.
+
+This is `RETROSPECTIVE_EXPLORATORY`: historical ALFRED *dates* are not
+authenticated intraday release times, a latest vintage is not the originally
+known value, historical availability is not fully established, units were
+not independently validated, and this does not represent all macro series.
+An empty day must stay explicit; do not infer consensus, surprises, a historical
+Mastermind alert, causal impact or trading authority. The bound source is read
+on demand and no extra collector, historical ledger, scheduler or model is made.
+
 ## Test with the existing Lab
 
 Use `lab_signals` to discover recipes and their support status, then `lab_plan` to make the intended test concrete. The installed adapter admits only reviewed OHLCV-only recipe modules. Other catalog entries remain discoverable with a refusal reason.

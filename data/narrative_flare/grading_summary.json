@@ -1,22 +1,22 @@
 {
-  "generated_at": "2026-11-09T05:48:52.553277+00:00",
+  "generated_at": "2026-11-14T04:58:41.502333+00:00",
   "families": {
     "narrative_source_call": {
-      "n_claims": 625,
+      "n_claims": 629,
       "n_resolved": 333,
       "hit_rate": null,
       "accruing": true,
       "state": "ACCRUING"
     },
     "narrative_flare_state": {
-      "n_claims": 28,
+      "n_claims": 30,
       "n_resolved": 0,
       "hit_rate": null,
       "accruing": true,
       "state": "ACCRUING",
       "excess_by_horizon_td": {
         "21": {
-          "n": 11,
+          "n": 13,
           "excess_values": [
             0.068706,
             0.051348,
@@ -25,24 +25,28 @@
             0.264431,
             0.264431,
             0.057548,
-            0.03428,
+            0.033506,
             0.015049,
             0.166418,
-            0.098468
+            0.098468,
+            0.032709,
+            0.068926
           ],
-          "mean_excess": 0.152324
+          "mean_excess": 0.136648
         },
         "63": {
-          "n": 0,
-          "excess_values": [],
-          "mean_excess": null
+          "n": 1,
+          "excess_values": [
+            0.160768
+          ],
+          "mean_excess": 0.160768
         }
       },
-      "excess_n_matured": 11
+      "excess_n_matured": 14
     }
   },
   "source_registry_n": 2,
-  "source_registry_total_calls": 26659,
+  "source_registry_total_calls": 28432,
   "authority": {
     "tier": "display",
     "may_rank": false,

@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "OKE-BULL-20261021",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 31.8,
-  "raw_confidence": 29.5,
-  "delta_vs_base": -28.2,
+  "management_confidence": 34.6,
+  "raw_confidence": 36.3,
+  "delta_vs_base": -25.4,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 21.2,
+    "validity": 62.9,
     "progress": 0.0,
-    "pace": 45.3,
+    "pace": 23.5,
     "retention": 50.0,
-    "overlay": 33.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.317,
+    "dist_to_stop_r": 0.71,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 33.9,
-    "p1": -0.4554,
-    "p2": -0.2277,
+    "horizon_pct_used": 42.9,
+    "p1": -0.1935,
+    "p2": -0.0968,
     "p3": null,
-    "move_r": -0.683,
+    "move_r": -0.29,
     "mfe_r": 0.347,
     "mae_r": -0.683
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-23",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 19,
-  "tau": 0.3393
+  "days_elapsed": 24,
+  "tau": 0.4286
 }

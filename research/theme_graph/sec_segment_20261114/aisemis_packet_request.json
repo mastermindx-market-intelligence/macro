@@ -1,0 +1,137 @@
+{
+ "schema": "theme_graph.segment_packet_request/v1",
+ "rows": [
+  {
+   "ticker": "ARM",
+   "accession": "0001973239-26-000097",
+   "manifest_key": "manifests/0001973239/0001973239-26-000097/ffsec_manifest_ac94b4f0106fdf7cecef0ebc1e82a547e4da6e432d0d49fb72779f0e7bd8457a.json",
+   "document_id": "sec_document_62d31f3e1b1ba71aaa7c3581557c4b1dfe7de32789516275a83381cc4055ab8e",
+   "subject_label": "Arm Holdings plc",
+   "disclosed_line": "single operating segment",
+   "share_scope": "segment",
+   "fiscal_year": 2026,
+   "span_start_anchor": "The Company operates as a single operating segment",
+   "span_end_anchor": "Less Operating Costs and Expenses:",
+   "figures": {
+    "revenue": {
+     "text": "4,920",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "The following table presents selected financial information with respect to the Company's single operating segment"
+    },
+    "revenue_denominator": {
+     "text": "4,920",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "The following table presents selected financial information with respect to the Company's single operating segment"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T13:40:00Z",
+   "policy_recorded_at": "2026-11-14T13:40:00Z",
+   "adopted_at": "2026-11-14T13:40:00Z"
+  },
+  {
+   "ticker": "FN",
+   "accession": "0001408710-26-000028",
+   "manifest_key": "manifests/0001408710/0001408710-26-000028/ffsec_manifest_c9405e01db3d8be66a11a0f999be7ef3eac71c0637f29e7ffab5c768505c17f0.json",
+   "document_id": "sec_document_c21422c1dae556939aeffaf1c06ee2f9276d113d2e34c900e366f4693a7d0fca",
+   "subject_label": "Fabrinet",
+   "disclosed_line": "single operating segment",
+   "share_scope": "segment",
+   "fiscal_year": 2026,
+   "span_start_anchor": "The Company manages its business activities on a consolidated basis and operates as a single operating segment",
+   "span_end_anchor": "id=\"f-1437\">4,641,097",
+   "figures": {
+    "revenue": {
+     "text": "4,641,097",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "The following table provides information about the Company's revenue, significant segment expenses and other segment expenses:"
+    },
+    "revenue_denominator": {
+     "text": "4,641,097",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "The following table provides information about the Company's revenue, significant segment expenses and other segment expenses:"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T13:40:00Z",
+   "policy_recorded_at": "2026-11-14T13:40:00Z",
+   "adopted_at": "2026-11-14T13:40:00Z"
+  },
+  {
+   "ticker": "SMCI",
+   "accession": "0001375365-26-000022",
+   "manifest_key": "manifests/0001375365/0001375365-26-000022/ffsec_manifest_75c666880e01164b2138abae9d550c70922fe55c328883b445de97687da5f77f.json",
+   "document_id": "sec_document_978e9f7cfbf3508f546db48b88aae3e0b80e5495f968965612e64ed6119bf03a",
+   "subject_label": "SUPER MICRO COMPUTER, INC.",
+   "disclosed_line": "one operating segment",
+   "share_scope": "segment",
+   "fiscal_year": 2026,
+   "span_start_anchor": "We operate in",
+   "span_end_anchor": "id=\"f-596\">39,063,072",
+   "figures": {
+    "revenue": {
+     "text": "39,063,072",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "The following is a summary of net sales by geographic region (in thousands):"
+    },
+    "revenue_denominator": {
+     "text": "39,063,072",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "The following is a summary of net sales by geographic region (in thousands):"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T13:40:00Z",
+   "policy_recorded_at": "2026-11-14T13:40:00Z",
+   "adopted_at": "2026-11-14T13:40:00Z"
+  },
+  {
+   "ticker": "NVDA",
+   "accession": "0001045810-26-000021",
+   "manifest_key": "manifests/0001045810/0001045810-26-000021/ffsec_manifest_1fe8291a60823ef06115037f38734ba900a3fa877c25360097e754bcb3dee062.json",
+   "document_id": "sec_document_5b75587074cf7849d010ec05a7ae7a18d305326a50418897d5d0bc75423bb26a",
+   "subject_label": "NVIDIA Corporation",
+   "disclosed_line": "Compute & Networking",
+   "share_scope": "segment",
+   "fiscal_year": 2026,
+   "span_start_anchor": "Segment Information",
+   "span_end_anchor": "id=\"f-1121\">215,938",
+   "figures": {
+    "revenue": {
+     "text": "193,479",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "scale=\"6\" id=\"f-1119\">"
+    },
+    "revenue_denominator": {
+     "text": "215,938",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "scale=\"6\" id=\"f-1121\">"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T13:40:00Z",
+   "policy_recorded_at": "2026-11-14T13:40:00Z",
+   "adopted_at": "2026-11-14T13:40:00Z"
+  }
+ ]
+}
