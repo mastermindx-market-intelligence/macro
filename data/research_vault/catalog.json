@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T18:41:54.567742+00:00",
-  "count": 3378,
+  "generated_at": "2026-11-14T19:12:29.535654+00:00",
+  "count": 3379,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -133,6 +133,25 @@
       "published_at": "2026-11-14T18:07:16Z",
       "summary_points": [
         "2026 Risk/Reward Framework: Technicals (post-position cleansing, supportive flows), seasonals (69% up weeks, 2.1% avg rally), AI demand (TSMC/CRWV), nominal US GDP above trend accelerating H2 - US Political/Inflation Risks: Infrastructure political disruption (geopolitics), broadening CPI (data release), regulatory/tax risks (policy); NDX uptrend clashes with 2027 supply surge (fundamentals) - Extreme Market Flows: Largest AI stock sale since 2020 (flows), significant risk liquidation since October (flows), net exposure at 3rd percentile (positioning)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zh8d0nndjxx-f77037",
+      "title": "GS Quinn Energy Futures Brent Oil Election Exits 14 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T18:07:14Z",
+      "summary_points": [
+        "Managed Money Liquidation: $4.4bn net sell (long unwinds $2.8bn, new shorts $1.6bn) amid US midterms; physical participants liquidated $13.9bn gross longs, pushing net positioning below 2-year median (35% on Nov 10), marking 4th largest 2-week bearish flow in 5 years.",
+        "Geopolitical & Technical Trigger: Goldman Sachs cites minimal geopolitical risk premium; 10% price decline warranted for medium-term momentum, with small gains halting short-term selling.",
+        "Institutional Bullish Momentum: Brent managed money net long positions surged sharply since April 2024, aligning with price rise, indicating strong institutional bullish positioning and potential upward momentum continuation."
       ],
       "tags": [],
       "tickers": [],
