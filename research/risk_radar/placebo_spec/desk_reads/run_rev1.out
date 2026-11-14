@@ -1,0 +1,61 @@
+# CORRECTION LINE (not a new read); placebo p90 under repair; part (a) provisional
+# desk <desk> (read-only); read rev1; n_draws 2000; smoke False
+[pin] bm_ref.py f7350e6e3f5a022a80aa2e9907f0b37cfc256fa8249960557798f50873467c76
+[pin] placebo_rule_a.py 5270e64e4041331095c1d93ae5addec4c87b91f613c3d4c61853c3eea7cc774c
+[pin] adapter.py 504257977843e0894a97ed53415475eab76d8fc91fa9fc9cb0bbdcb9d24929c1
+=== read rev1 (followup_rev1/run_rev1.py); n_draws 2000; smoke False
+  leading_signals + pit_signals: 11.9s; calendar 1993-01-29 .. 2026-11-11
+  inputs built in 13.6s; scorer <desk>/pivot/radar_eval/engine/risk_radar_eval/pivots.py
+  -- set rr-roff-confluence-k3-followup-rev1-repro kind top post 5 near high
+     step A p90 0.3701 recorded 0.3701 diff 0.0 (MATCH) (324.4s)
+    ruleA BAA_10Y    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 128 placed None alert 0.15707620528771385
+    ruleA CYC/DEF    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 60 placed None alert 0.0
+    ruleA DIA        near=high attempts 2000 kept 2000 discarded 0 acceptance 1.000 defined True E 1156 placed 0.655173611111111 alert 0.08024691358024691
+    ruleA EEM/SPY    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 208 placed None alert 0.021604938271604937
+    ruleA HYG/IEF    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 313 placed None alert 0.014218009478672985
+    ruleA HY_OAS     near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 119 placed None alert 0.14349775784753363
+    ruleA IGV/EWDEF  near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 208 placed None alert 0.006172839506172839
+    ruleA IWM        near=high attempts 2013 kept 2000 discarded 13 acceptance 0.994 defined True E 626 placed 0.47764351851851855 alert 0.026234567901234566
+    ruleA IWM/SPY    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 118 placed None alert 0.004629629629629629
+    ruleA MDY        near=high attempts 2004 kept 2000 discarded 4 acceptance 0.998 defined True E 893 placed 0.57525 alert 0.05709876543209876
+    ruleA QQQ        near=high attempts 2000 kept 2000 discarded 0 acceptance 1.000 defined True E 1027 placed 0.6022484567901234 alert 0.08024691358024691
+    ruleA QQQ/EWDEF  near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 332 placed None alert 0.024691358024691357
+    ruleA RSP        near=high attempts 2000 kept 2000 discarded 0 acceptance 1.000 defined True E 1057 placed 0.6224390432098765 alert 0.05709876543209876
+    ruleA RSP/SPY    near=high attempts 2436 kept 2000 discarded 436 acceptance 0.821 defined True E 885 placed 0.6964992283950616 alert 0.0941358024691358
+    ruleA RSPT/EWDEF near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 58 placed None alert 0.001579778830963665
+    ruleA SMH/EWDEF  near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 20 placed None alert 0.0
+    ruleA SPHB/SPLV  near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 4 placed None alert 0.0
+    ruleA SPY        near=high attempts 2000 kept 2000 discarded 0 acceptance 1.000 defined True E 1196 placed 0.6676404320987654 alert 0.08179012345679013
+    ruleA SPY/GLD    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 158 placed None alert 0.016975308641975308
+    ruleA SPY/TLT    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 235 placed None alert 0.0015432098765432098
+    ruleA XLK/EWDEF  near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 173 placed None alert 0.009259259259259259
+    ruleA placement 21 assets in 108.3s
+     ruleA NOT DEFINED at this exposure; undefined assets ['BAA_10Y', 'CYC/DEF', 'EEM/SPY', 'HYG/IEF', 'HY_OAS', 'IGV/EWDEF', 'IWM/SPY', 'QQQ/EWDEF', 'RSPT/EWDEF', 'SMH/EWDEF', 'SPHB/SPLV', 'SPY/GLD', 'SPY/TLT', 'XLK/EWDEF'] -> no further scoring for this set
+     part (a) old True -> new None (flip True)
+  -- set rr-roff-leg-rates-realrate-pre-desc kind top post 5 near high
+     step A p90 0.378 recorded 0.378 diff 0.0 (MATCH) (428.0s)
+    ruleA BAA_10Y    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 128 placed None alert 0.08529411764705883
+    ruleA CYC/DEF    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 60 placed None alert 0.020289855072463767
+    ruleA DIA        near=high attempts 2000 kept 2000 discarded 0 acceptance 1.000 defined True E 1156 placed 0.8891579710144928 alert 0.35942028985507246
+    ruleA EEM/SPY    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 208 placed None alert 0.04057971014492753
+    ruleA HYG/IEF    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 313 placed None alert 0.09538461538461539
+    ruleA HY_OAS     near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 119 placed None alert 0.06232294617563739
+    ruleA IGV/EWDEF  near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 208 placed None alert 0.04057971014492753
+    ruleA IWM        near=high attempts 2000 kept 2000 discarded 0 acceptance 1.000 defined True E 626 placed 0.7717043478260869 alert 0.17971014492753623
+    ruleA IWM/SPY    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 118 placed None alert 0.03188405797101449
+    ruleA MDY        near=high attempts 2000 kept 2000 discarded 0 acceptance 1.000 defined True E 893 placed 0.846072463768116 alert 0.23768115942028986
+    ruleA QQQ        near=high attempts 2000 kept 2000 discarded 0 acceptance 1.000 defined True E 1027 placed 0.8645260869565217 alert 0.2927536231884058
+    ruleA QQQ/EWDEF  near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 332 placed None alert 0.0782608695652174
+    ruleA RSP        near=high attempts 2000 kept 2000 discarded 0 acceptance 1.000 defined True E 1057 placed 0.8652521739130434 alert 0.30144927536231886
+    ruleA RSP/SPY    near=high attempts 2000 kept 2000 discarded 0 acceptance 1.000 defined True E 885 placed 0.9313768115942028 alert 0.1681159420289855
+    ruleA RSPT/EWDEF near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 58 placed None alert 0.00909090909090909
+    ruleA SMH/EWDEF  near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 20 placed None alert 0.0
+    ruleA SPHB/SPLV  near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 4 placed None alert 0.0
+    ruleA SPY        near=high attempts 2000 kept 2000 discarded 0 acceptance 1.000 defined True E 1196 placed 0.8895449275362319 alert 0.3507246376811594
+    ruleA SPY/GLD    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 158 placed None alert 0.02608695652173913
+    ruleA SPY/TLT    near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 235 placed None alert 0.06376811594202898
+    ruleA XLK/EWDEF  near=high attempts 20000 kept 0 discarded 20000 acceptance 0.000 defined False E 173 placed None alert 0.04057971014492753
+    ruleA placement 21 assets in 160.1s
+     ruleA NOT DEFINED at this exposure; undefined assets ['BAA_10Y', 'CYC/DEF', 'EEM/SPY', 'HYG/IEF', 'HY_OAS', 'IGV/EWDEF', 'IWM/SPY', 'QQQ/EWDEF', 'RSPT/EWDEF', 'SMH/EWDEF', 'SPHB/SPLV', 'SPY/GLD', 'SPY/TLT', 'XLK/EWDEF'] -> no further scoring for this set
+     part (a) old True -> new None (flip True)
+=== read rev1 done in 1034.3s -> raw_rev1_2000.json

@@ -1,0 +1,116 @@
+{
+ "series": "walkforward loud 2022-01-03..2023-12-29",
+ "n": 501,
+ "runs": [
+  1,
+  3,
+  2,
+  20,
+  86,
+  60,
+  2,
+  9,
+  2,
+  2,
+  1,
+  5
+ ],
+ "mass": 193,
+ "observed_share_of_mass_in_band": {
+  "high": 0.0,
+  "low": 0.1917
+ },
+ "rules": [
+  {
+   "near": "high",
+   "order": "random",
+   "eligible_sessions": 15,
+   "attempts": 20000,
+   "kept": 0,
+   "discarded": 20000,
+   "acceptance": 0.0,
+   "defined": false,
+   "mass_kept": null,
+   "share_of_placed_mass_in_band": null
+  },
+  {
+   "near": "high",
+   "order": "longest_first",
+   "eligible_sessions": 15,
+   "attempts": 20000,
+   "kept": 0,
+   "discarded": 20000,
+   "acceptance": 0.0,
+   "defined": false,
+   "mass_kept": null,
+   "share_of_placed_mass_in_band": null
+  },
+  {
+   "near": "low",
+   "order": "random",
+   "eligible_sessions": 61,
+   "attempts": 8300,
+   "kept": 2000,
+   "discarded": 6300,
+   "acceptance": 0.241,
+   "defined": true,
+   "mass_kept": 193,
+   "share_of_placed_mass_in_band": 0.1827
+  },
+  {
+   "near": "low",
+   "order": "longest_first",
+   "eligible_sessions": 61,
+   "attempts": 5514,
+   "kept": 2000,
+   "discarded": 3514,
+   "acceptance": 0.3627,
+   "defined": true,
+   "mass_kept": 193,
+   "share_of_placed_mass_in_band": 0.24
+  }
+ ]
+}
+high eligible dates: ['2022-01-03', '2022-01-04', '2023-12-11', '2023-12-12', '2023-12-13', '2023-12-14', '2023-12-15', '2023-12-18', '2023-12-19', '2023-12-21', '2023-12-22', '2023-12-26', '2023-12-27', '2023-12-28', '2023-12-29']
+[
+ {
+  "near": "high",
+  "w": 10,
+  "start_pool": 26,
+  "attempts": 20000,
+  "kept": 0,
+  "acceptance": 0.0,
+  "defined": false,
+  "share_mass_in_strict_band": null
+ },
+ {
+  "near": "high",
+  "w": 21,
+  "start_pool": 37,
+  "attempts": 20000,
+  "kept": 0,
+  "acceptance": 0.0,
+  "defined": false,
+  "share_mass_in_strict_band": null
+ },
+ {
+  "near": "low",
+  "w": 10,
+  "start_pool": 136,
+  "attempts": 4621,
+  "kept": 2000,
+  "acceptance": 0.4328,
+  "defined": true,
+  "share_mass_in_strict_band": 0.135
+ },
+ {
+  "near": "low",
+  "w": 21,
+  "start_pool": 177,
+  "attempts": 4087,
+  "kept": 2000,
+  "acceptance": 0.4894,
+  "defined": true,
+  "share_mass_in_strict_band": 0.1337
+ }
+]

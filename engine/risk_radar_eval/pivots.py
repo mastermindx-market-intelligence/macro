@@ -253,6 +253,59 @@ def score_pivots_multi(turns: list[Turn], alerts: dict[str, pd.Series],
     return out
 
 
+def _admissible_starts(a: np.ndarray, elig: np.ndarray, ln: int) -> np.ndarray:
+    """Starts s (ascending) with elig[s], s+ln <= n and a[s-1:s+ln+1] free (spec v1 §2)."""
+    n = len(a)
+    if ln > n:
+        return np.array([], dtype=int)
+    occ = np.concatenate([[0], np.cumsum(a, dtype=np.int64)])
+    ss = np.arange(0, n - ln + 1)
+    lo, hi = np.maximum(0, ss - 1), np.minimum(n, ss + ln + 1)
+    return ss[elig[ss] & ((occ[hi] - occ[lo]) == 0)]
+
+
+def place_runs_rule_a(runs, elig, *, n_draws: int, seed: int, cap: int | None = None) -> dict:
+    """PLACEBO_PLACEMENT_SPEC_v1 Rule A (co-signed, Amendment 1).
+
+    Eligibility binds the start only; every run is placed at full length with a one-session gap.
+    One default_rng(seed); per attempt exactly one permutation(runs) call, then one
+    integers(0, len(c)) per placed run over the ascending admissible starts c. A run with no
+    admissible start discards the attempt (counted). Attempts repeat until n_draws kept draws or
+    cap (default 10 * n_draws) attempts. Cap hit or empty pool: "not defined" (no draws used).
+    Every kept draw is asserted to carry the exact mass and run-length multiset.
+    """
+    elig = np.asarray(elig, dtype=bool)
+    n = len(elig)
+    runs = [int(x) for x in runs]
+    cap = 10 * n_draws if cap is None else int(cap)
+    mass, want = sum(runs), sorted(runs)
+    if not elig.any() or not runs:
+        return {"attempts": 0, "kept": 0, "discarded": 0, "cap": cap, "defined": False,
+                "draws": []}
+    rng = np.random.default_rng(seed)
+    kept: list[np.ndarray] = []
+    att = 0
+    while len(kept) < n_draws and att < cap:
+        att += 1
+        a = np.zeros(n, dtype=bool)
+        ok = True
+        for ln in rng.permutation(np.asarray(runs, dtype=int)):
+            ln = int(ln)
+            c = _admissible_starts(a, elig, ln)
+            if not len(c):
+                ok = False
+                break
+            s = int(c[rng.integers(0, len(c))])
+            a[s:s + ln] = True
+        if ok:
+            got = sorted(e - s + 1 for s, e in _run_bounds(a))
+            if int(a.sum()) != mass or got != want:
+                raise AssertionError("placebo draw does not match the alert's mass/run lengths")
+            kept.append(a)
+    return {"attempts": att, "kept": len(kept), "discarded": att - len(kept), "cap": cap,
+            "defined": len(kept) == n_draws, "draws": kept}
+
+
 def placebo(alert: pd.Series, *, px: pd.Series, turns: list[Turn], episodes: list,
             outcomes_through, near: str | None = None, tol: float = 0.01, n_draws: int = 500,
             seed: int = 0, pre: int = DEFAULT_PRE, post: int = DEFAULT_POST,
@@ -260,8 +313,10 @@ def placebo(alert: pd.Series, *, px: pd.Series, turns: list[Turn], episodes: lis
             seen_history_ok: bool = False) -> dict:
     """Random-run placebo for the flagged shares (research desk falsification, 2026-11-12).
 
-    Draws alert series with the observed alert's run lengths (hence its budget and persistence),
-    placing each run's start at random among eligible sessions without overlap:
+    Draws alert series with the observed alert's run lengths (hence its budget and persistence)
+    under PLACEBO_PLACEMENT_SPEC_v1 Rule A (`place_runs_rule_a`): full-length runs, starts among
+    eligible sessions, discards counted, "not defined at this exposure" on a cap hit or an empty
+    pool (then no placebo figure is reported). Eligible starts:
       near=None    any session;
       near="high"  sessions whose close is within `tol` of the running high (causal: closes <= t);
       near="low"   sessions whose close is within `tol` of the lowest close since the running high.
@@ -291,19 +346,14 @@ def placebo(alert: pd.Series, *, px: pd.Series, turns: list[Turn], episodes: lis
     obs = score_pivots(alert, turns=turns, episodes=episodes, outcomes_through=outcomes_through,
                        pre=pre, post=post, min_off=min_off, sealed_from=sealed_from,
                        seen_history_ok=seen_history_ok)
-    rng = np.random.default_rng(seed)
+    placed = place_runs_rule_a(runs, elig, n_draws=n_draws, seed=seed)
+    in_band_alert = (_r(float(elig[alert.to_numpy(dtype=bool)].mean()))
+                     if alert.any() else None)
+    in_band_placed = (_r(float(np.mean([elig[d].mean() for d in placed["draws"]])))
+                      if placed["draws"] else None)
     shares = {"top": [], "bottom": []}
     fro, prem = [], []
-    for _ in range(n_draws):
-        a = np.zeros(n, dtype=bool)
-        for ln in rng.permutation(runs):
-            for _try in range(50):
-                s = int(rng.choice(starts)) if len(starts) else 0
-                e = min(n, s + int(ln))
-                lo_, hi_ = max(0, s - 1), min(n, e + 1)      # keep runs separate
-                if not a[lo_:hi_].any():
-                    a[s:e] = True
-                    break
+    for a in (placed["draws"] if placed["defined"] else []):
         r = score_pivots(pd.Series(a, index=idx), turns=turns, episodes=episodes,
                          outcomes_through=outcomes_through, pre=pre, post=post, min_off=min_off,
                          sealed_from=sealed_from, seen_history_ok=seen_history_ok)
@@ -312,14 +362,23 @@ def placebo(alert: pd.Series, *, px: pd.Series, turns: list[Turn], episodes: lis
         for k in shares:
             if r[k]["share_flagged"] is not None:
                 shares[k].append(r[k]["share_flagged"])
+    _m = lambda v, fn: _r(float(fn(v))) if len(v) else None
     out = {"near": near, "tol": tol, "n_draws": n_draws, "seed": seed,
+           "rule": "PLACEBO_PLACEMENT_SPEC_v1 Rule A",
+           "defined": placed["defined"],
+           "status": "defined" if placed["defined"] else "not defined at this exposure",
+           "attempts": placed["attempts"], "kept": placed["kept"],
+           "discarded": placed["discarded"], "cap": placed["cap"],
+           "acceptance": (_r(placed["kept"] / placed["attempts"]) if placed["attempts"] else None),
+           "eligible_sessions": int(elig.sum()),
            "eligible_share": _r(float(elig.mean())),
+           "in_band_mass_share": {"alert": in_band_alert, "placed": in_band_placed},
            "false_risk_off_per_year": {"observed": obs["false_risk_off_per_year"],
-                                       "placebo_mean": _r(float(np.mean(fro))),
-                                       "placebo_median": _r(float(np.median(fro)))},
+                                       "placebo_mean": _m(fro, np.mean),
+                                       "placebo_median": _m(fro, np.median)},
            "premature_all_clear_per_year": {"observed": obs["premature_all_clear_per_year"],
-                                            "placebo_mean": _r(float(np.mean(prem))),
-                                            "placebo_median": _r(float(np.median(prem)))}}
+                                            "placebo_mean": _m(prem, np.mean),
+                                            "placebo_median": _m(prem, np.median)}}
     for k, v in shares.items():
         o = obs[k]["share_flagged"]
         v = np.asarray(v)

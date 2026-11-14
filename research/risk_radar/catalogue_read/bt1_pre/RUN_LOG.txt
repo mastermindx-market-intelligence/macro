@@ -1,0 +1,77 @@
+# Risk Radar BT1-RATE-RESPONSE on PRE (description only) + DGS10 substitute line
+# dry=False p90 draws=2000 control keeps=2000 window=2006-01-03..2019-12-31 procs=20
+[start] bm_ref.py f7350e6e3f5a022a80aa2e9907f0b37cfc256fa8249960557798f50873467c76
+[start] adapter.py 504257977843e0894a97ed53415475eab76d8fc91fa9fc9cb0bbdcb9d24929c1
+# ledger rows present with the commissioned spec shas: rr-bt1-rate-response-pre-desc, rr-bt1-rate-response-pre-dgs10-desc
+phase 1: rate legs (DFII10 via pit_signals; DGS10 next-business-day rule)
+  leading_signals + pit_signals: 10.1s; calendar 1993-01-29 .. 2026-11-10
+  DFII10 replay vs pit_signals: 5247 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5751 finite sessions from 2004-01-02
+phase 2: desk kit
+# scorer module: <desk>/pivot/radar_eval/engine/risk_radar_eval/pivots.py
+# series 21; turns 472
+# date guard ok: {"turns": "2019-12-31", "levels": "2019-12-31", "outcomes_through": "2019-12-31", "engine_calendar_used": "2019-12-31", "episodes": "2019-12-31"}; min scored turn 2006-01-11
+# desk levels SPY 1927-12-30..2019-12-31; QQQ 1999-03-10..2019-12-31
+# engine calendar vs desk SPY: 6780 common sessions (engine 8504, desk 23109)
+[dfii10] rule built: Rplus undefined 2763, A_R ON days 60
+[dfii10] candidate share 0.1732 false 0.8262 (0.0s)
+[dfii10] p90 0.3071 observed 0.1732 (30.7s)
+[dfii10] target share 0.015029; scoring 6 matched parts
+[dfii10] rule 2b verdict {"a": false, "b": false, "c": false, "criteria_met": [], "nomination": false, "parts_checked": 4} (DESCRIPTION; nomination forced False)
+[dfii10] control ESTIMABLE: generated 43125, accepted 2000; catch p10 -0.0315 false p90 0.27080000000000004
+[dfii10] fragmentation: 31 starts -> 24 retained; catch 0.16535433070866143 false 0.6630391360048491
+[dgs10] rule built: Rplus undefined 2755, A_R ON days 28
+[dgs10] candidate share 0.1417 false 0.6839 (0.0s)
+[dgs10] p90 0.2756 observed 0.1417 (15.5s)
+[dgs10] target share 0.007576; scoring 6 matched parts
+[dgs10] rule 2b verdict {"a": false, "b": false, "c": false, "criteria_met": [], "nomination": false, "parts_checked": 4} (DESCRIPTION; nomination forced False)
+[dgs10] control NOT_ESTIMABLE: generated 200000, accepted 730; catch p10 -0.007900000000000018 false p90 0.2986
+[dgs10] fragmentation: 21 starts -> 18 retained; catch 0.13385826771653545 false 0.6074965905803591
+# candidate cluster-id overlap: {"both": 13, "only_dfii10": 9, "only_dgs10": 5}
+[end] bm_ref.py f7350e6e3f5a022a80aa2e9907f0b37cfc256fa8249960557798f50873467c76
+[end] adapter.py 504257977843e0894a97ed53415475eab76d8fc91fa9fc9cb0bbdcb9d24929c1
+# total runtime 120.8s
+# pins match at start and end: True
+
+# post-run independent check (appended after the run; no figure above changed)
+# 1. Rplus brute force: 300 random window dates recomputed from raw qR/dy5 -> 0 mismatches
+# 2. B20: 200 random dates hand-recomputed per series (SPY, QQQ) -> 0 mismatches
+# 3. separation of the AND: Rplus>=.90 alone = 933 ON days (full history) vs A_R = 60; SPY new-low days 259, QQQ 276 in PRE
+# 4. native reconstruction fidelity: reconstructed rates_realrate leg catches 101/127 = 0.7953, matching the recorded .795; no new native aggregate reported
+# 5. sign-gate identity is structural, not a defect: of 14 window sessions with qR>=0.998016, 14 have dy5>0; Rplus vs Q5 differ on 799 window sessions overall but on 0 sessions at the matched threshold (ON set 53/53 identical). A trailing-percentile qR at 0.998 can only be a strongly positive dy5, so the sign gate cannot bind at the 1.5% matched share.
+  leading_signals + pit_signals: 9.9s; calendar 1993-01-29 .. 2026-11-10
+  DFII10 replay vs pit_signals: 5247 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5751 finite sessions from 2004-01-02
+  leading_signals + pit_signals: 12.6s; calendar 1993-01-29 .. 2026-11-11
+  DFII10 replay vs pit_signals: 5248 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5752 finite sessions from 2004-01-02
+  leading_signals + pit_signals: 11.0s; calendar 1993-01-29 .. 2026-11-11
+  DFII10 replay vs pit_signals: 5248 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5752 finite sessions from 2004-01-02
+  leading_signals + pit_signals: 11.0s; calendar 1993-01-29 .. 2026-11-11
+  DFII10 replay vs pit_signals: 5248 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5752 finite sessions from 2004-01-02
+  leading_signals + pit_signals: 10.5s; calendar 1993-01-29 .. 2026-11-11
+  DFII10 replay vs pit_signals: 5248 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5752 finite sessions from 2004-01-02
+  leading_signals + pit_signals: 10.6s; calendar 1993-01-29 .. 2026-11-11
+  DFII10 replay vs pit_signals: 5248 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5752 finite sessions from 2004-01-02
+  leading_signals + pit_signals: 9.9s; calendar 1993-01-29 .. 2026-11-11
+  DFII10 replay vs pit_signals: 5248 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5752 finite sessions from 2004-01-02
+  leading_signals + pit_signals: 9.9s; calendar 1993-01-29 .. 2026-11-11
+  DFII10 replay vs pit_signals: 5248 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5752 finite sessions from 2004-01-02
+  leading_signals + pit_signals: 10.1s; calendar 1993-01-29 .. 2026-11-11
+  DFII10 replay vs pit_signals: 5248 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5752 finite sessions from 2004-01-02
+  leading_signals + pit_signals: 10.0s; calendar 1993-01-29 .. 2026-11-11
+  DFII10 replay vs pit_signals: 5248 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5752 finite sessions from 2004-01-02
+  leading_signals + pit_signals: 10.2s; calendar 1993-01-29 .. 2026-11-11
+  DFII10 replay vs pit_signals: 5248 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5752 finite sessions from 2004-01-02
+  leading_signals + pit_signals: 10.1s; calendar 1993-01-29 .. 2026-11-11
+  DFII10 replay vs pit_signals: 5248 common finite sessions from 2006-01-03, max |diff| 0.0, nan mismatches 0
+  DGS10 PIT leg: next-business-day rule (no ALFRED overrides); 5752 finite sessions from 2004-01-02

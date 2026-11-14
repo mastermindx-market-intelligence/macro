@@ -1,0 +1,47 @@
+# Risk Radar follow-up rev1 (bm_ref rev1 pin)
+# dry=False n_draws=2000 window=2006-01-03..2019-12-31 procs=20
+[start] bm_ref.py f7350e6e3f5a022a80aa2e9907f0b37cfc256fa8249960557798f50873467c76
+[start] adapter.py 504257977843e0894a97ed53415475eab76d8fc91fa9fc9cb0bbdcb9d24929c1
+building alerts (leading_signals + pit_signals start 2006-01-03)
+  leading_signals + pit_signals: 10.0s; calendar 1993-01-29 .. 2026-11-10
+# scorer module: <desk>/pivot/radar_eval/engine/risk_radar_eval/pivots.py
+# series: 21; turns in window: 472  2006-01-11 .. 2019-12-31
+# alert window per series: 3523 sessions, 2005-12-01 .. 2019-12-31
+# date guard ok: {"turns": "2019-12-31", "alert_index": "2019-12-31", "px_index": "2019-12-31", "levels": "2019-12-31", "outcomes_through": "2019-12-31", "episodes": "2019-12-31"}
+# scoring candidate + 12 legs, 20 processes
+  candidate              share 0.4488 false 2.9264 (0.1s)
+  leg_credit_oas_roc     share 0.2756 false 1.3886 (0.0s)
+  leg_credit_hyg_tlt     share 0.2835 false 1.8433 (0.1s)
+  leg_rates_move         share 0.2047 false 1.2081 (0.0s)
+  leg_rates_realrate     share 0.7953 false 4.9745 (0.1s)
+  leg_bubble_ext         share 0.2362 false 2.5619 (0.0s)
+  leg_bubble_leadership  share 0.3307 false 2.916 (0.0s)
+  leg_growth_defensives  share 0.315 false 1.9058 (0.0s)
+  leg_growth_cyc_def     share 0.3701 false 2.0724 (0.1s)
+  leg_vol_term           share 0.2992 false 1.8051 (0.0s)
+  leg_global_breadth     share 0.2126 false 1.4024 (0.0s)
+  leg_jpy_carry          share 0.5276 false 3.4749 (0.0s)
+  leg_corr_floor_break   share 0.0866 false 0.5693 (0.0s)
+# p90 (k3 candidate) via parallel draw loop
+  p90 0.3701 observed 0.4488 (300.8s)
+# better reference: near; best single: rates_realrate
+# (a) verdict {"a": true, "b": true, "c": false, "criteria_met": ["a", "b"], "nomination": false}
+# (b) target alert share (pooled k3, windowed) 0.183723; alert_budget(mean of per-series) 0.183734
+# (b) scoring 12 matched parts
+# (b) verdict {"a": true, "b": true, "c": false, "criteria_met": ["a", "b"], "nomination": false, "parts_checked": 12} (nomination forced False)
+# (c) rates_realrate share 0.7953 false 4.9745 p90 0.378
+# turns: hand-built 472, rev1 472, only-hand 0, only-rev1 0
+# comparison to PRE: {"cluster_share": {"pre": 0.4488, "rev1": 0.4488, "delta": 0.0}, "false_per_asset_year": {"pre": 2.9264, "rev1": 2.9264, "delta": 0.0}, "p90": {"pre": 0.3701, "rev1": 0.3701, "delta": 0.0}, "near_share": {"pre": 0.3228, "rev1": 0.3228, "delta": 0.0}, "near_false": {"pre": 2.9507, "rev1": 2.9507, "delta": 0.0}, "dd_share": {"pre": 0.2205, "rev1": 0.2205, "delta": 0.0}, "dd_false": {"pre": 0.7116, "rev1": 0.7116, "delta": 0.0}, "rr_share": {"pre": 0.7953, "rev1": 0.7953, "delta": 0.0}, "rr_false": {"pre": 4.9745, "rev1": 4.9745, "delta": 0.0}, "turns_scored": {"pre": 471, "rev1": 471, "delta": 0.0}, "clusters": {"pre": 127, "rev1": 127, "delta": 0.0}, "alert_budget": {"pre": 0.18373387954269568, "rev1": 0.18373387954269568, "delta": 0.0}}
+[end] bm_ref.py f7350e6e3f5a022a80aa2e9907f0b37cfc256fa8249960557798f50873467c76
+[end] adapter.py 504257977843e0894a97ed53415475eab76d8fc91fa9fc9cb0bbdcb9d24929c1
+# total runtime 725.2s
+# pins match at start and end: True
+  leading_signals + pit_signals: 9.8s; calendar 1993-01-29 .. 2026-11-10
+  leading_signals + pit_signals: 10.5s; calendar 1993-01-29 .. 2026-11-11
+  leading_signals + pit_signals: 10.1s; calendar 1993-01-29 .. 2026-11-11
+  leading_signals + pit_signals: 11.2s; calendar 1993-01-29 .. 2026-11-11
+  leading_signals + pit_signals: 11.2s; calendar 1993-01-29 .. 2026-11-11
+  leading_signals + pit_signals: 10.5s; calendar 1993-01-29 .. 2026-11-11
+  leading_signals + pit_signals: 10.0s; calendar 1993-01-29 .. 2026-11-11
+  leading_signals + pit_signals: 9.9s; calendar 1993-01-29 .. 2026-11-11
+  leading_signals + pit_signals: 10.0s; calendar 1993-01-29 .. 2026-11-11

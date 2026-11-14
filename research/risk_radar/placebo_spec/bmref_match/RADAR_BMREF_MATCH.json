@@ -1,0 +1,2493 @@
+{
+ "rule": "ceo-ruling-bm-ref-unmatched-share-20261113",
+ "abs": 0.01,
+ "rel": 0.2,
+ "pooled": "per-series mean (= bm_ref target_budget_mean / alert_budget)",
+ "sets": [
+  {
+   "ledger_row": "479",
+   "set": "rr-roff-incumbent-v2",
+   "forms": {
+    "dd": {
+     "target_pooled": 0.22396744202908453,
+     "achieved_pooled": 0.22420311624228434,
+     "abs_gap": 0.0002356742131998102,
+     "rel_gap": 0.0010522699686376978,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 0,
+     "largest_single_miss": null,
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.22473012757605496,
+       "achieved": 0.23061825318940138,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.22347417840375586,
+       "achieved": 0.22253521126760564,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      }
+     }
+    },
+    "near": {
+     "target_pooled": 0.22396744202908453,
+     "achieved_pooled": 0.22387599815265397,
+     "abs_gap": -9.144387643056362e-05,
+     "rel_gap": -0.00040829093551324603,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 0,
+     "largest_single_miss": null,
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.22473012757605496,
+       "achieved": 0.2237487733071639,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.22347417840375586,
+       "achieved": 0.22253521126760564,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      }
+     }
+    }
+   },
+   "matched_forms": [
+    "dd",
+    "near"
+   ],
+   "recorded_better_reference": "near",
+   "line_b": "matched"
+  },
+  {
+   "ledger_row": "480",
+   "set": "rr-ron-incumbent-v2",
+   "forms": {
+    "dd": {
+     "target_pooled": 0.22396744202908453,
+     "achieved_pooled": 0.19647391511319018,
+     "abs_gap": -0.02749352691589435,
+     "rel_gap": -0.1227568019119673,
+     "matched": false,
+     "series_n": 21,
+     "series_missing": 3,
+     "largest_single_miss": {
+      "series": "QQQ/EWDEF",
+      "target": 0.22395326192794549,
+      "achieved": 0.0
+     },
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.22473012757605496,
+       "achieved": 0.23061825318940138,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.22347417840375586,
+       "achieved": 0.22347417840375586,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "RSP": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "SPHB/SPLV": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.08860759493670886,
+       "matched": false
+      }
+     }
+    },
+    "near": {
+     "target_pooled": 0.22396744202908453,
+     "achieved_pooled": 0.19647391511319018,
+     "abs_gap": -0.02749352691589435,
+     "rel_gap": -0.1227568019119673,
+     "matched": false,
+     "series_n": 21,
+     "series_missing": 3,
+     "largest_single_miss": {
+      "series": "QQQ/EWDEF",
+      "target": 0.22395326192794549,
+      "achieved": 0.0
+     },
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.22473012757605496,
+       "achieved": 0.23061825318940138,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.22347417840375586,
+       "achieved": 0.22347417840375586,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "RSP": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "SPHB/SPLV": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.22395326192794549,
+       "achieved": 0.22395326192794549,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.22395326192794549,
+       "achieved": 0.08860759493670886,
+       "matched": false
+      }
+     }
+    }
+   },
+   "matched_forms": [],
+   "recorded_better_reference": "dd",
+   "line_b": "(b) reference not matched at this exposure"
+  },
+  {
+   "ledger_row": "481",
+   "set": "rr-roff-confluence-k4-v2",
+   "forms": {
+    "dd": {
+     "target_pooled": 0.13830712421880303,
+     "achieved_pooled": 0.1385891655669776,
+     "abs_gap": 0.0002820413481745554,
+     "rel_gap": 0.0020392394807397167,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 0,
+     "largest_single_miss": null,
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.1393523061825319,
+       "achieved": 0.1452404317958783,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.13802816901408452,
+       "achieved": 0.13708920187793427,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.1382667964946446,
+       "achieved": 0.13924050632911392,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      }
+     }
+    },
+    "near": {
+     "target_pooled": 0.13830712421880303,
+     "achieved_pooled": 0.1383518369395721,
+     "abs_gap": 4.4712720769057857e-05,
+     "rel_gap": 0.0003232857383277087,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 0,
+     "largest_single_miss": null,
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.1393523061825319,
+       "achieved": 0.1393523061825319,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.13802816901408452,
+       "achieved": 0.13896713615023473,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      }
+     }
+    }
+   },
+   "matched_forms": [
+    "dd",
+    "near"
+   ],
+   "recorded_better_reference": "near",
+   "line_b": "matched"
+  },
+  {
+   "ledger_row": "482",
+   "set": "rr-ron-confluence-k4-v2",
+   "forms": {
+    "dd": {
+     "target_pooled": 0.13830712421880303,
+     "achieved_pooled": 0.12240432162676151,
+     "abs_gap": -0.01590280259204152,
+     "rel_gap": -0.11498180359012565,
+     "matched": false,
+     "series_n": 21,
+     "series_missing": 3,
+     "largest_single_miss": {
+      "series": "QQQ/EWDEF",
+      "target": 0.1382667964946446,
+      "achieved": 0.0
+     },
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.1393523061825319,
+       "achieved": 0.13346418056918546,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.13802816901408452,
+       "achieved": 0.13615023474178403,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "RSP": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "SPHB/SPLV": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.08860759493670886,
+       "matched": false
+      }
+     }
+    },
+    "near": {
+     "target_pooled": 0.13830712421880303,
+     "achieved_pooled": 0.12240432162676151,
+     "abs_gap": -0.01590280259204152,
+     "rel_gap": -0.11498180359012565,
+     "matched": false,
+     "series_n": 21,
+     "series_missing": 3,
+     "largest_single_miss": {
+      "series": "QQQ/EWDEF",
+      "target": 0.1382667964946446,
+      "achieved": 0.0
+     },
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.1393523061825319,
+       "achieved": 0.13346418056918546,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.13802816901408452,
+       "achieved": 0.13615023474178403,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "RSP": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "SPHB/SPLV": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.1382667964946446,
+       "achieved": 0.1382667964946446,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.1382667964946446,
+       "achieved": 0.08860759493670886,
+       "matched": false
+      }
+     }
+    }
+   },
+   "matched_forms": [],
+   "recorded_better_reference": "dd",
+   "line_b": "(b) reference not matched at this exposure"
+  },
+  {
+   "ledger_row": "483",
+   "set": "rr-ron-exit-v1-v2",
+   "forms": {
+    "dd": {
+     "target_pooled": 0.28332772221293595,
+     "achieved_pooled": 0.24711333538346622,
+     "abs_gap": -0.03621438682946973,
+     "rel_gap": -0.12781801422965833,
+     "matched": false,
+     "series_n": 21,
+     "series_missing": 3,
+     "largest_single_miss": {
+      "series": "QQQ/EWDEF",
+      "target": 0.28334956183057447,
+      "achieved": 0.0
+     },
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.28361138370951916,
+       "achieved": 0.28361138370951916,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.28262910798122065,
+       "achieved": 0.28356807511737087,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "RSP": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "SPHB/SPLV": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.08860759493670886,
+       "matched": false
+      }
+     }
+    },
+    "near": {
+     "target_pooled": 0.28332772221293595,
+     "achieved_pooled": 0.24711333538346622,
+     "abs_gap": -0.03621438682946973,
+     "rel_gap": -0.12781801422965833,
+     "matched": false,
+     "series_n": 21,
+     "series_missing": 3,
+     "largest_single_miss": {
+      "series": "QQQ/EWDEF",
+      "target": 0.28334956183057447,
+      "achieved": 0.0
+     },
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.28361138370951916,
+       "achieved": 0.28361138370951916,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.28262910798122065,
+       "achieved": 0.28356807511737087,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "RSP": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.0,
+       "matched": false
+      },
+      "SPHB/SPLV": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.28334956183057447,
+       "achieved": 0.28334956183057447,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.28334956183057447,
+       "achieved": 0.08860759493670886,
+       "matched": false
+      }
+     }
+    }
+   },
+   "matched_forms": [],
+   "recorded_better_reference": "dd",
+   "line_b": "(b) reference not matched at this exposure"
+  },
+  {
+   "ledger_row": "484",
+   "set": "rr-roff-confluence-k3-followup",
+   "forms": {
+    "dd": {
+     "target_pooled": 0.18373387954269566,
+     "achieved_pooled": 0.18393829540656753,
+     "abs_gap": 0.00020441586387187627,
+     "rel_gap": 0.001112564892118193,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 0,
+     "largest_single_miss": null,
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.18251490207209764,
+       "achieved": 0.18762418393414704,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.19750390015600625,
+       "achieved": 0.19750390015600625,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.18209036472509527,
+       "achieved": 0.18127381600435494,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.19135429262394196,
+       "achieved": 0.19135429262394196,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.1794401101422671,
+       "achieved": 0.1794401101422671,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      }
+     }
+    },
+    "near": {
+     "target_pooled": 0.18373387954269566,
+     "achieved_pooled": 0.18378794601742637,
+     "abs_gap": 5.406647473071846e-05,
+     "rel_gap": 0.00029426513425442923,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 0,
+     "largest_single_miss": null,
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.18251490207209764,
+       "achieved": 0.18365029804144195,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.19750390015600625,
+       "achieved": 0.19750390015600625,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.18209036472509527,
+       "achieved": 0.18209036472509527,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.19135429262394196,
+       "achieved": 0.19135429262394196,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.1794401101422671,
+       "achieved": 0.1794401101422671,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      }
+     }
+    }
+   },
+   "matched_forms": [
+    "dd",
+    "near"
+   ],
+   "recorded_better_reference": "near",
+   "line_b": "matched"
+  },
+  {
+   "ledger_row": "512 (note under 484)",
+   "set": "rev1 a k3 repro",
+   "forms": {
+    "dd": {
+     "target_pooled": 0.18373387954269566,
+     "achieved_pooled": 0.18393829540656753,
+     "abs_gap": 0.00020441586387187627,
+     "rel_gap": 0.001112564892118193,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 0,
+     "largest_single_miss": null,
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.18251490207209764,
+       "achieved": 0.18762418393414704,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.19750390015600625,
+       "achieved": 0.19750390015600625,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.18209036472509527,
+       "achieved": 0.18127381600435494,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.19135429262394196,
+       "achieved": 0.19135429262394196,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.1794401101422671,
+       "achieved": 0.1794401101422671,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      }
+     }
+    },
+    "near": {
+     "target_pooled": 0.18373387954269566,
+     "achieved_pooled": 0.18378794601742637,
+     "abs_gap": 5.406647473071846e-05,
+     "rel_gap": 0.00029426513425442923,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 0,
+     "largest_single_miss": null,
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.18251490207209764,
+       "achieved": 0.18365029804144195,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.19750390015600625,
+       "achieved": 0.19750390015600625,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.18209036472509527,
+       "achieved": 0.18209036472509527,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.19135429262394196,
+       "achieved": 0.19135429262394196,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.1794401101422671,
+       "achieved": 0.1794401101422671,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.18284424379232506,
+       "achieved": 0.18284424379232506,
+       "matched": true
+      }
+     }
+    }
+   },
+   "matched_forms": [
+    "dd",
+    "near"
+   ],
+   "recorded_better_reference": "near",
+   "line_b": "matched"
+  },
+  {
+   "ledger_row": "514 (note)",
+   "set": "rev1 c realrate desc",
+   "forms": {
+    "dd": {
+     "target_pooled": 0.09713744086984417,
+     "achieved_pooled": 0.0971644741072095,
+     "abs_gap": 2.7033237365331475e-05,
+     "rel_gap": 0.00027829884258072737,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 0,
+     "largest_single_miss": null,
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.09650865739426626,
+       "achieved": 0.09707635537893841,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.10140405616224649,
+       "achieved": 0.10140405616224649,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.09608056614044638,
+       "achieved": 0.09608056614044638,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.09975816203143893,
+       "achieved": 0.09975816203143893,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.08857273978889399,
+       "achieved": 0.08857273978889399,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      }
+     }
+    },
+    "near": {
+     "target_pooled": 0.09713744086984417,
+     "achieved_pooled": 0.09873638744621738,
+     "abs_gap": 0.001598946576373203,
+     "rel_gap": 0.01646066194512633,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 2,
+     "largest_single_miss": {
+      "series": "DIA",
+      "target": 0.09734762979683972,
+      "achieved": 0.11681715575620767
+     },
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.09650865739426626,
+       "achieved": 0.09650865739426626,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.09734762979683972,
+       "achieved": 0.11681715575620767,
+       "matched": false
+      },
+      "EEM/SPY": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.10140405616224649,
+       "achieved": 0.10140405616224649,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.09608056614044638,
+       "achieved": 0.09608056614044638,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.09734762979683972,
+       "achieved": 0.10750564334085778,
+       "matched": false
+      },
+      "RSP/SPY": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.09975816203143893,
+       "achieved": 0.09975816203143893,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.08857273978889399,
+       "achieved": 0.08857273978889399,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.09734762979683972,
+       "achieved": 0.1012979683972912,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.09734762979683972,
+       "achieved": 0.09734762979683972,
+       "matched": true
+      }
+     }
+    }
+   },
+   "matched_forms": [
+    "dd",
+    "near"
+   ],
+   "recorded_better_reference": "near",
+   "line_b": "matched"
+  },
+  {
+   "ledger_row": "535",
+   "set": "bt1 dfii10",
+   "forms": {
+    "dd": {
+     "target_pooled": 0.015033693168304158,
+     "achieved_pooled": 0.015047209786986829,
+     "abs_gap": 1.3516618682670942e-05,
+     "rel_gap": 0.0008990883697938112,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 0,
+     "largest_single_miss": null,
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.014760147601476014,
+       "achieved": 0.015043996593812092,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.016536661466458658,
+       "achieved": 0.016536661466458658,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.01442569406641263,
+       "achieved": 0.01442569406641263,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.016021765417170496,
+       "achieved": 0.016021765417170496,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.014685635612666361,
+       "achieved": 0.014685635612666361,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      }
+     }
+    },
+    "near": {
+     "target_pooled": 0.015033693168304158,
+     "achieved_pooled": 0.03761558386734393,
+     "abs_gap": 0.02258189069903977,
+     "rel_gap": 1.502085378904076,
+     "matched": false,
+     "series_n": 21,
+     "series_missing": 9,
+     "largest_single_miss": {
+      "series": "DIA",
+      "target": 0.014954853273137697,
+      "achieved": 0.11681715575620767
+     },
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.014760147601476014,
+       "achieved": 0.014760147601476014,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.014954853273137697,
+       "achieved": 0.11681715575620767,
+       "matched": false
+      },
+      "EEM/SPY": {
+       "target": 0.014954853273137697,
+       "achieved": 0.02200902934537246,
+       "matched": false
+      },
+      "HYG/IEF": {
+       "target": 0.016536661466458658,
+       "achieved": 0.018408736349453978,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.01442569406641263,
+       "achieved": 0.01442569406641263,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.014954853273137697,
+       "achieved": 0.07279909706546275,
+       "matched": false
+      },
+      "IWM/SPY": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.014954853273137697,
+       "achieved": 0.0894469525959368,
+       "matched": false
+      },
+      "QQQ": {
+       "target": 0.014954853273137697,
+       "achieved": 0.05163656884875847,
+       "matched": false
+      },
+      "QQQ/EWDEF": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.014954853273137697,
+       "achieved": 0.10750564334085778,
+       "matched": false
+      },
+      "RSP/SPY": {
+       "target": 0.014954853273137697,
+       "achieved": 0.022855530474040632,
+       "matched": false
+      },
+      "RSPT/EWDEF": {
+       "target": 0.016021765417170496,
+       "achieved": 0.016021765417170496,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.014685635612666361,
+       "achieved": 0.014685635612666361,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.014954853273137697,
+       "achieved": 0.1012979683972912,
+       "matched": false
+      },
+      "SPY/GLD": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.014954853273137697,
+       "achieved": 0.022573363431151242,
+       "matched": false
+      },
+      "XLK/EWDEF": {
+       "target": 0.014954853273137697,
+       "achieved": 0.014954853273137697,
+       "matched": true
+      }
+     }
+    }
+   },
+   "matched_forms": [
+    "dd"
+   ],
+   "recorded_better_reference": "near",
+   "line_b": "matched"
+  },
+  {
+   "ledger_row": "537",
+   "set": "bt1 dgs10",
+   "forms": {
+    "dd": {
+     "target_pooled": 0.007542295030186572,
+     "achieved_pooled": 0.00755636717674651,
+     "abs_gap": 1.4072146559938187e-05,
+     "rel_gap": 0.0018657645323627823,
+     "matched": true,
+     "series_n": 21,
+     "series_missing": 0,
+     "largest_single_miss": null,
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.007663922793074085,
+       "achieved": 0.00823162077774624,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "EEM/SPY": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "HYG/IEF": {
+       "target": 0.008112324492979718,
+       "achieved": 0.008112324492979718,
+       "matched": true
+      },
+      "HY_OAS": {
+       "target": 0.007348938486663037,
+       "achieved": 0.007076755579749592,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "IWM/SPY": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "QQQ": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "QQQ/EWDEF": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "RSP/SPY": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "RSPT/EWDEF": {
+       "target": 0.007859733978234583,
+       "achieved": 0.007859733978234583,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.005507113354749885,
+       "achieved": 0.005507113354749885,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "SPY/GLD": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "XLK/EWDEF": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      }
+     }
+    },
+    "near": {
+     "target_pooled": 0.007542295030186572,
+     "achieved_pooled": 0.03373516791335342,
+     "abs_gap": 0.026192872883166844,
+     "rel_gap": 3.472798767263141,
+     "matched": false,
+     "series_n": 21,
+     "series_missing": 10,
+     "largest_single_miss": {
+      "series": "DIA",
+      "target": 0.007618510158013544,
+      "achieved": 0.11681715575620767
+     },
+     "per_series": {
+      "BAA_10Y": {
+       "target": 0.007663922793074085,
+       "achieved": 0.007380073800738007,
+       "matched": true
+      },
+      "CYC/DEF": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "DIA": {
+       "target": 0.007618510158013544,
+       "achieved": 0.11681715575620767,
+       "matched": false
+      },
+      "EEM/SPY": {
+       "target": 0.007618510158013544,
+       "achieved": 0.02200902934537246,
+       "matched": false
+      },
+      "HYG/IEF": {
+       "target": 0.008112324492979718,
+       "achieved": 0.018408736349453978,
+       "matched": false
+      },
+      "HY_OAS": {
+       "target": 0.007348938486663037,
+       "achieved": 0.008165487207403375,
+       "matched": true
+      },
+      "IGV/EWDEF": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "IWM": {
+       "target": 0.007618510158013544,
+       "achieved": 0.07279909706546275,
+       "matched": false
+      },
+      "IWM/SPY": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007900677200902935,
+       "matched": true
+      },
+      "MDY": {
+       "target": 0.007618510158013544,
+       "achieved": 0.0894469525959368,
+       "matched": false
+      },
+      "QQQ": {
+       "target": 0.007618510158013544,
+       "achieved": 0.05163656884875847,
+       "matched": false
+      },
+      "QQQ/EWDEF": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "RSP": {
+       "target": 0.007618510158013544,
+       "achieved": 0.10750564334085778,
+       "matched": false
+      },
+      "RSP/SPY": {
+       "target": 0.007618510158013544,
+       "achieved": 0.022855530474040632,
+       "matched": false
+      },
+      "RSPT/EWDEF": {
+       "target": 0.007859733978234583,
+       "achieved": 0.007859733978234583,
+       "matched": true
+      },
+      "SMH/EWDEF": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      },
+      "SPHB/SPLV": {
+       "target": 0.005507113354749885,
+       "achieved": 0.005507113354749885,
+       "matched": true
+      },
+      "SPY": {
+       "target": 0.007618510158013544,
+       "achieved": 0.1012979683972912,
+       "matched": false
+      },
+      "SPY/GLD": {
+       "target": 0.007618510158013544,
+       "achieved": 0.008182844243792325,
+       "matched": true
+      },
+      "SPY/TLT": {
+       "target": 0.007618510158013544,
+       "achieved": 0.022573363431151242,
+       "matched": false
+      },
+      "XLK/EWDEF": {
+       "target": 0.007618510158013544,
+       "achieved": 0.007618510158013544,
+       "matched": true
+      }
+     }
+    }
+   },
+   "matched_forms": [
+    "dd"
+   ],
+   "recorded_better_reference": "near",
+   "line_b": "matched"
+  }
+ ]
+}

@@ -1,4 +1,6 @@
 """Leak and definition tests for engine.risk_radar_eval (synthetic prices; no store access)."""
+import json
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
@@ -446,3 +448,49 @@ def test_hy_baseline_uses_release_rule_on_holiday_monday():
     assert h.loc["2019-10-14"] == 4.26     # Friday's value is NOT yet known on the holiday
     assert h.loc["2019-10-15"] == 4.08     # Fri + Mon released Tue; latest obs is Mon
     assert h.loc["2019-10-16"] == 4.00
+
+
+# ---- PLACEBO_PLACEMENT_SPEC_v1 Rule A (co-signed; Amendment 1) ----
+_FIXTURE = (Path(__file__).resolve().parents[1] / "research" / "risk_radar" / "placebo_spec"
+            / "placebo_fixture_v1.json")
+
+
+def _fx_mask(n, spec):
+    m = np.zeros(n, dtype=bool)
+    if spec == "all":
+        m[:] = True
+    elif spec != "none":
+        m[spec["from"]:spec["to"] + 1] = True
+    return m
+
+
+def test_rule_a_reproduces_shared_fixture_exactly():
+    fx = json.loads(_FIXTURE.read_text())
+    for c in fx["cases"]:
+        r = P.place_runs_rule_a(c["runs_index_order"], _fx_mask(c["n"], c["eligible"]),
+                                n_draws=fx["n_draws"], seed=fx["seed"], cap=fx["cap"])
+        e = fx["expected"][c["id"]]
+        assert (r["attempts"], r["discarded"], r["kept"], r["defined"]) == \
+            (e["attempts"], e["discarded"], e["kept"], e["defined"]), c["id"]
+        got = [[[int(s), int(e_ - s + 1)] for s, e_ in P._run_bounds(d)] for d in r["draws"][:3]]
+        assert got == e["first3_runs_start_len"], c["id"]
+
+
+def test_rule_a_full_length_no_session_zero_and_exact_mass():
+    elig = np.zeros(40, dtype=bool); elig[28:] = True
+    r = P.place_runs_rule_a([10], elig, n_draws=50, seed=3)
+    assert r["defined"] and all(d.sum() == 10 and d[28:].sum() == 10 and not d[0] for d in r["draws"])
+    empty = P.place_runs_rule_a([5], np.zeros(40, dtype=bool), n_draws=5, seed=0)
+    assert empty == {"attempts": 0, "kept": 0, "discarded": 0, "cap": 50, "defined": False,
+                     "draws": []}
+
+
+def test_placebo_not_defined_reports_no_figure():
+    px, idx, eps, _ = _pivot_setup(0, 0)
+    turns = P.turns_from_episodes(eps)
+    alert = pd.Series(False, index=idx); alert.iloc[5:40] = True; alert.iloc[45:80] = True
+    r = P.placebo(alert, px=px, turns=turns, episodes=eps, outcomes_through=idx[-1],
+                  near="high", n_draws=20, sealed_from=None, pre=5, post=2)
+    assert not r["defined"] and r["status"] == "not defined at this exposure"
+    assert (r["attempts"], r["kept"], r["discarded"], r["cap"]) == (200, 0, 200, 200)
+    assert r["top"]["placebo_p90"] is None and r["false_risk_off_per_year"]["placebo_median"] is None

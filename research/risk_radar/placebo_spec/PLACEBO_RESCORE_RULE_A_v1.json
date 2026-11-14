@@ -1,0 +1,844 @@
+{
+ "label": "CORRECTION LINE (not a new read): published Macro placebo reads re-scored under PLACEBO_PLACEMENT_SPEC_v1 Rule A (co-signed, Amendment 1); every pre-repair figure reproduced the published JSON first",
+ "inputs_sha256": {
+  "pre_repair_pivots": "2f5ddd2c6cf670ea51ffd9a83cca9790f245b32f99af758ae3d08fae930ed43e",
+  "states_unlagged": "2161032e5f2721ca129b822e6616e5368d69ec69c292169e3e2f016139757819",
+  "states_lag1": "e3b0f2d4206a3df121bdfe5039a9596648cb2120a53c44ce456a48bd46bef40d",
+  "walkforward_alert_series": "85e72c6cada271a0e0865301e8109f64580cc1a55ccbc788b26e755df6957bd2",
+  "pivots_rule_a": "5aa49391f462242c39f7639c6b789006b707adfd4409b93a9c8fc778d9cee4f9"
+ },
+ "reads": {
+  "WALKFORWARD_SCORECARD_OOS_v1 \u00a73": {
+   "walkforward_loud|high": {
+    "mass": 235,
+    "runs": 17,
+    "defined": true,
+    "status": "defined",
+    "attempts": 2001,
+    "kept": 2000,
+    "discarded": 1,
+    "cap": 20000,
+    "acceptance": 0.9995,
+    "eligible_sessions": 392,
+    "eligible_share": 0.3216,
+    "in_band_mass_share": {
+     "alert": 0.0,
+     "placed": 0.5697
+    },
+    "figures": {
+     "fro_med": 2.0673,
+     "fro_mean": 2.0565,
+     "prem_med": 0.2067,
+     "prem_mean": 0.3041,
+     "top_placebo_mean": 0.6456,
+     "top_placebo_median": 0.6667,
+     "top_placebo_p90": 0.8333,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.3261,
+     "bottom_placebo_median": 0.3333,
+     "bottom_placebo_p90": 0.5,
+     "bottom_share_draws_ge_observed": 0.937
+    },
+    "observed": {
+     "top": 0.0,
+     "bottom": 0.1667,
+     "fro": 0.0,
+     "prem": 1.4471
+    }
+   },
+   "walkforward_loud|low": {
+    "mass": 235,
+    "runs": 17,
+    "defined": true,
+    "status": "defined",
+    "attempts": 2000,
+    "kept": 2000,
+    "discarded": 0,
+    "cap": 20000,
+    "acceptance": 1.0,
+    "eligible_sessions": 509,
+    "eligible_share": 0.4176,
+    "in_band_mass_share": {
+     "alert": 0.2128,
+     "placed": 0.5975
+    },
+    "figures": {
+     "fro_med": 1.6538,
+     "fro_mean": 1.7355,
+     "prem_med": 0.6202,
+     "prem_mean": 0.6436,
+     "top_placebo_mean": 0.5808,
+     "top_placebo_median": 0.6667,
+     "top_placebo_p90": 0.8333,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.4387,
+     "bottom_placebo_median": 0.5,
+     "bottom_placebo_p90": 0.6667,
+     "bottom_share_draws_ge_observed": 0.9795
+    },
+    "observed": {
+     "top": 0.0,
+     "bottom": 0.1667,
+     "fro": 0.0,
+     "prem": 1.4471
+    }
+   }
+  },
+  "SCORECARD_INSAMPLE \u00a76 (INSAMPLE_READS_LAG1_v2)": {
+   "radar_loud|high": {
+    "mass": 271,
+    "runs": 21,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 644,
+    "eligible_share": 0.3735,
+    "in_band_mass_share": {
+     "alert": 0.0,
+     "placed": 0.5899
+    },
+    "figures": {
+     "fro_med": 1.9002,
+     "fro_mean": 1.8822,
+     "prem_med": 0.1462,
+     "prem_mean": 0.2095,
+     "top_placebo_mean": 0.5311,
+     "top_placebo_median": 0.5556,
+     "top_placebo_p90": 0.7778,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.2729,
+     "bottom_placebo_median": 0.25,
+     "bottom_placebo_p90": 0.5,
+     "bottom_share_draws_ge_observed": 0.9367
+    },
+    "observed": {
+     "top": 0.1111,
+     "bottom": 0.125,
+     "fro": 0.0,
+     "prem": 1.3155
+    }
+   },
+   "radar_loud|low": {
+    "mass": 271,
+    "runs": 21,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 812,
+    "eligible_share": 0.471,
+    "in_band_mass_share": {
+     "alert": 0.2251,
+     "placed": 0.6509
+    },
+    "figures": {
+     "fro_med": 1.6079,
+     "fro_mean": 1.6527,
+     "prem_med": 0.4385,
+     "prem_mean": 0.3722,
+     "top_placebo_mean": 0.5019,
+     "top_placebo_median": 0.4444,
+     "top_placebo_p90": 0.6667,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.3967,
+     "bottom_placebo_median": 0.375,
+     "bottom_placebo_p90": 0.625,
+     "bottom_share_draws_ge_observed": 0.9833
+    },
+    "observed": {
+     "top": 0.1111,
+     "bottom": 0.125,
+     "fro": 0.0,
+     "prem": 1.3155
+    }
+   },
+   "radar_riskoff|high": {
+    "mass": 242,
+    "runs": 26,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 644,
+    "eligible_share": 0.3735,
+    "in_band_mass_share": {
+     "alert": 0.0,
+     "placed": 0.6235
+    },
+    "figures": {
+     "fro_med": 2.3387,
+     "fro_mean": 2.2944,
+     "prem_med": 0.1462,
+     "prem_mean": 0.2251,
+     "top_placebo_mean": 0.6352,
+     "top_placebo_median": 0.6667,
+     "top_placebo_p90": 0.7778,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.3142,
+     "bottom_placebo_median": 0.25,
+     "bottom_placebo_p90": 0.5,
+     "bottom_share_draws_ge_observed": 0.9733
+    },
+    "observed": {
+     "top": 0.1111,
+     "bottom": 0.125,
+     "fro": 0.0,
+     "prem": 1.7541
+    }
+   },
+   "radar_riskoff|low": {
+    "mass": 242,
+    "runs": 26,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 812,
+    "eligible_share": 0.471,
+    "in_band_mass_share": {
+     "alert": 0.2521,
+     "placed": 0.6824
+    },
+    "figures": {
+     "fro_med": 2.0464,
+     "fro_mean": 2.0235,
+     "prem_med": 0.4385,
+     "prem_mean": 0.4833,
+     "top_placebo_mean": 0.5922,
+     "top_placebo_median": 0.5556,
+     "top_placebo_p90": 0.7778,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.4654,
+     "bottom_placebo_median": 0.5,
+     "bottom_placebo_p90": 0.6375,
+     "bottom_share_draws_ge_observed": 0.9967
+    },
+    "observed": {
+     "top": 0.1111,
+     "bottom": 0.125,
+     "fro": 0.0,
+     "prem": 1.7541
+    }
+   },
+   "base_hy_oas_chg21_top_decile|high": {
+    "mass": 190,
+    "runs": 33,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 644,
+    "eligible_share": 0.3735,
+    "in_band_mass_share": {
+     "alert": 0.0526,
+     "placed": 0.7239
+    },
+    "figures": {
+     "fro_med": 2.9234,
+     "fro_mean": 2.9434,
+     "prem_med": 0.2923,
+     "prem_mean": 0.2787,
+     "top_placebo_mean": 0.7222,
+     "top_placebo_median": 0.7778,
+     "top_placebo_p90": 0.8889,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.3725,
+     "bottom_placebo_median": 0.375,
+     "bottom_placebo_p90": 0.625,
+     "bottom_share_draws_ge_observed": 0.3367
+    },
+    "observed": {
+     "top": 0.3333,
+     "bottom": 0.5,
+     "fro": 0.1462,
+     "prem": 2.7773
+    }
+   },
+   "base_hy_oas_chg21_top_decile|low": {
+    "mass": 190,
+    "runs": 33,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 812,
+    "eligible_share": 0.471,
+    "in_band_mass_share": {
+     "alert": 0.3474,
+     "placed": 0.7631
+    },
+    "figures": {
+     "fro_med": 2.6311,
+     "fro_mean": 2.5785,
+     "prem_med": 0.5847,
+     "prem_mean": 0.5896,
+     "top_placebo_mean": 0.7059,
+     "top_placebo_median": 0.6667,
+     "top_placebo_p90": 0.8889,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.555,
+     "bottom_placebo_median": 0.5,
+     "bottom_placebo_p90": 0.75,
+     "bottom_share_draws_ge_observed": 0.75
+    },
+    "observed": {
+     "top": 0.3333,
+     "bottom": 0.5,
+     "fro": 0.1462,
+     "prem": 2.7773
+    }
+   },
+   "base_mech_near_high_1pct|high": {
+    "mass": 644,
+    "runs": 88,
+    "defined": true,
+    "status": "defined",
+    "attempts": 2443,
+    "kept": 300,
+    "discarded": 2143,
+    "cap": 3000,
+    "acceptance": 0.1228,
+    "eligible_sessions": 644,
+    "eligible_share": 0.3735,
+    "in_band_mass_share": {
+     "alert": 1.0,
+     "placed": 0.6402
+    },
+    "figures": {
+     "fro_med": 7.4548,
+     "fro_mean": 7.5059,
+     "prem_med": 1.0232,
+     "prem_mean": 0.9701,
+     "top_placebo_mean": 0.9978,
+     "top_placebo_median": 1.0,
+     "top_placebo_p90": 1.0,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.5983,
+     "bottom_placebo_median": 0.625,
+     "bottom_placebo_p90": 0.75,
+     "bottom_share_draws_ge_observed": 0.2433
+    },
+    "observed": {
+     "top": 0.8889,
+     "bottom": 0.75,
+     "fro": 6.5777,
+     "prem": 1.7541
+    }
+   },
+   "base_mech_near_high_1pct|low": {
+    "mass": 644,
+    "runs": 88,
+    "defined": true,
+    "status": "defined",
+    "attempts": 326,
+    "kept": 300,
+    "discarded": 26,
+    "cap": 3000,
+    "acceptance": 0.9202,
+    "eligible_sessions": 812,
+    "eligible_share": 0.471,
+    "in_band_mass_share": {
+     "alert": 0.8043,
+     "placed": 0.6943
+    },
+    "figures": {
+     "fro_med": 6.5777,
+     "fro_mean": 6.5543,
+     "prem_med": 2.6311,
+     "prem_mean": 2.6204,
+     "top_placebo_mean": 0.9919,
+     "top_placebo_median": 1.0,
+     "top_placebo_p90": 1.0,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.6646,
+     "bottom_placebo_median": 0.625,
+     "bottom_placebo_p90": 0.875,
+     "bottom_share_draws_ge_observed": 0.45
+    },
+    "observed": {
+     "top": 0.8889,
+     "bottom": 0.75,
+     "fro": 6.5777,
+     "prem": 1.7541
+    }
+   }
+  },
+  "PIVOT_SCORECARD_INSAMPLE Placebo (PIVOT_PLACEBO_INSAMPLE_v2)": {
+   "radar_loud|None": {
+    "mass": 270,
+    "runs": 25,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 1724,
+    "eligible_share": 1.0,
+    "in_band_mass_share": {
+     "alert": 1.0,
+     "placed": 1.0
+    },
+    "figures": {
+     "fro_med": 1.1694,
+     "fro_mean": 1.1611,
+     "prem_med": 0.4385,
+     "prem_mean": 0.5272,
+     "top_placebo_mean": 0.3937,
+     "top_placebo_median": 0.4444,
+     "top_placebo_p90": 0.5556,
+     "top_share_draws_ge_observed": 0.9933,
+     "bottom_placebo_mean": 0.375,
+     "bottom_placebo_median": 0.375,
+     "bottom_placebo_p90": 0.625,
+     "bottom_share_draws_ge_observed": 0.9833
+    },
+    "observed": {
+     "top": 0.1111,
+     "bottom": 0.125,
+     "fro": 0.0,
+     "prem": 1.7541
+    },
+    "pre_repair_reproduced": true
+   },
+   "radar_loud|high": {
+    "mass": 270,
+    "runs": 25,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 644,
+    "eligible_share": 0.3735,
+    "in_band_mass_share": {
+     "alert": 0.0,
+     "placed": 0.5843
+    },
+    "figures": {
+     "fro_med": 2.1926,
+     "fro_mean": 2.2077,
+     "prem_med": 0.1462,
+     "prem_mean": 0.2202,
+     "top_placebo_mean": 0.6108,
+     "top_placebo_median": 0.6667,
+     "top_placebo_p90": 0.7778,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.3058,
+     "bottom_placebo_median": 0.25,
+     "bottom_placebo_p90": 0.5,
+     "bottom_share_draws_ge_observed": 0.9567
+    },
+    "observed": {
+     "top": 0.1111,
+     "bottom": 0.125,
+     "fro": 0.0,
+     "prem": 1.7541
+    },
+    "pre_repair_reproduced": true
+   },
+   "radar_loud|low": {
+    "mass": 270,
+    "runs": 25,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 812,
+    "eligible_share": 0.471,
+    "in_band_mass_share": {
+     "alert": 0.2259,
+     "placed": 0.6537
+    },
+    "figures": {
+     "fro_med": 1.9002,
+     "fro_mean": 1.9529,
+     "prem_med": 0.4385,
+     "prem_mean": 0.4614,
+     "top_placebo_mean": 0.5815,
+     "top_placebo_median": 0.5556,
+     "top_placebo_p90": 0.7778,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.4225,
+     "bottom_placebo_median": 0.375,
+     "bottom_placebo_p90": 0.625,
+     "bottom_share_draws_ge_observed": 0.9933
+    },
+    "observed": {
+     "top": 0.1111,
+     "bottom": 0.125,
+     "fro": 0.0,
+     "prem": 1.7541
+    },
+    "pre_repair_reproduced": true
+   },
+   "hy_oas_top_decile|None": {
+    "mass": 190,
+    "runs": 33,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 1724,
+    "eligible_share": 1.0,
+    "in_band_mass_share": {
+     "alert": 1.0,
+     "placed": 1.0
+    },
+    "figures": {
+     "fro_med": 1.6079,
+     "fro_mean": 1.5387,
+     "prem_med": 0.5847,
+     "prem_mean": 0.6812,
+     "top_placebo_mean": 0.503,
+     "top_placebo_median": 0.5556,
+     "top_placebo_p90": 0.6667,
+     "top_share_draws_ge_observed": 0.9133,
+     "bottom_placebo_mean": 0.4708,
+     "bottom_placebo_median": 0.5,
+     "bottom_placebo_p90": 0.75,
+     "bottom_share_draws_ge_observed": 0.58
+    },
+    "observed": {
+     "top": 0.3333,
+     "bottom": 0.5,
+     "fro": 0.1462,
+     "prem": 2.7773
+    },
+    "pre_repair_reproduced": "pivot|hy_oas_top_decile|None: pre-repair run does not reproduce the published JSON: {'fro_mean': (1.5309, 1.6381), 'prem_mean': (0.6904, 0.781), 'top_placebo_mean': (0.4718, 0.5315), 'top_placebo_p90': (0.6667, 0.7778), 'top_share_draws_ge_observed': (0.8867, 0.9467), 'bottom_placebo_mean': (0.4525, 0.4971), 'bottom_placebo_p90': (0.625, 0.75), 'bottom_share_draws_ge_observed': (0.5367, 0.6267)}"
+   },
+   "hy_oas_top_decile|high": {
+    "mass": 190,
+    "runs": 33,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 644,
+    "eligible_share": 0.3735,
+    "in_band_mass_share": {
+     "alert": 0.0526,
+     "placed": 0.7239
+    },
+    "figures": {
+     "fro_med": 2.9234,
+     "fro_mean": 2.9434,
+     "prem_med": 0.2923,
+     "prem_mean": 0.2787,
+     "top_placebo_mean": 0.7222,
+     "top_placebo_median": 0.7778,
+     "top_placebo_p90": 0.8889,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.3725,
+     "bottom_placebo_median": 0.375,
+     "bottom_placebo_p90": 0.625,
+     "bottom_share_draws_ge_observed": 0.3367
+    },
+    "observed": {
+     "top": 0.3333,
+     "bottom": 0.5,
+     "fro": 0.1462,
+     "prem": 2.7773
+    },
+    "pre_repair_reproduced": "pivot|hy_oas_top_decile|high: pre-repair run does not reproduce the published JSON: {'fro_mean': (2.9346, 3.2372), 'prem_mean': (0.2704, 0.287), 'top_placebo_mean': (0.7193, 0.7393), 'bottom_placebo_mean': (0.36, 0.3725), 'bottom_share_draws_ge_observed': (0.2667, 0.33)}"
+   },
+   "hy_oas_top_decile|low": {
+    "mass": 190,
+    "runs": 33,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 812,
+    "eligible_share": 0.471,
+    "in_band_mass_share": {
+     "alert": 0.3474,
+     "placed": 0.7631
+    },
+    "figures": {
+     "fro_med": 2.6311,
+     "fro_mean": 2.5785,
+     "prem_med": 0.5847,
+     "prem_mean": 0.5896,
+     "top_placebo_mean": 0.7059,
+     "top_placebo_median": 0.6667,
+     "top_placebo_p90": 0.8889,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.555,
+     "bottom_placebo_median": 0.5,
+     "bottom_placebo_p90": 0.75,
+     "bottom_share_draws_ge_observed": 0.75
+    },
+    "observed": {
+     "top": 0.3333,
+     "bottom": 0.5,
+     "fro": 0.1462,
+     "prem": 2.7773
+    },
+    "pre_repair_reproduced": "pivot|hy_oas_top_decile|low: pre-repair run does not reproduce the published JSON: {'fro_mean': (2.5487, 2.7782), 'prem_mean': (0.6081, 0.6646), 'top_placebo_mean': (0.7048, 0.7352), 'top_share_draws_ge_observed': (1.0, 0.9967), 'bottom_placebo_mean': (0.5483, 0.5813), 'bottom_share_draws_ge_observed': (0.7533, 0.8133)}"
+   },
+   "vix_ge_20|None": {
+    "mass": 710,
+    "runs": 65,
+    "defined": true,
+    "status": "defined",
+    "attempts": 1141,
+    "kept": 300,
+    "discarded": 841,
+    "cap": 3000,
+    "acceptance": 0.2629,
+    "eligible_sessions": 1724,
+    "eligible_share": 1.0,
+    "in_band_mass_share": {
+     "alert": 1.0,
+     "placed": 1.0
+    },
+    "figures": {
+     "fro_med": 2.9234,
+     "fro_mean": 2.9697,
+     "prem_med": 1.7541,
+     "prem_mean": 1.6303,
+     "top_placebo_mean": 0.7252,
+     "top_placebo_median": 0.7778,
+     "top_placebo_p90": 0.8889,
+     "top_share_draws_ge_observed": 0.7967,
+     "bottom_placebo_mean": 0.5717,
+     "bottom_placebo_median": 0.625,
+     "bottom_placebo_p90": 0.75,
+     "bottom_share_draws_ge_observed": 0.7967
+    },
+    "observed": {
+     "top": 0.6667,
+     "bottom": 0.5,
+     "fro": 2.7773,
+     "prem": 2.1926
+    },
+    "pre_repair_reproduced": true
+   },
+   "vix_ge_20|high": {
+    "mass": 710,
+    "runs": 65,
+    "defined": true,
+    "status": "defined",
+    "attempts": 696,
+    "kept": 300,
+    "discarded": 396,
+    "cap": 3000,
+    "acceptance": 0.431,
+    "eligible_sessions": 644,
+    "eligible_share": 0.3735,
+    "in_band_mass_share": {
+     "alert": 0.1366,
+     "placed": 0.4116
+    },
+    "figures": {
+     "fro_med": 5.7007,
+     "fro_mean": 5.7338,
+     "prem_med": 0.4385,
+     "prem_mean": 0.5126,
+     "top_placebo_mean": 0.8759,
+     "top_placebo_median": 0.8889,
+     "top_placebo_p90": 1.0,
+     "top_share_draws_ge_observed": 0.9967,
+     "bottom_placebo_mean": 0.4654,
+     "bottom_placebo_median": 0.5,
+     "bottom_placebo_p90": 0.625,
+     "bottom_share_draws_ge_observed": 0.57
+    },
+    "observed": {
+     "top": 0.6667,
+     "bottom": 0.5,
+     "fro": 2.7773,
+     "prem": 2.1926
+    },
+    "pre_repair_reproduced": true
+   },
+   "vix_ge_20|low": {
+    "mass": 710,
+    "runs": 65,
+    "defined": true,
+    "status": "defined",
+    "attempts": 434,
+    "kept": 300,
+    "discarded": 134,
+    "cap": 3000,
+    "acceptance": 0.6912,
+    "eligible_sessions": 812,
+    "eligible_share": 0.471,
+    "in_band_mass_share": {
+     "alert": 0.3535,
+     "placed": 0.4568
+    },
+    "figures": {
+     "fro_med": 4.9698,
+     "fro_mean": 5.0444,
+     "prem_med": 1.4617,
+     "prem_mean": 1.4685,
+     "top_placebo_mean": 0.8715,
+     "top_placebo_median": 0.8889,
+     "top_placebo_p90": 1.0,
+     "top_share_draws_ge_observed": 0.9967,
+     "bottom_placebo_mean": 0.6,
+     "bottom_placebo_median": 0.625,
+     "bottom_placebo_p90": 0.75,
+     "bottom_share_draws_ge_observed": 0.84
+    },
+    "observed": {
+     "top": 0.6667,
+     "bottom": 0.5,
+     "fro": 2.7773,
+     "prem": 2.1926
+    },
+    "pre_repair_reproduced": true
+   },
+   "spy_below_200|None": {
+    "mass": 333,
+    "runs": 18,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 1724,
+    "eligible_share": 1.0,
+    "in_band_mass_share": {
+     "alert": 1.0,
+     "placed": 1.0
+    },
+    "figures": {
+     "fro_med": 0.877,
+     "fro_mean": 0.8429,
+     "prem_med": 0.2923,
+     "prem_mean": 0.3562,
+     "top_placebo_mean": 0.3063,
+     "top_placebo_median": 0.3333,
+     "top_placebo_p90": 0.5556,
+     "top_share_draws_ge_observed": 0.9667,
+     "bottom_placebo_mean": 0.2908,
+     "bottom_placebo_median": 0.25,
+     "bottom_placebo_p90": 0.5,
+     "bottom_share_draws_ge_observed": 0.9467
+    },
+    "observed": {
+     "top": 0.1111,
+     "bottom": 0.125,
+     "fro": 0.0,
+     "prem": 1.1694
+    },
+    "pre_repair_reproduced": true
+   },
+   "spy_below_200|high": {
+    "mass": 333,
+    "runs": 18,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 644,
+    "eligible_share": 0.3735,
+    "in_band_mass_share": {
+     "alert": 0.0,
+     "placed": 0.5724
+    },
+    "figures": {
+     "fro_med": 1.6079,
+     "fro_mean": 1.5903,
+     "prem_med": 0.1462,
+     "prem_mean": 0.1876,
+     "top_placebo_mean": 0.49,
+     "top_placebo_median": 0.4444,
+     "top_placebo_p90": 0.6667,
+     "top_share_draws_ge_observed": 0.9967,
+     "bottom_placebo_mean": 0.2642,
+     "bottom_placebo_median": 0.25,
+     "bottom_placebo_p90": 0.5,
+     "bottom_share_draws_ge_observed": 0.93
+    },
+    "observed": {
+     "top": 0.1111,
+     "bottom": 0.125,
+     "fro": 0.0,
+     "prem": 1.1694
+    },
+    "pre_repair_reproduced": true
+   },
+   "spy_below_200|low": {
+    "mass": 333,
+    "runs": 18,
+    "defined": true,
+    "status": "defined",
+    "attempts": 300,
+    "kept": 300,
+    "discarded": 0,
+    "cap": 3000,
+    "acceptance": 1.0,
+    "eligible_sessions": 812,
+    "eligible_share": 0.471,
+    "in_band_mass_share": {
+     "alert": 0.1832,
+     "placed": 0.6271
+    },
+    "figures": {
+     "fro_med": 1.3155,
+     "fro_mean": 1.3745,
+     "prem_med": 0.2923,
+     "prem_mean": 0.3279,
+     "top_placebo_mean": 0.4718,
+     "top_placebo_median": 0.4444,
+     "top_placebo_p90": 0.6667,
+     "top_share_draws_ge_observed": 1.0,
+     "bottom_placebo_mean": 0.3454,
+     "bottom_placebo_median": 0.375,
+     "bottom_placebo_p90": 0.5,
+     "bottom_share_draws_ge_observed": 0.9767
+    },
+    "observed": {
+     "top": 0.1111,
+     "bottom": 0.125,
+     "fro": 0.0,
+     "prem": 1.1694
+    },
+    "pre_repair_reproduced": true
+   }
+  }
+ }
+}
