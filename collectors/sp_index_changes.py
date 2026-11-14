@@ -20,7 +20,9 @@ from __future__ import annotations
 
 import logging
 import re
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
+from html import unescape
 
 import pandas as pd
 
@@ -54,24 +56,35 @@ def _date_iso(x) -> str | None:
 
 def parse_rss(text: str) -> list[dict]:
     """'Set to Join' items → [{url, announce_date}] from the press RSS. PURE."""
+    # Decode XML character references and CDATA exactly once, before matching
+    # titles or constructing requests. Reject malformed feeds as a whole; the
+    # existing fetch boundary logs the failure and preserves the cache.
+    if re.search(r"<!DOCTYPE", text, re.I):
+        raise ValueError("RSS document types are not supported")
+    root = ET.fromstring(text)
+    namespace = root.tag.rpartition("}")[0] + "}" if root.tag.startswith("{") else ""
+    if root.tag != namespace + "rss":
+        raise ValueError("Expected an RSS document")
+    channel = root.find(namespace + "channel")
+    if channel is None:
+        raise ValueError("RSS channel missing")
     out = []
-    for item in re.findall(r"<item>(.*?)</item>", text, re.S):
-        title = re.search(r"<title>(.*?)</title>", item, re.S)
-        if not title or not _JOIN_RE.search(title.group(1)):
+    for item in channel.findall(namespace + "item"):
+        title = item.findtext(namespace + "title") or ""
+        link = item.findtext(namespace + "link") or ""
+        pub = item.findtext(namespace + "pubDate")
+        if not _JOIN_RE.search(title) or not link.strip():
             continue
-        link = re.search(r"<link>(.*?)</link>", item, re.S)
-        pub = re.search(r"<pubDate>(.*?)</pubDate>", item, re.S)
-        if link:
-            out.append({"url": link.group(1).strip(),
-                        "announce_date": _date_iso(pub.group(1)) if pub else None,
-                        "title": title.group(1).strip()})
+        out.append({"url": link.strip(),
+                    "announce_date": _date_iso(pub) if pub else None,
+                    "title": title.strip()})
     return out
 
 
 def parse_changes_page(html: str, url: str, announce_date: str | None) -> list[dict]:
     """The change-table rows from one announcement page. PURE.
     Returns [{ticker, index, action, effective_date, announce_date, company, announce_url}]."""
-    plain = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html))
+    plain = re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", html)))
     out = []
     for eff, idx, action, company, ticker, _sector in _ROW_RE.findall(plain):
         out.append({
@@ -88,19 +101,28 @@ def parse_changes_page(html: str, url: str, announce_date: str | None) -> list[d
 
 def fetch_index_changes() -> pd.DataFrame:
     """Poll the RSS, fetch NEW announcement pages, parse + APPEND to the git-tracked cache.
-    Idempotent on (announce_url, ticker, action). Never raises; degrades to the cache."""
+    Idempotent on (announce_url, ticker, action). Poll failures degrade to the cache.
+    Return-only attrs["index_changes_poll"] reports whether this poll completed;
+    it is not persisted as historical cache metadata or evidence freshness.
+    """
     import requests
     cache = _cache_path()
     prev = pd.read_parquet(cache) if cache.exists() else pd.DataFrame()
     seen_urls = set(prev["announce_url"]) if not prev.empty else set()
 
+    poll_errors = []
     sess = requests.Session()
     sess.headers.update({"User-Agent": _UA})
     try:
         r = sess.get(_RSS, timeout=30)
-        items = parse_rss(r.text) if r.status_code == 200 else []
+        if r.status_code != 200:
+            poll_errors.append("rss_http_error")
+            items = []
+        else:
+            items = parse_rss(r.text)
     except Exception as e:  # noqa: BLE001
         log.warning("sp_index_changes: RSS fetch failed (%s) — keeping cache", e)
+        poll_errors.append("rss_fetch_or_parse_error")
         items = []
 
     fresh = []
@@ -110,15 +132,24 @@ def fetch_index_changes() -> pd.DataFrame:
         try:
             pg = sess.get(it["url"], timeout=30)
             if pg.status_code != 200:
+                poll_errors.append("page_http_error")
                 log.info("sp_index_changes: page %s -> HTTP %d (skip)", it["url"][-30:], pg.status_code)
                 continue
             rows = parse_changes_page(pg.text, it["url"], it["announce_date"])
+            if not rows:
+                poll_errors.append("page_parse_error")
+                log.warning("sp_index_changes: announcement %s yielded no parseable rows; "
+                            "keeping cache (not a verified no-change feed)", it["url"])
+                continue
             fresh.extend(rows)
             log.info("sp_index_changes: %s -> %d rows", it["url"].split("/")[-1][:40], len(rows))
         except Exception as e:  # noqa: BLE001
+            poll_errors.append("page_fetch_or_parse_error")
             log.warning("sp_index_changes: page fetch failed %s (%s)", it["url"][-30:], e)
 
+    poll = {"complete": not poll_errors, "errors": sorted(set(poll_errors))}
     if not fresh:
+        prev.attrs["index_changes_poll"] = poll
         return prev
     fdf = pd.DataFrame(fresh)
     fdf["_seen"] = datetime.now(timezone.utc).isoformat()
@@ -126,6 +157,7 @@ def fetch_index_changes() -> pd.DataFrame:
     combined = combined.drop_duplicates(["announce_url", "ticker", "action"], keep="first").reset_index(drop=True)
     combined.to_parquet(cache)
     log.info("sp_index_changes: +%d rows (cache=%d)", len(fdf), len(combined))
+    combined.attrs["index_changes_poll"] = poll
     return combined
 
 

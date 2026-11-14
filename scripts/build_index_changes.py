@@ -7,7 +7,7 @@
      dated catalyst (display-only context; the net-of-cost gate stays closed — see
      engine/index_changes for the honest gross-vs-net decomposition).
 
-No-op-safe: degrades to the existing cache if the press feed is unreachable.
+No-op-safe: retains the existing cache and last published artifact on incomplete collection.
 """
 from __future__ import annotations
 
@@ -28,6 +28,11 @@ log = logging.getLogger("build_index_changes")
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     changes = fetch_index_changes()                 # poll + accumulate the announcement feed
+    poll = changes.attrs.get("index_changes_poll", {})
+    if poll.get("complete") is not True:
+        log.warning("index_changes: incomplete collection (%s); retaining last published artifact",
+                    poll.get("errors", ["collection_status_missing"]))
+        return 1
     payload = IC.build_snapshot(changes=changes)
     site = config.ROOT / config.load()["storage"]["site_dir"]
     out = site / "index_changes"
