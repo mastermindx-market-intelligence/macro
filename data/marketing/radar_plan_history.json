@@ -2,6 +2,43 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-11-14",
+      "tickers": [
+        "AGI",
+        "ARGX",
+        "BCC",
+        "BHF",
+        "CFG",
+        "CLH",
+        "CMCSA",
+        "CNMD",
+        "CRK",
+        "DAN",
+        "DOW",
+        "ECX",
+        "EPR",
+        "FOXF",
+        "GRBK",
+        "GS",
+        "IQMM",
+        "LQDA",
+        "MBGL",
+        "MOS",
+        "MSEX",
+        "NVST",
+        "OSK",
+        "PTC",
+        "STRC",
+        "STWD",
+        "SUPN",
+        "T",
+        "VZ",
+        "WPC",
+        "WWW",
+        "XYL"
+      ]
+    },
+    {
       "as_of": "2026-11-13",
       "tickers": [
         "APP",
@@ -164,32 +201,6 @@
         "SPHR",
         "VYX",
         "WMB"
-      ]
-    },
-    {
-      "as_of": "2026-11-07",
-      "tickers": [
-        "AA",
-        "ACIW",
-        "ARLO",
-        "BC",
-        "CALM",
-        "CAR",
-        "CCK",
-        "CMCSA",
-        "CPAY",
-        "CXM",
-        "ECG",
-        "FLS",
-        "FNV",
-        "GEN",
-        "GLXY",
-        "IP",
-        "JBSS",
-        "MSI",
-        "RMBS",
-        "VRT",
-        "VYX"
       ]
     }
   ]
