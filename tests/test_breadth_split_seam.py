@@ -193,3 +193,212 @@ def test_seam_scan_sees_across_nan_gaps():
     cached.loc[DATES[95]:DATES[99], "AAA"] = np.nan
     merged = fresh.combine_first(cached)
     assert "AAA" in seam_suspects(None, None, merged)
+
+
+
+@pytest.mark.parametrize('cached_kind', ['dividend', 'historical_staircase', 'healthy', 'corrupt', 'missing_rows'])
+def test_fetch_replaces_cache_with_one_adjustment_vintage(tmp_path, monkeypatch, cached_kind):
+    """Warm cache cannot contribute old-basis rows to a new 200DMA."""
+    from lib import config
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    dates = pd.bdate_range(end=pd.Timestamp.now().normalize(), periods=260)
+    names = [f'T{i:03}' for i in range(400)]
+    # Last close above a coherent MA, but below the mixed-vintage MA.
+    values = np.full(260, 99.0); values[-1] = 99.5
+    coherent = pd.DataFrame({n: values for n in names}, index=dates)
+    cached = coherent.copy()
+    if cached_kind == 'dividend':
+        cached.iloc[:-20] *= 1.02
+    elif cached_kind == 'historical_staircase':
+        cached.iloc[:100] *= 1.04; cached.iloc[100:200] *= 1.02
+    if cached_kind == 'missing_rows':
+        coherent.iloc[:10, :10] = np.nan
+    a = BreadthAdapter.__new__(BreadthAdapter)
+    a.cfg = {'lookback_days_live': 1100, 'ma_windows': [50, 200], 'nhnl_window': 252}
+    a.cache_path = tmp_path / '_closes_cache.parquet'
+    if cached_kind == 'corrupt':
+        a.cache_path.write_bytes(b'not parquet')
+    else:
+        cached.to_parquet(a.cache_path)
+    a.constituents = lambda: pd.DataFrame({'symbol': names, 'name': names, 'sector': ['Tech']*400})
+    calls = []
+    def download(tickers, period):
+        calls.append((tickers, period))
+        a._last_extras = {}
+        return coherent.iloc[-20:].copy() if period == '1mo' else coherent.copy()
+    a._download_closes = download
+    result = a.fetch()
+    assert calls == [(names, '4y')]
+    pd.testing.assert_frame_equal(pd.read_parquet(a.cache_path), coherent, check_freq=False)
+    assert result['breadth'].iloc[-1]['pct_above_200'] == 100
+    assert result['sector_breadth'].iloc[-1]['Tech|pct_above_200'] == 100
+
+
+def test_failed_full_vintage_download_preserves_existing_cache(tmp_path):
+    a = BreadthAdapter.__new__(BreadthAdapter)
+    a.cfg = {'lookback_days_live': 1100}
+    a.cache_path = tmp_path / '_closes_cache.parquet'
+    original = b'retained cache, never a fallback success'
+    a.cache_path.write_bytes(original)
+    names = [f'T{i:03}' for i in range(400)]
+    a.constituents = lambda: pd.DataFrame({'symbol': names})
+    calls = []
+    def download(tickers, period):
+        calls.append(period)
+        raise RuntimeError('provider unavailable')
+    a._download_closes = download
+    with pytest.raises(RuntimeError, match='provider unavailable'):
+        a.fetch()
+    assert calls == ['4y']
+    assert a.cache_path.read_bytes() == original
+
+
+@pytest.mark.parametrize('case', ['short20', 'short60', 'short199', 'short250', 'one_full', 'stale', 'threshold', 'complete', 'early_gaps'])
+@pytest.mark.parametrize('runner', [False, True])
+def test_replacement_window_admission_precedes_all_writes(tmp_path, monkeypatch, case, runner):
+    from collectors import breadth as module, base
+    from lib import config, store
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: {'storage': {'run_status_file': 'run_status.json'}})
+    names = [f'T{i:03}' for i in range(400)]
+    dates = pd.bdate_range(end=pd.Timestamp.now().normalize(), periods=260)
+    values = np.full((260, 400), 99.0); values[-1] = 99.5
+    old = pd.DataFrame(values, index=dates, columns=names)
+    fresh = old.copy()
+    if case.startswith('short'):
+        fresh = fresh.tail(int(case[5:]))
+    elif case == 'one_full':
+        fresh.iloc[:-60, 1:] = np.nan
+    elif case == 'stale':
+        fresh.index = fresh.index - pd.Timedelta(days=28)
+    elif case == 'threshold':
+        fresh = fresh.iloc[:, :320]
+    elif case == 'early_gaps':
+        fresh.iloc[:10, :10] = np.nan
+    a = BreadthAdapter.__new__(BreadthAdapter)
+    a.cfg = {'lookback_days_live':1100, 'ma_windows':[50,200], 'nhnl_window':252}
+    a.ycfg = {'batch_size':80, 'retries':2, 'backoff_base_s':0}
+    a.cache_path = tmp_path/'_closes_cache.parquet'
+    members = pd.DataFrame({'symbol':names, 'name':names, 'sector':['Tech']*400})
+    a.constituents = lambda: members.copy()
+    old.to_parquet(a.cache_path)
+    original = a.cache_path.read_bytes()
+    constituents = tmp_path/'constituents.parquet'
+    constituents.write_bytes(b'previous membership')
+    extras = tmp_path/'_high_cache.parquet'
+    extras.write_bytes(b'previous extras')
+    calls=[]
+    def download(batch, **kw):
+        calls.append(kw['period'])
+        f = fresh[[n for n in batch if n in fresh.columns]]
+        return pd.concat({'Close':f}, axis=1)
+    monkeypatch.setattr(module.yf, 'download', download)
+    monkeypatch.setattr(module.time, 'sleep', lambda _: None)
+    reject = case not in ('threshold', 'complete', 'early_gaps')
+    if runner:
+        for key, frame in {'breadth':a.compute(old), 'sector_breadth':a.compute_sectors(old,members)}.items():
+            store.upsert(a.group,key,frame)
+        aggregate = tmp_path/'breadth/breadth.parquet'
+        aggregate_before=aggregate.read_bytes()
+        receipt=base.run_adapter(a)
+        assert receipt.status == ('failed' if reject else 'ok')
+        if reject: assert aggregate.read_bytes()==aggregate_before
+    elif reject:
+        with pytest.raises(RuntimeError, match='temporal coverage|precedes retained'):
+            a.fetch()
+    else:
+        result=a.fetch()
+        assert result['breadth'].iloc[-1]['pct_above_200']==100
+    assert calls and set(calls)=={'4y'}
+    if reject:
+        assert a.cache_path.read_bytes()==original
+        assert constituents.read_bytes()==b'previous membership'
+        assert extras.read_bytes()==b'previous extras'
+    else:
+        pd.testing.assert_frame_equal(pd.read_parquet(a.cache_path), fresh, check_freq=False)
+
+@pytest.mark.parametrize('full_history, windows, nhnl, should_refuse', [
+    (True, [50,200], 252, False),
+    (False, [50,300], 252, True),
+    (False, [50,200], 300, True),
+])
+def test_window_admission_uses_config_and_preserves_full_history(tmp_path, monkeypatch, full_history, windows, nhnl, should_refuse):
+    from lib import config
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    names=[f'T{i:03}' for i in range(400)]
+    a=BreadthAdapter.__new__(BreadthAdapter)
+    a.cfg={'lookback_days_live':1100, 'ma_windows':windows, 'nhnl_window':nhnl}
+    a.cache_path=tmp_path/'_closes_cache.parquet'
+    a.cache_path.write_bytes(b'original cache')
+    a.constituents=lambda: pd.DataFrame({'symbol':names,'name':names,'sector':['Tech']*400})
+    rows=20 if full_history else 260
+    frame=pd.DataFrame(99.0,index=pd.bdate_range(end=pd.Timestamp.now().normalize(),periods=rows),columns=names)
+    calls=[]
+    def download(tickers, period):
+        calls.append(period)
+        return frame
+    a._download_closes=download
+    if should_refuse:
+        with pytest.raises(RuntimeError,match='temporal coverage'):
+            a.fetch(full_history=full_history)
+    else:
+        assert a.fetch(full_history=True)['breadth'].empty
+    assert a.cache_path.read_bytes()==b'original cache'
+    assert calls==(['max'] if full_history else ['4y'])
+
+@pytest.mark.parametrize('case', ['short260', 'equal780', 'complete', 'calendar_roll', 'gap', 'anchor_missing', 'anchor_nan'])
+@pytest.mark.parametrize('direction', [1, -1])
+def test_native_replacement_preserves_cumulative_origin(tmp_path, monkeypatch, case, direction):
+    from collectors import breadth as module, base
+    from lib import config, store
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: {'storage':{'run_status_file':'run_status.json'}})
+    names=[f'T{i:03}' for i in range(400)]
+    dates=pd.bdate_range(end=pd.Timestamp.now().normalize(),periods=901)
+    truth=pd.DataFrame(np.repeat((200+direction*np.arange(901)*.1)[:,None],400,axis=1),index=dates,columns=names)
+    a=BreadthAdapter.__new__(BreadthAdapter)
+    a.cfg={'lookback_days_live':1100,'ma_windows':[50,200],'nhnl_window':252}
+    a.ycfg={'batch_size':80,'retries':2,'backoff_base_s':0}
+    a.cache_path=tmp_path/'breadth'/'_closes_cache.parquet'
+    a.cache_path.parent.mkdir(parents=True)
+    members=pd.DataFrame({'symbol':names,'name':names,'sector':['Synthetic']*400})
+    a.constituents=lambda:members.copy()
+    long=case in ('calendar_roll','anchor_missing','anchor_nan')
+    coherent=truth if long else truth.tail(781)
+    old=coherent.iloc[:-1]
+    old_cache=old.loc[old.index>=old.index.max()-pd.Timedelta(days=1130)]
+    old_cache.to_parquet(a.cache_path)
+    prior=a.compute(old)
+    response=coherent.copy()
+    if case=='short260':response=response.tail(260)
+    if case=='equal780':response=response.tail(780)
+    if case=='gap':response=response.drop(response.index[120])
+    if long:
+        clipped=coherent.loc[coherent.index>=coherent.index.max()-pd.Timedelta(days=1130)]
+        first=a.compute(clipped).index[0]
+        previous=clipped.index[clipped.index.get_loc(first)-1]
+        if case=='anchor_missing':prior=prior.drop(previous)
+        if case=='anchor_nan':prior.loc[previous,'ad_line']=np.nan
+    store.upsert(a.group,'breadth',prior)
+    aggregate=tmp_path/'breadth'/'breadth.parquet'
+    before_cache=a.cache_path.read_bytes();before_aggregate=aggregate.read_bytes()
+    def download(batch,**kw):
+        return pd.concat({'Close':response[batch]},axis=1)
+    monkeypatch.setattr(module.yf,'download',download)
+    monkeypatch.setattr(module.time,'sleep',lambda _:None)
+    result=base.run_adapter(a)
+    reject=case not in ('complete','calendar_roll')
+    assert result.status==('failed' if reject else 'ok')
+    if reject:
+        assert a.cache_path.read_bytes()==before_cache
+        assert aggregate.read_bytes()==before_aggregate
+    else:
+        published=store.read(a.group,'breadth')
+        assert published.ad_line.diff().dropna().eq(400*direction).all()
+        expected=a.compute(coherent)
+        assert published.ad_line.iloc[-1]==expected.ad_line.iloc[-1]
+        shared=published.index.intersection(expected.index)
+        pd.testing.assert_series_equal(published.loc[shared, 'nh'], expected.loc[shared, 'nh'], check_freq=False, check_dtype=False)
+        pd.testing.assert_series_equal(published.loc[shared, 'nl'], expected.loc[shared, 'nl'], check_freq=False, check_dtype=False)

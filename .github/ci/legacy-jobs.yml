@@ -1603,7 +1603,7 @@ jobs:
       - name: default-off Yahoo availability capture and publication refusals
         run: python -m pytest tests/test_yahoo_availability_capture.py -q
       - name: existing dual-basis store regressions
-        run: python -m pytest tests/test_dual_basis_store.py -q
+        run: python -m pytest tests/test_dual_basis_store.py tests/test_breadth_split_seam.py -q
 
   live-flow-recovery-guards:
     if: ${{ false }}

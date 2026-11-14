@@ -3,8 +3,9 @@
 - Constituents: Wikipedia table (current members — survivorship caveat:
   fine for the live signal, biased for backtests; see LIMITATIONS.md).
 - Closes: yfinance in batches. The raw close matrix is a local cache
-  (data/breadth/_closes_cache.parquet, gitignored — in CI restored via
-  actions/cache; on miss it is re-downloaded, ~2 min). Only the small
+  (data/breadth/_closes_cache.parquet, gitignored). Each acquisition replaces
+  its full live window on one adjustment vintage; cached rows never fill a
+  newly adjusted close series. Only the small
   computed aggregate series is committed to the repo.
 - Outputs (data/breadth/breadth.parquet):
     pct_above_50, pct_above_200  — % of members above 50/200DMA
@@ -23,7 +24,7 @@ import pandas as pd
 import yfinance as yf
 
 from collectors.base import Adapter
-from lib import config, delisted_symbols
+from lib import config, delisted_symbols, store
 
 log = logging.getLogger(__name__)
 
@@ -488,17 +489,14 @@ class BreadthAdapter(Adapter):
         if full_history:
             closes = self._download_closes(tickers, "max")
         else:
-            closes = None
-            if self.cache_path.exists():
-                cached = pd.read_parquet(self.cache_path)
-                # refresh tail; full re-pull if cache is stale beyond the overlap
-                age = (pd.Timestamp.utcnow().tz_localize(None) - cached.index.max()).days
-                if age <= 14:
-                    fresh = self._download_closes(tickers, "1mo")
-                    closes = self._merge_refreshed(fresh, cached)
-            if closes is None:
-                days = self.cfg["lookback_days_live"]
-                closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y")
+            # auto_adjust restates *all* earlier prices after dividends, not
+            # only splits. A one-month refresh combined with cached older rows
+            # creates mixed-vintage moving averages (#11124). Reuse the cold
+            # path's full live window on every acquisition, replacing rather
+            # than filling from the old cache. This also heals existing seams;
+            # a failed download aborts before any cache write.
+            days = self.cfg["lookback_days_live"]
+            closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y")
             cutoff = closes.index.max() - pd.Timedelta(days=self.cfg["lookback_days_live"] + 30)
             closes = closes[closes.index >= cutoff]
 
@@ -518,6 +516,40 @@ class BreadthAdapter(Adapter):
         if live_cols < len(tickers) * 0.8:
             raise RuntimeError(f"breadth closes too sparse: {live_cols}/{len(tickers)}")
 
+        if not full_history:
+            # Width alone does not qualify a replacement adjustment vintage.
+            # Keep the existing 80% population policy, but require that population
+            # to support every configured metric at the returned window's tip.
+            required = max(*self.cfg["ma_windows"], self.cfg["nhnl_window"])
+            qualified = int(closes.tail(required).notna().sum().ge(required).sum())
+            if qualified < len(tickers) * 0.8:
+                raise RuntimeError(
+                    f"breadth temporal coverage too sparse: {qualified}/{len(tickers)} over {required} rows"
+                )
+            # A new vintage must not roll back the retained observation clock.
+            # An unreadable cache may be healed, never used as fallback output.
+            prior = None
+            if self.cache_path.exists():
+                try:
+                    prior = pd.read_parquet(self.cache_path)
+                except Exception as e:  # noqa: BLE001
+                    log.warning("breadth prior cache unreadable; qualifying replacement alone (%s)", e)
+            if prior is not None and not prior.dropna(how="all").empty:
+                prior_tip = prior.dropna(how="all").index.max()
+                if closes.dropna(how="all").index.max() < prior_tip:
+                    raise RuntimeError("breadth returned tip precedes retained cache tip")
+
+                # Retain every observed session still inside the configured
+                # live calendar window, not merely a percentage of row count.
+                retained = prior.dropna(how="all")
+                cutoff = closes.index.max() - pd.Timedelta(days=self.cfg["lookback_days_live"] + 30)
+                required_dates = retained.index[retained.index >= cutoff]
+                if not required_dates.isin(closes.dropna(how="all").index).all():
+                    raise RuntimeError("breadth replacement omits retained live sessions")
+
+        aggregate = self.compute(closes)
+        if not full_history:
+            aggregate = self._anchor_ad_line(aggregate, closes)
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
         if not full_history:
             closes.to_parquet(self.cache_path)
@@ -550,7 +582,7 @@ class BreadthAdapter(Adapter):
             log.warning("%s constituents churn log failed (%s)", self.name, e)
         members.set_index("symbol").to_parquet(cpath)
 
-        out = {"breadth": self.compute(closes)}
+        out = {"breadth": aggregate}
         # per-GICS-sector breadth (rotation-tensor breadth-migration gap,
         # 2026-07-02 incident handoff H5): same closes matrix, split by the
         # sector labels already on the constituents table. Never fatal —
@@ -611,6 +643,36 @@ class BreadthAdapter(Adapter):
         except Exception as e:  # noqa: BLE001 — updown must never break the breadth build
             log.warning("breadth updown accrual failed (%s) — breadth.parquet unaffected", e)
         return out
+
+    def _anchor_ad_line(self, frame: pd.DataFrame, closes: pd.DataFrame) -> pd.DataFrame:
+        """Keep the stored cumulative origin without mixing price vintages."""
+        prior = store.read(self.group, "breadth")
+        if prior is None or prior.empty or frame.empty:
+            return frame
+        if not prior.index.is_unique or not prior.index.is_monotonic_increasing:
+            raise RuntimeError("breadth cumulative history index is ambiguous")
+        first, last = frame.index.min(), frame.index.max()
+        overlap = prior.index[(prior.index >= first) & (prior.index <= last)]
+        if not overlap.isin(frame.index).all():
+            raise RuntimeError("breadth replacement omits retained aggregate sessions")
+        prefix = prior.loc[prior.index < first]
+        if prefix.empty:
+            return frame
+        position = closes.index.get_loc(first)
+        if position == 0 or prefix.index[-1] != closes.index[position - 1]:
+            raise RuntimeError("breadth cumulative predecessor is unavailable")
+        anchor = prefix.iloc[-1].get("ad_line")
+        if pd.isna(anchor) or not float("-inf") < float(anchor) < float("inf"):
+            raise RuntimeError("breadth cumulative predecessor is invalid")
+        frame = frame.copy()
+        # A rolling replacement has no NH/NL witness during its warm-up.
+        # Zero would overwrite qualified retained counts via combine_first.
+        # Leave those cells unavailable so the store retains prior evidence.
+        warmup = closes.index[:max(0, self.cfg["nhnl_window"] - 1)]
+        frame.loc[frame.index.isin(warmup), ["nh", "nl"]] = float("nan")
+        target = float(anchor) + frame.iloc[0]["adv"] - frame.iloc[0]["dec"]
+        frame["ad_line"] += target - frame.iloc[0]["ad_line"]
+        return frame
 
     def compute_sectors(self, closes: pd.DataFrame,
                         members: pd.DataFrame) -> pd.DataFrame | None:
