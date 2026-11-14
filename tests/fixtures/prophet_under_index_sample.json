@@ -1,0 +1,15 @@
+{
+  "definition": "EMITTER_SPEC rev 2 (2026-11-13)",
+  "reference_sha256": {
+    "9": "2b68c9ef57a0cb36c59218bd1a763440ae9a6c7646b87f14c8d4c4908fc9c7f9",
+    "11": "472933502a4999d3c2dbf5919f7f6c7d24c4524fc6ceb5e17aa9566efe8bc45a"
+  },
+  "rows": [
+    {"panel": 9, "date": "2004-01-02", "groups_N": 9, "up_n": 9, "down_n": 0, "reader_state": "rising together", "damaged_n": 0, "damaged_of": 9, "offsetting_band": "almost none", "display_form": "compact"},
+    {"panel": 9, "date": "2004-02-23", "groups_N": 9, "up_n": 5, "down_n": 4, "reader_state": "pulling apart", "damaged_n": 0, "damaged_of": 9, "offsetting_band": "more than usual", "display_form": "full"},
+    {"panel": 9, "date": "2004-03-11", "groups_N": 9, "up_n": 2, "down_n": 7, "reader_state": "falling together", "damaged_n": 1, "damaged_of": 9, "offsetting_band": "about usual", "display_form": "falling_with_index"},
+    {"panel": 11, "date": "2019-07-19", "groups_N": 11, "up_n": 9, "down_n": 2, "reader_state": "rising together", "damaged_n": 1, "damaged_of": 11, "offsetting_band": "almost none", "display_form": "compact"},
+    {"panel": 11, "date": "2019-07-31", "groups_N": 11, "up_n": 8, "down_n": 3, "reader_state": "quiet", "damaged_n": 1, "damaged_of": 11, "offsetting_band": "about usual", "display_form": "compact"},
+    {"panel": 11, "date": "2019-08-19", "groups_N": 11, "up_n": 3, "down_n": 8, "reader_state": "pulling apart", "damaged_n": 1, "damaged_of": 11, "offsetting_band": "about usual", "display_form": "full"}
+  ]
+}

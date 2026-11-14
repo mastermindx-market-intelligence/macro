@@ -99,6 +99,7 @@ os.chmod(os.environ["PROPHET_SOURCE_BLOB"], 0o400)
 exact = {
     "site/prophet/index.json",
     "site/prophet/showcase.json",
+    "site/prophet/under_index.json",
     # G-D board read: the ticker-keyed spark bodies that
     # index.json plans[].board_read.fields.spark reference. Build-owned
     # like showcase.json; without this entry the artifact is
@@ -164,6 +165,11 @@ fi
 
 echo "::group::build_prophet (plan refresh + ledger advancement)"
 python -m scripts.build_prophet 2>&1; rc=$?
+# Under-index daily feed: same completed-session stores and guarded checkpoint.
+# A failed feed build withholds this checkpoint, never republishes stale readouts.
+if [ "$rc" -eq 0 ]; then
+  python -m scripts.build_prophet_under_index 2>&1; rc=$?
+fi
 echo "::endgroup::"
 if [ "$rc" -eq 0 ]; then
   # Bind every newly-created plan to the exact admitted board row that
@@ -340,6 +346,7 @@ root = Path(os.environ["GITHUB_WORKSPACE"])
 exact = {
     "site/prophet/index.json",
     "site/prophet/showcase.json",
+    "site/prophet/under_index.json",
     # G-D board read: the ticker-keyed spark bodies that
     # index.json plans[].board_read.fields.spark reference. Build-owned
     # like showcase.json; without this entry the artifact is

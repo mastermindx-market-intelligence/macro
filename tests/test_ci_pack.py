@@ -5344,6 +5344,10 @@ CURATED_EXCLUSIVE = {
     # package, so the three packing probes keep their base aggregates
     # with no ceiling moved.
     "xguerrilla-admission",
+    # Prophet under-index feed (2026-11-13): the feed builder, its engine module
+    # and its fixed-sample suite run in one gate:code exclusive home, selected only
+    # by edits to that closure, so no shared pack ceiling moves.
+    "prophet-under-index",
 }
 
 
