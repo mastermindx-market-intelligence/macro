@@ -1135,3 +1135,231 @@ console.log('suite candidate, standalone, fragment, history, scroll and keyboard
         capture_output=True, text=True, check=False,
     )
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+from html.parser import HTMLParser as _BusinessHTMLParser
+
+
+class _BusinessNode:
+    def __init__(self, name='', attrs=()):
+        self.name, self.attrs, self.contents = name, dict(attrs), []
+
+    def _nodes(self):
+        for item in self.contents:
+            if isinstance(item, _BusinessNode):
+                yield item
+                yield from item._nodes()
+
+    def _class(self, name):
+        return name in self.attrs.get('class', '').split()
+
+    def select(self, selector):
+        if selector == '.mq-metric':
+            return [n for n in self._nodes() if n._class('mq-metric')]
+        if selector == '.mq-metric-meta > div':
+            return [child for n in self._nodes() if n._class('mq-metric-meta')
+                    for child in n.contents if isinstance(child, _BusinessNode) and child.name == 'div']
+        if selector == 'dd':
+            return [n for n in self._nodes() if n.name == 'dd']
+        if selector == 'dt .l-en':
+            return [span for n in self._nodes() if n.name == 'dt'
+                    for span in n._nodes() if span._class('l-en')]
+        raise ValueError('Unsupported Business definition test selector: ' + selector)
+
+    def select_one(self, selector):
+        found = self.select(selector)
+        return found[0] if found else None
+
+    def get_text(self, strip=False):
+        return ''.join(item.get_text(strip=strip) if isinstance(item, _BusinessNode)
+                       else item.strip() if strip else item for item in self.contents)
+
+
+class _BusinessParser(_BusinessHTMLParser):
+    VOID = frozenset('area base br col embed hr img input link meta param source track wbr'.split())
+
+    def __init__(self, html):
+        super().__init__(convert_charrefs=True)
+        self.root = _BusinessNode()
+        self.stack = [self.root]
+        self.feed(html)
+        self.close()
+
+    def handle_starttag(self, name, attrs):
+        node = _BusinessNode(name, attrs)
+        self.stack[-1].contents.append(node)
+        if name not in self.VOID:
+            self.stack.append(node)
+
+    def handle_startendtag(self, name, attrs):
+        self.stack[-1].contents.append(_BusinessNode(name, attrs))
+
+    def handle_endtag(self, name):
+        for i in range(len(self.stack) - 1, 0, -1):
+            if self.stack[i].name == name:
+                del self.stack[i:]
+                return
+
+    def handle_data(self, data):
+        self.stack[-1].contents.append(data)
+
+
+def _business_document(html, parser):
+    if parser != 'html.parser':
+        raise ValueError('Only the standard HTML parser is used for this regression')
+    return _BusinessParser(html).root
+
+
+@pytest.mark.parametrize("period", ["2025-01-31", "2026-11-30"])
+def test_business_period_alias_compatibility_is_not_a_future_date_heuristic(period):
+    from copy import deepcopy
+    from lib.macro_suite_view import qualify_business_clock_view, business_clock_qualification
+    snapshot = {
+        "workspace": {"id": "business_activity"},
+        "generation": {"calculation_as_of": period, "built_at": "2026-11-03T17:25:24Z"},
+        "availability": {"state": "CURRENT", "required": [{"source_asof": period, "status": "PRESENT"}]},
+        "metrics": {"items": [{"reference_period": period, "observed_at": period,
+            "calculation_as_of": period, "value": 0, "released_at": None}]},
+        "sources": {"items": [{"reference_period": period, "first_known_at": None}]},
+    }
+    before = deepcopy(snapshot)
+    projected = qualify_business_clock_view(snapshot)
+    assert snapshot == before
+    assert projected["metrics"]["items"][0]["value"] == 0
+    assert projected["metrics"]["items"][0]["reference_period"] == period
+    assert projected["metrics"]["items"][0]["observed_at"] is None
+    assert projected["metrics"]["items"][0]["calculation_as_of"] is None
+    assert projected["generation"]["calculation_as_of"] is None
+    assert projected["generation"]["built_at"] == before["generation"]["built_at"]
+    assert projected["availability"]["state"] == "CURRENT"
+    assert projected["availability"]["required"][0]["source_asof"] is None
+    q = business_clock_qualification(snapshot)
+    assert q["reference_period"] == period and q["presence_only"] is True and q["tone"] == "neutral"
+
+
+def test_business_clock_projection_preserves_explicit_distinct_clocks_and_other_family():
+    from copy import deepcopy
+    from lib.macro_suite_view import qualify_business_clock_view, business_clock_qualification
+    snapshot = {"workspace": {"id": "business_activity"},
+        "generation": {"calculation_as_of": "2026-11-03"},
+        "metrics": {"items": [{"reference_period": "2026-11-30", "observed_at": "2026-11-02",
+            "calculation_as_of": "2026-11-03", "released_at": "2026-11-02T14:00:00Z",
+            "available_at": "2026-11-02T14:00:01Z", "collected_at": "2026-11-02T14:00:02Z",
+            "value": None, "null_reason": "RIGHTS_BLOCKED"}]}}
+    before = deepcopy(snapshot)
+    assert qualify_business_clock_view(snapshot) == before
+    other = deepcopy(snapshot); other["workspace"]["id"] = "liquidity_regime"
+    assert qualify_business_clock_view(other) is other
+    assert business_clock_qualification(other) is None
+
+
+def test_business_legacy_read_view_qualifies_current_and_keeps_periods_and_rights():
+    import json
+    from copy import deepcopy
+    from lib import macro_suite_view as V
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+    snapshot, artifact = builder.read_workspace(ROOT / "site/macrodata", page)
+    before = deepcopy(snapshot)
+    view = V.build_view(snapshot, page_built_at="2026-11-03T21:52:38Z", artifact=artifact)
+    assert snapshot == before
+    assert view["evidence"]["artifact"] == artifact
+    assert view["evidence"]["generation"]["content_sha256"] == snapshot["generation"]["content_sha256"] == artifact["sha256"]
+    assert len(view["metrics"]) == len(snapshot["metrics"]["items"]) == 31
+    assert view["context"]["state"] == "CURRENT"
+    assert view["context"]["state_tone"] == "neutral"
+    assert view["context"]["calculation_as_of"] is None
+    assert view["context"]["last_source_cut"] is None
+    assert view["context"]["clock_qualification"]["reference_period"] == "2026-11-30"
+    for row, metric in zip(view["metrics"], snapshot["metrics"]["items"]):
+        assert row["value"] == labels.value_pair(metric["value"])
+        assert row["reference_period"] == metric["reference_period"]
+        clocks = {c["key"]: c["value"] for c in row["clocks"]}
+        assert clocks["observed_at"] is None and clocks["calculation_as_of"] is None
+        if metric["freshness"] == "CURRENT":
+            assert row["freshness_tone"] == "neutral"
+        if metric["rights_state"] == "RIGHTS_BLOCKED":
+            assert row["rights"] == labels.RIGHTS_STATE["RIGHTS_BLOCKED"]
+    for source, raw in zip(view["evidence"]["sources"], snapshot["sources"]["items"]):
+        clocks = {c["key"]: c["value"] for c in source["clocks"]}
+        assert clocks["reference_period"] == raw["reference_period"]
+        assert clocks["observed_at"] is None
+        assert clocks["released_at"] == raw["released_at"]
+    failed = deepcopy(snapshot); failed["availability"]["state"] = "SOURCE_FAILED"
+    assert V._context(failed, "2026-11-03T21:52:38Z")["state_tone"] == "bad"
+
+
+def test_business_reference_period_does_not_claim_method_or_definition_publication():
+    from lib import macro_suite_disclosure as disclosure
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+    snapshot, artifact = builder.read_workspace(ROOT / "tests/fixtures/macro_suite_t11", page)
+    view = macro_suite_view.build_view(snapshot, page_built_at="2026-11-03T21:52:38Z", artifact=artifact)
+    assert view["headline"]["effective_date"] == snapshot["headline"]["effective_date"]
+    assert view["headline"]["method_version_label"] == disclosure.method_version_pair(
+        snapshot["headline"]["method_version"], None)
+    for row, raw in zip(view["metrics"], snapshot["metrics"]["items"]):
+        assert row["definition_label"] == disclosure.definition_version_pair(raw["definition_version"], None)
+    for axis in view["axes"]:
+        if axis["definition_version"]:
+            assert "published" not in axis["definition_version"]["en"]
+            assert "发布于" not in axis["definition_version"]["zh"]
+    html = builder.render_page(builder._environment(ROOT), page, view)
+    headline = next(n for n in _business_document(html, "html.parser")._nodes() if n._class("mq-headline"))
+    date_label = next(n for n in headline._nodes() if n.name == "dt")
+    assert next(n for n in date_label._nodes() if n._class("l-en")).get_text(strip=True) == "Reference period"
+    assert next(n for n in date_label._nodes() if n._class("l-zh")).get_text(strip=True) == "参考期"
+
+
+@pytest.mark.parametrize("status,reason", [("PRESENT", None), ("PARTIAL", "COMPUTATION_REFUSED")])
+def test_business_present_clock_absence_is_not_missing_data(status, reason):
+    from copy import deepcopy
+    from lib import macro_suite_view as V
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+    snapshot, artifact = builder.read_workspace(ROOT / "tests/fixtures/macro_suite_t11", page)
+    component = snapshot["availability"]["required"][0]
+    component.update(status=status, freshness="CURRENT", source_asof=None, null_reason=reason)
+    before = deepcopy(snapshot)
+    view = V.build_view(snapshot, page_built_at=BUILT_AT, artifact=artifact)
+    row = view["context"]["required"][0]
+    assert row["presence"] == labels.PRESENCE[status]
+    assert row["source_asof"] is None and view["context"]["last_source_cut"] is None
+    assert row["absence"]["token"] == (reason or "UNKNOWN")
+    assert row["absence"]["label"] == {"en": "Observation timing not supplied", "zh": "来源未提供观察时间"}
+    assert row["freshness_tone"] == "neutral"
+    diagnostic = next(d for d in view["diagnostics"] if d["title"] == row["label"])
+    assert diagnostic["tone"] == "warn"
+    assert "No accepted source cut" in diagnostic["body"]["en"]
+    assert "No reading arrived today" not in diagnostic["body"]["en"]
+    assert "Observation timing not supplied" in diagnostic["body"]["en"]
+    assert snapshot == before
+
+
+@pytest.mark.parametrize("status,freshness,reason", [
+    ("ABSENT", "SOURCE_FAILED", "SOURCE_FAILED"),
+    ("PRESENT", "RIGHTS_BLOCKED", "RIGHTS_BLOCKED"),
+    ("PRESENT", "SOURCE_FAILED", "DISAGREEMENT"),
+    ("PRESENT", "CURRENT", "DISAGREEMENT"),
+])
+def test_business_unknown_clock_does_not_erase_data_rights_or_cut_refusals(status, freshness, reason):
+    from copy import deepcopy
+    from lib import macro_suite_view as V
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+    snapshot, artifact = builder.read_workspace(ROOT / "tests/fixtures/macro_suite_t11", page)
+    snapshot["availability"]["state"] = "SOURCE_FAILED"
+    component = snapshot["availability"]["required"][0]
+    component.update(status=status, freshness=freshness, source_asof=None, null_reason=reason)
+    snapshot["availability"]["contradiction"] = {
+        "present": True, "kind": None,
+        "en": "Source cuts are ambiguous or duplicated.", "zh": "来源截止存在歧义或重复。",
+        "components": [component["component_id"]],
+    }
+    before = deepcopy(snapshot)
+    view = V.build_view(snapshot, page_built_at=BUILT_AT, artifact=artifact)
+    row = view["context"]["required"][0]
+    assert row["presence"] == labels.PRESENCE[status]
+    assert row["absence"]["token"] == reason
+    assert row["absence"]["label"] == labels.NULL_REASON[reason]
+    assert view["context"]["state_tone"] == "bad"
+    diagnostic = next(d for d in view["diagnostics"] if d["title"] == row["label"])
+    assert diagnostic["tone"] == "warn" and "No accepted source cut" in diagnostic["body"]["en"]
+    assert any(d["tone"] == "bad" and d["body"]["en"] == "Source cuts are ambiguous or duplicated." for d in view["diagnostics"])
+    assert snapshot == before
