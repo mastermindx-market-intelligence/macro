@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T14:42:00.747114+00:00",
-  "count": 3371,
+  "generated_at": "2026-11-14T14:52:16.978249+00:00",
+  "count": 3372,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1200,6 +1200,26 @@
       "tickers": [],
       "top_pick": true,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nil3lx8ka7p-b49e03",
+      "title": "GS Utilities Daily Siemens Energy Higher growth & returns of value with scope for further upgrades United Utilities Grou...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T04:29:00Z",
+      "summary_points": [
+        "Siemens Energy: FY 2030 targets upgraded 7% with 4-5x EV/EBITDA New guidance (16% top-end profit margin before Special Items) driven by backlog margins, operational excellence, Siemens Gamesa turnaround, and trademark fee removal; capital allocation shifts to 40-60% dividends/buybacks (€27bn returns of value, 25% market cap).",
+        "Germany’s coal/oil plant legislation: Policy shift risks decarbonization Draft law mandates 30-day fuel reserves for coal/oil plants (vs 10 days for oil) until 2028, increasing fossil fuel reliance and creating supply chain risks amid gas shortages.",
+        "Saudi-Turkey Wind Infrastructure Deal: 3GW renewables partnership 3GW wind + BESS + HVDC under COP31 agreement (part of 5GW renewables deal), accelerating clean energy infrastructure investment and creating near-term opportunities.",
+        "European Electrification Acceleration: Power demand +5% pa Hyper-electrification scenario drives power demand growth, tripling PowerGen investments to €2tn; electrification spending to €3.5tn by 2026-35, requiring strong balance sheets for outperformance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
