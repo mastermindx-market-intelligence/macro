@@ -1,0 +1,75 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
+const path=process.argv[2];
+if(!path){console.error('Usage: node verify-prototype.mjs <prototype.html>');process.exit(2)}
+const bytes=fs.readFileSync(path);
+const html=(path.endsWith('.gz')?gunzipSync(bytes,{maxOutputLength:2000000}):bytes).toString('utf8');
+const script=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(x=>x[1]).join('\n');
+const prefix=script.split(/\nlet previousFocus/)[0];
+const elements=new Map();
+const element=(key)=>{if(!elements.has(key))elements.set(key,{innerHTML:'',textContent:'',dataset:{},style:{},setAttribute(){},querySelectorAll(){return []}});return elements.get(key)};
+const context=vm.createContext({document:{querySelector:element,getElementById:element},innerWidth:1440,console});
+vm.runInContext(prefix,context,{timeout:2000});
+const run=(source)=>vm.runInContext(source,context,{timeout:2000});
+const reset=()=>run("state.symbol='SPY';state.selected='600';state.freshness='dated'; for(let i=rows.length-1;i>=0;i--){if(rows[i].k.endsWith('-test'))rows.splice(i,1)};");
+const results=[];
+function test(name,fn){try{reset();fn();results.push({name,status:'PASS'})}catch(e){results.push({name,status:'FAIL',message:String(e.message).split('\n')[0]})}}
+test('SPY selected strike retains current value',()=>assert.match(run('details()'),/-11\.5M/));
+test('Reported zero remains 0.0M, not unknown',()=>{run("rows.push({k:'620-test',v:0,previous:0,c:'0.0',p:0});state.selected='620-test'");assert.match(run('details()').split('<small>')[0],/0\.0M/)});
+test('Null remains unavailable without a made-up unit',()=>{run("rows.push({k:'625-test',v:null,previous:null,c:'Unknown',p:0});state.selected='625-test'");const text=run('details()');assert.match(text,/Unavailable/);assert.doesNotMatch(text,/UnknownM|—M|NaNM/)});
+test('Earlier comparison belongs to the selected row',()=>{run("state.selected='590'");assert.match(run('details()'),/-5\.5M/);assert.doesNotMatch(run('details()'),/-18\.0M|−18\.0M/)});
+test('NVDA cannot receive the SPY strike fixture',()=>{run("state.symbol='NVDA';renderRows()");assert.doesNotMatch(element('#heatRows').innerHTML,/data-strike=/);assert.match(element('#heatRows').innerHTML,/NVDA/)});
+test('NVDA cannot display SPY evidence',()=>{run("state.symbol='NVDA'");assert.doesNotMatch(run('details()'),/-11\.5M|−11\.5M/);assert.match(run('details()'),/Unavailable|No fixture/)});
+test('Empty selection contains no retained strike rows',()=>{run("state.freshness='empty';renderRows()");assert.doesNotMatch(element('#heatRows').innerHTML,/data-strike=/)});
+test('Missing comparison never appends M to an absence',()=>{run("state.selected='610'");assert.doesNotMatch(run('details()'),/UnknownM|—M|NaNM/)});
+test('Canonical view catalog preserves Surface',()=>assert.match(script,/key:\s*['"]surface['"]/));
+test('Canonical view catalog preserves Positioning',()=>assert.match(script,/key:\s*['"]positioning['"]/));
+test('Canonical view catalog preserves Levels',()=>assert.match(script,/key:\s*['"]levels['"]/));
+test('Screener uses the actual vol page key',()=>assert.match(script,/key:\s*['"]screener['"][^\n]*pageKey:\s*['"]vol['"]/));
+test('Native zero_dte uses actual 0dte page key',()=>assert.match(script,/key:\s*['"]zero_dte['"][^\n]*pageKey:\s*['"]0dte['"]/));
+test('Table action does not merely dim chart bars',()=>assert.doesNotMatch(script,/dataset\.chart==='table'\?'\.28':'1'/));
+test('Evidence dock uses measured host width',()=>assert.match(script,/getBoundingClientRect\(\)\.width/));
+test('Language switch updates the document language',()=>assert.match(script,/document\.documentElement\.lang\s*=/));
+test('Save action stays disabled',()=>assert.match(html,/<button(?=[^>]*id="saveBtn")(?=[^>]*disabled)[^>]*>/));
+test('No remote assets or data fetches',()=>{assert.doesNotMatch(html,/<(?:script|link|img)[^>]*(?:src|href)=["']https?:/i);assert.doesNotMatch(script,/\bfetch\s*\(|XMLHttpRequest|WebSocket\s*\(/)});
+
+if(!process.argv.includes('--core')){
+test('Exact native pane count is 15',()=>assert.equal(run('nativeViews.length'),15));
+test('Native keys are unique',()=>assert.equal(run('new Set(nativeViews.map(x=>x.key)).size'),15));
+test('Native page keys are unique',()=>assert.equal(run('new Set(nativeViews.map(x=>x.pageKey)).size'),15));
+test('Vol remains screener, not volatility',()=>assert.equal(run("resolveView('vol').key"),'screener'));
+test('Volatility has a separate identity',()=>assert.equal(run("resolveView('volatility').key"),'volatility'));
+test('Prism is exposure, not a new pane',()=>assert.equal(run("resolveView('prism').key"),'gex'));
+test('Unknown native view defaults to Tape',()=>assert.equal(run("resolveView('unknown').key"),'tape'));
+test('Plan invents no native route',()=>assert.equal(run("nativeRoute('plan')"),null));
+test('Equity replay keeps only its admitted symbol key',()=>assert.equal(run("nativeRoute('equity-replay','NVDA')"),'/options/equity-replay?symbol=NVDA'));
+test('Futures does not infer a pair from SPY',()=>assert.equal(run("nativeRoute('futures','SPY')"),'/options/futures'));
+test('Nested research remains a gex seam',()=>assert.equal(run("nativeRoute('research')"),'/options?tab=gex&research=1'));
+test('Seven illustrative observations are retained',()=>assert.equal(run('contextRows().length'),7));
+test('Matched population reconciles to five finite pairs',()=>assert.equal(run('matchedCount()'),5));
+test('Positive value is explicitly signed',()=>assert.equal(run('millions(8.2)'),'+8.2M'));
+test('Negative zero is normalized',()=>assert.equal(run('millions(-0)'),'0.0M'));
+test('NaN is unavailable',()=>assert.equal(run('millions(NaN)'),'Unavailable'));
+test('Infinity is unavailable',()=>assert.equal(run('millions(Infinity)'),'Unavailable'));
+test('A valid zero has a zero delta',()=>assert.equal(run('rowChange({v:0,previous:0})'),0));
+test('One unavailable leg prevents a delta',()=>assert.equal(run('rowChange({v:5.6,previous:null})'),null));
+test('Two absent legs never become zero',()=>assert.equal(run('rowChange({v:null,previous:null})'),null));
+test('Permission loss withholds rows',()=>{run("state.freshness='permission'");assert.equal(run('contextRows().length'),0)});
+test('Loading withholds prior rows',()=>{run("state.freshness='loading'");assert.equal(run('contextRows().length'),0)});
+test('Refresh error retains only same-root dated rows',()=>{run("state.freshness='error'");assert.equal(run('contextRows().length'),7);run("state.symbol='NVDA'");assert.equal(run('contextRows().length'),0)});
+test('Table has exact-value column and row semantics',()=>{run("state.chart='table';renderRows()");const table=element('#heatRows').innerHTML;assert.match(table,/<table /);assert.match(table,/<caption>/);assert.equal((table.match(/scope="col"/g)||[]).length,4);assert.equal((table.match(/scope="row"/g)||[]).length,7);assert.match(table,/0\.0M/);run("state.chart='map'")});
+test('Dock refuses 983.999px usable width',()=>assert.equal(run('dockingForWidth(983.999)'),false));
+test('Dock accepts 984px usable width',()=>assert.equal(run('dockingForWidth(984)'),true));
+test('Unknown measured width never docks',()=>assert.equal(run('dockingForWidth(NaN)'),false));
+test('No contract means Plan authoring disabled',()=>assert.match(html,/<button(?=[^>]*id="draftBtn")(?=[^>]*disabled)[^>]*>/));
+test('Modal makes background inert in source',()=>assert.match(script,/querySelector\('\.app'\)\.inert=true/));
+test('Focus restoration resolves a stable strike key',()=>assert.match(script,/previousFocus\?\.strike/));
+test('Reduced-motion source rule retained',()=>assert.match(html,/@media\(prefers-reduced-motion:reduce\)/));
+test('All static IDs are unique',()=>{const ids=[...html.split('<script')[0].matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);assert.equal(new Set(ids).size,ids.length)});
+
+}
+const out={schema:'d08.prototype.source-check.v1',evidenceClass:'NODE_VM_FUNCTION_AND_STATIC_SOURCE_NOT_BROWSER',sha256:crypto.createHash('sha256').update(html).digest('hex'),node:process.version,passed:results.filter(x=>x.status==='PASS').length,failed:results.filter(x=>x.status==='FAIL').length,results};
+console.log(JSON.stringify(out,null,2));process.exitCode=out.failed?1:0;

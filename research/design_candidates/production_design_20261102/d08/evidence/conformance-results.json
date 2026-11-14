@@ -1,0 +1,32 @@
+{
+  "schema": "d08.conformance.receipt.v1",
+  "recorded_date_utc": "2026-11-03",
+  "scope": "D08 research/specification only; no production code or Paper content applied",
+  "common_contract": "D08-OPTIONS/1.0.0",
+  "common_contract_commit": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c",
+  "procedure_commit": "b2326bbe30e9988d26199f5e774a482b9c09068a",
+  "node_version": "v22.16.0",
+  "checks": {
+    "javascript_syntax": {"command": "node --check extracted-inline-script.js", "exit_code": 0},
+    "original_core_regression": {"evidence_class": "NODE_VM_FUNCTION_AND_STATIC_SOURCE_NOT_BROWSER", "passed": 3, "failed": 15, "exit_code": 1, "input_sha256": "f8c82abbcfb4e071c0c0d5160674008bad3b02c0ba5d3101487b8617900c7077", "input_location": "Original conversation attachment and downloadable continuation bundle; not included in this Git commit"},
+    "repaired_specimen": {"command": "node checks/verify-prototype.mjs prototype/review-v2.html.gz", "evidence_class": "NODE_VM_FUNCTION_AND_STATIC_SOURCE_NOT_BROWSER", "passed": 50, "failed": 0, "exit_code": 0, "input_sha256": "491232457d61de737504fdcaee1432df1b6e7c5eb20bb19231cae4d0162694e6"},
+    "foundation_reconciliation": {"command": "python3 checks/verify-foundation.py", "evidence_class": "CALCULATION_NOT_BROWSER", "passed": 22, "failed": 0, "width_cases": 23, "exit_code": 0, "joint_release": "NOT_QUALIFIED"},
+    "gzip_roundtrip": {"passed": true, "uncompressed_bytes": 54492, "uncompressed_sha256": "491232457d61de737504fdcaee1432df1b6e7c5eb20bb19231cae4d0162694e6"}
+  },
+  "artifacts": [
+    {"path": "prototype/review-v2.html.gz", "git_blob": "85bf7a22a2cd9969e6328eb1fd9e95ae6516aa6e", "bytes": 15808, "sha256": "417925f04154bdba2380925370bbdf42170d6599b56ad188aac4ee71dc248b5e"},
+    {"path": "checks/verify-prototype.mjs", "git_blob": "0a6ed82a6a460592ed2228348a1e2e096e7f180b", "bytes": 8313, "sha256": "31e9802210bd828c7b26836d85f13dd3e14360e946ccb83957c0c97e0f46e15d"},
+    {"path": "checks/verify-foundation.py", "git_blob": "6cf706d149c516563d0078255f69e447c45a531f", "bytes": 2480, "sha256": "ce930b6e14e91234803514b6fc54f71015785f54cf402aee5d56062290e11a73"}
+  ],
+  "source_inputs": {
+    "terminal_commit": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+    "options_ia_blob": "385821bff793ca49c62a7308e564b2a990c4d60a",
+    "options_workspace_blob": "9ba9883fb5a37da7d0bf785eefd2a1f35f1cdcc1",
+    "F01_commit": "b2d00ddc7e2dfbffdc3c5855e1a4dffe8c4226a5",
+    "F02_commit": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0"
+  },
+  "not_proven": ["native Paper content", "browser rendering", "keyboard/touch interaction", "screen reader conformance", "400 percent rendered reflow", "full EN/ZH copy qualification", "paid normal-data journeys", "backend persistence", "independent design approval", "production deployment"],
+  "native_effects": {"new_attempts_this_continuation": 0, "last_observed_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM", "last_observed_page_id": "p-2-0", "last_observed_artboard_id": "1N2L-0", "last_observed_content": "empty Frame", "held_operation": "d08-paper-shell-desktop-20261103-02", "hold_reason": "prior platform safety refusal; no replay or alternate carrier"},
+  "slice_sessions_launched": [],
+  "acceptance": "PARTIAL; source conformance is not reference acceptance"
+}
