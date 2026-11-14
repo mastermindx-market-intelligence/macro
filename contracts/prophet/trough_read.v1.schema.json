@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Prophet trough read v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "as_of", "built_at", "known_ts", "engine_ref", "status", "tickers"],
+  "properties": {
+    "schema": {"const": "prophet.trough_read/v1"},
+    "as_of": {"type": "string", "format": "date"},
+    "built_at": {"type": "string", "format": "date-time"},
+    "known_ts": {"type": ["string", "null"], "format": "date-time"},
+    "engine_ref": {"const": "e999086d"},
+    "status": {"enum": ["ok", "stale", "unavailable"]},
+    "tickers": {"type": "object", "additionalProperties": {"$ref": "#/$defs/row"}}
+  },
+  "$defs": {
+    "nullableBool": {"type": ["boolean", "null"]},
+    "components": {
+      "type": "object", "additionalProperties": false,
+      "required": ["K_gt_D", "K_rising", "D_rising", "hist_rising"],
+      "properties": {
+        "K_gt_D": {"$ref": "#/$defs/nullableBool"},
+        "K_rising": {"$ref": "#/$defs/nullableBool"},
+        "D_rising": {"$ref": "#/$defs/nullableBool"},
+        "hist_rising": {"$ref": "#/$defs/nullableBool"}
+      }
+    },
+    "timeframe": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tf", "bar_end", "available", "washed_out", "d", "turned_up", "components"],
+      "properties": {
+        "tf": {"enum": ["1D", "3D", "1W", "2W"]},
+        "bar_end": {"type": ["string", "null"], "format": "date"},
+        "available": {"type": "boolean"},
+        "washed_out": {"$ref": "#/$defs/nullableBool"},
+        "d": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+        "turned_up": {"$ref": "#/$defs/nullableBool"},
+        "components": {"$ref": "#/$defs/components"}
+      },
+      "allOf": [
+        {"if": {"properties": {"tf": {"enum": ["1D", "1W", "2W"]}}},
+         "then": {"properties": {"turned_up": {"type": "null"}}}},
+        {"if": {"properties": {"available": {"const": false}}},
+         "then": {"properties": {"washed_out": {"type": "null"}, "d": {"type": "null"}, "turned_up": {"type": "null"}}}},
+        {"if": {"properties": {"available": {"const": true}}},
+         "then": {"properties": {"washed_out": {"type": "boolean"}, "d": {"type": "number"}, "bar_end": {"type": "string"}}}}
+      ]
+    },
+    "history": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tf", "depth_atrc", "own_history_pct", "n_prior", "past"],
+      "properties": {
+        "tf": {"const": "3D"},
+        "depth_atrc": {"type": "number", "minimum": 0},
+        "own_history_pct": {"type": "number", "minimum": 0, "maximum": 1},
+        "n_prior": {"type": "integer", "minimum": 3},
+        "past": {"type": "array", "minItems": 3, "items": {
+          "type": "object", "additionalProperties": false,
+          "required": ["date", "depth_atrc"],
+          "properties": {"date": {"type": "string", "format": "date"}, "depth_atrc": {"type": "number", "minimum": 0}}
+        }}
+      }
+    },
+    "row": {
+      "type": "object", "additionalProperties": false,
+      "required": ["as_of", "known_ts", "timeframes", "kind", "own_history", "group", "provenance"],
+      "properties": {
+        "as_of": {"type": "string", "format": "date"},
+        "known_ts": {"type": ["string", "null"], "format": "date-time"},
+        "timeframes": {"type": "array", "minItems": 4, "maxItems": 4,
+          "items": false,
+          "prefixItems": [
+            {"allOf": [{"$ref": "#/$defs/timeframe"}, {"properties": {"tf": {"const": "1D"}}}]},
+            {"allOf": [{"$ref": "#/$defs/timeframe"}, {"properties": {"tf": {"const": "3D"}}}]},
+            {"allOf": [{"$ref": "#/$defs/timeframe"}, {"properties": {"tf": {"const": "1W"}}}]},
+            {"allOf": [{"$ref": "#/$defs/timeframe"}, {"properties": {"tf": {"const": "2W"}}}]}
+          ]},
+        "kind": {"type": "null"},
+        "provenance": {"type": "null"},
+        "own_history": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/history"}]},
+        "group": {"type": "object", "additionalProperties": false,
+          "required": ["group_id", "name", "state", "fields"],
+          "properties": {"group_id": {"type": ["string", "null"]}, "name": {"type": "string"}, "state": {"type": "null"}, "fields": {"type": "null"}}}
+      }
+    }
+  }
+}
