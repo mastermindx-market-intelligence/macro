@@ -531,6 +531,43 @@ def test_symbol_picker_is_a_real_combobox(html):
     assert 'role="listbox"' in html
 
 
+def test_symbol_picker_and_quick_symbols_have_bilingual_accessible_names(html):
+    assert 'for="sx-search"' in html
+    assert 'id="sx-search-lab"' in html
+    search_lab = html[html.index('id="sx-search-lab"'):][:260]
+    assert "Search a symbol" in search_lab and "搜索代码" in search_lab
+    results = html[html.index('id="sx-results"'):][:260]
+    assert 'aria-labelledby="sx-results-lab"' in results
+    result_lab = html[html.index('id="sx-results-lab"'):][:260]
+    assert "Symbol results" in result_lab and "搜索结果" in result_lab
+    quick = html[html.index('id="sx-quick"'):][:1000]
+    assert 'role="group"' in quick and 'aria-labelledby="sx-quick-lab"' in quick
+    assert 'id="sx-quick-lab"' in quick
+
+
+def test_quick_symbols_expose_the_current_symbol_and_js_keeps_it_in_sync(html):
+    quick = html[html.index('id="sx-quick"'):][:1200]
+    assert quick.count('aria-current="page"') == 1
+    assert re.search(r'<button[^>]+data-sym="SPY"[^>]+aria-current="page"', quick)
+    js = (ROOT / "templates" / "stock_seasonality.js").read_text()
+    body = _js_body(js, "syncQuickCurrent")
+    assert 'aria-current' in body and 'state.symbol' in body
+    adopt = _js_body(js, "adopt")
+    assert "syncQuickCurrent()" in adopt
+    assert "syncQuickCurrent();" in js[js.index("syncPlaceholder();"):],         "initial deep-link/default state must project into the quick symbols"
+
+
+def test_primary_controls_have_a_desktop_hit_target_floor():
+    css = (ROOT / "templates" / "stock_seasonality.css").read_text()
+    lens = re.search(r"\n\.sx-seg \.gbtn \{(.*?)\}", css, flags=re.S).group(1)
+    quick = re.search(r"\n\.sx-quick button \{(.*?)\}", css, flags=re.S).group(1)
+    assert "min-height: 36px" in lens
+    assert "min-height: 36px" in quick
+    coarse = re.search(r"@media \(pointer: coarse\) \{(.*?)\n\}", css, flags=re.S).group(1)
+    assert ".sx-seg .gbtn { min-height: 40px" in coarse
+    assert ".sx-quick button { min-height: 40px" in coarse
+
+
 
 
 # ── Catalyst mode — the evidence boundary (W2C/W3) ─────────────────────────
@@ -696,6 +733,9 @@ def test_mode_switch_is_in_the_masthead_not_the_lens_row(html):
     assert block.count('aria-pressed="true"') == 1, "exactly one mode is pressed"
     assert block.count("<button") == 2
     assert 'data-v="calendar"' in block and 'data-v="catalyst"' in block
+    assert "Calendar pattern" in block and "日历规律" in block
+    assert "Event dates" in block and "事件日期" in block
+    assert "Calendar clock" not in visible(html) and "日历时钟" not in visible(html)
 
 
 def test_the_mode_group_carries_a_bilingual_accessible_name(html):
@@ -757,6 +797,9 @@ def test_mode_change_is_announced_and_keyboard_reachable(html):
     # WIRED, not merely defined: deleting the call site left the identifier in
     # the file and the old grep-assertion green while the click path went silent.
     assert "announceMode(" in _js_body(js, "setMode")
+    assert '"Event dates mode. Event coverage is not connected."' in js
+    assert '"事件日期模式。事件数据尚未接入。"' in js
+    assert '"Calendar pattern mode."' in js and '"日历规律模式。"' in js
 
 
 def test_the_catalyst_cta_keeps_a_visible_focus_ring():
@@ -879,7 +922,7 @@ def test_the_counts_track_a_synthetic_artifact(entity, methodology):
     assert "已接入 3 项" in text and "未接入 0 项" in text
     # and the headline follows the same field
     assert "Event coverage is connected" in text
-    assert "Catalyst coverage is not connected" not in text
+    assert "Event-date coverage is not connected" not in text
 
 
 def test_a_connected_event_feed_never_renders_the_absence_clause(entity, methodology):
@@ -963,8 +1006,8 @@ def test_the_dark_ledger_never_makes_a_claim_about_the_whole_page(entity, method
         assert "Nothing on this page is connected" not in text
         assert "本页目前没有任何已接入的数据" not in text
         # Law 1: a stance still has to leave somewhere to go
-        assert "The calendar clock is still drawn here." in text
-        assert "Open the calendar clock" in text
+        assert "The calendar pattern is still shown here." in text
+        assert "Open the calendar pattern" in text
 
 
 # ── the hard line: nothing invented ────────────────────────────────────────
@@ -1075,16 +1118,16 @@ def test_catalyst_carries_a_stance_and_a_one_click_route_back(html):
     makes the reader do the analyst's job, even when the honest answer is
     'this one is empty, read the other one'."""
     text = catalyst_text(html)
-    assert "Catalyst coverage is not connected" in text
-    assert "Read the calendar clock instead" in text
-    assert "催化剂数据尚未接入" in text and "改用日历时钟" in text
+    assert "Event-date coverage is not connected" in text
+    assert "Read the calendar pattern instead" in text
+    assert "事件日期数据尚未接入" in text and "改看日历规律" in text
     # the route is a control, not a sentence pointing somewhere
     assert 'id="sx-to-cal"' in html and 'class="sx-cta"' in html
     js = (ROOT / "templates" / "stock_seasonality.js").read_text()
     assert "sx-to-cal" in js and 'setMode("calendar", true' in js
     # and it names what the calendar does answer
-    assert "What the calendar clock answers" in text
-    assert "日历时钟能回答什么" in text
+    assert "What the calendar pattern answers" in text
+    assert "日历规律能回答什么" in text
     # conditions being watched — never a promise and never a date
     assert "Conditions we watch — not a schedule." in text
     assert "stays empty on purpose" in text

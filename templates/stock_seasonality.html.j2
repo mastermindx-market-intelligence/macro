@@ -76,11 +76,11 @@ try{if(new URL(location.href).searchParams.get('mode')==='catalyst')document.doc
       <div class="sx-modebar">
         <span class="sx-sr" id="sx-mode-lab">{{ t('Page mode', '页面模式') }}</span>
         <span class="sx-seg sx-mode" id="sx-mode" role="group" aria-labelledby="sx-mode-lab">
-          <button type="button" class="gbtn gbtn-sm" data-v="calendar" aria-pressed="true">{{ t('Calendar clock', '日历时钟') }}</button>
-          <button type="button" class="gbtn gbtn-sm" data-v="catalyst" aria-pressed="false">{{ t('Catalyst', '催化剂') }}</button>
+          <button type="button" class="gbtn gbtn-sm" data-v="calendar" aria-pressed="true">{{ t('Calendar pattern', '日历规律') }}</button>
+          <button type="button" class="gbtn gbtn-sm" data-v="catalyst" aria-pressed="false">{{ t('Event dates', '事件日期') }}</button>
         </span>
         <script>try{if(document.documentElement.getAttribute('data-sx-mode')==='catalyst'){var _g=document.getElementById('sx-mode'),_b=_g&&_g.getElementsByTagName('button');if(_b){_b[0].setAttribute('aria-pressed','false');_b[1].setAttribute('aria-pressed','true');}}}catch(e){}</script>
-        {{ help('Calendar clock is this symbol’s own recurring calendar structure, drawn from complete years. Catalyst is the event side — clinical, regulatory and financing dates. No event source is connected yet, and that mode says exactly what is missing and what the calendar can answer instead.', '日历时钟：该标的自身的年内重复结构，基于完整年份绘制。催化剂：事件侧——临床、监管与融资日期。目前尚未接入任何事件数据源，该模式会明确说明缺少什么、以及日历时钟能替代回答什么。') }}
+        {{ help('Calendar pattern shows this symbol’s own recurring calendar structure, drawn from complete years. Event dates cover the clinical, regulatory and financing side. No event source is connected yet, so that mode says what is missing and what the calendar pattern can answer instead.', '日历规律：该标的自身的年内重复结构，基于完整年份绘制。事件日期覆盖临床、监管与融资事件。目前尚未接入事件数据源，因此该模式会说明缺少什么，以及日历规律能替代回答什么。') }}
       </div>
       <h1 class="sx-h1"><span class="sx-tick" id="sx-sym">{{ v.symbol }}</span> <span class="sx-name" id="sx-name">{{ v.name }}</span></h1>
       <p class="sx-sr" id="sx-mode-live" role="status" aria-live="polite"></p>
@@ -92,16 +92,18 @@ try{if(new URL(location.href).searchParams.get('mode')==='catalyst')document.doc
       <div class="sx-pick-box">
         <div class="sx-pick-field">
           <svg class="sx-pick-ic" viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg>
+          <label class="sx-sr" id="sx-search-lab" for="sx-search">{{ t('Search a symbol', '搜索代码') }}</label>
           <input type="text" id="sx-search" role="combobox" autocomplete="off" aria-expanded="false"
-                 aria-controls="sx-results" aria-autocomplete="list" aria-label="Search a symbol"
+                 aria-controls="sx-results" aria-autocomplete="list" aria-labelledby="sx-search-lab"
                  placeholder="Search a symbol…" data-ph-zh="搜索代码…">
           <span class="sx-pick-kbd" aria-hidden="true">/</span>
         </div>
-        <ul class="sx-pop" id="sx-results" role="listbox" aria-label="Symbol results" hidden></ul>
+        <span class="sx-sr" id="sx-results-lab">{{ t('Symbol results', '搜索结果') }}</span>
+        <ul class="sx-pop" id="sx-results" role="listbox" aria-labelledby="sx-results-lab" hidden></ul>
       </div>
-      <div class="sx-quick" id="sx-quick">
-        <span class="sx-quick-lab">{{ t('Jump to', '快速切换') }}</span>
-        {% for s in ['SPY', 'QQQ', 'XBI', 'IBB', 'XLV'] %}<button type="button" class="gbtn gbtn-sm" data-sym="{{ s }}">{{ s }}</button>{% endfor %}
+      <div class="sx-quick" id="sx-quick" role="group" aria-labelledby="sx-quick-lab">
+        <span class="sx-quick-lab" id="sx-quick-lab">{{ t('Jump to', '快速切换') }}</span>
+        {% for s in ['SPY', 'QQQ', 'XBI', 'IBB', 'XLV'] %}<button type="button" class="gbtn gbtn-sm" data-sym="{{ s }}"{% if s == v.symbol %} aria-current="page"{% endif %}>{{ s }}</button>{% endfor %}
       </div>
     </div>
   </header>
@@ -170,15 +172,15 @@ try{if(new URL(location.href).searchParams.get('mode')==='catalyst')document.doc
   <div class="sx-cat" id="sx-catalyst">
     <p class="sx-verdict">
       {%- if c.event_live %}{{ t('Event coverage is connected, but this page does not draw it yet.', '事件数据已接入，但本页尚未绘制。') }}
-      {%- else %}{{ t('Catalyst coverage is not connected. Nothing here reads a trial or a decision date.', '催化剂数据尚未接入。本页不读取任何临床试验或审批日期。') }}{% endif %}
+      {%- else %}{{ t('Event-date coverage is not connected. Nothing here reads a trial or decision date.', '事件日期数据尚未接入。本页不读取任何临床试验或审批日期。') }}{% endif %}
     </p>
     {# The stance line is scoped to the LEDGER or to the METHOD FILE, never to
        the page: "Nothing on this page is connected right now" shipped one click
        away from 25 drawn years and a verdict the same page stands behind. #}
     <p class="sx-cat-act">
-      {%- if c.clock_live %}{{ t('Read the calendar clock instead — connected, and rebuilt nightly.', '改用日历时钟：已接入，每晚重建。') }}
-      {%- elif c.meth_ok %}{{ t('No source below is connected. The calendar clock is still drawn here.', '下方没有任何已接入的数据源。日历时钟仍在本页绘制。') }}
-      {%- else %}{{ t('The method file could not be read. The calendar clock is still drawn here.', '方法文件无法读取。日历时钟仍在本页绘制。') }}{% endif %}
+      {%- if c.clock_live %}{{ t('Read the calendar pattern instead — connected, and rebuilt nightly.', '改看日历规律：已接入，每晚重建。') }}
+      {%- elif c.meth_ok %}{{ t('No source below is connected. The calendar pattern is still shown here.', '下方没有任何已接入的数据源。日历规律仍在本页展示。') }}
+      {%- else %}{{ t('The method file could not be read. The calendar pattern is still shown here.', '方法文件无法读取。日历规律仍在本页展示。') }}{% endif %}
     </p>
 
     <ul class="sx-chips">
@@ -254,7 +256,7 @@ try{if(new URL(location.href).searchParams.get('mode')==='catalyst')document.doc
 
     <div class="sx-two">
       <section class="sx-card">
-        <h2>{{ t('What the calendar clock answers', '日历时钟能回答什么') }}</h2>
+        <h2>{{ t('What the calendar pattern answers', '日历规律能回答什么') }}</h2>
         <ul class="sx-list">
           <li>{{ t('When in the year this name has been strong or weak.', '这只标的在一年中的哪些时段偏强或偏弱。') }}</li>
           {# CJK takes 破折号 or a colon, never a half-width " — " lifted out of
@@ -264,7 +266,7 @@ try{if(new URL(location.href).searchParams.get('mode')==='catalyst')document.doc
           <li>{{ t('Whether it still stands once every window tried is counted.', '在计入所有测试过的窗口后，它是否依然成立。') }}</li>
           {%- endif %}
         </ul>
-        <button type="button" class="sx-cta" id="sx-to-cal">{{ t('Open the calendar clock →', '打开日历时钟 →') }}</button>
+        <button type="button" class="sx-cta" id="sx-to-cal">{{ t('Open the calendar pattern →', '打开日历规律 →') }}</button>
       </section>
 
       <section class="sx-card">
@@ -273,7 +275,7 @@ try{if(new URL(location.href).searchParams.get('mode')==='catalyst')document.doc
         <ul class="sx-list">
           <li>{{ t('A decision-date source we can check against past years.', '一个能与过往年份对照检验的审批日期数据源。') }}</li>
           <li>{{ t('Enough past events per name to count, not just to list.', '每只标的有足够多的历史事件可供计数，而不只是罗列。') }}</li>
-          <li>{{ t('The same search accounting the calendar clock already carries.', '与日历时钟同一套搜索校正。') }}</li>
+          <li>{{ t('The same search accounting the calendar pattern already carries.', '与日历规律同一套搜索校正。') }}</li>
         </ul>
         {# "all three" was a hardcoded count of the list above it — the number
            goes stale the moment a condition is added or dropped. #}
@@ -333,13 +335,15 @@ try{if(new URL(location.href).searchParams.get('mode')==='catalyst')document.doc
        a non-button child inside a role="group" of buttons reads as one. #}
     <div class="sx-ctrls">
       <div class="sx-ctrl">
-        <span class="sx-seg" id="sx-central" role="group" aria-label="Central line">
+        <span class="sx-sr" id="sx-central-lab">{{ t('Center line', '中心线') }}</span>
+        <span class="sx-seg" id="sx-central" role="group" aria-labelledby="sx-central-lab">
           <button type="button" class="gbtn gbtn-sm" data-v="median" aria-pressed="true">{{ t('Median', '中位数') }}</button>
           <button type="button" class="gbtn gbtn-sm" data-v="mean" aria-pressed="false">{{ t('Mean', '均值') }}</button>
         </span>
       </div>
       <div class="sx-ctrl">
-        <span class="sx-seg" id="sx-panel" role="group" aria-label="Panel">
+        <span class="sx-sr" id="sx-panel-lab">{{ t('Comparison view', '比较方式') }}</span>
+        <span class="sx-seg" id="sx-panel" role="group" aria-labelledby="sx-panel-lab">
           <button type="button" class="gbtn gbtn-sm" data-v="raw" aria-pressed="true">{{ t('Raw', '原始') }}</button>
           <button type="button" class="gbtn gbtn-sm" data-v="neutral" aria-pressed="false"{% if not v.has_neutral %} disabled{% endif %}>{{ t('Vs market', '相对大盘') }}</button>
           <button type="button" class="gbtn gbtn-sm" data-v="detrended" aria-pressed="false">{{ t('Detrended', '去趋势') }}</button>
@@ -347,7 +351,8 @@ try{if(new URL(location.href).searchParams.get('mode')==='catalyst')document.doc
         {{ help('Vs market removes a market leg sized to this name, so what is left is only what this name did beyond the market. Detrended removes each year’s own drift, so only the shape inside the year is compared — it carries no search accounting, so it shows no verdict.', '相对大盘：按该股对大盘的敏感度剔除大盘部分，剩下的只是该股超出大盘的表现。去趋势：剔除每年自身的整体涨跌，只比较年内形状 — 该视图没有搜索校正，因此不给结论。') }}
       </div>
       <div class="sx-ctrl">
-        <span class="sx-seg" id="sx-lookback" role="group" aria-label="Years">
+        <span class="sx-sr" id="sx-lookback-lab">{{ t('History range', '历史区间') }}</span>
+        <span class="sx-seg" id="sx-lookback" role="group" aria-labelledby="sx-lookback-lab">
           {# The default view is the whole shipped panel, which IS Max — the numbered
              segments are sub-slices of it, so none of them starts pressed. #}
           {% for lb in [10, 15, 25] %}<button type="button" class="gbtn gbtn-sm" data-v="{{ lb }}" aria-pressed="false">{{ t(lb ~ 'y', lb ~ '年') }}</button>{% endfor %}
