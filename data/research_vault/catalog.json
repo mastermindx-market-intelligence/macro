@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T04:40:49.250844+00:00",
-  "count": 3342,
+  "generated_at": "2026-11-14T04:55:40.649263+00:00",
+  "count": 3343,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vjeyidjjgwq-8838a8",
+      "title": "US Equities Weekly Rundown 11 13 26",
+      "institution": "Prime",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T04:21:16Z",
+      "summary_points": [
+        "S&P 500 Resilience Amid CPI: S&P 500 +2.5% despite hot CPI, AI volatility, and earnings debate; Prime HFs net sold US equities for 2nd straight week (5 of last 6), driven by single-stock shorts offset by meme longs.",
+        "Elevated Leverage Risk: US Fundamental L/S Gross leverage at 209.1% (34th percentile), Net leverage at 45.4% (4th percentile), signaling high risk exposure with net leverage near historical lows.",
+        "Brent Crude Geopolitical Volatility: Brent tumbled -20% MTD (Nov 10) but rebounded +4.7% amid escalation fears; speculative length retreated (-$8bn CFTC), yet desk flows (+$3bn oil) indicate fresh upside demand.",
+        "VIX Put Surge Signals Fear: VIX put volume peaked sharply (10-day high), total US put volumes hit all-time high (Nov 5), with Panic Index at 6.5/10 and NVDA-driven SPX volatility at March 2020 levels.",
+        "Sector Rotation Conflicts: TMT broke 4-week losing streak but Financials underperformed (S&P 500 -200bps); Financials show conflicting flows (weekly buying vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-x7e6qifvat9-a5f976",
       "title": "Q3 earnings",
