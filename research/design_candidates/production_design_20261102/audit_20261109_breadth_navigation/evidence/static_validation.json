@@ -1,0 +1,27 @@
+{
+  "scope": "Design artifact static checks; no browser interaction or production qualification",
+  "javascript_syntax": {
+    "returncode": 0,
+    "stderr": ""
+  },
+  "html_unique_static_ids": 35,
+  "external_dependencies": [],
+  "original_breadth_boards_preserved": 9,
+  "breadth_boards_after": 15,
+  "original_revenue_boards_preserved": 28,
+  "revenue_boards_after": 28,
+  "mobile_overview_height_before": 3433,
+  "mobile_overview_height_after": 1486,
+  "height_reduction_pct": 56.71,
+  "fixture_calculations": {
+    "1244/2182_pct": 57,
+    "128/(128+67)_pct": 65.6,
+    "1327+741+104": 2172,
+    "1327/741": 1.79,
+    "121/(121+52)_pct": 69.9
+  },
+  "no_current_composite_score": true,
+  "component_page_references_corrected": true,
+  "prototype_guard_checks": "SVG hidden attribute, unavailable help action gate and reduced-motion rule present",
+  "browser_interaction_proof": "PENDING: Chrome automation blocked by open extension UI; no alternate control route used; owned tab closed and local server stopped."
+}

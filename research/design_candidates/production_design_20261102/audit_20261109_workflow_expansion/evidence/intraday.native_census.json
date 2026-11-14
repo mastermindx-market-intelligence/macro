@@ -1,0 +1,1638 @@
+[
+  {
+    "fileName": "Intraday Flow · R1 Draft",
+    "pageName": "Intraday Flow · R1 · Discovery workspace · DRAFT",
+    "pageId": "p-1-0",
+    "url": "https://app.paper.design/file/01M6Y2QK8TQZRN8T4BHG10CJXT/p-1-0",
+    "rootNodeId": "root_node_p-1-0",
+    "nodeCount": 654,
+    "artboardCount": 10,
+    "artboards": [
+      {
+        "id": "1-0",
+        "name": "IF-R1 · Scan workspace · Desktop · Light · EN",
+        "childCount": 3,
+        "width": 1440,
+        "height": 900,
+        "worldX": -3885,
+        "worldY": -670
+      },
+      {
+        "id": "3S-0",
+        "name": "IF-R1 · Scan workspace · Mobile · Light · EN",
+        "childCount": 3,
+        "width": 390,
+        "height": 844,
+        "worldX": -2365,
+        "worldY": -670
+      },
+      {
+        "id": "53-0",
+        "name": "IF-R1 · 扫描工作台 · Mobile · Dark · ZH",
+        "childCount": 4,
+        "width": 390,
+        "height": 927,
+        "worldX": -1895,
+        "worldY": -670
+      },
+      {
+        "id": "7D-0",
+        "name": "IF-R1 · 扫描工作台 · Desktop · Dark · ZH",
+        "childCount": 3,
+        "width": 1440,
+        "height": 900,
+        "worldX": -1425,
+        "worldY": -670
+      },
+      {
+        "id": "9F-0",
+        "name": "IF-R1 · Filtered no matches · Mobile · Dark · EN",
+        "childCount": 3,
+        "width": 390,
+        "height": 844,
+        "worldX": 95,
+        "worldY": -670
+      },
+      {
+        "id": "AP-0",
+        "name": "IF-R1 · Loading / awaiting source · Mobile · Light · EN",
+        "childCount": 4,
+        "width": 390,
+        "height": 844,
+        "worldX": 565,
+        "worldY": -670
+      },
+      {
+        "id": "CG-0",
+        "name": "IF-R3 · Source details · Mobile · Light · EN",
+        "childCount": 5,
+        "width": 390,
+        "height": 844,
+        "worldX": 1035,
+        "worldY": -670
+      },
+      {
+        "id": "DX-0",
+        "name": "IF-R3 · 数据来源 · Mobile · Dark · ZH",
+        "childCount": 5,
+        "width": 390,
+        "height": 844,
+        "worldX": 1505,
+        "worldY": -670
+      },
+      {
+        "id": "FE-0",
+        "name": "IF-R4 · Reading recorded evidence · Desktop · Light · EN",
+        "childCount": 2,
+        "width": 1440,
+        "height": 1228,
+        "worldX": 1975,
+        "worldY": -670
+      },
+      {
+        "id": "GN-0",
+        "name": "IF-R4 · 阅读已有评估 · Mobile · Dark · ZH",
+        "childCount": 3,
+        "width": 390,
+        "height": 1340,
+        "worldX": 3495,
+        "worldY": -670
+      }
+    ],
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-2-0",
+        "name": "00 · AGENT README · Read first",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-3-0",
+        "name": "01 · Product · Recorded scan and evidence",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-4-0",
+        "name": "04 · Build · Basis, freshness and states",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-1-0",
+        "name": "Intraday Flow · R1 · Discovery workspace · DRAFT",
+        "icon": "design",
+        "isActive": true
+      }
+    ],
+    "fontFamilies": [
+      "Inter",
+      "System Sans-Serif",
+      "PingFang SC",
+      "System Monospace"
+    ],
+    "tokens": {
+      "items": [
+        {
+          "name": "--mx-dark-bg",
+          "value": "#0F1115"
+        },
+        {
+          "name": "--mx-dark-panel",
+          "value": "#181B21"
+        },
+        {
+          "name": "--mx-dark-panel2",
+          "value": "#1E222A"
+        },
+        {
+          "name": "--mx-dark-text",
+          "value": "#D7DCE3"
+        },
+        {
+          "name": "--mx-dark-muted",
+          "value": "#8B93A1"
+        },
+        {
+          "name": "--mx-dark-line",
+          "value": "#3A4150"
+        },
+        {
+          "name": "--mx-dark-up",
+          "value": "#45B873"
+        },
+        {
+          "name": "--mx-dark-down",
+          "value": "#E06464"
+        },
+        {
+          "name": "--mx-dark-warn",
+          "value": "#E0A030"
+        },
+        {
+          "name": "--mx-dark-act",
+          "value": "#E05555"
+        },
+        {
+          "name": "--mx-dark-ok",
+          "value": "#3DA564"
+        },
+        {
+          "name": "--mx-dark-info",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-link",
+          "value": "#7AA7E0"
+        },
+        {
+          "name": "--mx-dark-orange",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-bg",
+          "value": "#F7F8FA"
+        },
+        {
+          "name": "--mx-light-panel",
+          "value": "#FFFFFF"
+        },
+        {
+          "name": "--mx-light-panel2",
+          "value": "#EEF1F6"
+        },
+        {
+          "name": "--mx-light-text",
+          "value": "#1C2430"
+        },
+        {
+          "name": "--mx-light-muted",
+          "value": "#5D6B7E"
+        },
+        {
+          "name": "--mx-light-line",
+          "value": "#C9CCD1"
+        },
+        {
+          "name": "--mx-light-up",
+          "value": "#1F9A55"
+        },
+        {
+          "name": "--mx-light-down",
+          "value": "#CF4040"
+        },
+        {
+          "name": "--mx-light-warn",
+          "value": "#B9791A"
+        },
+        {
+          "name": "--mx-light-act",
+          "value": "#C43D3D"
+        },
+        {
+          "name": "--mx-light-ok",
+          "value": "#2F8A52"
+        },
+        {
+          "name": "--mx-light-info",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-link",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-orange",
+          "value": "#C4781F"
+        },
+        {
+          "name": "--mx-dark-prov",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-prov-ink",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-dark-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-dark-tier-ink",
+          "value": "#9B86FF"
+        },
+        {
+          "name": "--mx-dark-ser-1",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-ser-2",
+          "value": "#D4A017"
+        },
+        {
+          "name": "--mx-dark-ser-3",
+          "value": "#0EA5E9"
+        },
+        {
+          "name": "--mx-dark-ser-4",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-prov",
+          "value": "#2F6FD0"
+        },
+        {
+          "name": "--mx-light-prov-ink",
+          "value": "#2C62B3"
+        },
+        {
+          "name": "--mx-light-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-light-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-light-tier-ink",
+          "value": "#5B3FC4"
+        },
+        {
+          "name": "--mx-light-ser-1",
+          "value": "#2F63C4"
+        },
+        {
+          "name": "--mx-light-ser-2",
+          "value": "#8F6A04"
+        },
+        {
+          "name": "--mx-light-ser-3",
+          "value": "#0284C7"
+        },
+        {
+          "name": "--mx-light-ser-4",
+          "value": "#B06A25"
+        },
+        {
+          "name": "--mx-light-ink-up",
+          "value": "#1E6D47"
+        },
+        {
+          "name": "--mx-light-ink-down",
+          "value": "#B23C3D"
+        },
+        {
+          "name": "--mx-light-ink-warn",
+          "value": "#7D5922"
+        },
+        {
+          "name": "--mx-light-ink-link",
+          "value": "#2758E6"
+        },
+        {
+          "name": "--noir-canvas",
+          "value": "#080808"
+        },
+        {
+          "name": "--noir-sidebar",
+          "value": "#0C0C0C"
+        },
+        {
+          "name": "--noir-panel",
+          "value": "#121212"
+        },
+        {
+          "name": "--noir-raised",
+          "value": "#191919"
+        },
+        {
+          "name": "--noir-hover",
+          "value": "#222222"
+        },
+        {
+          "name": "--noir-selected",
+          "value": "#292929"
+        },
+        {
+          "name": "--noir-text-primary",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "--noir-text-secondary",
+          "value": "#B8B8B8"
+        },
+        {
+          "name": "--noir-text-tertiary",
+          "value": "#949494"
+        },
+        {
+          "name": "--noir-champagne",
+          "value": "#C9B99B"
+        },
+        {
+          "name": "--noir-sage",
+          "value": "#A8C2AD"
+        },
+        {
+          "name": "--noir-rose",
+          "value": "#DEA4A5"
+        },
+        {
+          "name": "--noir-steel",
+          "value": "#A7B4C2"
+        },
+        {
+          "name": "--noir-lilac",
+          "value": "#BDB2CE"
+        },
+        {
+          "name": "--market-canvas",
+          "value": "#0A0B0D"
+        },
+        {
+          "name": "--market-panel",
+          "value": "#111318"
+        },
+        {
+          "name": "--market-raised",
+          "value": "#181B20"
+        },
+        {
+          "name": "--market-line",
+          "value": "#2B3038"
+        },
+        {
+          "name": "--mx-dark-up-soft",
+          "value": "rgb(69 184 115 / 12%)"
+        },
+        {
+          "name": "--mx-dark-down-soft",
+          "value": "rgb(224 100 100 / 12%)"
+        },
+        {
+          "name": "--mx-dark-warn-soft",
+          "value": "rgb(224 160 48 / 12%)"
+        },
+        {
+          "name": "--mx-dark-info-soft",
+          "value": "rgb(91 155 240 / 12%)"
+        },
+        {
+          "name": "--mx-light-up-soft",
+          "value": "#EAF7EF"
+        },
+        {
+          "name": "--mx-light-down-soft",
+          "value": "#FCECED"
+        },
+        {
+          "name": "--mx-light-warn-soft",
+          "value": "#FFF4E2"
+        },
+        {
+          "name": "--mx-light-info-soft",
+          "value": "#EAF2FC"
+        },
+        {
+          "name": "--mx-light-scrim",
+          "value": "#1C243029"
+        },
+        {
+          "name": "--font-ui",
+          "value": "\"Inter\""
+        },
+        {
+          "name": "--fs-micro",
+          "value": "10px"
+        },
+        {
+          "name": "--fs-label",
+          "value": "11px"
+        },
+        {
+          "name": "--fs-sm",
+          "value": "12.5px"
+        },
+        {
+          "name": "--fs-body",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-h3",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-md",
+          "value": "15px"
+        },
+        {
+          "name": "--fs-h2",
+          "value": "17px"
+        },
+        {
+          "name": "--fs-num-lg",
+          "value": "22px"
+        },
+        {
+          "name": "--fs-h1",
+          "value": "28px"
+        },
+        {
+          "name": "--fs-num-xl",
+          "value": "38px"
+        },
+        {
+          "name": "--fs-display",
+          "value": "46px"
+        },
+        {
+          "name": "--fw-regular",
+          "value": "400"
+        },
+        {
+          "name": "--fw-medium",
+          "value": "500"
+        },
+        {
+          "name": "--fw-semibold",
+          "value": "600"
+        },
+        {
+          "name": "--fw-bold",
+          "value": "700"
+        },
+        {
+          "name": "--fw-extrabold",
+          "value": "800"
+        },
+        {
+          "name": "--bp-mobile",
+          "value": "390px"
+        },
+        {
+          "name": "--bp-tablet",
+          "value": "768px"
+        },
+        {
+          "name": "--bp-desktop",
+          "value": "1440px"
+        },
+        {
+          "name": "--sp-1",
+          "value": "4px"
+        },
+        {
+          "name": "--sp-2",
+          "value": "8px"
+        },
+        {
+          "name": "--sp-3",
+          "value": "12px"
+        },
+        {
+          "name": "--sp-4",
+          "value": "16px"
+        },
+        {
+          "name": "--sp-5",
+          "value": "20px"
+        },
+        {
+          "name": "--sp-6",
+          "value": "24px"
+        },
+        {
+          "name": "--sp-7",
+          "value": "32px"
+        },
+        {
+          "name": "--sp-8",
+          "value": "44px"
+        },
+        {
+          "name": "--r-ctl",
+          "value": "8px"
+        },
+        {
+          "name": "--r-btn",
+          "value": "10px"
+        },
+        {
+          "name": "--r-card",
+          "value": "12px"
+        },
+        {
+          "name": "--r-panel",
+          "value": "14px"
+        },
+        {
+          "name": "--r-pill",
+          "value": "999px"
+        }
+      ]
+    }
+  },
+  {
+    "fileName": "Intraday Flow · R1 Draft",
+    "pageName": "01 · Product · Recorded scan and evidence",
+    "pageId": "p-3-0",
+    "url": "https://app.paper.design/file/01M6Y2QK8TQZRN8T4BHG10CJXT/p-3-0",
+    "rootNodeId": "root_node_p-3-0",
+    "nodeCount": 407,
+    "artboardCount": 7,
+    "artboards": [
+      {
+        "id": "IK-0",
+        "name": "R5 · Recorded scan · Desktop light",
+        "childCount": 3,
+        "width": 1440,
+        "height": 900,
+        "worldX": -2365,
+        "worldY": -670
+      },
+      {
+        "id": "OD-0",
+        "name": "R5 · Recorded scan · Phone EN",
+        "childCount": 3,
+        "width": 390,
+        "height": 844,
+        "worldX": -845,
+        "worldY": -670
+      },
+      {
+        "id": "PO-0",
+        "name": "R5 · 已有扫描 · 手机中文",
+        "childCount": 4,
+        "width": 390,
+        "height": null,
+        "worldX": -1895,
+        "worldY": 337
+      },
+      {
+        "id": "MB-0",
+        "name": "R5 · Recorded scan · Desktop dark",
+        "childCount": 3,
+        "width": 1440,
+        "height": 900,
+        "worldX": 95,
+        "worldY": -670
+      },
+      {
+        "id": "TF-0",
+        "name": "R5 · No current assessment · Missing inputs",
+        "childCount": 3,
+        "width": 390,
+        "height": 844,
+        "worldX": 1615,
+        "worldY": -670
+      },
+      {
+        "id": "RY-0",
+        "name": "R5 · Selected EMR · Current evidence unavailable",
+        "childCount": 5,
+        "width": 390,
+        "height": 844,
+        "worldX": -375,
+        "worldY": -670
+      },
+      {
+        "id": "UP-0",
+        "name": "R5 · All recorded classifications · Phone",
+        "childCount": 5,
+        "width": 390,
+        "height": 844,
+        "worldX": 2085,
+        "worldY": -670
+      }
+    ],
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-2-0",
+        "name": "00 · AGENT README · Read first",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-3-0",
+        "name": "01 · Product · Recorded scan and evidence",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-4-0",
+        "name": "04 · Build · Basis, freshness and states",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-1-0",
+        "name": "Intraday Flow · R1 · Discovery workspace · DRAFT",
+        "icon": "design",
+        "isActive": true
+      }
+    ],
+    "fontFamilies": [
+      "Inter",
+      "System Sans-Serif",
+      "PingFang SC",
+      "System Monospace"
+    ],
+    "tokens": {
+      "items": [
+        {
+          "name": "--mx-dark-bg",
+          "value": "#0F1115"
+        },
+        {
+          "name": "--mx-dark-panel",
+          "value": "#181B21"
+        },
+        {
+          "name": "--mx-dark-panel2",
+          "value": "#1E222A"
+        },
+        {
+          "name": "--mx-dark-text",
+          "value": "#D7DCE3"
+        },
+        {
+          "name": "--mx-dark-muted",
+          "value": "#8B93A1"
+        },
+        {
+          "name": "--mx-dark-line",
+          "value": "#3A4150"
+        },
+        {
+          "name": "--mx-dark-up",
+          "value": "#45B873"
+        },
+        {
+          "name": "--mx-dark-down",
+          "value": "#E06464"
+        },
+        {
+          "name": "--mx-dark-warn",
+          "value": "#E0A030"
+        },
+        {
+          "name": "--mx-dark-act",
+          "value": "#E05555"
+        },
+        {
+          "name": "--mx-dark-ok",
+          "value": "#3DA564"
+        },
+        {
+          "name": "--mx-dark-info",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-link",
+          "value": "#7AA7E0"
+        },
+        {
+          "name": "--mx-dark-orange",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-bg",
+          "value": "#F7F8FA"
+        },
+        {
+          "name": "--mx-light-panel",
+          "value": "#FFFFFF"
+        },
+        {
+          "name": "--mx-light-panel2",
+          "value": "#EEF1F6"
+        },
+        {
+          "name": "--mx-light-text",
+          "value": "#1C2430"
+        },
+        {
+          "name": "--mx-light-muted",
+          "value": "#5D6B7E"
+        },
+        {
+          "name": "--mx-light-line",
+          "value": "#C9CCD1"
+        },
+        {
+          "name": "--mx-light-up",
+          "value": "#1F9A55"
+        },
+        {
+          "name": "--mx-light-down",
+          "value": "#CF4040"
+        },
+        {
+          "name": "--mx-light-warn",
+          "value": "#B9791A"
+        },
+        {
+          "name": "--mx-light-act",
+          "value": "#C43D3D"
+        },
+        {
+          "name": "--mx-light-ok",
+          "value": "#2F8A52"
+        },
+        {
+          "name": "--mx-light-info",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-link",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-orange",
+          "value": "#C4781F"
+        },
+        {
+          "name": "--mx-dark-prov",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-prov-ink",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-dark-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-dark-tier-ink",
+          "value": "#9B86FF"
+        },
+        {
+          "name": "--mx-dark-ser-1",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-ser-2",
+          "value": "#D4A017"
+        },
+        {
+          "name": "--mx-dark-ser-3",
+          "value": "#0EA5E9"
+        },
+        {
+          "name": "--mx-dark-ser-4",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-prov",
+          "value": "#2F6FD0"
+        },
+        {
+          "name": "--mx-light-prov-ink",
+          "value": "#2C62B3"
+        },
+        {
+          "name": "--mx-light-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-light-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-light-tier-ink",
+          "value": "#5B3FC4"
+        },
+        {
+          "name": "--mx-light-ser-1",
+          "value": "#2F63C4"
+        },
+        {
+          "name": "--mx-light-ser-2",
+          "value": "#8F6A04"
+        },
+        {
+          "name": "--mx-light-ser-3",
+          "value": "#0284C7"
+        },
+        {
+          "name": "--mx-light-ser-4",
+          "value": "#B06A25"
+        },
+        {
+          "name": "--mx-light-ink-up",
+          "value": "#1E6D47"
+        },
+        {
+          "name": "--mx-light-ink-down",
+          "value": "#B23C3D"
+        },
+        {
+          "name": "--mx-light-ink-warn",
+          "value": "#7D5922"
+        },
+        {
+          "name": "--mx-light-ink-link",
+          "value": "#2758E6"
+        },
+        {
+          "name": "--noir-canvas",
+          "value": "#080808"
+        },
+        {
+          "name": "--noir-sidebar",
+          "value": "#0C0C0C"
+        },
+        {
+          "name": "--noir-panel",
+          "value": "#121212"
+        },
+        {
+          "name": "--noir-raised",
+          "value": "#191919"
+        },
+        {
+          "name": "--noir-hover",
+          "value": "#222222"
+        },
+        {
+          "name": "--noir-selected",
+          "value": "#292929"
+        },
+        {
+          "name": "--noir-text-primary",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "--noir-text-secondary",
+          "value": "#B8B8B8"
+        },
+        {
+          "name": "--noir-text-tertiary",
+          "value": "#949494"
+        },
+        {
+          "name": "--noir-champagne",
+          "value": "#C9B99B"
+        },
+        {
+          "name": "--noir-sage",
+          "value": "#A8C2AD"
+        },
+        {
+          "name": "--noir-rose",
+          "value": "#DEA4A5"
+        },
+        {
+          "name": "--noir-steel",
+          "value": "#A7B4C2"
+        },
+        {
+          "name": "--noir-lilac",
+          "value": "#BDB2CE"
+        },
+        {
+          "name": "--market-canvas",
+          "value": "#0A0B0D"
+        },
+        {
+          "name": "--market-panel",
+          "value": "#111318"
+        },
+        {
+          "name": "--market-raised",
+          "value": "#181B20"
+        },
+        {
+          "name": "--market-line",
+          "value": "#2B3038"
+        },
+        {
+          "name": "--mx-dark-up-soft",
+          "value": "rgb(69 184 115 / 12%)"
+        },
+        {
+          "name": "--mx-dark-down-soft",
+          "value": "rgb(224 100 100 / 12%)"
+        },
+        {
+          "name": "--mx-dark-warn-soft",
+          "value": "rgb(224 160 48 / 12%)"
+        },
+        {
+          "name": "--mx-dark-info-soft",
+          "value": "rgb(91 155 240 / 12%)"
+        },
+        {
+          "name": "--mx-light-up-soft",
+          "value": "#EAF7EF"
+        },
+        {
+          "name": "--mx-light-down-soft",
+          "value": "#FCECED"
+        },
+        {
+          "name": "--mx-light-warn-soft",
+          "value": "#FFF4E2"
+        },
+        {
+          "name": "--mx-light-info-soft",
+          "value": "#EAF2FC"
+        },
+        {
+          "name": "--mx-light-scrim",
+          "value": "#1C243029"
+        },
+        {
+          "name": "--font-ui",
+          "value": "\"Inter\""
+        },
+        {
+          "name": "--fs-micro",
+          "value": "10px"
+        },
+        {
+          "name": "--fs-label",
+          "value": "11px"
+        },
+        {
+          "name": "--fs-sm",
+          "value": "12.5px"
+        },
+        {
+          "name": "--fs-body",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-h3",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-md",
+          "value": "15px"
+        },
+        {
+          "name": "--fs-h2",
+          "value": "17px"
+        },
+        {
+          "name": "--fs-num-lg",
+          "value": "22px"
+        },
+        {
+          "name": "--fs-h1",
+          "value": "28px"
+        },
+        {
+          "name": "--fs-num-xl",
+          "value": "38px"
+        },
+        {
+          "name": "--fs-display",
+          "value": "46px"
+        },
+        {
+          "name": "--fw-regular",
+          "value": "400"
+        },
+        {
+          "name": "--fw-medium",
+          "value": "500"
+        },
+        {
+          "name": "--fw-semibold",
+          "value": "600"
+        },
+        {
+          "name": "--fw-bold",
+          "value": "700"
+        },
+        {
+          "name": "--fw-extrabold",
+          "value": "800"
+        },
+        {
+          "name": "--bp-mobile",
+          "value": "390px"
+        },
+        {
+          "name": "--bp-tablet",
+          "value": "768px"
+        },
+        {
+          "name": "--bp-desktop",
+          "value": "1440px"
+        },
+        {
+          "name": "--sp-1",
+          "value": "4px"
+        },
+        {
+          "name": "--sp-2",
+          "value": "8px"
+        },
+        {
+          "name": "--sp-3",
+          "value": "12px"
+        },
+        {
+          "name": "--sp-4",
+          "value": "16px"
+        },
+        {
+          "name": "--sp-5",
+          "value": "20px"
+        },
+        {
+          "name": "--sp-6",
+          "value": "24px"
+        },
+        {
+          "name": "--sp-7",
+          "value": "32px"
+        },
+        {
+          "name": "--sp-8",
+          "value": "44px"
+        },
+        {
+          "name": "--r-ctl",
+          "value": "8px"
+        },
+        {
+          "name": "--r-btn",
+          "value": "10px"
+        },
+        {
+          "name": "--r-card",
+          "value": "12px"
+        },
+        {
+          "name": "--r-panel",
+          "value": "14px"
+        },
+        {
+          "name": "--r-pill",
+          "value": "999px"
+        }
+      ]
+    }
+  },
+  {
+    "fileName": "Intraday Flow · R1 Draft",
+    "pageName": "04 · Build · Basis, freshness and states",
+    "pageId": "p-4-0",
+    "url": "https://app.paper.design/file/01M6Y2QK8TQZRN8T4BHG10CJXT/p-4-0",
+    "rootNodeId": "root_node_p-4-0",
+    "nodeCount": 63,
+    "artboardCount": 1,
+    "artboards": [
+      {
+        "id": "W6-0",
+        "name": "R5 · Build · Basis and source-reader repairs",
+        "childCount": 2,
+        "width": 1440,
+        "height": null,
+        "worldX": 3495,
+        "worldY": -670
+      }
+    ],
+    "pages": [
+      {
+        "type": "page",
+        "id": "p-2-0",
+        "name": "00 · AGENT README · Read first",
+        "icon": "arrow",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-3-0",
+        "name": "01 · Product · Recorded scan and evidence",
+        "icon": "design",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-4-0",
+        "name": "04 · Build · Basis, freshness and states",
+        "icon": "blueprint",
+        "isActive": false
+      },
+      {
+        "type": "page",
+        "id": "p-1-0",
+        "name": "Intraday Flow · R1 · Discovery workspace · DRAFT",
+        "icon": "design",
+        "isActive": true
+      }
+    ],
+    "fontFamilies": [
+      "Inter",
+      "System Sans-Serif",
+      "PingFang SC",
+      "System Monospace"
+    ],
+    "tokens": {
+      "items": [
+        {
+          "name": "--mx-dark-bg",
+          "value": "#0F1115"
+        },
+        {
+          "name": "--mx-dark-panel",
+          "value": "#181B21"
+        },
+        {
+          "name": "--mx-dark-panel2",
+          "value": "#1E222A"
+        },
+        {
+          "name": "--mx-dark-text",
+          "value": "#D7DCE3"
+        },
+        {
+          "name": "--mx-dark-muted",
+          "value": "#8B93A1"
+        },
+        {
+          "name": "--mx-dark-line",
+          "value": "#3A4150"
+        },
+        {
+          "name": "--mx-dark-up",
+          "value": "#45B873"
+        },
+        {
+          "name": "--mx-dark-down",
+          "value": "#E06464"
+        },
+        {
+          "name": "--mx-dark-warn",
+          "value": "#E0A030"
+        },
+        {
+          "name": "--mx-dark-act",
+          "value": "#E05555"
+        },
+        {
+          "name": "--mx-dark-ok",
+          "value": "#3DA564"
+        },
+        {
+          "name": "--mx-dark-info",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-link",
+          "value": "#7AA7E0"
+        },
+        {
+          "name": "--mx-dark-orange",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-bg",
+          "value": "#F7F8FA"
+        },
+        {
+          "name": "--mx-light-panel",
+          "value": "#FFFFFF"
+        },
+        {
+          "name": "--mx-light-panel2",
+          "value": "#EEF1F6"
+        },
+        {
+          "name": "--mx-light-text",
+          "value": "#1C2430"
+        },
+        {
+          "name": "--mx-light-muted",
+          "value": "#5D6B7E"
+        },
+        {
+          "name": "--mx-light-line",
+          "value": "#C9CCD1"
+        },
+        {
+          "name": "--mx-light-up",
+          "value": "#1F9A55"
+        },
+        {
+          "name": "--mx-light-down",
+          "value": "#CF4040"
+        },
+        {
+          "name": "--mx-light-warn",
+          "value": "#B9791A"
+        },
+        {
+          "name": "--mx-light-act",
+          "value": "#C43D3D"
+        },
+        {
+          "name": "--mx-light-ok",
+          "value": "#2F8A52"
+        },
+        {
+          "name": "--mx-light-info",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-link",
+          "value": "#285FFF"
+        },
+        {
+          "name": "--mx-light-orange",
+          "value": "#C4781F"
+        },
+        {
+          "name": "--mx-dark-prov",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-prov-ink",
+          "value": "#62A0E8"
+        },
+        {
+          "name": "--mx-dark-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-dark-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-dark-tier-ink",
+          "value": "#9B86FF"
+        },
+        {
+          "name": "--mx-dark-ser-1",
+          "value": "#5B9BF0"
+        },
+        {
+          "name": "--mx-dark-ser-2",
+          "value": "#D4A017"
+        },
+        {
+          "name": "--mx-dark-ser-3",
+          "value": "#0EA5E9"
+        },
+        {
+          "name": "--mx-dark-ser-4",
+          "value": "#E08B45"
+        },
+        {
+          "name": "--mx-light-prov",
+          "value": "#2F6FD0"
+        },
+        {
+          "name": "--mx-light-prov-ink",
+          "value": "#2C62B3"
+        },
+        {
+          "name": "--mx-light-tier-accent",
+          "value": "#7C5CFF"
+        },
+        {
+          "name": "--mx-light-tier-fill",
+          "value": "#6340D8"
+        },
+        {
+          "name": "--mx-light-tier-ink",
+          "value": "#5B3FC4"
+        },
+        {
+          "name": "--mx-light-ser-1",
+          "value": "#2F63C4"
+        },
+        {
+          "name": "--mx-light-ser-2",
+          "value": "#8F6A04"
+        },
+        {
+          "name": "--mx-light-ser-3",
+          "value": "#0284C7"
+        },
+        {
+          "name": "--mx-light-ser-4",
+          "value": "#B06A25"
+        },
+        {
+          "name": "--mx-light-ink-up",
+          "value": "#1E6D47"
+        },
+        {
+          "name": "--mx-light-ink-down",
+          "value": "#B23C3D"
+        },
+        {
+          "name": "--mx-light-ink-warn",
+          "value": "#7D5922"
+        },
+        {
+          "name": "--mx-light-ink-link",
+          "value": "#2758E6"
+        },
+        {
+          "name": "--noir-canvas",
+          "value": "#080808"
+        },
+        {
+          "name": "--noir-sidebar",
+          "value": "#0C0C0C"
+        },
+        {
+          "name": "--noir-panel",
+          "value": "#121212"
+        },
+        {
+          "name": "--noir-raised",
+          "value": "#191919"
+        },
+        {
+          "name": "--noir-hover",
+          "value": "#222222"
+        },
+        {
+          "name": "--noir-selected",
+          "value": "#292929"
+        },
+        {
+          "name": "--noir-text-primary",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "--noir-text-secondary",
+          "value": "#B8B8B8"
+        },
+        {
+          "name": "--noir-text-tertiary",
+          "value": "#949494"
+        },
+        {
+          "name": "--noir-champagne",
+          "value": "#C9B99B"
+        },
+        {
+          "name": "--noir-sage",
+          "value": "#A8C2AD"
+        },
+        {
+          "name": "--noir-rose",
+          "value": "#DEA4A5"
+        },
+        {
+          "name": "--noir-steel",
+          "value": "#A7B4C2"
+        },
+        {
+          "name": "--noir-lilac",
+          "value": "#BDB2CE"
+        },
+        {
+          "name": "--market-canvas",
+          "value": "#0A0B0D"
+        },
+        {
+          "name": "--market-panel",
+          "value": "#111318"
+        },
+        {
+          "name": "--market-raised",
+          "value": "#181B20"
+        },
+        {
+          "name": "--market-line",
+          "value": "#2B3038"
+        },
+        {
+          "name": "--mx-dark-up-soft",
+          "value": "rgb(69 184 115 / 12%)"
+        },
+        {
+          "name": "--mx-dark-down-soft",
+          "value": "rgb(224 100 100 / 12%)"
+        },
+        {
+          "name": "--mx-dark-warn-soft",
+          "value": "rgb(224 160 48 / 12%)"
+        },
+        {
+          "name": "--mx-dark-info-soft",
+          "value": "rgb(91 155 240 / 12%)"
+        },
+        {
+          "name": "--mx-light-up-soft",
+          "value": "#EAF7EF"
+        },
+        {
+          "name": "--mx-light-down-soft",
+          "value": "#FCECED"
+        },
+        {
+          "name": "--mx-light-warn-soft",
+          "value": "#FFF4E2"
+        },
+        {
+          "name": "--mx-light-info-soft",
+          "value": "#EAF2FC"
+        },
+        {
+          "name": "--mx-light-scrim",
+          "value": "#1C243029"
+        },
+        {
+          "name": "--font-ui",
+          "value": "\"Inter\""
+        },
+        {
+          "name": "--fs-micro",
+          "value": "10px"
+        },
+        {
+          "name": "--fs-label",
+          "value": "11px"
+        },
+        {
+          "name": "--fs-sm",
+          "value": "12.5px"
+        },
+        {
+          "name": "--fs-body",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-h3",
+          "value": "14px"
+        },
+        {
+          "name": "--fs-md",
+          "value": "15px"
+        },
+        {
+          "name": "--fs-h2",
+          "value": "17px"
+        },
+        {
+          "name": "--fs-num-lg",
+          "value": "22px"
+        },
+        {
+          "name": "--fs-h1",
+          "value": "28px"
+        },
+        {
+          "name": "--fs-num-xl",
+          "value": "38px"
+        },
+        {
+          "name": "--fs-display",
+          "value": "46px"
+        },
+        {
+          "name": "--fw-regular",
+          "value": "400"
+        },
+        {
+          "name": "--fw-medium",
+          "value": "500"
+        },
+        {
+          "name": "--fw-semibold",
+          "value": "600"
+        },
+        {
+          "name": "--fw-bold",
+          "value": "700"
+        },
+        {
+          "name": "--fw-extrabold",
+          "value": "800"
+        },
+        {
+          "name": "--bp-mobile",
+          "value": "390px"
+        },
+        {
+          "name": "--bp-tablet",
+          "value": "768px"
+        },
+        {
+          "name": "--bp-desktop",
+          "value": "1440px"
+        },
+        {
+          "name": "--sp-1",
+          "value": "4px"
+        },
+        {
+          "name": "--sp-2",
+          "value": "8px"
+        },
+        {
+          "name": "--sp-3",
+          "value": "12px"
+        },
+        {
+          "name": "--sp-4",
+          "value": "16px"
+        },
+        {
+          "name": "--sp-5",
+          "value": "20px"
+        },
+        {
+          "name": "--sp-6",
+          "value": "24px"
+        },
+        {
+          "name": "--sp-7",
+          "value": "32px"
+        },
+        {
+          "name": "--sp-8",
+          "value": "44px"
+        },
+        {
+          "name": "--r-ctl",
+          "value": "8px"
+        },
+        {
+          "name": "--r-btn",
+          "value": "10px"
+        },
+        {
+          "name": "--r-card",
+          "value": "12px"
+        },
+        {
+          "name": "--r-panel",
+          "value": "14px"
+        },
+        {
+          "name": "--r-pill",
+          "value": "999px"
+        }
+      ]
+    }
+  }
+]
+

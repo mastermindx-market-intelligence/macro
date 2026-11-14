@@ -1,0 +1,165 @@
+{
+  "scope": "Native artifact and source-packet integrity; no runtime execution",
+  "native_operation_count": 229,
+  "native_states": {
+    "APPLIED_RESPONSE_OBSERVED": 229
+  },
+  "jsx_exports": 25,
+  "screenshots": 29,
+  "ai_diff_only_intended_text": true,
+  "working_indicators_released": {
+    "01M6Y2VTQBVC9NA39HNG1DYWFH": true,
+    "01M6Y2QK8TQZRN8T4BHG10CJXT": true,
+    "01M6Y31C449F02KGRNPGK94Q8D": true,
+    "01M6Y309YH7PJZMF23R7EDH3CM": true,
+    "01M3P1QEHS5XXQY85BJT6QR2E1": true
+  },
+  "image_dimensions": [
+    {
+      "file": "screenshots/search.unavailable_zh.ui.jpg",
+      "width": 320,
+      "height": 440
+    },
+    {
+      "file": "screenshots/catalyst.changed.jpg",
+      "width": 620,
+      "height": 900
+    },
+    {
+      "file": "screenshots/catalyst.changed_zh.jpg",
+      "width": 320,
+      "height": 709
+    },
+    {
+      "file": "screenshots/intraday.phone_zh.jpg",
+      "width": 390,
+      "height": 826
+    },
+    {
+      "file": "screenshots/intraday.evidence.jpg",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "screenshots/watchlists.empty_zh.jpg",
+      "width": 390,
+      "height": 1402
+    },
+    {
+      "file": "screenshots/watchlists.empty_en.ui.jpg",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "screenshots/search.unavailable_zh.jpg",
+      "width": 320,
+      "height": 930
+    },
+    {
+      "file": "screenshots/search.unavailable_en.ui.jpg",
+      "width": 320,
+      "height": 440
+    },
+    {
+      "file": "screenshots/catalyst.sources.jpg",
+      "width": 620,
+      "height": 900
+    },
+    {
+      "file": "screenshots/catalyst.case_phone.jpg",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "screenshots/catalyst.build.jpg",
+      "width": 1304,
+      "height": 2000
+    },
+    {
+      "file": "screenshots/intraday.classifications.jpg",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "screenshots/catalyst.aster.jpg",
+      "width": 620,
+      "height": 900
+    },
+    {
+      "file": "screenshots/catalyst.lumen.jpg",
+      "width": 620,
+      "height": 900
+    },
+    {
+      "file": "screenshots/catalyst.ledger_phone.jpg",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "screenshots/watchlists.empty_zh.ui.jpg",
+      "width": 320,
+      "height": 844
+    },
+    {
+      "file": "screenshots/intraday.build.jpg",
+      "width": 1408,
+      "height": 2000
+    },
+    {
+      "file": "screenshots/catalyst.morrow.jpg",
+      "width": 620,
+      "height": 900
+    },
+    {
+      "file": "screenshots/search.unavailable_en.jpg",
+      "width": 320,
+      "height": 948
+    },
+    {
+      "file": "screenshots/catalyst.dark.jpg",
+      "width": 1440,
+      "height": 1040
+    },
+    {
+      "file": "screenshots/watchlists.empty_en.jpg",
+      "width": 390,
+      "height": 1402
+    },
+    {
+      "file": "screenshots/intraday.desktop_dark.jpg",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "screenshots/ai.builder.jpg",
+      "width": 1440,
+      "height": 1200
+    },
+    {
+      "file": "screenshots/intraday.desktop_light.jpg",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "screenshots/catalyst.kestrel.jpg",
+      "width": 620,
+      "height": 900
+    },
+    {
+      "file": "screenshots/catalyst.light.jpg",
+      "width": 1440,
+      "height": 1040
+    },
+    {
+      "file": "screenshots/intraday.phone_en.jpg",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "screenshots/intraday.no_read.jpg",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "errors": []
+}
