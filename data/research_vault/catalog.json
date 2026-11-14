@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T14:56:38.761058+00:00",
-  "count": 3372,
+  "generated_at": "2026-11-14T15:11:47.766947+00:00",
+  "count": 3373,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1603,6 +1603,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cms58ui0vfo-81feab",
+      "title": "USA Existing Home Sales Somewhat Below Expectations",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:03:49Z",
+      "summary_points": [
+        "Housing Sales Collapse: Existing home sales fell 5.5% MoM (3.75m units), missing forecast (-3.5%) and hitting lowest level since July 2010.",
+        "Price Decline: Median home price declined 0.3% MoM, signaling sustained weakness in housing market dynamics.",
+        "GDP Downgrade: Q4 GDP tracking estimate lowered by 0.1pp to +1.8%, reflecting deteriorating economic momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
