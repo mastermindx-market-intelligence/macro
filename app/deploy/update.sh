@@ -9,15 +9,25 @@ APP_DIR="/opt/macro"
 # Attended recovery of a source baseline which was installed but never adopted
 # by the complete API-managed Caddy configuration. Normal cron has no arguments.
 CADDY_SOURCE_BASELINE=""
+CADDY_WWW_TLS=0
 CADDY_RECONCILE_ARGS=()
 if [ "$#" -ne 0 ]; then
-	if [ "$#" -ne 2 ] || [ "$1" != --caddy-source-baseline ] ||
-	   [[ ! "$2" =~ ^[0-9a-f]{40}$ ]]; then
-		echo "macro-update: expected --caddy-source-baseline <protected-40-SHA>" >&2
+	if [ "$#" -eq 2 ] && [ "$1" = --caddy-source-baseline ] &&
+	   [[ "$2" =~ ^[0-9a-f]{40}$ ]]; then
+		CADDY_SOURCE_BASELINE=$2
+		CADDY_RECONCILE_ARGS=(--source-baseline "$2")
+	elif [ "$#" -eq 3 ] && [ "$1" = --caddy-www-automatic-tls ] &&
+	     [[ "$2" =~ ^[0-9a-f]{40}$ && "$3" =~ ^[0-9a-f]{64}$ ]]; then
+		CADDY_WWW_TLS=1
+		CADDY_RECONCILE_ARGS=(--www-automatic-tls "$2" "$3")
+	elif [ "$#" -eq 3 ] && [ "$1" = --caddy-www-restore-tls ] &&
+	     [[ "$2" =~ ^[0-9a-f]{40}$ && "$3" =~ ^[0-9a-f]{64}$ ]]; then
+		CADDY_WWW_TLS=1
+		CADDY_RECONCILE_ARGS=(--www-restore-tls "$2" "$3")
+	else
+		echo "macro-update: expected --caddy-source-baseline <protected-40-SHA> or --caddy-www-automatic-tls <protected-40-SHA> <active-64-SHA256> or --caddy-www-restore-tls <protected-40-SHA> <committed-64-op-id>" >&2
 		exit 2
 	fi
-	CADDY_SOURCE_BASELINE=$2
-	CADDY_RECONCILE_ARGS=(--source-baseline "$2")
 fi
 
 # Serialize runs. Cron fires every 3 min, but a big nightly render commit can
@@ -27,6 +37,15 @@ fi
 # then renames a partial/0-byte copy into site.served with a perfectly atomic
 # rename. Skipping is free: the next cron tick picks up whatever this run got.
 exec 9>/var/lock/macro-update.lock
+# The attended TLS effect owns only this transition, not the normal update tick.
+if [ "$CADDY_WWW_TLS" -eq 1 ]; then
+	flock -n -E 75 9 || exit "$?"
+	if ! cmp -s "/proc/$$/fd/255" "$APP_DIR/app/deploy/update.sh"; then
+		echo "macro-update: refusing www TLS adoption from a predecessor updater inode" >&2
+		exit 1
+	fi
+	exec python3 "$APP_DIR/app/deploy/reconcile-caddy-autosave.py" "${CADDY_RECONCILE_ARGS[@]}"
+fi
 flock -n 9 || exit 0
 # BEGIN OHLC_DELIVERY_RECONCILE
 # OHLC generations live outside both rsync trees. The helper borrows this

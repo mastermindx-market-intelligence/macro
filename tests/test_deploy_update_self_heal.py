@@ -1837,3 +1837,48 @@ def test_ohlc_delivery_reconciles_before_copy_and_on_repository_noop():
 
 def test_admin_restart_expectations_are_disjoint():
     assert not (set(ADMIN_MUST_RESTART) & set(ADMIN_MUST_NOT_RESTART))
+
+
+@pytest.mark.parametrize("args,busy,expected_status,driver_called", [
+    ([], False, 0, False),
+    (["--caddy-source-baseline", "a" * 40], False, 0, False),
+    (["--caddy-www-automatic-tls", "a" * 40, "b" * 64], False, 0, True),
+    (["--caddy-www-automatic-tls", "a" * 40, "b" * 64], True, 75, False),
+    (["--caddy-www-automatic-tls", "a" * 40, "short"], False, 2, False),
+    (["--caddy-www-restore-tls", "a" * 40, "b" * 64], False, 0, True),
+    (["--caddy-www-restore-tls", "a" * 40, "b" * 64], True, 75, False),
+    (["--caddy-www-restore-tls", "a" * 40, "short"], False, 2, False),
+])
+def test_www_tls_attended_dispatch_uses_same_lock_and_skips_ordinary_update(
+        tmp_path, args, busy, expected_status, driver_called):
+    prefix = SCRIPT[:SCRIPT.index("# BEGIN OHLC_DELIVERY_RECONCILE")]
+    prefix = prefix.replace("/var/lock/macro-update.lock", str(tmp_path / "lock"))
+    log = tmp_path / "actions"
+    fake_python = tmp_path / "python3"
+    fake_python.write_text('#!/bin/bash\ntest -e /dev/fd/9 || exit 90\nprintf "%s\\n" "$@" >> "$ACTIONS"\n')
+    fake_python.chmod(0o700)
+    controls = '''
+flock() {
+    [ "$1" = -n ] && [ -e /dev/fd/9 ] || return 91
+    if [ "$#" = 4 ]; then
+        [ "$2" = -E ] && [ "$3" = 75 ] && [ "$4" = 9 ] || return 92
+        [ "$BUSY" = 0 ] || return 75
+    else
+        [ "$2" = 9 ] && [ "$BUSY" = 0 ] || return 93
+    fi
+}
+cmp() { [ "$1" = -s ] && [[ "$2" == /proc/*/fd/255 ]] && [ "$3" = /opt/macro/app/deploy/update.sh ]; }
+'''
+    env = {**os.environ, "PATH": str(tmp_path) + os.pathsep + os.environ["PATH"],
+           "ACTIONS": str(log), "BUSY": "1" if busy else "0"}
+    completed = subprocess.run(["bash", "-c", controls + prefix + '\necho "ordinary update"\n',
+                                "test-update", *args], env=env, capture_output=True, text=True, timeout=10)
+    assert completed.returncode == expected_status
+    assert log.exists() is driver_called
+    if driver_called:
+        assert "ordinary update" not in completed.stdout
+        assert log.read_text().splitlines() == [
+            "/opt/macro/app/deploy/reconcile-caddy-autosave.py", args[0].replace("--caddy-", "--", 1),
+            *args[1:]]
+    elif expected_status == 0:
+        assert "ordinary update" in completed.stdout
