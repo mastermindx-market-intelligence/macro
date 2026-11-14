@@ -240,7 +240,7 @@ def _falsifiers(rec: dict, conv: dict) -> list[dict]:
         rs = _num(frag.get("rs_pctile")); dtc_cover = _num(frag.get("days_to_cover"))
         bits = []
         if rs is not None:
-            bits.append(f"RS top {rs:.0f}%")
+            bits.append(f"RS percentile {rs:.0f}")
         if dtc_cover is not None:
             bits.append(f"{dtc_cover:.0f}d to cover")
         tail = " · ".join(bits)

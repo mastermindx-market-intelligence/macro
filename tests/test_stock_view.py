@@ -274,3 +274,22 @@ def test_split_adjusted_legs_are_not_counted_as_fund_decisions():
                           "split_adjusted": True}]
     ev3 = sv.build_view(rec, "US")["evidence"].get("ownership")
     assert ev3 is None or "active funds" not in (ev3 or {}).get("value", "")
+
+
+
+def test_crowding_rs_label_is_percentile_not_top_tail():
+    """Producer percentile is not the complement/top-tail percentage."""
+    import copy
+    for rs in (0, 1, 50, 80, 90, 95, 99, 99.5, 100):
+        rec = _profiled("US", fragility={"flag": True, "rs_pctile": rs,
+                                       "days_to_cover": 9})
+        before = copy.deepcopy(rec)
+        out = sv.build_view(rec, "US")
+        warning = next(f for f in out["falsifiers"] if "Crowded & fragile" in f["en"])
+        for lang in ("en", "zh"):
+            assert f"RS percentile {rs:.0f}" in warning[lang]
+            assert "RS top " not in warning[lang]
+            assert "9d to cover" in warning[lang]
+        assert warning["payload"] == {"rs_pctile": rs, "days_to_cover": 9}
+        assert warning["severity"] == "med"
+        assert rec == before
