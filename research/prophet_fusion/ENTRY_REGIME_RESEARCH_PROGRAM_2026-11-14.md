@@ -278,3 +278,17 @@ material source/correctness change. Preserve the original cache and exact pinned
 research implementation for reproducibility; do not erase survivor/clock caveats
 or swap the primary metric/horizon. Next active action is exact-head release
 qualification plus qualified next-phase data/clock planning, never parameter fishing.
+
+
+## Cohort-first Chairman continuation
+
+The current commission prioritizes sector/theme and market-date timing before
+within-cohort stock alpha, and defers stop-loss optimization. The cumulative
+source direction, active Fable carrier reconciliation, CF-C1..CF-C6 task tree,
+67 new diagnostic tests and actual pre-2020 consumer findings are in
+`GREY_DOT_COHORT_DIRECTION_2026-11-14.md` and `cohort_extension_2026_11_14/`.
+This extends the parent outcome without changing the frozen original experiment.
+The native G0 formula, source/known clocks, Fable active studies and holdout releases
+remain separate and unchanged. No new strategy has been promoted. Exact Fable event
+archive/label receipts and real programme intake remain owed; source delivery is
+not pickup, a live consumer or scientific acceptance.

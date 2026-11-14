@@ -12147,6 +12147,10 @@ jobs:
     # separate, larger cleanup outside this PR's scope.
     paths:
       # Entry/regime mechanism research is hermetic in CI, not a nightly data test.
+      - "scripts/prophet_fusion_cohort_diagnostics.py"
+      - "scripts/prophet_fusion_cohort_census.py"
+      - "scripts/prophet_fusion_horizon_diagnostic.py"
+      - "tests/test_prophet_fusion_cohort_diagnostics.py"
       - "scripts/prophet_fusion_mechanisms.py"
       - "scripts/prophet_fusion_mechanism_study.py"
       - "scripts/prophet_fusion_mechanism_verify.py"
@@ -12287,7 +12291,7 @@ jobs:
       # used by this projection. Keep their existing proof in the PR code gate;
       # the context-and-grades data job only runs after merge.
       - name: Entry-regime mechanism research - causal prefixes, frozen inputs, negative controls and report consumer
-        run: python -m pytest tests/test_prophet_fusion_mechanisms.py tests/test_prophet_fusion_input_readiness.py tests/test_prophet_fusion_mechanism_verify.py tests/test_prophet_fusion_timing_attribution.py -q
+        run: python -m pytest tests/test_prophet_fusion_mechanisms.py tests/test_prophet_fusion_input_readiness.py tests/test_prophet_fusion_mechanism_verify.py tests/test_prophet_fusion_timing_attribution.py tests/test_prophet_fusion_cohort_diagnostics.py -q
       - name: entry-timing W2 estimator (conservative-of-two block bounds)
         run: python -m pytest tests/test_entry_timing_w2_estimator.py tests/test_entry_timing_w2_freeze.py -q
       - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)

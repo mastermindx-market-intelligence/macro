@@ -65,3 +65,114 @@ A useful consumer explains: what is washed out, what changed, whether pressure i
 - Moreira and Muir (2016), Volatility Managed Portfolios: distinguishes managing risk from indiscriminately buying high-volatility conditions. https://www.nber.org/papers/w22208
 
 All proposed improvements remain hypotheses. None promises a breakthrough or guarantees returns.
+
+## Implemented continuation and actual consumer evidence
+
+This is an additive implementation in the existing research carrier, not a new
+Fable experiment or a rerun of the original pilot. Direct principal execution was
+used because the current Fabric capability receipt reports adapter unavailable
+and Executive session_targets returns no addressable Claude target. No external
+worker was launched, no T3 turn was interrupted, and no alternate worker identity
+was invented.
+
+`prophet_fusion_cohort_diagnostics.py` implements the fixed, one-session-lagged
+MA20/slope5 VIX and implied-VVIX descriptors; a native EntryEvent decoration seam
+that retains missing known clocks, source era and provisional/final state; an exact
+symmetric aggregate-rate decomposition; and same-entry gross horizon attribution.
+It computes no oscillator, signal score, entry gate, position size or order.
+
+`prophet_fusion_cohort_census.py` consumes the incumbent VIXCLS and Cboe VVIX
+Parquets at 6bbc4b0fc694c847077661ff5bf4c19ea41e4e81. Arrow filters dates before
+conversion; the scored descriptive window is 2013-01-02 through 2019-12-31.
+The actual result is 1,762 equity sessions, 1,737 qualified MA-trajectory pairs,
+1,510 complete trailing-rank pairs and 401 opposite-MA-direction sessions. One
+missing native VVIX observation is not filled; affected windows abstain. High
+VIX rank with falling trajectories is observed, as is high rank with rising
+trajectories. These facts show distinct input behavior, NOT predictive value.
+No raw source prices or post-2019 observations are published.
+
+`prophet_fusion_horizon_diagnostic.py` consumes only the ORIGINAL frozen pilot
+outcomes at SHA256 1c7b9cb4027641fc88bbc88338543619257b46d0dced9964364e8535381b5ddd.
+It filters BOTH decision and outcome-end dates to <=2019-12-31 before decoding
+outcomes. This prevents a late-2019 entry from reading a 2020 result. It generated
+no new price backtest, labels or strategy trial. All 1,186 complete entry pairs and
+47 unmatched short-horizon rows remain accounted for. Same-entry close-path extrema
+must nest; total-loss, immature and unmatched states are not laundered into winners.
+
+For the 181 pre-2020 technical-core T1/T2 paired entries (153 decision dates), the
+DATE-WEIGHTED positive-net frequency is 54.58% at 21 sessions and 64.32% at 63.
+The rate change is exactly 20.15% of weight moving from nonpositive to positive,
+minus 10.40% moving the other way. The additional 42-session gross segment averaged
++3.046%; the same-window SPY segment averaged +1.778%, leaving a descriptive
++1.269pp difference. This is NOT a beta-neutral alpha estimate, new held-out result,
+grey-dot result, causal explanation or permission to change the primary horizon.
+Average worst close-to-entry loss also deepens from -3.568% to -5.653% across the
+longer window. This is path measurement, not stop-loss optimization or an intraday
+fill model. The other three mechanisms and all complete/unmatched counts are retained
+in `cohort_extension_2026_11_14/pre2020_horizon_diagnostic.{json,md}`.
+
+Local focused qualification: **161 passed** (150 owned research cases, including
+67 new cohort/horizon/census cases, plus 11 existing import-pinning checks).
+New failure controls include a future suffix/current close, missing calendar rows,
+false known clocks, same-session context laundering, source-era loss, metric/horizon
+mismatch, state-composition confounding, digest tampering, labels crossing the sealed
+boundary, double-charged cost avoidance, compounding identity and non-nesting path
+extrema. Tests use synthetic inputs. The two real-data consumers above have separate
+actual execution receipts. This is author self-review, not an independent reviewer.
+
+CF-C1/C3/C4 are implemented and synthetically qualified. CF-C2 is qualified against
+the native event contract but has NOT been joined to the Fable team's screenshot
+sample; its exact event archive and research-schema mapping remain owed. CF-C5 has
+actual input-consumer proof; the added same-entry development attribution is explicitly
+post-hoc, not a new primary test. CF-C6 requires source publication/readback and the
+existing programme's intake. GitHub delivery never means T3 pickup or an accepted
+holdout release. Hosted CI, merge, installed consumer and scientific acceptance remain
+separate. All original numerical report/spec artifacts remain unchanged.
+
+## The three questions must have different comparisons
+
+**Market-date timing.** Does the common market state identify better or safer dates
+for an otherwise fixed opportunity population? Use time/episode-blocked comparisons,
+matched exposure and simple market/risk baselines. Date fixed effects would absorb a
+pure VIX/VVIX date-level predictor entirely; they cannot be its primary test. Thousands
+of stocks on one panic date are not thousands of independent panic observations.
+
+**Cohort rotation.** At the same market date, does one dated sector/theme cohort offer
+better absolute and relative opportunity than the eligible alternatives? Use within-date
+cohort comparisons, equal attention/exposure budgets, dated membership and leave-target-out
+breadth. Relative defensive leadership while all cohorts fall is not automatically a
+profitable long entry. 'Tech versus staples' is a candidate comparison, not a timeless
+risk-on/off definition. Price-relative rotation is not proof of a specific capital flow.
+
+**Within-cohort selection.** On the same date and in the same cohort, which names add
+beyond that common move? Only this third question should prioritize stock beta,
+behavioral traits, catalysts, earnings and other stock-specific evidence. It cannot
+rescue a failed market/cohort timing claim by selecting today's remembered winners.
+
+The screenshots' pooled-to-within-day shrinkage is therefore not a reason to discard
+the washout idea. It is a reason to assign the putative effect to the correct question
+and test it against the correct alternative. The 0.2pp within-day observation is not
+itself a completed market-date test or an independently verified event-level result.
+
+## What earns the next experiment
+
+Before any new outcome comparison, obtain the Fable source SHA, exact event/input
+artifact digests, native trough label and denominator, finality/first-knowable rule,
+existing trial/holdout registration and active writer boundary. Do not ask for another
+broad screen or repeat their current stock-type/peer/volatility runs. The narrow missing
+comparison is IMPLIED VVIX MA direction beyond VIX level/direction and the existing
+cohort repair descriptor, with every entry charged its actual confirmation delay.
+
+A proposed pressure-release sequence must beat the SAME terminal state observed at
+an equal delay. A proposed sector gate must beat simple relative-strength and broad
+market-date controls. A proposed personal-depth modifier must beat generic drawdown,
+volatility and cohort movement. A proposed longer holding period must beat matched
+market/cohort continuation and account for deeper adverse paths and capital occupancy.
+These are separate falsifiers, not extra bullish points in a confirmation count.
+
+Keep the modelling search small: shared-family regularization or hierarchical pooling
+before a high-capacity router; continuous measurements before a large Cartesian table;
+prior-only trait estimation before per-name fitting. Current screenshots, this already-
+seen pilot and any reread development history are not clean new confirmation samples.
+Preserve the existing sealed releases and all negative constructions without inventing
+an extra approval ceremony or weakening a genuine data/estimability boundary.

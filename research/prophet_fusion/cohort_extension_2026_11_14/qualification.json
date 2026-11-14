@@ -1,0 +1,23 @@
+{
+  "schema": "prophet.cohort_extension_qualification/v1",
+  "author_review": "SELF_REVIEWED_NOT_INDEPENDENT_REVIEW",
+  "source_before_extension": "b52d13138f22159d740abf22c1b670d8c1715a06",
+  "owned_research_tests": 150,
+  "import_pin_tests": 11,
+  "focused_tests_passed": 161,
+  "new_diagnostic_tests": 67,
+  "test_log_sha256": "266faa0662a8644a413c59a3233c775e41b0dddb27a7e6b8d15e27f2cee8d145",
+  "paths": {
+    "scripts/prophet_fusion_cohort_diagnostics.py": "22671cee2e53ad9a56d8c5e1b3798c9ccef60f8eb71fc8b434f0b7169884b2e4",
+    "scripts/prophet_fusion_cohort_census.py": "1c50f71347ada11249833f130f46966a0fbe9ca67fe2cc179007f130d117a1d0",
+    "scripts/prophet_fusion_horizon_diagnostic.py": "068abb097c8a89ff40124696b29b8030391b16b51323a3af8a6cdb81b3e0e70d",
+    "tests/test_prophet_fusion_cohort_diagnostics.py": "9c2b48b88d905ffe1e33f2a062133571d396f9a9e83b3cd58e5f63270f5911e8"
+  },
+  "frozen_pilot_regenerated": false,
+  "heldout_after2019_outcome_rows_decoded": false,
+  "real_context_consumer": true,
+  "real_existing_outcome_consumer": true,
+  "original_g0_detector_changed": false,
+  "live_rank_gate_size_or_trade_changed": false,
+  "promotion_eligible": false
+}
