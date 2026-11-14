@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T19:47:47.640791+00:00",
-  "count": 3380,
+  "generated_at": "2026-11-14T23:12:05.565349+00:00",
+  "count": 3383,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -442,6 +442,23 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-rvvt2b5eslj-48de8e",
+      "title": "BofA US Watch October PCE inflation tracking: Tracking 0.29% m:m for core PCE after PPI",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:36:05Z",
+      "summary_points": [
+        "PCE Inflation & Fed Policy: Core PCE revised down to 0.29% m/m (from 0.32%) due to weaker PPI components - PCE Inflation & Fed Policy: Headline PCE at 0.30% m/m (down from 0.34%), signaling cooling inflation trend - PCE Inflation & Fed Policy: Fed expected to raise rates by 25bp per meeting with terminal rate at 4.5%-4.75%"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-zsgvsit12vf-323bb3",
       "title": "BofA US Economic Weekly Fed call change: Adding a hike in Jan ’27",
       "institution": "Bank of America",
@@ -661,6 +678,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4rqfqxuatsq-eec716",
+      "title": "UBS S&T Buy German Short End Covereds Versus KfW Robert Mathur 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:22:27Z",
+      "summary_points": [
+        "Covered Bonds vs KfW: Buy at 16bp spread premium driven by safe asset demand (renewed credit uncertainty/French spread widening), diversification from bund/KfW funding risks (2027), and supply dynamics favoring covered bonds (KfW funding needs + Lander pressures) - Trade Execution: 20m DE000WBP0BK9 vs KfW 3■ 10/10/2028; Entry KfW+18bp, Profit KfW+10bp, Stop KfW+22bp; Strongest relative value vs KfW (1-4y) vs NRW (5-6y) - Corporate Risk Premium: DE CBs - NRW spread spiked Feb-26, signaling rising German corporate credit risk vs NRW due to geopolitical tensions (Ukraine war) and ECB policy uncertainty, with NRW/KfW 5Y declining as safe-haven demand surges - WUWGR Liquidity Event: March 2026 low (2.405) in WUWGR (vs KFW) indicates liquidity crisis/credit downgrade risk for German utilities, with recovery reflecting market reassessment amid geopolitical stress"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
@@ -998,6 +1032,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 1,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-i9ozhrfydpi-99f3bc",
+      "title": "GS Duttenhoefer Duttenhoefers Daily 13.11.2026 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T13:33:05Z",
+      "summary_points": [
+        "Geopolitical Risk: US military warns Israel on Iran war resumption (contradicting Trump's stance), escalating Middle East tensions as key risk factor.",
+        "Semiconductor Sector: Drawdown overdone; 35 GW 2027 deployments in progress (low execution risk); NVDA/AVGO at attractive entry points.",
+        "AI Capex Driver: 2027 real business fixed investment growth forecasted at 8% (AI dominant driver), moderating US equity P/E to 18.5x (from 100th percentile)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },

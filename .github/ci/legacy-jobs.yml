@@ -28064,6 +28064,7 @@ jobs:
       - "engine/marketing/events.py"
       - "engine/marketing/exemplar_store.py"
       - "engine/marketing/expression_dial.py"
+      - "engine/marketing/fact_evidence.py"
       - "engine/marketing/garbage_gate.py"
       - "engine/marketing/hot_tape_llm.py"
       - "engine/marketing/house_picks.py"
@@ -30340,7 +30341,7 @@ jobs:
         # any effect, authorized CdpDriver subclass, base stubs still refusing.
         # Same lane, same deps (pure stdlib + pytest, Playwright lazily imported
         # and never touched on the refusal paths), so it runs with its sibling.
-        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py tools/xguerrilla/tests/test_runtime_adapter.py -q
+        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_fact_evidence.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py tools/xguerrilla/tests/test_runtime_adapter.py -q
 
   xguerrilla-admission:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
@@ -46339,6 +46340,7 @@ jobs:
       - "engine/marketing/events.py"
       - "engine/marketing/exemplar_store.py"
       - "engine/marketing/expression_dial.py"
+      - "engine/marketing/fact_evidence.py"
       - "engine/marketing/garbage_gate.py"
       - "engine/marketing/hot_tape_llm.py"
       - "engine/marketing/house_picks.py"
@@ -47069,6 +47071,7 @@ jobs:
       - "engine/marketing/events.py"
       - "engine/marketing/exemplar_store.py"
       - "engine/marketing/expression_dial.py"
+      - "engine/marketing/fact_evidence.py"
       - "engine/marketing/garbage_gate.py"
       - "engine/marketing/hot_tape_llm.py"
       - "engine/marketing/house_picks.py"
@@ -52782,6 +52785,7 @@ jobs:
       - "engine/marketing/events.py"
       - "engine/marketing/exemplar_store.py"
       - "engine/marketing/expression_dial.py"
+      - "engine/marketing/fact_evidence.py"
       - "engine/marketing/garbage_gate.py"
       - "engine/marketing/health_monitor.py"
       - "engine/marketing/hot_tape.py"

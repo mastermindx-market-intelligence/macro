@@ -301,21 +301,7 @@ artifacts:
   - agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-03-product-delivery.md
   - agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-04-installed-source.md
 next_action: >
-  Continue the Chairman's 2026-11-14 full Terminal Options suite assignment from
-  agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-11-14.md and the
-  terminal:docs/OPTIONS_SUITE_COMPLETION_2026-11-14.md plan. The assigned session owns
-  recovery and integration. Consume the existing exact-head CI/native release requests
-  for Terminal1514 and1519, then verify their installed revision and actual user paths.
-  Reconcile Terminal1266's original unknown push through its original operation before
-  any retry; its locally qualified d32a3d1 is not the published46782b0 head.
-  Start compatible source/consumer work while those lanes progress; preserve the original
-  carriers and exact holds on1248,781,799,804,686 and661 and the concurrent shared-shell1509.
-  Reuse accepted1296 Plan/Compare and the October22 R2 and October14 Paper/Lab evidence
-  within their recorded limits. C1-C7 are editorial acceptance slices, not new OA waves.
-  The original OA scientific, candidate-activation, exact-option, durability and AD-1T2
-  obligations remain as recorded in their wave rows and historical source-linked receipts.
-  No research result, UI completion, fixture pass or protected merge grants scoring,
-  probability, trade sizing, candidate activation, or programme completion.
+  Continue the Chairman's full Terminal Options suite assignment using the existing November14 handoff and terminal:docs/OPTIONS_SUITE_COMPLETION_2026-11-14.md. Screener1551, Flow1556 and OI1555 are protected source; preserve their accepted proof. Consume Discover1553's original new-head CI43646581075 and native auto request at5d43934bd595ae72335b0edfa69c45dce5924823 without reenrollment. Finish the original chart-source-presentation and overview-demand operations, qualify their actual responsive consumers, then use normal protected release and installed/entitled acceptance. Reconcile1266,1248,1554 and other held effects only through their original owners; no replay or alternate carrier. Retain1509/1512 navigation/monitor custody and804 persistence. C1-C7 remain editorial acceptance slices, not new OA waves. Original OA scientific, candidate-activation, exact-option, durability and AD-1T2 obligations remain in their wave rows. UI tests, merges and installation do not grant scoring, probability, trade sizing, candidate activation or programme completion.
 
 ---
 

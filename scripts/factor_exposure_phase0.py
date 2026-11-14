@@ -10,16 +10,16 @@ This feature is MEASUREMENT, not prediction, so the gate is NOT predictive IC/FD
 
   2. BETA STABILITY (the core gate) — does a beta estimated on the trailing window
      persist out-of-sample? At monthly rebalances, estimate betas on [t-W, t] (causal)
-     and correlate them cross-sectionally with the realized betas on the next [t, t+H].
+     and correlate them cross-sectionally with realized betas strictly after t,
+     using the same transform fitted through t.
      A factor whose in-sample beta doesn't rank next-period exposure is noise.
 
-  3. AGGREGATION DENOISING (the design justification) — the working assumption is
-     "trust the portfolio aggregate, not a single stock's secondary beta." Form random
-     K-name equal-weight books and show out-of-sample stability RISES with K, sharply
-     for the noisy macro factors. If it doesn't, the whole portfolio-level read is moot.
+  3. AGGREGATION — form random K-name equal-weight books and measure whether
+     out-of-sample stability improves with K. Improvement is a hypothesis to test,
+     not a consequence of averaging or permission to promote a confidence tier.
 
   4. EXPLANATORY POWER — market-only vs full-model R², and how much the secondary
-     factors add at the single-stock level (expected: little — hence point 3).
+     factors add at the single-stock level on the observed sample.
 
 Run:
   .venv/bin/python -m scripts.factor_exposure_phase0
@@ -78,9 +78,10 @@ def month_grid(index, warmup: int, horizon: int) -> list:
 # --------------------------------------------------------------------------- #
 def collinearity(F: pd.DataFrame, closes: pd.DataFrame, win: int, minp: int,
                  max_abs: float) -> dict:
+    F = fe._finite_factors(F).tail(win)
     raw_vif = vif(F)
     pairs = top_correlated_pairs(F, k=8, thresh=0.3)
-    G = fe.orthogonalize_factors(F.tail(win))
+    G = fe.orthogonalize_factors(F)
     orth_vif = vif(G)
 
     # double-count: naive "sum of univariate exposures treating factors as independent"
@@ -109,29 +110,35 @@ def collinearity(F: pd.DataFrame, closes: pd.DataFrame, win: int, minp: int,
 # --------------------------------------------------------------------------- #
 def stability(F: pd.DataFrame, closes: pd.DataFrame, *, win: int, horizon: int,
               minp: int, max_abs: float, basket_sizes: list, n_baskets: int) -> dict:
+    F = fe._finite_factors(F)
     idx = F.index.intersection(closes.index)
-    closes = closes.reindex(idx)
+    returns = fe._stock_returns(closes)
     grid = month_grid(idx, warmup=win, horizon=horizon)
     keys = [k for k in fe.FACTOR_ORDER if k in F.columns]
     if len(grid) < 4:
-        return {"error": f"grid too short ({len(grid)})", "rebalances": len(grid)}
+        return {"error": f"grid too short ({len(grid)})", "rebalances": 0,
+                "planned_rebalances": len(grid)}
 
     per_stock = {k: [] for k in keys}                     # cross-sectional persistence per date
     agg = {K: {k: [] for k in keys} for K in basket_sizes}
     fwd_minp = max(horizon // 2, 20)
+    evaluated = []
 
     for d in grid:
-        loc = idx.get_loc(d)
-        in_sl = idx[max(0, loc - win):loc + 1]
-        fw_sl = idx[loc:min(len(idx), loc + horizon + 1)]
-        if len(fw_sl) < fwd_minp + 1:
+        before = F.loc[F.index <= d].tail(win)
+        future = F.loc[F.index > d].head(horizon)
+        if len(future) < fwd_minp:
             continue
-        bin_ = fe.stock_betas(closes.loc[in_sl], F.loc[in_sl],
-                              window=win, min_obs=minp, max_abs=max_abs)["betas"]
-        bfw = fe.stock_betas(closes.loc[fw_sl], F.loc[fw_sl],
-                             window=len(fw_sl), min_obs=fwd_minp, max_abs=max_abs)["betas"]
+        transform = fe.orthogonalize_fit(before)
+        bin_ = fe._betas_on_window(returns.reindex(before.index),
+                                   fe.orthogonalize_apply(before, transform),
+                                   minp, max_abs)["betas"]
+        bfw = fe._betas_on_window(returns.reindex(future.index),
+                                  fe.orthogonalize_apply(future, transform),
+                                  fwd_minp, max_abs)["betas"]
         if not bin_ or not bfw:
             continue
+        evaluated.append(d)
         for k in keys:
             si, sf = _beta_series(bin_, k), _beta_series(bfw, k)
             per_stock[k].append(_spearman(si, sf))
@@ -151,9 +158,13 @@ def stability(F: pd.DataFrame, closes: pd.DataFrame, *, win: int, horizon: int,
         s = pd.Series(xs).dropna()
         return (round(float(s.mean()), 3), len(s)) if len(s) else (None, 0)
 
+    if len(evaluated) < 4:
+        return {"error": f"too few fitted rebalances ({len(evaluated)})",
+                "rebalances": len(evaluated), "planned_rebalances": len(grid)}
     ps = {k: dict(zip(("persist", "n"), mean_n(per_stock[k]))) for k in keys}
     ag = {K: {k: mean_n(agg[K][k])[0] for k in keys} for K in basket_sizes}
-    return {"rebalances": len(grid), "span": f"{grid[0].date()}..{grid[-1].date()}",
+    return {"rebalances": len(evaluated), "planned_rebalances": len(grid),
+            "span": f"{evaluated[0].date()}..{evaluated[-1].date()}",
             "horizon": horizon, "win": win, "per_stock": ps, "by_basket": ag,
             "basket_sizes": basket_sizes}
 
@@ -165,6 +176,7 @@ def explanatory(F: pd.DataFrame, closes: pd.DataFrame, win: int, minp: int,
                 max_abs: float) -> dict:
     """Nested R²: market-only → +style (growth, size) → full (+macro). Isolates how
     much the MACRO factors (rates/usd/oil/btc) actually add at the single-stock level."""
+    F = fe._finite_factors(F).tail(win)
     style = [c for c in ("mkt", "growth", "size") if c in F.columns]
 
     def r2_of(cols):
@@ -223,13 +235,17 @@ def render(F, col, stab, exp, args) -> str:
     L = ["# Factor-exposure engine — Phase 0 validation", "",
          "*Generated by `scripts/factor_exposure_phase0.py`. This is a MEASUREMENT tool, "
          "not a predictive signal — the gate is collinearity control + out-of-sample beta "
-         "STABILITY, not IC/FDR/DSR. Working assumption under test: trust the portfolio "
-         "aggregate, not a single stock's secondary beta.*", ""]
+         "STABILITY, not IC/FDR/DSR. Aggregation benefits are measured, not assumed. "
+         "This report does not assign confidence tiers or authorize trading.*", "",
+         f"Factor observations: {len(F)} rows, {F.index.min().date()}..{F.index.max().date()}. "
+         "Returns retain their original price predecessors; each ticker uses a joint "
+         "finite-support fit with an intercept. Forward observations are strictly after "
+         "the decision date and use the in-sample factor transform.", ""]
 
     # 1. collinearity
     L += ["## 1. Collinearity — why a univariate beta table double-counts", "",
-          "VIF per factor (>5 redundant, >10 severe) on the RAW factors vs after "
-          "orthogonalization:", "",
+          f"VIF per factor on the same trailing {args.win}-observation window, "
+          "before and after orthogonalization:", "",
           "| factor | raw VIF | orthogonalized VIF |", "|---|--:|--:|"]
     for k in keys:
         L.append(f"| {lab.get(k, k)} | {col['raw_vif'].get(k, '—')} | {col['orth_vif'].get(k, '—')} |")
@@ -237,20 +253,22 @@ def render(F, col, stab, exp, args) -> str:
         L += ["", "Most-correlated raw factor pairs: "
               + ", ".join(f"{p['a']}–{p['b']} {p['corr']}" for p in col["pairs"]) + "."]
     if col["infl_median"] is not None:
-        L += ["", f"**Double-count:** summing the univariate exposures (treating the factors as "
-              f"independent — the naive table) overstates a stock's factor variance by a median "
-              f"**{col['infl_median']:.2f}×** (p90 {col['infl_p90']:.2f}×) vs the orthogonal model, "
-              f"across {col['n_stocks']} stocks. The orthogonal betas remove this."]
+        L += ["", f"**Naive / joint factor-variance ratio:** treating raw univariate exposures "
+              f"as independent gives a median ratio **{col['infl_median']:.2f}×** "
+              f"(p90 {col['infl_p90']:.2f}×) relative to the joint model, across "
+              f"{col['n_stocks']} stocks. Values above 1 indicate overstatement; values "
+              f"below 1 indicate understatement. This is an in-sample comparison."]
 
     # 2. per-stock stability
     L += ["", "## 2. Out-of-sample beta stability (single-stock)", ""]
     if stab.get("error"):
         L += [f"_skipped — {stab['error']}_", ""]
     else:
-        L += [f"Span {stab['span']} · {stab['rebalances']} monthly rebalances · estimate on "
+        L += [f"Span {stab['span']} · {stab['rebalances']} fitted monthly rebalances "
+              f"from {stab['planned_rebalances']} planned dates · estimate on "
               f"{stab['win']}d, realize on next {stab['horizon']}d. Cross-sectional rank "
               f"correlation between in-sample and next-period beta (1 = perfectly persistent, "
-              f"0 = noise):", "",
+              f"0 = no observed rank association):", "",
               "| factor | persistence | n |", "|---|--:|--:|"]
         for k in keys:
             r = stab["per_stock"][k]
@@ -259,7 +277,7 @@ def render(F, col, stab, exp, args) -> str:
         # 3. aggregation denoising
         L += ["", "## 3. Aggregation denoising — does the portfolio aggregate firm up?", "",
               "Same persistence, but for random equal-weight books of K names (mean beta). "
-              "If trustworthy only in aggregate, these rise with K:", "",
+              "Compare the measured values across K; monotone improvement is not assumed:", "",
               "| factor | " + " | ".join(f"K={K}" for K in stab["basket_sizes"]) + " |",
               "|---|" + "--:|" * len(stab["basket_sizes"])]
         for k in keys:
@@ -267,21 +285,20 @@ def render(F, col, stab, exp, args) -> str:
             L.append(f"| {lab.get(k, k)} | {row} |")
 
     # 4. explanatory
+    extra = ", ".join(k for k in keys if k not in ("mkt", "growth", "size"))
     L += ["", "## 4. Explanatory power (nested R²)", "",
           f"Median single-stock R² over {exp['n']} names: market-only **{exp['r2_mkt_median']}** "
-          f"→ +style (growth, size) **{exp['r2_style_median']}** → +macro (rates/usd/oil/btc) "
+          f"→ +style (growth, size) **{exp['r2_style_median']}** → +remaining factors ({extra}) "
           f"**{exp['r2_full_median']}**. Style adds a median **{exp['style_add_median']}**; the "
-          f"MACRO factors add only **{exp['macro_add_median']}** (p90 {exp['macro_add_p90']}) — "
-          f"tiny at the single-stock level, which is exactly why §3 (aggregation) carries the "
-          f"macro read.", ""]
+          f"remaining factors add **{exp['macro_add_median']}** (p90 {exp['macro_add_p90']}). "
+          "These are in-sample fit differences, not evidence of forward reliability.", ""]
 
     L += ["---", "",
-          "**How to read.** §1 justifies the orthogonal model over a univariate table. "
-          "§2 says which single-stock betas are real (market/style ≫ macro). §3 is the "
-          "load-bearing test: if macro-factor persistence climbs with book size, the "
-          "PORTFOLIO exposure read is sound even where per-name betas are noisy — so ship "
-          "the aggregate, show single-stock secondary betas as low-confidence context. If "
-          "§3 stays flat, the macro factors are display-only at every level.", ""]
+          "**How to read.** §1 measures shared-factor double counting; §2 reports "
+          "single-stock rank persistence; §3 compares random baskets; §4 describes "
+          "in-sample fit. The finite sample, surviving price universe and overlapping "
+          "forward horizons limit these measurements. None of these tables by itself "
+          "qualifies a confidence category, predicts a future book, or authorizes a trade.", ""]
     return "\n".join(L)
 
 
