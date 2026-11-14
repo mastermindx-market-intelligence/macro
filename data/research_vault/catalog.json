@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T05:11:03.977785+00:00",
-  "count": 3344,
+  "generated_at": "2026-11-14T05:40:52.831298+00:00",
+  "count": 3345,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1162,6 +1162,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lnv9hyyiipl-d9ff8e",
+      "title": "GS Blaze GS Commods Aluminium Record spread strength (Spot deficit vs forward surplus) 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:45:23Z",
+      "summary_points": [
+        "Aluminium Spread Dynamics: Record spread strength signals severe physical supply constraints (spot deficit vs forward surplus), indicating potential price upside.",
+        "Chinese Inventory Drawdown & Spot Deficit Resolution: Chinese inventories down 30k MT (-13% y/y) via higher billet/semis exports, lower ingot imports, and off-warrant metal reduction, resolving supply disruptions.",
+        "SHFE/LME Spread Inversion & Supply Competition: SHFE/LME spread inverted ($350b Nov/Dec) due to China’s local demand, with open import ARB for Russian metal; China-LME supply competition unlikely to ease.",
+        "Regional Premium Pressure: Spreads incentivizing deliveries (e.g., MJP merchants offering LME +$100/mt) drive short positioning across regional premiums amid Asia/Middle East supply dynamics and Europe’s deficit debate."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
