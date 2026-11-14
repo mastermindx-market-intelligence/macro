@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T22:27:00.541985+00:00",
-  "count": 3381,
+  "generated_at": "2026-11-14T22:57:02.549739+00:00",
+  "count": 3382,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -678,6 +678,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4rqfqxuatsq-eec716",
+      "title": "UBS S&T Buy German Short End Covereds Versus KfW Robert Mathur 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:22:27Z",
+      "summary_points": [
+        "Covered Bonds vs KfW: Buy at 16bp spread premium driven by safe asset demand (renewed credit uncertainty/French spread widening), diversification from bund/KfW funding risks (2027), and supply dynamics favoring covered bonds (KfW funding needs + Lander pressures) - Trade Execution: 20m DE000WBP0BK9 vs KfW 3■ 10/10/2028; Entry KfW+18bp, Profit KfW+10bp, Stop KfW+22bp; Strongest relative value vs KfW (1-4y) vs NRW (5-6y) - Corporate Risk Premium: DE CBs - NRW spread spiked Feb-26, signaling rising German corporate credit risk vs NRW due to geopolitical tensions (Ukraine war) and ECB policy uncertainty, with NRW/KfW 5Y declining as safe-haven demand surges - WUWGR Liquidity Event: March 2026 low (2.405) in WUWGR (vs KFW) indicates liquidity crisis/credit downgrade risk for German utilities, with recovery reflecting market reassessment amid geopolitical stress"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
