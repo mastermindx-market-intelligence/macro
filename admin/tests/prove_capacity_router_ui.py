@@ -150,6 +150,14 @@ def run():
         assert 'Stale telemetry' in page.locator('.cf-cap-alert').inner_text()
         assert page.locator('.cf-cap-percent:not(.muted)').count()==0
         proof['claude_counters_freshness_benches_and_filters']=True
+        # The global live strip must expire too, rather than displaying a stale
+        # ten-request snapshot as ten requests currently executing.
+        page.evaluate('window.fixtureState.data.generated_at -= 7200')
+        page.wait_for_function('document.querySelector(".cf-metric strong").textContent.trim()==="—"')
+        assert 'current unknown' in page.locator('.cf-metric').first.inner_text()
+        page.evaluate('window.fixtureState.data.generated_at = Date.now()/1000')
+        page.wait_for_function('document.querySelector(".cf-metric strong").textContent.trim()!=="—"')
+        proof['router_live_metrics_expire_on_stale_snapshot']=True
         # Continue other proof views with restored fresh fixture.
         page.evaluate('window.fixtureState.data.claude.observed_at = Date.now()/1000')
         page.locator('.cf-tabs [data-view=providers]').click()
