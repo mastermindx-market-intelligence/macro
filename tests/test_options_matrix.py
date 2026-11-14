@@ -1813,3 +1813,92 @@ def test_boolean_oi_column_never_becomes_contract_counts(tmp_path, value):
         assert cell["call_oi"] is None and cell["put_oi"] is None
         assert cell["delta_oi"] == {"call": None, "put": None}
         assert cell["call_vol"] == 10 and cell["put_vol"] == 10
+
+
+def test_auto_asof_uses_latest_coherent_oi_greeks_session(tmp_path):
+    """Automatic as-of must ignore a newer OI-only partial refresh session.
+
+    The Theta daily maintainer may advance OI to business day D while settled
+    EOD and Greeks remain on S=D-1.  Publishing a matrix from max(OI.date)
+    alone then selects D, loses the same-date underlying spot, and emits a
+    zero-cell payload.  The latest session shared by OI and positive-spot
+    Greeks is the only coherent automatic matrix date.
+    """
+    root = "SPY"
+    expiry = "2026-08-15"
+    store = tmp_path / "theta_store"
+
+    oi_dir = store / "oi" / root
+    oi_dir.mkdir(parents=True)
+    pd.DataFrame([
+        {"root": root, "expiration": expiry, "strike": 500.0, "right": "C",
+         "date": "2026-07-03", "open_interest": 800},
+        {"root": root, "expiration": expiry, "strike": 500.0, "right": "P",
+         "date": "2026-07-03", "open_interest": 700},
+        {"root": root, "expiration": expiry, "strike": 500.0, "right": "C",
+         "date": "2026-07-07", "open_interest": 1000},
+        {"root": root, "expiration": expiry, "strike": 500.0, "right": "P",
+         "date": "2026-07-07", "open_interest": 900},
+        {"root": root, "expiration": expiry, "strike": 500.0, "right": "C",
+         "date": "2026-07-08", "open_interest": 1100},
+        {"root": root, "expiration": expiry, "strike": 500.0, "right": "P",
+         "date": "2026-07-08", "open_interest": 1000},
+    ]).to_parquet(oi_dir / "2026.parquet", index=False)
+
+    greeks_dir = store / "greeks" / root
+    greeks_dir.mkdir(parents=True)
+    pd.DataFrame([
+        {"root": root, "expiration": expiry, "strike": 500.0, "right": right,
+         "date": "2026-07-07", "underlying_price": 500.0,
+         "implied_vol": 0.20, "gamma": 0.02,
+         "delta": 0.5 if right == "C" else -0.5,
+         "theta": -0.1, "vega": 0.2, "rho": 0.0, "iv_error": 0.0}
+        for right in ("C", "P")
+    ]).to_parquet(greeks_dir / "2026.parquet", index=False)
+
+    eod_dir = store / "eod" / root
+    eod_dir.mkdir(parents=True)
+    pd.DataFrame([
+        {"root": root, "expiration": expiry, "strike": 500.0, "right": right,
+         "date": "2026-07-07", "open": 10.0, "high": 11.0,
+         "low": 9.0, "close": 10.0, "volume": 100, "count": 10}
+        for right in ("C", "P")
+    ]).to_parquet(eod_dir / "2026.parquet", index=False)
+
+    from engine.thetadata_store import clear_parquet_cache
+    clear_parquet_cache()
+    payload = build_matrix(root, store=store, asof=None)
+
+    assert payload["_build_meta"]["asof_date"] == "2026-07-07"
+    assert payload["cells"], payload.get("_no_data_reason")
+
+
+def test_runner_gates_on_canonical_coherent_session() -> None:
+    root = Path(__file__).resolve().parents[1]
+    runner = (root / "ops/launchd/run_options_matrix.sh").read_text()
+
+    assert "latest_options_matrix_session" in runner
+    assert 'coherent = latest_options_matrix_session("SPY", store=store)' in runner
+    assert "if coherent is not None and coherent >= required.isoformat():" in runner
+
+    # Freshness must not drift back to an OI-only date projection.
+    assert 'columns=["date"]' not in runner
+    assert 'Path(store) / "oi" / "SPY"' not in runner
+
+
+@pytest.mark.parametrize("oi_dates,eod_dates,greek_dates,expected", [
+    (("2026-09-21", "2026-09-22", "2026-09-23"),
+     ("2026-09-21", "2026-09-22"), ("2026-09-21", "2026-09-22"), "2026-09-22"),
+    (("2026-09-22",), (), ("2026-09-22",), None),
+    (("2026-08-21", "2026-09-23"), ("2026-08-21",), ("2026-08-21",), None),
+    (("2025-12-31", "2026-01-02"), ("2025-12-31",), ("2025-12-31",), "2025-12-31"),
+    (("2025-12-31", "2026-02-02"), ("2025-12-31",), ("2025-12-31",), None),
+])
+def test_scheduler_session_preserves_eod_and_nyse_lag_bounds(
+    tmp_path, oi_dates, eod_dates, greek_dates, expected,
+):
+    from engine.thetadata_store import latest_options_matrix_session
+    store = _session_repair_store(
+        tmp_path, oi_dates=oi_dates, eod_dates=eod_dates, greek_dates=greek_dates,
+    )
+    assert latest_options_matrix_session("SPY", store=store) == expected
