@@ -179,6 +179,8 @@ def build_release_visual_history(root: str | Path, *, asof: str) -> dict[str, An
             raise ValueError("manifest_schema_invalid")
         if manifest.get("status") != "ok" or manifest.get("source_output_type") != 2:
             raise ValueError("manifest_collection_incomplete")
+        if manifest.get("integrity_profile") != "release_target_artifact_sha256_bytes.v1":
+            raise ValueError("manifest_missing_sha256_bytes_profile")
         collected = _clock(manifest.get("completed_at"))
         if collected > cutoff:
             raise ValueError("future_collection_clock")
