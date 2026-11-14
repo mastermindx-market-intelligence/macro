@@ -156,3 +156,43 @@ def test_native_jinja_partial_compiles():
     assert "MMXReleaseVisualHistory" in markup
     assert 'data-rrh-chart' in markup
     assert 'role="status"' in markup
+
+
+def test_first_print_receipts_require_integrity_first_sequence_and_unique_truth(tmp_path,monkeypatch):
+    """Synthetic observations are test fixtures only, never chart seed data."""
+    def row(period,actual,receipt,*,sequence="first",integrity="ok",observed="2026-10-15T12:33:00Z"):
+        return {"release":"ppi_finaldemand","period":period,"unit":"percent",
+                "row_type":"actual","sequence":sequence,"actual":actual,
+                "receipt_id":receipt,"integrity":integrity,"observed_at":observed,
+                "source_released_at":"2026-10-15T12:30:00Z",
+                "source_url":"https://www.bls.gov/news.release/ppi.htm"}
+    entries=[
+        row("2026-08",0.3,"legit"),
+        row("2026-08",0.3,"legit"),             # exact duplicate idempotent
+        row("2026-08",99,"bad",integrity="bad"),  # defective input rejected
+        row("2026-09",0.2,"first"),
+        row("2026-09",0.4,"conflict"),            # conflicting first prints withheld
+        row("2026-10",0.5,"future",observed="2026-11-14T12:33:00Z"),
+        row("2026-08",0.9,"revised",sequence="correction_candidate"),
+    ]
+    monkeypatch.setattr(visual,"load_actual_ledger",lambda path:entries)
+    checked=[]
+    def integrity(receipt, *, defects_path):
+        checked.append(receipt["receipt_id"])
+        return [] if receipt["integrity"]=="ok" else ["source_bad"]
+    monkeypatch.setattr(visual,"receipt_integrity_errors",integrity)
+    events=visual._receipt_groups(tmp_path,visual._clock(NOW))
+    assert [e["period"] for e in events["ppi_finaldemand"]]==["2026-08"]
+    assert events["ppi_finaldemand"][0]["value"]==0.3
+    assert events["ppi_finaldemand"][0]["basis"]=="verified_official_first_print_mom"
+    assert "bad" in checked and "future" not in checked
+
+
+def test_visual_javascript_syntax_in_node_when_available():
+    import shutil
+    import subprocess
+    if not shutil.which("node"):
+        pytest.skip("Node unavailable in this CI image")
+    script=ROOT/"templates/release_visual_history.js"
+    result=subprocess.run(["node","--check",str(script)],capture_output=True,text=True,timeout=10)
+    assert result.returncode==0, result.stderr
