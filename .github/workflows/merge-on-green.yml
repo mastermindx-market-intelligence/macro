@@ -210,6 +210,8 @@ jobs:
       - name: sweep merge-on-green pull requests
         env:
           GH_REPO: ${{ github.repository }}
+          # Same mode expression as ci.yml; an unknown local mode fails closed.
+          MERGE_ON_GREEN_CI_SCOPE_MODE: ${{ vars.CI_SCOPE_MODE == 'off' && 'off' || 'active' }}
           # READS use the job's own GITHUB_TOKEN. Its quota is per-repository and
           # separate from the shared 5,000/hr account pool that ship_loop_guard.py
           # and every parallel session draw on — a sweep every 10 minutes must not

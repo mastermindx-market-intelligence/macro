@@ -15895,6 +15895,8 @@ jobs:
     # ci-control-plane-census, both declaring these same paths; see those jobs.
     runs-on: ubuntu-latest
     paths:
+      - "config/dag.yml"
+      - "site/factordata/basket_washout_state.json"
       # Actual source/metadata reads in the SA-W4 ownership contract.
       - "config.yml"
       - "engine/experiments_registry.py"
@@ -15967,10 +15969,12 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "research/signal_engine/confluence.py"
+      - "research/signal_engine/SCHEMA.json"
       - "scripts/notify.py"
       - "scripts/oracle_reversion_screen.py"
       - "scripts/oracle_screen.py"
       - "scripts/validate_regime_fwd.py"
+      - "scripts/validate_signals.py"
       - "site/qledger/track_record.json"
       # Ancestor package initializers of the declared subjects (2026-11-04,
       # ancestor-init census): importing a declared module executes these, so a
