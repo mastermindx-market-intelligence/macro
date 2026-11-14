@@ -127,7 +127,7 @@ def _clean_claude(raw):
             if not isinstance(lane, dict):
                 continue
             lanes[label(name)] = {
-                "used_weekly": number(lane.get("used_weekly"), 0),
+                "used_weekly": number(lane.get("used_weekly")),
                 "budget_weekly": number(lane.get("budget_weekly")),
                 "remaining_weekly": number(lane.get("remaining_weekly")),
                 "pressure": number(lane.get("pressure"), None, 1),
@@ -139,7 +139,7 @@ def _clean_claude(raw):
             }
         accounts.append({
             "id": label(account.get("id")), "label": label(account.get("label")),
-            "used_5h": number(account.get("used_5h"), 0),
+            "used_5h": number(account.get("used_5h")),
             "budget_5h": number(account.get("budget_5h")),
             "remaining_5h": number(account.get("remaining_5h")),
             "inflight": count(account.get("inflight")),
