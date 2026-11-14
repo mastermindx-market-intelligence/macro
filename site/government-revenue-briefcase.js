@@ -11,6 +11,7 @@
 
   var STATE_CONTRACT = 'government_procurement_local_state.v1';
   var EXPORT_CONTRACT = 'government_procurement_export.v1';
+  var IDENTITY_CUT_CONTRACT = 'government_revenue_saved_identity.v1';
   var SAVED_CUT_CONTRACT = 'government_procurement_saved_cut.v1';
   var MAX_SAVED_CUT_RECORDS = 100;
   var MAX_SAVED_CUT_BYTES = 256 * 1024;
@@ -525,6 +526,7 @@
   }
 
   function normalSavedCut(value, filters) {
+    if (object(value) && value.contract === IDENTITY_CUT_CONTRACT) return normalIdentityCut(value, filters);
     if (!object(value) || value.contract !== SAVED_CUT_CONTRACT || cutBytes(value) > MAX_SAVED_CUT_BYTES) return null;
     var payload = value.payload;
     if (!object(payload) || payload.contract !== EXPORT_CONTRACT || !object(payload.workspace)
@@ -562,6 +564,114 @@
         records: payload.records.map(publicEvent)
       }
     };
+  }
+
+  function publicIdentityFields(value, keys) {
+    var out = {};
+    if (!object(value)) return out;
+    keys.forEach(function (key) {
+      var item = value[key];
+      if (item === null || typeof item === 'boolean' || typeof item === 'number' && Number.isFinite(item)) out[key] = item;
+      else if (typeof item === 'string') out[key] = text(item, 2000);
+    });
+    return out;
+  }
+
+  function identityEvidence(values) {
+    if (!Array.isArray(values) || values.length > 24) throw cutError('invalid_saved_cut');
+    return values.map(function (row) {
+      var receipt = publicIdentityFields(row, ['record_id', 'publisher', 'content_sha256', 'retained_representation']);
+      var url = safeUrl(row && row.url);
+      if (url) {
+        var parsed = new URL(url);
+        if (parsed.username || parsed.password || Array.from(parsed.searchParams.keys()).some(function (key) {
+          return /(?:token|secret|password|credential|api.?key|authorization)/i.test(key);
+        })) url = null;
+      }
+      if (!receipt.record_id || !url || !/^[a-f0-9]{64}$/.test(receipt.content_sha256 || '')) throw cutError('invalid_saved_cut');
+      receipt.url = url;
+      return receipt;
+    });
+  }
+
+  function identityCase(value, listing) {
+    if (!object(value) || value.rights_state === 'denied' || !sourceClock(value.known_at)) throw cutError('invalid_saved_cut');
+    var keys = ['state', 'known_at', 'source_as_of', 'rights_state', 'effective_interval_state',
+      'recipient_attribution', 'economic_capture', 'listing_admission', 'price_comparability', 'dataos_listing_state',
+      'ordinary_shares_per_adr', 'quote_currency', 'entity_id', 'canonical_name', 'relationship',
+      'ownership_interest', 'interest_basis', 'accounting_basis', 'revenue_capture', 'workshare', 'cash_capture'];
+    var out = publicIdentityFields(value, keys);
+    if (listing) out.native_identity = publicIdentityFields(value.native_identity,
+      ['issuer_registry', 'issuer_native_id', 'issuer_name_as_printed', 'venue', 'symbol', 'security_kind']);
+    if (object(value.research_identity)) {
+      if (!sourceClock(value.research_identity.known_at)) throw cutError('invalid_saved_cut');
+      out.research_identity = publicIdentityFields(value.research_identity,
+        ['state', 'scope', 'issuer_cik', 'filer_name_as_printed', 'security_isin', 'underlying_isin',
+          'underlying_symbol_as_printed', 'underlying_venue_as_printed', 'depositary_as_printed',
+          'sponsorship_as_printed', 'mapping_snapshot', 'known_at', 'effective_interval_state']);
+    }
+    if (Array.isArray(value.documentary_counterparties)) {
+      if (value.documentary_counterparties.length > 24) throw cutError('invalid_saved_cut');
+      out.documentary_counterparties = value.documentary_counterparties.map(function (row) {
+        return publicIdentityFields(row, ['name_as_printed', 'ownership_interest', 'identity_path']);
+      });
+    }
+    out.evidence = identityEvidence(value.evidence);
+    return out;
+  }
+
+  function identityLatestClock(values) {
+    if (!values.length || values.some(function (value) { return !sourceClock(value); })) return null;
+    return values.slice().sort(function (a, b) {
+      var instant = Date.parse(a) - Date.parse(b);
+      var af = (a.match(/\.(\d+)/) || [])[1] || '', bf = (b.match(/\.(\d+)/) || [])[1] || '';
+      return instant || Number((af + '000000000').slice(3, 9)) - Number((bf + '000000000').slice(3, 9));
+    }).slice(-1)[0];
+  }
+
+  function normalIdentityCut(value, filters) {
+    try {
+      if (!object(value) || value.contract !== IDENTITY_CUT_CONTRACT || cutBytes(value) > MAX_SAVED_CUT_BYTES) return null;
+      var clean = cleanFilters(filters), subject = value.subject, meta = value.atlas, record = value.record;
+      if (clean.mode !== 'companies' || JSON.stringify(cleanFilters(value.filters)) !== JSON.stringify(clean)
+          || !object(subject) || !object(meta) || !object(record) || !TICKER.test(subject.ticker || '')
+          || value.selected_id !== 'identity:' + subject.ticker || record.ticker !== subject.ticker
+          || clean.ticker && clean.ticker !== subject.ticker || !sourceClock(value.saved_at)
+          || !/^gria1-[a-f0-9]{24}$/.test(meta.content_id || '') || meta.content_id !== subject.source_generation_id
+          || meta.contract !== 'government_revenue_identity_atlas.v1' || !contextAuthority(meta.authority)
+          || !sourceClock(meta.generated_at) || meta.generated_at !== subject.generated_at
+          || !sourceClock(subject.known_at) || !sourceClock(subject.observation_known_at)
+          || subject.research_identity_known_at != null && !sourceClock(subject.research_identity_known_at)) return null;
+      var context = record.archetype_context;
+      if (!object(context) || context.state !== 'partial' || !Array.isArray(context.listing_cases)
+          || !Array.isArray(context.ownership_cases) || context.listing_cases.length + context.ownership_cases.length > 24
+          || context.listing_cases.length + context.ownership_cases.length === 0) return null;
+      var cases = context.ownership_cases.concat(context.listing_cases);
+      var observations = cases.map(function (row) { return row.known_at; });
+      var qualifications = cases.filter(function (row) {
+        var q = row.research_identity;
+        return object(q) && q.state === 'source_supported_current_research' && q.scope === 'government_revenue_identity_context';
+      }).map(function (row) { return row.research_identity.known_at; });
+      if (subject.observation_known_at !== identityLatestClock(observations)
+          || subject.research_identity_known_at !== identityLatestClock(qualifications)
+          || subject.known_at !== identityLatestClock(observations.concat(qualifications))) return null;
+      return {
+        contract: IDENTITY_CUT_CONTRACT, saved_at: value.saved_at, selected_id: value.selected_id,
+        filters: clean, result_scope: 'selected source identity context; not award coverage',
+        subject: publicIdentityFields(subject, ['ticker', 'name', 'known_at', 'observation_known_at',
+          'research_identity_known_at', 'source_generation_id', 'generated_at']),
+        atlas: {contract: meta.contract, content_id: meta.content_id, generated_at: meta.generated_at,
+          authority: publicAuthority(meta.authority)},
+        record: {ticker: record.ticker, company_name: text(record.company_name, 200),
+          issuer_attribution: text(record.issuer_attribution, 80),
+          attribution_reason_en: text(record.attribution_reason_en || record.attribution_reason, 2000),
+          attribution_reason_zh: text(record.attribution_reason_zh, 2000),
+          archetype_context: {state: 'partial',
+            listing_cases: context.listing_cases.map(function (row) { return identityCase(row, true); }),
+            ownership_cases: context.ownership_cases.map(function (row) { return identityCase(row, false); }),
+            gaps: safeList(context.gaps, 24, function (row) { return typeof row === 'string' ? text(row, 1000) : null; })}}
+      };
+    } catch (error) { return null; }
   }
 
   root.createGovernmentRevenueBriefcase = function (api) {
@@ -655,6 +765,43 @@
       return cut;
     }
 
+    function captureIdentityCut(input, filters) {
+      var source = input.research_context;
+      if (!object(source)) throw cutError('research_context_unavailable');
+      var value = {contract: IDENTITY_CUT_CONTRACT, saved_at: stamp(), selected_id: source.selected_id,
+        subject: source.subject, atlas: source.atlas, record: source.record, filters: cleanFilters(filters)};
+      if (cutBytes(value) > MAX_SAVED_CUT_BYTES) throw cutError('saved_cut_too_large');
+      var cut = normalIdentityCut(value, filters);
+      if (!cut) throw cutError('invalid_saved_cut');
+      return cut;
+    }
+
+    function buildSavedResearchExport(id, kind) {
+      var retained = getSavedCut(id);
+      if (!retained.ok || retained.cut.contract !== IDENTITY_CUT_CONTRACT) throw cutError('invalid_saved_cut');
+      var cut = retained.cut, context = cut.record.archetype_context;
+      var filename = 'government-revenue-saved-' + cut.subject.ticker + '-' + cut.atlas.content_id;
+      if (kind === 'json') return {filename: filename + '.json', media_type: 'application/json;charset=utf-8', content: JSON.stringify(cut, null, 2) + '\n'};
+      if (kind !== 'csv') throw cutError('unsupported_export_mode');
+      var rows = [['contract','selected_id','ticker','company_name','source_generation_id','context_known_at',
+        'observation_known_at','research_identity_known_at','source_generated_at','saved_at','filters','scope',
+        'issuer_attribution','context_only','can_rank','can_size','case_kind','case_known_at','native_identity',
+        'research_identity','ordinary_shares_per_adr','quote_currency','rights_state','listing_admission',
+        'recipient_attribution','economic_capture','price_comparability','source_evidence','case_context']];
+      [['listing', context.listing_cases], ['ownership', context.ownership_cases]].forEach(function (group) {
+        group[1].forEach(function (row) {
+          rows.push([cut.contract, cut.selected_id, cut.subject.ticker, cut.record.company_name, cut.atlas.content_id,
+            cut.subject.known_at, cut.subject.observation_known_at, cut.subject.research_identity_known_at,
+            cut.atlas.generated_at, cut.saved_at, cut.filters, cut.result_scope, cut.record.issuer_attribution,
+            true, false, false, group[0], row.known_at, row.native_identity, row.research_identity,
+            row.ordinary_shares_per_adr, row.quote_currency, row.rights_state, row.listing_admission,
+            row.recipient_attribution, row.economic_capture, row.price_comparability, row.evidence, row]);
+        });
+      });
+      return {filename: filename + '.csv', media_type: 'text/csv;charset=utf-8',
+        content: rows.map(function (row) { return row.map(csvCell).join(','); }).join('\n') + '\n'};
+    }
+
     function getSavedCut(id) {
       var view = viewById(text(id, 80));
       if (!view) return {ok: false, reason: 'saved_view_not_found'};
@@ -670,7 +817,8 @@
       if (!name) throw new Error('saved view name is required');
       if (object(input.filters) && input.filters.mode != null && VIEW_MODES.indexOf(input.filters.mode) < 0) throw cutError('unsupported_view_mode');
       var filters = cleanFilters(input.filters);
-      var cut = Object.prototype.hasOwnProperty.call(input, 'workspace') ? captureSavedCut(input, filters) : null;
+      var cut = Object.prototype.hasOwnProperty.call(input, 'research_context') ? captureIdentityCut(input, filters) :
+        Object.prototype.hasOwnProperty.call(input, 'workspace') ? captureSavedCut(input, filters) : null;
       var view = {
         id: makeId('grv'), name: name, filters: filters,
         created_at: stamp(), updated_at: stamp()
@@ -688,11 +836,15 @@
       if (!name) throw new Error('saved view name is required');
       if (object(input.filters) && input.filters.mode != null && VIEW_MODES.indexOf(input.filters.mode) < 0) throw cutError('unsupported_view_mode');
       var filters = Object.prototype.hasOwnProperty.call(input, 'filters') ? cleanFilters(input.filters) : view.filters;
-      var hasCut = Object.prototype.hasOwnProperty.call(input, 'workspace');
+      var hasIdentity = Object.prototype.hasOwnProperty.call(input, 'research_context');
+      var hasCut = hasIdentity || Object.prototype.hasOwnProperty.call(input, 'workspace');
       if (!hasCut && Object.prototype.hasOwnProperty.call(view, 'cut') && JSON.stringify(filters) !== JSON.stringify(view.filters)) {
         throw cutError('saved_cut_required');
       }
-      var cut = hasCut ? captureSavedCut(input, filters) : null;
+      if (hasIdentity && state.alerts.some(function (alert) { return alert.view_id === view.id; })) {
+        throw cutError('saved_view_has_alerts');
+      }
+      var cut = hasIdentity ? captureIdentityCut(input, filters) : hasCut ? captureSavedCut(input, filters) : null;
       // Validate every replacement before touching the existing record.
       view.name = name; view.filters = filters;
       if (hasCut) view.cut = cut;
@@ -719,7 +871,9 @@
       input = object(input) ? input : {};
       var viewId = text(input.view_id, 80);
       var type = text(input.type, 40);
-      if (!viewById(viewId)) throw new Error('saved view not found');
+      var view = viewById(viewId);
+      if (!view) throw new Error('saved view not found');
+      if (view.cut && view.cut.contract === IDENTITY_CUT_CONTRACT) throw cutError('unsupported_alert_view');
       if (ALERT_TYPES.indexOf(type) < 0) throw new Error('unsupported alert type');
       if (state.alerts.length >= MAX_ALERTS) throw new Error('local alert limit reached');
       var alert = {
@@ -913,6 +1067,7 @@
       alert_types: ALERT_TYPES.slice(),
       listViews: function () { return copy(state.saved_views); },
       getSavedCut: getSavedCut,
+      buildSavedResearchExport: buildSavedResearchExport,
       getView: function (id) { var view = viewById(text(id, 80)); return view ? copy(view) : null; },
       createView: createView,
       updateView: updateView,
