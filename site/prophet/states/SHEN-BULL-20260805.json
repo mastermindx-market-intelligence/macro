@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SHEN-BULL-20260805",
-  "asof": "2026-11-13",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 8.0,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 0.0,
-    "progress": 15.0,
+    "progress": 6.2,
     "pace": 0.0,
-    "retention": 100.0,
+    "retention": 30.8,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.8,
-    "dist_to_t1_r": 1.3,
-    "dist_to_t2_r": 2.8,
-    "horizon_pct_used": 33.3,
-    "p1": 0.1333,
-    "p2": 0.0667,
+    "dist_to_stop_r": -0.938,
+    "dist_to_t1_r": 1.438,
+    "dist_to_t2_r": 2.938,
+    "horizon_pct_used": 35.6,
+    "p1": 0.041,
+    "p2": 0.0205,
     "p3": null,
-    "move_r": 0.2,
+    "move_r": 0.062,
     "mfe_r": 0.2,
     "mae_r": -0.738
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-30",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 15,
-  "tau": 0.3333,
+  "days_elapsed": 16,
+  "tau": 0.3556,
   "closed": true,
   "outcome": "INVALIDATED"
 }

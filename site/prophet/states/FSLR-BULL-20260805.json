@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FSLR-BULL-20260805",
-  "asof": "2026-11-13",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.2,
@@ -17,14 +17,14 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.114,
+    "dist_to_stop_r": -0.129,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 211.1,
-    "p1": -0.7427,
-    "p2": -0.3714,
+    "horizon_pct_used": 213.3,
+    "p1": -0.7528,
+    "p2": -0.3764,
     "p3": null,
-    "move_r": -1.114,
+    "move_r": -1.129,
     "mfe_r": 0.0,
     "mae_r": -1.148
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 95,
-  "tau": 2.1111,
+  "days_elapsed": 96,
+  "tau": 2.1333,
   "closed": true,
   "outcome": "INVALIDATED"
 }
