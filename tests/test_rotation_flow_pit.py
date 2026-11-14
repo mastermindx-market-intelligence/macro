@@ -190,6 +190,22 @@ def test_actual_nightly_caller_uses_benchmark_cutoff_not_old_event_clock(tmp_pat
     from tests.test_rotation_early_context import levels
     from tests.test_rotation_events_v2 import _make_minimal_sectors
 
+    # The two input snapshots share a build clock as well as an event clock.
+    # Freeze only this fixture's inert cross-state metadata; production keeps
+    # using its real wall clock.
+    from datetime import datetime, timezone
+
+    frozen_build_time = datetime(2026, 10, 8, 2, 3, 4, tzinfo=timezone.utc)
+
+    class FrozenBuildClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            if tz is None:
+                return frozen_build_time.replace(tzinfo=None)
+            return frozen_build_time.astimezone(tz)
+
+    monkeypatch.setattr(RE, "datetime", FrozenBuildClock)
+
     sectors = _make_minimal_sectors()
     for spec in sectors.values():
         for series in [spec["etf_close"], *spec["legs"].values()]:
@@ -225,4 +241,9 @@ def test_actual_nightly_caller_uses_benchmark_cutoff_not_old_event_clock(tmp_pat
     def state_bytes(root):
         return {p.name: p.read_bytes() for p in (root / "rotation_events").iterdir()
                 if p.is_file()}
+    for name in ("prefix", "future"):
+        persisted = json.loads(
+            (tmp_path / name / "rotation_events" / "cross_state.json").read_text()
+        )
+        assert persisted["generated_at"] == "2026-10-08T02:03:04Z"
     assert state_bytes(tmp_path / "future") == state_bytes(tmp_path / "prefix")
