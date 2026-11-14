@@ -10,8 +10,10 @@ from __future__ import annotations
 
 from contextlib import nullcontext
 
+import hashlib
 import importlib
 import importlib.util
+import json
 import os
 import subprocess
 import sys
@@ -23,6 +25,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
 URL = "/api/prophet/daily-brief/v1"
+CANDIDATES_URL = "/api/prophet/candidates/v1"
 SOURCE = "sha256:" + "a" * 64
 PAIR = "b" * 32
 RECEIPT = "sha256:" + "c" * 64
@@ -176,7 +179,8 @@ def client(route):
 
 @pytest.mark.parametrize("denial", [401, 403])
 @pytest.mark.parametrize("busy", [False, True])
-def test_real_auth_chain_denies_before_query_or_owner_read(route, monkeypatch, denial, busy):
+@pytest.mark.parametrize("endpoint", [URL, CANDIDATES_URL])
+def test_real_auth_chain_denies_before_query_or_owner_read(route, monkeypatch, denial, busy, endpoint):
     import app.main as main
     import app.paywall as paywall
 
@@ -193,11 +197,12 @@ def test_real_auth_chain_denies_before_query_or_owner_read(route, monkeypatch, d
     monkeypatch.setattr(main, "require_user", authenticate)
     monkeypatch.setattr(paywall, "enforce_site_full", entitle)
     bind_owner(monkeypatch, forbidden_owner)
+    monkeypatch.setattr(route, "_read_candidate_source", forbidden_owner)
     app = FastAPI()
     app.include_router(route.router)
     with route._READ_ADMISSION if busy else nullcontext():
         with TestClient(app) as boundary:
-            response = boundary.get(URL + "?source_sha256=not-a-hash&pair_id=../private")
+            response = boundary.get(endpoint + "?source_sha256=not-a-hash&pair_id=../private")
     assert response.status_code == denial
     assert calls == (["authenticate"] if denial == 401 else ["authenticate", "entitle"])
     private(response)
@@ -455,4 +460,254 @@ def test_busy_reader_does_not_replace_invalid_query_response(client, route, monk
         response = client.get(URL, params={**GOOD, "root": "/private"})
     assert response.status_code == 400
     assert response.json() == {"error": "INVALID_QUERY"}
+    private(response)
+
+
+def _candidate_board(total=4):
+    """Original synthetic publication: complete source order, including off-list rows."""
+    rows = [{
+        "ticker": f"DEMO{index}", "name": f"Synthetic company {index}",
+        "sector": "Technology", "pool_rank": index + 1,
+        "in_buy_lane": index < 2, "lane": "featured" if index < 2 else "forming",
+        "headline_reason": "board_featured" if index < 2 else "sector_cap_overflow",
+        "lane_reasons": ["board_featured" if index < 2 else "sector_cap_overflow"],
+        "prophet": {"score": 0 if index == 1 else 82.5},
+        # An injected off-list score must not escape the owner's cohort rule.
+        "prophet_score_basis": "buy_lane_pool", "private_extra": "withheld-test-value",
+    } for index in range(total)]
+    return {"as_of": "2026-11-12", "private_extra": "withheld-test-value",
+            "candidate_pool": {"as_of": "2026-11-12", "eligible": total,
+                               "pool_definition": "us_candidate_pool_v1", "rows": rows}}
+
+
+def _candidate_source(route, board=None, *, raw=None):
+    path = route._REPO_ROOT / "site/factordata/us_standouts.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if raw is None:
+        raw = json.dumps(_candidate_board() if board is None else board, indent=2).encode() + b"\n"
+    path.write_bytes(raw)
+    return path, raw
+
+
+def test_candidate_pool_uses_complete_owner_projection_and_exact_source_bytes(client, route):
+    from engine.us_candidate_lanes import project_candidate_visibility
+
+    board = _candidate_board(97)  # exceeds the old display cohort; never truncate at the API
+    path, raw = _candidate_source(route, board)
+    response = client.get(CANDIDATES_URL)
+    assert response.status_code == 200
+    private(response)
+    body = response.json()
+    assert body["schema"] == "mastermind.prophet_candidate_pool_read.v1"
+    assert body["market"] == "US"
+    assert body["source"] == {"path": "site/factordata/us_standouts.json",
+        "sha256": "sha256:" + hashlib.sha256(raw).hexdigest(), "bytes": len(raw)}
+    assert body["projection"] == project_candidate_visibility(board)
+    view = body["projection"]
+    assert [row["ticker"] for row in view["rows"]] == [f"DEMO{i}" for i in range(97)]
+    assert view["counts"] == {"eligible": 97, "in_buy_lane": 2, "off_buy_lane": 95,
+                              "scored": 2, "unscored": 95}
+    assert view["rows"][1]["prophet"] == {"score": 0.0}
+    assert all(row["prophet"] is None and row["prophet_score_basis"] is None
+               for row in view["rows"][2:])
+    assert "archive" not in view
+    assert "withheld-test-value" not in response.text
+    assert str(route._REPO_ROOT) not in response.text
+    assert path.read_bytes() == raw
+
+
+def test_candidate_zero_population_is_verified_empty_not_an_outage(client, route):
+    _candidate_source(route, _candidate_board(0))
+    response = client.get(CANDIDATES_URL)
+    assert response.status_code == 200
+    assert response.json()["projection"]["status"] == "empty"
+    assert response.json()["projection"]["counts"] == dict.fromkeys(
+        ("eligible", "in_buy_lane", "off_buy_lane", "scored", "unscored"), 0)
+    private(response)
+
+
+@pytest.mark.parametrize("invalid", ["missing", "nonobject", "session", "duplicate", "count"])
+def test_candidate_invalid_population_keeps_owner_unavailable(client, route, invalid):
+    board = _candidate_board()
+    if invalid == "missing":
+        board.pop("candidate_pool")
+    elif invalid == "nonobject":
+        board = []
+    elif invalid == "session":
+        board["candidate_pool"]["as_of"] = "2026-11-11"
+    elif invalid == "duplicate":
+        board["candidate_pool"]["rows"][1]["ticker"] = "demo0"
+    else:
+        board["candidate_pool"]["eligible"] += 1
+    _candidate_source(route, board)
+    response = client.get(CANDIDATES_URL)
+    assert response.status_code == 503
+    view = response.json()["projection"]
+    assert view["status"] == "unavailable" and view["rows"] == []
+    assert all(value is None for value in view["counts"].values())
+    private(response)
+
+
+@pytest.mark.parametrize("query", ["?market=CN", "?symbol=DEMO0", "?path=../private",
+                                  "?source_sha256=a", "?x=1&x=2", "?x="])
+@pytest.mark.parametrize("busy", [False, True])
+def test_candidate_query_rejected_before_read_or_admission(client, route, monkeypatch, query, busy):
+    monkeypatch.setattr(route, "_read_candidate_source", forbidden_owner)
+    with route._READ_ADMISSION if busy else nullcontext():
+        response = client.get(CANDIDATES_URL + query)
+    assert response.status_code == 400 and response.json() == {"error": "INVALID_QUERY"}
+    private(response)
+
+
+@pytest.mark.parametrize("raw", [b"{broken", b"\xff", b'{"x":NaN}',
+                                  b'{"x":Infinity}', b'{"x":1,"x":2}',
+                                  b'{"nested":{"x":1,"x":2}}'])
+def test_candidate_malformed_bytes_fail_privately_and_next_request_recovers(client, route, raw):
+    _candidate_source(route, raw=raw)
+    failed = client.get(CANDIDATES_URL)
+    assert failed.status_code == 503 and failed.json() == {"error": "CANDIDATES_UNAVAILABLE"}
+    private(failed)
+    _candidate_source(route)
+    assert client.get(CANDIDATES_URL).status_code == 200
+
+
+def test_candidate_source_bound_includes_exact_limit_and_refuses_one_byte_over(client, route, monkeypatch):
+    _, raw = _candidate_source(route)
+    monkeypatch.setattr(route, "_CANDIDATE_MAX_BYTES", len(raw))
+    assert client.get(CANDIDATES_URL).status_code == 200
+    monkeypatch.setattr(route, "_CANDIDATE_MAX_BYTES", len(raw) - 1)
+    failed = client.get(CANDIDATES_URL)
+    assert failed.status_code == 503 and failed.json() == {"error": "CANDIDATES_UNAVAILABLE"}
+    private(failed)
+
+
+@pytest.mark.parametrize("number", ["1e999", "-1e999"])
+def test_candidate_float_overflow_is_refused_even_outside_projection(client, route, number):
+    valid = json.dumps(_candidate_board())
+    # The pool itself is valid: an ignored field must not let non-finite JSON
+    # bypass parsing merely because the display projector omits that field.
+    raw = (valid[:-1] + ', "unprojected_overflow": ' + number + '}').encode()
+    _candidate_source(route, raw=raw)
+    failed = client.get(CANDIDATES_URL)
+    assert failed.status_code == 503 and failed.json() == {"error": "CANDIDATES_UNAVAILABLE"}
+    private(failed)
+    _candidate_source(route)
+    assert client.get(CANDIDATES_URL).status_code == 200
+
+
+def test_candidate_source_replacement_with_same_display_digest_is_refused(client, route, monkeypatch):
+    from engine.us_candidate_lanes import project_candidate_visibility
+
+    first = _candidate_board()
+    second = {**first, "unrelated_generation_field": "replacement"}
+    assert project_candidate_visibility(first) == project_candidate_visibility(second)
+    _, raw = _candidate_source(route, first)
+    reads = iter([raw, json.dumps(second).encode()])
+    with monkeypatch.context() as patch:
+        patch.setattr(route, "_read_candidate_source", lambda: next(reads))
+        failed = client.get(CANDIDATES_URL)
+    assert failed.status_code == 503 and failed.json() == {"error": "CANDIDATES_UNAVAILABLE"}
+    private(failed)
+    assert client.get(CANDIDATES_URL).status_code == 200
+
+
+@pytest.mark.parametrize("failure", ["missing", "final_read", "import", "project", "serialize", "overflow"])
+def test_candidate_failure_contains_details_and_releases_shared_admission(client, route, monkeypatch, failure):
+    import engine.us_candidate_lanes as owner
+
+    path, raw = _candidate_source(route)
+    with monkeypatch.context() as patch:
+        if failure == "missing":
+            path.unlink()
+        elif failure == "final_read":
+            reads = iter([raw, None])
+            def failing_read():
+                value = next(reads)
+                if value is None:
+                    raise OSError("private-source-detail")
+                return value
+            patch.setattr(route, "_read_candidate_source", failing_read)
+        elif failure == "import":
+            patch.setitem(sys.modules, "engine.us_candidate_lanes", None)
+        elif failure == "project":
+            def failing_project(*args, **kwargs):
+                raise RecursionError("private-source-detail")
+            patch.setattr(owner, "project_candidate_visibility", failing_project)
+        elif failure == "serialize":
+            patch.setattr(owner, "project_candidate_visibility",
+                          lambda *_: {"status": "ready", "value": float("nan")})
+        else:
+            board = _candidate_board()
+            board["candidate_pool"]["rows"][0]["pool_rank"] = 10 ** 500
+            _candidate_source(route, board)
+        failed = client.get(CANDIDATES_URL)
+    assert failed.status_code == 503 and failed.json() == {"error": "CANDIDATES_UNAVAILABLE"}
+    assert "private-source-detail" not in failed.text
+    private(failed)
+    _candidate_source(route)
+    assert client.get(CANDIDATES_URL).status_code == 200
+
+
+@pytest.mark.parametrize("active", ["candidate", "daily"])
+def test_candidate_and_daily_brief_share_one_nonqueuing_read_permit(client, route, monkeypatch, active):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+    import engine.us_candidate_lanes as owner
+
+    _candidate_source(route)
+    project = owner.project_candidate_visibility
+    entered, release = Event(), Event()
+    def hold(result):
+        entered.set()
+        assert release.wait(15)
+        return result
+    if active == "candidate":
+        monkeypatch.setattr(owner, "project_candidate_visibility", lambda board: hold(project(board)))
+        bind_owner(monkeypatch, recording_owner([], AVAILABLE))
+        first_url, first_params, blocked_url = CANDIDATES_URL, {}, URL
+        blocked_params, error = GOOD, "DAILY_BRIEF_UNAVAILABLE"
+    else:
+        bind_owner(monkeypatch, lambda *_args, **_kwargs: hold(AVAILABLE))
+        first_url, first_params, blocked_url = URL, GOOD, CANDIDATES_URL
+        blocked_params, error = {}, "CANDIDATES_UNAVAILABLE"
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first = pool.submit(client.get, first_url, params=first_params)
+        try:
+            assert entered.wait(5)
+            blocked = pool.submit(client.get, blocked_url, params=blocked_params).result(timeout=5)
+            assert blocked.status_code == 503 and blocked.json() == {"error": error}
+            private(blocked)
+            assert not first.done()
+        finally:
+            release.set()
+        assert first.result(timeout=5).status_code == 200
+    assert client.get(CANDIDATES_URL).status_code == 200
+
+
+def test_candidate_route_is_mounted_by_real_app_and_uses_existing_auth(tmp_path, monkeypatch):
+    from app import prophet_daily_brief as route
+    from app import main as auth_owner
+    from app import paywall
+
+    monkeypatch.setattr(route, "_REPO_ROOT", tmp_path)
+    path, raw = _candidate_source(route)
+    calls = []
+    def authenticate(_authorization):
+        calls.append("authenticate")
+        return {"id": "explicit-synthetic-candidate-test"}
+    def entitle(user, *, always=False):
+        assert always is True
+        calls.append("entitle")
+        return user
+    monkeypatch.setattr(auth_owner, "require_user", authenticate)
+    monkeypatch.setattr(paywall, "enforce_site_full", entitle)
+    assert auth_owner.prophet_daily_brief_router is route.router
+    # Exercise the actual mounted route/auth chain without starting unrelated
+    # application lifecycle jobs (same boundary as the native Daily Brief test).
+    assembled = TestClient(auth_owner.app)
+    response = assembled.get(CANDIDATES_URL)
+    assert response.status_code == 200
+    assert response.json()["projection"]["counts"]["eligible"] == 4
+    assert calls == ["authenticate", "entitle"]
+    assert path.read_bytes() == raw
     private(response)
