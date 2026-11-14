@@ -1,0 +1,17 @@
+# Historical fundamentals: explicit reconstruction, not a PIT blocker
+
+Scope: qualify an author-shared historical characteristic panel for independent INDUSTRY-level research. This is not a new data warehouse, a substitute for K3E source qualification, or permission to inspect reserved post-2002 outcomes. Only aggregate evidence and code are committed. Raw archive and selected records stay in the operation's ignored SSD .local_run directory.
+
+Primary source: Dacheng Xiu's university homepage links Empirical Data for Gu, Kelly and Xiu, Empirical Asset Pricing via Machine Learning (Review of Financial Studies2020), and Autoencoder Asset Pricing Models. Official archive https://dachxiu.chicagobooth.edu/download/datashare.zip. The observed central directory reports1555896289archive bytes, datashare.csv compressed1555894330/uncompressed3836202174bytes, plus readme.txt. Existing source is public author-shared research data; no raw redistribution or commercial-production-rights claim is made.
+
+The exact archive README was read through a bounded range request. SHA25619d34649c4fae0528edc9a9f06a4278b0f3202706edb6ed4a8cfe15e5d9e4c2a. It says characteristics already incorporate assumed release lags and DATE names the response month: its example permits March1957 monthly RET as response to a DATE19570329 row. It also explicitly says CRSP returns are NOT included. Consequently, mom1m is not silently renamed a certified total-return series. Any use as a lagged-return proxy requires a separate timing and independent-market-consistency diagnostic and explicit missing/delisting sensitivity. Reconstructed features may still be studied even when original-vintage observations are unavailable.
+
+## Outcome-blind acquisition and qualification
+
+Selected fields: permno,DATE,mvel1,mom1m,mom6m,mom12m,idiovol,roaq,roavol,roeq,nincr,sgr,rsup,gma,cashdebt,lev,operprof,sic2. All CSV fields initially remain strings; retain DATE<=20021231 BEFORE converting selected characteristics to numbers. Preserve missingness, record unknown numeric strings, and do not zero-fill. DATE is retained exactly before month-level transformations. Do not label PERMNO a canonical company/issuer identity: it is a source security identifier, and share-class duplication remains a qualification.
+
+Download guard: declared length<=2GB, sufficient admitted SSD free space, streamed bounded memory, no automatic replay of partial downloads. Hash original bytes; validate ZIP CRC while reading. Selected Parquet is bounded to768MB. Do not print individual observations. Record source/hash/version, rows, date coverage, schema and nonmissing counts. No future alpha outcome is tested by this acquisition.
+
+Next hypothesis after data qualification: whether changes in operating/earnings conditions, aggregated at source-native two-digit SIC industries, add information to continuation/reversal beyond price and risk baselines. Static valuation ratios are not automatically independent information because prices enter their denominators. Return-proxy alignment, missing-return incidence and measured industry support must be qualified before choosing the concrete experiment. Any resulting study is reconstructed exploratory evidence, not original-vintage validation or a claim about historical analyst consensus.
+
+This follows the Chairman's instruction to use imperfect historical data for discovery while preserving explicit assumptions and later falsification. Missing original PIT history is not an implementation or research stop.

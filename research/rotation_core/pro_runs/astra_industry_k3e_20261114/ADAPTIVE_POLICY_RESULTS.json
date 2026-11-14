@@ -1,0 +1,1184 @@
+{
+  "code_sha256": "3b11852210ebb990b89c618409b078258090e23ba985c445b46c0f2c0d19e46c",
+  "fixed_full_universe_policies": 5,
+  "fixed_reversal_half_policies": 4,
+  "fold_results": {
+    "context_risk": {
+      "1950": {
+        "adverse_excursion": -0.029982859564692276,
+        "bad_loss": 0.06296296296296296,
+        "downside_first": 0.06296296296296296,
+        "events": 540,
+        "excess_net": -0.0008782833921703234,
+        "months": 60,
+        "terminal_net": 0.050140612757562465,
+        "timeout": 0.638888888888889,
+        "upside_first": 0.2981481481481481,
+        "win": 0.7388888888888888
+      },
+      "1955": {
+        "adverse_excursion": -0.038135390343125665,
+        "bad_loss": 0.09629629629629628,
+        "downside_first": 0.09629629629629628,
+        "events": 540,
+        "excess_net": 0.004967449051536798,
+        "months": 60,
+        "terminal_net": 0.03713546729006791,
+        "timeout": 0.6129629629629629,
+        "upside_first": 0.2907407407407407,
+        "win": 0.6870370370370369
+      },
+      "1960": {
+        "adverse_excursion": -0.034586548867555335,
+        "bad_loss": 0.09259259259259259,
+        "downside_first": 0.09259259259259259,
+        "events": 546,
+        "excess_net": 0.01658508287338025,
+        "months": 60,
+        "terminal_net": 0.04925725738121143,
+        "timeout": 0.5814814814814816,
+        "upside_first": 0.3259259259259259,
+        "win": 0.7646296296296295
+      },
+      "1965": {
+        "adverse_excursion": -0.05222286957994212,
+        "bad_loss": 0.2,
+        "downside_first": 0.19666666666666666,
+        "events": 600,
+        "excess_net": 0.02299566881038751,
+        "months": 60,
+        "terminal_net": 0.038319645858860316,
+        "timeout": 0.3983333333333333,
+        "upside_first": 0.405,
+        "win": 0.6216666666666667
+      },
+      "1970": {
+        "adverse_excursion": -0.06988346945428997,
+        "bad_loss": 0.26833333333333337,
+        "downside_first": 0.265,
+        "events": 600,
+        "excess_net": 0.010038635129317717,
+        "months": 60,
+        "terminal_net": 0.015207426160629344,
+        "timeout": 0.4000000000000001,
+        "upside_first": 0.335,
+        "win": 0.5483333333333333
+      },
+      "1975": {
+        "adverse_excursion": -0.04419025412687701,
+        "bad_loss": 0.12666666666666668,
+        "downside_first": 0.10666666666666667,
+        "events": 600,
+        "excess_net": 0.010228721401647923,
+        "months": 60,
+        "terminal_net": 0.04665328286241722,
+        "timeout": 0.5216666666666667,
+        "upside_first": 0.37166666666666676,
+        "win": 0.6733333333333333
+      },
+      "1980": {
+        "adverse_excursion": -0.04716587151377504,
+        "bad_loss": 0.14333333333333334,
+        "downside_first": 0.14166666666666666,
+        "events": 600,
+        "excess_net": 0.005889655548038944,
+        "months": 60,
+        "terminal_net": 0.04663551416870589,
+        "timeout": 0.45,
+        "upside_first": 0.4083333333333333,
+        "win": 0.62
+      },
+      "1985": {
+        "adverse_excursion": -0.053414214852118704,
+        "bad_loss": 0.14666666666666664,
+        "downside_first": 0.14333333333333334,
+        "events": 600,
+        "excess_net": 0.002764258779424414,
+        "months": 60,
+        "terminal_net": 0.041960456689601106,
+        "timeout": 0.43666666666666665,
+        "upside_first": 0.42000000000000004,
+        "win": 0.7016666666666667
+      },
+      "1990": {
+        "adverse_excursion": -0.0503381463315439,
+        "bad_loss": 0.1383333333333333,
+        "downside_first": 0.13666666666666666,
+        "events": 600,
+        "excess_net": -0.007626029068190791,
+        "months": 60,
+        "terminal_net": 0.022063121221107006,
+        "timeout": 0.6266666666666666,
+        "upside_first": 0.23666666666666664,
+        "win": 0.62
+      },
+      "1995": {
+        "adverse_excursion": -0.054504107430090945,
+        "bad_loss": 0.18000000000000005,
+        "downside_first": 0.17333333333333334,
+        "events": 600,
+        "excess_net": -0.02648131495500172,
+        "months": 60,
+        "terminal_net": 0.0367196577421027,
+        "timeout": 0.45,
+        "upside_first": 0.37666666666666665,
+        "win": 0.6716666666666666
+      },
+      "2000": {
+        "adverse_excursion": -0.08363319572528605,
+        "bad_loss": 0.33333333333333337,
+        "downside_first": 0.3181818181818182,
+        "events": 330,
+        "excess_net": 0.04586064222590489,
+        "months": 33,
+        "terminal_net": 0.008192665290467612,
+        "timeout": 0.4090909090909091,
+        "upside_first": 0.2727272727272727,
+        "win": 0.5393939393939394
+      }
+    },
+    "expected_excess": {
+      "1950": {
+        "adverse_excursion": -0.03742393690138049,
+        "bad_loss": 0.07962962962962965,
+        "downside_first": 0.07962962962962965,
+        "events": 540,
+        "excess_net": 0.003064516351027504,
+        "months": 60,
+        "terminal_net": 0.0540834125007603,
+        "timeout": 0.538888888888889,
+        "upside_first": 0.3814814814814814,
+        "win": 0.6925925925925926
+      },
+      "1955": {
+        "adverse_excursion": -0.04994698733079434,
+        "bad_loss": 0.17037037037037037,
+        "downside_first": 0.1685185185185185,
+        "events": 540,
+        "excess_net": 0.011960992180870017,
+        "months": 60,
+        "terminal_net": 0.04412901041940112,
+        "timeout": 0.45185185185185184,
+        "upside_first": 0.3796296296296296,
+        "win": 0.7055555555555555
+      },
+      "1960": {
+        "adverse_excursion": -0.049124191519410616,
+        "bad_loss": 0.15555555555555553,
+        "downside_first": 0.15555555555555553,
+        "events": 546,
+        "excess_net": 0.0083667757751057,
+        "months": 60,
+        "terminal_net": 0.04103895028293687,
+        "timeout": 0.4868518518518518,
+        "upside_first": 0.3575925925925926,
+        "win": 0.6983333333333334
+      },
+      "1965": {
+        "adverse_excursion": -0.07020662595494825,
+        "bad_loss": 0.3083333333333334,
+        "downside_first": 0.295,
+        "events": 600,
+        "excess_net": 0.0279515762099591,
+        "months": 60,
+        "terminal_net": 0.04327555325843191,
+        "timeout": 0.25166666666666665,
+        "upside_first": 0.4533333333333333,
+        "win": 0.6
+      },
+      "1970": {
+        "adverse_excursion": -0.07971157308743192,
+        "bad_loss": 0.31500000000000006,
+        "downside_first": 0.31,
+        "events": 600,
+        "excess_net": 0.009553640558182057,
+        "months": 60,
+        "terminal_net": 0.014722431589493688,
+        "timeout": 0.36666666666666675,
+        "upside_first": 0.32333333333333336,
+        "win": 0.5549999999999999
+      },
+      "1975": {
+        "adverse_excursion": -0.05327421860360322,
+        "bad_loss": 0.1583333333333333,
+        "downside_first": 0.13333333333333333,
+        "events": 600,
+        "excess_net": 0.02120494973913036,
+        "months": 60,
+        "terminal_net": 0.05762951119989966,
+        "timeout": 0.4366666666666667,
+        "upside_first": 0.43,
+        "win": 0.6649999999999999
+      },
+      "1980": {
+        "adverse_excursion": -0.05896913105660747,
+        "bad_loss": 0.21000000000000002,
+        "downside_first": 0.20500000000000002,
+        "events": 600,
+        "excess_net": 0.007725644984843872,
+        "months": 60,
+        "terminal_net": 0.048471503605510814,
+        "timeout": 0.35833333333333334,
+        "upside_first": 0.43666666666666665,
+        "win": 0.6166666666666668
+      },
+      "1985": {
+        "adverse_excursion": -0.059114637634414394,
+        "bad_loss": 0.1883333333333333,
+        "downside_first": 0.18499999999999997,
+        "events": 600,
+        "excess_net": 0.004273372635850881,
+        "months": 60,
+        "terminal_net": 0.04346957054602756,
+        "timeout": 0.36666666666666675,
+        "upside_first": 0.44833333333333336,
+        "win": 0.695
+      },
+      "1990": {
+        "adverse_excursion": -0.05333327408932462,
+        "bad_loss": 0.15,
+        "downside_first": 0.14833333333333334,
+        "events": 600,
+        "excess_net": 0.004779028974608927,
+        "months": 60,
+        "terminal_net": 0.03446817926390673,
+        "timeout": 0.535,
+        "upside_first": 0.31666666666666665,
+        "win": 0.6316666666666667
+      },
+      "1995": {
+        "adverse_excursion": -0.05539464382865031,
+        "bad_loss": 0.1833333333333333,
+        "downside_first": 0.17499999999999996,
+        "events": 600,
+        "excess_net": -0.0026682944709694955,
+        "months": 60,
+        "terminal_net": 0.06053267822613493,
+        "timeout": 0.3383333333333333,
+        "upside_first": 0.48666666666666664,
+        "win": 0.7416666666666666
+      },
+      "2000": {
+        "adverse_excursion": -0.10109939702304667,
+        "bad_loss": 0.4,
+        "downside_first": 0.3575757575757576,
+        "events": 330,
+        "excess_net": 0.0520311581263395,
+        "months": 33,
+        "terminal_net": 0.014363181190902215,
+        "timeout": 0.24848484848484848,
+        "upside_first": 0.3939393939393939,
+        "win": 0.5666666666666667
+      }
+    },
+    "low_volatility": {
+      "1950": {
+        "adverse_excursion": -0.028459125519886448,
+        "bad_loss": 0.053703703703703705,
+        "downside_first": 0.053703703703703705,
+        "events": 540,
+        "excess_net": 0.00047305588540029047,
+        "months": 60,
+        "terminal_net": 0.05149195203513309,
+        "timeout": 0.6444444444444445,
+        "upside_first": 0.30185185185185187,
+        "win": 0.7444444444444444
+      },
+      "1955": {
+        "adverse_excursion": -0.03751365461490386,
+        "bad_loss": 0.09444444444444443,
+        "downside_first": 0.09444444444444443,
+        "events": 540,
+        "excess_net": 0.00404571921930911,
+        "months": 60,
+        "terminal_net": 0.036213737457840206,
+        "timeout": 0.6351851851851851,
+        "upside_first": 0.27037037037037037,
+        "win": 0.6814814814814815
+      },
+      "1960": {
+        "adverse_excursion": -0.03454188001083163,
+        "bad_loss": 0.09259259259259259,
+        "downside_first": 0.09259259259259259,
+        "events": 546,
+        "excess_net": 0.013593606607770849,
+        "months": 60,
+        "terminal_net": 0.04626578111560201,
+        "timeout": 0.6101851851851854,
+        "upside_first": 0.2972222222222222,
+        "win": 0.7555555555555554
+      },
+      "1965": {
+        "adverse_excursion": -0.05040816590103762,
+        "bad_loss": 0.19333333333333333,
+        "downside_first": 0.19,
+        "events": 600,
+        "excess_net": 0.024138048057525688,
+        "months": 60,
+        "terminal_net": 0.0394620251059985,
+        "timeout": 0.41666666666666674,
+        "upside_first": 0.39333333333333337,
+        "win": 0.6383333333333334
+      },
+      "1970": {
+        "adverse_excursion": -0.06971450859625065,
+        "bad_loss": 0.265,
+        "downside_first": 0.26333333333333336,
+        "events": 600,
+        "excess_net": 0.0063812086485940216,
+        "months": 60,
+        "terminal_net": 0.01154999967990565,
+        "timeout": 0.41666666666666674,
+        "upside_first": 0.32,
+        "win": 0.55
+      },
+      "1975": {
+        "adverse_excursion": -0.044430585690419105,
+        "bad_loss": 0.12666666666666668,
+        "downside_first": 0.11000000000000001,
+        "events": 600,
+        "excess_net": 0.002402956765864428,
+        "months": 60,
+        "terminal_net": 0.03882751822663371,
+        "timeout": 0.545,
+        "upside_first": 0.34500000000000003,
+        "win": 0.6416666666666667
+      },
+      "1980": {
+        "adverse_excursion": -0.04868442557177259,
+        "bad_loss": 0.15833333333333333,
+        "downside_first": 0.15833333333333333,
+        "events": 600,
+        "excess_net": 0.0047669529381077465,
+        "months": 60,
+        "terminal_net": 0.0455128115587747,
+        "timeout": 0.4533333333333333,
+        "upside_first": 0.3883333333333333,
+        "win": 0.6133333333333333
+      },
+      "1985": {
+        "adverse_excursion": -0.05321091975116747,
+        "bad_loss": 0.14,
+        "downside_first": 0.14,
+        "events": 600,
+        "excess_net": 8.603948302908186e-05,
+        "months": 60,
+        "terminal_net": 0.03928223739320577,
+        "timeout": 0.45499999999999996,
+        "upside_first": 0.405,
+        "win": 0.7016666666666667
+      },
+      "1990": {
+        "adverse_excursion": -0.046558951553484176,
+        "bad_loss": 0.11833333333333333,
+        "downside_first": 0.11666666666666667,
+        "events": 600,
+        "excess_net": -0.003307547650339436,
+        "months": 60,
+        "terminal_net": 0.026381602638958366,
+        "timeout": 0.6483333333333334,
+        "upside_first": 0.23500000000000001,
+        "win": 0.63
+      },
+      "1995": {
+        "adverse_excursion": -0.05218017042449597,
+        "bad_loss": 0.17833333333333337,
+        "downside_first": 0.17166666666666672,
+        "events": 600,
+        "excess_net": -0.024588958027138164,
+        "months": 60,
+        "terminal_net": 0.038612014669966256,
+        "timeout": 0.465,
+        "upside_first": 0.36333333333333334,
+        "win": 0.6866666666666668
+      },
+      "2000": {
+        "adverse_excursion": -0.0864947658398296,
+        "bad_loss": 0.3363636363636364,
+        "downside_first": 0.32727272727272727,
+        "events": 330,
+        "excess_net": 0.041387515867404745,
+        "months": 33,
+        "terminal_net": 0.003719538931967468,
+        "timeout": 0.42424242424242425,
+        "upside_first": 0.24848484848484848,
+        "win": 0.5363636363636365
+      }
+    },
+    "momentum": {
+      "1950": {
+        "adverse_excursion": -0.03567089263517438,
+        "bad_loss": 0.07222222222222223,
+        "downside_first": 0.07222222222222223,
+        "events": 540,
+        "excess_net": 0.006926061270276941,
+        "months": 60,
+        "terminal_net": 0.057944957420009734,
+        "timeout": 0.524074074074074,
+        "upside_first": 0.4037037037037037,
+        "win": 0.7240740740740742
+      },
+      "1955": {
+        "adverse_excursion": -0.050246414101481,
+        "bad_loss": 0.16296296296296295,
+        "downside_first": 0.1611111111111111,
+        "events": 540,
+        "excess_net": 0.009631210068367368,
+        "months": 60,
+        "terminal_net": 0.04179922830689849,
+        "timeout": 0.4722222222222223,
+        "upside_first": 0.3666666666666666,
+        "win": 0.6796296296296298
+      },
+      "1960": {
+        "adverse_excursion": -0.048656529888728366,
+        "bad_loss": 0.15185185185185185,
+        "downside_first": 0.15185185185185185,
+        "events": 546,
+        "excess_net": 0.007343338026659027,
+        "months": 60,
+        "terminal_net": 0.0400155125344902,
+        "timeout": 0.4988888888888888,
+        "upside_first": 0.3492592592592593,
+        "win": 0.6833333333333333
+      },
+      "1965": {
+        "adverse_excursion": -0.06664203069980512,
+        "bad_loss": 0.29500000000000004,
+        "downside_first": 0.2816666666666668,
+        "events": 600,
+        "excess_net": 0.03299163393878874,
+        "months": 60,
+        "terminal_net": 0.048315610987261545,
+        "timeout": 0.24833333333333332,
+        "upside_first": 0.47,
+        "win": 0.6150000000000001
+      },
+      "1970": {
+        "adverse_excursion": -0.08234107241159301,
+        "bad_loss": 0.32000000000000006,
+        "downside_first": 0.30999999999999994,
+        "events": 600,
+        "excess_net": 0.0006414751798046842,
+        "months": 60,
+        "terminal_net": 0.005810266211116314,
+        "timeout": 0.3616666666666666,
+        "upside_first": 0.32833333333333325,
+        "win": 0.4983333333333333
+      },
+      "1975": {
+        "adverse_excursion": -0.05442444096609373,
+        "bad_loss": 0.16666666666666666,
+        "downside_first": 0.14500000000000002,
+        "events": 600,
+        "excess_net": 0.019525725596308437,
+        "months": 60,
+        "terminal_net": 0.055950287057077726,
+        "timeout": 0.43166666666666664,
+        "upside_first": 0.4233333333333333,
+        "win": 0.6566666666666666
+      },
+      "1980": {
+        "adverse_excursion": -0.06317283102206693,
+        "bad_loss": 0.21333333333333332,
+        "downside_first": 0.20833333333333337,
+        "events": 600,
+        "excess_net": 0.005041292526005549,
+        "months": 60,
+        "terminal_net": 0.0457871511466725,
+        "timeout": 0.36000000000000004,
+        "upside_first": 0.43166666666666664,
+        "win": 0.6066666666666667
+      },
+      "1985": {
+        "adverse_excursion": -0.06003604277566401,
+        "bad_loss": 0.18166666666666667,
+        "downside_first": 0.18000000000000002,
+        "events": 600,
+        "excess_net": 0.0016368692507337222,
+        "months": 60,
+        "terminal_net": 0.04083306716091041,
+        "timeout": 0.38833333333333336,
+        "upside_first": 0.43166666666666675,
+        "win": 0.6766666666666666
+      },
+      "1990": {
+        "adverse_excursion": -0.05656886710967193,
+        "bad_loss": 0.16666666666666669,
+        "downside_first": 0.16500000000000004,
+        "events": 600,
+        "excess_net": -0.0006389328909697574,
+        "months": 60,
+        "terminal_net": 0.029050217398328044,
+        "timeout": 0.5249999999999999,
+        "upside_first": 0.31,
+        "win": 0.6283333333333334
+      },
+      "1995": {
+        "adverse_excursion": -0.05912009356117684,
+        "bad_loss": 0.20833333333333331,
+        "downside_first": 0.2,
+        "events": 600,
+        "excess_net": -0.0019902113320549738,
+        "months": 60,
+        "terminal_net": 0.06121076136504944,
+        "timeout": 0.3183333333333333,
+        "upside_first": 0.48166666666666663,
+        "win": 0.7416666666666666
+      },
+      "2000": {
+        "adverse_excursion": -0.1086641786107525,
+        "bad_loss": 0.42424242424242425,
+        "downside_first": 0.38181818181818183,
+        "events": 330,
+        "excess_net": 0.04872467950037896,
+        "months": 33,
+        "terminal_net": 0.011056702564941689,
+        "timeout": 0.22424242424242422,
+        "upside_first": 0.39393939393939387,
+        "win": 0.5363636363636364
+      }
+    },
+    "price_risk": {
+      "1950": {
+        "adverse_excursion": -0.028873752922772864,
+        "bad_loss": 0.05555555555555555,
+        "downside_first": 0.05555555555555555,
+        "events": 540,
+        "excess_net": 0.00029587388536596516,
+        "months": 60,
+        "terminal_net": 0.05131477003509875,
+        "timeout": 0.6481481481481483,
+        "upside_first": 0.29629629629629634,
+        "win": 0.7462962962962963
+      },
+      "1955": {
+        "adverse_excursion": -0.0377787523586897,
+        "bad_loss": 0.09444444444444443,
+        "downside_first": 0.09444444444444443,
+        "events": 540,
+        "excess_net": 0.0038972291319866793,
+        "months": 60,
+        "terminal_net": 0.03606524737051778,
+        "timeout": 0.6277777777777777,
+        "upside_first": 0.27777777777777773,
+        "win": 0.6814814814814815
+      },
+      "1960": {
+        "adverse_excursion": -0.03480959522592061,
+        "bad_loss": 0.0962962962962963,
+        "downside_first": 0.0962962962962963,
+        "events": 546,
+        "excess_net": 0.013506865305752232,
+        "months": 60,
+        "terminal_net": 0.04617903981358341,
+        "timeout": 0.6066666666666667,
+        "upside_first": 0.29703703703703704,
+        "win": 0.7538888888888888
+      },
+      "1965": {
+        "adverse_excursion": -0.049797565096848365,
+        "bad_loss": 0.18999999999999997,
+        "downside_first": 0.18666666666666665,
+        "events": 600,
+        "excess_net": 0.02285636016587132,
+        "months": 60,
+        "terminal_net": 0.03818033721434412,
+        "timeout": 0.4216666666666667,
+        "upside_first": 0.39166666666666666,
+        "win": 0.635
+      },
+      "1970": {
+        "adverse_excursion": -0.07007828212425331,
+        "bad_loss": 0.26666666666666666,
+        "downside_first": 0.26333333333333336,
+        "events": 600,
+        "excess_net": 0.006464902078087627,
+        "months": 60,
+        "terminal_net": 0.011633693109399261,
+        "timeout": 0.41833333333333333,
+        "upside_first": 0.31833333333333336,
+        "win": 0.5516666666666666
+      },
+      "1975": {
+        "adverse_excursion": -0.044479287220909394,
+        "bad_loss": 0.12999999999999998,
+        "downside_first": 0.11666666666666665,
+        "events": 600,
+        "excess_net": 0.0002906141295511579,
+        "months": 60,
+        "terminal_net": 0.03671517559032044,
+        "timeout": 0.5516666666666669,
+        "upside_first": 0.33166666666666667,
+        "win": 0.6466666666666666
+      },
+      "1980": {
+        "adverse_excursion": -0.049231768498161826,
+        "bad_loss": 0.1716666666666667,
+        "downside_first": 0.16999999999999998,
+        "events": 600,
+        "excess_net": 0.003254944712001857,
+        "months": 60,
+        "terminal_net": 0.04400080333266879,
+        "timeout": 0.44000000000000006,
+        "upside_first": 0.38999999999999996,
+        "win": 0.6050000000000001
+      },
+      "1985": {
+        "adverse_excursion": -0.052489068348082625,
+        "bad_loss": 0.12999999999999998,
+        "downside_first": 0.12833333333333333,
+        "events": 600,
+        "excess_net": 0.0009945702255476356,
+        "months": 60,
+        "terminal_net": 0.04019076813572431,
+        "timeout": 0.475,
+        "upside_first": 0.39666666666666667,
+        "win": 0.6983333333333334
+      },
+      "1990": {
+        "adverse_excursion": -0.046379365655304886,
+        "bad_loss": 0.10833333333333334,
+        "downside_first": 0.10666666666666666,
+        "events": 600,
+        "excess_net": -0.003040922178419023,
+        "months": 60,
+        "terminal_net": 0.026648228110878778,
+        "timeout": 0.6466666666666667,
+        "upside_first": 0.24666666666666665,
+        "win": 0.6316666666666667
+      },
+      "1995": {
+        "adverse_excursion": -0.05165491275479015,
+        "bad_loss": 0.16833333333333336,
+        "downside_first": 0.16166666666666668,
+        "events": 600,
+        "excess_net": -0.02257724073284498,
+        "months": 60,
+        "terminal_net": 0.04062373196425943,
+        "timeout": 0.4700000000000001,
+        "upside_first": 0.3683333333333334,
+        "win": 0.69
+      },
+      "2000": {
+        "adverse_excursion": -0.08833686371153454,
+        "bad_loss": 0.34242424242424246,
+        "downside_first": 0.3333333333333333,
+        "events": 330,
+        "excess_net": 0.03854577759870302,
+        "months": 33,
+        "terminal_net": 0.0008778006632657471,
+        "timeout": 0.4090909090909091,
+        "upside_first": 0.25757575757575757,
+        "win": 0.5242424242424244
+      }
+    }
+  },
+  "full_universe_policy_results": {
+    "context_risk": {
+      "adverse_excursion": -0.049329098550987514,
+      "bad_loss": 0.15530981218185008,
+      "coverage": 0.20615518569371422,
+      "downside_first": 0.15072845357205547,
+      "events": 6156,
+      "excess_net": 0.006038596910200799,
+      "months": 633,
+      "terminal_net": 0.03683397232625806,
+      "timeout": 0.5063191153238547,
+      "upside_first": 0.34295243110408985,
+      "win": 0.6581885202738283
+    },
+    "expected_excess": {
+      "adverse_excursion": -0.058967193210354624,
+      "bad_loss": 0.2027382833070037,
+      "coverage": 0.20615518569371422,
+      "downside_first": 0.19450588028787083,
+      "events": 6156,
+      "excess_net": 0.01183216492019864,
+      "months": 633,
+      "terminal_net": 0.042627540336255904,
+      "timeout": 0.40451114621730744,
+      "upside_first": 0.4009829734948218,
+      "win": 0.6552747059856064
+    },
+    "low_volatility": {
+      "adverse_excursion": -0.048651612212905766,
+      "bad_loss": 0.15220291381428822,
+      "coverage": 0.20615518569371422,
+      "downside_first": 0.1488853782692645,
+      "events": 6156,
+      "excess_net": 0.004810826128454618,
+      "months": 633,
+      "terminal_net": 0.03560620154451188,
+      "timeout": 0.5235211514832369,
+      "upside_first": 0.3275934702474987,
+      "win": 0.6576443742320519
+    },
+    "momentum": {
+      "adverse_excursion": -0.060345451507807506,
+      "bad_loss": 0.2058802878708092,
+      "coverage": 0.20615518569371422,
+      "downside_first": 0.19764788485167634,
+      "events": 6156,
+      "excess_net": 0.0102281550103439,
+      "months": 633,
+      "terminal_net": 0.04102353042640116,
+      "timeout": 0.40301913287695285,
+      "upside_first": 0.3993329822713709,
+      "win": 0.6450588028787081
+    },
+    "price_risk": {
+      "adverse_excursion": -0.04873531992863296,
+      "bad_loss": 0.15162366157626822,
+      "coverage": 0.20615518569371422,
+      "downside_first": 0.14814814814814814,
+      "events": 6156,
+      "excess_net": 0.004468566294046174,
+      "months": 633,
+      "terminal_net": 0.035263941710103434,
+      "timeout": 0.5242583816043531,
+      "upside_first": 0.3275934702474987,
+      "win": 0.6567140600315956
+    }
+  },
+  "limitations": [
+    "The same historical period was previously examined; these are adaptive hypotheses.",
+    "Prediction rows are complete-case outcome observations, not a prospective tradable universe.",
+    "Equal-month event means with overlapping horizons are not portfolio returns.",
+    "Close-based barriers do not model intraday stops or gap execution.",
+    "No date later than2002 is used; no K3E fundamental payoff is tested here.",
+    "All intervals are descriptive and unadjusted for multiple comparisons."
+  ],
+  "new_models_fit": 0,
+  "original_results_sha256": "72eea568180075f75276af078a831af51331be8d69853ea8188a0e56468d5f92",
+  "paired_comparisons": {
+    "context_risk_minus_low_volatility": {
+      "adverse_excursion": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.0014233701804984762,
+          0.00020531273078351012
+        ],
+        "difference": -0.0006774863380817499,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "bad_loss": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.0022827804107424963,
+          0.008059066175179918
+        ],
+        "difference": 0.0031068983675618745,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "excess_net": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.0003075638703003338,
+          0.002939047382696441
+        ],
+        "difference": 0.0012277707817461795,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "terminal_net": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.0003075638703003327,
+          0.002939047382696442
+        ],
+        "difference": 0.0012277707817461804,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      }
+    },
+    "context_risk_minus_momentum": {
+      "adverse_excursion": {
+        "calendar_month_span": 633,
+        "ci95": [
+          0.009155386846518272,
+          0.012901979448458981
+        ],
+        "difference": 0.011016352956819993,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "bad_loss": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.06556477093206951,
+          -0.037421011058451824
+        ],
+        "difference": -0.0505704756889591,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "excess_net": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.008476173704621276,
+          -9.739306419884262e-05
+        ],
+        "difference": -0.004189558100143104,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "terminal_net": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.008476173704621276,
+          -9.739306419884274e-05
+        ],
+        "difference": -0.004189558100143105,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      }
+    },
+    "context_risk_minus_price_risk": {
+      "adverse_excursion": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.0015260075032523582,
+          0.0003950709277199977
+        ],
+        "difference": -0.0005937786223545577,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "bad_loss": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.002933561523608916,
+          0.010849569949096015
+        ],
+        "difference": 0.0036861506055818854,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "excess_net": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.00044137152644584,
+          0.003560414081578669
+        ],
+        "difference": 0.0015700306161546248,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "terminal_net": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.0004413715264458397,
+          0.003560414081578669
+        ],
+        "difference": 0.0015700306161546252,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      }
+    },
+    "expected_excess_minus_momentum": {
+      "adverse_excursion": {
+        "calendar_month_span": 633,
+        "ci95": [
+          3.355361740429246e-05,
+          0.0025035510731694407
+        ],
+        "difference": 0.001378258297452885,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "bad_loss": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.010182552220466915,
+          0.004547568895910125
+        ],
+        "difference": -0.0031420045638055126,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "excess_net": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.0014490464408822253,
+          0.004095385234232217
+        ],
+        "difference": 0.0016040099098547382,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      },
+      "terminal_net": {
+        "calendar_month_span": 633,
+        "ci95": [
+          -0.0014490464408822258,
+          0.004095385234232216
+        ],
+        "difference": 0.0016040099098547375,
+        "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+        "months": 633,
+        "usable_replicates": 1000
+      }
+    }
+  },
+  "reversal_secondary": {
+    "all_candidates": {
+      "adverse_excursion": -0.058159833741160225,
+      "bad_loss": 0.18899116036786956,
+      "downside_first": 0.18122092545037968,
+      "events": 5185,
+      "excess_net": -0.003758441336788034,
+      "months": 566,
+      "terminal_net": 0.028671539104300554,
+      "timeout": 0.4721274023734417,
+      "upside_first": 0.34665167217617865,
+      "win": 0.6167823459149144
+    },
+    "coverage_warning": "All-candidates comparator has different coverage; half policies have identical coverage.",
+    "paired_against_momentum_half": {
+      "context_risk_half": {
+        "adverse_excursion": {
+          "calendar_month_span": 633,
+          "ci95": [
+            0.0023331751054596274,
+            0.005725475172817302
+          ],
+          "difference": 0.00414264562640172,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        },
+        "bad_loss": {
+          "calendar_month_span": 633,
+          "ci95": [
+            -0.03662597059037918,
+            -0.010652165216461822
+          ],
+          "difference": -0.024048644720022813,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        },
+        "excess_net": {
+          "calendar_month_span": 633,
+          "ci95": [
+            -0.005293774304715578,
+            0.0018759391065366812
+          ],
+          "difference": -0.001619179016912682,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        },
+        "terminal_net": {
+          "calendar_month_span": 633,
+          "ci95": [
+            -0.005293774304715581,
+            0.0018759391065366786
+          ],
+          "difference": -0.001619179016912685,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        }
+      },
+      "expected_excess_half": {
+        "adverse_excursion": {
+          "calendar_month_span": 633,
+          "ci95": [
+            -0.00407928858987439,
+            -3.7570259548914324e-05
+          ],
+          "difference": -0.002147300610435813,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        },
+        "bad_loss": {
+          "calendar_month_span": 633,
+          "ci95": [
+            -0.008115617485265313,
+            0.020733669452404138
+          ],
+          "difference": 0.007331238647493063,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        },
+        "excess_net": {
+          "calendar_month_span": 633,
+          "ci95": [
+            -0.0022245447997993532,
+            0.005558631880795518
+          ],
+          "difference": 0.0016014299898828273,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        },
+        "terminal_net": {
+          "calendar_month_span": 633,
+          "ci95": [
+            -0.0022245447997993515,
+            0.005558631880795519
+          ],
+          "difference": 0.0016014299898828286,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        }
+      },
+      "price_risk_half": {
+        "adverse_excursion": {
+          "calendar_month_span": 633,
+          "ci95": [
+            0.0039739253898027575,
+            0.0067790950374711275
+          ],
+          "difference": 0.005498984045862024,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        },
+        "bad_loss": {
+          "calendar_month_span": 633,
+          "ci95": [
+            -0.04310070215157424,
+            -0.02028714614906725
+          ],
+          "difference": -0.03245723897225664,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        },
+        "excess_net": {
+          "calendar_month_span": 633,
+          "ci95": [
+            -0.004136279506077747,
+            0.001589773563374055
+          ],
+          "difference": -0.0011211101591181217,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        },
+        "terminal_net": {
+          "calendar_month_span": 633,
+          "ci95": [
+            -0.004136279506077749,
+            0.0015897735633740528
+          ],
+          "difference": -0.0011211101591181256,
+          "interval_kind": "unadjusted_exploratory_12_calendar_month_moving_block",
+          "months": 566,
+          "usable_replicates": 1000
+        }
+      }
+    },
+    "policies": {
+      "context_risk_half": {
+        "adverse_excursion": -0.04927874362051564,
+        "bad_loss": 0.144153983531192,
+        "coverage": 0.5245901639344263,
+        "downside_first": 0.13960241025170353,
+        "events": 2720,
+        "excess_net": -0.0017647688629729573,
+        "months": 566,
+        "terminal_net": 0.030665211578115626,
+        "timeout": 0.535488507860416,
+        "upside_first": 0.3249090818878805,
+        "win": 0.63666266252397
+      },
+      "expected_excess_half": {
+        "adverse_excursion": -0.05556868985735317,
+        "bad_loss": 0.1755338668987079,
+        "coverage": 0.5245901639344263,
+        "downside_first": 0.1674476730572137,
+        "events": 2720,
+        "excess_net": 0.0014558401438225532,
+        "months": 566,
+        "terminal_net": 0.033885820584911144,
+        "timeout": 0.4777010925862516,
+        "upside_first": 0.3548512343565347,
+        "win": 0.6246333270184861
+      },
+      "momentum_half": {
+        "adverse_excursion": -0.05342138924691736,
+        "bad_loss": 0.1682026282512148,
+        "coverage": 0.5245901639344263,
+        "downside_first": 0.16192213018626447,
+        "events": 2720,
+        "excess_net": -0.00014558984606027499,
+        "months": 566,
+        "terminal_net": 0.032284390595028314,
+        "timeout": 0.4995727819491071,
+        "upside_first": 0.3385050878646285,
+        "win": 0.6295391372467344
+      },
+      "price_risk_half": {
+        "adverse_excursion": -0.04792240520105534,
+        "bad_loss": 0.13574538927895816,
+        "coverage": 0.5245901639344263,
+        "downside_first": 0.13211506789245303,
+        "events": 2720,
+        "excess_net": -0.001266700005178397,
+        "months": 566,
+        "terminal_net": 0.03116328043591019,
+        "timeout": 0.5474105105730548,
+        "upside_first": 0.3204744215344922,
+        "win": 0.6453543119620858
+      }
+    }
+  },
+  "schema": "prophet.industry_adaptive_policy_evaluation.v1",
+  "source_predictions_sha256": "3215d149c5f9df0c979708623c94aa368adad1d5fefb9cd5d81ca00bdb916223",
+  "state_composition_counts": {
+    "context_risk": {
+      "continuation": 4015,
+      "deterioration": 1779,
+      "persistent_weakness": 198,
+      "reversal_attempt": 164
+    },
+    "expected_excess": {
+      "continuation": 3827,
+      "deterioration": 2064,
+      "persistent_weakness": 169,
+      "reversal_attempt": 96
+    },
+    "low_volatility": {
+      "continuation": 3949,
+      "deterioration": 1834,
+      "persistent_weakness": 198,
+      "reversal_attempt": 175
+    },
+    "momentum": {
+      "continuation": 4429,
+      "deterioration": 1724,
+      "persistent_weakness": 1,
+      "reversal_attempt": 2
+    },
+    "price_risk": {
+      "continuation": 4168,
+      "deterioration": 1609,
+      "persistent_weakness": 185,
+      "reversal_attempt": 194
+    }
+  },
+  "status": "ADAPTIVE_EXPLORATORY_NOT_CONFIRMATION"
+}
