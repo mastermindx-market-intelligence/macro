@@ -22778,6 +22778,7 @@ jobs:
       - tests/test_agentos_direction.py
       - tests/test_agentos_direction_acceptance.py
       - tests/test_agentos_direction_owner.py
+      - tests/test_agentos_frontmatter_aliases.py
       - tests/test_agentos_plan_adoption.py
       - tests/test_agentos_project_archive.py
       - tests/test_agentos_project_knowledge_owner.py
@@ -22819,6 +22820,7 @@ jobs:
           python -m pytest tests/test_agentos_direction.py \
             tests/test_agentos_direction_acceptance.py \
             tests/test_agentos_direction_owner.py \
+            tests/test_agentos_frontmatter_aliases.py \
             tests/test_agentos_plan_adoption.py \
             tests/test_agentos_project_archive.py \
             tests/test_agentos_project_knowledge_owner.py \

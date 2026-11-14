@@ -654,8 +654,9 @@ def compile_proposal(request: object, *, programs: set) -> dict:
             "canonical check_workstream rejected this proposal: " + detail
         )
 
-    frontmatter = agentos.yaml.safe_dump(
+    frontmatter = agentos.yaml.dump(
         {name: compiled[name] for name in RECORD_KEY_ORDER},
+        Dumper=agentos._NoAliasDumper,
         sort_keys=False,
         allow_unicode=True,
         default_flow_style=False,

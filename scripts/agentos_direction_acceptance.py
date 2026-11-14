@@ -83,7 +83,11 @@ def _source(source, *, path, raw, commit):
 def _render(record, body):
     # The canonical owner owns parsing/rendering. Derived times and permissions
     # are never minted here; only explicit request/retained record facts survive.
-    text = "---\n" + agentos.yaml.safe_dump(record, sort_keys=False, allow_unicode=True) + "---\n" + body
+    # The no-alias dumper keeps shared reference mappings inline: aliased
+    # frontmatter is unreadable to every Agent OS record consumer.
+    front = agentos.yaml.dump(record, Dumper=agentos._NoAliasDumper,
+                              sort_keys=False, allow_unicode=True)
+    text = "---\n" + front + "---\n" + body
     _require(len(text.encode("utf-8")) <= 262144, "CONTENT_OVER_BUDGET")
     return text
 

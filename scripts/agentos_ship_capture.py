@@ -70,13 +70,22 @@ def _records(root):
         raise ValueError('missing or oversized workstream set')
     records = {}
     for path in paths:
-        if not _regular(path, root) or path.stat().st_size > 262144:
-            raise ValueError('unsafe workstream source')
-        text = path.read_text(encoding='utf-8')
-        _front(text)
-        rec, _ = aos.parse_record(path)
-        if any(p.hard for p in aos.check_workstream(rec, path, None)):
-            raise ValueError('malformed workstream')
+        try:
+            if not _regular(path, root) or path.stat().st_size > 262144:
+                raise ValueError('unsafe workstream source')
+            text = path.read_text(encoding='utf-8')
+            _front(text)
+            rec, _ = aos.parse_record(path)
+            if any(p.hard for p in aos.check_workstream(rec, path, None)):
+                raise ValueError('malformed workstream')
+        except (ValueError, OSError):
+            # One damaged record (aliased frontmatter, over-cap evidence body,
+            # malformed YAML) must not blind the advisory reminder — and every
+            # claim author — to the whole store. The handoff scan below already
+            # skips unreadable candidates the same way. A record skipped here
+            # also cannot be captured or claimed through this path, which is the
+            # correct posture: a narrow byte-level edit of it would be unsafe.
+            continue
         key = rec['key']
         if key in records:
             raise ValueError('duplicate workstream')
