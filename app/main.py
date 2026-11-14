@@ -2516,6 +2516,19 @@ app.include_router(research_router)
 from app.macro_command import router as macro_command_router  # noqa: E402
 app.include_router(macro_command_router)
 
+# Sector source-to-screen reads stay in this API process and existing resource gates.
+from app.sector_generation import create_router as create_sector_generation_router  # noqa: E402
+from app.sector_generation_reader import configure_sector_generation_reader  # noqa: E402
+app.include_router(create_sector_generation_router())
+try:
+    configure_sector_generation_reader(
+        app, generations_root=os.getenv("MACRO_SECTOR_GENERATIONS_ROOT"))
+except ValueError:
+    # A malformed optional binding must not remove the route or choose a fallback.
+    # Keep unrelated API services available while Sector answers its closed 503.
+    logging.getLogger(__name__).error("Sector generation storage configuration is invalid")
+
+
 # Earnings Wire member continuations are never static objects.  The public page
 # carries only its redacted preview; this authenticated route reads the complete
 # continuation from the existing private Research Vault bucket after enforcing

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "COIN-BULL-20260818",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.9,
@@ -14,19 +14,19 @@
     "progress": 32.8,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 33.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.158,
+    "dist_to_stop_r": -0.482,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 182.2,
-    "p1": -0.7723,
-    "p2": -0.3862,
+    "horizon_pct_used": 193.3,
+    "p1": -0.9882,
+    "p2": -0.4941,
     "p3": null,
-    "move_r": -1.158,
+    "move_r": -1.482,
     "mfe_r": 1.86,
-    "mae_r": -1.158
+    "mae_r": -1.482
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 40.850003051757824,
-  "_mae": -25.44000549316405,
+  "_mae": -32.54999847412108,
   "_max_p1": 1.240133668845107,
   "_first_trigger_ts": "2026-08-20",
   "_first_t1_ts": "2026-09-18",
   "_first_t2_ts": null,
-  "days_elapsed": 82,
-  "tau": 1.8222,
+  "days_elapsed": 87,
+  "tau": 1.9333,
   "closed": true,
   "outcome": "T1_HIT"
 }
