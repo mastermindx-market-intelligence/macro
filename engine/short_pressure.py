@@ -62,6 +62,7 @@ on day one. Governance record: `research/short_side/SP1_SHORT_PRESSURE_PREREG.md
 from __future__ import annotations
 
 import logging
+import math
 
 import pandas as pd
 
@@ -157,14 +158,15 @@ def _thin_adv(snap: pd.DataFrame) -> pd.Series:
     license a liquidity-normalised statistic."""
     if "avg_daily_vol" not in snap.columns:
         return pd.Series(False, index=snap.index)
-    return ~(snap["avg_daily_vol"] >= MIN_ADV_SHARES).fillna(False)
+    return ~(_finite_values(snap["avg_daily_vol"]) >= MIN_ADV_SHARES).fillna(False)
 
 
 def _pctile_basis(snap: pd.DataFrame) -> pd.Series:
     """Days-to-cover restricted to the rows a percentile may legitimately use:
     exchange-listed, not sentinel-capped, and liquid enough for the ratio to
     carry meaning (traps 1, 2 and 3)."""
-    ok = snap["days_to_cover"].notna()
+    dtc = _finite_values(snap["days_to_cover"])
+    ok = dtc.notna()
     if "is_listed" in snap.columns:
         ok &= snap["is_listed"].fillna(False)
     if "dtc_capped" in snap.columns:
@@ -172,7 +174,7 @@ def _pctile_basis(snap: pd.DataFrame) -> pd.Series:
     else:
         ok &= snap["days_to_cover"] < DTC_SENTINEL
     ok &= ~_thin_adv(snap)
-    return snap.loc[ok, "days_to_cover"]
+    return dtc.loc[ok]
 
 
 def cross_section(asof=None, si_panel: pd.DataFrame | None = None,
@@ -184,11 +186,11 @@ def cross_section(asof=None, si_panel: pd.DataFrame | None = None,
         return pd.DataFrame()
 
     out = pd.DataFrame(index=snap.index)
-    out["days_to_cover"] = snap["days_to_cover"].where(~snap.get("dtc_capped", False).fillna(False))
+    out["days_to_cover"] = _finite_values(snap["days_to_cover"]).where(~snap.get("dtc_capped", False).fillna(False))
     out["dtc_capped"] = snap.get("dtc_capped", False)
     out["thin_adv"] = _thin_adv(snap)
     out["avg_daily_vol"] = snap.get("avg_daily_vol")
-    out["si_change_pct"] = snap.get("si_change_pct")
+    out["si_change_pct"] = _finite_values(snap["si_change_pct"]) if "si_change_pct" in snap else None
     out["short_shares"] = snap.get("short_shares")
     out["settlement_date"] = snap.get("settlement_date")
 
@@ -221,10 +223,10 @@ def cross_section(asof=None, si_panel: pd.DataFrame | None = None,
     bp = borrow if borrow is not None else load_borrow_panel()
     fee = _latest_borrow(bp, asof)
     if fee is not None and not fee.empty:
-        out["borrow_fee_pct"] = pd.to_numeric(fee["fee_pct"].reindex(out.index), errors="coerce")
+        out["borrow_fee_pct"] = _finite_values(fee["fee_pct"].reindex(out.index))
         out["borrow_htb"] = (out["borrow_fee_pct"] >= FEE_HTB_PCT).fillna(False)
         out["borrow_severe"] = (out["borrow_fee_pct"] >= FEE_SEVERE_PCT).fillna(False)
-        out["avail_shares"] = fee["avail_shares"].reindex(out.index)
+        out["avail_shares"] = _finite_values(fee["avail_shares"].reindex(out.index))
         out["avail_unlimited"] = fee["avail_unlimited"].reindex(out.index).fillna(False)
     return out
 
@@ -245,9 +247,12 @@ def _dtc_change(full: pd.DataFrame | None, snap: pd.DataFrame, asof) -> pd.Serie
     if len(dates) < 2:
         return empty
     prev = df[df["settlement_date"] == dates[-2]].set_index("ticker")
-    cur_dtc = snap["days_to_cover"].where(~snap.get("dtc_capped", False).fillna(False))
-    prev_dtc = prev["days_to_cover"].where(~prev.get("dtc_capped", False).fillna(False))
-    return (cur_dtc - prev_dtc.reindex(snap.index)).astype(float)
+    cur_dtc = _finite_values(snap["days_to_cover"]).where(~snap.get("dtc_capped", False).fillna(False))
+    prev_dtc = _finite_values(prev["days_to_cover"]).where(~prev.get("dtc_capped", False).fillna(False))
+    # A retained ticker may have missed the newest settlement. Its current
+    # row must not be subtracted from itself and counted as measured change.
+    aligned = snap["settlement_date"] > dates[-2]
+    return _finite_values(cur_dtc - prev_dtc.reindex(snap.index)).where(aligned).astype(float)
 
 
 def _latest_borrow(bp: pd.DataFrame | None, asof) -> pd.DataFrame | None:
@@ -303,20 +308,20 @@ def axes(ticker: str, asof=None, xs: pd.DataFrame | None = None) -> dict | None:
             # under %.0f, and "higher than 100% of names" is never true of a name
             # that is itself in the comparison set.
             + (f", higher than {min(pct, 99.0):.0f}% of comparable names" if pct is not None else ""),
-            pct is not None and pct >= 80)
+            (pct >= 80) if pct is not None else None)
 
     chg = _f(r.get("dtc_change"))
     add("dtc_change", None if chg is None else round(chg, 2),
         "no prior settlement to compare" if chg is None else
         (f"cover burden up {chg:+.1f} days since the last report" if chg > 0
          else f"cover burden down {chg:+.1f} days since the last report"),
-        chg is not None and chg > 0)
+        (chg > 0) if chg is not None else None)
 
     sic = _f(r.get("si_change_pct"))
     add("si_change_pct", None if sic is None else round(sic, 2),
         "not reported" if sic is None else
         f"shares short {'up' if sic > 0 else 'down'} {abs(sic):.1f}% since the last report",
-        sic is not None and sic > 0)
+        (sic > 0) if sic is not None else None)
 
     fee = _f(r.get("borrow_fee_pct"))
     if fee is None:
@@ -371,12 +376,19 @@ def _state(n_elev: int, n_meas: int) -> str:
     return f"{n_elev} short-side readings stand out together"
 
 
+def _finite_values(values: pd.Series) -> pd.Series:
+    """Nonfinite inputs cannot be measurements or population members."""
+    numeric = pd.to_numeric(values, errors="coerce")
+    return numeric.where(numeric.map(lambda v: pd.notna(v) and math.isfinite(float(v))))
+
+
 def _f(v):
     try:
         if v is None or pd.isna(v):
             return None
-        return float(v)
-    except (TypeError, ValueError):
+        value = float(v)
+        return value if math.isfinite(value) else None
+    except (TypeError, ValueError, OverflowError):
         return None
 
 

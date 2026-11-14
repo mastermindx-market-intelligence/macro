@@ -15,6 +15,14 @@ from engine import short_pressure as sp
 # --------------------------------------------------------------------------
 # fixtures
 # --------------------------------------------------------------------------
+@pytest.fixture(autouse=True)
+def isolated_data_root(monkeypatch, tmp_path):
+    """Keep implicit native borrow reads inside each test's temporary store."""
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+
+
 def _panel(rows):
     df = pd.DataFrame(rows)
     df["settlement_date"] = pd.to_datetime(df["settlement_date"])
@@ -336,3 +344,175 @@ def test_snapshot_date_and_clock_are_captured():
     assert stamp == "07:17:12"
     assert df.iloc[0]["date"] == pd.Timestamp("2026-08-05")
     assert df.iloc[0]["snapshot_et"] == "07:17:12"
+
+
+# Missing comparative evidence must abstain, not vote negative.
+def _missing_measurement_axes(**updates):
+    row=dict(days_to_cover=None,dtc_pctile=None,dtc_change=None,si_change_pct=None,
+             borrow_fee_pct=None,avail_shares=None,avail_unlimited=False,
+             thin_adv=False,dtc_capped=False,settlement_date='2026-10-30')
+    row.update(updates)
+    return sp.axes('SYN',xs=pd.DataFrame([row],index=['SYN']))
+
+@pytest.mark.parametrize('missing',[None,float('nan'),pd.NA])
+def test_missing_changes_do_not_establish_coverage(missing):
+    r=_missing_measurement_axes(dtc_change=missing,si_change_pct=missing)
+    assert r['measured_count']==0
+    assert not r['coverage_ok']
+    assert r['state']=='not enough short-side data to describe'
+
+@pytest.mark.parametrize('key',['dtc_change','si_change_pct'])
+@pytest.mark.parametrize('value',[-1.0,0.0,1.0])
+def test_one_observation_is_not_two_measurements(key,value):
+    r=_missing_measurement_axes(**{key:value})
+    assert r['measured_count']==1
+    assert not r['coverage_ok']
+    assert r['agree_count']==int(value>0)
+
+@pytest.mark.parametrize('value',[-1.0,0.0,1.0])
+def test_observed_zero_and_negative_changes_remain_measured(value):
+    r=_missing_measurement_axes(dtc_change=value,si_change_pct=value)
+    assert r['measured_count']==2
+    assert r['coverage_ok']
+    assert r['agree_count']==2*int(value>0)
+
+@pytest.mark.parametrize('missing',[None,float('nan'),pd.NA])
+def test_raw_cover_burden_without_comparator_is_not_negative_evidence(missing):
+    r=_missing_measurement_axes(days_to_cover=3.0,dtc_pctile=missing)
+    leg=next(x for x in r['legs'] if x['axis']=='days_to_cover')
+    assert leg['value']==3.0
+    assert leg['reading']=='3.0 days of average volume to buy back'
+    assert leg['elevated'] is None
+    assert r['measured_count']==0
+
+@pytest.mark.parametrize('pct',[0.0,30.0,79.9,80.0,100.0])
+def test_observed_comparator_is_measured_without_invented_change_axes(pct):
+    r=_missing_measurement_axes(days_to_cover=3.0,dtc_pctile=pct)
+    assert r['measured_count']==1
+    assert r['agree_count']==int(pct>=80)
+
+@pytest.mark.parametrize('fee',[0.0,0.5,1.0,5.0])
+def test_borrow_only_does_not_inherit_two_phantom_measurements(fee):
+    r=_missing_measurement_axes(borrow_fee_pct=fee)
+    assert r['measured_count']==1
+    assert not r['coverage_ok']
+    assert r['agree_count']==int(fee>=1)
+
+@pytest.mark.parametrize('av,unlimited',[(None,False),(0.0,False),(450000.0,False),(None,True)])
+def test_availability_does_not_substitute_for_missing_directional_measures(av,unlimited):
+    r=_missing_measurement_axes(avail_shares=av,avail_unlimited=unlimited)
+    assert r['measured_count']==0
+    assert not r['coverage_ok']
+
+def test_complete_comparison_and_threshold_contract_unchanged():
+    r=_missing_measurement_axes(days_to_cover=3.0,dtc_pctile=90.0,dtc_change=1.0,
+           si_change_pct=0.0,borrow_fee_pct=0.5)
+    assert (r['measured_count'],r['agree_count'],r['coverage_ok'])==(4,2,True)
+    assert r['state']=='2 short-side readings stand out together'
+    assert not any(r['authority'][k] for k in ['may_rank','may_size','may_gate'])
+
+
+
+
+def test_absent_short_evidence_abstains_through_native_parquet_loaders(monkeypatch, tmp_path):
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    (tmp_path / "finra").mkdir()
+    pd.DataFrame([{
+        "ticker": "SYN", "settlement_date": pd.Timestamp("2026-10-30"),
+        "knowable_date": pd.Timestamp("2026-11-11"), "days_to_cover": None,
+        "dtc_capped": False, "is_listed": True, "avg_daily_vol": 500000,
+        "si_change_pct": None, "short_shares": 1000000,
+    }]).to_parquet(tmp_path / "finra/short_interest_panel.parquet", index=False)
+    result = sp.axes("SYN", xs=sp.cross_section(asof="2026-11-12"))
+    assert all(leg["value"] is None for leg in result["legs"])
+    assert result["measured_count"] == result["agree_count"] == 0
+    assert not result["coverage_ok"]
+    assert result["state"] == "not enough short-side data to describe"
+    assert not any(result["authority"][k] for k in ("may_rank", "may_size", "may_gate"))
+
+@pytest.mark.parametrize('prior', [False, True])
+@pytest.mark.parametrize('dtc', [0., .1, 3., 8., 20.])
+@pytest.mark.parametrize('sic', [None, -2., 0., 2.])
+def test_retained_ticker_cannot_compare_its_settlement_to_itself(prior, dtc, sic):
+    rows = [dict(ticker='SYN',settlement_date='2026-10-15',days_to_cover=dtc,si_change_pct=sic),
+            dict(ticker='LIVE',settlement_date='2026-10-30',days_to_cover=4.,si_change_pct=0.)]
+    if prior:
+        rows.append(dict(ticker='SYN',settlement_date='2026-09-30',days_to_cover=dtc+7.,si_change_pct=sic))
+    xs=sp.cross_section(asof='2026-11-12', si_panel=_panel(rows), borrow=pd.DataFrame())
+    result=sp.axes('SYN',xs=xs)
+    leg=next(x for x in result['legs'] if x['axis']=='dtc_change')
+    assert pd.isna(xs.loc['SYN','dtc_change'])
+    assert leg['value'] is None and leg['elevated'] is None
+    assert result['measured_count']==int(sic is not None)
+    assert not result['coverage_ok']
+    assert result['state']=='not enough short-side data to describe'
+
+
+def test_distinct_global_endpoints_preserve_real_zero_and_pit_transition(monkeypatch,tmp_path):
+    from lib import config
+    monkeypatch.setattr(config,'data_dir',lambda:tmp_path)
+    (tmp_path/'finra').mkdir()
+    panel=_panel([
+        dict(ticker='SYN',settlement_date='2026-09-30',days_to_cover=8.,si_change_pct=0.),
+        dict(ticker='SYN',settlement_date='2026-10-15',days_to_cover=8.,si_change_pct=0.),
+        dict(ticker='LIVE',settlement_date='2026-10-30',days_to_cover=4.,si_change_pct=0.)])
+    panel.loc[panel.ticker=='LIVE','knowable_date']=pd.Timestamp('2026-11-11')
+    panel.to_parquet(tmp_path/'finra/short_interest_panel.parquet',index=False)
+    early=sp.axes('SYN',xs=sp.cross_section(asof='2026-11-10'))
+    late=sp.axes('SYN',xs=sp.cross_section(asof='2026-11-11'))
+    leg=lambda x:next(y for y in x['legs'] if y['axis']=='dtc_change')
+    assert leg(early)['value']==0. and leg(early)['elevated'] is False
+    assert early['measured_count']==2 and early['coverage_ok']
+    assert leg(late)['value'] is None and leg(late)['elevated'] is None
+    assert late['measured_count']==1 and not late['coverage_ok']
+    assert late['settlement_date']==early['settlement_date']
+
+# Synthetic finite-admission regressions; these do not assert live incidence.
+@pytest.mark.parametrize('bad', [float('inf'), -float('inf'), 'inf', '-Infinity'])
+@pytest.mark.parametrize('field,axis', [('days_to_cover','days_to_cover'), ('dtc_change','dtc_change'), ('si_change_pct','si_change_pct'), ('borrow_fee_pct','borrow_fee'), ('avail_shares','availability')])
+def test_nonfinite_axes_abstain_and_serialize(field, axis, bad):
+    import json
+    xs = pd.DataFrame([{field: bad}], index=['SYN'])
+    payload = sp.axes('SYN', xs=xs)
+    assert next(leg for leg in payload['legs'] if leg['axis'] == axis)['value'] is None
+    assert payload['measured_count'] == 0
+    assert not payload['coverage_ok']
+    json.dumps(payload, allow_nan=False)
+
+@pytest.mark.parametrize('n', [199, 200, 250])
+@pytest.mark.parametrize('field', ['days_to_cover', 'avg_daily_vol'])
+@pytest.mark.parametrize('bad', [float('inf'), -float('inf')])
+def test_nonfinite_population_cannot_dilute_valid_peers(n, field, bad):
+    good = _wide_panel(n=n)
+    invalid = _wide_panel(n=200, dtc_start=500.)
+    invalid['ticker'] = ['X'+str(i) for i in range(200)]
+    invalid['dtc_capped'] = False
+    invalid[field] = bad
+    clean = sp.cross_section(asof='2026-08-01', si_panel=good, borrow=pd.DataFrame())
+    mixed = sp.cross_section(asof='2026-08-01', si_panel=pd.concat([good, invalid]), borrow=pd.DataFrame())
+    pd.testing.assert_series_equal(clean.dtc_pctile, mixed.loc[clean.index, 'dtc_pctile'])
+    assert mixed.loc[invalid.ticker, 'dtc_pctile'].isna().all()
+    if n < 200:
+        assert mixed.dtc_pctile.isna().all()
+    else:
+        assert mixed.loc[f'T{n-1:04d}', 'dtc_pctile'] == 100.
+
+@pytest.mark.parametrize('bad', [float('inf'), -float('inf')])
+@pytest.mark.parametrize('endpoint', ['previous', 'current'])
+def test_nonfinite_endpoint_cannot_be_a_change(endpoint, bad):
+    old = _wide_panel(settlement='2026-07-01', n=1)
+    new = _wide_panel(settlement='2026-07-15', n=1)
+    (old if endpoint == 'previous' else new)['days_to_cover'] = bad
+    (old if endpoint == 'previous' else new)['dtc_capped'] = False
+    xs = sp.cross_section(asof='2026-08-01', si_panel=pd.concat([old,new]), borrow=pd.DataFrame())
+    assert pd.isna(xs.loc['T0000','dtc_change'])
+
+def test_finite_endpoint_subtraction_overflow_abstains():
+    old = _wide_panel(settlement='2026-07-01', n=1)
+    new = _wide_panel(settlement='2026-07-15', n=1)
+    old['days_to_cover'], new['days_to_cover'] = -1e308, 1e308
+    old['dtc_capped'] = new['dtc_capped'] = False
+    xs = sp.cross_section(asof='2026-08-01', si_panel=pd.concat([old,new]), borrow=pd.DataFrame())
+    assert pd.isna(xs.loc['T0000','dtc_change'])
