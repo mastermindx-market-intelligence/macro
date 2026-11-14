@@ -38,7 +38,7 @@ def test_broad_sec_lane_is_scheduled_off_the_render_path_and_never_cancelled() -
     wave2 = _load(WAVE2)
     assert wave2["concurrency"]["group"] == "filing-forensics-sec"
     job = lane["jobs"]["poll_broad_sec"]
-    assert "macstudio-light" in job["runs-on"]
+    assert "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}" in job["runs-on"]
     assert job["timeout-minutes"] <= 90
 
 

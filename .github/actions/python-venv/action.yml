@@ -1,0 +1,44 @@
+name: python 3.12 (host-neutral per-runner venv)
+description: >
+  The shared per-runner Python 3.12 venv every self-hosted data lane bootstraps:
+  $HOME/.cache/mm-venv-${RUNNER_NAME:-default}, created once, reused across
+  runs, prepended to GITHUB_PATH, pip self-upgraded. Works on macOS ARM64
+  (macstudio/macstudio-light) and Linux x64 (data-linux) self-hosted runners
+  with identical behaviour on the Mac.
+inputs:
+  python-version:
+    description: >
+      Informational only — the interpreter is resolved from PATH, not
+      provisioned. Kept as an input so call sites read like the setup-python
+      step this replaces.
+    default: "3.12"
+runs:
+  using: composite
+  steps:
+    # NOT actions/setup-python, deliberately. Two documented self-hosted Mac
+    # failures rule it out for these pools: (1) no hostedtoolcache dir —
+    # setup-python dies with "mkdir: /Users/runner: Permission denied"
+    # (key-pool-probe run 29303838296 on actions-runner-3); (2) a setup-python
+    # 3.12 exec died with SIGKILL on the Studio (marketing-publish's known
+    # trap). The PATH-first resolution below is byte-identical to the former
+    # /opt/homebrew/bin/python3.12 bootstrap on every Mac runner (Homebrew is
+    # the only python3.12 there, and the fallback names it explicitly) and
+    # resolves /usr/bin/python3.12 on the Linux data pool. The pool image must
+    # provide python3.12 + venv — docs/RUNNER_DATA_LINUX_POOL.md owns that
+    # prerequisite.
+    - name: resolve python 3.12 (PATH first, Homebrew fallback)
+      id: pybin
+      shell: bash
+      run: |
+        PYBIN="$(command -v python3.12 || echo /opt/homebrew/bin/python3.12)"
+        "$PYBIN" -c 'import sys; sys.exit(0 if sys.version_info[:2] == (3, 12) else 1)' \
+          || { echo "::error::$PYBIN is not Python 3.12"; exit 1; }
+        echo "pybin=$PYBIN" >> "$GITHUB_OUTPUT"
+        "$PYBIN" --version
+    - name: per-runner venv cache ($HOME/.cache/mm-venv-<runner>)
+      shell: bash
+      run: |
+        VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
+        [ -x "$VENV/bin/python" ] || "${{ steps.pybin.outputs.pybin }}" -m venv "$VENV"
+        echo "$VENV/bin" >> "$GITHUB_PATH"
+        "$VENV/bin/python" -m pip install --quiet --upgrade pip

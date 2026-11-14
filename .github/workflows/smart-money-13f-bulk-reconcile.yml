@@ -24,7 +24,7 @@ concurrency:
 jobs:
   reconcile_publish:
     if: github.ref == 'refs/heads/main'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +34,11 @@ jobs:
       - name: Python 3.12 (isolated locked runtime)
         run: |
           VENV="$RUNNER_TEMP/institutional-13f-venv"
-          /opt/homebrew/bin/python3.12 -m venv "$VENV"
+          # Host-neutral interpreter: PATH python3.12 first, Homebrew fallback.
+          # The lock filename says macos-arm64 but its pins are platform-neutral
+          # (plain == pins, no markers/hashes), so it installs on either pool.
+          PYBIN="$(command -v python3.12 || echo /opt/homebrew/bin/python3.12)"
+          "$PYBIN" -m venv "$VENV"
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/pip" install --quiet \
             -r requirements/institutional-13f-macos-arm64-py312.lock

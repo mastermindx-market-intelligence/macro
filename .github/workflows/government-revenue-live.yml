@@ -171,7 +171,7 @@ concurrency:
 
 jobs:
   refresh:
-    runs-on: [self-hosted, macstudio-light]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}"]
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
@@ -196,15 +196,12 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           GOVREV_CALL_SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
-          /opt/homebrew/bin/python3.12 scripts/ci/govrev_publisher_preflight.py \
+          PYBIN="$(command -v python3.12 || echo /opt/homebrew/bin/python3.12)"
+          "$PYBIN" scripts/ci/govrev_publisher_preflight.py \
             --root . --out-dir "$RUNNER_TEMP"
 
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
 
       - name: fingerprint committed SAM evidence

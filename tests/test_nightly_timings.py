@@ -1173,7 +1173,8 @@ def test_asia_gate_job_carries_no_timings_wrapper():
     stay uninstrumented — for a structural reason, not a preference.
 
     `gate` has NO `actions/checkout`: its single step is a heredoc'd
-    GitHub-API-plus-clock decision run by /opt/homebrew/bin/python3.12. So
+    GitHub-API-plus-clock decision run by PATH-resolved python3.12 (Homebrew
+    fallback on the Mac — same resolution as .github/actions/python-venv). So
     scripts/nightly_timings.py and scripts/ci/nightly_timings_finish.sh do not
     EXIST in its workspace — instrumenting it means giving a checkout to the one
     job whose whole purpose is to be cheap enough to fire on seven cron slots a

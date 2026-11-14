@@ -26,21 +26,16 @@ concurrency:
 
 jobs:
   weekly-cycle:
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: python 3.12 (Homebrew venv - self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
-          exit 0
-
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
+        continue-on-error: true   # fail-open: same degrade-to-pack-only the inline `exit 0` gave
       - name: install deps
         run: |
           pip install --quiet pyyaml anthropic

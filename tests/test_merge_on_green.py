@@ -159,7 +159,13 @@ def test_the_hosted_sweep_keeps_a_minimal_runner_contract():
 def test_no_production_workflow_routes_to_rollback_only_merge_control():
     """No literal self-hosted route may match mac-builder-4 after W1-B."""
     parsed = yaml.safe_load(DEPLOY_SECRETS_WORKFLOW.read_text(encoding="utf-8"))
-    assert parsed["jobs"]["deploy"]["runs-on"] == ["self-hosted", "macstudio-light"]
+    # MACRO_DATA_LANE switch (2026-11-11): the quoted fallback is the label used
+    # while the variable is unset — it must stay macstudio-light (mac-builder-3),
+    # never any controller label, or this guard has been silently disarmed.
+    assert parsed["jobs"]["deploy"]["runs-on"] == [
+        "self-hosted",
+        "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}",
+    ]
     controller_labels = {"self-hosted", "macOS", "ARM64", "parked", "merge-control"}
     matching_routes = []
     for path in (ROOT / ".github" / "workflows").glob("*.yml"):

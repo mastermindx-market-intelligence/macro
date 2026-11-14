@@ -24,21 +24,17 @@ concurrency:
 
 jobs:
   brain-eval:
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 45     # measured budget: <=150 judge calls + 1 benchmark turn on a
                             # small model. The script is fail-soft per row, so a slow
                             # provider degrades the sample rather than the run.
     steps:
       - uses: actions/checkout@v4
-      - name: python 3.12 (Homebrew venv - self-hosted runner)
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
         # Same bootstrap every macstudio lane uses. Without it `python` is whatever
         # the runner's PATH resolves and the boto3/anthropic imports this script
         # needs are absent — the lane would run green and grade nothing.
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: weekly answer-quality eval
         # R2_*: the response-log corpus to grade + the summary archive.

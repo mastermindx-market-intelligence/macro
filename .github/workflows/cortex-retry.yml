@@ -44,7 +44,7 @@ concurrency:
 
 jobs:
   cortex-retry:
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     timeout-minutes: 30
     env:
       # SAME env mapping as daily.yml's cortex job (provider ladder inputs).
@@ -101,13 +101,9 @@ jobs:
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
               fh.write(f"retry={retry}\n")
           PY
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
         if: steps.gate.outputs.retry == 'yes'
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+        uses: ./.github/actions/python-venv
       - name: install requirements
         if: steps.gate.outputs.retry == 'yes'
         run: pip install -r requirements.txt

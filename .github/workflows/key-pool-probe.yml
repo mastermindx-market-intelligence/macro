@@ -50,7 +50,9 @@ jobs:
       # Homebrew venv, not actions/setup-python: on the self-hosted Macs the
       # hostedtoolcache dir (/Users/runner) doesn't exist and setup-python
       # dies with "mkdir: /Users/runner: Permission denied" (probe run
-      # 29303838296 on actions-runner-3). Mirrors metabolism-cycle.yml.
+      # 29303838296 on actions-runner-3). Mirrors the shared-venv logic now
+      # centralized in .github/actions/python-venv (why that action also
+      # resolves PATH python3.12 first and refuses setup-python).
       # macOS-only: /opt/homebrew/bin/python3.12 doesn't exist on ubuntu-latest,
       # so the ubuntu-latest dispatch option gets setup-python instead.
       - name: python 3.12 (Homebrew venv - self-hosted macOS runner)

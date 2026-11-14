@@ -113,7 +113,7 @@ jobs:
     # Job-level read permission plus checkout credential suppression makes the
     # zero-mutation contract structural, not merely a convention in the script.
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.delivery_readback_item != '' }}
-    runs-on: [self-hosted, macstudio-light]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}"]
     timeout-minutes: 10
     permissions:
       contents: read
@@ -127,13 +127,8 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: python 3.12 (Homebrew venv - self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
-
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - name: install readback dependency
         run: pip install --quiet pyyaml
 
@@ -163,7 +158,7 @@ jobs:
     # is the same reason commodity-sentinel uses it. Publishing is API calls plus
     # an occasional card raster; it is light work with a hard deadline, which is
     # exactly that lane's purpose.
-    runs-on: [self-hosted, macstudio-light]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}"]
     # 25m is plenty NOW THAT THE CHECKOUT IS SHALLOW (see fetch-depth below).
     # It was not before: on 2026-07-28 the full-history checkout ran the entire
     # 25m and was CANCELLED mid-clone, so `run publisher` never executed and the
@@ -210,18 +205,13 @@ jobs:
           fetch-depth: 1
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: python 3.12 (Homebrew venv - self-hosted runner)
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
         # NOT actions/setup-python: on this Studio a setup-python 3.12 exec dies
         # with SIGKILL (known trap), and a self-hosted runner has no hosted
         # tool-cache to fall back on. Same venv-per-runner pattern the
         # commodity-sentinel light lane already uses, so the two lanes cannot
         # drift apart on interpreter setup.
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
-
+        uses: ./.github/actions/python-venv
       - name: install deps
         # pyyaml: config/marketing.yml load. pandas+pyarrow: the tape gate's
         # earnings-day guard reads data/earnings/earnings.parquet (fail-soft —

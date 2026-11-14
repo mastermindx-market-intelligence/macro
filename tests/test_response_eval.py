@@ -1026,7 +1026,7 @@ def test_workflow_parses_with_on_and_jobs():
     jobs = doc["jobs"]
     assert isinstance(jobs, dict) and jobs
     job = jobs["brain-eval"]
-    assert job["runs-on"] == ["self-hosted", "macstudio"]
+    assert job["runs-on"] == ["self-hosted", "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     assert job["timeout-minutes"] == 45
     assert doc["concurrency"]["group"] == "brain-eval"
     assert doc["concurrency"]["cancel-in-progress"] is False

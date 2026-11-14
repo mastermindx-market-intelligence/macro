@@ -46,7 +46,7 @@ jobs:
   propose:
     # KILL SWITCH — absent variable → treated as paused (default-safe).
     if: vars.AUTONOMY_PAUSED != 'true'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio' }}"]
     # Raised from 20 → 45: the Opus LLM call + fitness-card read can take 20–35 min
     # under nightly-runner contention; 20 was too tight and caused cancellations at ~1h
     # (the workflow header shows the job-level limit, not the step limit).  45 min gives
@@ -60,13 +60,8 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: python 3.12 (Homebrew venv - self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
-
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - name: install deps
         run: pip install --quiet pyyaml anthropic
 

@@ -52,16 +52,12 @@ jobs:
     # scheduled duplicate writer after the VPS live plane passes freshness checks.
     # This is intentionally controlled by a repo variable, not by merging code.
     if: ${{ github.event_name == 'workflow_dispatch' || vars.VPS_LIVE_PRIMARY != 'true' }}
-    runs-on: [self-hosted, macstudio-light]   # dedicated light runner: live ticks must never queue behind nightly/asia/render holds on the 3-slot macstudio pool (observed 47-144m queue waits for 0.4m of work)
+    runs-on: [self-hosted, "${{ vars.MACRO_DATA_LANE || 'macstudio-light' }}"]   # dedicated light runner: live ticks must never queue behind nightly/asia/render holds on the 3-slot macstudio pool (observed 47-144m queue waits for 0.4m of work)
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - name: python 3.12 (Homebrew venv — self-hosted runner)
-        run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
-          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
-          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - name: python 3.12 (host-neutral venv — self-hosted runner)
+        uses: ./.github/actions/python-venv
       - run: pip install -r requirements.txt
       - name: regime freshness self-heal (re-stamp latest.json if the store advanced past it)
         # Fast (~25s), cancellation-proof catch-up for the nightly staleness bug: when the price
