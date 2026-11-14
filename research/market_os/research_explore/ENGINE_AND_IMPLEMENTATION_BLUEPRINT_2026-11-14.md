@@ -246,13 +246,16 @@ Render only a response matching the current complete request identity. Changing 
 Prove real issuer coverage, unit integrity, constraints, historical availability, later corrections, scenario isolation, rapid request races, saved restoration and exact evidence. A green frontend test cannot substitute for evaluable real issuer state.
 
 
-### Authored evidence and saved-version interactions
+### Authored evidence and saved-version interactions — target versus current owner
 
-The constraint inspector opens a selected operand's precise source document, locator and available-at time. The $120m registered amount and $40m utilization produce $80m registered dollar room in the fixture; 95m issued shares and 24m reserved shares remain share quantities. Missing authorization still blocks total issuability. Opening or closing this inspector updates navigation focus only; it must not change the calculation request key.
+The constraint inspector target opens a selected operand's precise source document, locator and available-at time. The R1 fixture's USD 120m registered amount and USD 40m utilization produce USD 80m registered dollar room; 95m shares and 24m reserved shares remain share quantities. Missing authorization still blocks total issuability. Opening/closing this inspector changes focus only, not the calculation key. Current evidence routes echo current/system context and need an incumbent owner extension for exact historical/scenario bindings.
 
-The saved-version view deliberately presents a newer usage record ($40m → $52m) separately from the unchanged saved anchor. The derived registered room changes from $80m to $68m in the available record. The original scenario retains its saved inputs and output. “Create version 2” proposes a new scenario version with copied assumptions and the explicitly selected new anchor; it must not silently rewrite version 1.
+The R1 saved-version composition deliberately presents a newer usage record (USD 40m → USD 52m) separately from its saved anchor. Registered room becomes USD 68m in that newer record. Retaining the original full numerical result and Create version 2 are intended interactions, not established runtime capabilities. The pinned SavedScenario retains assumptions, anchor, generations and result/rule digests, but no full result body. Current/scenario restore evaluates at served as-of; then-known restore retains its cutoff. The consumer must distinguish saved metadata from that evaluated result.
 
-Use the existing saved_scenarios/scenario_inputs owners for persistence, version identity, optimistic concurrency and effect receipts. If a save response is uncertain, reconcile that same scenario/version before retry. For an unavailable operand, retain the saved snapshot and name the missing input; do not fill it with zero or recompute a plausible-looking result. A saved-screen fixture does not prove an account effect.
+The store currently uses a deterministic saved_id and merge-duplicates upsert. Immutable numbered versions, optimistic concurrency and operation receipts require explicit extensions within the existing saved_scenarios/scenario_inputs/store owners. Do not introduce another persistence authority or silently change restore semantics. If original inputs/result bytes cannot be retained or reconstructed exactly, keep the assumptions and show the original numerical result as unavailable.
+
+A save evaluates the posted anchor without automatic rebasing. A moved as-of can refuse it; valid same-anchor generation changes may alter the evaluated result. Persist that evaluation's identities once. An uncertain save must be reconciled against the original user-scoped target before retry; finding a copy proves existence without identifying the operation that wrote it. R2's detailed contract below supersedes any earlier wording that implied these future guarantees already existed.
+
 
 ## 9. Global Cycles — five distinct destinations
 
@@ -494,3 +497,18 @@ The dated brief preserves three original source dependencies and its July analys
 Keep the incumbent current/lifecycle, UK, regional/qbus, influence and publication owners. event_id, item_id and event_key remain distinct; RSS-description hashes are not full-document hashes. Source eligibility and fetch outcomes require separate consumer meanings. Not collected is not a transient outage or evidence that no related event exists. Render from published artifacts without triggering collection/model work or graph writes.
 
 All nine final compositions were reviewed and received observed guarded finish receipts. The final Chinese mobile root is 5J4-1 after a qualified owned-root font repair; the inventory points to its final screenshot. No held/foreign pages were repurposed. Design-state coverage, systematic parity and runtime acceptance remain open. Continue Capital conflict/restore design next.
+
+
+## 19. C12 — Capital R2 conflicts, historical refusal and save recovery
+
+The [R2 contract](CAPITAL_STRUCTURE_R2_BUILD_SPEC_2026-11-14.md) binds seven additional native pages: five product compositions, a state sheet and Build. The cumulative inventory is 99 pages: 77 product/responsive/theme/locale, fifteen Build and seven state sheets, with seventeen mobile and five intermediate compositions.
+
+Comparable Class A issued-and-outstanding observations of 95m and 98m remain unresolved with selected=None. They became available 13 November and cannot enter a 31 October then-known answer. The pinned share-basis producer admits no records; populated conflicts require a real incumbent projection. Registered USD 120m less USD 52m gives USD 68m in its own scope and cannot settle share capacity.
+
+Historical restoration preserves the saved cutoff, clock and assumptions. The explicit fixture has a 14 November bundle as-of against a 31 October request, refusing all five input families. A later serving date alone does not establish mismatch. Preserve New York 23:59:59 precision: 31 October 2026 converts to 1 November 03:59:59Z. Missing original result bytes remain unavailable rather than being replaced by today's answer.
+
+Unconfirmed save is separate from successful calculation. Feasibility remains unresolved beside the potential-share and cash figures. Check saved scenarios reconciles the same user's original identity; an incomplete list is not proof of absence. Preserve neutral absent/foreign 404, public-clock limitation, typed restore outcomes and identity-drift 503. CAS/version conflict remains an explicit future contract. A save does not rebase the posted anchor; current/scenario restore can.
+
+The 768px loading state retains ALTA, requested date and mode with no earlier issuer's figures. Guard all responses, pagination and source details by the full request tuple. Focus-only source navigation uses replaceState and restores focus/scroll; issuer/mode/date/scenario changes create history. Existing loadMoreEvents and mode-bound evidence gaps are static source findings, not claimed production incidents.
+
+Principal and bounded reasoning reviews checked source contracts, whole-second cutoff conversion, fixture arithmetic and final compositions. Card gaps/navigation and distant feasibility copy were repaired; all seven final roots have observed finish receipts. Historic U0/W3/W4/#8673 holds remain, and no release status was requalified. Continue China Sectors narrow/theme/locale investigation, then remaining family and cross-product design proof. Product implementation remains sequenced after design-phase closure.
