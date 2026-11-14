@@ -1,5 +1,34 @@
 # Native Macro producer — protected-main reconciliation candidate
 
+## Current conflict recovery — 2026-11-14
+
+This revision supersedes historical instructions below to keep the release label armed while pushing. Current protected `docs/agent_guides/CODEX_DELIVERY.md` (blob `3e095c1c5c414fe109aa855f1487a5b40e5492c8`) requires **arm last**. The original #11258 carrier is visibly disarmed before source publication; `merge-blocked` is preserved. Fresh binding CI and the incumbent controller's clean predicate are required before later re-enrollment. No direct merge, duplicate controller, hold clearing, update-branch request or workflow dispatch is introduced.
+
+### Bound inputs and preservation
+
+- Original producer head: `4e41bf91ef3930437a44b154baff3e0e3be92622`, tree `f139c58165d138ff97f2a180416375e5090b1e85`.
+- Current protected input: `2d9f8d18334ee991f8750c97e7650d2cd957524b`, tree `17276167f0b4f3dd6dacc40f0dc9bf3408e68674`.
+- Conflict common ancestor: `821433ccb703694d47dc549fe1f4461cea121647`.
+- Initial conflict diagnosis used protected `1b848860aaf47f7d555efbe0b3ef1d6a7f09e523`; the two subsequent publication commits leave all19 owned preimages and governing delivery law unchanged. An exhaustive direct path census, independent of GitHub's300-file comparison ceiling, proves compatibility.
+
+The resulting commit has the original producer as first parent and the current protected input as second parent. Its tree begins with the complete protected tree, carries17 other producer/proof blobs unchanged, and changes only the catalogue union plus this recovery record relative to the previous owned delta. The executable deploy script retains mode100755; the other owned leaves retain100644. This is a substantive source-conflict repair, not an ancestry-only refresh.
+
+### Exactly three conflicts, all402 jobs preserved
+
+Git's actual three-way merge of the complete verified catalogue inputs returns exactly3 conflict hunks: `nw-lobe-unfreeze`, `washout-turn-organ` and `unrun-picks-boards`. Each inserts the producer's `source_bindings.py` and `payroll_revisions.py` beside protected China/Flow dependencies. The resolution keeps both contributions. The protected peer-participation test step, templates, tests, marketing test command and all other non-conflicting fields remain intact.
+
+The resulting catalogue Git blob is `6d14b74847b91543286b4789b4a2874384403703` (2,732,014bytes). Parsed comparison proves all402 job identities preserved. Every job changed on only one side exactly matches that side. All6 shared jobs retain protected non-path fields and the multiset union of both path lists; each newly added path appears once. Four pre-existing duplicate entries in `ticker-news-qbus` are preserved rather than opportunistically cleaned up.
+
+The original accepted producer behavior and numerical/source qualification are unchanged. This scoped merge proof does not claim a full new source run. The ordinary new-head CI must exercise the complete joined tree; source proof is not authenticated producer publication or consumer acceptance.
+
+### Original controller and remaining proof
+
+Completed full sweep43646647269, job132605842839, explicitly observed the producer's dirty/unmergeable state and declined its refresh with no update-branch write or refresh-budget use. Assigned-session recovery and exact-head CAS retain the original `sol/market-ontology-native-experience-20261114-c3` carrier; no later competing writer/effect was identified in its canonical PR record.
+
+After source readback, consume the natural exact-head CI and re-enroll only when the current clean predicate permits. Continue through the incumbent merge controller, actual protected postimages, canonical served publication and authenticated native consumers. #11246, #11253, registry#11267, Housing#11282, Analyst, Rates, Alerts and official revisions/PIT retain their own unfinished gates; this repair does not close the parent mission.
+
+## Historical earlier recovery receipts
+
 ## Problem and exact inputs
 
 The existing [Macro #11258 release-controller receipt](https://github.com/mastermindx-market-intelligence/macro/pull/11258#issuecomment-6882061629) at 2026-11-14T18:15:46Z reports that every check concluded clean, but protected main changed the CI definitions and a real source conflict prevents the normal refresh. The existing release request remains armed.
