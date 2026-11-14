@@ -1,0 +1,180 @@
+{
+  "schema": "paper_audit_followup2.verification.v1",
+  "date": "2026-11-09",
+  "governance_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "parent_design_pr": 10872,
+  "parent_design_head": "376bc2cee3641eb7f55b113210be916a8a0f85d7",
+  "news": {
+    "file_id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+    "page_id": "p-1-0",
+    "frame": "YN-0",
+    "changed_nodes": [
+      {
+        "node_id": "Z8-0",
+        "expected": "Counted 02:35 AM · all 2 sources",
+        "actual": "Counted 02:35 AM · all 2 sources",
+        "pass": true
+      },
+      {
+        "node_id": "ZC-0",
+        "expected": "Count basis stays across all accessible sources while the filter narrows stories. EN: “all 2 sources” · ZH: “全部 2 个来源”。",
+        "actual": "Count basis stays across all accessible sources while the filter narrows stories. EN: “all 2 sources” · ZH: “全部 2 个来源”。",
+        "pass": true
+      }
+    ],
+    "exact_jsx_text_only_delta": true,
+    "render_width": 360,
+    "render_inspected": true,
+    "unresolved_effects": [],
+    "released": true
+  },
+  "limits": [
+    "Paper geometry and exact text readback only.",
+    "No production copy or count/filter implementation changed.",
+    "ZH wording supplied in builder annotation; no separate ZH recovery-frame render claimed."
+  ],
+  "risk": {
+    "file_id": "01M38EVF74SJWG1GANN5VP380Z",
+    "page_id": "p-1-0",
+    "frame": "8PS-0",
+    "changed_node": "8QV-0",
+    "expected": "In the US source, 0.73× compares model risk over 21 closing observations with the 17.8% base rate (rounded to 18% here), not exposure size. Snapshot calibration remains unverified. Driver scores use separate scales; never average them into 36.",
+    "actual": "In the US source, 0.73× compares model risk over 21 closing observations with the 17.8% base rate (rounded to 18% here), not exposure size. Snapshot calibration remains unverified. Driver scores use separate scales; never average them into 36.",
+    "exact_jsx_text_only_delta": true,
+    "render_width": 1240,
+    "render_inspected": true,
+    "released": true,
+    "unresolved_effects": [],
+    "preserved": [
+      "13% and18% retained display;17.8% base rate;0.73× ratio",
+      "21D retained selection and unmatched historical cohort",
+      "unverified calibration; source/receipt qualification; existing return",
+      "current98K/9AI mobile siblings already name closing observations; no paired method paragraph"
+    ]
+  },
+  "news_review_contract": {
+    "file_id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+    "page_id": "p-3-0",
+    "parent": "3H7-0",
+    "frame": "414-0",
+    "illustration": "417-0",
+    "text_readbacks": [
+      {
+        "node_id": "415-0",
+        "actual": "One feed. Different count scopes.",
+        "expected": "One feed. Different count scopes.",
+        "pass": true
+      },
+      {
+        "node_id": "416-0",
+        "actual": "The activity strip uses supplied feed-wide report counts. Catch-up chips count story rows after row.source filtering; the review-state filter selects the visible subset. A grouped story can contain several reports. Keep these counts separate.",
+        "expected": "The activity strip uses supplied feed-wide report counts. Catch-up chips count story rows after row.source filtering; the review-state filter selects the visible subset. A grouped story can contain several reports. Keep these counts separate.",
+        "pass": true
+      },
+      {
+        "node_id": "41Y-0",
+        "actual": "Existing owners: TickerNewsPanel passes snapshot.flow to NewsFlowStrip and the complete presented rows to useNewsCatchup. Keep source-filtered counts, review-filtered visible rows, unreadShown and markShown in that hook. Do not expand source selection to arbitrary grouped-report membership.",
+        "expected": "Existing owners: TickerNewsPanel passes snapshot.flow to NewsFlowStrip and the complete presented rows to useNewsCatchup. Keep source-filtered counts, review-filtered visible rows, unreadShown and markShown in that hook. Do not expand source selection to arbitrary grouped-report membership.",
+        "pass": true
+      },
+      {
+        "node_id": "41Z-0",
+        "actual": "markStoriesReviewed retains presented [sequence, item_count] pairs and the first captured evidence basis. The reviewed-through receipt advances only when every row in the current presented page is reviewed. Preserve owner, rights context and the newest stored review state.",
+        "expected": "markStoriesReviewed retains presented [sequence, item_count] pairs and the first captured evidence basis. The reviewed-through receipt advances only when every row in the current presented page is reviewed. Preserve owner, rights context and the newest stored review state.",
+        "pass": true
+      },
+      {
+        "node_id": "420-0",
+        "expected": "Presentation extension: when a review-state filter is active, label the activity reading “Feed total” / “资讯流总计”. For a source-only filter, the existing count-basis line can use “all 2 sources” / “全部 2 个来源”, as in the recovery specimen. Derive the chosen scope treatment in TickerNewsPanel from the existing source and effective review filter. Keep its window and coverage; add no count, store or review effect.",
+        "actual": "Presentation extension: when a review-state filter is active, label the activity reading “Feed total” / “资讯流总计”. For a source-only filter, the existing count-basis line can use “all 2 sources” / “全部 2 个来源”, as in the recovery specimen. Derive the chosen scope treatment in TickerNewsPanel from the existing source and effective review filter. Keep its window and coverage; add no count, store or review effect.",
+        "pass": true
+      },
+      {
+        "node_id": "421-0",
+        "actual": "Acceptance: select Benzinga → two New story rows, still eight feed reports. Mark shown → only A/B reviewed and C unchanged; no full-page receipt advance. Clear the filter → C remains New. A later accepted revision of A becomes Updated without replacing its first saved basis. Repeat with the review-status filter, hidden stories, account/rights changes and current-owner readback.",
+        "expected": "Acceptance: select Benzinga → two New story rows, still eight feed reports. Mark shown → only A/B reviewed and C unchanged; no full-page receipt advance. Clear the filter → C remains New. A later accepted revision of A becomes Updated without replacing its first saved basis. Repeat with the review-status filter, hidden stories, account/rights changes and current-owner readback.",
+        "pass": true
+      },
+      {
+        "node_id": "422-0",
+        "actual": "Source: mastermind-terminal / terminal/components/news/{TickerNewsPanel.tsx, useNewsCatchup.ts, NewsFlowStrip.tsx}; terminal/lib/newsReviewState.ts. All four are byte-identical at d7a83d3348a4fcb762d93221f19c4e94cbe4505e and 8fcce1194c53543361bd21dbb2e69fc6ee556152. F04 extension; proposed presentation only. Source and Paper readback do not establish browser or production acceptance.",
+        "expected": "Source: mastermind-terminal / terminal/components/news/{TickerNewsPanel.tsx, useNewsCatchup.ts, NewsFlowStrip.tsx}; terminal/lib/newsReviewState.ts. All four are byte-identical at d7a83d3348a4fcb762d93221f19c4e94cbe4505e and 8fcce1194c53543361bd21dbb2e69fc6ee556152. F04 extension; proposed presentation only. Source and Paper readback do not establish browser or production acceptance.",
+        "pass": true
+      }
+    ],
+    "preexisting_children_preserved": true,
+    "preexisting_jsx_prefix_exact": true,
+    "render_width": 612,
+    "render_inspected": true,
+    "released": true,
+    "intermediate_capture": {
+      "commit": "35cc0249ffd94b8a1ab88b210fa9e500cce34235",
+      "path": "proof/news_count_contract_after.jpg",
+      "blob": "18dc6cc6c86b152512880c1152d490af814256a2",
+      "superseded_reason": "Make review-state filter scope explicitly feed-wide."
+    }
+  },
+  "totals": {
+    "applied_response_observed": 12,
+    "unresolved_effects": [],
+    "unique_text_readbacks": 17,
+    "inspected_captures": 7,
+    "current_manifest_captures": 6
+  },
+  "sector_dossier_contract": {
+    "file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+    "page_id": "p-5-0",
+    "parent": "GYT-0",
+    "frame": "HBL-0",
+    "text_readbacks": [
+      {
+        "node_id": "HBM-0",
+        "expected": "Dossier actions must open the dossier",
+        "actual": "Dossier actions must open the dossier",
+        "pass": true
+      },
+      {
+        "node_id": "HBN-0",
+        "expected": "Proposed R4 action binding. The native workspace and Dossier sources are still draft and held in PRs #10703 and #10707. This note does not qualify or release either dependency.",
+        "actual": "Proposed R4 action binding. The native workspace and Dossier sources are still draft and held in PRs #10703 and #10707. This note does not qualify or release either dependency.",
+        "pass": true
+      },
+      {
+        "node_id": "HBO-0",
+        "expected": "SectorCentralOpenCycle(nativeId, trigger) records the origin and opens Cycles. Its true return confirms navigation was accepted; it does not confirm an open or source-qualified Dossier. The new entry has cycles:null and no open Dossier state. refreshDossier reads entry.dossier.open.",
+        "actual": "SectorCentralOpenCycle(nativeId, trigger) records the origin and opens Cycles. Its true return confirms navigation was accepted; it does not confirm an open or source-qualified Dossier. The new entry has cycles:null and no open Dossier state. refreshDossier reads entry.dossier.open.",
+        "pass": true
+      },
+      {
+        "node_id": "HBP-0",
+        "expected": "Extend that same entry path to carry the intended inline Dossier opening through its existing state and refreshDossier owner. Use the selected row’s admitted native ID and real trigger. Keep dossierAccess, the applied SectorCyclesApply receipt, entry/href, subject/family and publication checks before mounting. Preserve pending and unavailable states; never mount the component directly or substitute an old/default subject.",
+        "actual": "Extend that same entry path to carry the intended inline Dossier opening through its existing state and refreshDossier owner. Use the selected row’s admitted native ID and real trigger. Keep dossierAccess, the applied SectorCyclesApply receipt, entry/href, subject/family and publication checks before mounting. Preserve pending and unavailable states; never mount the component directly or substitute an old/default subject.",
+        "pass": true
+      },
+      {
+        "node_id": "HBQ-0",
+        "expected": "Consumer proof: start with ordered A = Energy, B = Technology while native Cycles last showed Energy. Activate Technology Dossier. Prove that the Technology component actually opens with its qualified subject, family and publication; a true navigation return does not pass. Change selection during loading and reject the obsolete opening. Pending or missing evidence must never display the Energy dossier.",
+        "actual": "Consumer proof: start with ordered A = Energy, B = Technology while native Cycles last showed Energy. Activate Technology Dossier. Prove that the Technology component actually opens with its qualified subject, family and publication; a true navigation return does not pass. Change selection during loading and reject the obsolete opening. Pending or missing evidence must never display the Energy dossier.",
+        "pass": true
+      },
+      {
+        "node_id": "HBR-0",
+        "expected": "Use dossierOptions().onOpenCycles for the Dossier-to-Cycles action: it closes the inline Dossier and focuses sc-cycle-heading. The separate sc-cycle-return then uses the qualified Central origin. Ordered comparison and full-basis restoration remain the GPL proposal, with its existing validators and partial-result rules. Preserve G4P, BML and source/provenance holds; add no route, modal or restoration store.",
+        "actual": "Use dossierOptions().onOpenCycles for the Dossier-to-Cycles action: it closes the inline Dossier and focuses sc-cycle-heading. The separate sc-cycle-return then uses the qualified Central origin. Ordered comparison and full-basis restoration remain the GPL proposal, with its existing validators and partial-result rules. Preserve G4P, BML and source/provenance holds; add no route, modal or restoration store.",
+        "pass": true
+      },
+      {
+        "node_id": "HBS-0",
+        "expected": "Source: macro / templates/si_workspace.js at 9fc460ff36345387c3a2c5435b079852e8488da0 (PR #10703). Dossier PR #10707 remains 74930f6931773b23072f91590319dc39fe5a7d07. Both were read as draft/open/unmerged. F06 extension; source inspection and Paper rendering are not native-consumer acceptance.",
+        "actual": "Source: macro / templates/si_workspace.js at 9fc460ff36345387c3a2c5435b079852e8488da0 (PR #10703). Dossier PR #10707 remains 74930f6931773b23072f91590319dc39fe5a7d07. Both were read as draft/open/unmerged. F06 extension; source inspection and Paper rendering are not native-consumer acceptance.",
+        "pass": true
+      }
+    ],
+    "preexisting_children_preserved": true,
+    "preexisting_jsx_prefix_exact": true,
+    "render_width": 1000,
+    "render_inspected": true,
+    "released": true,
+    "source_boundary": "Proposed binding against draft/open/unmerged #10703 and #10707; existing holds preserved."
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "schema": "paper_audit_followup2.artifacts.v1",
+  "entries": [
+    {
+      "path": "BUILD_EXTENSION.md",
+      "bytes": 12310,
+      "sha256": "e7bb52943c8df85dc01b90735f0bb168309c9b4e4090cee697adc70fd0dc5bf9",
+      "git_blob": "9362fd7340bde049449e0555b6a7aa87b9f93650"
+    },
+    {
+      "path": "EFFECTS.json",
+      "bytes": 227672,
+      "sha256": "1bb5d888ce58aef14cb599602655c9b516cfe67c71e15e152b67ccf944b54422",
+      "git_blob": "79d329a5c98c9b19a87eae88b96b66248ccf1bf1"
+    },
+    {
+      "path": "RESULTS.md",
+      "bytes": 6837,
+      "sha256": "4797bc215d9ca67d649b2a785d91075d0efc8ac68d9fe1ade516fe1a7b15547c",
+      "git_blob": "313a786e8760afacc8ef64404c67b0181e35a1d3"
+    },
+    {
+      "path": "SOURCE_COMPARISON.json",
+      "bytes": 3648,
+      "sha256": "a93f572f4f9f4cffe5dd78282e8811f982c3c01367bacf51ddaa492f6421cd4c",
+      "git_blob": "ae9c7c5a2cc23ffd55787c8659118d2ce520dba9"
+    },
+    {
+      "path": "VERIFICATION.json",
+      "bytes": 13513,
+      "sha256": "b40408bcc17210c2f156829d0c662ef35c964cd5d0c1fd6d87921a224f43ed22",
+      "git_blob": "d069301d671cdee1f3198e38d901cf2769f7a3b9"
+    },
+    {
+      "path": "before/news_review_build.jsx",
+      "bytes": 17533,
+      "sha256": "b49b493cdea9502651a35c6289ad988d1fbea35d1362f0b4a9b27c4d4bce598a",
+      "git_blob": "67b0af75d33de742475921874a859ac0c0ef865f"
+    },
+    {
+      "path": "before/news_source_filter.jsx",
+      "bytes": 6473,
+      "sha256": "ef1651aae2cbf6d969f1b6ea301afb70e4b18a0a07c73c5aa4a5a896b171e10a",
+      "git_blob": "d2e3139995b3259853d991864c5991e487328b56"
+    },
+    {
+      "path": "before/risk_evidence.jsx",
+      "bytes": 23750,
+      "sha256": "f337547039b47c43d2f9ee27b1c90266d6aaf69217c676b2d8976164acf1d0d4",
+      "git_blob": "0f1150911ea35e7c01210a26c672156bc7128ded"
+    },
+    {
+      "path": "before/sector_dossier_build.jsx",
+      "bytes": 7214,
+      "sha256": "2f5ce763eb8d8c9b4275e64b312f755f512b9004baae2aaa9135a396a3b7953e",
+      "git_blob": "b16db0eff3bea6267108d28b57c2abd8a0b62532"
+    },
+    {
+      "path": "news_count_scope.svg",
+      "bytes": 2197,
+      "sha256": "d3435f49ffd66b262d1052198856fdaf0ff273dd8db8c7651748c7a434855dce",
+      "git_blob": "f4d8c194a4068d089179f864587fac7641c19f69"
+    },
+    {
+      "path": "post/news_count_contract.jsx",
+      "bytes": 6834,
+      "sha256": "d832f62256a9d5b745bda75e395d832421d2f9d36be70a3f71a8a3c0781019c8",
+      "git_blob": "9bbfe9046eabde3e8c8777c8ca0d2582e4bbacec"
+    },
+    {
+      "path": "post/news_review_build.jsx",
+      "bytes": 24314,
+      "sha256": "ce999355c328900a8c6e2c18c71db2d911f192bf2f72f1caa638371e5934d141",
+      "git_blob": "9900a8a39e616d57ae96826e38d53720a7fb7fe5"
+    },
+    {
+      "path": "post/news_source_filter.jsx",
+      "bytes": 6548,
+      "sha256": "d1161d8f848c1880be3c872b4f09d222d43285edb2b219beb24fe533efaa0c58",
+      "git_blob": "5c41e76c3e59993e55aee3037b7419104c3b8f53"
+    },
+    {
+      "path": "post/risk_evidence.jsx",
+      "bytes": 23772,
+      "sha256": "c683effafdbde30f8b0aad1578790d4df48642f7b6da30524b1d3730bcd802e1",
+      "git_blob": "f26097f213809ad7b99b4c2cc66095c03f0e73cf"
+    },
+    {
+      "path": "post/sector_dossier_build.jsx",
+      "bytes": 10962,
+      "sha256": "e10eb11c008a2acc02fb7e291597b45b98bdad8406f2323f9788dbbe5affea59",
+      "git_blob": "3bdb33a81eacf229d45e6734ed4b67cd604caa17"
+    },
+    {
+      "path": "post/sector_dossier_contract.jsx",
+      "bytes": 3827,
+      "sha256": "bf6c7e1dc24bb543cf9328ab0baf986b3ffcfc440e10871293a9d75d65393b77",
+      "git_blob": "bde50c563142b80116f94fdf9c1e30bd20cfaeeb"
+    },
+    {
+      "path": "proof/news_count_contract_after.jpg",
+      "bytes": 167884,
+      "sha256": "9fa06ca802af45c0a8fd86b6406ebc328e84910176652350483bd5bccafa2a08",
+      "git_blob": "18dd21c62fbe588ed0a62c7fd0545a30839b82c2",
+      "width": 612,
+      "height": 1001,
+      "format": "JPEG"
+    },
+    {
+      "path": "proof/news_source_filter_after.jpg",
+      "bytes": 21583,
+      "sha256": "9510b7dccb33dc7a74ed9848ea9e62bf9997d7f131c218fea126c14c489381bd",
+      "git_blob": "b3e909dba0200e2cadba1ceec6197e0ab04b8387",
+      "width": 360,
+      "height": 259,
+      "format": "JPEG"
+    },
+    {
+      "path": "proof/news_source_filter_before.jpg",
+      "bytes": 19264,
+      "sha256": "ea78cdffa3fe6be4fb3b2022edd9ec1690a01717bf884b901c050258f1bd03ae",
+      "git_blob": "ea402b4d1b37aaa00321481c5424b89bc14697d7",
+      "width": 360,
+      "height": 259,
+      "format": "JPEG"
+    },
+    {
+      "path": "proof/risk_evidence_after.jpg",
+      "bytes": 220675,
+      "sha256": "81f4f83ca81a7a5b4779ee507165ff5f55d6e77c221c059224d1045dc3f5989b",
+      "git_blob": "69be603588a0748a334b3ffcfa9d587d22054855",
+      "width": 1240,
+      "height": 1557,
+      "format": "JPEG"
+    },
+    {
+      "path": "proof/risk_evidence_before.jpg",
+      "bytes": 219546,
+      "sha256": "3336a8c295e672bd31ffececeb5daa77b9e2710b3f5d58f986192b24ac326d38",
+      "git_blob": "bb70dfa769ad68e896ec7e42614f0786f2fb61ef",
+      "width": 1240,
+      "height": 1557,
+      "format": "JPEG"
+    },
+    {
+      "path": "proof/sector_dossier_contract_after.jpg",
+      "bytes": 144320,
+      "sha256": "afc45a7ed1ca95320f4db4746f4737193c30e7c05fc579c5708f423cf8219230",
+      "git_blob": "74245bed3fcbf8c8164ccd3a8ec5116f5db99446",
+      "width": 1000,
+      "height": 457,
+      "format": "JPEG"
+    }
+  ]
+}
