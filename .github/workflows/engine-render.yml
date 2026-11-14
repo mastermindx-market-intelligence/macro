@@ -124,7 +124,18 @@ jobs:
           VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
           # render-linux (WSL2 PC) has python3.12 on PATH; a Mac fallback runner uses the Homebrew path.
           PYBIN="$(command -v python3.12 || echo /opt/homebrew/bin/python3.12)"
-          [ -x "$VENV/bin/python" ] || "$PYBIN" -m venv "$VENV"
+          if [ ! -x "$VENV/bin/python" ]; then
+            rm -rf -- "$VENV"
+            "$PYBIN" -m venv "$VENV"
+          elif ! "$VENV/bin/python" -m pip --version >/dev/null 2>&1; then
+            echo "::warning::persistent venv on ${RUNNER_NAME:-this runner} lost pip; attempting repair"
+            "$VENV/bin/python" -m ensurepip --upgrade >/dev/null 2>&1 || true
+            if ! "$VENV/bin/python" -m pip --version >/dev/null 2>&1; then
+              rm -rf -- "$VENV"
+              "$PYBIN" -m venv "$VENV"
+            fi
+          fi
+          "$VENV/bin/python" -m pip --version
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - name: zstd parity for remaining cache-backed breadth inputs
