@@ -8818,7 +8818,7 @@
   "gaps": [],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/lagging.py",
-  "produced_at": "2026-11-14T11:03:49Z",
+  "produced_at": "2026-11-14T11:51:09Z",
   "inputs_hash": "sha256:7bfa8abd02650ffe46e3746fe439f4a273d8349551eee01e5ec188e0255bf6ac",
   "tier": "infrastructure"
 }

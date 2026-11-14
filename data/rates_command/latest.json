@@ -1,7 +1,7 @@
 {
   "schema": "rates_command.v1",
   "asof": "2026-11-12",
-  "built": "2026-11-14T11:04:30.367507+00:00",
+  "built": "2026-11-14T11:52:16.411749+00:00",
   "display_only": true,
   "authority": false,
   "board": {
@@ -1661,7 +1661,7 @@
   },
   "policy_path_repricing": {
     "schema": "rate_futures.repricing.v1",
-    "evaluated_at": "2026-11-14T11:04:30.174677+00:00",
+    "evaluated_at": "2026-11-14T11:52:15.933193+00:00",
     "asof": "2026-11-12",
     "historical_availability_qualified": false,
     "display_only": true,
@@ -1778,8 +1778,8 @@
   "regime_outlook": {
     "schema_version": "regime_outlook.v1",
     "scope": "US",
-    "analysis_cutoff": "2026-11-14T11:04:30.355406+00:00",
-    "built_at": "2026-11-14T11:04:30.357956+00:00",
+    "analysis_cutoff": "2026-11-14T11:52:16.391440+00:00",
+    "built_at": "2026-11-14T11:52:16.397046+00:00",
     "mapping_version": "VERDICT_MAPPING_V2",
     "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
     "inputs": {
@@ -1790,7 +1790,7 @@
       },
       "R": {
         "path": "data/regime/latest.json",
-        "sha256": "51ca54ee6dfdae441a4421600edf49cc17985c402255a637f314358990dd544b",
+        "sha256": "82eff9b71f34b3d15adac6c2cdfe84fdc4f7093080b649516b03d954e3a4bd6c",
         "read_status": "available"
       },
       "M": {
@@ -2433,7 +2433,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/labor_nowcast/read",
-          "sha256": "51ca54ee6dfdae441a4421600edf49cc17985c402255a637f314358990dd544b",
+          "sha256": "82eff9b71f34b3d15adac6c2cdfe84fdc4f7093080b649516b03d954e3a4bd6c",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-13",
           "precision": "date",
@@ -2470,7 +2470,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/state",
-          "sha256": "51ca54ee6dfdae441a4421600edf49cc17985c402255a637f314358990dd544b",
+          "sha256": "82eff9b71f34b3d15adac6c2cdfe84fdc4f7093080b649516b03d954e3a4bd6c",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-06",
           "precision": "date",
@@ -2507,7 +2507,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/complacency/breadth_div",
-          "sha256": "51ca54ee6dfdae441a4421600edf49cc17985c402255a637f314358990dd544b",
+          "sha256": "82eff9b71f34b3d15adac6c2cdfe84fdc4f7093080b649516b03d954e3a4bd6c",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-13",
           "precision": "date",
@@ -2544,7 +2544,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/label",
-          "sha256": "51ca54ee6dfdae441a4421600edf49cc17985c402255a637f314358990dd544b",
+          "sha256": "82eff9b71f34b3d15adac6c2cdfe84fdc4f7093080b649516b03d954e3a4bd6c",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-13",
           "precision": "date",
@@ -2581,7 +2581,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-          "sha256": "51ca54ee6dfdae441a4421600edf49cc17985c402255a637f314358990dd544b",
+          "sha256": "82eff9b71f34b3d15adac6c2cdfe84fdc4f7093080b649516b03d954e3a4bd6c",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-13",
           "precision": "date",
@@ -2761,7 +2761,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-          "sha256": "51ca54ee6dfdae441a4421600edf49cc17985c402255a637f314358990dd544b",
+          "sha256": "82eff9b71f34b3d15adac6c2cdfe84fdc4f7093080b649516b03d954e3a4bd6c",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-13",
           "precision": "date",
@@ -2983,7 +2983,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/conditions/financial_conditions/trend",
-          "sha256": "51ca54ee6dfdae441a4421600edf49cc17985c402255a637f314358990dd544b",
+          "sha256": "82eff9b71f34b3d15adac6c2cdfe84fdc4f7093080b649516b03d954e3a4bd6c",
           "clock_semantics": "source_observation_date",
           "as_of": "2026-11-06",
           "precision": "date",
@@ -3020,7 +3020,7 @@
         "source": {
           "artifact": "R",
           "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-          "sha256": "51ca54ee6dfdae441a4421600edf49cc17985c402255a637f314358990dd544b",
+          "sha256": "82eff9b71f34b3d15adac6c2cdfe84fdc4f7093080b649516b03d954e3a4bd6c",
           "clock_semantics": "owner_snapshot_date",
           "as_of": "2026-11-13",
           "precision": "date",
