@@ -234,3 +234,47 @@ not an additional primary test, trained feature, live forecast or way to rescue 
 failed primary contrast. No p-values or promotion follow from it. Month means may
 include later dates because they are retrospective outcome controls, never inputs
 to a historical decision. Preserve the original 11 primary contrasts unchanged.
+
+Price-source qualification: the pinned Yahoo collector maps `Adj Close` to `close`
+(total-return basis), while the pinned basket-OHLCV writer declares auto-adjusted
+fetches. The sampled captured SPY/AAPL/XOM Parquets contain only Arrow/Pandas metadata,
+not original adjustment-vintage/availability receipts. This supports a consistent
+intended basis, not proof of original vendor vintages or execution-price identity.
+The frozen unaudited-basis caveat remains; no source naming guess silently promotes it.
+The public Prophet Operator Lab explicitly excludes forward-outcome reads; research
+reports remain in the existing research consumer rather than injecting retrospective
+results into the live candidate API.
+
+## Completed pilot and actual consumer evidence
+
+The original process completed exit 0 after 2,226.90 seconds; original runner/core
+code remained unchanged throughout. It produced 2,851 events and 5,702 horizon
+outcomes from 31,581 prefix observations. The separate verifier passed all outcome,
+fill, cost, context, summary and point-contrast checks; maximum net-return error
+4.45e-16. The auxiliary matched asset/month control completed 62,700 hypothetical
+date/horizon outcomes and left the primary report digest unchanged. The owned
+framework now passes 79 tests. Results and a bounded scientific verdict are in
+`ENTRY_REGIME_PILOT_VERDICT_2026-11-14.md` and `entry_regime_2026_11_14/`.
+
+No primary comparison's adjusted interval excludes zero. T1/T2's market-uptrend
+filter lowered its 21-session positive-net frequency; stress filtering improved
+its point estimate but did not clear the adjusted comparison. No live gate,
+ranking, sizing or order was promoted. These are survivor-panel research results,
+not live-board performance or a global refutation of conditional strategies.
+
+A relevant input-correctness defect was separately owned and fixed in PR #11242,
+operation `entry-pit-group-repair-20261114`, head
+`db55fd3022703219258c64a751db41dbb18b182c`: explicit PIT index groups could widen to
+the whole historical union because the loader dropped src. Nine red cases were
+repaired; 179 existing/new grader/universe tests pass, one optional data test skips,
+and nine real-source group/date consumer checks match exactly. Missing historical
+group coverage stays unavailable. Its isolated workspace did not alter the original
+pilot's pinned native engine. The parent research PR is #11241. Both Ready PRs
+remain subject to actual protected delivery receipts, not publication-as-completion.
+
+DO_NOT_REDO: frozen specification, original completed prefix replay, accepted input
+capture, real arithmetic verification and negative results need no rerun absent a
+material source/correctness change. Preserve the original cache and exact pinned
+research implementation for reproducibility; do not erase survivor/clock caveats
+or swap the primary metric/horizon. Next active action is exact-head release
+qualification plus qualified next-phase data/clock planning, never parameter fishing.

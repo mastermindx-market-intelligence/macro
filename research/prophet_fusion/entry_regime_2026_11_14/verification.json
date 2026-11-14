@@ -1,0 +1,47 @@
+{
+  "does_not_prove": [
+    "original historical availability",
+    "unbiased universe",
+    "execution feasibility",
+    "bootstrap asymptotic coverage",
+    "future edge",
+    "portfolio returns",
+    "production promotion"
+  ],
+  "environment": {
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "pyarrow": "25.0.1",
+    "python": "3.14.7"
+  },
+  "event_rows_sha256": "1c7b9cb4027641fc88bbc88338543619257b46d0dced9964364e8535381b5ddd",
+  "native_source": {
+    "checked_worktree_head": "973b09f0e3c851044cf538cd01beb7456b0bc94b",
+    "native_paths_checked": [
+      "engine",
+      "lib",
+      "scripts/prophet_fusion_arena.py",
+      "research/prophet_fusion/families.yml"
+    ],
+    "native_source_matches_spec": true,
+    "source_base": "6bbc4b0fc694c847077661ff5bf4c19ea41e4e81"
+  },
+  "promotion_eligible": false,
+  "report_sha256": "cc1f9a1df0efb76e3d769ce9b76ece1b1130bd36d6939e768425b9fc2e3b7567",
+  "row_verification": {
+    "all_price_fill_cost_and_context_checks": true,
+    "events_verified": 5702,
+    "maximum_net_return_absolute_error": 4.440892098500626e-16
+  },
+  "schema": "prophet.entry_regime_arithmetic_verification/v1",
+  "scope": "Independent arithmetic implementation and source readback by the assigned principal; not a distinct reviewer.",
+  "spec_sha256": "1f02b90917f69653b7659fc0b1883b6a7256224585ac22e1604293a8809b0a72",
+  "status": "PASS_WITH_DECLARED_SCOPE",
+  "summary_verification": {
+    "arm_summaries_verified": 24,
+    "bootstrap_intervals_recomputed_here": false,
+    "contrast_point_estimates_verified": 11
+  },
+  "verified_at": "2026-11-14T06:06:18.978078+00:00",
+  "verifier_code_sha256": "7eac2854e30383d976cb0d65f5981fbadcc52e62300faef2ac0ed817a4d3aca3"
+}

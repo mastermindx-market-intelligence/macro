@@ -31,7 +31,8 @@ Set BLAS/OpenMP to one thread to avoid nested oversubscription.
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python3 -m pytest \
   tests/test_prophet_fusion_mechanisms.py \
   tests/test_prophet_fusion_input_readiness.py \
-  tests/test_prophet_fusion_mechanism_verify.py -q
+  tests/test_prophet_fusion_mechanism_verify.py \
+  tests/test_prophet_fusion_timing_attribution.py -q
 ```
 
 The tests use synthetic fixtures and limited native-prefix parity. Passing them is
@@ -122,3 +123,20 @@ name/era robustness and prospective shadow proof. Stage-2 win-gating, the broad
 family-reliability grid and other closed constructions are not reopened by a
 pleasant-looking row in this report. No public endpoint or production restart is
 required merely to read this research evidence.
+
+## Auxiliary timing-attribution control
+
+After a primary report has passed its bound arithmetic verification:
+
+```sh
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
+python3 -m scripts.prophet_fusion_timing_attribution \
+  --input tmp/entry-regime-confluence-20261113/pilot
+```
+
+This separately saved diagnostic compares each event with the same asset/month's
+common-qualified hypothetical entry dates. It neither changes nor replaces the
+primary report, and publishes no significance or promotion. Its protocol was added
+after the primary freeze and is labeled auxiliary. It helps distinguish timing
+from merely owning favorable assets in favorable periods; it is not a complete
+portfolio risk or exposure attribution.
