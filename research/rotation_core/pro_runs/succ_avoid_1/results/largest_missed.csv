@@ -1,0 +1,11 @@
+group,cohort,high_date,trough_date,decline,caught_timely,warning_days22_to63,exit_already_active_at_high,member_mdd63,peak_in_scored_panel,common_features_available_at_peak,exit_active_at_trough
+FF49_Autos,FF49,2020-02-04,2020-03-18,0.5017096246,False,False,True,0.5027464988,True,True,True
+FF12_Durbl,FF12,2020-02-04,2020-03-18,0.4755757215,False,False,True,0.5045160116,True,True,True
+FF49_Mines,FF49,2019-12-18,2020-03-18,0.4672828797,False,False,True,0.4753751971,True,True,False
+FF49_Autos,FF49,2022-09-19,2022-12-16,0.4230359735,False,False,True,0.4230359735,True,True,False
+FF49_BusSv,FF49,2020-02-19,2020-03-23,0.4060758462,False,False,False,0.4060758462,True,True,False
+FF49_Fin,FF49,2020-01-30,2020-03-23,0.4035695937,False,False,True,0.4146920918,True,True,False
+FF12_Durbl,FF12,2022-09-19,2022-12-16,0.3989991939,False,False,True,0.3130162844,True,True,False
+FF49_Gold,FF49,2014-08-12,2014-11-05,0.3778647999,False,False,True,0.3784242181,False,False,False
+FF49_Steel,FF49,2022-04-18,2022-07-05,0.3725749305,False,False,True,0.3794628924,True,True,False
+FF49_Banks,FF49,2019-12-12,2020-03-16,0.3681737509,False,False,True,0.3793065931,True,True,False

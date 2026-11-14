@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Every observable flag uses the fixed completed 3-session anchor and allowed observation dates.",
+    "C2 is exactly OLD intersect REL; C2..C8 are OLD subsets; breadth is FF12-only.",
+    "All per-group VOL matches are exact; both shifts preserve counts and have complete \u00b110/63-session support.",
+    "Twelve fixed-spaced events independently reconstruct prior-high age, fake21, ordered-pair member MDD and next-close exit MDD.",
+    "OLD matched to itself is identically zero in point estimates and all reported bootstrap bounds.",
+    "Synthetic RSI edge values, EMA arithmetic seeding and preservation of explicit source-bar NaNs pass.",
+    "Archived HY observations exactly match 2,760 pre-2024-archive overlaps and 33 current FRED overlaps."
+  ],
+  "independent_event_arithmetic_checks": 12,
+  "prefix_check": "All nine signal tapes and common readiness verified unchanged through 2019-12-18 when later permitted data are removed; performed separately before report.",
+  "candidate_outcome_runs": 1,
+  "threshold_tuning_runs": 0,
+  "post_outcome_signal_changes": 0,
+  "post_outcome_report_change": "Renamed later_warning_within63 to warning_days22_to63; added trough-coverage and matching-information diagnostics; no candidate result changed. Removed n/11 column that could misstate scored-period frequency; retained actual annual counts and eligible group-year rate.",
+  "pre_first_run_repairs": [
+    "Preserve source-bar NaNs",
+    "Require initialized selected-partner oscillator",
+    "Independent all-observable missed-top universe",
+    "Use all-observable flags for miss catches",
+    "Restrict C5 miss universe",
+    "Attribute annual shift counts to source year"
+  ],
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3"
+  },
+  "source_sha256": {
+    "PROTOCOL.md": "198611513b3206b5935efed518189aa8916eb4e65f58b7a443416a2d0333ef87",
+    "acquire.py": "0fdcaa369d2bef24b1c5a03f7d39f09812397f6a5fc4b41ca2a13b63f99706ba",
+    "run_study.py": "40994b1de61ab47f7e9cfe1f29aaeb55ca4d064877b694059aeb00107396a641",
+    "verify_study.py": "026b778541a14ee5b8ec8257e0ec8183fbddefd5a78b6c474df17e14ce76bee9"
+  }
+}

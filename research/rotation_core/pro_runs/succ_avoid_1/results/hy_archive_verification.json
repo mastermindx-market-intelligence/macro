@@ -1,0 +1,18 @@
+{
+  "primary_FRED_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2&cosd=2013-01-02&coed=2023-12-29",
+  "archive_url": "https://raw.githubusercontent.com/chatterjee-aryan/macro_regime_modeling/4e6529620a0a73d8288f4f70af74c2bd8d275352/data/BAMLH0A0HYM2.csv",
+  "pre2024_crosscheck_url": "https://raw.githubusercontent.com/hrithikRag/Optimizing-SP-500-Investment-Timing-A-Multi--Indicator-Approach/6922419cdf65924d472b683236229701813b03b2/BAMLH0A0HYM2.csv",
+  "checks": [
+    {
+      "against": "pre2024_public_archive",
+      "matching_nonmissing_rows": 2760,
+      "maximum_absolute_difference": 0.0
+    },
+    {
+      "against": "current_FRED_overlap",
+      "matching_nonmissing_rows": 33,
+      "maximum_absolute_difference": 0.0
+    }
+  ],
+  "warning": "Public FRED-origin archived CSV; not an independently proven point-in-time feed."
+}

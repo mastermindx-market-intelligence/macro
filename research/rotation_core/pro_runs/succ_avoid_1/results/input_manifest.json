@@ -1,0 +1,188 @@
+{
+  "allowed_start": "2013-01-02",
+  "allowed_end": "2023-12-29",
+  "observations_outside_block_retained": 0,
+  "vintage": "public current-vintage histories; no point-in-time vintage proof",
+  "inputs": [
+    {
+      "file": "ff12.csv",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/12_Industry_Portfolios_Daily_CSV.zip",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "e8d356e62c88acfc25b82a89a3ea5451eba181ee013d4ed0c3c092332ab68498"
+    },
+    {
+      "file": "ff49.csv",
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/49_Industry_Portfolios_Daily_CSV.zip",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "364adbdc80ad0d0719a2f54d662afbad64a9e5b7974d28b48bec0342eb9ab6a9"
+    },
+    {
+      "file": "SPY.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "9f8f99ba21a5a5ad1913718121898903bd2b482279862ca49bcb2eafc43b1351"
+    },
+    {
+      "file": "XLB.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLB?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "c407ee9a3f04cee328d9d6f8da61f8952f420e4e7dbc3fba51dd9c9fd126c912"
+    },
+    {
+      "file": "XLE.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLE?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "50ba264607afe3c8e5cdbd19cf1da2648dcd9a2a230255697b3a5c32655b425b"
+    },
+    {
+      "file": "XLF.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLF?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "196124d179c52ee8956db270bf79ab53be9be3fdb9827deedf76797022ca9a86"
+    },
+    {
+      "file": "XLI.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLI?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "a49956c2f3f09229e62cebe9e273f7dd3508a7904c8c0babe776936c95ae32c4"
+    },
+    {
+      "file": "XLK.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLK?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "120cef9bfe6f95e95d62bf7a034a1a6cca73a0c86894e518bc3e8a0272624117"
+    },
+    {
+      "file": "XLP.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLP?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "6b14c8a8be03d5f47182d43ae4dd792a15f01e67242fdc1de4debf1a604cdeac"
+    },
+    {
+      "file": "XLU.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLU?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "a0a2f2298bf1db82709abe5069cb79ee191508456721da3a6b1a424b25299b20"
+    },
+    {
+      "file": "XLV.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLV?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "b7c6992b6252c609eb3895a4857c660b29f5f21d4a26eb06bba10bc1c56ddaca"
+    },
+    {
+      "file": "XLY.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLY?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 2768,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "d987c24775fa05dfc52adc6ee303e230acb734ebecb86a125d08cf7372188782"
+    },
+    {
+      "file": "XLRE.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLRE?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 2071,
+      "first": "2015-10-08",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "dc5c849b412f92266e9a7ac574d7562f9ae9e21829f91d33a640ff41442781fd"
+    },
+    {
+      "file": "XLC.csv",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/XLC?period1=1357084800&period2=1703980800&interval=1d&events=div%2Csplits",
+      "rows": 1393,
+      "first": "2018-06-19",
+      "last": "2023-12-29",
+      "missing_values": 0,
+      "sha256": "0daadc7240895811bac5e28baa5a7e0417d0582b0c600fdaaf304d13dce58ae0"
+    },
+    {
+      "file": "DGS2.csv",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2&cosd=2013-01-02&coed=2023-12-29",
+      "rows": 2868,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 117,
+      "sha256": "440389f30b8e3409e5876f3c4a8a47442780ec2408363ac04b6e636d25526638"
+    },
+    {
+      "file": "DGS10.csv",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2013-01-02&coed=2023-12-29",
+      "rows": 2868,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 117,
+      "sha256": "d731a4fd666ce8b7bb52f39bab592094e85fc8ae657a1272d5dc5f5774fa4293"
+    },
+    {
+      "file": "BAMLH0A0HYM2.csv",
+      "url": "https://raw.githubusercontent.com/chatterjee-aryan/macro_regime_modeling/4e6529620a0a73d8288f4f70af74c2bd8d275352/data/BAMLH0A0HYM2.csv",
+      "rows": 2904,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 35,
+      "sha256": "bd0cedc2e6cc6829f0add862899fe8d46aefaf23655ea2326ea2123e064d9de7"
+    },
+    {
+      "file": "DTWEXB.csv",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXB&cosd=2013-01-02&coed=2023-12-29",
+      "rows": 1825,
+      "first": "2013-01-02",
+      "last": "2019-12-31",
+      "missing_values": 87,
+      "sha256": "b2b7661f3994c7b41ec4f8adee62695b44181386ca2a9cefb3aa3a8d1ac5b929"
+    },
+    {
+      "file": "DTWEXBGS.csv",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS&cosd=2013-01-02&coed=2023-12-29",
+      "rows": 2868,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 133,
+      "sha256": "3c0ac9409036ab7195c184ac74aced59bc453be2f32d0fa370855cd6d60cfaed"
+    },
+    {
+      "file": "VIXCLS.csv",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS&cosd=2013-01-02&coed=2023-12-29",
+      "rows": 2868,
+      "first": "2013-01-02",
+      "last": "2023-12-29",
+      "missing_values": 88,
+      "sha256": "0e8ca01b0e21e0ae70b865eecb5533908e824865aa8b694235247663f0c6f10a"
+    }
+  ]
+}
