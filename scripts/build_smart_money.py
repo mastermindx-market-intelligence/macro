@@ -38,6 +38,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from jinja2 import Environment, FileSystemLoader  # noqa: E402
 
 from lib import config  # noqa: E402
+from lib.numeric import finite_json_value  # noqa: E402
 from lib.pages import (  # noqa: E402
     dbase_prefix,
     externalize_css_text,
@@ -171,6 +172,11 @@ _CENSUS_SCOPE_KEYS = frozenset({
 
 def _jdump(obj) -> str:
     return json.dumps(obj, separators=(",", ":"), default=str)
+
+
+def _serialize_desk(desk: dict) -> str:
+    """Emit parseable JSON for the browser, retaining missing values as null."""
+    return json.dumps(finite_json_value(desk), separators=(",", ":"), default=str, allow_nan=False)
 
 
 def _site_dir() -> Path:
@@ -859,9 +865,8 @@ def render_institutional_census_only() -> int:
             desk_path,
             maximum_bytes=_CENSUS_RENDER_ARTIFACT_MAX_BYTES,
             label="smartmoney_desk.json",
-            # The legacy desk intentionally contains Python JSON NaN sentinels.
-            # Preserve those already-public values; the new census document is
-            # loaded independently through the strict finite-number boundary.
+            # Accept old desktop files with NaN. The new desk serialization
+            # normalizes missing values to JSON null before publication.
             allow_non_finite=True,
         )
         tracker = _load_bounded_json_object(
@@ -875,7 +880,7 @@ def render_institutional_census_only() -> int:
             raise ValueError("institutional census summary exceeds its byte ceiling")
         updated_desk = dict(desk)
         updated_desk["institutional_census"] = census
-        desk_payload = _jdump(updated_desk)
+        desk_payload = _serialize_desk(updated_desk)
         if len(desk_payload.encode("utf-8")) > _CENSUS_RENDER_ARTIFACT_MAX_BYTES:
             raise ValueError("updated smartmoney_desk.json exceeds its byte ceiling")
 
@@ -1959,8 +1964,9 @@ def main() -> int:
     }
 
     try:
-        (_site_dir() / "smartmoney_desk.json").write_text(_jdump(desk))
-        desk_kb = len(_jdump(desk)) // 1024
+        desk_payload = _serialize_desk(desk)
+        (_site_dir() / "smartmoney_desk.json").write_text(desk_payload, encoding="utf-8")
+        desk_kb = len(desk_payload.encode("utf-8")) // 1024
     except Exception as e:  # noqa: BLE001
         log.warning("write smartmoney_desk.json failed: %s", e)
         desk_kb = 0
