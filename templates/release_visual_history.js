@@ -197,6 +197,14 @@
     var asofLabel=valid?String(history.source_collected_at).slice(0,10):'';
     var latestLabel=latest?latest.period:'';
     var sourceBasis=valid && series.basis_metadata && series.basis_metadata[basis];
+    var sourceLink=byRole(host,'[data-rrh-source]');
+    if (sourceLink) {
+      var sourceId=sourceBasis && sourceBasis.series_id;
+      sourceLink.setAttribute('href',
+        typeof sourceId==='string' && /^[A-Z0-9]{3,12}$/.test(sourceId) ?
+          'https://fred.stlouisfed.org/series/'+sourceId :
+          'https://fred.stlouisfed.org/');
+    }
     var isProxy=basis==='yoy' && !!sourceBasis &&
       sourceBasis.official_reported_basis_comparable!==true;
     var qualifierEn=!sourceBasis?'Source basis unverified':
