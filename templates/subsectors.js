@@ -43,7 +43,10 @@
     russell: { url: 'marketdata/subsector_confluence_russell.json', dir: 'subsector_russell/', prefix: '', groupsKey: 'subsectors', noun: ['subsectors', '子行业'], rollup: ['Sector amalgamations', '板块汇聚'], rollupDesc: ['The 11 sectors as equal-weight baskets — the natural small-cap rotation buckets. RS is vs IWM (within-index).', '11 个板块作为等权篮子——小盘股自然的轮动桶。相对强弱基准为 IWM（指数内）。'] }
   };
   var DATA = {};
-  var TAB = 'subsectors';
+  // Authored index-detail returns keep their cohort on a fresh board document.
+  var returnDesks = new URLSearchParams(location.search).getAll('desk');
+  var TAB = returnDesks.length === 1 && ['nasdaq', 'russell'].indexOf(returnDesks[0]) !== -1
+    ? returnDesks[0] : 'subsectors';
   var NIDATA = null;
   var LEAD = null;
   var SORT = {};   // per-tab full-table sort {col, dir}
@@ -552,6 +555,7 @@
 
   function boot() {
     Array.prototype.forEach.call(document.querySelectorAll('.sc-tab'), function (el) {
+      el.classList.toggle('on', el.getAttribute('data-tab') === TAB);
       el.addEventListener('click', function () { setTab(el.getAttribute('data-tab')); });
     });
     var appEl = document.getElementById('sc-app');
@@ -575,7 +579,7 @@
       return fetch('marketdata/nasdaq_internals.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
     }).then(function (ni) {
       try { if (ni && ni.schema === 'nasdaq_internals.v1') NIDATA = ni; } catch (e) {}
-      render();
+      setTab(TAB);
     });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
