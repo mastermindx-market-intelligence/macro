@@ -3,7 +3,7 @@
 Status: DESIGN CANDIDATE / IMPLEMENTATION NOT STARTED
 Owner: Chairman's 14 November 2026 Research Explore assignment.
 Parent: [Research Explore migration record](../RESEARCH_EXPLORE_SHARED_SHELL_2026-11-14.md).
-Detailed contracts: [Policy Watch R6](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md) · [Research Hub R6](RESEARCH_HUB_R6_BUILD_SPEC_2026-11-14.md).
+Detailed contracts: [Policy Watch R6](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md) · [Research Hub R6](RESEARCH_HUB_R6_BUILD_SPEC_2026-11-14.md) · [Special Situations R2](SPECIAL_SITUATIONS_R2_BUILD_SPEC_2026-11-14.md).
 
 ## 1. Objective and source binding
 
@@ -464,3 +464,18 @@ Rows considered is the age-prefilter denominator, including some immature window
 The four desk directions remain separate. Alt neutral is explicitly a neutral score range; absent sources remain unavailable. Policy stays outside the four-reading tally and remains accessible through a mobile disclosure. A Policy fallback/tie-break concern is recorded for a focused owner invariance test, not claimed repaired.
 
 Visual/source review corrected score units, neutral-versus-absent wording, missing mobile Policy access, shell-height parity and redundant lower-panel copy. All eight final compositions were inspected and owned roots finished through the guarded M1 adapter. Next: D1-SPECIAL activist, international and amended-consideration workflows.
+
+
+## 17. C10 — Special Situations R2 identity, sources and consideration
+
+The [R2 detailed contract](SPECIAL_SITUATIONS_R2_BUILD_SPEC_2026-11-14.md) binds seven additional native pages to incumbent owners. The cumulative inventory is 83: 65 product/responsive/theme/locale views, thirteen Build boards and five state sheets; fourteen mobile and three intermediate compositions. Source baseline and design-first acceptance remain unchanged.
+
+Add exact campaign/transaction identity to current CIK/category and ticker/category projections. One issuer may have two agreements; one termination must not close the other. An ownership-only 13D/A amendment must not become campaign escalation. Preserve reporting-person identity, joint holdings, holding date, filing/observation clocks and objective evidence. The current activist record counts filing rows and absolute 60-trading-row target returns; it is not independent campaign success or benchmark alpha.
+
+International discovery remains within the incumbent UK/Canada lanes. Preserve original publisher/type, URL, publication and observation clocks, entity-resolution provenance and typed coverage receipts. Possible offer, firm intention, satisfied condition and completion require distinct evidence; listing market does not prove cross-border parties. No collection or market-enable change occurred.
+
+Retain original and amended agreement terms at their source cuts. Outside date, company guidance, vote and actual completion remain different date types. USD22 + 0.5 acquirer shares at USD40 yields USD42 per target share; against USD39 the gross spread is 7.69%. Ratio, security, quote units and times are explicit. Unknown pence/pounds, elections, collars, proration and month-only closing guidance must withhold unsupported values or annualization. Fee payer, recipient and trigger remain source-bound; an USD85m fixture fee is not necessarily owed or per-share consideration.
+
+Implement through existing special_situations, activist, special_arb, international collector/classifier, premium and build owners. Preserve premium typed refusals, distinguish its pre-announcement price basis from the 30-row proxy, preserve thin-store protection and replace paid HTML fragments with an authenticated typed consumer projection. Static source risks require focused real-path proof; none was claimed reproduced in production.
+
+The principal and bounded read-only reviewers inspected final compositions and checked fixture meaning/arithmetic. All seven roots received observed guarded finish receipts. Draft documentation and Paper design do not establish runtime interactions, entitlement proof, source coverage or production readiness. Continue D1-POLICY and the remaining family/cross-product design states before product implementation.
