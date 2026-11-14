@@ -286,7 +286,7 @@ must close this gate on the new published source. The original88ebf64 run and it
 remaining pack conclusions remain predecessor evidence, not proof of the next head.
 
 The scientific adverse results and source/runtime dependencies are preserved in
-PR comments6869171163,6869231916,6869270587,6869264815 and cumulative6869868647.
+PR comments6869461499,6869714335,6869780654,6869740630 and cumulative6869868647.
 All score/rank/gate/size/trade authority remains false. Production remains blocked
 by existing Caddy/TLS source/adoption qualification; economist-history admission
 and genuine prospective validation remain separate obligations.
@@ -315,3 +315,27 @@ only the owned25 source/evidence paths are candidates. This materially repaired
 precondition qualifies another attempt through the same original managed publisher.
 Hosted exact-new-head CI remains required before release; no green predecessor,
 source publication or screenshot is being treated as production acceptance.
+
+
+## Second hosted CI contract registration repair
+
+The predecessor88ebf64 run finished with a second actual failing pack: the original
+`test_the_curated_exclusive_set_is_actually_declared` found the newly explicit
+MRI job absent from its pinned `CURATED_EXCLUSIVE` set. The job's original
+commands, exact inferred dependency closure and packing ceilings were already
+retained; its required owner enrollment was missing. Added exactly
+`unrun-release-forecast` to that set, retaining the full equality assertion and
+all validators. Focused original guards now report3passed,301deselected in202.23s.
+This corrects a registration omission, not a waiver of a design or CI contract.
+
+The full hosted-runner contract command still needs to run after integrating the
+actual overlapping main changes. Main861d87c0f58087d48cd88df4c852ef0c280a891c adds
+a separate validated rotation-context capture suite and tests; it does not contain
+our MRI engine or enrollment. Its additions must be preserved, not overwritten.
+
+Live unique-MSC-marker lookup also corrected erroneous recovery-note comment IDs:
+narrow stress6869461499, full-family stress6869714335, source qualification6869740630,
+regime falsifier6869780654; cumulative frontier6869868647 is unchanged. The actual
+records are present/read back. Source-hashed experiments and original test logs
+were reread;706/509/164/77counts and source hash bindings match their receipts.
+No research record, outcome or live authority was regenerated to hide a failure.
