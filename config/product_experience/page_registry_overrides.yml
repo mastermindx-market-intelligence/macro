@@ -1282,7 +1282,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_monetary.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "command_center"
     why: "Macro & Monetary suite hub — the single entry point to the fourteen workspaces"
@@ -1295,7 +1295,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_liquidity_regime.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1307,7 +1307,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_growth_real_economy.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1319,7 +1319,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_business_activity.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1331,7 +1331,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_labor_markets.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1343,7 +1343,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_inflation_system.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1355,7 +1355,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_monetary_policy.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1367,7 +1367,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_financial_conditions.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1379,7 +1379,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_liquidity_central_banks.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1391,7 +1391,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_capital_structure.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1403,7 +1403,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_housing_real_estate.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1415,7 +1415,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_consumer_payments.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1427,7 +1427,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_national_debt_liabilities.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1439,7 +1439,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_rates_curves.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1451,7 +1451,7 @@ pages:
     - config/site_access.yml
     - terminal/app/(shell)/macro_trade_flows.html/page.tsx
     note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
-      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055;
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
       release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
@@ -1628,7 +1628,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyOverview.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -1661,7 +1661,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -1694,7 +1694,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -1727,7 +1727,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -1760,7 +1760,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -1793,7 +1793,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -1826,7 +1826,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -1859,7 +1859,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -1892,7 +1892,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -1925,7 +1925,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -1958,7 +1958,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -1991,7 +1991,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -2024,7 +2024,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -2057,7 +2057,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -2090,7 +2090,7 @@ pages:
     - terminal/components/macro-economy/MacroEconomyReader.tsx
     - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
     - terminal/lib/shared-shell/readingProxy.ts
-    note: Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro;
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
       no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
       Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
       acceptance.
@@ -2122,7 +2122,7 @@ pages:
     - terminal/components/BrainWidget.tsx
     - terminal/components/AppNav.tsx
     - terminal/components/chrome/shared-shell/SharedShellLaunchLinks.tsx
-    note: Inherited source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055 from PR1501; anonymous shell is not
+    note: Inherited source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a from PR1501; anonymous shell is not
       guest access to private chat/history. Backend companion remains Macro PR11251. Registry qualification grants
       no deployment or visual acceptance.
   terminal:market_reference:
@@ -2151,6 +2151,6 @@ pages:
     - terminal/lib/market-reference/registry.generated.json
     - terminal/lib/sharedShellMegaMenu.ts
     - terminal/proxy.ts
-    note: Inherited source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055 from PR1501. Tools-menu destination,
+    note: Inherited source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a from PR1501. Tools-menu destination,
       not a top-level rail item. No macro:reference exact-path migration is declared because the existing alias has
       a different target path. Registry qualification is not production or visual acceptance.

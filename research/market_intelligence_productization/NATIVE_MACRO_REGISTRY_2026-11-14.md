@@ -222,3 +222,51 @@ or live acceptance changed. Continue the original publication, authenticated
 consumer and masterplan obligations through their existing owners.
 **MORE_WORK_EXISTS**.
 
+
+## Growth and payroll return source — 2026-11-14
+
+Terminal T is now `662d2f18af07f19515f4a3101a886616a79ab97a`, tree
+`03a1faf75f28467f679f87bf20d7767deca01c35`. The source fixes the reproduced
+non-focus evidence-return defect and adds Growth history and same-vintage payroll
+browser journeys. All 182 affected native tests and strict TypeScript pass;
+24 browser cases compile and are discovered, while their exact-head hosted
+execution remains outstanding. Accepted source transitions and the existing
+return owner are recorded in Terminal's CUSTODY.json. Terminal stays Draft.
+
+All 59 inventory-consumed Terminal files reproduce the preceding T's exact
+bytes. Only the new canonical commit and nine changed tree objects needed
+hydration; every object reproduced its Git SHA, actual `git ls-tree -r T`
+still traversed 26,304 paths, and all 59 `git show T:path` reads matched.
+The existing frozen protected baseline and its ancestry proof are unchanged.
+
+The overlay's 32 explicit source-reference notes were advanced to this T before
+the unchanged canonical generator ran with `--as-of 2026-11-14T16:07:09Z`,
+the same frozen B and all sixteen migration flags. Generation and `--check`
+pass. Full structural comparison against preceding candidate ae147882 proves
+all 377 rows and their order unchanged except those 32 source-reference notes;
+only the source ref/SHA and generation time change in metadata. Route discovery,
+classifications, access, lifecycle, source evidence, contracts and all seventeen
+new entries' compliant:false declarations remain unchanged.
+
+| Result | Exact digest |
+| --- | --- |
+| Registry SHA256 | `03f06ef8877d76731bfbd55edc0b6f1b891172b1eed74bafd7a34d3825eba865` |
+| Registry Git blob | `081e6e90af41b13535270f590fc4154de6fe6eb5` |
+| Overlay SHA256 | `43cc79b7fe185bd1c1068aeb3aa47c9a5e9436da2585d2e90a5476a2461cf658` |
+| Overlay Git blob | `9e8d3072d50a3185a84d9272593b3d06512bb156` |
+
+This child and every inherited hold retain their existing carriers. The latest
+dependency assessment found #11246 mergeable; its earlier conflict diagnosis is
+stale. The incumbent controller's full run43612963417 consumed clean checks for
+both #11246 and #11253, found proof stale after protected CI-definition change
+16557932, and deferred its own refresh with zero admitted workload slots.
+Run43613062655 independently confirmed the continuing capacity condition.
+Neither old-author acknowledgement nor a new source patch is the missing action.
+Preserve those armed requests and consume the same controller's actual admitted
+refresh/merge outcome; do not force a refresh, clear a hold, or replace its queue.
+
+No catalogue export, admission, release request or deployed acceptance is made.
+After protected parent release, this successor owns the already-defined additive
+reconciliation, publication/API proof, exact-R export and authenticated consumer
+qualification. The broader original masterplan remains open.
+**MORE_WORK_EXISTS**.

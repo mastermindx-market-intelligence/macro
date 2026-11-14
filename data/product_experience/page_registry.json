@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-11-14T15:52:10Z",
+  "generated_at": "2026-11-14T16:07:09Z",
   "sources": {
     "macro": {
       "available": true,
@@ -51,9 +51,9 @@
     },
     "terminal": {
       "root": "/workspace/scratch/174a810b67b5/registry-terminal-git",
-      "ref": "0fe5166fc208b78f61ac906df624f616fd282055",
+      "ref": "662d2f18af07f19515f4a3101a886616a79ab97a",
       "available": true,
-      "sha": "0fe5166fc208b78f61ac906df624f616fd282055",
+      "sha": "662d2f18af07f19515f4a3101a886616a79ab97a",
       "page_modules": 56,
       "registry_base_commit": "e62c54307664f9347a8a10cfa897e32e506ec264",
       "registry_base_sha256": "ee0708b3be98e37268af469bb67c936a7c3135eb6775388051078d90fe2484dd",
@@ -6612,7 +6612,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -6659,7 +6659,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -6706,7 +6706,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -6797,7 +6797,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -6844,7 +6844,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -6891,7 +6891,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -6938,7 +6938,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -6985,7 +6985,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -7032,7 +7032,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -7079,7 +7079,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -7126,7 +7126,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -7173,7 +7173,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -7220,7 +7220,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -7267,7 +7267,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -7357,7 +7357,7 @@
       "notes": [
         "template attributed by name match; no write_page() call site names it",
         "no write_page() call site resolves to this route; builder unknown",
-        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 0fe5166fc208b78f61ac906df624f616fd282055; release and consumer proof remain open."
+        "Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a; release and consumer proof remain open."
       ]
     },
     {
@@ -14019,7 +14019,7 @@
       ],
       "notes": [
         "Next.js App Router page module (the module IS the page)",
-        "Inherited source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055 from PR1501; anonymous shell is not guest access to private chat/history. Backend companion remains Macro PR11251. Registry qualification grants no deployment or visual acceptance."
+        "Inherited source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a from PR1501; anonymous shell is not guest access to private chat/history. Backend companion remains Macro PR11251. Registry qualification grants no deployment or visual acceptance."
       ]
     },
     {
@@ -14859,7 +14859,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -14913,7 +14913,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -14967,7 +14967,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15021,7 +15021,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15075,7 +15075,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15129,7 +15129,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15183,7 +15183,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15237,7 +15237,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15291,7 +15291,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15345,7 +15345,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15399,7 +15399,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15453,7 +15453,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15507,7 +15507,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15561,7 +15561,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15615,7 +15615,7 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module",
-        "Native source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
+        "Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro; no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099. Inventory qualification is not protected catalogue admission, API publication, visual compliance or production acceptance."
       ]
     },
     {
@@ -15665,7 +15665,7 @@
       ],
       "notes": [
         "Next.js App Router page module (the module IS the page)",
-        "Inherited source at Terminal 0fe5166fc208b78f61ac906df624f616fd282055 from PR1501. Tools-menu destination, not a top-level rail item. No macro:reference exact-path migration is declared because the existing alias has a different target path. Registry qualification is not production or visual acceptance."
+        "Inherited source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a from PR1501. Tools-menu destination, not a top-level rail item. No macro:reference exact-path migration is declared because the existing alias has a different target path. Registry qualification is not production or visual acceptance."
       ]
     },
     {
