@@ -1,0 +1,120 @@
+{
+  "schema": "mastermind.news_brain_projection_proof.v1",
+  "artifact_source_commit": "4bf5db311721bb2ceffe66f694de08a52d9d168c",
+  "evaluation_instant": "2026-11-08T08:44:41+00:00",
+  "source_sha256": {
+    "candidate_helper": "addb42813f32dc650f9a9a76587e5ccfce39a6955bf997908b9c45d70ba65dcf",
+    "baseline_helper": "1f890c03f1d856835db061d466e8e4f3371dddb5a7ef8180b409768c51b0ff00",
+    "gateway": "f2b649764cd6662408124c246b5ad585c5dd0d35308710754d3b898abe89f833"
+  },
+  "artifact_sha256": {
+    "macro.json": "f9c246b7f22147eff1c113247f6ce02aedf61c8710423a808e09ab96fedccffd",
+    "financial.json": "6a2fe38100abdaf82e1a71e61bdd019b83b9b5d331b65bcb5728137b94a76925"
+  },
+  "checks": {
+    "old_event_projection_and_order_preserved": true,
+    "unchanged_gateway_projection_and_json_normalizer_preserve_metadata": true,
+    "health_unknown_without_receipt": true,
+    "actual_upstream_links_preserved": true,
+    "retention_unknown_without_explicit_flag": true
+  },
+  "model_visible_result": {
+    "asof": "2026-11-08T08:44:41Z",
+    "asof_basis": "tool_read_time",
+    "collection_health": {
+      "state": "unknown",
+      "reason": "No collector-health receipt is read by this tool. Artifact availability, event age and an empty result do not establish collection health."
+    },
+    "window_h": 48.0,
+    "events": [
+      {
+        "ts": "2026-11-06T21:28:00Z",
+        "headline": "Nvidia, Intel, Tesla, AMD, Coherent, Lam Research, Moderna, and More Stocks That Explain Today’s Market",
+        "source": "barrons.com",
+        "salience": 88.0,
+        "corroboration": null,
+        "source_kind": "nightly",
+        "source_url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1fblhqTzg0eVNMSFpfMnVwVHktcFNzU2VnVUEtUk1xUUFGZWZVemk4Z3ZOeFRjMU5JZFF2Y1BOclh5UV9KNWRnOG5xb1Nmc2FDajZSa3BBRTByX0ZleUk5WGVVeDY?oc=5",
+        "timestamp_basis": "financial_news.seendate",
+        "news_freshness": {
+          "source_asof": "2026-11-07T09:57:50.834666+00:00",
+          "source_asof_basis": "financial_news.fetched_at",
+          "retained_from_previous_build": null,
+          "retained_reason": null
+        }
+      },
+      {
+        "ts": "2026-11-06T19:57:00Z",
+        "headline": "Stock Market Outlook: Nvidia Earnings, Anthropic’s IPO, and the Fed Rate Decision",
+        "source": "barrons.com",
+        "salience": 87.0,
+        "corroboration": null,
+        "source_kind": "nightly",
+        "source_url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPdVM5RWx2cGx4U3R0Z3pJMzRzQ1NWaURpbkhvRnRXbzhPU3dVcVRmbVBuT05DOUJ4aXduWGhWYXBzQVZSbVhpU3FHVkQxdnBIWEFLSHBzNGJuc2VWR0Exb3F4dkFSazFNM0ZvQkhrYm1jMzlQcDVGVGQ0RUlYWW5ZVUIzRng1Z3YxZFZmaC1TbWUzSVhoTUJfY3Nn?oc=5",
+        "timestamp_basis": "financial_news.seendate",
+        "news_freshness": {
+          "source_asof": "2026-11-07T09:57:50.834666+00:00",
+          "source_asof_basis": "financial_news.fetched_at",
+          "retained_from_previous_build": null,
+          "retained_reason": null
+        }
+      },
+      {
+        "ts": "2026-11-06T15:18:00Z",
+        "headline": "Chip Stocks Have Been Hit Hard. Nvidia and 4 More at Fire-Sale Prices.",
+        "source": "barrons.com",
+        "salience": 83.0,
+        "corroboration": null,
+        "source_kind": "nightly",
+        "source_url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOZ2JpNmpFX3NFWURNaTBlZDB5WDI2THhydmtNeDJUTk1YenZfU290TWh5VlR1RnZCVWdkZWxFWkswVnhXUm1tVGtRaThmM0trRTRmMFY0VW4tbk1DTkVfeWpEWWpPT3NuRERrZ255RXpwQ1RGRFRTV1k2WUt3Ymx5M19mSGw0Q1pC?oc=5",
+        "timestamp_basis": "financial_news.seendate",
+        "news_freshness": {
+          "source_asof": "2026-11-07T09:57:50.834666+00:00",
+          "source_asof_basis": "financial_news.fetched_at",
+          "retained_from_previous_build": null,
+          "retained_reason": null
+        }
+      },
+      {
+        "ts": "2026-11-06T15:12:00Z",
+        "headline": "Nvidia Stock Rises on Dip-Buying: 3 Reasons to Be Optimistic",
+        "source": "barrons.com",
+        "salience": 83.0,
+        "corroboration": null,
+        "source_kind": "nightly",
+        "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBpbHc0aG5OM2dVRUpBUEFXeVRDZnB3WWpwemtTYU44MGx0MHNRUkRlUFgzUFZyaV9UTFZWSG1GekFBSktPLTl3ZzFSeEVaYnpEUUpWMkxmN3lyanNXTVhYbDNDVU1kOEh5RVdaemdOekM0Z3NMZGVZ?oc=5",
+        "timestamp_basis": "financial_news.seendate",
+        "news_freshness": {
+          "source_asof": "2026-11-07T09:57:50.834666+00:00",
+          "source_asof_basis": "financial_news.fetched_at",
+          "retained_from_previous_build": null,
+          "retained_reason": null
+        }
+      },
+      {
+        "ts": "2026-11-06T13:25:50Z",
+        "headline": "Global tech stocks plunge as US midterms add to AI slowdown fears",
+        "source": "bbc.com",
+        "salience": 82.0,
+        "corroboration": null,
+        "source_kind": "nightly",
+        "source_url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5XdkJGRE8yWFZFWXBDYzA4WXRyM1doblZVak9PRjFMNGszT1NCSEx0UEQ1QWduQjlvZ1Bnd21qcEc5MDU3cjRxRXFtTV8xd3BPdURJaENhUDdUMms?oc=5",
+        "timestamp_basis": "financial_news.seendate",
+        "news_freshness": {
+          "source_asof": "2026-11-07T09:57:50.834666+00:00",
+          "source_asof_basis": "financial_news.fetched_at",
+          "retained_from_previous_build": null,
+          "retained_reason": null
+        }
+      }
+    ],
+    "note": "nightly digest only"
+  },
+  "limits": [
+    "offline read of pinned artifacts whose hashes match the observed VPS files",
+    "wire ladder neutralized; this proof reads nightly artifacts only",
+    "gateway function bodies evaluated without gateway initialization",
+    "not the recovered raw response of the live model run",
+    "no authenticated dispatch, provider call, source release or production acceptance"
+  ]
+}

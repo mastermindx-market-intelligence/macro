@@ -1,0 +1,44 @@
+{
+  "schema": "mastermind.news_browser_proof_manifest.v1",
+  "observed_date": "2026-11-08",
+  "surface": "https://app.mastermind-x.com/terminal",
+  "browser": "connected local Chrome, existing authenticated session",
+  "terminal_deployed_source_sha": null,
+  "frames": [
+    {
+      "file": "browser_proofs/2026-11-08/terminal-news-counts.jpg",
+      "mime_type": "image/jpeg",
+      "bytes": 208218,
+      "sha256": "6b9bbf4d18344a72c75fe59035f68ed5a4a18fedc29fb60cd6ed879bd053542e",
+      "scope": "Rendered News coverage counts; no collector-health inference"
+    },
+    {
+      "file": "browser_proofs/2026-11-08/terminal-news-reviewed-persistence.jpg",
+      "mime_type": "image/jpeg",
+      "bytes": 202688,
+      "sha256": "4fbacd1f54812ada6bc95972ff1ff68f8f4d29dbeb67593a123c8f65f2cb88ab",
+      "scope": "One reviewed report in a fresh same-browser document; no cross-device claim"
+    },
+    {
+      "file": "browser_proofs/2026-11-08/terminal-brain-health-failure.jpg",
+      "mime_type": "image/jpeg",
+      "bytes": 159753,
+      "sha256": "54b67406ed0498fc2d8e2d8cef29fe2f4e76db27bcab105757682c5633671820",
+      "scope": "Completed pre-release answer with unsupported collection-health claim; cropped at capture to the observed answer panel"
+    }
+  ],
+  "live_ai_run": {
+    "run_id": "f70ce541c9d04fc4a5626990be5d9f8d",
+    "started_at": "2026-11-08T08:44:41.104392Z",
+    "finished_at": "2026-11-08T08:45:34.469740Z",
+    "done": true,
+    "cancelled": false,
+    "truncated": false,
+    "event_count": 29
+  },
+  "limits": [
+    "screenshots are observational evidence, not source deployment identity",
+    "source link and collection metadata repair remains subject to hosted checks and production verification",
+    "no raw replay payload was obtained after the browser blocked its navigation"
+  ]
+}
