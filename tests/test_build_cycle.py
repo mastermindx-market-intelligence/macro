@@ -210,6 +210,17 @@ def test_payload_census_and_shape():
         assert "opinion" in card and "as_of" in card["opinion"]
 
 
+def test_native_cycle_asset_matches_script_body_without_a_second_compute(tmp_path):
+    payload = {"version": 1, "order": ["gold"], "cycles": {"gold": {"bands": []}},
+               "notes_as_of": "2026-11-01", "tape_as_of": None}
+    build_cycle._write_engine_js(tmp_path, payload)
+    assets = tmp_path / "cycledata"
+    js = (assets / "cycle_engine.js").read_text(encoding="utf-8")
+    native = (assets / "cycle_engine.json").read_text(encoding="utf-8")
+    assert json.loads(native) == payload
+    assert native.rstrip() == js.split("window.CYCLE_ENGINE = ", 1)[1].removesuffix(";\n")
+
+
 def test_emitted_js_is_valid_and_scripttag(tmp_path):
     """The written cycle_engine.js assigns window.CYCLE_ENGINE (script-tag data, ruling A11)
     and its JSON body round-trips."""

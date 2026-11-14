@@ -275,6 +275,7 @@ async function logout() {
 const NAV_ICO = (inner) => `<svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
 const CONTROL_ROOM_URL = "https://control.mastermind-x.com";
 const ICONS = {
+  capacity_router: NAV_ICO('<path d="M4 6h6l4 12h6M4 18h6L14 6h6"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/>'),
   overview:    NAV_ICO('<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'),
   neural_web:  NAV_ICO('<circle cx="12" cy="12" r="2.4"/><circle cx="5" cy="6" r="1.7"/><circle cx="19" cy="6" r="1.7"/><circle cx="5" cy="18" r="1.7"/><circle cx="19" cy="18" r="1.7"/><path d="M10 11 6.4 7.2M14 11l3.6-3.8M10 13l-3.6 3.8M14 13l3.6 3.8"/>'),
   alerts:      NAV_ICO('<path d="M12 3a6 6 0 0 0-6 6c0 4-1.5 5.5-2 6.5h16c-.5-1-2-2.5-2-6.5a6 6 0 0 0-6-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/>'),
@@ -346,7 +347,7 @@ const ICONS = {
 /* One inventory, organized by operator task. Specialist tools stay searchable
    and keep their route IDs; they are not deleted or presented as everyday work. */
 const NAV_GROUPS = [
-  { label: "Workspace", primary: true, items: [["overview", "Overview"], ["health", "Data health"], ["system", "System status"], ["deploy", "Build & Deploy"]] },
+  { label: "Workspace", primary: true, items: [["overview", "Overview"], ["capacity_router", "Capacity Router"], ["health", "Data health"], ["system", "System status"], ["deploy", "Build & Deploy"]] },
   { label: "Customers", primary: true, items: [["analytics", "Analytics"], ["users", "Users"], ["support_tickets", "Support Tickets"], ["email_center", "Email Center"], ["revenue", "Revenue"]] },
   { label: "Publishing", primary: true, items: [["marketing_floor", "Publishing overview"], ["marketing_outbox", "Outbox"], ["marketing_content", "Content Studio"], ["marketing_publish", "Publisher"]] },
   { label: "Intelligence & research", items: [["neural_web", "Observatory"], ["intelligence_os", "Intelligence OS"], ["orchestrator", "Master Brain"], ["prophet", "Prophet"], ["macro_thesis", "Macro Thesis"], ["mastermind_ai", "Mastermind AI"], ["mastermind_logs", "AI Response Logs"], ["alerts", "Alerts"], ["long_hold", "Long-Hold Lobe"], ["context_lobe", "Context Lobe"], ["causal_lab", "Causal Lab"], ["chronicle", "Chronicle"], ["research_tools", "Research Tools"], ["experiments", "Experiments"]] },
@@ -769,6 +770,7 @@ function runAdminRender(id, render) {
   });
 }
 function go(id) {
+  if (window.CapacityRouter) window.CapacityRouter.unmount();
   if (!Object.prototype.hasOwnProperty.call(RENDER, id) || typeof RENDER[id] !== "function") {
     ++ADMIN_RENDER_EPOCH;
     adminPageFailure("overview", new Error("This admin page does not exist."), () => go("overview"));
@@ -920,6 +922,10 @@ function meter(label, pct, valText, cls) {
 }
 
 const RENDER = {};
+RENDER.capacity_router = () => window.CapacityRouter.mount($("#view"), {
+  isCurrent: () => CURRENT === "capacity_router",
+  onAuthFailure: showLogin,
+});
 
 function renderControlRoom() {
   const view = $("#view");
@@ -15294,7 +15300,7 @@ RENDER.long_hold = async () => {
         <td>${esc(it.mechanism || "—")}</td>
         <td><span class="statpill ${it.reconcile === "matched" ? "s-ok" : it.reconcile ? "s-warn" : ""}">${esc(it.reconcile || "—")}</span></td>
         <td class="sub" style="max-width:320px">${esc(it.thesis_one_liner || "—")}</td>
-        <td>${it.file ? `<a href="${esc(it.file)}" target="_blank" rel="noopener">case</a>` : "—"}</td>
+        <td>${/^research\/winners\/cases\/[A-Za-z0-9][A-Za-z0-9._-]*\.md$/.test(it.file || "") ? `<a href="https://github.com/mastermindx-market-intelligence/macro/blob/main/${esc(it.file)}" target="_blank" rel="noopener">case</a>` : "—"}</td>
       </tr>`
     ).join("") || `<tr><td colspan="6" class="muted sub">no cases yet</td></tr>`;
     const casesBlock = `
@@ -15386,6 +15392,24 @@ RENDER.long_hold = async () => {
 };
 
 /* ---- Context Lobe ------------------------------------------------------- */
+function contextCandidateEvidence(row, standingLaw) {
+  const ticker = esc(row.ticker || "—");
+  const blocks = row.evidence_blocks;
+  if (!blocks || typeof blocks !== "object" || Array.isArray(blocks)) return `<b>${ticker}</b>`;
+  const groups = Object.entries(blocks).map(([name, values]) => {
+    const facts = Object.entries(values).map(([key, value]) =>
+      `<li>${Array.isArray(values) ? "" : esc(key.replace(/_/g, " ")) + ": "}${iosEvidenceJson(value)}</li>`
+    ).join("");
+    return `<b>${esc(name.replace(/_/g, " "))}</b><ul>${facts}</ul>`;
+  }).join("");
+  const kernel = row.kernel_fdr_cleared;
+  const status = kernel === true ? "cleared" : "not cleared";
+  const caveat = typeof kernel === "boolean"
+    ? `<p>Shared kernel guidance · FDR ${status}</p>${standingLaw ? `<p class="sub">${esc(standingLaw)}</p>` : ""}` : "";
+  return `<details><summary aria-label="Inspect evidence for ${ticker}"><b>${ticker}</b></summary>
+    ${groups || "<p>No ticker-specific evidence in this snapshot.</p>"}${caveat}</details>`;
+}
+
 RENDER.context_lobe = async () => {
   const v = $("#view");
   v.innerHTML = `<div class="sub muted" style="margin-bottom:8px">Loading…</div>`;
@@ -15432,8 +15456,14 @@ RENDER.context_lobe = async () => {
         detail = `US ${esc(lobe.us_quad || "—")} · CN ${esc(lobe.china_quad || "—")} · HK ${esc(lobe.hk_quad || "—")}`;
       } else if (name === "bottom_sensors") {
         const counts = lobe.counts || {};
-        const countStr = Object.entries(counts).map(([k, n]) => `${esc(k)} ${n}`).join(" · ") || "—";
-        detail = `n=${lobe.n_rows != null ? lobe.n_rows : "—"} · ${countStr}`;
+        const countStr = Object.entries(counts).map(([group, values]) => {
+          if (Number.isInteger(values)) return `${esc(group)} ${values}`;
+          const entries = values && typeof values === "object" && !Array.isArray(values)
+            ? Object.entries(values).filter(([, count]) => Number.isInteger(count)) : [];
+          const breakdown = entries.map(([label, count]) => `${esc(label)} ${count}`).join(", ");
+          return `${esc(group)}: ${breakdown || "—"}`;
+        }).join(" · ") || "—";
+        detail = `n=${lobe.n_rows != null ? esc(lobe.n_rows) : "—"} · ${countStr}`;
       } else if (name === "options_entry") {
         const gate = lobe.gate || {};
         detail = Object.entries(gate).map(([k, v2]) => `${esc(k)}=${esc(String(v2))}`).join(" · ") || "—";
@@ -15481,12 +15511,17 @@ RENDER.context_lobe = async () => {
   if (candidates.length === 0) {
     candidatesHtml = `<div class="sub muted">no candidate context rows</div>`;
   } else {
+    const known = candidates.filter(row => row.evidence_blocks && typeof row.evidence_blocks === "object" && !Array.isArray(row.evidence_blocks));
+    const evidenced = known.filter(row => Object.keys(row.evidence_blocks).length).length;
+    const coverage = known.length === candidates.length
+      ? `${evidenced} of ${candidates.length} displayed tickers have ticker-specific evidence.`
+      : "Ticker-specific evidence coverage is unavailable for this selection.";
     const cRows = candidates.map(row => {
       const nullDash = (v2) => v2 != null ? esc(String(v2)) : "—";
       const fmtF = (v2, dp) => v2 != null ? Number(v2).toFixed(dp != null ? dp : 2) : "—";
       const boolStr = (v2) => v2 == null ? "—" : (v2 ? "yes" : "no");
       return `<tr>
-        <td><b>${esc(row.ticker || "—")}</b></td>
+        <td>${contextCandidateEvidence(row, lobes.reliability?.standing_law)}</td>
         <td><span class="statpill">${nullDash(row.bottom_state)}</span></td>
         <td class="r mono">${row.trigger_age_ticks != null ? fmtF(row.trigger_age_ticks, 0) : "—"}</td>
         <td>${boolStr(row.coiled)}</td>
@@ -15503,7 +15538,7 @@ RENDER.context_lobe = async () => {
       </tr>`;
     }).join("");
     candidatesHtml = `
-      <div class="note muted" style="margin-bottom:6px">Showing ${d.n_candidates_shown} of ${d.n_candidates_total} tickers · sorted by sub-block richness · display-only context</div>
+      <div class="note muted" style="margin-bottom:6px">Showing ${d.n_candidates_shown} of ${d.n_candidates_total} tickers. ${coverage}</div>
       <table><thead><tr>
         <th>Ticker</th><th>Bottom state</th><th class="r">Trig age</th>
         <th>Coiled</th><th>Star</th>
