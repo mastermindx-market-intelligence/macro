@@ -76,6 +76,16 @@ FROZEN_WINDOW_ORDER = (
 FROZEN_WATCH_TEST_SHA256 = (
     "c08d2fa7bd45dd1d4338787936cf490c26b70f21f3891c988c01c9e18b564f84"
 )
+# #9790 (aa208d3c) added only this data-isolation fixture to the frozen
+# companion suite. Require its exact bytes and preserve the original file hash.
+APPROVED_WATCH_TEST_ISOLATION = (
+    b'\n'
+    b'\n'
+    b'@pytest.fixture(autouse=True)\n'
+    b'def isolated_page_data(tmp_path, monkeypatch):\n'
+    b'    # The policy projector resolves inputs independently of render(root).\n'
+    b'    monkeypatch.setattr("lib.config.data_dir", lambda: tmp_path / "data")\n'
+)
 FROZEN_WATCH_TEMPLATE_SHA256 = (
     "8fee91f5e6059fd427b897c69259917d544662e9862996a7009fcf22a7ef3736"
 )
@@ -528,7 +538,9 @@ def test_12_artifact_budget_and_atomic_write(tmp_path, monkeypatch, capsys):
 def test_13_merged_policy_watch_chip_is_untouched(tmp_path, monkeypatch):
     assert callable(page_builder._policy_watch)
     watch_test = (ROOT / "tests" / "test_capital_structure_policy_projection.py").read_bytes()
-    assert hashlib.sha256(watch_test).hexdigest() == FROZEN_WATCH_TEST_SHA256
+    assert watch_test.count(APPROVED_WATCH_TEST_ISOLATION) == 1
+    original_watch_test = watch_test.replace(APPROVED_WATCH_TEST_ISOLATION, b"", 1)
+    assert hashlib.sha256(original_watch_test).hexdigest() == FROZEN_WATCH_TEST_SHA256
 
     src = (ROOT / "templates" / "capital_structure.html.j2").read_text(encoding="utf-8")
 
