@@ -564,6 +564,20 @@ def research_search(
     except HTTPException:
         return {"items": [], "count": 0, "available": False}
 
+    # Restrict the eligible rows BEFORE BM25 ranking and LIMIT. Filtering the
+    # first N global hits afterward can silently discard preview/Pro matches
+    # while showing an empty result, even when the document is indexed.
+    visible_ids = admitted
+    if not _can_view(_optional_tier(authorization)):
+        preview_ids = {
+            str((item or {}).get("id") or "")
+            for item in _catalog_preview(_load_catalog()).get("items", [])
+        }
+        visible_ids = admitted & preview_ids
+    # corpus.search accepts only canonical document IDs. An invalid catalog ID
+    # cannot be read as a PDF either; never let one poison the whole set.
+    visible_ids = {doc_id for doc_id in visible_ids if corpus_mod.valid_doc_id(doc_id)}
+
     conn = _corpus_conn()
     if conn is None:
         return {"items": [], "count": 0, "available": False}
@@ -576,6 +590,7 @@ def research_search(
             date_from=(from_ or None),
             date_to=(to or None),
             limit=lim,
+            allowed_ids=visible_ids,
         )
     except Exception as exc:  # noqa: BLE001 — corpus.search already degrades; belt
         log.debug("research_vault: search failed (%s)", exc)
@@ -585,17 +600,6 @@ def research_search(
             conn.close()
         except Exception:  # noqa: BLE001
             pass
-
-    # Gate 1 — catalog admission, applied to EVERY tier (see the docstring).
-    items = [item for item in items if str((item or {}).get("id") or "") in admitted]
-
-    # Gate 2 — the non-Pro preview narrowing, applied on top.
-    if not _can_view(_optional_tier(authorization)):
-        preview_ids = {
-            str((item or {}).get("id") or "")
-            for item in _catalog_preview(_load_catalog()).get("items", [])
-        }
-        items = [item for item in items if str((item or {}).get("id") or "") in preview_ids]
 
     return {"items": items, "count": len(items), "available": True}
 

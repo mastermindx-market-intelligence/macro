@@ -1226,6 +1226,95 @@ def test_pro_search_cannot_surface_a_corpus_row_the_catalog_has_not_admitted(cli
     )
 
 
+def test_search_restricts_visibility_before_ranking_and_limit(client, monkeypatch):
+    """An eligible preview hit must not disappear behind stronger private hits.
+
+    This executes real FTS5 with a catalog-admitted old document, a public
+    preview document and an ahead-of-catalog document. LIMIT=1 must apply
+    AFTER membership, not to a global BM25 list filtered afterward.
+    """
+    import app.research as research_mod
+
+    c, ctl = client
+    # Search resolves optional auth directly, outside FastAPI dependency overrides.
+    monkeypatch.setattr(
+        research_mod,
+        "_optional_tier",
+        lambda authorization: (
+            ctl["tier"] if authorization == _AUTH["Authorization"] else "anon"
+        ),
+    )
+    store = _seeded_store(client)
+    older_id = "catalog-older-indexed-hit"
+    ahead_id = "corpus-ahead-not-yet-admitted"
+    preview_ids = [_DOC_ID, "preview-other-one", "preview-other-two"]
+
+    cat = catalog_mod.empty()
+    for idx, doc_id in enumerate([*preview_ids, older_id]):
+        catalog_mod.upsert_item(cat, {
+            "id": doc_id, "title": "Neutral desk report",
+            "institution": "Bernstein", "side": "sell",
+            "published_at": f"2026-07-{21 - idx:02d}T14:00:00Z",
+            "summary_points": ["General market context"],
+        })
+    catalog_mod.publish(store, cat)
+
+    corpus_path = Path(store.root) / "_ranked_search_corpus.sqlite"
+    conn = corpus_mod.open_db(corpus_path)
+    for doc_id, title, summary, body in [
+        (_DOC_ID, "Neutral desk report", "General context", "hyperscaler"),
+        (older_id, "Hyperscaler pipeline", "Hyperscaler outlook",
+         "hyperscaler hyperscaler"),
+        (ahead_id, "Hyperscaler hyperscaler", "Hyperscaler hyperscaler",
+         "hyperscaler hyperscaler"),
+    ]:
+        corpus_mod.upsert(conn, {
+            "id": doc_id, "title": title, "institution": "Bernstein",
+            "side": "sell", "published_at": "2026-07-21T14:00:00Z",
+            "summary_points": [summary],
+        }, body)
+    conn.close()
+    store.put_bytes("research_vault/corpus.sqlite", corpus_path.read_bytes(),
+                    "application/octet-stream")
+    corpus_mod.reset_cache()
+    _bust_cache()
+
+    # Assert the route uses pre-LIMIT eligibility on the ACTUAL FTS5 query.
+    # Native BM25 ties/frequencies differ across SQLite builds, so the order
+    # of two equally eligible Pro documents is not a stable API contract.
+    actual_search = corpus_mod.search
+    observed_allowed_ids = []
+
+    def traced_search(conn, query, **kwargs):
+        allowed = kwargs.get("allowed_ids")
+        assert isinstance(allowed, set), "visibility must be applied before FTS LIMIT"
+        observed_allowed_ids.append(set(allowed))
+        return actual_search(conn, query, **kwargs)
+
+    monkeypatch.setattr(corpus_mod, "search", traced_search)
+
+    anon = c.get("/api/research/search", params={"q": "hyperscaler", "limit": 1})
+    assert anon.status_code == 200
+    assert [it["id"] for it in anon.json()["items"]] == [_DOC_ID]
+    assert observed_allowed_ids[-1] == set(preview_ids)
+
+    ctl["tier"] = "pro"
+    pro = c.get("/api/research/search", params={"q": "hyperscaler", "limit": 1},
+                headers=_AUTH)
+    assert pro.status_code == 200
+    assert pro.json()["count"] == 1
+    assert pro.json()["items"][0]["id"] in {_DOC_ID, older_id}
+    assert observed_allowed_ids[-1] == {*preview_ids, older_id}
+
+    # Unique title/summary keyword proves the older Pro document is reachable
+    # even when it is beyond the fixed public preview.
+    older = c.get("/api/research/search", params={"q": "outlook", "limit": 1},
+                  headers=_AUTH)
+    assert older.status_code == 200
+    assert [it["id"] for it in older.json()["items"]] == [older_id]
+    assert observed_allowed_ids[-1] == {*preview_ids, older_id}
+
+
 def test_search_reports_unavailable_when_visibility_cannot_be_established(client):
     """No valid catalog anywhere → we cannot prove ANY id is public → refuse."""
     c, ctl = client
