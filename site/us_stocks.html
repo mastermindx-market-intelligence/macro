@@ -684,10 +684,6 @@ function sectorProphetSelection(search) {
     
     
     
-    <div style="margin:6px 0 10px;padding:8px 12px;border-radius:var(--r-ctl,8px);border:1px solid var(--line);background:var(--panel2);font-size:var(--fs-sm);font-weight:600">
-      <span class="ab-shock-ic"><svg class="ic-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10.3 4.2 2.4 18a2 2 0 0 0 1.72 3h15.76a2 2 0 0 0 1.72-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/><line x1="12" y1="9.4" x2="12" y2="13.4"/><circle cx="12" cy="16.7" r="1" fill="currentColor" stroke="none"/></svg></span> <span class="l-en">Market shock active — new entries are less predictable. The order below has not been changed and uses pre-shock data. Active until 2026-11-18.</span><span class="l-zh">市场冲击仍在 — 新入场更难判断。下方顺序未作调整，使用的是冲击前数据。有效期至 2026-11-18。</span>
-    </div>
-    
     
     
     
@@ -1297,7 +1293,7 @@ function sectorProphetSelection(search) {
       <div class="plv-body" id="plv-body"></div>
       <div class="plv-fn" id="plv-fn"></div>
     </div>
-    <script type="application/json" id="plv-names">{"ASO": "Academy Sports + Outdoors", "CEG": "Constellation Energy", "NTRS": "Northern Trust", "PCRX": "Pacira BioSciences, Inc.", "SG": "Sweetgreen", "TLN": "Talen Energy"}</script>
+    <script type="application/json" id="plv-names">{"ASO": "Academy Sports + Outdoors", "CEG": "Constellation Energy", "CERT": "Certara, Inc.", "NTRS": "Northern Trust", "PCRX": "Pacira BioSciences, Inc.", "TLN": "Talen Energy"}</script>
     
     
     <div class="panel span12 notable" id="us-standouts"
@@ -1326,7 +1322,7 @@ function sectorProphetSelection(search) {
       <p id="us-board-load-status" class="muted" role="status" aria-live="polite" hidden><span class="l-en">Full board data could not load. The dated preview remains available. Reload to try again.</span><span class="l-zh">完整榜单数据无法加载，带日期的预览仍可查看。请刷新页面重试。</span></p>
       
       <div class="pbs-note">
-        <span class="pbs-nv" data-bs-note="confirmed"><span class="l-en"><span class="pbs-fig">2</span> of <span class="pbs-fig">6</span> confirmed overnight · <span class="pbs-fig">0</span> adjusted, <span class="pbs-fig">4</span> left the board</span><span class="l-zh"><span class="pbs-fig">6</span> 只中 <span class="pbs-fig">2</span> 只隔夜确认 · 调整 <span class="pbs-fig">0</span> 只，离榜 <span class="pbs-fig">4</span> 只</span><span class="help">?<span class="tip tip-wide"><span class="l-en">Last evening's board was built from the day's closes; the overnight pass then rebuilt it with the inputs that only arrive at night. Confirmed means the name came through unchanged. Adjusted means its entry range, stage or place in the order moved — the card shows the current numbers. Left the board means it no longer meets the bar; that is not a sell instruction for a position you already hold. Left the board: DIA, DX-Y.NYB, NVMI, WULF</span><span class="l-zh">昨晚的榜单是按当日收盘价生成的；隔夜复核会用深夜才到位的数据重算一遍。「确认」表示这只股票原样通过；「已调整」表示入场区间、阶段或排序位置有变动，卡片上显示的是最新数值；「已离榜」表示它不再达标 —— 这不是让你卖出已有仓位的指令。已离榜：DIA、DX-Y.NYB、NVMI、WULF</span></span></span></span>
+        <span class="pbs-nv" data-bs-note="confirmed"><span class="l-en"><span class="pbs-fig">1</span> of <span class="pbs-fig">6</span> confirmed overnight · <span class="pbs-fig">0</span> adjusted, <span class="pbs-fig">5</span> left the board</span><span class="l-zh"><span class="pbs-fig">6</span> 只中 <span class="pbs-fig">1</span> 只隔夜确认 · 调整 <span class="pbs-fig">0</span> 只，离榜 <span class="pbs-fig">5</span> 只</span><span class="help">?<span class="tip tip-wide"><span class="l-en">Last evening's board was built from the day's closes; the overnight pass then rebuilt it with the inputs that only arrive at night. Confirmed means the name came through unchanged. Adjusted means its entry range, stage or place in the order moved — the card shows the current numbers. Left the board means it no longer meets the bar; that is not a sell instruction for a position you already hold. Left the board: DIA, DX-Y.NYB, NVMI, UAMY, WULF</span><span class="l-zh">昨晚的榜单是按当日收盘价生成的；隔夜复核会用深夜才到位的数据重算一遍。「确认」表示这只股票原样通过；「已调整」表示入场区间、阶段或排序位置有变动，卡片上显示的是最新数值；「已离榜」表示它不再达标 —— 这不是让你卖出已有仓位的指令。已离榜：DIA、DX-Y.NYB、NVMI、UAMY、WULF</span></span></span></span>
         <span class="pbs-nv" data-bs-note="ahead" hidden><span class="l-en"><b>Get ready</b> — set from today's close, confirmed by morning.</span><span class="l-zh"><b>可以开始准备</b> — 依今日收盘价选出，明早完成确认。</span><span class="help">?<span class="tip tip-wide"><span class="l-en">Only part of the full test can run this early. In: how strong the signal is, and how far the name has already run. Not yet in: the entry range, the edge score the cards normally show, and the setup-quality checks — those need inputs that arrive later at night. So this is a shortlist, not the ranked board: order, scores and buy zones land with the overnight pass, and a name can still be adjusted or leave before morning. Room is how far a name has left to go before it counts as stretched — "Not checked" means that reading did not arrive for this one.</span><span class="l-zh">这个时点只能完成整套判定中的一部分。已纳入：信号强弱，以及这只股票已经走了多远。尚未纳入：入场区间、卡片上平时显示的「优势」评分，以及形态质量检查 —— 这几项都要等深夜的数据到位。所以这是一份候选名单，还不是排好序的榜单：排序、评分和买区都要等隔夜复核给出，个别股票在明早之前仍可能被调整或移出。「空间」指的是股价在被视为过度拉伸之前还剩多少余地；标注「未检查」表示这只股票没有取到这项读数。</span></span></span></span>
         <span class="pbs-nv" data-bs-note="behind" hidden><span class="l-en">Tonight's early update isn't in — these are last night's confirmed picks. Check a live quote before you act.</span><span class="l-zh">今晚的提前更新未到位，以下为昨晚确认的选股名单。操作前请先看一下实时报价。</span><span class="help">?<span class="tip tip-wide"><span class="l-en">Tonight's early rebuild didn't publish, so the board still shows the picks the overnight pass confirmed on the date stamped above. The overnight pass runs regardless and will refresh the board tonight. Prices on the cards are from that date, not from today.</span><span class="l-zh">今晚的提前重算没有发布，所以榜单显示的仍是上方日期那一晚确认的选股。隔夜复核照常运行，今晚会刷新榜单。卡片上的价格来自那一天，不是今天。</span></span></span></span>
         <span class="pbs-nv" data-bs-note="closed" hidden><span class="l-en">Markets are closed — these are the last confirmed picks. The board updates after the next session's close.</span><span class="l-zh">休市中，以下为最近一次确认的选股名单。下一个交易日收盘后更新。</span><span class="help">?<span class="tip tip-wide"><span class="l-en">Markets were closed today, so there is nothing new to add. The board shows the picks confirmed after the last session, and it refreshes after the next one closes.</span><span class="l-zh">今天休市，没有新的内容。榜单显示的是上一个交易日之后确认的选股，下一个交易日收盘后会刷新。</span></span></span></span>
@@ -1406,22 +1402,21 @@ function sectorProphetSelection(search) {
 
 
 <link rel="stylesheet" href="assets/css/7331c259.css?v=7331c259">
-<details class="ucp" id="us-candidate-pool" data-status="ready" data-total="98" data-as-of="2026-11-13" data-source-digest="1666abd33ce7dde82553779c6865adabe9518e511bddc6614cb42658f16724b7" data-view="table">
+<details class="ucp" id="us-candidate-pool" data-status="ready" data-total="98" data-as-of="2026-11-13" data-source-digest="0637c99d5f4fdd7fbcd9a0109df34a45b76faa1cb9058709c4d5e8db5b43407b" data-view="table">
   <summary><span class="l-en">All eligible candidates</span><span class="l-zh">全部候选股票</span>
-    <span class="ucp-summary-count">98 <span class="l-en">eligible</span><span class="l-zh">个候选</span> · 33 <span class="l-en">outside main list</span><span class="l-zh">个不在主榜</span></span>
+    <span class="ucp-summary-count">98 <span class="l-en">eligible</span><span class="l-zh">个候选</span> · 36 <span class="l-en">outside main list</span><span class="l-zh">个不在主榜</span></span>
   </summary>
   <div class="ucp-body">
     <p class="ucp-note"><span class="l-en">Eligibility is not an entry recommendation. Display limits do not remove names from this view.</span><span class="l-zh">候选资格并非入场推荐。展示上限不会使候选从此视图消失。</span>
       <span class="l-en">As of</span><span class="l-zh">截至</span> 2026-11-13.</p>
     
     
-    <details class="ucp-receipt ucp-archive" data-archive-status="matched_fields">
+    <details class="ucp-receipt ucp-archive" data-archive-status="incomplete">
       <summary><span class="l-en">Saved history</span><span class="l-zh">历史记录</span> ·
-        98/98 <span class="l-en">candidate records match</span><span class="l-zh">个候选记录匹配</span>
+        0/98 <span class="l-en">candidate records match</span><span class="l-zh">个候选记录匹配</span>
         
       </summary>
-      <p><span class="l-en">Saved candidate fields match this screen. The archive does not establish the exact build version.</span><span class="l-zh">已保存的候选字段与此筛选结果匹配，但档案无法确认完全相同的构建版本。</span>
-      </p>
+      <p><span class="l-en">Some candidate records are missing or differ. Do not treat this archive as a complete replay of this screen.</span><span class="l-zh">部分候选记录缺失或不一致，不能将此档案视为本次筛选的完整回放。</span></p>
     </details>
     
     
@@ -1433,7 +1428,7 @@ function sectorProphetSelection(search) {
       <label class="ucp-search" for="ucp-search"><span><span class="l-en">Find ticker, company or sector</span><span class="l-zh">查找代码、公司或板块</span></span><input id="ucp-search" type="search" autocomplete="off"></label>
       <label class="ucp-toggle"><input id="ucp-outside" type="checkbox"><span><span class="l-en">Outside main list only</span><span class="l-zh">仅看主榜之外</span></span></label>
     </div>
-    <p class="ucp-status" aria-live="polite"><span data-ucp-matched>3</span> <span class="l-en">shown of</span><span class="l-zh">个匹配，共加载</span> <span data-ucp-loaded>3</span> <span class="l-en">loaded</span><span class="l-zh">个</span> · 33 <span class="l-en">without a final score in the full pool</span><span class="l-zh">个候选尚无最终评分</span></p>
+    <p class="ucp-status" aria-live="polite"><span data-ucp-matched>3</span> <span class="l-en">shown of</span><span class="l-zh">个匹配，共加载</span> <span data-ucp-loaded>3</span> <span class="l-en">loaded</span><span class="l-zh">个</span> · 36 <span class="l-en">without a final score in the full pool</span><span class="l-zh">个候选尚无最终评分</span></p>
     <div class="ucp-list">
 
 
@@ -1511,8 +1506,8 @@ function sectorProphetSelection(search) {
       <div class="muted"><span class="l-en">Screen order is not final rank. Eligibility is not entry permission.</span><span class="l-zh">筛选顺序并非最终排名。候选资格不等于入场许可。</span></div>
       <span class="ucp-reason" data-reason="sector_cap_overflow"><span class="l-en">Sector display limit reached</span><span class="l-zh">达到板块展示上限</span></span>
       
-      <div class="ucp-archive-row" data-archive-state="matched_fields">
-        <span class="l-en">Saved candidate fields match.</span><span class="l-zh">已保存候选字段匹配。</span>
+      <div class="ucp-archive-row" data-archive-state="missing">
+        <span class="l-en">No matching saved candidate record.</span><span class="l-zh">没有匹配的已保存候选记录。</span>
         
       </div>
       
@@ -1530,7 +1525,7 @@ function sectorProphetSelection(search) {
 <div class="ucp-row" data-ticker="LUNR" data-off-board="true">
   <div class="ucp-identity">
     <a href="stock.html#LUNR">LUNR</a>
-    <span class="ucp-name">Intuitive Machines</span>
+    <span class="ucp-name">Intuitive Machines Inc</span>
     <span class="muted">Industrials</span>
   </div>
   <div class="ucp-decision">
@@ -1597,8 +1592,8 @@ function sectorProphetSelection(search) {
       <div class="muted"><span class="l-en">Screen order is not final rank. Eligibility is not entry permission.</span><span class="l-zh">筛选顺序并非最终排名。候选资格不等于入场许可。</span></div>
       <span class="ucp-reason" data-reason="sector_cap_overflow"><span class="l-en">Sector display limit reached</span><span class="l-zh">达到板块展示上限</span></span>
       
-      <div class="ucp-archive-row" data-archive-state="matched_fields">
-        <span class="l-en">Saved candidate fields match.</span><span class="l-zh">已保存候选字段匹配。</span>
+      <div class="ucp-archive-row" data-archive-state="missing">
+        <span class="l-en">No matching saved candidate record.</span><span class="l-zh">没有匹配的已保存候选记录。</span>
         
       </div>
       
@@ -1678,13 +1673,13 @@ function sectorProphetSelection(search) {
   </div>
 </div></details>
     <details class="ucp-receipt"><summary><span class="l-en">Decision record</span><span class="l-zh">决策记录</span></summary>
-      <span class="l-en">Screen position</span><span class="l-zh">筛选位置</span> 35
+      <span class="l-en">Screen position</span><span class="l-zh">筛选位置</span> 34
       
       <div class="muted"><span class="l-en">Screen order is not final rank. Eligibility is not entry permission.</span><span class="l-zh">筛选顺序并非最终排名。候选资格不等于入场许可。</span></div>
       <span class="ucp-reason" data-reason="sector_cap_overflow"><span class="l-en">Sector display limit reached</span><span class="l-zh">达到板块展示上限</span></span>
       
-      <div class="ucp-archive-row" data-archive-state="matched_fields">
-        <span class="l-en">Saved candidate fields match.</span><span class="l-zh">已保存候选字段匹配。</span>
+      <div class="ucp-archive-row" data-archive-state="missing">
+        <span class="l-en">No matching saved candidate record.</span><span class="l-zh">没有匹配的已保存候选记录。</span>
         
       </div>
       
@@ -2127,7 +2122,7 @@ function sectorProphetSelection(search) {
       
       
       
-      <section class="mx-sec" id="us-today" data-today-total="12" data-today-visible="1" data-today-source-sha256="sha256:dfaddf30d1e227bb1aa7c8c759e4963b0455a105f4979aa011b6a1539daff892" data-today-pair-id="9d103426f012490baf18f5f15580ced6" data-today-selection-receipt="sha256:a8578135491736ffd180308e007583805b61ce8bed655227e904b16c5a832432" data-today-roster-size="65" data-today-served="2~sha256:0fc361f88f1064f0d8edf0d7245c8af4c3d403c56dfaeac0e9bd66740f411673">
+      <section class="mx-sec" id="us-today" data-today-total="12" data-today-visible="1" data-today-source-sha256="sha256:3d6e88e2cc9351ad3725be16ff2cd9b36487b97cd9e54aa1d3755f8239809a2b" data-today-pair-id="788bdd748b6e4e0b88696f9804cfaa45" data-today-selection-receipt="sha256:c5dcfd43ed9959cf6aebac3609aa07e433b520c43aaf5369f701857e1c18ffe4" data-today-roster-size="62" data-today-served="2~sha256:6f1a5f4e0a5522433a7a7e54545e877714f1f3bcef2e90d24d08f88de560465a">
         <div class="mx-sec-hd">
           <h2 class="mx-sec-h2"><span class="l-en">Today</span><span class="l-zh">今日</span></h2>
           <span class="mx-sec-total"><span class="l-en"><b>1</b> of <b>12</b> Featured</span><span class="l-zh">精选 <b>1</b> / <b>12</b></span></span>
@@ -2494,22 +2489,22 @@ function sectorProphetSelection(search) {
         <div class="mx-sec-hd">
           <h2 class="mx-sec-h2"><span class="l-en">Screener</span><span class="l-zh">筛选器</span></h2>
           
-          <span class="mx-sec-total"><span class="l-en"><b>65</b> screened · as of <time datetime="2026-11-13">2026-11-13</time></span><span class="l-zh">筛出 <b>65</b> 只 · 截至 <time datetime="2026-11-13">2026-11-13</time></span></span>
+          <span class="mx-sec-total"><span class="l-en"><b>62</b> screened · as of <time datetime="2026-11-13">2026-11-13</time></span><span class="l-zh">筛出 <b>62</b> 只 · 截至 <time datetime="2026-11-13">2026-11-13</time></span></span>
           <a class="mx-sec-link" href="discovery.html"><span class="l-en">Open the screener</span><span class="l-zh">打开筛选器</span></a>
         </div><p class="mx-sec-note"><span class="l-en">Names surfaced by this dated screen. A candidate is not a setup: it becomes one only when a plan is written for it, which is what the Plans view counts.</span><span class="l-zh">本次筛选出的股票。候选不等于计划：只有为它建立计划后，才会计入计划视图。</span></p><div class="us-gate-note" id="us-gate-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          <span class="l-en">You're seeing the first 3 of 65 screened candidates. Sign in to see the full list.</span>
-          <span class="l-zh">当前显示本次筛出的 65 只候选中的前 3 只。登录后可查看完整名单。</span>
+          <span class="l-en">You're seeing the first 3 of 62 screened candidates. Sign in to see the full list.</span>
+          <span class="l-zh">当前显示本次筛出的 62 只候选中的前 3 只。登录后可查看完整名单。</span>
         </div><div class="cand-shelves">
           <span class="cand-shelf"><b class="fig">7</b><span><span class="l-en">Active setups</span><span class="l-zh">活跃形态</span></span><i><span class="l-en">Check each card’s dated entry read</span><span class="l-zh">请查看每张卡片的入场判读及日期</span></i></span>
           
-          <span class="cand-shelf"><b class="fig">40</b><span><span class="l-en">Setting up</span><span class="l-zh">形成中</span></span><i><span class="l-en">not there yet — get ready</span><span class="l-zh">尚未触发 — 做好准备</span></i></span>
+          <span class="cand-shelf"><b class="fig">39</b><span><span class="l-en">Setting up</span><span class="l-zh">形成中</span></span><i><span class="l-en">not there yet — get ready</span><span class="l-zh">尚未触发 — 做好准备</span></i></span>
           
           <span class="cand-shelf"><b class="fig">9</b><span><span class="l-en">Ran — don’t chase</span><span class="l-zh">已启动 — 勿追</span></span><i><span class="l-en">the move already started</span><span class="l-zh">行情已经启动</span></i></span>
           
           <span class="cand-shelf"><b class="fig">3</b><span><span class="l-en">Basing</span><span class="l-zh">筑底中</span></span><i><span class="l-en">no entry signal yet — watch, don’t chase</span><span class="l-zh">尚无入场信号 — 观察，勿追高</span></i></span>
           
-          <span class="cand-shelf"><b class="fig">6</b><span><span class="l-en">Blocked</span><span class="l-zh">受阻</span></span><i><span class="l-en">stand aside for now</span><span class="l-zh">暂时观望</span></i></span>
+          <span class="cand-shelf"><b class="fig">4</b><span><span class="l-en">Blocked</span><span class="l-zh">受阻</span></span><i><span class="l-en">stand aside for now</span><span class="l-zh">暂时观望</span></i></span>
           
         </div><div class="nbgrid" data-showmore-rows="3" id="us-cand-grid">
       
@@ -2594,14 +2589,14 @@ function sectorProphetSelection(search) {
     <svg class="nch" viewBox="0 0 240 42" preserveAspectRatio="none" width="100%" height="42"><rect x="144.0" y="10.1" width="96.0" height="6.6" fill="var(--up)" fill-opacity="0.09" stroke="none"/><line x1="144.0" y1="10.1" x2="240" y2="10.1" stroke="var(--up)" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.65"/><line x1="144.0" y1="16.6" x2="240" y2="16.6" stroke="var(--up)" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.65"/><polyline points="0,42 0.0,19.2 3.9,31.2 7.7,29.7 11.6,31.4 15.5,32.1 19.4,34.9 23.2,34.2 27.1,34.6 31.0,35.2 34.8,37.7 38.7,37.8 42.6,38.5 46.5,35.9 50.3,34.9 54.2,31.4 58.1,28.7 61.9,30.5 65.8,33.0 69.7,32.7 73.5,40.7 77.4,42.0 81.3,40.3 85.2,38.6 89.0,38.9 92.9,36.6 96.8,38.2 100.6,36.4 104.5,36.5 108.4,35.2 112.3,35.5 116.1,32.0 120.0,32.7 123.9,29.5 127.7,30.2 131.6,26.8 135.5,14.2 139.4,12.6 143.2,18.5 147.1,12.6 151.0,12.2 154.8,11.5 158.7,18.7 162.6,20.2 166.5,19.8 170.3,20.9 174.2,21.5 178.1,18.4 181.9,27.0 185.8,28.0 189.7,25.0 193.5,22.6 197.4,22.0 201.3,21.6 205.2,23.4 209.0,26.5 212.9,19.1 216.8,28.4 220.6,31.6 224.5,24.7 228.4,17.3 232.3,17.9 236.1,12.5 240.0,10.1 240,42" fill="var(--up)" opacity="0.12" stroke="none"/><polyline points="0.0,19.2 3.9,31.2 7.7,29.7 11.6,31.4 15.5,32.1 19.4,34.9 23.2,34.2 27.1,34.6 31.0,35.2 34.8,37.7 38.7,37.8 42.6,38.5 46.5,35.9 50.3,34.9 54.2,31.4 58.1,28.7 61.9,30.5 65.8,33.0 69.7,32.7 73.5,40.7 77.4,42.0 81.3,40.3 85.2,38.6 89.0,38.9 92.9,36.6 96.8,38.2 100.6,36.4 104.5,36.5 108.4,35.2 112.3,35.5 116.1,32.0 120.0,32.7 123.9,29.5 127.7,30.2 131.6,26.8 135.5,14.2 139.4,12.6 143.2,18.5 147.1,12.6 151.0,12.2 154.8,11.5 158.7,18.7 162.6,20.2 166.5,19.8 170.3,20.9 174.2,21.5 178.1,18.4 181.9,27.0 185.8,28.0 189.7,25.0 193.5,22.6 197.4,22.0 201.3,21.6 205.2,23.4 209.0,26.5 212.9,19.1 216.8,28.4 220.6,31.6 224.5,24.7 228.4,17.3 232.3,17.9 236.1,12.5 240.0,10.1" fill="none" stroke="var(--up)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/><circle cx="240.0" cy="10.1" r="2.6" fill="var(--up)"/></svg>
     <span class="pv-ov pv-ovl"><span class="pv-chip"><span class="l-en">Buy</span><span class="l-zh">买入</span></span>
       <span class="pv-live" hidden></span>
-      <span class="pv-cau"><button class="pv-cau-btn" type="button" aria-label="Caution notes (3)" onclick="event.preventDefault();event.stopPropagation();this.focus()">⚠ 3</button><span class="pv-cau-pop" role="tooltip"><span class="pv-cau-hd"><span class="l-en">Before you act</span><span class="l-zh">动手之前</span></span><span class="pv-cau-row"><span class="l-en">Accounting quality is worth a second look.</span><span class="l-zh">财务质量值得再核查一次。</span></span><span class="pv-cau-row"><span class="l-en">Its Power &amp; Grid Buildout basket is below its long-term trend. Size down: the tape is rewarding leaders, and this basket is not one.</span><span class="l-zh">所属 电力与电网 篮子已跌破长期趋势。减小仓位：当前行情奖励领先板块，该篮子并不在其中。</span></span><span class="pv-cau-row"><span class="l-en">Already moving. Don&#39;t chase above the buy zone.</span><span class="l-zh">已在异动。不要在买区上方追高。</span></span></span></span>
+      <span class="pv-cau"><button class="pv-cau-btn" type="button" aria-label="Caution notes (4)" onclick="event.preventDefault();event.stopPropagation();this.focus()">⚠ 4</button><span class="pv-cau-pop" role="tooltip"><span class="pv-cau-hd"><span class="l-en">Before you act</span><span class="l-zh">动手之前</span></span><span class="pv-cau-row"><span class="l-en">Accounting quality is worth a second look.</span><span class="l-zh">财务质量值得再核查一次。</span></span><span class="pv-cau-row"><span class="l-en">The broad tape is under stress. Size down, or wait for confirmation.</span><span class="l-zh">大盘承压。减小仓位，或等待信号确认。</span></span><span class="pv-cau-row"><span class="l-en">Its Power &amp; Grid Buildout basket is below its long-term trend. Size down: the tape is rewarding leaders, and this basket is not one.</span><span class="l-zh">所属 电力与电网 篮子已跌破长期趋势。减小仓位：当前行情奖励领先板块，该篮子并不在其中。</span></span><span class="pv-cau-row"><span class="l-en">Already moving. Don&#39;t chase above the buy zone.</span><span class="l-zh">已在异动。不要在买区上方追高。</span></span></span></span>
     </span>
     <span class="pv-ov pv-ovr"><span class="pv-quote"><span class="nb-px pv-px" data-sym="TLN" data-mkt="us">$386.68</span><span class="nb-chg pv-chg" data-sym="TLN" data-mkt="us">—</span></span></span>
   </div>
   <div class="pv-bd">
     <div class="pv-hd">
       <span class="pv-idw"><span class="pv-tk">TLN</span><span class="pv-nm"><span class="l-en">Talen Energy</span><span class="l-zh">Talen Energy</span></span></span>
-      <span class="pv-edge"><span class="pv-edl"><span class="l-en">Priority</span><span class="l-zh">优先级</span></span><span class="pv-edn">63</span></span>
+      <span class="pv-edge"><span class="pv-edl"><span class="l-en">Priority</span><span class="l-zh">优先级</span></span><span class="pv-edn">62</span></span>
     </div>
     <div class="pv-ind"><span class="l-en">Utilities</span><span class="l-zh">公用事业</span></div><div class="pv-mk"><span class="pv-mk-i pv-mk-lane" data-tip-en="The shape of the setup: bottoming = turning up off a base · continuation = an existing uptrend resuming · trend / recovery = further along. It groups risk, it does not rank the name." data-tip-zh="形态类型：筑底＝自底部转强 · 延续＝原有上升趋势重启 · 趋势／复苏＝走得更远。它用于摆放风险，不决定排名。"><span class="l-en">Continuation</span><span class="l-zh">延续</span></span></div>
     <div class="pv-stp"><span class="pv-dot pa"></span><span class="pv-seg pa"></span><span class="pv-dot pa"></span><span class="pv-seg pa"></span><span class="pv-dot on"></span><span class="pv-seg"></span><span class="pv-dot"></span></div>
@@ -2997,12 +2992,12 @@ function sectorProphetSelection(search) {
       </div>
         <div class="us-tier-wall" id="us-tier-wall">
           <div class="us-tw-h">
-            <span class="l-en">62 more names in this screen</span>
-            <span class="l-zh">本次筛选还有 62 只股票</span>
+            <span class="l-en">59 more names in this screen</span>
+            <span class="l-zh">本次筛选还有 59 只股票</span>
           </div>
           <div class="us-tw-p">
-            <span class="l-en">You're seeing the first 3 of 65 names. Sign in to see the full ranked board, every entry stage, and the table view.</span>
-            <span class="l-zh">当前显示 65 只中的前 3 只。登录后可查看完整排名榜单、全部入场阶段与表格视图。</span>
+            <span class="l-en">You're seeing the first 3 of 62 names. Sign in to see the full ranked board, every entry stage, and the table view.</span>
+            <span class="l-zh">当前显示 62 只中的前 3 只。登录后可查看完整排名榜单、全部入场阶段与表格视图。</span>
           </div>
           <div class="us-tw-acts">
             <a class="us-tw-btn" href="plans.html"><span class="l-en">See plans</span><span class="l-zh">查看方案</span></a>
@@ -3019,8 +3014,8 @@ function sectorProphetSelection(search) {
           <div class="cand-row"><span class="cand-tk">NTRS</span><span class="cand-nm"><span class="l-en">Northern Trust</span><span class="l-zh">Northern Trust</span></span><span class="cand-px fig">$178.24</span></div>
         </div>
         <p class="mx-sec-note" style="margin:12px 0 0">
-          <span class="l-en">Showing 3 recent candidates (some already carry a plan) · <b>65</b> screened 2026-11-13</span>
-          <span class="l-zh">显示其中 3 只近期候选（部分已建立计划）· 本次共筛出 <b>65</b> 只 · 筛选日 2026-11-13</span>
+          <span class="l-en">Showing 3 recent candidates (some already carry a plan) · <b>62</b> screened 2026-11-13</span>
+          <span class="l-zh">显示其中 3 只近期候选（部分已建立计划）· 本次共筛出 <b>62</b> 只 · 筛选日 2026-11-13</span>
         </p>
       </div>
       
@@ -3028,7 +3023,7 @@ function sectorProphetSelection(search) {
 <details class="pvr">
   <summary class="pvr-sum">
     <span class="pvr-hd"><span class="l-en">Passed on tonight</span><span class="l-zh">今晚未纳入</span></span>
-    <span class="pvr-stat"><span class="l-en">26 of 65</span><span class="l-zh">26 / 65 只</span></span>
+    <span class="pvr-stat"><span class="l-en">24 of 62</span><span class="l-zh">24 / 62 只</span></span>
     <span class="pvr-caret" aria-hidden="true"></span>
   </summary>
   <p class="pvr-lede"><span class="l-en">Watch — don&#39;t chase. Each rejoins the board when its setup completes.</span><span class="l-zh">观望，不要追。形态走完，它们会自己回到榜上。</span></p>
@@ -3046,9 +3041,9 @@ function sectorProphetSelection(search) {
       </div>
     </li>
     <li class="pvr-g">
-      <div class="pvr-gh"><span class="pvr-why"><span class="l-en">Standing aside for now</span><span class="l-zh">暂时回避</span></span><span class="pvr-n">6</span></div>
+      <div class="pvr-gh"><span class="pvr-why"><span class="l-en">Standing aside for now</span><span class="l-zh">暂时回避</span></span><span class="pvr-n">4</span></div>
       <div class="pvr-tks">
-        <span class="pvr-more"><span class="l-en">6 more with full access</span><span class="l-zh">另有 6 只，完整权限可见</span></span>
+        <span class="pvr-more"><span class="l-en">4 more with full access</span><span class="l-zh">另有 4 只，完整权限可见</span></span>
       </div>
     </li>
     <li class="pvr-g">
@@ -3101,6 +3096,22 @@ function sectorProphetSelection(search) {
   
   
   
+  <a class="pbr-r" href="stock.html#XERS">
+    <span class="pbr-tk">XERS</span>
+    <span class="pbr-nm">Xeris Biopharma Holdings Inc</span>
+    
+    <span class="pbr-m"><span class="az-up">+60.9%</span> <span class="l-en">since signal · fired 7 sessions ago</span>
+      <span class="l-zh">信号后 · 7个交易日前触发</span>
+    </span>
+    
+    
+  </a>
+
+  
+  
+  
+  
+  
   <a class="pbr-r" href="stock.html#USPH">
     <span class="pbr-tk">USPH</span>
     <span class="pbr-nm">U.S. Physical Therapy, Inc.</span>
@@ -3128,22 +3139,6 @@ function sectorProphetSelection(search) {
     
   </a>
 
-  
-  
-  
-  
-  
-  <a class="pbr-r" href="stock.html#CNK">
-    <span class="pbr-tk">CNK</span>
-    <span class="pbr-nm">Cinemark Holdings, Inc.</span>
-    
-    <span class="pbr-m"><span class="az-up">+5.9%</span> <span class="l-en">since signal · fired 8 sessions ago</span>
-      <span class="l-zh">信号后 · 8个交易日前触发</span>
-    </span>
-    
-    
-  </a>
-
         </div>
         <p class="pg-more"><span class="l-en">9 more names here — <a href="plans.html">sign in to see the full list</a></span><span class="l-zh">此处还有 9 只 — <a href="plans.html">登录后查看完整名单</a></span></p>
       </div>
@@ -3153,7 +3148,7 @@ function sectorProphetSelection(search) {
       
       
       
-      <p class="pb-fn"><span class="l-en">Higher Priority means the setup is more ready today, not more likely to win. Featured highlights up to 12 of the most ready names, with no more than four per sector; every qualifying name still appears on this board. We could not check whether 2 featured names had already run too far.</span><span class="l-zh">优先级越高，表示今天越接近可操作，并不代表更容易获胜。精选区最多突出 12 只股票、每个板块不超过 4 只；所有合格股票仍会保留在本榜。其中 2 只精选股票无法检查是否已经涨得太远。</span></p>
+      <p class="pb-fn"><span class="l-en">Higher Priority means the setup is more ready today, not more likely to win. Featured highlights up to 12 of the most ready names, with no more than four per sector; every qualifying name still appears on this board.</span><span class="l-zh">优先级越高，表示今天越接近可操作，并不代表更容易获胜。精选区最多突出 12 只股票、每个板块不超过 4 只；所有合格股票仍会保留在本榜。</span></p>
       
       </div>
       
@@ -3641,59 +3636,7 @@ function sectorProphetSelection(search) {
     
   
   
-
-  
     
-  
-  
-    
-  
-
-  
-    
-  
-  
-    
-  
-
-  
-    
-  
-  
-    
-  
-
-  
-    
-  
-  
-    
-  
-
-  
-    
-  
-  
-    
-  
-
-  
-    
-  
-  
-    
-  
-
-  
-    
-  
-  
-    
-  
-
-  
-    
-  
   
 
   
@@ -3759,19 +3702,12 @@ function sectorProphetSelection(search) {
     
   
   
-    
-  
 
   
     
   
   
     
-  
-
-  
-    
-  
   
 
   
@@ -3797,12 +3733,67 @@ function sectorProphetSelection(search) {
     
   
   
+    
+  
+
+  
+    
+  
+  
 
   
     
   
   
     
+  
+
+  
+    
+  
+  
+    
+  
+
+  
+    
+  
+  
+
+  
+    
+  
+  
+    
+  
+
+  
+    
+  
+  
+    
+  
+
+  
+    
+  
+  
+
+  
+    
+  
+  
+
+  
+    
+  
+  
+    
+  
+
+  
+    
+  
   
 
 
@@ -3848,17 +3839,17 @@ function sectorProphetSelection(search) {
           </div>
           <div class="trd-card">
             <div class="trd-card-k"><span class="l-en">Joined</span><span class="l-zh">新上榜</span></div>
-            <div class="trd-card-v az-up">21</div>
+            <div class="trd-card-v az-up">11</div>
             <div class="trd-card-m"><span class="l-en">new to the board</span><span class="l-zh">今日新增至榜单</span></div>
           </div>
           <div class="trd-card">
             <div class="trd-card-k"><span class="l-en">Left</span><span class="l-zh">已离榜</span></div>
-            <div class="trd-card-v az-dn">1</div>
+            <div class="trd-card-v az-dn">8</div>
             <div class="trd-card-m"><span class="l-en">removed from the board</span><span class="l-zh">今日从榜单移除</span></div>
           </div>
           <div class="trd-card">
             <div class="trd-card-k"><span class="l-en">Read changed</span><span class="l-zh">读数变化</span></div>
-            <div class="trd-card-v">31</div>
+            <div class="trd-card-v">32</div>
             <div class="trd-card-m"><span class="l-en">verb or reason updates</span><span class="l-zh">动作词或原因变化</span></div>
           </div>
         </div>
@@ -3885,101 +3876,6 @@ function sectorProphetSelection(search) {
   <span class="nb-delta-added">
     <span class="l-en">added: Earnings within blackout window · Extended / parabolic — do not chase · Stressed tape — size down or wait</span>
     <span class="l-zh">新增：处于财报窗口期 · 过度拉伸/抛物线——勿追高 · 盘面承压——减仓或等待</span>
-  </span>
-  
-</div>
-
-<div class="wcd-item" role="listitem">
-  <div class="wcd-item-hd">
-    <span class="nb-delta-tk">ADT</span>
-    
-      <span class="nb-delta-verb nb-delta-enter">
-        <span class="l-en">entered board · WAIT</span>
-        <span class="l-zh">新上榜 · WAIT</span>
-      </span>
-    
-  </div>
-  
-  
-  <span class="nb-delta-added">
-    <span class="l-en">added: Stressed tape — size down or wait</span>
-    <span class="l-zh">新增：盘面承压——减仓或等待</span>
-  </span>
-  
-</div>
-
-<div class="wcd-item" role="listitem">
-  <div class="wcd-item-hd">
-    <span class="nb-delta-tk">AME</span>
-    
-      <span class="nb-delta-verb nb-delta-enter">
-        <span class="l-en">entered board · BUY</span>
-        <span class="l-zh">新上榜 · BUY</span>
-      </span>
-    
-  </div>
-  
-  
-  <span class="nb-delta-added">
-    <span class="l-en">added: Entry capped — entry timing blocks a full buy</span>
-    <span class="l-zh">新增：入场封顶——入场时机阻碍满仓</span>
-  </span>
-  
-</div>
-
-<div class="wcd-item" role="listitem">
-  <div class="wcd-item-hd">
-    <span class="nb-delta-tk">ARLO</span>
-    
-      <span class="nb-delta-verb nb-delta-enter">
-        <span class="l-en">entered board · BUY</span>
-        <span class="l-zh">新上榜 · BUY</span>
-      </span>
-    
-  </div>
-  
-  
-  <span class="nb-delta-added">
-    <span class="l-en">added: Entry capped — entry timing blocks a full buy</span>
-    <span class="l-zh">新增：入场封顶——入场时机阻碍满仓</span>
-  </span>
-  
-</div>
-
-<div class="wcd-item" role="listitem">
-  <div class="wcd-item-hd">
-    <span class="nb-delta-tk">CHDN</span>
-    
-      <span class="nb-delta-verb nb-delta-enter">
-        <span class="l-en">entered board · WAIT</span>
-        <span class="l-zh">新上榜 · WAIT</span>
-      </span>
-    
-  </div>
-  
-  
-  <span class="nb-delta-added">
-    <span class="l-en">added: Extended / parabolic — do not chase · Stressed tape — size down or wait</span>
-    <span class="l-zh">新增：过度拉伸/抛物线——勿追高 · 盘面承压——减仓或等待</span>
-  </span>
-  
-</div>
-
-<div class="wcd-item" role="listitem">
-  <div class="wcd-item-hd">
-    <span class="nb-delta-tk">CHTR</span>
-    
-      <span class="nb-delta-verb nb-delta-enter">
-        <span class="l-en">entered board · TRIM ONLY</span>
-        <span class="l-zh">新上榜 · TRIM ONLY</span>
-      </span>
-    
-  </div>
-  
-  
-  <span class="nb-delta-added">
-    <span class="l-en">added: Extended / parabolic — do not chase · Stressed tape — size down or wait</span>
-    <span class="l-zh">新增：过度拉伸/抛物线——勿追高 · 盘面承压——减仓或等待</span>
   </span>
   
 </div>
@@ -4089,22 +3985,6 @@ function sectorProphetSelection(search) {
 
 <div class="wcd-item" role="listitem">
   <div class="wcd-item-hd">
-    <span class="nb-delta-tk">TLN</span>
-    
-      <span class="nb-delta-verb">TRIM ONLY → BUY</span>
-    
-  </div>
-  
-  <span class="nb-delta-cleared">
-    <span class="l-en">cleared: Extended / parabolic — do not chase</span>
-    <span class="l-zh">已解除：过度拉伸/抛物线——勿追高</span>
-  </span>
-  
-  
-</div>
-
-<div class="wcd-item" role="listitem">
-  <div class="wcd-item-hd">
     <span class="nb-delta-tk">TTC</span>
     
       <span class="nb-delta-verb nb-delta-enter">
@@ -4143,26 +4023,26 @@ function sectorProphetSelection(search) {
 
 <div class="wcd-item" role="listitem">
   <div class="wcd-item-hd">
-    <span class="nb-delta-tk">WEN</span>
+    <span class="nb-delta-tk">COHR</span>
     
-      <span class="nb-delta-verb nb-delta-enter">
-        <span class="l-en">entered board · WAIT</span>
-        <span class="l-zh">新上榜 · WAIT</span>
+      <span class="nb-delta-verb nb-delta-leave">
+        <span class="l-en">left board · was WAIT</span>
+        <span class="l-zh">已离榜 · 原为 WAIT</span>
       </span>
     
   </div>
   
-  
-  <span class="nb-delta-added">
-    <span class="l-en">added: Extended / parabolic — do not chase · Stressed tape — size down or wait</span>
-    <span class="l-zh">新增：过度拉伸/抛物线——勿追高 · 盘面承压——减仓或等待</span>
+  <span class="nb-delta-cleared">
+    <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
+    <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
   </span>
+  
   
 </div>
 
 <div class="wcd-item" role="listitem">
   <div class="wcd-item-hd">
-    <span class="nb-delta-tk">ACLS</span>
+    <span class="nb-delta-tk">COP</span>
     
       <span class="nb-delta-verb">BUY → WAIT</span>
     
@@ -4173,11 +4053,63 @@ function sectorProphetSelection(search) {
 
 <div class="wcd-item" role="listitem">
   <div class="wcd-item-hd">
-    <span class="nb-delta-tk">AZTA</span>
+    <span class="nb-delta-tk">EQIX</span>
     
       <span class="nb-delta-verb nb-delta-leave">
-        <span class="l-en">left board · was WAIT</span>
-        <span class="l-zh">已离榜 · 原为 WAIT</span>
+        <span class="l-en">left board · was BUY</span>
+        <span class="l-zh">已离榜 · 原为 BUY</span>
+      </span>
+    
+  </div>
+  
+  <span class="nb-delta-cleared">
+    <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
+    <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
+  </span>
+  
+  
+</div>
+
+<div class="wcd-item" role="listitem">
+  <div class="wcd-item-hd">
+    <span class="nb-delta-tk">FIVE</span>
+    
+      <span class="nb-delta-verb nb-delta-leave">
+        <span class="l-en">left board · was BUY</span>
+        <span class="l-zh">已离榜 · 原为 BUY</span>
+      </span>
+    
+  </div>
+  
+  
+</div>
+
+<div class="wcd-item" role="listitem">
+  <div class="wcd-item-hd">
+    <span class="nb-delta-tk">FNV</span>
+    
+      <span class="nb-delta-verb nb-delta-leave">
+        <span class="l-en">left board · was BUY</span>
+        <span class="l-zh">已离榜 · 原为 BUY</span>
+      </span>
+    
+  </div>
+  
+  <span class="nb-delta-cleared">
+    <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
+    <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
+  </span>
+  
+  
+</div>
+
+<div class="wcd-item" role="listitem">
+  <div class="wcd-item-hd">
+    <span class="nb-delta-tk">HRB</span>
+    
+      <span class="nb-delta-verb nb-delta-leave">
+        <span class="l-en">left board · was TRIM ONLY</span>
+        <span class="l-zh">已离榜 · 原为 TRIM ONLY</span>
       </span>
     
   </div>
@@ -4190,8 +4122,87 @@ function sectorProphetSelection(search) {
   
 </div>
 
+<div class="wcd-item" role="listitem">
+  <div class="wcd-item-hd">
+    <span class="nb-delta-tk">HUM</span>
+    
+      <span class="nb-delta-verb nb-delta-leave">
+        <span class="l-en">left board · was WAIT</span>
+        <span class="l-zh">已离榜 · 原为 WAIT</span>
+      </span>
+    
+  </div>
+  
+  
+</div>
+
+<div class="wcd-item" role="listitem">
+  <div class="wcd-item-hd">
+    <span class="nb-delta-tk">KLAC</span>
+    
+      <span class="nb-delta-verb nb-delta-leave">
+        <span class="l-en">left board · was BUY</span>
+        <span class="l-zh">已离榜 · 原为 BUY</span>
+      </span>
+    
+  </div>
+  
+  <span class="nb-delta-cleared">
+    <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
+    <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
+  </span>
+  
+  
+</div>
+
+<div class="wcd-item" role="listitem">
+  <div class="wcd-item-hd">
+    <span class="nb-delta-tk">MPWR</span>
+    
+      <span class="nb-delta-verb">BUY → WAIT</span>
+    
+  </div>
+  
+  <span class="nb-delta-cleared">
+    <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
+    <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
+  </span>
+  
+  
+</div>
+
+<div class="wcd-item" role="listitem">
+  <div class="wcd-item-hd">
+    <span class="nb-delta-tk">MSM</span>
+    
+      <span class="nb-delta-verb">BUY → WAIT</span>
+    
+  </div>
+  
+  
+</div>
+
+<div class="wcd-item" role="listitem">
+  <div class="wcd-item-hd">
+    <span class="nb-delta-tk">PENG</span>
+    
+      <span class="nb-delta-verb nb-delta-leave">
+        <span class="l-en">left board · was WAIT</span>
+        <span class="l-zh">已离榜 · 原为 WAIT</span>
+      </span>
+    
+  </div>
+  
+  <span class="nb-delta-cleared">
+    <span class="l-en">cleared: Entry capped — entry timing blocks a full buy</span>
+    <span class="l-zh">已解除：入场封顶——入场时机阻碍满仓</span>
+  </span>
+  
+  
+</div>
+
         </div>
-        <p class="pg-more"><span class="l-en">12 more names here — <a href="plans.html">sign in to see the full list</a></span><span class="l-zh">此处还有 12 只 — <a href="plans.html">登录后查看完整名单</a></span></p>
+        <p class="pg-more"><span class="l-en">10 more names here — <a href="plans.html">sign in to see the full list</a></span><span class="l-zh">此处还有 10 只 — <a href="plans.html">登录后查看完整名单</a></span></p>
       </div>
     </div>
 
@@ -4356,18 +4367,6 @@ function sectorProphetSelection(search) {
 
   
   
-  <tr class="ts-row" data-tkr="SG">
-    <td class="c-stock"><a class="ts-tk-a" href="stock.html#SG"><span class="ts-tk">SG</span></a> <span class="ts-nm">Sweetgreen</span></td>
-    <td class="muted c-sector"><span class="l-en">Consumer Discretionary</span><span class="l-zh">可选消费</span></td>
-    <td class="c-theme"><span class="muted"><span class="l-en">no signal yet</span><span class="l-zh">暂无信号</span></span></td>
-    <td class="r c-edge az-up">+0.87</td>
-    <td class="r muted c-offhigh">-7.3%</td>
-    <td class="c-state"><span class="l-en">NEARING A HIGH</span><span class="l-zh">接近高点</span></td>
-    <td class="c-entry"><span class="ent-good"><span class="l-en">pullback zone</span><span class="l-zh">回调买区</span> $11.26–$12.12</span></td>
-  </tr>
-
-  
-  
   <tr class="ts-row" data-tkr="PCRX">
     <td class="c-stock"><a class="ts-tk-a" href="stock.html#PCRX"><span class="ts-tk">PCRX</span></a> <span class="ts-nm">Pacira BioSciences, Inc.</span></td>
     <td class="muted c-sector"><span class="l-en">Health Care</span><span class="l-zh">医疗保健</span></td>
@@ -4390,9 +4389,21 @@ function sectorProphetSelection(search) {
     <td class="c-entry"><span class="ent-good"><span class="l-en">pullback zone</span><span class="l-zh">回调买区</span> $62.95–$66.28</span></td>
   </tr>
 
+  
+  
+  <tr class="ts-row" data-tkr="CERT">
+    <td class="c-stock"><a class="ts-tk-a" href="stock.html#CERT"><span class="ts-tk">CERT</span></a> <span class="ts-nm">Certara, Inc.</span></td>
+    <td class="muted c-sector"><span class="l-en">Health Care</span><span class="l-zh">医疗保健</span></td>
+    <td class="c-theme"><span class="muted"><span class="l-en">no signal yet</span><span class="l-zh">暂无信号</span></span></td>
+    <td class="r c-edge az-dn">-0.75</td>
+    <td class="r muted c-offhigh">-2.6%</td>
+    <td class="c-state"><span class="l-en">NEARING A HIGH</span><span class="l-zh">接近高点</span></td>
+    <td class="c-entry"><span class="ent-good"><span class="l-en">pullback zone</span><span class="l-zh">回调买区</span> $10.97–$11.59</span> <span class="ent-warn" data-tip-en="Price is unusually far above its trend — chasing here is risky." data-tip-zh="价格已明显高于趋势，追高风险较大。"><span class="l-en">extended</span><span class="l-zh">过热</span></span></td>
+  </tr>
+
           </tbody>
         </table></div>
-        <p class="pg-more"><span class="l-en">12 more names here — <a href="plans.html">sign in to see the full list</a></span><span class="l-zh">此处还有 12 只 — <a href="plans.html">登录后查看完整名单</a></span></p>
+        <p class="pg-more"><span class="l-en">11 more names here — <a href="plans.html">sign in to see the full list</a></span><span class="l-zh">此处还有 11 只 — <a href="plans.html">登录后查看完整名单</a></span></p>
       </div>
       
     </div>
@@ -4946,7 +4957,7 @@ function sectorProphetSelection(search) {
             <span class="tip tip-seas"><b style="font-size:12px;display:block;margin-bottom:1px"><span class="l-en">Seasonality — average return by month</span><span class="l-zh">季节性 — 各月平均回报</span></b><svg viewBox="0 0 320 86" width="100%" style="display:block;margin:4px 0 6px;overflow:visible"><line x1="8" y1="40" x2="312" y2="40" style="stroke:var(--line);stroke-width:1"/><rect x="13.6" y="40.0" width="14.2" height="6.6" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="20.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">1</text><rect x="38.9" y="37.3" width="14.2" height="2.7" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="46.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">2</text><rect x="64.2" y="26.0" width="14.2" height="14.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="71.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">3</text><rect x="89.6" y="24.1" width="14.2" height="15.9" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="96.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">4</text><rect x="114.9" y="33.9" width="14.2" height="6.1" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="122.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">5</text><rect x="140.2" y="40.0" width="14.2" height="2.7" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="147.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">6</text><rect x="165.6" y="24.5" width="14.2" height="15.5" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="172.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">7</text><rect x="190.9" y="33.9" width="14.2" height="6.1" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="198.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">8</text><rect x="216.2" y="40.0" width="14.2" height="11.0" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="223.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">9</text><rect x="241.6" y="16.9" width="14.2" height="23.1" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="248.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">10</text><rect x="261.3" y="6" width="25.3" height="66.0" rx="2" style="fill:var(--text);opacity:.07"/><rect x="266.9" y="14.0" width="14.2" height="26.0" rx="1.5" style="fill:var(--up);opacity:1"/><text x="274.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--text);font-weight:700">11</text><rect x="292.2" y="33.2" width="14.2" height="6.8" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="299.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">12</text></svg><div style="display:flex;gap:10px"><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jan</span><span class="l-zh">1月</span></td><td class="neg">-0.5%</td><td>46%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Feb</span><span class="l-zh">2月</span></td><td class="pos">+0.2%</td><td>57%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Mar</span><span class="l-zh">3月</span></td><td class="pos">+1.1%</td><td>64%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Apr</span><span class="l-zh">4月</span></td><td class="pos">+1.2%</td><td>68%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">May</span><span class="l-zh">5月</span></td><td class="pos">+0.5%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Jun</span><span class="l-zh">6月</span></td><td class="neg">-0.2%</td><td>43%</td><td class="muted">28</td></tr></table><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jul</span><span class="l-zh">7月</span></td><td class="pos">+1.2%</td><td>64%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Aug</span><span class="l-zh">8月</span></td><td class="pos">+0.5%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Sep</span><span class="l-zh">9月</span></td><td class="neg">-0.9%</td><td>43%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Oct</span><span class="l-zh">10月</span></td><td class="pos">+1.8%</td><td>61%</td><td class="muted">28</td></tr><tr style="background:var(--panel2);font-weight:700"><td style="text-align:left"><span class="l-en">Nov</span><span class="l-zh">11月</span></td><td class="pos">+2.0%</td><td>75%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Dec</span><span class="l-zh">12月</span></td><td class="pos">+0.5%</td><td>63%</td><td class="muted">27</td></tr></table></div><div class="muted" style="font-size:10.5px;margin-top:6px;line-height:1.4"><span class="l-en">Each month’s average return across this instrument’s full history, and how often it closed up. Weak evidence — background colour only, never a signal on its own (and left out of the heat score).</span><span class="l-zh">该标的全部历史中每个月的平均回报及收涨频率。属于弱证据 — 仅作背景参考，绝不单独作为信号（且已排除在热度分数之外）。</span></div></span>
           </span>
         </td>
-        <td class="neg" style="font-size:11.5px" data-tip-en="50% of 2,231 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="2,231 个实测 63 日窗口中有 50% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">-0.0% vs SPY · even odds</span><span class="l-zh">对SPY -0.0% · 胜率接近五五</span></td>
+        <td class="neg" style="font-size:11.5px" data-tip-en="50% of 2,232 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="2,232 个实测 63 日窗口中有 50% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">-0.0% vs SPY · even odds</span><span class="l-zh">对SPY -0.0% · 胜率接近五五</span></td>
       </tr>
       
       <tr>
@@ -4970,7 +4981,7 @@ function sectorProphetSelection(search) {
             <span class="tip tip-seas"><b style="font-size:12px;display:block;margin-bottom:1px"><span class="l-en">Seasonality — average return by month</span><span class="l-zh">季节性 — 各月平均回报</span></b><svg viewBox="0 0 320 86" width="100%" style="display:block;margin:4px 0 6px;overflow:visible"><line x1="8" y1="40" x2="312" y2="40" style="stroke:var(--line);stroke-width:1"/><rect x="13.6" y="29.8" width="14.2" height="10.2" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="20.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">1</text><rect x="38.9" y="40.0" width="14.2" height="2.0" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="46.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">2</text><rect x="64.2" y="30.2" width="14.2" height="9.8" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="71.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">3</text><rect x="89.6" y="26.1" width="14.2" height="13.9" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="96.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">4</text><rect x="114.9" y="34.3" width="14.2" height="5.7" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="122.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">5</text><rect x="140.2" y="30.6" width="14.2" height="9.4" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="147.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">6</text><rect x="165.6" y="27.3" width="14.2" height="12.7" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="172.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">7</text><rect x="190.9" y="36.4" width="14.2" height="3.6" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="198.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">8</text><rect x="216.2" y="40.0" width="14.2" height="13.2" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="223.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">9</text><rect x="241.6" y="28.6" width="14.2" height="11.4" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="248.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">10</text><rect x="261.3" y="6" width="25.3" height="66.0" rx="2" style="fill:var(--text);opacity:.07"/><rect x="266.9" y="14.0" width="14.2" height="26.0" rx="1.5" style="fill:var(--up);opacity:1"/><text x="274.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--text);font-weight:700">11</text><rect x="292.2" y="23.4" width="14.2" height="16.6" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="299.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">12</text></svg><div style="display:flex;gap:10px"><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jan</span><span class="l-zh">1月</span></td><td class="pos">+0.9%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Feb</span><span class="l-zh">2月</span></td><td class="neg">-0.2%</td><td>57%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Mar</span><span class="l-zh">3月</span></td><td class="pos">+0.9%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Apr</span><span class="l-zh">4月</span></td><td class="pos">+1.3%</td><td>54%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">May</span><span class="l-zh">5月</span></td><td class="pos">+0.5%</td><td>68%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Jun</span><span class="l-zh">6月</span></td><td class="pos">+0.9%</td><td>57%</td><td class="muted">28</td></tr></table><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jul</span><span class="l-zh">7月</span></td><td class="pos">+1.2%</td><td>64%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Aug</span><span class="l-zh">8月</span></td><td class="pos">+0.3%</td><td>57%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Sep</span><span class="l-zh">9月</span></td><td class="neg">-1.2%</td><td>39%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Oct</span><span class="l-zh">10月</span></td><td class="pos">+1.1%</td><td>61%</td><td class="muted">28</td></tr><tr style="background:var(--panel2);font-weight:700"><td style="text-align:left"><span class="l-en">Nov</span><span class="l-zh">11月</span></td><td class="pos">+2.4%</td><td>79%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Dec</span><span class="l-zh">12月</span></td><td class="pos">+1.5%</td><td>67%</td><td class="muted">27</td></tr></table></div><div class="muted" style="font-size:10.5px;margin-top:6px;line-height:1.4"><span class="l-en">Each month’s average return across this instrument’s full history, and how often it closed up. Weak evidence — background colour only, never a signal on its own (and left out of the heat score).</span><span class="l-zh">该标的全部历史中每个月的平均回报及收涨频率。属于弱证据 — 仅作背景参考，绝不单独作为信号（且已排除在热度分数之外）。</span></div></span>
           </span>
         </td>
-        <td class="neg" style="font-size:11.5px" data-tip-en="49% of 2,375 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="2,375 个实测 63 日窗口中有 49% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">-0.2% vs SPY · even odds</span><span class="l-zh">对SPY -0.2% · 胜率接近五五</span></td>
+        <td class="neg" style="font-size:11.5px" data-tip-en="49% of 2,374 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="2,374 个实测 63 日窗口中有 49% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">-0.2% vs SPY · even odds</span><span class="l-zh">对SPY -0.2% · 胜率接近五五</span></td>
       </tr>
       
       <tr>
@@ -4994,7 +5005,7 @@ function sectorProphetSelection(search) {
             <span class="tip tip-seas"><b style="font-size:12px;display:block;margin-bottom:1px"><span class="l-en">Seasonality — average return by month</span><span class="l-zh">季节性 — 各月平均回报</span></b><svg viewBox="0 0 320 86" width="100%" style="display:block;margin:4px 0 6px;overflow:visible"><line x1="8" y1="40" x2="312" y2="40" style="stroke:var(--line);stroke-width:1"/><rect x="13.6" y="34.7" width="14.2" height="5.3" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="20.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">1</text><rect x="38.9" y="40.0" width="14.2" height="3.4" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="46.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">2</text><rect x="64.2" y="28.9" width="14.2" height="11.1" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="71.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">3</text><rect x="89.6" y="18.0" width="14.2" height="22.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="96.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">4</text><rect x="114.9" y="37.4" width="14.2" height="2.6" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="122.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">5</text><rect x="140.2" y="40.0" width="14.2" height="1.0" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="147.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">6</text><rect x="165.6" y="25.0" width="14.2" height="15.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="172.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">7</text><rect x="190.9" y="39.0" width="14.2" height="1.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="198.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">8</text><rect x="216.2" y="40.0" width="14.2" height="8.3" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="223.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">9</text><rect x="241.6" y="25.2" width="14.2" height="14.8" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="248.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">10</text><rect x="261.3" y="6" width="25.3" height="66.0" rx="2" style="fill:var(--text);opacity:.07"/><rect x="266.9" y="14.0" width="14.2" height="26.0" rx="1.5" style="fill:var(--up);opacity:1"/><text x="274.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--text);font-weight:700">11</text><rect x="292.2" y="29.8" width="14.2" height="10.2" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="299.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">12</text></svg><div style="display:flex;gap:10px"><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jan</span><span class="l-zh">1月</span></td><td class="pos">+0.6%</td><td>50%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Feb</span><span class="l-zh">2月</span></td><td class="neg">-0.4%</td><td>46%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Mar</span><span class="l-zh">3月</span></td><td class="pos">+1.3%</td><td>54%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Apr</span><span class="l-zh">4月</span></td><td class="pos">+2.5%</td><td>64%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">May</span><span class="l-zh">5月</span></td><td class="pos">+0.3%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Jun</span><span class="l-zh">6月</span></td><td class="neg">-0.1%</td><td>54%</td><td class="muted">28</td></tr></table><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jul</span><span class="l-zh">7月</span></td><td class="pos">+1.7%</td><td>68%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Aug</span><span class="l-zh">8月</span></td><td class="pos">+0.1%</td><td>46%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Sep</span><span class="l-zh">9月</span></td><td class="neg">-0.9%</td><td>43%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Oct</span><span class="l-zh">10月</span></td><td class="pos">+1.7%</td><td>61%</td><td class="muted">28</td></tr><tr style="background:var(--panel2);font-weight:700"><td style="text-align:left"><span class="l-en">Nov</span><span class="l-zh">11月</span></td><td class="pos">+3.0%</td><td>79%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Dec</span><span class="l-zh">12月</span></td><td class="pos">+1.2%</td><td>78%</td><td class="muted">27</td></tr></table></div><div class="muted" style="font-size:10.5px;margin-top:6px;line-height:1.4"><span class="l-en">Each month’s average return across this instrument’s full history, and how often it closed up. Weak evidence — background colour only, never a signal on its own (and left out of the heat score).</span><span class="l-zh">该标的全部历史中每个月的平均回报及收涨频率。属于弱证据 — 仅作背景参考，绝不单独作为信号（且已排除在热度分数之外）。</span></div></span>
           </span>
         </td>
-        <td class="neg" style="font-size:11.5px" data-tip-en="49% of 2,375 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="2,375 个实测 63 日窗口中有 49% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">-0.2% vs SPY · even odds</span><span class="l-zh">对SPY -0.2% · 胜率接近五五</span></td>
+        <td class="neg" style="font-size:11.5px" data-tip-en="49% of 2,374 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="2,374 个实测 63 日窗口中有 49% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">-0.2% vs SPY · even odds</span><span class="l-zh">对SPY -0.2% · 胜率接近五五</span></td>
       </tr>
       
       <tr>
@@ -5018,7 +5029,7 @@ function sectorProphetSelection(search) {
             <span class="tip tip-seas"><b style="font-size:12px;display:block;margin-bottom:1px"><span class="l-en">Seasonality — average return by month</span><span class="l-zh">季节性 — 各月平均回报</span></b><svg viewBox="0 0 320 86" width="100%" style="display:block;margin:4px 0 6px;overflow:visible"><line x1="8" y1="40" x2="312" y2="40" style="stroke:var(--line);stroke-width:1"/><rect x="13.6" y="40.0" width="14.2" height="2.4" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="20.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">1</text><rect x="38.9" y="40.0" width="14.2" height="11.2" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="46.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">2</text><rect x="64.2" y="14.0" width="14.2" height="26.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="71.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">3</text><rect x="89.6" y="14.2" width="14.2" height="25.8" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="96.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">4</text><rect x="114.9" y="31.6" width="14.2" height="8.4" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="122.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">5</text><rect x="140.2" y="39.0" width="14.2" height="1.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="147.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">6</text><rect x="165.6" y="29.1" width="14.2" height="10.9" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="172.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">7</text><rect x="190.9" y="38.1" width="14.2" height="1.9" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="198.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">8</text><rect x="216.2" y="40.0" width="14.2" height="1.7" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="223.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">9</text><rect x="241.6" y="22.6" width="14.2" height="17.4" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="248.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">10</text><rect x="261.3" y="6" width="25.3" height="66.0" rx="2" style="fill:var(--text);opacity:.07"/><rect x="266.9" y="30.7" width="14.2" height="9.3" rx="1.5" style="fill:var(--up);opacity:1"/><text x="274.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--text);font-weight:700">11</text><rect x="292.2" y="29.0" width="14.2" height="11.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="299.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">12</text></svg><div style="display:flex;gap:10px"><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jan</span><span class="l-zh">1月</span></td><td class="neg">-0.2%</td><td>46%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Feb</span><span class="l-zh">2月</span></td><td class="neg">-1.0%</td><td>54%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Mar</span><span class="l-zh">3月</span></td><td class="pos">+2.3%</td><td>75%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Apr</span><span class="l-zh">4月</span></td><td class="pos">+2.3%</td><td>82%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">May</span><span class="l-zh">5月</span></td><td class="pos">+0.7%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Jun</span><span class="l-zh">6月</span></td><td class="pos">+0.0%</td><td>54%</td><td class="muted">28</td></tr></table><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jul</span><span class="l-zh">7月</span></td><td class="pos">+1.0%</td><td>64%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Aug</span><span class="l-zh">8月</span></td><td class="pos">+0.2%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Sep</span><span class="l-zh">9月</span></td><td class="neg">-0.1%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Oct</span><span class="l-zh">10月</span></td><td class="pos">+1.5%</td><td>75%</td><td class="muted">28</td></tr><tr style="background:var(--panel2);font-weight:700"><td style="text-align:left"><span class="l-en">Nov</span><span class="l-zh">11月</span></td><td class="pos">+0.8%</td><td>61%</td><td class="muted">28</td></tr><tr><td style="text-align:left"><span class="l-en">Dec</span><span class="l-zh">12月</span></td><td class="pos">+1.0%</td><td>63%</td><td class="muted">27</td></tr></table></div><div class="muted" style="font-size:10.5px;margin-top:6px;line-height:1.4"><span class="l-en">Each month’s average return across this instrument’s full history, and how often it closed up. Weak evidence — background colour only, never a signal on its own (and left out of the heat score).</span><span class="l-zh">该标的全部历史中每个月的平均回报及收涨频率。属于弱证据 — 仅作背景参考，绝不单独作为信号（且已排除在热度分数之外）。</span></div></span>
           </span>
         </td>
-        <td class="neg" style="font-size:11.5px" data-tip-en="49% of 2,375 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="2,375 个实测 63 日窗口中有 49% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">-0.2% vs SPY · even odds</span><span class="l-zh">对SPY -0.2% · 胜率接近五五</span></td>
+        <td class="neg" style="font-size:11.5px" data-tip-en="49% of 2,374 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="2,374 个实测 63 日窗口中有 49% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">-0.2% vs SPY · even odds</span><span class="l-zh">对SPY -0.2% · 胜率接近五五</span></td>
       </tr>
       
       <tr>
@@ -5042,7 +5053,7 @@ function sectorProphetSelection(search) {
             <span class="tip tip-seas"><b style="font-size:12px;display:block;margin-bottom:1px"><span class="l-en">Seasonality — average return by month</span><span class="l-zh">季节性 — 各月平均回报</span></b><svg viewBox="0 0 320 86" width="100%" style="display:block;margin:4px 0 6px;overflow:visible"><line x1="8" y1="40" x2="312" y2="40" style="stroke:var(--line);stroke-width:1"/><rect x="13.6" y="36.2" width="14.2" height="3.8" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="20.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">1</text><rect x="38.9" y="40.0" width="14.2" height="2.4" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="46.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">2</text><rect x="64.2" y="33.1" width="14.2" height="6.9" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="71.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">3</text><rect x="89.6" y="32.2" width="14.2" height="7.8" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="96.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">4</text><rect x="114.9" y="36.6" width="14.2" height="3.4" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="122.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">5</text><rect x="140.2" y="25.4" width="14.2" height="14.6" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="147.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">6</text><rect x="165.6" y="14.4" width="14.2" height="25.6" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="172.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">7</text><rect x="190.9" y="36.8" width="14.2" height="3.2" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="198.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">8</text><rect x="216.2" y="40.0" width="14.2" height="26.0" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="223.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">9</text><rect x="241.6" y="40.0" width="14.2" height="2.5" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="248.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">10</text><rect x="261.3" y="6" width="25.3" height="66.0" rx="2" style="fill:var(--text);opacity:.07"/><rect x="266.9" y="15.4" width="14.2" height="24.6" rx="1.5" style="fill:var(--up);opacity:1"/><text x="274.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--text);font-weight:700">11</text><rect x="292.2" y="36.3" width="14.2" height="3.7" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="299.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">12</text></svg><div style="display:flex;gap:10px"><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jan</span><span class="l-zh">1月</span></td><td class="pos">+0.5%</td><td>55%</td><td class="muted">11</td></tr><tr><td style="text-align:left"><span class="l-en">Feb</span><span class="l-zh">2月</span></td><td class="neg">-0.3%</td><td>64%</td><td class="muted">11</td></tr><tr><td style="text-align:left"><span class="l-en">Mar</span><span class="l-zh">3月</span></td><td class="pos">+0.9%</td><td>55%</td><td class="muted">11</td></tr><tr><td style="text-align:left"><span class="l-en">Apr</span><span class="l-zh">4月</span></td><td class="pos">+1.0%</td><td>45%</td><td class="muted">11</td></tr><tr><td style="text-align:left"><span class="l-en">May</span><span class="l-zh">5月</span></td><td class="pos">+0.4%</td><td>73%</td><td class="muted">11</td></tr><tr><td style="text-align:left"><span class="l-en">Jun</span><span class="l-zh">6月</span></td><td class="pos">+1.8%</td><td>91%</td><td class="muted">11</td></tr></table><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jul</span><span class="l-zh">7月</span></td><td class="pos">+3.2%</td><td>91%</td><td class="muted">11</td></tr><tr><td style="text-align:left"><span class="l-en">Aug</span><span class="l-zh">8月</span></td><td class="pos">+0.4%</td><td>55%</td><td class="muted">11</td></tr><tr><td style="text-align:left"><span class="l-en">Sep</span><span class="l-zh">9月</span></td><td class="neg">-3.3%</td><td>27%</td><td class="muted">11</td></tr><tr><td style="text-align:left"><span class="l-en">Oct</span><span class="l-zh">10月</span></td><td class="neg">-0.3%</td><td>36%</td><td class="muted">11</td></tr><tr style="background:var(--panel2);font-weight:700"><td style="text-align:left"><span class="l-en">Nov</span><span class="l-zh">11月</span></td><td class="pos">+3.1%</td><td>67%</td><td class="muted">12</td></tr><tr><td style="text-align:left"><span class="l-en">Dec</span><span class="l-zh">12月</span></td><td class="pos">+0.5%</td><td>55%</td><td class="muted">11</td></tr></table></div><div class="muted" style="font-size:10.5px;margin-top:6px;line-height:1.4"><span class="l-en">Each month’s average return across this instrument’s full history, and how often it closed up. Weak evidence — background colour only, never a signal on its own (and left out of the heat score).</span><span class="l-zh">该标的全部历史中每个月的平均回报及收涨频率。属于弱证据 — 仅作背景参考，绝不单独作为信号（且已排除在热度分数之外）。</span></div></span>
           </span>
         </td>
-        <td class="neg" style="font-size:11.5px" data-tip-en="49% of 2,375 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="2,375 个实测 63 日窗口中有 49% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">-0.2% vs SPY · even odds</span><span class="l-zh">对SPY -0.2% · 胜率接近五五</span></td>
+        <td class="neg" style="font-size:11.5px" data-tip-en="49% of 2,374 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="2,374 个实测 63 日窗口中有 49% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">-0.2% vs SPY · even odds</span><span class="l-zh">对SPY -0.2% · 胜率接近五五</span></td>
       </tr>
       
       <tr>
@@ -5062,8 +5073,8 @@ function sectorProphetSelection(search) {
         <td class="neg" data-sort="-0.9">-0.9%</td>
         <td>
           <span class="help" style="width:auto;height:auto;border:none;margin:0">
-            <span style="cursor:help">+4.0%</span>
-            <span class="tip tip-seas"><b style="font-size:12px;display:block;margin-bottom:1px"><span class="l-en">Seasonality — average return by month</span><span class="l-zh">季节性 — 各月平均回报</span></b><svg viewBox="0 0 320 86" width="100%" style="display:block;margin:4px 0 6px;overflow:visible"><line x1="8" y1="40" x2="312" y2="40" style="stroke:var(--line);stroke-width:1"/><rect x="13.6" y="14.0" width="14.2" height="26.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="20.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">1</text><rect x="38.9" y="40.0" width="14.2" height="5.5" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="46.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">2</text><rect x="64.2" y="40.0" width="14.2" height="4.9" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="71.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">3</text><rect x="89.6" y="27.8" width="14.2" height="12.2" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="96.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">4</text><rect x="114.9" y="23.9" width="14.2" height="16.1" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="122.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">5</text><rect x="140.2" y="35.0" width="14.2" height="5.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="147.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">6</text><rect x="165.6" y="26.2" width="14.2" height="13.8" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="172.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">7</text><rect x="190.9" y="29.6" width="14.2" height="10.4" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="198.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">8</text><rect x="216.2" y="40.0" width="14.2" height="11.3" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="223.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">9</text><rect x="241.6" y="40.0" width="14.2" height="10.9" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="248.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">10</text><rect x="261.3" y="6" width="25.3" height="66.0" rx="2" style="fill:var(--text);opacity:.07"/><rect x="266.9" y="15.4" width="14.2" height="24.6" rx="1.5" style="fill:var(--up);opacity:1"/><text x="274.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--text);font-weight:700">11</text><rect x="292.2" y="40.0" width="14.2" height="1.0" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="299.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">12</text></svg><div style="display:flex;gap:10px"><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jan</span><span class="l-zh">1月</span></td><td class="pos">+4.2%</td><td>75%</td><td class="muted">8</td></tr><tr><td style="text-align:left"><span class="l-en">Feb</span><span class="l-zh">2月</span></td><td class="neg">-0.9%</td><td>25%</td><td class="muted">8</td></tr><tr><td style="text-align:left"><span class="l-en">Mar</span><span class="l-zh">3月</span></td><td class="neg">-0.8%</td><td>62%</td><td class="muted">8</td></tr><tr><td style="text-align:left"><span class="l-en">Apr</span><span class="l-zh">4月</span></td><td class="pos">+2.0%</td><td>62%</td><td class="muted">8</td></tr><tr><td style="text-align:left"><span class="l-en">May</span><span class="l-zh">5月</span></td><td class="pos">+2.6%</td><td>75%</td><td class="muted">8</td></tr><tr><td style="text-align:left"><span class="l-en">Jun</span><span class="l-zh">6月</span></td><td class="pos">+0.8%</td><td>75%</td><td class="muted">8</td></tr></table><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jul</span><span class="l-zh">7月</span></td><td class="pos">+2.2%</td><td>78%</td><td class="muted">9</td></tr><tr><td style="text-align:left"><span class="l-en">Aug</span><span class="l-zh">8月</span></td><td class="pos">+1.7%</td><td>67%</td><td class="muted">9</td></tr><tr><td style="text-align:left"><span class="l-en">Sep</span><span class="l-zh">9月</span></td><td class="neg">-1.8%</td><td>33%</td><td class="muted">9</td></tr><tr><td style="text-align:left"><span class="l-en">Oct</span><span class="l-zh">10月</span></td><td class="neg">-1.8%</td><td>44%</td><td class="muted">9</td></tr><tr style="background:var(--panel2);font-weight:700"><td style="text-align:left"><span class="l-en">Nov</span><span class="l-zh">11月</span></td><td class="pos">+4.0%</td><td>78%</td><td class="muted">9</td></tr><tr><td style="text-align:left"><span class="l-en">Dec</span><span class="l-zh">12月</span></td><td class="neg">-0.0%</td><td>62%</td><td class="muted">8</td></tr></table></div><div class="muted" style="font-size:10.5px;margin-top:6px;line-height:1.4"><span class="l-en">Each month’s average return across this instrument’s full history, and how often it closed up. Weak evidence — background colour only, never a signal on its own (and left out of the heat score).</span><span class="l-zh">该标的全部历史中每个月的平均回报及收涨频率。属于弱证据 — 仅作背景参考，绝不单独作为信号（且已排除在热度分数之外）。</span></div></span>
+            <span style="cursor:help">+4.1%</span>
+            <span class="tip tip-seas"><b style="font-size:12px;display:block;margin-bottom:1px"><span class="l-en">Seasonality — average return by month</span><span class="l-zh">季节性 — 各月平均回报</span></b><svg viewBox="0 0 320 86" width="100%" style="display:block;margin:4px 0 6px;overflow:visible"><line x1="8" y1="40" x2="312" y2="40" style="stroke:var(--line);stroke-width:1"/><rect x="13.6" y="14.0" width="14.2" height="26.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="20.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">1</text><rect x="38.9" y="40.0" width="14.2" height="5.5" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="46.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">2</text><rect x="64.2" y="40.0" width="14.2" height="4.9" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="71.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">3</text><rect x="89.6" y="27.8" width="14.2" height="12.2" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="96.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">4</text><rect x="114.9" y="23.9" width="14.2" height="16.1" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="122.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">5</text><rect x="140.2" y="35.0" width="14.2" height="5.0" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="147.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">6</text><rect x="165.6" y="26.2" width="14.2" height="13.8" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="172.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">7</text><rect x="190.9" y="29.6" width="14.2" height="10.4" rx="1.5" style="fill:var(--up);opacity:0.55"/><text x="198.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">8</text><rect x="216.2" y="40.0" width="14.2" height="11.3" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="223.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">9</text><rect x="241.6" y="40.0" width="14.2" height="10.9" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="248.7" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">10</text><rect x="261.3" y="6" width="25.3" height="66.0" rx="2" style="fill:var(--text);opacity:.07"/><rect x="266.9" y="14.6" width="14.2" height="25.4" rx="1.5" style="fill:var(--up);opacity:1"/><text x="274.0" y="80" text-anchor="middle" style="font-size:9px;fill:var(--text);font-weight:700">11</text><rect x="292.2" y="40.0" width="14.2" height="1.0" rx="1.5" style="fill:var(--down);opacity:0.55"/><text x="299.3" y="80" text-anchor="middle" style="font-size:9px;fill:var(--muted);font-weight:400">12</text></svg><div style="display:flex;gap:10px"><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jan</span><span class="l-zh">1月</span></td><td class="pos">+4.2%</td><td>75%</td><td class="muted">8</td></tr><tr><td style="text-align:left"><span class="l-en">Feb</span><span class="l-zh">2月</span></td><td class="neg">-0.9%</td><td>25%</td><td class="muted">8</td></tr><tr><td style="text-align:left"><span class="l-en">Mar</span><span class="l-zh">3月</span></td><td class="neg">-0.8%</td><td>62%</td><td class="muted">8</td></tr><tr><td style="text-align:left"><span class="l-en">Apr</span><span class="l-zh">4月</span></td><td class="pos">+2.0%</td><td>62%</td><td class="muted">8</td></tr><tr><td style="text-align:left"><span class="l-en">May</span><span class="l-zh">5月</span></td><td class="pos">+2.6%</td><td>75%</td><td class="muted">8</td></tr><tr><td style="text-align:left"><span class="l-en">Jun</span><span class="l-zh">6月</span></td><td class="pos">+0.8%</td><td>75%</td><td class="muted">8</td></tr></table><table style="margin:0;flex:1 1 0;min-width:0"><colgroup><col style="width:28%"><col style="width:28%"><col style="width:23%"><col style="width:21%"></colgroup><tr><th style="text-align:left"><span class="l-en">Month</span><span class="l-zh">月份</span></th><th><span class="l-en">Avg</span><span class="l-zh">均值</span></th><th><span class="l-en">Up</span><span class="l-zh">收涨</span></th><th><span class="l-en">Yrs</span><span class="l-zh">年数</span></th></tr><tr><td style="text-align:left"><span class="l-en">Jul</span><span class="l-zh">7月</span></td><td class="pos">+2.2%</td><td>78%</td><td class="muted">9</td></tr><tr><td style="text-align:left"><span class="l-en">Aug</span><span class="l-zh">8月</span></td><td class="pos">+1.7%</td><td>67%</td><td class="muted">9</td></tr><tr><td style="text-align:left"><span class="l-en">Sep</span><span class="l-zh">9月</span></td><td class="neg">-1.8%</td><td>33%</td><td class="muted">9</td></tr><tr><td style="text-align:left"><span class="l-en">Oct</span><span class="l-zh">10月</span></td><td class="neg">-1.8%</td><td>44%</td><td class="muted">9</td></tr><tr style="background:var(--panel2);font-weight:700"><td style="text-align:left"><span class="l-en">Nov</span><span class="l-zh">11月</span></td><td class="pos">+4.1%</td><td>78%</td><td class="muted">9</td></tr><tr><td style="text-align:left"><span class="l-en">Dec</span><span class="l-zh">12月</span></td><td class="neg">-0.0%</td><td>62%</td><td class="muted">8</td></tr></table></div><div class="muted" style="font-size:10.5px;margin-top:6px;line-height:1.4"><span class="l-en">Each month’s average return across this instrument’s full history, and how often it closed up. Weak evidence — background colour only, never a signal on its own (and left out of the heat score).</span><span class="l-zh">该标的全部历史中每个月的平均回报及收涨频率。属于弱证据 — 仅作背景参考，绝不单独作为信号（且已排除在热度分数之外）。</span></div></span>
           </span>
         </td>
         <td class="neg" style="font-size:11.5px" data-tip-en="49% of 3,516 measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="3,516 个实测 63 日窗口中有 49% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"><span class="l-en">-0.1% vs SPY · even odds</span><span class="l-zh">对SPY -0.1% · 胜率接近五五</span></td>
@@ -7595,11 +7606,11 @@ if (document.readyState === 'loading') {
 <script>
 (function(){
   'use strict';
-  var GATE = {"locked": 62, "payload": "/premiumdata/us_stocks.json", "preview": 3, "stage_counts": {"basing": 3, "blocked": 6, "bottoming": 36, "continuation": 7, "live": 7, "ran": 9, "recovery": 0, "setting_up": 40, "trend": 0, "watch": 22}, "tier": "essential", "total": 65};
+  var GATE = {"locked": 59, "payload": "/premiumdata/us_stocks.json", "preview": 3, "stage_counts": {"basing": 3, "blocked": 4, "bottoming": 35, "continuation": 7, "live": 7, "ran": 9, "recovery": 0, "setting_up": 39, "trend": 0, "watch": 20}, "tier": "essential", "total": 62};
   /* The board and the four adjacent panels are separate switches over ONE
      payload — either can be gated alone, so the fetch is driven by whichever
      is present and each hydrate step is independently guarded below. */
-  var PGATE = {"actnow": {"locked": 26, "preview": 3, "total": 36}, "candidate_pool": {"locked": 95, "preview": 3, "total": 98}, "leader_observations": {"locked": 113, "preview": 3, "total": 116}, "leaders": {"locked": 12, "preview": 3, "total": 15}, "passed": {"locked": 26}, "payload": "/premiumdata/us_stocks.json", "plv_names": {"locked": 72}, "preview": 3, "ran": {"locked": 9, "preview": 3, "total": 12}, "setups": {"locked": 3, "preview": 3, "total": 6}, "tape": {"locked": 307}, "tier": "essential", "what_changed": {"locked": 12}};
+  var PGATE = {"actnow": {"locked": 26, "preview": 3, "total": 36}, "candidate_pool": {"locked": 95, "preview": 3, "total": 98}, "leader_observations": {"locked": 113, "preview": 3, "total": 116}, "leaders": {"locked": 11, "preview": 3, "total": 14}, "passed": {"locked": 24}, "payload": "/premiumdata/us_stocks.json", "plv_names": {"locked": 71}, "preview": 3, "ran": {"locked": 9, "preview": 3, "total": 12}, "setups": {"locked": 3, "preview": 3, "total": 6}, "tape": {"locked": 307}, "tier": "essential", "what_changed": {"locked": 10}};
   /* P-MP1-SHELL §8b: the Setups grid's OWN gate, over the plan book rather
      than the candidate board GATE splits — same payload, same URL, a third
      independent switch. */
