@@ -30,7 +30,7 @@ concurrency:
 jobs:
   trust-gate:
     name: trust-gate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
       - name: canary implementation must come from main
@@ -45,7 +45,7 @@ jobs:
   hosted-environment:
     name: hosted-environment
     needs: trust-gate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       # Create negative evidence before touching Git. A checkout/bootstrap failure is

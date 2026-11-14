@@ -136,7 +136,7 @@ def test_p3bb_executor_stays_call_capable_after_production_route_activation() ->
     assert document["permissions"] == {"contents": "read", "pull-requests": "read"}
 
     trust = document["jobs"]["trust-gate"]
-    assert trust["runs-on"] == "ubuntu-latest"
+    assert trust["runs-on"] == "ubuntu-24.04"
     assert trust["outputs"] == {
         "control_sha": "${{ steps.admit.outputs.control_sha }}",
         "pr_number": "${{ steps.admit.outputs.pr_number }}",
@@ -168,7 +168,7 @@ def test_p3bb_executor_stays_call_capable_after_production_route_activation() ->
     assert {
         production["jobs"][name]["runs-on"]
         for name in ("ci-plan", "ci-pack", "ci-gate")
-    } == {"ubuntu-latest"}
+    } == {"ubuntu-24.04"}
 
 
 def test_p3ba_accepts_exact_main_called_same_repo_pr_and_derives_identity(
@@ -276,7 +276,7 @@ def test_p3ba_refuses_untrusted_call_contexts(
 def test_p3ba_planner_uses_main_control_and_routes_one_or_all_exact_pr_packs() -> None:
     document = workflow("trusted-ci-executor.yml")
     plan = document["jobs"]["plan"]
-    assert plan["runs-on"] == "ubuntu-latest"
+    assert plan["runs-on"] == "ubuntu-24.04"
     assert plan["needs"] == "trust-gate"
     assert {
         "matrix",
@@ -342,7 +342,7 @@ def test_p3ba_planner_uses_main_control_and_routes_one_or_all_exact_pr_packs() -
     hosted_pack = document["jobs"]["legacy-hosted-pack"]
     assert hosted_pack["needs"] == "plan"
     assert hosted_pack["if"] == "needs.plan.outputs.execution_route == 'hosted'"
-    assert hosted_pack["runs-on"] == "ubuntu-latest"
+    assert hosted_pack["runs-on"] == "ubuntu-24.04"
     assert "max-parallel" not in hosted_pack["strategy"]
     assert hosted_pack["strategy"]["matrix"] == (
         "${{ fromJSON(needs.plan.outputs.matrix) }}"

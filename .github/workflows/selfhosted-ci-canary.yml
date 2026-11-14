@@ -24,7 +24,7 @@ concurrency:
 jobs:
   trust-gate:
     name: diagnostic-trusted-main-gate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: refuse a workflow definition outside main
@@ -39,7 +39,7 @@ jobs:
   plan:
     name: diagnostic-plan-current-heavy-pack
     needs: trust-gate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
       matrix: ${{ steps.select.outputs.matrix }}
@@ -192,7 +192,7 @@ jobs:
     # selected, not only the primary one.
     name: diagnostic-hosted-control-pack-${{ matrix.pack }}
     needs: plan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     strategy:
       fail-fast: false
@@ -619,7 +619,7 @@ jobs:
     name: diagnostic-hosted-selfhosted-result-parity-pack-${{ matrix.pack }}
     if: always()
     needs: [plan, hosted-control, selfhosted-pack, cache-negative-control, contamination-probe]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
       fail-fast: false

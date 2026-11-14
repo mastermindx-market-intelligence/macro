@@ -30,7 +30,7 @@ concurrency:
 jobs:
   research-vault-contract:
     if: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
       # The contract uses a small source closure. A whole-repository checkout
@@ -190,7 +190,9 @@ jobs:
   # PRODUCER_STALE; every other nonzero verdict remains red (same as ingest).
   research-vault-source-url:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
+    # This mixed-trigger workflow uses the fixed image required for PR jobs.
+    # Scheduled and dispatch conditions remain unchanged.
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
@@ -228,7 +230,7 @@ jobs:
     # Research Vault URL freshness lives in research-vault-source-url above so it
     # is not gated on VPS_LIVE_PRIMARY.
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && vars.VPS_LIVE_PRIMARY == 'true') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4

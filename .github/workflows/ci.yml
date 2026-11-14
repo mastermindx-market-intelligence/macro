@@ -4640,7 +4640,7 @@ jobs:
   # deliberately unchanged here.
   ci-plan:
     name: ci-plan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Planning loads one manifest and diffs one base; 30 minutes is a hang bound,
     # not a budget. `ci-pack` keeps its own 180.
     timeout-minutes: 30
@@ -4951,10 +4951,12 @@ jobs:
     #     four-pack tail without competing with render workers.
     #   * One `runs-on` for every event removes the event-dependent routing entirely,
     #     so main's baseline and a pull request now prove the packs the SAME way.
+    #     The fixed hosted image also excludes labels that may match self-hosted
+    #     runners, preserving the hosted execution boundary.
     #
     # NOT the macstudio pool, unchanged: that is the render/nightly lane and is
     # routinely saturated (CLAUDE.md — render budget is law).
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 180
     strategy:
       # Sibling packs must FINISH so their proofs survive a single red. A
@@ -5258,7 +5260,7 @@ jobs:
     # treats `skipped` as OK precisely because non-PR events skip it here.
     if: github.event_name == 'pull_request'
     name: contract-delta
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # 25 -> 45 (2026-08-19). PR #6013's contract-delta job was CANCELLED at
     # exactly 25 minutes — checkout/setup/fetch all green, only the gate step
     # itself killed mid-run — because scripts/check_contract_delta.py's two
@@ -5367,7 +5369,7 @@ jobs:
     if: always()
     name: ci-gate
     needs: [ci-plan, ci-pack, contract-delta]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: check out the one shared semantic-proof law

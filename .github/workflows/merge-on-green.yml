@@ -160,7 +160,7 @@ jobs:
     #
     # The job needs only Python, network, a sparse checkout, and PyYAML; no
     # setup-python step or persistent workspace is load-bearing.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
 
     steps:

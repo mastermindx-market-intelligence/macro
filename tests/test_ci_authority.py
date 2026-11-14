@@ -28,6 +28,13 @@ from scripts.ci_authority_paths import (
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/ci-authority.yml"
 REPOSITORY = "mastermindx-market-intelligence/macro"
+
+
+def test_trusted_authority_uses_the_fixed_hosted_image() -> None:
+    workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+    assert workflow["jobs"]["ci-authority"]["runs-on"] == "ubuntu-24.04"
+
+
 PR_NUMBER = 5588
 HEAD = "a" * 40
 NEW_HEAD = "b" * 40

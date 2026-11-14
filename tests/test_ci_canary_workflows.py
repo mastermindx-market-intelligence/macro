@@ -49,8 +49,8 @@ def test_merge_control_hosted_canary_is_read_only_main_pinned_and_non_acting() -
     assert set(document["jobs"]) == {"trust-gate", "hosted-environment"}
     trust = document["jobs"]["trust-gate"]
     probe = document["jobs"]["hosted-environment"]
-    assert trust["runs-on"] == "ubuntu-latest"
-    assert probe["runs-on"] == "ubuntu-latest"
+    assert trust["runs-on"] == "ubuntu-24.04"
+    assert probe["runs-on"] == "ubuntu-24.04"
     assert probe["needs"] == "trust-gate"
     assert "refs/heads/main" in str(trust)
 
@@ -200,10 +200,10 @@ def test_merge_control_hosted_canary_is_read_only_main_pinned_and_non_acting() -
 
 def test_normal_ci_and_fences_remain_hosted() -> None:
     ci = workflow("ci.yml")
-    assert {ci["jobs"][name]["runs-on"] for name in ("ci-plan", "ci-pack", "ci-gate")} == {"ubuntu-latest"}
+    assert {ci["jobs"][name]["runs-on"] for name in ("ci-plan", "ci-pack", "ci-gate")} == {"ubuntu-24.04"}
     fences = workflow("fences.yml")
     for job in fences["jobs"].values():
-        assert job["runs-on"] == "ubuntu-latest"
+        assert job["runs-on"] == "ubuntu-24.04"
 
 
 def test_selfhosted_checkout_is_cache_preceded_negotiated_and_exact_sha_verified() -> None:
@@ -256,7 +256,7 @@ def test_m1_canary_has_no_old_generic_route_or_checkout() -> None:
     job = document["jobs"]["m1-service-canary"]
     assert job["runs-on"] == ["self-hosted", "m1-theta"]
     assert job["needs"] == "trust-gate"
-    assert document["jobs"]["trust-gate"]["runs-on"] == "ubuntu-latest"
+    assert document["jobs"]["trust-gate"]["runs-on"] == "ubuntu-24.04"
     assert "refs/heads/main" in str(document["jobs"]["trust-gate"])
     assert not {"macstudio", "macstudio-light", "theta-m1", "codex", "render-heavy"} & set(job["runs-on"])
     assert all("uses" not in step for step in job["steps"])
@@ -675,7 +675,7 @@ def test_hosted_control_fans_out_over_every_selected_pack() -> None:
     """
     hosted = workflow("selfhosted-ci-canary.yml")["jobs"]["hosted-control"]
     assert hosted["strategy"]["matrix"] == "${{ fromJSON(needs.plan.outputs.matrix) }}"
-    assert hosted["runs-on"] == "ubuntu-latest"
+    assert hosted["runs-on"] == "ubuntu-24.04"
 
 
 def test_render_reservation_probe_is_preserved_at_three_and_four_slots() -> None:

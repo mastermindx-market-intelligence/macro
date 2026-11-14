@@ -293,7 +293,7 @@ def test_ci_yml_carries_a_contract_delta_job_gated_to_pull_request() -> None:
         "contract-delta must never attempt to run on a push/workflow_dispatch "
         "main-proof event -- it has no PR base to diff against there"
     )
-    assert job.get("runs-on") == "ubuntu-latest"
+    assert job.get("runs-on") == "ubuntu-24.04"
     # 25 -> 45 (2026-08-19, PR #6013 cancellation): the job is off the
     # critical path (packs run ~30 min regardless), so this pins a floor, not
     # an exact value -- a further raise for more margin must not red this.

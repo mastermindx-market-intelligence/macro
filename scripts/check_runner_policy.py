@@ -2,7 +2,9 @@
 """Enforce the public-repository trusted-CI runner-routing boundary.
 
 The planner, stable pack anchors, semantic gate, ordinary PR packs, forks, fences,
-and merge controller default to GitHub-hosted Linux/x64. Exact same-repository PR
+and merge controller default to the fixed GitHub-hosted Linux/x64 image
+``ubuntu-24.04``. The ``ubuntu-latest`` label can also match self-hosted runners
+registered with that label. Exact same-repository PR
 execution may call the protected-main trusted executor only through the explicit
 CI_EXECUTION_ROUTE=pc fallback; candidate-authored jobs may not address the runner
 group or supply executor identity. Existing production self-hosted lanes are left
@@ -60,7 +62,7 @@ CUSTOM_LABELS = {
     "m1-theta",
     "m1-light",
 }
-HOSTED = "ubuntu-latest"
+HOSTED = "ubuntu-24.04"
 TRUSTED_PULL_REQUEST_TARGET = ".github/workflows/ci-authority.yml"
 TRUSTED_AUTHORITY_CHECKOUT = (
     "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
