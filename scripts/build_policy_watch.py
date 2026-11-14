@@ -33,7 +33,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
-from engine.policy_watch_current import build_current  # noqa: E402
+from engine.policy_watch_current import build_current, build_policy_event_feed  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_policy_watch")
@@ -180,6 +180,64 @@ _MONTH_ABBR = (
 )
 _STOP_EN = {"proposed": "Proposed", "passed": "Passed", "in_force": "In force", "enforced": "Enforced"}
 _STOP_ZH = {"proposed": "提出", "passed": "通过", "in_force": "生效", "enforced": "执行"}
+
+
+def _policy_event_instant_labels(raw: object) -> tuple[str, str]:
+    """Full bilingual UTC-minute labels for source acquisition clocks."""
+    value = str(raw or "").strip()
+    if not value:
+        return "", ""
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return "", ""
+    if dt.tzinfo is None or dt.utcoffset() is None:
+        return "", ""
+    dt = dt.astimezone(timezone.utc)
+    en = f"{_MONTH_FULL[dt.month - 1]} {dt.day}, {dt.year} {dt:%H:%M} UTC"
+    zh = f"{dt.year}年{dt.month}月{dt.day}日 {dt:%H:%M} UTC"
+    return en, zh
+
+
+def decorate_policy_event_feed(feed: dict | None) -> dict:
+    """Attach display-only labels without collapsing the feed's three clocks."""
+    if not isinstance(feed, dict):
+        feed = {}
+    out = dict(feed)
+    out.setdefault("schema", "policy_watch_event_feed.v1")
+    out.setdefault("state", "unavailable")
+    out.setdefault("fresh", False)
+    out.setdefault("items", [])
+    out.setdefault("sources", [])
+    checked_en, checked_zh = _policy_event_instant_labels(out.get("coverage_checked_at"))
+    out["coverage_checked_at_en"] = checked_en
+    out["coverage_checked_at_zh"] = checked_zh
+
+    items = []
+    for raw in out.get("items") or []:
+        if not isinstance(raw, dict):
+            continue
+        row = dict(raw)
+        source_en, source_zh = format_lifecycle_date(row.get("source_date"), "day")
+        known_en, known_zh = _policy_event_instant_labels(row.get("known_at"))
+        row["source_date_en"] = source_en
+        row["source_date_zh"] = source_zh
+        row["known_at_en"] = known_en
+        row["known_at_zh"] = known_zh
+        items.append(row)
+    out["items"] = items
+
+    sources = []
+    for raw in out.get("sources") or []:
+        if not isinstance(raw, dict):
+            continue
+        row = dict(raw)
+        checked_en, checked_zh = _policy_event_instant_labels(row.get("checked_at"))
+        row["checked_at_en"] = checked_en
+        row["checked_at_zh"] = checked_zh
+        sources.append(row)
+    out["sources"] = sources
+    return out
 
 
 def format_lifecycle_date(raw: object, precision: str = "day") -> tuple[str, str]:
@@ -453,6 +511,14 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001
         log.warning("scorecard skipped: %s", e)
 
+    # Read-only official policy-event discovery over the existing Europe/qbus artifacts.
+    # This is context-only and remains separate from lifecycle authority.
+    try:
+        policy_events = decorate_policy_event_feed(build_policy_event_feed(config.ROOT))
+    except Exception as e:  # noqa: BLE001
+        log.warning("policy event feed skipped: %s", e)
+        policy_events = decorate_policy_event_feed(None)
+
     # deterministic policy lifecycle (no LLM) — owner: engine.policy_intent_desk
     lifecycle = None
     try:
@@ -474,7 +540,7 @@ def main() -> int:
         source_links=source_links, featured_predictions=featured_predictions, brief=brief,
         uk_desk=uk_desk,
         active_section="research", active_page="policy_watch",
-        lifecycle=lifecycle, current=current,
+        lifecycle=lifecycle, current=current, policy_events=policy_events,
         analysis_asof_iso=analysis_asof_iso,
         analysis_asof_en=analysis_asof_en,
         analysis_asof_zh=analysis_asof_zh,
