@@ -44,7 +44,7 @@ function calculatorScript(path, transform = (source) => source) {
   return transform(scripts[0]);
 }
 
-function loadClient(path, transform) {
+function loadClient(path, transform, globals = {}) {
   const raw = calculatorScript(path, transform);
 
   // Fail closed if the source structure changes. Only expose references; do
@@ -80,6 +80,7 @@ ${ANCHOR}`);
   let ready;
   const errors = [];
   const context = vm.createContext({
+    ...globals,
     navigator: {
       clipboard: { writeText() { return Promise.resolve(); } },
     },
@@ -274,6 +275,48 @@ for (const path of SOURCES) {
     assert.equal(client.nodes['out-breakeven'].textContent, '$97.00');
     assert.match(client.copy(), ORDINARY_COPY);
     assert.doesNotMatch(client.nodes['out-plain'].textContent, /No nonnegative|locks in a loss|breaks even at or above/);
+  });
+
+  test(`${path}: decimal equality is a plateau without erasing neighboring signed payoffs`, () => {
+    const client = loadClient(path);
+    for (const [c, K, prem, state] of [
+      [0.3, 0.2, 0.1, 'plateau'],
+      [0.3, 0.2, 0.09999999999999999, 'loss'],
+      [0.3, 0.2, 0.10000000000000002, 'point'],
+      [0.3, 0.2, 0.3, 'point'],
+      [0.3, 0.2, 0.30000000000000004, 'gain'],
+      [3e-7, 2e-7, 1e-7, 'plateau'],
+      [3e21, 2e21, 1e21, 'plateau'],
+    ]) {
+      const res = client.input({ c, K, prem, d: 0 });
+      assert.equal(res.ok, true);
+      assert.equal(res.breakevenState, state, `${c}/${K}/${prem}`);
+      assert.equal(client.nodes['out-breakeven'].textContent.endsWith(' and above'), state === 'plateau');
+      assert.equal(client.copy().includes(' and above'), state === 'plateau');
+      assert.equal(client.nodes['out-plain'].className, state === 'loss' ? 'co-plain warn' : 'co-plain');
+    }
+  });
+
+  test(`${path}: small-cent payoff matrix does not turn decimal equality into a loss`, () => {
+    const client = loadClient(path);
+    for (const C of [3, 7, 11, 30, 101]) for (let K = 1; K < C; K++) {
+      for (const P of [C - K - 1, C - K, C - K + 1].filter((p) => p > 0)) {
+        const res = client.input({ c: C / 100, K: K / 100, prem: P / 100, d: 0 });
+        const cap = K + P - C;
+        const state = cap < 0 ? 'loss' : P > C ? 'gain' : cap === 0 ? 'plateau' : 'point';
+        assert.equal(res.breakevenState, state, `${C}/${K}/${P} cents`);
+        assert.equal(client.copy().includes('not attainable'), cap < 0);
+      }
+    }
+  });
+
+  test(`${path}: unavailable exact integer arithmetic fails closed instead of throwing`, () => {
+    const client = loadClient(path, undefined, { BigInt: undefined });
+    const res = client.input(ORDINARY);
+    assert.equal(res.ok, false);
+    assert.match(res.msg, /exact integer arithmetic/);
+    assert.equal(client.nodes['out-breakeven'].textContent, '—');
+    assert.equal(client.copy(), '');
   });
 
   test(`${path}: independent integer-cents payoff matrix agrees with the presentation`, () => {

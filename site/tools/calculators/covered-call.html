@@ -374,15 +374,32 @@
 (function(){
   "use strict";
 
+  // Classify the accepted decimal values exactly. Binary subtraction can turn
+  // 0.30 - 0.10 === 0.20 into a false gain/loss; an epsilon hides real losses.
+  // This changes only the payoff state, not the existing numeric outputs.
+  function payoffState(c, K, prem){
+    var parts = [c,K,prem].map(function(n){
+      var e=String(n).split("e"), m=e[0].split(".");
+      return {digits:m.join(""), exponent:Number(e[1]||0)-(m[1]||"").length};
+    });
+    var scale = Math.min.apply(null, parts.map(function(p){return p.exponent;}));
+    var units = parts.map(function(p){
+      return BigInt(p.digits) * (BigInt(10) ** BigInt(p.exponent-scale));
+    });
+    var cap = units[1] + units[2] - units[0], zero = BigInt(0);
+    return cap < zero ? "loss" : units[2] > units[0] ? "gain" : cap === zero ? "plateau" : "point";
+  }
+
   // ── pure compute (covered-call spec — do not re-derive) ────────────────────
   // inputs: {c basis, K strike, prem premium, d daysToExp (optional, 0 = none)}.
   // Returns an outputs object, or {ok:false, msg} for invalid input.
   // Never returns NaN/Infinity.
   function compute(inp){
     var c=inp.c, K=inp.K, prem=inp.prem, d=inp.d;
-    if(!(c>0)) return {ok:false, msg:"Enter a cost basis above zero."};
-    if(!(K>0)) return {ok:false, msg:"Enter the call strike you sold."};
-    if(!(prem>0)) return {ok:false, msg:"Enter the premium you received per share."};
+    if(!isFinite(c) || !(c>0)) return {ok:false, msg:"Enter a cost basis above zero."};
+    if(!isFinite(K) || !(K>0)) return {ok:false, msg:"Enter the call strike you sold."};
+    if(!isFinite(prem) || !(prem>0)) return {ok:false, msg:"Enter the premium you received per share."};
+    if(typeof BigInt !== "function") return {ok:false, msg:"This calculator requires a browser with exact integer arithmetic support."};
     var staticReturnPct = 100 * prem / c;
     var ifCalledReturnPct = 100 * (K - c + prem) / c;
     var breakeven = c - prem;
@@ -401,7 +418,7 @@
       downsideProtectionPct:downsideProtectionPct,
       // A covered position is capped at K: c-prem is a reachable zero only
       // when it is nonnegative and no higher than the strike.
-      breakevenState: breakeven > K ? "loss" : breakeven < 0 ? "gain" : breakeven === K ? "plateau" : "point",
+      breakevenState: payoffState(c, K, prem),
       hasDays:hasDays,
       annualizedIfCalled:annualizedIfCalled,
       strikeBelowBasis: K < c
