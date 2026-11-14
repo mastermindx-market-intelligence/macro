@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T04:55:40.649263+00:00",
-  "count": 3343,
+  "generated_at": "2026-11-14T05:11:03.977785+00:00",
+  "count": 3344,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -664,6 +664,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6shqyxtvmsk-04d469",
+      "title": "BofA European Equity Strategy Will European equities continue to outperform",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T12:04:23Z",
+      "summary_points": [
+        "European Equity Reversal vs Strategy: EPS expectations outpacing US for 3 years (AI capex boom) reversed YTD underperformance (-6% to +6% vs global), yet strategy remains negative due to fading outperformance, 10% underperformance vs global by Q2 (Stoxx 600 15% downside risk).",
+        "AI Capex vs Profitability Deterioration: US hyperscalers' capex to exceed $1tn by 2025 (250%+ growth), but ROIC dropped to 15.5% (from 21%) with rising cost of capital, signaling declining profitability and critical earnings pressure.",
+        "Oracle CDS Spike as Sector Risk: Oracle's 5-year CDS spread surged to 2008-levels (Exhibit 23), highlighting severe credit risk for AI infrastructure and sector-wide stability implications.",
+        "US Real Yields Dominate Equity Discount: Stoxx 600 limited rally despite EPS growth due to sharp US 10yr real yield rise (Exhibit 38), confirming US real yields as critical risk factor for global equities.",
+        "Hormuz Supply Disruption Geopolitical Risk: US-Iran MOU triggered near-zero tanker transits through Strait of Hormuz (Exhibit 40), signaling acute oil supply chain disruption and price volatility risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 74,
       "language": "en",
       "needs_metadata": false
     },
