@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-11-14T16:07:09Z",
+  "generated_at": "2026-11-14T20:08:41Z",
   "sources": {
     "macro": {
       "available": true,
@@ -50,11 +50,11 @@
       ]
     },
     "terminal": {
-      "root": "/workspace/scratch/174a810b67b5/registry-terminal-git",
-      "ref": "662d2f18af07f19515f4a3101a886616a79ab97a",
+      "root": "/workspace/scratch/613742d6b57a/native_registry_refresh/terminal.git",
+      "ref": "86931925e2e5c71af3c25e4fc062d461cbc4c9f3",
       "available": true,
-      "sha": "662d2f18af07f19515f4a3101a886616a79ab97a",
-      "page_modules": 56,
+      "sha": "86931925e2e5c71af3c25e4fc062d461cbc4c9f3",
+      "page_modules": 61,
       "registry_base_commit": "e62c54307664f9347a8a10cfa897e32e506ec264",
       "registry_base_sha256": "ee0708b3be98e37268af469bb67c936a7c3135eb6775388051078d90fe2484dd",
       "native_migrations": {
@@ -14105,6 +14105,59 @@
       ]
     },
     {
+      "page_id": "terminal:cycle_intelligence",
+      "repo": "terminal",
+      "route": "/cycle-intelligence",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/cycle-intelligence/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/sector-intelligence?source=flagship_cycles",
+        "/cycledata/cycle_engine.json"
+      ],
+      "access_shell": "anonymous",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "chart_workspace",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Which published cycle and band am I inspecting, where are its historical turns, and how current is its source?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Anonymous presentation shell; verified subject-scoped reading is required before the cycle payload is requested",
+        "The publication owns the available cycles and bands; cycle, band and turn selections remain independent of workspace browsing market"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/cycle-intelligence/page.tsx",
+        "terminal/app/api/sector-intelligence/route.ts",
+        "terminal/app/layout.tsx",
+        "terminal/components/chrome/AppShell.tsx",
+        "terminal/components/chrome/shared-shell/SharedShellPresentation.tsx",
+        "terminal/components/workspaces/CycleIntelligence.tsx",
+        "terminal/lib/flagshipCycle.ts",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/sharedShellMarket.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "Exact native source at Terminal 86931925e2e5c71af3c25e4fc062d461cbc4c9f3. Existing payload access remains with its owner; classification does not grant a plan entitlement, assign a formal owner, assert design compliance, or prove deployed acceptance."
+      ]
+    },
+    {
       "page_id": "terminal:dev_chart_bench",
       "repo": "terminal",
       "route": "/dev/chart-bench",
@@ -14755,6 +14808,58 @@
       ],
       "notes": [
         "Next.js App Router page module (the module IS the page)"
+      ]
+    },
+    {
+      "page_id": "terminal:macro_weather",
+      "repo": "terminal",
+      "route": "/macro-weather",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro-weather/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/macro_context.html"
+      ],
+      "access_shell": "anonymous",
+      "payload_tier": "public",
+      "nav_family": "none",
+      "archetype": "chart_workspace",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "What do the published regional and domain readings say, and what changed?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Reads the bounded published Macro Weather document through the existing server reader; no member credential is forwarded",
+        "The publication supplies the available domains; explicit domain selection is independent of workspace browsing market"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/macro-weather/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/chrome/AppShell.tsx",
+        "terminal/components/chrome/shared-shell/SharedShellPresentation.tsx",
+        "terminal/components/workspaces/MacroWeather.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/macroWeather.server.ts",
+        "terminal/lib/macroWeather.ts",
+        "terminal/lib/sharedShellMarket.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "Exact native source at Terminal 86931925e2e5c71af3c25e4fc062d461cbc4c9f3. Existing payload access remains with its owner; classification does not grant a plan entitlement, assign a formal owner, assert design compliance, or prove deployed acceptance."
       ]
     },
     {
@@ -15619,6 +15724,59 @@
       ]
     },
     {
+      "page_id": "terminal:market_alerts",
+      "repo": "terminal",
+      "route": "/market-alerts",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/market-alerts/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/market-desks/alerts",
+        "/factordata/alerts_triage.json"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "chart_workspace",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Which published market alerts need investigation, and which source evidence supports them?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing SignupGate and verified subject-scoped reader; the upstream owner retains payload-access decisions",
+        "United States coverage only; unsupported or invalid workspace market does not mount the desk data reader"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/market-alerts/page.tsx",
+        "terminal/app/api/shared-shell/market-desks/[desk]/route.ts",
+        "terminal/app/layout.tsx",
+        "terminal/components/chrome/AppShell.tsx",
+        "terminal/components/chrome/shared-shell/SharedShellPresentation.tsx",
+        "terminal/components/market-desks/MarketDesk.tsx",
+        "terminal/components/market-desks/MarketDeskPage.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/sharedShellMarket.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "Exact native source at Terminal 86931925e2e5c71af3c25e4fc062d461cbc4c9f3. Existing payload access remains with its owner; classification does not grant a plan entitlement, assign a formal owner, assert design compliance, or prove deployed acceptance."
+      ]
+    },
+    {
       "page_id": "terminal:market_reference",
       "repo": "terminal",
       "route": "/market-reference",
@@ -15707,6 +15865,59 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module"
+      ]
+    },
+    {
+      "page_id": "terminal:news_intelligence",
+      "repo": "terminal",
+      "route": "/news-intelligence",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/news-intelligence/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/market-desks/news",
+        "/live/intelligence.json"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "chart_workspace",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Which published news developments matter, and what source evidence should I inspect?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing SignupGate and verified subject-scoped reader; the upstream owner retains payload-access decisions",
+        "United States coverage only; unsupported or invalid workspace market does not mount the desk data reader"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/news-intelligence/page.tsx",
+        "terminal/app/api/shared-shell/market-desks/[desk]/route.ts",
+        "terminal/app/layout.tsx",
+        "terminal/components/chrome/AppShell.tsx",
+        "terminal/components/chrome/shared-shell/SharedShellPresentation.tsx",
+        "terminal/components/market-desks/MarketDesk.tsx",
+        "terminal/components/market-desks/MarketDeskPage.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/sharedShellMarket.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "Exact native source at Terminal 86931925e2e5c71af3c25e4fc062d461cbc4c9f3. Existing payload access remains with its owner; classification does not grant a plan entitlement, assign a formal owner, assert design compliance, or prove deployed acceptance."
       ]
     },
     {
@@ -16260,6 +16471,58 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "gate marker `SignupGate` in the page module"
+      ]
+    },
+    {
+      "page_id": "terminal:wti_live_path",
+      "repo": "terminal",
+      "route": "/wti-live-path",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/wti-live-path/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/ontology/explorer/v1?chain=oil_inflation_duration_derate"
+      ],
+      "access_shell": "anonymous",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "none",
+      "archetype": "chart_workspace",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Which condition currently blocks the WTI oil-to-duration path, and which source reading explains it?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Anonymous presentation shell; the existing authenticated ontology reader retains sign-in, restricted, limited and unavailable outcomes",
+        "Fixed oil_inflation_duration_derate chain and four-leg sequence; revision and selected leg remain independent of workspace browsing market"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/wti-live-path/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/chrome/AppShell.tsx",
+        "terminal/components/chrome/shared-shell/SharedShellPresentation.tsx",
+        "terminal/components/workspaces/WtiLivePath.tsx",
+        "terminal/lib/i18n.tsx",
+        "terminal/lib/sharedShellMarket.ts",
+        "terminal/lib/wtiPath.server.ts",
+        "terminal/lib/wtiPath.ts"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "Exact native source at Terminal 86931925e2e5c71af3c25e4fc062d461cbc4c9f3. Existing payload access remains with its owner; classification does not grant a plan entitlement, assign a formal owner, assert design compliance, or prove deployed acceptance."
       ]
     },
     {

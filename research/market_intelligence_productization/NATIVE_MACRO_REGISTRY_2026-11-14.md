@@ -270,3 +270,140 @@ After protected parent release, this successor owns the already-defined additive
 reconciliation, publication/API proof, exact-R export and authenticated consumer
 qualification. The broader original masterplan remains open.
 **MORE_WORK_EXISTS**.
+
+## Protected-source reconciliation refresh — 2026-11-14 20:08 UTC
+
+This supersedes the earlier Terminal 662d2f source qualification above while preserving its accepted rows and all original release holds. The exact integration source is Terminal **86931925e2e5c71af3c25e4fc062d461cbc4c9f3**, tree **0ef52eea50ae75e84b2f30e1c9ff9d8626049f36**, on Draft #1524. It includes the owned Growth/mobile source and the reconciled protected shared-shell source. Its hosted TypeScript, production build, unit and evidence fan-in checks have passed; remaining browser shards were still running at this qualification boundary. This record does not substitute those checks for deployed acceptance.
+
+### Actual immutable inputs and ancestry
+
+Frozen protected registry B remains **e62c54307664f9347a8a10cfa897e32e506ec264**, registry Git blob **a4ef0e826405d58cc69afc1ccab1268612137c97**, SHA256 **ee0708b3be98e37268af469bb67c936a7c3135eb6775388051078d90fe2484dd**. The observed protected Macro main was **821433ccb703694d47dc549fe1f4461cea121647**. The real command `git merge-base --is-ancestor B origin/main` exited **0**, with no stderr, against that bound main ref. Its closure uses 47 genuine commit objects: the 46 records in the retained protected interval plus B's authentic parent **5287b9c2091f16fe9827721f4c2a65c2da1449f1**. All objects match their canonical Git SHA. No graft, shallow boundary, replaced parent, fake root or synthetic Git runner was used.
+
+The actual Terminal Git mirror contains the exact commit, all **2,386 unique tree objects**, and the **64 consumed blobs** below. The full `git ls-tree -r T --name-only` output has **27,169 leaves**, SHA256 **0d90764d6e297c5d97d74ecb69594011ce7917b26b91ca1ed3beb9b8d4e6478b**. Every consumed `git show T:path` returned bytes matching the recorded blob. This is sufficient object closure for the actual generator, not a claim that all unrelated repository blobs or all history were reconstructed.
+
+### Unchanged incumbent generator executed
+
+Generator Git blob **326e5ba3ec7588a060c6eea8740e8d22ad6a4015** is unchanged. From the qualification Macro root, the actual CLI was:
+
+```text
+python scripts/build_product_page_registry.py \
+  --terminal-root /workspace/scratch/613742d6b57a/native_registry_refresh/terminal.git \
+  --terminal-ref 86931925e2e5c71af3c25e4fc062d461cbc4c9f3 \
+  --refresh-terminal-from e62c54307664f9347a8a10cfa897e32e506ec264 \
+  --overrides config/product_experience/page_registry_overrides.yml \
+  --output data/product_experience/page_registry.json \
+  --as-of 2026-11-14T20:08:41Z \
+  --native-migration macro:macro \
+  --native-migration macro:macro_monetary \
+  --native-migration macro:macro_liquidity_regime \
+  --native-migration macro:macro_growth_real_economy \
+  --native-migration macro:macro_business_activity \
+  --native-migration macro:macro_labor_markets \
+  --native-migration macro:macro_inflation_system \
+  --native-migration macro:macro_monetary_policy \
+  --native-migration macro:macro_financial_conditions \
+  --native-migration macro:macro_liquidity_central_banks \
+  --native-migration macro:macro_capital_structure \
+  --native-migration macro:macro_housing_real_estate \
+  --native-migration macro:macro_consumer_payments \
+  --native-migration macro:macro_national_debt_liabilities \
+  --native-migration macro:macro_rates_curves \
+  --native-migration macro:macro_trade_flows
+```
+
+It exited **0** and wrote **382 rows: 314 Macro, 61 Terminal, 7 Mastermind**. The incumbent `--check` with the same output and override paths also exited **0**: `page registry OK: 382 rows, schema mastermind.page_registry.v1`. No alternate generator, hand-built catalogue, network PR enrichment or exporter mutation was used.
+
+### Preservation and additions
+
+All **377 prior registry rows** are JSON-value-identical to head **76ce56b4585e4f0e53ef510c23f52d8fc9c81f64**. That includes all 56 existing Terminal entries. All existing override values are unchanged. Macro and Mastermind source provenance is identical to B. Against B, only the already-declared sixteen predecessor rows retain their admission marker/evidence/note additions; their owner, access, lifecycle and all other values are unchanged. The exact sixteen native mappings are unchanged. No ontology-to-WTI, macro-context-to-weather or cycle-page-to-cycle-intelligence replacement is declared.
+
+The only new entries are:
+
+| Native page | Access represented by the source | Product question |
+| --- | --- | --- |
+| Cycle Intelligence | Anonymous presentation shell, existing verified member payload reader | Which published cycle and band am I inspecting, and where are its historical turns? |
+| Macro Weather | Public document reader, no member credentials forwarded | What does each published macro domain say, and how current is it? |
+| WTI Live Path | Anonymous presentation shell, existing authenticated ontology reader | What does the fixed oil/inflation transmission path show at this source revision? |
+| Market Alerts | Existing signed-in US-only desk | Which published alerts need attention, with which evidence? |
+| News Intelligence | Existing signed-in US-only desk | Which current published news matters for this market context? |
+
+All five preserve derived `owner:unowned`, `priority:unclassified`, `nav_family:none`, and `design_system.compliant:false`. Theme/locale declarations are source capabilities, not visual acceptance. Classification grants no entitlement, new payload access, formal ownership or deployed acceptance.
+
+| Result | Git blob | SHA256 |
+| --- | --- | --- |
+| Registry, 487,489 bytes | `8915b84b11ae4a96a427d1726bbcad888d1e4758` | `fe779776a8ea15516782b6385f8000689fdd4cdf314a70f2c28bc5675bea6bfb` |
+| Overrides, 88,236 bytes | `b901c71a979eaf387389f2c9c25ac30136e2d9ea` | `4d7d50719c64edbe7331feb24cc11be26df055062ab7192c8b685341971433d4` |
+| Unchanged generator | `326e5ba3ec7588a060c6eea8740e8d22ad6a4015` | `acf69e6144a66b7a1a4f5857768e3f37903aa5532bb526c2f1d7604b8fb1857f` |
+
+### Complete consumed Terminal input manifest
+
+| Input at exact T | Git blob |
+| --- | --- |
+| `terminal/app/(shell)/[...legacyPath]/page.tsx` | `7fde5de99560264bb936922da70d092a99836de6` |
+| `terminal/app/(shell)/admin/page.tsx` | `2624b68dbb59505ba46694243c3dd92743986d03` |
+| `terminal/app/(shell)/alerts/page.tsx` | `ad35e1bf099bc2d7e8983751497620d7c03dc438` |
+| `terminal/app/(shell)/analysis/page.tsx` | `2ba4029c7b5c5bd34cb973262a127929f8d603ef` |
+| `terminal/app/(shell)/brain/page.tsx` | `a29609de35764dd10858b13e08ba2c94e095082a` |
+| `terminal/app/(shell)/briefs/[deliveryId]/sharing/page.tsx` | `11c77d9701461e550edc4f400fb3a828120e8169` |
+| `terminal/app/(shell)/briefs/shared/[deliveryId]/page.tsx` | `62c0ee9df5203d51efaa9c8e19eaa4c04167ae0b` |
+| `terminal/app/(shell)/cycle-intelligence/page.tsx` | `36ff14a1eac99b8b879fd2c8aa739cffac85aa7e` |
+| `terminal/app/(shell)/discover/page.tsx` | `7453cf8ba3ce0a0ff79f2c3c4036c1a8301ae037` |
+| `terminal/app/(shell)/dislocations/page.tsx` | `bb957c702422851f3c8eb556b5f74de3211f9636` |
+| `terminal/app/(shell)/intelligence/page.tsx` | `fb0976f8469def5affa49bc65ca93bc5b4432723` |
+| `terminal/app/(shell)/macro-weather/page.tsx` | `6df859c16d4b1d27b93e95ee71be41c3b9c595d2` |
+| `terminal/app/(shell)/macro.html/page.tsx` | `c93d106af0127218f0e257303655e79a746d668b` |
+| `terminal/app/(shell)/macro_business_activity.html/page.tsx` | `eeaf91ca1ce2454f180bc6083dbd1adb905645d7` |
+| `terminal/app/(shell)/macro_capital_structure.html/page.tsx` | `b1a1fbf35c42e9f169205ec195589364ed3ad755` |
+| `terminal/app/(shell)/macro_consumer_payments.html/page.tsx` | `c892dbfaa7122669e13d9da83096eb2780bcfea1` |
+| `terminal/app/(shell)/macro_financial_conditions.html/page.tsx` | `3d9b361491b4d428999d364587b655537655165f` |
+| `terminal/app/(shell)/macro_growth_real_economy.html/page.tsx` | `c96fb50fa361e69b39548c9986a38acca00a000b` |
+| `terminal/app/(shell)/macro_housing_real_estate.html/page.tsx` | `3ad6a019a0b8025b3a56077f99bb66fc97037d53` |
+| `terminal/app/(shell)/macro_inflation_system.html/page.tsx` | `c15ff0c2757ba3e404883af58840de9b63cf1287` |
+| `terminal/app/(shell)/macro_labor_markets.html/page.tsx` | `3c5e12333689f2c2a28bd7139dda950c1e1b8a78` |
+| `terminal/app/(shell)/macro_liquidity_central_banks.html/page.tsx` | `d98029639d4e90d80b223016f99b72bc9c3bfd98` |
+| `terminal/app/(shell)/macro_liquidity_regime.html/page.tsx` | `da5a1f69ef676b50e6e980ba86db23595ff68652` |
+| `terminal/app/(shell)/macro_monetary.html/page.tsx` | `ca227932c4eb0fcd2dd989276d1563186ca184d9` |
+| `terminal/app/(shell)/macro_monetary_policy.html/page.tsx` | `c0c4c6062f70a14627360b32941d4fe56f0bd86a` |
+| `terminal/app/(shell)/macro_national_debt_liabilities.html/page.tsx` | `377ba3f8f40c89905666b09362869cf13f0906dd` |
+| `terminal/app/(shell)/macro_rates_curves.html/page.tsx` | `d99f757cbef505039c5caca14ed84443d5b7769f` |
+| `terminal/app/(shell)/macro_trade_flows.html/page.tsx` | `8abeb710e94ad0b71aee82b1c863789df1540937` |
+| `terminal/app/(shell)/market-alerts/page.tsx` | `c4f423ef731d5218aee2d1cde6845eea4f1bf991` |
+| `terminal/app/(shell)/market-reference/page.tsx` | `35521f4b0cdfbe898b328f053cf5c2021b3750e0` |
+| `terminal/app/(shell)/monitor/page.tsx` | `4bbfa18c23221d2ddff5919673dfcd64938b6c78` |
+| `terminal/app/(shell)/news-intelligence/page.tsx` | `ab7b3de35a4d09b6a880d6ee36d572d567b1db7f` |
+| `terminal/app/(shell)/options/equity-replay/page.tsx` | `d0a00f166e6221ec04076abeda2f33523bf13e81` |
+| `terminal/app/(shell)/options/futures/page.tsx` | `d5b3c38cd04c066c8be4f7e1c01cde4b6e84b0c8` |
+| `terminal/app/(shell)/options/page.tsx` | `02228127f92df4cd42234fbf58bbe67cea3ec5ea` |
+| `terminal/app/(shell)/portfolio/page.tsx` | `4cd0e187505443acd5f1daf6787cb30d0c2f85d4` |
+| `terminal/app/(shell)/prophet/evaluation/page.tsx` | `2d0c3b6b34e3aa45b9b4127391985b566b7b32d6` |
+| `terminal/app/(shell)/prophet/page.tsx` | `896760adccd139141cf810a845b14ef48395e9f8` |
+| `terminal/app/(shell)/research-assistant/page.tsx` | `d03f8b01a171bb184996f58a01dabe2534e9f194` |
+| `terminal/app/(shell)/research/page.tsx` | `0fbd63e747e6df078ef7621a4ac54a6770c50249` |
+| `terminal/app/(shell)/scripts/page.tsx` | `5834e0577f69ae8cee68e81602b08a18e85fec9d` |
+| `terminal/app/(shell)/sectors/page.tsx` | `b068d65694a7f4778c154c7af2d2f180cba6afec` |
+| `terminal/app/(shell)/today/page.tsx` | `98cb63bb2aed3d89a407eebbed78f5343bb71ff7` |
+| `terminal/app/(shell)/wti-live-path/page.tsx` | `0f82612113b4bd3fe5691ca7b48e03668368c1ad` |
+| `terminal/app/dev/chart-bench/page.tsx` | `4effd4e718645fc529a340d2ec791ad9c6923ec2` |
+| `terminal/app/dev/futures-sample/page.tsx` | `f3436cf7617d5a4ed77cb637fb4b696aa0729312` |
+| `terminal/app/dev/futures/page.tsx` | `fcd6ead3a51befc158d1f4b4dccc98a15ebf8b09` |
+| `terminal/app/dev/options-plan/page.tsx` | `c2aaeac2e9db98fa9e4af01b33db61d69231a5ba` |
+| `terminal/app/dev/sector-cycles/page.tsx` | `cdfc380b118acd2cc0950bc6a1054a3ce6482e69` |
+| `terminal/app/dev/sector-depth/page.tsx` | `407168944d3a1d48d6b5ed955827857e69cacd58` |
+| `terminal/app/dev/settings/page.tsx` | `74439fc3b49dea4a2d49674f9baf07b24fc636f7` |
+| `terminal/app/dev/theater/page.tsx` | `cec79c8dd2c4ef857fc030ec733683abf545244c` |
+| `terminal/app/dev/workspaces/page.tsx` | `50d46843c3b6f9fff0ab98e9b86374e8688c78be` |
+| `terminal/app/embed/chart/page.tsx` | `bad101df8eef9dd4616ae2fe3273d9bcb32d7944` |
+| `terminal/app/invite/page.tsx` | `39890183d8fa77058a98a8521e569249ba6bb00c` |
+| `terminal/app/layout.tsx` | `9bc010bed318948a3a4cd8fa375025defaad7213` |
+| `terminal/app/learn/page.tsx` | `803ead13dc242f3860cefd0828435421fa071be1` |
+| `terminal/app/login/page.tsx` | `4e0804e7f44caa13c7eb6aa0b35c97979ed0b8b2` |
+| `terminal/app/page.tsx` | `c434c839facba1e0efc9ac42838110e49dfc172b` |
+| `terminal/app/reset-password/page.tsx` | `8279b17481d7a7c440c603ad7cda78a26f0ba8d9` |
+| `terminal/app/terminal/page.tsx` | `75031c61677a3a4d98c8bfd8ac7c39e2d410a5bc` |
+| `terminal/app/x/[slug]/page.tsx` | `1041dddc233e4ba2e7246c3693060f0b95f93a62` |
+| `terminal/components/AppNav.tsx` | `b22a99843a69da6ba36fc7148ddd933b3d3cc39c` |
+| `terminal/lib/i18n.tsx` | `efd3688e2b4ca6bcd9e806d0096854158c1de214` |
+
+### Continuing boundary
+
+Keep this original Draft carrier, its parent #11253 and the incumbent release/controller requests. The parent remains open with its existing merge-on-green and merge-blocked labels; no hold is cleared and no second release request is issued here. The source refresh is prepared and qualified, but **R is not yet protected**. Only the actual protected R may feed the unchanged `export_shared_shell_routes.py --inventory-ref R` and its check. Publication/API receipts, exact deployed digests, and authenticated desktop/tablet/phone EN/ZH light/dark journeys remain required. The five newer routes also retain their own payload owners and independent scope boundaries. Broader masterplan work remains open. **MORE_WORK_EXISTS**.
