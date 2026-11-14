@@ -32,7 +32,7 @@ This task is not complete when a plan, PR, screenshot, CI run, shell frame or ch
 | E05 | BioCatalyst Intelligence | biocatalyst.html; app/biocatalyst.py | Research trial milestones, record changes and selected peer facts |
 | E06 | Capital Structure | capital_structure.html; app/capital_structure.py | Understand issuer limits, then-known facts and explicit scenarios |
 | E07a | Global Market Cycles | markets.html | Compare measured market cycles and separately labeled analyst context |
-| E07b | Country Cycles | country_cycles.html | Inspect countries/blocs, USD ETF basis, relative strength and currency context |
+| E07b | Country Cycles | country_cycles.html | Inspect countries/blocs with explicit Local / USD basis, relative strength and currency context |
 | E07c | U.S. Sector Cycles | sector_cycles.html | Compare sectors, themes, Nasdaq-100 and Russell-2000 universes |
 | E07d | China Sector Cycles | sector_cycles_china.html | Explore Shenwan sectors and baskets with evidence-limited forward context |
 | E07e | Cycle Intelligence | cycle.html | Distinguish measured oscillators from historical frames |
@@ -79,7 +79,7 @@ Use research/capital_structure/e2e_20261013/U0_JOURNEY_FREEZE.md. Preserve Today
 
 ### E07 Cycles
 
-Preserve each universe and engine. Global Market Cycles contains nine mapped country-engine markets and US/Europe analyst estimates. Country performance uses explicit USD ETF basis. US four-universe selection and lazy series loading remain. China separates measured position, typical rhythm and evidence-gated historical probabilities. Cycle Intelligence FRAME receives no fabricated oscillator, scalar position, dial or uncertainty cone. Projection is not a reversal promise or trade signal.
+Preserve each universe and engine. Global Market Cycles contains nine mapped country-engine markets and US/Europe analyst estimates. The current Country consumer uses a local native index or synthetic ETF / FX path; USD ETF is a separate nested record. Expose an explicit Local / USD basis selector and exact source label. Older builder introductory prose describes USD and must not override the inspected W3.9 renderer. US four-universe selection and lazy series loading remain. China separates measured position, typical rhythm and evidence-gated historical probabilities. Cycle Intelligence FRAME receives no fabricated oscillator, scalar position, dial or uncertainty cone. Projection is not a reversal promise or trade signal.
 
 ### E08 Research
 
@@ -99,7 +99,7 @@ Preserve existing owner-issued discovery/cohort/ranking semantics without new fu
 ## Phases
 
 - P1 source and design inventory: source contracts and twelve destination routes recovered. Current dedicated design homes inspected; existing Terminal and Intelligence Hub files provide isolated new pages for destinations without a located dedicated home. This bounded inventory does not claim account-wide absence.
-- P2 Paper composition: ACTIVE. Policy, Government Revenue and Alternative Data primary flows have been authored. Continue Special Situations, BioCatalyst, Capital Structure, all five Cycles routes and Research, then close remaining interaction/responsive gaps.
+- P2 Paper composition: ACTIVE. Policy, Government Revenue and Alternative Data primary flows have been authored. Special Situations, BioCatalyst and Capital Structure populated flows have also been authored; continue all five Cycles routes and Research, then close remaining interaction/responsive gaps.
 - P3 interaction/responsive/theme/locale and Build closure: follows each product; no static-frame-only completion.
 - P4 Terminal frontend and engine upgrade packets: after full Paper design completion, with fresh carrier/hold/running-writer reconciliation.
 - P5 implementation, protected release and real consumer acceptance: not started.
@@ -134,3 +134,47 @@ Detailed Policy source: [Policy Watch R6 build specification](research_explore/P
 Visual reasoning caught and resolved these specific defects in owned nodes: insufficient chart-footer padding; mobile excess card space; literal newline text in a Build block; overlapping Government secondary paths; a company-linked filter that still displayed an unresolved recipient; ambiguous award identity; historical snapshot predating first observation; collided evidence captions; unspecified market-implied rate basis; and official decision copy blended with interpretation. The last semantic changes require final screenshot readback before closure.
 
 The current Paper bridge supports creation of page-root frames through qualified write_html. Each product frame uses its own new page for reliable canvas organization. Original page/node IDs and held states remain untouched. New pages are additive candidate work, not a source-family cutover.
+
+
+## Milestone C5 — six desk families authored; cycle basis correction
+
+The parent mission remains IN PROGRESS. This milestone records concrete native Paper designs and the source correction below, not design completion or production acceptance. Existing Paper pages and held carriers remain untouched. All displayed financial, policy, procurement and trial values in the new product frames are synthetic fixtures.
+
+### Newly authored destinations and build pages
+
+| Desk / view | Paper page | Root node | Visual status |
+|---|---|---|---|
+| Government Revenue R13 Build | https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-9-0 | 4R9-0 | Screenshot inspected; six engine/acceptance contracts |
+| Alternative Data R1 Build | https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-F-1 | 90H-1 | Screenshot inspected |
+| Special Situations events | https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1U-1 | 2G3L-1 | Inspected, no clipping |
+| Special Situations case terms | https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1V-1 | 2GAA-1 | Inspected; terms, amendments and conditions distinct |
+| Special Situations 320px mobile | https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1W-1 | 2GGN-1 | Inspected; usable narrow flow |
+| Special Situations Build | https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1X-1 | 2GIO-1 | Inspected |
+| BioCatalyst R10 milestones | https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-4-0 | 2BY-0 | Inspected; month intervals and day markers; spacing refined after inspection |
+| BioCatalyst R10 trial changes | https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-5-0 | 2JF-0 | Inspected; before/after fields and source clocks; spacing refined |
+| BioCatalyst R10 explicit peer matrix | https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-6-0 | 2PF-0 | Inspected; three explicit NCT fixtures, comparability limits |
+| BioCatalyst R10 mobile | https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-7-0 | 2VT-0 | Inspected at 390px; spacing refined |
+| BioCatalyst R10 Build | https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-8-0 | 307-0 | Applied and screenshot captured; inspection pending |
+| Capital Structure Today | https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1Y-1 | 2GJI-1 | Inspected; limiting condition before route measures |
+| Capital Structure On a date | https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1Z-1 | 2GPG-1 | Inspected; system-availability cutoff and later evidence exclusion |
+| Capital Structure Scenario | https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-20-1 | 2GVJ-1 | Inspected dark theme; assumptions, arithmetic and unresolved feasibility distinct |
+| Capital Structure mobile | https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-21-1 | 2H2C-1 | Inspected at 390px |
+| Capital Structure Build | https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-22-1 | 2H4A-1 | Applied and screenshot captured; inspection pending |
+
+### Corrections integrated from actual visual and semantic review
+
+- Policy: proposed status is visible; market pricing is labeled expected midpoint; the observed target range and market-implied midpoint are different chart encodings. The recorded decision and “Our read” are separate. Final dark account contrast adjustment applied; latest screenshot awaits inspection.
+- Government Revenue: no obligation-to-revenue conversion; snapshot cutoff is 14 Nov, consistent with first observation; recipient/issuer captions have bounded widths. A visible exact award/order identifier and non-wrapping RECORDED heading were applied after final inspection and await the latest screenshot check.
+- Alternative Data: the table and detail count primary sources separately from related records. Insider transaction/filing/provider rows belong to one event group, not three confirmations. Final screenshots after count/spacing fixes were inspected and clean.
+- BioCatalyst: partial registry dates are bands, completion is not readout, source changes preserve old and new versions, peers are explicitly user selected, and unlike endpoints are not ranked. Final spacing-only refinements require a final screenshot pass.
+- Capital: fictional RIVT inputs demonstrate unknown authorization, distinct registered-dollar room versus potential shares versus reported cash, historical exclusion by first observation, and an explicitly hypothetical transaction. Scenario arithmetic ($60m / $4 = 15m shares; $1.2m fees; $58.8m net) does not assert feasibility; unverified sale conditions remain visible.
+
+### Material source correction for Cycles
+
+The bounded review of `templates/sector_cycles.js` at pinned Macro `e856ef0200a0c508c78ef9a6666116020e4835d1` found that the W3.9 consumer renders Countries' primary local-currency equity cycle (native index or synthetic ETF / FX), while `usd_record` supplies a distinct USD ETF cycle and `fx` supplies currency context. `scripts/build_markets.py` deliberately chooses `usd_record`. Do not label the entire family USD performance.
+
+Markets exposes canonical `pos_v2` / `phase_v2`, timing fields and confirmed turns, not a full oscillator history in its summary packet. Do not draw a dense historical curve from the scalar. China has `osc[]` history with a 0–100 axis and a separate date-window projection; it does not need an extrapolated oscillator path. Preserve canonical versus legacy position distinctions. Long Cycle FRAME has turns, leg lengths in years and typical windows, but no scalar, gauge, oscillator or uncertainty cone. Long Cycle measured normalization must be bound to the actual producer before assigning an amplitude label.
+
+### Continuity and next exact action
+
+Continue the five cycle product views, their interaction/state details and build contract; then Research Discover/Following/All desks and its owner-preserving contract. Close final visual checks for the small refinements listed above, add Government Revenue save/uncertain mapping states, persist per-engine build specifications and exact Paper inventory, and prepare a draft design PR. Do not begin product implementation while the design phase remains incomplete. No runtime collectors, watchers, alert enrollment, product code, merge or deployment were changed.
