@@ -143,7 +143,8 @@ def _r(v, nd: int = 2):
 # --- per-country row ----------------------------------------------------------
 def _country_row(spec: dict, f: pd.DataFrame, us_y10_last: float | None) -> dict | None:
     idx = f.index
-    y10 = _align(_series(spec, "y10", f), idx)
+    raw_y10 = _series(spec, "y10", f)
+    y10 = _align(raw_y10, idx)
     if y10 is None or y10.dropna().empty:
         return None
     y2 = _align(_series(spec, "y2", f), idx)
@@ -151,7 +152,7 @@ def _country_row(spec: dict, f: pd.DataFrame, us_y10_last: float | None) -> dict
     real = _align(_series(spec, "real", f), idx)
 
     lvl = float(y10.dropna().iloc[-1])
-    last_ts = y10.dropna().index[-1]
+    last_ts = raw_y10.loc[:idx[-1]].dropna().index[-1]
     age = (idx[-1] - last_ts).days
     stale = age > STALE_DAYS.get(spec["cadence"], 30)
 
@@ -168,7 +169,8 @@ def _country_row(spec: dict, f: pd.DataFrame, us_y10_last: float | None) -> dict
     vel = _ird_velocity(y10.dropna())
     return {
         "code": spec["code"], "en": spec["en"], "zh": spec["zh"], "ccy": spec["ccy"],
-        "cadence": spec["cadence"], "stale": stale, "gdp_w": spec["gdp_w"],
+        "cadence": spec["cadence"], "stale": stale,
+        "y10_asof": str(last_ts.date()), "gdp_w": spec["gdp_w"],
         "y10": _r(lvl), "y2": _r(float(y2.dropna().iloc[-1])) if y2 is not None and not y2.dropna().empty else None,
         "slope": _r(slope), "slope_basis": slope_basis, "slope_state": _slope_state(slope),
         "chg_63d_bp": _r(chg, 0), "direction": _direction(chg),
