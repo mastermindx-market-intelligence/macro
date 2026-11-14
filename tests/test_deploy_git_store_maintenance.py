@@ -59,7 +59,10 @@ def test_units_are_a_bounded_nightly_oneshot():
     assert "ExecStart=/usr/local/sbin/macro-git-store-maintenance" in service
     # 75 = deferred (lock or memory busy): not a failed unit, retried next night.
     assert "SuccessExitStatus=75" in service
-    assert "RuntimeMaxSec=" in service and "TimeoutStartSec=" in service
+    # A oneshot is bounded by TimeoutStartSec. systemd ignores RuntimeMaxSec on
+    # one and logs a warning on every unit load (DSC:SYSTEMD-ONESHOTS-USE-TIMEOUTSTARTSEC).
+    assert "TimeoutStartSec=6h" in service
+    assert "RuntimeMaxSec=" not in service
     assert "MemoryMax=" in service and "MemoryHigh=" in service
     assert "Nice=19" in service and "IOSchedulingClass=idle" in service
     assert "OnCalendar=*-*-* 02:40:00 UTC" in timer
