@@ -307,15 +307,15 @@ def _get_latest_two_annual(
 
 # ── Annual repurchases fallback from fundamentals_panel ──────────────────────
 
-def _get_annual_repurchases(
+def _get_annual_repurchases_row(
     ticker: str,
     fundamentals_panel_df: pd.DataFrame,
     as_of_date: pd.Timestamp | None = None,
-) -> float | None:
-    """Get the latest PIT-safe annual repurchases from fundamentals_panel.
+) -> dict | None:
+    """Select the latest PIT-safe annual repurchases row from fundamentals_panel.
 
     Returns None if unavailable.  Used as fallback when quarterly TTM coverage
-    is partial — the annual figure is on the same period footing as sbc_ttm.
+    is partial. Its selected period must be compared with the SBC period.
     """
     if fundamentals_panel_df is None or fundamentals_panel_df.empty:
         return None
@@ -343,20 +343,20 @@ def _get_annual_repurchases(
     if sub_rep.empty:
         return None
 
-    return _num(sub_rep.iloc[0]["repurchases"])
+    return sub_rep.iloc[0].to_dict()
 
 
 # ── SBC from statements.parquet ───────────────────────────────────────────────
 
-def _get_sbc_ttm(
+def _get_sbc_row(
     ticker: str,
     statements_df: pd.DataFrame | None,
     as_of_date: pd.Timestamp | None = None,
-) -> float | None:
-    """Get latest annual SBC from statements.parquet.
+) -> dict | None:
+    """Select the latest annual SBC row from statements.parquet.
 
-    SBC is an annual figure (from companyfacts). We return the latest available
-    annual SBC as a proxy for the TTM figure. Returns None if unavailable —
+    SBC is an annual figure (from companyfacts). Retain the selected row and
+    period, with the scalar compatibility helper exposing the existing proxy. Returns None if unavailable —
     callers must treat None as 'unavailable', NOT as zero.
 
     Coverage is sparse (~18/7781 rows as of 2026-07-06) — the LT-1 backfill may
@@ -392,8 +392,30 @@ def _get_sbc_ttm(
     if sub_sbc.empty:
         return None
 
-    sbc_val = _num(sub_sbc.iloc[0]["sbc"])
-    return sbc_val
+    return sub_sbc.iloc[0].to_dict()
+
+
+def _get_annual_repurchases(ticker, fundamentals_panel_df, as_of_date=None):
+    """Compatibility scalar view of the exact selected annual row."""
+    row = _get_annual_repurchases_row(ticker, fundamentals_panel_df, as_of_date)
+    return _num(row["repurchases"]) if row is not None else None
+
+
+def _get_sbc_ttm(ticker, statements_df, as_of_date=None):
+    """Compatibility scalar view; availability/selection gates are unchanged."""
+    row = _get_sbc_row(ticker, statements_df, as_of_date)
+    return _num(row["sbc"]) if row is not None else None
+
+
+def _annual_period(row):
+    """Expose a selected annual period without inferring it from FY alone."""
+    if row is None:
+        return None
+    end = pd.to_datetime(row.get("period_end"), errors="coerce")
+    fy = _num(row.get("fy"))
+    if pd.isna(end) or end is None or fy is None or not fy.is_integer():
+        return None
+    return {"fy": int(fy), "period_end": end.date().isoformat()}
 
 
 # ── main computation ──────────────────────────────────────────────────────────
@@ -453,9 +475,11 @@ def compute_capital_allocation(
     # per ticker in the TTM window for 97% of names).  A partial quarterly sum is NOT a
     # reliable TTM figure and cannot be cleanly subtracted from a full-year SBC.
     # When coverage is partial, fall back to fundamentals_panel.repurchases (annual,
-    # PIT-safe, well-covered) so that repurch_ttm and sbc_ttm are on the same footing.
+    # PIT-safe). Selected annual periods are retained and checked before SBC netting.
+    repurch_annual_row = None
     if repurch_coverage == "partial":
-        annual_rep = _get_annual_repurchases(ticker, fundamentals_panel_df, asof_ts)
+        repurch_annual_row = _get_annual_repurchases_row(ticker, fundamentals_panel_df, asof_ts)
+        annual_rep = _num(repurch_annual_row["repurchases"]) if repurch_annual_row is not None else None
         if annual_rep is not None:
             repurch_ttm = annual_rep
             repurch_coverage = "annual_fallback"
@@ -486,7 +510,10 @@ def compute_capital_allocation(
         debt_lt_prior = _num(prior_annual.get("debt_lt"))
 
     # ── 3. SBC from statements.parquet ───────────────────────────────────────
-    sbc_ttm = _get_sbc_ttm(ticker, statements_df, asof_ts)
+    sbc_annual_row = _get_sbc_row(ticker, statements_df, asof_ts)
+    sbc_ttm = _num(sbc_annual_row["sbc"]) if sbc_annual_row is not None else None
+    repurch_annual_period = _annual_period(repurch_annual_row)
+    sbc_annual_period = _annual_period(sbc_annual_row)
     sbc_available = sbc_ttm is not None
 
     # ── 4. Derived metrics ────────────────────────────────────────────────────
@@ -514,14 +541,19 @@ def compute_capital_allocation(
     # None when sbc unavailable — must not treat missing as zero.
     # Also None when repurch_coverage='partial': subtracting a full-year SBC from
     # a partial quarterly sum produces a structurally unreliable result.  The annual
-    # fallback ('annual_fallback') and 'full' quarterly coverage are both acceptable
-    # because they use the same period as sbc_ttm (annual).
+    # fallback additionally requires the exact selected annual FY/end to match SBC.
+    # Full quarterly coverage keeps its existing convention; this guard is annual-only.
     net_buyback_after_sbc: float | None = None
     net_buyback_after_sbc_note: str | None = None
     if not sbc_available:
         net_buyback_after_sbc_note = "unavailable — SBC not in data"
     elif repurch_coverage == "partial":
         net_buyback_after_sbc_note = "unavailable — repurch_ttm is partial quarterly sum; period mismatch with annual SBC"
+    elif repurch_coverage == "annual_fallback" and (
+        repurch_annual_period is None or sbc_annual_period is None
+        or repurch_annual_period != sbc_annual_period
+    ):
+        net_buyback_after_sbc_note = "unavailable — selected annual periods differ or are unknown"
     elif repurch_ttm is not None and mcap and mcap > 0:
         net_buyback_after_sbc = float((repurch_ttm - sbc_ttm) / mcap)
 
@@ -550,6 +582,8 @@ def compute_capital_allocation(
         "sbc_ttm": sbc_ttm,
         "repurch_coverage": repurch_coverage,
         "sbc_note": net_buyback_after_sbc_note,
+        "repurch_annual_period": repurch_annual_period,
+        "sbc_annual_period": sbc_annual_period,
         # display fields
         "capital_allocation_delta": capital_allocation_delta,
         "buyback_yield": buyback_yield,
@@ -660,3 +694,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
