@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T05:55:50.098053+00:00",
-  "count": 3346,
+  "generated_at": "2026-11-14T06:26:12.058263+00:00",
+  "count": 3347,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -2022,6 +2022,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-9zrnqoayate-34416a",
+      "title": "JPM Copper Dashboard",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T10:39:53Z",
+      "summary_points": [
+        "Physical Tightness & Supply Disruption: 90% of global visible copper inventories in US amid supply disruptions; global production down 1.3% YTD, demand down ~2% YTD; LME speculative positioning falls.",
+        "Data Center Demand Surge: Data center copper demand share of global demand rises to 29% (2028e), contributing ~20% to global copper demand growth by 2030e, driven by hyperscaler capex (Microsoft, Amazon, Google, Meta).",
+        "Carry Trade Mechanics: US copper inventory build driven by carry trade (physical copper shipped to US, sold COMEX futures 3-12mo forward); drawdowns require sustained LME premium to COMEX or stronger physical premiums in China/Europe to incentivize metal withdrawal.",
+        "Revenue Concentration Risk: High revenue concentration in key miners (NEM: 59% ASX revenue 2026E; AAL: 74% EMEA revenue 2026E), with declining EBIT exposure signaling structural revenue mix shifts.",
+        "Copper/Aluminum Ratio Substitution Risk: Ratio nearing 4.5 (above 4x threshold), indicating heightened substitution risk to aluminum in applications, pressuring copper demand fundamentals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 32,
       "language": "en",
       "needs_metadata": false
     },
