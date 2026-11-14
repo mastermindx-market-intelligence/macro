@@ -30,7 +30,7 @@
   function mount(host, options = {}) {
     unmount();
     const s = {host, options, data:null, view:"flow", minutes:15, query:"", status:"all", model:"all", selected:null,
-      paused:false, pending:false, disposed:false, timer:null, tick:null, controller:null, scale:1, page:0, error:null, received:0, stream:null, transport:"connecting", requestGeneration:0, changes:new Map(), nodeOrder:{}, arrivals:0, updates:0, history:null, intelligence:null, settings:null, detailTimer:null, detailPending:false, custom:null, chartField:"output_tokens", showConfigured:true, mapFitted:false};
+      paused:false, pending:false, disposed:false, timer:null, tick:null, controller:null, scale:1, page:0, error:null, received:0, stream:null, transport:"connecting", requestGeneration:0, changes:new Map(), nodeOrder:{}, arrivals:0, updates:0, history:null, intelligence:null, settings:null, detailTimer:null, detailPending:false, custom:null, chartField:"output_tokens", showConfigured:true, mapFitted:false, claudeFilter:"all", claudeFamily:"all"};
     active = s;
     host.innerHTML = `<section class="cf-shell" aria-label="Capacity Fabric router">
       <header class="cf-hero"><div><div class="cf-eyebrow"><span class="cf-mark">${icon("flow")}</span> INFRASTRUCTURE <span>/</span> ROUTER</div><h1>Capacity Fabric<span class="cf-title-dot">.</span></h1><p>Follow the intelligence. From capacity to every consumer.</p></div>
@@ -58,6 +58,7 @@
       }
       if(field==="chart") {s.chartField=e.target.value;renderView(s);}
       if(field==="configured") {s.showConfigured=e.target.checked;renderView(s);}
+      if(field==="claude-filter" || field==="claude-family") {s[field==="claude-filter"?"claudeFilter":"claudeFamily"]=e.target.value;renderView(s);}
       if(field==="model" || field==="status") {s[field]=e.target.value; s.page=0; renderView(s); renderInspector(s);}
     });
     s.keydown = e => {
@@ -372,35 +373,123 @@
   }
 
   function claudeView(s) {
-    const d=s.data, cl=d.claude;
-    if(!cl) return `<div class="cf-view-intro"><div><span class="cf-section-kicker">ANTHROPIC GATEWAY</span><h2>Claude family lanes</h2><p>Weekly budgets per account and family, with the shared 5-hour window. Benched lanes recover at their reset; a reset time alone does not restore capacity.</p></div></div>${empty("No gateway observation","The observer has not cached a gateway lane reading yet. It polls the incumbent gateway every 30 seconds.")}`;
-    if(!cl.reachable) return `<div class="cf-view-intro"><div><span class="cf-section-kicker">ANTHROPIC GATEWAY</span><h2>Claude family lanes</h2></div></div>${empty("Gateway unreachable","Lane budgets are unknown. The last observation is not shown as current.")}`;
-    const nowS=Date.now()/1000;
-    const cards=(cl.accounts||[]).map(a=>{
-      const lanes=Object.entries(a.families||{}).map(([name,lane])=>{
-        const benched=lane.cooldown_until!=null&&lane.cooldown_until>nowS;
-        const pct=lane.budget_weekly&&lane.remaining_weekly!=null?Math.max(0,Math.min(100,lane.remaining_weekly/lane.budget_weekly*100)):null;
-        const reset=lane.weekly_resets_at!=null?`resets ${clock(lane.weekly_resets_at)}${lane.weekly_reset_source==="estimated"?" (est.)":""}`:"";
-        return `<div class="cf-lane ${benched?"benched":""}">
-          <div class="cf-lane-head"><span>${escape(name)}</span>${lane.expiring_soon?'<small class="cf-amber-text">expiring soon</small>':""}${benched?'<small class="cf-red-text">benched</small>':""}</div>
-          ${pct!=null?`<div class="cf-meter"><i style="width:${pct}%"></i></div><small>${Math.round(pct)}% left · ${n(lane.remaining_weekly)} / ${n(lane.budget_weekly)}</small>`:'<small class="cf-muted">budget unknown</small>'}
-          <small class="cf-muted">${benched?`until ${clock(lane.cooldown_until)}`:reset}</small>
+    const d=s.data, cl=d&&d.claude;
+    if(!cl) return `<div class="cf-view-intro"><div><span class="cf-section-kicker">ANTHROPIC GATEWAY</span><h2>Claude capacity</h2><p>The gateway has not supplied an account observation.</p></div></div>${empty("Usage and availability unknown","The gateway status is polled separately from router traffic. No quota or availability conclusion is possible yet.")}`;
+    const now=Date.now()/1000;
+    const gatewayAge=typeof cl.observed_at==="number" && Number.isFinite(cl.observed_at)?now-cl.observed_at:null;
+    const routerAge=typeof d.generated_at==="number" && Number.isFinite(d.generated_at)?now-d.generated_at:null;
+    const fresh=cl.reachable===true && gatewayAge!==null && routerAge!==null
+      && gatewayAge>=-30 && gatewayAge<=90 && routerAge>=-30 && routerAge<=15;
+    const accounts=Array.isArray(cl.accounts)?cl.accounts:[];
+    const familyNames=[...new Set(accounts.flatMap(a=>Object.keys(a.families||{})))].sort((a,b)=>{
+      const order=["fable","opus","sonnet","haiku","other"];
+      const x=order.indexOf(a.toLowerCase()),y=order.indexOf(b.toLowerCase());
+      return (x<0?100:x)-(y<0?100:y)||a.localeCompare(b);
+    });
+    const quota=(used,remaining,budget)=>{
+      if(![used,remaining,budget].every(x=>typeof x==="number"&&Number.isFinite(x)&&x>=0)||budget===0)return {kind:"unknown"};
+      const tolerance=Math.max(1,budget*.005);
+      if(used>budget+tolerance||remaining>budget+tolerance||Math.abs(used+remaining-budget)>tolerance)return {kind:"conflict"};
+      return {kind:"consistent",usedPct:Math.min(100,Math.max(0,100*used/budget))};
+    };
+    const blockedUntil=(a,lane)=>{
+      const times=[a.cooldown_until,lane&&lane.cooldown_until].filter(t=>typeof t==="number"&&t>now);
+      return times.length?Math.max(...times):null;
+    };
+    const laneState=(a,lane)=>{
+      if(!fresh)return ["unknown","Not current"];
+      if(a.drain)return ["warning","Draining"];
+      if(blockedUntil(a,lane))return ["blocked",lane.cooldown_until>now?"Benched":"Account cooling"];
+      if(quota(lane.used_weekly,lane.remaining_weekly,lane.budget_weekly).kind==="conflict")return ["warning","Counter mismatch"];
+      return ["neutral","No hold reported"];
+    };
+    const allLanes=accounts.flatMap(a=>Object.values(a.families||{}).map(lane=>({a,lane})));
+    const benchCount=allLanes.filter(({a,lane})=>fresh&&!a.drain&&!!blockedUntil(a,lane)).length;
+    const draining=accounts.filter(a=>fresh&&a.drain).length;
+    const questionable=allLanes.filter(({lane})=>quota(lane.used_weekly,lane.remaining_weekly,lane.budget_weekly).kind!=="consistent").length;
+    const noHold=allLanes.filter(({a,lane})=>laneState(a,lane)[0]==="neutral").length;
+    const selectedFamily=s.claudeFamily||"all",selectedFilter=s.claudeFilter||"all";
+    const priority=a=>a.drain?4:Object.values(a.families||{}).some(l=>blockedUntil(a,l))?3
+      :Object.values(a.families||{}).some(l=>quota(l.used_weekly,l.remaining_weekly,l.budget_weekly).kind!=="consistent")?2:1;
+    const ordered=accounts.slice().sort((a,b)=>priority(b)-priority(a)||String(a.label||a.id).localeCompare(String(b.label||b.id)));
+    const cards=ordered.map(a=>{
+      const lanes=Object.entries(a.families||{}).filter(([name])=>selectedFamily==="all"||name===selectedFamily);
+      if(!lanes.length)return "";
+      const attention= !fresh||a.drain||lanes.some(([_,lane])=>laneState(a,lane)[0]!=="neutral"||quota(lane.used_weekly,lane.remaining_weekly,lane.budget_weekly).kind!=="consistent");
+      if(selectedFilter==="attention"&&!attention)return "";
+      if(selectedFilter==="unblocked"&&(attention||!fresh))return "";
+      const five=quota(a.used_5h,a.remaining_5h,a.budget_5h);
+      const fiveText=five.kind==="consistent"?`${n(a.used_5h)} / ${n(a.budget_5h)} tracked units`
+        :five.kind==="conflict"?"Counters disagree":"Insufficient counter data";
+      const accountBenched=lanes.filter(([_,lane])=>fresh&&!a.drain&&!!blockedUntil(a,lane)).length;
+      const accountHeadline=!fresh?"Last observation only":a.drain?"Draining"
+        :accountBenched?`${accountBenched} lane${accountBenched===1?"":"s"} benched`:"No active bench recorded";
+      const tiles=lanes.map(([name,lane])=>{
+        const [state,label]=laneState(a,lane),q=quota(lane.used_weekly,lane.remaining_weekly,lane.budget_weekly);
+        const pct=Math.round(q.usedPct||0);
+        const balance=q.kind==="consistent"?`${n(lane.used_weekly)} of ${n(lane.budget_weekly)} tracked units`
+          :q.kind==="conflict"?"Usage and remaining do not add up to the budget":"Usage or balance not reported";
+        const cooldown=blockedUntil(a,lane);
+        const reset=lane.weekly_resets_at!=null
+          ?`${lane.weekly_reset_source==="provider"?"Provider-reported":"Estimated/unsourced"} weekly reset: ${clock(lane.weekly_resets_at)}`
+          :"Weekly reset time unavailable";
+        return `<div class="cf-cap-lane ${state}" data-key="claude-lane:${escape(a.id||a.label)}:${escape(name)}">
+          <div class="cf-cap-lane-head"><strong>${escape(name)}</strong><span class="cf-cap-state ${state}">${escape(label)}</span></div>
+          ${fresh&&q.kind==="consistent"?`<div class="cf-cap-percent">${pct}% <small>of configured weekly budget tracked</small></div>
+            <div class="cf-cap-meter" role="img" aria-label="${pct}% of configured ${escape(name)} budget tracked"><i style="width:${q.usedPct.toFixed(2)}%"></i></div>`:
+            `<div class="cf-cap-percent muted">${q.kind==="conflict"?"Inconsistent":q.kind==="unknown"?"Unknown":"Stale reading"}</div>`}
+          <small class="cf-cap-tracked">${fresh?escape(balance):`Last known: ${escape(balance)}`}</small>
+          ${cooldown?`<small class="cf-cap-cooldown">${fresh?"Hold until":"Last reported hold until"} ${clock(cooldown)}</small>`:""}
+          <small class="cf-cap-reset">${escape(reset)}</small>
+          ${lane.expiring_soon&&fresh?'<small class="cf-cap-reset-soon">Weekly reset approaching</small>':""}
         </div>`;
       }).join("");
-      const pct5=a.budget_5h?Math.max(0,Math.min(100,(a.remaining_5h!=null?a.remaining_5h:a.budget_5h-a.used_5h)/a.budget_5h*100)):null;
-      return `<article class="cf-claude-card">
-        <div class="cf-claude-head"><strong>${escape(a.label||a.id)}</strong>
-          ${a.drain?'<span class="cf-state cancelled"><i></i>draining</span>':""}
-          ${a.inflight?`<small class="cf-muted">${a.inflight} in flight</small>`:""}
-          <small class="cf-muted">${escape(a.last_status||"")}</small></div>
-        <div class="cf-claude-5h"><span>Shared 5h window</span>${pct5!=null?`<div class="cf-meter"><i style="width:${pct5}%"></i></div><small>${n(a.used_5h)} used / ${n(a.budget_5h)}</small>`:'<small class="cf-muted">not reported</small>'}</div>
-        <div class="cf-lane-grid">${lanes}</div>
+      return `<article class="cf-cap-account" data-key="claude-account:${escape(a.id||a.label)}" aria-label="Claude gateway account ${escape(a.label||a.id)}">
+        <div class="cf-cap-account-top">
+          <div class="cf-cap-account-heading"><h3>${escape(a.label||a.id)}</h3><span class="cf-cap-status ${!fresh?"unknown":a.drain?"warning":accountBenched?"blocked":"neutral"}">${escape(accountHeadline)}</span>
+            <small>Gateway last status: ${escape(a.last_status||"unreported")}${a.inflight!=null?` · ${n(a.inflight)} in flight`:""}</small></div>
+          <div class="cf-cap-5h"><span>Shared five-hour window · gateway units</span><strong>${escape(fiveText)}</strong>
+            ${fresh&&five.kind==="consistent"?`<div class="cf-cap-meter" role="img" aria-label="${Math.round(five.usedPct)}% of configured five-hour budget tracked"><i style="width:${five.usedPct.toFixed(2)}%"></i></div>`:""}
+            <small>${fresh&&five.kind==="consistent"?`${Math.round(five.usedPct)}% tracked · not a provider balance`:fresh?"No trustworthy five-hour percentage":"Last-known counters, not live capacity"}</small></div>
+        </div><div class="cf-cap-family-grid">${tiles}</div>
       </article>`;
-    }).join("");
-    return `<div class="cf-view-intro"><div><span class="cf-section-kicker">ANTHROPIC GATEWAY</span><h2>Claude family lanes</h2><p>Weekly budgets per account and family, with the shared 5-hour window. Reset times are provider-reported unless marked estimated. Observed ${clock(cl.observed_at)}.</p></div>
-      <span>${(cl.accounts||[]).length} accounts${cl.stranded_family?` · stranded boost: ${escape(cl.stranded_family)}`:""}</span></div>
-      ${cl.preferences&&cl.preferences.length?`<p class="cf-muted cf-prefs">Account preferences: ${cl.preferences.map(escape).join(", ")}</p>`:""}
-      <div class="cf-claude-grid">${cards||empty("No accounts observed","The gateway reported no accounts.")}</div>`;
+    }).filter(Boolean).join("");
+    const status=fresh?"Recent gateway observation":cl.reachable?"Stale telemetry":"Gateway unreachable";
+    const observed=cl.observed_at!=null?`Last gateway poll ${clock(cl.observed_at)}`:"No timestamp reported";
+    const freshnessText=fresh?"Operational holds reflect the recent gateway reading, not guaranteed provider acceptance."
+      :"Current lane availability is UNKNOWN. Old counters and hold times are not evidence that an account can serve requests now.";
+    const optionsFamily=[`<option value="all"${selectedFamily==="all"?" selected":""}>All model families</option>`]
+      .concat(familyNames.map(name=>`<option value="${escape(name)}"${selectedFamily===name?" selected":""}>${escape(name)}</option>`)).join("");
+    const summary=(title,value,note)=>`<div class="cf-cap-stat"><span>${title}</span><strong>${value}</strong><small>${note}</small></div>`;
+    return `<section class="cf-cap-dashboard">
+      <div class="cf-view-intro"><div><span class="cf-section-kicker">ANTHROPIC GATEWAY / READ-ONLY</span><h2>Claude capacity</h2>
+        <p>See which account or model family is held, and why. Gateway budget counters are not verified Anthropic subscription balances.</p></div>
+        <span>${accounts.length} accounts · ${allLanes.length} model-family lanes</span></div>
+      <div class="cf-cap-alert ${fresh?"": "stale"}" role="status"><span class="cf-cap-alert-dot" aria-hidden="true"></span>
+        <div><strong>${status}</strong><p>${freshnessText}</p></div><small>${observed}</small></div>
+      <div class="cf-cap-stats" aria-label="Claude lane summary">
+        ${summary("Accounts reported",String(accounts.length),"Configured gateway seats, not validated subscriptions")}
+        ${summary("Benched lanes",fresh?String(benchCount):"—",fresh?"Reported cooldowns currently active":"Unknown with stale telemetry")}
+        ${summary("Draining accounts",fresh?String(draining):"—","Not available for new requests while draining")}
+        ${summary("Counters needing verification",String(questionable),`${allLanes.length} family lanes · missing or inconsistent`)}
+      </div>
+      <div class="cf-cap-controls">
+        <div><h3>Account health & family usage</h3><p>${fresh?`${noHold} lanes have no reported hold; this is not a promise of availability.`:"Last-known values are shown for diagnosis only."}</p></div>
+        <div class="cf-cap-selects"><label>Show <select data-field="claude-filter" aria-label="Filter Claude accounts by attention">
+          <option value="all"${selectedFilter==="all"?" selected":""}>All accounts · problems first</option>
+          <option value="attention"${selectedFilter==="attention"?" selected":""}>Needs attention</option>
+          <option value="unblocked"${selectedFilter==="unblocked"?" selected":""}>No reported holds</option>
+        </select></label><label>Model family <select data-field="claude-family" aria-label="Filter Claude model families">${optionsFamily}</select></label></div>
+      </div>
+      <div class="cf-cap-accounts">${cards||empty("Nothing matches these filters","Choose all accounts or all model families to review the full gateway observation.")}</div>
+      <details class="cf-cap-help"><summary>How to interpret these numbers and statuses</summary>
+        <p><b>Weekly and five-hour budgets:</b> gateway-tracked units divided by configured ceilings. These are not token usage, Anthropic-billed balances, or a reliable measure of remaining paid quota. A zero can mean no locally observed use.</p>
+        <p><b>Benched / cooling:</b> the gateway has recorded a temporary hold. It may be held even with zero five-hour usage. <b>No hold reported</b> does not guarantee a successful request. <b>Unknown</b> is not zero.</p>
+        <p><b>Counter quality:</b> percentages appear only when the reported used, remaining and budget values are present and internally consistent. Reset provenance describes the reset time only; it does not validate quota balances. The router observation-window selector does not alter Claude five-hour or weekly limits.</p>
+        ${cl.stranded_family?`<p><b>Routing preference:</b> stranded-family boost currently reports ${escape(cl.stranded_family)}; this is a routing preference, not extra account capacity.</p>`:""}
+        ${Array.isArray(cl.preferences)&&cl.preferences.length?`<p>Gateway account preferences: ${cl.preferences.map(escape).join(", ")}</p>`:""}
+      </details>
+    </section>`;
   }
 
   function consumerView(s) {
