@@ -39,6 +39,7 @@ import subprocess
 import tempfile
 import time
 import zlib
+from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -3805,9 +3806,9 @@ def render_earnings_card(
 #   thin vertical accent SPINE tinted to that row's direction (up green / down
 #   red), while the panel title carries the house indigo→blue gradient of the
 #   _brand_bar laser. The spines rhyme with the footer laser and bind the rows
-#   into a single "watchlist object". Per-row 10-session sparklines (direction-
-#   colored) are what actually sell "live watchlist, not a text post"; a row
-#   with no price history degrades to no sparkline — never a broken glyph.
+#   into a single "watchlist object". Per-row sourced-close sparklines carry
+#   actual observation counts and end dates; missing history gets a distinctly
+#   labeled 1D move, never an invented multi-session path or an empty slot.
 #
 # Palette is 100% inherited (no invented colors): family up #4CAF50 / down
 #   #E23B3B, base #0E1420, header #0A1020, hairline #232A3D, muted ink #6b7a99,
@@ -3826,6 +3827,46 @@ _WL_MONO_PALETTE = [
 ]
 
 
+def _wl_finite(value: object) -> float | None:
+    """A finite numeric market field, or None (including NaN and infinity)."""
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _wl_valid_closes(closes: list[float] | None) -> list[float]:
+    """Only real, positive closes may contribute to a historical price line."""
+    if not closes:
+        return []
+    return [v for raw in closes if (v := _wl_finite(raw)) is not None and v > 0]
+
+
+def _wl_dated_observations(
+    dates: list[str], closes: list[float]
+) -> list[tuple[str, float]]:
+    """Keep aligned, dated positive closes; reject non-monotonic history.
+
+    A request for ten bars is not proof that ten *usable* sessions were returned.
+    Retain the actual date of each observation so the image can disclose its
+    source window rather than silently calling three points a 10-day chart.
+    """
+    observed: list[tuple[str, float]] = []
+    for raw_date, raw_close in zip(dates or [], closes or []):
+        close = _wl_finite(raw_close)
+        if close is None or close <= 0:
+            continue
+        try:
+            observed_date = date.fromisoformat(str(raw_date)[:10]).isoformat()
+        except (TypeError, ValueError):
+            continue
+        if observed and observed_date <= observed[-1][0]:
+            return []  # duplicate/out-of-order rows must not become a timeline
+        observed.append((observed_date, close))
+    return observed[-10:]
+
+
 def _wl_sparkline(
     closes: "list[float] | None",
     x: float,
@@ -3837,19 +3878,16 @@ def _wl_sparkline(
 ) -> str:
     """A tiny direction-colored area sparkline for one watchlist row.
 
-    Returns "" (draw nothing) when there is too little data — the row then reads
-    as a clean logo/price cell rather than a broken glyph. Baseline is the series
-    min so the line hugs the cell floor; a faint area fill gives it body at
-    thumbnail size. All geometry is local to the (x, y, w, h) box.
+    Returns "" when there are fewer than three usable closes; the caller then
+    supplies an explicitly labeled one-day move or an unavailable state. All
+    geometry is local to the (x, y, w, h) box.
     """
-    if not closes or len(closes) < 3:
-        return ""
-    vals = [float(v) for v in closes if v is not None and v == v]
+    vals = _wl_valid_closes(closes)
     if len(vals) < 3:
         return ""
     lo = min(vals)
     hi = max(vals)
-    rng = (hi - lo) or 1.0
+    rng = hi - lo
     n = len(vals)
     inner_pad = 1.5
 
@@ -3858,6 +3896,8 @@ def _wl_sparkline(
 
     def sy(v: float) -> float:
         # small vertical inset so peaks/troughs never clip the cell
+        if not rng:
+            return y + h / 2.0
         return y + inner_pad + (h - 2 * inner_pad) * (1.0 - (v - lo) / rng)
 
     pts = " ".join(f"{sx(i):.1f},{sy(v):.1f}" for i, v in enumerate(vals))
@@ -3873,6 +3913,39 @@ def _wl_sparkline(
         f'<polygon points="{area}" fill="url(#{grad_id})" stroke="none"/>'
         f'<polyline points="{pts}" fill="none" stroke="{color}" '
         f'stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>'
+    )
+
+
+def _wl_one_day_move(
+    pct: float, x: float, y: float, w: float, h: float, color: str
+) -> str:
+    """A two-endpoint 1D move, never a fabricated multi-day price history.
+
+    The observed close-to-close percentage gives the direction; its exact
+    magnitude is printed in the row's change pill. The line is intentionally
+    straight (no invented intermediate bars) and visibly marked "1D".
+    """
+    if not math.isfinite(pct) or pct < -100:
+        return ""
+    x0, x1 = x + 4, x + w - 44
+    if pct > 0:
+        y0, y1 = y + h - 5, y + 5
+    elif pct < 0:
+        y0, y1 = y + 5, y + h - 5
+    else:
+        y0 = y1 = y + h / 2
+    return (
+        '<g data-wl-trend="1d-move">'
+        f'<title>1D close-to-close move {pct:+.1f}%; '
+        'historical price series unavailable</title>'
+        f'<polyline points="{x0:.1f},{y0:.1f} {x1:.1f},{y1:.1f}" '
+        f'fill="none" stroke="{color}" stroke-width="2.8" '
+        'stroke-linecap="round"/>'
+        f'<circle cx="{x0:.1f}" cy="{y0:.1f}" r="3" fill="{color}"/>'
+        f'<circle cx="{x1:.1f}" cy="{y1:.1f}" r="3" fill="{color}"/>'
+        f'<text x="{x + w - 29:.1f}" y="{y + h / 2 + 6:.1f}" '
+        'fill="#98a7c1" font-size="18" text-anchor="middle" '
+        'font-weight="700" font-family="sans-serif">1D</text></g>'
     )
 
 
@@ -4098,7 +4171,8 @@ def render_watchlist_card(
     $SNAP -3.4% $RBLX -4.3% …") as a screenshot of a premium SaaS watchlist
     panel on a phone: dark #0E1420 base, favicon lockup + wordmark, a titled
     panel with a column-label header, one raised cell per ticker (rank rail +
-    color-logo avatar chip + ticker/name + 10-session sparkline +
+    color-logo avatar chip + ticker/name + an observed-close sparkline with
+    source count/end-date (or a marked 1D move when history is missing) + optional
     right-aligned price + colored % pill), and the shared _brand_bar CTA footer.
     The third member of the earnings / breaking card family.
 
@@ -4113,8 +4187,9 @@ def render_watchlist_card(
         title: Theme / list name (the hero, e.g. "Social media selling off").
         rows: List of dicts, each {ticker, name (optional), price, pct_change}.
             4-8 rows typical; 3-10 handled gracefully via height auto-scaling.
-            price / pct_change may be None → the cell degrades cleanly (no pill /
-            no price) rather than printing a placeholder dash.
+            price / pct_change may be None. A valid pct_change is the one-day
+            move (as supplied by the theme/tape feeds); without a price series
+            or a valid move, the row explicitly says trend data is unavailable.
         as_of: Optional as-of stamp shown in the panel header (e.g. "Jul 20").
         logo_root: If provided, each row's logo is auto-resolved + cached via
             resolve_color_logo(ticker, logo_root) — the ORIGINAL full-color icon,
@@ -4145,10 +4220,8 @@ def render_watchlist_card(
     safe_rows = safe_rows[:10]
 
     def _pct_of(r: dict) -> float:
-        try:
-            return abs(float(r.get("pct_change")))
-        except (TypeError, ValueError):
-            return -1.0  # missing pct → sinks below any real magnitude
+        pct = _wl_finite(r.get("pct_change"))
+        return abs(pct) if pct is not None and pct >= -100 else -1.0
 
     safe_rows = sorted(safe_rows, key=_pct_of, reverse=True)
     n_rows = len(safe_rows)
@@ -4271,22 +4344,42 @@ def render_watchlist_card(
     sym_x = inner_l + rail_w              # where the SYMBOL cluster begins
     price_col_x = inner_r - 200           # right edge of price numerals
     pill_col_x = inner_r                  # right edge of pct pill
-    spark_w = 150
-    spark_r = price_col_x - 236           # right edge of sparkline box
-    spark_l = spark_r - spark_w
-    body_parts.append(
-        f'<text x="{sym_x:.1f}" y="{col_y:.1f}" fill="#5c6a86" '
-        f'font-size="18" font-weight="700" font-family="sans-serif" '
-        f'letter-spacing="2.5">SYMBOL</text>'
+    has_price_column = any(_wl_finite(r.get("price")) is not None for r in safe_rows)
+    has_names = any(str(r.get("name") or "").strip() for r in safe_rows)
+    # Theme cards have no absolute prices. Give their actual trend column the
+    # reclaimed width instead of printing an empty "LAST" header over a void.
+    if not has_price_column and not has_names:
+        spark_l = inner_l + 335
+        spark_w = max(150, inner_r - 210 - spark_l)
+    else:
+        spark_w = 150
+        spark_r = price_col_x - 236
+        spark_l = spark_r - spark_w
+    trend_label_x = spark_l + (spark_w - 44) / 2
+    price_header = (
         f'<text x="{price_col_x:.1f}" y="{col_y:.1f}" fill="#5c6a86" '
         f'font-size="18" font-weight="700" text-anchor="end" '
         f'font-family="sans-serif" letter-spacing="2.5">LAST</text>'
-        f'<text x="{pill_col_x:.1f}" y="{col_y:.1f}" fill="#5c6a86" '
-        f'font-size="18" font-weight="700" text-anchor="end" '
-        f'font-family="sans-serif" letter-spacing="2.5">CHANGE</text>'
-        f'<line x1="{inner_l:.1f}" y1="{col_y + 18:.1f}" '
-        f'x2="{inner_r:.1f}" y2="{col_y + 18:.1f}" '
-        f'stroke="#1B2333" stroke-width="1.5"/>'
+        if has_price_column else ""
+    )
+    body_parts.append(
+        (
+            f'<text x="{sym_x:.1f}" y="{col_y:.1f}" fill="#5c6a86" '
+            f'font-size="18" font-weight="700" font-family="sans-serif" '
+            f'letter-spacing="2.5">SYMBOL</text>'
+            f'<text x="{trend_label_x:.1f}" y="{col_y:.1f}" fill="#5c6a86" '
+            f'font-size="18" font-weight="700" text-anchor="middle" '
+            f'font-family="sans-serif" letter-spacing="2.5">TREND</text>'
+        )
+        + price_header
+        + (
+            f'<text x="{pill_col_x:.1f}" y="{col_y:.1f}" fill="#5c6a86" '
+            f'font-size="18" font-weight="700" text-anchor="end" '
+            f'font-family="sans-serif" letter-spacing="2.5">CHANGE</text>'
+            f'<line x1="{inner_l:.1f}" y1="{col_y + 18:.1f}" '
+            f'x2="{inner_r:.1f}" y2="{col_y + 18:.1f}" '
+            f'stroke="#1B2333" stroke-width="1.5"/>'
+        )
     )
 
     # ── Rows ─────────────────────────────────────────────────────────────────
@@ -4314,15 +4407,10 @@ def render_watchlist_card(
         ticker = str(r.get("ticker", "") or "").upper()[:8]
         name = str(r.get("name", "") or "").strip()
 
-        # Direction + numbers (NaN treated same as None — degrade, don't print "nan")
-        try:
-            pct = float(r.get("pct_change"))
-            has_pct = not math.isnan(pct)
-            if not has_pct:
-                pct = 0.0
-        except (TypeError, ValueError):
-            pct = 0.0
-            has_pct = False
+        # Reject NaN, infinity and impossible (< -100%) equity moves.
+        raw_pct = _wl_finite(r.get("pct_change"))
+        has_pct = raw_pct is not None and raw_pct >= -100
+        pct = raw_pct if has_pct else 0.0
         up = pct > 0
         down = pct < 0
         dcolor = UP if up else (DOWN if down else FLAT)
@@ -4391,15 +4479,57 @@ def render_watchlist_card(
                 f'letter-spacing="0.005em">{_xesc(ticker)}</text>'
             )
 
-        # Sparkline (10-session closes) — direction-colored; silent if no data.
+        # Genuine dated close observations if available. The chart color describes
+        # THAT period, independently of the one-day % pill; those signs can
+        # legitimately differ. Missing history gets a labeled 1D endpoint
+        # move from the provided percentage, never a made-up wiggle/path. Three
+        # observations are NOT "10D": show actual coverage and source end date.
         spark = ""
         if logo_root is not None:
             closes = load_closes(ticker, logo_root, n=10)
             if closes is not None:
-                _, cvals = closes
-                spark = _wl_sparkline(
-                    cvals, spark_l, ry + 26, spark_w, ROW_H - 52, dcolor, ruid
-                )
+                observed = _wl_dated_observations(*closes)
+                if len(observed) >= 3:
+                    cvals = [v for _, v in observed]
+                    first_date, last_date = observed[0][0], observed[-1][0]
+                    last_day = date.fromisoformat(last_date)
+                    date_label = f"{last_day:%b} {last_day.day} '{last_day.year % 100:02d}"
+                    trend_color = UP if cvals[-1] > cvals[0] else (
+                        DOWN if cvals[-1] < cvals[0] else FLAT)
+                    spark = _wl_sparkline(
+                        cvals, spark_l, ry + 18, spark_w - 70,
+                        ROW_H - 66, trend_color, ruid
+                    )
+                    if spark:
+                        spark = (
+                            f'<g data-wl-trend="observed-closes" '
+                            f'data-wl-observations="{len(observed)}">'
+                            f'<title>{len(observed)} observed daily closes of up to 10 '
+                            f'requested, {first_date} to {last_date}; missing '
+                            'observations are not fabricated</title>'
+                            + spark
+                            + f'<text x="{spark_l + spark_w - 35:.1f}" '
+                            f'y="{row_cy + 2:.1f}" fill="#98a7c1" '
+                            f'font-size="18" text-anchor="middle" '
+                            f'font-weight="700" font-family="sans-serif">'
+                            f'{len(observed)}/10</text>'
+                            + f'<text x="{spark_l + spark_w / 2:.1f}" '
+                            f'y="{ry + ROW_H - 9:.1f}" fill="#7e8ba5" '
+                            f'font-size="18" text-anchor="middle" '
+                            f'font-family="sans-serif">{date_label}</text></g>'
+                        )
+        if not spark and has_pct:
+            spark = _wl_one_day_move(
+                pct, spark_l, ry + 26, spark_w, ROW_H - 52, dcolor
+            )
+        if not spark:
+            spark = (
+                '<g data-wl-trend="unavailable">'
+                f'<text x="{spark_l + (spark_w - 44) / 2:.1f}" '
+                f'y="{row_cy + 6:.1f}" fill="#71809c" '
+                f'font-size="18" text-anchor="middle" '
+                'font-family="sans-serif">NO TREND DATA</text></g>'
+            )
         if spark:
             body_parts.append(spark)
 
@@ -4407,7 +4537,7 @@ def render_watchlist_card(
         # NaN is treated same as None: no price rendered, no "nan" in output.
         try:
             price = float(r.get("price"))
-            if not math.isnan(price):
+            if math.isfinite(price):
                 price_s = f"{price:,.2f}"
                 body_parts.append(
                     f'<text x="{price_col_x:.1f}" y="{row_cy + 11:.1f}" fill="#e6ecf6" '
