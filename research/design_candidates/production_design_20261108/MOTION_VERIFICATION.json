@@ -1,0 +1,30 @@
+{
+  "artifact": "MOTION_SPECIMEN.html",
+  "source": "macro@338a10852dcefa5d2bd07e5c6be0955c2b1e83fd",
+  "checks": {
+    "canonical_renderer_executed": "PASS",
+    "js_blocks_parse": {
+      "status": "PASS",
+      "count": 2
+    },
+    "paper_storyboard_visual_readback": "PASS",
+    "browser_playback": "NOT_VERIFIED",
+    "responsive_browser_check": "NOT_VERIFIED",
+    "reduced_motion_runtime": "NOT_VERIFIED",
+    "scroll_replay_runtime": "NOT_VERIFIED"
+  },
+  "boundary": {
+    "classification": "BROWSER_SECURITY_POLICY_DENIAL",
+    "attempt": "Navigate own self-contained specimen using data:text/html",
+    "reason": "Only http: and https: protocols allowed; policy refused this action",
+    "reconciled": "Blank tab observed and closed on the original browser carrier; no indirect or alternate browser execution attempted."
+  },
+  "pending_acceptance": [
+    "No running animations after settle",
+    "No replay merely on scroll return",
+    "Reduced motion shows final path without animation",
+    "Missing history renders no data path",
+    "Keyboard disclosure opens and Escape returns focus",
+    "No overflow at 390px"
+  ]
+}

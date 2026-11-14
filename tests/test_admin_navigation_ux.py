@@ -101,15 +101,70 @@ function block(start, end) {
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_workspace_keeps_every_route_once_but_only_13_primary_pages():
+def test_context_lobe_renders_distinct_bottom_state_and_trigger_tier_counts():
+    _node_assert("""
+const branch = block('} else if (name === "bottom_sensors") {', '} else if (name === "options_entry") {');
+const render = new Function('lobe', 'esc', 'let detail; ' + branch.slice(branch.indexOf('{') + 1) + '; return detail;');
+const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+const text = counts => render({n_rows: 2919, counts}, escape);
+assert.equal(text({bottom_state: {WATCH: 2850, KNIFE_RISK: 2}, trigger_tier: {T1: 135, T2: 104, T4: 1}}),
+  'n=2919 · bottom_state: WATCH 2850, KNIFE_RISK 2 · trigger_tier: T1 135, T2 104, T4 1');
+assert.equal(text({WATCH: 0}), 'n=2919 · WATCH 0');
+assert.equal(text({'<tier>': {'<T1>': 0}, absent: {}, missing: null}),
+  'n=2919 · &lt;tier&gt;: &lt;T1&gt; 0 · absent: — · missing: —');
+assert.equal(text({}), 'n=2919 · —');
+""")
+
+
+def test_long_hold_case_links_open_committed_markdown():
+    _node_assert("""
+const rows = block('const caseRows = (cases.items || []).map(it =>', 'const casesBlock =');
+const render = new Function('cases', 'esc', rows + '; return caseRows;');
+const row = file => render({items: [{file}]}, String);
+const path = 'research/winners/cases/AFRM_2022.md';
+assert.ok(row(path).includes('href="https://github.com/mastermindx-market-intelligence/macro/blob/main/' + path + '"'));
+for (const file of [null, '../AFRM_2022.md', 'research/winners/cases/../other.md', 'https://example.org/AFRM.md']) {
+  assert.ok(!row(file).includes('<a '));
+}
+""")
+
+
+def test_context_candidate_disclosures_trace_source_and_count_only_displayed_rows():
+    _node_assert("""
+const esc = value => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
+const helpers = block('function contextCandidateEvidence(', 'RENDER.context_lobe =');
+const json = block('function iosEvidenceJson(', 'Object.assign(IOS_LABEL_ZH');
+const body = block('// ---- candidate_context table ----', '  v.innerHTML = ');
+const render = new Function('d', 'lobes', 'esc', json + helpers + body + '; return candidatesHtml;');
+const shared = {ticker:'SHARED', evidence_blocks:{}, kernel_fdr_cleared:false};
+const evidence = {ticker:'A"<', evidence_blocks:{analyst:{observed:0, flagged:false}, graph_conflicts:[{note:'<x>'}]}};
+const html = rows => render({candidates:rows,n_candidates_shown:rows.length,n_candidates_total:250},
+  {reliability:{standing_law:'Producer <guidance>'}}, esc);
+const mixed = html([shared,evidence]);
+assert.ok(mixed.includes('1 of 2 displayed tickers have ticker-specific evidence'));
+assert.ok(mixed.includes('No ticker-specific evidence in this snapshot.'));
+assert.ok(mixed.includes('FDR not cleared') && mixed.includes('Producer &lt;guidance>'));
+assert.ok(mixed.includes('observed: <code class="mono">0') && mixed.includes('flagged: <code class="mono">false'));
+assert.ok(mixed.includes('Inspect evidence for A&quot;&lt;') && !mixed.includes('<x>'));
+assert.ok(html([{ticker:'OLD'}]).includes('coverage is unavailable'));
+assert.ok(!html([{ticker:'OLD'}]).includes('No ticker-specific evidence'));
+""")
+
+
+def test_workspace_keeps_every_route_once_with_capacity_router_primary():
     _node_assert("""
 const groups = new Function(block('const NAV_GROUPS = [', 'const TAB_LABELS = ') + '; return NAV_GROUPS;')();
 const ids = groups.flatMap(group => group.items.map(item => item[0]));
-const expected = 'overview health system deploy analytics users support_tickets email_center revenue marketing_floor marketing_outbox marketing_content marketing_publish neural_web intelligence_os orchestrator prophet macro_thesis mastermind_ai mastermind_logs alerts long_hold context_lobe causal_lab chronicle research_tools experiments marketing_sentinel marketing_lanes marketing_radar marketing_reply_queue marketing_seo marketing_models marketing_health marketing_learning marketing_lab marketing_lobes marketing_overview marketing_departments marketing_campaigns marketing_channels personas marketing_allies marketing_ads marketing_experiments control_room metabolism codex cost content site_gate features brief vector'.split(' ');
-assert.equal(ids.length, 54);
-assert.equal(new Set(ids).size, 54);
+const expected = 'overview capacity_router health system deploy analytics users support_tickets email_center revenue marketing_floor marketing_outbox marketing_content marketing_publish neural_web intelligence_os orchestrator prophet macro_thesis mastermind_ai mastermind_logs alerts long_hold context_lobe causal_lab chronicle research_tools experiments marketing_sentinel marketing_lanes marketing_radar marketing_reply_queue marketing_seo marketing_models marketing_health marketing_learning marketing_lab marketing_lobes marketing_overview marketing_departments marketing_campaigns marketing_channels personas marketing_allies marketing_ads marketing_experiments control_room metabolism codex cost content site_gate features brief vector'.split(' ');
+assert.equal(ids.length, 55);
+assert.equal(new Set(ids).size, 55);
 assert.deepEqual([...ids].sort(), expected.sort());
-assert.equal(groups.filter(group => group.primary).flatMap(group => group.items).length, 13);
+// #10950 intentionally adds Workspace → Capacity Router. Bind the exact primary
+// set, not just a larger count, so no unrelated route can silently become primary.
+const primary = groups.filter(group => group.primary).flatMap(group => group.items.map(item => item[0]));
+const expectedPrimary = 'overview capacity_router health system deploy analytics users support_tickets email_center revenue marketing_floor marketing_outbox marketing_content marketing_publish'.split(' ');
+assert.equal(primary.length, 14);
+assert.deepEqual([...primary].sort(), expectedPrimary.sort());
 """)
 
 
