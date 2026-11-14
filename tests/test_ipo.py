@@ -439,7 +439,7 @@ def test_avoid_builds_three_items_on_hot_data():
         assert it["title_en"] and it["title_zh"]
         assert "tone" in it and it["tone"] in ("red", "warn", "calm")
     # next_days==0 → the lock-up item is red (into the cliff)
-    lock = next(i for i in av["items"] if "un-lock" in i["title_en"])
+    lock = next(i for i in av["items"] if "modeled lock-up" in i["title_en"])
     assert lock["tone"] == "red"
 
 
@@ -1266,6 +1266,40 @@ def _w20d_froth_size_disp(html):
                   r'<span class="l-zh">90天经营公司交易规模中位数</span>\s*:\s*'
                   r'(.*?)</div>', html[i:j], re.DOTALL)
     return m.group(1) if m else None
+
+
+@pytest.mark.parametrize("next_days", [0, 1, 7, 45, 90])
+def test_modeled_lockup_dates_do_not_claim_observed_releases(monkeypatch, tmp_path, next_days):
+    """Date-only statuses must remain estimates in hero, Avoid and both legends."""
+    raw = [
+        {"ticker": "PAST", "company": "Past Co", "expiry_date": "2026-07-02",
+         "days_to": -5, "size_usd": None, "status": "just-expired", "source": "estimate"},
+        {"ticker": "NEXT", "company": "Next Co", "expiry_date": "2026-07-22",
+         "days_to": next_days, "size_usd": 7.47e8,
+         "status": "approaching" if next_days <= 45 else "locked", "source": "confirmed"},
+    ]
+    summary = il.summary(raw)
+    html = _w20d_render(monkeypatch, tmp_path,
+                        lockvm={"rows": [], "raw": raw, "summary": summary})
+    sec = _w20d_cliff_section(html)
+    for claim in ("unlocks this week", "big lock-up unlocks", "NEXT unlocks",
+                  "just un-locked", "supply live", "still locked", "刚解禁", "供给中", "仍锁定"):
+        assert claim not in html
+    for label in ("modeled date passed", "估算日期已过", "modeled date ahead", "估算日期在后"):
+        assert label in sec
+    assert "2026-07-02" in sec and "2026-07-22" in sec
+    assert "prospectus-derived day count" in sec and "Actual releases can depend on conditions" in sec
+    hero = bi._build_hero({"band": "OPEN"}, {}, {}, summary, "2026-07-07")
+    if next_days <= 10:
+        assert "modeled" in hero["line_en"] and "估算" in hero["line_zh"]
+    avoid = bi._build_avoid({}, {}, summary, "2026-07-07")["items"][0]
+    assert "modeled" in avoid["detail_en"] and "估算" in avoid["detail_zh"]
+    if next_days <= 45:
+        assert "1 modeled date" in avoid["detail_en"] and "共 1" in avoid["detail_zh"]
+        assert "1 more" not in avoid["detail_en"] and "还有 1" not in avoid["detail_zh"]
+        assert "deal size ~$747M" in avoid["detail_en"] and "发行规模约$747M" in avoid["detail_zh"]
+    else:
+        assert "past 30 days" in avoid["detail_en"] and "过去30天" in avoid["detail_zh"]
 
 
 def test_w20d_phase0_receipt_vm_formats():

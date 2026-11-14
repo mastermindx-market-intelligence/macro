@@ -52,7 +52,7 @@ def test_vector_cards_translate_machine_values_into_plain_glance_copy() -> None:
     assert "偏好：黄金, 白银" in html
     assert "全球再通胀 · 风险偏好" in html
     assert "research desk" not in html
-    assert "Next shares unlock: ACME 10-03 · 3 lock-ups approaching" in html
+    assert "Next modeled expiry: ACME 10-03 · 3 modeled dates within 45d" in html
     assert "Next un-lock" not in html
     assert "coming soon" not in html
     assert 'data-tip-en="' in html and "Risk index 73/100" in html

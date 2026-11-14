@@ -3557,13 +3557,13 @@ def _hub_ipo_lockup_line(ipo: dict) -> tuple[str, str] | None:
     name = _esc(company or ticker)
     date = str(ipo.get("next_lockup_date") or "")
     md = _esc(date[5:] if len(date) >= 10 else date)
-    # Main's later verb ("Next shares unlock") + H1 company name and lock-up noun.
-    en = "Next shares unlock: " + name + ((" " + md) if md else "")
-    zh = "下一解禁：" + name + ((" " + md) if md else "")
+    # The snapshot carries a modeled date, not an observed release of shares.
+    en = "Next modeled expiry: " + name + ((" " + md) if md else "")
+    zh = "下一估算到期日：" + name + ((" " + md) if md else "")
     n = ipo.get("lockups_approaching")
     if n:
-        en += " · " + str(n) + " lock-ups approaching"
-        zh += " · 临近 " + str(n) + " 只解禁"
+        en += " · " + str(n) + " modeled dates within 45d"
+        zh += " · 未来45天内 " + str(n) + " 个估算日期"
     return en, zh
 
 

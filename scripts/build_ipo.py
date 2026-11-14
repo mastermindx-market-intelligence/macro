@@ -574,11 +574,11 @@ def _build_hero(win: dict, after: dict, pipe: dict, lk_summary: dict,
     ntk = lk_summary.get("next_ticker")
     if ntk and nd is not None and nd <= 10:
         if nd <= 1:
-            parts_en.append("and a big lock-up unlocks this week")
-            parts_zh.append("且本周有大额解禁")
+            parts_en.append("and a modeled lock-up date falls this week")
+            parts_zh.append("且本周有估算禁售到期日")
         else:
-            parts_en.append(f"and a big lock-up unlocks in {nd} days")
-            parts_zh.append(f"且 {nd} 天后有大额解禁")
+            parts_en.append(f"and a modeled lock-up date is in {nd} days")
+            parts_zh.append(f"且 {nd} 天后为估算禁售到期日")
 
     line_en = " — ".join([parts_en[0], ", ".join(parts_en[1:])]) if len(parts_en) > 1 else parts_en[0]
     line_zh = " —— ".join([parts_zh[0], "，".join(parts_zh[1:])]) if len(parts_zh) > 1 else parts_zh[0]
@@ -610,16 +610,17 @@ def _build_avoid(after: dict, pipe: dict, lk_summary: dict,
         tone = "red" if (nd is not None and nd <= 7) else "warn"
         if ntk and lk_summary.get("next_date"):
             when = _lockup_when_en(lk_summary.get("next_date"), nd)
-            sz = f" (~{_usd(nsize)})" if nsize is not None else ""
-            det_en = f"{ntk} unlocks {when}{sz}; {appr} more within 45 days."
-            det_zh = f"{ntk} 于{_lockup_when_zh(lk_summary.get('next_date'), nd)}解禁{('（约' + _usd(nsize) + '）') if nsize is not None else ''}；45 天内还有 {appr} 只。"
+            sz = f" (deal size ~{_usd(nsize)})" if nsize is not None else ""
+            dates = "date" if appr == 1 else "dates"
+            det_en = f"{ntk}: modeled expiry {when}{sz}; {appr} modeled {dates} within 45 days in total."
+            det_zh = f"{ntk}：估算到期日{_lockup_when_zh(lk_summary.get('next_date'), nd)}{('（发行规模约' + _usd(nsize) + '）') if nsize is not None else ''}；45 天内共 {appr} 个估算日期。"
         else:
-            det_en = f"{appr} names unlock within 45 days; {just} just expired."
-            det_zh = f"45 天内有 {appr} 只解禁；{just} 只刚刚解禁。"
+            det_en = f"{appr} modeled dates within 45 days; {just} in the past 30 days."
+            det_zh = f"45 天内有 {appr} 个估算日期；过去30天有 {just} 个。"
         items.append({
             "icon": "🔓",
-            "title_en": "Names near un-lock — don't add into the cliff",
-            "title_zh": "临近解禁 —— 勿加仓",
+            "title_en": "Near modeled lock-up dates — check the terms",
+            "title_zh": "临近估算到期日 —— 核对条款",
             "detail_en": det_en, "detail_zh": det_zh, "tone": tone,
         })
 
@@ -786,16 +787,22 @@ def _lockup_when_zh(date_iso: str | None, days: int | None) -> str:
 
 
 # F1 (W20-L6): display-only zh map for the committed phase-0 event-study verdict.
-_PHASE0_VERDICT_ZH = {"DISPLAY-ONLY · no measurable edge on our sample":
-                      "仅供展示 · 在我们的样本上无可测量的优势"}
+_PHASE0_VERDICT_ZH = {
+    "DISPLAY-ONLY · no measurable edge on our sample": "仅供展示 · 在我们的样本上无可测量的优势",
+    "DISPLAY-ONLY · insufficient usable event windows": "仅供展示 · 可用事件窗口不足",
+    "DISPLAY-ONLY · event-window statistics unavailable": "仅供展示 · 事件窗口统计不可用",
+    "DISPLAY-ONLY · drift confirmed (avoid, not shortable)": "仅供展示 · 漂移已确认（应规避，不代表可做空）",
+    "DISPLAY-ONLY · soft negative drift, not significant": "仅供展示 · 轻微负向漂移，未达显著性",
+}
 
 
 def _phase0_receipt_vm(phase0) -> dict | None:
     """Item F1 view-model: render the committed lock-up phase-0 event study as a
     display-only receipt line under the cliff note. _lockup_vm already reads the
-    file; nothing here re-runs the study. None unless phase0 is a dict whose stat
-    is a dict with finite numeric mean_pct and pct_negative, and n_names and
-    as_of are present — no honest receipt, no line."""
+    file; nothing here re-runs the study. Legacy statistics require finite
+    mean/pct-negative values. Current explicit
+    insufficient or unavailable states are retained for truthful disclosure.
+    Both forms require a study date and sample count."""
     if not isinstance(phase0, dict):
         return None
     stat = phase0.get("stat")
@@ -804,10 +811,21 @@ def _phase0_receipt_vm(phase0) -> dict | None:
     mean = _finite(stat.get("mean_pct"))
     pct_neg = _finite(stat.get("pct_negative"))
     n_names, as_of = phase0.get("n_names"), phase0.get("as_of")
-    if (not isinstance(mean, (int, float)) or not isinstance(pct_neg, (int, float))
-            or n_names is None or not as_of):
+    status = stat.get("status")
+    has_statistics = isinstance(mean, (int, float)) and isinstance(pct_neg, (int, float))
+    # Preserve legacy missing-data behavior. Current unavailable research is a
+    # result to disclose, not permission to fall back to an older no-edge claim.
+    if (n_names is None or not as_of or
+            (not has_statistics and status not in ("insufficient", "unavailable_statistics"))):
         return None
-    mean_disp = f"{mean:+.2f}%"
+    current_status = status in ("available", "insufficient", "unavailable_statistics")
+    # A current badge reports the focus-window count explicitly. If that field
+    # is missing, disclose the gap instead of borrowing the any-window union.
+    focus_n = stat.get("n")
+    if focus_n is None and not current_status:
+        focus_n = n_names
+    has_statistics = has_statistics and (not current_status or focus_n is not None)
+    mean_disp = f"{mean:+.2f}%" if has_statistics else ""
     if mean_disp.startswith("-"):
         mean_disp = "\u2212" + mean_disp[1:]      # U+2212 minus, never the hyphen
     focus = phase0.get("focus")
@@ -821,10 +839,26 @@ def _phase0_receipt_vm(phase0) -> dict | None:
         window_en, window_zh = "around the un-lock", "解禁前后"
     verdict_en = phase0.get("verdict")
     verdict_en = verdict_en if isinstance(verdict_en, str) else ""
-    return {"as_of": as_of, "n_names": n_names, "mean_disp": mean_disp,
-            "pct_negative": f"{pct_neg:.1f}", "window_en": window_en,
-            "window_zh": window_zh, "verdict_en": verdict_en,
-            "verdict_zh": _PHASE0_VERDICT_ZH.get(verdict_en, verdict_en)}
+    verdict_zh = _PHASE0_VERDICT_ZH.get(verdict_en, verdict_en)
+    note_en = note_zh = None
+    if current_status:
+        missing = stat.get("n_unavailable")
+        if focus_n is None:
+            coverage_en = "focus-window observation count unavailable"
+            coverage_zh = "重点窗口观测数量不可用"
+        else:
+            coverage_en = f"{focus_n} usable focus-window observations"
+            coverage_zh = f"{focus_n}个可用重点窗口观测"
+        if missing is not None:
+            coverage_en += f"; {missing} unavailable"
+            coverage_zh += f"；{missing}个不可用"
+        note_en = f"Study as of {as_of}: {coverage_en}. {verdict_en}."
+        note_zh = f"截至{as_of}的研究：{coverage_zh}。{verdict_zh}。"
+    return {"as_of": as_of, "n_names": focus_n, "n_any_window": n_names,
+            "has_statistics": has_statistics, "mean_disp": mean_disp,
+            "pct_negative": f"{pct_neg:.1f}" if has_statistics else "", "window_en": window_en,
+            "window_zh": window_zh, "verdict_en": verdict_en, "verdict_zh": verdict_zh,
+            "evidence_note_en": note_en, "evidence_note_zh": note_zh}
 
 
 def _prospectus_deals_vm() -> list[dict]:
