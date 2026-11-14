@@ -1287,12 +1287,12 @@ STATE_TONE: dict[str, dict[str, str]] = {
 # has no row: the caller omits `.mc-chip-fresh` entirely when freshness is
 # CURRENT.
 FRESHNESS_NOTE: dict[str, dict[str, str]] = {
-    "LATE_WITHIN_TOLERANCE": _pair("arriving late", "延迟送达"),
-    "STALE_SOURCE": _pair("not updated today", "今日未更新"),
+    "LATE_WITHIN_TOLERANCE": _pair("within the allowed reporting lag", "发布滞后仍在容忍范围内"),
+    "STALE_SOURCE": _pair("source data are older than allowed", "源数据已超过允许时效"),
     "NOT_YET_RELEASED": _pair("not published yet", "尚未发布"),
-    "SOURCE_FAILED": _pair("didn't arrive today", "今日未送达"),
-    "RIGHTS_BLOCKED": _pair("not licensed here", "此处无授权"),
-    "NOT_COVERED": _pair("not covered", "未覆盖"),
+    "SOURCE_FAILED": _pair("source data unavailable", "源数据暂不可用"),
+    "RIGHTS_BLOCKED": _pair("display restricted by usage rights", "展示受使用权限限制"),
+    "NOT_COVERED": _pair("not covered by this publication", "本次发布未覆盖"),
     "HISTORICAL_AS_KNOWN": _pair("as known at the time", "按当时已知"),
     "SIMULATED": _pair("simulated", "模拟数据"),
 }
@@ -1331,20 +1331,35 @@ CHIP_MEANING: dict[str, dict[str, str]] = {
 # first matching cause wins.
 CHIP_NULL_NOTE: dict[str, dict[str, str]] = {
     "no_state": _pair(
-        "This section publishes its own numbers rather than a one-word read. Open it to see them.",
-        "本板块发布的是具体数据，而非一句话读数。点击查看。"),
+        "This section has no single summary reading. Explore its individual measures.",
+        "本板块不提供单一概括读数，可查看各项指标。"),
+    "source_failed": _pair(
+        "Source data are unavailable for this reading. Open the section for details.",
+        "此读数所需的源数据暂不可用，可进入本板块查看详情。"),
+    "stale": _pair(
+        "The source data are older than allowed for this reading.",
+        "源数据已超过此读数允许的时效。"),
     "late": _pair(
-        "Today's reading hasn't arrived. We show nothing rather than yesterday's number dressed as today's.",
-        "今日读数尚未送达。我们宁可不显示，也不会把昨天的数字当作今天的。"),
+        "Inputs are within the allowed reporting lag. No summary is available.",
+        "数据滞后仍在允许范围内，暂无概括读数。"),
     "not_released": _pair(
-        "The source hasn't published yet. It appears here the first time it does.",
-        "数据源尚未发布。首次发布后即会出现在此处。"),
+        "The source has not published this reading yet.",
+        "数据源尚未发布此读数。"),
     "no_snapshot": _pair(
-        "We show this once this section publishes a dated reading. It refreshes with the nightly update.",
-        "该板块首次发布带日期的读数后即会显示，随每晚更新刷新。"),
+        "No verified publication is available for this section.",
+        "暂无法提供本板块经核验的发布内容。"),
     "rights": _pair(
-        "We're not licensed to show this reading here.",
-        "我们在此处没有显示该读数的授权。"),
+        "Usage rights prevent displaying this reading here.",
+        "使用权限限制在此处展示该读数。"),
+    "not_covered": _pair(
+        "This publication does not cover this reading.",
+        "本次发布未覆盖此读数。"),
+    "calculation_refused": _pair(
+        "This publication does not provide a summary calculation. Open the section for details.",
+        "本次发布未提供概括读数的计算结果，可进入本板块查看详情。"),
+    "unavailable": _pair(
+        "A summary reading is unavailable. Open the section for details.",
+        "暂无概括读数，可进入本板块查看详情。"),
     "plan": _pair(
         "This section is part of a higher plan.",
         "本板块属于更高级别方案。"),

@@ -239,7 +239,7 @@ def test_a_workspace_this_build_could_not_read_renders_null_neutral() -> None:
     chip = next(c for c in header["strip"] if c["id"] == "money")
     assert chip["null"] is True
     assert chip["tone"] == "neutral"
-    assert chip["note"] == L.CHIP_NULL_NOTE["no_snapshot"]
+    assert chip["note"] == L.CHIP_NULL_NOTE["source_failed"]
 
 
 def test_no_axes_workspace_with_current_freshness_gets_the_no_state_cause() -> None:
@@ -253,16 +253,14 @@ def test_no_axes_workspace_with_current_freshness_gets_the_no_state_cause() -> N
     assert chip["note"] == L.CHIP_NULL_NOTE["no_state"]
 
 
-def test_no_axes_workspace_that_also_failed_today_gets_the_late_cause() -> None:
-    """`rates_curves`-shaped case (design pin §11.2 frame observation): BOTH
-    structurally state-less AND SOURCE_FAILED today — freshness trouble is
-    the more urgent, more actionable fact and wins the cause selection."""
+def test_no_axes_workspace_with_source_failure_keeps_the_failure_cause() -> None:
+    """A failed source is distinct from an expected release or reporting lag."""
     entries = [_entry("rates_curves", state_id=None, freshness="SOURCE_FAILED",
                       effective_date=None, null_reason="NOT_APPLICABLE")]
     header = macro_suite_view.build_command_header(entries, page_built_at=BUILT_AT)
     chip = next(c for c in header["strip"] if c["id"] == "rates")
     assert chip["null"] is True
-    assert chip["note"] == L.CHIP_NULL_NOTE["late"]
+    assert chip["note"] == L.CHIP_NULL_NOTE["source_failed"]
 
 
 def test_populated_not_applicable_chip_reads_see_the_curve() -> None:
@@ -578,3 +576,107 @@ def test_unknown_tokens_are_empty_for_the_shipped_artifact() -> None:
     unknown = [t for t in L.unknown_tokens() if t.startswith("macro_command_state:")]
     assert unknown == [], unknown
     L.reset_unknown_tokens()
+
+
+# Producer-copy truthfulness: operational causes cannot invent delivery timing,
+# licensing, first-publication promises or structural absence.
+@pytest.mark.parametrize("freshness,null_reason,cause", [
+    ("SOURCE_FAILED", "NOT_APPLICABLE", "source_failed"),
+    ("STALE_SOURCE", "NOT_APPLICABLE", "stale"),
+    ("RIGHTS_BLOCKED", "NOT_APPLICABLE", "rights"),
+    ("NOT_COVERED", "NOT_APPLICABLE", "not_covered"),
+    ("NOT_YET_RELEASED", "NOT_APPLICABLE", "not_released"),
+    ("LATE_WITHIN_TOLERANCE", None, "late"),
+    ("LATE_WITHIN_TOLERANCE", "COMPUTATION_REFUSED", "calculation_refused"),
+    ("CURRENT", "COMPUTATION_REFUSED", "calculation_refused"),
+    ("CURRENT", "NOT_COVERED", "not_covered"),
+    ("CURRENT", "RIGHTS_BLOCKED", "rights"),
+    ("CURRENT", "NOT_YET_RELEASED", "not_released"),
+    ("CURRENT", None, "unavailable"),
+    ("CURRENT", "UNKNOWN_REASON", "unavailable"),
+    ("CURRENT", "NOT_APPLICABLE", "no_state"),
+])
+def test_publication_cause_preserves_the_known_reason(freshness: str, null_reason: str | None, cause: str) -> None:
+    entries = [_entry("liquidity_regime", freshness=freshness, null_reason=null_reason, effective_date=None)]
+    before = copy.deepcopy(entries)
+    header = macro_suite_view.build_command_header(entries, page_built_at=BUILT_AT)
+    chip = next(row for row in header["strip"] if row["id"] == "money")
+    assert chip["cause"] == cause
+    assert chip["note"] == L.CHIP_NULL_NOTE[cause]
+    assert chip["null"] is True and chip["value"] is None and chip["tone"] == "neutral"
+    assert chip["as_of"] is None and header["read"]["clauses"] == []
+    assert entries == before
+
+
+@pytest.mark.parametrize("kind,cause", [
+    ("SOURCE_FAILED", "source_failed"), ("STALE_SOURCE", "stale"),
+    ("RIGHTS_BLOCKED", "rights"), ("NOT_COVERED", "not_covered"),
+    ("NOT_YET_RELEASED", "not_released"), ("COMPUTATION_REFUSED", "calculation_refused"),
+    (None, "no_snapshot"), ("UNKNOWN_FAILURE", "no_snapshot"), ({}, "no_snapshot"),
+])
+def test_publication_cause_uses_a_missing_snapshot_failure(kind: Any, cause: str) -> None:
+    entry = _entry("liquidity_regime", snapshot=False)
+    entry["failure"] = {"kind": kind} if kind is not None else None
+    header = macro_suite_view.build_command_header([entry], page_built_at=BUILT_AT)
+    chip = next(row for row in header["strip"] if row["id"] == "money")
+    assert chip["cause"] == cause
+    assert chip["note"] == L.CHIP_NULL_NOTE[cause]
+    assert chip["tone"] == "neutral" and chip["as_of"] is None
+
+
+def _policy_figure_entry(freshness: str) -> dict[str, Any]:
+    entry = _entry("monetary_policy", freshness=freshness, effective_date="2026-09-04", null_reason="NOT_APPLICABLE")
+    entry["snapshot"]["changes"] = {
+        "comparability": "COMPARABLE",
+        "deltas": [{"metric_id": "fed_funds_rate", "prior_value": 4.33, "current_value": 4.33, "delta": 0.0}],
+    }
+    return entry
+
+
+@pytest.mark.parametrize("freshness,cause", [
+    ("SOURCE_FAILED", "source_failed"), ("STALE_SOURCE", "stale"),
+    ("RIGHTS_BLOCKED", "rights"), ("NOT_COVERED", "not_covered"),
+    ("NOT_YET_RELEASED", "not_released"),
+])
+def test_publication_cause_cannot_be_bypassed_by_comparable_figure_rows(freshness: str, cause: str) -> None:
+    entry = _policy_figure_entry(freshness)
+    header = macro_suite_view.build_command_header([entry], page_built_at=BUILT_AT)
+    chip = next(row for row in header["strip"] if row["id"] == "policy")
+    assert chip["cause"] == cause
+    assert chip["note"] == L.CHIP_NULL_NOTE[cause]
+    assert chip["value"] is None and chip["tone"] == "neutral" and chip["as_of"] is None
+
+
+@pytest.mark.parametrize("freshness", ["CURRENT", "LATE_WITHIN_TOLERANCE"])
+def test_publication_cause_keeps_usable_figure_and_its_allowed_lag(freshness: str) -> None:
+    header = macro_suite_view.build_command_header([_policy_figure_entry(freshness)], page_built_at=BUILT_AT)
+    chip = next(row for row in header["strip"] if row["id"] == "policy")
+    assert chip["cause"] == "see_curve" and chip["as_of"] == "2026-09-04"
+    assert chip["note"] == (None if freshness == "CURRENT" else L.FRESHNESS_NOTE[freshness])
+
+
+@pytest.mark.parametrize("freshness", ["SOURCE_FAILED", "STALE_SOURCE", "LATE_WITHIN_TOLERANCE"])
+def test_publication_cause_does_not_reclassify_a_populated_owner_state(freshness: str) -> None:
+    entry = _entry("liquidity_regime", state_id="C", freshness=freshness, effective_date="2026-09-04")
+    before = copy.deepcopy(entry)
+    header = macro_suite_view.build_command_header([entry], page_built_at=BUILT_AT)
+    chip = next(row for row in header["strip"] if row["id"] == "money")
+    assert chip["null"] is False and chip["cause"] is None
+    assert chip["value"] == L.STATE_WORD["liquidity_regime"]["C"]
+    assert chip["tone"] == L.STATE_TONE["liquidity_regime"]["C"]
+    assert chip["as_of"] == "2026-09-04" and chip["note"] == L.FRESHNESS_NOTE[freshness]
+    assert header["read"]["clauses"][0]["predicate"] == L.PREDICATE_FORM["liquidity_regime"]["C"]
+    assert all(word not in chip["note"]["en"].lower() for word in ("today", "arriv"))
+    assert all(word not in chip["note"]["zh"] for word in ("今日", "送达"))
+    assert entry == before
+
+
+def test_publication_cause_notes_do_not_invent_license_or_refresh_promises() -> None:
+    uncovered = L.CHIP_NULL_NOTE["not_covered"]
+    assert "licens" not in uncovered["en"].lower() and "授权" not in uncovered["zh"]
+    missing = L.CHIP_NULL_NOTE["no_snapshot"]
+    assert all(word not in missing["en"].lower() for word in ("night", "first", "refresh"))
+    assert all(word not in missing["zh"] for word in ("每晚", "首次", "刷新"))
+    distinct_notes = {tuple(L.CHIP_NULL_NOTE[cause][lang] for lang in ("en", "zh"))
+                      for cause in ("source_failed", "stale", "late")}
+    assert len(distinct_notes) == 3
