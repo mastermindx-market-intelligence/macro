@@ -9,8 +9,8 @@ The publication watcher uses two deliberately small entry points:
 
 ``parse_actual(parser_name, body)``
     Extracts a fail-closed display packet from an official feed entry or release
-    page.  A parser returns ``None`` unless all headline fields for its release
-    are present.
+    page. A parser returns ``None`` unless its headline fields are verified;
+    explicitly unpublished CPI annual comparisons carry separate evidence.
 
 Only the Python standard library is used so these helpers stay available in the
 small VPS live-update process.
@@ -546,20 +546,215 @@ def _metric(
     }
 
 
+def _cpi_document_period(text: str) -> str | None:
+    matches = re.findall(
+        r"\bCONSUMER PRICE INDEX\s*-\s*(" + "|".join(_MONTHS)
+        + r")\s+((?:19|20)\d{2})\b", text, flags=re.IGNORECASE,
+    )
+    if len(matches) != 1:
+        return None
+    month, year = matches[0]
+    return f"{month.title()} {year}"
+
+
+def cpi_document_matches_release(
+    body: bytes, event_date: date | str, reference_period: str | None,
+) -> bool:
+    """Bind a CPI detail page to its embargo header and reference-period title.
+
+    A stale release can mention the next release date in its footer, so a date
+    appearing somewhere in the document is not enough.
+    """
+    text = _html_text(body)
+    if not reference_period or _cpi_document_period(text) != reference_period:
+        return False
+    headers = re.findall(
+        r"Transmission of material in this release is embargoed until\s+"
+        r"\d{1,2}:\d{2}\s+a\.m\.\s+\(ET\)\s+[A-Za-z]+,\s+("
+        + "|".join(_MONTHS) + r")\s+(\d{1,2}),\s+((?:19|20)\d{2})\b",
+        text, flags=re.IGNORECASE,
+    )
+    if len(headers) != 1:
+        return False
+    month, day, year = headers[0]
+    try:
+        return date(int(year), _MONTHS[month.lower()], int(day)) == _event_day(event_date)
+    except (TypeError, ValueError):
+        return False
+
+
+class _CpiTableAParser(HTMLParser):
+    """Read Table A cell/header associations without guessing by column offset."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.depth = 0
+        self.tables = 0
+        self.invalid = False
+        self.cells: list[dict[str, Any]] = []
+        self.cell: dict[str, Any] | None = None
+        self.parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attributes = dict(attrs)
+        if tag == "table":
+            if attributes.get("id") == "cpi_pressa":
+                self.tables += 1
+                self.depth = 1
+            elif self.depth:
+                self.invalid = True
+                self.depth += 1
+        if self.depth and tag in {"th", "td"}:
+            if self.cell is not None:
+                self.invalid = True
+            self.cell = {"tag": tag, **attributes}
+            self.parts = []
+        elif self.cell is not None:
+            self.parts.append(" ")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in {"th", "td"} and self.cell is not None:
+            self.cell["text"] = re.sub(r"\s+", " ", "".join(self.parts)).strip()
+            self.cells.append(self.cell)
+            self.cell = None
+        elif self.cell is not None:
+            self.parts.append(" ")
+        if tag == "table" and self.depth:
+            self.depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if self.cell is not None:
+            self.parts.append(data)
+
+
+def _cpi_unavailable_yearly_evidence(
+    body: bytes, text: str, monthly: tuple[float, float],
+    yearly: tuple[float | None, float | None],
+) -> dict[str, Any] | None:
+    """Accept annual missingness only with current, series-specific BLS proof."""
+    period = _cpi_document_period(text)
+    if period is None:
+        return None
+    month, year_text = period.split()
+    year = int(year_text)
+    comparison_period = f"{month} {year - 1}"
+    notice = (r"BLS cannot publish 12-month percent changes for\s+"
+              + re.escape(period) + r"\s+for indexes where\s+"
+              + re.escape(comparison_period) + r"\s+data are unavailable\b")
+    if not re.search(notice, text, flags=re.IGNORECASE):
+        return None
+    table = _CpiTableAParser()
+    table.feed(body.decode("utf-8", errors="ignore"))
+    table.close()
+    if table.tables != 1 or table.invalid or table.depth or table.cell is not None:
+        return None
+    header_ids = [cell["id"] for cell in table.cells if cell.get("id")]
+    if len(header_ids) != len(set(header_ids)):
+        return None
+
+    def unique(matches: list[dict[str, Any]]) -> dict[str, Any] | None:
+        return matches[0] if len(matches) == 1 else None
+
+    def header(label: str) -> dict[str, Any] | None:
+        return unique([c for c in table.cells if c["tag"] == "th" and c["text"] == label])
+
+    month_root = header("Seasonally adjusted changes from preceding month")
+    annual = unique([c for c in table.cells if c["tag"] == "th" and re.fullmatch(
+        r"Un-\s*adjusted\s+12-mos\.\s+ended\s+" + month[:3] + r"\.?\s+" + year_text,
+        c["text"], flags=re.IGNORECASE,
+    )])
+    if not month_root or not annual or not month_root.get("id") or not annual.get("id"):
+        return None
+
+    def month_header(value: str) -> dict[str, Any] | None:
+        name, number = value.split()
+        return unique([c for c in table.cells if c["tag"] == "th"
+                       and c.get("headers", "").split() == [month_root["id"]]
+                       and re.fullmatch(name[:3] + r"\.?\s+" + number, c["text"], re.I)])
+
+    current = month_header(period)
+    month_number = _MONTHS[month.lower()]
+    previous_period = date(year - (month_number == 1), (month_number - 2) % 12 + 1, 1).strftime("%B %Y")
+    previous = month_header(previous_period)
+    if not current or not current.get("id"):
+        return None
+
+    def cell_text(row: dict[str, Any], column: dict[str, Any], *, monthly_cell: bool) -> str | None:
+        expected = {row["id"], column["id"]}
+        if monthly_cell:
+            expected.add(month_root["id"])
+        cell = unique([c for c in table.cells if c["tag"] == "td"
+                       and set(c.get("headers", "").split()) == expected])
+        return cell["text"] if cell else None
+
+    def numeric(value: str | None) -> float | None:
+        return float(value) if value and re.fullmatch(r"-?\d+(?:\.\d+)?", value) else None
+
+    unavailable = []
+    previous_values = []
+    for label, metric_id, mom, yoy in zip(
+        ("All items", "All items less food and energy"),
+        ("cpi_headline_yoy", "cpi_core_yoy"), monthly, yearly,
+    ):
+        row = header(label)
+        if not row or not row.get("id") or numeric(cell_text(row, current, monthly_cell=True)) != mom:
+            return None
+        annual_text = cell_text(row, annual, monthly_cell=False)
+        if yoy is None:
+            if annual_text != "-":
+                return None
+            unavailable.append({"metric_id": metric_id, "period": period,
+                                "comparison_period": comparison_period,
+                                "reason": "official_prior_year_data_unavailable"})
+        elif numeric(annual_text) != yoy:
+            return None
+        previous_values.append(numeric(cell_text(row, previous, monthly_cell=True))
+                               if previous and previous.get("id") else None)
+    result: dict[str, Any] = {"reference_period": period, "unavailable_metrics": unavailable}
+    if all(value is not None for value in previous_values):
+        result["monthly_comparison"] = {"reference_period": previous_period,
+                                        "headline_mom": previous_values[0], "core_mom": previous_values[1]}
+    return result
+
+
 def parse_cpi_actual(body: bytes) -> dict[str, Any] | None:
     """Parse headline and core CPI monthly/yearly changes from a BLS release."""
     text = _html_text(body)
     headline_mom = _change_after(
         text, r"Consumer Price Index for All Urban Consumers"
     )
+    # Anchored patterns first: BLS October 2026 phrasing moved the 12-month
+    # clause in front of the verb — "Over the last 12 months, the all items
+    # index increased 3.7 percent before seasonal adjustment." These cannot
+    # match the legacy clause order, and running them before the loose legacy
+    # window below keeps that window from binding a neighbouring index's
+    # yearly figure when paragraphs are short.
     headline_yoy_match = re.search(
-        rf"(?:Consumer Price Index for All Urban Consumers|the index for all items)"
-        rf".{{0,180}}?\b(?P<verb>{_CHANGE_WORDS})\b"
-        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
-        r"\s+over the last 12 months",
+        rf"over the last 12 months,?\s*the all items index\s+"
+        rf"(?P<verb>{_CHANGE_WORDS})\b"
+        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent",
         text,
         flags=re.IGNORECASE,
     )
+    if headline_yoy_match is None:
+        # Recap phrasing: "The all items index rose 3.7 percent for the 12
+        # months ending September."
+        headline_yoy_match = re.search(
+            rf"the all items index\s+(?P<verb>{_CHANGE_WORDS})\b"
+            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
+            r"\s+for the 12 months ending",
+            text,
+            flags=re.IGNORECASE,
+        )
+    if headline_yoy_match is None:
+        headline_yoy_match = re.search(
+            rf"(?:Consumer Price Index for All Urban Consumers|the index for all items)"
+            rf".{{0,180}}?\b(?P<verb>{_CHANGE_WORDS})\b"
+            r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
+            r"\s+over the last 12 months",
+            text,
+            flags=re.IGNORECASE,
+        )
     headline_yoy = (
         _signed_change(
             headline_yoy_match.group("verb"), headline_yoy_match.group("value")
@@ -589,24 +784,60 @@ def parse_cpi_actual(body: bytes) -> dict[str, Any] | None:
         if core_match
         else None
     )
+    # Bind yearly changes to the core label itself, or its explicit monthly
+    # clause's semicolon continuation. A free character window can cross into
+    # an energy/shelter sentence when core YoY is missing or unreadable.
+    core_label = (
+        r"(?:the )?(?:all items less food and energy index"
+        r"|index for all items less food and energy)"
+    )
+    core_yearly_change = (
+        rf"(?P<verb>up|down|{_CHANGE_WORDS})\b"
+        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?"
+        r"(?P<percent>\s*percent)?"
+        r"(?:\s+over the (?:last )?year"
+        r"|\s+over the last 12 months"
+        r"|\s+for the 12 months ending)"
+    )
     core_yoy_match = re.search(
-        r"(?:the )?index for all items less food and energy"
-        r".{0,180}?"
-        rf"\b(?P<verb>up|down|{_CHANGE_WORDS})\b"
-        r"(?:\s+(?:by\s+)?(?P<value>\d+(?:\.\d+)?))?\s*percent"
-        r"\s+over the year",
+        core_label + r"\s+" + core_yearly_change,
         text,
         flags=re.IGNORECASE,
     )
+    if core_yoy_match is None:
+        # Legacy BLS feed: "was unchanged in June (SA); up 2.6 percent
+        # over the year (NSA)". Match only this core-owned continuation.
+        core_yoy_match = re.search(
+            core_label
+            + rf"\s+(?:{_CHANGE_WORDS})\b"
+            + r"(?:\s+(?:by\s+)?\d+(?:\.\d+)?\s+percent)?"
+            + r"\s+in\s+[A-Z][a-z]+(?:\s+\(SA\))?;\s*"
+            + core_yearly_change,
+            text,
+            flags=re.IGNORECASE,
+        )
+    # Only an explicit unchanged clause may omit its numerical percentage.
+    if core_yoy_match and "unchanged" not in core_yoy_match.group("verb").lower():
+        if core_yoy_match.group("value") is None or core_yoy_match.group("percent") is None:
+            core_yoy_match = None
     core_yoy = (
         _signed_change(core_yoy_match.group("verb"), core_yoy_match.group("value"))
         if core_yoy_match
         else None
     )
-    required = (headline_mom, headline_yoy, core_mom, core_yoy)
-    if any(value is None for value in required):
+    if headline_mom is None or core_mom is None:
         return None
-    period = _embedded_reference_period(text) or _period_from_month_text(text, None)
+    missing_evidence = None
+    if (headline_yoy is None or core_yoy is None
+            or re.search(r"BLS cannot publish 12-month percent changes", text, re.I)):
+        missing_evidence = _cpi_unavailable_yearly_evidence(
+            body, text, (headline_mom, core_mom), (headline_yoy, core_yoy),
+        )
+        if missing_evidence is None:
+            return None
+        if not missing_evidence["unavailable_metrics"]:
+            missing_evidence = None
+    period = (missing_evidence or {}).get("reference_period") or _embedded_reference_period(text) or _period_from_month_text(text, None)
     headline_en = (
         f"CPI {_format_percent(headline_mom)} m/m; "
         f"core {_format_percent(core_mom)}"
@@ -615,6 +846,32 @@ def parse_cpi_actual(body: bytes) -> dict[str, Any] | None:
         f"消费者价格指数环比 {_format_percent(headline_mom)}；"
         f"核心环比 {_format_percent(core_mom)}"
     )
+    if missing_evidence:
+        annual_en, annual_zh = [], []
+        for label_en, label_zh, value in (("Headline", "整体", headline_yoy), ("Core", "核心", core_yoy)):
+            annual_en.append(f"{label_en} year over year: " + ("not published" if value is None else _format_percent(value, sign=False)))
+            annual_zh.append(f"{label_zh}同比：" + ("未发布" if value is None else _format_percent(value, sign=False)))
+        summary_en = f"{headline_en}. " + "; ".join(annual_en) + ". BLS lacks the corresponding prior-year data."
+        summary_zh = f"{headline_zh}。" + "；".join(annual_zh) + "。BLS 缺少对应的上年同期数据。"
+        previous = missing_evidence.get("monthly_comparison")
+        if previous:
+            comparisons_en, comparisons_zh = [], []
+            for label_en, label_zh, key, value in (("Headline", "整体", "headline_mom", headline_mom), ("Core", "核心", "core_mom", core_mom)):
+                prior = previous[key]
+                if value == prior:
+                    comparisons_en.append(f"{label_en} monthly inflation held at {value:.1f}%")
+                    comparisons_zh.append(f"{label_zh}环比保持在 {value:.1f}%")
+                else:
+                    comparisons_en.append(f"{label_en} monthly inflation {'eased' if value < prior else 'rose'} from {prior:.1f}% to {value:.1f}%")
+                    comparisons_zh.append(f"{label_zh}环比从 {prior:.1f}% {'降至' if value < prior else '升至'} {value:.1f}%")
+            summary_en += " " + "; ".join(comparisons_en) + f" versus {previous['reference_period']}."
+            summary_zh += "相较于上月，" + "；".join(comparisons_zh) + "。"
+    else:
+        summary_en = (f"{headline_en}. Year over year: "
+                      f"{_format_percent(headline_yoy, sign=False)} headline and "
+                      f"{_format_percent(core_yoy, sign=False)} core.")
+        summary_zh = (f"{headline_zh}。同比：整体 {_format_percent(headline_yoy, sign=False)}，"
+                      f"核心 {_format_percent(core_yoy, sign=False)}。")
     return {
         "kind": "inflation",
         "headline_mom": headline_mom,
@@ -623,23 +880,15 @@ def parse_cpi_actual(body: bytes) -> dict[str, Any] | None:
         "core_yoy": core_yoy,
         "unit": "percent",
         "reference_period": period,
-        "metrics": [
-            _metric("cpi_headline_mom", headline_mom, "percent", period),
-            _metric("cpi_core_mom", core_mom, "percent", period),
-            _metric("cpi_headline_yoy", headline_yoy, "percent", period),
-            _metric("cpi_core_yoy", core_yoy, "percent", period),
-        ],
+        "metrics": [_metric(metric_id, value, "percent", period)
+                    for metric_id, value in (("cpi_headline_mom", headline_mom), ("cpi_core_mom", core_mom),
+                                             ("cpi_headline_yoy", headline_yoy), ("cpi_core_yoy", core_yoy))
+                    if value is not None],
         "headline_en": headline_en,
         "headline_zh": headline_zh,
-        "summary_en": (
-            f"{headline_en}. Year over year: "
-            f"{_format_percent(headline_yoy, sign=False)} headline and "
-            f"{_format_percent(core_yoy, sign=False)} core."
-        ),
-        "summary_zh": (
-            f"{headline_zh}。同比：整体 {_format_percent(headline_yoy, sign=False)}，"
-            f"核心 {_format_percent(core_yoy, sign=False)}。"
-        ),
+        "summary_en": summary_en,
+        "summary_zh": summary_zh,
+        **(missing_evidence or {}),
     }
 
 

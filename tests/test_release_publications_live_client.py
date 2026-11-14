@@ -221,6 +221,66 @@ if (api.awaitingEvents(
   ).length !== 0) {{
   throw new Error("T+25h detected publication regressed to awaiting release");
 }}
+// A stuck unparsed row outlives the 24h result window only up to the
+// watcher-declared unresolved retention (default 7 days); a weeks-old row
+// must stop posing as a live detection.
+const staleUnparsedPayload = {{
+  publications: [{{
+    event_id: "cpi:2026-10-14",
+    type: "CPI",
+    date: "2026-10-14",
+    status: "published_unparsed",
+    data_ready: false,
+    detected_at: "2026-10-14T12:31:17Z"
+  }}],
+  poll_window: {{
+    unresolved_retention_min: {{ CPI: 10080 }}
+  }}
+}};
+if (api.recentPublications(
+    staleUnparsedPayload, new Date("2026-10-20T12:00:00Z")).length !== 1) {{
+  throw new Error("unparsed row inside declared retention was dropped");
+}}
+if (api.recentPublications(
+    staleUnparsedPayload, new Date("2026-11-09T22:00:00Z")).length !== 0) {{
+  throw new Error("26-day-old unparsed row still rendered as a live detection");
+}}
+const shortRetentionPayload = {{
+  publications: [{{
+    type: "CPI",
+    date: "2026-10-14",
+    status: "published_unparsed",
+    data_ready: false,
+    detected_at: "2026-10-14T12:31:17Z"
+  }}],
+  poll_window: {{
+    unresolved_retention_min: {{ CPI: 1440 }}
+  }}
+}};
+if (api.recentPublications(
+    shortRetentionPayload, new Date("2026-10-16T12:00:00Z")).length !== 0) {{
+  throw new Error("declared retention window was not honored");
+}}
+if (api.unresolvedRetentionMs({{}}, "CPI") !== 7 * 24 * 60 * 60 * 1000) {{
+  throw new Error("default unresolved retention is not 7 days");
+}}
+if (api.unresolvedRetentionMs(shortRetentionPayload, "CPI") !== 24 * 60 * 60 * 1000) {{
+  throw new Error("declared unresolved retention was not applied");
+}}
+// The "Detected" label must carry the ET date once the detection is not from
+// the current ET day, so an old extraction cannot read as a fresh detection.
+const sameDayStamp = api.easternStampPair(
+  "2026-11-06T13:31:17Z", new Date("2026-11-06T20:00:00Z"));
+if (!sameDayStamp || sameDayStamp.en !== "08:31 ET" ||
+    sameDayStamp.en !== sameDayStamp.zh) {{
+  throw new Error("same-ET-day detection stamp lost its clock-only form");
+}}
+const priorDayStamp = api.easternStampPair(
+  "2026-10-14T12:31:17Z", new Date("2026-11-09T22:00:00Z"));
+if (!priorDayStamp || priorDayStamp.en !== "Oct 14 · 08:31 ET" ||
+    priorDayStamp.zh !== "10月14日 · 08:31 ET") {{
+  throw new Error("prior-day detection stamp omitted its date");
+}}
 const expiringPayload = {{
   publications: [{{
     type: "FOMC",
@@ -487,6 +547,55 @@ def test_action_plan_row_reads_as_a_sentence_not_a_styleless_chip():
         capture_output=True,
         text=True,
         timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_cpi_schedule_read_updates_only_the_matching_release():
+    driver = ACTION_PLAN_DRIVER.split("function freshActionRow()", 1)[0] + r'''
+function schedule(date, text) {
+  const row = new El("div"); row.className = "fbm-row";
+  const state = new El("span"); state.className = "fbm-row-state";
+  state.textContent = "Next CPI · 1d";
+  const line = new El("span"); line.className = "fbm-row-line";
+  line.textContent = text;
+  const tip = new El("span"); tip.className = "fbm-tip";
+  tip.setAttribute("data-tip-en", "Release " + date + ". 1 days out.");
+  row.appendChild(state); row.appendChild(line); row.appendChild(tip);
+  return row;
+}
+const current = schedule("2026-11-10", "A forthcoming print can reset the read.");
+const future = schedule("2026-12-10", "Future release remains scheduled.");
+document.querySelectorAll = function(selector) {
+  return selector === "#dlg-fed .fbm-row" ? [current, future] : [];
+};
+const row = { type: "CPI", event_id: "cpi:2026-11-10", date: "2026-11-10",
+  data_ready: false, source_url: "https://www.bls.gov/news.release/archives/cpi_11102026.htm" };
+api.patchCpiSchedule(row, true);
+if (!current.textContent.includes("CPI detected")) throw new Error("detection not shown");
+row.data_ready = true;
+row.actual = { summary_en: "CPI +0.4% m/m; core +0.3%. Annual comparisons not published.",
+  summary_zh: "CPI 环比 +0.4%；核心 +0.3%。同比未发布。" };
+api.patchCpiSchedule(row, true);
+api.patchCpiSchedule(row, true);
+if (!current.textContent.includes("CPI released") ||
+    !current.textContent.includes(row.actual.summary_en) ||
+    !current.textContent.includes(row.actual.summary_zh) ||
+    current.textContent.includes("Next CPI") || current.textContent.includes("forthcoming")) {
+  throw new Error("CPI schedule failed to transition to the bilingual result");
+}
+const tip = current.querySelector(".fbm-tip");
+if (!tip.getAttribute("data-tip-en").includes(row.source_url) ||
+    tip.getAttribute("data-tip-en").includes("1 days out")) {
+  throw new Error("obsolete pre-release tooltip survived");
+}
+if (!future.textContent.includes("Next CPI") || future.textContent.includes("not published")) {
+  throw new Error("a different scheduled release was overwritten");
+}
+'''
+    result = subprocess.run(
+        ["node", "-e", driver.replace("__TEMPLATE_PATH__", json.dumps(str(TEMPLATE)))],
+        cwd=ROOT, capture_output=True, text=True, timeout=30,
     )
     assert result.returncode == 0, result.stdout + result.stderr
 
