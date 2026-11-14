@@ -26656,7 +26656,7 @@ jobs:
     # (86.7% of snapshot rows, ~1475 of 1702 names).  Spec §3 says missing
     # dollar_adv_20d must PASS with liq_unknown=True.
     # Fix: adv.isna() | adv.ge(_LIQ_ADV_MIN) in _apply_liquidity().
-    # Four suites:
+    # Retained Pick Lab suites and same-day T0 source-clock coverage:
     #   test_pick_lab_liquidity.py — four required cases (null-adv pass,
     #                                below-threshold excluded, above-threshold
     #                                pass, close<5+null-adv excluded) plus
@@ -26666,6 +26666,7 @@ jobs:
     #                                (catalyst/standouts/stale-cross shapes,
     #                                _col container values, snapshot upsert).
     #   test_pick_lab_hk_render.py — HK lab page renderer suite (needs jinja2).
+    #   test_t0_indicator.py     — same-day source-clock contract with native signals.
     # Network-free; no data/ writes.
     runs-on: ubuntu-latest
     steps:
@@ -26676,7 +26677,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: pick lab liquidity gate regression tests
-        run: python -m pytest tests/test_pick_lab_liquidity.py tests/test_pick_lab_core.py tests/test_pick_lab_hk_runner.py tests/test_pick_lab_hk_render.py -q
+        run: python -m pytest tests/test_pick_lab_liquidity.py tests/test_pick_lab_core.py tests/test_pick_lab_hk_runner.py tests/test_pick_lab_hk_render.py tests/test_t0_indicator.py -q
 
   pick-lab-cn-render:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
