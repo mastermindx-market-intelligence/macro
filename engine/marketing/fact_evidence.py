@@ -22,7 +22,9 @@ _MAX_TOKENS = 128
 _MAX_BYTES = 16_384
 _MAX_FACT_TEXT = 360
 _MAX_NUMBER_TEXT = 32
-_NUMBER_TEXT = re.compile(r"^[+\-]?[\d,.]+(?:[%xXkKmMbB])?$")
+_NUMBER_TEXT = re.compile(
+    r"[+\-]?(?:\d+(?:\.\d+)?|\.\d+|\d{1,3}(?:,\d{3})+(?:\.\d+)?)(?:[%xXkKmMbB])?\Z"
+)
 
 
 def _valid_day(day: Any) -> bool:

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
+import pytest
+
 from engine.marketing import approval_desk, outbox
 from engine.marketing.content_studio import drop_degenerate_facts, strip_scaffolding
 from engine.marketing.copywriter import build_context
@@ -180,3 +182,61 @@ def test_grading_receipt_preserves_own_stop_and_target(tmp_path):
     ev = approval_desk.item_evidence(item)
     assert ev["target_str"] == "190.0"
     assert ev["stop_str"] == "162.2"
+
+
+def _packet_for_number(number):
+    packet = _source_packet()
+    packet["facts"][0]["text"] = f"The reported total was {number}."
+    packet["facts"][0]["numbers"] = [number]
+    packet["numbers_whitelist"] = [number, "+4.2%"]
+    assert valid_writer_packet(packet, as_of=_DAY)
+    return packet
+
+
+@pytest.mark.parametrize("malformed,licensed", [
+    ("221,000,00", "221,000"),
+    ("1,000,00", "1,000"),
+    ("1,,000", "1,000"),
+    ("1000,000", "1,000,000"),
+    ("1,000.00.5", "1,000.00"),
+    ("1,234.50,00", "1,234.50"),
+    (".5,000", "5,000"),
+    ("-.5,000", "5,000"),
+    ("--1,000", "-1,000"),
+    ("1,000k%", "1,000k"),
+    ("1,000%%", "1,000%"),
+])
+def test_malformed_grouped_run_is_quarantined_after_original_fact_handoff(tmp_path, malformed, licensed):
+    item = _emitted(tmp_path, f"The reported total was {malformed}.", _packet_for_number(licensed))
+    outcome = approval_desk.check_number_sanity(item, approval_desk.item_evidence(item))
+    assert outcome.status == approval_desk.UNVERIFIABLE
+    assert malformed in outcome.evidence
+    verdict = approval_desk.audit_item(item, now=_NOW)
+    assert verdict.action == "quarantine"
+    assert verdict.check == "number_sanity"
+
+
+@pytest.mark.parametrize("number", [".", ",", "1..2", "221,000,00", "1,000k%", "--1,000"])
+def test_malformed_numeric_license_is_not_a_verified_writer_packet(number):
+    packet = _source_packet()
+    packet["numbers_whitelist"] = [number]
+    assert not valid_writer_packet(packet, as_of=_DAY)
+    packet = _source_packet()
+    packet["facts"][0]["numbers"] = [number]
+    assert not valid_writer_packet(packet, as_of=_DAY)
+
+
+@pytest.mark.parametrize("number", ["221000", "221,000", "+1,234.50", "-1,000.25%", "1,000k", ".5"])
+def test_canonical_numeric_license_remains_valid(number):
+    assert valid_writer_packet(_packet_for_number(number), as_of=_DAY)
+
+
+@pytest.mark.parametrize("printed,licensed", [
+    ("221,000", "221000"), ("221000", "221,000"),
+    ("+1,234.50", "+1234.50"), ("-1,000.25%", "-1000.25%"),
+    ("1,000k", "1000k"),
+])
+def test_approval_preserves_valid_grouping_equivalence_and_sentence_comma(tmp_path, printed, licensed):
+    item = _emitted(tmp_path, f"The reported total was {printed}, according to the source.", _packet_for_number(licensed))
+    outcome = approval_desk.check_number_sanity(item, approval_desk.item_evidence(item))
+    assert outcome.status == approval_desk.PASS

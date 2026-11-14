@@ -643,14 +643,24 @@ def check_number_sanity(item: dict, ev: dict, *,
     if ev.get("writer_packet_verified"):
         from engine.marketing.copywriter import _extract_number_tokens  # noqa: PLC0415
         # The writer's legacy number regex sees "221,000" as "221" and "000".
-        # Protect the comma-group first, then scan the remainder with the
-        # existing validator. A legitimate reported count must not fail purely
-        # because approval split its thousands separator.
-        comma_numbers = re.compile(r"(?<![\w])([+\-]?\d{1,3}(?:,\d{3})+(?:\.\d+)?%?)(?![\w])")
+        # Capture the complete comma run before validating it: protecting only
+        # "221,000" inside "221,000,00" would discard an unlicensed suffix.
+        # Sentence punctuation and separate range endpoints remain outside it.
+        comma_numbers = re.compile(
+            r"(?<![A-Za-z0-9_])[+\-]*\.?\d[\d.,]*,[\d.,]*\d[%xXkKmMbB]*(?![A-Za-z0-9_]|[.,]\d)"
+        )
+        grouped_number = re.compile(
+            r"[+\-]?\d{1,3}(?:,\d{3})+(?:\.\d+)?(?:%|[xXkKmMbB])?\Z"
+        )
+        grouping_normalized = {
+            n.replace(",", "") for n in allowed
+            if "," not in n or grouped_number.fullmatch(n)
+        }
         quoted_numbers = comma_numbers.findall(text)
         leftover = comma_numbers.sub(" ", text)
         for tok in quoted_numbers + _extract_number_tokens(leftover):
-            if tok not in allowed:
+            malformed = "," in tok and not grouped_number.fullmatch(tok)
+            if malformed or (tok not in allowed and tok.replace(",", "") not in grouping_normalized):
                 return Check(
                     "number_sanity", UNVERIFIABLE,
                     f"number '{tok}' does not occur in the original writer fact "
