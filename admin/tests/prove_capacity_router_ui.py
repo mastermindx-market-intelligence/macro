@@ -39,7 +39,20 @@ def fixture():
         'input_tokens':2000+i*100,'output_tokens':200+i*20,'input_tokens_known':i+4,'output_tokens_known':i+4} for i in range(30)]
     raw={'schema':SCHEMA,'epoch':'f'*32,'sequence':1,'started_at':now-7200,'generated_at':now,
         'routes':routes,'aliases':{'fabric/balanced':[f'model-{i:02}' for i in range(12)],'fabric/fast':['model-12','model-13'], 'fabric/frontier':['model-58','model-59']},
-        'active':records[:24],'recent':records[24:],'series':series,'totals':{},'history_state':'recorded'}
+        'active':records[:24],'recent':records[24:],'series':series,'totals':{},'history_state':'recorded',
+        'claude':{'reachable':True,'observed_at':now,'stranded_family':'fable','accounts':[
+            {'id':'abcd1234','label':'max-4','used_5h':0,'budget_5h':1000,'remaining_5h':1000,
+             'inflight':0,'last_status':'window_rolled','drain':False,
+             'families':{name:{'used_weekly':0,'budget_weekly':limit,'remaining_weekly':limit,
+                 'cooldown_until':now+1800,'weekly_resets_at':now+3600,
+                 'weekly_reset_source':'provider'} for name,limit in
+                 [('fable',4000),('opus',1400),('sonnet',1000),('haiku',500),('other',100)]}},
+            {'id':'efgh5678','label':'max-3','used_5h':None,'budget_5h':1000,'remaining_5h':None,
+             'inflight':0,'last_status':'ok','drain':False,
+             'families':{'opus':{'used_weekly':None,'budget_weekly':1400,
+                 'remaining_weekly':1390,'cooldown_until':None,'weekly_resets_at':now+3600,
+                 'weekly_reset_source':'estimated'}}}
+        ]}}
     raw=clean_snapshot(raw)
     with tempfile.TemporaryDirectory() as temp:
         p=Path(temp)/'snapshot.json';p.write_text(json.dumps(raw));data=panel(60,path=p,now=now)
@@ -114,6 +127,32 @@ def run():
         proof['incremental_row_identity']=True
         page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
         page.screenshot(path=str(OUT/'dark-requests.png'),full_page=True)
+        # Claude is a gateway observation, not an authoritative provider quota.
+        # A five-hour counter of zero must not make a benched account "available".
+        page.locator('.cf-tabs [data-view=claude]').click()
+        page.wait_for_selector('.cf-cap-dashboard')
+        assert page.locator('.cf-cap-account').count()==2
+        assert '5' in page.locator('.cf-cap-stat').nth(1).inner_text()
+        assert 'Benched' in page.locator('.cf-cap-dashboard').inner_text()
+        assert '0 / 1,000 tracked units' in page.locator('.cf-cap-dashboard').inner_text()
+        assert 'Unknown' in page.locator('.cf-cap-dashboard').inner_text()
+        assert 'Gateway budget counters are not verified' in page.locator('.cf-cap-dashboard').inner_text()
+        page.locator('[data-field=claude-family]').select_option('opus')
+        assert page.locator('.cf-cap-lane').count()==2
+        page.locator('[data-field=claude-family]').select_option('all')
+        assert page.locator('.cf-cap-lane').count()==6
+        page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
+        page.screenshot(path=str(OUT/'dark-claude-capacity.png'),full_page=True)
+        # No current telemetry => no current quota percentage or active hold claim.
+        page.evaluate('window.fixtureState.data.claude.observed_at -= 7200')
+        page.locator('.cf-tabs [data-view=providers]').click()
+        page.locator('.cf-tabs [data-view=claude]').click()
+        assert 'Stale telemetry' in page.locator('.cf-cap-alert').inner_text()
+        assert page.locator('.cf-cap-percent:not(.muted)').count()==0
+        proof['claude_counters_freshness_benches_and_filters']=True
+        # Continue other proof views with restored fresh fixture.
+        page.evaluate('window.fixtureState.data.claude.observed_at = Date.now()/1000')
+        page.locator('.cf-tabs [data-view=providers]').click()
         page.locator('.cf-tabs [data-view=history]').click();page.wait_for_selector('.cf-history-metrics')
         page.locator('[data-field=window]').select_option('0');page.wait_for_selector('.cf-history-metrics')
         assert 'All recorded consumption' in page.locator('.cf-view').inner_text()
