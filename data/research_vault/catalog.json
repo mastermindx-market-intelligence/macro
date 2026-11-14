@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T04:10:34.942358+00:00",
-  "count": 3341,
+  "generated_at": "2026-11-14T04:40:49.250844+00:00",
+  "count": 3342,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-x7e6qifvat9-a5f976",
+      "title": "Q3 earnings",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-14T04:06:01Z",
+      "summary_points": [
+        "S&P 500 Q3 Fundamentals: Underlying earnings growth at 29.9% YoY (adjusted for Alphabet/Amazon one-offs), sales growth at 14.5% YoY, with robust beat rates and resilient top-line demand (sales surprise above average vs. normalized EPS surprise).",
+        "AI-Driven Earnings Dominance: Semiconductors and AI-linked sectors (Hardware/Software) drive ~66% of S&P 500 net income growth; AI adoption broadens beyond Tech/Mag-7, with tariff mentions declining.",
+        "Earnings Breadth & Sector Resilience: 75% of S&P 500 companies report positive YoY EPS growth; all 11 sectors show positive sales growth (cyclical outpacing defensive), with Tech/Healthcare/Industrials leading FY2026 guidance raises (91%/80%/77%).",
+        "Magnificent 7 Earnings Gap Narrowing: Mag-7 Q3 earnings growth (28.4%) still outpaces S&P 493 (23.8%), but gap is narrowing, signaling broader market participation beyond mega-caps."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-mzpe4qwbnrh-91ec5d",
       "title": "PNC Economics Research Claims 12 November 2026",
