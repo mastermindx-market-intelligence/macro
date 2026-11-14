@@ -11,6 +11,10 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.mark.parametrize('case', [
+    'pending switch clears path',
+    'pending switch clears histogram',
+    'pending switch clears strip',
+    'pending switch clears path note',
     'pending ticker clears prior evidence',
     'latest response wins',
     'failed response stays unavailable',
