@@ -34830,7 +34830,16 @@ jobs:
         run: python -m pytest tests/test_no_lookahead.py -q
       # Carry's ambient cache checks retain their full DATA enrollment.
       - name: carry history admission with synthetic contracts and temporary Parquet
-        run: python -m pytest tests/test_phase_buildout.py -k 'test_carry_late_unused_contract_preserves_history or test_carry_history_cap_preserves_eligible_tail or test_carry_contract_order_does_not_set_history_start or test_carry_does_not_emit_before_second_contract_exists or test_carry_retains_roll_price_and_month_gap_rules or test_carry_date_pair_oracle or test_carry_force_fetch_and_weekly_cache_preserve_history' -q
+        run: >-
+          python -m pytest
+          tests/test_phase_buildout.py::test_carry_late_unused_contract_preserves_history
+          tests/test_phase_buildout.py::test_carry_history_cap_preserves_eligible_tail
+          tests/test_phase_buildout.py::test_carry_contract_order_does_not_set_history_start
+          tests/test_phase_buildout.py::test_carry_does_not_emit_before_second_contract_exists
+          tests/test_phase_buildout.py::test_carry_retains_roll_price_and_month_gap_rules
+          tests/test_phase_buildout.py::test_carry_date_pair_oracle
+          tests/test_phase_buildout.py::test_carry_force_fetch_and_weekly_cache_preserve_history
+          -q
       - name: study + trial lanes (OOS, divergence, drift, fingerprints, gauntlets)
         run: python -m pytest tests/test_a2_oos_analysis.py tests/test_construction_divergence_study.py tests/test_expect_drift_panel.py tests/test_f_hz1_study.py tests/test_falsosc_trial_v1.py tests/test_grade_breadth_divergence.py tests/test_intraday_large_cap_tech_leader_study.py tests/test_long_hold_gap_guard.py tests/test_macro_fire_context.py tests/test_options_history_gauntlet.py tests/test_options_history_retrospective.py tests/test_per_fire_sector_benchmark.py tests/test_run_w1_sev.py tests/test_run_w2_slq.py tests/test_thesis_funnel_history.py tests/test_w3_fingerprint_stats.py -q
       # Pick-conditional forward distributions, waves 1 + 1.5 (wired 2026-08-06).
