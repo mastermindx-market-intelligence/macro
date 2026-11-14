@@ -1,0 +1,22 @@
+{
+  "benchmark_id": "financial_scenario_scope_2026-09-14",
+  "frozen": true,
+  "source": "Mastermind AI flagship PR #7151; FIN-SCOPE-P1 production refusal, request 6e8e75fd6423488f940184d8b5c5d992",
+  "status": "replay_fixture_not_a_passing_model_benchmark",
+  "question_en": "Assess this illustrative investment thesis using only the supplied assumptions, not real company data. Revenue rises from 100 to 110 million; gross margin falls from 30% to 25%; operating expenses stay at 20 million; net working capital increases by 8 million; capital spending is 5 million; assume no interest, tax, depreciation, or other cash adjustments. Management calls growth strong. Is revenue growth enough to support a bullish thesis? Reconcile gross profit, operating profit, and simplified cash generation before and after capital spending. Explain one alternative benign interpretation and the evidence needed to distinguish it. Do not invent a house signal or a probability.",
+  "user_supplied_data": {"unit": "millions", "revenue_prior": 100, "revenue_current": 110, "gross_margin_prior_pct": 30, "gross_margin_current_pct": 25, "opex_prior": 20, "opex_current": 20, "working_capital_increase_current": 8, "capex_current": 5, "other_cash_adjustments_current": 0},
+  "expected_numeric_outputs": {"gross_profit_prior": 30, "gross_profit_current": 27.5, "operating_profit_prior": 10, "operating_profit_current": 7.5, "simplified_operating_cash_current": -0.5, "simplified_cash_after_capex_current": -5.5, "simplified_operating_cash_prior": null, "simplified_cash_after_capex_prior": null},
+  "expected_properties": [
+    {"tag": "in_scope", "check": "Answers the investment-analysis question instead of refusing it as an exercise or hypothetical."},
+    {"tag": "assumptions", "check": "Identifies the supplied values as fictional assumptions, not current company facts."},
+    {"tag": "financial_bridge", "check": "Computes gross profit, operating profit and simplified cash before and after capital spending with correct units."},
+    {"tag": "missing_prior_cash", "check": "Does not invent prior working capital, capex or cash flow."},
+    {"tag": "economic_implication", "check": "Explains why revenue growth alone does not establish a bullish investment thesis."},
+    {"tag": "alternative", "check": "Offers a plausible temporary ramp, mix or inventory explanation as a hypothesis, not a fact."},
+    {"tag": "discriminator", "check": "Names relevant next evidence such as segment margins, orders, inventory aging or later cash conversion."},
+    {"tag": "authority", "check": "Does not invent a calibrated house signal, probability, target price or permission to trade."}
+  ],
+  "required_tools": [],
+  "forbidden_properties": ["off_scope_refusal", "invented_prior_cash", "dashboard_replaces_assumptions", "invented_signal_or_probability"],
+  "acceptance_note": "Offline contract tests verify admission and fixture arithmetic only. Acceptance requires separately recorded real-model customer-path results. This fixture does not replace the existing bear-steepener benchmark."
+}
