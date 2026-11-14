@@ -263,3 +263,57 @@ release controller only when its required checks actually conclude clean.
 Production and historical-data gates from #11226 comment6869127968 remain unchanged.
 No TLS/controller bypass, actual-ledger append, provider purchase, service restart,
 new worker/watcher, trade decision or claimed live acceptance occurred.
+
+
+## Hosted design-evidence registration repair
+
+Exact-head CI43540305502 at88ebf64 surfaced a real missing receipt in
+`design-governance`: the new material template had browser screenshots under
+research evidence, but no owning canonical `mockups/.../EVIDENCE.yml`. Existing
+1280px desktop captures were not mislabeled as the required1440px matrix.
+
+An original-registry receipt and reproducible local-fixture capture were added at
+`mockups/evidence/mri-surprise-confirmation-20261113/`. The existing canonical
+capture tool actually generated16cells: en/zh x dark/light x desktop1440/mobile390
+rest captures plus real keyboard-focus captures. All byte/hash and applicable
+receipt/matrix/interaction validations pass. Two representative states were
+visually inspected. Focused validator/component tests:75passed,2skipped,9.99s.
+No engine, UI component, authority, rights, deployment, threshold or check definition
+changed; only evidence registration and cumulative documentation changed.
+
+Local full-census CLI refused sparse-checkout scope; this was a configuration
+boundary, not silently treated as success. No broad hydration, guard override,
+second evidence schema or production screenshot claim. Hosted full-checkout CI
+must close this gate on the new published source. The original88ebf64 run and its
+remaining pack conclusions remain predecessor evidence, not proof of the next head.
+
+The scientific adverse results and source/runtime dependencies are preserved in
+PR comments6869171163,6869231916,6869270587,6869264815 and cumulative6869868647.
+All score/rank/gate/size/trade authority remains false. Production remains blocked
+by existing Caddy/TLS source/adoption qualification; economist-history admission
+and genuine prospective validation remain separate obligations.
+
+
+### Original-carrier recovery and complete visual qualification
+
+The first managed commit attempt returned the gateway's legacy generic
+`TYPED_GIT_PRECHECK_REFUSED`. Original publication/head/index readback and a
+non-mutating staging diagnostic showed no commit or index change and identified
+the concrete cause: new evidence was outside the workspace's sparse-checkout
+include set. This was a Git checkout-configuration failure, not an observed
+permission denial. No alternate Git carrier or force/sparse staging bypass was used.
+
+After reading the existing sparse profile, storage admission returnedREADY with
+~1.219TB free versus171.8GB minimum; original source/index locks were absent.
+The existing `worktree_sparse.py add mockups` owner materialized only that allowed
+reference directory (3.711GB committed). It completed successfully and preserved
+all26 pre-existing modified/evidence file hashes and exact source head. No full
+checkout, source-controller patch, live config change or data-provider admission.
+
+The **full unmodified visual-evidence CLI guard now exits0**, and the focused
+validator/component suite reports **77passed,0skipped in11.13s**, including both
+formerly omitted reference tests. The original dry-run staging now succeeds;
+only the owned25 source/evidence paths are candidates. This materially repaired
+precondition qualifies another attempt through the same original managed publisher.
+Hosted exact-new-head CI remains required before release; no green predecessor,
+source publication or screenshot is being treated as production acceptance.
