@@ -533,6 +533,8 @@ def _build_p_raw_history(
             p_raw_cols[dst_m][pos] = p_raw
 
     df = pd.DataFrame(p_raw_cols, index=idx_common)
+    # Preserve causal structural fallback, but do not present it as measured D.
+    df.attrs["dynamic_unavailable_refits"] = sum(d is None for d in d_cache.values())
     return df
 
 
@@ -776,6 +778,8 @@ def compute(root=None) -> dict:
             )
             D_today = _build_dynamic_matrix(vol_mat, avail_mkts)
             D_today_as_of = idx_common[-1]
+            if D_today is None:
+                gaps.append("Current dynamic matrix unavailable; structural fallback used")
         else:
             gaps.append("Insufficient common vol history for dynamic matrix")
 
@@ -788,6 +792,9 @@ def compute(root=None) -> dict:
             vol_panel, bench_closes
         )
         if p_raw_df is not None and not p_raw_df.empty:
+            unavailable_refits = p_raw_df.attrs.get("dynamic_unavailable_refits", 0)
+            if unavailable_refits:
+                gaps.append(f"Historical dynamic matrix unavailable at {unavailable_refits} refits; structural fallback used")
             # Causal percentile per market
             pct_cols = {}
             for mkt in MARKETS:

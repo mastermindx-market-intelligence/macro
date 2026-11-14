@@ -213,8 +213,13 @@ class TestSpilloverFunction:
             assert "to_others_pct" in item
 
     def test_us_from_others_is_present_when_spy_loaded(self):
-        """SPY is in the basket → us_from_others should be a number."""
+        """SPY with identified varying innovations has a receiving estimate."""
         store_map = _full_basket_store(n=350)
+        rng = np.random.default_rng(10962)
+        for frame in store_map.values():
+            # The default fixed OHLC ratios have numerically constant GK vol.
+            # Use actual varying ranges for this positive-evidence control.
+            frame["high"] = frame["close"] * (1.01 + rng.uniform(0, .02, len(frame)))
         with patch("engine.contagion.store.read", _make_store(store_map)):
             result = spillover()
         if result.get("n_series", 0) >= 3:
@@ -463,3 +468,252 @@ class TestFrozenBasket:
         assert not overlap, (
             f"Old coverage-greedy tickers still in basket: {overlap}"
         )
+
+
+class TestFEVDQualification:
+    """#10962: units cannot become risk, and undefined evidence is not zero."""
+
+    @pytest.mark.parametrize("seed", [4, 17, 83])
+    @pytest.mark.parametrize("units", [[1e-7, 1., 1.], [1e-10, 1., 1.],
+                                       [1e7, 1e-7, 1.]])
+    @pytest.mark.parametrize("positive", [False, True])
+    def test_full_var_to_fevd_is_invariant_to_individual_units(self, seed, units, positive):
+        """Qualify the estimated coefficients, not only precomputed MA inputs."""
+        rng = np.random.default_rng(seed)
+        y = np.zeros((500, 3))
+        shocks = rng.normal(size=y.shape)
+        transition = np.array([[.7, 0., 0.], [.7, .2, 0.], [0., .7, .2]])
+        for t in range(1, len(y)):
+            y[t] = transition @ y[t-1] + shocks[t]
+        if positive:
+            y = .15 * np.exp(.1*y)
+        units = np.asarray(units)
+        a, sigma = _fit_var(y, 2)
+        scaled_a, scaled_sigma = _fit_var(y*units, 2)
+        np.testing.assert_allclose(
+            scaled_a / units[:, None] * np.tile(units, 2)[None, :],
+            a, rtol=1e-9, atol=1e-10)
+        np.testing.assert_allclose(
+            scaled_sigma / units[:, None] / units[None, :], sigma,
+            rtol=1e-10, atol=1e-12)
+        expected = _gfevd(_var_to_ma(a, 2, 10), sigma, 10)
+        actual = _gfevd(_var_to_ma(scaled_a, 2, 10), scaled_sigma, 10)
+        np.testing.assert_allclose(actual, expected, rtol=1e-9, atol=1e-10)
+        assert _dy_connectedness(actual)["total"] == pytest.approx(
+            _dy_connectedness(expected)["total"], abs=1e-8)
+
+    @pytest.mark.parametrize("k", [2, 3, 14])
+    @pytest.mark.parametrize("positive", [False, True])
+    def test_conditioned_fit_preserves_no_intercept_ols_and_covariance(self, k, positive):
+        y = np.random.default_rng(10962+k).normal(size=(200, k))
+        if positive:
+            y = .15 * np.exp(.1*y)
+        p = 2
+        x = np.concatenate([y[p-lag:-lag] for lag in range(1, p+1)], axis=1)
+        coef = np.linalg.lstsq(x, y[p:], rcond=None)[0]
+        residual = y[p:] - x @ coef
+        covariance = residual.T @ residual / (len(x)-k*p-1)
+        actual_a, actual_sigma = _fit_var(y, p)
+        np.testing.assert_allclose(actual_a, coef.T, rtol=1e-10, atol=1e-11)
+        np.testing.assert_allclose(actual_sigma, covariance, rtol=1e-10, atol=1e-12)
+
+    @pytest.mark.parametrize("variance", [1e-240, 1e-16, 1e-13, 1e-12, 1., 1e240])
+    @pytest.mark.parametrize("rho", [0., .5, -.5])
+    def test_covariance_units_do_not_change_shares(self, variance, rho):
+        cov = np.array([[1., rho], [rho, 1.]]) * variance
+        got = _gfevd([np.eye(2)], cov, 1)
+        expected = np.array([[1., rho*rho], [rho*rho, 1.]]) / (1+rho*rho)
+        np.testing.assert_allclose(got, expected, atol=1e-14, rtol=1e-14)
+        c = _dy_connectedness(got)
+        assert c["total"] == pytest.approx(100*rho*rho/(1+rho*rho), abs=1e-12)
+        assert sum(c["to_others"]) == pytest.approx(sum(c["from_others"]))
+
+    @pytest.mark.parametrize("units", [[1e-7, 1.], [1e70, 1e-70], [2., .25]])
+    def test_individual_variable_units(self, units):
+        d = np.array(units)
+        cov = np.array([[1., .5], [.5, 1.]])
+        phi = [np.eye(2), np.array([[.3, .2], [.1, .4]])]
+        expected = _gfevd(phi, cov, 2)
+        scaled_phi = [p*d[:, None]/d[None, :] for p in phi]
+        actual = _gfevd(scaled_phi, cov*d[:, None]*d[None, :], 2)
+        np.testing.assert_allclose(actual, expected, atol=1e-14, rtol=1e-14)
+
+    @pytest.mark.parametrize("cov", [np.zeros((2,2)), np.diag([1.,0.]),
+        np.diag([1.,-1.]), np.array([[1.,2.],[2.,1.]]),
+        np.array([[1.,.2],[.3,1.]]), np.array([[1.,np.nan],[np.nan,1.]]),
+        np.array([[1.,0.],[0.,np.inf]])])
+    def test_undefined_covariance_refuses(self, cov):
+        with pytest.raises(ValueError):
+            _gfevd([np.eye(2)], cov, 1)
+
+    @pytest.mark.parametrize("theta", [np.zeros((3,3)), np.diag([1.,1.,0.]),
+        np.array([[1.1,-.1],[0.,1.]]), np.array([[1.,np.nan],[0.,1.]]),
+        np.ones((2,3)), np.empty((0,0))])
+    def test_connectedness_requires_actual_unit_mass(self, theta):
+        with pytest.raises(ValueError):
+            _dy_connectedness(theta)
+
+    def test_malformed_ma_and_horizon_refuse(self):
+        for ph, horizon in [([],1), ([np.eye(2)],0), ([np.eye(2)],True),
+                            ([np.eye(3)],1), ([np.ones((2,2))*np.inf],1),
+                            ([np.zeros((2,2))],1)]:
+            with pytest.raises(ValueError):
+                _gfevd(ph,np.eye(2),horizon)
+
+    @pytest.mark.parametrize("constant", [0., .1, 1e-100, 1e100])
+    def test_flat_fit_never_fabricates_residual_evidence(self, constant):
+        with pytest.raises(ValueError):
+            _fit_var(np.full((200,3),constant),2)
+
+    def test_failed_solver_is_not_independent_innovations(self):
+        with patch("engine.contagion.np.linalg.lstsq", side_effect=np.linalg.LinAlgError):
+            with pytest.raises(ValueError):
+                _fit_var(np.random.default_rng(4).normal(size=(200,3)),2)
+
+    @pytest.mark.parametrize("zero_range", [False,True])
+    def test_native_flat_ohlc_store_is_unavailable(self,zero_range):
+        import json
+        frames=_full_basket_store(n=400)
+        if zero_range:
+            for frame in frames.values():
+                for key in ("open","high","low"):
+                    frame[key]=frame["close"]
+        with patch("engine.contagion.store.read",_make_store(frames)):
+            result=spillover()
+        assert result["state"]=="unavailable"
+        assert result["total_connectedness"] is None
+        assert result["us_from_others"] is None
+        assert result["to_others"]==result["from_others"]=={}
+        assert result["top_transmitters"]==result["history_weekly"]==[]
+        assert any("current estimate unavailable" in x for x in result["gaps"])
+        assert any("weekly estimates unavailable" in x for x in result["gaps"])
+        json.dumps(result,allow_nan=False)
+
+    def test_valid_history_survives_invalid_current_window(self):
+        import engine.contagion as c
+        n=500;idx=_bdate_index(n);rng=np.random.default_rng(7)
+        panels={t:pd.Series(np.r_[rng.uniform(.1,.3,n-150),np.full(150,.2)],index=idx)
+                for t in _ETF_BASKET}
+        frames=_full_basket_store(n=n)
+        with patch("engine.contagion.store.read",_make_store(frames)), patch(
+            "engine.contagion._garman_klass_vol",side_effect=list(panels.values())):
+            result=c.spillover()
+        assert result["total_connectedness"] is None
+        assert result["history_weekly"]
+        assert result["history_weekly"][-1]["date"] < str(idx[-1].date())
+        assert all(0<=r["total"]<=100 for r in result["history_weekly"])
+
+
+class TestInnovationResolution:
+    """#10962: numerical fit residuals are not identified innovations."""
+
+    @pytest.mark.parametrize("k", [2, 3, 14])
+    @pytest.mark.parametrize("kind", ["linear", "alternating"])
+    @pytest.mark.parametrize("units", ["ordinary", "tiny", "mixed"])
+    def test_exact_nonconstant_recurrences_refuse(self, k, kind, units):
+        x = (np.arange(1, 151, dtype=np.int64) if kind == "linear"
+             else np.tile([1, 2], 75))
+        exact = x[:, None] * np.arange(1, k + 1)[None, :]
+        oracle = (exact[2:] - 2 * exact[1:-1] + exact[:-2]
+                  if kind == "linear" else exact[2:] - exact[:-2])
+        assert np.count_nonzero(oracle) == 0
+        scale = (np.full(k, 1e-100) if units == "tiny" else
+                 np.resize([1e-7, 1e4, 1.], k) if units == "mixed" else np.ones(k))
+        with pytest.raises(ValueError, match="innovation variance unresolved"):
+            _fit_var(exact * scale, 2)
+
+    @pytest.mark.parametrize("scale", [1e-100, 1., 1e100])
+    def test_full_rank_exact_recurrence_refuses(self, scale):
+        y = np.column_stack([np.resize([1., 0., -1., 0.], 150),
+                             np.resize([1., 0., -1.], 150)])
+        X = np.column_stack([y[1:-1], y[:-2]])
+        assert np.linalg.matrix_rank(X) == 4
+        assert np.count_nonzero(y[2:, 0] + y[:-2, 0]) == 0
+        assert np.count_nonzero(y[2:, 1] + y[1:-1, 1] + y[:-2, 1]) == 0
+        with pytest.raises(ValueError, match="innovation variance unresolved"):
+            _fit_var(y * scale, 2)
+
+    @pytest.mark.parametrize("seed", [4, 17, 83])
+    @pytest.mark.parametrize("noise", [1e-8, 1e-10, 1e-12])
+    def test_small_resolvable_innovations_survive_unit_changes(self, seed, noise):
+        rng = np.random.default_rng(seed)
+        n, k = 200, 3
+        t = np.arange(n)
+        # Nonconstant deterministic component plus deliberately tiny independent
+        # noise. The residual is far below an absolute 1e-12 variance floor.
+        y = np.column_stack([.5 + .1 * np.sin(.1 * t + i) for i in range(k)])
+        y += rng.normal(0, noise, (n, k))
+        units = np.array([1e-7, 1e4, 1.])
+        for panel in (y, y * units):
+            A, S = _fit_var(panel, 2)
+            theta = _gfevd(_var_to_ma(A, 2, 10), S, 10)
+            assert np.isfinite(theta).all()
+            np.testing.assert_allclose(theta.sum(axis=1), 1, atol=1e-14)
+        _, S = _fit_var(y, 2)
+        assert np.diag(S).max() < 1e-12
+
+    def test_one_unresolved_response_refuses_otherwise_noisy_system(self):
+        rng = np.random.default_rng(17)
+        y = rng.normal(size=(150, 3))
+        y[:, 1] = np.arange(150)
+        with pytest.raises(ValueError, match="innovation variance unresolved"):
+            _fit_var(y, 2)
+
+    @pytest.mark.parametrize("scale", [1e-100, 1., 1e100])
+    def test_rank_deficient_common_stochastic_innovations_remain_valid(self, scale):
+        x = np.random.default_rng(20261114).normal(size=150)
+        y = x[:, None] * np.arange(1, 15)[None, :] * scale
+        assert np.linalg.matrix_rank(np.column_stack([y[1:-1], y[:-2]])) == 2
+        A, S = _fit_var(y, 2)
+        theta = _gfevd(_var_to_ma(A, 2, 10), S, 10)
+        assert _dy_connectedness(theta)["total"] > 90
+
+    @pytest.mark.parametrize("individual_scales", [False, True])
+    def test_native_geometric_ohlc_current_and_history_are_unavailable(
+            self, individual_scales, tmp_path, monkeypatch):
+        import hashlib
+        import json
+        from lib import config
+        # All 52 weekly windows must start after the 20-day GK warmup;
+        # partial rolling windows are not an exact geometric recurrence.
+        n = 500
+        idx = pd.bdate_range(end="2026-11-13", periods=n)
+        monkeypatch.setattr(config, "ROOT", tmp_path)
+        monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
+        before = {}
+        for i, ticker in enumerate(_ETF_BASKET):
+            v = .1 * 1.001 ** np.arange(n)
+            if individual_scales:
+                v = v * (i + 1)
+            frame = pd.DataFrame({"open": 100., "low": 100., "close": 100.,
+                "high": 100 * np.exp(v * np.sqrt(2 / 252))}, index=idx)
+            group = "yahoo" if ticker in ("EEM", "SPY") else "intl_etf"
+            path = tmp_path / "data" / group / f"{ticker}.parquet"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            frame.to_parquet(path)
+            before[path] = hashlib.sha256(path.read_bytes()).hexdigest()
+        # Real native Parquet reader, GK transform, VAR, MA and public path.
+        result = spillover()
+        assert result["state"] == "unavailable"
+        assert result["n_series"] == 14
+        assert result["total_connectedness"] is result["us_from_others"] is None
+        assert result["history_weekly"] == result["top_transmitters"] == []
+        assert any("current estimate unavailable" in s for s in result["gaps"])
+        assert any("weekly estimates unavailable" in s for s in result["gaps"])
+        assert any("innovation variance unresolved" in s for s in result["gaps"])
+        json.dumps(result, allow_nan=False)
+        assert before == {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in before}
+
+    def test_healthy_history_survives_exact_recurrence_current_window(self):
+        n = 500
+        idx = _bdate_index(n)
+        rng = np.random.default_rng(7)
+        panels = {t: pd.Series(np.r_[rng.uniform(.1, .3, n - 150),
+            .1 * 1.001 ** np.arange(150)], index=idx) for t in _ETF_BASKET}
+        with patch("engine.contagion.store.read", _make_store(_full_basket_store(n=n))), \
+                patch("engine.contagion._garman_klass_vol", side_effect=list(panels.values())):
+            result = spillover()
+        assert result["total_connectedness"] is None
+        assert result["history_weekly"]
+        assert result["history_weekly"][-1]["date"] < str(idx[-1].date())
+        assert any("innovation variance unresolved" in s for s in result["gaps"])

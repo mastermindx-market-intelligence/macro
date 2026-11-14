@@ -909,3 +909,96 @@ def test_weekend_bench_stamp_is_refused_with_a_gap(tmp_path, monkeypatch):
     assert _SATURDAY not in hist_asofs, "a Saturday stamp reached history.jsonl"
     assert not [r for r in _hist_rows(tmp_path) if r["market"] == "au"]
     assert _shadow_rows(tmp_path, "au") == []
+
+
+@pytest.mark.parametrize("constant", [0., .2])
+def test_undefined_innovations_use_existing_structural_fallback(constant):
+    """#10962: current AND historical shared-helper callers retain CGL-R7."""
+    n=180
+    idx=pd.bdate_range("2025-01-02",periods=n)
+    vol={m:pd.Series(np.full(n,constant),index=idx) for m in MARKETS}
+    bench={m:pd.Series(np.linspace(100,80+i,n),index=idx) for i,m in enumerate(MARKETS)}
+    mat=np.column_stack(list(v.values for v in vol.values()))
+    assert cgl._build_dynamic_matrix(mat,MARKETS) is None
+    for dst in range(len(MARKETS)):
+        np.testing.assert_allclose(cgl._blend_row(dst,None,set()),cgl._STRUCTURAL[dst])
+    actual=cgl._build_p_raw_history(vol,bench)
+    assert actual is not None
+    with patch("engine.contagion_links._gfevd",side_effect=ValueError("unavailable control")):
+        expected=cgl._build_p_raw_history(vol,bench)
+    pd.testing.assert_frame_equal(actual,expected)
+    assert np.isfinite(actual.iloc[cgl.DY_WINDOW - 1:].to_numpy()).all()
+
+
+@pytest.mark.parametrize("constant", [0., .2])
+def test_undefined_dynamic_compute_discloses_current_and_history(constant, tmp_path, monkeypatch):
+    """The full read-only consumer names structural fallback for both callers."""
+    monkeypatch.setattr(cgl, "date", _PinnedClock)
+    idx = pd.bdate_range(end=_FRIDAY, periods=220)
+    vol = pd.Series(constant, index=idx)
+    bench = pd.Series(np.linspace(100., 80., len(idx)), index=idx)
+    with patch.object(cgl, "_proxy_vol_series", return_value=vol), \
+            patch.object(cgl, "_load_close", return_value=bench):
+        art = cgl.compute(root=tmp_path)
+    assert all(row is None for row in art["matrix"]["dynamic"].values())
+    assert art["matrix"]["blended"] == art["matrix"]["static"]
+    assert set(art["pressure"]) == set(MARKETS)
+    assert "Current dynamic matrix unavailable; structural fallback used" in art["gaps"]
+    assert any(g.startswith("Historical dynamic matrix unavailable at ") for g in art["gaps"])
+    json.dumps(art, allow_nan=False)
+    assert not list(tmp_path.rglob("*")), "compute must remain read-only"
+
+
+@pytest.mark.parametrize("seed", [4, 17, 83])
+@pytest.mark.parametrize("unit_mode", ["common", "individual"])
+def test_full_dynamic_pressure_and_history_are_unit_invariant(seed, unit_mode, tmp_path, monkeypatch):
+    """#10962: preserve CGL attribution and percentiles under positive unit changes."""
+    monkeypatch.setattr(cgl, "date", _PinnedClock)
+    rng = np.random.default_rng(seed)
+    n, k = 680, len(MARKETS)
+    idx = pd.bdate_range(end=_FRIDAY, periods=n)
+    x = np.zeros((n, k))
+    shocks = rng.normal(size=(n, k))
+    for t in range(1, n):
+        x[t] = .45*x[t-1] + .25*np.roll(x[t-1], 1) + .35*shocks[t] + .2*shocks[t, 0]
+    vol = {m: pd.Series(.15*np.exp(.25*x[:, i]), index=idx) for i, m in enumerate(MARKETS)}
+    low = {m: s * (1e-7 if unit_mode == "common" else [1e-7, 1e4, 1.][i % 3])
+           for i, (m, s) in enumerate(vol.items())}
+    prices = 100*np.exp(np.cumsum(rng.normal(.0002, .012, size=(n, k)), axis=0))
+    bench = {m: pd.Series(prices[:, i], index=idx) for i, m in enumerate(MARKETS)}
+    by_key = {cgl._BENCH[m]: bench[m] for m in MARKETS}
+    def compute(panel):
+        with patch.object(cgl, "_proxy_vol_series", side_effect=lambda m: panel[m]), \
+                patch.object(cgl, "_load_close", side_effect=lambda group, ticker: by_key[(group, ticker)]):
+            return cgl.compute(root=tmp_path)
+    regular, scaled = compute(vol), compute(low)
+    assert regular["matrix"] == scaled["matrix"]
+    assert regular["pressure"] == scaled["pressure"]
+    assert regular["gaps"] == scaled["gaps"]
+    actual, expected = cgl._build_p_raw_history(vol, bench), cgl._build_p_raw_history(low, bench)
+    np.testing.assert_allclose(actual, expected, rtol=1e-8, atol=1e-8, equal_nan=True)
+    assert actual.attrs["dynamic_unavailable_refits"] == 0
+    assert expected.attrs["dynamic_unavailable_refits"] == 0
+    assert not list(tmp_path.rglob("*")), "qualification must not write ledgers"
+
+
+def test_exact_recurrence_innovations_use_existing_structural_fallback(tmp_path, monkeypatch):
+    """#10962: shared VAR refusal reaches both CGL consumers without writes."""
+    monkeypatch.setattr(cgl, "date", _PinnedClock)
+    n = 680
+    idx = pd.bdate_range(end=_FRIDAY, periods=n)
+    vol = {m: pd.Series(.1 * (i + 1) * 1.001 ** np.arange(n), index=idx)
+           for i, m in enumerate(MARKETS)}
+    rng = np.random.default_rng(4)
+    prices = 100 * np.exp(np.cumsum(rng.normal(.0002, .012, (n, len(MARKETS))), axis=0))
+    bench = {m: pd.Series(prices[:, i], index=idx) for i, m in enumerate(MARKETS)}
+    by_key = {cgl._BENCH[m]: bench[m] for m in MARKETS}
+    with patch.object(cgl, "_proxy_vol_series", side_effect=lambda m: vol[m]), \
+            patch.object(cgl, "_load_close", side_effect=lambda group, ticker: by_key[(group, ticker)]):
+        result = cgl.compute(root=tmp_path)
+    history = cgl._build_p_raw_history(vol, bench)
+    assert history.attrs["dynamic_unavailable_refits"] > 0
+    assert any("Current dynamic matrix unavailable" in s for s in result["gaps"])
+    assert any("Historical dynamic matrix unavailable" in s for s in result["gaps"])
+    json.dumps(result, allow_nan=False)
+    assert not list(tmp_path.rglob("*")), "compute must remain read-only"
