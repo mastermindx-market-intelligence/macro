@@ -14,7 +14,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from engine.intraday_greeks import KERNEL_CONVENTIONS, bs_greeks_vec, kernel_applicability
+from engine.intraday_greeks import KERNEL_CONVENTIONS, bs_greeks_vec, implied_vol_vec, kernel_applicability
 from engine.options_exposure_projection import (
     _index, _number, _session_date, _time,
     compose_native_exposure_context, exposure_input_digest,
@@ -62,6 +62,94 @@ def _finite_kernel_members(contracts, prices, horizons, *, r, q):
             if any(not np.isfinite(value).all() for value in values):
                 return False
     return True
+
+
+def _quote_kernel_identity():
+    """Local executed Python implementation identity, not source authentication.
+
+    Code paths/line tables are excluded so worktree placement cannot change the
+    identity. Actual kernel functions, constants, executed aliases and dependency
+    versions are included. No file/current-clock/network read or caller version.
+    """
+    import hashlib
+    import json
+    import marshal
+    import sys
+    import types
+    from engine import intraday_greeks as kernel
+    try:
+        import scipy
+        scipy_version = scipy.__version__
+    except ImportError:
+        scipy_version = None
+
+    def normalized(code):
+        return code.replace(co_filename="", co_firstlineno=1, co_linetable=b"",
+            co_consts=tuple(normalized(value) if isinstance(value, types.CodeType) else value
+                            for value in code.co_consts))
+
+    functions = {name: value for name, value in vars(kernel).items()
+                 if isinstance(value, types.FunctionType) and value.__module__ == kernel.__name__}
+    functions.update(executed_iv=implied_vol_vec, executed_greeks=bs_greeks_vec,
+                     executed_applicability=kernel_applicability)
+    implementation = {"kind": "local_python_implementation_fingerprint/v1",
+        "module": kernel.__name__,
+        "versions": {"python": sys.version, "numpy": np.__version__, "scipy": scipy_version},
+        "functions": {name: {
+            "code_sha256": hashlib.sha256(marshal.dumps(normalized(function.__code__))).hexdigest(),
+            "defaults": function.__defaults__, "kwdefaults": function.__kwdefaults__}
+            for name, function in sorted(functions.items())},
+        "constants": {name: value.item() if isinstance(value, np.generic) else value
+            for name, value in vars(kernel).items() if name.isupper()
+            and isinstance(value, (str, int, float, bool, dict, tuple, list, type(None), np.generic))}}
+    encoded = json.dumps(implementation, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    return {**json.loads(encoded), "sha256": hashlib.sha256(encoded).hexdigest()}
+
+
+def _quote_capsule_ref(capsule):
+    import hashlib
+    import json
+    try:
+        encoded = json.dumps(capsule, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    except (ValueError, TypeError, OverflowError) as exc:
+        raise ValueError("Invalid quote provenance encoding") from exc
+    if len(encoded) > 262144:
+        raise ValueError("Quote provenance exceeds selected-expiry byte bound")
+    return "quote-valuation:sha256:" + hashlib.sha256(encoded).hexdigest()
+
+
+def _validated_quote_capsule(context, greeks_df, oi_df, asof, root):
+    """Bounded integrity/semantics check; never a provider/PIT/rights grant."""
+    capsule = context.get("quote_valuation")
+    if not isinstance(capsule, dict):
+        raise ValueError("Missing quote provenance")
+    identity = _quote_kernel_identity()
+    iv = (context.get("greek_provenance") or {}).get("iv")
+    original = deepcopy({key: value for key, value in context.items()
+                if key not in {"quote_valuation", "source_snapshot_ref", "input_sha256", "greek_provenance"}})
+    supplied = deepcopy(capsule.get("supplied_context"))
+    if not isinstance(supplied, dict) or not isinstance(supplied.get("clocks"), dict):
+        raise ValueError("Missing supplied quote context")
+    # The incumbent OI receipt composer normalizes equivalent Z/+00:00 text.
+    # Compare instants without changing any retained capsule/event strings.
+    for field in ("option_observed_at", "underlying_observed_at", "greeks_available_at", "oi_available_at", "available_at"):
+        before, after = _time(supplied["clocks"].get(field)), _time(original["clocks"].get(field))
+        if before is None or after is None or before != after:
+            raise ValueError("Quote context clock mismatch")
+        supplied["clocks"][field] = original["clocks"][field] = after.isoformat()
+    if (capsule.get("schema") != "options.quote_valuation/v1"
+            or capsule.get("kind") != "conditional_asof_reconstruction"
+            or capsule.get("historical_first_availability_established") is not False
+            or capsule.get("pit_qualified") is not False
+            or capsule.get("implementation") != identity
+            or capsule.get("derived_input_sha256") != exposure_input_digest(greeks_df, oi_df, asof, root)
+            or supplied != original
+            or _quote_capsule_ref(capsule) != context.get("source_snapshot_ref")
+            or not isinstance(iv, dict) or iv.get("implementation_sha256") != identity["sha256"]
+            or iv.get("model_ref") != KERNEL_CONVENTIONS["model"]
+               + "|engine.intraday_greeks.implied_vol_vec|local-implementation-sha256:" + identity["sha256"]):
+        raise ValueError("Quote provenance/source/model mismatch")
+    return deepcopy(capsule)
 
 
 def build_admitted_scenario_surface(greeks_df, oi_df, asof, root, *, request, source_context):
@@ -186,6 +274,11 @@ def build_admitted_scenario_surface(greeks_df, oi_df, asof, root, *, request, so
     out["source"] = {"root": root, "security_id": context["security_id"],
         "source_snapshot_ref": context["source_snapshot_ref"], "input_sha256": context["input_sha256"],
         "clocks": deepcopy(clocks), "rights_decision_ref": context.get("rights_decision_ref")}
+    if context["source_snapshot_ref"].startswith("quote-valuation:") or "quote_valuation" in context:
+        try:
+            out["source"]["quote_valuation"] = _validated_quote_capsule(context, greeks_df, oi_df, asof, root)
+        except (ValueError, TypeError, AttributeError, KeyError, OverflowError):
+            return refuse("quote_valuation_provenance_unqualified")
     expected_rows, term_rows = context.get("expected_contracts"), context.get("contract_terms")
     if not isinstance(expected_rows, list) or not expected_rows or not isinstance(term_rows, list):
         return refuse("expected_population_or_terms_unknown")
@@ -276,3 +369,137 @@ def build_admitted_scenario_surface(greeks_df, oi_df, asof, root, *, request, so
         "r_source": "explicit_scenario_assumption", "q_source": "explicit_scenario_assumption",
         "iv_provenance": deepcopy(context["greek_provenance"]["iv"])}
     return out
+
+
+def compose_quote_valuation_inputs(option_captures, underlying_capture, oi_df, asof, root, *,
+                                   source_context, valuation_at, evaluated_at,
+                                   max_quote_age_seconds, quote_policy, r, q):
+    """Opt-in local conditional reconstruction; no acquisition or authority grant.
+
+    Capture objects contain ``raw`` CSV bytes and an original ``receipt`` string.
+    Explicit equal context observation clocks describe model valuation at T; raw
+    quote events remain separate, unchanged fields. Later capture availability is
+    never backdated to T. The existing strict scenario admission remains separate.
+    """
+    from lib.options_source_receipts import quote_capture_at, native_acquisitions
+    from engine.options_nbbo_cohort import FIRM_OPRA_QUOTE_CONDITIONS, KNOWN_THETA_EXCHANGES
+
+    target, evaluated = _time(valuation_at), _time(evaluated_at)
+    if (root not in {"SPY", "QQQ"} or target is None or evaluated is None or evaluated < target
+            or target.tz_convert("America/New_York").date().isoformat() != asof
+            or _native_number(r) is None or r < 0 or _native_number(q) != 0
+            or not isinstance(source_context, dict) or source_context.get("kind") != "modeled_exposure"
+            or source_context.get("root") != root or not _text(source_context.get("security_id"))):
+        raise ValueError("Explicit qualified valuation domain required")
+    if any(field in source_context for field in ("input_sha256", "source_snapshot_ref", "greek_provenance", "quote_valuation")):
+        raise ValueError("Existing source identity cannot be relabelled as quote valuation")
+    context = deepcopy(source_context)
+    clocks = context.get("clocks")
+    if (not isinstance(clocks, dict) or clocks.get("source_session") != asof
+            or clocks.get("oi_report_date") != asof
+            or any(_time(clocks.get(field)) != target for field in ("option_observed_at", "underlying_observed_at"))
+            or _time(clocks.get("available_at")) != evaluated
+            or _time(clocks.get("greeks_available_at")) != evaluated):
+        raise ValueError("Explicit valuation/computation clocks required; none are rewritten")
+    policy_fields = {"option_conditions", "stock_conditions", "option_exchanges", "stock_exchanges", "stock_condition_basis"}
+    if (not isinstance(quote_policy, dict) or set(quote_policy) != policy_fields
+            or not _text(quote_policy["stock_condition_basis"])
+            or any(not isinstance(quote_policy[field], list) or not quote_policy[field]
+                   or any(type(value) is not int or value < 0 for value in quote_policy[field])
+                   for field in policy_fields - {"stock_condition_basis"})
+            or not set(quote_policy["option_conditions"]) <= FIRM_OPRA_QUOTE_CONDITIONS
+            or not set(quote_policy["option_exchanges"]) <= KNOWN_THETA_EXCHANGES):
+        raise ValueError("Explicit feed-specific mark policy required")
+    if (not isinstance(option_captures, list) or not option_captures or len(option_captures) > 100
+            or not isinstance(underlying_capture, dict) or set(underlying_capture) != {"raw", "receipt"}):
+        raise ValueError("Bounded exact supplied captures required")
+
+    def capture(value, kind):
+        if not isinstance(value, dict) or set(value) != {"raw", "receipt"}:
+            raise ValueError("Invalid quote capture shape")
+        result = quote_capture_at(**value, kind=kind, root=root, session=asof,
+            valuation_at=valuation_at, max_age_seconds=max_quote_age_seconds,
+            allowed_conditions=quote_policy[kind + "_conditions"],
+            allowed_exchanges=quote_policy[kind + "_exchanges"])
+        if _time(result["receipt"]["received_at"]) > evaluated:
+            raise ValueError("Quote unavailable at actual evaluation cutoff")
+        return result
+
+    underlying = capture(underlying_capture, "stock")
+    options = [capture(value, "option") for value in option_captures]
+    expected_rows, term_rows = context.get("expected_contracts"), context.get("contract_terms")
+    if (not isinstance(expected_rows, list) or not expected_rows or not isinstance(term_rows, list)
+            or not isinstance(oi_df, pd.DataFrame)):
+        raise ValueError("Explicit expected population/OI/terms required")
+    if any(not isinstance(row, dict) for row in expected_rows + term_rows):
+        raise ValueError("Invalid expected/terms row shape")
+    expected, bad_e = _index(expected_rows, root)
+    terms, bad_t = _index(term_rows, root)
+    oi, bad_o = _index(oi_df.to_dict("records"), root)
+    if (bad_e or bad_t or bad_o or any(len(rows) != 1 for table in (expected, terms, oi) for rows in table.values())
+            or set(expected) != set(terms) or set(expected) != set(oi)):
+        raise ValueError("Duplicate/missing/extra supplied member")
+    oi_receipts = native_acquisitions(oi_df, root, asof, "oi", now=evaluated_at)
+    oi_available = _time(clocks.get("oi_available_at"))
+    if (not oi_receipts or oi_available is None or oi_available > evaluated
+            or any(_time(receipt["received_at"]) > oi_available for receipt in oi_receipts)):
+        raise ValueError("Actual OI availability unqualified")
+    rows, seen = [], set()
+    spot = underlying["mid"]
+    for option in options:
+        params = option["receipt"]["parameters"]
+        key = (params["expiration"], float(params["strike"]), "C")
+        if key in seen or key not in expected:
+            raise ValueError("Duplicate/extra captured member")
+        seen.add(key)
+        term = terms[key][0]
+        expiry, known = _time(term.get("economic_expiry_at")), _time(term.get("available_at"))
+        if (expiry is None or known is None or known > evaluated
+                or expiry.tz_convert("America/New_York").date().isoformat() != key[0]
+                or term.get("exercise_style") != "american"
+                or term.get("discrete_dividend_before_expiry") is not False
+                or term.get("security_id") != context["security_id"]
+                or term.get("currency") != "USD" or term.get("multiplier") != 100
+                or term.get("deliverable") != "100_underlying_shares"
+                or ("shares_per_contract" in term and _number(term["shares_per_contract"]) != 100)
+                or ("additional_underlyings" in term and term["additional_underlyings"] != [])
+                or any(not _text(term.get(field)) for field in ("series_id", "terms_ref", "deliverable_ref"))):
+            raise ValueError("Explicit economic terms/dividend facts unqualified")
+        seconds = (expiry - target).total_seconds()
+        if kernel_applicability(exercise_style="american", right="C",
+                seconds_to_economic_expiry=seconds, discrete_dividend_before_expiry=False)["status"] != "supported":
+            raise ValueError("Kernel applicability refused")
+        interest = _number(oi[key][0].get("open_interest"))
+        if interest is None or interest < 0 or not interest.is_integer():
+            raise ValueError("Unknown/invalid OI")
+        sigma = float(implied_vol_vec(np.array([option["mid"]]), spot,
+            np.array([key[1]]), np.array([seconds / (365 * 86400)]), np.array([True]), r=r, q=q)[0])
+        if not np.isfinite(sigma) or sigma <= 0:
+            raise ValueError("IV unsolved; supplied cohort withheld")
+        rows.append(dict(root=root, date=asof, expiration=key[0], strike=key[1], right="C",
+            implied_vol=sigma, underlying_price=spot, timestamp=option["raw_event_at"],
+            underlying_timestamp=underlying["raw_event_at"], _theta_acquisition=option["receipt_text"]))
+    if seen != set(expected):
+        raise ValueError("Missing supplied quote member")
+    greeks = pd.DataFrame(rows)
+    input_digest = exposure_input_digest(greeks, oi_df, asof, root)
+    implementation = _quote_kernel_identity()
+    evidence = {"schema": "options.quote_valuation/v1", "kind": "conditional_asof_reconstruction",
+        "valuation_at": valuation_at, "evaluated_at": evaluated_at,
+        "historical_first_availability_established": False, "pit_qualified": False,
+        "max_quote_age_seconds": max_quote_age_seconds, "policy": deepcopy(quote_policy),
+        "r": r, "q": q, "derivation": "engine.intraday_greeks.implied_vol_vec",
+        "implementation": implementation,
+        "derived_input_sha256": input_digest,
+        "option_quotes": options, "underlying_quote": underlying,
+        "oi_receipts": oi_receipts, "supplied_context": deepcopy(context)}
+    source_ref = _quote_capsule_ref(evidence)
+    context["source_snapshot_ref"] = source_ref
+    context["quote_valuation"] = evidence
+    context["greek_provenance"] = {"iv": {"source_ref": source_ref,
+        "model_ref": KERNEL_CONVENTIONS["model"] + "|engine.intraday_greeks.implied_vol_vec|local-implementation-sha256:" + implementation["sha256"],
+        "implementation_sha256": implementation["sha256"],
+        "method": "engine.intraday_greeks", "unit": "decimal_annualized",
+        "tenor_policy": "economic_expiry_no_floor"}}
+    context["input_sha256"] = input_digest
+    return greeks, oi_df.copy(deep=True), context

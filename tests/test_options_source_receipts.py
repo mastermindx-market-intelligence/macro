@@ -15,6 +15,28 @@ from engine.options_exposure_projection import (compose_native_exposure_context,
     exposure_input_digest, build_exposure_projection)
 
 
+def test_quote_receipts_are_separate_from_legacy_greek_receipts():
+    from lib.options_source_receipts import THETA_QUOTE_ENDPOINTS
+    parameters = dict(symbol="SPY", date="2026-10-20", expiration="2026-10-28",
+        strike="100", right="call", start_time="14:59:59.000", end_time="15:00:00.000",
+        interval="tick", format="csv")
+    raw = b"synthetic quote capture"
+    with pytest.raises(ValueError, match="transport clocks"):
+        theta_acquisition(THETA_QUOTE_ENDPOINTS["option"], parameters, raw,
+                          origin="http://theta-fixture:25503", received_at="2026-10-21T10:00:00Z")
+    receipt = theta_acquisition(THETA_QUOTE_ENDPOINTS["option"], parameters, raw,
+        origin="http://theta-fixture:25503", received_at="2026-10-21T10:00:00Z",
+        request_started_at="2026-10-21T09:59:59Z")
+    decoded = json.loads(receipt)
+    assert decoded["response_bytes"] == len(raw)
+    assert decoded["response_sha256"] == hashlib.sha256(raw).hexdigest()
+    assert decoded["historical_first_availability_established"] is False
+    frame = pd.DataFrame([dict(root="SPY", expiration="2026-10-28", strike=100., right="C",
+                               **{ACQUISITION_COLUMN: receipt})])
+    assert native_acquisitions(frame, "SPY", "2026-10-20", "greeks") is None
+    assert "start_time" not in __import__("lib.options_source_receipts", fromlist=["THETA_PARAMETERS"]).THETA_PARAMETERS
+
+
 @pytest.mark.parametrize('root', ['SPY', 'QQQ'])
 def test_opted_in_writer_receipt_survives_backfill_and_daily_year_merge(tmp_path, monkeypatch, root):
     from datetime import date
