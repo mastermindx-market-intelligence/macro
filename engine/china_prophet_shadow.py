@@ -21,6 +21,7 @@ Integrity rules:
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
+import json
 import logging
 import math
 from typing import Any
@@ -71,6 +72,7 @@ _OBJECT_COLUMNS = (
     "micro_asof",
     "micro_batch_asof",
     "board_asof",
+    "peer_context_json",
     "sector_turn_state",
     "sector_turn_asof",
     "narrative_theme",
@@ -366,6 +368,10 @@ def _row_record(
 
     record: dict[str, Any] = {
         "stamp_date": asof,
+        "peer_context_json": (
+            json.dumps(row["peer_context"], sort_keys=True, separators=(",", ":"), allow_nan=False)
+            if row.get("peer_context") and row["peer_context"].get("as_of") == asof else None
+        ),
         "ticker": ticker,
         "name": _text(row.get("name")),
         "sector": _text(row.get("sector")),

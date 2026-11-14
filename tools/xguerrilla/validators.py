@@ -15,6 +15,8 @@ from datetime import datetime
 from typing import Iterable, Sequence
 from urllib.parse import urlsplit
 
+from .tlds import is_tld
+
 KINDS = ("post", "reply", "quote")
 
 #: Deterministic gates, in the order the policy settled them:
@@ -70,7 +72,10 @@ _FIRST_WORD = re.compile(r"\s*([A-Za-z'’]+)")
 BIO_HOST = "www.mastermind-x.com"
 #: The path IS the attribution key (BL-2): the registry's immutable child id,
 #: never the handle, and never a campaign parameter.
-BIO_PATH_RE = re.compile(r"^/x/[a-z0-9]{4,32}$")
+#: Registry ids are dotted (desk.and.dusk, mila.lifts, wren.mp4): a bare
+#: [a-z0-9] class refuses 4 of the 5 registered children, so the shape admits
+#: interior single dots only — 4-32 chars, no leading/trailing/double dot.
+BIO_PATH_RE = re.compile(r"^/x/(?!.*\.\.)[a-z0-9][a-z0-9.]{2,30}[a-z0-9]$")
 #: Hosts that resolve to somebody else's estate. Refused even when they redirect
 #: to us: with posts and replies URL-free (BL-9) the bio is the single hop, so
 #: BL-3 requires that hop to be org-controlled end to end.
@@ -84,12 +89,30 @@ _BARE_LINK_HOSTS = {
 #: X autolinks a bare host too, so a URL is not only `scheme://`: the token
 #: matcher also names the hosts that matter. Order matters — the scheme and
 #: `www.` alternatives win at any position they can match.
+#: The last alternative is the general scheme-less host: any dotted host whose
+#: trailing label is a real TLD — a gate cannot maintain a list of everybody
+#: else's *domains*, but the TLD *alphabet* is one versioned data file
+#: (``tlds.py``/``tlds.txt``, IANA snapshot + reserved names, sha256-pinned).
+#: Membership, not label shape, separates hosts from prose: "Node.js",
+#: "notes.txt" and "setup.exe" end on labels that are not TLDs, while
+#: "x.com/handle" ends on "com". Shape still refuses the rest: "e.g."/"i.e."
+#: end on a one-letter label, "v1.2"/"2.0.1" end on a number, and a
+#: sentence-final "done." carries no second label at all. Labels that are
+#: BOTH a TLD and a file extension (zip, mov, app) count as TLDs — the gate
+#: stays fail-closed; the collision decision is documented in ``tlds.txt``
+#: and pinned by tests. Group 1 captures the trailing label so
+#: ``links_in_text`` can apply the membership check.
 _LINK_TOKEN = re.compile(
     r"(?i)(?:https?://[^\s<>\"'`]+"
     r"|www\.[^\s<>\"'`]+"
-    r"|(?<![\w.@/-])(?:%s)(?:/[^\s<>\"'`]*)?(?![\w-]))"
+    r"|(?<![\w.@/-])(?:%s)(?:/[^\s<>\"'`]*)?(?![\w-])"
+    r"|(?<![\w.@/-])(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+([a-z]{2,})"
+    r"(?![\w-]))"
     % "|".join(re.escape(h) for h in sorted(_BARE_LINK_HOSTS))
 )
+# Consume a general host's path only after its TLD qualifies. A rejected
+# filename must not swallow a real URL later in that same slash-delimited text.
+_LINK_PATH = re.compile(r"/[^\s<>\"'`]*")
 #: Sentence punctuation is not part of a link.
 _TRAILING = ".,;:!?)]}»’\"'"
 
@@ -147,11 +170,33 @@ def links_in_text(text: str) -> list[str]:
     ``.strip().rstrip(_TRAILING)`` is deliberate — a bio that ends "…/x/ab12cd34."
     still carries the canonical link, while a trailing-slash variant does not
     lose its slash to punctuation cleanup.
+
+    A match from the general scheme-less-host alternative counts only when its
+    trailing label (group 1) is a real TLD: filename-shaped prose — "Node.js",
+    "notes.txt", "setup.exe" — is not a link, so the zero-URL gate does not
+    refuse it. Scheme, ``www.`` and the named bare hosts carry no group 1 and
+    always count.
     """
+    text = text or ""
     found: list[str] = []
-    for match in _LINK_TOKEN.finditer(text or ""):
-        token = match.group(0).strip().rstrip(_TRAILING).strip()
-        if token and token not in found:
+    seen: set[str] = set()
+    cursor = 0
+    while match := _LINK_TOKEN.search(text, cursor):
+        tail = match.group(1)
+        if tail is not None and not is_tld(tail):
+            # An explicit www./http(s) start can be inside the rejected dotted
+            # header. Keep original-string lookbehind context when resuming.
+            cursor = match.start() + 1
+            continue
+        end = match.end()
+        if tail is not None:
+            path = _LINK_PATH.match(text, end)
+            if path is not None:
+                end = path.end()
+        cursor = end
+        token = text[match.start():end].strip().rstrip(_TRAILING).strip()
+        if token and token not in seen:
+            seen.add(token)
             found.append(token)
     return found
 
@@ -373,20 +418,21 @@ def _bio_link_violations(
             f"bio link {link!r} has a trailing slash — the canonical form ends "
             f"at the child id (BL-10)"
         )
-    elif not BIO_PATH_RE.match(path):
+    elif not BIO_PATH_RE.fullmatch(path):
         out.append(
             f"bio link path {path!r} is not the settled destination shape "
-            f"^/x/[a-z0-9]{{4,32}}$ (BL-2)"
+            f"/x/<4-32 lowercase letters/digits with single interior dots> (BL-2)"
         )
 
-    if BIO_PATH_RE.match(path):
+    if BIO_PATH_RE.fullmatch(path):
         slug = path[len("/x/"):]
         if child_id is not None:
             wanted = str(child_id or "").strip()
-            if not re.fullmatch(r"[a-z0-9]{4,32}", wanted):
+            if not BIO_PATH_RE.fullmatch(f"/x/{wanted}"):
                 out.append(
                     f"child_id {child_id!r} is not a valid attribution key "
-                    f"([a-z0-9]{{4,32}}) — the path cannot bind to it"
+                    f"(4-32 lowercase letters/digits with single interior dots) — "
+                    f"the path cannot bind to it"
                 )
             elif path != f"/x/{wanted}":
                 out.append(
