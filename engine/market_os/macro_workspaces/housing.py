@@ -676,7 +676,7 @@ def _metrics(built_at, mortgage, starts, permits, case_shiller, zori_rows,
         "mortgage_30y_rate_level", m_level, "percent", "percent", "market_rate_level",
         "higher_more_restrictive_financing", f"data/fred/{SERIES_MORTGAGE}.parquet",
         "fred.MORTGAGE30US.mortgage_30y", m_date, m_fresh,
-        source_refs=["FRED:MORTGAGE30US (Freddie Mac PMMS via FRED, ruling R-2)"],
+        source_refs=["FRED:MORTGAGE30US"],
         transformation=(
             "Freddie Mac Primary Mortgage Market Survey 30-year fixed rate, "
             "republished by FRED; a market rate series SA/NSA does not apply to."
@@ -818,7 +818,7 @@ def _metrics(built_at, mortgage, starts, permits, case_shiller, zori_rows,
     items.append(_metric(
         "national_rent_zori_level", z_level, "number", "usd_per_month", "level",
         "higher_more_expensive_rent", "data/zori/national.parquet",
-        "zori.national.zori", z_date, z_fresh, source_refs=["Zillow Research ZORI (national, smoothed)"],
+        "zori.national.zori", z_date, z_fresh, source_refs=["national_rent_zori"],
         transformation=(
             "Zillow Research ZORI (smoothed, all home types), national aggregate, "
             "collected directly from Zillow -- not FRED. Zillow's own collector-"
@@ -836,7 +836,7 @@ def _metrics(built_at, mortgage, starts, permits, case_shiller, zori_rows,
     items.append(_metric(
         "national_rent_zori_yoy", zori_yoy_val, "percent", "percent", "yoy_pct_change",
         "higher_more_expensive_rent", "data/zori/national.parquet",
-        "zori.national.zori", z_date, z_fresh, source_refs=["Zillow Research ZORI (national, smoothed)"],
+        "zori.national.zori", z_date, z_fresh, source_refs=["national_rent_zori"],
         transformation="12-month percent change of the same (NSA-per-census) series.",
         status="DISAGREEMENT" if zori_disagree else "PRESENT",
         null_reason="DISAGREEMENT" if zori_disagree else ("INSUFFICIENT_HISTORY" if z_latest else None),
@@ -847,6 +847,7 @@ def _metrics(built_at, mortgage, starts, permits, case_shiller, zori_rows,
         "existing_home_sales", None, "count", "units_saar", "n/a", "n/a",
         "NONE -- NAR terms bar storage in a retrieval system (ruling R-3)",
         "NONE", None, "RIGHTS_BLOCKED",
+        source_refs=["existing_home_sales_nar"],
         transformation=(
             "NAR (National Association of REALTORS) existing-home-sales data is "
             "rights-blocked for storage in this estate's retrieval system -- NAR's "
@@ -862,6 +863,7 @@ def _metrics(built_at, mortgage, starts, permits, case_shiller, zori_rows,
         "new_home_sales", None, "count", "units_saar", "n/a", "n/a",
         "NONE -- no Census New Residential Sales collector is wired in this estate",
         "NONE", None, "NOT_COVERED",
+        source_refs=["new_home_sales_census"],
         transformation=(
             "Census Bureau New Residential Sales would supply this leg, but no "
             "collector for that release exists in this estate today. Building a "
@@ -874,6 +876,7 @@ def _metrics(built_at, mortgage, starts, permits, case_shiller, zori_rows,
         "housing_completions", None, "count", "units_saar", "n/a", "n/a",
         "NONE -- no Census completions (COMPUTSA-equivalent) collector is wired",
         "NONE", None, "NOT_COVERED",
+        source_refs=["housing_completions_census"],
         transformation=(
             "Census Bureau housing completions (a COMPUTSA-equivalent release) has "
             "no collector registered anywhere in this estate today. This composer "
@@ -894,16 +897,19 @@ def _metrics(built_at, mortgage, starts, permits, case_shiller, zori_rows,
     items.append(_metric(
         "pending_home_sales_redfin", None, "count", "count", "n/a", "n/a",
         "NONE -- scripts/collect_redfin_hf.py store is empty", "NONE", None, "SOURCE_FAILED",
+        source_refs=["redfin_high_frequency"],
         transformation=redfin_note, null_reason="SOURCE_FAILED",
     ))
     items.append(_metric(
         "active_listings_redfin", None, "count", "count", "n/a", "n/a",
         "NONE -- scripts/collect_redfin_hf.py store is empty", "NONE", None, "SOURCE_FAILED",
+        source_refs=["redfin_high_frequency"],
         transformation=redfin_note, null_reason="SOURCE_FAILED",
     ))
     items.append(_metric(
         "price_drop_share_redfin", None, "percent", "percent", "n/a", "n/a",
         "NONE -- scripts/collect_redfin_hf.py store is empty", "NONE", None, "SOURCE_FAILED",
+        source_refs=["redfin_high_frequency"],
         transformation=(
             redfin_note + " This particular leg is additionally roughly "
             f"{_REDFIN_PRICE_DROP_SEASONALITY_PCT_DISCLOSED:g} percent pure "
@@ -915,6 +921,7 @@ def _metrics(built_at, mortgage, starts, permits, case_shiller, zori_rows,
     items.append(_metric(
         "median_days_on_market_redfin", None, "count", "days", "n/a", "n/a",
         "NONE -- scripts/collect_redfin_hf.py store is empty", "NONE", None, "SOURCE_FAILED",
+        source_refs=["redfin_high_frequency"],
         transformation=redfin_note, null_reason="SOURCE_FAILED",
     ))
 

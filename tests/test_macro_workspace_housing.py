@@ -418,6 +418,54 @@ def test_zori_metrics_never_cite_fred_source() -> None:
         assert not any("FRED" in ref for ref in m["source_refs"])
 
 
+@pytest.mark.parametrize("populated", [True, False])
+def test_every_metric_links_to_its_exact_published_source(populated) -> None:
+    """Source identities must resolve even for a typed absent measurement.
+
+    A bare FRED token names one exact artifact; other references must be a
+    published source_id. Attribution and absence explanations belong to their
+    existing descriptive fields, never to an unresolvable identity string.
+    """
+    snap = _compose() if populated else _compose(fred_frames={}, zori=None)
+    sources = {source["source_id"]: source for source in snap["sources"]["items"]}
+    expected = {
+        "mortgage_30y_rate_level": ["mortgage_rate"],
+        "mortgage_30y_rate_change_13w": ["mortgage_rate"],
+        "housing_starts_level": ["housing_starts"],
+        "housing_starts_yoy": ["housing_starts"],
+        "building_permits_level": ["building_permits"],
+        "building_permits_yoy": ["building_permits"],
+        "permits_minus_starts_spread": ["building_permits", "housing_starts"],
+        "case_shiller_national_hpi_level": ["case_shiller_hpi"],
+        "case_shiller_national_hpi_yoy": ["case_shiller_hpi"],
+        "national_rent_zori_level": ["national_rent_zori"],
+        "national_rent_zori_yoy": ["national_rent_zori"],
+        "existing_home_sales": ["existing_home_sales_nar"],
+        "new_home_sales": ["new_home_sales_census"],
+        "housing_completions": ["housing_completions_census"],
+        "pending_home_sales_redfin": ["redfin_high_frequency"],
+        "active_listings_redfin": ["redfin_high_frequency"],
+        "price_drop_share_redfin": ["redfin_high_frequency"],
+        "median_days_on_market_redfin": ["redfin_high_frequency"],
+    }
+    resolved = {}
+    for metric in snap["metrics"]["items"]:
+        ids = []
+        for ref in metric["source_refs"]:
+            if ref in sources:
+                ids.append(ref)
+            else:
+                assert ref.startswith("FRED:")
+                artifact = f"data/fred/{ref.removeprefix('FRED:')}.parquet"
+                matches = [sid for sid, source in sources.items()
+                           if source["artifact_ref"] == artifact]
+                assert len(matches) == 1, (ref, matches)
+                ids.extend(matches)
+        resolved[metric["metric_id"]] = ids
+    assert resolved == expected
+    contract.validate(contract.finalize(snap))
+
+
 def test_no_metric_combines_case_shiller_and_zori_in_one_value() -> None:
     snap = _compose()
     ids = {m["metric_id"] for m in snap["metrics"]["items"]}
