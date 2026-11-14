@@ -28,6 +28,7 @@ from engine.fundamental_forensics.source_sync import (
     _decode_pointer,
     _read_versioned_pointer,
 )
+from engine.marketing.catalyst_packets import FIGURE_OUTCOMES
 from engine.research_vault.r2_store import LocalStore, R2Store, build_store
 
 NAMESPACE_PREFIX = "marketing/catalyst-sec-source/v1/"
@@ -329,6 +330,13 @@ def _validate_event(event: object) -> None:
     _require(lineage.get("correction_generation") in (0, 1),
              "event correction_generation must be 0 or 1")
     _require(event.get("parse_status") in _PARSE_STATUSES, "event parse_status is invalid")
+    # Absent on an event published before the code existed; such an event is
+    # carried unchanged, so a legacy index must still read.
+    if "figure_outcome" in event:
+        outcome = event["figure_outcome"]
+        _require(isinstance(outcome, str)
+                 and FIGURE_OUTCOMES.get(outcome) == event["parse_status"],
+                 "event figure_outcome is invalid for its parse_status")
 
 
 def read_latest_index(store: object) -> LatestIndex | None:
