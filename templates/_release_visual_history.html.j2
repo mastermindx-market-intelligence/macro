@@ -15,6 +15,7 @@
 #rr-visual-history .rrh-value{font-size:clamp(28px,4.8vw,46px);letter-spacing:-.04em;line-height:1.1;font-variant-numeric:tabular-nums;font-weight:750}
 #rr-visual-history .rrh-delta{font-size:12px;color:var(--muted);font-weight:600}
 #rr-visual-history .rrh-interpretation{font-size:12px;line-height:1.55;min-height:19px;margin:8px 0}
+#rr-visual-history .rrh-basis-warning{display:block;margin-top:5px;color:var(--muted);font-weight:750}
 #rr-visual-history .rrh-state{font-size:11px;color:var(--muted);margin:4px 0;min-height:14px}
 #rr-visual-history .rrh-chart-title{font-size:11px;font-weight:700;color:var(--muted);margin:14px 0 0}
 #rr-visual-history .rrh-chart{display:block;width:100%;height:auto;min-height:160px;max-height:285px;overflow:visible}
@@ -50,7 +51,7 @@
     <div class="rrh-top">
       <div>
         <h3 id="rrh-title"><span class="l-en">Release history at a glance</span><span class="l-zh">数据发布历史速览</span></h3>
-        <p class="rrh-intro"><span class="l-en">Real historical levels, verified first prints and expectations — kept on separate bases.</span><span class="l-zh">历史指数、经核验的首次公布值与市场预期，口径清晰区分。</span></p>
+        <p class="rrh-intro"><span class="l-en">Verified index trends, first prints and expectations. BLS annual rates (NSA) and monthly rates (SA) are different.</span><span class="l-zh">历史指数、官方首次值及市场预期分开呈现；BLS 同比采用未季调指数，环比采用季调指数。</span></p>
       </div>
       <div class="rrh-controls">
         <label><span class="l-en">Measure</span><span class="l-zh">指标</span>
@@ -89,8 +90,8 @@
       <details class="mx-disc">
         <summary><span class="l-en">Data, revisions and last 12 readings</span><span class="l-zh">数据口径、修订与最近 12 期</span></summary>
         <div class="mx-disc-body">
-          <p><span class="l-en">The chart derives YoY/MoM from one ALFRED snapshot of currently revised index levels. It is not an archive of what economists knew on every original release date. First-print values are separately verified official MoM receipts. Surprise requires independently captured pre-release economist consensus; model estimates are never relabelled as Street consensus.</span>
-            <span class="l-zh">图表基于同一时点的 ALFRED 修订后指数计算同比和环比，并非当年每次发布的首次值。官方首次公布环比值单独验证；意外幅度必须使用发布前独立采集的经济学家共识，不会将模型预测误称市场共识。</span></p>
+          <p><span class="l-en">The chart derives trends from one ALFRED collection-time snapshot of revised indices. For BLS CPI/PPI, the reported 12-month rate uses NOT seasonally adjusted (NSA) indices, while the monthly print uses seasonally adjusted (SA) indices. When an optional NSA index is missing, the chart labels its SA YoY value as a proxy, not the official headline. PCE uses BEA seasonally adjusted indices for both horizons. Missing reference months remain missing (including October 2025 CPI). This is not a release-day first-print archive. Verified official first-print MoM receipts and qualified pre-release economist consensus are shown separately; model estimates are never relabelled as Street consensus.</span>
+            <span class="l-zh">图表基于同一采集时点的 ALFRED 修订后指数。BLS 的 CPI/PPI 官方同比采用未季调 (NSA) 指数，环比采用季调 (SA) 指数；若未季调指数缺失，则将季调同比明确标注为替代值而非官方同比。BEA 的 PCE 两种口径均采用季调指数；缺失月份（含 2025 年 10 月 CPI）不插值。官方首次环比值与发布前经济学家共识独立验证，模型预测不会冒充市场共识。</span></p>
           <p><span class="l-en">A rising inflation series is descriptive, not a prediction of yields or stock performance. Missing months remain gaps; stale collections are labelled.</span>
             <span class="l-zh">通胀上行仅为描述，不代表利率或股价预测。缺失月份保留空缺，过期采集明确标识。</span></p>
           <table>
@@ -98,7 +99,7 @@
               <th><span class="l-en">Revised reading</span><span class="l-zh">修订后数值</span></th></tr></thead>
             <tbody data-rrh-table></tbody>
           </table>
-          <p><a href="https://fred.stlouisfed.org/" target="_blank" rel="noopener noreferrer">
+          <p><a data-rrh-source href="https://fred.stlouisfed.org/" target="_blank" rel="noopener noreferrer">
             <span class="l-en">FRED/ALFRED series source</span><span class="l-zh">FRED/ALFRED 数据来源</span></a>
           </p>
           <p><span class="l-en">Display-only research context. No forecast-validation, risk gate, position sizing or trading permission.</span>
