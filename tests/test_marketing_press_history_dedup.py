@@ -7,7 +7,10 @@ provider or the X publishing API; the outbox fixture is under tmp_path only.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+import socket
+from datetime import datetime, timedelta, timezone
+
+import pytest
 
 from engine.marketing import press_lane
 
@@ -134,3 +137,120 @@ def test_old_bea_archive_path_catches_feed_clock_fallback(tmp_path):
         {"source": "bea_news", "url": "https://example.com/news/2024/a"}, now=_NOW)
     assert not press_lane._stale_bea_release_url(
         {"source": "bea_news", "url": "https://www.bea.gov/news/2026/a"}, now=_NOW)
+
+
+@pytest.mark.parametrize(
+    ("stamp", "expected_stale"),
+    [
+        ("0001-01-01T00:00:00+14:00", True),
+        ("9999-12-31T23:59:59-12:00", False),
+    ],
+)
+def test_source_clock_extreme_offsets_keep_age_policy(stamp, expected_stale):
+    assert press_lane._stale_feed_clock(
+        {"published_at": stamp}, now=_NOW, max_age_hours=168
+    ) is expected_stale
+
+
+@pytest.mark.parametrize(
+    ("published", "expected_stale"),
+    [
+        (_NOW - timedelta(days=7), False),
+        (_NOW - timedelta(days=7, microseconds=1), True),
+        (_NOW - timedelta(days=7) + timedelta(microseconds=1), False),
+        (_NOW.astimezone(timezone(timedelta(hours=8))), False),
+        ((_NOW - timedelta(hours=169)).astimezone(
+            timezone(timedelta(hours=-4))), True),
+        ((_NOW - timedelta(hours=169)).replace(tzinfo=None), True),
+    ],
+)
+def test_source_clock_preserves_strict_age_boundary_and_offsets(
+        published, expected_stale):
+    assert press_lane._stale_feed_clock(
+        {"published_at": published.isoformat()}, now=_NOW, max_age_hours=168
+    ) is expected_stale
+
+
+@pytest.mark.parametrize(
+    ("stamp", "expected_survivors", "expected_stale"),
+    [
+        ("0001-01-01T00:00:00+14:00", {"fresh"}, {"boundary", "ordinary-old"}),
+        ("9999-12-31T23:59:59-12:00", {"boundary", "fresh"}, {"ordinary-old"}),
+    ],
+)
+def test_extreme_clock_does_not_abort_real_mixed_tick(
+        tmp_path, monkeypatch, stamp, expected_survivors, expected_stale):
+    from engine.marketing import breaking_summary
+
+    attempts = []
+
+    def forbidden(effect):
+        def fail(*args, **kwargs):
+            attempts.append(effect)
+            raise AssertionError(f"unexpected {effect}")
+        return fail
+
+    monkeypatch.setattr(
+        breaking_summary, "build_breaking_payload", forbidden("generation"))
+    monkeypatch.setattr(
+        press_lane, "_emit_outbox_item", forbidden("emission"))
+    monkeypatch.setattr(socket.socket, "connect", forbidden("socket"))
+    monkeypatch.setattr(socket, "create_connection", forbidden("connection"))
+    monkeypatch.setattr(socket, "getaddrinfo", forbidden("DNS"))
+
+    def feed(item_id, headline, published_at):
+        return {
+            "id": item_id, "source": "reuters", "source_name": "Reuters",
+            "source_tier": "wire",
+            "url": f"https://example.com/synthetic/{item_id}",
+            "headline": headline, "body_snippet": headline,
+            "published_at": published_at,
+        }
+
+    # The fresh item follows the hostile clock, so an early batch abort cannot
+    # masquerade as successful per-item disposition.
+    items = [
+        feed("boundary", "US GDP grows 2.3% in third quarter", stamp),
+        feed("ordinary-old", "US consumer prices rise 0.2% in August",
+             (_NOW - timedelta(days=30)).isoformat()),
+        feed("fresh", "US retail sales rise 0.4% in September",
+             (_NOW - timedelta(hours=1)).isoformat()),
+    ]
+    result = press_lane.run_press_tick(
+        items, root=tmp_path, now=_NOW,
+        cfg={
+            "breaking": {
+                "scoring": {"enabled": False},
+                "llm": {"enabled": False},
+            },
+            "fomc_desk": {"enabled": False},
+        },
+        press_cfg={"wire": {
+            "flagship_top_k_per_day": 0,
+            "tape": {"enabled": False},
+            "rail_salience_floor": 0,
+            "intelligence": {"salience_floor": 0},
+        }},
+        state={}, seen_ids=set(), dry_run=True,
+    )
+    assert {
+        row["id"] for row in result["skipped"]
+        if row["reason"] == "stale_source_timestamp"
+    } == expected_stale
+    assert {row["item_id"] for row in result["corpus"]} == expected_survivors
+    assert {row["id"] for row in result["rail"]} == expected_survivors
+    evidence = [
+        entry for packet in result["intelligence"]
+        for entry in packet["evidence"]
+    ]
+    assert {entry["event_id"] for entry in evidence} == expected_survivors
+    if "boundary" in expected_survivors:
+        assert next(row for row in result["corpus"]
+                    if row["item_id"] == "boundary")["published_at"] == stamp
+        assert next(row for row in result["rail"]
+                    if row["id"] == "boundary")["ts"] == stamp
+        assert next(entry for entry in evidence
+                    if entry["event_id"] == "boundary")["published_at"] == stamp
+    assert result["emitted"] == []
+    assert attempts == []
+    assert not [path for path in tmp_path.rglob("*") if path.is_file()]

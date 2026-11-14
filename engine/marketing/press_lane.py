@@ -567,7 +567,9 @@ def _stale_feed_clock(item: dict, *, now: datetime, max_age_hours: float) -> boo
         return False
     if published.tzinfo is None:
         published = published.replace(tzinfo=timezone.utc)
-    return (now.astimezone(timezone.utc) - published.astimezone(timezone.utc)).total_seconds() > max_age_hours * 3600
+    # Aware subtraction handles offsets without constructing a UTC datetime
+    # outside years 1..9999 for otherwise valid extreme source timestamps.
+    return (now - published).total_seconds() > max_age_hours * 3600
 
 
 def _stale_bea_release_url(item: dict, *, now: datetime) -> bool:
