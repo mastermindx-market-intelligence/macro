@@ -31,6 +31,17 @@ TARGETS = {
     "pce_headline": ("PCEPI", "PCE prices", "PCE 价格"),
     "pce_core": ("PCEPILFE", "Core PCE prices", "核心 PCE 价格"),
 }
+# Official BLS headline 12-month rates use unadjusted price indexes;
+# BLS monthly prints use seasonally adjusted indexes. BEA PCE series
+# are seasonally adjusted for both published comparison horizons.
+# These IDs are optional chart inputs in the EXISTING ALFRED cohort.
+YOY_HEADLINE_SERIES = {
+    "ppi_finaldemand": "PPIFID",
+    "cpi_headline": "CPIAUCNS",
+    "cpi_core": "CPILFENS",
+    "pce_headline": "PCEPI",
+    "pce_core": "PCEPILFE",
+}
 OFFICIAL_RELEASE = {
     "ppi_finaldemand": "ppi_finaldemand",
     "cpi_headline": "cpi_headline",
@@ -185,6 +196,14 @@ def build_release_visual_history(root: str | Path, *, asof: str) -> dict[str, An
             "name_en": name_en, "name_zh": name_zh,
             "source_url": f"https://fred.stlouisfed.org/series/{series_id}",
             "status": "unavailable", "yoy": [], "mom": [],
+            "basis_metadata": {
+                "yoy": {"series_id": series_id, "seasonal_adjustment": "SA",
+                        "official_reported_basis_comparable": release.startswith("pce_"),
+                        "first_print": False, "basis_note": "SA_index_derived_yoy"},
+                "mom": {"series_id": series_id, "seasonal_adjustment": "SA",
+                        "official_reported_basis_comparable": True,
+                        "first_print": False, "basis_note": "SA_index_derived_mom"},
+            },
             "first_prints": receipts.get(OFFICIAL_RELEASE[release], []),
         }
         try:
@@ -193,7 +212,31 @@ def build_release_visual_history(root: str | Path, *, asof: str) -> dict[str, An
                 raise ValueError("series_manifest_missing")
             curves = _series(root, series_id, meta, collected.date())
             item.update(curves)
-            item["status"] = "available" if curves["yoy"] else "history_insufficient"
+            # Official BLS 12-month headline: NSA year-over-year, never SA.
+            # A missing optional NSA series retains an explicitly labelled SA
+            # trend proxy; it is NOT the reported BLS 12-month release reading.
+            headline_id = YOY_HEADLINE_SERIES[release]
+            if headline_id != series_id:
+                try:
+                    headline_meta = manifest["series"].get(headline_id)
+                    if not isinstance(headline_meta, dict):
+                        raise ValueError("official_nsa_series_not_collected")
+                    headline_curves = _series(root, headline_id, headline_meta, collected.date())
+                    if not headline_curves["yoy"]:
+                        raise ValueError("official_nsa_yoy_observations_missing")
+                    item["yoy"] = headline_curves["yoy"]
+                    item["basis_metadata"]["yoy"] = {
+                        "series_id": headline_id,
+                        "seasonal_adjustment": "NSA",
+                        "official_reported_basis_comparable": True,
+                        "first_print": False,
+                        "basis_note": "NSA_index_derived_yoy_not_official_first_print",
+                    }
+                except (OSError, ValueError, TypeError, KeyError, ImportError) as nsa_error:
+                    result["reason_codes"].append(f"{release}:nsa:{str(nsa_error)}")
+            else:
+                item["basis_metadata"]["yoy"]["basis_note"] = "BEA_SA_index_derived_yoy"
+            item["status"] = "available" if item["yoy"] or item["mom"] else "history_insufficient"
             item["last_observation"] = max(
                 (p["period"] for p in (curves["yoy"] + curves["mom"])), default=None
             )
