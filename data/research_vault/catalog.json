@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T08:11:20.117250+00:00",
-  "count": 3352,
+  "generated_at": "2026-11-14T08:26:07.907081+00:00",
+  "count": 3353,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1382,6 +1382,25 @@
         "Asian Tech Geopolitical Risk: Hormuz tensions (Iran mine claims, LNG supply cuts) + AI chipmaker executive investigation (8% share drop) create uncertainty in Taiwan/South Korea/Japan tech markets.",
         "AI Infrastructure Demand vs.",
         "USD Pressure: AI infrastructure demand boosts semiconductor indices (+5.7%); USD strength (Dollar Index 102.90) and rate hike expectations pressure gold (-1.1%)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-auwxzavakeu-09c565",
+      "title": "GS Chryssafis 10 Charts We're Talking About 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T19:41:14Z",
+      "summary_points": [
+        "Fed Policy & CPI Pressure: Hot CPI data intensifies Fed rate hike urgency, pressuring risk assets; USD strength vs oil exporters/safe havens creates fundamental cross-currents.",
+        "NVDA's Valuation & Leadership Clarity: Current price reflects favorable risk/reward with ~80% EPS growth; mirrors Apple's 2011 de-rating (17X→12X P/E) pre-leadership clarity recovery.",
+        "HY BB/Hyperscaler Spread Divergence: HY BB spread (211.8) vs Hyperscaler (162.9) signals widening relative value, with IG 30y (115) indicating yield compression risk."
       ],
       "tags": [],
       "tickers": [],
