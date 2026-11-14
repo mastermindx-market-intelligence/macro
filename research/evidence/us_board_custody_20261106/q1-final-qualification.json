@@ -1,0 +1,85 @@
+{
+  "source_sha256": {
+    "scripts/ci/push_hold.sh": "397b3900403853b0db000c23ee497fc5fba4cbcbf73dde8134d94afef9e40e03",
+    "scripts/ci/us_board_commit.sh": "14a7ecbe28cc00655a8e53458b2db1264e92b47aa661ea0a98e4e1aeaa1fa49d",
+    "tests/test_push_retry.py": "835aaffe0126d7a326318f126196805698600627ccd7e2c70dfa2ef329cccbf3"
+  },
+  "commands": [
+    {
+      "name": "custody_final",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_push_retry.py",
+        "-q",
+        "-rs",
+        "-k",
+        "us_board or hold",
+        "--basetemp",
+        "/tmp/macro-pr10432-c4-q1-20261106/after-final"
+      ],
+      "exit_code": 0,
+      "runtime_seconds": 105.97,
+      "log_sha256": "61a87d65a9ee0c0c0667b6eda3a7a18ce159e027ab8396674b0bc46c8b1c9cca",
+      "log_tail": "..................................................                       [100%]\n50 passed, 126 deselected in 104.99s (0:01:44)\n"
+    },
+    {
+      "name": "source_wiring",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_us_sector_rotation_wiring.py",
+        "tests/test_prophet_off_engine_lane.py",
+        "tests/test_nightly_timings.py",
+        "tests/test_workflow_file_size.py",
+        "-q",
+        "-rs"
+      ],
+      "exit_code": 0,
+      "runtime_seconds": 10.77,
+      "log_sha256": "73756dec818dc61c75bac168dc96730d763dccacd7d6e6fffdcd7d4522a89a77",
+      "log_tail": "........................................................................ [ 55%]\n.........................................................                [100%]\n=============================== warnings summary ===============================\ntests/test_prophet_off_engine_lane.py::TestUsBoardLandingJob::test_it_runs_after_engine_whatever_engine_did\n  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/fixtures.py:1313: PytestRemovedIn10Warning: Class-scoped fixture defined as instance method is deprecated.\n  Instance attributes set in this fixture will NOT be visible to test methods,\n  as each test gets a new instance while the fixture runs only once per class.\n  Use @classmethod decorator and set attributes on cls instead.\n  See https://docs.pytest.org/en/stable/deprecations.html#class-scoped-fixture-as-instance-method\n    fixturefunc = resolve_fixture_function(fixturedef, request)\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n129 passed, 1 warning in 9.98s\n"
+    },
+    {
+      "name": "dag_conformance",
+      "command": [
+        "python3",
+        "scripts/check_dag_conformance.py",
+        "--verbose"
+      ],
+      "exit_code": 0,
+      "runtime_seconds": 2.74,
+      "log_sha256": "baee2b13d30b1a51dda46a439eb167356b862b18f7414f66b64c76c0f4076606",
+      "log_tail": "  [OK] .github/workflows/daily.yml / collect (11 declared steps)\n  [OK] .github/workflows/daily.yml / capital_structure (12 declared steps)\n  [OK] .github/workflows/daily.yml / collect_tail (20 declared steps)\n  [OK] .github/workflows/daily.yml / engine (248 declared steps)\n  [OK] .github/workflows/daily.yml / factor_panel (3 declared steps)\n  [OK] .github/workflows/daily.yml / factor_series (1 declared steps)\n  [OK] .github/workflows/daily.yml / us_prophet_ledgers (6 declared steps)\n  [OK] .github/workflows/daily.yml / us_board_ledgers (2 declared steps)\n  [OK] .github/workflows/daily.yml / stock_briefs (3 declared steps)\n  [OK] .github/workflows/daily.yml / tech_lab_offrender (2 declared steps)\n  [OK] .github/workflows/daily.yml / standout_audit_us (10 declared steps)\n  [OK] .github/workflows/daily.yml / us_scan_tier (3 declared steps)\n  [OK] .github/workflows/daily.yml / oracle_offrender (9 declared steps)\n  [OK] .github/workflows/daily.yml / cortex (10 declared steps)\n  [OK] .github/workflows/daily.yml / active_build_map (1 declared steps)\n  [OK] .github/workflows/asia-close.yml / asia (50 declared steps)\n  [OK] .github/workflows/engine-render.yml / engine-render (84 declared steps)\n  [OK] .github/workflows/render.yml / render (95 declared steps)\n  [OK] .github/workflows/intraday.yml / bars (1 declared steps)\n  [OK] .github/workflows/intraday-fastpath.yml / fastpath (9 declared steps)\n  [OK] .github/workflows/weekly.yml / weekly-report (41 declared steps)\n  [OK] .github/workflows/sentinel.yml / flash-crash (5 declared steps)\n  [OK] .github/workflows/commodity-sentinel.yml / shock (5 declared steps)\n  [OK] .github/workflows/whitehouse-sentinel.yml / monitor (4 declared steps)\n  [OK] .github/workflows/government-revenue-live.yml / refresh (7 declared steps)\n  [OK] .github/workflows/filing-forensics-sec.yml / acquire_project_sync (10 declared steps)\n  [OK] .github/workflows/filing-forensics-broad-sec.yml / poll_broad_sec (1 declared steps)\n  [OK] .github/workflows/close-pass.yml / publish (2 declared steps)\n\nSUSPECT drift (2) \u2014 undocumented, needs owner review:\n  [render, engine-render] cl_misc order differs from daily cl_misc: render has sectorcyc\u2192countrycyc\u2192cycle\u2192 measurement\u2192markets vs daily cycle\u2192sect\n    note: UNDOCUMENTED drift inherited at W5a adoption \u2014 needs owner review (residual cosmetic order difference only; the build_markets half was resolved by #2728). Either document why the two lanes sequence cy\n  [engine-render] cl_misc omits build_sector_cycles, build_country_cycles, build_cycle, and build_markets vs both daily.yml and render.yml\n    note: UNDOCUMENTED drift inherited at W5a adoption \u2014 needs owner review. engine-render.yml cl_misc (lines 241-244) contains only: build_seasonality, build_reports, build_policy_watch, build_index_changes. T\n\nDAG conformance OK \u2014 28 lane(s) checked, 2 suspect drift(s) visible above.\n"
+    },
+    {
+      "name": "input_closure",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "-q",
+        "-rs"
+      ],
+      "exit_code": 0,
+      "runtime_seconds": 159.59,
+      "log_sha256": "482c7d0beda9519f5948f4881496bce0982717f4073c5a8a9034614b9dbccb38",
+      "log_tail": ".                                                                        [100%]\n1 passed in 158.65s (0:02:38)\n"
+    },
+    {
+      "name": "diff_check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "runtime_seconds": 0.96,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_tail": ""
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "phase": "q1_after_initial_completed",
+  "exit_code": 0,
+  "runtime_seconds": 72.19,
+  "source_sha256": {
+    "helper": "1e058bc02d02846163880a5afe1a2607ffcd000ff5b2d6514f7b08daf515b8a8",
+    "committer": "14a7ecbe28cc00655a8e53458b2db1264e92b47aa661ea0a98e4e1aeaa1fa49d"
+  },
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "tests/test_push_retry.py",
+    "-q",
+    "-rs",
+    "-k",
+    "us_board or hold",
+    "--basetemp",
+    "/tmp/macro-pr10432-c4-q1-20261106/after-initial"
+  ],
+  "log_sha256": "80fa8ec601ff3103e1f4130a903c52b71e4f467795f4930bfcb0f257783587f8",
+  "log_tail": "........................................                                 [100%]\n40 passed, 126 deselected in 69.39s (0:01:09)\n"
+}
