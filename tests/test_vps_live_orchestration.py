@@ -1375,6 +1375,7 @@ def test_snapshot_lane_requests_private_quote_provenance(tmp_path: Path):
         live_dir=tmp_path / "public" / "live",
         state_dir=tmp_path / "state",
         data_dir=tmp_path / "data",
+        now=datetime(2026, 11, 13, 18, tzinfo=timezone.utc),
     )
     calls: list[tuple[str, str, list[str]]] = []
 
