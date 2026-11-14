@@ -1324,6 +1324,70 @@ def _survey(frame_name: str, root: str | None, horizon: int | None) -> dict[str,
     }
 
 
+
+def metadata_intake(frame_name: str, root: Path | str | None, *,
+                    expected_parts: Mapping[str, Mapping[str, Any]],
+                    columns: Sequence[str], months: Iterable[str] | None = None) -> dict[str, Any]:
+    """Pre-label intake through the existing Conditional Fusion consumer chain.
+
+    No build_labels, era exclusions, three-key dedupe, fold survey, fit or score.
+    A successfully read grade catalogue is not the original candidate population.
+    """
+    from copy import deepcopy
+    from scripts.prophet_fusion_labels import MetadataIntakeRefusal, load_prophet_rank_metadata
+    if frame_name != FRAME_PROPHET_RANK:
+        raise MetadataIntakeRefusal("METADATA_FRAME_UNSUPPORTED")
+    metadata = load_prophet_rank_metadata(root, columns=columns,
+                                         expected_parts=expected_parts, months=months)
+    return {
+        "schema": SCHEMA,
+        "mode": "metadata_only",
+        "frame": frame_name,
+        "rows": len(metadata),
+        "columns": list(metadata.columns),
+        "grade_metadata_projection": deepcopy(metadata.attrs["grade_metadata_projection"]),
+        "source_eligibility": "NOT_ESTABLISHED",
+        "run_allowed": False,
+        "non_promotion_bearing": True,
+        "required_evidence_not_established_by_this_read": [
+            "original_candidate_inventory_and_expected_sessions",
+            "selected_price_basis_vintage_and_raw_liquidity",
+            "dated_security_issuer_and_ordinary_industry_identity",
+            "source_rights_including_encoded_copy_and_footer_access",
+            "label_support_and_actual_usable_time",
+            "authorized_training_key_tuples_and_prediction_seals",
+            "registered_code_environment_budget_and_independent_review",
+        ],
+    }
+
+
+def _metadata_catalogue_json(path: str) -> tuple[dict[str, Any], str]:
+    """Read a bounded supplied catalogue, rejecting duplicate JSON keys.
+
+    The digest identifies input bytes, not an authorization or source-owner grant.
+    """
+    from scripts.prophet_fusion_labels import MetadataIntakeRefusal
+    def unique_pairs(pairs):
+        out = {}
+        for key, value in pairs:
+            if key in out:
+                raise MetadataIntakeRefusal("DUPLICATE_CATALOGUE_KEY")
+            out[key] = value
+        return out
+    try:
+        with Path(path).open("rb") as handle:
+            raw = handle.read(4 * 1024 * 1024 + 1)
+        if len(raw) > 4 * 1024 * 1024:
+            raise MetadataIntakeRefusal("CATALOGUE_TOO_LARGE")
+        catalogue = json.loads(raw, object_pairs_hook=unique_pairs)
+    except MetadataIntakeRefusal:
+        raise
+    except Exception:
+        raise MetadataIntakeRefusal("CATALOGUE_UNREADABLE") from None
+    if not isinstance(catalogue, dict):
+        raise MetadataIntakeRefusal("CATALOGUE_MAPPING_REQUIRED")
+    return catalogue, hashlib.sha256(raw).hexdigest()
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--selftest", action="store_true",
@@ -1339,12 +1403,37 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--out", default=None,
                         help="artifact directory (default: system scratch dir)")
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--metadata-only", action="store_true",
+                        help="read only authorized native grade metadata; no labels, fit or score")
+    parser.add_argument("--metadata-catalogue", default=None,
+                        help="source-owner supplied JSON mapping of part SHA256/bytes/rows")
+    parser.add_argument("--metadata-columns", nargs="+", default=None)
+    parser.add_argument("--metadata-months", nargs="+", default=None,
+                        help="grading-run months, not candidate stamp months")
     args = parser.parse_args(argv)
 
-    if not (args.selftest or args.survey or args.check_registry):
-        parser.error("choose one of --selftest / --survey / --check-registry")
+    if args.metadata_only:
+        if (args.selftest or args.survey or args.check_registry
+                or args.horizon is not None or args.out is not None):
+            parser.error("--metadata-only cannot be combined with execution/survey/output options")
+        if (args.frame != FRAME_PROPHET_RANK or args.root is None
+                or args.metadata_catalogue is None or args.metadata_columns is None):
+            parser.error("--metadata-only requires --frame prophet_rank, --root, --metadata-catalogue and --metadata-columns")
+    elif any(x is not None for x in (args.metadata_catalogue, args.metadata_columns, args.metadata_months)):
+        parser.error("metadata arguments require --metadata-only")
+    elif not (args.selftest or args.survey or args.check_registry):
+        parser.error("choose one of --selftest / --survey / --check-registry / --metadata-only")
 
     try:
+        if args.metadata_only:
+            catalogue, digest = _metadata_catalogue_json(args.metadata_catalogue)
+            doc = metadata_intake(args.frame, args.root, expected_parts=catalogue,
+                                  columns=args.metadata_columns, months=args.metadata_months)
+            doc["catalogue_input_sha256"] = digest
+            print(json.dumps(doc, indent=2, default=str) if args.json else
+                  f"METADATA_ONLY rows={doc['rows']} source_eligibility=NOT_ESTABLISHED run_allowed=false",
+                  flush=True)
+            return 0
         if args.check_registry:
             registry = load_registry()
             doc = {"schema": SCHEMA, "registry": registry.path,

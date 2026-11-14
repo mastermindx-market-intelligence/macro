@@ -147,12 +147,46 @@ def _identity(spine: IdentitySpine, ticker: object, on: object) -> tuple[str | N
     return security, spine.issuers.issuer_of_security(security) if security else None
 
 
+def identity_fields(spine: IdentitySpine, ticker: object, on: object) -> dict[str, object]:
+    """Project the existing Data OS identity readers for one prospective decision row.
+
+    This is deliberately a projection, not another identity allocator or historical
+    reconstruction.  ``VendorAliasTable`` supplies the dated listing->security binding;
+    ``IssuerMaster`` supplies the current economic issuer observed by the nightly.  The
+    result is captured at the decision clock so future studies can replay what the owner
+    said then.  Nothing here backfills an old Context Vector row from today's master.
+    """
+    session = _session(on)
+    if session is None:
+        state = "INVALID_DECISION_DATE"
+        security = issuer = None
+    else:
+        security, issuer = _identity(spine, ticker, session)
+        state = (
+            "RESOLVED" if security is not None and issuer is not None
+            else "SECURITY_UNRESOLVED" if security is None
+            else "ISSUER_UNRESOLVED"
+        )
+    return {
+        "security_id": security,
+        "issuer_id": issuer,
+        "identity_epoch": "epoch_0" if security is not None else None,
+        "identity_epoch_state": "provisional" if security is not None else None,
+        "identity_spec_schema": IDENTITY_SCHEMA if security is not None else None,
+        "identity_spec_hash": spec_hash() if security is not None else None,
+        "identity_capture_state": state,
+        "identity_capture_basis": "DATA_OS_CURRENT_SNAPSHOT_CAPTURED_PROSPECTIVELY",
+    }
+
+
 def _observation(*, source: str, schema: str, source_event_id: str, receipt: str,
                  ticker: object, session: object, spine: IdentitySpine,
                  intake_class: str, anchor: dict[str, object] | None = None,
                  occurred_at: object = None, known_at: object = None,
                  expert_event_id: str | None = None) -> tuple[dict[str, object] | None, str | None]:
-    security, company = _identity(spine, ticker, session)
+    identity = identity_fields(spine, ticker, session)
+    security = identity.get("security_id")
+    company = identity.get("issuer_id")
     if security is None:
         return None, "IDENTITY_UNRESOLVED"
     if company is None:
@@ -163,9 +197,12 @@ def _observation(*, source: str, schema: str, source_event_id: str, receipt: str
         return None, "MALFORMED_RECEIPT"
     result: dict[str, object] = {
         "security_id": security, "company_id": company,
-        "ticker_at_observation": str(ticker), "identity_epoch": "epoch_0",
-        "identity_epoch_state": "provisional", "identity_spec_schema": IDENTITY_SCHEMA,
-        "identity_spec_hash": spec_hash(), "anchor": anchor, "intake_class": intake_class,
+        "ticker_at_observation": str(ticker),
+        "identity_epoch": identity["identity_epoch"],
+        "identity_epoch_state": identity["identity_epoch_state"],
+        "identity_spec_schema": identity["identity_spec_schema"],
+        "identity_spec_hash": identity["identity_spec_hash"],
+        "anchor": anchor, "intake_class": intake_class,
         "occurred_at": occurred, "known_at": known, "source_system": source,
         "source_schema": schema, "source_event_id": source_event_id, "source_receipt": receipt,
     }
