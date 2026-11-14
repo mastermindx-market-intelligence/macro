@@ -370,3 +370,115 @@ def test_lane_gate_is_the_shared_ledger_lane_definition():
     src = pathlib.Path(ge.__file__).read_text()
     assert "COLLECT_LANE" not in src, \
         "group_earnings reads the lane env var directly instead of via ledger_lane"
+
+
+def _observed_benchmark_fixture(tmp_path, monkeypatch, mode="complete"):
+    """Real member/SPY Parquets through native loaders, then the shared return path."""
+    expected, events, sessions = _fixture(*_even_schedule())
+    data = tmp_path / "data"
+    (data / "baskets/ohlcv").mkdir(parents=True, exist_ok=True)
+    (data / "yahoo").mkdir(parents=True, exist_ok=True)
+    for ticker in MEMBERS:
+        close = 100.0 * (1.0 + expected[ticker] + 0.001).cumprod()
+        pd.DataFrame({"close": close}).to_parquet(data / f"baskets/ohlcv/{ticker}.parquet")
+    spy = pd.DataFrame({"close": 100.0 * np.power(1.001, np.arange(len(sessions)))},
+                       index=sessions)
+    missing = set()
+    if mode in ("report_gap", "infinite", "last_null_duplicate"):
+        missing = {12}
+    elif mode == "prior_report_gap":
+        missing = {7}
+    elif mode == "quiet_gap":
+        missing = {3}
+    elif mode == "no_baseline":
+        # The first report's previous close is observed, but no quiet-day return is.
+        missing = set(range(7)) | set(range(32, len(sessions)))
+    for pos in missing:
+        spy.iloc[pos, 0] = float("inf") if mode == "infinite" else float("nan")
+    if mode == "last_null_duplicate":
+        spy.iloc[12, 0] = 100.0 * 1.001 ** 12
+        spy = pd.concat([spy, pd.DataFrame({"close": [None]}, index=[sessions[12]])])
+        spy = spy.sort_index(kind="stable")
+    spy.to_parquet(data / "yahoo/SPY.parquet")
+    monkeypatch.setattr(config, "data_dir", lambda: data)
+    closes = ge._member_closes(MEMBERS)
+    grid = pd.DatetimeIndex(closes.index)
+    benchmark = ge._spy_close(grid)
+    assert benchmark is not None and list(grid) == list(sessions)
+    adjusted = closes.pct_change(fill_method=None).sub(
+        benchmark.pct_change(fill_method=None), axis=0)
+    return adjusted, events, grid, expected, missing
+
+
+@pytest.mark.parametrize("mode,removed", [
+    ("report_gap", {12, 13}), ("prior_report_gap", {8}),
+    ("quiet_gap", set()), ("infinite", {12, 13}),
+    ("last_null_duplicate", {12, 13}), ("complete", set()),
+])
+def test_observed_spy_dates_qualify_each_sympathy_return_without_compressing_time(
+        tmp_path, monkeypatch, mode, removed):
+    adj, events, sessions, expected, missing = _observed_benchmark_fixture(
+        tmp_path, monkeypatch, mode)
+    unsupported = {0} | missing | {i + 1 for i in missing if i + 1 < len(sessions)}
+    assert {i for i in range(len(sessions)) if adj.iloc[i].isna().all()} == unsupported
+    kept = [i for i in range(len(sessions)) if i not in unsupported]
+    np.testing.assert_allclose(adj.iloc[kept].to_numpy(), expected.iloc[kept].to_numpy(),
+                               rtol=1e-12, atol=1e-12)
+    block, rows = ge.sympathy(MEMBERS, events, adj, sessions)
+    assert block["n_events"] == 24 - len(removed)
+    assert block["n_reporters"] == 6 and block["ratio"] == 3.0
+    assert len(rows) == block["n_events"]
+    omitted = {sessions[i].date().isoformat() for i in removed}
+    assert not ({r["event_date"] for r in rows} & omitted)
+    assert block["directional"]["n_beat_days"] == 12 - len(removed)
+    assert block["directional"]["n_miss_days"] == 12
+    assert block["directional"]["beat_day_median"] == 0.03
+    assert block["directional"]["miss_day_median"] == -0.03
+
+
+def test_missing_benchmark_baseline_does_not_erase_supported_directional_medians(
+        tmp_path, monkeypatch):
+    adj, events, sessions, _, _ = _observed_benchmark_fixture(
+        tmp_path, monkeypatch, "no_baseline")
+    block, rows = ge.sympathy(MEMBERS, events, adj, sessions)
+    assert block["ratio"] is None
+    assert block["n_events"] == len(rows) == 24 and block["n_reporters"] == 6
+    assert block["directional"] == {"beat_day_median": 0.03, "miss_day_median": -0.03,
+                                    "n_beat_days": 12, "n_miss_days": 12}
+
+
+def test_benchmark_gap_changes_only_new_ledger_admission_not_recorded_history(
+        tmp_path, monkeypatch):
+    complete, events, sessions, _, _ = _observed_benchmark_fixture(tmp_path, monkeypatch)
+    _, complete_rows = ge.sympathy(MEMBERS, events, complete, sessions)
+    old = {"basket_id": "b1", **complete_rows[4]}
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    assert ge.append_sympathy_ledger([old]) == 1
+    path = ge.sympathy_ledger_path()
+    old_frame = pd.read_parquet(path)
+    adj, events, sessions, _, _ = _observed_benchmark_fixture(
+        tmp_path, monkeypatch, "report_gap")
+    _, observed_rows = ge.sympathy(MEMBERS, events, adj, sessions)
+    fresh = [{"basket_id": "b1", **row} for row in observed_rows]
+    assert len(fresh) == 22 and old["event_date"] not in {r["event_date"] for r in fresh}
+    assert ge.append_sympathy_ledger(fresh) == 22
+    current = pd.read_parquet(path)
+    assert len(current) == 23
+    retained = current[current["event_date"] == old["event_date"]].reset_index(drop=True)
+    pd.testing.assert_frame_equal(retained, old_frame)
+    assert sessions[13].date().isoformat() not in set(current["event_date"])
+    before = path.read_bytes()
+    assert ge.append_sympathy_ledger(fresh) == 0
+    assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("lane", ["express", "intraday"])
+def test_qualified_gap_rows_do_not_advance_outside_nightly(tmp_path, monkeypatch, lane):
+    adj, events, sessions, _, _ = _observed_benchmark_fixture(
+        tmp_path, monkeypatch, "report_gap")
+    _, rows = ge.sympathy(MEMBERS, events, adj, sessions)
+    assert len(rows) == 22
+    monkeypatch.setenv("COLLECT_LANE", lane)
+    monkeypatch.setenv("US_LANE", "nightly")
+    assert ge.append_sympathy_ledger([{"basket_id": "b1", **r} for r in rows]) == 0
+    assert not ge.sympathy_ledger_path().exists()

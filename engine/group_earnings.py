@@ -91,7 +91,10 @@ REVISIONS. engine.theme_revisions' member-rollup pattern (its MIN_ANALYSTS cover
 DRIFT. Members whose season reaction session is at least DRIFT_SESSIONS (5) sessions
     before `as_of`: the share with a positive cumulative SPY-adjusted return from the
     REACTION session's close to five sessions later — post-announcement drift measured
-    after the initial gap, not through it. Floor MIN_DRIFT_N (4), else null.
+    after the initial gap, not through it. Both member and SPY endpoint closes must be
+    observed; a missing benchmark date is never carried forward or skipped to move the
+    horizon. Interior benchmark gaps do not change this endpoint comparison.
+    Floor MIN_DRIFT_N (4), else null.
 
 SYMPATHY. The signature leg: do earnings move this basket TOGETHER? Over the trailing
     WINDOW_Q (8) quarters of member reaction sessions, pool every |SPY-adjusted same-day
@@ -276,7 +279,10 @@ def _member_closes(tickers: list[str]) -> pd.DataFrame:
 
 def _spy_close(idx: pd.DatetimeIndex) -> pd.Series | None:
     """SPY closes on the member session grid — the same benchmark cache engine.baskets
-    and engine.group_flow read (`store.read("yahoo", "SPY")`)."""
+    and engine.group_flow read (`store.read("yahoo", "SPY")`). Missing observations stay
+    missing: drift needs its fixed endpoints; daily returns need adjacent observations.
+    Resolve keep-last identity before qualification so a final missing duplicate cannot
+    resurrect an earlier quote for the same date."""
     try:
         df = store.read("yahoo", "SPY")
     except Exception as e:  # noqa: BLE001
@@ -284,11 +290,13 @@ def _spy_close(idx: pd.DatetimeIndex) -> pd.Series | None:
         return None
     if df is None or "close" not in getattr(df, "columns", []):
         return None
-    s = pd.to_numeric(df["close"], errors="coerce").dropna()
-    if s.empty:
-        return None
+    s = pd.to_numeric(df["close"], errors="coerce")
     s.index = pd.DatetimeIndex(s.index).as_unit("ms")
-    return s[~s.index.duplicated(keep="last")].sort_index().reindex(idx).ffill()
+    s = s[~s.index.duplicated(keep="last")].sort_index()
+    s = s.where(np.isfinite(s))
+    if s.dropna().empty:
+        return None
+    return s.reindex(idx)
 
 
 # ---------------------------------------------------------------------------

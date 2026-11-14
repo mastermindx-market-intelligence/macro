@@ -22,6 +22,7 @@ from __future__ import annotations
 import copy
 import json
 import re
+from datetime import datetime, timezone
 
 import pandas as pd
 import pytest
@@ -684,3 +685,162 @@ def test_end_to_end_directional_split_refuses_on_its_own_floor(pulse):
     d = pulse["rich"]["sympathy"]["directional"]
     assert (d["n_beat_days"], d["n_miss_days"]) == (4, 1)
     assert d["beat_day_median"] is None and d["miss_day_median"] is None
+
+
+# Observed SPY dates are required inputs, not permission to manufacture a close.
+def _benchmark_writer_tree(root, monkeypatch):
+    data = root / "data"
+    sessions = pd.bdate_range(end="2026-11-10", periods=30)
+    members = list("ABCD")
+    event, endpoint = sessions[-7], sessions[-2]
+    for folder in ("baskets/ohlcv", "yahoo", "earnings"):
+        (data / folder).mkdir(parents=True, exist_ok=True)
+    (data / "baskets/membership.json").write_text(json.dumps({"baskets": {
+        "benchmark": {"members": [{"ticker": t, "added": "2020-01-01",
+                                    "removed": None} for t in members]}}}))
+    close = pd.Series(100.0, index=sessions)
+    close.loc[endpoint:] = 101.0
+    for ticker in members:
+        pd.DataFrame({"close": close}).to_parquet(data / f"baskets/ohlcv/{ticker}.parquet")
+    spy = pd.Series(100.0, index=sessions)
+    spy.loc[endpoint:] = 102.0
+    pd.DataFrame({"close": spy}).to_parquet(data / "yahoo/SPY.parquet")
+    reported = sessions[-8].date().isoformat()
+    rows = [{"next_date": "2027-02-01", "next_time": "time-after-hours",
+             "as_of": sessions[-1].date().isoformat(),
+             "surprises_json": json.dumps([{"reported": reported, "surprise_pct": 5.0}])}
+            for _ in members]
+    pd.DataFrame(rows, index=members).to_parquet(data / "earnings/earnings.parquet")
+    monkeypatch.setattr(config, "data_dir", lambda: data)
+    # conftest sets nightly: this public-writer proof explicitly declines advancement.
+    monkeypatch.setenv("COLLECT_LANE", "express")
+
+    class FixedDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return cls(2026, 11, 11, 21, 0, tzinfo=timezone.utc)
+
+    monkeypatch.setattr(ge, "datetime", FixedDatetime)
+    return data, sessions, event, endpoint
+
+
+def _read_benchmark_write(out_dir):
+    result = ge.write_earnings_pulse(out_dir)
+    assert result is not None and result["benchmark"]["authority"] == "context_only"
+    assert json.loads((out_dir / "earnings_pulse.json").read_text()) == result
+    json.dumps(result, allow_nan=False)
+    assert validate_pulse(result["benchmark"]) == []
+    assert not ge.sympathy_ledger_path().exists()
+    return result
+
+
+@pytest.mark.parametrize("mode", [
+    "missing_start", "missing_end", "null_start", "null_end", "duplicate_null_end",
+    "duplicate_invalid_end", "infinite_end", "single_old_quote",
+])
+def test_public_writer_withholds_drift_without_observed_spy_endpoints(
+        tmp_path, monkeypatch, mode):
+    data, sessions, event, endpoint = _benchmark_writer_tree(tmp_path, monkeypatch)
+    before = _read_benchmark_write(tmp_path / "complete")
+    assert before["benchmark"]["drift"] == {"pos_share_5d": 0.0, "n": 4}
+    path = data / "yahoo/SPY.parquet"
+    spy = pd.read_parquet(path)
+    if mode == "missing_start":
+        spy = spy.drop(event)
+    elif mode == "missing_end":
+        spy = spy.drop(endpoint)
+    elif mode in ("null_start", "null_end", "infinite_end"):
+        spy.loc[event if mode == "null_start" else endpoint, "close"] = (
+            float("inf") if mode == "infinite_end" else float("nan"))
+    elif mode.startswith("duplicate_"):
+        # A final null/bad duplicate supersedes the earlier valid endpoint.
+        value = None if mode == "duplicate_null_end" else "not-a-close"
+        spy = spy.astype(object) if isinstance(value, str) else spy
+        spy = pd.concat([spy, pd.DataFrame({"close": [value]}, index=[endpoint])])
+        if isinstance(value, str):
+            spy["close"] = spy["close"].astype(str)
+        # The shared store reader sorts dates. Use its canonical monotonic input order,
+        # keeping same-date identity visible rather than testing its sort algorithm.
+        spy = spy.sort_index(kind="stable")
+    else:
+        spy = spy.iloc[:1]
+    spy.to_parquet(path)
+    after = _read_benchmark_write(tmp_path / "incomplete")
+    assert after["benchmark"]["drift"] == {"pos_share_5d": None, "n": 0}
+    # The later valid quote cannot move the five-session endpoint or fill its hole.
+    aligned = ge._spy_close(sessions.as_unit("ms"))
+    assert aligned is not None and aligned.index.equals(sessions.as_unit("ms"))
+    assert pd.isna(aligned.loc[event if mode.endswith("start") else endpoint])
+    for key in ("schema", "authority", "generated_at", "as_of", "season", "results",
+                "guidance", "revisions"):
+        assert before["benchmark"][key] == after["benchmark"][key]
+
+
+@pytest.mark.parametrize("mode", ["interior_gap", "last_duplicate_valid", "complete"])
+def test_complete_endpoints_keep_true_zero_and_fixed_horizon(tmp_path, monkeypatch, mode):
+    data, sessions, event, endpoint = _benchmark_writer_tree(tmp_path, monkeypatch)
+    expected = _read_benchmark_write(tmp_path / "complete")
+    path = data / "yahoo/SPY.parquet"
+    spy = pd.read_parquet(path)
+    if mode == "interior_gap":
+        spy = spy.drop(sessions[-5])
+    elif mode == "last_duplicate_valid":
+        spy = pd.concat([spy, pd.DataFrame({"close": [None, 102.0]},
+                                          index=[endpoint, endpoint])])
+        spy = spy.sort_index(kind="stable")
+    spy.to_parquet(path)
+    actual = _read_benchmark_write(tmp_path / "qualified")
+    assert actual == expected
+    assert actual["benchmark"]["drift"] == {"pos_share_5d": 0.0, "n": 4}
+
+
+@pytest.mark.parametrize("mode", ["absent", "empty", "all_null", "all_nonfinite",
+                                  "last_duplicate_null", "outside_grid"])
+def test_unusable_benchmark_still_refuses_the_whole_public_write(
+        tmp_path, monkeypatch, mode):
+    data, sessions, _, _ = _benchmark_writer_tree(tmp_path, monkeypatch)
+    path = data / "yahoo/SPY.parquet"
+    spy = pd.read_parquet(path)
+    if mode == "absent":
+        path.unlink()
+    else:
+        if mode == "empty":
+            spy = spy.iloc[:0]
+        elif mode == "all_null":
+            spy["close"] = float("nan")
+        elif mode == "all_nonfinite":
+            spy["close"] = float("inf")
+        elif mode == "last_duplicate_null":
+            spy = pd.DataFrame({"close": [100.0, None]}, index=[sessions[0], sessions[0]])
+        else:
+            spy.index = spy.index - pd.Timedelta(days=365)
+        spy.to_parquet(path)
+    out_dir = tmp_path / "refused"
+    assert ge.write_earnings_pulse(out_dir) is None
+    assert not (out_dir / "earnings_pulse.json").exists()
+    assert not ge.sympathy_ledger_path().exists()
+
+
+@pytest.mark.parametrize("missing_offset", [-20, -21])
+def test_benchmark_gap_withholds_unsupported_sympathy_from_new_ledger_rows(
+        tmp_path, monkeypatch, missing_offset):
+    fixture = _write_tree(tmp_path, monkeypatch)
+    complete = ge.compute_group_earnings(write_ledger=False)
+    assert complete["rich"]["sympathy"]["n_events"] == 48
+    path = config.data_dir() / "yahoo/SPY.parquet"
+    spy = pd.read_parquet(path)
+    spy.drop(fixture["sessions"][missing_offset]).to_parquet(path)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    actual = ge.compute_group_earnings()
+    assert actual is not None
+    rich = actual["rich"]
+    assert rich["sympathy"]["n_events"] == 47
+    assert rich["sympathy"]["n_reporters"] == 8
+    assert rich["sympathy"]["ratio"] == 2.0
+    missing_event = fixture["sessions"][-20].date().isoformat()
+    ledger = pd.read_parquet(ge.sympathy_ledger_path())
+    assert len(ledger[ledger["basket_id"] == "rich"]) == 47
+    assert not (ledger["event_date"] == missing_event).any()
+    for key in ("schema", "authority", "as_of", "season", "results", "guidance", "revisions"):
+        assert rich[key] == complete["rich"][key]
+    assert validate_pulse(rich) == []
