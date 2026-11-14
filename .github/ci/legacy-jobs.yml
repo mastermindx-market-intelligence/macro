@@ -15887,6 +15887,8 @@ jobs:
     # ci-control-plane-census, both declaring these same paths; see those jobs.
     runs-on: ubuntu-latest
     paths:
+      # Remaining original #10615 transitive input; accepted main owns the rest.
+      - "site/factordata/basket_washout_state.json"
       # Actual source/metadata reads in the SA-W4 ownership contract.
       - "config.yml"
       - "engine/experiments_registry.py"

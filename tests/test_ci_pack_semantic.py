@@ -2090,6 +2090,158 @@ def test_selected_python_loader_environment_refuses_missing_library_metadata_or_
         PACK._selected_python_loader_environment()
 
 
+def _python_library_maps(library: Path) -> str:
+    stat = library.stat()
+    device = f"{os.major(stat.st_dev):02x}:{os.minor(stat.st_dev):02x}"
+    # Linux maps leaves spaces and backslashes literal; only newline is escaped.
+    name = str(library).replace("\n", "\\012")
+    return (
+        f"1000-2000 r--p 00000000 {device} {stat.st_ino} {name}\n"
+        f"2000-3000 r-xp 00001000 {device} {stat.st_ino} {name}\n"
+    )
+
+
+def _relocated_python_fixture(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *, spaced_path: bool = False
+):
+    build = tmp_path / "build-python"
+    runtime = tmp_path / ("runtime python" if spaced_path else "runtime-python")
+    for prefix in (build, runtime):
+        library_dir = prefix / "lib"
+        library_dir.mkdir(parents=True)
+        (library_dir / "libpython3.12.so.1.0").write_bytes(b"same library bytes")
+        (library_dir / "libpython3.12.so").symlink_to("libpython3.12.so.1.0")
+    config = {
+        "prefix": str(build),
+        "LIBDIR": str(build / "lib"),
+        "LDLIBRARY": "libpython3.12.so",
+        "INSTSONAME": "libpython3.12.so.1.0",
+    }
+    mapping = {"text": _python_library_maps(runtime / "lib/libpython3.12.so.1.0")}
+    original_read_bytes = Path.read_bytes
+
+    def read_bytes(path: Path, *args, **kwargs):
+        if path == Path("/proc/self/maps"):
+            value = mapping["text"]
+            if isinstance(value, OSError):
+                raise value
+            return value.encode("utf-8")
+        return original_read_bytes(path, *args, **kwargs)
+
+    monkeypatch.setattr(PACK.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(PACK.sys, "base_prefix", str(runtime))
+    monkeypatch.setattr(PACK.sysconfig, "get_config_var", config.get)
+    monkeypatch.setattr(PACK.Path, "read_bytes", read_bytes)
+    monkeypatch.setenv("LD_LIBRARY_PATH", str(build / "lib"))
+    return build, runtime, config, mapping
+
+
+@pytest.mark.parametrize("spaced_path", [False, True])
+def test_selected_python_loader_environment_qualifies_the_mapped_relocated_library(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, spaced_path: bool
+) -> None:
+    build, runtime, _config, _mapping = _relocated_python_fixture(
+        tmp_path, monkeypatch, spaced_path=spaced_path
+    )
+    assert (build / "lib").resolve() != (runtime / "lib").resolve()
+    assert PACK._selected_python_loader_environment() == {
+        "LD_LIBRARY_PATH": str(runtime / "lib")
+    }
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [
+        "build_library_mapped",
+        "two_python_objects_mapped",
+        "no_executable_mapping",
+        "mapped_object_replaced",
+        "wrong_mapping_device",
+        "deleted_mapping",
+        "unreadable_maps",
+        "malformed_mapping",
+        "library_directory_escapes",
+        "library_file_escapes",
+        "libdir_outside_build_prefix",
+        "missing_build_prefix",
+        "two_declared_objects",
+        "no_python_mapping",
+        "same_inode_outside_runtime",
+        "octal_spelling_outside_runtime",
+        "control_record_injection",
+    ],
+)
+def test_selected_python_loader_environment_refuses_unqualified_relocation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    build, runtime, config, mapping = _relocated_python_fixture(tmp_path, monkeypatch)
+    library = runtime / "lib/libpython3.12.so.1.0"
+    build_library = build / "lib/libpython3.12.so.1.0"
+    if failure == "build_library_mapped":
+        mapping["text"] = _python_library_maps(build_library)
+    elif failure == "two_python_objects_mapped":
+        mapping["text"] += _python_library_maps(build_library)
+    elif failure == "no_executable_mapping":
+        mapping["text"] = mapping["text"].replace("r-xp", "r--p")
+    elif failure == "mapped_object_replaced":
+        replacement = runtime / "lib/replacement.so"
+        replacement.write_bytes(library.read_bytes())
+        replacement.replace(library)
+    elif failure == "wrong_mapping_device":
+        stat = library.stat()
+        device = f"{os.major(stat.st_dev):02x}:{os.minor(stat.st_dev):02x}"
+        mapping["text"] = mapping["text"].replace(f" {device} ", " ff:ff ")
+    elif failure == "deleted_mapping":
+        mapping["text"] = mapping["text"].replace("\n", " (deleted)\n")
+    elif failure == "unreadable_maps":
+        mapping["text"] = OSError("maps fixture unavailable")
+    elif failure == "malformed_mapping":
+        mapping["text"] = f"malformed Python mapping {library}\n"
+    elif failure == "library_directory_escapes":
+        (runtime / "lib").rename(runtime / "original-lib")
+        (runtime / "lib").symlink_to(build / "lib", target_is_directory=True)
+    elif failure == "library_file_escapes":
+        library.unlink()
+        library.symlink_to(build_library)
+    elif failure == "libdir_outside_build_prefix":
+        unrelated = tmp_path / "unrelated-lib"
+        unrelated.mkdir()
+        config["LIBDIR"] = str(unrelated)
+    elif failure == "missing_build_prefix":
+        config.pop("prefix")
+    elif failure == "two_declared_objects":
+        other_name = runtime / "lib/libpython3.12.so"
+        other_name.unlink()
+        other_name.write_bytes(b"same library bytes")
+    elif failure == "no_python_mapping":
+        mapping["text"] = "1000-2000 r-xp 00000000 00:00 0 [vdso]\n"
+    elif failure == "same_inode_outside_runtime":
+        build_library.unlink()
+        build_library.hardlink_to(library)
+        mapping["text"] = _python_library_maps(build_library)
+    elif failure == "octal_spelling_outside_runtime":
+        lookalike_dir = Path(str(runtime) + r"\057lib")
+        lookalike_dir.mkdir()
+        lookalike = lookalike_dir / library.name
+        lookalike.hardlink_to(library)
+        assert not lookalike.is_relative_to(runtime)
+        assert lookalike.stat().st_ino == library.stat().st_ino
+        mapping["text"] = _python_library_maps(lookalike)
+    elif failure == "control_record_injection":
+        stat = library.stat()
+        device = f"{os.major(stat.st_dev):02x}:{os.minor(stat.st_dev):02x}"
+        injected = f"3000-4000 r-xp 00000000 {device} {stat.st_ino} {library}"
+        lookalike = Path(str(tmp_path / "outside") + "\r" + injected)
+        lookalike.parent.mkdir(parents=True)
+        lookalike.hardlink_to(library)
+        assert not lookalike.is_relative_to(runtime)
+        assert lookalike.stat().st_ino == library.stat().st_ino
+        mapping["text"] = _python_library_maps(lookalike)
+
+    with pytest.raises(PACK.ExecutionProfileError, match="outside selected interpreter"):
+        PACK._selected_python_loader_environment()
+
+
 def test_replay_process_never_invents_time_after_the_shared_deadline(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
