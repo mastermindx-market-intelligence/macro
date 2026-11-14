@@ -25,8 +25,13 @@ waves:
   - id: intelligent_financial_output
     title: Financial snapshots, local responsive controls, math and reliable Fast presentation
     status: in_progress
-next_action: Publish the measured current-main composition through original PR10069, consume its full applicable hosted verdict, merge through normal required checks, verify automatic publication and actual signed-in Macro standalone/embedded and Terminal behavior, then record release closeout.
+  - id: scenario_illustration_extension
+    title: Numeric heatmaps and qualitative scenario matrices with model selection and production proof
+    status: in_progress
+next_action: Reconcile original Fabric run brain-scenario-illustrations-build-20261104-c4 under root mastermind-ai-illustrations-20261015-c1 after evidenced runtime recovery; require matching-root terminal/result or execution-absence proof before resuming HM2-HM6. Preserve the tested parent selection repair, same branch and original uncertain effect. PR10069 is merged.
 artifacts:
+  - agentos/handoffs/WS-MASTERMIND-AI-ILLUSTRATIONS-2026-11-04-C4.md
+  - docs/superpowers/specs/2026-11-04-brain-scenario-illustrations.md
   - docs/superpowers/specs/2026-10-21-brain-intelligent-output.md
   - docs/superpowers/specs/2026-10-15-mastermind-ai-illustrations.md
   - docs/superpowers/plans/2026-10-15-mastermind-ai-illustrations.md
@@ -201,3 +206,27 @@ The merged financial-asset/deploy/Caddy integration passed **424 tests in 37.98 
 This integrated candidate still requires exact-head independent integration review and hosted qualification, normal merge, automatic deployment/public render, deployed asset and running-backend identity, and actual signed-in model-to-widget/history acceptance on Macro standalone, Macro embedded and Terminal. First usable visual timing must be observed on real responses; earlier receipt-byte reductions are not latency measurements. No deployed or live-user success is asserted here.
 
 Final executable-AST comparison preserves the original packing tests plus the exact incoming `test_autosave_adoption_contracts_execute_in_existing_code_job`; only measured ceilings and explanatory docstrings change. Authored source/evidence passes whitespace checks. Whitespace reported in inherited generated pages and bundled assets is verified byte-for-byte against its respective incoming-main or accepted-feature parent and is preserved with those existing content hashes. AgentOS validation reports 0 errors and 167 warnings.
+
+## 2026-11-04 scenario-illustration extension — parent integration and retained effect
+
+Chairman supplied an options hedge-demand scenario heatmap and commissioned advanced reusable chat illustrations. Continue the same `WS:MASTERMIND-AI-ILLUSTRATIONS` and original program root `mastermind-ai-illustrations-20261015-c1`. Current protected Mastermind procedure pin: `700eef54bca4a2dc4e30d94a6b30dcfa733ad57c`. Source operation `brain-scenario-illustrations-20261104-c4`, Macro base `affa0fd2e68723efc9e2cbc0e7c791ab70f5a53d`, branch `sol/web-brain-scenario-illustrations-20261104-c4`, registered workspace `/Volumes/Mastermind 2/agent-workspaces/macro/web/brain-scenario-illustrations-20261104-c4`; Studio Direct remains the sole source modifying carrier.
+
+Accepted scope: extend the incumbent visual-v1 compiler/renderer/history with numeric `heatmap` and illustrative-only qualitative `scenario_matrix`; preserve symbolic states, missing/zero distinctions, visible assumptions, axis labels, source binding and EN/ZH themes. No new chat, renderer service, source/auth/history/worker plane. The frozen spec and HM task tree are remotely verified at `5c936097a1c40f8f7ad062ed051613e3566667cd`. Original push action `d3bbcd590d8ae5e049368f51a1455f5e6f011d997b3f1e52e825c77825e16899` is reconciled APPLIED: exact local and remote head match, clean workspace before subsequent edits. Do not retry that push. PR10069 is canonically merged; PR9447 and PR10208 remain untouched.
+
+A bounded architecture-only native child reviewed the matrix semantics and was explicitly ACCEPTED/STOP; no watcher or continuing writer. Its source-axis finding is part of the Fabric packet: source heatmaps bind first-column row labels through the existing binding owner; numeric equality does not certify column association, units or interpretation.
+
+Paid Fabric child: `brain-scenario-illustrations-build-20261104-c4`; parent `brain-scenario-illustrations-20261104-c4`; original root above; AUTO/C2 bounded compiler/renderer/gateway-guard/test patch. It is prohibited from changing this parent workspace, publishing, merging or deploying. The original MCP controller PID43230 recorded LAUNCH_ATTEMPT on ubuntu3, then `CONTROLLER_PROCESS_UNPROVEN stage=poll-sleep rc=76`, missing remote terminal rc, `EFFECT_UNKNOWN` and preserved lease `79d1303e976b` at 19:47Z. Canonical status reports root unverified, no result-consumption/retry/dispatch authority and no execution-absence proof. **No worker START, completed patch or accepted result is claimed.** Preserve this exact operation/carrier and lease; do not duplicate or shadow-implement its scope. Read-only original-target reconciliation continues; no alternative worker, adapter mutation, cancellation or lease release is authorized by this record.
+
+Independent parent repair: Fast presentation eligibility omitted heatmap/matrix terms in English and both Chinese scripts; the system scope line also contradicted explicitly requested financial teaching. Direct-work reason `LOWER_TOTAL_OVERHEAD / PRINCIPAL_JUDGMENT`: two small integration points outside the child’s compiler/renderer and `_prepare_inline_visual` blocks, plus a focused regression. The parent added these presentation terms while intersecting the same upstream-authorized schemas, and narrowed the prompt clarification to explicitly requested financial examples with assumptions, never actual data or forecasts. No data-family/entitlement widening. Exact-source native technical review remains due before acceptance.
+
+Validation actually observed on the registered workspace:
+- Existing `python3 -m pytest tests/test_brain_output_fast_presentation.py -q`: 12 passed before edits.
+- Nine new English/Simplified/Traditional heatmap/matrix cases failed before the eligibility repair (9 failed, 12 deselected); each returned no visual tool.
+- Same file after repair: 21 passed in 4.67s. Cases preserve withheld-tool exclusion and do not add market readers to self-contained teaching requests.
+- These are deterministic gateway/tool-surface tests, not actual model-selection, live authenticated history, UI rendering, deployment or production acceptance.
+
+Read-only production baseline: `https://www.mastermind-x.com/mm_brain_visuals.js` HTTP200, 17984 bytes, SHA256 `2e3ce3a587eae8205727e0be20154eae1b9ddc45e8bb94ac8b3ca4949689339f`, no scenario_matrix. Math presentation asset HTTP200; health returned status ok with running commit `079ba10fe07` and checkout `affa0fd2e68` (distinct facts). The new matrix templates are **not proven implemented or live**. Next executable action: reconcile the original Fabric run’s terminal evidence on its owning carrier; consume/review actual patch only after matching-root result delivery becomes authorized. Independently finish review/publication of the small presentation repair without marking the overall illustration mission complete.
+
+Read-only recovery review by native child `/root/fabric_recovery_review` confirmed the installed `current-output`, `collect-existing` and generic `observe-run` helpers do not admit this plaintext Web commission: their historical/native-parent/producer provenance gates are unsatisfied. No helper was invoked to bypass those gates. The child was explicitly ACCEPTED/STOP with no watcher. Exact missing evidence is a qualified original-runtime reconciliation binding this Web request to remote terminal execution and its retained result, or canonical execution-absence proof. This is an unresolved runtime effect, not a credential/permission request to the Chairman. Do not add a scope entry, fabricate native environment identity, copy unqualified output or substitute another carrier.
+
+Additional parent qualification: `python3 -m pytest tests/test_brain_gateway.py -q -k 'system_prompt or prescreen or offscope'` returned 18 passed / 434 deselected in 5.24s. `python3 scripts/agentos.py validate` returned 0 errors / 185 advisory warnings (sparse/missing artifacts and overdue records across the existing store); `git diff --check` returned clean. No unrelated store repair was attempted.

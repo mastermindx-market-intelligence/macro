@@ -28,6 +28,28 @@ def test_exact_failed_prompt_gets_presentation_without_external_data():
     assert visible([{"name": "get_quote"}]) == []
     assert visible([]) == []
 
+@pytest.mark.parametrize("message", [
+    "Use a heatmap for this hypothetical revenue example.",
+    "Use a heat map for this hypothetical revenue example.",
+    "Use heatmaps for these hypothetical revenue examples.",
+    "Use a matrix for this hypothetical revenue example.",
+    "Use matrices for these hypothetical revenue examples.",
+    "用热力图展示这个假设收入情景。",
+    "用熱力圖展示這個假設收入情景。",
+    "用矩阵展示这个假设收入情景。",
+    "用矩陣展示這個假設收入情景。",
+])
+def test_matrix_request_enables_only_already_authorized_presentation(message):
+    assert _question_profile(message, None).name == "self_contained_financial"
+    schemas = [{"name": n} for n in (
+        "get_quote", "get_fundamentals", "render_inline_visual",
+        "render_inline_chart", "render_financial_widget",
+    )]
+    assert [s["name"] for s in visible(schemas, message)] == ["render_inline_visual"]
+    assert visible([{"name": "get_quote"}], message) == []
+    assert visible([], message) == []
+
+
 def test_ordinary_fast_data_family_is_unchanged(tmp_path):
     message = "Why did NVDA move today?"
     full = gw._all_brain_tool_schemas(tmp_path, page="macro", user_id="")
