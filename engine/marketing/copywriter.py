@@ -181,6 +181,9 @@ _BANNED_CHEESE_WORDS: tuple[str, ...] = (
 #: not the register this closes and is explicitly out of scope.
 _NUMBER_RE = re.compile(
     r"""
+    (?<![A-Za-z0-9_])[+-]?\d{1,3}(?:,\d{3})+(?:\.\d+)?(?:%|[xXkKmMbB])?(?![A-Za-z0-9_])
+                              # grouped count/price: 221,000, 1,234.50, $7,600,000
+    |
     [+-]?\d+\.?\d*%            # percentage: +12.3% or -5.5%
     |
     \d+\.?\d*x                 # multiplier: 3x or 2.5x
@@ -1806,6 +1809,14 @@ def validate_copy(
 
     # 5. Numbers not in whitelist
     whitelist = set(ctx.get("numbers_whitelist") or [])
+    # A grouping comma is typography, not a different fact. Preserve the
+    # numeric license across "221000" / "221,000" without relaxing its value.
+    # This must not bless an arbitrary new figure: only comma removal is equal.
+    _grouping_normalized = {str(n).replace(",", "") for n in whitelist}
+
+    def _number_licensed(token: str) -> bool:
+        return token in whitelist or token.replace(",", "") in _grouping_normalized
+
     found_tokens = _extract_number_tokens(full_text)
     # A number in an explicit price slot ("target 44", "below 66.6") is a LEVEL,
     # and a level is licensed or it is invented. The general screen below skips
@@ -1818,13 +1829,13 @@ def validate_copy(
         # token sits in a price slot, where the digit count says nothing.
         if re.match(r"^\d{1,2}$", token) and token not in slot_set:
             continue  # single/two-digit bare integers are fine (e.g. "T1", "3 weeks")
-        if token not in whitelist:
+        if not _number_licensed(token):
             violations.append(f"number '{token}' not in whitelist")
     seen_tokens = set(found_tokens)
     for token in slot_tokens:
         if token in seen_tokens:
             continue  # already reported by the general screen above
-        if token not in whitelist:
+        if not _number_licensed(token):
             violations.append(
                 f"level '{token}' is not in whitelist (a number in an entry / "
                 f"target / stop slot has to come from the packet)"
