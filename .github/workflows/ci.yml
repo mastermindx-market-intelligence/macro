@@ -4773,6 +4773,11 @@ jobs:
             echo "plan_artifact_name=ci-semantic-plan-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           } >> "$GITHUB_OUTPUT"
       - name: install isolated pack runner
+        # Same constraint freeze as ci-pack (see its env: block): the planner's
+        # own pyyaml is pinned with everything else. This step's sparse
+        # checkout keeps ci/ (only data/site/mockups/verify_shots are cut).
+        env:
+          PIP_CONSTRAINT: ${{ github.workspace }}/ci/constraints.txt
         run: |
           python -m venv "$RUNNER_TEMP/ci-plan-runner"
           "$RUNNER_TEMP/ci-plan-runner/bin/pip" install pyyaml
@@ -4891,6 +4896,26 @@ jobs:
       (github.event.pull_request.head.repo.full_name != github.repository ||
       vars.CI_EXECUTION_ROUTE != 'pc' ||
       needs.trusted-ci.result == 'success')
+    # FREEZE WHAT THE PACKS INSTALL (F3, CI Lightning). Job-level env, so it
+    # reaches EVERY pip invocation in this job: the isolated pack-runner venv
+    # above the matrix, every legacy job's standalone `pip install` dependency
+    # step (scripts/run_ci_pack.py::_dependency_environment builds the child
+    # environment from os.environ, so the constraint flows into the install
+    # itself), and any pip a test shells out. One upstream release — Playwright
+    # 1.65.0 on 2026-11-09 — failed 44 runs / 229 job-hours in 48 h because
+    # 358 of 387 manifest installs were unpinned; this file is the pin.
+    #
+    # The file lives in ci/ (NOT .github/ci/) on purpose: the merge-on-green
+    # controller treats .github/ci/** edits as check-definition changes that
+    # stale every armed PR, while the planner already treats
+    # **/constraints*.txt anywhere as a global invalidator — exactly the
+    # split wanted: this PR runs the full suite, ordinary PRs are untouched.
+    #
+    # A missing file must FAIL the install (pip errors on an unreadable
+    # constraint), not silently install floating: fail-closed is the point.
+    # ci-pack's checkout is the full tree, so the file is always present.
+    env:
+      PIP_CONSTRAINT: ${{ github.workspace }}/ci/constraints.txt
     # The logical jobs in .github/ci/legacy-jobs.yml remain the reviewable
     # source of truth, but GitHub sees only this matrix. Twelve pack runners
     # execute every legacy run step against a clean working tree, sharing one
@@ -5300,6 +5325,10 @@ jobs:
         # Static/manifest analysis only, same posture as integration-baseline.yml —
         # neither scripts/run_ci_pack.py's inference nor
         # scripts/audit_unrun_tests.py's census imports the product data stack.
+        # Same constraint freeze as ci-pack (see its env: block); this job's
+        # sparse checkout keeps ci/ (only site/ and data/ are cut).
+        env:
+          PIP_CONSTRAINT: ${{ github.workspace }}/ci/constraints.txt
         run: pip install pytest pyyaml
       - name: resolve the exact tested PR merge base
         id: contract-merge

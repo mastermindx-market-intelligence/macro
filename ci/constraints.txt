@@ -1,0 +1,105 @@
+# CI dependency constraints (F3, CI Lightning).
+#
+# WHAT THIS IS: the single freeze on every package the legacy CI jobs
+# `pip install` at runtime. `.github/workflows/ci.yml` exports
+# PIP_CONSTRAINT=$GITHUB_WORKSPACE/ci/constraints.txt for the ci-pack runner
+# path (and the ci-plan / contract-delta control-plane installs), so an
+# upstream release cannot change what CI installs between two runs of the
+# same commit. That is the whole fix for the 2026-11-09 Playwright 1.65.0
+# drift class: 44 failed runs / 229 job-hours in 48 h from one release.
+#
+# WHY THIS PATH: it lives OUTSIDE `.github/ci/` and `.github/workflows/`, so
+# editing it is not a CI-definition change for the merge-on-green controller
+# (`CI_DEFINITION_TREES`) and does not stale every armed PR's proof. It IS a
+# planner GLOBAL_INVALIDATORS entry (`**/constraints*.txt` in
+# scripts/run_ci_pack.py), which is correct and kept: a PR that changes what
+# CI installs must run the full suite. There is no path that avoids the
+# planner entry (the pattern matches the filename anywhere), and none should.
+#
+# VERSION PROVENANCE. Two tiers, marked per line:
+#   [green-run] observed installed by a SUCCESSFUL full-suite main proof
+#     (workflow_dispatch run 42558876818, 2026-11-08; retained pack logs for
+#     ci-pack-7/ci-pack-10 record `Successfully installed <pkg>-<ver>`).
+#   [pypi] not present in the retained pack logs (those jobs ran in packs
+#     whose logs were not retained); pinned at the current PyPI resolution —
+#     exactly what an unconstrained green run installs today — so the pin
+#     freezes the passing set rather than changing it.
+# The one deliberate exception is `playwright`: 1.65.0 (2026-11-09) is the
+# known regression; 1.64.1 is the last version the native browser plan
+# qualifies (scripts/ci_apt_native_plan.py::QUALIFIED_PLAYWRIGHT_VERSION),
+# matching the explicit job pins in .github/ci/legacy-jobs.yml.
+#
+# ONE VERSION PER PACKAGE, always. Where the manifest pins one job explicitly
+# (numpy==2.3.5, rjsmin==1.2.5) while other jobs install unpinned, the pin
+# takes the explicitly pinned version and every unpinned job converges on it
+# (the green run had resolved those unpinned jobs to numpy 2.5.4 / rjsmin
+# 1.3.0; both pinned versions are individually green on main, and unifying
+# removes the dual-version slot a `pkg==A,==B` constraint would need — pip 26
+# refuses that form against an explicit `==A` requirement, so it is not an
+# option at all).
+#
+# REFRESHING: bump versions deliberately (a PR touching this file runs the
+# full suite by design). Refresh strategy: copy the `Successfully installed`
+# versions from a green full-suite main proof.
+#
+# NOT covered: transitive dependencies (they follow the direct pins) and
+# requirements/tiingo.txt's own `websocket-client>=1.8,<2` (that file is a
+# pinned-in-repo requirements law; editing it is a global invalidator).
+# The Playwright browser BINARIES are governed separately by
+# scripts/ci_apt_native_plan.py (nativeDeps bundle), not by this file.
+
+# --- test runner -----------------------------------------------------------
+pytest==9.2.0                    # [green-run]
+pytest-mock==3.17.0              # [green-run]
+pytest-xdist==3.8.0              # [green-run]
+
+# --- data stack ------------------------------------------------------------
+numpy==2.3.5                     # [explicit manifest pin; also satisfies pandas 3.1.1 (>=2.0.2), scipy 1.18.1 (>=2.0.0,<2.8), scikit-learn 1.9.1]
+pandas==3.1.1                    # [green-run]
+pyarrow==26.0.1                  # [green-run]
+scipy==1.18.1                    # [green-run]
+scikit-learn==1.9.1              # [green-run]
+joblib==1.6.0                    # [green-run]
+openpyxl==3.1.5                  # [green-run]
+xlrd==2.0.2                      # [pypi]
+lxml==6.1.3                      # [pypi]
+pyyaml==6.0.3                    # [green-run]
+tzdata==2026.6                   # [green-run]
+exchange-calendars==4.13.2       # [pypi]
+yfinance==1.8.0                  # [pypi]
+
+# --- web / API -------------------------------------------------------------
+requests==2.34.2                 # [green-run]
+httpx==0.28.1                    # [green-run]
+websockets==17.4                 # [pypi]
+boto3==1.43.126                  # [green-run]
+anthropic==2.7.0                 # [pypi]
+stripe==12.5.2                   # [pypi; manifest pins >=11,<13 — 12.5.2 is the newest inside it]
+
+# --- templating / markup ---------------------------------------------------
+jinja2==3.1.6                    # [green-run]
+markupsafe==3.0.4                # [green-run]
+beautifulsoup4==4.15.0           # [green-run]
+html5lib==1.1                    # [green-run]
+jsonschema==4.26.0               # [green-run; also explicit ==4.26.0 in 15 jobs]
+referencing==0.37.0              # [green-run]
+pydantic==2.14.3                 # [green-run]
+python-dotenv==1.2.4             # [pypi]
+tenacity==9.2.1                  # [pypi]
+
+# --- rendering / documents -------------------------------------------------
+plotly==7.1.0                    # [green-run]
+pillow==13.0.0                   # [green-run]
+reportlab==5.1.0                 # [pypi]
+pypdf==7.0.0                     # [pypi]
+pdfplumber==0.11.10              # [explicit manifest pin]
+rjsmin==1.2.5                    # [explicit manifest pin in 17 jobs; green run resolved one unpinned job to 1.3.0]
+rcssmin==1.2.2                   # [explicit manifest pin]
+fastapi==0.162.2                 # [green-run]
+
+# --- browsers --------------------------------------------------------------
+# MUST equal scripts/ci_apt_native_plan.py::QUALIFIED_PLAYWRIGHT_VERSION and
+# the native_parallel job pins (enforced by tests/test_ci_dependency_constraints.py
+# and tests/test_ci_browser_native_setup.py).
+playwright==1.64.1               # [explicit pin + native tuple; 1.65.0 is the 2026-11-09 regression]
+datasketch==2.0.0                # [pypi]
