@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "NWS-BULL-20261006",
-  "asof": "2026-11-06",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 16.1,
@@ -14,23 +14,23 @@
     "progress": 60.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 32.8
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -7.5,
+    "dist_to_stop_r": -4.433,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 68.9,
-    "p1": -5.6667,
-    "p2": -2.8333,
+    "horizon_pct_used": 86.7,
+    "p1": -3.6222,
+    "p2": -1.8111,
     "p3": null,
-    "move_r": -8.5,
+    "move_r": -5.433,
     "mfe_r": 8.1,
-    "mae_r": -8.5
+    "mae_r": -8.533
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: between_t1_t2 \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.4300007629394536,
-  "_mae": -2.5500006866455074,
+  "_mae": -2.5600009155273433,
   "_max_p1": 5.400001695421016,
   "_first_trigger_ts": "2026-10-07",
   "_first_t1_ts": "2026-10-15",
   "_first_t2_ts": "2026-10-15",
-  "days_elapsed": 31,
-  "tau": 0.6889,
+  "days_elapsed": 39,
+  "tau": 0.8667,
   "closed": true,
   "outcome": "T1_HIT"
 }

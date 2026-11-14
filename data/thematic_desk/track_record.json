@@ -1,60 +1,60 @@
 {
   "schema": "thematic_desk.v1",
-  "as_of": "2026-11-06",
-  "scored_total": 454,
-  "open": 57,
+  "as_of": "2026-11-13",
+  "scored_total": 472,
+  "open": 44,
   "unscored_soft": 80,
   "overall": {
-    "n": 454,
-    "hits": 271,
-    "misses": 183,
-    "hit_rate": 0.597,
-    "dir_accuracy": 0.423
+    "n": 472,
+    "hits": 278,
+    "misses": 194,
+    "hit_rate": 0.589,
+    "dir_accuracy": 0.417
   },
   "by_market": {
     "us": {
-      "n": 138,
-      "hits": 78,
-      "misses": 60,
-      "hit_rate": 0.565,
-      "dir_accuracy": 0.413
+      "n": 144,
+      "hits": 79,
+      "misses": 65,
+      "hit_rate": 0.549,
+      "dir_accuracy": 0.396
     },
     "china": {
-      "n": 123,
-      "hits": 66,
+      "n": 127,
+      "hits": 70,
       "misses": 57,
-      "hit_rate": 0.537,
-      "dir_accuracy": 0.366
+      "hit_rate": 0.551,
+      "dir_accuracy": 0.378
     },
     "hk": {
-      "n": 46,
-      "hits": 45,
+      "n": 48,
+      "hits": 47,
       "misses": 1,
-      "hit_rate": 0.978,
-      "dir_accuracy": 0.957
+      "hit_rate": 0.979,
+      "dir_accuracy": 0.958
     },
     "canada": {
-      "n": 147,
+      "n": 153,
       "hits": 82,
-      "misses": 65,
-      "hit_rate": 0.558,
-      "dir_accuracy": 0.313
+      "misses": 71,
+      "hit_rate": 0.536,
+      "dir_accuracy": 0.301
     }
   },
   "by_conviction": {
     "low": {
-      "n": 437,
-      "hits": 258,
-      "misses": 179,
-      "hit_rate": 0.59,
-      "dir_accuracy": 0.41
+      "n": 454,
+      "hits": 264,
+      "misses": 190,
+      "hit_rate": 0.581,
+      "dir_accuracy": 0.403
     },
     "medium": {
-      "n": 17,
-      "hits": 13,
+      "n": 18,
+      "hits": 14,
       "misses": 4,
-      "hit_rate": 0.765,
-      "dir_accuracy": 0.765
+      "hit_rate": 0.778,
+      "dir_accuracy": 0.778
     },
     "high": {
       "n": 0,
@@ -64,127 +64,127 @@
       "dir_accuracy": null
     }
   },
-  "calibration_note": "454 scored, hit-rate 0.597 (directional accuracy 0.423). Chance alone would land a hit-rate near 0.8312 (directional accuracy near 0.5066) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "472 scored, hit-rate 0.589 (directional accuracy 0.417). Chance alone would land a hit-rate near 0.8312 (directional accuracy near 0.5066) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
     {
-      "id": "us-2026-10-08-20261009080026-1",
+      "id": "us-2026-10-14-20261015073715-1",
       "market": "us",
-      "subject": "Cybersecurity",
+      "subject": "US Energy Complex",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "miss",
-      "realized": -0.0901,
-      "check_by": "2026-11-05"
+      "realized": -0.0503,
+      "check_by": "2026-11-11"
     },
     {
-      "id": "canada-2026-10-08-20261009080249-1",
+      "id": "canada-2026-10-14-20261015073938-1",
       "market": "canada",
       "subject": "Oil & Gas Producers",
       "lean": "overweight",
       "conviction": "low",
       "outcome": "miss",
-      "realized": -0.0695,
-      "check_by": "2026-11-05"
+      "realized": -0.101,
+      "check_by": "2026-11-11"
     },
     {
-      "id": "us-2026-10-08-20261009140031-1",
+      "id": "us-2026-10-14-20261016061724-1",
       "market": "us",
-      "subject": "Silver Miners",
-      "lean": "avoid",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0339,
-      "check_by": "2026-11-05"
-    },
-    {
-      "id": "us-2026-10-08-20261014084010-1",
-      "market": "us",
-      "subject": "Cybersecurity",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0901,
-      "check_by": "2026-11-05"
-    },
-    {
-      "id": "canada-2026-10-08-20261014084240-1",
-      "market": "canada",
-      "subject": "Oil & Gas Producers",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0695,
-      "check_by": "2026-11-05"
-    },
-    {
-      "id": "us-2026-10-08-20261014182029-1",
-      "market": "us",
-      "subject": "Housing Chain",
-      "lean": "underweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": 0.1383,
-      "check_by": "2026-11-05"
-    },
-    {
-      "id": "canada-2026-10-08-20261014182227-1",
-      "market": "canada",
-      "subject": "Oil & Gas Producers",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0695,
-      "check_by": "2026-11-05"
-    },
-    {
-      "id": "hk-2026-09-23-20260923185522-3",
-      "market": "hk",
-      "subject": "China Tech & Internet",
-      "lean": "avoid",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0627,
-      "check_by": "2026-11-04"
-    },
-    {
-      "id": "canada-2026-09-23-20260924080758-1",
-      "market": "canada",
-      "subject": "Silver & Royalties",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.1187,
-      "check_by": "2026-11-04"
-    },
-    {
-      "id": "canada-2026-09-23-20260924080758-2",
-      "market": "canada",
       "subject": "Gold Miners",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.1187,
-      "check_by": "2026-11-04"
-    },
-    {
-      "id": "canada-2026-09-23-20260924080758-3",
-      "market": "canada",
-      "subject": "Consumer Staples & Retail",
       "lean": "avoid",
       "conviction": "low",
-      "outcome": "miss",
-      "realized": 0.0801,
-      "check_by": "2026-11-04"
+      "outcome": "hit",
+      "realized": 0.0344,
+      "check_by": "2026-11-11"
     },
     {
-      "id": "canada-2026-09-23-20260925072524-2",
+      "id": "canada-2026-10-14-20261016061934-1",
       "market": "canada",
-      "subject": "Big Banks",
+      "subject": "Oil & Gas Producers",
       "lean": "overweight",
       "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.0346,
-      "check_by": "2026-11-04"
+      "outcome": "miss",
+      "realized": -0.101,
+      "check_by": "2026-11-11"
+    },
+    {
+      "id": "us-2026-10-14-20261016170128-1",
+      "market": "us",
+      "subject": "US Energy Complex",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0503,
+      "check_by": "2026-11-11"
+    },
+    {
+      "id": "canada-2026-10-14-20261016170316-1",
+      "market": "canada",
+      "subject": "Oil & Gas Producers",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.101,
+      "check_by": "2026-11-11"
+    },
+    {
+      "id": "us-2026-10-14-20261017060317-1",
+      "market": "us",
+      "subject": "US Energy Complex",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0503,
+      "check_by": "2026-11-11"
+    },
+    {
+      "id": "canada-2026-10-14-20261017060514-1",
+      "market": "canada",
+      "subject": "Oil & Gas Producers",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.101,
+      "check_by": "2026-11-11"
+    },
+    {
+      "id": "us-2026-10-14-20261017175218-1",
+      "market": "us",
+      "subject": "US Energy Complex",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0503,
+      "check_by": "2026-11-11"
+    },
+    {
+      "id": "canada-2026-10-14-20261017175350-1",
+      "market": "canada",
+      "subject": "Oil & Gas Producers",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.101,
+      "check_by": "2026-11-11"
+    },
+    {
+      "id": "us-2026-10-14-20261018060647-1",
+      "market": "us",
+      "subject": "US Energy Complex",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0503,
+      "check_by": "2026-11-11"
+    },
+    {
+      "id": "canada-2026-10-14-20261018060858-1",
+      "market": "canada",
+      "subject": "Oil & Gas Producers",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.101,
+      "check_by": "2026-11-11"
     }
   ]
 }

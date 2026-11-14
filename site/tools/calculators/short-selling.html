@@ -442,7 +442,10 @@
           " return on the notional sold short";
         plain += res.hasFee ? ", after a " + money(res.borrowCost) + " borrow fee." : ".";
       } else if(res.net < 0){
-        plain = "This short lost " + money(res.net) + " — the stock rose against the position, a " +
+        var cause = res.gross < 0 ? "the stock rose against the position"
+          : (res.gross > 0 ? "borrow fees exceeded the gain from the stock decline"
+            : "borrow fees caused the loss while the stock price was unchanged");
+        plain = "This short lost " + money(res.net) + " — " + cause + ", a " +
           pct(res.returnPct) + " return on the notional";
         plain += res.hasFee ? ", including a " + money(res.borrowCost) + " borrow fee." : ".";
         outPlain.className="co-plain warn";
@@ -483,7 +486,7 @@
 <script>window.MM_API=window.MM_API||'https://app.mastermind-x.com';window.__mmAccountLoading=true;</script>
 <script src="../../supabase.js?v=8596965f" defer></script>
 <script src="../../account.js?v=3a75ad49" defer></script>
-<script src="../../theme.js?v=3c193891" defer></script>
+<script src="../../theme.js?v=aa83d371" defer></script>
 
 <script>
 (function(){

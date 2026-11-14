@@ -594,29 +594,11 @@ def render_microtheme_research_markdown(report: Mapping[str, Any]) -> str:
 MICRO_IDENTITY_PREFLIGHT_SCHEMA = "gmi.microtheme_identity_preflight/v1"
 
 
-def build_microtheme_identity_preflight(
-    research: Mapping[str, Any],
-    *,
-    issuer_rows: list[dict],
-    security_rows: list[dict],
-    issuer_snapshot_sha256: str,
-    security_snapshot_sha256: str,
-    crosswalk_path: Path | None = None,
-) -> dict[str, Any]:
-    """Diagnose CURRENT issuer-name hints without minting memberships.
-
-    The caller supplies actual Data OS reference rows, not a second name registry.
-    Qualifying real issuer/security/listing identity, clocks and semantic roles
-    remains with the original Data OS and GMI owners. No network or file writes.
-    """
+def _micro_dataos_current_issuer_name_index(issuer_rows: list[dict], security_rows: list[dict]):
+    """Use only the incumbent CURRENT Data OS issuer-security reader; names are search cues."""
     import re
-
     from lib.dataos.identity import IssuerMaster
 
-    base = build_microtheme_research_evidence(research, crosswalk_path=crosswalk_path)
-    if any(not isinstance(v, str) or re.fullmatch(r"[0-9a-f]{64}", v) is None
-           for v in (issuer_snapshot_sha256, security_snapshot_sha256)):
-        _micro_refuse("unbound identity reference digest")
     if not isinstance(issuer_rows, list) or not isinstance(security_rows, list):
         _micro_refuse("identity references must be record lists")
     if not issuer_rows or not security_rows:
@@ -660,6 +642,60 @@ def build_microtheme_identity_preflight(
 
     if not index:
         _micro_refuse("no current issuers with incumbent eligible securities")
+    countries = sorted({
+        row.get("country") for row in security_rows
+        if isinstance(row, Mapping) and isinstance(row.get("country"), str)
+    })
+    return index, omitted_active_names, countries
+
+
+def _micro_name_hint_candidates(hint, index):
+    """Whole-token prefix matching only: never an identity, issuer or eligibility verdict."""
+    import re
+
+    words = tuple(re.findall(r"[^\W_]+", hint.casefold())) if isinstance(hint, str) else ()
+    # Multi-company conjunctions are not legal issuers. No fuzzy fallback:
+    # "AMD" must NOT match the letters buried in "Camden".
+    usable = (isinstance(hint, str) and bool(words) and len(words[0]) >= 3
+              and "/" not in hint and " and " not in hint.casefold())
+    matches = [
+        dict(candidate)
+        for legal, candidate in index
+        if usable and legal[:len(words)] == words
+    ]
+    matches.sort(key=lambda item: item["issuer_id"])
+    state = (
+        "UNUSABLE_NAME_HINT" if not usable else
+        "POSSIBLE_ONE_CURRENT_ISSUER" if len(matches) == 1 else
+        "AMBIGUOUS_NAME_PREFIX" if len(matches) > 1 else
+        "NO_NAME_PREFIX_IN_REFERENCE"
+    )
+    return state, matches
+
+
+
+def build_microtheme_identity_preflight(
+    research: Mapping[str, Any],
+    *,
+    issuer_rows: list[dict],
+    security_rows: list[dict],
+    issuer_snapshot_sha256: str,
+    security_snapshot_sha256: str,
+    crosswalk_path: Path | None = None,
+) -> dict[str, Any]:
+    """Diagnose CURRENT issuer-name hints without minting memberships.
+
+    The caller supplies actual Data OS reference rows, not a second name registry.
+    Qualifying real issuer/security/listing identity, clocks and semantic roles
+    remains with the original Data OS and GMI owners. No network or file writes.
+    """
+    import re
+
+    base = build_microtheme_research_evidence(research, crosswalk_path=crosswalk_path)
+    if any(not isinstance(v, str) or re.fullmatch(r"[0-9a-f]{64}", v) is None
+           for v in (issuer_snapshot_sha256, security_snapshot_sha256)):
+        _micro_refuse("unbound identity reference digest")
+    index, omitted_active_names, countries = _micro_dataos_current_issuer_name_index(issuer_rows, security_rows)
     counts = {
         "POSSIBLE_ONE_CURRENT_ISSUER": 0,
         "NO_NAME_PREFIX_IN_REFERENCE": 0,
@@ -669,23 +705,7 @@ def build_microtheme_identity_preflight(
     entries: list[dict[str, Any]] = []
     for row in base["candidates"]:
         hint = row.get("issuer_name_hint")
-        words = tuple(re.findall(r"[^\W_]+", hint.casefold())) if isinstance(hint, str) else ()
-        # Multi-company conjunctions are not legal issuers. No fuzzy fallback:
-        # "AMD" must NOT match the letters buried in "Camden".
-        usable = (isinstance(hint, str) and bool(words) and len(words[0]) >= 3
-                  and "/" not in hint and " and " not in hint.casefold())
-        matches = [
-            dict(candidate)
-            for legal, candidate in index
-            if usable and legal[:len(words)] == words
-        ]
-        matches.sort(key=lambda item: item["issuer_id"])
-        state = (
-            "UNUSABLE_NAME_HINT" if not usable else
-            "POSSIBLE_ONE_CURRENT_ISSUER" if len(matches) == 1 else
-            "AMBIGUOUS_NAME_PREFIX" if len(matches) > 1 else
-            "NO_NAME_PREFIX_IN_REFERENCE"
-        )
+        state, matches = _micro_name_hint_candidates(hint, index)
         counts[state] += 1
         entries.append({
             "record_id": row["record_id"], "micro_id": row["micro_id"],
@@ -695,10 +715,6 @@ def build_microtheme_identity_preflight(
             "canonical_membership_admitted": False,
             "measurement_eligible": False,
         })
-    countries = sorted({
-        row.get("country") for row in security_rows
-        if isinstance(row, Mapping) and isinstance(row.get("country"), str)
-    })
     return {
         "schema": MICRO_IDENTITY_PREFLIGHT_SCHEMA,
         "authority_ceiling": "internal_research_candidate_triage_only",
@@ -1179,6 +1195,282 @@ def render_microtheme_addendum_markdown(report: Mapping[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+# Joint original + addendum evidence gap review. This is a PURE derivative of
+# existing research and existing CURRENT Data OS readers, NOT a new curation
+# queue, security master, membership truth store or graph materializer.
+MICRO_CURATOR_READINESS_SCHEMA = "gmi.microtheme_curator_readiness/v1"
+
+
+def build_microtheme_curator_readiness(
+    research: Mapping[str, Any],
+    addendum: Mapping[str, Any],
+    *,
+    issuer_rows: list[dict],
+    security_rows: list[dict],
+    issuer_snapshot_sha256: str,
+    security_snapshot_sha256: str,
+    crosswalk_path: Path | None = None,
+    intake_dir: Path | None = None,
+) -> dict[str, Any]:
+    """Provide curators missing-evidence work for 103+46 unadmitted roles.
+
+    For current Data OS names, use the same exact prefix screen as the already
+    accepted 103-row preflight. Never infer legal issuer, PIT security history,
+    provider rights, economic materiality or a trade from source references.
+    """
+    import re
+
+    current = build_microtheme_identity_preflight(
+        research,
+        issuer_rows=issuer_rows,
+        security_rows=security_rows,
+        issuer_snapshot_sha256=issuer_snapshot_sha256,
+        security_snapshot_sha256=security_snapshot_sha256,
+        crosswalk_path=crosswalk_path,
+    )
+    extension = build_microtheme_addendum_review(
+        research, addendum,
+        crosswalk_path=crosswalk_path, intake_dir=intake_dir,
+    )
+    index, omitted_names, countries = _micro_dataos_current_issuer_name_index(
+        issuer_rows, security_rows)
+    if (current["reference"]["current_issuer_rows_without_legal_name"] != omitted_names
+        or current["reference"]["covered_country_codes"] != countries):
+        _micro_refuse("CURRENT Data OS source disagreeing between consumers")
+    if (current["counts"]["activity_records"] != 103
+        or extension["counts"]["additional_activity_proposals"] != 46):
+        _micro_refuse("unexpected original/extension candidate population")
+
+    original_hints = {r["record_id"]: r for r in current["candidate_diagnostics"]}
+    entries = []
+    all_status_counts: dict[str, int] = {}
+    staged_roles: dict[str, int] = {}
+    missing_dates = 0
+    year_only_dates = 0
+    all_publication_pointers = []
+
+    def add_record(
+        *,
+        origin: str,
+        record_id: str,
+        micro_id: str,
+        entity_name: str,
+        issuer_hint: str | None,
+        role: str,
+        product: str,
+        stage: str,
+        source_ids: list[str],
+        source_registry: Mapping[str, dict],
+        screened: dict | None = None,
+    ) -> None:
+        nonlocal missing_dates, year_only_dates
+        if screened is None:
+            state, matches = _micro_name_hint_candidates(issuer_hint, index)
+        else:
+            state = screened["identity_hint_state"]
+            matches = copy.deepcopy(screened["possible_current_issuer_refs"])
+            expected_state, expected_matches = _micro_name_hint_candidates(issuer_hint, index)
+            if state != expected_state or matches != expected_matches:
+                _micro_refuse("source-local name screen is internally inconsistent")
+        all_status_counts[state] = all_status_counts.get(state, 0) + 1
+        staged_roles[stage] = staged_roles.get(stage, 0) + 1
+
+        references = []
+        for ref_id in source_ids:
+            row = source_registry[ref_id]
+            published = row["published_on"]
+            if published is None:
+                precision = "UNKNOWN"
+            elif isinstance(published, str) and re.fullmatch(r"\d{4}", published):
+                precision = "YEAR"
+            elif isinstance(published, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", published):
+                precision = "DAY"
+            else:
+                _micro_refuse("source-pointer date has unapproved precision")
+            references.append({
+                "source_ref": ref_id,
+                "publisher_hint": row.get("publisher_hint", row.get("publisher")),
+                "url": row["url"],
+                "publisher_claimed_date": published,
+                "date_precision": precision,
+                "original_source_authenticated": False,
+                "public_use_rights_qualified": False,
+            })
+            all_publication_pointers.append(row["url"])
+
+        undated = any(r["date_precision"] == "UNKNOWN" for r in references)
+        partial = not undated and any(r["date_precision"] == "YEAR" for r in references)
+        if undated:
+            missing_dates += 1
+        elif partial:
+            year_only_dates += 1
+        date_state = (
+            "PUBLISHER_DATE_UNKNOWN" if undated else
+            "YEAR_ONLY_PUBLISHER_CLAIM" if partial else
+            "DAY_REFERENCED_NOT_SOURCE_AUTHENTICATED"
+        )
+        steps = []
+        if date_state != "DAY_REFERENCED_NOT_SOURCE_AUTHENTICATED":
+            steps.append("VALIDATE_SOURCE_PUBLICATION_DAY")
+        if state != "POSSIBLE_ONE_CURRENT_ISSUER":
+            steps.append("RESOLVE_ENTITY_NAME_AND_LISTING_WITH_DATAOS")
+        steps.extend((
+            "VERIFY_PRIMARY_SOURCE_ROLE_STAGE_AND_PURPOSE_RIGHTS",
+            "QUALIFY_DATAOS_LEGAL_ISSUER_SECURITY_AND_ASOF_LINEAGE",
+            "QUALIFY_EXACT_GROUP_OWNERSHIP_MEMBERSHIP_AND_DATED_ROLES",
+            "OBTAIN_GMI_OWNER_RATIFICATION_BEFORE_GRAPH_EDGE",
+        ))
+        entries.append({
+            "record_id": record_id,
+            "origin_kind": origin,
+            "micro_id": micro_id,
+            "entity_name": entity_name,
+            "issuer_name_hint": issuer_hint,
+            "role_claim": role,
+            "product_or_activity": product,
+            "evidence_stage_claim": stage,
+            "sources": references,
+            "date_proof_state": date_state,
+            "current_name_hint_state": state,
+            "possible_current_issuer_refs": matches,
+            "source_use_qualification": "NOT_PERFORMED",
+            "source_authentication": "NOT_PERFORMED",
+            "human_product_role_adjudication": "NOT_PERFORMED",
+            "dataos_legal_entity_qualification": "NOT_PERFORMED",
+            "exact_group_qualified": False,
+            "graph_membership_admitted": False,
+            "measurement_eligible": False,
+            "rank_eligible": False,
+            "signal_eligible": False,
+            "sizing_eligible": False,
+            "trading_eligible": False,
+            "effective_at": None,
+            "known_at": None,
+            "next_source_owner_actions": steps,
+        })
+
+    for row in research["candidates"]:
+        add_record(
+            origin="INITIAL_RESEARCH_UNADMITTED",
+            record_id=row["record_id"], micro_id=row["micro_id"],
+            entity_name=row["entity_name"], issuer_hint=row.get("issuer_name_hint"),
+            role=row["role"], product=row["product_or_activity"], stage=row["stage"],
+            source_ids=row["source_ids"], source_registry=research["sources"],
+            screened=original_hints[row["record_id"]],
+        )
+    for row in extension["candidate_activity_roles"]:
+        add_record(
+            origin="ADDITIONAL_SOURCE_POINTER_UNADMITTED",
+            record_id=row["record_id"], micro_id=row["micro_id"],
+            entity_name=row["entity_name"], issuer_hint=row.get("issuer_name_hint"),
+            role=row["proposed_role"], product=row["product_or_activity"],
+            stage=row["evidence_stage"], source_ids=row["source_ids"],
+            source_registry=extension["source_references"],
+        )
+
+    # Per-micro groups support human work selection, NOT ranking securities.
+    summaries: dict[str, dict] = {}
+    for row in entries:
+        micro = row["micro_id"]
+        v = summaries.setdefault(micro, {
+            "micro_id": micro,
+            "original_research_roles": 0,
+            "additional_unadmitted_roles": 0,
+            "source_date_unknown_roles": 0,
+            "unique_possible_current_issuer_name_hints": set(),
+            "actual_qualified_company_memberships": 0,
+            "eligible_measurement_cohorts": 0,
+        })
+        if row["origin_kind"] == "INITIAL_RESEARCH_UNADMITTED":
+            v["original_research_roles"] += 1
+        else:
+            v["additional_unadmitted_roles"] += 1
+        if row["date_proof_state"] == "PUBLISHER_DATE_UNKNOWN":
+            v["source_date_unknown_roles"] += 1
+        for candidate in row["possible_current_issuer_refs"]:
+            v["unique_possible_current_issuer_name_hints"].add(candidate["issuer_id"])
+    for v in summaries.values():
+        v["unique_possible_current_issuer_name_hints"] = len(v["unique_possible_current_issuer_name_hints"])
+    entries.sort(key=lambda r: (r["micro_id"], r["origin_kind"], r["record_id"]))
+    if len(entries) != len({(r["origin_kind"], r["record_id"]) for r in entries}):
+        _micro_refuse("duplicate source research record identity")
+    if not (len(entries) == 149 and len(summaries) == 68):
+        _micro_refuse("source coverage unexpectedly narrowed")
+    return {
+        "schema": MICRO_CURATOR_READINESS_SCHEMA,
+        "availability": "CURRENT_SOURCE_TRIAGE_ONLY_NO_ADMISSION",
+        "authority_ceiling": "research_internal_only",
+        "original_research_digest": current["research_source_digest"],
+        "addendum_digest": extension["addendum_content_digest"],
+        "reference": copy.deepcopy(current["reference"]),
+        "counts": {
+            "original_activity_records": current["counts"]["activity_records"],
+            "additional_research_activity_records": extension["counts"]["additional_activity_proposals"],
+            "total_research_activity_records": len(entries),
+            "micro_definitions": len(summaries),
+            "separate_source_references": len(research["sources"]) + len(extension["source_references"]),
+            "distinct_source_urls": len(
+                {v["url"] for v in research["sources"].values()} |
+                {v["url"] for v in extension["source_references"].values()}),
+            "distinct_urls_linked_to_candidate_roles": len(set(all_publication_pointers)),
+            "research_records_missing_publication_day": missing_dates + year_only_dates,
+            "research_records_missing_any_publisher_date": missing_dates,
+            "year_only_publisher_date_records": year_only_dates,
+            "current_identity_name_hint_states": dict(sorted(all_status_counts.items())),
+            "identity_qualified_memberships": 0,
+            "exact_groups_admitted": 0,
+            "graph_edges_admitted": 0,
+            "measurement_cohorts_admitted": 0,
+        },
+        "stage_claim_counts": dict(sorted(staged_roles.items())),
+        "micro_readiness": [summaries[m] for m in sorted(summaries)],
+        "candidate_worklist": entries,
+        "limitations": [
+            "This is a read-only DERIVED curator research view, not another curation queue.",
+            "Publisher dates are model-referenced and unverified; no dated source is authenticated for PIT use.",
+            "All use rights, exact group membership and legal issuer/share-class histories remain unqualified.",
+            "Data OS current legal-name prefix matches are search hints, not canonical entity IDs.",
+            "None of these sources qualifies historical denominator, investment ranking, sizing or trading.",
+            "C0 forbids automatically turning parent groups or these records into micro EXPRESSES edges.",
+        ],
+    }
+
+
+def render_microtheme_curator_readiness_markdown(report: Mapping[str, Any]) -> str:
+    """Escaped owner-readiness view, deliberately never an investment leaderboard."""
+    import html
+    from urllib.parse import quote
+
+    def clean(value: object) -> str:
+        return (html.escape(str(value if value is not None else "unknown"), quote=True)
+                .replace("|", "&#124;").replace("\r", " ").replace("\n", " "))
+    c = report["counts"]
+    lines = [
+        "# GMI research-to-curator readiness — NOTHING ADMITTED", "",
+        f"{c['total_research_activity_records']} model-origin candidate activities across "
+        f"{c['micro_definitions']} micros, based on "
+        f"{c['separate_source_references']} reference links "
+        f"({c['distinct_source_urls']} distinct URLs).", "",
+        f"At least one linked source lacks a publisher date: {c['research_records_missing_any_publisher_date']} roles. "
+        f"Missing day-level proof: {c['research_records_missing_publication_day']} roles.", "",
+        "Current legal-name matches are unqualified discovery cues; zero issuer/role/group admissions.", "",
+        "| Micro | Origin | Business hint | Stage claim | Current-name screen | Publisher date | Evidence link |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for row in report["candidate_worklist"]:
+        link = row["sources"][0]
+        url = quote(link["url"], safe="/:?&=#%+@-._~")
+        lines.append("| " + " | ".join([
+            clean(row["micro_id"]), clean(row["origin_kind"]),
+            clean(row["entity_name"]), clean(row["evidence_stage_claim"]),
+            clean(row["current_name_hint_state"]), clean(row["date_proof_state"]),
+            f"[publisher pointer]({url})",
+        ]) + " |")
+    lines += ["", "## Unmet owner gates", ""]
+    lines += ["- " + clean(v) for v in report["limitations"]]
+    return "\n".join(lines) + "\n"
+
+
 # ---------------------------------------------------------------------------
 # Native activity admission (GMI recovery 2026-10-16, section 9 step 3)
 # ---------------------------------------------------------------------------
@@ -1191,11 +1483,17 @@ def render_microtheme_addendum_markdown(report: Mapping[str, Any]) -> str:
 # expression or a prepared coverage profile is never an admission basis.
 
 ACTIVITY_EVIDENCE_SCHEMA = "gmi.activity_membership_evidence/v1"
-ADMITTED_ACTIVITY_SPECIES = frozenset({"planned_product_integration"})
-ACTIVITY_ROLES = frozenset({"component_supplier", "platform_owner"})
+ADMITTED_ACTIVITY_SPECIES = frozenset({"planned_product_integration", "principal_business_activity"})
+ACTIVITY_ROLES = frozenset({"component_supplier", "platform_owner", "operator"})
 ACTIVITY_CROSSWALK_PATH = "config/theme_crosswalk.yml"
 ACTIVITY_SOURCE_OWNER = "engine.company_intelligence.issuer_disclosure_owner"
-_ACTIVITY_SPECIES_BY_FACT = {("product_integration", "planned"): "planned_product_integration"}
+_ACTIVITY_SPECIES_BY_FACT = {("product_integration", "planned"): "planned_product_integration",
+                             ("segment_activity", "reported"): "principal_business_activity"}
+#: House rule v1: a disclosed line is a member only if it is a reportable segment
+#: (share_scope == "segment") OR its revenue share is at least this threshold.
+_ACTIVITY_HOUSE_RULE_MIN_SHARE = 0.10
+_ACTIVITY_EXPOSURE_BASIS = "house_rule_v1"
+_ACTIVITY_EXPOSURE_ROLES = frozenset({"primary", "secondary"})
 _NATIVE_BASIS = {"kind": "native_disclosure_fact"}
 _HINT_KEYS = frozenset({"identity_hint_state", "possible_current_issuer_refs"})
 
@@ -1320,7 +1618,9 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
                                        role: str, knowledge_cutoff: str, code_version: str,
                                        root: Path = ROOT, identity_reader=None,
                                        disclosure_reader=None,
-                                       basis: Mapping[str, Any] | None = None) -> dict[str, Any]:
+                                       basis: Mapping[str, Any] | None = None,
+                                       exposure_role: str | None = None,
+                                       profit_driver: bool | None = None) -> dict[str, Any]:
     """Bind one native disclosed activity to one micro-theme as proposal evidence.
 
     Refuses (``ActivityAdmissionRefusal.code``) rather than guessing: a name-prefix
@@ -1330,6 +1630,14 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
     ambiguous or mismatched issuer identity; a target that is not one current
     micro-theme definition; an unadmitted role. The result is evidence only:
     graph-membership use is NOT_GRANTED because no source-purpose ruling grants it.
+
+    For the ``principal_business_activity`` species the evidence also carries a
+    closed ``exposure`` block. Its shares are computed from the owner fact
+    (revenue / revenue_denominator), never from caller numbers; ``exposure_role``
+    (primary or secondary) and ``profit_driver`` are the proposer's judgments and
+    are required for that species only. House rule v1 admits a line only if it is a
+    reportable segment or its revenue share is >= 0.10, else
+    ``EXPOSURE_BELOW_HOUSE_RULE``.
     """
     if basis is not None:
         if isinstance(basis, Mapping) and _HINT_KEYS & set(basis):
@@ -1391,7 +1699,91 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
     from engine.company_intelligence import issuer_disclosure_owner as owner
     from engine.theme_graph import rights
 
-    return {
+    exposure = None
+    if species == "principal_business_activity":
+        # The segment species is the issuer's own disclosed line: role operator,
+        # lifecycle current, segment-only scope, and a pinned exposure block.
+        if role != "operator":
+            raise ActivityAdmissionRefusal("ROLE_NOT_ADMITTED", repr(role))
+        if exposure_role not in _ACTIVITY_EXPOSURE_ROLES:
+            raise ActivityAdmissionRefusal("EXPOSURE_ROLE_NOT_ADMITTED", repr(exposure_role))
+        if type(profit_driver) is not bool:
+            raise ActivityAdmissionRefusal("EXPOSURE_PROFIT_DRIVER_INVALID", repr(profit_driver))
+        revenue, revenue_denominator = fact.get("revenue"), fact.get("revenue_denominator")
+        profit, profit_denominator = fact.get("profit"), fact.get("profit_denominator")
+        # A share is the exact quotient of two filed figures, never a caller number.
+        # Both figures must state the same scale; a missing or differing scale is a
+        # typed refusal, and a loss (negative figure) is carried, never rounded away.
+        for numerator_label, denominator_label in (("revenue", "revenue_denominator"),
+                                                   ("profit", "profit_denominator")):
+            numerator, denominator = fact.get(numerator_label), fact.get(denominator_label)
+            if numerator is None or denominator is None:
+                continue
+            numerator_scale = fact.get(f"{numerator_label}_scale")
+            denominator_scale = fact.get(f"{denominator_label}_scale")
+            if (numerator_scale is None or denominator_scale is None
+                    or numerator_scale != denominator_scale):
+                raise ActivityAdmissionRefusal(
+                    "EXPOSURE_SCALE_MISMATCH",
+                    f"{numerator_label}_scale={numerator_scale!r} "
+                    f"{denominator_label}_scale={denominator_scale!r}")
+        # A non-positive revenue denominator, or a negative revenue numerator, is a
+        # typed refusal, never a ZeroDivisionError or a negative share.
+        if revenue_denominator is not None and revenue_denominator <= 0:
+            raise ActivityAdmissionRefusal(
+                "EXPOSURE_DENOMINATOR_INVALID", f"revenue_denominator={revenue_denominator!r}")
+        if revenue is not None and revenue < 0:
+            raise ActivityAdmissionRefusal("EXPOSURE_NUMERATOR_INVALID", f"revenue={revenue!r}")
+        revenue_share = (revenue / revenue_denominator
+                         if revenue is not None and revenue_denominator is not None else None)
+        # A loss profit (negative figure or denominator) omits profit_share entirely.
+        if profit is not None and profit_denominator is not None and profit_denominator <= 0:
+            raise ActivityAdmissionRefusal(
+                "EXPOSURE_DENOMINATOR_INVALID", f"profit_denominator={profit_denominator!r}")
+        profit_share = (profit / profit_denominator
+                        if profit is not None and profit_denominator is not None
+                        and profit >= 0 and profit_denominator > 0 else None)
+        share_scope = fact["share_scope"]
+        # House rule v1: a reportable segment OR a revenue share >= 0.10. A minor
+        # line stays in research lists, never proposed as a member.
+        if share_scope != "segment" and not (revenue_share is not None
+                                             and revenue_share >= _ACTIVITY_HOUSE_RULE_MIN_SHARE):
+            raise ActivityAdmissionRefusal(
+                "EXPOSURE_BELOW_HOUSE_RULE",
+                f"{fact['disclosed_line']!r} share_scope={share_scope!r} revenue_share={revenue_share!r}")
+        scope = {"segment": {"value": fact["disclosed_line"], "state": "KNOWN"}}
+        lifecycle = "current"
+        exposure = {
+            "basis": _ACTIVITY_EXPOSURE_BASIS,
+            "role": exposure_role,
+            "profit_driver": profit_driver,
+            "disclosed_line": fact["disclosed_line"],
+            "share_scope": share_scope,
+            "revenue_share": revenue_share,
+            "revenue_denominator": revenue_denominator,
+            "profit_share": profit_share,
+            "profit_denominator": profit_denominator,
+            "profit_measure": fact.get("profit_measure"),
+            "fiscal_year": fact["fiscal_year"],
+            "accession": fact["accession"],
+        }
+    else:
+        # planned_product_integration: unchanged scope/lifecycle; operator and the
+        # segment-only exposure judgments are not admitted for this species.
+        if role == "operator":
+            raise ActivityAdmissionRefusal("ROLE_NOT_ADMITTED", repr(role))
+        if exposure_role is not None or profit_driver is not None:
+            raise ActivityAdmissionRefusal("EXPOSURE_SPECIES_MISMATCH",
+                                           "exposure judgments are segment-only")
+        scope = {
+            "product": fact["product"],
+            "platform": fact["platform"],
+            "counterparty_issuer_id": fact["object_id"],
+            "segment": {"value": None, "state": "UNDISCLOSED"},
+        }
+        lifecycle = fact["lifecycle"]
+
+    evidence = {
         "schema": ACTIVITY_EVIDENCE_SCHEMA,
         "issuer": {
             "node_id": node,
@@ -1403,14 +1795,9 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
             "identity_read_sha256": hashlib.sha256(_canonical(row).encode()).hexdigest(),
         },
         "species": species,
-        "scope": {
-            "product": fact["product"],
-            "platform": fact["platform"],
-            "counterparty_issuer_id": fact["object_id"],
-            "segment": {"value": None, "state": "UNDISCLOSED"},
-        },
+        "scope": scope,
         "role": role,
-        "lifecycle": fact["lifecycle"],
+        "lifecycle": lifecycle,
         "endpoints": {"source_node_id": node, "target_node_id": target["theme_id"],
                       "direction": "SOURCE_TO_TARGET"},
         "target_definition": target,
@@ -1453,3 +1840,6 @@ def build_activity_membership_evidence(*, issuer_node_id: str, target_theme_id: 
             "served_generation": {"value": None, "precision": None, "state": "NOT_APPLICABLE"},
         },
     }
+    if exposure is not None:
+        evidence["exposure"] = exposure
+    return evidence

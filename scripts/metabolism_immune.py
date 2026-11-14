@@ -12,7 +12,7 @@ Runs every 2h (cron '15 */2 * * *').  Three independent responsibilities:
 
   B. LANE-HEALTH SENSORS (R-V8-4)
      - Dead cron (cancelled/timed_out latest run per schedule workflow)
-     - Queue saturation (runs queued > queue_stuck_min minutes)
+     - Queued workflow projections older than queue_stuck_min minutes
      - Offline self-hosted runners
      - Key-pool partial degradation (>50% cooling)
      Each fires once per day per condition (dedup via journal markers).
@@ -119,7 +119,9 @@ def _gh_json(args: list[str], timeout: int = 60) -> Any:
         return None
 
 
-def _gh_json_list(args: list[str], timeout: int = 60) -> list[dict]:
+def _gh_json_list(
+    args: list[str], timeout: int = 60, *, preserve_invalid: bool = False,
+) -> list[dict]:
     """Run a gh command and ALWAYS return a flat list of dicts.  NEVER raises.
 
     Handles all three output shapes produced by gh:
@@ -133,7 +135,10 @@ def _gh_json_list(args: list[str], timeout: int = 60) -> list[dict]:
     3. Single line (one object or one array, no --paginate):
        Treated as a one-element or multi-element flat result.
 
-    Empty output or errors → [].
+    Empty output or errors → []. With preserve_invalid, otherwise discarded
+    records become empty-dict placeholders so a caller can retain uncertainty.
+    These placeholders do not represent verified jobs. Other callers keep the
+    legacy default, which discards invalid records.
     """
     try:
         result = subprocess.run(
@@ -152,12 +157,19 @@ def _gh_json_list(args: list[str], timeout: int = 60) -> list[dict]:
             try:
                 obj = json.loads(line)
             except Exception:  # noqa: BLE001
+                if preserve_invalid:
+                    flat.append({})
                 continue
             if isinstance(obj, list):
-                flat.extend(item for item in obj if isinstance(item, dict))
+                if preserve_invalid:
+                    flat.extend(item if isinstance(item, dict) else {} for item in obj)
+                else:
+                    flat.extend(item for item in obj if isinstance(item, dict))
             elif isinstance(obj, dict):
                 flat.append(obj)
-            # scalars silently dropped
+            elif preserve_invalid:
+                flat.append({})
+            # The default continues to discard invalid records.
         return flat
     except Exception as exc:  # noqa: BLE001
         log.warning("immune._gh_json_list: %s", exc)
@@ -954,6 +966,91 @@ def _fetch_runs_list() -> list[dict]:
     return []
 
 
+
+def _annotate_queue_health_runs(
+    runs: list[dict[str, Any]],
+    lane_cfg: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Attach child evidence within the existing workflow-age read window.
+
+    Only runs above the alert threshold and at most 26 hours old cause a
+    job-detail read. This window limits reads; it is not proof that older
+    workflows have no queued children. Outside the window, or with failed,
+    empty or incomplete child evidence, the projection remains unverified.
+    NEVER raises.
+    """
+    from datetime import datetime, timezone  # noqa: PLC0415
+    from engine.metabolism.immune import (  # noqa: PLC0415
+        QUEUE_PROJECTION_STALE_AFTER_MINUTES,
+    )
+
+    try:
+        threshold_min = int(lane_cfg.get("queue_stuck_min") or 40)
+        now = datetime.now(timezone.utc)
+        annotated: list[dict[str, Any]] = []
+
+        for original in (runs or []):
+            run = dict(original)
+            annotated.append(run)
+            if str(run.get("status") or "").lower() != "queued":
+                continue
+
+            created_raw = run.get("created_at") or ""
+            try:
+                created = datetime.fromisoformat(created_raw.replace("Z", "+00:00"))
+                queued_min = (now - created).total_seconds() / 60.0
+            except Exception:  # noqa: BLE001
+                continue
+
+            if (
+                queued_min <= threshold_min
+                or queued_min > QUEUE_PROJECTION_STALE_AFTER_MINUTES
+            ):
+                continue
+
+            run_id = run.get("id")
+            if not run_id:
+                continue
+
+            jobs = _gh_json_list(
+                [
+                    "api",
+                    f"/repos/{{owner}}/{{repo}}/actions/runs/{run_id}/jobs?per_page=100",
+                    "--jq", ".jobs[]",
+                    "--paginate",
+                ],
+                timeout=60,
+                preserve_invalid=True,
+            )
+            statuses = [
+                str(job.get("status") or "").lower()
+                if isinstance(job, dict) else ""
+                for job in jobs
+            ]
+            if not statuses:
+                continue
+
+            run["_queue_child_statuses"] = sorted(set(statuses))
+            # A genuinely queued child stays actionable even when a sibling is
+            # already running.  Prioritizing active_children first would hide a
+            # real queue wait behind unrelated in-progress work.
+            if "queued" in statuses:
+                run["_queue_projection_state"] = "queued_children"
+            elif any(status not in {"queued", "in_progress", "completed"}
+                     for status in statuses):
+                # Missing/invalid rows and unknown states cannot prove a clear.
+                continue
+            elif "in_progress" in statuses:
+                run["_queue_projection_state"] = "active_children"
+            elif all(status == "completed" for status in statuses):
+                run["_queue_projection_state"] = "terminal_children"
+
+        return annotated
+    except Exception as exc:  # noqa: BLE001
+        log.warning("immune._annotate_queue_health_runs: %s", exc)
+        return [dict(run) for run in (runs or [])]
+
+
 def _fetch_runners_list() -> list[dict]:
     """Fetch self-hosted runners from gh api.  NEVER raises."""
     try:
@@ -1094,10 +1191,12 @@ def run_lane_health_checks(
     *,
     root: Path,
     dry_run: bool = False,
+    errors: list[str] | None = None,
 ) -> list[dict]:
     """Run all lane-health sensors; emit insights + Telegram for new findings.
 
-    Returns list of fired-insight dicts.  NEVER raises.
+    Returns acknowledged insight dicts (or previews in dry-run mode). Append
+    failures are also added to errors when supplied. NEVER raises.
     """
     from engine.metabolism.immune import (  # noqa: PLC0415
         check_dead_cron, check_queue_stuck,
@@ -1112,6 +1211,7 @@ def run_lane_health_checks(
 
     try:
         runs = _fetch_runs_list()
+        queue_runs = _annotate_queue_health_runs(runs, lane_cfg)
         runners = _fetch_runners_list()
         key_ledger = _fetch_key_ledger(root)
 
@@ -1123,8 +1223,8 @@ def run_lane_health_checks(
             ),
             (
                 cooldown.get("queue_stuck_journal_key") or "immune.lane_health.queue_stuck",
-                check_queue_stuck(runs, lane_cfg),
-                "Actions queue saturation detected",
+                check_queue_stuck(queue_runs, lane_cfg),
+                "Actions queued projections need attention",
             ),
             (
                 cooldown.get("runner_offline_journal_key") or "immune.lane_health.runner_offline",
@@ -1154,7 +1254,14 @@ def run_lane_health_checks(
                 evidence_ref=str(root / "data" / "metabolism" / "ci_status.json"),
             )
             if not dry_run:
-                append_row(row, root=root)
+                if append_row(row, root=root) is not True:
+                    error = f"insight append unacknowledged: {journal_key}"
+                    log.warning("IMMUNE: %s; cooldown unchanged", error)
+                    if errors is not None:
+                        errors.append(error)
+                    # The append may have partial effects. Do not replay it here
+                    # or suppress the observation with a false daily marker.
+                    continue
                 mark_fired_today(journal_key, root=root)
                 _notify(f"[Metabolism/Immune] {summary}")
             fired.append(row)
@@ -1327,7 +1434,14 @@ def run_immune_lane(
                             evidence_ref=check.get("url"),
                         )
                         if not dry_run:
-                            append_row(row, root=r)
+                            if append_row(row, root=r) is not True:
+                                error = f"insight append unacknowledged: {journal_key}"
+                                log.warning("IMMUNE: %s; cooldown unchanged", error)
+                                summary["errors"].append(error)
+                                # Preserve the observed red without claiming its
+                                # insight was delivered or replaying the append.
+                                summary["unknown_reds"].append(check_name)
+                                continue
                             mark_fired_today(journal_key, root=r)
                             _notify(
                                 f"[Metabolism/Immune] Unknown CI red on main: {check_name!r} "
@@ -1377,7 +1491,9 @@ def run_immune_lane(
                     })
 
         # Step 4: lane-health sensors (R-V8-4)
-        lh_rows = run_lane_health_checks(immune_cfg, root=r, dry_run=dry_run)
+        lh_rows = run_lane_health_checks(
+            immune_cfg, root=r, dry_run=dry_run, errors=summary["errors"],
+        )
         summary["lane_health"] = [r2.get("summary") for r2 in lh_rows]
 
     except Exception as exc:  # noqa: BLE001

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ARES-BULL-20260722",
-  "asof": "2026-11-06",
+  "asof": "2026-11-14",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 38.5,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 15.6,
+    "progress": 17.1,
     "pace": 0.0,
-    "retention": 31.5,
-    "overlay": 32.8
+    "retention": 35.3,
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.211,
-    "dist_to_t1_r": 1.289,
-    "dist_to_t2_r": 2.789,
-    "horizon_pct_used": 231.1,
-    "p1": 0.1409,
-    "p2": 0.0705,
+    "dist_to_stop_r": 1.237,
+    "dist_to_t1_r": 1.263,
+    "dist_to_t2_r": 2.763,
+    "horizon_pct_used": 248.9,
+    "p1": 0.1583,
+    "p2": 0.0792,
     "p3": null,
-    "move_r": 0.211,
+    "move_r": 0.237,
     "mfe_r": 0.672,
     "mae_r": -0.41
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 104,
-  "tau": 2.3111,
+  "days_elapsed": 112,
+  "tau": 2.4889,
   "closed": true,
   "outcome": "EXPIRED"
 }

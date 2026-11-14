@@ -1,18 +1,18 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-11-03",
-  "generated_at": "2026-11-06T12:02:43.751547+00:00",
+  "as_of": "2026-11-12",
+  "generated_at": "2026-11-14T11:08:32.644751+00:00",
   "is_context_only": true,
-  "n_snapshots": 1371,
-  "n_days": 47,
+  "n_snapshots": 1401,
+  "n_days": 50,
   "horizons": {
     "5": {
-      "n_matured": 1328,
+      "n_matured": 1398,
       "by_stage": {
         "running": {
-          "n": 1251,
-          "mean_fwd_rel": -0.0052,
-          "hit_rate": 0.431
+          "n": 1320,
+          "mean_fwd_rel": -0.0048,
+          "hit_rate": 0.433
         },
         "coiling": {
           "n": 36,
@@ -20,23 +20,23 @@
           "hit_rate": 0.472
         },
         "coiling_primed": {
-          "n": 41,
-          "mean_fwd_rel": 0.011,
-          "hit_rate": 0.585
+          "n": 42,
+          "mean_fwd_rel": 0.0113,
+          "hit_rate": 0.595
         }
       },
-      "running_ic": -0.0173,
-      "running_ic_t_hac": -0.289,
+      "running_ic": -0.0251,
+      "running_ic_t_hac": -0.441,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 1328,
+      "n_matured": 1353,
       "by_stage": {
         "running": {
-          "n": 1251,
-          "mean_fwd_rel": -0.0102,
-          "hit_rate": 0.408
+          "n": 1275,
+          "mean_fwd_rel": -0.0096,
+          "hit_rate": 0.419
         },
         "coiling": {
           "n": 36,
@@ -44,23 +44,23 @@
           "hit_rate": 0.417
         },
         "coiling_primed": {
-          "n": 41,
-          "mean_fwd_rel": 0.0142,
-          "hit_rate": 0.488
+          "n": 42,
+          "mean_fwd_rel": 0.0145,
+          "hit_rate": 0.5
         }
       },
-      "running_ic": -0.0422,
-      "running_ic_t_hac": -0.847,
+      "running_ic": -0.042,
+      "running_ic_t_hac": -0.863,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 1215,
+      "n_matured": 1328,
       "by_stage": {
         "running": {
-          "n": 1138,
-          "mean_fwd_rel": -0.0325,
-          "hit_rate": 0.319
+          "n": 1251,
+          "mean_fwd_rel": -0.0248,
+          "hit_rate": 0.365
         },
         "coiling": {
           "n": 36,
@@ -73,32 +73,32 @@
           "hit_rate": 0.61
         }
       },
-      "running_ic": -0.0978,
-      "running_ic_t_hac": -1.143,
+      "running_ic": -0.0578,
+      "running_ic_t_hac": -0.952,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 551,
+      "n_matured": 688,
       "by_stage": {
         "running": {
-          "n": 486,
-          "mean_fwd_rel": -0.0546,
-          "hit_rate": 0.296
+          "n": 615,
+          "mean_fwd_rel": -0.0538,
+          "hit_rate": 0.306
         },
         "coiling": {
-          "n": 33,
-          "mean_fwd_rel": -0.0445,
-          "hit_rate": 0.242
+          "n": 36,
+          "mean_fwd_rel": -0.0356,
+          "hit_rate": 0.278
         },
         "coiling_primed": {
-          "n": 32,
-          "mean_fwd_rel": 0.0084,
-          "hit_rate": 0.531
+          "n": 37,
+          "mean_fwd_rel": -0.0066,
+          "hit_rate": 0.459
         }
       },
-      "running_ic": -0.0507,
-      "running_ic_t_hac": -2.06,
+      "running_ic": -0.146,
+      "running_ic_t_hac": -2.095,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     }
@@ -116,67 +116,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-10-13",
-      "id": "subsectors:internet-content-information",
-      "name": "Internet Content & Information",
+      "date": "2026-10-20",
+      "id": "subsectors:oil-gas-e-p",
+      "name": "Oil & Gas E&P",
       "stage": "running",
-      "fwd_rel": -0.1689,
+      "fwd_rel": -0.07,
       "horizon_d": 21
     },
     {
-      "date": "2026-10-13",
+      "date": "2026-10-16",
       "id": "nasdaq:internet-content-information",
       "name": "Internet Content & Information",
       "stage": "running",
-      "fwd_rel": -0.1689,
+      "fwd_rel": -0.117,
       "horizon_d": 21
     },
     {
-      "date": "2026-10-13",
-      "id": "baskets:semicap-equipment",
-      "name": "Semiconductor Equipment (WFE)",
-      "stage": "running",
-      "fwd_rel": -0.1615,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-10-13",
-      "id": "nasdaq:semiconductor-equipment-materials",
-      "name": "Semiconductor Equipment & Materials",
-      "stage": "running",
-      "fwd_rel": -0.1594,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-10-13",
-      "id": "russell:semiconductor-equipment-materials",
-      "name": "Semiconductor Equipment & Materials",
-      "stage": "running",
-      "fwd_rel": -0.1581,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-10-13",
-      "id": "subsectors:semiconductor-equipment-materials",
-      "name": "Semiconductor Equipment & Materials",
-      "stage": "running",
-      "fwd_rel": -0.1469,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-10-13",
-      "id": "baskets:mag7",
-      "name": "Magnificent Seven",
-      "stage": "running",
-      "fwd_rel": -0.0448,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-10-13",
+      "date": "2026-10-16",
       "id": "russell:packaging-containers",
       "name": "Packaging & Containers",
       "stage": "running",
-      "fwd_rel": -0.0013,
+      "fwd_rel": -0.0535,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-16",
+      "id": "subsectors:scientific-technical-instruments",
+      "name": "Scientific & Technical Instruments",
+      "stage": "running",
+      "fwd_rel": -0.0298,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-16",
+      "id": "baskets:industrial-distribution",
+      "name": "Industrial Distribution & Capital Goods",
+      "stage": "running",
+      "fwd_rel": -0.0017,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-15",
+      "id": "nasdaq:semiconductor-equipment-materials",
+      "name": "Semiconductor Equipment & Materials",
+      "stage": "running",
+      "fwd_rel": -0.2311,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-15",
+      "id": "nasdaq:internet-content-information",
+      "name": "Internet Content & Information",
+      "stage": "running",
+      "fwd_rel": -0.134,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-10-15",
+      "id": "baskets:robotics-automation",
+      "name": "Robotics & Automation",
+      "stage": "running",
+      "fwd_rel": -0.0377,
       "horizon_d": 21
     }
   ],

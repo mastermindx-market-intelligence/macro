@@ -17,6 +17,10 @@ For **host-local** Claude/CLI edits and any process running on the M2, the incum
 
 An assigned session must drive its existing PR to the **actual user/machine outcome**, not stop at Draft or a published commit. Retain its original source carrier, repair concrete failing CI, make **non-held** stable reviewable candidates Ready, obtain genuinely required independent/formal checks, use the existing authorized merge-on-green controller, verify merged commit and owed production/browser proof. A pending check or published PR is not completion. Do not create a replacement PR, hand off to an archived reviewer chat, invent a watcher, or label an unmerged PR delivered. If an actual hold/permission/uncertain effect prevents the release, preserve the original exact target and next actionable repair; continue disjoint permitted work. Recorded `HOLD-FOR-SOL` stays **Draft / PARKED**, no `merge-on-green` label, no native auto-merge, no Ready or merge until the actual hold owner releases it; do not relabel the hold as DONE. An actually verified current-controller handoff may delegate an idle wait but **never** proves merged/accepted; the historical `scripts/ci_handoff.py` is absent from protected main and must not be invoked as a required exit ritual; red/held PRs retain an accountable reachable repair owner under `DEC:SESSION-OWNED-REVIEW-20261103`. Never self-approve, self-merge, bypass branch rules, remove recorded HOLD or replay denied effects. Follow Mastermind's [session-owned finish-to-release law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/SESSION_LOCAL_REVIEW_POLICY.md#finish-to-release-ownership-a-pr-is-an-intermediate-artifact) after accepted source enrollment.
 
+## Reuse-first engineering (established infrastructure)
+
+For substantial implementation of existing machinery (agent harnesses, charts, dashboards, scheduling, storage, monitoring or UI), inspect incumbent Macro/Mastermind capabilities and credible maintained open-source options first. Prefer integrating, composing or extending proven libraries with a narrow adapter rather than rebuilding commodity infrastructure. Keep bespoke sector/intelligence/quantitative hypotheses and signals independently designed and scientifically validated. Check maintenance, compatibility, existing security/data boundaries and actual integration tests; no new sign-off. The scan is proportionate, not a new approval or documentation gate. Apply the protected shared [Reuse First policy](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/REUSE_FIRST_ENGINEERING.md) when accepted; a proposal alone does not change live settings.
+
 ## Standing commercial data rights
 
 Chris has directly confirmed approved existing commercial licensing with full commercial rights for the Research Factory Yahoo/yfinance route (including the fixed nine sector ETFs), Massive/Polygon, Tiingo and ThetaData options. Apply [DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023](agentos/decisions/DEC-COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023.md) and the [shared source law](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/COMMERCIAL_DATA_RIGHTS.md). The commercial gate is `APPROVED_BY_CHAIRMAN_ATTESTATION`; no repeated approval, contract upload or public-terms re-proof. Preserve separately evidenced historical/PIT, access, quality, budget, scientific and unresolved-effect facts.
@@ -103,15 +107,14 @@ current by file overwrite only, never by git operations on the primary.
 
 **`EXACT_HUMAN_GATE` requires evidence, not a retry quota:** name the exact
 blocked action, observed tool/permission facts, and the reachable human action.
-A known human-only control requires no repeated probe. An explicit safety/permission
-refusal ends that effect immediately; ordinary technical failures can receive bounded
-permitted diagnosis. Real gates are MFA / Touch ID / passkey / CAPTCHA, a provider
+A known human-only control requires no repeated probe. Classify the observed error before declaring a refusal: length, schema,
+transport and capacity problems invite bounded authorized repair, not a mission stop.
+Actual protected access restrictions remain specific to their affected operations. Real gates are MFA / Touch ID / passkey / CAPTCHA, a provider
 refusal, a physical device, money or security-setting changes, and Sol/Chairman rulings
 the seat does not hold. "I could not find a path" is not a gate: troubleshoot (read the
 hook or helper source, run its check command, inspect the mount/policy/receipt) before
 classifying. This law widens no credential, security setting, purchase, money-movement,
-production-deployment or safety boundary, and an explicit safety/permission refusal
-still ends that effect's retry.
+production-deployment or safety boundary, while verified protected restrictions stay scoped to their exact effects.
 
 ### The six execution invariants
 
@@ -210,7 +213,7 @@ to the parent. Store full worker logs outside principal context and material
 cross-session decisions in existing Agent OS continuity. Don't create children
 merely to occupy free Ubuntu lanes; budget real non-overlapping work, admission,
 review and disk headroom. Record an exception to delegation when direct effort
-is demonstrably better, and never use another carrier to bypass a refusal.
+is demonstrably better, and never duplicate an unreconciled modifying operation.
 Updated source instructions alone are **not** fresh-session installation or
 real-path adoption proof.
 
@@ -463,3 +466,9 @@ Disarming is never silent (#5291): `gh pr edit <n> --remove-label merge-on-green
 requires, in the same act, a visible marker (`merge-blocked` or a comment naming the
 session and intent) and responsibility through merged-or-handed-back. Never remove
 another session's arm without the applicable custody and continuation evidence.
+
+## Graph engineering for substantial missions
+
+Load [.agents/skills/mastermind-graph-engineering/SKILL.md](.agents/skills/mastermind-graph-engineering/SKILL.md) for multi-domain or long-horizon work. It resolves the shared Mastermind skill and its T3, Hermes and Paperclip guidance.
+
+Keep product direction, long-horizon planning and acceptance with the principal. Give admitted suborchestrators complete domain outcomes, let them coordinate admitted children and integrate evidence locally, and send compact decisions and proof upward. Preserve original root, actual parentage, scope, budget, writer custody and result return. Discover runtime depth limits before spawning; use the shallowest useful hierarchy and continue after accepted milestones.

@@ -461,10 +461,23 @@ def test_pages_uses_null_safe_anti_membership_without_changing_classifiers(monke
     assert "count(distinct e.visitor_id)" in outer
     assert "avg(e.dwell_ms)" in outer
     assert "group by 1,2 order by views desc nulls last, 1, 2 limit 500" in outer
-    # The historical classifier definitions, including their non-null ID contract,
-    # remain shared with every other caller; only this outer membership shape changed.
-    assert sql.startswith(a._cte(bot_window=43200))
-    assert "where e.visitor_id is not null" in a._excluded_cte()
+    # Pages now projects only classifier OUTPUT IDs. Historical seeds/anchors,
+    # customer protection and the unchanged bot block still classify those IDs.
+    assert sql.startswith(a._pages_cte(43200))
+    global_exclusions = a._excluded_cte()
+    focused_exclusions = a._excluded_cte(focus_visitors=True)
+    historical_prefix = global_exclusions.split("excl_link as (", 1)[0]
+    assert focused_exclusions.startswith(historical_prefix)
+    customer_guard = "where not exists (select 1 from public.analytics_events e3 "
+    assert focused_exclusions.split(customer_guard, 1)[1] == global_exclusions.split(customer_guard, 1)[1]
+    assert focused_exclusions.count("and e2.visitor_id in (select visitor_id from focus_visitors)") == 2
+    assert "excluded as (select visitor_id from excl_seed where visitor_id in (select visitor_id from focus_visitors)" in focused_exclusions
+    assert sql.count(a._bot_cte(43200)) == 1
+    # The seed is now five index-driven membership arms rather than one OR across five
+    # columns. The null guard has to survive that rewrite on EVERY arm, or a NULL
+    # visitor_id would enter `excluded` and the anti-membership would stop being null-safe.
+    # (The excl_vids arm reads a literal text[] list, so it is non-null by construction.)
+    assert a._excluded_cte().count("and e.visitor_id is not null") == 4
     assert "where e2.visitor_id is not null" in a._excluded_cte()
     assert "where e.visitor_id is not null" in a._bot_cte(43200)
 

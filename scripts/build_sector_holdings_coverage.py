@@ -35,13 +35,14 @@ import errno
 import json
 import logging
 import math
+import numbers
 import os
 import re
 import stat
 import sys
 import tempfile
 from collections.abc import Mapping, Sequence
-from datetime import date
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import numpy as np
@@ -61,6 +62,40 @@ SOURCE = "sector_holdings parquet store (issuer top 20 by weight)"
 
 TICKER = re.compile(r"^[A-Z][A-Z0-9]*(?:[.-][A-Z0-9]+)?$")
 MAX_LISTED = 60
+
+# --- capture provenance (owner-local receipt) --------------------------------
+#
+# The per-fund store carries one reserved capture block per capture (see
+# collectors/sector_holdings.py). These constants MIRROR the producer's
+# contract; tests/test_sector_holdings_coverage.py asserts the two lists are
+# identical, so the mirror cannot drift silently. The published
+# sector_holdings.coverage.v1 feed is a CLOSED contract and does NOT carry any
+# of this — the receipt is owner-local, for a later admission decision.
+CAPTURE_PREFIX = "capture_"
+CAPTURE_SCHEMA_VERSION = "sector_holdings.capture.v1"
+# Exact requested source, mirrored under the same producer-contract drift test.
+SSGA_XLSX = ("https://www.ssga.com/us/en/intermediary/etfs/library-content/"
+             "products/fund-data/etfs/us/holdings-daily-us-en-{fund}.xlsx")
+CAPTURE_COLUMNS = (
+    "capture_schema_version",
+    "capture_fund",
+    "capture_source_url",
+    "capture_content_sha256",
+    "capture_content_bytes",
+    "capture_retrieved_at",
+    "capture_issuer_as_of",
+    "capture_date_origin",
+)
+DATE_ORIGIN_ISSUER_REPORTED = "issuer_reported"
+DATE_ORIGIN_RETRIEVAL_FALLBACK = "retrieval_date_fallback"
+DATE_ORIGIN_NOT_RECORDED = "date_origin_not_recorded"
+
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+# What a receipt may and may not say. A capture consistency check proves that
+# the rows came from one identified response — nothing more.
+CAPTURE_LIMITATION = (
+    "capture consistency is not issuer mapping, source-use rights, economic "
+    "causation, historical availability, correction history or a sector explanation")
 
 
 def _sector_funds() -> list[str]:
@@ -92,6 +127,16 @@ def load_snapshots(funds: Sequence[str]) -> dict[str, pd.DataFrame | None]:
     return out
 
 
+def _latest_rows(snapshot: pd.DataFrame) -> pd.DataFrame:
+    """The rows of the snapshot's latest index date.
+
+    ONE selector for the whole module: the coverage block and the capture
+    receipt must describe the SAME rows, so they cannot drift apart.
+    """
+    idx = pd.to_datetime(snapshot.index)
+    return snapshot.loc[idx == idx.max()]
+
+
 def coverage_for_fund(fund: str, snapshot: pd.DataFrame | None, *, asof: date,
                       total: int | None = None) -> dict:
     """One fund's coverage block. Pure: reads the frame it is handed, never the
@@ -103,9 +148,8 @@ def coverage_for_fund(fund: str, snapshot: pd.DataFrame | None, *, asof: date,
                 "coverage": {"count": {"listed": 0, "total": None}, "weight_pct": 0.0,
                              "concentration": {"top3_of_fund_pct": None,
                                                "top3_of_sample_pct": None}}}
-    idx = pd.to_datetime(snapshot.index)
-    last = idx.max()
-    rows = snapshot.loc[idx == last]
+    last = pd.to_datetime(snapshot.index).max()
+    rows = _latest_rows(snapshot)
     tickers = rows["ticker"].astype(str).str.strip().str.upper()
     weights = pd.to_numeric(rows["weight_pct"], errors="coerce").astype(float)
     # The ticker gate is part of `keep`: CASH_USD-style rows, blanks and
@@ -146,6 +190,273 @@ def coverage_for_fund(fund: str, snapshot: pd.DataFrame | None, *, asof: date,
                          "weight_pct": weight,
                          "concentration": {"top3_of_fund_pct": top3,
                                            "top3_of_sample_pct": top3_share}}}
+
+
+# --- capture receipt (owner-local; NOT part of the published v1 feed) ---------
+#
+# The receipt binds a fund's latest stored snapshot to the capture that
+# produced it: which response, which bytes, which retrieval instant, and
+# where the index date came from. It is deliberately humble about what it
+# proves: a capture binds ROWS TO A RESPONSE. It does not admit the issuer,
+# the source-use rights, the economics, the historical availability, the
+# correction history or any sector explanation — and it never claims the
+# response body, the original publication time or a revision lineage that the
+# capture does not carry.
+
+
+def _is_null(value) -> bool:
+    """True for None, pd.NA, NaT and NaN — but never for a non-scalar."""
+    if value is None or value is pd.NA:
+        return True
+    try:
+        return bool(pd.isna(value))
+    except (TypeError, ValueError):
+        return False
+
+
+def _parse_utc_timestamp(value) -> datetime | None:
+    """An aware-UTC timestamp, or None. A naive stamp is NOT accepted: a
+    retrieval instant without a zone cannot be bound to an index date."""
+    if not isinstance(value, str) or not value.strip():
+        return None
+    text = value.strip()
+    if text.endswith(("Z", "z")):
+        text = text[:-1] + "+00:00"
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() != timedelta(0):
+        return None
+    return parsed
+
+
+def _parse_iso_date(value) -> date | None:
+    """An ISO calendar date, or None."""
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        return date.fromisoformat(value.strip())
+    except ValueError:
+        return None
+
+
+def _empty_capture() -> dict:
+    """The withheld capture block: no field is ever guessed."""
+    return {"schema_version": None, "fund": None, "source_url": None,
+            "content_sha256": None, "content_bytes": None, "retrieved_at": None,
+            "issuer_as_of": None, "date_origin": None}
+
+
+def _unavailable_lineage(kind: str) -> dict:
+    """An explicitly UNAVAILABLE revision/supersession lineage.
+
+    A capture records ONE response. It never establishes what preceded it,
+    what superseded it, or whether the issuer ever corrected it — and a
+    same-date replacement is a replacement, not a revision.
+    """
+    return {"status": "unavailable", "kind": kind, "predecessor": None,
+            "successor": None,
+            "reason": "the capture records one response and carries no "
+                      "revision or supersession evidence"}
+
+
+def _validate_capture_row(values: dict, fund: str, index_day: date) -> tuple[dict | None, list[str]]:
+    """One selected row's capture block: (normalised values, problems).
+
+    An empty ``problems`` list means the block is internally valid. Values is
+    None with no problems means the row carries no capture at all (a legacy
+    row) — that is a different state from a malformed block, and it is
+    reported as such.
+    """
+    if all(_is_null(value) for value in values.values()):
+        return None, []
+    problems: list[str] = []
+    schema = values["capture_schema_version"]
+    if not isinstance(schema, str) or schema != CAPTURE_SCHEMA_VERSION:
+        problems.append(f"schema version {schema!r} is not {CAPTURE_SCHEMA_VERSION!r}")
+    source_fund = values["capture_fund"]
+    if not isinstance(source_fund, str) or source_fund != fund:
+        problems.append(f"source fund {source_fund!r} is not {fund!r}")
+    url = values["capture_source_url"]
+    expected_url = SSGA_XLSX.format(fund=fund.lower()) if fund in FUNDS else None
+    if not isinstance(url, str) or expected_url is None or url != expected_url:
+        problems.append("source url is not the canonical https url for this fund")
+    digest = values["capture_content_sha256"]
+    if not isinstance(digest, str) or not _SHA256_RE.fullmatch(digest):
+        problems.append("content digest is not a lowercase sha256 hex digest")
+    nbytes = values["capture_content_bytes"]
+    # A parquet round-trip widens an int column that carries nulls (legacy
+    # rows beside a captured row) to float64, so an exact-integer float is
+    # the SAME count — a fractional or negative one is not a count at all.
+    if isinstance(nbytes, bool) or not isinstance(nbytes, numbers.Real):
+        problems.append("content byte count is not a non-negative integer")
+    elif not float(nbytes).is_integer() or int(nbytes) < 0:
+        problems.append("content byte count is not a non-negative integer")
+    retrieved_at = _parse_utc_timestamp(values["capture_retrieved_at"])
+    if retrieved_at is None:
+        problems.append("retrieved_at is not an aware utc timestamp")
+    raw_as_of = values["capture_issuer_as_of"]
+    issuer_as_of = _parse_iso_date(raw_as_of)
+    if not _is_null(raw_as_of) and issuer_as_of is None:
+        problems.append("issuer as-of is not an iso date")
+    origin = values["capture_date_origin"]
+    if origin not in (DATE_ORIGIN_ISSUER_REPORTED, DATE_ORIGIN_RETRIEVAL_FALLBACK):
+        problems.append(f"date origin {origin!r} is not a native capture origin")
+    # Date bindings: the index date must be the date the capture claims.
+    if origin == DATE_ORIGIN_ISSUER_REPORTED:
+        if issuer_as_of is None:
+            problems.append("issuer-reported origin without an issuer as-of date")
+        elif issuer_as_of != index_day:
+            problems.append(f"issuer as-of {issuer_as_of.isoformat()} is not the "
+                            f"indexed date {index_day.isoformat()}")
+    elif origin == DATE_ORIGIN_RETRIEVAL_FALLBACK:
+        if not _is_null(raw_as_of):
+            problems.append("retrieval-date fallback carries an issuer as-of date")
+        elif retrieved_at is not None and retrieved_at.date() != index_day:
+            problems.append(f"retrieval-date fallback index {index_day.isoformat()} "
+                            f"is not the retrieval date {retrieved_at.date().isoformat()}")
+    if problems:
+        return None, problems
+    return {
+        "capture_schema_version": schema,
+        "capture_fund": source_fund,
+        "capture_source_url": url,
+        "capture_content_sha256": digest,
+        "capture_content_bytes": int(nbytes),
+        "capture_retrieved_at": values["capture_retrieved_at"],
+        "capture_issuer_as_of": raw_as_of,
+        "capture_date_origin": origin,
+    }, []
+
+
+def source_receipt_for_fund(fund: str, snapshot: pd.DataFrame | None) -> dict:
+    """The capture receipt bound to one fund's latest stored snapshot.
+
+    Pure: reads the frame it is handed, never the store and never the clock.
+
+    The metadata is validated across ALL the selected (latest-date) rows
+    BEFORE any holdings filter or de-duplication — a capture that describes
+    only some of the rows it claims is not a consistent capture, and a filter
+    that drops rows first would hide exactly that disagreement.
+
+    ``status`` is one of:
+
+    ``consistent``
+        every selected row carries the same well-formed capture block;
+    ``missing``
+        no selected row carries one (legacy rows — their date origin was never
+        recorded and is reported as such, never backfilled);
+    ``mixed``
+        some selected rows carry one and others do not, or the populated rows
+        disagree about the digest, the retrieval instant, the issuer date or
+        the origin;
+    ``malformed``
+        a capture is present but invalid (schema, timestamp, digest, byte
+        count, source fund or date binding).
+
+    Anything but ``consistent`` WITHHOLDS the capture block: the receipt
+    reports the state, never a first-winner's values.
+    """
+    receipt = {
+        "fund": fund,
+        "as_of": None,
+        "status": "missing",
+        "capture": _empty_capture(),
+        "reasons": [],
+        "issuer_effective_date_qualified": False,
+        "original_available_at": None,
+        "historically_admissible": False,
+        "source_body_retained": False,
+        "revision_lineage": _unavailable_lineage("revision"),
+        "supersession_lineage": _unavailable_lineage("supersession"),
+        "limitation": CAPTURE_LIMITATION,
+    }
+    if snapshot is None or snapshot.empty:
+        receipt["capture"]["date_origin"] = DATE_ORIGIN_NOT_RECORDED
+        receipt["reasons"].append("no stored snapshot")
+        return receipt
+    rows = _latest_rows(snapshot)
+    index_day = pd.to_datetime(snapshot.index).max().date()
+    receipt["as_of"] = index_day.isoformat()
+    if not any(column in rows.columns for column in CAPTURE_COLUMNS):
+        receipt["capture"]["date_origin"] = DATE_ORIGIN_NOT_RECORDED
+        receipt["reasons"].append(
+            "capture block absent — legacy rows, date origin not recorded")
+        return receipt
+    incomplete = [column for column in CAPTURE_COLUMNS if column not in rows.columns]
+    if incomplete:
+        receipt["status"] = "malformed"
+        receipt["reasons"].append("capture block is incomplete, missing: "
+                                  + ", ".join(incomplete))
+        return receipt
+    populated: list[dict] = []
+    empty_rows = 0
+    problems: list[str] = []
+    for _, row in rows.iterrows():
+        values = {column: row[column] for column in CAPTURE_COLUMNS}
+        row_values, row_problems = _validate_capture_row(values, fund, index_day)
+        if row_problems:
+            problems.extend(row_problems)
+            continue
+        if row_values is None:
+            empty_rows += 1
+            continue
+        populated.append(row_values)
+    if problems:
+        receipt["status"] = "malformed"
+        receipt["reasons"].extend(sorted(set(problems)))
+        return receipt
+    if not populated:
+        receipt["capture"]["date_origin"] = DATE_ORIGIN_NOT_RECORDED
+        receipt["reasons"].append(
+            "no selected row carries a capture — legacy rows, date origin not recorded")
+        return receipt
+    if empty_rows:
+        receipt["status"] = "mixed"
+        receipt["reasons"].append(
+            f"{empty_rows} of {len(rows)} selected row(s) carry no capture")
+        return receipt
+    disagreements = [column for column in CAPTURE_COLUMNS
+                     if len({row[column] for row in populated}) > 1]
+    if disagreements:
+        receipt["status"] = "mixed"
+        receipt["reasons"].append("capture fields disagree across the selected "
+                                  "rows: " + ", ".join(disagreements))
+        return receipt
+    first = populated[0]
+    receipt["status"] = "consistent"
+    receipt["capture"] = {
+        "schema_version": first["capture_schema_version"],
+        "fund": first["capture_fund"],
+        "source_url": first["capture_source_url"],
+        "content_sha256": first["capture_content_sha256"],
+        "content_bytes": first["capture_content_bytes"],
+        "retrieved_at": first["capture_retrieved_at"],
+        "issuer_as_of": first["capture_issuer_as_of"],
+        "date_origin": first["capture_date_origin"],
+    }
+    # Only an issuer-stated date qualifies as an issuer-effective date; a
+    # retrieval-date fallback says nothing about the issuer's effective date.
+    receipt["issuer_effective_date_qualified"] = (
+        first["capture_date_origin"] == DATE_ORIGIN_ISSUER_REPORTED)
+    return receipt
+
+
+def coverage_with_source_receipt(fund: str, snapshot: pd.DataFrame | None, *,
+                                  asof: date, total: int | None = None) -> dict:
+    """The coverage block and its capture receipt as ONE bound selection.
+
+    The receipt is computed FIRST — on the same latest-date rows the coverage
+    block uses, and before the holdings filter and de-duplication — so a
+    capture is never validated on a subset of the rows it claims to describe.
+    The coverage block is the existing one, unchanged: the same weight and
+    count denominators, the same unknown total holding count, the same
+    fund-versus-sample semantics.
+    """
+    receipt = source_receipt_for_fund(fund, snapshot)
+    coverage = coverage_for_fund(fund, snapshot, asof=asof, total=total)
+    return {"coverage": coverage, "receipt": receipt}
 
 
 def build_holdings_coverage(snapshots: Mapping[str, pd.DataFrame | None], *,

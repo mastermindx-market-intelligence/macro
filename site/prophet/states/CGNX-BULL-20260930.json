@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CGNX-BULL-20260930",
-  "asof": "2026-11-06",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.4,
@@ -13,24 +13,24 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 31.2,
-    "overlay": 26.8
+    "retention": 33.7,
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.816,
+    "dist_to_stop_r": -0.574,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 68.9,
-    "p1": -1.2107,
-    "p2": -0.6053,
+    "horizon_pct_used": 86.7,
+    "p1": -1.0495,
+    "p2": -0.5247,
     "p3": null,
-    "move_r": -1.816,
+    "move_r": -1.574,
     "mfe_r": 0.0,
     "mae_r": -1.816
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 31,
-  "tau": 0.6889
+  "days_elapsed": 39,
+  "tau": 0.8667
 }

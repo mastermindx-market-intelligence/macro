@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SLB-BULL-20261021",
-  "asof": "2026-11-06",
+  "asof": "2026-11-14",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 47.6,
-  "raw_confidence": 39.3,
-  "delta_vs_base": -12.4,
+  "management_confidence": 37.6,
+  "raw_confidence": 38.3,
+  "delta_vs_base": -22.4,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 55.0,
+    "validity": 80.9,
     "progress": 0.0,
-    "pace": 52.8,
+    "pace": 12.8,
     "retention": 50.0,
-    "overlay": 32.8
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.642,
+    "dist_to_stop_r": 0.854,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 31.1,
-    "p1": -0.2387,
-    "p2": -0.1194,
+    "horizon_pct_used": 48.9,
+    "p1": -0.097,
+    "p2": -0.0485,
     "p3": null,
-    "move_r": -0.358,
+    "move_r": -0.146,
     "mfe_r": 0.086,
     "mae_r": -0.358
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Macro Headwind",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-24",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 14,
-  "tau": 0.3111
+  "days_elapsed": 22,
+  "tau": 0.4889
 }

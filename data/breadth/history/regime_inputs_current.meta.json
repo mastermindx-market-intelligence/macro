@@ -1,0 +1,476 @@
+{
+ "basis": "reconstructed_current_membership",
+ "basis_note": "today's members applied to the past; not point-in-time; survivors only",
+ "no_outcomes": "series only: no outcome relation, no regime assignment, no trading call of any kind, on any period",
+ "scope": "series only: group and universe numbers; no member ticker, row or price; no regime assignment of any kind",
+ "start": {
+  "date": "2000-01-01",
+  "rule": "first January 1 from which every later calendar year has name-week above-200 flag disagreement against the Tiingo archive of 0.5% or less (S&P 500 members priced in both, weeks where both hold 200 sessions)",
+  "note": "200-session averages use the full download, so the first weeks after the start read flags from late in the prior year",
+  "reason_before": "second_source_disagreement"
+ },
+ "floors": {
+  "index": 2,
+  "share_and_statistic": 2,
+  "source": "scripts/build_tree_breadth_and_index.py (COO ruling 34 s2)"
+ },
+ "index": {
+  "rebalance_rule": "engine.baskets._ew_level: each session the index return is the plain mean of the daily total returns of the members priced that session (daily rebalance to equal weight), chained from 1.0 on the group's first valid session",
+  "return": "total return (auto_adjust closes)",
+  "floor_gap": "On a session with fewer than 2 priced members the level is missing (reason below_index_member_floor) and that session carries no return; the chain resumes from the last valid level.",
+  "dividend_effect": "A difference in dividend method shifts the long-run level of a total-return index, not the timing of its turns.",
+  "survivors_only_effect": "The index holds only names alive today, so its past returns are overstated, more so the further back and in themes with high failure rates; relative turns between groups are less affected than levels, and that is not tested here."
+ },
+ "high_beta_computed": {
+  "rule": "top fifth of universe members by trailing 252-session beta to SPY daily returns (cov/var on 252 paired daily returns, full window required), ranked at each month's last session, held the next month; ties broken by ticker; equal-weight daily rebalance within the held month, same _ew_level chaining from 1.0",
+  "beta_window": 252,
+  "fraction": "top 1/5 (ceil)",
+  "first_selection": "1994-01-31",
+  "cohort_size_min": 52,
+  "cohort_size_max": 100,
+  "cohort_size_last": 100,
+  "months_selected": 395
+ },
+ "price_source": "yfinance yf.download(auto_adjust=True, period='max'), one single-vintage download, held off git; never the collector cache or data/yahoo",
+ "price_vintage": "2026-11-12T07:33:42.601690+00:00",
+ "price_retry": {
+  "vintage": "2026-11-12T07:36:21.718194+00:00",
+  "requested": 7,
+  "served": 6
+ },
+ "price_topup": {
+  "vintage": "2026-11-12T09:39:20Z",
+  "names": 4,
+  "call": "yf.download(<one ticker>, period='max', auto_adjust=True), one call per ticker",
+  "library": "yfinance 1.4.1",
+  "rule": "each name's full history is from a single download; no ticker has history from two downloads (COO 2026-11-12 09:39Z)",
+  "reason": "members of the relationship-hub families absent from the first download"
+ },
+ "etf_source": "data/yahoo/<T>.parquet on origin/main, column close (vendor price series, not the house auto_adjust download); read with git show, never edited",
+ "etfs": {
+  "SPY": {
+   "path": "data/yahoo/SPY.parquet",
+   "ref": "origin/main",
+   "column": "close",
+   "first_date": "1993-01-29"
+  },
+  "RSP": {
+   "path": "data/yahoo/RSP.parquet",
+   "ref": "origin/main",
+   "column": "close",
+   "first_date": "2003-05-01"
+  },
+  "SPHB": {
+   "path": "data/yahoo/SPHB.parquet",
+   "ref": "origin/main",
+   "column": "close",
+   "first_date": "2011-05-05"
+  },
+  "IGV": {
+   "path": "data/yahoo/IGV.parquet",
+   "ref": "origin/main",
+   "column": "close",
+   "first_date": "2001-07-17"
+  },
+  "SOXX": {
+   "path": "data/yahoo/SOXX.parquet",
+   "ref": "origin/main",
+   "column": "close",
+   "first_date": "2001-07-13"
+  }
+ },
+ "universe": {
+  "registry": "data/breadth/constituents.parquet",
+  "registry_sha256": "99f071b19a24cb6783e8ff061d07ae3006fb833af595602425e2a1eebc5aec2f",
+  "members": 503,
+  "sectors": 11,
+  "basis": "today's S&P 500 members and today's GICS sector labels, same family sector basis as scripts/build_tree_breadth_and_index.py"
+ },
+ "baskets": {
+  "registry": "data/baskets/membership.json",
+  "registry_sha256": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae",
+  "active_members": {
+   "ai_software": 17,
+   "non_ai_software": 14,
+   "ai_semiconductors": 12
+  }
+ },
+ "house_history_check": {
+  "question": "does the house breadth history already hold universe rows?",
+  "answer": "no universe group exists in any house history file; every universe breadth series here is new",
+  "files_checked": [
+   "group_breadth_daily_current.parquet (11 sector groups)",
+   "group_breadth_daily_dated_sp500.parquet (11 sector groups)",
+   "basket_breadth_daily_current.parquet (49 basket groups)",
+   "house_breadth_weekly_current.parquet (gmi/rel families)",
+   "house_ew_index_daily_current.parquet (sector/basket/gmi/rel groups)"
+  ],
+  "live_surface_note": "data/breadth/breadth.parquet (the live nightly collector surface) does carry universe pct_above_50/200 and nh/nl, but on collector-cache prices, not the house download; it is not history and is not mixed into this house-basis file",
+  "source_rule": "These series sit on a different price source from the sector breadth history (group_breadth_*_current.parquet, Tiingo archive); the two are never joined or mixed."
+ },
+ "weights_check": {
+  "question": "are historical S&P 500 index weights on main?",
+  "answer": "no: constituents files hold today's members only (name, sector), desk_weights/shadow.json is desk allocation, rate_futures constituents are futures contracts, cpi_relative_importance is CPI weights",
+  "decision": "count-based leadership only; the weight-based top-10 measure is skipped"
+ },
+ "data_end": "2026-11-11",
+ "series": {
+  "diff_pct_above_200_21d": {
+   "definition": "plain difference (points) of the percent-above-200 share, session t minus t-21",
+   "source": "house member closes via engine.group_breadth_history.level_change",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "the counted set can differ between the two endpoints of a change",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "diff_pct_above_200_63d": {
+   "definition": "plain difference (points) of the percent-above-200 share, session t minus t-63",
+   "source": "house member closes via engine.group_breadth_history.level_change",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "the counted set can differ between the two endpoints of a change",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "diff_pct_above_50_21d": {
+   "definition": "plain difference (points) of the percent-above-50 share, session t minus t-21",
+   "source": "house member closes via engine.group_breadth_history.level_change",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "the counted set can differ between the two endpoints of a change",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "diff_pct_above_50_63d": {
+   "definition": "plain difference (points) of the percent-above-50 share, session t minus t-63",
+   "source": "house member closes via engine.group_breadth_history.level_change",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "the counted set can differ between the two endpoints of a change",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "dispersion_21d": {
+   "definition": "cross-sectional standard deviation (ddof=1, percent) of member simple 21-session returns, universe and per sector",
+   "source": "house member closes",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "members without both endpoint closes are not counted",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "dispersion_63d": {
+   "definition": "cross-sectional standard deviation (ddof=1, percent) of member simple 63-session returns, universe and per sector",
+   "source": "house member closes",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "members without both endpoint closes are not counted",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "ew_index": {
+   "definition": "equal-weight total-return index level of the group, chained from 1.0 (daily rebalance)",
+   "source": "house member closes via engine.baskets._ew_level",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "survivors only: past levels are overstated, more so further back",
+   "first_date": "2000-01-03",
+   "kind": [
+    "computed",
+    "house"
+   ]
+  },
+  "ew_vs_spy": {
+   "definition": "EW universe index divided by SPY close, rebased to 100 at the first common session",
+   "source": "house EW index; SPY close on main",
+   "basis": "house EW level (today's members, survivors only) and vendor close on origin/main",
+   "gaps": "different dividend methods between legs shift the long-run ratio level, not the timing of its turns",
+   "first_date": "2000-01-03",
+   "kind": "etf"
+  },
+  "n_above_200": {
+   "definition": "count of universe members strictly above their own 200-session SMA (n = counted members)",
+   "source": "house member closes via engine.group_breadth_history.member_flags",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "the counted set can differ between the two endpoints of a change",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "n_above_50": {
+   "definition": "count of universe members strictly above their own 50-session SMA (n = counted members)",
+   "source": "house member closes via engine.group_breadth_history.member_flags",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "the counted set can differ between the two endpoints of a change",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "n_beat_ew_126d": {
+   "definition": "count of members beating the EW universe index over 126 sessions (n = counted members)",
+   "source": "house member closes and EW universe index",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "survivors only: past levels are overstated, more so further back",
+   "first_date": "2000-07-03",
+   "kind": "house"
+  },
+  "n_beat_ew_63d": {
+   "definition": "count of members beating the EW universe index over 63 sessions (n = counted members)",
+   "source": "house member closes and EW universe index",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "survivors only: past levels are overstated, more so further back",
+   "first_date": "2000-04-03",
+   "kind": "house"
+  },
+  "n_counted_nh": {
+   "definition": "universe members with a close and a full prior 252-session window on the session",
+   "source": "house member closes",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "a close and a full prior 252-session window are both required",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "new_highs_252": {
+   "definition": "count of universe members whose close strictly exceeds the prior 252-session maximum (full window)",
+   "source": "house member closes; house high52w_new convention",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "a close and a full prior 252-session window are both required",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "new_lows_252": {
+   "definition": "count of universe members whose close is strictly below the prior 252-session minimum (full window)",
+   "source": "house member closes; house low52w_new convention",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "a close and a full prior 252-session window are both required",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "nh_nl_252": {
+   "definition": "new 252-session highs minus new lows (counts)",
+   "source": "house member closes; house high52w_new/low52w_new convention",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "a close and a full prior 252-session window are both required",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "pct_above_200": {
+   "definition": "percent of counted universe members strictly above their own 200-session simple moving average",
+   "source": "house member closes via engine.group_breadth_history.member_flags",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "the counted set can differ between the two endpoints of a change",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "pct_above_50": {
+   "definition": "percent of counted universe members strictly above their own 50-session simple moving average",
+   "source": "house member closes via engine.group_breadth_history.member_flags",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "the counted set can differ between the two endpoints of a change",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "pct_beat_ew_126d": {
+   "definition": "percent of counted members whose simple 126-session return strictly exceeds the EW universe index's over the same window",
+   "source": "house member closes and EW universe index",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "survivors only: past levels are overstated, more so further back",
+   "first_date": "2000-07-03",
+   "kind": "house"
+  },
+  "pct_beat_ew_63d": {
+   "definition": "percent of counted members whose simple 63-session return strictly exceeds the EW universe index's over the same window",
+   "source": "house member closes and EW universe index",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "survivors only: past levels are overstated, more so further back",
+   "first_date": "2000-04-03",
+   "kind": "house"
+  },
+  "rel_ai_software_vs_ai_semiconductors": {
+   "definition": "ai_software basket EW index divided by the ai_semiconductors basket EW index, rebased to 100 at the first common session",
+   "source": "house EW levels",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "survivors only: past levels are overstated, more so further back",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "rel_ai_software_vs_ew_universe": {
+   "definition": "ai_software basket EW index divided by the EW universe index, rebased to 100 at the first common session",
+   "source": "house EW levels",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "survivors only: past levels are overstated, more so further back",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "rel_ai_software_vs_soxx": {
+   "definition": "ai_software basket EW index divided by SOXX close, rebased to 100 at the first common session",
+   "source": "house EW levels and ETF close on main",
+   "basis": "house EW level (today's members, survivors only) and vendor close on origin/main",
+   "gaps": "survivors only: past levels are overstated, more so further back; different dividend methods between legs shift the long-run ratio level, not the timing of its turns; SOXX starts 2001-07-13",
+   "first_date": "2001-07-13",
+   "kind": "etf"
+  },
+  "rel_high_beta_computed_vs_ai_semiconductors": {
+   "definition": "computed high-beta EW index divided by the ai_semiconductors basket EW index, rebased to 100 at the first common session",
+   "source": "house EW levels",
+   "basis": "today's members applied to the past; not point-in-time; survivors only; cohort computed monthly, not curated",
+   "gaps": "computed, not curated, survivors only (rule in high_beta_computed)",
+   "first_date": "2000-01-03",
+   "kind": "computed"
+  },
+  "rel_high_beta_computed_vs_ew_universe": {
+   "definition": "computed high-beta EW index divided by the EW universe index, rebased to 100 at the first common session",
+   "source": "house EW levels",
+   "basis": "today's members applied to the past; not point-in-time; survivors only; cohort computed monthly, not curated",
+   "gaps": "computed, not curated, survivors only (rule in high_beta_computed)",
+   "first_date": "2000-01-03",
+   "kind": "computed"
+  },
+  "rel_high_beta_computed_vs_soxx": {
+   "definition": "computed high-beta EW index divided by SOXX close, rebased to 100 at the first common session",
+   "source": "house EW levels and ETF close on main",
+   "basis": "house EW level (today's members, survivors only) and vendor close on origin/main",
+   "gaps": "computed, not curated, survivors only (rule in high_beta_computed); different dividend methods between legs shift the long-run ratio level, not the timing of its turns; SOXX starts 2001-07-13",
+   "first_date": "2001-07-13",
+   "kind": "etf"
+  },
+  "rel_igv_vs_ai_semiconductors": {
+   "definition": "IGV close divided by the ai_semiconductors basket EW index, rebased to 100 at the first common session",
+   "source": "house EW levels and ETF close on main",
+   "basis": "house EW level (today's members, survivors only) and vendor close on origin/main",
+   "gaps": "different dividend methods between legs shift the long-run ratio level, not the timing of its turns; IGV starts 2001-07-17",
+   "first_date": "2001-07-17",
+   "kind": "etf"
+  },
+  "rel_igv_vs_ew_universe": {
+   "definition": "IGV close divided by the EW universe index, rebased to 100 at the first common session",
+   "source": "house EW levels and ETF close on main",
+   "basis": "house EW level (today's members, survivors only) and vendor close on origin/main",
+   "gaps": "different dividend methods between legs shift the long-run ratio level, not the timing of its turns; IGV starts 2001-07-17",
+   "first_date": "2001-07-17",
+   "kind": "etf"
+  },
+  "rel_igv_vs_soxx": {
+   "definition": "IGV close divided by SOXX close, rebased to 100 at the first common session",
+   "source": "ETF close on main",
+   "basis": "vendor close on origin/main; not the house download",
+   "gaps": "different dividend methods between legs shift the long-run ratio level, not the timing of its turns; IGV starts 2001-07-17; SOXX starts 2001-07-13",
+   "first_date": "2001-07-17",
+   "kind": "etf"
+  },
+  "rel_non_ai_software_vs_ai_semiconductors": {
+   "definition": "non_ai_software basket EW index divided by the ai_semiconductors basket EW index, rebased to 100 at the first common session",
+   "source": "house EW levels",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "survivors only: past levels are overstated, more so further back",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "rel_non_ai_software_vs_ew_universe": {
+   "definition": "non_ai_software basket EW index divided by the EW universe index, rebased to 100 at the first common session",
+   "source": "house EW levels",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "survivors only: past levels are overstated, more so further back",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "rel_non_ai_software_vs_soxx": {
+   "definition": "non_ai_software basket EW index divided by SOXX close, rebased to 100 at the first common session",
+   "source": "house EW levels and ETF close on main",
+   "basis": "house EW level (today's members, survivors only) and vendor close on origin/main",
+   "gaps": "survivors only: past levels are overstated, more so further back; different dividend methods between legs shift the long-run ratio level, not the timing of its turns; SOXX starts 2001-07-13",
+   "first_date": "2001-07-13",
+   "kind": "etf"
+  },
+  "rel_sphb_vs_ai_semiconductors": {
+   "definition": "SPHB close divided by the ai_semiconductors basket EW index, rebased to 100 at the first common session",
+   "source": "house EW levels and ETF close on main",
+   "basis": "house EW level (today's members, survivors only) and vendor close on origin/main",
+   "gaps": "different dividend methods between legs shift the long-run ratio level, not the timing of its turns; SPHB starts 2011-05-05",
+   "first_date": "2011-05-05",
+   "kind": "etf"
+  },
+  "rel_sphb_vs_ew_universe": {
+   "definition": "SPHB close divided by the EW universe index, rebased to 100 at the first common session",
+   "source": "house EW levels and ETF close on main",
+   "basis": "house EW level (today's members, survivors only) and vendor close on origin/main",
+   "gaps": "different dividend methods between legs shift the long-run ratio level, not the timing of its turns; SPHB starts 2011-05-05",
+   "first_date": "2011-05-05",
+   "kind": "etf"
+  },
+  "rel_sphb_vs_soxx": {
+   "definition": "SPHB close divided by SOXX close, rebased to 100 at the first common session",
+   "source": "ETF close on main",
+   "basis": "vendor close on origin/main; not the house download",
+   "gaps": "different dividend methods between legs shift the long-run ratio level, not the timing of its turns; SPHB starts 2011-05-05; SOXX starts 2001-07-13",
+   "first_date": "2011-05-05",
+   "kind": "etf"
+  },
+  "rsp_vs_spy": {
+   "definition": "RSP close divided by SPY close, rebased to 100 at the first common session",
+   "source": "RSP and SPY close on main",
+   "basis": "vendor close on origin/main; not the house download",
+   "gaps": "RSP starts 2003-05-01; different dividend methods between legs shift the long-run ratio level, not the timing of its turns",
+   "first_date": "2003-05-01",
+   "kind": "etf"
+  },
+  "sector_dispersion_21d": {
+   "definition": "standard deviation (ddof=1, percent) across the 11 sector EW index simple 21-session returns (n = sectors with a valid return)",
+   "source": "house sector EW levels",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "survivors only: past levels are overstated, more so further back",
+   "first_date": "2000-02-02",
+   "kind": "house"
+  },
+  "sector_dispersion_63d": {
+   "definition": "standard deviation (ddof=1, percent) across the 11 sector EW index simple 63-session returns (n = sectors with a valid return)",
+   "source": "house sector EW levels",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "gaps": "survivors only: past levels are overstated, more so further back",
+   "first_date": "2000-04-03",
+   "kind": "house"
+  }
+ },
+ "files": [
+  "regime_inputs_daily_current.parquet"
+ ],
+ "rows": {
+  "regime_inputs_daily_current.parquet": 494532
+ },
+ "bytes": {
+  "regime_inputs_daily_current.parquet": 4186568
+ },
+ "columns": [
+  "date",
+  "series",
+  "group",
+  "value",
+  "n",
+  "kind"
+ ],
+ "missing_rule": "a session with no valid value carries no row; n is the counted members (or priced members for a level) beside every value",
+ "dispersion_units": "percent (a 0.01 return reads 1.0); ddof=1",
+ "ratio_rule": "every ratio is rebased to 100 at the first session both legs are valid",
+ "engine": "engine.baskets._ew_level; engine.group_breadth_history.member_flags/group_levels/level_change; scripts.build_tree_breadth_and_index.group_index",
+ "self_check_house_index": {
+  "house_file": "data/breadth/history/house_ew_index_daily_current.parquet",
+  "compared_rows": 94584,
+  "max_abs_level_diff": 4.999917528891729e-07,
+  "max_abs_level_diff_by_group": {
+   "Communication Services": 4.9977691229941e-07,
+   "Consumer Discretionary": 4.999612883693771e-07,
+   "Consumer Staples": 4.99897135908256e-07,
+   "Energy": 4.999917528891729e-07,
+   "Financials": 4.999098344171671e-07,
+   "Health Care": 4.999490290646946e-07,
+   "Industrials": 4.99594436931261e-07,
+   "Information Technology": 4.999894893664703e-07,
+   "Materials": 4.999133373928544e-07,
+   "Real Estate": 4.999409348727113e-07,
+   "Utilities": 4.999353611090385e-07,
+   "ai_semiconductors": 4.998348961393617e-07,
+   "ai_software": 4.999418010687151e-07,
+   "non_ai_software": 4.999458056431649e-07
+  },
+  "note": "same download vintage; levels rounded to 6 decimals in the house file"
+ },
+ "rates_credit_dollar_on_main": {
+  "ref": "origin/main",
+  "n_series": 650,
+  "scope_note": "parquet series under data/fred, fred_vintage, ofr_fsi, treasury, treasury_auctions, corp_bonds, canada_macro, china_macro, china_credit, china_yield, china_pboc, intl_macro, plus fed_net_liquidity, macro_snapshots/ledger, cot_dollar and the yahoo dollar indices; latest-value JSON surfaces listed separately",
+  "full_list_in": "research/breadth_history/REGIME_INPUTS_REPORT.md",
+  "note": "census only, no build; per-series path/series/first-date list in the report"
+ }
+}

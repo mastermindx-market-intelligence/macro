@@ -473,3 +473,20 @@ def test_completion_install_forced_interleaving_excludes_other_phase_before_mark
     assert not thread.is_alive() and not holder_errors and not second_effects
     assert (tmp_path/('completion-attempt' if first=='complete' else 'install-attempt')).is_dir()
     assert not (tmp_path/('completion-attempt' if second=='complete' else 'install-attempt')).exists()
+
+
+def test_update_stage_bounds_network_retries_so_an_outage_settles(tmp_path, monkeypatch):
+    # An archive outage must make apt exit nonzero by itself (settled) instead of
+    # consuming the whole setup deadline as an unreaped child.
+    monkeypatch.setattr(STAGE.time, 'monotonic', lambda: 0)
+    calls = []
+    def native(argv, **kwargs):
+        calls.append((argv, kwargs))
+        return 100, b'E: Temporary failure resolving archive\n'
+    monkeypatch.setattr(STAGE, 'observe_command', native)
+    result = STAGE.run_stage(tmp_path, 'update', None, 600)
+    assert calls == [(('/usr/bin/apt-get', '-o', 'Acquire::AllowInsecureRepositories=false',
+                       '-o', 'Acquire::Retries=1',
+                       '-o', 'Acquire::http::Timeout=30', '-o', 'Acquire::https::Timeout=30',
+                       'update'), {'deadline': 600})]
+    assert result['outcome'] == 'failed' and result['settlement'] == 'settled'
