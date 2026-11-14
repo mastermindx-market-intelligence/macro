@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T08:26:07.907081+00:00",
-  "count": 3353,
+  "generated_at": "2026-11-14T08:41:13.120369+00:00",
+  "count": 3354,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1486,6 +1486,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ylhtqifvvno-ce69c7",
+      "title": "KeyBanc NVIDIA Given the Likely Imminent Removal of CEO Jensen Huang Downgrading to Sector Weight Given Heightened Long Term Execution Risk 12 Nov 2026",
+      "institution": "NVIDIA",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:59:12Z",
+      "summary_points": [
+        "CEO Succession Risk: KeyBanc downgrades NVDA to Sector Weight due to heightened strategic execution risk from likely removal of CEO Jensen Huang, critical to company roadmap; succession uncertainty warrants lower valuation multiple.",
+        "Valuation Concerns: Price target cut to $173.73 (vs. prior Overweight) with bear case at $150; current P/E 35.3x (FY ends/31) vs. 0x in 2027E, reflecting elevated valuation expectations despite downgrade.",
+        "Geopolitical Restrictions: Persistent China sales restrictions on NVDA sales remain a material risk factor impacting revenue streams and growth trajectory."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
