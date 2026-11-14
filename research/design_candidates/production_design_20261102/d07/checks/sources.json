@@ -1,0 +1,22 @@
+{
+  "repo": "mastermindx-market-intelligence/mastermind-terminal",
+  "commit": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+  "files": [
+    {
+      "path": "terminal/lib/analysisRoute.ts",
+      "blob": "549d94e4ba6dd3d6b278d9849dc3c4852f8d5ebd"
+    },
+    {
+      "path": "terminal/lib/theses.ts",
+      "blob": "eb539804e0a7db91b60ef0b61e3905137d8628ff"
+    },
+    {
+      "path": "terminal/lib/__tests__/analysisRoute.test.ts",
+      "blob": "2b1bf19d08acf463c7f6ea104dabab4695aa3111"
+    },
+    {
+      "path": "terminal/lib/analysisSymbol.ts",
+      "blob": "b32106075430767915f66a30a0bc47f8d55fada6"
+    }
+  ]
+}

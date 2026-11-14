@@ -1,0 +1,4261 @@
+{
+  "classification": "STATIC_ARTIFACT_CHECKS",
+  "checks": 433,
+  "failures": [],
+  "image_jsx_pairs": 8,
+  "text_nodes_checked": 249,
+  "minimum_text_contrast": 4.737883,
+  "control_minimum_heights_checked": 62,
+  "ui_execution_assertions": 0,
+  "all_checks": [
+    {
+      "label": "Eight distinct study boards",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A image digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A JSX digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A actual image dimensions",
+      "passed": true,
+      "observed": [
+        320,
+        973
+      ]
+    },
+    {
+      "label": "A exported root identity",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A native width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A explicit content width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A study qualification",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A all token references resolve",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A 1NH7-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "A 1NH8-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "A 1NHB-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NHB-0/span-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NHC-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "A 1NHE-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "A 1NHF-0 text contrast",
+      "passed": true,
+      "observed": 12.513347
+    },
+    {
+      "label": "A 1NHG-0 text contrast",
+      "passed": true,
+      "observed": 12.513347
+    },
+    {
+      "label": "A 1NHS-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NHT-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "A 1NHW-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NHX-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NHX-0/span-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NHY-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "A 1NI1-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NI2-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NI2-0/span-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NI3-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "A 1NI6-0 text contrast",
+      "passed": true,
+      "observed": 7.519707
+    },
+    {
+      "label": "A 1NI6-0/span-0 text contrast",
+      "passed": true,
+      "observed": 7.519707
+    },
+    {
+      "label": "A 1NI7-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "A 1NI9-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "A 1NIA-0 text contrast",
+      "passed": true,
+      "observed": 6.924735
+    },
+    {
+      "label": "A 1NHJ-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "A 1NHK-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NHL-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NHM-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "A 1NHN-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NHO-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NHP-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "A 1NID-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NIE-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "A 1NIF-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "A 1NIG-0 text contrast",
+      "passed": true,
+      "observed": 7.586804
+    },
+    {
+      "label": "B image digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B JSX digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B actual image dimensions",
+      "passed": true,
+      "observed": [
+        390,
+        973
+      ]
+    },
+    {
+      "label": "B exported root identity",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B native width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B explicit content width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B study qualification",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B all token references resolve",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B 1NJK-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "B 1NJJ-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "B 1NJH-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NJH-0/span-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NJG-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "B 1NJC-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "B 1NJE-0 text contrast",
+      "passed": true,
+      "observed": 12.513347
+    },
+    {
+      "label": "B 1NJD-0 text contrast",
+      "passed": true,
+      "observed": 12.513347
+    },
+    {
+      "label": "B 1NJB-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NJA-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "B 1NJ8-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NJ7-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NJ7-0/span-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NJ6-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "B 1NJ4-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NJ3-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NJ3-0/span-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NJ2-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "B 1NJ0-0 text contrast",
+      "passed": true,
+      "observed": 7.519707
+    },
+    {
+      "label": "B 1NJ0-0/span-0 text contrast",
+      "passed": true,
+      "observed": 7.519707
+    },
+    {
+      "label": "B 1NIZ-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "B 1NIW-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "B 1NIX-0 text contrast",
+      "passed": true,
+      "observed": 6.924735
+    },
+    {
+      "label": "B 1NIT-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "B 1NIV-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NIU-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NIQ-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "B 1NIS-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NIR-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NIP-0 text contrast",
+      "passed": true,
+      "observed": 6.106184
+    },
+    {
+      "label": "B 1NIN-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NIM-0 text contrast",
+      "passed": true,
+      "observed": 13.70974
+    },
+    {
+      "label": "B 1NIK-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "B 1NIL-0 text contrast",
+      "passed": true,
+      "observed": 7.586804
+    },
+    {
+      "label": "C image digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "C JSX digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "C actual image dimensions",
+      "passed": true,
+      "observed": [
+        1008,
+        735
+      ]
+    },
+    {
+      "label": "C exported root identity",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "C native width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "C explicit content width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "C study qualification",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "C all token references resolve",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "C 1NJN-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "C 1NJO-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "C 1NJP-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "C 1NJW-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "C 1NJX-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "C 1NK0-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NK1-0 text contrast",
+      "passed": true,
+      "observed": 4.737883
+    },
+    {
+      "label": "C 1NK2-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NK3-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "C 1NK4-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NK5-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "C 1NK6-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NK7-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "C 1NK8-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NK9-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "C 1NKC-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NKD-0 text contrast",
+      "passed": true,
+      "observed": 5.117071
+    },
+    {
+      "label": "C 1NKE-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NKF-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "C 1NKG-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NKH-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "C 1NKK-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NKL-0 text contrast",
+      "passed": true,
+      "observed": 4.737883
+    },
+    {
+      "label": "C 1NKM-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NKN-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "C 1NKO-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NKP-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "C 1NKR-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "C 1NKX-0 text contrast",
+      "passed": true,
+      "observed": 4.793117
+    },
+    {
+      "label": "C 1NKZ-0 text contrast",
+      "passed": true,
+      "observed": 13.796661
+    },
+    {
+      "label": "C 1NL1-0 text contrast",
+      "passed": true,
+      "observed": 13.796661
+    },
+    {
+      "label": "C 1NL3-0 text contrast",
+      "passed": true,
+      "observed": 4.793117
+    },
+    {
+      "label": "C 1NL7-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NL8-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "C 1NLA-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "C 1NLB-0 text contrast",
+      "passed": true,
+      "observed": 5.117071
+    },
+    {
+      "label": "C 1NLD-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "C 1NLE-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NLG-0 text contrast",
+      "passed": true,
+      "observed": 6.299409
+    },
+    {
+      "label": "C 1NLK-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NLL-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "C 1NLN-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NLO-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "C 1NLQ-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NLR-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "C 1NLT-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "C 1NMK-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NML-0 text contrast",
+      "passed": true,
+      "observed": 4.737883
+    },
+    {
+      "label": "C 1NMM-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NMN-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "C 1NMO-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "C 1NLW-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NLX-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "C 1NLY-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NM1-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NM2-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NM2-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NM3-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "C 1NM6-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NM7-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NM7-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NM8-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NM8-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NM9-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NM9-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NMC-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "C 1NMD-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "C 1NMF-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "C 1NMG-0 text contrast",
+      "passed": true,
+      "observed": 5.034635
+    },
+    {
+      "label": "D image digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "D JSX digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "D actual image dimensions",
+      "passed": true,
+      "observed": [
+        1008,
+        735
+      ]
+    },
+    {
+      "label": "D exported root identity",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "D native width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "D explicit content width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "D study qualification",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "D all token references resolve",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "D 1NPE-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "D 1NPD-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "D 1NPC-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "D 1NPA-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "D 1NP9-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "D 1NP6-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NP7-0 text contrast",
+      "passed": true,
+      "observed": 4.737883
+    },
+    {
+      "label": "D 1NP4-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NP5-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "D 1NP2-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NP3-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "D 1NP0-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NP1-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "D 1NOY-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NOZ-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "D 1NOV-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NOW-0 text contrast",
+      "passed": true,
+      "observed": 5.117071
+    },
+    {
+      "label": "D 1NOT-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NOU-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "D 1NOR-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NOS-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "D 1NOO-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NOP-0 text contrast",
+      "passed": true,
+      "observed": 4.737883
+    },
+    {
+      "label": "D 1NOM-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NON-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "D 1NOK-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NOL-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "D 1NOJ-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "D 1NOG-0 text contrast",
+      "passed": true,
+      "observed": 4.793117
+    },
+    {
+      "label": "D 1NOE-0 text contrast",
+      "passed": true,
+      "observed": 13.796661
+    },
+    {
+      "label": "D 1NOC-0 text contrast",
+      "passed": true,
+      "observed": 13.796661
+    },
+    {
+      "label": "D 1NOA-0 text contrast",
+      "passed": true,
+      "observed": 4.793117
+    },
+    {
+      "label": "D 1NO7-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NO6-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "D 1NO3-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "D 1NO4-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NO0-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "D 1NO1-0 text contrast",
+      "passed": true,
+      "observed": 5.117071
+    },
+    {
+      "label": "D 1NNY-0 text contrast",
+      "passed": true,
+      "observed": 6.299409
+    },
+    {
+      "label": "D 1NNV-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NNU-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "D 1NNS-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NNR-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "D 1NNP-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NNO-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "D 1NNM-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "D 1NNH-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NNI-0 text contrast",
+      "passed": true,
+      "observed": 4.737883
+    },
+    {
+      "label": "D 1NNF-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NNG-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "D 1NND-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "D 1NNA-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NN8-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "D 1NN9-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NN6-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NN5-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NN5-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NN4-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "D 1NN2-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NN1-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NN1-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NN0-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NN0-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NMZ-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NMZ-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NMX-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "D 1NMW-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "D 1NMT-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "D 1NMU-0 text contrast",
+      "passed": true,
+      "observed": 5.034635
+    },
+    {
+      "label": "E image digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "E JSX digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "E actual image dimensions",
+      "passed": true,
+      "observed": [
+        320,
+        671
+      ]
+    },
+    {
+      "label": "E exported root identity",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "E native width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "E explicit content width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "E study qualification",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "E all token references resolve",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "E 1NQK-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "E 1NQL-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "E 1NQP-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NQQ-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "E 1NQR-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NQT-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NQU-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NQU-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NQV-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "E 1NQX-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NQY-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NQY-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NQZ-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NQZ-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NR0-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NR0-0/span-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NR2-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "E 1NR3-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "E 1NR4-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "E 1NR5-0 text contrast",
+      "passed": true,
+      "observed": 5.034635
+    },
+    {
+      "label": "F image digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F JSX digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F actual image dimensions",
+      "passed": true,
+      "observed": [
+        390,
+        973
+      ]
+    },
+    {
+      "label": "F exported root identity",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F native width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F explicit content width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F study qualification",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F all token references resolve",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F 1NQI-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "F 1NQH-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "F 1NQF-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NQF-0/span-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "F 1NQE-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "F 1NQA-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "F 1NQC-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "F 1NQB-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "F 1NQ9-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NQ8-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "F 1NQ6-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NQ5-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NQ5-0/span-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NQ4-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "F 1NQ2-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NQ1-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NQ1-0/span-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NQ0-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "F 1NPY-0 text contrast",
+      "passed": true,
+      "observed": 5.928109
+    },
+    {
+      "label": "F 1NPY-0/span-0 text contrast",
+      "passed": true,
+      "observed": 5.928109
+    },
+    {
+      "label": "F 1NPX-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "F 1NPU-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "F 1NPV-0 text contrast",
+      "passed": true,
+      "observed": 5.034635
+    },
+    {
+      "label": "F 1NPR-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "F 1NPT-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NPS-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NPO-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "F 1NPQ-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NPP-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NPN-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "F 1NPL-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NPK-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "F 1NPI-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "F 1NPJ-0 text contrast",
+      "passed": true,
+      "observed": 4.737883
+    },
+    {
+      "label": "G image digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G JSX digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G actual image dimensions",
+      "passed": true,
+      "observed": [
+        320,
+        973
+      ]
+    },
+    {
+      "label": "G exported root identity",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G native width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G explicit content width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G study qualification",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G all token references resolve",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G 1NS9-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "G 1NS8-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "G 1NS6-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NS6-0/span-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "G 1NS5-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "G 1NS1-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "G 1NS3-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "G 1NS2-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "G 1NS0-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRZ-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "G 1NRX-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRW-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRW-0/span-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRV-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "G 1NRT-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRS-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRS-0/span-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRR-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "G 1NRP-0 text contrast",
+      "passed": true,
+      "observed": 5.928109
+    },
+    {
+      "label": "G 1NRP-0/span-0 text contrast",
+      "passed": true,
+      "observed": 5.928109
+    },
+    {
+      "label": "G 1NRO-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "G 1NRL-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "G 1NRM-0 text contrast",
+      "passed": true,
+      "observed": 5.034635
+    },
+    {
+      "label": "G 1NRI-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "G 1NRK-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRJ-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRF-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "G 1NRH-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRG-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRE-0 text contrast",
+      "passed": true,
+      "observed": 5.106805
+    },
+    {
+      "label": "G 1NRC-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NRB-0 text contrast",
+      "passed": true,
+      "observed": 14.699592
+    },
+    {
+      "label": "G 1NR9-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "G 1NRA-0 text contrast",
+      "passed": true,
+      "observed": 4.737883
+    },
+    {
+      "label": "H image digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "H JSX digest",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "H actual image dimensions",
+      "passed": true,
+      "observed": [
+        320,
+        508
+      ]
+    },
+    {
+      "label": "H exported root identity",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "H native width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "H explicit content width",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "H study qualification",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "H all token references resolve",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "H 1NSC-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "H 1NSD-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "H 1NSG-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "H 1NSH-0 control height",
+      "passed": true,
+      "observed": 44.0
+    },
+    {
+      "label": "H 1NSI-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "H 1NSK-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "H 1NSL-0 text contrast",
+      "passed": true,
+      "observed": 5.117071
+    },
+    {
+      "label": "H 1NSM-0 text contrast",
+      "passed": true,
+      "observed": 4.793117
+    },
+    {
+      "label": "H 1NSO-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "H 1NSP-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "H 1NSR-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "H 1NSS-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "H 1NSU-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "H 1NSV-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "H 1NSX-0 control height",
+      "passed": true,
+      "observed": 48.0
+    },
+    {
+      "label": "H 1NSY-0 text contrast",
+      "passed": true,
+      "observed": 15.620283
+    },
+    {
+      "label": "H 1NT1-0 text contrast",
+      "passed": true,
+      "observed": 5.426664
+    },
+    {
+      "label": "A historical value 46.743",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A historical value 45.000",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A historical value 44.10–45.90",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A historical value +3.9%",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A historical value 54.0",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A historical value 52.92–55.08",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A period, clock and unavailable labels",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A source action precedes detailed comparator",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B historical value 46.743",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B historical value 45.000",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B historical value 44.10–45.90",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B historical value +3.9%",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B historical value 54.0",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B historical value 52.92–55.08",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B period, clock and unavailable labels",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "B source action precedes detailed comparator",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F historical value 46.743",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F historical value 45.000",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F historical value 44.10–45.90",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F historical value +3.9%",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F historical value 54.0",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F historical value 52.92–55.08",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F period, clock and unavailable labels",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F source action precedes detailed comparator",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G historical value 46.743",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G historical value 45.000",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G historical value 44.10–45.90",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G historical value +3.9%",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G historical value 54.0",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G historical value 52.92–55.08",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G period, clock and unavailable labels",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "G source action precedes detailed comparator",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "A/B width variants preserve all text",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "F/G width variants preserve all text",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "C retained views, controls and missingness",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "C selected value has explicit border",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "C evidence selection and clocks agree",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "D retained views, controls and missingness",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "D selected value has explicit border",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "D evidence selection and clocks agree",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "D/E evidence text is identical after its study label",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "H retains five actual Financials views",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "H names current view and close destination",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "H five view controls have 48px minimum",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "Historical midpoint arithmetic rounds to +3.9%",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "Prior guidance range is midpoint ±2%",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "Next-period range is separate midpoint ±2%",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "Synthetic annual growth is +20%",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "Synthetic EPS preserves zero and unavailable",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "Synthetic annual identities and durations",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "66 unique recorded operations",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "Operation states are observed and bounded",
+      "passed": true,
+      "observed": {
+        "PAPER_READY": 1,
+        "APPLIED_RESPONSE_OBSERVED": 65
+      }
+    },
+    {
+      "label": "Selected ink correction is recorded",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "Contrast working indicators released",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "Nine original R3 artboards retained",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "Original phone remains an empty predecessor",
+      "passed": true,
+      "observed": null
+    },
+    {
+      "label": "Build-contract board remains present",
+      "passed": true,
+      "observed": null
+    }
+  ],
+  "text_contrast": [
+    {
+      "board": "A",
+      "node": "1NH7-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "A",
+      "node": "1NH8-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "A",
+      "node": "1NHB-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NHB-0/span-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NHC-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "A",
+      "node": "1NHF-0",
+      "foreground": "#D7DCE3",
+      "background": "#181B21",
+      "ratio": 12.513347
+    },
+    {
+      "board": "A",
+      "node": "1NHG-0",
+      "foreground": "#D7DCE3",
+      "background": "#181B21",
+      "ratio": 12.513347
+    },
+    {
+      "board": "A",
+      "node": "1NHS-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NHT-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "A",
+      "node": "1NHW-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NHX-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NHX-0/span-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NHY-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "A",
+      "node": "1NI1-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NI2-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NI2-0/span-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NI3-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "A",
+      "node": "1NI6-0",
+      "foreground": "#45B873",
+      "background": "#0F1115",
+      "ratio": 7.519707
+    },
+    {
+      "board": "A",
+      "node": "1NI6-0/span-0",
+      "foreground": "#45B873",
+      "background": "#0F1115",
+      "ratio": 7.519707
+    },
+    {
+      "board": "A",
+      "node": "1NI7-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "A",
+      "node": "1NIA-0",
+      "foreground": "#7AA7E0",
+      "background": "#181B21",
+      "ratio": 6.924735
+    },
+    {
+      "board": "A",
+      "node": "1NHK-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NHL-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NHN-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NHO-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NHP-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "A",
+      "node": "1NID-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NIE-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "A",
+      "node": "1NIG-0",
+      "foreground": "#7AA7E0",
+      "background": "#0F1115",
+      "ratio": 7.586804
+    },
+    {
+      "board": "B",
+      "node": "1NJK-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "B",
+      "node": "1NJJ-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "B",
+      "node": "1NJH-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NJH-0/span-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NJG-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "B",
+      "node": "1NJE-0",
+      "foreground": "#D7DCE3",
+      "background": "#181B21",
+      "ratio": 12.513347
+    },
+    {
+      "board": "B",
+      "node": "1NJD-0",
+      "foreground": "#D7DCE3",
+      "background": "#181B21",
+      "ratio": 12.513347
+    },
+    {
+      "board": "B",
+      "node": "1NJB-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NJA-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "B",
+      "node": "1NJ8-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NJ7-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NJ7-0/span-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NJ6-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "B",
+      "node": "1NJ4-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NJ3-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NJ3-0/span-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NJ2-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "B",
+      "node": "1NJ0-0",
+      "foreground": "#45B873",
+      "background": "#0F1115",
+      "ratio": 7.519707
+    },
+    {
+      "board": "B",
+      "node": "1NJ0-0/span-0",
+      "foreground": "#45B873",
+      "background": "#0F1115",
+      "ratio": 7.519707
+    },
+    {
+      "board": "B",
+      "node": "1NIZ-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "B",
+      "node": "1NIX-0",
+      "foreground": "#7AA7E0",
+      "background": "#181B21",
+      "ratio": 6.924735
+    },
+    {
+      "board": "B",
+      "node": "1NIV-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NIU-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NIS-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NIR-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NIP-0",
+      "foreground": "#8B93A1",
+      "background": "#0F1115",
+      "ratio": 6.106184
+    },
+    {
+      "board": "B",
+      "node": "1NIN-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NIM-0",
+      "foreground": "#D7DCE3",
+      "background": "#0F1115",
+      "ratio": 13.70974
+    },
+    {
+      "board": "B",
+      "node": "1NIL-0",
+      "foreground": "#7AA7E0",
+      "background": "#0F1115",
+      "ratio": 7.586804
+    },
+    {
+      "board": "C",
+      "node": "1NJN-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "C",
+      "node": "1NJO-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "C",
+      "node": "1NJP-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "C",
+      "node": "1NJW-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "C",
+      "node": "1NJX-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "C",
+      "node": "1NK1-0",
+      "foreground": "#285FFF",
+      "background": "#F7F8FA",
+      "ratio": 4.737883
+    },
+    {
+      "board": "C",
+      "node": "1NK3-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "C",
+      "node": "1NK5-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "C",
+      "node": "1NK7-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "C",
+      "node": "1NK9-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "C",
+      "node": "1NKD-0",
+      "foreground": "#2758E6",
+      "background": "#EEF1F6",
+      "ratio": 5.117071
+    },
+    {
+      "board": "C",
+      "node": "1NKF-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "C",
+      "node": "1NKH-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "C",
+      "node": "1NKL-0",
+      "foreground": "#285FFF",
+      "background": "#F7F8FA",
+      "ratio": 4.737883
+    },
+    {
+      "board": "C",
+      "node": "1NKN-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "C",
+      "node": "1NKP-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "C",
+      "node": "1NKR-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "C",
+      "node": "1NKX-0",
+      "foreground": "#5D6B7E",
+      "background": "#EEF1F6",
+      "ratio": 4.793117
+    },
+    {
+      "board": "C",
+      "node": "1NKZ-0",
+      "foreground": "#1C2430",
+      "background": "#EEF1F6",
+      "ratio": 13.796661
+    },
+    {
+      "board": "C",
+      "node": "1NL1-0",
+      "foreground": "#1C2430",
+      "background": "#EEF1F6",
+      "ratio": 13.796661
+    },
+    {
+      "board": "C",
+      "node": "1NL3-0",
+      "foreground": "#5D6B7E",
+      "background": "#EEF1F6",
+      "ratio": 4.793117
+    },
+    {
+      "board": "C",
+      "node": "1NL7-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NL8-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "C",
+      "node": "1NLB-0",
+      "foreground": "#2758E6",
+      "background": "#EEF1F6",
+      "ratio": 5.117071
+    },
+    {
+      "board": "C",
+      "node": "1NLE-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NLG-0",
+      "foreground": "#1E6D47",
+      "background": "#FFFFFF",
+      "ratio": 6.299409
+    },
+    {
+      "board": "C",
+      "node": "1NLK-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NLL-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "C",
+      "node": "1NLN-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NLO-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "C",
+      "node": "1NLQ-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NLR-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "C",
+      "node": "1NLT-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "C",
+      "node": "1NML-0",
+      "foreground": "#285FFF",
+      "background": "#F7F8FA",
+      "ratio": 4.737883
+    },
+    {
+      "board": "C",
+      "node": "1NMN-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "C",
+      "node": "1NMO-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "C",
+      "node": "1NLW-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NLY-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NM1-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NM2-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NM2-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NM3-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "C",
+      "node": "1NM6-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NM7-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NM7-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NM8-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NM8-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NM9-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NM9-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NMC-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "C",
+      "node": "1NMD-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "C",
+      "node": "1NMG-0",
+      "foreground": "#285FFF",
+      "background": "#FFFFFF",
+      "ratio": 5.034635
+    },
+    {
+      "board": "D",
+      "node": "1NPE-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "D",
+      "node": "1NPD-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "D",
+      "node": "1NPC-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "D",
+      "node": "1NPA-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "D",
+      "node": "1NP9-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "D",
+      "node": "1NP7-0",
+      "foreground": "#285FFF",
+      "background": "#F7F8FA",
+      "ratio": 4.737883
+    },
+    {
+      "board": "D",
+      "node": "1NP5-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "D",
+      "node": "1NP3-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "D",
+      "node": "1NP1-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "D",
+      "node": "1NOZ-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "D",
+      "node": "1NOW-0",
+      "foreground": "#2758E6",
+      "background": "#EEF1F6",
+      "ratio": 5.117071
+    },
+    {
+      "board": "D",
+      "node": "1NOU-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "D",
+      "node": "1NOS-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "D",
+      "node": "1NOP-0",
+      "foreground": "#285FFF",
+      "background": "#F7F8FA",
+      "ratio": 4.737883
+    },
+    {
+      "board": "D",
+      "node": "1NON-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "D",
+      "node": "1NOL-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "D",
+      "node": "1NOJ-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "D",
+      "node": "1NOG-0",
+      "foreground": "#5D6B7E",
+      "background": "#EEF1F6",
+      "ratio": 4.793117
+    },
+    {
+      "board": "D",
+      "node": "1NOE-0",
+      "foreground": "#1C2430",
+      "background": "#EEF1F6",
+      "ratio": 13.796661
+    },
+    {
+      "board": "D",
+      "node": "1NOC-0",
+      "foreground": "#1C2430",
+      "background": "#EEF1F6",
+      "ratio": 13.796661
+    },
+    {
+      "board": "D",
+      "node": "1NOA-0",
+      "foreground": "#5D6B7E",
+      "background": "#EEF1F6",
+      "ratio": 4.793117
+    },
+    {
+      "board": "D",
+      "node": "1NO7-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NO6-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "D",
+      "node": "1NO4-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NO1-0",
+      "foreground": "#2758E6",
+      "background": "#EEF1F6",
+      "ratio": 5.117071
+    },
+    {
+      "board": "D",
+      "node": "1NNY-0",
+      "foreground": "#1E6D47",
+      "background": "#FFFFFF",
+      "ratio": 6.299409
+    },
+    {
+      "board": "D",
+      "node": "1NNV-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NNU-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "D",
+      "node": "1NNS-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NNR-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "D",
+      "node": "1NNP-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NNO-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "D",
+      "node": "1NNM-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "D",
+      "node": "1NNI-0",
+      "foreground": "#285FFF",
+      "background": "#F7F8FA",
+      "ratio": 4.737883
+    },
+    {
+      "board": "D",
+      "node": "1NNG-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "D",
+      "node": "1NND-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "D",
+      "node": "1NNA-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NN9-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NN6-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NN5-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NN5-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NN4-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "D",
+      "node": "1NN2-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NN1-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NN1-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NN0-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NN0-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NMZ-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NMZ-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NMX-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "D",
+      "node": "1NMW-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "D",
+      "node": "1NMU-0",
+      "foreground": "#285FFF",
+      "background": "#FFFFFF",
+      "ratio": 5.034635
+    },
+    {
+      "board": "E",
+      "node": "1NQK-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "E",
+      "node": "1NQL-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "E",
+      "node": "1NQP-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NQR-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NQT-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NQU-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NQU-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NQV-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "E",
+      "node": "1NQX-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NQY-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NQY-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NQZ-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NQZ-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NR0-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NR0-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NR2-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "E",
+      "node": "1NR3-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "E",
+      "node": "1NR5-0",
+      "foreground": "#285FFF",
+      "background": "#FFFFFF",
+      "ratio": 5.034635
+    },
+    {
+      "board": "F",
+      "node": "1NQI-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "F",
+      "node": "1NQH-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "F",
+      "node": "1NQF-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NQF-0/span-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "F",
+      "node": "1NQE-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "F",
+      "node": "1NQC-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "F",
+      "node": "1NQB-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "F",
+      "node": "1NQ9-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NQ8-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "F",
+      "node": "1NQ6-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NQ5-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NQ5-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NQ4-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "F",
+      "node": "1NQ2-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NQ1-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NQ1-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NQ0-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "F",
+      "node": "1NPY-0",
+      "foreground": "#1E6D47",
+      "background": "#F7F8FA",
+      "ratio": 5.928109
+    },
+    {
+      "board": "F",
+      "node": "1NPY-0/span-0",
+      "foreground": "#1E6D47",
+      "background": "#F7F8FA",
+      "ratio": 5.928109
+    },
+    {
+      "board": "F",
+      "node": "1NPX-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "F",
+      "node": "1NPV-0",
+      "foreground": "#285FFF",
+      "background": "#FFFFFF",
+      "ratio": 5.034635
+    },
+    {
+      "board": "F",
+      "node": "1NPT-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NPS-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NPQ-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NPP-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NPN-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "F",
+      "node": "1NPL-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NPK-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "F",
+      "node": "1NPJ-0",
+      "foreground": "#285FFF",
+      "background": "#F7F8FA",
+      "ratio": 4.737883
+    },
+    {
+      "board": "G",
+      "node": "1NS9-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "G",
+      "node": "1NS8-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "G",
+      "node": "1NS6-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NS6-0/span-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "G",
+      "node": "1NS5-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "G",
+      "node": "1NS3-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "G",
+      "node": "1NS2-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "G",
+      "node": "1NS0-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRZ-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "G",
+      "node": "1NRX-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRW-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRW-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRV-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "G",
+      "node": "1NRT-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRS-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRS-0/span-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRR-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "G",
+      "node": "1NRP-0",
+      "foreground": "#1E6D47",
+      "background": "#F7F8FA",
+      "ratio": 5.928109
+    },
+    {
+      "board": "G",
+      "node": "1NRP-0/span-0",
+      "foreground": "#1E6D47",
+      "background": "#F7F8FA",
+      "ratio": 5.928109
+    },
+    {
+      "board": "G",
+      "node": "1NRO-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "G",
+      "node": "1NRM-0",
+      "foreground": "#285FFF",
+      "background": "#FFFFFF",
+      "ratio": 5.034635
+    },
+    {
+      "board": "G",
+      "node": "1NRK-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRJ-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRH-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRG-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRE-0",
+      "foreground": "#5D6B7E",
+      "background": "#F7F8FA",
+      "ratio": 5.106805
+    },
+    {
+      "board": "G",
+      "node": "1NRC-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRB-0",
+      "foreground": "#1C2430",
+      "background": "#F7F8FA",
+      "ratio": 14.699592
+    },
+    {
+      "board": "G",
+      "node": "1NRA-0",
+      "foreground": "#285FFF",
+      "background": "#F7F8FA",
+      "ratio": 4.737883
+    },
+    {
+      "board": "H",
+      "node": "1NSC-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "H",
+      "node": "1NSD-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    },
+    {
+      "board": "H",
+      "node": "1NSG-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "H",
+      "node": "1NSI-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "H",
+      "node": "1NSL-0",
+      "foreground": "#2758E6",
+      "background": "#EEF1F6",
+      "ratio": 5.117071
+    },
+    {
+      "board": "H",
+      "node": "1NSM-0",
+      "foreground": "#5D6B7E",
+      "background": "#EEF1F6",
+      "ratio": 4.793117
+    },
+    {
+      "board": "H",
+      "node": "1NSP-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "H",
+      "node": "1NSS-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "H",
+      "node": "1NSV-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "H",
+      "node": "1NSY-0",
+      "foreground": "#1C2430",
+      "background": "#FFFFFF",
+      "ratio": 15.620283
+    },
+    {
+      "board": "H",
+      "node": "1NT1-0",
+      "foreground": "#5D6B7E",
+      "background": "#FFFFFF",
+      "ratio": 5.426664
+    }
+  ],
+  "control_minimum_heights": [
+    {
+      "board": "A",
+      "node": "1NHE-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "A",
+      "node": "1NI9-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "A",
+      "node": "1NHJ-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "A",
+      "node": "1NHM-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "A",
+      "node": "1NIF-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "B",
+      "node": "1NJC-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "B",
+      "node": "1NIW-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "B",
+      "node": "1NIT-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "B",
+      "node": "1NIQ-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "B",
+      "node": "1NIK-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "C",
+      "node": "1NK0-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NK2-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NK4-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NK6-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NK8-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NKC-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NKE-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NKG-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NKK-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NKM-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NKO-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NLA-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "C",
+      "node": "1NLD-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "C",
+      "node": "1NMK-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NMM-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "C",
+      "node": "1NLX-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "C",
+      "node": "1NMF-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NP6-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NP4-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NP2-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NP0-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NOY-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NOV-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NOT-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NOR-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NOO-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NOM-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NOK-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NO3-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "D",
+      "node": "1NO0-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "D",
+      "node": "1NNH-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NNF-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "D",
+      "node": "1NN8-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "D",
+      "node": "1NMT-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "E",
+      "node": "1NQQ-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "E",
+      "node": "1NR4-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "F",
+      "node": "1NQA-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "F",
+      "node": "1NPU-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "F",
+      "node": "1NPR-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "F",
+      "node": "1NPO-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "F",
+      "node": "1NPI-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "G",
+      "node": "1NS1-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "G",
+      "node": "1NRL-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "G",
+      "node": "1NRI-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "G",
+      "node": "1NRF-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "G",
+      "node": "1NR9-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "H",
+      "node": "1NSH-0",
+      "minimum_height": 44.0
+    },
+    {
+      "board": "H",
+      "node": "1NSK-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "H",
+      "node": "1NSO-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "H",
+      "node": "1NSR-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "H",
+      "node": "1NSU-0",
+      "minimum_height": 48.0
+    },
+    {
+      "board": "H",
+      "node": "1NSX-0",
+      "minimum_height": 48.0
+    }
+  ]
+}

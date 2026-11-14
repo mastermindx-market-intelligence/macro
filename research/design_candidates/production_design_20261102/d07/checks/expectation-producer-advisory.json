@@ -1,0 +1,134 @@
+{
+  "kind": "D07 advisory source diagnostics",
+  "status": "BASELINE_REPRODUCED",
+  "scope": "Source functions and controlled synthetic fixtures. These passing probes reproduce existing defects or limits and do not establish product acceptance.",
+  "source_blob": "1b39e3a519a548d2187130498dd05b58a256ccdd",
+  "executed": 9,
+  "results": [
+    {
+      "case": "flagged-numeric-observations",
+      "observed": {
+        "comparable_pairs": 0,
+        "explorer_point": {
+          "at": "2026-11-02T00:00:00Z",
+          "period_end": "2026-12-31",
+          "average": 999.0,
+          "median": null,
+          "high": 9999.0,
+          "low": null,
+          "analysts": 30.0
+        }
+      },
+      "required_contract": "Suppress ineligible numeric values consistently while retaining reason and independent eligible fields."
+    },
+    {
+      "case": "known-noncomparable-currency",
+      "observed": {
+        "input_class": "schema-boundary synthetic data",
+        "current_src_a1_metadata": "unit/currency/basis are null",
+        "pair_count": 1,
+        "prior_currency": "USD",
+        "latest_currency": "EUR",
+        "naive_change": 1.0
+      },
+      "required_contract": "The source owner already keeps basis changes noncomparable. Preserve unit/currency/basis and their absence through the descriptive consumer."
+    },
+    {
+      "case": "partial-attempt-clocks",
+      "observed": {
+        "observed_sessions": [
+          "s1",
+          "s2"
+        ],
+        "emitted_sessions": [
+          "s1"
+        ],
+        "reasons": []
+      },
+      "required_contract": "Account for every observed session with fallback or typed omission. A silent drop cannot be represented as complete coverage."
+    },
+    {
+      "case": "duplicate-observation-key",
+      "observed": {
+        "pair_count": 2,
+        "breadth": [
+          {
+            "session_id": "s2",
+            "at": "2026-11-02T00:00:00Z",
+            "metric": "EPS",
+            "up": 2,
+            "down": 0,
+            "flat": 0
+          }
+        ],
+        "explorer_latest": {
+          "at": "2026-11-02T00:00:00Z",
+          "period_end": "2026-12-31",
+          "average": 12.0,
+          "median": null,
+          "high": null,
+          "low": null,
+          "analysts": null
+        }
+      },
+      "required_contract": "Require an owner-selected eligible observation revision shared across views, with original raw observations and lineage preserved."
+    },
+    {
+      "case": "conflicting-period-within-point",
+      "observed": {
+        "at": "2026-10-20T00:00:00Z",
+        "period_end": "2026-09-30",
+        "average": 12.0,
+        "median": null,
+        "high": 24.0,
+        "low": null,
+        "analysts": null
+      },
+      "required_contract": "Only combine mean/range/count for the same resolved fiscal period. Otherwise suppress range and show source conflict."
+    },
+    {
+      "case": "offset-aware-session-order",
+      "observed": {
+        "emitted": "2026-11-02T00:30:00Z",
+        "chronological_min": "2026-11-01T23:00:00Z"
+      },
+      "required_contract": "Require normalized UTC producer timestamps or normalize before selecting the chronological minimum."
+    },
+    {
+      "case": "duplicate-order-reversal",
+      "observed": {
+        "breadth": [
+          {
+            "session_id": "s2",
+            "at": "2026-11-02T00:00:00Z",
+            "metric": "EPS",
+            "up": 1,
+            "down": 1,
+            "flat": 0
+          }
+        ],
+        "latest": 11.0
+      },
+      "required_contract": "Input row order must not manufacture a new revision or change source eligibility."
+    },
+    {
+      "case": "analyst-denominator",
+      "observed": {
+        "median": 20.0,
+        "population": "two ticker/metric/horizon keys; one issuer"
+      },
+      "required_contract": "Label this as median coverage per metric/horizon at each key's latest count. Do not imply a common-session issuer consensus."
+    },
+    {
+      "case": "publication-interrupted",
+      "observed": {
+        "exception": "RuntimeError",
+        "summary": "new",
+        "index": "new",
+        "html": "old",
+        "old_ticker_file": "still present"
+      },
+      "required_contract": "The existing publisher must stage and promote one coherent generation or declare mismatch. Verify original files on failed render and keep orphan histories labeled."
+    }
+  ]
+}

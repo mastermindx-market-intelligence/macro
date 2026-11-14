@@ -1,0 +1,106 @@
+{
+  "schema": "paper-recovery-delivery-alignment/v1",
+  "recorded_date": "2026-11-09",
+  "source_law_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "gmi": {
+    "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+    "page_id": "p-7-0",
+    "source_head": "11aed18841b996babe1b81c0b4eb0ebd7f27a797",
+    "new_roots": [
+      "7NQ-0",
+      "7PZ-0"
+    ],
+    "build_root": "7M9-0",
+    "build_modules": 11,
+    "build": {
+      "nodes": 36,
+      "all_original_ids": true,
+      "parents": true,
+      "styles": true,
+      "original_order": true,
+      "unchanged_other_text": true
+    },
+    "readback": [
+      {
+        "nodes": 36,
+        "all_original_ids": true,
+        "parents": true,
+        "styles": true,
+        "original_order": true,
+        "unchanged_other_text": true
+      },
+      {
+        "node": "7NQ-0",
+        "nodes": 79,
+        "notice": [
+          {
+            "id": "7SC-0",
+            "text": "This topic is outside your filters. "
+          },
+          {
+            "id": "7SF-0",
+            "text": "Clear filters "
+          }
+        ]
+      },
+      {
+        "node": "7PZ-0",
+        "nodes": 79,
+        "notice": [
+          {
+            "id": "7SN-0",
+            "text": "当前主题不在筛选范围内。 "
+          },
+          {
+            "id": "7SP-0",
+            "text": "清除筛选 "
+          }
+        ]
+      },
+      {
+        "node": "7ER-0",
+        "original_exact": true
+      },
+      {
+        "node": "7GR-0",
+        "original_exact": true
+      }
+    ],
+    "visual_observed": [
+      "EN recovery",
+      "corrected ZH Day recovery",
+      "11-module Build"
+    ],
+    "finish": "APPLIED_RESPONSE_OBSERVED"
+  },
+  "catalyst": {
+    "file_id": "01M6Y2VTQBVC9NA39HNG1DYWFH",
+    "page_id": "p-3-0",
+    "root": "10D-0",
+    "merged": "9f13ad1226d785524e56a5e03bf5236b231242a6",
+    "live_unchanged": "db06eacd8938cf44588d3906bca95bfd7122b74b",
+    "changed_text": [
+      "10H-0",
+      "1ER-0",
+      "1ES-0",
+      "1FJ-0",
+      "1FK-0"
+    ],
+    "readback": {
+      "nodes": 32,
+      "ids": true,
+      "parents": true,
+      "styles": true,
+      "other_text": true
+    },
+    "visual_observed": true,
+    "finish": "APPLIED_RESPONSE_OBSERVED",
+    "deployment": "one reconciled attempt refused; no replay"
+  },
+  "tools": {
+    "file_id": "01M6Y32A3E4XC51FQVJN98YRPH",
+    "root": "31M-0",
+    "state": "NO_CHANGE_REQUIRED",
+    "reason": "Existing Build already explicitly describes Draft status, payload-key failure, four P0B findings and pinned-family denial; natural CI confirms these same boundaries."
+  }
+}

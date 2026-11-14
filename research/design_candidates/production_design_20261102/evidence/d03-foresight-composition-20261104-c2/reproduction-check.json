@@ -1,0 +1,37 @@
+{
+  "result": "PASS",
+  "input_files": 28,
+  "files_materialized": 29,
+  "composed_template_sha256": "bb9610d3162db361b40fa2536470c6b8323d2b984dad9a450c0c034eba3f1d94",
+  "repositories_modified": false,
+  "output": "/private/tmp/d03-foresight-compose-20261104-pdzh_wxi/reproduction-check",
+  "command": [
+    "python3",
+    "/tmp/d03-foresight-compose-20261104-pdzh_wxi/delivery/reproduce_snapshot.py",
+    "--t35-repo",
+    "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/d03-foresight-gate-state-20261104-c2-1e2cf936cd83034a",
+    "--t36-repo",
+    "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-confirmer-t36-20261104-c2-4cdf52c0894d99c2",
+    "--t37-repo",
+    "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-pending-t37-20261104-c2-b181e904c380228d",
+    "--out",
+    "/tmp/d03-foresight-compose-20261104-pdzh_wxi/reproduction-check"
+  ],
+  "source_workspaces": [
+    {
+      "path": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/d03-foresight-gate-state-20261104-c2-1e2cf936cd83034a",
+      "head": "8b9ed9a0b63b6771f6b0f637c2a1df1e3cba5d53",
+      "status": ""
+    },
+    {
+      "path": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-confirmer-t36-20261104-c2-4cdf52c0894d99c2",
+      "head": "d5350fcddeaa60c3a271e4029ace69560ef6a2b2",
+      "status": ""
+    },
+    {
+      "path": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/d03-foresight-pending-t37-20261104-c2-b181e904c380228d",
+      "head": "e488b0a00951747e2cab89ecc1d867f470746dc3",
+      "status": ""
+    }
+  ]
+}

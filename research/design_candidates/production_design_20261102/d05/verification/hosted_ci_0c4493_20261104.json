@@ -1,0 +1,183 @@
+{
+  "schema": "d05.hosted-ci-readback.v1",
+  "observed_utc": "2026-11-04T12:25:28Z",
+  "head": "0c4493c7025f7c1c0f9e558860d5e4ba33457cd1",
+  "run": 41824389478,
+  "contract_delta": "success",
+  "full_ci_claimed": false,
+  "checks": [
+    {
+      "id": 126558067343,
+      "name": "trusted-ci",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558067343"
+    },
+    {
+      "id": 126558066508,
+      "name": "ci-pack-2",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066508"
+    },
+    {
+      "id": 126558066460,
+      "name": "ci-pack-7",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066460"
+    },
+    {
+      "id": 126558066440,
+      "name": "ci-pack-11",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066440"
+    },
+    {
+      "id": 126558066428,
+      "name": "ci-pack-5",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066428"
+    },
+    {
+      "id": 126558066404,
+      "name": "ci-pack-6",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066404"
+    },
+    {
+      "id": 126558066371,
+      "name": "ci-pack-9",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066371"
+    },
+    {
+      "id": 126558066369,
+      "name": "ci-pack-0",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066369"
+    },
+    {
+      "id": 126558066358,
+      "name": "ci-pack-1",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066358"
+    },
+    {
+      "id": 126558066357,
+      "name": "ci-pack-8",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066357"
+    },
+    {
+      "id": 126558066337,
+      "name": "ci-pack-4",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066337"
+    },
+    {
+      "id": 126558066329,
+      "name": "ci-pack-3",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066329"
+    },
+    {
+      "id": 126558066296,
+      "name": "ci-pack-10",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066296"
+    },
+    {
+      "id": 126556622465,
+      "name": "grader-manifest",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/126556622465"
+    },
+    {
+      "id": 126556618216,
+      "name": "capability-broker",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/126556618216"
+    },
+    {
+      "id": 126556613388,
+      "name": "self-mod-fence",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/126556613388"
+    },
+    {
+      "id": 126556289612,
+      "name": "contract-delta",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126556289612"
+    },
+    {
+      "id": 126556289187,
+      "name": "ci-plan",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126556289187"
+    },
+    {
+      "id": 126555823518,
+      "name": "ci-authority/main",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/126555823518"
+    },
+    {
+      "id": 126555818837,
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/126555818837"
+    },
+    {
+      "id": 126555289681,
+      "name": "fence-pack",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389362/job/126555289681"
+    },
+    {
+      "id": 126555277400,
+      "name": "ci-authority",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824384833/job/126555277400"
+    }
+  ],
+  "expected_inactive_authority": {
+    "check": 126555818837,
+    "context": "ci-authority/codex/merge-queue-pilot",
+    "context_active": false,
+    "reason": "inactive_base_context"
+  },
+  "prior_failure": {
+    "head": "1573afdee7f6956968bded3b84e5fd4e25a8c82c",
+    "job": 126542200532,
+    "classification": "8 introduced exact import-closure path omissions",
+    "repair": "4802d1b1e2e53061c42f57e78223ab4e45b16c3a"
+  },
+  "superseded_run": {
+    "head": "4802d1b1e2e53061c42f57e78223ab4e45b16c3a",
+    "run": 41823736273,
+    "conclusion": "cancelled",
+    "rerun_performed": false
+  },
+  "source_owner": "Existing Macro follow-through lead; no competing source writes from this programme/Dossier lane after4802."
+}

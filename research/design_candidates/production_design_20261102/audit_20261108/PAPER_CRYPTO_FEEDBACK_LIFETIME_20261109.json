@@ -1,0 +1,2945 @@
+{
+  "date": "2026-11-09",
+  "file_id": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+  "source": {
+    "head": "480ae8eb4f0e82065c324b56058c6c6eb25674b0",
+    "tree": "1079c54c69b3cc0e4a982caab4eef63f2ae198b2",
+    "assets": "89c2e5bd3fa3"
+  },
+  "source_pr": 10901,
+  "audit_parent": {
+    "head": "be78022220e2d960c67840ee09f1619212b757ea",
+    "tree": "7769434bf249952477ef6f7842cd71df975ece02"
+  },
+  "purpose": "Retire obsolete feedback through the existing navigation/status boundary, preserve current confirmation and intentional frozen Remove handoff, and bind the existing builder references to exact proof.",
+  "updates": [
+    {
+      "nodeId": "QM-0",
+      "html": "R4.01–08 supersede the seven archived R3 boards. Base: Macro PR #9580. Candidate upgrades: Draft PR #10901 · 480ae8e. Saved-case states 09–18 + Build 3IP-0: Saved cases · Candidate UI + results proposal."
+    },
+    {
+      "nodeId": "3KZ-0",
+      "html": "Separate actions; keep keyboard focus visible. Confirmed changes retain reading and fresh feedback. Failures reveal their message without rebuilding or moving focus. Task changes clear old feedback. Disabled Save stays inert."
+    },
+    {
+      "nodeId": "3IQ-0",
+      "html": "BUILDER HANDOFF · SAVED CASES + FEEDBACK LIFETIME · 9 NOV 2026"
+    },
+    {
+      "nodeId": "3IR-0",
+      "html": "Keep the reader. Clear the old result."
+    },
+    {
+      "nodeId": "3IS-0",
+      "html": "Macro PR #10901 · 480ae8eb4f0e82065c324b56058c6c6eb25674b0 · dependent open Draft. Fresh results stay with their task. Navigation, Close/reopen, language changes and explicit Retry retire old messages and reserved space. Frozen Remove carries its confirmed result into Saved, even if the list becomes unreadable. States 09–18 retain saved identity and recovery. PR #9580 remains the incumbent base at 5e496c24c962e85a4f7f514dd43dc61443b95cab. Historical fixtures and synthetic storage are not personal records or current-market evidence."
+    },
+    {
+      "nodeId": "3IW-0",
+      "html": "Continue templates/crypto_intelligence_r4.js and existing update(), apply(), save() and toast() owners. Five source/generated/test paths change; 16 recorded inputs remain exact, including CSS. Build map: research/design_candidates/crypto_snapshot_safety_20261109/README.md. Read FEEDBACK_LIFETIME.md with CURRENT_ACTIONS.md, DRAWER_FOCUS.md, CURRENT_SAVE_READING.md and SNAPSHOT_SAFETY.md. Existing navigation and frozen-reading contracts remain.<br /><br />30-day fixture: revision r4-display:2026-10-17:30:continuation; BTC; cutoff 17 Oct 2026; expiry 16 Nov; daily close above $86,595, then stronger spot demand. Its 60 prior closes run 18 Aug–16 Oct, range $64,681–$86,595. The older 7-day failure case uses $81,566 and expires 24 Oct. Keep the original horizons/ranges separate. Tests use explicit historical time anchors."
+    },
+    {
+      "nodeId": "3JG-0",
+      "html": "Use one existing status node and five-second timer. Timeout retains space inside its task. At a task boundary, retire only the captured element/timer/text witness after existing preflight guards and before destination rendering or closing. Current confirmed Save/Remove retains its direct render and reading. Frozen Remove passes one synchronous result witness, qualified by the destination URL and language captured before the history write.<br /><br />An explicit handoff can preserve or retire only its supplied witness. If a newer result replaced it during a callback, leave that result alone. Status ownership never gates navigation; do not reissue confirmation after focus callbacks. Existing 48px/44px actions, 12px gaps, visible keyboard focus, qualified reading, one-level parent returns, whole-journey Close and reduced motion remain."
+    },
+    {
+      "nodeId": "3JS-0",
+      "html": "Feedback-lifetime run: 67 browser cases passed in 69.78s; Chrome 157.0.8103.39; 67 contexts / 67 pages; zero page errors, external requests or WebSockets. Initial parent baseline: 27 failed / 39 passed. Corrected new-case baseline: 26 failed / 4 passed. Two new-test harness corrections and one added handoff control are recorded; existing parent tests are unchanged.<br /><br />The final run contains 30 new and 37 retained cases. Corrected baseline and final module bytes match. All 23 final PNGs and two baseline comparisons are retained; 10 new final views and both comparisons were inspected. Exact proof: feedback-lifetime/PUBLICATION_RECEIPT.json. Earlier phase counts overlap; no cross-engine or assistive-technology certification is inferred."
+    },
+    {
+      "nodeId": "3JW-0",
+      "html": "Source 480ae8eb4f0e82065c324b56058c6c6eb25674b0 / assets 89c2e5bd3fa3: 39 source/document/evidence texts and 25 native PNGs read back exactly. Six source transforms reverse exactly; removing appended tests restores the parent browser module. States 17 / 3LJ-0 and 18 / 3MC-0 keep their optional-evidence meaning. Hosted/independent acceptance, merge, deployment and production replacement remain separate.<br /><br />Next: tighten the Start guide around the current scenario workflow and the task → owner → contract → proof map. Alert gate HE-0, route-cutover QQ-0, H5/model and all release/admission holds remain. No forecast skill, model allocation or alert delivery is inferred."
+    }
+  ],
+  "operations": {
+    "edit": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-crypto-feedback-lifetime-text-20261109",
+      "tool": "set_text_content",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"QM-0\"\n    },\n    {\n      \"nodeId\": \"3KZ-0\"\n    },\n    {\n      \"nodeId\": \"3IQ-0\"\n    },\n    {\n      \"nodeId\": \"3IR-0\"\n    },\n    {\n      \"nodeId\": \"3IS-0\"\n    },\n    {\n      \"nodeId\": \"3IW-0\"\n    },\n    {\n      \"nodeId\": \"3JG-0\"\n    },\n    {\n      \"nodeId\": \"3JS-0\"\n    },\n    {\n      \"nodeId\": \"3JW-0\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "Crypto Intelligence · R4 References and Archive",
+          "pageName": "Crypto Intelligence · R4 · Design References",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1033,
+          "artboardCount": 8,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "R4 · 01 · Crypto Overview · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1401,
+              "worldX": -2240,
+              "worldY": -2598.5
+            },
+            {
+              "id": "4B-0",
+              "name": "R4 · 02 · Bitcoin · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1387,
+              "worldX": -720,
+              "worldY": -2598.5
+            },
+            {
+              "id": "8E-0",
+              "name": "R4 · 03 · Markets · Light · EN",
+              "childCount": 5,
+              "width": 1440,
+              "height": 870,
+              "worldX": -2240,
+              "worldY": -1148.5
+            },
+            {
+              "id": "BB-0",
+              "name": "R4 · 04 · Scenarios · Light · EN",
+              "childCount": 6,
+              "width": 1440,
+              "height": 1197,
+              "worldX": -720,
+              "worldY": -1148.5
+            },
+            {
+              "id": "EF-0",
+              "name": "R4 · 05 · Evidence + Hover + Source States",
+              "childCount": 2,
+              "width": 1440,
+              "height": 873,
+              "worldX": -2240,
+              "worldY": 101.5
+            },
+            {
+              "id": "G5-0",
+              "name": "R4 · 06 · Scenario + Save + Alert Contract",
+              "childCount": 2,
+              "width": 1440,
+              "height": 861,
+              "worldX": -720,
+              "worldY": 101.5
+            },
+            {
+              "id": "HX-0",
+              "name": "R4 · 07 · Responsive Journey",
+              "childCount": 2,
+              "width": 1760,
+              "height": 1437,
+              "worldX": -2240,
+              "worldY": 1161.5
+            },
+            {
+              "id": "QI-0",
+              "name": "R4 · 08 · Build + State Scorecard",
+              "childCount": 3,
+              "width": 1440,
+              "height": 1200,
+              "worldX": 800,
+              "worldY": -2598.5
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "00 · AGENT README · Read first",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Crypto Intelligence · R4 · Design References",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Saved cases · Candidate UI + results proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "Asset readings · Candidate UI + receipt proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Archive · Crypto R1–R3 · Not for Build",
+              "icon": "paper",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "System Sans-Serif",
+            "System Monospace"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--mx-dark-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--mx-dark-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--mx-dark-act",
+                "value": "#E05555"
+              },
+              {
+                "name": "--mx-dark-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--mx-dark-info",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--mx-dark-orange",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--mx-light-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--mx-light-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--mx-light-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--mx-light-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--mx-light-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--mx-light-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--mx-light-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--mx-light-warn",
+                "value": "#B9791A"
+              },
+              {
+                "name": "--mx-light-act",
+                "value": "#C43D3D"
+              },
+              {
+                "name": "--mx-light-ok",
+                "value": "#2F8A52"
+              },
+              {
+                "name": "--mx-light-info",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-link",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-orange",
+                "value": "#C4781F"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-prov-ink",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-dark-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-dark-tier-ink",
+                "value": "#9B86FF"
+              },
+              {
+                "name": "--mx-dark-ser-1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-ser-2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--mx-dark-ser-3",
+                "value": "#0EA5E9"
+              },
+              {
+                "name": "--mx-dark-ser-4",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-prov",
+                "value": "#2F6FD0"
+              },
+              {
+                "name": "--mx-light-prov-ink",
+                "value": "#2C62B3"
+              },
+              {
+                "name": "--mx-light-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-light-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-light-tier-ink",
+                "value": "#5B3FC4"
+              },
+              {
+                "name": "--mx-light-ser-1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--mx-light-ser-2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--mx-light-ser-3",
+                "value": "#0284C7"
+              },
+              {
+                "name": "--mx-light-ser-4",
+                "value": "#B06A25"
+              },
+              {
+                "name": "--mx-light-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--mx-light-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--mx-light-ink-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--mx-light-ink-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--noir-canvas",
+                "value": "#080808"
+              },
+              {
+                "name": "--noir-sidebar",
+                "value": "#0C0C0C"
+              },
+              {
+                "name": "--noir-panel",
+                "value": "#121212"
+              },
+              {
+                "name": "--noir-raised",
+                "value": "#191919"
+              },
+              {
+                "name": "--noir-hover",
+                "value": "#222222"
+              },
+              {
+                "name": "--noir-selected",
+                "value": "#292929"
+              },
+              {
+                "name": "--noir-text-primary",
+                "value": "#F3F3F3"
+              },
+              {
+                "name": "--noir-text-secondary",
+                "value": "#B8B8B8"
+              },
+              {
+                "name": "--noir-text-tertiary",
+                "value": "#949494"
+              },
+              {
+                "name": "--noir-champagne",
+                "value": "#C9B99B"
+              },
+              {
+                "name": "--noir-sage",
+                "value": "#A8C2AD"
+              },
+              {
+                "name": "--noir-rose",
+                "value": "#DEA4A5"
+              },
+              {
+                "name": "--noir-steel",
+                "value": "#A7B4C2"
+              },
+              {
+                "name": "--noir-lilac",
+                "value": "#BDB2CE"
+              },
+              {
+                "name": "--market-canvas",
+                "value": "#0A0B0D"
+              },
+              {
+                "name": "--market-panel",
+                "value": "#111318"
+              },
+              {
+                "name": "--market-raised",
+                "value": "#181B20"
+              },
+              {
+                "name": "--market-line",
+                "value": "#2B3038"
+              },
+              {
+                "name": "--mx-dark-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--mx-dark-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--mx-dark-warn-soft",
+                "value": "rgb(224 160 48 / 12%)"
+              },
+              {
+                "name": "--mx-dark-info-soft",
+                "value": "rgb(91 155 240 / 12%)"
+              },
+              {
+                "name": "--mx-light-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--mx-light-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--mx-light-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--mx-light-info-soft",
+                "value": "#EAF2FC"
+              },
+              {
+                "name": "--mx-light-scrim",
+                "value": "#1C243029"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12.5px"
+              },
+              {
+                "name": "--fs-body",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-h3",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--fs-num-xl",
+                "value": "38px"
+              },
+              {
+                "name": "--fs-display",
+                "value": "46px"
+              },
+              {
+                "name": "--fw-regular",
+                "value": "400"
+              },
+              {
+                "name": "--fw-medium",
+                "value": "500"
+              },
+              {
+                "name": "--fw-semibold",
+                "value": "600"
+              },
+              {
+                "name": "--fw-bold",
+                "value": "700"
+              },
+              {
+                "name": "--fw-extrabold",
+                "value": "800"
+              },
+              {
+                "name": "--bp-mobile",
+                "value": "390px"
+              },
+              {
+                "name": "--bp-tablet",
+                "value": "768px"
+              },
+              {
+                "name": "--bp-desktop",
+                "value": "1440px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r-ctl",
+                "value": "8px"
+              },
+              {
+                "name": "--r-btn",
+                "value": "10px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-panel",
+                "value": "14px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+          "contentHash": {
+            "tokens": "6234666b"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6Y3F0NXNDPAKJMJGCAD759Z"
+        },
+        "snapshot_sha256": "b912c47c49e13dec127f97cabe52ad3daa65034cc791ecc5906f754f6ab9881c",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "Crypto Intelligence · R4 References and Archive",
+          "pageName": "Crypto Intelligence · R4 · Design References",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1033,
+          "artboardCount": 8,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "R4 · 01 · Crypto Overview · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1401,
+              "worldX": -2240,
+              "worldY": -2598.5
+            },
+            {
+              "id": "4B-0",
+              "name": "R4 · 02 · Bitcoin · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1387,
+              "worldX": -720,
+              "worldY": -2598.5
+            },
+            {
+              "id": "8E-0",
+              "name": "R4 · 03 · Markets · Light · EN",
+              "childCount": 5,
+              "width": 1440,
+              "height": 870,
+              "worldX": -2240,
+              "worldY": -1148.5
+            },
+            {
+              "id": "BB-0",
+              "name": "R4 · 04 · Scenarios · Light · EN",
+              "childCount": 6,
+              "width": 1440,
+              "height": 1197,
+              "worldX": -720,
+              "worldY": -1148.5
+            },
+            {
+              "id": "EF-0",
+              "name": "R4 · 05 · Evidence + Hover + Source States",
+              "childCount": 2,
+              "width": 1440,
+              "height": 873,
+              "worldX": -2240,
+              "worldY": 101.5
+            },
+            {
+              "id": "G5-0",
+              "name": "R4 · 06 · Scenario + Save + Alert Contract",
+              "childCount": 2,
+              "width": 1440,
+              "height": 861,
+              "worldX": -720,
+              "worldY": 101.5
+            },
+            {
+              "id": "HX-0",
+              "name": "R4 · 07 · Responsive Journey",
+              "childCount": 2,
+              "width": 1760,
+              "height": 1437,
+              "worldX": -2240,
+              "worldY": 1161.5
+            },
+            {
+              "id": "QI-0",
+              "name": "R4 · 08 · Build + State Scorecard",
+              "childCount": 3,
+              "width": 1440,
+              "height": 1200,
+              "worldX": 800,
+              "worldY": -2598.5
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "00 · AGENT README · Read first",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Crypto Intelligence · R4 · Design References",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Saved cases · Candidate UI + results proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "Asset readings · Candidate UI + receipt proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Archive · Crypto R1–R3 · Not for Build",
+              "icon": "paper",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "System Sans-Serif",
+            "System Monospace"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--mx-dark-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--mx-dark-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--mx-dark-act",
+                "value": "#E05555"
+              },
+              {
+                "name": "--mx-dark-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--mx-dark-info",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--mx-dark-orange",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--mx-light-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--mx-light-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--mx-light-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--mx-light-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--mx-light-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--mx-light-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--mx-light-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--mx-light-warn",
+                "value": "#B9791A"
+              },
+              {
+                "name": "--mx-light-act",
+                "value": "#C43D3D"
+              },
+              {
+                "name": "--mx-light-ok",
+                "value": "#2F8A52"
+              },
+              {
+                "name": "--mx-light-info",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-link",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-orange",
+                "value": "#C4781F"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-prov-ink",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-dark-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-dark-tier-ink",
+                "value": "#9B86FF"
+              },
+              {
+                "name": "--mx-dark-ser-1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-ser-2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--mx-dark-ser-3",
+                "value": "#0EA5E9"
+              },
+              {
+                "name": "--mx-dark-ser-4",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-prov",
+                "value": "#2F6FD0"
+              },
+              {
+                "name": "--mx-light-prov-ink",
+                "value": "#2C62B3"
+              },
+              {
+                "name": "--mx-light-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-light-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-light-tier-ink",
+                "value": "#5B3FC4"
+              },
+              {
+                "name": "--mx-light-ser-1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--mx-light-ser-2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--mx-light-ser-3",
+                "value": "#0284C7"
+              },
+              {
+                "name": "--mx-light-ser-4",
+                "value": "#B06A25"
+              },
+              {
+                "name": "--mx-light-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--mx-light-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--mx-light-ink-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--mx-light-ink-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--noir-canvas",
+                "value": "#080808"
+              },
+              {
+                "name": "--noir-sidebar",
+                "value": "#0C0C0C"
+              },
+              {
+                "name": "--noir-panel",
+                "value": "#121212"
+              },
+              {
+                "name": "--noir-raised",
+                "value": "#191919"
+              },
+              {
+                "name": "--noir-hover",
+                "value": "#222222"
+              },
+              {
+                "name": "--noir-selected",
+                "value": "#292929"
+              },
+              {
+                "name": "--noir-text-primary",
+                "value": "#F3F3F3"
+              },
+              {
+                "name": "--noir-text-secondary",
+                "value": "#B8B8B8"
+              },
+              {
+                "name": "--noir-text-tertiary",
+                "value": "#949494"
+              },
+              {
+                "name": "--noir-champagne",
+                "value": "#C9B99B"
+              },
+              {
+                "name": "--noir-sage",
+                "value": "#A8C2AD"
+              },
+              {
+                "name": "--noir-rose",
+                "value": "#DEA4A5"
+              },
+              {
+                "name": "--noir-steel",
+                "value": "#A7B4C2"
+              },
+              {
+                "name": "--noir-lilac",
+                "value": "#BDB2CE"
+              },
+              {
+                "name": "--market-canvas",
+                "value": "#0A0B0D"
+              },
+              {
+                "name": "--market-panel",
+                "value": "#111318"
+              },
+              {
+                "name": "--market-raised",
+                "value": "#181B20"
+              },
+              {
+                "name": "--market-line",
+                "value": "#2B3038"
+              },
+              {
+                "name": "--mx-dark-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--mx-dark-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--mx-dark-warn-soft",
+                "value": "rgb(224 160 48 / 12%)"
+              },
+              {
+                "name": "--mx-dark-info-soft",
+                "value": "rgb(91 155 240 / 12%)"
+              },
+              {
+                "name": "--mx-light-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--mx-light-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--mx-light-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--mx-light-info-soft",
+                "value": "#EAF2FC"
+              },
+              {
+                "name": "--mx-light-scrim",
+                "value": "#1C243029"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12.5px"
+              },
+              {
+                "name": "--fs-body",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-h3",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--fs-num-xl",
+                "value": "38px"
+              },
+              {
+                "name": "--fs-display",
+                "value": "46px"
+              },
+              {
+                "name": "--fw-regular",
+                "value": "400"
+              },
+              {
+                "name": "--fw-medium",
+                "value": "500"
+              },
+              {
+                "name": "--fw-semibold",
+                "value": "600"
+              },
+              {
+                "name": "--fw-bold",
+                "value": "700"
+              },
+              {
+                "name": "--fw-extrabold",
+                "value": "800"
+              },
+              {
+                "name": "--bp-mobile",
+                "value": "390px"
+              },
+              {
+                "name": "--bp-tablet",
+                "value": "768px"
+              },
+              {
+                "name": "--bp-desktop",
+                "value": "1440px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r-ctl",
+                "value": "8px"
+              },
+              {
+                "name": "--r-btn",
+                "value": "10px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-panel",
+                "value": "14px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+          "contentHash": {
+            "tokens": "6234666b"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6Y3F0NXNDPAKJMJGCAD759Z"
+        },
+        "snapshot_sha256": "b912c47c49e13dec127f97cabe52ad3daa65034cc791ecc5906f754f6ab9881c",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    },
+    "finish": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "operation_id": "paper-estate-cont-20261108-crypto-feedback-lifetime-finish-20261109",
+      "tool": "finish_working_on_nodes",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3F0NXNDPAKJMJGCAD759Z\",\n    \"name\": \"Crypto Intelligence · R4 References and Archive\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "OK"
+          }
+        ]
+      },
+      "before": {
+        "basic_info": {
+          "fileName": "Crypto Intelligence · R4 References and Archive",
+          "pageName": "Crypto Intelligence · R4 · Design References",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1033,
+          "artboardCount": 8,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "R4 · 01 · Crypto Overview · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1401,
+              "worldX": -2240,
+              "worldY": -2598.5
+            },
+            {
+              "id": "4B-0",
+              "name": "R4 · 02 · Bitcoin · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1387,
+              "worldX": -720,
+              "worldY": -2598.5
+            },
+            {
+              "id": "8E-0",
+              "name": "R4 · 03 · Markets · Light · EN",
+              "childCount": 5,
+              "width": 1440,
+              "height": 870,
+              "worldX": -2240,
+              "worldY": -1148.5
+            },
+            {
+              "id": "BB-0",
+              "name": "R4 · 04 · Scenarios · Light · EN",
+              "childCount": 6,
+              "width": 1440,
+              "height": 1197,
+              "worldX": -720,
+              "worldY": -1148.5
+            },
+            {
+              "id": "EF-0",
+              "name": "R4 · 05 · Evidence + Hover + Source States",
+              "childCount": 2,
+              "width": 1440,
+              "height": 873,
+              "worldX": -2240,
+              "worldY": 101.5
+            },
+            {
+              "id": "G5-0",
+              "name": "R4 · 06 · Scenario + Save + Alert Contract",
+              "childCount": 2,
+              "width": 1440,
+              "height": 861,
+              "worldX": -720,
+              "worldY": 101.5
+            },
+            {
+              "id": "HX-0",
+              "name": "R4 · 07 · Responsive Journey",
+              "childCount": 2,
+              "width": 1760,
+              "height": 1437,
+              "worldX": -2240,
+              "worldY": 1161.5
+            },
+            {
+              "id": "QI-0",
+              "name": "R4 · 08 · Build + State Scorecard",
+              "childCount": 3,
+              "width": 1440,
+              "height": 1200,
+              "worldX": 800,
+              "worldY": -2598.5
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "00 · AGENT README · Read first",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Crypto Intelligence · R4 · Design References",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Saved cases · Candidate UI + results proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "Asset readings · Candidate UI + receipt proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Archive · Crypto R1–R3 · Not for Build",
+              "icon": "paper",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "System Sans-Serif",
+            "System Monospace"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--mx-dark-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--mx-dark-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--mx-dark-act",
+                "value": "#E05555"
+              },
+              {
+                "name": "--mx-dark-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--mx-dark-info",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--mx-dark-orange",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--mx-light-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--mx-light-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--mx-light-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--mx-light-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--mx-light-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--mx-light-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--mx-light-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--mx-light-warn",
+                "value": "#B9791A"
+              },
+              {
+                "name": "--mx-light-act",
+                "value": "#C43D3D"
+              },
+              {
+                "name": "--mx-light-ok",
+                "value": "#2F8A52"
+              },
+              {
+                "name": "--mx-light-info",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-link",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-orange",
+                "value": "#C4781F"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-prov-ink",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-dark-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-dark-tier-ink",
+                "value": "#9B86FF"
+              },
+              {
+                "name": "--mx-dark-ser-1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-ser-2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--mx-dark-ser-3",
+                "value": "#0EA5E9"
+              },
+              {
+                "name": "--mx-dark-ser-4",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-prov",
+                "value": "#2F6FD0"
+              },
+              {
+                "name": "--mx-light-prov-ink",
+                "value": "#2C62B3"
+              },
+              {
+                "name": "--mx-light-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-light-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-light-tier-ink",
+                "value": "#5B3FC4"
+              },
+              {
+                "name": "--mx-light-ser-1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--mx-light-ser-2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--mx-light-ser-3",
+                "value": "#0284C7"
+              },
+              {
+                "name": "--mx-light-ser-4",
+                "value": "#B06A25"
+              },
+              {
+                "name": "--mx-light-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--mx-light-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--mx-light-ink-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--mx-light-ink-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--noir-canvas",
+                "value": "#080808"
+              },
+              {
+                "name": "--noir-sidebar",
+                "value": "#0C0C0C"
+              },
+              {
+                "name": "--noir-panel",
+                "value": "#121212"
+              },
+              {
+                "name": "--noir-raised",
+                "value": "#191919"
+              },
+              {
+                "name": "--noir-hover",
+                "value": "#222222"
+              },
+              {
+                "name": "--noir-selected",
+                "value": "#292929"
+              },
+              {
+                "name": "--noir-text-primary",
+                "value": "#F3F3F3"
+              },
+              {
+                "name": "--noir-text-secondary",
+                "value": "#B8B8B8"
+              },
+              {
+                "name": "--noir-text-tertiary",
+                "value": "#949494"
+              },
+              {
+                "name": "--noir-champagne",
+                "value": "#C9B99B"
+              },
+              {
+                "name": "--noir-sage",
+                "value": "#A8C2AD"
+              },
+              {
+                "name": "--noir-rose",
+                "value": "#DEA4A5"
+              },
+              {
+                "name": "--noir-steel",
+                "value": "#A7B4C2"
+              },
+              {
+                "name": "--noir-lilac",
+                "value": "#BDB2CE"
+              },
+              {
+                "name": "--market-canvas",
+                "value": "#0A0B0D"
+              },
+              {
+                "name": "--market-panel",
+                "value": "#111318"
+              },
+              {
+                "name": "--market-raised",
+                "value": "#181B20"
+              },
+              {
+                "name": "--market-line",
+                "value": "#2B3038"
+              },
+              {
+                "name": "--mx-dark-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--mx-dark-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--mx-dark-warn-soft",
+                "value": "rgb(224 160 48 / 12%)"
+              },
+              {
+                "name": "--mx-dark-info-soft",
+                "value": "rgb(91 155 240 / 12%)"
+              },
+              {
+                "name": "--mx-light-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--mx-light-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--mx-light-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--mx-light-info-soft",
+                "value": "#EAF2FC"
+              },
+              {
+                "name": "--mx-light-scrim",
+                "value": "#1C243029"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12.5px"
+              },
+              {
+                "name": "--fs-body",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-h3",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--fs-num-xl",
+                "value": "38px"
+              },
+              {
+                "name": "--fs-display",
+                "value": "46px"
+              },
+              {
+                "name": "--fw-regular",
+                "value": "400"
+              },
+              {
+                "name": "--fw-medium",
+                "value": "500"
+              },
+              {
+                "name": "--fw-semibold",
+                "value": "600"
+              },
+              {
+                "name": "--fw-bold",
+                "value": "700"
+              },
+              {
+                "name": "--fw-extrabold",
+                "value": "800"
+              },
+              {
+                "name": "--bp-mobile",
+                "value": "390px"
+              },
+              {
+                "name": "--bp-tablet",
+                "value": "768px"
+              },
+              {
+                "name": "--bp-desktop",
+                "value": "1440px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r-ctl",
+                "value": "8px"
+              },
+              {
+                "name": "--r-btn",
+                "value": "10px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-panel",
+                "value": "14px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+          "contentHash": {
+            "tokens": "6234666b"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6Y3F0NXNDPAKJMJGCAD759Z"
+        },
+        "snapshot_sha256": "b912c47c49e13dec127f97cabe52ad3daa65034cc791ecc5906f754f6ab9881c",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "after": {
+        "basic_info": {
+          "fileName": "Crypto Intelligence · R4 References and Archive",
+          "pageName": "Crypto Intelligence · R4 · Design References",
+          "pageId": "p-1-0",
+          "url": "https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-1-0",
+          "rootNodeId": "root_node_p-1-0",
+          "nodeCount": 1033,
+          "artboardCount": 8,
+          "artboards": [
+            {
+              "id": "1-0",
+              "name": "R4 · 01 · Crypto Overview · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1401,
+              "worldX": -2240,
+              "worldY": -2598.5
+            },
+            {
+              "id": "4B-0",
+              "name": "R4 · 02 · Bitcoin · Light · EN",
+              "childCount": 7,
+              "width": 1440,
+              "height": 1387,
+              "worldX": -720,
+              "worldY": -2598.5
+            },
+            {
+              "id": "8E-0",
+              "name": "R4 · 03 · Markets · Light · EN",
+              "childCount": 5,
+              "width": 1440,
+              "height": 870,
+              "worldX": -2240,
+              "worldY": -1148.5
+            },
+            {
+              "id": "BB-0",
+              "name": "R4 · 04 · Scenarios · Light · EN",
+              "childCount": 6,
+              "width": 1440,
+              "height": 1197,
+              "worldX": -720,
+              "worldY": -1148.5
+            },
+            {
+              "id": "EF-0",
+              "name": "R4 · 05 · Evidence + Hover + Source States",
+              "childCount": 2,
+              "width": 1440,
+              "height": 873,
+              "worldX": -2240,
+              "worldY": 101.5
+            },
+            {
+              "id": "G5-0",
+              "name": "R4 · 06 · Scenario + Save + Alert Contract",
+              "childCount": 2,
+              "width": 1440,
+              "height": 861,
+              "worldX": -720,
+              "worldY": 101.5
+            },
+            {
+              "id": "HX-0",
+              "name": "R4 · 07 · Responsive Journey",
+              "childCount": 2,
+              "width": 1760,
+              "height": 1437,
+              "worldX": -2240,
+              "worldY": 1161.5
+            },
+            {
+              "id": "QI-0",
+              "name": "R4 · 08 · Build + State Scorecard",
+              "childCount": 3,
+              "width": 1440,
+              "height": 1200,
+              "worldX": 800,
+              "worldY": -2598.5
+            }
+          ],
+          "pages": [
+            {
+              "type": "page",
+              "id": "p-5-0",
+              "name": "00 · AGENT README · Read first",
+              "icon": "arrow",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-1-0",
+              "name": "Crypto Intelligence · R4 · Design References",
+              "icon": "design",
+              "isActive": true
+            },
+            {
+              "type": "page",
+              "id": "p-4-0",
+              "name": "Saved cases · Candidate UI + results proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-3-0",
+              "name": "Asset readings · Candidate UI + receipt proposal",
+              "icon": "design",
+              "isActive": false
+            },
+            {
+              "type": "page",
+              "id": "p-2-0",
+              "name": "Archive · Crypto R1–R3 · Not for Build",
+              "icon": "paper",
+              "isActive": false
+            }
+          ],
+          "fontFamilies": [
+            "Inter",
+            "System Sans-Serif",
+            "System Monospace"
+          ],
+          "tokens": {
+            "items": [
+              {
+                "name": "--mx-dark-bg",
+                "value": "#0F1115"
+              },
+              {
+                "name": "--mx-dark-panel",
+                "value": "#181B21"
+              },
+              {
+                "name": "--mx-dark-panel2",
+                "value": "#1E222A"
+              },
+              {
+                "name": "--mx-dark-text",
+                "value": "#D7DCE3"
+              },
+              {
+                "name": "--mx-dark-muted",
+                "value": "#8B93A1"
+              },
+              {
+                "name": "--mx-dark-line",
+                "value": "#3A4150"
+              },
+              {
+                "name": "--mx-dark-up",
+                "value": "#45B873"
+              },
+              {
+                "name": "--mx-dark-down",
+                "value": "#E06464"
+              },
+              {
+                "name": "--mx-dark-warn",
+                "value": "#E0A030"
+              },
+              {
+                "name": "--mx-dark-act",
+                "value": "#E05555"
+              },
+              {
+                "name": "--mx-dark-ok",
+                "value": "#3DA564"
+              },
+              {
+                "name": "--mx-dark-info",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-link",
+                "value": "#7AA7E0"
+              },
+              {
+                "name": "--mx-dark-orange",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-bg",
+                "value": "#F7F8FA"
+              },
+              {
+                "name": "--mx-light-panel",
+                "value": "#FFFFFF"
+              },
+              {
+                "name": "--mx-light-panel2",
+                "value": "#EEF1F6"
+              },
+              {
+                "name": "--mx-light-text",
+                "value": "#1C2430"
+              },
+              {
+                "name": "--mx-light-muted",
+                "value": "#5D6B7E"
+              },
+              {
+                "name": "--mx-light-line",
+                "value": "#C9CCD1"
+              },
+              {
+                "name": "--mx-light-up",
+                "value": "#1F9A55"
+              },
+              {
+                "name": "--mx-light-down",
+                "value": "#CF4040"
+              },
+              {
+                "name": "--mx-light-warn",
+                "value": "#B9791A"
+              },
+              {
+                "name": "--mx-light-act",
+                "value": "#C43D3D"
+              },
+              {
+                "name": "--mx-light-ok",
+                "value": "#2F8A52"
+              },
+              {
+                "name": "--mx-light-info",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-link",
+                "value": "#285FFF"
+              },
+              {
+                "name": "--mx-light-orange",
+                "value": "#C4781F"
+              },
+              {
+                "name": "--mx-dark-prov",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-prov-ink",
+                "value": "#62A0E8"
+              },
+              {
+                "name": "--mx-dark-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-dark-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-dark-tier-ink",
+                "value": "#9B86FF"
+              },
+              {
+                "name": "--mx-dark-ser-1",
+                "value": "#5B9BF0"
+              },
+              {
+                "name": "--mx-dark-ser-2",
+                "value": "#D4A017"
+              },
+              {
+                "name": "--mx-dark-ser-3",
+                "value": "#0EA5E9"
+              },
+              {
+                "name": "--mx-dark-ser-4",
+                "value": "#E08B45"
+              },
+              {
+                "name": "--mx-light-prov",
+                "value": "#2F6FD0"
+              },
+              {
+                "name": "--mx-light-prov-ink",
+                "value": "#2C62B3"
+              },
+              {
+                "name": "--mx-light-tier-accent",
+                "value": "#7C5CFF"
+              },
+              {
+                "name": "--mx-light-tier-fill",
+                "value": "#6340D8"
+              },
+              {
+                "name": "--mx-light-tier-ink",
+                "value": "#5B3FC4"
+              },
+              {
+                "name": "--mx-light-ser-1",
+                "value": "#2F63C4"
+              },
+              {
+                "name": "--mx-light-ser-2",
+                "value": "#8F6A04"
+              },
+              {
+                "name": "--mx-light-ser-3",
+                "value": "#0284C7"
+              },
+              {
+                "name": "--mx-light-ser-4",
+                "value": "#B06A25"
+              },
+              {
+                "name": "--mx-light-ink-up",
+                "value": "#1E6D47"
+              },
+              {
+                "name": "--mx-light-ink-down",
+                "value": "#B23C3D"
+              },
+              {
+                "name": "--mx-light-ink-warn",
+                "value": "#7D5922"
+              },
+              {
+                "name": "--mx-light-ink-link",
+                "value": "#2758E6"
+              },
+              {
+                "name": "--noir-canvas",
+                "value": "#080808"
+              },
+              {
+                "name": "--noir-sidebar",
+                "value": "#0C0C0C"
+              },
+              {
+                "name": "--noir-panel",
+                "value": "#121212"
+              },
+              {
+                "name": "--noir-raised",
+                "value": "#191919"
+              },
+              {
+                "name": "--noir-hover",
+                "value": "#222222"
+              },
+              {
+                "name": "--noir-selected",
+                "value": "#292929"
+              },
+              {
+                "name": "--noir-text-primary",
+                "value": "#F3F3F3"
+              },
+              {
+                "name": "--noir-text-secondary",
+                "value": "#B8B8B8"
+              },
+              {
+                "name": "--noir-text-tertiary",
+                "value": "#949494"
+              },
+              {
+                "name": "--noir-champagne",
+                "value": "#C9B99B"
+              },
+              {
+                "name": "--noir-sage",
+                "value": "#A8C2AD"
+              },
+              {
+                "name": "--noir-rose",
+                "value": "#DEA4A5"
+              },
+              {
+                "name": "--noir-steel",
+                "value": "#A7B4C2"
+              },
+              {
+                "name": "--noir-lilac",
+                "value": "#BDB2CE"
+              },
+              {
+                "name": "--market-canvas",
+                "value": "#0A0B0D"
+              },
+              {
+                "name": "--market-panel",
+                "value": "#111318"
+              },
+              {
+                "name": "--market-raised",
+                "value": "#181B20"
+              },
+              {
+                "name": "--market-line",
+                "value": "#2B3038"
+              },
+              {
+                "name": "--mx-dark-up-soft",
+                "value": "rgb(69 184 115 / 12%)"
+              },
+              {
+                "name": "--mx-dark-down-soft",
+                "value": "rgb(224 100 100 / 12%)"
+              },
+              {
+                "name": "--mx-dark-warn-soft",
+                "value": "rgb(224 160 48 / 12%)"
+              },
+              {
+                "name": "--mx-dark-info-soft",
+                "value": "rgb(91 155 240 / 12%)"
+              },
+              {
+                "name": "--mx-light-up-soft",
+                "value": "#EAF7EF"
+              },
+              {
+                "name": "--mx-light-down-soft",
+                "value": "#FCECED"
+              },
+              {
+                "name": "--mx-light-warn-soft",
+                "value": "#FFF4E2"
+              },
+              {
+                "name": "--mx-light-info-soft",
+                "value": "#EAF2FC"
+              },
+              {
+                "name": "--mx-light-scrim",
+                "value": "#1C243029"
+              },
+              {
+                "name": "--font-ui",
+                "value": "\"Inter\""
+              },
+              {
+                "name": "--fs-micro",
+                "value": "10px"
+              },
+              {
+                "name": "--fs-label",
+                "value": "11px"
+              },
+              {
+                "name": "--fs-sm",
+                "value": "12.5px"
+              },
+              {
+                "name": "--fs-body",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-h3",
+                "value": "14px"
+              },
+              {
+                "name": "--fs-md",
+                "value": "15px"
+              },
+              {
+                "name": "--fs-h2",
+                "value": "17px"
+              },
+              {
+                "name": "--fs-num-lg",
+                "value": "22px"
+              },
+              {
+                "name": "--fs-h1",
+                "value": "28px"
+              },
+              {
+                "name": "--fs-num-xl",
+                "value": "38px"
+              },
+              {
+                "name": "--fs-display",
+                "value": "46px"
+              },
+              {
+                "name": "--fw-regular",
+                "value": "400"
+              },
+              {
+                "name": "--fw-medium",
+                "value": "500"
+              },
+              {
+                "name": "--fw-semibold",
+                "value": "600"
+              },
+              {
+                "name": "--fw-bold",
+                "value": "700"
+              },
+              {
+                "name": "--fw-extrabold",
+                "value": "800"
+              },
+              {
+                "name": "--bp-mobile",
+                "value": "390px"
+              },
+              {
+                "name": "--bp-tablet",
+                "value": "768px"
+              },
+              {
+                "name": "--bp-desktop",
+                "value": "1440px"
+              },
+              {
+                "name": "--sp-1",
+                "value": "4px"
+              },
+              {
+                "name": "--sp-2",
+                "value": "8px"
+              },
+              {
+                "name": "--sp-3",
+                "value": "12px"
+              },
+              {
+                "name": "--sp-4",
+                "value": "16px"
+              },
+              {
+                "name": "--sp-5",
+                "value": "20px"
+              },
+              {
+                "name": "--sp-6",
+                "value": "24px"
+              },
+              {
+                "name": "--sp-7",
+                "value": "32px"
+              },
+              {
+                "name": "--sp-8",
+                "value": "44px"
+              },
+              {
+                "name": "--r-ctl",
+                "value": "8px"
+              },
+              {
+                "name": "--r-btn",
+                "value": "10px"
+              },
+              {
+                "name": "--r-card",
+                "value": "12px"
+              },
+              {
+                "name": "--r-panel",
+                "value": "14px"
+              },
+              {
+                "name": "--r-pill",
+                "value": "999px"
+              }
+            ]
+          },
+          "fileId": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+          "contentHash": {
+            "tokens": "6234666b"
+          }
+        },
+        "identity": {
+          "kind": "file-id",
+          "id": "01M6Y3F0NXNDPAKJMJGCAD759Z"
+        },
+        "snapshot_sha256": "b912c47c49e13dec127f97cabe52ad3daa65034cc791ecc5906f754f6ab9881c",
+        "write_binding_ready": true,
+        "binding_error": null
+      },
+      "retry_allowed": false,
+      "production_acceptance": false
+    }
+  },
+  "checks": [
+    {
+      "root": "QI-0",
+      "nodes": 67,
+      "all_ids_parents_order_styles_exact": true,
+      "textChanges": [
+        "QM-0",
+        "3KZ-0"
+      ],
+      "full_inverse_exact": true
+    },
+    {
+      "root": "3IP-0",
+      "nodes": 34,
+      "all_ids_parents_order_styles_exact": true,
+      "textChanges": [
+        "3IQ-0",
+        "3IR-0",
+        "3IS-0",
+        "3IW-0",
+        "3JG-0",
+        "3JS-0",
+        "3JW-0"
+      ],
+      "full_inverse_exact": true
+    }
+  ],
+  "geometry": {
+    "QI-0": {
+      "id": "QI-0",
+      "name": "R4 · 08 · Build + State Scorecard",
+      "component": "Frame",
+      "width": 1440,
+      "height": 1200,
+      "worldX": 800,
+      "worldY": -2598.5,
+      "x": 800,
+      "y": -2598.5,
+      "isVisible": true,
+      "isLocked": false,
+      "parentId": "root_node_p-1-0",
+      "childIds": [
+        "QJ-0",
+        "QR-0",
+        "RA-0"
+      ],
+      "childCount": 3,
+      "artboardId": null,
+      "textContent": null
+    },
+    "3IP-0": {
+      "id": "3IP-0",
+      "name": "Build · Verified saved-case workflow",
+      "component": "Frame",
+      "width": 1440,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "x": null,
+      "y": null,
+      "isVisible": true,
+      "isLocked": false,
+      "parentId": "root_node_p-4-0",
+      "childIds": [
+        "3IQ-0",
+        "3IR-0",
+        "3IS-0",
+        "3IU-0",
+        "3IY-0",
+        "3J2-0",
+        "3J6-0",
+        "3JA-0",
+        "3JE-0",
+        "3JI-0",
+        "3JM-0",
+        "3JQ-0",
+        "3JU-0"
+      ],
+      "childCount": 13,
+      "artboardId": null,
+      "textContent": null
+    }
+  },
+  "root_snapshots": [
+    {
+      "id": "QI-0",
+      "before": "(\n    <div id=\"QI-0\" style={{ backgroundColor: 'var(--mx-light-bg)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-ui)', fontSynthesis: 'none', gap: '24px', height: '1200px', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', padding: '40px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>\n      <div id=\"QJ-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-ui)', gap: '12px' }}>\n        <div id=\"QK-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', fontFamily: 'var(--font-ui)', fontSize: '11px', fontWeight: 600, letterSpacing: '1.2px', lineHeight: '14px' }}>\n          R4 / 08 · BUILD AUTHORITY &amp; STATE SCORECARD · 9 NOV 2026\n        </div>\n        <div id=\"QL-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.65px', lineHeight: '34px' }}>\n          A complete journey. An explicit build contract.\n        </div>\n        <div id=\"QM-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '14px', lineHeight: '150%' }}>\n          R4.01–08 supersede the seven archived R3 boards. Base: Macro PR #9580. Candidate upgrades: Draft PR #10901 · bbfdd6d. Saved-case states 09–18 + Build 3IP-0: Saved cases · Candidate UI + results proposal.\n        </div>\n        <div id=\"QN-0\" style={{ boxSizing: 'border-box', display: 'flex', gap: '24px' }}>\n          <div id=\"QO-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Design applied in Paper\n          </div>\n          <div id=\"QP-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Private implementation review available\n          </div>\n          <div id=\"QQ-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Public-route cutover remains an acceptance gate\n          </div>\n        </div>\n      </div>\n      <div id=\"QR-0\" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-ui)', padding: '24px' }}>\n        <div id=\"QS-0\" style={{ boxSizing: 'border-box', paddingBottom: '16px' }}>\n          <div id=\"QT-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '17px', fontWeight: 600, lineHeight: '22px' }}>\n            Four tasks. Two replacement entry points.\n          </div>\n        </div>\n        <div id=\"QU-0\" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', fontFamily: 'var(--font-ui)', gap: '24px', paddingBlock: '13px' }}>\n          <div id=\"QV-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', fontWeight: 600, lineHeight: '16px', width: '150px' }}>\n            Overview\n          </div>\n          <div id=\"QW-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px', width: '270px' }}>\n            crypto.html\n          </div>\n          <div id=\"QX-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Read the current setup and next conditions\n          </div>\n        </div>\n        <div id=\"QY-0\" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', fontFamily: 'var(--font-ui)', gap: '24px', paddingBlock: '13px' }}>\n          <div id=\"QZ-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', fontWeight: 600, lineHeight: '16px', width: '150px' }}>\n            Bitcoin\n          </div>\n          <div id=\"R0-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px', width: '270px' }}>\n            vector.html\n          </div>\n          <div id=\"R1-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Inspect structure, evidence and canonical model\n          </div>\n        </div>\n        <div id=\"R2-0\" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', fontFamily: 'var(--font-ui)', gap: '24px', paddingBlock: '13px' }}>\n          <div id=\"R3-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', fontWeight: 600, lineHeight: '16px', width: '150px' }}>\n            Markets\n          </div>\n          <div id=\"R4-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px', width: '270px' }}>\n            crypto.html#markets\n          </div>\n          <div id=\"R5-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Inspect asset readings and risk\n          </div>\n        </div>\n        <div id=\"R6-0\" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', fontFamily: 'var(--font-ui)', gap: '24px', paddingBlock: '13px' }}>\n          <div id=\"R7-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', fontWeight: 600, lineHeight: '16px', width: '150px' }}>\n            Scenarios\n          </div>\n          <div id=\"R8-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px', width: '270px' }}>\n            crypto.html#scenarios\n          </div>\n          <div id=\"R9-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Challenge paths, save context and review history\n          </div>\n        </div>\n      </div>\n      <div id=\"RA-0\" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-ui)', padding: '24px' }}>\n        <div id=\"RB-0\" style={{ boxSizing: 'border-box', paddingBottom: '20px' }}>\n          <div id=\"RC-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '17px', fontWeight: 600, lineHeight: '22px' }}>\n            Interaction scorecards\n          </div>\n        </div>\n        <div id=\"RD-0\" style={{ borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBottom: '14px' }}>\n          <div id=\"RE-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '11px', lineHeight: '14px', width: '190px' }}>\n            INTERACTION\n          </div>\n          <div id=\"RF-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '11px', lineHeight: '14px', width: '90px' }}>\n            DESIGN\n          </div>\n          <div id=\"RG-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '11px', lineHeight: '14px', width: '105px' }}>\n            UI\n          </div>\n          <div id=\"RH-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '11px', lineHeight: '14px', width: '345px' }}>\n            DATA / SERVICE\n          </div>\n          <div id=\"RI-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '11px', lineHeight: '14px', width: '440px' }}>\n            BEHAVIOR &amp; ACCEPTANCE\n          </div>\n        </div>\n        <div id=\"3KG-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '16px' }}>\n          <div id=\"3KH-0\" style={{ boxSizing: 'border-box', color: '#202832', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', fontWeight: 600, lineHeight: '18px', width: '190px' }}>\n            Saved-case restore\n          </div>\n          <div id=\"3KI-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '90px' }}>\n            09, 12–14\n          </div>\n          <div id=\"3KJ-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '105px' }}>\n            Implemented · Draft\n          </div>\n          <div id=\"3KK-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '345px' }}>\n            Existing local snapshot owner. Original fields, horizon and source digest; legacy digest is optional.\n          </div>\n          <div id=\"3KL-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '440px' }}>\n            30D from a 7D view retains its original conditions. No current-evidence substitution. Original 7D fixture stays 7D.\n          </div>\n        </div>\n        <div id=\"3KN-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '16px' }}>\n          <div id=\"3KO-0\" style={{ boxSizing: 'border-box', color: '#202832', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', fontWeight: 600, lineHeight: '18px', width: '190px' }}>\n            Review → case\n          </div>\n          <div id=\"3KP-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '90px' }}>\n            R4.06 · 10, 15\n          </div>\n          <div id=\"3KQ-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '105px' }}>\n            Implemented · Draft\n          </div>\n          <div id=\"3KR-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '345px' }}>\n            Existing drawer history. Same current ID + horizon, or exact saved revision. Detached entries replace into that case.\n          </div>\n          <div id=\"3KS-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '440px' }}>\n            Match panel/revision/horizon/cutoff to restore disclosure, scroll and usable focus. Parent returns one level; Close exits the journey. New current reviews start at top.\n          </div>\n        </div>\n        <div id=\"3KU-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '16px' }}>\n          <div id=\"3KV-0\" style={{ boxSizing: 'border-box', color: '#202832', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', fontWeight: 600, lineHeight: '18px', width: '190px' }}>\n            Save / Remove\n          </div>\n          <div id=\"3KW-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '90px' }}>\n            R4.06 · 11, 16\n          </div>\n          <div id=\"3KX-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '105px' }}>\n            Implemented · Draft\n          </div>\n          <div id=\"3KY-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '345px' }}>\n            Existing collection, drawer and status owners. Explicit intent; one write with exact readback. No storage replay or second feedback lifecycle.\n          </div>\n          <div id=\"3KZ-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '440px' }}>\n            Separate actions with complete keyboard focus visible below the sticky header. Confirmed changes retain reading. Owned failures reveal their message without rebuilding or moving focus. Disabled Save stays inert.\n          </div>\n        </div>\n        <div id=\"3OA-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '16px' }}>\n          <div id=\"3OF-0\" style={{ boxSizing: 'border-box', color: '#202832', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', fontWeight: 600, lineHeight: '18px', width: '190px' }}>\n            Navigation\n          </div>\n          <div id=\"3OE-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '90px' }}>\n            R4.01–07\n          </div>\n          <div id=\"3OD-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '105px' }}>\n            Implemented · Draft\n          </div>\n          <div id=\"3OC-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '345px' }}>\n            Existing R4 routing · address() / update() / apply()\n          </div>\n          <div id=\"3OB-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '440px' }}>\n            Native links keep h/window/q/filter/sort. If the old view owns focus, focus the destination tab before hiding it. Newer URL/locale/history/focus or a removed target cancels this continuation.\n          </div>\n        </div>\n        <div id=\"3OO-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '16px' }}>\n          <div id=\"3OT-0\" style={{ boxSizing: 'border-box', color: '#202832', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', fontWeight: 600, lineHeight: '18px', width: '190px' }}>\n            Scenario windows\n          </div>\n          <div id=\"3OS-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '90px' }}>\n            R4.01 / 02 / 04\n          </div>\n          <div id=\"3OR-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '105px' }}>\n            Implemented · Draft\n          </div>\n          <div id=\"3OQ-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '345px' }}>\n            Existing apply() + supplied dates/progress. Shared drawer and Save rules stay unchanged.\n          </div>\n          <div id=\"3OP-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '440px' }}>\n            Supplied dates only; UTC expiry day included. Evidence status stays independent. Invalid or future windows retain recorded wording. Refresh on apply; no timer.\n          </div>\n        </div>\n      </div>\n    </div>\n  )",
+      "after": "(\n    <div id=\"QI-0\" style={{ backgroundColor: 'var(--mx-light-bg)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-ui)', fontSynthesis: 'none', gap: '24px', height: '1200px', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', padding: '40px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>\n      <div id=\"QJ-0\" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-ui)', gap: '12px' }}>\n        <div id=\"QK-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', fontFamily: 'var(--font-ui)', fontSize: '11px', fontWeight: 600, letterSpacing: '1.2px', lineHeight: '14px' }}>\n          R4 / 08 · BUILD AUTHORITY &amp; STATE SCORECARD · 9 NOV 2026\n        </div>\n        <div id=\"QL-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.65px', lineHeight: '34px' }}>\n          A complete journey. An explicit build contract.\n        </div>\n        <div id=\"QM-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '14px', lineHeight: '150%' }}>\n          R4.01–08 supersede the seven archived R3 boards. Base: Macro PR #9580. Candidate upgrades: Draft PR #10901 · 480ae8e. Saved-case states 09–18 + Build 3IP-0: Saved cases · Candidate UI + results proposal.\n        </div>\n        <div id=\"QN-0\" style={{ boxSizing: 'border-box', display: 'flex', gap: '24px' }}>\n          <div id=\"QO-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Design applied in Paper\n          </div>\n          <div id=\"QP-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Private implementation review available\n          </div>\n          <div id=\"QQ-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Public-route cutover remains an acceptance gate\n          </div>\n        </div>\n      </div>\n      <div id=\"QR-0\" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-ui)', padding: '24px' }}>\n        <div id=\"QS-0\" style={{ boxSizing: 'border-box', paddingBottom: '16px' }}>\n          <div id=\"QT-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '17px', fontWeight: 600, lineHeight: '22px' }}>\n            Four tasks. Two replacement entry points.\n          </div>\n        </div>\n        <div id=\"QU-0\" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', fontFamily: 'var(--font-ui)', gap: '24px', paddingBlock: '13px' }}>\n          <div id=\"QV-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', fontWeight: 600, lineHeight: '16px', width: '150px' }}>\n            Overview\n          </div>\n          <div id=\"QW-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px', width: '270px' }}>\n            crypto.html\n          </div>\n          <div id=\"QX-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Read the current setup and next conditions\n          </div>\n        </div>\n        <div id=\"QY-0\" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', fontFamily: 'var(--font-ui)', gap: '24px', paddingBlock: '13px' }}>\n          <div id=\"QZ-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', fontWeight: 600, lineHeight: '16px', width: '150px' }}>\n            Bitcoin\n          </div>\n          <div id=\"R0-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px', width: '270px' }}>\n            vector.html\n          </div>\n          <div id=\"R1-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Inspect structure, evidence and canonical model\n          </div>\n        </div>\n        <div id=\"R2-0\" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', fontFamily: 'var(--font-ui)', gap: '24px', paddingBlock: '13px' }}>\n          <div id=\"R3-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', fontWeight: 600, lineHeight: '16px', width: '150px' }}>\n            Markets\n          </div>\n          <div id=\"R4-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px', width: '270px' }}>\n            crypto.html#markets\n          </div>\n          <div id=\"R5-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Inspect asset readings and risk\n          </div>\n        </div>\n        <div id=\"R6-0\" style={{ alignItems: 'center', borderTopColor: 'var(--mx-light-line)', borderTopStyle: 'solid', borderTopWidth: '1px', boxSizing: 'border-box', display: 'flex', fontFamily: 'var(--font-ui)', gap: '24px', paddingBlock: '13px' }}>\n          <div id=\"R7-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', fontWeight: 600, lineHeight: '16px', width: '150px' }}>\n            Scenarios\n          </div>\n          <div id=\"R8-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-info)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px', width: '270px' }}>\n            crypto.html#scenarios\n          </div>\n          <div id=\"R9-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '12.5px', lineHeight: '16px' }}>\n            Challenge paths, save context and review history\n          </div>\n        </div>\n      </div>\n      <div id=\"RA-0\" style={{ backgroundColor: 'var(--mx-light-panel)', borderColor: 'var(--mx-light-line)', borderRadius: '12px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-ui)', padding: '24px' }}>\n        <div id=\"RB-0\" style={{ boxSizing: 'border-box', paddingBottom: '20px' }}>\n          <div id=\"RC-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-text)', fontFamily: 'var(--font-ui)', fontSize: '17px', fontWeight: 600, lineHeight: '22px' }}>\n            Interaction scorecards\n          </div>\n        </div>\n        <div id=\"RD-0\" style={{ borderBottomColor: 'var(--mx-light-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBottom: '14px' }}>\n          <div id=\"RE-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '11px', lineHeight: '14px', width: '190px' }}>\n            INTERACTION\n          </div>\n          <div id=\"RF-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '11px', lineHeight: '14px', width: '90px' }}>\n            DESIGN\n          </div>\n          <div id=\"RG-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '11px', lineHeight: '14px', width: '105px' }}>\n            UI\n          </div>\n          <div id=\"RH-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '11px', lineHeight: '14px', width: '345px' }}>\n            DATA / SERVICE\n          </div>\n          <div id=\"RI-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', flexShrink: 0, fontFamily: 'var(--font-ui)', fontSize: '11px', lineHeight: '14px', width: '440px' }}>\n            BEHAVIOR &amp; ACCEPTANCE\n          </div>\n        </div>\n        <div id=\"3KG-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '16px' }}>\n          <div id=\"3KH-0\" style={{ boxSizing: 'border-box', color: '#202832', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', fontWeight: 600, lineHeight: '18px', width: '190px' }}>\n            Saved-case restore\n          </div>\n          <div id=\"3KI-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '90px' }}>\n            09, 12–14\n          </div>\n          <div id=\"3KJ-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '105px' }}>\n            Implemented · Draft\n          </div>\n          <div id=\"3KK-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '345px' }}>\n            Existing local snapshot owner. Original fields, horizon and source digest; legacy digest is optional.\n          </div>\n          <div id=\"3KL-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '440px' }}>\n            30D from a 7D view retains its original conditions. No current-evidence substitution. Original 7D fixture stays 7D.\n          </div>\n        </div>\n        <div id=\"3KN-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '16px' }}>\n          <div id=\"3KO-0\" style={{ boxSizing: 'border-box', color: '#202832', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', fontWeight: 600, lineHeight: '18px', width: '190px' }}>\n            Review → case\n          </div>\n          <div id=\"3KP-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '90px' }}>\n            R4.06 · 10, 15\n          </div>\n          <div id=\"3KQ-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '105px' }}>\n            Implemented · Draft\n          </div>\n          <div id=\"3KR-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '345px' }}>\n            Existing drawer history. Same current ID + horizon, or exact saved revision. Detached entries replace into that case.\n          </div>\n          <div id=\"3KS-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '440px' }}>\n            Match panel/revision/horizon/cutoff to restore disclosure, scroll and usable focus. Parent returns one level; Close exits the journey. New current reviews start at top.\n          </div>\n        </div>\n        <div id=\"3KU-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '16px' }}>\n          <div id=\"3KV-0\" style={{ boxSizing: 'border-box', color: '#202832', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', fontWeight: 600, lineHeight: '18px', width: '190px' }}>\n            Save / Remove\n          </div>\n          <div id=\"3KW-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '90px' }}>\n            R4.06 · 11, 16\n          </div>\n          <div id=\"3KX-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '105px' }}>\n            Implemented · Draft\n          </div>\n          <div id=\"3KY-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '345px' }}>\n            Existing collection, drawer and status owners. Explicit intent; one write with exact readback. No storage replay or second feedback lifecycle.\n          </div>\n          <div id=\"3KZ-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '440px' }}>\n            Separate actions; keep keyboard focus visible. Confirmed changes retain reading and fresh feedback. Failures reveal their message without rebuilding or moving focus. Task changes clear old feedback. Disabled Save stays inert.\n          </div>\n        </div>\n        <div id=\"3OA-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '16px' }}>\n          <div id=\"3OF-0\" style={{ boxSizing: 'border-box', color: '#202832', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', fontWeight: 600, lineHeight: '18px', width: '190px' }}>\n            Navigation\n          </div>\n          <div id=\"3OE-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '90px' }}>\n            R4.01–07\n          </div>\n          <div id=\"3OD-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '105px' }}>\n            Implemented · Draft\n          </div>\n          <div id=\"3OC-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '345px' }}>\n            Existing R4 routing · address() / update() / apply()\n          </div>\n          <div id=\"3OB-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '440px' }}>\n            Native links keep h/window/q/filter/sort. If the old view owns focus, focus the destination tab before hiding it. Newer URL/locale/history/focus or a removed target cancels this continuation.\n          </div>\n        </div>\n        <div id=\"3OO-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '16px', paddingBlock: '16px' }}>\n          <div id=\"3OT-0\" style={{ boxSizing: 'border-box', color: '#202832', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', fontWeight: 600, lineHeight: '18px', width: '190px' }}>\n            Scenario windows\n          </div>\n          <div id=\"3OS-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '90px' }}>\n            R4.01 / 02 / 04\n          </div>\n          <div id=\"3OR-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '105px' }}>\n            Implemented · Draft\n          </div>\n          <div id=\"3OQ-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '345px' }}>\n            Existing apply() + supplied dates/progress. Shared drawer and Save rules stay unchanged.\n          </div>\n          <div id=\"3OP-0\" style={{ boxSizing: 'border-box', color: '#526074', flexShrink: '0', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12.5px', lineHeight: '18px', width: '440px' }}>\n            Supplied dates only; UTC expiry day included. Evidence status stays independent. Invalid or future windows retain recorded wording. Refresh on apply; no timer.\n          </div>\n        </div>\n      </div>\n    </div>\n  )",
+      "inverse_exact": true
+    },
+    {
+      "id": "3IP-0",
+      "before": "(\n    <div id=\"3IP-0\" style={{ backgroundColor: '#F7F9FC', borderColor: '#D9DFE8', borderRadius: '16px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '24px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '40px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>\n      <div id=\"3IQ-0\" style={{ boxSizing: 'border-box', color: '#2459D3', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, letterSpacing: '1px', lineHeight: '18px' }}>\n        BUILDER HANDOFF · SAVED CASES + KEYBOARD CONTINUITY · 9 NOV 2026\n      </div>\n      <div id=\"3IR-0\" style={{ boxSizing: 'border-box', color: '#1F2937', fontFamily: '\"Inter-Bold\", \"Inter\", system-ui, sans-serif', fontSize: '32px', fontWeight: 700, lineHeight: '40px' }}>\n        Keep the reader. Keep focus in view.\n      </div>\n      <div id=\"3IS-0\" style={{ boxSizing: 'border-box', color: '#526074', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>\n        Macro PR #10901 · bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4 · dependent open Draft. Native keyboard focus now clears drawer edges and the actual sticky header, including wrapped saved titles. Explicit reading restoration keeps its scroll. States 09–18 retain saved identity and recovery. PR #9580 remains the incumbent base at 5e496c24c962e85a4f7f514dd43dc61443b95cab. Historical fixtures and synthetic storage are not personal records or current-market evidence.\n      </div>\n      <div id=\"3IU-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3IV-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          01 · Source &amp; fixtures\n        </div>\n        <div id=\"3IW-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Continue templates/crypto_intelligence_r4.js/.css and the existing drawer, route, history, status and storage owners. Seven source/generated/test paths change; 14 recorded inputs remain exact. Build map: research/design_candidates/crypto_snapshot_safety_20261109/README.md. Read DRAWER_FOCUS.md with CURRENT_ACTIONS.md, CURRENT_SAVE_READING.md, SNAPSHOT_SAFETY.md, CURRENT_CASE_RETURN.md, NAVIGATION.md and FROZEN_LAYOUT.md.<br /><br />30-day fixture: revision r4-display:2026-10-17:30:continuation; BTC; cutoff 17 Oct 2026; expiry 16 Nov; daily close above $86,595, then stronger spot demand. Its 60 prior closes run 18 Aug–16 Oct, range $64,681–$86,595. The older 7-day failure case uses $81,566 and expires 24 Oct. Keep the original horizons/ranges separate. Tests use explicit historical time anchors.\n        </div>\n      </div>\n      <div id=\"3IY-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3IZ-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          02 · Resolve the saved record\n        </div>\n        <div id=\"3J0-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented: the existing mmx.crypto.r4.scenarios.v1 reader separates the ready full collection from unavailable storage. Requested saved-item and memory-saved revisions need one usable exact match, supported horizon, real cutoff/expiry dates and original bilingual case fields. Duplicate/malformed/missing requested versions never borrow current context. Storage-bearing panels preflight before DOM replacement and yield to newer navigation/focus.<br /><br />Optional evidence has its own display qualification. Missing issue_evidence supports legacy state 14. A present unusable digest uses new state 17 / 3LJ-0. Displayed family names/states must be nonempty strings; snapshot dates pass savedDay(). Mixed entries retain readable values and identify unreadable entries. No original storage bytes are changed or current evidence substituted.\n        </div>\n      </div>\n      <div id=\"3J2-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3J3-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          03 · Return is a parent action\n        </div>\n        <div id=\"3J4-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented and verified: managed review with an exact immediate saved-item parent → “← Saved case” → one native history.back(). A review opened from a detached saved-item can still have this real parent. A truly detached review uses “Open saved case” and replaces the current entry with that exact version.<br /><br />A bounded pending return intent suppresses duplicate activation and matches only the expected arrival. Missing, duplicate or unreadable versions stay on the current entry with explicit recovery. Arrival re-reads before restoring any old content. Close remains the whole-drawer journey exit, never the parent action. No parallel router, history stack or saved-case store is added.\n        </div>\n      </div>\n      <div id=\"3J6-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3J7-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          04 · Keep horizons separate\n        </div>\n        <div id=\"3J8-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented and verified: saved list items pass their validated original horizon. A 30-day saved case opened from the 7-day view stays 30-day through review, parent return and native Back/Forward. Close restores the original 7-day ancestor and its other route parameters. A legacy parent horizon is repaired through replaceState in the same entry, without a second parent or a changed outer origin.<br /><br />Original 7-day item H4-0 maps to state 14 / 3BM-0; the 30-day list item maps to state 09 / 3BC-0. Review is state 10 / 3BE-0; detached review is state 15 / 3BO-0; unavailable is state 11 / 3BG-0. State 12 / 3BI-0 is the same saved-item with evidence expanded, not another route.\n        </div>\n      </div>\n      <div id=\"3JA-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JB-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          05 · Original condition first\n        </div>\n        <div id=\"3JC-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented: original title, asset, saved horizon, labeled cutoff and complete condition are immediately readable. Native “Original case details” retains sequence, invalidation, counterpoint, next check recorded then, expiry, prior-close window/range and the research qualification. “Original evidence” holds qualified captured readings and their snapshot dates. Historical review is the clear 48px primary action; Remove remains separate.<br /><br />Today's expiry stays distinct from original progress. Nonexpired retained progress says “At cutoff”; an expired case keeps its lifecycle warning and original progress inside details. Missing localized progress is unavailable, never inferred from levels or a generic conditional state: new state 18 / 3MC-0. Snapshot dates are not independent observation dates. None of these states creates forecast or model authority.\n        </div>\n      </div>\n      <div id=\"3JE-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JF-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          06 · Actions, reading &amp; motion\n        </div>\n        <div id=\"3JG-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Current Review and Save/Remove use 48px targets with 12px separation; Inspect has its own row, at least 44px high. Save is primary, Remove neutral, disabled Save inactive. Native keyboard scrolling keeps the whole focus ring visible. The existing dialog requests 9px clearance to provide at least 8px after fractional rounding. A ResizeObserver publishes only the actual sticky-header height to CSS; it never focuses, scrolls, renders or writes history.<br /><br />Current/saved reading still uses history.state.reading, qualified by panel/revision/horizon/cutoff. Confirmed current changes restore fresh disclosure/scroll and persist the resulting key before terminal focus. Explicit preventScroll retains the reader; newer route/history/focus wins. Parent returns one level; Close exits the journey. New review entries start at top. Existing reduced motion remains; no height animation or nested scroller.\n        </div>\n      </div>\n      <div id=\"3JI-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JJ-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          07 · Explicit save &amp; remove\n        </div>\n        <div id=\"3JK-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Save and Remove retain displayed intent. Already-present Save and already-absent Remove make zero writes. Preserve saved_at, issue_evidence and unrelated parsed entries; Remove deletes every exact revision match. Only a new Save applies the existing 50-record retention policy; opaque entries survive. Read/parse/shape failure prevents mutation. One write requires exact serialized readback.<br /><br />One existing status node follows content; it cannot cover actions. Unconfirmed outcomes retain body and focus without retry. Only a still-owned focused action may minimally scroll the drawer to expose its failure below the sticky header. An already-visible message causes no scroll. Timeout hides the message while retaining its box; different later messages can have different heights. Successful frozen Remove still returns to Saved snapshots. Web Storage is not atomic cross-tab compare-and-swap.\n        </div>\n      </div>\n      <div id=\"3JM-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JN-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          08 · Honest recovery &amp; copy\n        </div>\n        <div id=\"3JO-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          State 11: the requested saved version is unavailable; offer Saved snapshots and current outlook without borrowing case fields. State 16: the collection cannot be read; offer Try reading again and current outlook. State 14: a legacy case has no evidence digest. State 17 / 3LJ-0: a retained digest is incomplete/unreadable while original conditions and cutoff remain usable. State 18 / 3MC-0: original progress was not retained; do not reconstruct it.<br /><br />“No changes were made” is reserved for pre-write failure. Confirmed removal followed by failed list reading uses neutral copy. Unconfirmed writes never auto-retry or redirect. The new evidence projection makes no writes and does not repair or delete malformed records. Recovery actions are visibly separated and keep their existing destinations.\n        </div>\n      </div>\n      <div id=\"3JQ-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JR-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          09 · Recorded native proof\n        </div>\n        <div id=\"3JS-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Keyboard-focus run: 48 browser cases passed in 43.40s; Chrome 157.0.8103.39; 48 contexts / 48 pages; zero page errors, external requests or WebSockets. Baseline: 7 failed / 41 passed. Initial candidate: 47 passed / 1 failed because native rounding left 7.84375px clearance. The final CSS allowance fixes it. All three runs use identical test bytes and the same 48 case IDs.<br /><br />Twenty-two layout samples retain exact body/header dimensions, scroll height and relative control geometry. All 28 final PNGs plus three baseline and one initial diagnostic are retained. Eleven final focus views and three baseline views were inspected. Earlier action/reading proofs keep their own scope; counts overlap. Exact proof: drawer-focus/PUBLICATION_RECEIPT.json. No cross-engine or assistive-technology certification is inferred.\n        </div>\n      </div>\n      <div id=\"3JU-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JV-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          10 · Delivery &amp; acceptance\n        </div>\n        <div id=\"3JW-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Source bbfdd6d9d039f4f08e17c6f1e917e535dd4b2ee4 / assets 4f86c987c57c: 39 source/document/evidence texts and 32 native PNGs read back exactly. Both source transforms reverse exactly; removing appended tests restores the parent browser module. States 17 / 3LJ-0 and 18 / 3MC-0 keep their optional-evidence meaning. Hosted/independent acceptance, merge, deployment and production replacement remain separate.<br /><br />Next: retire old feedback and its reserved timeout space when a task ends. Preserve current confirmation and the intentional frozen Remove → Saved result through the existing status/navigation owners. Alert gate HE-0, route-cutover QQ-0, H5/model and all release/admission holds remain. No forecast skill, model allocation or alert delivery is inferred.\n        </div>\n      </div>\n    </div>\n  )",
+      "after": "(\n    <div id=\"3IP-0\" style={{ backgroundColor: '#F7F9FC', borderColor: '#D9DFE8', borderRadius: '16px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '24px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '40px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>\n      <div id=\"3IQ-0\" style={{ boxSizing: 'border-box', color: '#2459D3', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, letterSpacing: '1px', lineHeight: '18px' }}>\n        BUILDER HANDOFF · SAVED CASES + FEEDBACK LIFETIME · 9 NOV 2026\n      </div>\n      <div id=\"3IR-0\" style={{ boxSizing: 'border-box', color: '#1F2937', fontFamily: '\"Inter-Bold\", \"Inter\", system-ui, sans-serif', fontSize: '32px', fontWeight: 700, lineHeight: '40px' }}>\n        Keep the reader. Clear the old result.\n      </div>\n      <div id=\"3IS-0\" style={{ boxSizing: 'border-box', color: '#526074', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px' }}>\n        Macro PR #10901 · 480ae8eb4f0e82065c324b56058c6c6eb25674b0 · dependent open Draft. Fresh results stay with their task. Navigation, Close/reopen, language changes and explicit Retry retire old messages and reserved space. Frozen Remove carries its confirmed result into Saved, even if the list becomes unreadable. States 09–18 retain saved identity and recovery. PR #9580 remains the incumbent base at 5e496c24c962e85a4f7f514dd43dc61443b95cab. Historical fixtures and synthetic storage are not personal records or current-market evidence.\n      </div>\n      <div id=\"3IU-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3IV-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          01 · Source &amp; fixtures\n        </div>\n        <div id=\"3IW-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Continue templates/crypto_intelligence_r4.js and existing update(), apply(), save() and toast() owners. Five source/generated/test paths change; 16 recorded inputs remain exact, including CSS. Build map: research/design_candidates/crypto_snapshot_safety_20261109/README.md. Read FEEDBACK_LIFETIME.md with CURRENT_ACTIONS.md, DRAWER_FOCUS.md, CURRENT_SAVE_READING.md and SNAPSHOT_SAFETY.md. Existing navigation and frozen-reading contracts remain.<br /><br />30-day fixture: revision r4-display:2026-10-17:30:continuation; BTC; cutoff 17 Oct 2026; expiry 16 Nov; daily close above $86,595, then stronger spot demand. Its 60 prior closes run 18 Aug–16 Oct, range $64,681–$86,595. The older 7-day failure case uses $81,566 and expires 24 Oct. Keep the original horizons/ranges separate. Tests use explicit historical time anchors.\n        </div>\n      </div>\n      <div id=\"3IY-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3IZ-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          02 · Resolve the saved record\n        </div>\n        <div id=\"3J0-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented: the existing mmx.crypto.r4.scenarios.v1 reader separates the ready full collection from unavailable storage. Requested saved-item and memory-saved revisions need one usable exact match, supported horizon, real cutoff/expiry dates and original bilingual case fields. Duplicate/malformed/missing requested versions never borrow current context. Storage-bearing panels preflight before DOM replacement and yield to newer navigation/focus.<br /><br />Optional evidence has its own display qualification. Missing issue_evidence supports legacy state 14. A present unusable digest uses new state 17 / 3LJ-0. Displayed family names/states must be nonempty strings; snapshot dates pass savedDay(). Mixed entries retain readable values and identify unreadable entries. No original storage bytes are changed or current evidence substituted.\n        </div>\n      </div>\n      <div id=\"3J2-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3J3-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          03 · Return is a parent action\n        </div>\n        <div id=\"3J4-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented and verified: managed review with an exact immediate saved-item parent → “← Saved case” → one native history.back(). A review opened from a detached saved-item can still have this real parent. A truly detached review uses “Open saved case” and replaces the current entry with that exact version.<br /><br />A bounded pending return intent suppresses duplicate activation and matches only the expected arrival. Missing, duplicate or unreadable versions stay on the current entry with explicit recovery. Arrival re-reads before restoring any old content. Close remains the whole-drawer journey exit, never the parent action. No parallel router, history stack or saved-case store is added.\n        </div>\n      </div>\n      <div id=\"3J6-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3J7-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          04 · Keep horizons separate\n        </div>\n        <div id=\"3J8-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented and verified: saved list items pass their validated original horizon. A 30-day saved case opened from the 7-day view stays 30-day through review, parent return and native Back/Forward. Close restores the original 7-day ancestor and its other route parameters. A legacy parent horizon is repaired through replaceState in the same entry, without a second parent or a changed outer origin.<br /><br />Original 7-day item H4-0 maps to state 14 / 3BM-0; the 30-day list item maps to state 09 / 3BC-0. Review is state 10 / 3BE-0; detached review is state 15 / 3BO-0; unavailable is state 11 / 3BG-0. State 12 / 3BI-0 is the same saved-item with evidence expanded, not another route.\n        </div>\n      </div>\n      <div id=\"3JA-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JB-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          05 · Original condition first\n        </div>\n        <div id=\"3JC-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Implemented: original title, asset, saved horizon, labeled cutoff and complete condition are immediately readable. Native “Original case details” retains sequence, invalidation, counterpoint, next check recorded then, expiry, prior-close window/range and the research qualification. “Original evidence” holds qualified captured readings and their snapshot dates. Historical review is the clear 48px primary action; Remove remains separate.<br /><br />Today's expiry stays distinct from original progress. Nonexpired retained progress says “At cutoff”; an expired case keeps its lifecycle warning and original progress inside details. Missing localized progress is unavailable, never inferred from levels or a generic conditional state: new state 18 / 3MC-0. Snapshot dates are not independent observation dates. None of these states creates forecast or model authority.\n        </div>\n      </div>\n      <div id=\"3JE-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JF-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          06 · Actions, reading &amp; motion\n        </div>\n        <div id=\"3JG-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Use one existing status node and five-second timer. Timeout retains space inside its task. At a task boundary, retire only the captured element/timer/text witness after existing preflight guards and before destination rendering or closing. Current confirmed Save/Remove retains its direct render and reading. Frozen Remove passes one synchronous result witness, qualified by the destination URL and language captured before the history write.<br /><br />An explicit handoff can preserve or retire only its supplied witness. If a newer result replaced it during a callback, leave that result alone. Status ownership never gates navigation; do not reissue confirmation after focus callbacks. Existing 48px/44px actions, 12px gaps, visible keyboard focus, qualified reading, one-level parent returns, whole-journey Close and reduced motion remain.\n        </div>\n      </div>\n      <div id=\"3JI-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JJ-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          07 · Explicit save &amp; remove\n        </div>\n        <div id=\"3JK-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Save and Remove retain displayed intent. Already-present Save and already-absent Remove make zero writes. Preserve saved_at, issue_evidence and unrelated parsed entries; Remove deletes every exact revision match. Only a new Save applies the existing 50-record retention policy; opaque entries survive. Read/parse/shape failure prevents mutation. One write requires exact serialized readback.<br /><br />One existing status node follows content; it cannot cover actions. Unconfirmed outcomes retain body and focus without retry. Only a still-owned focused action may minimally scroll the drawer to expose its failure below the sticky header. An already-visible message causes no scroll. Timeout hides the message while retaining its box; different later messages can have different heights. Successful frozen Remove still returns to Saved snapshots. Web Storage is not atomic cross-tab compare-and-swap.\n        </div>\n      </div>\n      <div id=\"3JM-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JN-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          08 · Honest recovery &amp; copy\n        </div>\n        <div id=\"3JO-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          State 11: the requested saved version is unavailable; offer Saved snapshots and current outlook without borrowing case fields. State 16: the collection cannot be read; offer Try reading again and current outlook. State 14: a legacy case has no evidence digest. State 17 / 3LJ-0: a retained digest is incomplete/unreadable while original conditions and cutoff remain usable. State 18 / 3MC-0: original progress was not retained; do not reconstruct it.<br /><br />“No changes were made” is reserved for pre-write failure. Confirmed removal followed by failed list reading uses neutral copy. Unconfirmed writes never auto-retry or redirect. The new evidence projection makes no writes and does not repair or delete malformed records. Recovery actions are visibly separated and keep their existing destinations.\n        </div>\n      </div>\n      <div id=\"3JQ-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JR-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          09 · Recorded native proof\n        </div>\n        <div id=\"3JS-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Feedback-lifetime run: 67 browser cases passed in 69.78s; Chrome 157.0.8103.39; 67 contexts / 67 pages; zero page errors, external requests or WebSockets. Initial parent baseline: 27 failed / 39 passed. Corrected new-case baseline: 26 failed / 4 passed. Two new-test harness corrections and one added handoff control are recorded; existing parent tests are unchanged.<br /><br />The final run contains 30 new and 37 retained cases. Corrected baseline and final module bytes match. All 23 final PNGs and two baseline comparisons are retained; 10 new final views and both comparisons were inspected. Exact proof: feedback-lifetime/PUBLICATION_RECEIPT.json. Earlier phase counts overlap; no cross-engine or assistive-technology certification is inferred.\n        </div>\n      </div>\n      <div id=\"3JU-0\" style={{ borderBottomColor: '#D9DFE8', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '32px', paddingBottom: '24px', width: '100%' }}>\n        <div id=\"3JV-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexShrink: '0', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '26px', width: '250px' }}>\n          10 · Delivery &amp; acceptance\n        </div>\n        <div id=\"3JW-0\" style={{ boxSizing: 'border-box', color: '#1F2937', flexBasis: '0%', flexGrow: '1', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '15px', lineHeight: '24px', minWidth: '0px', whiteSpace: 'pre-wrap' }}>\n          Source 480ae8eb4f0e82065c324b56058c6c6eb25674b0 / assets 89c2e5bd3fa3: 39 source/document/evidence texts and 25 native PNGs read back exactly. Six source transforms reverse exactly; removing appended tests restores the parent browser module. States 17 / 3LJ-0 and 18 / 3MC-0 keep their optional-evidence meaning. Hosted/independent acceptance, merge, deployment and production replacement remain separate.<br /><br />Next: tighten the Start guide around the current scenario workflow and the task → owner → contract → proof map. Alert gate HE-0, route-cutover QQ-0, H5/model and all release/admission holds remain. No forecast skill, model allocation or alert delivery is inferred.\n        </div>\n      </div>\n    </div>\n  )",
+      "inverse_exact": true
+    }
+  ],
+  "source_readback": {
+    "texts": [
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/PARENT_INPUTS.json",
+        "sha": "f9c10730c835eb151686aa5a79a401286afb9516",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/PARENT_RECEIPT.json",
+        "sha": "aa9854f3c7ff339b161ada70ef95ab89e5089939",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/PARENT_SNAPSHOT.py",
+        "sha": "078eb5b22e75b5450733b3d334fedaa4768c09f0",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/SOURCE_RECEIPT.json",
+        "sha": "3d73b36c75363f5cf2ad382f5ff723d28f82d029",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/TRANSFORMS.json",
+        "sha": "94681f1c1b1a2a2e93306c47b6bd4ac58f975dff",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/INITIAL_TEST_ADDITION.txt",
+        "sha": "61bfad4b6cd7a8e1c8bbf5c1fb4b2c84f3351d3f",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/HANDOFF_TEST_ADDITION.txt",
+        "sha": "de592f662fa0f04fcf925299854b7924e6d0f349",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/TEST_FIXES.json",
+        "sha": "69c4bee37a2b41e485334801644daa1cfca6d45d",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/TEST_ADDITION.txt",
+        "sha": "937998f84cffd56d035011550735cc2db2e81652",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/BASELINE_RUNNER.py",
+        "sha": "dd899fb1d36dde1a8eb8245925027ea64d7f33cc",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/CORRECTED_BASELINE_RUNNER.py",
+        "sha": "ce04cedb277a9212e01f464ad4d2d3f37a74c0e1",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/VERIFIED_RUNNER.py",
+        "sha": "b3587d1ec7fc7cd4c66183403dc2055578604201",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/PUBLICATION_READBACK.py",
+        "sha": "9ffd2c2eb265f62e26742ffac9be54af2b8fe227",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/BASELINE_RESULT.json",
+        "sha": "cf799e5b380f17737d294cb6b14ee66479ffe4f8",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/BASELINE_OBSERVATIONS.json",
+        "sha": "4bc5a945a00f21e00ef6861b42c43d2138a19275",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/BASELINE_STDOUT.txt",
+        "sha": "8d9e31b6c6b260ead5ae77957164692962d1d778",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/BASELINE_STDERR.txt",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/BASELINE_JUNIT.xml",
+        "sha": "600b3f6191ab390151ecee5d22f7a8b8ef470d6f",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/CORRECTED_BASELINE_RESULT.json",
+        "sha": "87483701e61a36bc81e68f4283e38bbba6727602",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/CORRECTED_BASELINE_OBSERVATIONS.json",
+        "sha": "99e6b4bc1644aae327e55e4fffb1918026a04df8",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/CORRECTED_BASELINE_STDOUT.txt",
+        "sha": "5e86d408ccfcdc58ebfea7bf9687c707af13127c",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/CORRECTED_BASELINE_STDERR.txt",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/CORRECTED_BASELINE_JUNIT.xml",
+        "sha": "8cd4229e8fe25a54fd52821e2621f7477c954026",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/VERIFIED_RESULT.json",
+        "sha": "49401b2ceeb5072230311b3036ccb4f2e9fd0050",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/VERIFIED_OBSERVATIONS.json",
+        "sha": "8dd47d352ffeb8fd22619a068ff4c524fa444f95",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/VERIFIED_STDOUT.txt",
+        "sha": "6740c0c09950ac8a9e44b74925735c4997a0886a",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/VERIFIED_STDERR.txt",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/VERIFIED_JUNIT.xml",
+        "sha": "a5499b95e932aa70ad5b9b2ae845057dc6d382c3",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/PUBLICATION_RECEIPT.json",
+        "sha": "f85c226201b83bf74ce702151a3f37d19aa62328",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/CAPTURE_REFERENCES.json",
+        "sha": "5d1965576fa9f24eb02a3b83e3eb1788c6d3f60a",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/FEEDBACK_LIFETIME.md",
+        "sha": "4b0fb4caba0d8713727f93e695c3b6cf09865257",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/README.md",
+        "sha": "336edb630b70808d03d24c0a897a8ecb249e4fd4",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/CURRENT_ACTIONS.md",
+        "sha": "f395b9aea7adbf977d92c2f39d572941d5fef0ab",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/DRAWER_FOCUS.md",
+        "sha": "48997276688477d5b65bac9df66d3e8db468ab69",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "templates/crypto_intelligence_r4.js",
+        "sha": "d76fa574ef612265a0043989365bd2b6a2f24f5c",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "site/crypto_intelligence_r4.js",
+        "sha": "d76fa574ef612265a0043989365bd2b6a2f24f5c",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "tests/test_crypto_intelligence_r4_browser.py",
+        "sha": "b8e4d9a2dfcbdf19767c588dc21f8d6207c532d5",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "site/crypto-r4.html",
+        "sha": "f3e529ac42b7348cd1a256ec273497d908b238c4",
+        "kind": "text",
+        "exact": true
+      },
+      {
+        "path": "site/vector-r4.html",
+        "sha": "68909c75af3f335c7532273a6816ef737ec6de36",
+        "kind": "text",
+        "exact": true
+      }
+    ],
+    "images": [
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-baseline-corrected/feedback-task-review-success-en-390.png",
+        "sha": "a3fe657696a2ae8107b3a9a22b9c2ee327e0ed32",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-baseline-corrected/feedback-task-review-failure-zh-320.png",
+        "sha": "b0e3bf1bca279eb6393f86f320a79dfcfd206ed5",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/current-return-details-en-390.png",
+        "sha": "052116d9013b0a3568fa705f68b9eb904c1c1036",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/current-return-details-zh-320.png",
+        "sha": "e4863ceba1daecd4ae4f0e4b075498793748db03",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/current-return-review-en-390.png",
+        "sha": "21c07fa072c928aaca721c27ec562b441c0a9dc2",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/current-return-review-zh-320.png",
+        "sha": "793cb5e2f77f0ac016576ce22e9328f4f49c59c3",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/current-save-reading-remove-en-390.png",
+        "sha": "0f59849ed3bb09939a3c8a166951e49f1f4ee727",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/current-save-reading-remove-expired-en-390.png",
+        "sha": "c5736f4c7856be8104b835d869d79cffa8c233e8",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/current-save-reading-remove-expired-zh-320.png",
+        "sha": "3c6eb73f3236722133a16e694aa27f18ae9b06bc",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/current-save-reading-remove-zh-320.png",
+        "sha": "4ac199926ae7ac7776b78a3636b465821a6d12a0",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/current-save-reading-save-en-390.png",
+        "sha": "a2265fb0960d964a6d6fa4057b204496a6e5b019",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/current-save-reading-save-zh-320.png",
+        "sha": "3e0d681418af7a0a732d035d73ddd988a648f8c3",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/feedback-retry-en-390.png",
+        "sha": "3856aeef38799b28a7e0d9c60f32444c6f8c955d",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/feedback-retry-zh-320.png",
+        "sha": "934f39f15f38f5d4a96f9ccc31b420d79195136a",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/feedback-task-demand-evidence-failure-en-390.png",
+        "sha": "b2a415f646689b412d4c4692bf362e512fc0de1a",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/feedback-task-demand-evidence-failure-zh-320.png",
+        "sha": "ceaa9381733f337f697dc4f4d26dab73ab5b019f",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/feedback-task-demand-evidence-success-en-390.png",
+        "sha": "b2a415f646689b412d4c4692bf362e512fc0de1a",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/feedback-task-demand-evidence-success-zh-320.png",
+        "sha": "ceaa9381733f337f697dc4f4d26dab73ab5b019f",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/feedback-task-review-failure-en-390.png",
+        "sha": "5622efd50d2c210b002e606d5150ce33430b84c3",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/feedback-task-review-failure-zh-320.png",
+        "sha": "69acf18e6a428b1373b269248b791f8fbe13835a",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/feedback-task-review-success-en-390.png",
+        "sha": "5622efd50d2c210b002e606d5150ce33430b84c3",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/feedback-task-review-success-zh-320.png",
+        "sha": "69acf18e6a428b1373b269248b791f8fbe13835a",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/navigation-return-1440-en.png",
+        "sha": "8e6081df59377a6cf780588abc1f03c04b5bb85b",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/navigation-return-320-en.png",
+        "sha": "4346f508202e03c1493699726a91ee130baeb49b",
+        "kind": "image",
+        "exact": true
+      },
+      {
+        "path": "research/design_candidates/crypto_snapshot_safety_20261109/feedback-lifetime/captures/feedback-lifetime-verified/navigation-return-390-zh.png",
+        "sha": "9c5b22177462980f33f85b5d986085f261116558",
+        "kind": "image",
+        "exact": true
+      }
+    ]
+  },
+  "paper_images": [
+    {
+      "nodeId": "QI-0",
+      "path": "research/design_candidates/production_design_20261102/audit_20261108/PAPER_CRYPTO_FEEDBACK_LIFETIME_SCORECARD_20261109.jpg",
+      "blob": "8052d16d6967b0635c9e882043be712af398fb1e"
+    },
+    {
+      "nodeId": "3IP-0",
+      "path": "research/design_candidates/production_design_20261102/audit_20261108/PAPER_CRYPTO_FEEDBACK_LIFETIME_BUILD_20261109.jpg",
+      "blob": "a83c7dfe9a86933d87daafd5ccd26d146d40b906"
+    }
+  ],
+  "visual_review": {
+    "roots_inspected": [
+      "QI-0",
+      "3IP-0"
+    ],
+    "new_native_crops_inspected": 10,
+    "baseline_crops_inspected": 2,
+    "retained_native_final_regression_crops": 13,
+    "qi_size": [
+      1440,
+      1200
+    ],
+    "builder_screenshot_resized_to": [
+      1162,
+      2000
+    ],
+    "builder_world_geometry_reported": false
+  },
+  "limits": [
+    "All 101 existing IDs, parent relations, order and exported styles remain exact; nine text nodes change and both full JSX inverses match.",
+    "The final run has 67 cases (30 new,37 retained). Initial baseline has 66; corrected new-case baseline has30. Two fixes affect only appended harness code, plus one separately added handoff control. No parent test function changed.",
+    "One existing status and timer remain. Retirement cannot erase a newer result; status ownership is not a navigation gate. The timeout retains space within its original task.",
+    "Chrome157.0.8103.39 local historical/synthetic proof only. No new hosted, cross-engine, assistive-technology, market freshness, personal-record, model/alert/result/receipt/release/admission acceptance.",
+    "The full Build screenshot was inspected. Height/world coordinates remain unreported; no freeform placement claim. No held style operation was used."
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "fixture_only": true,
+  "proof_label": "successor-0c4493",
+  "fixture_manifest_sha256": "0a78ce798897b97d3847977c770ef911f65238f7b466956d57d853d1860b6f6e",
+  "viewport": [
+    1440,
+    1000
+  ],
+  "theme": "dark",
+  "lang": "en",
+  "steps": [
+    {
+      "name": "market map to native Cycles through actual Next same-document commit",
+      "details": null
+    },
+    {
+      "name": "State-only chart edit survives a parent reload without a new navigation entry",
+      "details": null
+    },
+    {
+      "name": "actual Dossier, chart settings and both evidence disclosures",
+      "details": null
+    },
+    {
+      "name": "Dossier Members action preserves the Central snapshot",
+      "details": {
+        "href": "http://localhost:3100/basket/us_sector_energy.html#hold",
+        "owner": "account:e2e-user-default"
+      }
+    },
+    {
+      "name": "Members to actual Company route retains both destinations",
+      "details": {
+        "href": "http://localhost:3100/terminal?symbol=XOM&from=macro",
+        "entry": "65175fd1-7242-4961-963c-bee1c3243840"
+      }
+    },
+    {
+      "name": "Company reload preserves entry-owned return context and native dark presentation",
+      "details": null
+    },
+    {
+      "name": "Back to Members restores source, exact sort, listing focus and viewport",
+      "details": null
+    },
+    {
+      "name": "Return to Cycles restores chart, Dossier values page, sources and exact focus",
+      "details": null
+    },
+    {
+      "name": "Cycles to original market map restores observed-history mode",
+      "details": null
+    }
+  ],
+  "errors": [],
+  "restore_receipts": [
+    {
+      "protocol": "mmx.shared-shell.v1",
+      "frameGeneration": "d6dc2c8f-e287-4989-8eff-095dd2a6a799",
+      "type": "RESTORE_RESULT",
+      "restoreId": "50c9a531-2139-45b1-b2cb-680ca5a4302e",
+      "snapshotId": "92aae43d-1d7d-48b3-98c1-af8d96a4963b:0",
+      "canonicalPath": "/basket/us_sector_energy.html#hold",
+      "outcome": "applied",
+      "reason": null,
+      "publicationId": null,
+      "membersSourceId": "members1-a902854d9996efbe41fe79dcce3183e9b196500fdfbb7621ae341c35780f3b8e",
+      "focus": "applied",
+      "viewport": "applied"
+    },
+    {
+      "protocol": "mmx.shared-shell.v1",
+      "frameGeneration": "967b2395-2ad2-4558-b57d-096a70b9c986",
+      "type": "RESTORE_RESULT",
+      "restoreId": "7c45b96f-b839-430b-a5a0-bd3e5d804943",
+      "snapshotId": "3be32958-e324-4fb4-88f8-90b4a5b92a10:0",
+      "canonicalPath": "/sector_central.html?g=XLE&cycle=xle#cycles",
+      "outcome": "applied",
+      "reason": null,
+      "publicationId": "cycp1-45de93acd524e9e0b0a9a5354a23025d54e06fef1871576c2ce4002dc81147bb",
+      "membersSourceId": null,
+      "focus": "applied",
+      "viewport": "applied"
+    }
+  ],
+  "observed_presentation": {
+    "theme": "dark",
+    "lang": "en"
+  },
+  "rendered_presentation": [
+    {
+      "capture": "01-central-dossier",
+      "path": "/sector_central.html",
+      "theme": "dark",
+      "lang": "en",
+      "boundary": "shared presentation"
+    },
+    {
+      "capture": "02-members",
+      "path": "/basket/us_sector_energy.html",
+      "theme": "dark",
+      "lang": "en",
+      "boundary": "shared presentation"
+    },
+    {
+      "capture": "03-company",
+      "path": "/terminal",
+      "theme": "dark",
+      "lang": "en",
+      "boundary": "shared presentation"
+    },
+    {
+      "capture": "04-members-returned",
+      "path": "/basket/us_sector_energy.html",
+      "theme": "dark",
+      "lang": "en",
+      "boundary": "shared presentation"
+    },
+    {
+      "capture": "05-central-returned",
+      "path": "/sector_central.html",
+      "theme": "dark",
+      "lang": "en",
+      "boundary": "shared presentation"
+    }
+  ],
+  "central_viewport_readback": {
+    "actual": {
+      "scrollY": 5122,
+      "focus": {
+        "kind": "dossier",
+        "id": "action-members"
+      }
+    },
+    "expected": {
+      "scrollY": 5122,
+      "focus": {
+        "kind": "dossier",
+        "id": "action-members"
+      }
+    }
+  },
+  "passed": true
+}

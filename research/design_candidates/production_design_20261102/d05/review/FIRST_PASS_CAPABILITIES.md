@@ -1,0 +1,142 @@
+# D05 capability/task manifest for first-pass review
+
+Job: An investor identifies sector and theme leadership, investigates rotation and cycle evidence, reaches a constituent Company, and returns to the same analytical context. The user also moves between supported markets and historical periods.
+
+Task path: Market → Sector brief → Rotation/cycle evidence → Theme or constituent → Company → exact return.
+
+Existing capabilities to retain across the complete family (not all must be visible simultaneously in these two submitted compositions):
+
+- R3A-01: Six action-lane keys (`buy_now,buy_soon,on_the_run,take_profits,hold,avoid`) folding into five rendered columns (hold+avoid share "Stand aside")
+- R3A-02: Exact EN/ZH lane labels + subcopy (Buy now / Almost ready / In favour — don't chase / Take profits / Stand aside)
+- R3A-03: Lane header counts computed off the FULL board, never gated ("counts are free, names are paid")
+- R3A-04: Row merge order: theme (basket) rows lead, sector rows follow, within each lane
+- R3A-05: `buy_soon` sector sub-list sorted by `days` ascending
+- R3A-06: Theme row `score` + `perf_20d_rel` numeric fields
+- R3A-07: Sector row qualitative `stat_en`/`stat_zh` chip (no blended score/perf pair)
+- R3A-08: Per-sector conviction score (`sectordata/sector_central.json`, distinct artifact from the action board)
+- R3A-09: Sector row click destination (`US_SECTOR_PAGE` override table → `sectors/<TICKER>.html` fallback)
+- R3A-10: Theme row click destination (`basket/<id>.html`)
+- R3A-11: Bottoming-watch row click destination (href set by producer, consumed verbatim)
+- R3A-12: "+N more" links → `sector_central.html#actnow-section` (same-page anchor, all five lanes)
+- R3A-13: Lane-foot "Drill to stocks →" → `#confluence` in-page view switch
+- R3A-14: Premium gate switch + preview/locked split (`config.yml sector_central_gate: gated:true, preview_rows:3`)
+- R3A-15: Split computed twice (Python payload + Jinja shell) from the identical source list — shell/payload cannot disagree by construction
+- R3A-16: `premiumdata/sector_central.json` payload, `tier_payload.v1` schema, written unconditionally every build
+- R3A-17: `sector_central.json` payload kept separate from `us_stocks.json` (no shared-file overwrite race)
+- R3A-18: `/premiumdata/` URL-level enforcement ahead of the site-wide paywall switch
+- R3A-19: Authenticated hydration flow (`whenAuthSettled` → fetch → `hydrate()` schema/page validation → DOM insert by `data-ab-lane` → `restoreFold` → disclosure-line removal)
+- R3A-20: `si-read-overview` summary strip (`readOverview()`, composed purely from `theme_intel.act_now.buy` length + hero attrs)
+- R3A-21: Bottoming Watch: strict display-tier/watch-only contract (`signal`/`timing_state` payload fields deliberately never rendered)
+- R3A-22: Bottoming Watch exact EN/ZH wording (lane title, subcopy, per-row chip, gate-conflict chip, dual-read chip, empty state, null disclosure)
+- R3A-23: Bottoming Watch full-width strip layout under the five lanes, explicitly NOT a sixth action lane
+- R3A-24: Overview hero / "This week's handoff" / "What changed" leadership context, sourced from `si_handoff.json` `theme_context`/`factor_season`/`flow`
+- R3A-25: Hero fallback to generic "US Sector Intelligence" when `si_handoff.json` absent/corrupt
+- R3A-26: Structural separation: no code path connects hero leadership text to action-board lane placement
+- R3A-27: Overview absolute-clock stale guard (`_dtpState`, 12h threshold vs `Date.now()`)
+- R3A-28: Zero-vs-missing distinction (`is not none`/`is defined` idioms, never truthiness)
+- R3A-29: Per-lane empty-state copy via Jinja `{% for/else %}` (genuine zero-length construct, not a string check)
+- R3A-30: Independent fail-soft degrade per secondary source (`ctx`/`action_board`/`_bottoming`/`flows_html`, each with its own fallback)
+- R3A-31: Fetch-fail / malformed-JSON collapse to one fixed "Data failed to load — please refresh." string
+- R3A-32: 401/403/offline collapse to no-op keeping the server-baked preview + sign-in disclosure line
+- R3A-33: `dispshort()` curated long-name abbreviation table + CSS ellipsis fallback for unlisted names
+- R3A-34: Fold/show-more at the 3-row threshold, CSS-suppressed control below threshold; DOM-side `restoreFold()` reimplements the same threshold for the hydrate path
+- R3A-35: Self-grader / Track Record (`#grader`, `engine.sector_central_grader`, nightly-sole-advancer, ledger NEVER read back into a live score)
+- R3A-36: Rotation map SVG quadrant scatter (`#rvx-rmap`), context-labeled, no gated call
+- R3A-37: Rotation-map accessible text/table equivalent (`#rvx-board`, full ranked list)
+- R3A-38: Linked-board `reco` tag rendering (`enter/accumulate/hold/trim/avoid` → Buy/Add/Hold/Trim/Avoid)
+- R3A-39: Sector-cycle clock chart (`#sc-chart`, lazy-mounted `@cycles`)
+- R3A-40: "One gated read per sector" board (`#board`, 11 GICS SPDRs, engine.sector_central conviction chain)
+- R3A-41: `si-read-map` strip (`readMap()`, same `theme_intel.themes` source as the board)
+- R3A-42: Map-view context disclaimer copy ("Only the lanes above carry a gated, graded call")
+- R3A-43: `si-read-moving` strip (counts up/down movers from `pulse_rank_delta_5d` sign only)
+- R3A-44: Rotation-events / flow-lane board (`#rc-events-mount`)
+- R3A-45: Whole-market rotation map (`#rotation-app`, 269 subsectors + Mag-7 composite) with `drawStrip()`/`drawTrackRecord()` text accessible equivalents
+- R3A-46: Desk-watch panel (`#desk-watch-mount`, turn desk + tape-onset, both DISPLAY-ONLY by producer docstring)
+- R3A-47: Moving's canonical binding = five nightly artifacts (`rotation_events.json`, `sector_fragmentation.json`, `subsector_rotation.json`, `oracle_turn_desk.json`, `oracle_tape_onset.json`) — NOT `si_handoff.json`
+- R3A-48: `si-read-money` strip (`data-regime` attribute, baked server-side from `si_handoff.json` `flow.cluster.regime`)
+- R3A-49: Money-flow verdict card (server `flow.cluster.regime` headline + client `etf_pulse.json`/`vol_sentiment.json` chips)
+- R3A-50: Market breadth gcards (`#mkt-breadth` etc., `theme_intel.market_concentration`, per-field null guards)
+- R3A-51: Sector-ETF flow board table (`#sc-flows`, server-rendered, display-only)
+- R3A-52: Market-heat treemap (`#heatmap-scorecard`) with client polling on `generated_utc` change
+- R3A-53: Index-leadership strip (`#scc-leadership`) with self-graded "Validated / Measuring / Accruing" sub-line
+- R3A-54: Client-side filter/sort controls (mode tabs, category chips, column sort, chart range picker) with `localStorage` persistence, no server round-trip
+- R3A-55: Full basket table (`#btable`): name, optional Group-pulse, sparkline, 1d/5d/20d/60d/MTD/YTD, synthetic S&P 500 benchmark row
+- R3A-56: Default 20d-descending sort; top-8/bottom-8 render with "Show all" revealing all 49 baskets
+- R3A-57: Performance chart (`lightweight-charts`, rebased to 0% at window start, deferred-mount fix for `display:none` 0px-width bug)
+- R3A-58: Time Machine (`#tm-mount`, replay of measured history, unit/year/preset controls, "no predictive claim")
+- R3A-59: Forming Narratives deterministic score + 5-leg breakdown (fixed-weight formula, no LLM)
+- R3A-60: Forming Narratives `ai_watch` field — LLM-sourced (DeepSeek via `engine.master_brain._call_model`), printed verbatim, feeds no score/rank/gate
+- R3A-61: Forming Narratives standing caveat text (non-predictive disclosure, conditional caveats)
+- R3A-62: Falsifier-register label rewrite at read time ("Kill criterion: X" → "Watching for: X")
+- R3A-63: Four independent universe artifacts (S&P/Baskets/Nasdaq/Russell), one shared render engine, structurally no client-side mixing
+- R3A-64: Tab order: hard-coded DOM order S&P → Nasdaq → Russell → Baskets
+- R3A-65: S&P thin-but-listed wording (`n_gateable`/`n_subsectors`/`n_thin`)
+- R3A-66: Baskets-tab thin/gateable disclosure
+- R3A-67: Nasdaq/Russell thin-but-listed wording (code-shared with S&P, currently silent at `n_thin=0`)
+- R3A-68: State/regime label vocabulary (`_STATE_META`, 9 states, EN/ZH) shared across all four universes
+- R3A-69: Coarse class/ribbon buckets (`entry_now/forming/tailwind/neutral/late/headwind`); `forming` has no ribbon bucket and folds into Neutral
+- R3A-70: S&P row identity + producer sort order (`_slug(sub_industry_name)`, `kind="subsector"`, `_CLASS_ORDER` tuple)
+- R3A-71: Full-table client-side re-sort (default tier-ascending; independent of, and can diverge visually from, producer class/weight/rs60 order)
+- R3A-72: Basket rows: `basket_id` stamp + `b-` filename-prefix disambiguation (same `subsector/` directory as S&P)
+- R3A-73: Nasdaq/Russell amalgamation rows (`kind="sector"`, `amalg-` id prefix, always `with_members=True`)
+- R3A-74: Per-universe group detail pages (`subsector_detail.html.j2`, separate directories for Nasdaq/Russell)
+- R3A-75: Members-listing sort (own-cascade weight desc, tie-break `vs_basket` desc)
+- R3A-76: Stock detail destination (`stockHref`, uniform `stock.html#<TICKER>` across all four universes)
+- R3A-77: Coverage wording template (verbatim EN/ZH, per-universe noun swap)
+- R3A-78: S&P row-identity detector for a foreign/theme row (5-part rule: `kind`, no `basket_id`, `_industry_map()` traceable label, `universe=="sp500_subsectors"`, producer-only attack surface)
+- R3A-79: Confluence full-table search has NO "no results" message on zero matches (count-only `0/N` header)
+- R3A-80: Six canonical views + `VIEWS` array, exact-match hash dispatch
+- R3A-81: 21-entry `LEGACY_ANCHORS` table
+- R3A-82: `#theme-*` boot-time-only redirect via `resolveThemeHash()`
+- R3A-83: `#read-*` trace-open with defer/retry (`pendingTrace`, held until the Act-Now board exists)
+- R3A-84: Unknown/empty-hash fallback to Overview + `replaceState('#overview')` on empty hash
+- R3A-85: Deep-link scroll mechanics: `scrollIntoView({block:'start'})`, no `behavior` key (defaults instant, not smooth)
+- R3A-86: Per-view working-destination inventory (Overview/Map/Moving/Money/Explore/Confluence hrefs, static + runtime-generated)
+- R3A-87: Single premium wall = `premiumdata/sector_central.json`, gating ONLY the Overview Act-Now board
+- R3A-88: Explore/Confluence/Map/Moving/Money payloads all ungated
+- R3A-89: Nightly-sole-advancer rule for the Track Record ledger (`engine.ledger_lane.nightly_advance_enabled()`)
+- R3A-90: Loading state: baked HTML for Overview (no skeleton); Confluence's `#sc-app` pre-`render()` static shell (no skeleton)
+- R3A-91: Cardinality-extreme capping with count-labeled controls (Overview lanes cap 3; Confluence caps 4/8/12)
+- R3A-92: Correction/revision representation (a value later corrected/restated)
+- C01: Eleven US SPDR sector ETF cycle records with sector identity, names and group metadata
+- C02: Thematic baskets plus Nasdaq and Russell amalgamation families, selectable within the existing family registry
+- C03: Real-price series rebased to a common start, with displayed rebase metadata
+- C04: Cycle-position oscillator, legacy phase/position, and additive canonical v2 position/phase
+- C05: Log/linear price scale and chart re-anchoring
+- C06: Zoom controls, selected history window, available-history domain and price re-anchoring
+- C07: Phase filter chips and cyclical group filtering with pinned-focus behavior
+- C08: Multiple-series selection, family-specific chips, series search, select-all/clear and focused comparison
+- C09: Existing 21/63-session RS and within-family leadership; reconstructed RS history is a shared backend capability not yet consumed by the standalone renderer
+- C10: Confirmed historical peaks/troughs and chart turn markers
+- C11: Clickable peak-to-trough leg timeline and dated leg explanations
+- C12: Epoch-aware researched leg narratives, dated analyst overlay, TTL and stale quarantine
+- C13: Cycle DNA / history-rhymes profiles with lazy-loaded historical mechanisms
+- C14: Factual engine-owned read, generated in English and Chinese, primary to analyst prose
+- C15: Resolved stance, semantic tone and “clocks disagree” divergence output
+- C16: Timing ladder, weekly/3-day MACD state, daily-cycle phase and failed-cycle context exist in shared backend; a dedicated standalone Timing detail view remains to build
+- C17: Standalone above-trend/stance plus Central shared 12-month gate, macro context and conviction components; the full standalone trace is an upgrade
+- C18: Existing next-turn rhythm and projection interval; backend overdue flag is not rendered by the standalone page and must be added
+- C19: Turn-hazard probabilities at 1/3/6 months, MODEL/PASS versus KM PRIOR, epoch and qualification context
+- C20: Rotation-event chips and active sector-linked events
+- C21: Sector fragmentation chips/context
+- C22: Existing sector/theme research links and detail-panel transitions
+- C23: Existing shared Sector Central grader and prospective cycle logging; standalone Cycles outcome-grader presentation is missing and must be built
+- C24: Existing source/basis/history and split payload metadata; standalone source date currently starts as an ellipsis until JS, so SSR date is a required upgrade
+- C25: Mobile series picker, detail-sheet detents, chart full-screen and touch selection
+- C26: Keyboard activation, live-region status, chart focus and accessible controls
+- C27: Bilingual copy, semantic tone handling and existing light/dark design system
+- C28: Lazy hydration of series/narratives/DNA, optional rotation/fragmentation fetches and resilient core rendering
+- U01: Correct Macro target and current carrier
+- U02: Coherent source generation and standalone Cycles error states
+- U03: Measured phase age and coherent cycle semantics
+- U04: Interpretable outcome grading
+- U05: Native coverage and correction contracts
+- U06: Full current editable Cycles design
+- U07: Complete native Dossier
+- U08: Grounded editable Research
+- U09: Real Prophet/Screener/stock continuation
+- U10: Durable saved investigations
+- U11: Complete design/interaction state package
+- U12: Real design/reference admission and source review
+- U13: Served product and natural refresh proof
+- U14: Finite scientific upgrade and honest claims

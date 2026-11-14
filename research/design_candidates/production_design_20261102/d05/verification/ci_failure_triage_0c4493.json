@@ -1,0 +1,278 @@
+{
+  "schema": "d05.ci-failure-triage.v1",
+  "observed_utc": "2026-11-04 12:50:53 UTC",
+  "head": "0c4493c7025f7c1c0f9e558860d5e4ba33457cd1",
+  "tested_merge": "969df7bda4f3db57e25e5c2abdd3f4175e3fb28a",
+  "base": "56868dfeb13821d583e8a83a213d4cef0ba89423",
+  "run": 41824389478,
+  "classification": "CHECKPOINTED_CONTINUATION",
+  "source_writer": "Incumbent D05 Macro source lead. This programme/Dossier lane remains source-frozen after4802.",
+  "source_writes_by_this_phase": [],
+  "manual_reruns": [],
+  "full_ci_claimed": false,
+  "checks": [
+    {
+      "id": 126558067343,
+      "name": "trusted-ci",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558067343"
+    },
+    {
+      "id": 126558066508,
+      "name": "ci-pack-2",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066508"
+    },
+    {
+      "id": 126558066460,
+      "name": "ci-pack-7",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066460"
+    },
+    {
+      "id": 126558066440,
+      "name": "ci-pack-11",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066440"
+    },
+    {
+      "id": 126558066428,
+      "name": "ci-pack-5",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066428"
+    },
+    {
+      "id": 126558066404,
+      "name": "ci-pack-6",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066404"
+    },
+    {
+      "id": 126558066371,
+      "name": "ci-pack-9",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066371"
+    },
+    {
+      "id": 126558066369,
+      "name": "ci-pack-0",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066369"
+    },
+    {
+      "id": 126558066358,
+      "name": "ci-pack-1",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066358"
+    },
+    {
+      "id": 126558066357,
+      "name": "ci-pack-8",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066357"
+    },
+    {
+      "id": 126558066337,
+      "name": "ci-pack-4",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066337"
+    },
+    {
+      "id": 126558066329,
+      "name": "ci-pack-3",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066329"
+    },
+    {
+      "id": 126558066296,
+      "name": "ci-pack-10",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126558066296"
+    },
+    {
+      "id": 126556622465,
+      "name": "grader-manifest",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/126556622465"
+    },
+    {
+      "id": 126556618216,
+      "name": "capability-broker",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/126556618216"
+    },
+    {
+      "id": 126556613388,
+      "name": "self-mod-fence",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/126556613388"
+    },
+    {
+      "id": 126556289612,
+      "name": "contract-delta",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126556289612"
+    },
+    {
+      "id": 126556289187,
+      "name": "ci-plan",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389478/job/126556289187"
+    },
+    {
+      "id": 126555823518,
+      "name": "ci-authority/main",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/126555823518"
+    },
+    {
+      "id": 126555818837,
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/runs/126555818837"
+    },
+    {
+      "id": 126555292346,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389362/job/126555292346"
+    },
+    {
+      "id": 126555291957,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389362/job/126555291957"
+    },
+    {
+      "id": 126555291895,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389362/job/126555291895"
+    },
+    {
+      "id": 126555289681,
+      "name": "fence-pack",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824389362/job/126555289681"
+    },
+    {
+      "id": 126555277400,
+      "name": "ci-authority",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/41824384833/job/126555277400"
+    }
+  ],
+  "findings": [
+    {
+      "pack": 2,
+      "job": 126558066508,
+      "logical_job": "design-governance",
+      "kind": "new token-governance violations",
+      "paths": [
+        "templates/sector_central.html.j2"
+      ],
+      "evidence": "Two new radius-literal findings at lines476/480:12px and10px.25321 other findings explicitly inherited/nonblocking.",
+      "next": "Use applicable existing radius tokens for the two added Dossier rules; retain forward-only ratchet."
+    },
+    {
+      "pack": 3,
+      "job": 126558066329,
+      "logical_job": "reference-integrity",
+      "test": "tests/test_xpv2_sector_r3_fixture.py::TestThinButListedWording::test_en_and_zh_wording_present",
+      "kind": "obsolete semantic assertion and ineffective mutation",
+      "evidence": "Four old EN/ZH timing-capability fragments absent. Current production correctly distinguishes scored/not-scored from timing permission and price histories from volume coverage.",
+      "next": "Pin both current bilingual scored/not-scored clauses; prove unscored rows retained; require pristine checker success and effective independent EN/ZH mutations. Do not restore unsupported timing copy."
+    },
+    {
+      "pack": 3,
+      "job": 126558066329,
+      "logical_job": "basket-staleness-warn",
+      "test": "tests/test_theme_detail_cycles.py::test_missing_theme_counts_render_as_unavailable_with_real_members",
+      "kind": "attribute-order regex mismatch in tested base composition",
+      "evidence": "Actual anchors include data-member-symbol between class and href; native Canada destinations remain intact. Expanded regional tests exist in tested merge/base, not the older candidate file.",
+      "next": "Preserve expanded regional tests; structurally require tk class token, exact8anchors, exactsymbolset and symbol→nativeCanada href mapping. Retain unavailable-count, muted-class, source-date and benchmark assertions."
+    },
+    {
+      "pack": 3,
+      "job": 126558066329,
+      "logical_job": "ew-p4-descriptive-ui",
+      "test": "tests/test_ew_p4_descriptive_ui.py::test_receipt_shots_depict_the_source_under_test",
+      "kind": "source-equivalence receipt drift",
+      "evidence": "Sector Central template actual63b46b039395df34b5010222932f25e8f76ed2ec versus recorded9266e9413a62ae1ba72942f30a9904824593690d.",
+      "next": "Incumbent source lead already owns EW-P4 recapture/receipt refresh. No duplicate browser worker or changed hash without actual recapture."
+    },
+    {
+      "pack": 4,
+      "job": 126558066337,
+      "logical_job": "public-render-fastlane",
+      "test": "tests/test_si_workspace_shell.py::test_brief_evidence_link_opens_the_measured_map_panel",
+      "kind": "incomplete VM browser host",
+      "evidence": "Real 3-second fallback reaches new URL(...,location.href); VM lacks URL and href. Exact original harness failure reproduced, both existing replay cases pass with browser host fields supplied in memory.",
+      "next": "Supply WHATWG URL and coherent absolute location; preserve all6route/target assertions and async fallback. No product exception catch, skip or weakened identity/source fence.",
+      "proof": "verification/ci_pack4_harness_reproduction_0c4493.json"
+    },
+    {
+      "pack": 6,
+      "job": 126558066404,
+      "logical_job": "ftr-tape-surfaces",
+      "test": "tests/test_ftr_w3_ui.py::test_all_basket_sort_artifacts_keep_semantics_and_static_styles",
+      "kind": "real generated presentation drift",
+      "evidence": "Existing generated utilities page retains old7-rule sort-style block; current template adds mobile Members scrolling/columns/44px controls.",
+      "next": "Preserve all-region parity/page-count/keyboard checks. Synchronize only singleton owned presentation fragments with all unrelated payload bytes unchanged; no collectors or broad regeneration."
+    },
+    {
+      "pack": 6,
+      "job": 126558066404,
+      "logical_job": "ftr-tape-surfaces",
+      "test": "tests/test_ftr_w3_ui.py::test_basket_holdings_use_canonical_scroll_wrapper_before_late_load",
+      "kind": "brittle wrapper assertion plus real accessible-name defect",
+      "evidence": "Immediate parent still has ts and tbl-scroll, but adds hold-scroll/region/tabindex. aria-label embeds HTML-returning L(...), breaking the quoted attribute.",
+      "next": "Use plain localized text or aria-labelledby. Assert parent/class tokens semantically; removal of tbl-scroll must fail. Prove actual late wrapTables pass preserves parent, focused sort button and horizontal position. Check plain EN/ZH accessible names."
+    }
+  ],
+  "source_blobs": {
+    "tested_merge_theme_detail_test": "2eae10da330ab242a48f6a3fbe3d44654205f0c2",
+    "tested_merge_wording_test": "8c57fdf027f538f444a6a7746b8e84c6c4a7168d",
+    "tested_merge_ftr_test": "9639f3edfbc7ab1080c0086e739aa2d229acfe99",
+    "current_router": "ac426abc3a8a49a6d1023cc53b8eedb00a23c57a",
+    "current_router_test": "9d40017add0d844de5decc854091f0f370a4b158"
+  },
+  "handoff_thread": "https://mastermindxgroup.slack.com/archives/C0CBC6AEAQZ/p1793796400767899?thread_ts=1793768002.626429&cid=C0CBC6AEAQZ",
+  "secretary_ack": "gb2-ping-0541; WAITING_INCUMBENT_MACRO_WRITER, no source write confirmed",
+  "independent_review": "Bounded optional C3 judgments; stopped. No mandatory external-review claim.",
+  "holds": [
+    "No merge",
+    "No Ready/un-draft",
+    "No enqueue/auto-merge",
+    "No held-PR relabel",
+    "No production deploy",
+    "F01/F02 provisional",
+    "Original uncertain Paper effects frozen",
+    "Original Terminal/component publishers only"
+  ]
+}

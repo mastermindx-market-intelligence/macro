@@ -1,0 +1,147 @@
+{
+  "schema": "mastermind.paper.catalyst_release_attempt.v1",
+  "recorded_at": "2026-11-09T05:33:47.268Z",
+  "pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1354",
+  "candidate_head": "45472fcedad31292d660d54731d4da472ca04f1e",
+  "merged_sha": "9f13ad1226d785524e56a5e03bf5236b231242a6",
+  "merged_at": "2026-11-09T05:25:20Z",
+  "merge_group": {
+    "run_id": 42562605657,
+    "attempt": 1,
+    "conclusion": "success",
+    "completed_at": "2026-11-09T05:24:50Z",
+    "required_aggregate_job": 128993384320,
+    "required_aggregate_conclusion": "success",
+    "queue_entry": null
+  },
+  "merged_source_files_exact": [
+    {
+      "path": "terminal/components/catalyst-opportunity/CatalystOpportunityView.tsx",
+      "blob": "d38dbd5ec816cd16c54002f564d390ff4a171919"
+    },
+    {
+      "path": "terminal/components/catalyst-opportunity/CatalystOpportunityWorkspace.tsx",
+      "blob": "90d8c4a0e3752933ca074629d719dec548c9db16"
+    },
+    {
+      "path": "terminal/lib/catalystOpportunityLex.ts",
+      "blob": "a2bb3b3728e9be6baaed9c2270e7102eba0de145"
+    },
+    {
+      "path": "terminal/components/catalyst-opportunity/CatalystOpportunity.module.css",
+      "blob": "dad75c5d942577f13af6f1d5dee7d5046227fc68"
+    },
+    {
+      "path": "terminal/lib/__tests__/catalystOpportunityView.test.tsx",
+      "blob": "754f596122973ed2fd8d86742b4512fb9e081e9e"
+    },
+    {
+      "path": "terminal/e2e/catalyst-opportunity.spec.ts",
+      "blob": "dafbcdc3b1d9e7ebe0e065637ab27b4c705595a3"
+    }
+  ],
+  "release": {
+    "command": "/usr/bin/ssh -o BatchMode=yes -o ConnectTimeout=8 -o StrictHostKeyChecking=yes vps-mmx 'bash /opt/terminal/terminal-build.sh --target production --target-sha 9f13ad1226d785524e56a5e03bf5236b231242a6'",
+    "studio_pid": 32014,
+    "remote_owner_pid": 3380876,
+    "installed_owner_blob": "9af75ffa6a9449cd487697516b76ba4b7e46c30f",
+    "candidate_owner_blob": "3acacc322d25ab01069b6a506aa69d73f5911bc8",
+    "exit_code": 65,
+    "runtime_seconds": 29.76,
+    "result": "INSTALLATION_ADMISSION_REFUSED",
+    "reason": "unsupported-service-launch-hook",
+    "preflight": {
+      "path": "/var/lib/mastermind-terminal/release-preflight/20261109T053114Z-db06eacd8938cf44588d3906bca95bfd7122b74b-de693931a25c726f8f5f93cbc18721de4c142096d29041412fff9c4118f46827.json",
+      "sha256": "f90613278a80a84b58b1c0e31bda6baee8e13f6dd8a73a84185ddd48f2c1489b",
+      "keys": [
+        "accepted_sha",
+        "canonical_repo",
+        "generated_at",
+        "policy_digest",
+        "policy_path",
+        "receipt_id",
+        "result",
+        "schema",
+        "source_audit",
+        "source_audit_receipt_id"
+      ],
+      "summary": {
+        "schema": "mastermind.terminal.release_preflight_receipt.v1",
+        "result": "CLEAN",
+        "accepted_sha": "db06eacd8938cf44588d3906bca95bfd7122b74b",
+        "receipt_id": "de693931a25c726f8f5f93cbc18721de4c142096d29041412fff9c4118f46827",
+        "source_audit_receipt_id": "374f8bfeb8f176afec80c3496ed1f9ad2a8e52a370fb2e34f9bbcb2517f636ec",
+        "policy_digest": "0d0ec2dafc2a7ffbd7ceeba5f6d5cb0c2790d97670097df3e7bd08c3244bb76a",
+        "generated_at": "2026-11-09T05:31:14.371904Z"
+      },
+      "reviewed_policy": {
+        "commit": "db06eacd8938cf44588d3906bca95bfd7122b74b",
+        "blob": "d1fab9bfa467458a7b06dc4891c355d1c365a94f",
+        "canonical_digest": "0d0ec2dafc2a7ffbd7ceeba5f6d5cb0c2790d97670097df3e7bd08c3244bb76a",
+        "matches_receipt": true
+      }
+    },
+    "accepted_ref_before": "b0bda003b7abdc13364c18d342f8752455ea1627",
+    "accepted_ref_after": "9f13ad1226d785524e56a5e03bf5236b231242a6"
+  },
+  "reconciled": {
+    "deployment_marker": "db06eacd8938cf44588d3906bca95bfd7122b74b",
+    "canonical_head": "db06eacd8938cf44588d3906bca95bfd7122b74b",
+    "canonical_dirty_path_count": 0,
+    "service_state": "active",
+    "shared_build_lock_held": false,
+    "installed_owner_blob": "9af75ffa6a9449cd487697516b76ba4b7e46c30f",
+    "source_and_live_generation_unchanged": true
+  },
+  "read_only_service_shape": {
+    "LoadState": "loaded",
+    "NeedDaemonReload": "no",
+    "ActiveState": "active",
+    "WorkingDirectory": "/opt/terminal/terminal",
+    "ExecStartPre": {
+      "present": true,
+      "sha256": "67a2092b57d4cc5b2155aa6feb6b5e72719fd58b266d8794cd77a9edd2b655b2",
+      "record_count": 2,
+      "recognized_paths": [
+        "/bin/sh",
+        "/usr/local/sbin/terminal-volume-guard"
+      ]
+    },
+    "ExecStartPost": {
+      "present": false,
+      "sha256": null
+    },
+    "ExecCondition": {
+      "present": false,
+      "sha256": null
+    },
+    "ExecStopPost": {
+      "present": false,
+      "sha256": null
+    },
+    "RootDirectory": {
+      "present": false,
+      "sha256": null
+    },
+    "RootImage": {
+      "present": false,
+      "sha256": null
+    },
+    "PAMName": {
+      "present": false,
+      "sha256": null
+    }
+  },
+  "boundaries": [
+    "No second release, source normalization, service-hook edit, controller replacement, alternate deployment carrier or admission bypass.",
+    "CLEAN proves current source agreement only, not deployment or live behavior.",
+    "Real-account browser proof remains blocked by the already-observed Chrome-extension user-presence obstacle; no alternate browser was used to evade it.",
+    "Only protected native merge is complete; production release remains refused."
+  ],
+  "root_cause": {
+    "source": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/db06eacd8938cf44588d3906bca95bfd7122b74b/ops/terminal-build.sh",
+    "installed_classifier": "classify_environment_topology rejects every nonempty ExecStartPre. The two observed pre-start records are enough to explain the exact refusal.",
+    "prospective_source": "Merged owner3acacc322d25ab01069b6a506aa69d73f5911bc8 contains a separate typed, custody-bound production-prehook admission path; it was not the running embedded verifier.",
+    "no_inference": "Fetching the candidate did not upgrade the running release owner. No host argument mismatch or prospective admission success is claimed."
+  }
+}

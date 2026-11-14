@@ -1,0 +1,2963 @@
+{
+  "phase": "GMI copy fallback pre-hide recovery",
+  "date": "2026-11-09",
+  "source": {
+    "pr": 10676,
+    "parent": "c19d6185f0d06b9ef8af3fb8979d121d32e36c39",
+    "head": "60f131e086e614487d86ebf089aa52b1af2630f0",
+    "tree": "e9658ebaa39a1b9222ff0cb5148000702082bba5",
+    "files": [
+      {
+        "path": "templates/gmi.js",
+        "sha": "c5d32d689ffae6caedf72a8afef317c9900c4428",
+        "exact": true
+      },
+      {
+        "path": "site/gmi.js",
+        "sha": "c5d32d689ffae6caedf72a8afef317c9900c4428",
+        "exact": true
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/verify_product_browser.py",
+        "sha": "0de73186399ccfcd76d8f1f1a33b5ef860a749f5",
+        "exact": true
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/verify_copy_focus_component.py",
+        "sha": "528fda4019268aa9b7c52a42808547dbb41fdbc0",
+        "exact": true
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/COPY_FOCUS_VALIDATION_20261109.json",
+        "sha": "12e275fbaf5cb2805809e3d653c1167def00b864",
+        "exact": true
+      },
+      {
+        "path": "research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md",
+        "sha": "5b409181fd8669c22430ea11974aa769b472bfe8",
+        "exact": true
+      }
+    ],
+    "draft": true,
+    "unmerged": true,
+    "hold_exact": true,
+    "pr_body_exact": true
+  },
+  "proof": {
+    "pid": 99607,
+    "exit_code": 0,
+    "runtime_seconds": 54.32,
+    "cases": 28,
+    "contexts": 50,
+    "page_errors": 0,
+    "browser": "157.0.8103.39",
+    "baseline": {
+      "pid": 73607,
+      "exit_code": 1,
+      "expected_owned_hide_failures": 2,
+      "cases": 2,
+      "contexts": 2,
+      "runtime_seconds": 5.26
+    },
+    "diagnostic": {
+      "pid": 95180,
+      "exit_code": 1,
+      "passed": 21,
+      "executed": 22,
+      "reason": "Native disabled-button blur assumption failed; Chrome retained focus. Final test labels synchronous pending-render injection explicitly."
+    },
+    "observations": {
+      "interactive_snapshots": 32,
+      "interactive_owned_hides": 0,
+      "lifecycle_snapshots": 1,
+      "explicit_pagehide_owned_hides": 1,
+      "pagehide_focus_calls": 0
+    },
+    "native_source_checks": {
+      "copy_owner_scope": {
+        "before_copy_owner_exact": true,
+        "navigation_filters_answer_and_input_owners_exact": true,
+        "locale_observer_and_initialization_exact": true,
+        "attempt_identity_and_messages_exact": true
+      },
+      "unchanged_outputs": [
+        "gmi-companies.html",
+        "gmi-coverage.html",
+        "gmi-index.html",
+        "gmi-issuer-mu.html",
+        "gmi-relationships.html",
+        "gmi-states.html",
+        "gmi.css",
+        "gmi.html"
+      ],
+      "sources": {
+        "templates/gmi.js": {
+          "bytes": 57243,
+          "sha256": "4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e",
+          "blob": "c5d32d689ffae6caedf72a8afef317c9900c4428"
+        },
+        "candidate/gmi.js": {
+          "bytes": 57243,
+          "sha256": "4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e",
+          "blob": "c5d32d689ffae6caedf72a8afef317c9900c4428"
+        },
+        "verify_product_browser.py": {
+          "bytes": 292118,
+          "sha256": "795e2215a942b1dd779ee0cc6e58db92628843a08e33ae4cd3b0b9dbfc40fa6c",
+          "blob": "0de73186399ccfcd76d8f1f1a33b5ef860a749f5"
+        },
+        "verify_copy_focus_component.py": {
+          "bytes": 8823,
+          "sha256": "4ddaf33f231ef6bb434e49d618193fb9c75ee375c4a123604e6bf4c93287cd2d",
+          "blob": "528fda4019268aa9b7c52a42808547dbb41fdbc0"
+        }
+      },
+      "native_cloud_hashes_exact": true
+    },
+    "ast": {
+      "parent": "c19d6185f0d06b9ef8af3fb8979d121d32e36c39",
+      "prior_definitions": 112,
+      "all_prior_ast_exact": true,
+      "new_definitions": [
+        "copy_focus_before_effect",
+        "copy_focus_destinations",
+        "copy_focus_failure",
+        "copy_focus_failure_redirect",
+        "copy_focus_new_attempt",
+        "copy_focus_page",
+        "copy_focus_pagehide",
+        "copy_focus_record",
+        "copy_focus_retirement"
+      ],
+      "syntax": "PASS",
+      "source_files": {
+        "candidate-gmi.js": {
+          "bytes": 57243,
+          "sha256": "4ca7c46fd9a9720819ce8153c54998114cee3dc9cf9fc305bf92bc7be165152e",
+          "blob": "c5d32d689ffae6caedf72a8afef317c9900c4428"
+        },
+        "candidate-verify.py": {
+          "bytes": 292118,
+          "sha256": "795e2215a942b1dd779ee0cc6e58db92628843a08e33ae4cd3b0b9dbfc40fa6c",
+          "blob": "0de73186399ccfcd76d8f1f1a33b5ef860a749f5"
+        },
+        "verify_copy_focus_component.py": {
+          "bytes": 8823,
+          "sha256": "4ddaf33f231ef6bb434e49d618193fb9c75ee375c4a123604e6bf4c93287cd2d",
+          "blob": "528fda4019268aa9b7c52a42808547dbb41fdbc0"
+        }
+      },
+      "parent_files": {
+        "gmi.js": {
+          "bytes": 56306,
+          "sha256": "c6d7011f82f6c2c09e40a20f05d6cbc13bfef8d5d82c7a70439ff4656c742838",
+          "blob": "15b39754aa170a97cd9468a4823142718ff6284a"
+        },
+        "verifier": {
+          "bytes": 276430,
+          "sha256": "dd3798db26a5a90a7b89dc23b9d66ad11fb508518229fcd2cc0326f0c04eedb7",
+          "blob": "47f22a4796eedca910daa803911608d6259e2376"
+        }
+      }
+    },
+    "native_receipt": {
+      "path": "/Volumes/Mastermind/agent-workspaces/verify/gmi-copy-focus-20261109-g_wehs_x/copy-focus-native-receipts.json",
+      "bytes": 128058,
+      "sha256": "0f299ec72bdafce7145179743f45861f8958b5567c0e8f92e750de9dd3173978"
+    },
+    "canonical_validation": "https://github.com/mastermindx-market-intelligence/Macro/blob/60f131e086e614487d86ebf089aa52b1af2630f0/research/theme_graph/gmi_design_20261021/COPY_FOCUS_VALIDATION_20261109.json",
+    "screenshots_inspected": {
+      "inspected": [
+        "copy-fallback-390-en.png",
+        "copy-fallback-320-zh.png",
+        "answer-recovery-390-en.png",
+        "answer-recovery-320-zh.png"
+      ],
+      "findings": "Manual-copy field remains selected, localized and contained at EN390/ZH320; Close remains visible; source-card/receipt and answer recovery render without horizontal page overflow. This phase changes behavior and builder guidance, not product visual styles."
+    }
+  },
+  "paper": {
+    "file": "01M5H6EARN9YHQV17JC6ZG9BRY",
+    "page": "p-7-0",
+    "root": "7M9-0",
+    "before_jsx": "(\n    <div id=\"7M9-0\" style={{ backgroundColor: 'var(--color-gmi-night-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '20px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '32px', WebkitFontSmoothing: 'antialiased', width: '1080px' }}>\n      <div id=\"7MA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-accent)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', fontWeight: 600, letterSpacing: '0.06em', lineHeight: '18px' }}>\n        S06 · BUILD · RECEIPTS, KEYBOARD &amp; SEARCH IMPLEMENTED · 09 NOV 2026\n      </div>\n      <div id=\"7MB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '28px', fontWeight: 600, lineHeight: '36px' }}>\n        Research that keeps your place.\n      </div>\n      <div id=\"7MP-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          01 · Keep the two native disclosures distinct\n        </div>\n        <div id=\"7MR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Source receipt / 来源凭证 uses .gmi-evidence-receipt: the selected card’s Record, Source key and Source text hash. Theme details / 主题详情 uses .gmi-topic-receipt: taxonomy paths, Core/Extended scope and value-chain position. Keep the current publication date, planned lifecycle, source link, company action, related topics and coverage intact. No inspector, extra route or request is needed to open either disclosure.\n        </div>\n      </div>\n      <div id=\"7MT-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MU-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          02 · Exact public fields; separate clocks\n        </div>\n        <div id=\"7MV-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Candidate #10676 @c19d6185 preserves the existing scripts/build_gmi_explorer.py admission of one exact Micron product observation. The card contains published_date, public URL, bilingual source label, receipt, source key/hash, planned lifecycle, product and platform. 26 Feb 2024 is a date-only publication. First recorded remains a separate theme_links.first_seen value; retrieval and review timestamps are not card fields. Do not infer current delivery, amount or revenue exposure.\n        </div>\n      </div>\n      <div id=\"7MX-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          03 · Preserve locale state inside the existing renderer\n        </div>\n        <div id=\"7MZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Implemented in templates/gmi.js and identical site/gmi.js · current blob 15b39754aa170a97cd9468a4823142718ff6284a · PR10676 @c19d6185f0d06b9ef8af3fb8979d121d32e36c39. Only the locale observer passes sync(true). A one-render capture matches exact theme + receipt + source key + source text hash; every member of a duplicate receipt-ID group is ineligible. Native details restore only exact current matches, regardless of order, then discard the capture. No storage, request, URL field or research-state owner was added; evidence=1 remains the existing filter.\n        </div>\n      </div>\n      <div id=\"7N1-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7N2-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          04 · Preserve receipt focus across languages\n        </div>\n        <div id=\"7N3-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          On a locale-only receipt redraw, keep focus on any surviving control. Restore only a previously focused node that was removed, and only while focus remains on the body. Source/company actions must match both role and the complete destination after the existing navigation rewrite. A changed or missing action falls back to that receipt’s summary; an absent, changed or ambiguous record uses the current focusable topic heading. Native summary keeps Enter/Space and ordinary Tab behavior; disclosure state grants no source, selection or navigation authority.\n        </div>\n      </div>\n      <div id=\"7N5-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7N6-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          05 · Keep recovery at the serving boundary\n        </div>\n        <div id=\"7N7-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          gmi_return carries only the qualified theme/company catalogue context, a bounded query and at most one upstream theme return; it does not capture an immutable source snapshot, exact opener or scroll. Keep stale-issuer deletion. Once the guarded publisher propagates that deletion, standalone HTML reaches the normal missing-file response after the existing access gate. Do not create a replacement issuer page.<br />At the inspected Terminal source, no GMI route is admitted; the existing route boundary uses notFound(). For a separately admitted route, a missing qualified bridge reaches the existing 15-second failure boundary with Retry / Open original; a registry mismatch uses refresh. Neither proves withdrawal. Access restrictions, missing files and routing eligibility need distinct evidence.<br />Future recovery belongs to the existing serving/shell owner, must retain only permitted return context and cannot depend on JavaScript in a deleted document. Qualified against Macro @071ed19f and Terminal @4e868da4. Installed flags, live responses and the separately held registry proposal remain unverified.\n        </div>\n      </div>\n      <div id=\"7N9-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          06 · Responsive implementation and useful motion\n        </div>\n        <div id=\"7NB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Both GMI stylesheets retain a 44 px minimum for native summaries. The production macro renders Theme details / 主题详情 separately from Source receipt / 来源凭证, including without JavaScript. Receipt identifiers remain exact. Primary navigation labels now wrap at narrow widths; the 320 px English document fits its viewport with 44 px targets. Category shortcuts also measure at least 44 px. Their mobile sticky-header and destination offsets are paired at 61 px, keeping headers visible below the rail. Preserve native expansion and immediate reduced-motion behavior. The answer-side recovery bar wraps at 320 px and retains a 44 px action.<br /><br />When an initialized primary Browse dialog lacks showModal, refreshJourney must qualify the existing full-index anchor before the opener navigates to that anchor’s href. The index’s existing return action restores the permitted nondefault theme, query, category, scope, evidence and lens. Keep URL validation and query bounds with safeReturn; arbitrary hash fields, exact opener, scroll and immutable source snapshots are not promised.<br /><br />Native dialog presentation keeps the element inside main, so the current journey selector already covers the open drawer’s index link. Preserve that selector and ordinary open/search-focus lifecycle. This valid-payload capability fallback is separate from failed-data recovery. Controlled absence of one dialog method proves the branch’s contract, not historical-browser support.\n        </div>\n      </div>\n      <div id=\"7NH-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NJ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          07 · Copy belongs to its initiating view\n        </div>\n        <div id=\"7NI-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          One attempt captures the complete normalized URL and selected theme. Pending shows Copying… / 正在复制…. Success, failure and finally may update only that same current attempt. Selection, filter URL changes, history, lens changes and page exit retire it, even after an A→B→A return. Each success timer belongs to its own attempt; an old completion cannot enable a newer action.<br />A current failure shows the captured URL in the existing manual fallback. Later focus, pointer intent or window blur relinquishes automatic focus; body focus alone grants nothing. Locale-only redraws preserve the current URL and translate owned feedback. A prior system clipboard write cannot be cancelled; no corrective write, queue, retry or persistence was added.\n        </div>\n      </div>\n      <div id=\"7NK-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NM-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          08 · One keyboard entry; predictable filtering\n        </div>\n        <div id=\"7NL-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The enhanced tree has one sequential row entry, with arrows moving among visible rows. Hidden and empty categories cannot retain a Tab stop. Its existing bilingual heading supplies the accessible name. Native theme links keep their destinations and modified-click behavior; information buttons and See all stay separately reachable. Without JavaScript, the original 371 link attributes remain.<br /><br />Plain Enter/Space on a leaf delegates to the existing topic-selection owner. Preserve parent expansion, modifiers, IME and repeat handling. Before search hides active row content, focus the search input; before collapse hides a descendant, focus its nearest visible ancestor. Preserve surviving and unrelated focus. Clearing a zero-result search restores expansion and uses the first visible row as the next entry.<br /><br />Index shortcuts follow their filtered groups. Hidden, detached or unowned targets cannot replace the parameter fragment; reject stale observer entries before changing current-link state. Return focus before the index hides an active row, category or shortcut. Query, lens, open state and return context keep their existing owners.<br /><br />The tree’s existing no-match paragraph now sits inside one persistent polite, atomic status region. Keep focus in search, preserve its bilingual text and skip unchanged visibility writes. Clear hides the paragraph while the status owner remains mounted. A scoped CSS rule offsets the extra empty flex gap: normal spacing stays 12 px; the visible message keeps its original margins. No second announcer, timer, locale observer or query state is needed.<br /><br />Primary Browse first computes which result rows and region will disappear. Before hiding an owned focus target, try reachable search, then Done inside an open native dialog or the visible opener/topic heading in the sidebar. Recheck actual focus: preserve a surviving redirect; continue the bounded fallback if focus remains in a retiring subtree. A newer synchronous filter pass cancels the stale projection. Keep surviving/unrelated focus and closed mobile Browse unchanged; skip unchanged hidden writes.\n        </div>\n      </div>\n      <div id=\"7NN-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          09 · Count the results the user can see\n        </div>\n        <div id=\"7NO-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The existing indexRender pass derives one compact status plus category and subgroup counts from its matching rows. HBM shows 2 results / 2 个结果, category counts of two, and one result in each visible subgroup. At zero, use the existing no-match wording in the same live-status region. The query is already visible; do not repeat it in a paragraph.<br /><br />Generated data-gmi-total attributes restore the original totals on Clear. Keep the footer explicitly labelled Full index / 完整索引. Hide the static core/extended breakdown while searching: tier and held/admitted review status are separate dimensions, so never infer one from the other. Existing bilingual spans handle language changes. Matching-row counts do not establish company evidence, completeness, freshness or admission.<br /><br />The index now keeps one persistent polite/atomic wrapper around its existing visual feedback paragraph. Move the status role off the hidden paragraph; retain its count/no-match spans and language owner. indexHidden still releases owned focus before a hide request, then skips unchanged visibility writes. Repeated equivalent searches and duplicate language notifications make no feedback mutations. The whole paragraph controls empty-gap compensation: 12 px normally and after Clear; zero-result feedback retains its space.\n        </div>\n      </div>\n      <div id=\"7SR-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7ST-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          10 · Recover without leaving the answer\n        </div>\n        <div id=\"7SS-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Show “This topic is outside your filters.” / “当前主题不在筛选范围内。” with Clear filters / 清除筛选 only when a valid selected topic is excluded. Invalid-topic and failed-data states keep their own explanations, without this unrelated action. Generated markup starts hidden when JavaScript is unavailable.<br /><br />Join the existing data-topic-reset handler. Clear Browse query/category/scope/evidence, retain the selected theme, and use the current replace-URL path to preserve lens and return context and retire copy feedback. Do not select or rerender the answer: retain evidence-node identity, exact source fields and open receipts.<br /><br />The answer-side caller returns focus to the visible topic heading; existing drawer/sidebar callers keep search focus. Before hiding a focused recovery action, focus that heading. Native modal behavior stays intact. Reuse current panel/button tokens, allow wrapping, expose the notice before changing its status text, and skip unchanged text writes. No extra timer, storage or announcement owner is needed.<br /><br />Reset chooses that established heading/search destination before projecting filter visibility. Do not focus again after filters: a surviving intentional redirect must remain. Query/category/scope/evidence clear through the existing replace-URL owner; theme, lens, qualified return, evidence nodes and open receipts remain. History keeps its separate existing answer-render path.\n        </div>\n      </div>\n      <div id=\"7YP-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7YR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          11 · Clear the search; keep the research\n        </div>\n        <div id=\"7YQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The tree and full index share one localized Clear search / 清空搜索 icon button. It is hidden until JavaScript binds the existing input path. Keep the field 44 px high and the action 44 × 44 px. Replace the slash hint while the raw input is nonempty, including whitespace. Suppress the browser cancel only under the enhanced class.<br /><br />Click and native Enter/Space focus the input, empty its value and dispatch the current input event once. Ordinary Escape uses that same helper; consumed, composing and keyCode229 events do nothing. The existing search, URL and expansion owners perform the reset. These tree/index actions do not clear primary Browse filters, select a different answer or redraw evidence.<br /><br />Index initial/history restoration synchronizes the button from the restored value. Before hiding a focused clear action, return focus to search; preserve unrelated focus. Keep lens, qualified return, other hash keys and current disclosures. Use the existing locale owner. No second filter state, announcement cycle, timer or navigation owner is needed. S06G contains editable EN Day / ZH Noir 320 px states; implementation proof also covers 390 and 1440 px.<br /><br />Primary Browse owns its separate Escape handler. Ignore non-Escape keys. For Escape already consumed, composing or carrying keyCode229, stop propagation and return without clearing the query, calling updateFilters or adding preventDefault. This also keeps that guarded event away from document bubble handlers while leaving the input method’s default behavior intact.<br /><br />Ordinary Escape with a nonempty query keeps the existing preventDefault, stopPropagation, clear and updateFilters path. Retain the selected theme, category, scope, evidence filter, lens and answer nodes; keep focus in search. With an empty query, leave Escape to the browser so the existing native dialog cancel/close and opener-focus cleanup work. Do not add composition state, a cancel blocker, a timer or an ignore-next-close flag.<br /><br />Synthetic composing/229 events prove this authored event contract, not OS-native IME behavior. Real consumed and ordinary Escape keys verify the query, history, focus and native dialog boundary separately. A one-use test cancel listener can keep the dialog open; removing that test-only prevention restores the next native dismissal.<br /><br />Primary Browse now has its own 44 × 44 px Clear search / 清空搜索 button. It is visible for any nonempty raw input, including whitespace, and replaces the slash hint in the same slot. Bind the click before adding the enhancement class; leave it hidden without JavaScript or valid topic data. Use a plain wrapper with the input’s existing bilingual name, plus scoped primary padding/native-cancel rules.<br /><br />Clear only the query through updateFilters once. Retain topic, category, scope, evidence-only, lens, qualified return, other hash fields, answer/source-card nodes and open receipts. The drawer stays open. Other filters may still yield zero matches; keep Clear all filters available. An already empty activation is inert.<br /><br />The existing filters projection owns button visibility and pre-hide focus. Capture its pass and the URL before focusing search; if a focus callback projects newer state or begins hash restoration, yield. Respect surviving focus redirects and never focus a second time. Leave the accepted primary Escape handler unchanged. Q01/Q02 show EN390/ZH320; Q03/Q04 compare query Clear and full Reset on Browse · Search and filters, p-D-0.\n        </div>\n      </div>\n      <div id=\"87Z-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"881-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          12 · The index starts with its task\n        </div>\n        <div id=\"880-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Use the existing page_key=index branch in _gmi_product_header.html.j2. Keep GMI Explorer as a small real link with its .gmi-product-name hook and 44 px target; place the sole All micro-themes / 全部细分主题 H1 beside the one exact dated snapshot. Remove only the index’s repeated head() introduction, breadcrumb, count sentence and same-clock date. Other pages keep their existing header output.<br /><br />Preserve the full snapshot/stale subtree, Brain slot, navigation and the qualified return inserted after navigation. Keep the 72 px mobile Brain reservation. Use a 32 px title on desktop and 24 px at ≤820, natural Chinese spacing, no fixed height and 16 px navigation/return gaps. The brand still restores the qualified research destination; company return may contain one upstream theme return.<br /><br />Without JavaScript, keep the server-rendered title/date, ordinary links and native disclosures. Do not fabricate stale qualification, Brain docking or a contextual return. The Index · Search and navigation page shows an EN390 default viewport and ZH320 filtered company-return/stale state. Two visible results and Full index: 371 stay distinct. These are editable design states; the existing source owns query, count, history and navigation.\n        </div>\n      </div>\n      <div id=\"88I-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"88J-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          13 · Choose a category, then go\n        </div>\n        <div id=\"88K-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          At the existing ≤640 px breakpoint, show a native Category / 类别 select and a separate Go / 前往 button. Keep the select and Go 44 px high, Go 44 px wide, an 8 px gap and the existing 61 px sticky strip. Desktop and no-JS keep the original anchor track. The authored custom wrapper starts hidden; unavailable scripts must not leave an inert control.<br /><br />Selection is a pending destination, not the category in view. Typeahead and selection never navigate. Go revalidates and invokes the retained category link, preserving query, lens, qualified return, other hash keys and history. Keep the selected ID for repeat jumps. Derive options from the existing visible groups and active-language labels/counts; available zero-count categories stay eligible. Filtering removes unavailable options; a lost choice resets to the prompt without a first-category fallback.<br /><br />Retain valid choices through locale/count changes and avoid rebuilding equivalent options. Passive IntersectionObserver updates only the existing anchor current state. Before disabling focused Go, focus the select; before zero-match nav hiding, the existing index owner focuses search. On resize, reveal incoming controls, transfer only owned focus with preventScroll, carry a focused desktop link’s ID to mobile, then hide outgoing controls. If all destinations are stale, recover to existing search. No new URL, storage, locale, observer or navigation owner.\n        </div>\n      </div>\n      <div id=\"8SW-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"8SX-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          14 · Company entry keeps evidence and focus\n        </div>\n        <div id=\"8SY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Use exactly page_key=companies in the shared header. Keep the small 44 px GMI Explorer link, one Company evidence / 公司证据 H1, the original snapshot/stale owner, active navigation, utility links and 72 px Brain reservation. Share the existing compact index declarations; issuer and the six other HTML pages remain unchanged. The company page already had one snapshot: remove repeated introduction/breadcrumb/title instructions, not a second date.<br /><br />Keep every source-rendered company, dated product record, planned stage, named platform, source label/link, historical-context footer and company-detail action. Keep the interpretation guide. Remove only the final paragraph that repeats the guide’s qualification. The 26 Feb 2024 source date and 3 Nov 2026 snapshot remain separate.<br /><br />Within the existing company controller, focus search before hiding a card or no-match container that owns focus. Clear search / 清空搜索 focuses search before clearing and invoking updateCompanies once. Skip unchanged hidden values and complete localized count text; preserve unrelated or surviving control focus and the existing URL, history, return and locale owners.<br /><br />A normalized active query says N matching companies / 匹配到 N 家公司. Blank or whitespace-only input retains N companies with evidence on file / 有收录证据的公司：N 家. Count company cards, not product connections. No-match offers Clear search; a genuinely empty catalogue says No company evidence yet / 暂无公司证据, keeps Clear hidden and offers Explore themes.<br /><br />Paper Companies · Evidence and recovery contains C01 EN390 match, C02 ZH320 Noir full catalogue, C03 EN390 no-match with qualified research return, C04 ZH320 Noir empty-catalogue fixture, and C05 the complete EN card. Phone shells are truthful 844 px viewports; content continues below the fold. C04 is a renderer fixture, not a replacement public dataset. C05 exposes both source and company-detail actions without compressing the phone card.\n        </div>\n      </div>\n      <div id=\"90Y-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"90Z-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          15 · Retire returns; offer available evidence\n        </div>\n        <div id=\"910-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          When refreshJourney retires an absent or rejected return, first ask whether the holder contains document.activeElement. If it does, focus the existing a.gmi-product-name[href] outside that holder with preventScroll:true. If focus remains in the holder, use the existing product-nav link as the bounded fallback. Respect a focus handler that already moved to another surviving control. Then remove the invalid holder; even an exceptional DOM with neither usable target must not keep a stale Back action.<br /><br />Valid-to-valid changes keep the same Back anchor and update its qualified href/localized label. Unrelated source, search or navigation focus stays in place. Keep safeReturn, originalHrefs and the following link-projection loop exact. Focus must not activate a link, write history, manufacture a return or retain the retired destination on the brand. The browser still owns history scrolling and layout anchoring: a measured focus call kept scrollY at 300; removing the holder later changed it to 240. Do not add a scroll controller to conceal that distinction.<br /><br />Use the exact relationships page key with the existing compact task header: Company relationships / 公司关系. Preserve snapshot/stale, Brain slot, real brand/nav and utilities. The unavailable panel says Public relationship view unavailable / 暂无公开关系视图; it reports the missing verified public projection, not the outcome of every record’s clearance decision.<br /><br />Browse company evidence / 浏览公司证据 is the native primary action, followed by Explore themes and Coverage &amp; methodology. Existing navigation carries a qualified theme return or reuses the exact company-catalogue query/upstream context; direct and rejected entry use the ordinary company route. Without JavaScript all three anchors and the native publication disclosure work. Keep the original explanation and disclosure intact. Do not emit relationship parties, records, magnitudes, excerpts or a hidden search payload; source availability is not display permission.<br /><br />Paper Relationships · Availability contains R01 EN390 Day direct entry, R02 ZH320 Noir with company return, and R03 the expanded publication mechanism. The phones use 844 px viewports. These are editable source-contract specimens; local browser proof, catalogue content and public release acceptance remain separate.\n        </div>\n      </div>\n      <div id=\"9O4-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"9O5-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          16 · Coverage uses honest units and clocks\n        </div>\n        <div id=\"9O7-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Use exactly page_key=coverage in the compact shared header: Coverage &amp; methodology / 覆盖与方法. Keep one H1, the existing snapshot/stale owner, active navigation, 44 px brand link and 72 px Brain reservation. The overview starts with Core-theme company coverage and separate US/China cards. Never add the two markets into a globally unique company total or turn the uncertain denominator into a precise percentage.<br /><br />Each market displays the unchanged numerator_issuers, issuer_count_bounds, eligible_issuers_resolved and, when nonzero, eligible_securities_unresolved_issuer. Matched means linked to a company record; identity qualification is a separate condition. Unmatched listings are securities, not distinct companies. In the producer, only IDENTITY_NOT_QUALIFIED mixes those populations: subtract the unresolved-listing contribution from that one reason before showing company reasons. Do not clamp a negative value or conceal an accounting mismatch. Tests require company reasons to total matched companies minus the admitted numerator.<br /><br />The accepted US input has 1 admitted company, 1,927 matched companies and 4 unmatched listings, with bounds 1,928–1,931. Its company reasons are 722 identity-unconfirmed, 1,200 vendor-only and 4 without activity: 1,926 companies. China has 0 matched companies and 1,019 unmatched listings, bounds 1–1,019, and no company-reason population. An absent breakdown never says complete coverage. Keep every configured reason label and company unit; no hidden global aggregate or fabricated complete state.<br /><br />Derive the activity strip and both theme totals from acceptance-tier micros only, using admitted &gt; 0. Here 1 core theme has admitted activity and 67 do not; the 303 extended themes remain separate and excluded. Themes count themes, not distinct market companies. The proposed-only note, when present, is a subset of themes without admitted activity; kind=held is not every pending proposal.<br /><br />Use native details/summary for company reasons and Method &amp; sources. Keep Enter/Space, no-JS operation and independent open states; reduced motion removes only the caret transition. The method separates admission, company matching, theme counts and public publication checks. Snapshot as of comes from model.asof; Coverage model generated comes from provenance.built_at_utc with exact datetime and UTC. Sources remain undated. Never relabel model creation as review time or assume model.asof is the directory snapshot.<br /><br />Paper Coverage · Companies and listings contains CV01 EN390 Day and CV02 ZH320 Noir phones, CV03 full expanded US reasons, CV04 full method and source clocks, and CV05 the ZH core-theme strip. The phones remain 844 px viewports; complete components are shown alongside them. These are editable source-contract specimens. Keep existing model, producer, public projection, publication safeguards, route owners and original model01/release fences.\n        </div>\n      </div>\n      <div id=\"A1B-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"A1C-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          17 · Recover failed topic research\n        </div>\n        <div id=\"A1D-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Parse or schema failure leaves the source-rendered starting topic in place. Say Interactive research could not load. The starting topic is shown below. / 交互研究未能加载。下方显示起始主题。 Reveal one native Open the full index / 打开完整索引 anchor in the existing notice region. Keep it hidden during normal, missing-topic, filter-recovery and no-JavaScript states. A requested nondefault hash does not mean that topic was rendered.<br /><br />The new anchor exists before restoreCompanies → refreshJourney captures main links. Keep originalHrefs, safeReturn and refreshJourney as the only journey projection. In the failure branch, hashchange and popstate invoke that same owner. Observe data-lang and data-gmi-lens because the existing lens control uses replaceState without a history event. Only language changes update translated options and the failure notice. Do not add URL writes, retries, fetches, storage or a second navigation owner.<br /><br />Keep Browse, Reset and Copy unavailable. Hide only the empty Related topics section whose payload container has no element children or non-whitespace text. Keep the starting answer, dated company/source actions, product context, Evidence coverage and native Source receipt, Theme details and census disclosures. Never imply the starting answer matches the rejected request, or that dated planned evidence proves current delivery or revenue exposure.<br /><br />The index action stays an anchor for keyboard activation, browser link menus and new tabs. Qualified theme/query/lens/filter context follows the existing policy; Back and Forward refresh it, absent or rejected context restores the original gmi-index.html href, and locale changes retain the same focused node. Navigation preserves the requested context without claiming the failed page rendered it.<br /><br />No-JavaScript uses the existing noscript/native index route. Missing bundle and exceptions before payload parsing are outside this catch; the static global index remains available. Payload faults are test fixtures, never saved public data. The component harness extracts the four canonical verifier functions and tests actual generated main content with production GMI JS/CSS.<br /><br />Paper Research · Load recovery contains F01 EN390 Noir and F02 ZH390 Day as 844 px viewports, plus F03 complete starting-topic fallback. Source receipts and theme details begin closed; the empty Related topics block is absent. The separate full component exposes the available below-fold content without compressing the phones.\n        </div>\n      </div>\n      <div id=\"7ND-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NE-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          18 · Proof and release boundary\n        </div>\n        <div id=\"7NF-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The native-Browse fallback now passes 12 browser cases in 12 fresh anonymous contexts, Chrome 157.0.8103.39, zero page errors. Ten actual opener/drawer → index → return journeys cover missing and supported showModal at EN/ZH390/320 plus EN820. Two existing primary Escape cases preserve guard/clear/native-dismissal behavior. Final PID26102 passes in 27.08 s.<br /><br />A valid nondefault selected topic returns with the owner-qualified query, category, scope, evidence and lens; an unqualified fixture field is dropped. The capability fault affects one dialog instance only, leaving the prototype intact. After return, a fresh document opens Browse normally and focuses search. Four final index/returned-Browse captures were inspected.<br /><br />Baseline PID24930 reproduces two missing-return failures and passes two ordinary-path journeys. Emitted markup and open-dialog runtime both confirm ancestry inside main. The journey selector and URL qualification remain unchanged; only the existing unsupported-dialog branch refreshes and follows the native index anchor. All seven HTML pages/CSS are byte-exact, all 111 prior verifier definitions remain AST-exact, and six published source files read back exactly.<br /><br />The earlier 44 px Clear workflow at 1015aa95 remains 30 cases/34 contexts with five inspected captures and editable Q01–Q04 on p-D-0. Earlier focus at b5b56537 remains 28/30; Escape at 2b2ab661 6/6; payload at 60cd0e21 20/22. These are dated source records, not newly rerun whole-product matrices.<br /><br />PR10676 @c19d6185f0d06b9ef8af3fb8979d121d32e36c39 stays Draft with original model/release holds. DESIGN_RECORD §§11.19–11.37 separates source-bound proof. Build remains eighteen modules / 57 nodes. This controlled capability test does not certify a historical browser, full shared shell/fonts, native OS IME, spoken AT, live account/admission, current hosted CI or deployment.\n        </div>\n      </div>\n    </div>\n  )",
+    "after_jsx": "(\n    <div id=\"7M9-0\" style={{ backgroundColor: 'var(--color-gmi-night-canvas)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', gap: '20px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', padding: '32px', WebkitFontSmoothing: 'antialiased', width: '1080px' }}>\n      <div id=\"7MA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-accent)', fontFamily: 'var(--font-gmi-ui)', fontSize: '12px', fontWeight: 600, letterSpacing: '0.06em', lineHeight: '18px' }}>\n        S06 · BUILD · RECEIPTS, KEYBOARD &amp; SEARCH IMPLEMENTED · 09 NOV 2026\n      </div>\n      <div id=\"7MB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '28px', fontWeight: 600, lineHeight: '36px' }}>\n        Research that keeps your place.\n      </div>\n      <div id=\"7MP-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          01 · Keep the two native disclosures distinct\n        </div>\n        <div id=\"7MR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Source receipt / 来源凭证 uses .gmi-evidence-receipt: the selected card’s Record, Source key and Source text hash. Theme details / 主题详情 uses .gmi-topic-receipt: taxonomy paths, Core/Extended scope and value-chain position. Keep the current publication date, planned lifecycle, source link, company action, related topics and coverage intact. No inspector, extra route or request is needed to open either disclosure.\n        </div>\n      </div>\n      <div id=\"7MT-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MU-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          02 · Exact public fields; separate clocks\n        </div>\n        <div id=\"7MV-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Candidate #10676 @60f131e0 preserves the existing scripts/build_gmi_explorer.py admission of one exact Micron product observation. The card contains published_date, public URL, bilingual source label, receipt, source key/hash, planned lifecycle, product and platform. 26 Feb 2024 is a date-only publication. First recorded remains a separate theme_links.first_seen value; retrieval and review timestamps are not card fields. Do not infer current delivery, amount or revenue exposure.\n        </div>\n      </div>\n      <div id=\"7MX-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7MY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          03 · Preserve locale state inside the existing renderer\n        </div>\n        <div id=\"7MZ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          Implemented in templates/gmi.js and identical site/gmi.js · current blob c5d32d689ffae6caedf72a8afef317c9900c4428 · PR10676 @60f131e086e614487d86ebf089aa52b1af2630f0. Only the locale observer passes sync(true). A one-render capture matches exact theme + receipt + source key + source text hash; every member of a duplicate receipt-ID group is ineligible. Native details restore only exact current matches, regardless of order, then discard the capture. No storage, request, URL field or research-state owner was added; evidence=1 remains the existing filter.\n        </div>\n      </div>\n      <div id=\"7N1-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7N2-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          04 · Preserve receipt focus across languages\n        </div>\n        <div id=\"7N3-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px' }}>\n          On a locale-only receipt redraw, keep focus on any surviving control. Restore only a previously focused node that was removed, and only while focus remains on the body. Source/company actions must match both role and the complete destination after the existing navigation rewrite. A changed or missing action falls back to that receipt’s summary; an absent, changed or ambiguous record uses the current focusable topic heading. Native summary keeps Enter/Space and ordinary Tab behavior; disclosure state grants no source, selection or navigation authority.\n        </div>\n      </div>\n      <div id=\"7N5-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7N6-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          05 · Keep recovery at the serving boundary\n        </div>\n        <div id=\"7N7-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          gmi_return carries only the qualified theme/company catalogue context, a bounded query and at most one upstream theme return; it does not capture an immutable source snapshot, exact opener or scroll. Keep stale-issuer deletion. Once the guarded publisher propagates that deletion, standalone HTML reaches the normal missing-file response after the existing access gate. Do not create a replacement issuer page.<br />At the inspected Terminal source, no GMI route is admitted; the existing route boundary uses notFound(). For a separately admitted route, a missing qualified bridge reaches the existing 15-second failure boundary with Retry / Open original; a registry mismatch uses refresh. Neither proves withdrawal. Access restrictions, missing files and routing eligibility need distinct evidence.<br />Future recovery belongs to the existing serving/shell owner, must retain only permitted return context and cannot depend on JavaScript in a deleted document. Qualified against Macro @071ed19f and Terminal @4e868da4. Installed flags, live responses and the separately held registry proposal remain unverified.\n        </div>\n      </div>\n      <div id=\"7N9-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NA-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          06 · Responsive implementation and useful motion\n        </div>\n        <div id=\"7NB-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Both GMI stylesheets retain a 44 px minimum for native summaries. The production macro renders Theme details / 主题详情 separately from Source receipt / 来源凭证, including without JavaScript. Receipt identifiers remain exact. Primary navigation labels now wrap at narrow widths; the 320 px English document fits its viewport with 44 px targets. Category shortcuts also measure at least 44 px. Their mobile sticky-header and destination offsets are paired at 61 px, keeping headers visible below the rail. Preserve native expansion and immediate reduced-motion behavior. The answer-side recovery bar wraps at 320 px and retains a 44 px action.<br /><br />When an initialized primary Browse dialog lacks showModal, refreshJourney must qualify the existing full-index anchor before the opener navigates to that anchor’s href. The index’s existing return action restores the permitted nondefault theme, query, category, scope, evidence and lens. Keep URL validation and query bounds with safeReturn; arbitrary hash fields, exact opener, scroll and immutable source snapshots are not promised.<br /><br />Native dialog presentation keeps the element inside main, so the current journey selector already covers the open drawer’s index link. Preserve that selector and ordinary open/search-focus lifecycle. This valid-payload capability fallback is separate from failed-data recovery. Controlled absence of one dialog method proves the branch’s contract, not historical-browser support.\n        </div>\n      </div>\n      <div id=\"7NH-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NJ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          07 · Copy belongs to its initiating view\n        </div>\n        <div id=\"7NI-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          One attempt captures the complete normalized URL and selected theme. Pending shows Copying… / 正在复制…. Success, failure and finally belong only to that current attempt. Selection, filter URL changes, history, lens changes and page exit retire it, including an A→B→A return. Each success timer belongs to its own attempt.<br /><br />renderCopyFeedback owns both visibility and pre-hide recovery. Retire the old attempt, timer and owned announcement first. If its panel still owns focus, try reachable Copy, then the topic heading, with preventScroll. Recheck actual focus after callbacks; preserve a surviving redirect and unrelated focus. Close has no separate late focus call.<br /><br />Keep local render-pass validity separate from currentCopy identity. A newer render stops the old projection from hiding or clearing its feedback. Copy also yields if recovery changes URL/theme before normalization, and checks the attempt again before issuing writeText. After completion rendering, recheck before feedback; after failure focus, select only the still-current focused address.<br /><br />Locale-only redraws preserve the current attempt and translate its feedback. Later focus, pointer intent or window blur relinquishes automatic failure focus. Pagehide explicitly suppresses recovery while retiring state. An issued system clipboard write cannot be cancelled. No retry, queue, persistence or second navigation owner is added.\n        </div>\n      </div>\n      <div id=\"7NK-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NM-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          08 · One keyboard entry; predictable filtering\n        </div>\n        <div id=\"7NL-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The enhanced tree has one sequential row entry, with arrows moving among visible rows. Hidden and empty categories cannot retain a Tab stop. Its existing bilingual heading supplies the accessible name. Native theme links keep their destinations and modified-click behavior; information buttons and See all stay separately reachable. Without JavaScript, the original 371 link attributes remain.<br /><br />Plain Enter/Space on a leaf delegates to the existing topic-selection owner. Preserve parent expansion, modifiers, IME and repeat handling. Before search hides active row content, focus the search input; before collapse hides a descendant, focus its nearest visible ancestor. Preserve surviving and unrelated focus. Clearing a zero-result search restores expansion and uses the first visible row as the next entry.<br /><br />Index shortcuts follow their filtered groups. Hidden, detached or unowned targets cannot replace the parameter fragment; reject stale observer entries before changing current-link state. Return focus before the index hides an active row, category or shortcut. Query, lens, open state and return context keep their existing owners.<br /><br />The tree’s existing no-match paragraph now sits inside one persistent polite, atomic status region. Keep focus in search, preserve its bilingual text and skip unchanged visibility writes. Clear hides the paragraph while the status owner remains mounted. A scoped CSS rule offsets the extra empty flex gap: normal spacing stays 12 px; the visible message keeps its original margins. No second announcer, timer, locale observer or query state is needed.<br /><br />Primary Browse first computes which result rows and region will disappear. Before hiding an owned focus target, try reachable search, then Done inside an open native dialog or the visible opener/topic heading in the sidebar. Recheck actual focus: preserve a surviving redirect; continue the bounded fallback if focus remains in a retiring subtree. A newer synchronous filter pass cancels the stale projection. Keep surviving/unrelated focus and closed mobile Browse unchanged; skip unchanged hidden writes.\n        </div>\n      </div>\n      <div id=\"7NN-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NP-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          09 · Count the results the user can see\n        </div>\n        <div id=\"7NO-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The existing indexRender pass derives one compact status plus category and subgroup counts from its matching rows. HBM shows 2 results / 2 个结果, category counts of two, and one result in each visible subgroup. At zero, use the existing no-match wording in the same live-status region. The query is already visible; do not repeat it in a paragraph.<br /><br />Generated data-gmi-total attributes restore the original totals on Clear. Keep the footer explicitly labelled Full index / 完整索引. Hide the static core/extended breakdown while searching: tier and held/admitted review status are separate dimensions, so never infer one from the other. Existing bilingual spans handle language changes. Matching-row counts do not establish company evidence, completeness, freshness or admission.<br /><br />The index now keeps one persistent polite/atomic wrapper around its existing visual feedback paragraph. Move the status role off the hidden paragraph; retain its count/no-match spans and language owner. indexHidden still releases owned focus before a hide request, then skips unchanged visibility writes. Repeated equivalent searches and duplicate language notifications make no feedback mutations. The whole paragraph controls empty-gap compensation: 12 px normally and after Clear; zero-result feedback retains its space.\n        </div>\n      </div>\n      <div id=\"7SR-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7ST-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          10 · Recover without leaving the answer\n        </div>\n        <div id=\"7SS-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Show “This topic is outside your filters.” / “当前主题不在筛选范围内。” with Clear filters / 清除筛选 only when a valid selected topic is excluded. Invalid-topic and failed-data states keep their own explanations, without this unrelated action. Generated markup starts hidden when JavaScript is unavailable.<br /><br />Join the existing data-topic-reset handler. Clear Browse query/category/scope/evidence, retain the selected theme, and use the current replace-URL path to preserve lens and return context and retire copy feedback. Do not select or rerender the answer: retain evidence-node identity, exact source fields and open receipts.<br /><br />The answer-side caller returns focus to the visible topic heading; existing drawer/sidebar callers keep search focus. Before hiding a focused recovery action, focus that heading. Native modal behavior stays intact. Reuse current panel/button tokens, allow wrapping, expose the notice before changing its status text, and skip unchanged text writes. No extra timer, storage or announcement owner is needed.<br /><br />Reset chooses that established heading/search destination before projecting filter visibility. Do not focus again after filters: a surviving intentional redirect must remain. Query/category/scope/evidence clear through the existing replace-URL owner; theme, lens, qualified return, evidence nodes and open receipts remain. History keeps its separate existing answer-render path.\n        </div>\n      </div>\n      <div id=\"7YP-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7YR-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          11 · Clear the search; keep the research\n        </div>\n        <div id=\"7YQ-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The tree and full index share one localized Clear search / 清空搜索 icon button. It is hidden until JavaScript binds the existing input path. Keep the field 44 px high and the action 44 × 44 px. Replace the slash hint while the raw input is nonempty, including whitespace. Suppress the browser cancel only under the enhanced class.<br /><br />Click and native Enter/Space focus the input, empty its value and dispatch the current input event once. Ordinary Escape uses that same helper; consumed, composing and keyCode229 events do nothing. The existing search, URL and expansion owners perform the reset. These tree/index actions do not clear primary Browse filters, select a different answer or redraw evidence.<br /><br />Index initial/history restoration synchronizes the button from the restored value. Before hiding a focused clear action, return focus to search; preserve unrelated focus. Keep lens, qualified return, other hash keys and current disclosures. Use the existing locale owner. No second filter state, announcement cycle, timer or navigation owner is needed. S06G contains editable EN Day / ZH Noir 320 px states; implementation proof also covers 390 and 1440 px.<br /><br />Primary Browse owns its separate Escape handler. Ignore non-Escape keys. For Escape already consumed, composing or carrying keyCode229, stop propagation and return without clearing the query, calling updateFilters or adding preventDefault. This also keeps that guarded event away from document bubble handlers while leaving the input method’s default behavior intact.<br /><br />Ordinary Escape with a nonempty query keeps the existing preventDefault, stopPropagation, clear and updateFilters path. Retain the selected theme, category, scope, evidence filter, lens and answer nodes; keep focus in search. With an empty query, leave Escape to the browser so the existing native dialog cancel/close and opener-focus cleanup work. Do not add composition state, a cancel blocker, a timer or an ignore-next-close flag.<br /><br />Synthetic composing/229 events prove this authored event contract, not OS-native IME behavior. Real consumed and ordinary Escape keys verify the query, history, focus and native dialog boundary separately. A one-use test cancel listener can keep the dialog open; removing that test-only prevention restores the next native dismissal.<br /><br />Primary Browse now has its own 44 × 44 px Clear search / 清空搜索 button. It is visible for any nonempty raw input, including whitespace, and replaces the slash hint in the same slot. Bind the click before adding the enhancement class; leave it hidden without JavaScript or valid topic data. Use a plain wrapper with the input’s existing bilingual name, plus scoped primary padding/native-cancel rules.<br /><br />Clear only the query through updateFilters once. Retain topic, category, scope, evidence-only, lens, qualified return, other hash fields, answer/source-card nodes and open receipts. The drawer stays open. Other filters may still yield zero matches; keep Clear all filters available. An already empty activation is inert.<br /><br />The existing filters projection owns button visibility and pre-hide focus. Capture its pass and the URL before focusing search; if a focus callback projects newer state or begins hash restoration, yield. Respect surviving focus redirects and never focus a second time. Leave the accepted primary Escape handler unchanged. Q01/Q02 show EN390/ZH320; Q03/Q04 compare query Clear and full Reset on Browse · Search and filters, p-D-0.\n        </div>\n      </div>\n      <div id=\"87Z-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"881-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          12 · The index starts with its task\n        </div>\n        <div id=\"880-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Use the existing page_key=index branch in _gmi_product_header.html.j2. Keep GMI Explorer as a small real link with its .gmi-product-name hook and 44 px target; place the sole All micro-themes / 全部细分主题 H1 beside the one exact dated snapshot. Remove only the index’s repeated head() introduction, breadcrumb, count sentence and same-clock date. Other pages keep their existing header output.<br /><br />Preserve the full snapshot/stale subtree, Brain slot, navigation and the qualified return inserted after navigation. Keep the 72 px mobile Brain reservation. Use a 32 px title on desktop and 24 px at ≤820, natural Chinese spacing, no fixed height and 16 px navigation/return gaps. The brand still restores the qualified research destination; company return may contain one upstream theme return.<br /><br />Without JavaScript, keep the server-rendered title/date, ordinary links and native disclosures. Do not fabricate stale qualification, Brain docking or a contextual return. The Index · Search and navigation page shows an EN390 default viewport and ZH320 filtered company-return/stale state. Two visible results and Full index: 371 stay distinct. These are editable design states; the existing source owns query, count, history and navigation.\n        </div>\n      </div>\n      <div id=\"88I-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"88J-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          13 · Choose a category, then go\n        </div>\n        <div id=\"88K-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          At the existing ≤640 px breakpoint, show a native Category / 类别 select and a separate Go / 前往 button. Keep the select and Go 44 px high, Go 44 px wide, an 8 px gap and the existing 61 px sticky strip. Desktop and no-JS keep the original anchor track. The authored custom wrapper starts hidden; unavailable scripts must not leave an inert control.<br /><br />Selection is a pending destination, not the category in view. Typeahead and selection never navigate. Go revalidates and invokes the retained category link, preserving query, lens, qualified return, other hash keys and history. Keep the selected ID for repeat jumps. Derive options from the existing visible groups and active-language labels/counts; available zero-count categories stay eligible. Filtering removes unavailable options; a lost choice resets to the prompt without a first-category fallback.<br /><br />Retain valid choices through locale/count changes and avoid rebuilding equivalent options. Passive IntersectionObserver updates only the existing anchor current state. Before disabling focused Go, focus the select; before zero-match nav hiding, the existing index owner focuses search. On resize, reveal incoming controls, transfer only owned focus with preventScroll, carry a focused desktop link’s ID to mobile, then hide outgoing controls. If all destinations are stale, recover to existing search. No new URL, storage, locale, observer or navigation owner.\n        </div>\n      </div>\n      <div id=\"8SW-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"8SX-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          14 · Company entry keeps evidence and focus\n        </div>\n        <div id=\"8SY-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Use exactly page_key=companies in the shared header. Keep the small 44 px GMI Explorer link, one Company evidence / 公司证据 H1, the original snapshot/stale owner, active navigation, utility links and 72 px Brain reservation. Share the existing compact index declarations; issuer and the six other HTML pages remain unchanged. The company page already had one snapshot: remove repeated introduction/breadcrumb/title instructions, not a second date.<br /><br />Keep every source-rendered company, dated product record, planned stage, named platform, source label/link, historical-context footer and company-detail action. Keep the interpretation guide. Remove only the final paragraph that repeats the guide’s qualification. The 26 Feb 2024 source date and 3 Nov 2026 snapshot remain separate.<br /><br />Within the existing company controller, focus search before hiding a card or no-match container that owns focus. Clear search / 清空搜索 focuses search before clearing and invoking updateCompanies once. Skip unchanged hidden values and complete localized count text; preserve unrelated or surviving control focus and the existing URL, history, return and locale owners.<br /><br />A normalized active query says N matching companies / 匹配到 N 家公司. Blank or whitespace-only input retains N companies with evidence on file / 有收录证据的公司：N 家. Count company cards, not product connections. No-match offers Clear search; a genuinely empty catalogue says No company evidence yet / 暂无公司证据, keeps Clear hidden and offers Explore themes.<br /><br />Paper Companies · Evidence and recovery contains C01 EN390 match, C02 ZH320 Noir full catalogue, C03 EN390 no-match with qualified research return, C04 ZH320 Noir empty-catalogue fixture, and C05 the complete EN card. Phone shells are truthful 844 px viewports; content continues below the fold. C04 is a renderer fixture, not a replacement public dataset. C05 exposes both source and company-detail actions without compressing the phone card.\n        </div>\n      </div>\n      <div id=\"90Y-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"90Z-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          15 · Retire returns; offer available evidence\n        </div>\n        <div id=\"910-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          When refreshJourney retires an absent or rejected return, first ask whether the holder contains document.activeElement. If it does, focus the existing a.gmi-product-name[href] outside that holder with preventScroll:true. If focus remains in the holder, use the existing product-nav link as the bounded fallback. Respect a focus handler that already moved to another surviving control. Then remove the invalid holder; even an exceptional DOM with neither usable target must not keep a stale Back action.<br /><br />Valid-to-valid changes keep the same Back anchor and update its qualified href/localized label. Unrelated source, search or navigation focus stays in place. Keep safeReturn, originalHrefs and the following link-projection loop exact. Focus must not activate a link, write history, manufacture a return or retain the retired destination on the brand. The browser still owns history scrolling and layout anchoring: a measured focus call kept scrollY at 300; removing the holder later changed it to 240. Do not add a scroll controller to conceal that distinction.<br /><br />Use the exact relationships page key with the existing compact task header: Company relationships / 公司关系. Preserve snapshot/stale, Brain slot, real brand/nav and utilities. The unavailable panel says Public relationship view unavailable / 暂无公开关系视图; it reports the missing verified public projection, not the outcome of every record’s clearance decision.<br /><br />Browse company evidence / 浏览公司证据 is the native primary action, followed by Explore themes and Coverage &amp; methodology. Existing navigation carries a qualified theme return or reuses the exact company-catalogue query/upstream context; direct and rejected entry use the ordinary company route. Without JavaScript all three anchors and the native publication disclosure work. Keep the original explanation and disclosure intact. Do not emit relationship parties, records, magnitudes, excerpts or a hidden search payload; source availability is not display permission.<br /><br />Paper Relationships · Availability contains R01 EN390 Day direct entry, R02 ZH320 Noir with company return, and R03 the expanded publication mechanism. The phones use 844 px viewports. These are editable source-contract specimens; local browser proof, catalogue content and public release acceptance remain separate.\n        </div>\n      </div>\n      <div id=\"9O4-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"9O5-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          16 · Coverage uses honest units and clocks\n        </div>\n        <div id=\"9O7-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Use exactly page_key=coverage in the compact shared header: Coverage &amp; methodology / 覆盖与方法. Keep one H1, the existing snapshot/stale owner, active navigation, 44 px brand link and 72 px Brain reservation. The overview starts with Core-theme company coverage and separate US/China cards. Never add the two markets into a globally unique company total or turn the uncertain denominator into a precise percentage.<br /><br />Each market displays the unchanged numerator_issuers, issuer_count_bounds, eligible_issuers_resolved and, when nonzero, eligible_securities_unresolved_issuer. Matched means linked to a company record; identity qualification is a separate condition. Unmatched listings are securities, not distinct companies. In the producer, only IDENTITY_NOT_QUALIFIED mixes those populations: subtract the unresolved-listing contribution from that one reason before showing company reasons. Do not clamp a negative value or conceal an accounting mismatch. Tests require company reasons to total matched companies minus the admitted numerator.<br /><br />The accepted US input has 1 admitted company, 1,927 matched companies and 4 unmatched listings, with bounds 1,928–1,931. Its company reasons are 722 identity-unconfirmed, 1,200 vendor-only and 4 without activity: 1,926 companies. China has 0 matched companies and 1,019 unmatched listings, bounds 1–1,019, and no company-reason population. An absent breakdown never says complete coverage. Keep every configured reason label and company unit; no hidden global aggregate or fabricated complete state.<br /><br />Derive the activity strip and both theme totals from acceptance-tier micros only, using admitted &gt; 0. Here 1 core theme has admitted activity and 67 do not; the 303 extended themes remain separate and excluded. Themes count themes, not distinct market companies. The proposed-only note, when present, is a subset of themes without admitted activity; kind=held is not every pending proposal.<br /><br />Use native details/summary for company reasons and Method &amp; sources. Keep Enter/Space, no-JS operation and independent open states; reduced motion removes only the caret transition. The method separates admission, company matching, theme counts and public publication checks. Snapshot as of comes from model.asof; Coverage model generated comes from provenance.built_at_utc with exact datetime and UTC. Sources remain undated. Never relabel model creation as review time or assume model.asof is the directory snapshot.<br /><br />Paper Coverage · Companies and listings contains CV01 EN390 Day and CV02 ZH320 Noir phones, CV03 full expanded US reasons, CV04 full method and source clocks, and CV05 the ZH core-theme strip. The phones remain 844 px viewports; complete components are shown alongside them. These are editable source-contract specimens. Keep existing model, producer, public projection, publication safeguards, route owners and original model01/release fences.\n        </div>\n      </div>\n      <div id=\"A1B-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"A1C-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          17 · Recover failed topic research\n        </div>\n        <div id=\"A1D-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          Parse or schema failure leaves the source-rendered starting topic in place. Say Interactive research could not load. The starting topic is shown below. / 交互研究未能加载。下方显示起始主题。 Reveal one native Open the full index / 打开完整索引 anchor in the existing notice region. Keep it hidden during normal, missing-topic, filter-recovery and no-JavaScript states. A requested nondefault hash does not mean that topic was rendered.<br /><br />The new anchor exists before restoreCompanies → refreshJourney captures main links. Keep originalHrefs, safeReturn and refreshJourney as the only journey projection. In the failure branch, hashchange and popstate invoke that same owner. Observe data-lang and data-gmi-lens because the existing lens control uses replaceState without a history event. Only language changes update translated options and the failure notice. Do not add URL writes, retries, fetches, storage or a second navigation owner.<br /><br />Keep Browse, Reset and Copy unavailable. Hide only the empty Related topics section whose payload container has no element children or non-whitespace text. Keep the starting answer, dated company/source actions, product context, Evidence coverage and native Source receipt, Theme details and census disclosures. Never imply the starting answer matches the rejected request, or that dated planned evidence proves current delivery or revenue exposure.<br /><br />The index action stays an anchor for keyboard activation, browser link menus and new tabs. Qualified theme/query/lens/filter context follows the existing policy; Back and Forward refresh it, absent or rejected context restores the original gmi-index.html href, and locale changes retain the same focused node. Navigation preserves the requested context without claiming the failed page rendered it.<br /><br />No-JavaScript uses the existing noscript/native index route. Missing bundle and exceptions before payload parsing are outside this catch; the static global index remains available. Payload faults are test fixtures, never saved public data. The component harness extracts the four canonical verifier functions and tests actual generated main content with production GMI JS/CSS.<br /><br />Paper Research · Load recovery contains F01 EN390 Noir and F02 ZH390 Day as 844 px viewports, plus F03 complete starting-topic fallback. Source receipts and theme details begin closed; the empty Related topics block is absent. The separate full component exposes the available below-fold content without compressing the phones.\n        </div>\n      </div>\n      <div id=\"7ND-0\" style={{ backgroundColor: 'var(--color-gmi-night-surface)', borderColor: 'var(--color-gmi-night-line)', borderRadius: '14px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '24px' }}>\n        <div id=\"7NE-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-text)', fontFamily: 'var(--font-gmi-ui)', fontSize: '18px', fontWeight: 600, lineHeight: '26px' }}>\n          18 · Proof and release boundary\n        </div>\n        <div id=\"7NF-0\" style={{ boxSizing: 'border-box', color: 'var(--color-gmi-night-muted)', fontFamily: 'var(--font-gmi-ui)', fontSize: '14px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>\n          The copy-recovery matrix passes 28 cases in 50 fresh anonymous contexts, Chrome 157.0.8103.39, zero page errors. Final PID 99607: 54.32 s. Thirty-two interactive snapshots record zero hides while the panel owns focus. Close, Enter/Space, actual Back/Forward, unavailable targets and surviving/retiring redirects use the existing renderer.<br /><br />New pending and immediate-failure attempts survive recovery callbacks. An older Copy cannot overwrite navigation or issue an extra write. The unchanged clipboard regression covers 21 contexts; EN390/ZH320 answer-recovery adds four. Four final manual-fallback/answer captures were inspected. One separate injected pagehide snapshot deliberately hides without focus recovery.<br /><br />Baseline PID 73607 reproduces both ordering failures. Diagnostic PID 95180 exposed a test assumption: this Chrome retained Copy focus when disabled and emitted no blur. The corrected pending-render callback is explicitly injected. All 112 prior verifier definitions are AST-exact; seven HTML pages/CSS remain byte-exact; six source files read back exactly.<br /><br />Earlier source-bound evidence remains dated: dialog return c19d6185: 12/12; query Clear 1015aa95: 30/34 and editable Q01–Q04; Browse focus b5b56537: 28/30; Escape 2b2ab661: 6/6; payload 60cd0e21: 20/22.<br /><br />PR 10676 @60f131e086e614487d86ebf089aa52b1af2630f0 stays Draft with original model/release holds. DESIGN_RECORD §§11.19–11.38 separates proof. Build remains 18 modules / 57 nodes. No full shared-shell/fonts, system clipboard, native OS IME, spoken AT, actual BFCache, live account/admission, current hosted CI or deployment acceptance is claimed.\n        </div>\n      </div>\n    </div>\n  )",
+    "checks": {
+      "nodes": 57,
+      "all_ids_and_parents_exact": true,
+      "all_styles_exact": true,
+      "only_expected_text_changes": true,
+      "flow_exact": true,
+      "tokens": "ac191fd9",
+      "differences": [
+        {
+          "id": "7MV-0",
+          "styleExact": true,
+          "parentExact": true
+        },
+        {
+          "id": "7MZ-0",
+          "styleExact": true,
+          "parentExact": true
+        },
+        {
+          "id": "7NI-0",
+          "styleExact": true,
+          "parentExact": true
+        },
+        {
+          "id": "7NF-0",
+          "styleExact": true,
+          "parentExact": true
+        }
+      ]
+    },
+    "prior_Q01_Q04_exact": true,
+    "operations": [
+      {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "paper-estate-cont-20261108-gmi-copy-focus-build",
+        "tool": "set_text_content",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M5H6EARN9YHQV17JC6ZG9BRY\",\n    \"name\": \"GMI Explorer · Product system\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ac191fd9\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"7NI-0\"\n    },\n    {\n      \"nodeId\": \"7MV-0\"\n    },\n    {\n      \"nodeId\": \"7MZ-0\"\n    },\n    {\n      \"nodeId\": \"7NF-0\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before": {
+          "basic_info": {
+            "fileName": "GMI Explorer · Product system",
+            "pageName": "History · 03 Nov first desktop draft",
+            "pageId": "p-2-0",
+            "url": "https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-2-0",
+            "rootNodeId": "root_node_p-2-0",
+            "nodeCount": 3081,
+            "artboardCount": 14,
+            "artboards": [
+              {
+                "id": "9A-0",
+                "name": "01 · Theme atlas / Noir · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 0
+              },
+              {
+                "id": "4H1-0",
+                "name": "01 · 主题探索 / Noir · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 0,
+                "worldY": 6000
+              },
+              {
+                "id": "4PE-0",
+                "name": "01 · 主题探索 / Day · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 1520,
+                "worldY": 6000
+              },
+              {
+                "id": "26V-0",
+                "name": "07 · Theme atlas / Day · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 3000
+              },
+              {
+                "id": "I4-0",
+                "name": "02 · Theme detail & value chain / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 0
+              },
+              {
+                "id": "QH-0",
+                "name": "03 · Micro-theme index / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 0
+              },
+              {
+                "id": "YU-0",
+                "name": "04 · Company intelligence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 1500
+              },
+              {
+                "id": "177-0",
+                "name": "05 · Relationship evidence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 1500
+              },
+              {
+                "id": "1FK-0",
+                "name": "06 · Coverage & receipts / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 1500
+              },
+              {
+                "id": "2F8-0",
+                "name": "08 · Theme detail & value chain / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 3000
+              },
+              {
+                "id": "2KO-0",
+                "name": "09 · Micro-theme index / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 3000
+              },
+              {
+                "id": "2RB-0",
+                "name": "10 · Company intelligence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 4500
+              },
+              {
+                "id": "2W0-0",
+                "name": "11 · Relationship evidence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 4500
+              },
+              {
+                "id": "310-0",
+                "name": "12 · Coverage & receipts / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 4500
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "01 · Current product · Start here",
+                "icon": "arrow",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-D-0",
+                "name": "Browse · Search and filters",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-0",
+                "name": "Index · Search and navigation",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "Companies · Evidence and recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-A-0",
+                "name": "Relationships · Availability",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-B-0",
+                "name": "Coverage · Companies and listings",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-C-0",
+                "name": "Research · Load recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "Build · Interaction & receipts",
+                "icon": "blueprint",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "Reference · Preservation rules",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "Foundations · Tokens & state reference",
+                "icon": "swatches",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "History · 03 Nov first desktop draft",
+                "icon": "paper",
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "History · 03 Nov first mobile draft",
+                "icon": "paper",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "History · 21–22 Oct references",
+                "icon": "images",
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "PingFang SC",
+              "IBM Plex Mono",
+              "System Sans-Serif"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--color-gmi-night-canvas",
+                  "value": "#0F1115"
+                },
+                {
+                  "name": "--color-gmi-night-surface",
+                  "value": "#181B21"
+                },
+                {
+                  "name": "--color-gmi-night-raised",
+                  "value": "#1E222A"
+                },
+                {
+                  "name": "--color-gmi-night-text",
+                  "value": "#F2F4F7"
+                },
+                {
+                  "name": "--color-gmi-night-muted",
+                  "value": "#A5ACB8"
+                },
+                {
+                  "name": "--color-gmi-night-line",
+                  "value": "#333A46"
+                },
+                {
+                  "name": "--color-gmi-night-accent",
+                  "value": "#8AB4F8"
+                },
+                {
+                  "name": "--color-gmi-night-selection",
+                  "value": "#202C3F"
+                },
+                {
+                  "name": "--color-gmi-night-positive",
+                  "value": "#8AD3B0"
+                },
+                {
+                  "name": "--color-gmi-night-caution",
+                  "value": "#E6B96A"
+                },
+                {
+                  "name": "--color-gmi-day-canvas",
+                  "value": "#F7F8FA"
+                },
+                {
+                  "name": "--color-gmi-day-surface",
+                  "value": "#FFFFFF"
+                },
+                {
+                  "name": "--color-gmi-day-raised",
+                  "value": "#EEF1F6"
+                },
+                {
+                  "name": "--color-gmi-day-text",
+                  "value": "#1C2430"
+                },
+                {
+                  "name": "--color-gmi-day-muted",
+                  "value": "#5D6B7E"
+                },
+                {
+                  "name": "--color-gmi-day-line",
+                  "value": "#DDE2E9"
+                },
+                {
+                  "name": "--color-gmi-day-accent",
+                  "value": "#285FFF"
+                },
+                {
+                  "name": "--color-gmi-day-selection",
+                  "value": "#EDF3FF"
+                },
+                {
+                  "name": "--color-gmi-day-positive",
+                  "value": "#267752"
+                },
+                {
+                  "name": "--color-gmi-day-caution",
+                  "value": "#865D13"
+                },
+                {
+                  "name": "--color-gmi-night-danger",
+                  "value": "#F1A3A3"
+                },
+                {
+                  "name": "--color-gmi-day-danger",
+                  "value": "#B42318"
+                },
+                {
+                  "name": "--font-gmi-ui",
+                  "value": "\"Inter\""
+                },
+                {
+                  "name": "--font-gmi-mono",
+                  "value": "\"IBM Plex Mono\""
+                },
+                {
+                  "name": "--font-gmi-zh",
+                  "value": "\"PingFang SC\""
+                },
+                {
+                  "name": "--text-gmi-caption",
+                  "value": "12px"
+                },
+                {
+                  "name": "--text-gmi-body",
+                  "value": "14px"
+                },
+                {
+                  "name": "--text-gmi-title",
+                  "value": "24px"
+                },
+                {
+                  "name": "--text-gmi-display",
+                  "value": "36px"
+                },
+                {
+                  "name": "--font-weight-gmi-regular",
+                  "value": "400"
+                },
+                {
+                  "name": "--font-weight-gmi-medium",
+                  "value": "500"
+                },
+                {
+                  "name": "--font-weight-gmi-semibold",
+                  "value": "600"
+                },
+                {
+                  "name": "--tracking-gmi-label",
+                  "value": "0.08em"
+                },
+                {
+                  "name": "--leading-gmi-body",
+                  "value": "22px"
+                },
+                {
+                  "name": "--opacity-gmi-disabled",
+                  "value": "50%"
+                },
+                {
+                  "name": "--breakpoint-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--breakpoint-gmi-tablet",
+                  "value": "768px"
+                },
+                {
+                  "name": "--breakpoint-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--container-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--container-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--spacing-gmi-1",
+                  "value": "4px"
+                },
+                {
+                  "name": "--spacing-gmi-2",
+                  "value": "8px"
+                },
+                {
+                  "name": "--spacing-gmi-3",
+                  "value": "12px"
+                },
+                {
+                  "name": "--spacing-gmi-4",
+                  "value": "16px"
+                },
+                {
+                  "name": "--spacing-gmi-6",
+                  "value": "24px"
+                },
+                {
+                  "name": "--spacing-gmi-8",
+                  "value": "32px"
+                },
+                {
+                  "name": "--radius-gmi-control",
+                  "value": "8px"
+                },
+                {
+                  "name": "--radius-gmi-panel",
+                  "value": "14px"
+                }
+              ]
+            },
+            "fileId": "01M5H6EARN9YHQV17JC6ZG9BRY",
+            "contentHash": {
+              "tokens": "ac191fd9"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M5H6EARN9YHQV17JC6ZG9BRY"
+          },
+          "snapshot_sha256": "eba2cb99efe62ae5aa0ab49c70f17b71c1db3c679a947a2998c04425a348ca40",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "basic_info": {
+            "fileName": "GMI Explorer · Product system",
+            "pageName": "History · 03 Nov first desktop draft",
+            "pageId": "p-2-0",
+            "url": "https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-2-0",
+            "rootNodeId": "root_node_p-2-0",
+            "nodeCount": 3081,
+            "artboardCount": 14,
+            "artboards": [
+              {
+                "id": "9A-0",
+                "name": "01 · Theme atlas / Noir · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 0
+              },
+              {
+                "id": "4H1-0",
+                "name": "01 · 主题探索 / Noir · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 0,
+                "worldY": 6000
+              },
+              {
+                "id": "4PE-0",
+                "name": "01 · 主题探索 / Day · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 1520,
+                "worldY": 6000
+              },
+              {
+                "id": "26V-0",
+                "name": "07 · Theme atlas / Day · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 3000
+              },
+              {
+                "id": "I4-0",
+                "name": "02 · Theme detail & value chain / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 0
+              },
+              {
+                "id": "QH-0",
+                "name": "03 · Micro-theme index / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 0
+              },
+              {
+                "id": "YU-0",
+                "name": "04 · Company intelligence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 1500
+              },
+              {
+                "id": "177-0",
+                "name": "05 · Relationship evidence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 1500
+              },
+              {
+                "id": "1FK-0",
+                "name": "06 · Coverage & receipts / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 1500
+              },
+              {
+                "id": "2F8-0",
+                "name": "08 · Theme detail & value chain / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 3000
+              },
+              {
+                "id": "2KO-0",
+                "name": "09 · Micro-theme index / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 3000
+              },
+              {
+                "id": "2RB-0",
+                "name": "10 · Company intelligence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 4500
+              },
+              {
+                "id": "2W0-0",
+                "name": "11 · Relationship evidence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 4500
+              },
+              {
+                "id": "310-0",
+                "name": "12 · Coverage & receipts / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 4500
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "01 · Current product · Start here",
+                "icon": "arrow",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-D-0",
+                "name": "Browse · Search and filters",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-0",
+                "name": "Index · Search and navigation",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "Companies · Evidence and recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-A-0",
+                "name": "Relationships · Availability",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-B-0",
+                "name": "Coverage · Companies and listings",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-C-0",
+                "name": "Research · Load recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "Build · Interaction & receipts",
+                "icon": "blueprint",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "Reference · Preservation rules",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "Foundations · Tokens & state reference",
+                "icon": "swatches",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "History · 03 Nov first desktop draft",
+                "icon": "paper",
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "History · 03 Nov first mobile draft",
+                "icon": "paper",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "History · 21–22 Oct references",
+                "icon": "images",
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "PingFang SC",
+              "IBM Plex Mono",
+              "System Sans-Serif"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--color-gmi-night-canvas",
+                  "value": "#0F1115"
+                },
+                {
+                  "name": "--color-gmi-night-surface",
+                  "value": "#181B21"
+                },
+                {
+                  "name": "--color-gmi-night-raised",
+                  "value": "#1E222A"
+                },
+                {
+                  "name": "--color-gmi-night-text",
+                  "value": "#F2F4F7"
+                },
+                {
+                  "name": "--color-gmi-night-muted",
+                  "value": "#A5ACB8"
+                },
+                {
+                  "name": "--color-gmi-night-line",
+                  "value": "#333A46"
+                },
+                {
+                  "name": "--color-gmi-night-accent",
+                  "value": "#8AB4F8"
+                },
+                {
+                  "name": "--color-gmi-night-selection",
+                  "value": "#202C3F"
+                },
+                {
+                  "name": "--color-gmi-night-positive",
+                  "value": "#8AD3B0"
+                },
+                {
+                  "name": "--color-gmi-night-caution",
+                  "value": "#E6B96A"
+                },
+                {
+                  "name": "--color-gmi-day-canvas",
+                  "value": "#F7F8FA"
+                },
+                {
+                  "name": "--color-gmi-day-surface",
+                  "value": "#FFFFFF"
+                },
+                {
+                  "name": "--color-gmi-day-raised",
+                  "value": "#EEF1F6"
+                },
+                {
+                  "name": "--color-gmi-day-text",
+                  "value": "#1C2430"
+                },
+                {
+                  "name": "--color-gmi-day-muted",
+                  "value": "#5D6B7E"
+                },
+                {
+                  "name": "--color-gmi-day-line",
+                  "value": "#DDE2E9"
+                },
+                {
+                  "name": "--color-gmi-day-accent",
+                  "value": "#285FFF"
+                },
+                {
+                  "name": "--color-gmi-day-selection",
+                  "value": "#EDF3FF"
+                },
+                {
+                  "name": "--color-gmi-day-positive",
+                  "value": "#267752"
+                },
+                {
+                  "name": "--color-gmi-day-caution",
+                  "value": "#865D13"
+                },
+                {
+                  "name": "--color-gmi-night-danger",
+                  "value": "#F1A3A3"
+                },
+                {
+                  "name": "--color-gmi-day-danger",
+                  "value": "#B42318"
+                },
+                {
+                  "name": "--font-gmi-ui",
+                  "value": "\"Inter\""
+                },
+                {
+                  "name": "--font-gmi-mono",
+                  "value": "\"IBM Plex Mono\""
+                },
+                {
+                  "name": "--font-gmi-zh",
+                  "value": "\"PingFang SC\""
+                },
+                {
+                  "name": "--text-gmi-caption",
+                  "value": "12px"
+                },
+                {
+                  "name": "--text-gmi-body",
+                  "value": "14px"
+                },
+                {
+                  "name": "--text-gmi-title",
+                  "value": "24px"
+                },
+                {
+                  "name": "--text-gmi-display",
+                  "value": "36px"
+                },
+                {
+                  "name": "--font-weight-gmi-regular",
+                  "value": "400"
+                },
+                {
+                  "name": "--font-weight-gmi-medium",
+                  "value": "500"
+                },
+                {
+                  "name": "--font-weight-gmi-semibold",
+                  "value": "600"
+                },
+                {
+                  "name": "--tracking-gmi-label",
+                  "value": "0.08em"
+                },
+                {
+                  "name": "--leading-gmi-body",
+                  "value": "22px"
+                },
+                {
+                  "name": "--opacity-gmi-disabled",
+                  "value": "50%"
+                },
+                {
+                  "name": "--breakpoint-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--breakpoint-gmi-tablet",
+                  "value": "768px"
+                },
+                {
+                  "name": "--breakpoint-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--container-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--container-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--spacing-gmi-1",
+                  "value": "4px"
+                },
+                {
+                  "name": "--spacing-gmi-2",
+                  "value": "8px"
+                },
+                {
+                  "name": "--spacing-gmi-3",
+                  "value": "12px"
+                },
+                {
+                  "name": "--spacing-gmi-4",
+                  "value": "16px"
+                },
+                {
+                  "name": "--spacing-gmi-6",
+                  "value": "24px"
+                },
+                {
+                  "name": "--spacing-gmi-8",
+                  "value": "32px"
+                },
+                {
+                  "name": "--radius-gmi-control",
+                  "value": "8px"
+                },
+                {
+                  "name": "--radius-gmi-panel",
+                  "value": "14px"
+                }
+              ]
+            },
+            "fileId": "01M5H6EARN9YHQV17JC6ZG9BRY",
+            "contentHash": {
+              "tokens": "ac191fd9"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M5H6EARN9YHQV17JC6ZG9BRY"
+          },
+          "snapshot_sha256": "eba2cb99efe62ae5aa0ab49c70f17b71c1db3c679a947a2998c04425a348ca40",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "paper-estate-cont-20261108-gmi-copy-focus-proof-spacing",
+        "tool": "set_text_content",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M5H6EARN9YHQV17JC6ZG9BRY\",\n    \"name\": \"GMI Explorer · Product system\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ac191fd9\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"7NF-0\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        "before": {
+          "basic_info": {
+            "fileName": "GMI Explorer · Product system",
+            "pageName": "History · 03 Nov first desktop draft",
+            "pageId": "p-2-0",
+            "url": "https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-2-0",
+            "rootNodeId": "root_node_p-2-0",
+            "nodeCount": 3081,
+            "artboardCount": 14,
+            "artboards": [
+              {
+                "id": "9A-0",
+                "name": "01 · Theme atlas / Noir · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 0
+              },
+              {
+                "id": "4H1-0",
+                "name": "01 · 主题探索 / Noir · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 0,
+                "worldY": 6000
+              },
+              {
+                "id": "4PE-0",
+                "name": "01 · 主题探索 / Day · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 1520,
+                "worldY": 6000
+              },
+              {
+                "id": "26V-0",
+                "name": "07 · Theme atlas / Day · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 3000
+              },
+              {
+                "id": "I4-0",
+                "name": "02 · Theme detail & value chain / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 0
+              },
+              {
+                "id": "QH-0",
+                "name": "03 · Micro-theme index / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 0
+              },
+              {
+                "id": "YU-0",
+                "name": "04 · Company intelligence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 1500
+              },
+              {
+                "id": "177-0",
+                "name": "05 · Relationship evidence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 1500
+              },
+              {
+                "id": "1FK-0",
+                "name": "06 · Coverage & receipts / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 1500
+              },
+              {
+                "id": "2F8-0",
+                "name": "08 · Theme detail & value chain / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 3000
+              },
+              {
+                "id": "2KO-0",
+                "name": "09 · Micro-theme index / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 3000
+              },
+              {
+                "id": "2RB-0",
+                "name": "10 · Company intelligence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 4500
+              },
+              {
+                "id": "2W0-0",
+                "name": "11 · Relationship evidence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 4500
+              },
+              {
+                "id": "310-0",
+                "name": "12 · Coverage & receipts / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 4500
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "01 · Current product · Start here",
+                "icon": "arrow",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-D-0",
+                "name": "Browse · Search and filters",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-0",
+                "name": "Index · Search and navigation",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "Companies · Evidence and recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-A-0",
+                "name": "Relationships · Availability",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-B-0",
+                "name": "Coverage · Companies and listings",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-C-0",
+                "name": "Research · Load recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "Build · Interaction & receipts",
+                "icon": "blueprint",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "Reference · Preservation rules",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "Foundations · Tokens & state reference",
+                "icon": "swatches",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "History · 03 Nov first desktop draft",
+                "icon": "paper",
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "History · 03 Nov first mobile draft",
+                "icon": "paper",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "History · 21–22 Oct references",
+                "icon": "images",
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "PingFang SC",
+              "IBM Plex Mono",
+              "System Sans-Serif"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--color-gmi-night-canvas",
+                  "value": "#0F1115"
+                },
+                {
+                  "name": "--color-gmi-night-surface",
+                  "value": "#181B21"
+                },
+                {
+                  "name": "--color-gmi-night-raised",
+                  "value": "#1E222A"
+                },
+                {
+                  "name": "--color-gmi-night-text",
+                  "value": "#F2F4F7"
+                },
+                {
+                  "name": "--color-gmi-night-muted",
+                  "value": "#A5ACB8"
+                },
+                {
+                  "name": "--color-gmi-night-line",
+                  "value": "#333A46"
+                },
+                {
+                  "name": "--color-gmi-night-accent",
+                  "value": "#8AB4F8"
+                },
+                {
+                  "name": "--color-gmi-night-selection",
+                  "value": "#202C3F"
+                },
+                {
+                  "name": "--color-gmi-night-positive",
+                  "value": "#8AD3B0"
+                },
+                {
+                  "name": "--color-gmi-night-caution",
+                  "value": "#E6B96A"
+                },
+                {
+                  "name": "--color-gmi-day-canvas",
+                  "value": "#F7F8FA"
+                },
+                {
+                  "name": "--color-gmi-day-surface",
+                  "value": "#FFFFFF"
+                },
+                {
+                  "name": "--color-gmi-day-raised",
+                  "value": "#EEF1F6"
+                },
+                {
+                  "name": "--color-gmi-day-text",
+                  "value": "#1C2430"
+                },
+                {
+                  "name": "--color-gmi-day-muted",
+                  "value": "#5D6B7E"
+                },
+                {
+                  "name": "--color-gmi-day-line",
+                  "value": "#DDE2E9"
+                },
+                {
+                  "name": "--color-gmi-day-accent",
+                  "value": "#285FFF"
+                },
+                {
+                  "name": "--color-gmi-day-selection",
+                  "value": "#EDF3FF"
+                },
+                {
+                  "name": "--color-gmi-day-positive",
+                  "value": "#267752"
+                },
+                {
+                  "name": "--color-gmi-day-caution",
+                  "value": "#865D13"
+                },
+                {
+                  "name": "--color-gmi-night-danger",
+                  "value": "#F1A3A3"
+                },
+                {
+                  "name": "--color-gmi-day-danger",
+                  "value": "#B42318"
+                },
+                {
+                  "name": "--font-gmi-ui",
+                  "value": "\"Inter\""
+                },
+                {
+                  "name": "--font-gmi-mono",
+                  "value": "\"IBM Plex Mono\""
+                },
+                {
+                  "name": "--font-gmi-zh",
+                  "value": "\"PingFang SC\""
+                },
+                {
+                  "name": "--text-gmi-caption",
+                  "value": "12px"
+                },
+                {
+                  "name": "--text-gmi-body",
+                  "value": "14px"
+                },
+                {
+                  "name": "--text-gmi-title",
+                  "value": "24px"
+                },
+                {
+                  "name": "--text-gmi-display",
+                  "value": "36px"
+                },
+                {
+                  "name": "--font-weight-gmi-regular",
+                  "value": "400"
+                },
+                {
+                  "name": "--font-weight-gmi-medium",
+                  "value": "500"
+                },
+                {
+                  "name": "--font-weight-gmi-semibold",
+                  "value": "600"
+                },
+                {
+                  "name": "--tracking-gmi-label",
+                  "value": "0.08em"
+                },
+                {
+                  "name": "--leading-gmi-body",
+                  "value": "22px"
+                },
+                {
+                  "name": "--opacity-gmi-disabled",
+                  "value": "50%"
+                },
+                {
+                  "name": "--breakpoint-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--breakpoint-gmi-tablet",
+                  "value": "768px"
+                },
+                {
+                  "name": "--breakpoint-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--container-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--container-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--spacing-gmi-1",
+                  "value": "4px"
+                },
+                {
+                  "name": "--spacing-gmi-2",
+                  "value": "8px"
+                },
+                {
+                  "name": "--spacing-gmi-3",
+                  "value": "12px"
+                },
+                {
+                  "name": "--spacing-gmi-4",
+                  "value": "16px"
+                },
+                {
+                  "name": "--spacing-gmi-6",
+                  "value": "24px"
+                },
+                {
+                  "name": "--spacing-gmi-8",
+                  "value": "32px"
+                },
+                {
+                  "name": "--radius-gmi-control",
+                  "value": "8px"
+                },
+                {
+                  "name": "--radius-gmi-panel",
+                  "value": "14px"
+                }
+              ]
+            },
+            "fileId": "01M5H6EARN9YHQV17JC6ZG9BRY",
+            "contentHash": {
+              "tokens": "ac191fd9"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M5H6EARN9YHQV17JC6ZG9BRY"
+          },
+          "snapshot_sha256": "eba2cb99efe62ae5aa0ab49c70f17b71c1db3c679a947a2998c04425a348ca40",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "basic_info": {
+            "fileName": "GMI Explorer · Product system",
+            "pageName": "History · 03 Nov first desktop draft",
+            "pageId": "p-2-0",
+            "url": "https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-2-0",
+            "rootNodeId": "root_node_p-2-0",
+            "nodeCount": 3081,
+            "artboardCount": 14,
+            "artboards": [
+              {
+                "id": "9A-0",
+                "name": "01 · Theme atlas / Noir · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 0
+              },
+              {
+                "id": "4H1-0",
+                "name": "01 · 主题探索 / Noir · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 0,
+                "worldY": 6000
+              },
+              {
+                "id": "4PE-0",
+                "name": "01 · 主题探索 / Day · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 1520,
+                "worldY": 6000
+              },
+              {
+                "id": "26V-0",
+                "name": "07 · Theme atlas / Day · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 3000
+              },
+              {
+                "id": "I4-0",
+                "name": "02 · Theme detail & value chain / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 0
+              },
+              {
+                "id": "QH-0",
+                "name": "03 · Micro-theme index / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 0
+              },
+              {
+                "id": "YU-0",
+                "name": "04 · Company intelligence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 1500
+              },
+              {
+                "id": "177-0",
+                "name": "05 · Relationship evidence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 1500
+              },
+              {
+                "id": "1FK-0",
+                "name": "06 · Coverage & receipts / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 1500
+              },
+              {
+                "id": "2F8-0",
+                "name": "08 · Theme detail & value chain / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 3000
+              },
+              {
+                "id": "2KO-0",
+                "name": "09 · Micro-theme index / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 3000
+              },
+              {
+                "id": "2RB-0",
+                "name": "10 · Company intelligence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 4500
+              },
+              {
+                "id": "2W0-0",
+                "name": "11 · Relationship evidence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 4500
+              },
+              {
+                "id": "310-0",
+                "name": "12 · Coverage & receipts / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 4500
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "01 · Current product · Start here",
+                "icon": "arrow",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-D-0",
+                "name": "Browse · Search and filters",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-0",
+                "name": "Index · Search and navigation",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "Companies · Evidence and recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-A-0",
+                "name": "Relationships · Availability",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-B-0",
+                "name": "Coverage · Companies and listings",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-C-0",
+                "name": "Research · Load recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "Build · Interaction & receipts",
+                "icon": "blueprint",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "Reference · Preservation rules",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "Foundations · Tokens & state reference",
+                "icon": "swatches",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "History · 03 Nov first desktop draft",
+                "icon": "paper",
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "History · 03 Nov first mobile draft",
+                "icon": "paper",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "History · 21–22 Oct references",
+                "icon": "images",
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "PingFang SC",
+              "IBM Plex Mono",
+              "System Sans-Serif"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--color-gmi-night-canvas",
+                  "value": "#0F1115"
+                },
+                {
+                  "name": "--color-gmi-night-surface",
+                  "value": "#181B21"
+                },
+                {
+                  "name": "--color-gmi-night-raised",
+                  "value": "#1E222A"
+                },
+                {
+                  "name": "--color-gmi-night-text",
+                  "value": "#F2F4F7"
+                },
+                {
+                  "name": "--color-gmi-night-muted",
+                  "value": "#A5ACB8"
+                },
+                {
+                  "name": "--color-gmi-night-line",
+                  "value": "#333A46"
+                },
+                {
+                  "name": "--color-gmi-night-accent",
+                  "value": "#8AB4F8"
+                },
+                {
+                  "name": "--color-gmi-night-selection",
+                  "value": "#202C3F"
+                },
+                {
+                  "name": "--color-gmi-night-positive",
+                  "value": "#8AD3B0"
+                },
+                {
+                  "name": "--color-gmi-night-caution",
+                  "value": "#E6B96A"
+                },
+                {
+                  "name": "--color-gmi-day-canvas",
+                  "value": "#F7F8FA"
+                },
+                {
+                  "name": "--color-gmi-day-surface",
+                  "value": "#FFFFFF"
+                },
+                {
+                  "name": "--color-gmi-day-raised",
+                  "value": "#EEF1F6"
+                },
+                {
+                  "name": "--color-gmi-day-text",
+                  "value": "#1C2430"
+                },
+                {
+                  "name": "--color-gmi-day-muted",
+                  "value": "#5D6B7E"
+                },
+                {
+                  "name": "--color-gmi-day-line",
+                  "value": "#DDE2E9"
+                },
+                {
+                  "name": "--color-gmi-day-accent",
+                  "value": "#285FFF"
+                },
+                {
+                  "name": "--color-gmi-day-selection",
+                  "value": "#EDF3FF"
+                },
+                {
+                  "name": "--color-gmi-day-positive",
+                  "value": "#267752"
+                },
+                {
+                  "name": "--color-gmi-day-caution",
+                  "value": "#865D13"
+                },
+                {
+                  "name": "--color-gmi-night-danger",
+                  "value": "#F1A3A3"
+                },
+                {
+                  "name": "--color-gmi-day-danger",
+                  "value": "#B42318"
+                },
+                {
+                  "name": "--font-gmi-ui",
+                  "value": "\"Inter\""
+                },
+                {
+                  "name": "--font-gmi-mono",
+                  "value": "\"IBM Plex Mono\""
+                },
+                {
+                  "name": "--font-gmi-zh",
+                  "value": "\"PingFang SC\""
+                },
+                {
+                  "name": "--text-gmi-caption",
+                  "value": "12px"
+                },
+                {
+                  "name": "--text-gmi-body",
+                  "value": "14px"
+                },
+                {
+                  "name": "--text-gmi-title",
+                  "value": "24px"
+                },
+                {
+                  "name": "--text-gmi-display",
+                  "value": "36px"
+                },
+                {
+                  "name": "--font-weight-gmi-regular",
+                  "value": "400"
+                },
+                {
+                  "name": "--font-weight-gmi-medium",
+                  "value": "500"
+                },
+                {
+                  "name": "--font-weight-gmi-semibold",
+                  "value": "600"
+                },
+                {
+                  "name": "--tracking-gmi-label",
+                  "value": "0.08em"
+                },
+                {
+                  "name": "--leading-gmi-body",
+                  "value": "22px"
+                },
+                {
+                  "name": "--opacity-gmi-disabled",
+                  "value": "50%"
+                },
+                {
+                  "name": "--breakpoint-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--breakpoint-gmi-tablet",
+                  "value": "768px"
+                },
+                {
+                  "name": "--breakpoint-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--container-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--container-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--spacing-gmi-1",
+                  "value": "4px"
+                },
+                {
+                  "name": "--spacing-gmi-2",
+                  "value": "8px"
+                },
+                {
+                  "name": "--spacing-gmi-3",
+                  "value": "12px"
+                },
+                {
+                  "name": "--spacing-gmi-4",
+                  "value": "16px"
+                },
+                {
+                  "name": "--spacing-gmi-6",
+                  "value": "24px"
+                },
+                {
+                  "name": "--spacing-gmi-8",
+                  "value": "32px"
+                },
+                {
+                  "name": "--radius-gmi-control",
+                  "value": "8px"
+                },
+                {
+                  "name": "--radius-gmi-panel",
+                  "value": "14px"
+                }
+              ]
+            },
+            "fileId": "01M5H6EARN9YHQV17JC6ZG9BRY",
+            "contentHash": {
+              "tokens": "ac191fd9"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M5H6EARN9YHQV17JC6ZG9BRY"
+          },
+          "snapshot_sha256": "eba2cb99efe62ae5aa0ab49c70f17b71c1db3c679a947a2998c04425a348ca40",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "retry_allowed": false,
+        "production_acceptance": false
+      },
+      {
+        "state": "APPLIED_RESPONSE_OBSERVED",
+        "operation_id": "paper-estate-cont-20261108-gmi-copy-focus-finish",
+        "tool": "finish_working_on_nodes",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"file\": {\n    \"id\": \"01M5H6EARN9YHQV17JC6ZG9BRY\",\n    \"name\": \"GMI Explorer · Product system\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"ac191fd9\"\n  }\n}"
+            },
+            {
+              "type": "text",
+              "text": "OK"
+            }
+          ]
+        },
+        "before": {
+          "basic_info": {
+            "fileName": "GMI Explorer · Product system",
+            "pageName": "History · 03 Nov first desktop draft",
+            "pageId": "p-2-0",
+            "url": "https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-2-0",
+            "rootNodeId": "root_node_p-2-0",
+            "nodeCount": 3081,
+            "artboardCount": 14,
+            "artboards": [
+              {
+                "id": "9A-0",
+                "name": "01 · Theme atlas / Noir · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 0
+              },
+              {
+                "id": "4H1-0",
+                "name": "01 · 主题探索 / Noir · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 0,
+                "worldY": 6000
+              },
+              {
+                "id": "4PE-0",
+                "name": "01 · 主题探索 / Day · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 1520,
+                "worldY": 6000
+              },
+              {
+                "id": "26V-0",
+                "name": "07 · Theme atlas / Day · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 3000
+              },
+              {
+                "id": "I4-0",
+                "name": "02 · Theme detail & value chain / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 0
+              },
+              {
+                "id": "QH-0",
+                "name": "03 · Micro-theme index / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 0
+              },
+              {
+                "id": "YU-0",
+                "name": "04 · Company intelligence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 1500
+              },
+              {
+                "id": "177-0",
+                "name": "05 · Relationship evidence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 1500
+              },
+              {
+                "id": "1FK-0",
+                "name": "06 · Coverage & receipts / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 1500
+              },
+              {
+                "id": "2F8-0",
+                "name": "08 · Theme detail & value chain / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 3000
+              },
+              {
+                "id": "2KO-0",
+                "name": "09 · Micro-theme index / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 3000
+              },
+              {
+                "id": "2RB-0",
+                "name": "10 · Company intelligence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 4500
+              },
+              {
+                "id": "2W0-0",
+                "name": "11 · Relationship evidence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 4500
+              },
+              {
+                "id": "310-0",
+                "name": "12 · Coverage & receipts / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 4500
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "01 · Current product · Start here",
+                "icon": "arrow",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-D-0",
+                "name": "Browse · Search and filters",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-0",
+                "name": "Index · Search and navigation",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "Companies · Evidence and recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-A-0",
+                "name": "Relationships · Availability",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-B-0",
+                "name": "Coverage · Companies and listings",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-C-0",
+                "name": "Research · Load recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "Build · Interaction & receipts",
+                "icon": "blueprint",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "Reference · Preservation rules",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "Foundations · Tokens & state reference",
+                "icon": "swatches",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "History · 03 Nov first desktop draft",
+                "icon": "paper",
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "History · 03 Nov first mobile draft",
+                "icon": "paper",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "History · 21–22 Oct references",
+                "icon": "images",
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "PingFang SC",
+              "IBM Plex Mono",
+              "System Sans-Serif"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--color-gmi-night-canvas",
+                  "value": "#0F1115"
+                },
+                {
+                  "name": "--color-gmi-night-surface",
+                  "value": "#181B21"
+                },
+                {
+                  "name": "--color-gmi-night-raised",
+                  "value": "#1E222A"
+                },
+                {
+                  "name": "--color-gmi-night-text",
+                  "value": "#F2F4F7"
+                },
+                {
+                  "name": "--color-gmi-night-muted",
+                  "value": "#A5ACB8"
+                },
+                {
+                  "name": "--color-gmi-night-line",
+                  "value": "#333A46"
+                },
+                {
+                  "name": "--color-gmi-night-accent",
+                  "value": "#8AB4F8"
+                },
+                {
+                  "name": "--color-gmi-night-selection",
+                  "value": "#202C3F"
+                },
+                {
+                  "name": "--color-gmi-night-positive",
+                  "value": "#8AD3B0"
+                },
+                {
+                  "name": "--color-gmi-night-caution",
+                  "value": "#E6B96A"
+                },
+                {
+                  "name": "--color-gmi-day-canvas",
+                  "value": "#F7F8FA"
+                },
+                {
+                  "name": "--color-gmi-day-surface",
+                  "value": "#FFFFFF"
+                },
+                {
+                  "name": "--color-gmi-day-raised",
+                  "value": "#EEF1F6"
+                },
+                {
+                  "name": "--color-gmi-day-text",
+                  "value": "#1C2430"
+                },
+                {
+                  "name": "--color-gmi-day-muted",
+                  "value": "#5D6B7E"
+                },
+                {
+                  "name": "--color-gmi-day-line",
+                  "value": "#DDE2E9"
+                },
+                {
+                  "name": "--color-gmi-day-accent",
+                  "value": "#285FFF"
+                },
+                {
+                  "name": "--color-gmi-day-selection",
+                  "value": "#EDF3FF"
+                },
+                {
+                  "name": "--color-gmi-day-positive",
+                  "value": "#267752"
+                },
+                {
+                  "name": "--color-gmi-day-caution",
+                  "value": "#865D13"
+                },
+                {
+                  "name": "--color-gmi-night-danger",
+                  "value": "#F1A3A3"
+                },
+                {
+                  "name": "--color-gmi-day-danger",
+                  "value": "#B42318"
+                },
+                {
+                  "name": "--font-gmi-ui",
+                  "value": "\"Inter\""
+                },
+                {
+                  "name": "--font-gmi-mono",
+                  "value": "\"IBM Plex Mono\""
+                },
+                {
+                  "name": "--font-gmi-zh",
+                  "value": "\"PingFang SC\""
+                },
+                {
+                  "name": "--text-gmi-caption",
+                  "value": "12px"
+                },
+                {
+                  "name": "--text-gmi-body",
+                  "value": "14px"
+                },
+                {
+                  "name": "--text-gmi-title",
+                  "value": "24px"
+                },
+                {
+                  "name": "--text-gmi-display",
+                  "value": "36px"
+                },
+                {
+                  "name": "--font-weight-gmi-regular",
+                  "value": "400"
+                },
+                {
+                  "name": "--font-weight-gmi-medium",
+                  "value": "500"
+                },
+                {
+                  "name": "--font-weight-gmi-semibold",
+                  "value": "600"
+                },
+                {
+                  "name": "--tracking-gmi-label",
+                  "value": "0.08em"
+                },
+                {
+                  "name": "--leading-gmi-body",
+                  "value": "22px"
+                },
+                {
+                  "name": "--opacity-gmi-disabled",
+                  "value": "50%"
+                },
+                {
+                  "name": "--breakpoint-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--breakpoint-gmi-tablet",
+                  "value": "768px"
+                },
+                {
+                  "name": "--breakpoint-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--container-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--container-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--spacing-gmi-1",
+                  "value": "4px"
+                },
+                {
+                  "name": "--spacing-gmi-2",
+                  "value": "8px"
+                },
+                {
+                  "name": "--spacing-gmi-3",
+                  "value": "12px"
+                },
+                {
+                  "name": "--spacing-gmi-4",
+                  "value": "16px"
+                },
+                {
+                  "name": "--spacing-gmi-6",
+                  "value": "24px"
+                },
+                {
+                  "name": "--spacing-gmi-8",
+                  "value": "32px"
+                },
+                {
+                  "name": "--radius-gmi-control",
+                  "value": "8px"
+                },
+                {
+                  "name": "--radius-gmi-panel",
+                  "value": "14px"
+                }
+              ]
+            },
+            "fileId": "01M5H6EARN9YHQV17JC6ZG9BRY",
+            "contentHash": {
+              "tokens": "ac191fd9"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M5H6EARN9YHQV17JC6ZG9BRY"
+          },
+          "snapshot_sha256": "eba2cb99efe62ae5aa0ab49c70f17b71c1db3c679a947a2998c04425a348ca40",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "after": {
+          "basic_info": {
+            "fileName": "GMI Explorer · Product system",
+            "pageName": "History · 03 Nov first desktop draft",
+            "pageId": "p-2-0",
+            "url": "https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-2-0",
+            "rootNodeId": "root_node_p-2-0",
+            "nodeCount": 3081,
+            "artboardCount": 14,
+            "artboards": [
+              {
+                "id": "9A-0",
+                "name": "01 · Theme atlas / Noir · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 0
+              },
+              {
+                "id": "4H1-0",
+                "name": "01 · 主题探索 / Noir · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 0,
+                "worldY": 6000
+              },
+              {
+                "id": "4PE-0",
+                "name": "01 · 主题探索 / Day · 中文",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1212,
+                "worldX": 1520,
+                "worldY": 6000
+              },
+              {
+                "id": "26V-0",
+                "name": "07 · Theme atlas / Day · EN",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1194,
+                "worldX": 0,
+                "worldY": 3000
+              },
+              {
+                "id": "I4-0",
+                "name": "02 · Theme detail & value chain / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 0
+              },
+              {
+                "id": "QH-0",
+                "name": "03 · Micro-theme index / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 0
+              },
+              {
+                "id": "YU-0",
+                "name": "04 · Company intelligence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 1500
+              },
+              {
+                "id": "177-0",
+                "name": "05 · Relationship evidence / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 1500
+              },
+              {
+                "id": "1FK-0",
+                "name": "06 · Coverage & receipts / Noir",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 1500
+              },
+              {
+                "id": "2F8-0",
+                "name": "08 · Theme detail & value chain / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1189,
+                "worldX": 1520,
+                "worldY": 3000
+              },
+              {
+                "id": "2KO-0",
+                "name": "09 · Micro-theme index / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1459,
+                "worldX": 3040,
+                "worldY": 3000
+              },
+              {
+                "id": "2RB-0",
+                "name": "10 · Company intelligence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1291,
+                "worldX": 0,
+                "worldY": 4500
+              },
+              {
+                "id": "2W0-0",
+                "name": "11 · Relationship evidence / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1272,
+                "worldX": 1520,
+                "worldY": 4500
+              },
+              {
+                "id": "310-0",
+                "name": "12 · Coverage & receipts / Day",
+                "childCount": 5,
+                "width": 1440,
+                "height": 1239,
+                "worldX": 3040,
+                "worldY": 4500
+              }
+            ],
+            "pages": [
+              {
+                "type": "page",
+                "id": "p-1-0",
+                "name": "01 · Current product · Start here",
+                "icon": "arrow",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-D-0",
+                "name": "Browse · Search and filters",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-8-0",
+                "name": "Index · Search and navigation",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-9-0",
+                "name": "Companies · Evidence and recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-A-0",
+                "name": "Relationships · Availability",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-B-0",
+                "name": "Coverage · Companies and listings",
+                "icon": null,
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-C-0",
+                "name": "Research · Load recovery",
+                "icon": "design",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-7-0",
+                "name": "Build · Interaction & receipts",
+                "icon": "blueprint",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-6-0",
+                "name": "Reference · Preservation rules",
+                "icon": "info",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-4-0",
+                "name": "Foundations · Tokens & state reference",
+                "icon": "swatches",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-2-0",
+                "name": "History · 03 Nov first desktop draft",
+                "icon": "paper",
+                "isActive": true
+              },
+              {
+                "type": "page",
+                "id": "p-3-0",
+                "name": "History · 03 Nov first mobile draft",
+                "icon": "paper",
+                "isActive": false
+              },
+              {
+                "type": "page",
+                "id": "p-5-0",
+                "name": "History · 21–22 Oct references",
+                "icon": "images",
+                "isActive": false
+              }
+            ],
+            "fontFamilies": [
+              "Inter",
+              "PingFang SC",
+              "IBM Plex Mono",
+              "System Sans-Serif"
+            ],
+            "tokens": {
+              "items": [
+                {
+                  "name": "--color-gmi-night-canvas",
+                  "value": "#0F1115"
+                },
+                {
+                  "name": "--color-gmi-night-surface",
+                  "value": "#181B21"
+                },
+                {
+                  "name": "--color-gmi-night-raised",
+                  "value": "#1E222A"
+                },
+                {
+                  "name": "--color-gmi-night-text",
+                  "value": "#F2F4F7"
+                },
+                {
+                  "name": "--color-gmi-night-muted",
+                  "value": "#A5ACB8"
+                },
+                {
+                  "name": "--color-gmi-night-line",
+                  "value": "#333A46"
+                },
+                {
+                  "name": "--color-gmi-night-accent",
+                  "value": "#8AB4F8"
+                },
+                {
+                  "name": "--color-gmi-night-selection",
+                  "value": "#202C3F"
+                },
+                {
+                  "name": "--color-gmi-night-positive",
+                  "value": "#8AD3B0"
+                },
+                {
+                  "name": "--color-gmi-night-caution",
+                  "value": "#E6B96A"
+                },
+                {
+                  "name": "--color-gmi-day-canvas",
+                  "value": "#F7F8FA"
+                },
+                {
+                  "name": "--color-gmi-day-surface",
+                  "value": "#FFFFFF"
+                },
+                {
+                  "name": "--color-gmi-day-raised",
+                  "value": "#EEF1F6"
+                },
+                {
+                  "name": "--color-gmi-day-text",
+                  "value": "#1C2430"
+                },
+                {
+                  "name": "--color-gmi-day-muted",
+                  "value": "#5D6B7E"
+                },
+                {
+                  "name": "--color-gmi-day-line",
+                  "value": "#DDE2E9"
+                },
+                {
+                  "name": "--color-gmi-day-accent",
+                  "value": "#285FFF"
+                },
+                {
+                  "name": "--color-gmi-day-selection",
+                  "value": "#EDF3FF"
+                },
+                {
+                  "name": "--color-gmi-day-positive",
+                  "value": "#267752"
+                },
+                {
+                  "name": "--color-gmi-day-caution",
+                  "value": "#865D13"
+                },
+                {
+                  "name": "--color-gmi-night-danger",
+                  "value": "#F1A3A3"
+                },
+                {
+                  "name": "--color-gmi-day-danger",
+                  "value": "#B42318"
+                },
+                {
+                  "name": "--font-gmi-ui",
+                  "value": "\"Inter\""
+                },
+                {
+                  "name": "--font-gmi-mono",
+                  "value": "\"IBM Plex Mono\""
+                },
+                {
+                  "name": "--font-gmi-zh",
+                  "value": "\"PingFang SC\""
+                },
+                {
+                  "name": "--text-gmi-caption",
+                  "value": "12px"
+                },
+                {
+                  "name": "--text-gmi-body",
+                  "value": "14px"
+                },
+                {
+                  "name": "--text-gmi-title",
+                  "value": "24px"
+                },
+                {
+                  "name": "--text-gmi-display",
+                  "value": "36px"
+                },
+                {
+                  "name": "--font-weight-gmi-regular",
+                  "value": "400"
+                },
+                {
+                  "name": "--font-weight-gmi-medium",
+                  "value": "500"
+                },
+                {
+                  "name": "--font-weight-gmi-semibold",
+                  "value": "600"
+                },
+                {
+                  "name": "--tracking-gmi-label",
+                  "value": "0.08em"
+                },
+                {
+                  "name": "--leading-gmi-body",
+                  "value": "22px"
+                },
+                {
+                  "name": "--opacity-gmi-disabled",
+                  "value": "50%"
+                },
+                {
+                  "name": "--breakpoint-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--breakpoint-gmi-tablet",
+                  "value": "768px"
+                },
+                {
+                  "name": "--breakpoint-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--container-gmi-mobile",
+                  "value": "390px"
+                },
+                {
+                  "name": "--container-gmi-desktop",
+                  "value": "1440px"
+                },
+                {
+                  "name": "--spacing-gmi-1",
+                  "value": "4px"
+                },
+                {
+                  "name": "--spacing-gmi-2",
+                  "value": "8px"
+                },
+                {
+                  "name": "--spacing-gmi-3",
+                  "value": "12px"
+                },
+                {
+                  "name": "--spacing-gmi-4",
+                  "value": "16px"
+                },
+                {
+                  "name": "--spacing-gmi-6",
+                  "value": "24px"
+                },
+                {
+                  "name": "--spacing-gmi-8",
+                  "value": "32px"
+                },
+                {
+                  "name": "--radius-gmi-control",
+                  "value": "8px"
+                },
+                {
+                  "name": "--radius-gmi-panel",
+                  "value": "14px"
+                }
+              ]
+            },
+            "fileId": "01M5H6EARN9YHQV17JC6ZG9BRY",
+            "contentHash": {
+              "tokens": "ac191fd9"
+            }
+          },
+          "identity": {
+            "kind": "file-id",
+            "id": "01M5H6EARN9YHQV17JC6ZG9BRY"
+          },
+          "snapshot_sha256": "eba2cb99efe62ae5aa0ab49c70f17b71c1db3c679a947a2998c04425a348ca40",
+          "write_binding_ready": true,
+          "binding_error": null
+        },
+        "retry_allowed": false,
+        "production_acceptance": false
+      }
+    ],
+    "captured_and_inspected": [
+      "7NH-0 copy contract",
+      "7ND-0 proof and release boundary"
+    ],
+    "read_projection_recovery": {
+      "reason": "Read result contained both rendered MCP image and nested image metadata; forwarding the metadata as image failed after the actual copy-module screenshot displayed. No mutation failed/replayed. Build/flow readback retained; proof screenshot reread on same target.",
+      "mutation_replayed": false
+    }
+  },
+  "limits": [
+    "Generated-main/CSS/JS component proof; no full shared-shell or fonts acceptance",
+    "Clipboard outcomes and pending-render setter callback are explicit injections; no operating-system clipboard writes",
+    "Chrome retained focus when Copy was disabled; no automatic native disabled-button blur is claimed",
+    "Injected pagehide verifies focus suppression/retirement, not actual BFCache",
+    "Native OS IME, spoken assistive technology, live account/admission, current hosted CI and deployment are unproven",
+    "Original model01 EFFECT_UNKNOWN/ROOT_UNVERIFIED and all Draft/release holds remain unchanged"
+  ],
+  "next": "Show exact company/product/platform matches in existing Browse result secondary text, using only current public connection fields; preserve search semantics and selected research."
+}

@@ -1,0 +1,263 @@
+{
+  "purpose": "Design-study fixtures and expectations. Existing source shapes are retained. This file defines no production endpoint or transport contract.",
+  "historical_comparison": {
+    "classification": "HISTORICAL_PAPER_REFERENCE",
+    "company": "NVDA",
+    "paper_source_file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "paper_source_page": "p-S-0",
+    "paper_source_nodes": [
+      "1BEK-0",
+      "1CD3-0"
+    ],
+    "period": "Q2 FY2026",
+    "actual_usd_bn": 46.743,
+    "reported_on": "2025-08-27",
+    "prior_midpoint_usd_bn": 45,
+    "prior_range_usd_bn": [
+      44.1,
+      45.9
+    ],
+    "prior_guidance_issued_on": "2025-05-28",
+    "comparison_basis": "prior_management_guidance_midpoint",
+    "analyst_consensus": null,
+    "next_period": "Q3 FY2026",
+    "next_midpoint_usd_bn": 54,
+    "next_range_usd_bn": [
+      52.92,
+      55.08
+    ],
+    "production_raw_guidance_binding": "OWNER_BINDING_REQUIRED",
+    "study_location": "Company R3 Lab / Expectations vocabulary"
+  },
+  "synthetic_statements": {
+    "classification": "SYNTHETIC_CONTRACT_EXAMPLE",
+    "source_shape": "Partial<Fund> with existing StatementPeriodSet fields",
+    "source_commit": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+    "data": {
+      "schema": "mastermind.fund/v1",
+      "ticker": "FIXTURE",
+      "asof": "2026-11-03",
+      "quote_currency": "USD",
+      "stmt_currency": "USD",
+      "statements": {
+        "annual": {
+          "periods": [
+            "FY2024",
+            "FY2025"
+          ],
+          "period_start": [
+            "2024-01-01",
+            "2025-01-01"
+          ],
+          "period_end": [
+            "2024-12-31",
+            "2025-12-31"
+          ],
+          "fiscal_year": [
+            "2024",
+            "2025"
+          ],
+          "period_kind": [
+            "full_year",
+            "full_year"
+          ],
+          "period_number": [
+            null,
+            null
+          ],
+          "period_duration_months": [
+            12,
+            12
+          ],
+          "comparison_basis": [
+            "synthetic_uniform_basis",
+            "synthetic_uniform_basis"
+          ],
+          "reporting_cadence": "annual",
+          "income": {
+            "revenue": [
+              100000000,
+              120000000
+            ],
+            "cogs": [
+              null,
+              null
+            ],
+            "gross_profit": [
+              null,
+              null
+            ],
+            "opex": [
+              null,
+              null
+            ],
+            "op_income": [
+              null,
+              null
+            ],
+            "nonop_income": [
+              null,
+              null
+            ],
+            "pretax_income": [
+              null,
+              null
+            ],
+            "taxes": [
+              null,
+              null
+            ],
+            "net_income": [
+              null,
+              null
+            ],
+            "eps_basic": [
+              null,
+              null
+            ],
+            "eps_diluted": [
+              0,
+              null
+            ],
+            "ebitda": [
+              null,
+              null
+            ]
+          },
+          "balance": {
+            "assets": [
+              null,
+              null
+            ],
+            "assets_st": [
+              null,
+              null
+            ],
+            "assets_lt": [
+              null,
+              null
+            ],
+            "liabilities": [
+              null,
+              null
+            ],
+            "liab_st": [
+              null,
+              null
+            ],
+            "liab_lt": [
+              null,
+              null
+            ],
+            "equity": [
+              null,
+              null
+            ],
+            "debt": [
+              null,
+              null
+            ],
+            "cash": [
+              null,
+              null
+            ],
+            "net_debt": [
+              null,
+              null
+            ]
+          },
+          "cashflow": {
+            "cfo": [
+              null,
+              null
+            ],
+            "cfi": [
+              null,
+              null
+            ],
+            "cff": [
+              null,
+              null
+            ],
+            "capex": [
+              null,
+              null
+            ],
+            "fcf": [
+              null,
+              null
+            ]
+          },
+          "filed_by_period": [
+            "2025-02-15",
+            "2026-02-15"
+          ],
+          "period_provenance": {
+            "income": [
+              {
+                "origin": "synthetic_fixture",
+                "provider": "synthetic_fixture",
+                "acquired_at": "2025-02-16T09:00:00Z",
+                "scope": "income",
+                "raw_input_sha256": null
+              },
+              {
+                "origin": "synthetic_fixture",
+                "provider": "synthetic_fixture",
+                "acquired_at": "2026-02-16T09:00:00Z",
+                "scope": "income",
+                "raw_input_sha256": null
+              }
+            ]
+          }
+        },
+        "quarterly": null
+      }
+    },
+    "document_state": "unavailable_in_fixture",
+    "retained_revision": null,
+    "selections": {
+      "C": {
+        "field": "income.revenue",
+        "period_index": 0
+      },
+      "D": {
+        "field": "income.revenue",
+        "period_index": 1
+      },
+      "E": {
+        "field": "income.revenue",
+        "period_index": 1
+      }
+    }
+  },
+  "financials_chooser": {
+    "classification": "EXISTING_VIEW_LABELS",
+    "source_commit": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+    "current": "statements",
+    "views": [
+      {
+        "label": "Statements",
+        "page": "statements"
+      },
+      {
+        "label": "Statistics",
+        "page": "statistics"
+      },
+      {
+        "label": "Revenue",
+        "page": "revenue"
+      },
+      {
+        "label": "Dividends",
+        "page": "dividends"
+      },
+      {
+        "label": "Compare",
+        "page": "compare"
+      }
+    ],
+    "route_owner": "terminal/lib/analysisRoute.ts and existing family navigation",
+    "selection_rule": "Preserve the selected listing and use the existing native navigation/parser. Closing restores Financials / Statements focus."
+  }
+}

@@ -1,0 +1,10 @@
+Source Macro fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9 templates/earnings_wire/earnings-wire.js
+Loaded source Git blob 12216b31e5a747d959051ca2295bc690270335ac
+Probe boundary: source function execution with a synthetic DOM and auth/HTTP seam. No browser, private account or production API access.
+WITNESS 1: delayed A response inserted member HTML after SIGNED_OUT and set unlocked. Required owner fence would discard it.
+WITNESS 2: owner-A response inserted after owner-B became current. No second entitlement read occurred.
+WITNESS 3: initial guest then same-document SIGNED_IN performs zero member fetches. The one-shot loader does not resume.
+WITNESS 4: this article module retains already-hydrated member markup after SIGNED_OUT. The public-auth owner emits the event without reloading.
+WITNESS 5: 401/403/404/429/503 share the same signed-in gate outcome. No status-specific recovery is rendered by this module.
+WITNESS 6: same-slug payload with 11 member facts was accepted against a shell advertising 10. Current client/schema has no document revision or generation comparison. This proves guard absence, not a served mixed-generation incident.
+6/6 source witnesses reproduced. These are defect/contract witnesses, not passing product acceptance.

@@ -1,0 +1,24 @@
+{
+  "schema": "paper-tree-status/v1",
+  "date": "2026-11-09",
+  "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+  "page_id": "p-7-0",
+  "root": "7M9-0",
+  "source_head": "37c7cf217f9d63605843a8b1e860f3e4139486b4",
+  "changed_text": [
+    "7MV-0",
+    "7MZ-0",
+    "7NL-0",
+    "7NF-0"
+  ],
+  "modules": 11,
+  "readback": {
+    "nodes": 36,
+    "ids_and_order": true,
+    "parents": true,
+    "styles": true,
+    "other_text": true
+  },
+  "native_screenshot_observed": true,
+  "finish": "APPLIED_RESPONSE_OBSERVED"
+}

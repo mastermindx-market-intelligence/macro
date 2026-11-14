@@ -1,0 +1,56 @@
+{
+  "phase": "builder_entry_consolidation",
+  "date": "2026-11-09",
+  "audit_parent": "3fd53d2c61c1cf5db3bd83b1b28fe8352b885d41",
+  "audit_parent_tree": "ef4d32d359de689f86f25a33485178d6e9f1f9c6",
+  "source_documentation_head": "2c9d619dfdc2e21a0cc0839094c6fa2be84a6260",
+  "source_documentation_tree": "c86fc3372cc0885a779b9548da5996ce5f36a375",
+  "runtime_checkpoint": "e70fc60183c83565497c431c433b0594423cc7cb",
+  "assets": "f15feec04ead",
+  "source_before_archive_blob": "521089bfbbb99eccac1e556b58f7de4be1d090ea",
+  "audit_before_archive_blob": "791479733ec5845ad8e8d9a0630fa6d0f5b67357",
+  "audit_archive_content": "Exact existing blob reused beside its original README; no provenance inserted into the frozen copy.",
+  "source_before_characters": 18973,
+  "source_after_characters": 9942,
+  "audit_before_characters": 72117,
+  "audit_after_characters": 23322,
+  "source_legacy_heading_destinations": 16,
+  "audit_legacy_heading_destinations": 23,
+  "source_workflow_rows": 12,
+  "paper_surfaces": 23,
+  "original_paper_surface_destinations": 53,
+  "final_paper_surface_destinations": 55,
+  "implementation_rows": 6,
+  "checks": {
+    "before_image_exact": true,
+    "archive_absent_at_parent": true,
+    "all_paper_surface_destinations_retained": true,
+    "all_old_heading_destinations_retained": true,
+    "distinct_memory_workspaces": true,
+    "no_stale_current_implementation_heading": true,
+    "recorded_source_not_live_head": true,
+    "source_readback_exact": true
+  },
+  "source_readback": [
+    {
+      "name": "README.md",
+      "exact": true,
+      "blob": "89cd610b56f9674c696a3fe84a5976b464e59b98",
+      "chars": 9942
+    },
+    {
+      "name": "README_PHASE_HISTORY_20261109.md",
+      "exact": true,
+      "blob": "521089bfbbb99eccac1e556b58f7de4be1d090ea",
+      "chars": 18973
+    },
+    {
+      "name": "BUILD_MAP_VALIDATION.json",
+      "exact": true,
+      "blob": "b1df702cf1a1f743fd6f48609c912f20a6e19241",
+      "chars": 1402
+    }
+  ],
+  "effect_scope": "Two README entry points reorganized; exact old README blobs preserved. No runtime/test/Paper/data/route/model/release changes. No browser tests rerun. Existing proof scopes and holds remain.",
+  "ongoing_history_owner": "WORKFLOW_CONTINUATION_20261108.md; frozen README snapshots are not another rolling log."
+}

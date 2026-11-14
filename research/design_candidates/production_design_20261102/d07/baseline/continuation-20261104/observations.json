@@ -1,0 +1,191 @@
+{
+  "schema": "d07.served-journey-observations.v1",
+  "observed_date_utc": "2026-11-04",
+  "evidence_class": "ACTUAL_SERVED_BROWSER_BASELINE",
+  "method": "Authored readback of actual UI actions, DOM-visible text and layout measurements",
+  "served_build_commit": "UNATTESTED",
+  "account_context": "CURRENT_AVAILABLE_CONTEXT_ONLY",
+  "automated_browser_assertion_count": 0,
+  "article": {
+    "url": "https://beta.mastermind-x.com/stocks/earnings/aal-2026q3-call-record.html",
+    "company": "AAL",
+    "call": "Q3 FY2026",
+    "displayed_date": "2026-10-22",
+    "displayed_excerpt_count": 12,
+    "displayed_numeric_receipt_count": 11,
+    "content_financial_accuracy": "NOT_QUALIFIED_BY_UI_OBSERVATION",
+    "mobile_320": {
+      "iframe_client_width": 309,
+      "iframe_scroll_width": 309,
+      "date_lines": [
+        "2026-10-",
+        "22"
+      ],
+      "heading_lines": 4
+    },
+    "mobile_390": {
+      "iframe_client_width": 379,
+      "iframe_scroll_width": 379,
+      "date_lines": 1,
+      "primary_cta": [
+        347,
+        68.1875
+      ],
+      "secondary_cta": [
+        347,
+        41
+      ]
+    },
+    "explicit_cta_result": "NEW_TAB_CORRECT_AAL_CALL_OPENED"
+  },
+  "transcript": {
+    "opened_url": "https://app.mastermind-x.com/terminal?sym=AAL&pane=transcripts&tx=2026Q3&utm_source=earnings_wire&utm_medium=organic_research&utm_campaign=company_intelligence",
+    "archive_call_count": 10,
+    "selected_call": "Q3 FY2026",
+    "initial_focus": "Close transcript",
+    "after_tab_focus": "Search this call",
+    "after_escape": {
+      "transcript_visible": false,
+      "company_archive_visible": true,
+      "focus_tag": "BODY"
+    },
+    "settled_url": "https://app.mastermind-x.com/terminal?sym=AAL&utm_source=earnings_wire&utm_medium=organic_research&utm_campaign=company_intelligence",
+    "settled_url_reload_visible_dialogs": 0,
+    "pane_removal_timing": "NOT_ISOLATED_TO_ESCAPE",
+    "persisted_transcript_body_text": false
+  },
+  "forecast": {
+    "url": "https://beta.mastermind-x.com/analysis?symbol=600519.SS&page=forecast",
+    "annual_targets": [
+      2026,
+      2027,
+      2028
+    ],
+    "displayed_eps": [
+      68.97,
+      72.76,
+      76.46
+    ],
+    "displayed_revenue_billions_cny": [
+      180.26,
+      189.28,
+      198.8
+    ],
+    "displayed_clock_text": "Consensus estimates · eastmoney · as of Nov 3, 2026",
+    "clock_semantics": "SOURCE_INSPECTED_FUND_FILE_BUILD_DATE",
+    "actuals_initial_table_page": "2028 E–2028 E",
+    "expanded_eps": {
+      "average": 76.46,
+      "actual": null,
+      "high": null,
+      "low": null,
+      "count": null
+    },
+    "mobile": {
+      "body_scroll_widths": [
+        [
+          320,
+          320
+        ],
+        [
+          390,
+          390
+        ]
+      ],
+      "table_width_390": 355,
+      "control_height": 21,
+      "disclosure_size": [
+        12,
+        13
+      ]
+    },
+    "eps_quarterly": {
+      "periods": [
+        "Q1 2026",
+        "Q2 2026"
+      ],
+      "reported": [
+        21.76,
+        null
+      ],
+      "estimates": [
+        null,
+        null
+      ],
+      "quarterly_unavailable_explanation_visible": false
+    },
+    "zh_count_label": "预测机构数",
+    "zh_route_and_selected_quarter_retained": true,
+    "dark_320_scrolled": {
+      "body_width": 320,
+      "scroll_width": 320,
+      "last_row_bottom": 574.8125,
+      "visible_local_navigation_top": 772,
+      "visible_local_navigation_height": 72,
+      "last_row_clearance": 197.1875,
+      "theme": "dark",
+      "last_row_height": 30.59375
+    },
+    "last_disclosure_tab_readback": "BODY",
+    "keyboard_full_path": "NOT_QUALIFIED"
+  },
+  "search": {
+    "query": "Alibaba",
+    "result_listing_ids": [
+      "BABA",
+      "0241.HK",
+      "9988.HK",
+      "89988.HK"
+    ],
+    "baba_preview": {
+      "venue": "NYSE",
+      "trading_currency": "USD",
+      "url_unchanged": true
+    },
+    "commit_url": "https://beta.mastermind-x.com/analysis?symbol=BABA&company_query=Alibaba",
+    "committed_statement_currency": "CNY",
+    "back": {
+      "original_forecast_url_restored": true,
+      "query_restored": true,
+      "baba_selection_restored": true,
+      "underlying_forecast_subview": "Price target"
+    },
+    "hk_preview": {
+      "listing": "9988.HK",
+      "venue": "HKEX",
+      "trading_currency": "HKD",
+      "url_unchanged": true
+    },
+    "cancel_forward_back": {
+      "forward_baba_url_restored": true,
+      "back_forecast_url_restored": true,
+      "search_dialog_visible_after_back": false
+    }
+  },
+  "effect_reconciliation": [
+    {
+      "action": "Price target selection at 320",
+      "tool_response": "CDP input timeout",
+      "readback": "REQUESTED_SELECTION_APPLIED",
+      "replayed": false
+    }
+  ],
+  "restored_environment": {
+    "theme": "light",
+    "locale": "EN",
+    "viewport_override": "RESET",
+    "observed_width_after_reset": 1585
+  },
+  "open_qualification": [
+    "served commit attestation",
+    "controlled React component fixtures",
+    "guest and revoked/expired rights",
+    "cross-subject and retained revision",
+    "exact passage/copy/digest",
+    "complete planner return",
+    "full keyboard and touch",
+    "zoom and reduced motion",
+    "full theme/locale parity",
+    "independent product and taste review"
+  ]
+}

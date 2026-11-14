@@ -1,0 +1,52 @@
+[
+  {
+    "path": "test-result-incomplete-snapshot.txt",
+    "bytes": 133451,
+    "sha256": "7265ec7c72530cdba6474460b4fe351035bc1e6f700be21b5c623095708e9c7c"
+  },
+  {
+    "path": "browser.log",
+    "bytes": 5384,
+    "sha256": "c887710b783db5ceced87be7ba68fc59e9640a5f2cdf3244a31e6f6ae1264142"
+  },
+  {
+    "path": "browser-verified.log",
+    "bytes": 1374,
+    "sha256": "ebdbe3f443e8f7ce3256c71c28a790db2754d2d97493bcc5e0124ba81fcfa9e8"
+  },
+  {
+    "path": "browser-verified/browser-proof.json",
+    "bytes": 355876,
+    "sha256": "cdb58bf3eeb7cbade7beecc2e04142a53536f9610f356eccb5daa279c61a256e"
+  },
+  {
+    "path": "diagnose_overflow.py",
+    "bytes": 20844,
+    "sha256": "831ccdab842e1dacdf8b995873a71813a6a90fe1e11793a9b3b7f27282860351"
+  },
+  {
+    "path": "diagnostic.log",
+    "bytes": 4664,
+    "sha256": "5153e4bb34693a73c5e9082da83d3ee55f1c35146dba1d38a70d616b1ab991d5"
+  },
+  {
+    "path": "diagnostic/failure-limited-hot-1440-light-en.png",
+    "bytes": 363668,
+    "sha256": "1e157f67c32c0caa3fd8dcf6780607360e43161fcb98149c1fbd895163956eff"
+  },
+  {
+    "path": "diagnostic/failure.json",
+    "bytes": 5039,
+    "sha256": "3b4d70a36d56a64927c26ef790855b18f74e6e2ebe2cb9804b1dd64e05751961"
+  },
+  {
+    "path": "diagnostic/limited-hot-1440-light-en.png",
+    "bytes": 19897,
+    "sha256": "3b9699341f6ae1042de0c8413853dcb2928a881a26b34f470447b774a7135a1a"
+  },
+  {
+    "path": "diagnostic/overflow-diagnostic.json",
+    "bytes": 8944,
+    "sha256": "85b92b148eb7d03bb6c48aec1a61abe71e44507f24a58a494d99126c1dd91f19"
+  }
+]
