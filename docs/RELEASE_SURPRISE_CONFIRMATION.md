@@ -170,3 +170,13 @@ is a bounded catalog result, not proof that no account or integration exists.
 
 This dependency is independent of release of honest unavailable/shadow context.
 Do not claim the Alphatica result was reproduced while it remains unresolved.
+
+
+## Long-running API source updates
+
+The optional Prophet route imports the shared MRI reader at request time; Python
+still caches that module and its two local basis/actual validators. Their exact
+source paths are registered in the existing API-restart predicate. Data artifacts
+are read fresh and do not trigger API restart; research/ingestion modules and
+lookalike filenames remain outside this serving closure. This registration does
+not itself restart the service or bypass the updater's independent deployment gates.

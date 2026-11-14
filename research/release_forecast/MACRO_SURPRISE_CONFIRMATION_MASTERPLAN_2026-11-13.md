@@ -188,3 +188,34 @@ Final local closure recheck after declaring the native-host test dependency:
 **1 passed, 303 deselected in 138.89s**. The remaining code/visual candidate is
 ready for publication to original PR #11226 and its binding hosted CI. Release
 is not armed, and this source checkpoint does not end the mission.
+
+
+## Final API serving dependency hardening
+
+Post-publication adversarial consumer inspection found a genuine lifecycle gap:
+`app/prophet_daily_brief.py` -> the incumbent stock-library projection -> the new
+MRI reader imports three modules into the long-running API process. The existing
+updater restart predicate matched none of `engine/release_surprise_confirmation.py`,
+`engine/release_actuals.py`, or `engine/rates_command_basis.py`. An initial app change
+would restart correctly, but a later reader-only fix could remain import-cached.
+
+The original API restart regex now includes exactly those three source modules.
+All updater bytes outside its existing API restart region are unchanged; no
+Caddy, TLS, journal, CAS, source-install or runtime admission logic was modified.
+Positive dependency tests and negative data/research/lookalike-path tests were
+added to the incumbent suite. Affected updater/API/MRI tests: **509 passed,
+5 existing warnings in 47.54s**. Bash syntax and diff hygiene passed. The two
+visual receipts still match every unchanged input byte, so no recapture was repeated.
+
+Current natural CI for predecessor `25d829af62f788a6014852893cc3aac676176353`
+is run `43538595652`; necessary source movement will supersede that candidate,
+not reuse its incomplete checks as proof of the final head. There is one attended
+observer (PID88427), no duplicate workflow dispatch and no release opt-in.
+
+Production preflight is durably recorded in #11226 comment6869127968 and the
+existing TLS lane #10900 comment6869128615. The normal updater refuses a
+non-route/TLS/global configuration mismatch; served MRI remains dated2026-10-16.
+Source engineering and later permitted merge do not clear this actual deployment
+gate. The separate TLS/held Caddy lanes and their current writers/holds remain
+untouched. No service, credential, active config, producer ledger or data source
+was changed on production. The source lane remains active on this original branch.
