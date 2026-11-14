@@ -3,7 +3,7 @@
 Status: DESIGN CANDIDATE / IMPLEMENTATION NOT STARTED
 Owner: Chairman's 14 November 2026 Research Explore assignment.
 Parent: [Research Explore migration record](../RESEARCH_EXPLORE_SHARED_SHELL_2026-11-14.md).
-Detailed contracts: [Policy Watch R6](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md).
+Detailed contracts: [Policy Watch R6](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md).
 
 ## 1. Objective and source binding
 
@@ -143,7 +143,7 @@ Use actual award records, a correction, an unresolved recipient and a known issu
 
 ### Source and feature map
 
-Reuse altdata.py, altdata_models, altdata_signals, altdata_emit, altdata_alerts, altdata_ledger and altdata_brain. Preserve the by_ticker.v2 and mastermind.v1 compatibility surfaces. The inspected co-firing event-cluster logic in altdata_signals.py means that multiple labels may describe one underlying event.
+Reuse altdata.py, altdata_models, altdata_signals, altdata_emit, altdata_alerts, altdata_ledger and altdata_brain. Preserve the by_ticker.v2 and mastermind.v1 compatibility surfaces. The inspected co-firing event-cluster logic groups channel taxonomy; it is a dependence heuristic and does not establish record-level independence. Primary-origin and derived-record identities are still required.
 
 Companies is the investigation list. A row explains the observed reason it surfaced, event groups, primary sources and reporting date. Evidence detail groups a transaction, filing and derived provider row together. Relationships opens one inspectable edge at a time. Change tape and Evidence history retain source revisions and evaluation history. Preserve insider, congressional, contracts, lobbying, off-exchange, institutions, apps, patents, retail and corporate-event channels through scoped channel filters.
 
@@ -438,3 +438,15 @@ Source: [Government API](https://github.com/mastermindx-market-intelligence/macr
 ### Preserved next work
 
 Next is Alternative Data relationship, provider and maturity-state design. Preliminary source review identifies approximate channel grouping instead of event identity, empty/error conflation and seed-derived control edges that cannot be promoted to verified ownership. These findings require a concrete source-grounded design and upgrade contract in D1-ALT. Remaining Special Situations, Policy, Hub, Capital and systematic cross-product states remain scoped; C7 does not close the design phase.
+
+## 15. C8 — Alternative Data R2
+
+Six additional Paper views bring the native set to 68. The detailed [R2 contract](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md) specifies relationship evidence, source-state receipts, exact cohort identity, progressive disclosure and consumer proof.
+
+- Record counts and primary-origin counts remain distinct. Unknown lineage never becomes independent confirmation.
+- Existing feed defaults collapse missing/empty/error states. Add typed receipts to the incumbent collector/producer before presenting valid-empty, delay, provider access or unknown coverage.
+- Seed CONTROLS labels/confidence do not establish documentary control. Unsupported associations stay unresolved; officer status and effective date are separate facts.
+- Consume Article 3 dynamically for its exact family/horizon/vintage. Its independent n_dates sample floor is one requirement; neither a historical HOLD nor a five-day verdict transfers to another selection. Evidence and evaluation clocks remain separate.
+- The Sources inspector follows the selected row. Advanced definitions are behind Coverage scope; technical details remain collapsed. Other horizons are explicit navigation without a conflicting verdict in the active scope.
+
+All six compositions were visually inspected. Three reviewer findings (horizon mixing, ambiguous sample wording, unselected source details) were corrected and affected final screenshots reinspected. This establishes design refinement, not runtime readiness. Next: D1-HUB models/cohorts, evaluation and disagreement using the incumbent ledger and evaluator owners.
