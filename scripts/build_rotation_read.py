@@ -70,7 +70,6 @@ COPY = [
 STALE_WEEKS = 2
 
 HIST_RELPATH = "data/breadth/history/basket_breadth_weekly_current.parquet"
-NIGHTLY_RELPATH = "data/breadth/history/basket_breadth_weekly_current_live.parquet"
 MEMBERSHIP_RELPATH = "data/baskets/membership.json"
 
 # Exact row field order of every groups[] entry.
@@ -81,8 +80,8 @@ ROW_FIELDS = (
 )
 INPUT_NAMES = ("archive", "nightly")
 RUN_CENSORED_REASON = (
-    "the run reaches the first week of the input history with a defined 13-week "
-    "change, so its length is not known from this input"
+    "the run begins at the input's first week or right after a week whose 13-week "
+    "change is undefined, so its length is not known from this input"
 )
 _MEASURE_FIELDS = (
     "pct_above_200", "chg_13w", "chg_26w", "direction", "run_weeks",
@@ -129,12 +128,24 @@ def build(hist: pd.DataFrame | None, membership: dict | None,
     top_status = "stale" if behind >= STALE_WEEKS else "ok"
 
     baskets = membership.get("baskets") or {}
-    # First week with a defined 13-week change, per group, at or before as_of: a run
-    # that reaches it may have begun before the input starts (the nightly input
-    # covers only its own download window), so its length is not reported.
+    # A run's length is known only when the week just before its first week carries a
+    # defined 13-week change (a different state there is what started the run). When
+    # the run reaches the input's first week, or begins right after a week whose change
+    # is undefined (before the history, or a gap under the member rule), its true start
+    # is not known from this input, so the length is not reported.
     upto = hist.loc[hist["date"] <= pd.Timestamp(as_of)]
-    defined = upto.loc[upto["fix_chg_pct_above_200_13w"].notna()]
-    n_defined_weeks = defined.groupby("group")["date"].nunique().to_dict()
+    week_dates = pd.DatetimeIndex(sorted(upto["date"].unique()))
+    chg_by_group = {
+        g: sub.drop_duplicates("date", keep="last").set_index("date")["fix_chg_pct_above_200_13w"]
+        .reindex(week_dates)
+        for g, sub in upto.groupby("group")
+    }
+
+    def _run_start_known(gid: str, run: int) -> bool:
+        chg = chg_by_group.get(gid)
+        before = len(week_dates) - 1 - run    # row just before the run's first row
+        return chg is not None and before >= 0 and not _missing(chg.iloc[before])
+
     field_notes: list[dict] = []
     week = hist.loc[hist["date"] == pd.Timestamp(as_of)]
     by_group = {
@@ -193,7 +204,7 @@ def build(hist: pd.DataFrame | None, membership: dict | None,
             run = r.get("run_fix_chg_pct_above_200_13w")
             if _missing(run):
                 row["run_weeks"] = None
-            elif int(run) >= int(n_defined_weeks.get(gid, 0)):
+            elif not _run_start_known(gid, int(run)):
                 row["run_weeks"] = None
                 field_notes.append({"group_id": gid, "field": "run_weeks",
                                     "reason": RUN_CENSORED_REASON})

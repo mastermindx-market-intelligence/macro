@@ -484,6 +484,43 @@ def test_run_reaching_input_start_is_withheld():
     assert rows["us_sector_a"]["run_weeks"] == 3  # a shorter run is reported as is
 
 
+@pytest.mark.parametrize("offset, withheld", [(0, True), (1, False)])
+def test_run_boundary_at_input_start(offset, withheld):
+    """run == number of weeks reaches the first row (withheld); one less starts after a defined week."""
+    hist = _hist()
+    n_weeks = hist["date"].nunique()
+    hist.loc[hist["group"] == "us_theme_x", "run_fix_chg_pct_above_200_13w"] = float(n_weeks - offset)
+    rows = _rows_by_id(brr.build(hist, _membership(), NOW_OK, input_name="nightly"))
+    assert rows["us_theme_x"]["run_weeks"] == (None if withheld else n_weeks - offset)
+
+
+def test_run_after_undefined_gap_is_withheld():
+    """A run that restarts right after weeks with no defined change has an unknown start."""
+    hist = _hist()
+    dates = sorted(hist["date"].unique())
+    x = hist["group"] == "us_theme_x"
+    gap = x & hist["date"].isin(dates[10:14])          # four undefined weeks mid-history
+    hist.loc[gap, "fix_chg_pct_above_200_13w"] = np.nan
+    run_after_gap = len(dates) - 14                     # the run fills every week after the gap
+    hist.loc[x, "run_fix_chg_pct_above_200_13w"] = float(run_after_gap)
+    rows = _rows_by_id(brr.build(hist, _membership(), NOW_OK, input_name="archive"))
+    assert rows["us_theme_x"]["run_weeks"] is None
+    hist.loc[x, "run_fix_chg_pct_above_200_13w"] = float(run_after_gap - 1)  # starts after a defined week
+    rows = _rows_by_id(brr.build(hist, _membership(), NOW_OK, input_name="archive"))
+    assert rows["us_theme_x"]["run_weeks"] == run_after_gap - 1
+
+
+def test_check_names_unreadable_nightly_when_archive_absent(tmp_path):
+    from scripts import check_sector_intelligence_freshness as freshness
+
+    root = tmp_path / "r"
+    p = root / NIGHTLY
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(b"not a parquet file")
+    errors = freshness.check_rotation_read(root)
+    assert len(errors) == 1 and Path(NIGHTLY).name in errors[0]
+
+
 def test_input_name_is_neutral_and_checked():
     payload = brr.build(_hist(), _membership(), NOW_OK)
     assert payload["input"] == "archive"

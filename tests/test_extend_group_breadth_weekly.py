@@ -18,6 +18,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 import scripts.extend_group_breadth_weekly as ext
 
@@ -196,23 +197,32 @@ def test_basket_file_written_with_counts_and_start(tmp_path):
     assert meta["counts"]["by_basket"]["hb_new"] == {"listed": 11, "priced": 11, "absent": 0}
     assert meta["history_start"] == meta["span"]["closes_start"]
     assert meta["coverage_floor"]["value"] == ext.BASKET_COVERAGE_FLOOR == 0.90
-    text = json.dumps(meta).lower()
-    for word in ("tiingo", "yfinance", "vendor"):
-        assert word not in text
+    # the source is described neutrally: the field is exactly the generic wording
+    assert meta["price_source"].startswith("full-window download (period ")
+    assert meta["price_source"].endswith("auto-adjusted closes; never the collector's cache (#11124)")
     assert not list(out.glob("*.tmp"))
 
 
-def test_sector_file_unchanged_when_basket_names_fail(tmp_path):
+def _boom(*_a, **_k):
+    raise RuntimeError("failure after the download")
+
+
+@pytest.mark.parametrize("mode", ["second_call_raises", "below_floor", "raises_after_download"])
+def test_sector_file_unchanged_when_basket_names_fail(tmp_path, monkeypatch, mode):
     bd = _members(tmp_path, _groups())
     mp = _roster(tmp_path, _baskets())
     ext.build(bd, tmp_path / "plain", downloader=_fake("2026-11-06"), scratch=tmp_path / "s0", now=NOW)
-    r = ext.build(bd, tmp_path / "fail", downloader=_two_call_fake("2026-11-06", fail_second=True),
-                  scratch=tmp_path / "s1", now=NOW, membership_path=mp)
+    dl = {"second_call_raises": _two_call_fake("2026-11-06", fail_second=True),
+          "below_floor": _two_call_fake("2026-11-06", lose=6),
+          "raises_after_download": _two_call_fake("2026-11-06")}[mode]
+    if mode == "raises_after_download":
+        monkeypatch.setattr(ext, "expand_multi", _boom)
+    r = ext.build(bd, tmp_path / "fail", downloader=dl, scratch=tmp_path / "s1", now=NOW, membership_path=mp)
     assert r["status"] == "written" and r["baskets"]["status"] == "not_written"
-    a = (tmp_path / "plain" / f"{ext.LIVE_NAME}.parquet").read_bytes()
-    b = (tmp_path / "fail" / f"{ext.LIVE_NAME}.parquet").read_bytes()
-    assert a == b
+    for name in (f"{ext.LIVE_NAME}.parquet", f"{ext.LIVE_NAME}.meta.json"):
+        assert (tmp_path / "plain" / name).read_bytes() == (tmp_path / "fail" / name).read_bytes()
     assert not (tmp_path / "fail" / f"{ext.BASKET_LIVE_NAME}.parquet").exists()
+    assert not (tmp_path / "fail" / f"{ext.BASKET_LIVE_NAME}.meta.json").exists()
 
 
 def test_bad_night_keeps_previous_basket_file(tmp_path):
@@ -221,12 +231,14 @@ def test_bad_night_keeps_previous_basket_file(tmp_path):
     ext.build(bd, out, downloader=_two_call_fake("2026-10-30"), scratch=tmp_path / "s0", now=NOW,
               membership_path=mp)
     pq = out / f"{ext.BASKET_LIVE_NAME}.parquet"
-    before = pq.read_bytes()
+    mj = out / f"{ext.BASKET_LIVE_NAME}.meta.json"
+    before, before_meta = pq.read_bytes(), mj.read_bytes()
     for dl in (_two_call_fake("2026-11-06", fail_second=True),
                _two_call_fake("2026-11-06", lose=6)):  # 6 of 18 names absent: below the floor
         r = ext.build(bd, out, downloader=dl, scratch=tmp_path / "s1", now=NOW, membership_path=mp)
         assert r["baskets"]["status"] == "not_written"
         assert pq.read_bytes() == before
+        assert mj.read_bytes() == before_meta
         assert not list(out.glob("*.tmp"))
 
 

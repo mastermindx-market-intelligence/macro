@@ -49,6 +49,20 @@ read's ``too_few_members``, is unchanged). The reason for 0.90: the archive
 basket history priced 664 of the 702 roster names (94.6%), so a night below
 90% has lost a large block of the download (a rate limit or an outage), and
 basket shares built from it would move for reasons that are not the market.
+Measured once on the real roster with this script's own download (2026-11-13):
+698 of 702 names priced on the last kept session, 0.994, so the floor has room
+on a normal night. A night that falls below it prints a ``::warning::`` line so
+the skipped basket file is visible in the run log.
+
+Duplicate series: the archive builder drops a name whose series duplicates
+another roster name (an alias pair in a stale price store). This file is one
+fresh download per run, keyed by the roster's own symbols, so that store-level
+duplication does not arise; no such step is applied here.
+
+The temporary files end in ``.tmp`` under ``data/`` and are ignored by git
+(``data/**/*.tmp``). The meta is moved into place after the parquet; a kill
+between the two moves can leave a new parquet beside the previous meta until
+the next run rewrites both.
 
 The basket history in this file starts where the download window starts
 (``PERIOD``), recorded in its meta as ``history_start``; fields that need a
@@ -402,6 +416,9 @@ def main() -> None:
     t0 = time.monotonic()
     r = build(a.breadth_dir, a.out, scratch=a.scratch, membership_path=a.membership)
     r["run_seconds"] = round(time.monotonic() - t0, 1)
+    b = r.get("baskets") or {}
+    if b.get("status") == "not_written":
+        print(f"::warning::house basket file not written tonight: {b.get('reason')}")
     keep = ("status", "as_of_week", "price_vintage", "comparison_vs_archive", "members",
             "baskets", "run_seconds")
     print(json.dumps({k: r[k] for k in keep if k in r}, indent=2, default=str))

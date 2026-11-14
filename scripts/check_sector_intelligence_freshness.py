@@ -486,8 +486,16 @@ def check_rotation_read(root: Path) -> list[str]:
     if name is not None:
         expected = last_completed_weekly_close(selected["date"].unique())
     else:
-        # Neither file passes: an unreadable archive is named; a readable one
+        # Neither file passes. With no archive, the nightly file alone failed:
+        # it is named when unreadable, else treated like the archive's absence
+        # (nothing to check). An unreadable archive is named; a readable one
         # with no completed close falls through to the branch below.
+        if not hist_path.exists():
+            try:
+                pd.read_parquet(nightly_path)
+            except Exception as exc:  # noqa: BLE001 - named, not raised
+                return [f"rotation_read: cannot read input history {nightly_path.name}: {exc}"]
+            return []
         try:
             hist = pd.read_parquet(hist_path)
             expected = last_completed_weekly_close(
