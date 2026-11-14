@@ -1,5 +1,106 @@
 # Native Rates scenario service qualification — 2026-11-14
 
+## Current successor: explicit Rates 1.1 source capability
+
+This source-only successor is prepared on Macro #11280 at exact parent
+`3c15624a1dce49670d01d3ccef3f0cc956b1e659`. It supersedes the service-admission
+behavior described in the historical section below: finding valid Rates data
+and a valid v2 request does not itself permit calculation. The existing POST
+now requires an explicitly enabled, closed 1.1 Rates publication after its
+incumbent identity and paid-access dependency.
+
+Production defaults remain `1.0.0` and `execution_available: false`.
+`engine/market_os/macro_workspaces/build.py`, the original 1.0 schema,
+`app/paywall.py`, `app/main.py` and the view owner remain byte unchanged.
+No publication, runtime admission, UI enablement, catalogue admission, release
+opt-in, trade authority or persistence is created by this source phase.
+
+### Version and source semantics
+
+| Manifest minimum | Snapshot | Accepted by the reader |
+| --- | --- | --- |
+| 1.0 | 1.0 | Yes |
+| 1.0 | 1.1 | No |
+| 1.1 | 1.0 | Yes |
+| 1.1 | 1.1 | Yes |
+| Unknown | Any | No |
+
+These are exact known contract identifiers, not a permissive 1.x check.
+The new closed 1.1 schema permits execution only for supported US Rates,
+`rates_curves.two_yield_shift.v1`, the existing v2 request and v1 result, and
+exactly the ordered `us2y_bp` / `us10y_bp` assumptions. Their owner fields,
+bp units, +/-300 bounds and 5 bp step are fixed. The old five-assumption Rates
+declaration and all production composers remain disabled.
+
+The existing selected GET adds an optional Rates source projection:
+`mastermind.macro_rates_scenario_source.v1`. Its states are `qualified`,
+`disabled` and `unavailable`. Every state carries
+`access: {required_feature: site_full, state: not_checked}`. This is source
+suitability, never an entitlement result, expiry, permission or execution
+receipt. GET does not calculate or query an access service.
+
+A qualified projection binds the exact manifest, artifact and generation,
+closed assumptions, common observation date, two observed yields, observed
+2s10s spread, and each source's identity, latest observation, freshness and
+rights state. It uses the existing owner's latest qualified common date,
+not the independently latest hero values. Real zero and negative values are
+preserved. Version and capability changes participate in the existing content
+and baseline identities. An unavailable comparison baseline leaves the
+ordinary verified Rates reading visible.
+
+The POST qualifies source and publication metadata before comparing expected
+digests. A valid changed publication is 409 even if its successor disables
+execution. Matching disabled data is 503 `scenario_unavailable`; malformed
+internal metadata cannot manufacture a source-change receipt. The existing
+Bearer identity, forced `site_full` enforcement, private body limits,
+duplicate-key parser, encoding and final selected-body/manifest fences remain
+the sole transport and authority owners. The existing WTI branch is unchanged.
+
+### Qualification and bounded review
+
+The joined existing serving suites plus the new source-admission suite passed
+**249 cases, zero skipped**. They exercise the actual assembled application and
+its real identity-to-entitlement dependency, with external authorities fixtured
+below that dependency. The source checks use the real composer, manifest
+reader, view, baseline owner and serializer. The assembled positive round trip
+also passed independently before that joined run.
+
+The first core run had 373 passed and one obsolete expectation: it still
+classified the newly supported 1.1 minimum as unknown. That negative case now
+uses unknown 1.2, and is included in the final passing joined run. Missing local
+canonical imports/configuration and the declared requests dependency were
+hydrated without source or authentication stubs before the assembled run.
+No browser, deployed endpoint, provider or real account was called.
+
+Final joined log SHA-256:
+`69ea67f408be353aab54b2417cb57719080ea9f60e2fcc7bb0db6d51b7f446a9`.
+Assembled preflight log SHA-256:
+`5d0b2e76e5a5ecdc7f9034dc2e5480bc2817bc4eed377b6ab6b84dea85c1d90e`.
+
+Read-only architecture review found no concrete correctness gap in the closed
+capability, version matrix, source/access separation, common-date baseline,
+refusal ordering or POST final fence. This is source review, not GitHub
+APPROVED or deployed acceptance. Only the incumbent research-vault-api serving
+step adds the new test file; all 402 CI jobs and other job semantics are
+preserved. No runner, workflow, watcher or queue is added.
+
+### Remaining consumer and release proof
+
+The native consumer must accept known 1.1 without inferring access, bind the
+source projection, use the existing session/transport owners, and implement
+explicit Run and explicit baseline-change acceptance from Paper M11/M12.
+The current native 1.0 reader is not permission to publish 1.1. Its update,
+interaction tests, natural browser capture and authenticated deployed round
+trip remain owed. Baseline or principal changes must invalidate current
+results; there is no automatic POST or retry.
+
+This feature companion remains Ready and unarmed on Analyst #11278. Its
+existing feature-base authority hold, the WTI/runtime/retention holds and all
+catalogue/publication controls remain in force. Native source qualification
+does not close the broader paid-scenario/masterplan rows.
+
+## Historical initial service qualification
+
 ## Assignment and outcome
 
 WS:MARKET-OS / F01, Macro #6819; recovery parent Terminal #1524.

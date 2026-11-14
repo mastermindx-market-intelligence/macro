@@ -1713,6 +1713,11 @@ class RatesScenarioBaseline:
     us10y_pct: float
     sources: tuple[RatesScenarioSource, RatesScenarioSource]
 
+    @property
+    def observed_spread_bp(self) -> float:
+        """The same owner arithmetic for preview and the executed comparison."""
+        return _scenario_number(round((self.us10y_pct - self.us2y_pct) * 100, 4))
+
 
 @dataclass(frozen=True, slots=True)
 class RatesYieldShifts:
@@ -1948,7 +1953,7 @@ def evaluate_rates_scenario(baseline: RatesScenarioBaseline, assumptions: Mappin
     shifts = parse_rates_yield_shifts(assumptions)
     short = _scenario_number(round(baseline.us2y_pct + shifts.us2y_bp / 100, 4))
     long = _scenario_number(round(baseline.us10y_pct + shifts.us10y_bp / 100, 4))
-    spread = _scenario_number(round((baseline.us10y_pct - baseline.us2y_pct) * 100, 4))
+    spread = baseline.observed_spread_bp
     delta = shifts.us10y_bp - shifts.us2y_bp
     assumed_spread = _scenario_number(round(spread + delta, 4))
     # Even finite JSON numbers can be too large for binary floats to represent

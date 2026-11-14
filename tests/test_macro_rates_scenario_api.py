@@ -73,7 +73,7 @@ def client(authority):
 @pytest.fixture
 def published(tmp_path, monkeypatch):
     root = tmp_path / "site.served"
-    snapshot, baseline, request, metadata = publication_fixture(root / "macrodata")
+    snapshot, baseline, request, metadata = publication_fixture(root / "macrodata", scenario_enabled=True)
     monkeypatch.setattr(mc, "_served_root", lambda: root)
     return SimpleNamespace(
         root=root, data=root / "macrodata", snapshot=snapshot, baseline=baseline,
@@ -125,9 +125,25 @@ def test_actual_assembled_route_has_exact_mechanical_receipt_and_no_writes(publi
     assert all(value is False for key, value in result["authority"].items() if key != "display_only")
     assert set(result["effects"].values()) == {0}
     assert files(published.root) == before
-    assert published.snapshot["scenario_contract"]["execution_available"] is False
-    assert published.snapshot["schema"]["version"] == "1.0.0"
+    assert published.snapshot["scenario_contract"]["execution_available"] is True
+    assert published.snapshot["schema"]["version"] == "1.1.0"
     assert authority.seen == [("identity", "fixture-member"), ("entitlement", "member", "site_full")]
+
+
+def test_old_disabled_publication_refuses_before_calculation(client, published, monkeypatch):
+    _, _, request, _ = publication_fixture(published.data)
+    before = files(published.root)
+    monkeypatch.setattr(owner, "evaluate_rates_scenario", lambda *_a, **_k: pytest.fail("disabled source calculated"))
+    response = client.post(PATH, json=request, headers=MEMBER)
+    refusal(response, 503, "scenario_unavailable")
+    assert files(published.root) == before
+
+
+def test_replaced_enabled_publication_reports_change_before_new_disabled_state(client, published, monkeypatch):
+    publication_fixture(published.data)
+    monkeypatch.setattr(owner, "evaluate_rates_scenario", lambda *_a, **_k: pytest.fail("changed source calculated"))
+    response = client.post(PATH, json=published.request, headers=MEMBER)
+    refusal(response, 409, "source_changed")
 
 
 @pytest.mark.parametrize("headers,status", [({}, 401), ({"Authorization": "Bearer invalid"}, 401),
@@ -244,7 +260,8 @@ def test_qualified_but_different_publication_is_409(client, published, key):
 
 def test_republication_requires_explicit_new_expectation(client, published):
     first = client.post(PATH, json=published.request, headers=MEMBER).json()
-    _, _, next_request, metadata = publication_fixture(published.data, built_at="2026-09-04T13:00:00Z")
+    _, _, next_request, metadata = publication_fixture(
+        published.data, built_at="2026-09-04T13:00:00Z", scenario_enabled=True)
     assert metadata["artifact"]["sha256"] == published.metadata["artifact"]["sha256"]
     refusal(client.post(PATH, json=published.request, headers=MEMBER), 409, "source_changed")
     response = client.post(PATH, json=next_request, headers=MEMBER)
@@ -265,10 +282,13 @@ def test_unavailable_or_unqualified_baseline_has_no_partial_result(client, publi
         assert b"3.8" in before
         published.body.write_bytes(before.replace(b"3.8", b"3.9", 1))
     else:
-        snapshot = contract.finalize(owner.compose({
+        snapshot = owner.compose({
             owner.SERIES_US2Y: [("2026-09-01", 3.8)],
             owner.SERIES_US10Y: [("2026-09-02", 4.1)],
-        }, built_at="2026-09-04T12:00:00Z", code_version="test-fixture"))
+        }, built_at="2026-09-04T12:00:00Z", code_version="test-fixture")
+        snapshot["schema"]["version"] = published.snapshot["schema"]["version"]
+        snapshot["scenario_contract"] = copy.deepcopy(published.snapshot["scenario_contract"])
+        snapshot = contract.finalize(snapshot)
         contract.validate(snapshot)
         raw = (json.dumps(snapshot, sort_keys=True) + "\n").encode()
         published.body.write_bytes(raw)

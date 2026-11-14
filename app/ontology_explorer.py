@@ -289,7 +289,8 @@ def _rates_scenario_response(payload: dict) -> Response:
             "generation_id": snapshot["generation"]["generation_id"],
             "artifact": entry["artifact"],
         }
-        baseline = rates_curves.rates_scenario_baseline(snapshot)
+        baseline, metadata = wire.qualify_rates_publication(
+            snapshot, metadata, expected_publication=normalized["expected_publication"])
         calculation = rates_curves.evaluate_rates_scenario(baseline, normalized["assumptions"])
         result = wire.serialize_rates_result(normalized, calculation, publication=metadata)
         # Encode and bound the actual HTTP response inside the same read fence.
@@ -299,7 +300,7 @@ def _rates_scenario_response(payload: dict) -> Response:
 async def _private_rates_scenario(payload: dict) -> Response:
     from app import macro_command
     from engine.market_os.macro_workspaces.rates_curves import RatesScenarioBaselineError
-    from lib.macro_rates_scenario_contract import RatesScenarioContractError
+    from lib.macro_rates_scenario_contract import RatesScenarioContractError, RatesScenarioUnavailable
 
     try:
         return await run_in_threadpool(_rates_scenario_response, payload)
@@ -307,6 +308,9 @@ async def _private_rates_scenario(payload: dict) -> Response:
         raise
     except macro_command.MacroPublicationChanged:
         raise _post_error(409, "source_changed") from None
+    except RatesScenarioUnavailable as exc:
+        code = "scenario_unavailable" if str(exc) == "scenario_disabled" else "source_unavailable"
+        raise _post_error(503, code) from None
     except RatesScenarioContractError as exc:
         if str(exc) == "source_changed":
             raise _post_error(409, "source_changed") from None

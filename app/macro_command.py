@@ -207,6 +207,7 @@ def read_macro_publication(selected: str | None = None):
     # Composition dependencies are request-scoped; auth and unrelated APIs
     # remain available while this artifact reader is unavailable.
     from scripts import build_macro_suite_pages as builder
+    from engine.market_os.macro_workspaces import contract
 
     # The existing suite owns admission. Never derive a filesystem path
     # from a query or silently select another region/workspace.
@@ -227,7 +228,7 @@ def read_macro_publication(selected: str | None = None):
     manifest = json.loads(manifest_raw.decode("utf-8"))
     if (not isinstance(manifest, dict)
             or manifest.get("schema") != "mastermind.macro_workspace_manifest.v1"
-            or manifest.get("min_client_contract") != builder.MIN_CLIENT_CONTRACT
+            or not contract.supported_client_contract(manifest.get("min_client_contract"))
             or not isinstance(manifest.get("workspaces"), dict)):
         raise ValueError("unqualified manifest")
     generated_at = manifest.get("generated_at")
@@ -279,7 +280,7 @@ def read_macro_publication(selected: str | None = None):
         "manifest_generated_at": generated_at,
         "manifest_sha256": hashlib.sha256(manifest_raw).hexdigest(),
         "composed_at": composed_at,
-        "min_client_contract": builder.MIN_CLIENT_CONTRACT,
+        "min_client_contract": manifest["min_client_contract"],
     }
     yield MacroPublicationRead(tuple(entries), source)
     # A failed consumer returns no result. Preserve its original error instead
@@ -316,6 +317,16 @@ def compose_macro_command(selected: str | None = None) -> dict:
                 snapshot, page_built_at=composed_at, artifact=entry["artifact"],
                 layout=builder._layout_for(selected),
             ) if snapshot is not None else None)
+            scenario = {}
+            if selected == "rates_curves":
+                from lib.macro_rates_scenario_contract import rates_scenario_source
+                metadata = {
+                    "manifest_sha256": source["manifest_sha256"],
+                    "manifest_generated_at": source["manifest_generated_at"],
+                    "generation_id": (snapshot or {}).get("generation", {}).get("generation_id"),
+                    "artifact": entry["artifact"],
+                }
+                scenario = {"scenario": rates_scenario_source(snapshot, metadata)}
             return {
                 "schema": "mastermind.macro_command_workspace_read.v1",
                 "source": source,
@@ -325,6 +336,7 @@ def compose_macro_command(selected: str | None = None) -> dict:
                     "generation_id": (snapshot or {}).get("generation", {}).get("generation_id"),
                     "artifact": entry["artifact"], "view": view,
                     "failure": entry["failure"],
+                    **scenario,
                 },
             }
         header = macro_suite_view.build_command_header(entries, page_built_at=composed_at)

@@ -28517,7 +28517,7 @@ jobs:
       - name: research vault serving-API security tests
         run: python -m pytest tests/test_research_api.py tests/test_research_revision_read.py -q
       - name: Macro Command registered-user serving API
-        run: python -m pytest tests/test_macro_command_api.py tests/test_macro_rates_scenario_contract.py tests/test_macro_rates_scenario_api.py -q
+        run: python -m pytest tests/test_macro_command_api.py tests/test_macro_rates_scenario_contract.py tests/test_macro_rates_scenario_api.py tests/test_macro_rates_scenario_admission.py -q
       - name: source-bound report evidence — corpus selector
         run: python -m pytest tests/test_research_evidence_passages.py -q
 

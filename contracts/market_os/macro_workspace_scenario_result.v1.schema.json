@@ -109,7 +109,7 @@
               "maximum": 2097152
             },
             "min_client_contract": {
-              "const": "mastermind.macro_workspace_snapshot.v1@1.0.0"
+              "enum": ["mastermind.macro_workspace_snapshot.v1@1.0.0", "mastermind.macro_workspace_snapshot.v1@1.1.0"]
             }
           }
         }

@@ -33,12 +33,23 @@ def schemas():
     return result
 
 
-def publication_fixture(tmp_path, *, built_at="2026-09-04T12:00:00Z", two=3.8, ten=4.1, frames=None):
+def publication_fixture(tmp_path, *, built_at="2026-09-04T12:00:00Z", two=3.8, ten=4.1, frames=None,
+                        scenario_enabled=False):
     frames = frames if frames is not None else {
         owner.SERIES_US2Y: [("2026-09-02", two)],
         owner.SERIES_US10Y: [("2026-09-02", ten)],
     }
-    snapshot = contract.finalize(owner.compose(frames, built_at=built_at, code_version="test-fixture"))
+    snapshot = owner.compose(frames, built_at=built_at, code_version="test-fixture")
+    if scenario_enabled:
+        snapshot["schema"]["version"] = "1.1.0"
+        original = {row["assumption_id"]: row for row in snapshot["scenario_contract"]["assumptions"]}
+        snapshot["scenario_contract"] = {
+            "execution_available": True, "method": owner.RATES_SCENARIO_METHOD,
+            "request_schema": wire.REQUEST_SCHEMA, "result_schema": wire.RESULT_SCHEMA,
+            "assumptions": [original["us2y_bp"], original["us10y_bp"]],
+            "status": "PRESENT", "note": "Explicit test publication; no production admission.",
+        }
+    snapshot = contract.finalize(snapshot)
     contract.validate(snapshot)
     body_path = tmp_path / "workspaces/rates_curves/US/latest.json"
     body_path.parent.mkdir(parents=True, exist_ok=True)
@@ -46,7 +57,7 @@ def publication_fixture(tmp_path, *, built_at="2026-09-04T12:00:00Z", two=3.8, t
     body_path.write_bytes(raw)
     manifest = {
         "schema": "mastermind.macro_workspace_manifest.v1", "generated_at": built_at,
-        "min_client_contract": builder.MIN_CLIENT_CONTRACT,
+        "min_client_contract": f"{contract.CONTRACT_ID}@1.1.0" if scenario_enabled else builder.MIN_CLIENT_CONTRACT,
         "workspaces": {"rates_curves/US": {
             "path": "workspaces/rates_curves/US/latest.json", "bytes": len(raw),
             "content_sha256": snapshot["generation"]["content_sha256"],
@@ -261,7 +272,7 @@ def test_absent_publication_context_cannot_be_manufactured_from_calculation(read
     (("artifact",), "raw_sha256", "f" * 64),
     (("artifact",), "bytes", True), (("artifact",), "bytes", 1.5),
     (("artifact",), "bytes", 0), (("artifact",), "bytes", 2097153),
-    (("artifact",), "min_client_contract", "mastermind.macro_workspace_snapshot.v1@1.1.0"),
+    (("artifact",), "min_client_contract", "mastermind.macro_workspace_snapshot.v1@1.2.0"),
 ])
 def test_crossed_or_malformed_reader_metadata_is_refused(reading, location, key, value):
     _, baseline, request, original = reading
