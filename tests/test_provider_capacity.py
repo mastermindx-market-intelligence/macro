@@ -705,3 +705,83 @@ def test_canonical_digest_vector_is_stable():
     expected_bytes = '{"a":[2,1],"z":"容量"}'.encode("utf-8")
     assert pc._canonical_bytes(value) == expected_bytes
     assert hashlib.sha256(pc._canonical_bytes(value)).hexdigest() == hashlib.sha256(expected_bytes).hexdigest()
+
+# These are fixed projection-coverage scopes, never new executable slot IDs.
+_UNPROJECTED_FAMILIES = (
+    ("alibaba", "alibaba_subscription"),
+    ("cursor", "cursor_subscription"),
+    ("glm", "glm_subscription"),
+    ("grok", "grok_subscription"),
+    ("openrouter", "openrouter_api_key"),
+)
+
+
+def test_unprojected_provider_families_are_unknown_diagnostics_not_capacity(monkeypatch):
+    document = _snapshot(monkeypatch)
+    expected_scopes = {f"provider-family:{family}" for family, _ in _UNPROJECTED_FAMILIES}
+    assert set(pc.UNPROJECTED_PROVIDER_FAMILY_SCOPES) == expected_scopes
+    assert {
+        row["scope"]: row for row in document["degraded"]
+        if row["scope"] in expected_scopes
+    } == {
+        scope: {
+            "code": "PROVIDER_INVENTORY_UNKNOWN",
+            "scope": scope,
+            "observed_at": None,
+        }
+        for scope in expected_scopes
+    }
+    assert len(document["slots"]) == 12
+    assert {row["provider"] for row in document["slots"]} == {"claude", "codex", "deepseek"}
+    assert not any(
+        row["capability_id"] in expected_scopes
+        or row["capability_id"] in {cap_id for _, cap_id in _UNPROJECTED_FAMILIES}
+        for row in document["slots"]
+    )
+
+
+@pytest.mark.parametrize("family,capability_id", _UNPROJECTED_FAMILIES)
+def test_supplied_unprojected_observation_cannot_replace_coverage_truth(
+    monkeypatch, family, capability_id
+):
+    baseline = _snapshot(monkeypatch)
+    scope = f"provider-family:{family}"
+    for supplied_id in (capability_id, scope):
+        supplied = _observations() + [{
+            "capability_id": supplied_id,
+            "present": True,
+            "enabled": True,
+            "health": {"state": "available"},
+            "degraded_codes": [],
+        }]
+        got = _snapshot(monkeypatch, supplied)
+        assert got["slots"] == baseline["slots"]
+        assert {
+            "code": "PROVIDER_INVENTORY_UNKNOWN",
+            "scope": scope,
+            "observed_at": None,
+        } in got["degraded"]
+        assert {
+            "code": "PROVIDER_INVENTORY_UNKNOWN",
+            "scope": "producer",
+            "observed_at": None,
+        } in got["degraded"]
+        assert not any(row["capability_id"] == supplied_id for row in got["slots"])
+
+
+@pytest.mark.parametrize("family,capability_id", _UNPROJECTED_FAMILIES)
+def test_unprojected_family_cannot_be_forged_into_a_valid_slot(
+    monkeypatch, family, capability_id
+):
+    document = _snapshot(monkeypatch)
+    forged = copy.deepcopy(document["slots"][0])
+    forged.update({
+        "capability_id": capability_id,
+        "account_label": capability_id,
+        "provider": family,
+        "present": True,
+        "enabled": True,
+    })
+    document["slots"].append(forged)
+    with pytest.raises(pc.ProviderCapacityError, match="UNDECLARED_SLOT"):
+        pc.validate_snapshot(document, check_hash=False)

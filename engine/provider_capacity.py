@@ -23,7 +23,7 @@ SCHEMA = "mastermind.provider_capacity.v1"
 PRODUCER_REPOSITORY = "mastermindx-market-intelligence/macro"
 PRODUCER_PROGRAM = "shared-ai-provider-control"
 IMPLEMENTATION_ID = "provider-capacity-v1"
-IMPLEMENTATION_VERSION = 1
+IMPLEMENTATION_VERSION = 2
 HOST_REF = "local-unbound"
 
 HEALTH_FRESHNESS_SECONDS = 10 * 60
@@ -73,6 +73,18 @@ SUPPORTED_SLOTS = (
     SlotDefinition("codex_account_2", "codex", "subscription", "attached_login", "native_cli", "codex"),
     SlotDefinition("codex_account_3", "codex", "subscription", "attached_login", "native_cli", "codex"),
     SlotDefinition("deepseek_api_key", "deepseek", "metered_api", "api_key", "api", "deepseek"),
+)
+
+
+# Coverage diagnostics for this producer's reviewed v1 inventory only. These
+# fixed scopes are not executable identities, enrollment, or company-wide
+# provider-state claims. No qualified inventory observation is available here.
+UNPROJECTED_PROVIDER_FAMILY_SCOPES = (
+    "provider-family:alibaba",
+    "provider-family:cursor",
+    "provider-family:glm",
+    "provider-family:grok",
+    "provider-family:openrouter",
 )
 
 DEGRADED_CODES = {
@@ -981,7 +993,10 @@ def _build_snapshot_from_observations(
         by_id[capability_id] = observation
 
     supported_ids = {definition.capability_id for definition in SUPPORTED_SLOTS}
-    degraded_rows: list[dict[str, Any]] = []
+    degraded_rows: list[dict[str, Any]] = [
+        _degraded("PROVIDER_INVENTORY_UNKNOWN", scope)
+        for scope in UNPROJECTED_PROVIDER_FAMILY_SCOPES
+    ]
     if set(by_id) - supported_ids:
         degraded_rows.append(_degraded("PROVIDER_INVENTORY_UNKNOWN", "producer"))
 
