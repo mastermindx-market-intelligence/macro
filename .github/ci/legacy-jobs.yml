@@ -12226,6 +12226,13 @@ jobs:
       - "scripts/build_stock_library.py"
       - "tests/test_prophet_today_provenance.py"
       - "tests/test_prophet_daily_brief_api.py"
+      # Description-only trough projection shares the incumbent stock-library input.
+      - "engine/trough_read.py"
+      - "scripts/build_prophet_trough_read.py"
+      - "tests/test_prophet_trough_read.py"
+      - "contracts/prophet/trough_read.v1.schema.json"
+      - "scripts/ci/daily_engine_prophet_nightly.sh"
+      - "scripts/ci/daily_engine_prophet_checkpoint.sh"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12244,7 +12251,9 @@ jobs:
         # the real boto3 import is never reached.
         # W2's frozen estimator imports scipy.stats at collection time; the
         # isolated prophet-lab CI environment must include scipy explicitly.
-        run: pip install pytest pandas numpy scipy pyarrow fastapi httpx pyyaml requests jinja2 playwright
+        run: pip install pytest pandas numpy scipy pyarrow fastapi httpx pyyaml requests jinja2 playwright jsonschema
+      - name: trough state and publication contract
+        run: python -m pytest tests/test_prophet_trough_read.py -q
       - name: Prophet Operator Lab — projection, real-reader chain, transport, timeparse, commissioning-prep
         run: >
           python -m pytest

@@ -900,6 +900,13 @@ lanes:
           build_prophet's early band is fragile publication machinery. engine/seasonality/
           program_watch.py reads this token as the decision record; deleting it re-opens the
           daily-order tripwire, which is the intended behaviour if the decision is ever revisited.
+      - id: build_prophet_trough_read
+        module: scripts.build_prophet_trough_read
+        note: >
+          Description-only per-company trough read. Runs after build_prophet in
+          scripts/ci/daily_engine_prophet_nightly.sh and writes
+          site/prophet/trough_read.json through the existing guarded checkpoint.
+          No ranking, scoring or member-release authority.
       - id: prophet_board_acceptance
         module: scripts.prophet_board_acceptance
         note: >

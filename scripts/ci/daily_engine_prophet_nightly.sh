@@ -104,6 +104,7 @@ exact = {
     # like showcase.json; without this entry the artifact is
     # runner-local and the references resolve to nothing on main.
     "site/prophet/board_read_sparks.json",
+    "site/prophet/trough_read.json",
     "data/prophet/ledger.jsonl",
     "data/prophet/ledger_quarantine.json",
     "data/prophet_arena/scoreboard.json",
@@ -164,6 +165,9 @@ fi
 
 echo "::group::build_prophet (plan refresh + ledger advancement)"
 python -m scripts.build_prophet 2>&1; rc=$?
+if [ "$rc" -eq 0 ]; then
+  python -m scripts.build_prophet_trough_read 2>&1; rc=$?
+fi
 echo "::endgroup::"
 if [ "$rc" -eq 0 ]; then
   # Bind every newly-created plan to the exact admitted board row that
@@ -345,6 +349,7 @@ exact = {
     # like showcase.json; without this entry the artifact is
     # runner-local and the references resolve to nothing on main.
     "site/prophet/board_read_sparks.json",
+    "site/prophet/trough_read.json",
     "data/prophet/ledger.jsonl",
     "data/prophet/ledger_quarantine.json",
     "data/prophet_arena/scoreboard.json",
