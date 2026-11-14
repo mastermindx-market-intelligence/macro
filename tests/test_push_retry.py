@@ -553,7 +553,14 @@ def test_daily_engine_keeps_final_commit_after_core_checkpoint():
     assert publisher_steps[1]["if"] == "always()"
 
 
-def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
+@pytest.mark.parametrize(
+    ("prefix", "next_id"),
+    [
+        ("checkpoint_core", "check_builder_failstreaks"),
+        ("publish_final", "build_feeds"),
+    ],
+)
+def test_daily_engine_core_checkpoint_is_fully_declared_in_dag(prefix, next_id):
     dag = yaml.safe_load((REPO_ROOT / "config" / "dag.yml").read_text())
     engine = next(
         lane
@@ -563,38 +570,53 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
     )
     steps = engine["steps"]
     ids = [step.get("id") for step in steps]
-    start = ids.index("checkpoint_core_precommit_inject_data_base")
+    start = ids.index(f"{prefix}_precommit_inject_data_base")
     expected = [
-        ("checkpoint_core_precommit_inject_data_base", "scripts.inject_data_base", None),
-        ("checkpoint_core_precommit_externalize_css", "scripts.externalize_css", None),
-        ("checkpoint_core_precommit_optimize_assets", "scripts.optimize_assets", None),
+        (f"{prefix}_precommit_inject_data_base", "scripts.inject_data_base", None),
+        (f"{prefix}_precommit_externalize_css", "scripts.externalize_css", None),
+        (f"{prefix}_precommit_optimize_assets", "scripts.optimize_assets", None),
         (
-            "checkpoint_core_precommit_check_template_site_sync",
+            f"{prefix}_precommit_check_template_site_sync",
             "scripts.check_template_site_sync",
             ["--fix"],
         ),
         (
-            "checkpoint_core_gold_render_audit",
+            f"{prefix}_gold_render_audit",
             "scripts.audit_china_gold_premium",
             ["--strict-render"],
         ),
         (
-            "checkpoint_core_commodity_recovery",
+            f"{prefix}_risk_envelope_worktree",
+            "scripts.check_risk_envelope_pair",
+            ["--root", "."],
+        ),
+        (
+            f"{prefix}_risk_envelope_index",
+            "scripts.check_risk_envelope_pair",
+            ["--root", ".", "--git-ref", "INDEX"],
+        ),
+        (
+            f"{prefix}_commodity_recovery",
             "scripts.check_commodity_publication",
             ["--heal-from", "$COMMODITY_ACCEPTED"],
         ),
-        ("checkpoint_core_postrebase_inject_data_base", "scripts.inject_data_base", None),
-        ("checkpoint_core_postrebase_externalize_css", "scripts.externalize_css", None),
-        ("checkpoint_core_postrebase_optimize_assets", "scripts.optimize_assets", None),
+        (f"{prefix}_postrebase_inject_data_base", "scripts.inject_data_base", None),
+        (f"{prefix}_postrebase_externalize_css", "scripts.externalize_css", None),
+        (f"{prefix}_postrebase_optimize_assets", "scripts.optimize_assets", None),
         (
-            "checkpoint_core_postrebase_check_template_site_sync",
+            f"{prefix}_postrebase_check_template_site_sync",
             "scripts.check_template_site_sync",
             ["--fix"],
         ),
         (
-            "checkpoint_core_commodity_candidate",
+            f"{prefix}_commodity_candidate",
             "scripts.check_commodity_publication",
             ["--accepted-ref", "$COMMODITY_ACCEPTED", "--candidate-ref", "$qledger_push_candidate"],
+        ),
+        (
+            f"{prefix}_risk_envelope_commit",
+            "scripts.check_risk_envelope_pair",
+            ["--root", ".", "--git-ref", "$qledger_push_candidate"],
         ),
     ]
 
@@ -611,7 +633,7 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
         step.module for step in _extract_steps_from_run(publisher_source)
     ]
     assert [step.get("module") for step in declared] == actual_modules
-    assert steps[start + len(expected)]["id"] == "check_builder_failstreaks"
+    assert steps[start + len(expected)]["id"] == next_id
 
 
 
