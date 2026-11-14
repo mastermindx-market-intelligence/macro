@@ -1,0 +1,30 @@
+[
+  {
+    "surface": "landing",
+    "theme": "light",
+    "color": "rgb(28, 36, 48)",
+    "imageLoaded": true,
+    "width": 27
+  },
+  {
+    "surface": "landing",
+    "theme": "dark",
+    "color": "rgb(28, 36, 48)",
+    "imageLoaded": true,
+    "width": 27
+  },
+  {
+    "surface": "public",
+    "theme": "light",
+    "color": "rgb(28, 36, 48)",
+    "imageLoaded": true,
+    "width": 27
+  },
+  {
+    "surface": "public",
+    "theme": "dark",
+    "color": "rgb(28, 36, 48)",
+    "imageLoaded": true,
+    "width": 27
+  }
+]

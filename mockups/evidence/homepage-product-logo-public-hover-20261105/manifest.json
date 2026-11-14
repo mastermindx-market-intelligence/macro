@@ -1,0 +1,597 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "hover",
+        "name": "public-brand-hover",
+        "spec": "public-brand-hover:hover(.public-brand)",
+        "value": ".public-brand"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-11-05T11:02:41Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:48841/api/billing/offers/founding_pro",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:48841/api/billing/offers/founding_pro"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 1276,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 1856,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 1276,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 0,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 783645,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 16,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 186
+      },
+      "page_id": "support.html",
+      "registry_route": "/support.html",
+      "route": "/support.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 248723,
+          "captured": true,
+          "file": "0b00f5342b30c5a3.png",
+          "force_state": null,
+          "height": 1276,
+          "locale": "en",
+          "sha256": "0b00f5342b30c5a312c47d5a9c9f0692cbca0159a07dee5bbac8f92a62bc65fe",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.005735302424594371,
+            "inp_proxy_ms": null,
+            "lcp_ms": 168,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "public-brand-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 248989,
+          "captured": true,
+          "file": "5ac800f92a84d67f--public-brand-hover.png",
+          "force_state": "public-brand-hover",
+          "height": 1276,
+          "locale": "en",
+          "sha256": "5ac800f92a84d67f9b4bcd6b08d81f58cd0486ed10a0f1668fec878a16ff3bdd",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.005735302424594371,
+            "inp_proxy_ms": null,
+            "lcp_ms": 56,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 234920,
+          "captured": true,
+          "file": "dd90989e5496c21e.png",
+          "force_state": null,
+          "height": 1276,
+          "locale": "en",
+          "sha256": "dd90989e5496c21e84915a7ea49bb051b9a3756d2d5f722c52be7fa3a3ec5af3",
+          "theme": "light",
+          "timing": {
+            "cls": 0.0055047878689236125,
+            "inp_proxy_ms": null,
+            "lcp_ms": 60,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "public-brand-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 235127,
+          "captured": true,
+          "file": "7aae4cf484de2087--public-brand-hover.png",
+          "force_state": "public-brand-hover",
+          "height": 1276,
+          "locale": "en",
+          "sha256": "7aae4cf484de2087a8855245ca7cec37dcb68bfeb9080d0398cdf7ad32217bd7",
+          "theme": "light",
+          "timing": {
+            "cls": 0.005735302424594371,
+            "inp_proxy_ms": null,
+            "lcp_ms": 56,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 265966,
+          "captured": true,
+          "file": "58c69e86ca4aaeac.png",
+          "force_state": null,
+          "height": 1228,
+          "locale": "zh",
+          "sha256": "58c69e86ca4aaeacf108d9b9be05e8b2dc3db6f4d98932b5bde217b16e059c47",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.005367184284979424,
+            "inp_proxy_ms": null,
+            "lcp_ms": 96,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "public-brand-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 265707,
+          "captured": true,
+          "file": "8c1014f8ad8f2ff5--public-brand-hover.png",
+          "force_state": "public-brand-hover",
+          "height": 1228,
+          "locale": "zh",
+          "sha256": "8c1014f8ad8f2ff52c7e6ae4e769122ccab24e1559d101896800273655f47928",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.005367184284979424,
+            "inp_proxy_ms": null,
+            "lcp_ms": 60,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 252076,
+          "captured": true,
+          "file": "d063cb07f7c900be.png",
+          "force_state": null,
+          "height": 1228,
+          "locale": "zh",
+          "sha256": "d063cb07f7c900bea919eef3db6808defe8333172fad10785f62ac38df8909fc",
+          "theme": "light",
+          "timing": {
+            "cls": 0.005367184284979424,
+            "inp_proxy_ms": null,
+            "lcp_ms": 60,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "public-brand-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 252239,
+          "captured": true,
+          "file": "55d1679b6001eeb5--public-brand-hover.png",
+          "force_state": "public-brand-hover",
+          "height": 1228,
+          "locale": "zh",
+          "sha256": "55d1679b6001eeb5a0fa87e12a6a4409f58891f6203566d72d8ea6fd42cfed36",
+          "theme": "light",
+          "timing": {
+            "cls": 0.005367184284979424,
+            "inp_proxy_ms": null,
+            "lcp_ms": 56,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 159957,
+          "captured": true,
+          "file": "b20c59296c87605b.png",
+          "force_state": null,
+          "height": 1856,
+          "locale": "en",
+          "sha256": "b20c59296c87605bf1e7570dda8e31b40734675e272846e48e7ff1fbce019f40",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.012573361015458563,
+            "inp_proxy_ms": null,
+            "lcp_ms": 44,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "public-brand-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 159993,
+          "captured": true,
+          "file": "d1f2ad3f042eeb04--public-brand-hover.png",
+          "force_state": "public-brand-hover",
+          "height": 1856,
+          "locale": "en",
+          "sha256": "d1f2ad3f042eeb04e745f534809ce72debbaf20fad9a4fa94b5df56a40033ed9",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.012573361015458563,
+            "inp_proxy_ms": null,
+            "lcp_ms": 44,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 158670,
+          "captured": true,
+          "file": "65f876e4c132ced1.png",
+          "force_state": null,
+          "height": 1856,
+          "locale": "en",
+          "sha256": "65f876e4c132ced1dbc0f6115e4c1ea7445db2b06410137ab229d2871de26572",
+          "theme": "light",
+          "timing": {
+            "cls": 0.012573361015458563,
+            "inp_proxy_ms": null,
+            "lcp_ms": 44,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "public-brand-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 158777,
+          "captured": true,
+          "file": "6aa4b47d9b095881--public-brand-hover.png",
+          "force_state": "public-brand-hover",
+          "height": 1856,
+          "locale": "en",
+          "sha256": "6aa4b47d9b095881b1dcb3dd731f518f5466eb0d2d164065b7e7475a127767d2",
+          "theme": "light",
+          "timing": {
+            "cls": 0.012573361015458563,
+            "inp_proxy_ms": null,
+            "lcp_ms": 40,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 160404,
+          "captured": true,
+          "file": "80495d5e33e4c18d.png",
+          "force_state": null,
+          "height": 1785,
+          "locale": "zh",
+          "sha256": "80495d5e33e4c18dce2baea671bc70199d539358a50780702333d4f6ce87da3c",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.009659025789615847,
+            "inp_proxy_ms": null,
+            "lcp_ms": 40,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "public-brand-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 160493,
+          "captured": true,
+          "file": "94e0f06e9fdc8fc7--public-brand-hover.png",
+          "force_state": "public-brand-hover",
+          "height": 1785,
+          "locale": "zh",
+          "sha256": "94e0f06e9fdc8fc7ee71dbdb37149c21b28f2cb5eee8878827ebc277b5adb8b7",
+          "theme": "dark",
+          "timing": {
+            "cls": 0.01183751012918709,
+            "inp_proxy_ms": null,
+            "lcp_ms": 44,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 160600,
+          "captured": true,
+          "file": "a5b6d60e54c9d516.png",
+          "force_state": null,
+          "height": 1785,
+          "locale": "zh",
+          "sha256": "a5b6d60e54c9d516c2f999321061c45825909526d92d138e275fa93bb3126687",
+          "theme": "light",
+          "timing": {
+            "cls": 0.01183751012918709,
+            "inp_proxy_ms": null,
+            "lcp_ms": 48,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "public-brand-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 160665,
+          "captured": true,
+          "file": "79085c0afbb02aa3--public-brand-hover.png",
+          "force_state": "public-brand-hover",
+          "height": 1785,
+          "locale": "zh",
+          "sha256": "79085c0afbb02aa3e25f95432e945451d3cbd9f8fa2983687de98b67d233f6ca",
+          "theme": "light",
+          "timing": {
+            "cls": 0.01183751012918709,
+            "inp_proxy_ms": null,
+            "lcp_ms": 40,
+            "resource_count": 15,
+            "server_timing": [],
+            "transfer_bytes": 1091523
+          },
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/support.html"
+    ],
+    "max_pages": 30,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/home/ubuntu0/lanes/repos/macro/.git/worktrees/macro-pr6988-hover-20261105-c3",
+    "resolved_sha_or_none": "e559fed9941635fe4932ac41ddd75a6ca0070738",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /home/ubuntu0/lanes/repos/macro/.git/worktrees/macro-pr6988-hover-20261105-c3 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/home/ubuntu0/lanes/wt/macro-pr6988-hover-20261105-c3/site"
+  },
+  "timing_basis": "lab",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.4.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 16,
+    "states_captured": 16
+  }
+}
