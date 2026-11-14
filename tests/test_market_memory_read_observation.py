@@ -246,9 +246,10 @@ def test_routes_preserve_exact_original_authorization_limits_and_payloads(name, 
 def test_catalog_preserves_the_entire_pre_timing_read_contract():
     from engine.neuralweb import market_memory_retained_catalog as catalog
     node = ast.parse(inspect.getsource(catalog.read_catalog)).body[0]
-    # Exact fa559344 pre-timing body, with only timing scopes/argument removed.
+    # Exact P15.T2.S1 sibling-navigation contract (PR #10796).
+    # Only timing scopes/argument are stripped; all functional nodes remain.
     assert _ast_digest(StripObserver().visit(node)) == (
-        'c9e0315bcd0fbbfbecd7dcfabaff1e98de4feab27b2632cc061435859509eede')
+        'b7263d692afaeffd9ee99cb5271f97b6138cb8eae1dad02c0cecfa12594c3374')
 
 
 @pytest.mark.parametrize('left,right', [
