@@ -4,7 +4,8 @@ The lock-up overhang is the IPO Radar's most-defensible leg, but "documented in 
 literature" is not "tradeable on our data". This harness measures, on the deals our
 own calendar lists, the actual abnormal return around the lock-up cliff:
 
-    event date  = priced_date + (prospectus-confirmed | 180d) lock-up
+    event date  = priced_date + (cached scalar | modeled 180d) lock-up
+                  retained conditional prospectus terms are excluded (unknown date)
     abnormal r  = stock daily return − SPY daily return  (simple market-adjustment)
     windows     = pre-run-up [-10,-1], event [-1,+3] / [0,+3] / [0,+1], wide [-5,+5]
 
@@ -126,9 +127,18 @@ def run(max_names: int, min_size: float) -> dict:
 
     cars = {w: [] for w in WINDOWS}
     unavailable = {w: 0 for w in WINDOWS}
-    used, missing = [], 0
+    used, missing, conditional = [], 0, 0
     for _, r in samp.iterrows():
         t = str(r["ticker"]).upper()
+        # Reuse the display-calendar/collector admission contract: retained
+        # conditional prospectus bytes do not establish an exact release date,
+        # even if a stale scalar is present. Do not manufacture a 180-day event.
+        if (not lk.empty and t in lk.index
+                and isinstance(lk.loc[t].get("prospectus_archive_content"), bytes)):
+            conditional += 1
+            for w in WINDOWS:
+                unavailable[w] += 1
+            continue
         s = close(t)
         if s is None or s.empty or not s.notna().any():
             missing += 1
@@ -149,7 +159,8 @@ def run(max_names: int, min_size: float) -> dict:
                 unavailable[w] += 1
         if got:
             used.append(t)
-    log.info("usable: %d names (%d missing price data)", len(used), missing)
+    log.info("usable: %d names (%d missing price data; %d conditional event dates excluded)",
+             len(used), missing, conditional)
 
     rows = {}
     for w, vals in cars.items():
@@ -197,7 +208,11 @@ def run(max_names: int, min_size: float) -> dict:
 
     return {"windows": rows, "focus": FOCUS, "verdict": verdict, "tier": tier,
             "n_names": len(used), "n_missing": missing, "n_sampled": len(samp),
-            "n_unavailable_names": len(samp) - len(used), "min_size_usd": min_size,
+            "n_unavailable_names": len(samp) - len(used),
+            "n_conditional_event_dates": conditional,
+            "event_date_policy": "priced_date + cached scalar or modeled 180 days; "
+                                 "retained conditional terms excluded (unknown expiry)",
+            "min_size_usd": min_size,
             "as_of": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
             "caveats": ["survivorship (delisted IPOs absent → drift biased upward)",
                         "small/time-clustered sample (cross-sectional t overstates)",
@@ -210,6 +225,7 @@ def _write_report(res: dict) -> Path:
     L = ["# IPO lock-up expiry — Phase-0 event study", "",
          f"As of {res['as_of']} · {res['n_names']} names with at least one usable window "
          f"({res['n_missing']} missing price data; "
+         f"{res['n_conditional_event_dates']} conditional event dates excluded; "
          f"{res['n_unavailable_names']} with no usable window) · min deal size "
          f"${res['min_size_usd'] / 1e6:.0f}M", "",
          f"**Verdict: {res['verdict']}**", "",
@@ -224,7 +240,8 @@ def _write_report(res: dict) -> Path:
                      f"{r['trimmed_mean_pct']} | {r['pct_negative']} | {r['t']} | {r['p']} |")
     L += ["", "### Honest caveats"] + [f"- {c}" for c in res["caveats"]]
     L += ["", "Market-adjusted (stock − SPY) cumulative returns around the lock-up "
-          "expiry (priced_date + prospectus-confirmed-or-180d). The leg ships "
+          f"expiry ({res['event_date_policy']}). These modeled calendar dates do not "
+          "establish actual share release or waiver timing. The leg ships "
           "DISPLAY-ONLY regardless: a negative drift here is long-only-avoidable, not "
           "shortable net of borrow, so it never becomes a scored signal — only an "
           "avoid/de-risk calendar."]
@@ -246,7 +263,9 @@ def main() -> int:
     badge.parent.mkdir(parents=True, exist_ok=True)
     badge.write_text(json.dumps({"verdict": res["verdict"], "tier": res["tier"],
                                  "focus": res["focus"], "stat": res["windows"].get(res["focus"]),
-                                 "n_names": res["n_names"], "as_of": res["as_of"]},
+                                 "n_names": res["n_names"], "as_of": res["as_of"],
+                                 "n_conditional_event_dates": res["n_conditional_event_dates"],
+                                 "event_date_policy": res["event_date_policy"]},
                                 indent=2, allow_nan=False))
     print(f"\n[verdict] {res['verdict']}")
     f = res["windows"].get(res["focus"], {})

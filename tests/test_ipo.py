@@ -1650,3 +1650,134 @@ def test_phase0_future_anchor_counts_reach_report_and_badge(monkeypatch, tmp_pat
     assert f"{25 - future_count} names with at least one usable window" in report
     assert f"{future_count} with no usable window" in report
     assert result["verdict"] in report
+
+
+# #10957: unknown conditional release dates must never become modeled events.
+def _phase0_conditional_run(monkeypatch, conditional_count, scalar, missing_prices=False,
+                            archive=b"retained conditional prospectus", ordinary_scalar=180,
+                            ordinary_missing_count=0):
+    import sys
+    import types
+    import numpy as np
+    from datetime import datetime, timezone
+    from scripts import ipo_lockup_phase0 as phase
+
+    class FixedClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return cls(2026, 11, 14, tzinfo=timezone.utc)
+
+    idx = pd.bdate_range("2025-01-01", periods=200)
+    names = [f"S{i:02d}" for i in range(25)]
+    priced = idx[100] - pd.Timedelta(days=180)
+    cal = pd.DataFrame({"ticker": names, "priced_date": priced.strftime("%Y-%m-%d"),
+                        "status": "priced", "is_spac": False, "offer_value_usd": 100e6})
+    terms = pd.DataFrame({
+        "lockup_days": [scalar if i < conditional_count else ordinary_scalar for i in range(25)],
+        "prospectus_archive_content": [archive if i < conditional_count else None for i in range(25)],
+    }, index=names)
+    prices = pd.DataFrame(index=idx)
+    for i, name in enumerate(names):
+        values = np.full(len(idx), 100.0)
+        values[99:] *= 1.0 - .001 * (i + 1)
+        if ((missing_prices and i < conditional_count)
+                or i >= len(names) - ordinary_missing_count):
+            values[:] = np.nan
+        prices[(name, "Close")] = values
+    prices.columns = pd.MultiIndex.from_tuples(prices.columns)
+    monkeypatch.setattr(phase, "datetime", FixedClock)
+    monkeypatch.setattr(phase, "load_calendar", lambda: cal)
+    monkeypatch.setattr(phase, "load_lockups", lambda: terms)
+    monkeypatch.setattr(phase.store, "read", lambda *a: pd.DataFrame({"close": 100.0}, index=idx))
+    monkeypatch.setitem(sys.modules, "yfinance", types.SimpleNamespace(download=lambda *a, **k: prices))
+    events = []
+    native_car = phase._car
+
+    def observed_car(stock, spy, event, w0, w1):
+        events.append(event)
+        return native_car(stock, spy, event, w0, w1)
+
+    monkeypatch.setattr(phase, "_car", observed_car)
+    return phase, phase.run(140, 50e6), events, priced
+
+
+@pytest.mark.parametrize("conditional_count", [0, 1, 25])
+@pytest.mark.parametrize("scalar", [None, 90, 180])
+@pytest.mark.parametrize("missing_prices", [False, True])
+def test_phase0_conditional_dates_are_excluded_before_prices(
+        monkeypatch, tmp_path, conditional_count, scalar, missing_prices):
+    import json
+    import sys
+    phase, result, events, priced = _phase0_conditional_run(
+        monkeypatch, conditional_count, scalar, missing_prices)
+    assert result["n_names"] == 25 - conditional_count
+    assert result["n_conditional_event_dates"] == conditional_count
+    assert result["n_missing"] == 0  # unknown date is not a missing-price diagnosis
+    assert result["n_unavailable_names"] == conditional_count
+    assert result["n_sampled"] == 25
+    assert len(events) == len(phase.WINDOWS) * (25 - conditional_count)
+    assert all(event == priced + pd.Timedelta(days=180) for event in events)
+    for row in result["windows"].values():
+        assert row["n"] == 25 - conditional_count
+        assert row["n_unavailable"] == conditional_count
+    assert "modeled 180 days" in result["event_date_policy"]
+    assert "conditional terms excluded" in result["event_date_policy"]
+    assert result["verdict"].startswith("DISPLAY-ONLY")
+    if conditional_count:
+        assert "insufficient" in result["verdict"]
+        assert result["tier"] == "none"
+    else:
+        assert result["windows"][phase.FOCUS]["mean_pct"] == -1.3
+        assert result["windows"][phase.FOCUS]["t"] == -5.741
+    json.dumps(result, allow_nan=False)
+    monkeypatch.setattr(phase.config, "ROOT", tmp_path)
+    monkeypatch.setattr(phase.config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(phase, "run", lambda *a: result)
+    monkeypatch.setattr(sys, "argv", ["ipo_lockup_phase0"])
+    assert phase.main() == 0
+    badge = json.loads((tmp_path / "data/ipo/lockup_phase0.json").read_text(),
+                       parse_constant=lambda token: (_ for _ in ()).throw(ValueError(token)))
+    assert badge["n_conditional_event_dates"] == conditional_count
+    assert badge["event_date_policy"] == result["event_date_policy"]
+    assert badge["stat"] == result["windows"][phase.FOCUS]
+    report = (tmp_path / "reports/ipo-lockup-phase0.md").read_text()
+    assert f"{conditional_count} conditional event dates excluded" in report
+    assert result["event_date_policy"] in report
+    assert "do not establish actual share release or waiver timing" in report
+
+
+@pytest.mark.parametrize("archive", [None, float("nan"), ""])
+@pytest.mark.parametrize("scalar", [None, 150, 180])
+def test_phase0_ordinary_modeled_dates_keep_incumbent_offsets(monkeypatch, archive, scalar):
+    phase, result, events, priced = _phase0_conditional_run(
+        monkeypatch, 25, scalar, archive=archive)
+    assert result["n_names"] == 25
+    assert result["n_conditional_event_dates"] == 0
+    assert len(events) == 125
+    days = 180 if scalar is None else scalar
+    assert all(event == priced + pd.Timedelta(days=days) for event in events)
+    assert all(row["n"] == 25 and row["n_unavailable"] == 0
+               for row in result["windows"].values())
+    assert result["verdict"].startswith("DISPLAY-ONLY")
+
+
+@pytest.mark.parametrize("scalar", [None, 90, 180])
+def test_phase0_empty_retained_archive_matches_incumbent_exclusion(monkeypatch, scalar):
+    _, result, events, _ = _phase0_conditional_run(monkeypatch, 1, scalar, archive=b"")
+    assert result["n_names"] == 24
+    assert result["n_conditional_event_dates"] == 1
+    assert len(events) == 120
+
+
+@pytest.mark.parametrize("conditional_count", [1, 5, 20])
+def test_phase0_conditional_and_missing_price_reasons_are_disjoint(monkeypatch, conditional_count):
+    phase, result, events, _ = _phase0_conditional_run(
+        monkeypatch, conditional_count, 180, missing_prices=True, ordinary_missing_count=1)
+    assert result["n_conditional_event_dates"] == conditional_count
+    assert result["n_missing"] == 1
+    assert result["n_names"] == 24 - conditional_count
+    assert result["n_unavailable_names"] == 1 + conditional_count
+    assert len(events) == len(phase.WINDOWS) * (24 - conditional_count)
+    for row in result["windows"].values():
+        assert row["n"] == 24 - conditional_count
+        assert row["n_unavailable"] == 1 + conditional_count
