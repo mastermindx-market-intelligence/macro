@@ -327,19 +327,77 @@
       + '</div>';
   }
 
+  function _record(value){
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  }
+  function _optionalNumbers(value, keys){
+    if(value == null) return true;
+    return _record(value) && keys.every(function(key){
+      var number = value[key];
+      return number == null || (typeof number === 'number' && isFinite(number));
+    });
+  }
+  function _optionalArray(value, predicate){
+    return value == null || (Array.isArray(value) && value.every(predicate));
+  }
+  function _hasTurnDesk(d){
+    // Step 15 owns armed[]. Step 19's additive tape_onset_nodes cannot prove
+    // that there are no armed windows when the Turn Desk artifact is absent.
+    return _record(d) && (d.asof == null || typeof d.asof === 'string')
+      && Array.isArray(d.armed) && d.armed.every(function(sector){
+        return _record(sector) && _optionalArray(sector.member_fires, _record)
+          && _optionalArray(sector.qual_filters_true, function(flag){ return typeof flag === 'string'; });
+      })
+      && _optionalNumbers(d.base_rates, ['in_window_wr21', 'outside_window_wr21',
+        'holdout_delta_pp', 'holdout_ci_lo_pp', 'holdout_ci_hi_pp', 'n_windows']);
+  }
+  function _hasTapeOnset(d){
+    return _record(d) && (d.asof == null || typeof d.asof === 'string')
+      && _record(d.nodes) && Object.keys(d.nodes).every(function(key){
+      var node = d.nodes[key];
+      return _record(node) && typeof node.tape_onset_unconfirmed === 'boolean'
+        && _optionalNumbers(node.tape_onset_stats,
+          ['p_onset_5d', 'false_positive_5d', 'p_confirmed_10d', 'n_flags']);
+    });
+  }
+
   function render(td, tpo){
     var el = document.getElementById('dw-content');
     if(!el) return;
-    var armed   = (td && td.armed) || [];
-    var flagged = _flaggedNodes(tpo);
-
-    // BOTH empty or absent → one quiet line (a quiet tape is a valid read).
-    if(!armed.length && !flagged.length){
+    // A failed read or malformed collection is unavailable, never evidence of
+    // a quiet tape. Keep the other feed usable and exclude rejected metadata.
+    var armed = [], flagged = [], armedHtml = '', onsetHtml = '', footHtml = '';
+    // Isolate renderer failures as well as fetch/shape failures: malformed
+    // details in one source must not erase the other source's valid cards.
+    try {
+      if(!_hasTapeOnset(tpo)) tpo = null;
+      else {
+        flagged = _flaggedNodes(tpo);
+        if(flagged.length) onsetHtml = _onsetHtml(tpo, flagged);
+      }
+    } catch(error) { tpo = null; flagged = []; }
+    try {
+      if(!_hasTurnDesk(td)) td = null;
+      else {
+        armed = td.armed;
+        if(armed.length) armedHtml = _armedHtml(td);
+        footHtml = _footHtml(td, tpo);
+      }
+    } catch(error) { td = null; armed = []; }
+    if(!td) footHtml = _footHtml(null, tpo);
+    if(!td && !tpo){
+      el.innerHTML = '<p class="dw-quiet">'
+        + L('Desk-watch data unavailable.', '值守台数据暂不可用。')
+        + '</p>';
+      return;
+    }
+    // Both successfully read and empty → one legitimate quiet line.
+    if(td && tpo && !armed.length && !flagged.length){
       el.innerHTML = '<p class="dw-quiet">'
         + '<span class="l-en">No armed windows and no early flow signs right now — a quiet tape is a valid read.</span>'
         + '<span class="l-zh">当前无已武装窗口，也无最早期资金迹象——安静的盘面也是有效读数。</span>'
         + '</p>'
-        + _footHtml(td, tpo);
+        + footHtml;
       return;
     }
 
@@ -348,8 +406,11 @@
       + L('Armed windows', '已武装窗口')
       + (armed.length ? ' · '+armed.length : '')
       + '</div>'
-      + (armed.length
-          ? _armedHtml(td)
+      + (!td
+          ? '<div class="dw-quiet-row">'
+            + L('Armed-window data unavailable.', '入场窗口数据暂不可用。') + '</div>'
+          : armed.length
+          ? armedHtml
           : '<div class="dw-quiet-row">'
             + '<span class="l-en">No sectors armed right now — a quiet desk is a valid read.</span>'
             + '<span class="l-zh">当前无板块处于入场窗口——安静的值守台也是有效读数。</span></div>')
@@ -358,13 +419,16 @@
       + L('Earliest flow signs', '最早期资金迹象')
       + (flagged.length ? ' · '+flagged.length : '')
       + '</div>'
-      + (flagged.length
-          ? _onsetHtml(tpo, flagged)
+      + (!tpo
+          ? '<div class="dw-quiet-row">'
+            + L('Early-flow data unavailable.', '早期资金信号数据暂不可用。') + '</div>'
+          : flagged.length
+          ? onsetHtml
           : '<div class="dw-quiet-row">'
             + '<span class="l-en">No early flow signs right now — a quiet tape is a valid read.</span>'
             + '<span class="l-zh">当前无最早期资金迹象——安静的盘面也是有效读数。</span></div>')
       + '</div>';
-    el.innerHTML = html + _footHtml(td, tpo);
+    el.innerHTML = html + footHtml;
   }
 
   function load(){
