@@ -128,6 +128,30 @@ source evidence, then qualify and release the native Terminal consumer. Keep
 `/us_stocks.html` available until its full feature and access parity is proven.
 No legacy source/presentation retirement is authorized by this API result alone.
 
+### Exact API restart dependency repair
+
+Original CI run `43574366924`, pack 2 job `132386113587`, failed the existing
+`test_api_load_time_import_closure_is_covered_by_restart_regex` guard. The new
+route reaches `engine/us_candidate_lanes.py`; Python retains that module in the
+API process even though the route imports it on request. A later source-only
+change therefore needs the incumbent API restart transaction.
+
+The repair adds only `us_candidate_lanes` to the existing exact evaluation/options
+module predicate in `app/deploy/update.sh`. It does not widen the matcher to all
+engines, exempt the guard, alter deployment ownership, or change the verified
+restart transaction. The existing closure test is unchanged. The script's input
+blob `a12b0c8cb7f0bc9e7153c0f0659dc6f5a0d2fb3e` was identical at this PR's head,
+its protected input, and the inspected protected main
+`daec304a0d7582586dda975e4474bbaf5741cb17`. Other pending deployment changes touch
+different predicates or sections and retain their own custody and effects.
+
+Local verification materialized all top-level `app` Python files and every
+tracked `engine`/`lib` Python file before running the real unchanged closure
+guard: **1 passed**. `bash -n app/deploy/update.sh` and `git diff --check` also
+passed. This addresses the originating failure; the repaired head still requires
+its normal binding CI and protected release path. The held #10674 operation and
+other deployment PRs were not adopted, released, or replayed.
+
 ## Preserved active effects
 
 Macro #10674's unresolved operation 26751 and held 449-file branch are neither
