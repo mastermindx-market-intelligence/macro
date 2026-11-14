@@ -102,6 +102,56 @@ class TestRussellReconSessions:
 # ── sp_rebalance_sessions ─────────────────────────────────────────────────────
 
 class TestSpRebalanceSessions:
+    @pytest.mark.parametrize(
+        "closed,previous_session",
+        [("2008-03-21", "2008-03-20"),
+         ("2026-06-19", "2026-06-18"),
+         ("2027-06-18", "2027-06-17")],
+    )
+    def test_exchange_holiday_moves_event_to_actual_session(self, closed, previous_session):
+        idx = pd.bdate_range(previous_session, closed)
+        expected = date.fromisoformat(previous_session)
+        assert sp_rebalance_sessions(idx) == [expected]
+        assert tag(expected)["is_sp_rebalance_session"] is True
+        assert tag(date.fromisoformat(closed))["is_sp_rebalance_session"] is False
+
+    @pytest.mark.parametrize(
+        "observed,expected",
+        [([], []),
+         (["2024-03-14", "2024-03-18"], []),
+         (["2024-01-02", "2024-03-18"], []),
+         (["2026-06-17", "2026-06-22"], []),
+         (["2024-03-14"], []),
+         (["2026-06-18"], [date(2026, 6, 18)]),
+         (["2024-03-15"], [date(2024, 3, 15)]),
+         (["2024-03-18", "2024-03-15", "2024-03-14", "2024-03-15"],
+          [date(2024, 3, 15)])],
+    )
+    def test_observation_gaps_never_move_calendar_events(self, observed, expected):
+        assert sp_rebalance_sessions(pd.DatetimeIndex(observed)) == expected
+
+    def test_scheduled_day_is_known_before_nominal_holiday(self):
+        idx = pd.bdate_range("2026-06-01", "2026-06-18")
+        assert sp_rebalance_sessions(idx) == [date(2026, 6, 18)]
+
+    def test_sparse_indices_only_select_present_scheduled_days(self):
+        import random
+
+        rng = random.Random(2362)
+        idx = pd.bdate_range("2026-01-01", "2026-12-31")
+        scheduled = {date(2026, 3, 20), date(2026, 6, 18),
+                     date(2026, 9, 18), date(2026, 12, 18)}
+        for _ in range(100):
+            sample = rng.sample(list(idx), rng.randint(1, 100))
+            expected = sorted({d.date() for d in sample} & scheduled)
+            assert sp_rebalance_sessions(sample) == expected
+
+    @pytest.mark.parametrize("day", [date(2026, 6, 17), date(2026, 6, 18),
+                                      date(2026, 6, 19), date(2026, 6, 22)])
+    def test_scalar_and_singleton_bulk_tag_agree(self, day):
+        frame = build_tag_frame([day])
+        assert frame.loc[day].to_dict() == tag(day)
+
     def test_four_per_year(self):
         idx = pd.bdate_range("2024-01-01", "2024-12-31")
         sessions = sp_rebalance_sessions(idx)
@@ -266,3 +316,36 @@ class TestBuildTagFrame:
         sessions = [date(2024, 6, 28)]
         df = build_tag_frame(sessions)
         assert bool(df.loc[date(2024, 6, 28), "is_quarter_end"]) is True
+
+
+def test_upcoming_builder_uses_exchange_adjusted_rebalance_date():
+    from scripts.build_rebalance_pulse import _next_upcoming_events
+
+    assert _next_upcoming_events(date(2026, 6, 17))[0] == {
+        "date": "2026-06-18", "types": ["sp_rebalance"], "td_to": 1,
+    }
+
+
+def test_builder_classifies_holiday_adjusted_volume_spike(tmp_path, monkeypatch):
+    import json
+    from scripts.build_rebalance_pulse import main
+
+    day = date(2026, 6, 18)
+    idx = pd.bdate_range(end=day, periods=26)
+    volume = pd.DataFrame({"AAPL": [100.0] * 25 + [180.0]}, index=idx)
+    updown = pd.DataFrame({"up_vol": [60.0], "down_vol": [40.0]},
+                          index=[pd.Timestamp(day)])
+
+    def read_parquet(path, *args, **kwargs):
+        return (volume if Path(path).name == "_volume_cache.parquet" else updown).copy()
+
+    monkeypatch.setattr(pd, "read_parquet", read_parquet)
+    assert main(["--root", str(tmp_path), "--asof", str(day)]) == 0
+    payload = json.loads((tmp_path / "site/marketdata/rebalance_pulse.json").read_text())
+    pulse = payload["latest_pulse"]
+    assert payload["gaps"] == []
+    assert pulse["class"] == "mechanical_spike_absorbed"
+    assert pulse["calendar"]["is_sp_rebalance_session"] is True
+    assert pulse["market_vol_ratio"] == 1.8
+    assert pulse["up_share"] == 0.6
+    assert pulse["authority"] == {"may_rank": False, "may_gate": False, "may_size": False}

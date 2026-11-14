@@ -14,7 +14,8 @@ Emits per-session tags:
                             RECON_OVERRIDES wins when present
   in_recon_week           — any session in the same ISO week as the recon day
   is_sp_rebalance_session  — S&P quarterly rebalance = quad-witching 3rd-Friday
-                            of Mar/Jun/Sep/Dec (via engine.opex helpers)
+                            of Mar/Jun/Sep/Dec, adjusted to a NYSE session
+                            (via engine.opex and lib.nyse_calendar helpers)
   is_month_end_session     — last session of each calendar month
 
 Authority: display/context tier.  may_rank=false, may_gate=false, may_size=false.
@@ -96,19 +97,26 @@ def russell_recon_sessions(y0: int, y1: int) -> list[date]:
 
 
 def sp_rebalance_sessions(index: "pd.DatetimeIndex | list") -> list[date]:
-    """S&P quarterly rebalance sessions = quad-witching 3rd-Fridays of Mar/Jun/Sep/Dec.
+    """S&P quarterly rebalance sessions present in the supplied index.
 
-    Reuses engine.opex.expiration_days — does not duplicate the math.
-    Returns only quad-witching days (is_quad=True) as a sorted list of dates.
+    The third-Friday rule is adjusted by the NYSE calendar, never by gaps in
+    the caller's price history. Missing observations cannot move an event to
+    another bar. A holiday-adjusted Thursday is known on Thursday even when
+    the observed index does not yet extend through the nominal Friday.
     """
     import pandas as pd
-    from engine.opex import expiration_days  # noqa: PLC0415 — late import avoids circulars
+    from engine.opex import _third_friday  # reuse the existing date rule
 
-    idx = pd.DatetimeIndex(sorted(set(index)))
-    exp = expiration_days(idx)
-    # expiration_days returns a Series where the value is is_quad
-    quads = [ts.date() for ts, is_quad in exp.items() if is_quad]
-    return sorted(quads)
+    idx = pd.DatetimeIndex(index)
+    if idx.empty:
+        return []
+    observed = {ts.date() for ts in idx}
+    scheduled = {
+        last_session_on_or_before(_third_friday(year, month))
+        for year in range(min(observed).year, max(observed).year + 1)
+        for month in QUARTER_MONTHS
+    }
+    return sorted(scheduled & observed)
 
 
 def month_end_sessions(y0: int, y1: int) -> list[date]:
