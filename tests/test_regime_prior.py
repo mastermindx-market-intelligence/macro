@@ -42,6 +42,107 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+
+def _pit_prior():
+    return {"status": "fresh", "quad": "Q1",
+            "market_state": {"score": 90, "verdict": "RISK_ON"},
+            "sources": {k: {"asof": _today(), "status": "fresh"} for k in
+                        ("regime", "market_state", "vol_regime", "business_cycle")}}
+
+
+def test_emit_future_then_corrected_admits_first_valid_row(tmp_path):
+    import pandas as pd
+    from scripts.build_regime_prior import emit
+    (tmp_path / "regime").mkdir()
+    prior = _pit_prior()
+    prior["sources"]["market_state"]["asof"] = _days_ago(-1)
+    target = tmp_path / "regime" / "market_state_history.parquet"
+    with patch("engine.regime_prior.regime_prior", return_value=prior):
+        emit(data_dir=tmp_path, site_dir=tmp_path / "site")
+    assert not target.exists()
+    js = tmp_path / "site" / "regimedata" / "regime_prior.js"
+    assert '"score":90' in js.read_text()
+    prior = _pit_prior()
+    prior["market_state"]["score"] = 40
+    with patch("engine.regime_prior.regime_prior", return_value=prior):
+        emit(data_dir=tmp_path, site_dir=tmp_path / "site")
+    assert '"score":40' in js.read_text()
+    assert pd.read_parquet(target)["ms_score"].tolist() == [40]
+
+
+def test_pit_legacy_undated_input_and_existing_history_preserved(tmp_path):
+    import pandas as pd
+    from scripts.build_regime_prior import _append_pit
+    (tmp_path / "regime").mkdir()
+    target = tmp_path / "regime" / "market_state_history.parquet"
+    prior = _pit_prior()
+    del prior["sources"]
+    _append_pit(tmp_path, prior)
+    assert not target.exists()
+    pd.DataFrame([{"date": _today(), "ms_score": 90}]).to_parquet(target, index=False)
+    before = target.read_bytes()
+    _append_pit(tmp_path, _pit_prior())
+    assert target.read_bytes() == before
+
+
+@pytest.mark.parametrize("name", ["regime", "market_state", "vol_regime", "business_cycle"])
+@pytest.mark.parametrize("age", [-365, -30, -1, 6, 365])
+def test_pit_refuses_unqualified_date_before_keep_first(tmp_path, name, age):
+    import pandas as pd
+    from scripts.build_regime_prior import _append_pit
+    (tmp_path / "regime").mkdir()
+    prior = _pit_prior()
+    prior["sources"][name]["asof"] = _days_ago(age)
+    target = tmp_path / "regime" / "market_state_history.parquet"
+    _append_pit(tmp_path, prior)
+    assert not target.exists()
+    corrected = _pit_prior()
+    corrected["market_state"]["score"] = 40
+    _append_pit(tmp_path, corrected)
+    history = pd.read_parquet(target)
+    assert history["ms_score"].tolist() == [40]
+    assert json.loads(history.iloc[0]["source_provenance"]) == corrected["sources"]
+    before = target.read_bytes()
+    _append_pit(tmp_path, prior)
+    _append_pit(tmp_path, _pit_prior())
+    assert target.read_bytes() == before
+
+
+@pytest.mark.parametrize("bad", [None, "", "invalid", "2026-02-30", "2026-1-2",
+                                 "2026-11-12T12:00:00Z", 20261112])
+def test_pit_refuses_missing_or_noncanonical_provenance(tmp_path, bad):
+    from scripts.build_regime_prior import _append_pit
+    prior = _pit_prior()
+    (tmp_path / "regime").mkdir()
+    prior["sources"]["market_state"]["asof"] = bad
+    _append_pit(tmp_path, prior)
+    assert not (tmp_path / "regime" / "market_state_history.parquet").exists()
+
+
+@pytest.mark.parametrize("age", [0, 1, 5])
+def test_pit_existing_grace_and_optional_crosscheck_preserved(tmp_path, age):
+    import pandas as pd
+    from scripts.build_regime_prior import _append_pit
+    (tmp_path / "regime").mkdir()
+    prior = _pit_prior()
+    for source in prior["sources"].values():
+        source["asof"] = _days_ago(age)
+    prior["sources"]["commodity_complex"] = {"status": "unavailable", "asof": None}
+    _append_pit(tmp_path, prior)
+    hist = pd.read_parquet(tmp_path / "regime" / "market_state_history.parquet")
+    assert hist["ms_score"].tolist() == [90]
+    assert json.loads(hist.iloc[0]["source_provenance"]) == prior["sources"]
+
+
+@pytest.mark.parametrize("status", ["stale", "unavailable", "partial", None])
+def test_pit_refuses_inconsistent_freshness(tmp_path, status):
+    from scripts.build_regime_prior import _append_pit
+    prior = _pit_prior()
+    (tmp_path / "regime").mkdir()
+    prior["sources"]["regime"]["status"] = status
+    _append_pit(tmp_path, prior)
+    assert not (tmp_path / "regime" / "market_state_history.parquet").exists()
+
 # ---------------------------------------------------------------------------
 # Helpers
 
@@ -202,7 +303,9 @@ def test_pit_append_keep_first(tmp_path):
 
     prior = {"status": "fresh", "quad": "Q1", "liquidity": "expanding",
              "market_state": {"verdict": "RISK_ON", "score": 70},
-             "vol_regime": "calm", "bc_phase": "expansion"}
+             "vol_regime": "calm", "bc_phase": "expansion",
+             "sources": {k: {"asof": _today(), "status": "fresh"} for k in
+                         ("regime", "market_state", "vol_regime", "business_cycle")}}
 
     # First append
     _append_pit(data_dir, prior)
@@ -231,7 +334,9 @@ def test_pit_append_separate_dates(tmp_path):
 
     prior_base = {"status": "fresh", "quad": "Q1", "liquidity": "expanding",
                   "market_state": {"verdict": "RISK_ON", "score": 70},
-                  "vol_regime": "calm", "bc_phase": "expansion"}
+                  "vol_regime": "calm", "bc_phase": "expansion",
+             "sources": {k: {"asof": _today(), "status": "fresh"} for k in
+                         ("regime", "market_state", "vol_regime", "business_cycle")}}
 
     # Simulate two different dates by writing the parquet directly with a past date
     import pandas as pd
@@ -540,3 +645,4 @@ def test_meta_as_narrative_flows_from_curated_seed():
     assert block["primary_narrative_id"] == "meta"
     # 12 per-cycle Q3 claims + the meta claim = 13 disagreements vs a Q1 engine
     assert block["n"] == 13
+

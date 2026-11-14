@@ -48283,6 +48283,7 @@ jobs:
       - "engine/market_state.py"
       - "tests/test_markets_regime_strip.py"
       - "tests/test_markets_cyc_stage_mobile.py"
+      - "tests/test_regime_prior.py"
       - "tests/fixtures/markets_regime_strip/**"
       # Import closure beyond the page family. Listed literally so
       # exclusive scope still covers what inference would have owned.
@@ -48369,7 +48370,7 @@ jobs:
         # the PR that caused it can act on it. The data-gated twin is retired,
         # not moved: post-#7986 it would assert exactly what this step asserts,
         # because it no longer reads the feeds it was split out for.
-        run: python -m pytest tests/test_markets_regime_strip.py tests/test_markets_cyc_stage_mobile.py -q
+        run: python -m pytest tests/test_markets_regime_strip.py tests/test_markets_cyc_stage_mobile.py tests/test_regime_prior.py -q
 
   dashboard-render-contract:
     # dashboard.html.j2 rendered-HTML contract (macro.html + us_stocks.html) and
