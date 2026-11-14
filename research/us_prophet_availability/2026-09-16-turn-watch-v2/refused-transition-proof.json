@@ -1,0 +1,15 @@
+{
+  "returncode": 0,
+  "elapsed_seconds": 99.59,
+  "summary": "........................................................................ [ 35%]\n........................................................................ [ 70%]\n............................................................             [100%]\n204 passed in 98.41s (0:01:38)\n",
+  "source_digests": {
+    "scripts/build_turn_watch.py": "f6cb509e851d8065268837df3eae163ef540d4a9c8b615be80572f2161f49375",
+    "tests/test_us_candidate_episode_intake.py": "95c2732d1aafea00b977ae65c00a92a922da3c701c5943f4d0a159ecf180bc26",
+    "engine/us_candidate_episode_intake.py": "4ab2cabbdf90712f55a2357da7a95b7507bd770c887ecd989eab4ad34b981200"
+  },
+  "production": false,
+  "new_refusal_tests": 3,
+  "preimage_failures": 3,
+  "unchanged_successful_v1_emission_order": true,
+  "claim": "Rejected version upgrade/downgrade/backdate changes neither public deck nor private inputs; no cross-file crash-atomicity claim."
+}

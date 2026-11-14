@@ -20,9 +20,11 @@ from engine.session_digest import session_window_et
 from engine.stock_identity.fingerprint import spec_hash
 from engine.us_candidate_episode import canonical_json
 from lib.dataos.identity import IssuerMaster, VendorAliasTable
+from lib.nyse_calendar import is_session
 
 
 TURN_WATCH_SCHEMA = "prophet.candidate_episode_input.turn_watch/v1"
+TURN_WATCH_SCHEMA_V2 = "prophet.candidate_episode_input.turn_watch/v2"
 IDENTITY_SCHEMA = "stock_identity.fingerprint_spec.v1"
 
 
@@ -174,6 +176,37 @@ def _observation(*, source: str, schema: str, source_event_id: str, receipt: str
     return result, None
 
 
+def _valid_turn_watch_v2_document(document: Mapping[str, object]) -> bool:
+    required = {"schema", "data_session", "known_at", "selection_era", "anchor_era",
+                "trigger_registry", "source_artifact_sha256", "rows", "content_sha256"}
+    session = _session(document.get("data_session"))
+    return (
+        set(document) == required
+        and session is not None
+        and is_session(session)
+        and document.get("data_session") == session.isoformat()
+        and document.get("known_at") == _close(session.isoformat())
+        and all(isinstance(document.get(k), str) and bool(document[k])
+                for k in ("selection_era", "anchor_era"))
+        and isinstance(document.get("trigger_registry"), Mapping)
+        and bool(document["trigger_registry"])
+        and _receipt(document.get("source_artifact_sha256")) is not None
+    )
+
+
+def _turn_watch_row_receipt(document: Mapping[str, object], row: Mapping[str, object]) -> str:
+    """V2 semantic row evidence; exact file evidence remains in source_receipts.
+
+    Source definitions remain binding. Runtime and sibling rows are container
+    facts, not changes to this already identified observation.
+    """
+    material = {key: document.get(key) for key in (
+        "schema", "data_session", "known_at", "selection_era", "anchor_era", "trigger_registry",
+    )}
+    material["row"] = dict(row)
+    return "sha256:" + sha256(canonical_json(material).encode("utf-8")).hexdigest()
+
+
 def turn_watch_observations(path: Path, spine: IdentitySpine) -> IntakeBatch:
     """Normalize full private TURN WATCH rows; only this source provides a structural anchor."""
     source, schema = "turn_watch", TURN_WATCH_SCHEMA
@@ -193,9 +226,10 @@ def turn_watch_observations(path: Path, spine: IdentitySpine) -> IntakeBatch:
     rows = document.get("rows")
     digest = document.get("content_sha256")
     receipt = _receipt(f"sha256:{digest}" if isinstance(digest, str) else None)
-    if document.get("schema") != TURN_WATCH_SCHEMA or not isinstance(rows, list):
+    if document.get("schema") not in (TURN_WATCH_SCHEMA, TURN_WATCH_SCHEMA_V2) or not isinstance(rows, list):
         return IntakeBatch((), (), ({"source": source, "status": "degraded", "reason": "MALFORMED_SOURCE",
                                      "files": file_receipts},))
+    schema = str(document["schema"])
     expected_digest = sha256(canonical_json({key: value for key, value in document.items()
                                               if key != "content_sha256"}).encode("utf-8")).hexdigest()
     if receipt is None or digest != expected_digest:
@@ -209,22 +243,27 @@ def turn_watch_observations(path: Path, spine: IdentitySpine) -> IntakeBatch:
         return IntakeBatch((), suppressions,
                            ({"source": source, "status": "degraded", "reason": "MALFORMED_RECEIPT",
                              "files": file_receipts},))
+    if schema == TURN_WATCH_SCHEMA_V2 and not _valid_turn_watch_v2_document(document):
+        return IntakeBatch((), (), ({"source": source, "status": "degraded",
+                                      "reason": "MALFORMED_SOURCE", "files": file_receipts},))
     observations: list[dict[str, object]] = []
     suppressions: list[dict[str, object]] = []
     session = document.get("data_session")
     for raw in rows:
         row = dict(raw) if isinstance(raw, Mapping) else {}
+        row_receipt = (_turn_watch_row_receipt(document, row)
+                       if schema == TURN_WATCH_SCHEMA_V2 else receipt)
         event_id = _source_id(source, {"data_session": session, "row": row})
         ticker = row.get("ticker")
         fired = row.get("triggers")
         if not isinstance(fired, Mapping) or not any(isinstance(v, Mapping) and v.get("fired")
                                                      for v in fired.values()):
-            suppressions.append(_suppression(source, schema, event_id, receipt, ticker, "MISSING_TRIGGER",
+            suppressions.append(_suppression(source, schema, event_id, row_receipt, ticker, "MISSING_TRIGGER",
                                               session=session))
             continue
         if any(isinstance(v, Mapping) and v.get("fired") and not v.get("evaluated", False)
                for v in fired.values()):
-            suppressions.append(_suppression(source, schema, event_id, receipt, ticker, "UNEVALUATED_TRIGGER",
+            suppressions.append(_suppression(source, schema, event_id, row_receipt, ticker, "UNEVALUATED_TRIGGER",
                                               session=session))
             continue
         trigger_clocks = []
@@ -235,24 +274,24 @@ def turn_watch_observations(path: Path, spine: IdentitySpine) -> IntakeBatch:
             if trigger_clock is not None:
                 trigger_clocks.append(trigger_clock)
         if not trigger_clocks:
-            suppressions.append(_suppression(source, schema, event_id, receipt, ticker,
+            suppressions.append(_suppression(source, schema, event_id, row_receipt, ticker,
                                               "MALFORMED_RECEIPT", session=session))
             continue
         trigger_clock = min(trigger_clocks)
         reset = row.get("reset")
         if not isinstance(reset, Mapping) or reset.get("reset_low") is None or not reset.get("reset_low_date"):
-            suppressions.append(_suppression(source, schema, event_id, receipt, ticker, "MISSING_RESET_LOW",
+            suppressions.append(_suppression(source, schema, event_id, row_receipt, ticker, "MISSING_RESET_LOW",
                                               session=session))
             continue
         anchor_time = _close(reset.get("reset_low_date"))
         if anchor_time is None:
-            suppressions.append(_suppression(source, schema, event_id, receipt, ticker, "MALFORMED_RECEIPT",
+            suppressions.append(_suppression(source, schema, event_id, row_receipt, ticker, "MALFORMED_RECEIPT",
                                               session=session))
             continue
         anchor = {"kind": "turn_watch_reset_low", "time": anchor_time,
-                  "price": reset["reset_low"], "basis": "adjusted_close", "source_receipt": receipt}
+                  "price": reset["reset_low"], "basis": "adjusted_close", "source_receipt": row_receipt}
         observation, reason = _observation(
-            source=source, schema=schema, source_event_id=event_id, receipt=receipt,
+            source=source, schema=schema, source_event_id=event_id, receipt=row_receipt,
             ticker=ticker, session=session, spine=spine, intake_class="technical_emergence",
             anchor=anchor,
             occurred_at=trigger_clock,
@@ -260,7 +299,7 @@ def turn_watch_observations(path: Path, spine: IdentitySpine) -> IntakeBatch:
         )
         if observation is None:
             security, _company = _identity(spine, ticker, session)
-            suppressions.append(_suppression(source, schema, event_id, receipt, ticker, str(reason),
+            suppressions.append(_suppression(source, schema, event_id, row_receipt, ticker, str(reason),
                                               session=session, security_id=security))
         else:
             observations.append(observation)
