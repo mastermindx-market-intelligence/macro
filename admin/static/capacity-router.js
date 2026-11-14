@@ -30,7 +30,7 @@
   function mount(host, options = {}) {
     unmount();
     const s = {host, options, data:null, view:"flow", minutes:15, query:"", status:"all", model:"all", selected:null,
-      paused:false, pending:false, disposed:false, timer:null, tick:null, controller:null, scale:1, page:0, error:null, received:0, stream:null, transport:"connecting", requestGeneration:0, changes:new Map(), nodeOrder:{}, arrivals:0, updates:0, history:null, intelligence:null, settings:null, detailTimer:null, detailPending:false, custom:null, chartField:"output_tokens", showConfigured:true, mapFitted:false, claudeFilter:"all", claudeFamily:"all", claudeLastFresh:null};
+      paused:false, pending:false, disposed:false, timer:null, tick:null, controller:null, scale:1, page:0, error:null, received:0, stream:null, transport:"connecting", requestGeneration:0, changes:new Map(), nodeOrder:{}, arrivals:0, updates:0, history:null, intelligence:null, settings:null, detailTimer:null, detailPending:false, custom:null, chartField:"output_tokens", showConfigured:true, mapFitted:false, claudeFilter:"all", claudeFamily:"all", claudeLastFresh:null, lastMetricState:null};
     active = s;
     host.innerHTML = `<section class="cf-shell" aria-label="Capacity Fabric router">
       <header class="cf-hero"><div><div class="cf-eyebrow"><span class="cf-mark">${icon("flow")}</span> INFRASTRUCTURE <span>/</span> ROUTER</div><h1>Capacity Fabric<span class="cf-title-dot">.</span></h1><p>Follow the intelligence. From capacity to every consumer.</p></div>
@@ -209,6 +209,12 @@
     const state=s.paused?"paused":s.error?"disconnected":!d?"connecting":!d.ok?"disconnected":age>15?"stale":"live";
     s.root.dataset.connection=state;
     s.root.dataset.hidden=String(document.hidden);
+    // A stale or paused router snapshot cannot prove *current* concurrency,
+    // cooldowns, consumer count or operational capacity.
+    if(s.lastMetricState!==state) {
+      s.lastMetricState=state;
+      renderMetrics(s);
+    }
     s.root.querySelector(".cf-connection").innerHTML=`<i></i><span>${{live:"Live telemetry",paused:"Paused",stale:"Telemetry stale",disconnected:"Disconnected",connecting:"Connecting"}[state]}</span><small>${age==null?"":`${Math.floor(age)}s ago`}</small>`;
     const notice=s.root.querySelector(".cf-notice");
     const drops=d&&d.totals&&(d.totals.dropped_requests+d.totals.observer_errors);
@@ -231,15 +237,19 @@
 
   function renderMetrics(s) {
     const d=s.data, v=d&&d.ok?d.summary:{};
+    const age=d&&typeof d.generated_at==="number"?Date.now()/1000-d.generated_at:null;
+    const current=Boolean(d&&d.ok&&!s.paused&&!s.error&&age!==null&&age>=-30&&age<=15);
+    const liveOnly=value=>current?value:null;
+    const historical=current?"":"Last recorded · ";
     const cards=[
-      ["Concurrent requests",v.active_requests,`${n(v.awaiting_output)} awaiting first output`,"teal"],
-      ["Reported output / sec",v.output_tokens_per_s,"Approx. selected-window average","blue"],
-      ["Output tokens",v.output_tokens,`${n(v.input_tokens)} input · selected window`,"violet"],
-      ["First content · p50",v.p50_first_content_ms==null?null:seconds(v.p50_first_content_ms/1000),`p95 ${seconds(v.p95_first_content_ms==null?null:v.p95_first_content_ms/1000)} · ${n(v.first_content_samples)} samples`,""],
-      ["Known consumers",v.active_consumers,`${n(v.unattributed_active)} active requests unattributed`,""],
-      ["Routes outside cooldown",v.ready_routes==null?null:`${v.ready_routes} / ${(d.routes||[]).length}`,`${n(v.cooling_routes)} cooling · ${n(v.providers)} providers`,""],
+      ["Concurrent requests",liveOnly(v.active_requests),current?`${n(v.awaiting_output)} awaiting first output`:`Last recorded ${n(v.active_requests)} · current unknown`,"teal"],
+      ["Reported output / sec",v.output_tokens_per_s,`${historical}selected-window average`,"blue"],
+      ["Output tokens",v.output_tokens,`${historical}${n(v.input_tokens)} input · selected window`,"violet"],
+      ["First content · p50",v.p50_first_content_ms==null?null:seconds(v.p50_first_content_ms/1000),`${historical}p95 ${seconds(v.p95_first_content_ms==null?null:v.p95_first_content_ms/1000)} · ${n(v.first_content_samples)} samples`,""],
+      ["Known consumers",liveOnly(v.active_consumers),current?`${n(v.unattributed_active)} active requests unattributed`:"Last recorded consumer count · current unknown",""],
+      ["Routes outside cooldown",liveOnly(v.ready_routes==null?null:`${v.ready_routes} / ${(d.routes||[]).length}`),current?`${n(v.cooling_routes)} cooling · ${n(v.providers)} providers`:`${historical}${n(v.cooling_routes)} cooling · current unknown`,""],
     ];
-    if(d&&d.ok&&(d.overflow||d.claude)) cards.push(["Overflow & lanes",v.overflowing_families==null?null:v.overflowing_families,`${n(v.benched_lanes)} Claude lanes benched · ${n(v.over_target_keys)} seats over target${d.peak&&d.peak.active?" · peak active":""}`,"violet"]);
+    if(d&&d.ok&&(d.overflow||d.claude)) cards.push(["Overflow & lanes",liveOnly(v.overflowing_families),current?`${n(v.benched_lanes)} Claude lanes benched · ${n(v.over_target_keys)} seats over target${d.peak&&d.peak.active?" · peak active":""}`:`Last recorded ${n(v.benched_lanes)} benches · current unknown`,"violet"]);
     patchMarkup(s.root.querySelector(".cf-metrics"),cards.map(([title,value,sub,color])=>`<article data-key="${title}" class="cf-metric ${color}"><div>${title}</div><strong>${typeof value==="string"?value:n(value)}</strong><small>${sub}</small></article>`).join(""));
     const counts={requests:d&&d.ok?(d.active.length+d.recent.length):null,providers:v.providers,consumers:v.active_consumers,
       overflow:d&&d.ok&&d.overflow?Object.values(d.overflow.families||{}).filter(f=>f.overflowing).length:null,
