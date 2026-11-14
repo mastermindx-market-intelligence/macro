@@ -1426,3 +1426,39 @@ pages:
     evidence:
       - "terminal/app/(shell)/options/equity-replay/page.tsx"
     why: "Existing paid equity-depth replay chart workspace using IexDepthReplayMount and the incumbent live-options gate. No navigation or access expansion."
+
+  terminal:briefs_deliveryid_sharing:
+    archetype: utility
+    evidence:
+      - "terminal/app/(shell)/briefs/[deliveryId]/sharing/page.tsx"
+    why: "Account-scoped sharing review and receipt controls for one delivered brief; a management utility, with existing identity and grant boundaries unchanged."
+
+  terminal:briefs_shared_deliveryid:
+    archetype: chart_workspace
+    evidence:
+      - "terminal/app/(shell)/briefs/shared/[deliveryId]/page.tsx"
+    why: "Native Terminal shared-brief reader. The archetype records Terminal's governing doctrine, while the recipient and delivery authorization remain with the incumbent reader."
+
+  terminal:dev_sector_cycles:
+    archetype: chart_workspace
+    evidence:
+      - "terminal/app/dev/sector-cycles/page.tsx"
+    why: "Synthetic SectorCycleLens verification harness under Terminal doctrine; its developer-only lifecycle and production guard are unchanged."
+
+  terminal:dev_sector_depth:
+    archetype: chart_workspace
+    evidence:
+      - "terminal/app/dev/sector-depth/page.tsx"
+    why: "Sector Intelligence depth verification harness under Terminal doctrine, retaining explicitly labeled fixtures and its developer-only lifecycle."
+
+  terminal:prophet_evaluation:
+    archetype: chart_workspace
+    evidence:
+      - "terminal/app/(shell)/prophet/evaluation/page.tsx"
+    why: "Native Prophet evaluation view under the same Terminal doctrine as Prophet; the existing member and paid-feature gates remain authoritative."
+
+  terminal:research_assistant:
+    archetype: chart_workspace
+    evidence:
+      - "terminal/app/(shell)/research-assistant/page.tsx"
+    why: "Account-scoped native evidence-to-thesis workspace under Terminal doctrine, like the existing research view; this classification creates no data or access authority."

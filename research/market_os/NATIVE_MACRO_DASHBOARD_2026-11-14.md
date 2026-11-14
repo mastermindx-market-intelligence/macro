@@ -114,3 +114,13 @@ Terminal bridge fixtures are being moved from the newly native Macro path to the
 On Macro head8673b3a02ce966540f2675ebfe21ee389ce55fbc, contract-delta job132413402413 again stopped in checkout with a truncated promisor fetch. Object18d1af1c408309f24337af8f5efc6efb6a433f91 is a valid 1,210-byte skill file; its name is the first missing entry after the batch transport failure, not evidence of corrupt source. No workflow was replayed, runner changed, or gate waived. This CI-wiring correction receives normal fresh exact-head checks.
 
 The combined registered-serving cohort passes all 52 tests with the manifest-declared dependencies. The dashboard test module imports its real endpoint during collection, before the incumbent Macro Command authentication test temporarily patches helper reads; this prevents capturing a temporary test double during a later lazy module import. Authentication-first and real served-file assertions remain intact.
+
+## Completed CI adjudication and canonical classification repair
+
+Run `43584692727` on `c5ac3bb3a7f0a702d9eab8bae28007527d27ad6c` completed. Contract-delta and ten CI packs passed. Pack 5 failed in checkout before tests; pack 3 found a real registry regression: six pre-existing Terminal routes discovered at inventory T were missing explicit archetype judgments. The gate correctly blocked release. No caller rerun was submitted.
+
+The canonical overlay now classifies the brief-sharing management utility and the existing shared-brief, sector verification, Prophet evaluation and research-assistant views. The latter retain their established Terminal design doctrine. The unchanged scoped generator regenerated the registry from the same protected baseline and immutable T. Readback confirms all 360 row identities and source pins are preserved; exactly six archetype fields changed, with no access, lifecycle, navigation or compliance claim added.
+
+All 373 tests in the existing registry derivation, design-system schema, design ratchet and route-export cohorts pass after this repair. This substantive source revision receives fresh binding CI, superseding the old-head pack-5 rerun plan. The existing merge-on-green controller owns its diagnostic merge-blocked label; no hold is manually cleared.
+
+Terminal current-head phone/tablet native journeys and retained bridge recovery passed. Its final desktop correction preserves the strict complete-interval visibility assertion and recovers 16 px of excess overview spacing. Protected registry R, actual rendered publication P, authenticated served digest, exact-R catalog and live beta acceptance remain required.

@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-11-14T09:15:24Z",
+  "generated_at": "2026-11-14T11:35:00Z",
   "sources": {
     "macro": {
       "available": true,
@@ -13907,7 +13907,7 @@
       "access_shell": "signed_in",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "utility",
       "design_system": {
         "compliant": false
       },
@@ -13948,7 +13948,7 @@
       "access_shell": "signed_in",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -14149,7 +14149,7 @@
       "access_shell": "unknown",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -14189,7 +14189,7 @@
       "access_shell": "unknown",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -14953,7 +14953,7 @@
       "access_shell": "unknown",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
@@ -15033,7 +15033,7 @@
       "access_shell": "signed_in",
       "payload_tier": "unknown",
       "nav_family": "none",
-      "archetype": "unclassified",
+      "archetype": "chart_workspace",
       "design_system": {
         "compliant": false
       },
