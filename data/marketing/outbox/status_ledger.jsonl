@@ -14083,3 +14083,5 @@
 {"id":"ob-2026-11-13-52caa7dfa5","from":"posting","to":"posted","at":"2026-11-14T16:58:48Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6af89347918fe79d2e909907","external_url":null,"at":"2026-11-14T16:58:22Z","booked_at":"2026-11-14T17:15:22Z"}}
 {"id":"ob-2026-11-14-5b3f68e3f3","from":"approved","to":"posting","at":"2026-11-14T16:58:48Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-11-14-5b3f68e3f3","from":"posting","to":"posted","at":"2026-11-14T16:58:49Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6af89349918fe79d2e90998e","external_url":null,"at":"2026-11-14T16:58:22Z","booked_at":"2026-11-14T17:26:22Z"}}
+{"id":"ob-2026-11-14-22d889059b","from":"queued","to":"approved","at":"2026-11-14T20:39:52Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-11-14-22d889059b","from":"approved","to":"quarantined","at":"2026-11-14T20:39:55Z","actor":"publisher","note":"voice laws (queue vintage): question mark: the post states, it does not ask. End on the fact","receipt":null}
