@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T06:40:58.031173+00:00",
-  "count": 3348,
+  "generated_at": "2026-11-14T06:55:56.729040+00:00",
+  "count": 3349,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1516,6 +1516,26 @@
         "AI/Data Center Catalysts: FPS (CFO transition, Q1 guidance met, $18 bottom, 3x+ book-to-bill sustainability risk), LGN (10%+ topline/20%+ EBITDA beats, M&A additive), and DPC (post-IPO, 13% implied move) report tomorrow.",
         "Key Flow Dynamics: XLI ETF up 1.48% (11 Nov 2026); CARR post-presentation, KBR weakness, CNM pre-announcement, LMT vs. primes, FLY feedback driving inbounds.",
         "Critical Risk Factor: FPS’s 3x+ book-to-bill sustainability risk amid strong data center sector momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tbnkh33lpo4-c4f855",
+      "title": "GS Duttenhoefer Duttenhoefers Daily 12.11.2026 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:29:51Z",
+      "summary_points": [
+        "Fed Policy Tightening: Second 25bp hike expected in Dec, third possible in March (Jan), signaling sustained tightening despite strong US capex (2026 +11% real business investment, AI-driven).",
+        "Semiconductor Entry Points: Drawdown overdone; 35GW 2027 deployments underway (low execution risk), with NVDA/AVGO and AMAT/LRCX as compelling entry points amid SOX at 200-dma.",
+        "Nike Valuation Disconnect: EPS too high (31x P/E) despite Y/Y revenue decline (6/9 quarters, worst -10% in 2 years), highlighting sector-specific risk amid broader supply-demand shifts.",
+        "Supply-Demand Shift: Largest NET supply increase since 2000, creating systemic risk amid US retail sales strength but sentiment vs. action gap."
       ],
       "tags": [],
       "tickers": [],
