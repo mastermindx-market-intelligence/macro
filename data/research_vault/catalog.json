@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T17:26:45.491891+00:00",
-  "count": 3375,
+  "generated_at": "2026-11-14T17:56:49.646633+00:00",
+  "count": 3376,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-pwtuyigxwzl-4d6845",
+      "title": "Next week",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T17:33:02Z",
+      "summary_points": [
+        "Key Data Releases & Geopolitics: FOMC minutes, US retail/industrial production (Oct), UK CPI/GfK (Oct-Nov), Japan Q3 GDP (preliminary), China APEC meeting drive near-term policy shifts and trade dynamics.",
+        "Earnings Focus: Nvidia (Tue), Alibaba/Tencent/JD.com, and major US retailers (Walmart, Home Depot) dictate sector rotations and tech/retail valuation trajectories.",
+        "Critical Data & Central Bank Events: US manufacturing/housing/retail data, Japan Q3 GDP, Eurozone production, and high-impact US 20-yr bonds ($16bn) / 10-yr TIPS ($19bn) auctions directly influence yield curves and risk asset allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-sjzl5wfclnd-e44fb0",
       "title": "2027 Global FX Outlook Timing the Turn",
