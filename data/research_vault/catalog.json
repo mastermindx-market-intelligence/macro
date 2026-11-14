@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T05:40:52.831298+00:00",
-  "count": 3345,
+  "generated_at": "2026-11-14T05:55:50.098053+00:00",
+  "count": 3346,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1540,6 +1540,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-1iphdpxtmrr-6b823c",
+      "title": "GS Blekos GS Focus Idea Danone (15% Upside) 11 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:29:29Z",
+      "summary_points": [
+        "US Operational Reset & Growth Catalysts: 8 projects across 4 factories, service levels troughed at 85% Q3, new leadership driving 4% organic growth (FY27/28E); Specialized Nutrition +12.4%/+7.9% Q3 LFL growth (Americas/APAC), Kate Farms medical nutrition doubling to ~€500m.",
+        "Specialized Nutrition Margin Leadership: Most margin-accretive category (55% EBIT vs EDP’s 31% EBIT); sustained growth in Medical Nutrition/China IMF critical for valuation.",
+        "US EDP Recovery as Key Valuation Trigger: €76 PT target contingent on US EDP growth/margins inflection and input-cost inflation mitigation; neutral rating pending clearer recovery.",
+        "Valuation Discount to Peers: Trades at 19% discount to Goldman Sachs Consumer Staples peers; expected Net Debt/EBITDA reduction to 1.2x by 2027."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
