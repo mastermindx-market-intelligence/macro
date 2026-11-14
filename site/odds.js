@@ -1222,6 +1222,10 @@
       if (priceChart) { try { priceChart.destroy(); } catch (e) {} priceChart = null; }
       pc.innerHTML = '<div class="od-skel-block" style="position:absolute;left:0;right:0;top:6px;bottom:6px"></div>';
     }
+    // Other analyzer tabs must retire their previous-symbol evidence too.
+    ["#od-path-chart", "#od-hist-chart", "#od-strip-chart", "#od-path-note"].forEach(function (id) {
+      var el = $(id); if (el) el.innerHTML = "";
+    });
     var vs = $("#od-vol-strip"); if (vs) vs.hidden = true;
     var tbl = $("#od-days-table");
     if (tbl) tbl.innerHTML = '<tbody><tr><td style="border-bottom:none">' +
