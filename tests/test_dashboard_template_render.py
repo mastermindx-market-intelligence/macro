@@ -445,6 +445,42 @@ def test_macro_health_degraded_source_remains_attention_state():
     assert "需关注" in panel
 
 
+# Product rule: no data-provider name on a product surface. Collector ids and
+# their failure notes can name one, so the panel renders reviewed labels and
+# scrubbed notes (lib/source_health_labels.py) while the ids stay unchanged.
+_PROVIDER_RE = re.compile(
+    r"(?i)(?<![A-Za-z0-9])(?:yfinance|yahoo|tushare|polygon|massive)(?![A-Za-z0-9(])"
+)
+
+
+def test_macro_health_panel_names_no_data_provider(monkeypatch):
+    from scripts import build_site  # noqa: PLC0415
+
+    sources = {
+        "china_tushare": {"status": "ok", "rows": 5, "last_date": "2026-10-31", "error": None},
+        "massive_stock_day": {"status": "stale", "rows": 9, "last_date": "2026-10-30",
+                              "error": "massive_stock_day lag; Yahoo fallback used"},
+        "polygon_gex_accrual": {"status": "ok", "rows": 3, "last_date": "2026-10-31", "error": None},
+        "polygon_news": {"status": "error", "rows": 0, "last_date": None,
+                         "error": "HTTPSConnectionPool(host='api.polygon.io') read timed out"},
+        "yahoo": {"status": "error", "rows": 0, "last_date": None,
+                  "error": "yfinance: https://query1.finance.yahoo.com/v8/chart 429"},
+    }
+    monkeypatch.setattr(build_site.store, "read_status", lambda: {"sources": sources})
+    rows = build_site.health_rows()
+    assert [r["name"] for r in rows] == sorted(sources)
+
+    vm = _base_vm()
+    vm["health"] = rows
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    assert _PROVIDER_RE.findall(panel) == []
+    for en, zh in (("China market data", "中国市场数据"), ("US daily prices", "美股日线价格"),
+                   ("Options exposure accrual", "期权敞口累积"), ("News feed", "新闻流"),
+                   ("US quotes", "美股行情")):
+        assert en in panel and zh in panel
+    assert "US daily prices lag; provider fallback used" in panel
+
+
 def test_us_track_record_filter_bar_stays_in_document_flow():
     """The dense US ledger filters must scroll away instead of covering rows."""
     vm = _base_vm()

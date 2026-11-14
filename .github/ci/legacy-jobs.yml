@@ -15324,6 +15324,7 @@ jobs:
       - "lib/global_regime_fragment.py"
       - "templates/theme.css"
       - "lib/help_directory.py"
+      - "lib/source_health_labels.py"
       - "lib/hk_calendar.py"
       - "lib/macro_suite_disclosure.py"
       - "lib/macro_suite_labels.py"
@@ -20594,6 +20595,7 @@ jobs:
       - lib/forex_link.py
       - lib/global_regime_fragment.py
       - lib/help_directory.py
+      - lib/source_health_labels.py
       - lib/hk_calendar.py
       - lib/intl_compare_mount.py
       - lib/intl_compare_view.py
@@ -25673,6 +25675,7 @@ jobs:
       - "lib/forex_link.py"
       - "lib/global_regime_fragment.py"
       - "lib/help_directory.py"
+      - "lib/source_health_labels.py"
       - "lib/hk_calendar.py"
       - "lib/illus.py"
       - "lib/macro_suite_disclosure.py"
@@ -37312,6 +37315,7 @@ jobs:
       - "lib/forex_link.py"
       - "lib/global_regime_fragment.py"
       - "lib/help_directory.py"
+      - "lib/source_health_labels.py"
       - "lib/hk_calendar.py"
       - "lib/intl_compare_mount.py"
       - "lib/intl_compare_view.py"
@@ -48457,6 +48461,12 @@ jobs:
       - "tests/test_mag7_tape_strip.py"
       - "tests/test_theme_tape.py"
       - "tests/test_us_board_priority_ui.py"
+      # Health-panel source labels: the label contract lives in lib/ (covered by
+      # lib/** below) and the suite also reads the page copy of these templates.
+      - "tests/test_source_health_labels.py"
+      - "templates/canada_stock.html.j2"
+      - "templates/intl_stock.html.j2"
+      - "templates/stock.html.j2"
       # EW-P4.T1 descriptive observation UI: the suite itself runs in its own
       # job (ew-p4-descriptive-ui, EW-P5 FU2). The band templates, the frozen
       # lib contract and the shared fixtures stay here because dashboard.html.j2
@@ -48685,7 +48695,8 @@ jobs:
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_vsb_surface.py
-          tests/test_macro_mtf_sort_key.py -q
+          tests/test_macro_mtf_sort_key.py
+          tests/test_source_health_labels.py -q
 
   ew-p4-descriptive-ui:
     # EW-P4 descriptive observation UI (Grey Deer early-warning). Split out of
@@ -53099,6 +53110,7 @@ jobs:
       - "lib/global_regime_fragment.py"
       - "lib/growth_registry.py"
       - "lib/help_directory.py"
+      - "lib/source_health_labels.py"
       - "lib/hk_calendar.py"
       - "lib/intl_compare_mount.py"
       - "lib/intl_compare_view.py"
