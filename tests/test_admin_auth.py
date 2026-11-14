@@ -70,6 +70,36 @@ def test_session_expiry():
         _restore(old)
 
 
+def test_session_rolling_refresh_and_expiration():
+    from unittest.mock import patch
+    old = _set_env(ADMIN_SESSION_SECRET="rolling-secret", ADMIN_SESSION_TTL_HOURS="720")
+    try:
+        with patch("admin.auth.time.time", return_value=1_800_000_000):
+            original = auth.mint_session()
+            assert auth.refreshed_session(original) == original
+        with patch("admin.auth.time.time", return_value=1_800_000_000 + 86401):
+            renewed = auth.refreshed_session(original)
+            assert renewed is not None and renewed != original
+            assert auth.valid_session(renewed)
+        with patch("admin.auth.time.time", return_value=1_800_000_000 + 720 * 3600 + 1):
+            assert auth.refreshed_session(original) is None
+        with patch("admin.auth.time.time", return_value=1_800_000_000 + 86401):
+            assert auth.refreshed_session(original + "tamper") is None
+        _set_env(ADMIN_SESSION_SECRET="rotated-secret")
+        with patch("admin.auth.time.time", return_value=1_800_000_000 + 86401):
+            assert auth.refreshed_session(original) is None
+    finally:
+        _restore(old)
+
+
+def test_default_session_ttl_is_rolling_30_days():
+    old = _set_env(ADMIN_SESSION_TTL_HOURS=None)
+    try:
+        assert settings.session_ttl_hours() == 720
+    finally:
+        _restore(old)
+
+
 def test_password_and_lockout():
     old = _set_env(ADMIN_PASSWORD="hunter2")
     _reset_throttle()
@@ -507,6 +537,17 @@ def _response_cookies(response):
     return morsels
 
 
+def _assert_renewed_csrf(morsel, expected, lifetime):
+    assert morsel.key == auth.CSRF_COOKIE
+    assert morsel.value == expected
+    assert morsel["domain"] == ""
+    assert morsel["path"] == "/"
+    assert morsel["samesite"] == "Strict"
+    assert morsel["secure"] is True
+    assert morsel["httponly"] == ""
+    assert morsel["max-age"] == str(lifetime)
+
+
 def test_session_check_promotes_only_a_valid_deployed_session_to_parent_domain():
     old = _set_env(ADMIN_DEPLOYED="1", ADMIN_PASSWORD="s3cret",
                    ADMIN_SESSION_SECRET="it-secret", ADMIN_SESSION_TTL_HOURS="1")
@@ -522,16 +563,19 @@ def test_session_check_promotes_only_a_valid_deployed_session_to_parent_domain()
         assert _response_cookies(invalid) == []
 
         session = auth.mint_session()
+        csrf = auth.new_csrf()
         promoted_response = _req(
-            port, "/api/session", cookies={auth.SESSION_COOKIE: session}
+            port, "/api/session", cookies={auth.SESSION_COOKIE: session,
+                                           auth.CSRF_COOKIE: csrf}
         )
         assert json.loads(promoted_response.read())["authenticated"] is True
         promoted = _response_cookies(promoted_response)
         assert [(m.key, m["domain"]) for m in promoted] == [
             (auth.SESSION_COOKIE, "mastermind-x.com"),
             (auth.SESSION_COOKIE, ""),
+            (auth.CSRF_COOKIE, ""),
         ]
-        shared, legacy = promoted
+        shared, legacy, renewed_csrf = promoted
         if shared.value != session:
             raise AssertionError("session promotion changed the signed value")
         assert shared["path"] == "/"
@@ -545,7 +589,143 @@ def test_session_check_promotes_only_a_valid_deployed_session_to_parent_domain()
         assert legacy["secure"] is True
         assert legacy["httponly"] is True
         assert legacy["max-age"] == "0"
-        assert all(m.key != auth.CSRF_COOKIE for m in promoted)
+        _assert_renewed_csrf(renewed_csrf, csrf, 3600)
+    finally:
+        httpd.shutdown(); httpd.server_close()
+        _restore(old)
+
+
+def test_session_endpoint_renews_old_signed_token_without_changing_csrf():
+    from unittest.mock import patch
+    old = _set_env(ADMIN_DEPLOYED="1", ADMIN_PASSWORD="s3cret",
+                   ADMIN_SESSION_SECRET="renewal-secret", ADMIN_SESSION_TTL_HOURS="720")
+    httpd, port = _server()
+    try:
+        now = 1_800_000_000
+        with patch("admin.auth.time.time", return_value=now):
+            previous = auth.mint_session()
+            csrf = auth.new_csrf()
+        with patch("admin.auth.time.time", return_value=now + 86401):
+            response = _req(port, "/api/session", cookies={auth.SESSION_COOKIE: previous,
+                                                          auth.CSRF_COOKIE: csrf})
+            assert json.loads(response.read())["authenticated"] is True
+            cookies = _response_cookies(response)
+            assert len(cookies) == 3
+            shared, old_host, renewed_csrf = cookies
+            assert shared.value != previous
+            assert shared["domain"] == "mastermind-x.com"
+            assert shared["max-age"] == str(720 * 3600)
+            assert old_host.value == ""
+            assert auth.valid_session(shared.value)
+            _assert_renewed_csrf(renewed_csrf, csrf, 720 * 3600)
+    finally:
+        httpd.shutdown(); httpd.server_close()
+        _restore(old)
+
+
+def test_rolling_session_keeps_csrf_writes_past_original_cookie_expiry():
+    from unittest.mock import patch
+
+    old = _set_env(ADMIN_DEPLOYED="1", ADMIN_PASSWORD="s3cret",
+                   ADMIN_SESSION_SECRET="rolling-csrf-secret", ADMIN_SESSION_TTL_HOURS="720")
+    httpd, port = _server()
+    try:
+        # The last case models an existing seven-day cookie moving to thirty days.
+        for original_hours, current_hours in [(1, 1), (2, 2), (24, 24),
+                                               (168, 168), (720, 720), (168, 720)]:
+            start = 1_800_000_000
+            os.environ["ADMIN_SESSION_TTL_HOURS"] = str(original_hours)
+            with patch("admin.auth.time.time", return_value=start):
+                jar = {auth.SESSION_COOKIE: auth.mint_session(),
+                       auth.CSRF_COOKIE: auth.new_csrf()}
+            original_csrf = jar[auth.CSRF_COOKIE]
+            original_ttl = original_hours * 3600
+            expires = {key: start + original_ttl for key in jar}
+            os.environ["ADMIN_SESSION_TTL_HOURS"] = str(current_hours)
+            lifetime = current_hours * 3600
+            step = min(86400, original_ttl // 2)
+            for elapsed in range(step, original_ttl + step + 1, step):
+                now = start + elapsed
+                jar = {key: value for key, value in jar.items() if expires[key] > now}
+                with patch("admin.auth.time.time", return_value=now):
+                    response = _req(port, "/api/session", cookies=jar)
+                    assert json.loads(response.read())["authenticated"] is True
+                    renewed = _response_cookies(response)
+                    for cookie in renewed:
+                        # A zero-age host-session deletion does not delete the
+                        # distinct promoted parent-domain cookie.
+                        if int(cookie["max-age"]) > 0:
+                            jar[cookie.key] = cookie.value
+                            expires[cookie.key] = now + int(cookie["max-age"])
+                    csrf = next(m for m in renewed if m.key == auth.CSRF_COOKIE)
+                    _assert_renewed_csrf(csrf, original_csrf, lifetime)
+            assert now > start + original_ttl
+            with patch("admin.auth.time.time", return_value=now):
+                assert _req(port, "/api/auth-check", cookies=jar).status == 200
+                for header, expected_status in [(None, 403), ("wrong", 403),
+                                                 (jar[auth.CSRF_COOKIE], 400)]:
+                    headers = {} if header is None else {auth.CSRF_HEADER: header}
+                    try:
+                        _req(port, "/api/flags/toggle", "POST",
+                             {"path": "not.real", "value": True}, jar, headers)
+                        raise AssertionError("unmanaged write must not execute")
+                    except urllib.error.HTTPError as exc:
+                        assert exc.code == expected_status
+    finally:
+        httpd.shutdown(); httpd.server_close()
+        _restore(old)
+
+
+def test_valid_session_recovers_missing_or_malformed_csrf_safely():
+    import re
+
+    old = _set_env(ADMIN_DEPLOYED="1", ADMIN_PASSWORD="s3cret",
+                   ADMIN_SESSION_SECRET="csrf-recovery-secret", ADMIN_SESSION_TTL_HOURS="720")
+    httpd, port = _server()
+    try:
+        token = auth.mint_session()
+        for value in [None, "short", "a" * 33, "%0D%0AX-Injection%3Ayes",
+                      '"bad\\015\\012Injected\\072yes"']:
+            jar = {auth.SESSION_COOKIE: token}
+            if value is not None:
+                jar[auth.CSRF_COOKIE] = value
+            response = _req(port, "/api/session", cookies=jar)
+            assert json.loads(response.read())["authenticated"] is True
+            cookies = _response_cookies(response)
+            assert len(cookies) == 3
+            csrf = next(m for m in cookies if m.key == auth.CSRF_COOKIE)
+            assert re.fullmatch(r"[A-Za-z0-9_-]{32}", csrf.value)
+            assert csrf.value != value
+            _assert_renewed_csrf(csrf, csrf.value, 720 * 3600)
+            assert response.headers.get("Injected") is None
+            assert response.headers.get("X-Injection") is None
+    finally:
+        httpd.shutdown(); httpd.server_close()
+        _restore(old)
+
+
+def test_invalid_signed_sessions_never_renew_csrf():
+    from unittest.mock import patch
+
+    old = _set_env(ADMIN_DEPLOYED="1", ADMIN_PASSWORD="s3cret",
+                   ADMIN_SESSION_SECRET="csrf-invalid-secret", ADMIN_SESSION_TTL_HOURS="1")
+    httpd, port = _server()
+    try:
+        now = 1_800_000_000
+        with patch("admin.auth.time.time", return_value=now):
+            token = auth.mint_session()
+        for value, when, secret in [
+            (token, now + 3600, "csrf-invalid-secret"),
+            (token + "tampered", now + 1, "csrf-invalid-secret"),
+            (token, now + 1, "rotated-secret"),
+        ]:
+            os.environ["ADMIN_SESSION_SECRET"] = secret
+            with patch("admin.auth.time.time", return_value=when):
+                response = _req(port, "/api/session", cookies={
+                    auth.SESSION_COOKIE: value, auth.CSRF_COOKIE: auth.new_csrf(),
+                })
+                assert json.loads(response.read())["authenticated"] is False
+                assert _response_cookies(response) == []
     finally:
         httpd.shutdown(); httpd.server_close()
         _restore(old)

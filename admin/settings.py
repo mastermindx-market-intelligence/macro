@@ -57,9 +57,9 @@ def session_secret() -> bytes:
 
 def session_ttl_hours() -> int:
     try:
-        return max(1, min(720, int(_env("ADMIN_SESSION_TTL_HOURS") or "168")))
+        return max(1, min(720, int(_env("ADMIN_SESSION_TTL_HOURS") or "720")))
     except ValueError:
-        return 168
+        return 720
 
 
 def public_url() -> str:

@@ -763,7 +763,7 @@ class Handler(BaseHTTPRequestHandler):
         if self._secure_cookie():
             attrs += "; Secure"
         age = 0 if clear else settings.session_ttl_hours() * 3600
-        sv, cv = ("" if clear else session), ("" if clear else csrf)
+        sv = "" if clear else session
         cookies = [
             f"{auth.SESSION_COOKIE}={sv}; HttpOnly{attrs}; Max-Age={age}",
         ]
@@ -772,18 +772,32 @@ class Handler(BaseHTTPRequestHandler):
                 f"{auth.SESSION_COOKIE}=; HttpOnly; Domain=mastermind-x.com"
                 f"{attrs}; Max-Age=0"
             )
-        cookies.append(
-            f"{auth.CSRF_COOKIE}={cv}{attrs}; Max-Age={age}"  # readable by JS (double-submit)
-        )
+        cookies.append(self._csrf_cookie(csrf, clear=clear))
         return cookies
+
+    def _csrf_cookie(self, csrf: str, clear: bool = False) -> str:
+        attrs = "; Path=/; SameSite=Strict"
+        if self._secure_cookie():
+            attrs += "; Secure"
+        age = 0 if clear else settings.session_ttl_hours() * 3600
+        value = "" if clear else csrf
+        # Host-only and readable by JS for the existing double-submit check.
+        return f"{auth.CSRF_COOKIE}={value}{attrs}; Max-Age={age}"
 
     def _promote_session_cookie(self, session: str) -> list[str]:
         attrs = "; Path=/; SameSite=Strict; Secure"
         age = settings.session_ttl_hours() * 3600
+        csrf = self._cookie_val(auth.CSRF_COOKIE)
+        # Never reflect arbitrary inbound cookie text into a response header.
+        # Reuse canonical tokens across tabs; recover an expired/malformed cookie
+        # only after the caller has established a valid signed session.
+        if not csrf or re.fullmatch(r"[A-Za-z0-9_-]{32}", csrf) is None:
+            csrf = auth.new_csrf()
         return [
             f"{auth.SESSION_COOKIE}={session}; HttpOnly; Domain=mastermind-x.com"
             f"{attrs}; Max-Age={age}",
             f"{auth.SESSION_COOKIE}=; HttpOnly{attrs}; Max-Age=0",
+            self._csrf_cookie(csrf),
         ]
 
     def _host_ok(self) -> bool:
@@ -872,12 +886,11 @@ class Handler(BaseHTTPRequestHandler):
                                    "deployed": settings.deployed()})
             if path == "/api/session":
                 auth_enabled = settings.auth_enabled()
-                authenticated = (not auth_enabled) or self._authed()
+                session = auth.refreshed_session(self._cookie_val(auth.SESSION_COOKIE)) if auth_enabled else None
+                authenticated = (not auth_enabled) or session is not None
                 cookies = None
                 if settings.deployed() and auth_enabled and authenticated:
-                    cookies = self._promote_session_cookie(
-                        self._cookie_val(auth.SESSION_COOKIE) or ""
-                    )
+                    cookies = self._promote_session_cookie(session)
                 return self._json({
                     "auth_enabled": auth_enabled,
                     "authenticated": authenticated,

@@ -53,6 +53,9 @@ remaining remediation work and reproducible read-only browser checks.
   `admin.` is grey-cloud / direct-to-origin, not behind Cloudflare).
 - Password → **HMAC-signed, stateless session cookie** (HttpOnly, Secure,
   SameSite=Strict). Every `/api/*` route except login/session/health requires it.
+  Authenticated /api/session checks renew valid signed sessions after 24 hours;
+  the visible browser checks every 30 minutes and on return from a long pause.
+  Sessions expire after 30 days without renewal, and logout still clears them.
 - Writes additionally require a **double-submit CSRF token** + same-origin Origin +
   JSON Content-Type.
 - **Per-client** login lockout (keyed on the real IP via `X-Forwarded-For`), so an
@@ -67,7 +70,7 @@ ADMIN_DEPLOYED=1                 # forced by `--deployed`; enables auth + proxy 
 ADMIN_PASSWORD=...               # the login password (no password → refuses to start)
 ADMIN_SESSION_SECRET=...         # persist so signed sessions survive a restart
 ADMIN_ALLOWED_HOSTS=admin.mastermind-x.com   # DNS-rebinding allowlist (default)
-ADMIN_SESSION_TTL_HOURS=168      # optional (default 7 days)
+ADMIN_SESSION_TTL_HOURS=720      # optional (default rolling 30 days; 1..720)
 
 # --- integrations (all optional; panels degrade with setup steps) ---
 SUPABASE_ACCESS_TOKEN=sbp_...    # Supabase PAT → Users panel (Management API SQL)
