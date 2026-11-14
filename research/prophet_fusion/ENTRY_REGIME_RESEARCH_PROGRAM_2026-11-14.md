@@ -35,7 +35,8 @@ missing source commit was repaired by fetching that exact object. The second ret
 unqualified; same-owner status proved the clean correct workspace and reconciled it.
 Fabric adapter was unavailable; Executive reader returned backend_unavailable. Direct
 principal work is NO_ELIGIBLE_PRE_EFFECT_WORKER / PRINCIPAL_JUDGMENT, not a fabricated
-worker start. PLAN_NOT_ORG_LINKED until an authorized Agent OS linkage is saved.
+worker start. Linked by additive artifact pointers in the existing WS:PROPHET-CONDITIONAL-FUSION;
+its owner, accepted waves, C1 adoption and release holds remain unchanged.
 
 Do not mutate #10277's W1 carrier, #10363's B4 carrier or its original P5 UNKNOWN,
 #8548's held C3 optimization, existing W3 paired-ledger bytes, or the November 19 W2
@@ -162,3 +163,51 @@ performance. The full board needs original context/latch receipts and its own
 qualified prospective comparison. The exact 12 arms and 11 primary contrasts,
 fixed dates/universe/costs, and non-promotion status are frozen in
 `entry_regime_v1_spec.json`. No candidate outcome has been read or calculated.
+
+## P1/P3 measured readiness milestone (outcome-blind)
+
+The exact-source, native-registry audit decoded only registered input/availability
+and identity columns from five candidate month files; no grade/outcome columns,
+W3 store or W2 frozen outcome was decoded. Evidence lives under
+`entry_regime_2026_11_14/readiness.{json,md}`. At source 6bbc4b0f:
+206,840 rows represent 64 economic-session dates across five calendar months,
+2026-07-31 through 2026-11-12. Three board definitions are retained separately.
+All four audited native macro regime axes fail the incumbent estimability meter
+(`insufficient_contrast`); the thinnest state has one or two distinct months,
+versus the unchanged twelve-month-per-state floor. This says the requested
+conditional inference is unsupported, not that the incumbent C1 ranker is disabled.
+
+Native-status and date-label diagnostics find future-dated, stale and missing
+context labels. These are not proof of historical leakage or a live outage:
+economic session, source as-of and actual publication can be different clocks.
+Original receipts must adjudicate these discrepancies before any predictive join.
+The diagnostic deliberately grants no feature admission or intraday knowability.
+Raw family coverage and status/date-checked coverage are both retained; full-family
+coverage is not a substitute for the existing selected-feature gates.
+
+Qualification tests: the technical-core/report suite passes 39 synthetic and native
+prefix tests; the new outcome-blind readiness consumer passes 15 tests (54 owned tests total). Synthetic
+fixtures are not financial performance. The registered real-price pilot is running
+under its immutable input/spec/code binding; no result has yet been claimed.
+
+Native chronological-fold readiness also reports zero qualified folds for the
+21- and 63-session horizons on these input dates, with three native refusals per
+horizon. No training/test/embargo floor was relaxed. The independent conceptual
+synthesis and six dependency-aware mechanism lanes are recorded in
+`ENTRY_REGIME_FIRST_PRINCIPLES_2026-11-14.md` with primary-source citations.
+
+Expanded regression qualification additionally ran the old fusion family/arena
+suites: 167 passed, 5 skipped, 2 existing real-data tests could not run because this
+sparse worktree lacks `data/us_board_ledger/retro_grades.parquet`. The missing store
+was not fabricated or replaced; this is not a claim of a green full legacy suite.
+The new 54-test code-gated consumer is hermetic and passes in full. Agent OS
+validation found zero errors (206 existing advisory warnings). The earlier native
+contract-delta preflight found zero introduced and zero inherited findings; the
+final source head still requires its exact-head hosted checks before release.
+
+Related Linear projection: MAS-120 (selective regime estimability) under MAS-116.
+The current commission is separately authorized by the Chairman; this work does
+not claim the original Cell-D species/analogue mission complete or acquire its
+unimplemented routing scope. Any projection comment points to this source; existing
+Linear status and assignment remain unchanged. The prior per-family reliability
+kill is expressly retained in the first-principles memo, not silently reopened.

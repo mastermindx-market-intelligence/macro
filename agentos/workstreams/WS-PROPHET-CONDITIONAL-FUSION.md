@@ -109,6 +109,9 @@ do_not_redo:
   - "Do not build a rival fingerprint/epoch/personality stack — consume
     stock_identity.* interfaces (#5583) and adopt its Method Law channels A/B/C."
 artifacts:
+  - research/prophet_fusion/ENTRY_REGIME_RESEARCH_PROGRAM_2026-11-14.md
+  - research/prophet_fusion/ENTRY_REGIME_FIRST_PRINCIPLES_2026-11-14.md
+  - research/prophet_fusion/entry_regime_2026_11_14/readiness.md
   - research/PROPHET_CONDITIONAL_FUSION_MASTERPLAN_BY_FABLE.md
   - research/prophet_fusion/W3_SHADOW_RACE_RECUT.md
   - research/prophet_fusion/W3_RACE_PREREG.md
