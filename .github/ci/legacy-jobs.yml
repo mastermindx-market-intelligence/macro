@@ -51228,6 +51228,12 @@ jobs:
     timeout-minutes: 10
     paths:
       - "tests/test_c19_wp29_hk_southbound_two_period.py"
+      - "tests/test_hk_southbound_missing_evidence.py"
+      - "engine/hk_stock_signals.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/config.py"
+      - "config.yml"
       - "engine/hk_southbound_stocks.py"
       - "collectors/hk_southbound_holdings.py"
     runs-on: ubuntu-latest
@@ -51239,7 +51245,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: c19-wp29-hk-southbound-two-period
-        run: python -m pytest tests/test_c19_wp29_hk_southbound_two_period.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_c19_wp29_hk_southbound_two_period.py tests/test_hk_southbound_missing_evidence.py -q -p no:cacheprovider
   c19-wp15-operating-driver-pins:
     if: ${{ false }}
     gate: code

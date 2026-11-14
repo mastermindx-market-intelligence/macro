@@ -243,7 +243,7 @@ def _zscore(s) -> pd.Series:
     s = pd.to_numeric(s, errors="coerce")
     mu, sd = s.mean(), s.std(ddof=0)
     if not sd or np.isnan(sd):
-        return pd.Series(0.0, index=s.index)
+        return pd.Series(0.0, index=s.index).where(s.notna())
     return ((s - mu) / sd).clip(-3.0, 3.0)
 
 
