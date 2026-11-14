@@ -83,6 +83,14 @@ This section governs when a session may STOP; §Shared workspace + completion ab
 - **The delivery ladder is nine distinct facts and none implies the next**: `ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF -> ACCEPTANCE`. An acknowledgement is not a queue entry; a queue entry is not a started worker; a returned packet is not a green check; a merge is not production proof; production proof is not acceptance by the commissioning authority. Report the rung the evidence reaches and no higher — a checkpoint, a status note, or a continuation record is a description of work, never the outcome it describes.
 - **Every substantial session classifies its own end state** on one line, `SESSION END: <STATE>`, with STATE one of `PROVEN_OUTCOME` | `EXACT_HUMAN_GATE` | `EFFECT_UNKNOWN` | `PLATFORM_FAILURE` | `ALL_SCOPED_LANES_BLOCKED` | `DURABLE_EXECUTION_RUNNING` | `MORE_WORK_EXISTS`. The set is closed on purpose. **`MORE_WORK_EXISTS` and `ALL_SCOPED_LANES_BLOCKED` are never valid stopping states** and the Stop guard refuses either self-declaration; `ALL_SCOPED_LANES_BLOCKED` is retained only as an auditable mid-task diagnostic that forces blocker demolition/routing. The ordinary any-code ladder remains the unsatisfiable-gate escape. The converse is equally binding: reaching the actual outcome or an exact external terminal boundary early is a complete session however short or expensive it was — **never pad a session to look substantial, and never stop while authorized work remains**. Context compaction, rotation, or a `/clear` is a harness event, not an outcome; the block ledger deliberately survives `resume`/`compact`.
 
+**CI holds release, not independent authorized work.** A pending/red or held PR
+remains unshipped. Use an existing verified observer when available, without
+inventing watcher registration or background execution. Continue already-authorized, path/dependency-disjoint
+foreground work under its existing source custody rather than idling or generating
+repeated hold notes. A Stop hook's `decision: block` still rejects that Stop/ship
+attempt; this clarification creates no new Stop-hook exit or release permission.
+Do not merge, arm, rename, duplicate CI, or mutate a held PR to escape its hold.
+
 ## Navigation source-of-truth (STANDING)
 
 The site has exactly two global header families. Authenticated/product pages use

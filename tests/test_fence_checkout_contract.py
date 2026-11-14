@@ -291,6 +291,16 @@ def test_hold_wrapper_regressions_execute_inside_the_fast_fence() -> None:
     ``test_every_hold_suite_regression_is_called_inside_the_fast_fence`` enforces both.
     """
     hold = _load_hold_suite_module()
+    # Execute all six #917 cases through their canonical functions and parameter sets.
+    for branch, kind in hold.HOLD_PROGRESS_BRANCH_CASES:
+        hold.test_pending_advice_preserves_hold_without_a_foreground_stop(branch, kind)
+    for status in hold.HOLD_PROGRESS_STATUSES:
+        with pytest.MonkeyPatch.context() as monkeypatch:
+            hold.test_stop_entrypoint_emits_nonterminal_hold_and_never_relays(
+                monkeypatch, status
+            )
+    for path in hold.HOLD_PROGRESS_ENTRYPOINTS:
+        hold.test_native_entrypoints_keep_ci_wait_action_scoped(path)
     hold.test_exact_sol_hold_protocol_is_recognized()
     for mutation in hold.UNSAFE_HOLD_MUTATIONS:
         hold.test_incomplete_or_unsafe_hold_fails_closed(mutation)

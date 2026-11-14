@@ -160,6 +160,14 @@ whose effect cannot be observed — a timed-out post, an ambiguous dispatch, a d
 tool call — is reconciled on the same carrier that performed it. A blind retry or a
 failover to another provider is how one irreversible act becomes two.
 
+**CI holds release, not independent authorized work.** A pending/red or held PR
+remains unshipped. Use an existing verified observer when available, without
+inventing watcher registration or background execution. Continue already-authorized, path/dependency-disjoint
+foreground work under its existing source custody rather than idling or generating
+repeated hold notes. A Stop hook's `decision: block` still rejects that Stop/ship
+attempt; this clarification creates no new Stop-hook exit or release permission.
+Do not merge, arm, rename, duplicate CI, or mutate a held PR to escape its hold.
+
 ### The delivery ladder
 
 `ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF ->
