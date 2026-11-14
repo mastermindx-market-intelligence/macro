@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T19:12:29.535654+00:00",
-  "count": 3379,
+  "generated_at": "2026-11-14T22:27:00.541985+00:00",
+  "count": 3381,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -157,6 +157,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ztyrnp76ayw-537bdc",
+      "title": "GS Miller Global Reflections 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T18:07:12Z",
+      "summary_points": [
+        "AI Theme Rebalancing: Power theme (GSENEPOW) up, barbell approach (selective AI + defensive FCF) amid regime shift risk; memory stocks double if fundamental confidence returns.",
+        "Cash Flow Focus: Market rewards high FCF in higher rates; prefer High vs Low FCF (GSPUFCPP) and Lending Sensitive basket (GSXULEND) for capital needs.",
+        "Europe's Defensive AI Hedge: Low AI beta (SXXP 2y daily beta to GSPUARTI <0.05), EU High & Stable Margins (GSXEMARG) basket offers low/no AI correlation + defensive skew.",
+        "SPXAI Technical Outperformance: SPXAI (116.71) outperforms SPX (112.02); market at left tail of 2027 Memory outcomes—significant upside if trade confidence resumes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
@@ -418,6 +438,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rvvt2b5eslj-48de8e",
+      "title": "BofA US Watch October PCE inflation tracking: Tracking 0.29% m:m for core PCE after PPI",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:36:05Z",
+      "summary_points": [
+        "PCE Inflation & Fed Policy: Core PCE revised down to 0.29% m/m (from 0.32%) due to weaker PPI components - PCE Inflation & Fed Policy: Headline PCE at 0.30% m/m (down from 0.34%), signaling cooling inflation trend - PCE Inflation & Fed Policy: Fed expected to raise rates by 25bp per meeting with terminal rate at 4.5%-4.75%"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },

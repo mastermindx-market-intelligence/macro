@@ -6310,6 +6310,15 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
+      - "engine/hk_southbound_stocks.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -24794,6 +24803,15 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
+      - "engine/hk_southbound_stocks.py"
       - "engine/us_board_snapshots.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -28046,6 +28064,7 @@ jobs:
       - "engine/marketing/events.py"
       - "engine/marketing/exemplar_store.py"
       - "engine/marketing/expression_dial.py"
+      - "engine/marketing/fact_evidence.py"
       - "engine/marketing/garbage_gate.py"
       - "engine/marketing/hot_tape_llm.py"
       - "engine/marketing/house_picks.py"
@@ -30322,7 +30341,7 @@ jobs:
         # any effect, authorized CdpDriver subclass, base stubs still refusing.
         # Same lane, same deps (pure stdlib + pytest, Playwright lazily imported
         # and never touched on the refusal paths), so it runs with its sibling.
-        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py tools/xguerrilla/tests/test_runtime_adapter.py -q
+        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_fact_evidence.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py tools/xguerrilla/tests/test_runtime_adapter.py -q
 
   xguerrilla-admission:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
@@ -35919,6 +35938,14 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
       - "engine/us_board_snapshots.py"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
@@ -36534,6 +36561,22 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
+      - "engine/hk_southbound_stocks.py"
+      - "templates/china.html.j2"
+      - "templates/_track_record_dlg.html.j2"
+      - "templates/_lens.html.j2"
+      - "templates/_cn_prophet_peer_context.html.j2"
+      - "templates/sector_central_china.html.j2"
+      - "tests/test_china_prophet_shadow.py"
+      - "tests/test_cn_board_unified_grid.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -37728,6 +37771,8 @@ jobs:
       - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
         run: python -m pytest tests/test_cn_live_pack_archive.py -q
 
+      - name: A-share Prophet peer participation and bilingual disclosure
+        run: python -m pytest tests/test_china_prophet_shadow.py tests/test_cn_board_unified_grid.py -k peer -q
       # ITP-ES wave 1: deterministic page builder contract.
       - name: expectation surface page builder contract (ITP-ES wave 1)
         run: python -m pytest tests/test_build_expectation_surface.py -q
@@ -38060,6 +38105,14 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/china_prophet_peer_context.py"
+      - "engine/flow_observatory/__init__.py"
+      - "engine/flow_observatory/changes.py"
+      - "engine/flow_observatory/contract.py"
+      - "engine/flow_observatory/groups.py"
+      - "engine/flow_observatory/history.py"
+      - "engine/flow_observatory/quality.py"
+      - "engine/flow_velocity.py"
       - "engine/us_board_snapshots.py"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
@@ -46265,6 +46318,7 @@ jobs:
       - "engine/marketing/events.py"
       - "engine/marketing/exemplar_store.py"
       - "engine/marketing/expression_dial.py"
+      - "engine/marketing/fact_evidence.py"
       - "engine/marketing/garbage_gate.py"
       - "engine/marketing/hot_tape_llm.py"
       - "engine/marketing/house_picks.py"
@@ -46995,6 +47049,7 @@ jobs:
       - "engine/marketing/events.py"
       - "engine/marketing/exemplar_store.py"
       - "engine/marketing/expression_dial.py"
+      - "engine/marketing/fact_evidence.py"
       - "engine/marketing/garbage_gate.py"
       - "engine/marketing/hot_tape_llm.py"
       - "engine/marketing/house_picks.py"
@@ -52708,6 +52763,7 @@ jobs:
       - "engine/marketing/events.py"
       - "engine/marketing/exemplar_store.py"
       - "engine/marketing/expression_dial.py"
+      - "engine/marketing/fact_evidence.py"
       - "engine/marketing/garbage_gate.py"
       - "engine/marketing/health_monitor.py"
       - "engine/marketing/hot_tape.py"
