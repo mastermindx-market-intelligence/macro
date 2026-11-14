@@ -500,6 +500,180 @@ def test_w18d3_header_wires_the_vol_chip():
     print("ok test_w18d3_header_wires_the_vol_chip")
 
 
+# Missing-outcome regression coverage: prices are synthetic, no historical regrade.
+def _maturity_oracle(close, cells, h, *, alpha=10, min_n=20,
+                     floor=.43, ceil=.58, marginal=None):
+    """Independent positional oracle; no shift or vectorized label mask."""
+    observations = [(i, float(close.iloc[i + h] > close.iloc[i]))
+                    for i in range(max(0, len(close) - h))
+                    if pd.notna(close.iloc[i]) and pd.notna(close.iloc[i + h])
+                    and pd.notna(cells.iloc[i])]
+    if not observations:
+        return .5, 0, "n/a"
+    now = cells.dropna().iloc[-1]
+    base = (sum(y for _, y in observations) / len(observations)
+            if marginal is None else marginal)
+    outcomes = [y for i, y in observations if cells.iloc[i] == now]
+    n = len(outcomes)
+    p = (sum(outcomes) + alpha * base) / (n + alpha) if n else base
+    if n < min_n:
+        p = base
+    return float(min(max(p, floor), ceil)), n, str(now)
+
+
+def _maturity_case(prices, h, cells=None, **kw):
+    close = pd.Series(prices, dtype=float)
+    states = pd.Series(cells if cells is not None else ["A"] * len(close),
+                       dtype=object)
+    actual = forward_dist.cond_up_prob(close, states, h, **kw)
+    expected = _maturity_oracle(close, states, h, **kw)
+    assert actual[1:] == expected[1:]
+    assert actual[0] == pytest.approx(expected[0], abs=1e-14)
+    return actual
+
+
+def test_maturity_tail_is_unknown_not_loss():
+    assert _maturity_case([100, 101, 102, 103, 104], 2, min_n=1,
+                          floor=0., ceil=1.) == (1., 3, "A")
+
+
+def test_maturity_no_endpoint_retains_neutral_no_evidence():
+    for h in (3, 5, 100):
+        for marginal in (None, .9):
+            assert _maturity_case([100, 101, 102], h, marginal=marginal) == (.5, 0, "n/a")
+
+
+def test_maturity_missing_source_or_endpoint_excluded():
+    for prices in ([np.nan, 101, 102, 103, 104],
+                   [100, 101, np.nan, 103, 104],
+                   [100, 101, 102, 103, np.nan],
+                   [np.nan] * 5):
+        _maturity_case(prices, 1, min_n=1, floor=0., ceil=1.)
+
+
+def test_maturity_supplied_marginal_does_not_admit_unknowns():
+    p, n, state = _maturity_case([100, 101, 102, 103, 104], 2,
+                                min_n=1, marginal=.5, floor=0., ceil=1.)
+    assert p == pytest.approx(8 / 13) and (n, state) == (3, "A")
+
+
+def test_maturity_current_cell_need_not_have_mature_labels():
+    result = _maturity_case([100, 102, 101, 104, 100, 103], 2,
+                            cells=["A", "A", "A", "A", "B", "B"],
+                            min_n=1, floor=0., ceil=1.)
+    assert result == (.5, 0, "B")
+
+
+def test_maturity_latest_known_state_survives_missing_current_price():
+    result = _maturity_case([100, 102, 101, 104, 100, np.nan], 2,
+                            cells=["A", "A", "A", "A", "B", "B"],
+                            min_n=1, floor=0., ceil=1.)
+    assert result == (2 / 3, 0, "B")
+
+
+def test_maturity_latest_known_state_survives_null_state_tail():
+    result = _maturity_case([100, 102, 101, 104, 100, 103], 2,
+                            cells=["A", "A", "A", "B", "B", None],
+                            min_n=1, floor=0., ceil=1., alpha=0)
+    assert result == (0., 1, "B")
+
+
+def test_maturity_missing_states_and_empty_inputs_stay_neutral():
+    assert _maturity_case([100, 101, 102], 1, cells=[None] * 3) == (.5, 0, "n/a")
+    assert _maturity_case([], 1) == (.5, 0, "n/a")
+
+
+def test_maturity_caps_do_not_hide_wrong_population():
+    for prices, expected in (([100, 101, 102, 103, 104], .58),
+                             ([104, 103, 102, 101, 100], .43)):
+        p, n, state = _maturity_case(prices, 2, min_n=1)
+        assert (p, n, state) == (expected, 3, "A")
+
+
+def test_maturity_ties_remain_observed_nonwins():
+    assert _maturity_case([100] * 5, 2, min_n=1, floor=0., ceil=1.) == (0., 3, "A")
+
+
+def test_maturity_minimum_count_uses_observed_cell_only():
+    # Three mature A observations with one win, a B win, then immature A labels.
+    prices = [100, 110, 100, 110, 120, 130]
+    states = ["A", "A", "A", "B", "A", "A"]
+    p, n, cell = _maturity_case(prices, 2, cells=states,
+                               min_n=4, floor=0., ceil=1., alpha=0)
+    assert (p, n, cell) == (.5, 3, "A")
+
+
+def test_maturity_nullable_prices_match_float_prices():
+    for dtype in ("float64", "Float64"):
+        close = pd.Series([100, 101, np.nan, 103, 104], dtype=dtype)
+        state = pd.Series(["A"] * 5)
+        actual = forward_dist.cond_up_prob(close, state, 1, min_n=1, floor=0., ceil=1.)
+        assert actual == (1., 2, "A")
+
+
+def test_maturity_positional_oracle_matrix():
+    rng = np.random.default_rng(119151)
+    count = 0
+    for n in (7, 20, 55, 300):
+        for h in (1, 5, n, n + 3):
+            for trial in range(12):
+                close = pd.Series(100 * np.exp(np.cumsum(rng.normal(0, .02, n))))
+                states = pd.Series(rng.choice(["A", "B", "C"], n), dtype=object)
+                if trial % 3 == 0:
+                    close.iloc[int(rng.integers(n))] = np.nan
+                if trial % 4 == 0:
+                    states.iloc[int(rng.integers(n))] = None
+                for kw in ({"min_n": 1, "floor": 0., "ceil": 1.},
+                           {"min_n": 20}, {"min_n": 3, "marginal": .51}):
+                    actual = forward_dist.cond_up_prob(close, states, h, **kw)
+                    expected = _maturity_oracle(close, states, h, **kw)
+                    assert actual[1:] == expected[1:]
+                    assert actual[0] == pytest.approx(expected[0], abs=1e-14)
+                    count += 1
+    assert count == 576
+
+
+def test_maturity_full_emitter_uses_observed_labels_and_retains_guards():
+    from unittest.mock import patch
+
+    idx = pd.bdate_range("2020-01-01", periods=300)
+    close = pd.Series(100 * np.exp(np.cumsum(
+        np.random.default_rng(20261111).normal(.0004, .014, 300))), index=idx)
+    actual = anticipation.anticipate(close, asset="SYNTH", asset_class="us_equity", gate={})
+    with patch.object(forward_dist, "cond_up_prob", _maturity_oracle):
+        expected = anticipation.anticipate(close, asset="SYNTH", asset_class="us_equity", gate={})
+    assert actual == expected
+    assert json.loads(json.dumps(actual, allow_nan=False)) == actual
+    assert actual["horizons"]["long"]["p_up"] == .58
+    assert actual["horizons"]["long"]["direction"] == "up-lean"
+    assert actual["horizons"]["long"]["cell_n"] == 20  # Cone count, not direction count.
+    assert actual["horizons"]["long"]["thin"]
+    assert actual["horizons"]["long"]["underpowered"]
+    assert actual["horizons"]["short"]["direction"] == "coin-flip"
+    assert actual["horizons"]["short"]["conviction"] == "TOSS_UP"
+    assert not any(h["direction_scored"] for h in actual["horizons"].values())
+    assert actual["guards"]["direction"] == "display-only"
+
+
+def test_maturity_existing_index_override_remains_authoritative():
+    from unittest.mock import patch
+
+    idx = pd.bdate_range("2020-01-01", periods=300)
+    close = pd.Series(100 * np.exp(np.cumsum(
+        np.random.default_rng(20261111).normal(.0004, .014, 300))), index=idx)
+    override = {"horizons": {name: {"p_up": .49, "scored": False}
+                             for name in ("medium", "long")}}
+    with patch.object(anticipation.index_direction, "forecast", return_value=override), \
+            patch.object(anticipation, "direction_gate", return_value={}):
+        actual = anticipation.anticipate(close, asset="SPY", asset_class="index", gate={})
+    for name in ("medium", "long"):
+        assert actual["horizons"][name]["p_up"] == .49
+        assert actual["horizons"][name]["direction"] == "neutral"
+        assert not actual["horizons"][name]["direction_scored"]
+    assert actual["guards"]["direction"] == "display-only"
+
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     for fn in fns:

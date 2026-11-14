@@ -35249,6 +35249,10 @@ jobs:
       # BODIES. A rewritten walk_forward with an unchanged signature still passes.
       - name: pick-conditional forward distributions — PIT/embargo (w1) + HAR standardizer pin (w1.5)
         run: python -m pytest tests/test_pick_forward_dist.py tests/test_pick_forward_dist_phase1.py -q
+      # Only the synthetic observed-outcome regressions belong to source CI.
+      # The complete module remains in the existing DATA engine-render-guards lane.
+      - name: Anticipation observed-outcome maturity regressions
+        run: python -m pytest tests/test_anticipation.py -k maturity -q
 
   admin-analytics-pages:
     # The live page reader must retain every exclusion while avoiding repeated
