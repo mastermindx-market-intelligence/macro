@@ -513,3 +513,121 @@ class TestImports:
                 result = cp.panel()
         assert isinstance(result, dict)
         assert result["mode"]["effective"] == "off"
+
+
+class TestCodexUsageRenderer:
+    """Exercise the shipped Codex renderer, not a parallel HTML implementation."""
+
+    def render(self, raw, now=1791014400000):
+        import shutil
+        import subprocess
+        node = shutil.which("node")
+        assert node, "Node is required to execute the actual admin renderer"
+        js = r"""
+const fs = require('node:fs');
+const vm = require('node:vm');
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+const source = fs.readFileSync(process.argv[1], 'utf8');
+const begin = source.indexOf('RENDER.codex = async () => {');
+const end = source.indexOf('/* ---- boot ', begin);
+if (begin < 0 || end < 0) throw Error('Codex renderer boundary not found');
+const view = {innerHTML: '', querySelectorAll: () => []};
+class FixedDate extends Date { static now() { return input.now; } }
+let reads = 0;
+const context = {
+  RENDER: {}, Date: FixedDate,
+  $: (selector) => selector === '#view' ? view : null,
+  api: async (path) => { if (path !== '/api/codex') throw Error('unexpected read'); reads++; return {usage: input.usage}; },
+  esc: (value) => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
+  post: () => { throw Error('unexpected modifying request'); },
+};
+vm.createContext(context);
+vm.runInContext(source.slice(begin, end), context, {timeout: 1000});
+context.RENDER.codex().then(() => {
+  if (reads !== 1) throw Error('unexpected read count');
+  process.stdout.write(JSON.stringify({html: view.innerHTML}));
+}).catch(e => { console.error(e); process.exitCode = 1; });
+"""
+        usage = _cp()._derive_usage(raw, 85)
+        result = subprocess.run([node, '-e', js, str(Path(__file__).resolve().parents[1] / 'admin/static/app.js')],
+            input=json.dumps({'usage': usage, 'now': now}), text=True,
+            capture_output=True, timeout=10, check=True)
+        return json.loads(result.stdout)['html']
+
+    def raw(self, primary=7, secondary=None, primary_mins=10080, secondary_mins=None):
+        def window(value, mins):
+            return None if value is None else {'used_percent': value, 'window_mins': mins,
+                'resets_at': '2026-10-10T08:00:00+00:00'}
+        return {'rate_limits': {'primary': window(primary, primary_mins),
+            'secondary': window(secondary, secondary_mins), 'fetched_at': '2026-10-03T07:55:00+00:00'},
+            'paused_until': None, 'sessions': []}
+
+    def test_weekly_primary_is_not_labelled_as_five_hour(self):
+        html = self.render(self.raw())
+        assert '7-day window (primary)' in html
+        assert '5h primary window' not in html
+        assert 'Weekly secondary' not in html
+        assert '2026-10-10 08:00:00 UTC' in html
+        assert 'in 7d 0h' in html
+
+    def test_two_native_windows_use_their_own_durations(self):
+        html = self.render(self.raw(12, 26, 300, 10080))
+        assert '5-hour window (primary)' in html
+        assert '7-day window (secondary)' in html
+        assert '12.0%' in html and '26.0%' in html
+
+    def test_unknown_duration_does_not_get_an_invented_weekly_label(self):
+        html = self.render(self.raw(7, 8, None, None))
+        assert 'Primary window (duration not reported)' in html
+        assert 'Secondary window (duration not reported)' in html
+        assert '5h primary' not in html and 'Weekly secondary' not in html
+
+    def test_over_budget_number_is_not_clamped_for_display(self):
+        html = self.render(self.raw(105))
+        assert '105.0%' in html
+        assert 'width:100%' in html
+
+    @pytest.mark.parametrize('permission,text', [
+        (False, 'Provider has not allowed ordinary usage'),
+        (None, 'Provider permission is unknown'),
+        (True, 'Provider permission observed'),
+    ])
+    def test_permission_is_visible_but_not_execution_authority(self, permission, text):
+        raw = self.raw(0)
+        raw['rate_limits']['ordinary_usage_allowed'] = permission
+        html = self.render(raw)
+        assert text in html
+        assert 'Meter readings do not grant execution' in html
+
+    def test_absent_permission_is_not_invented_as_allowed(self):
+        assert 'Provider permission not reported' in self.render(self.raw())
+
+    def test_passed_reset_does_not_claim_automatic_recovery(self):
+        raw = self.raw(100)
+        raw['rate_limits']['primary']['resets_at'] = '2026-10-03T07:00:00+00:00'
+        raw['paused_until'] = '2026-10-03T07:00:00+00:00'
+        html = self.render(raw)
+        assert 'Reported reset time has passed; awaiting fresh quota data' in html
+        assert 'auto-mode resumes after reset' not in html
+        assert '100.0%' in html
+
+    def test_unknown_measurement_stays_unknown(self):
+        raw = self.raw()
+        raw['rate_limits']['primary']['used_percent'] = 'bad'
+        html = self.render(raw)
+        assert 'Usage not reported' in html
+        assert 'NaN' not in html
+
+    def test_observation_time_and_missing_deadline_are_visible(self):
+        raw = self.raw()
+        raw['rate_limits']['primary']['resets_at'] = None
+        html = self.render(raw)
+        assert '2026-10-03 07:55:00 UTC' in html
+        assert 'Reset time not reported' in html
+
+    def test_invalid_deadline_is_not_echoed_as_html(self):
+        raw = self.raw()
+        raw['rate_limits']['primary']['resets_at'] = '<img src=x onerror=alert(1)>'
+        html = self.render(raw)
+        assert '<img src=x' not in html
+        assert 'Reset time not reported' in html
