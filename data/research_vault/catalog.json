@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T02:40:48.794444+00:00",
-  "count": 3336,
+  "generated_at": "2026-11-14T02:55:21.651713+00:00",
+  "count": 3337,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -2397,6 +2397,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 48,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nocj78afvnx-d71a06",
+      "title": "Cushman & Wakefield Ltd. (CWK) Updating Estimates and PT after 3Q26",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:41:40Z",
+      "summary_points": [
+        "Estimate & Target Update: Revised 2026/2027/2028 estimates to -1%/0%/+1% (vs. consensus), 12m target raised to $19.00 (11.0x EPS, 7.4x EV/EBITDA) post-Q3 beat driven by capital markets/leasing growth.",
+        "Investment Thesis: \"Buy\" rating with 36.8% upside ($19.00 target vs.",
+        "$13.89), fueled by revenue growth ($10.28bn→$12.25bn by 12/28E) and accelerating FFOPS ($1.22→$1.98).",
+        "Target Price vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
