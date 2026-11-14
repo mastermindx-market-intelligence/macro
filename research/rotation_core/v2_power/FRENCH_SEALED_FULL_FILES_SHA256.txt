@@ -1,0 +1,6 @@
+b9d36d571e968d71f7b03207e7fed6398554f953719b8c1bf3ee3ad8d00e7520  /home/ubuntu2/tmp/rotation-core/data/french/49_Industry_Portfolios_daily_CSV.zip
+a17d6a29387651d009fe56057dbf241f2e676fef4f671de028c1e35b34d8b3a4  /home/ubuntu2/tmp/rotation-core/data/french/x/49_Industry_Portfolios_Daily.csv
+d11f87b42f301ea931d1ddc823d3e2125aba4c8310eeeec43f96554e98b1ebb4  /home/ubuntu2/tmp/rotation-core/data/french/12_Industry_Portfolios_daily_CSV.zip
+c20b1ccb5bc22b7137938854499f81c74a88694e95af224bf8d0189c0f846f34  /home/ubuntu2/tmp/rotation-core/data/french/17_Industry_Portfolios_daily_CSV.zip
+421db54387cf7c9dfc53e3e68eefa3b9f6a9094b5bcf0cf52bb36e69a31f71e7  /home/ubuntu2/tmp/rotation-core/data/french/x/12_Industry_Portfolios_Daily.csv
+3e30b7e2a5ef30c42c090fba656d023d078fe96e092c6517332b58bd143e0cd7  /home/ubuntu2/tmp/rotation-core/data/french/x/17_Industry_Portfolios_Daily.csv

@@ -1,0 +1,95 @@
+{
+ "window": [
+  "1998-01-02",
+  "2019-12-31"
+ ],
+ "books": 17,
+ "rows": {
+  "H1_h3_b25": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "price_only_h3_b25": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "H1_2x_h3_b25": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "cash_ablation_h3_b25": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "H1_h3_b37.5": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "price_only_h3_b37.5": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "H1_2x_h3_b37.5": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "cash_ablation_h3_b37.5": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "H1_h5_b25": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "price_only_h5_b25": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "H1_2x_h5_b25": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "cash_ablation_h5_b25": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "H1_h5_b37.5": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "price_only_h5_b37.5": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "H1_2x_h5_b37.5": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "cash_ablation_h5_b37.5": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  },
+  "H3": {
+   "sessions_differing": 0,
+   "first": null,
+   "last": null
+  }
+ },
+ "books_with_any_difference": 0
+}

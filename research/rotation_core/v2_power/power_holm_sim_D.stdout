@@ -1,0 +1,44 @@
+{
+ "D_se_annual": {
+  "H1": 0.0135,
+  "H2": 0.0046,
+  "H3": 0.0172
+ },
+ "corr": [
+  [
+   1.0,
+   -0.068,
+   -0.575
+  ],
+  [
+   -0.068,
+   1.0,
+   0.072
+  ],
+  [
+   -0.575,
+   0.072,
+   1.0
+  ]
+ ],
+ "results": {
+  "H1_true_0.0218": {
+   "P_H1_rejected_holm_sim": 0.805,
+   "P_H1_rejected_bonferroni": 0.803,
+   "P_joint_pass_holm_sim": 0.636,
+   "P_joint_pass_bonferroni": 0.635
+  },
+  "H1_true_0.02": {
+   "P_H1_rejected_holm_sim": 0.732,
+   "P_H1_rejected_bonferroni": 0.731,
+   "P_joint_pass_holm_sim": 0.569,
+   "P_joint_pass_bonferroni": 0.568
+  },
+  "H1_true_0.01": {
+   "P_H1_rejected_holm_sim": 0.225,
+   "P_H1_rejected_bonferroni": 0.225,
+   "P_joint_pass_holm_sim": 0.161,
+   "P_joint_pass_bonferroni": 0.161
+  }
+ }
+}

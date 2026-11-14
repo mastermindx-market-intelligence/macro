@@ -1,0 +1,89 @@
+--- /home/ubuntu2/tmp/rotation-core/pro_runs/B_rerun/pin_ref/inputs.py	2026-11-11 03:27:23.216580463 -0800
++++ /home/ubuntu2/tmp/rotation-core/pro_runs/B_rerun/src/inputs.py	2026-11-11 03:24:28.218566316 -0800
+@@ -6,7 +6,8 @@
+ import xlrd
+ 
+ ROOT=Path(__file__).resolve().parent
+-RAW=ROOT/'raw'
++# RERUN ADAPTER 1: inputs live in ../data (date-truncated local copies), not ./raw downloads.
++RAW=ROOT.parent/'data'
+ CUTOFF=pd.Timestamp('2019-12-31')
+ FIRST=pd.Timestamp('1926-07-01')
+ D_NAMES='Food Soda Beer Smoke Hshld Hlth MedEq Drugs Util'.split()
+@@ -44,7 +45,25 @@
+ def french(name):
+     return parse_french_text((RAW/(name+'.txt')).read_text())
+ 
++# RERUN ADAPTER 2: FRED served from the Macro repo blob store IN MEMORY (git show at pin
++# 4d49b23a8f), truncated at 2019-12-31 before use; FRED content is never written to disk.
++# Series absent from the store on this machine are returned empty (rules see them as
++# unavailable inputs); names listed in FRED_UNAVAILABLE.
++FRED_REPO='/home/ubuntu2/.t3/worktrees/Macro/rotation-core'
++FRED_PIN='4d49b23a8f'
++FRED_STORE_COLUMNS={'UNRATE':'unemployment_rate'}
++FRED_UNAVAILABLE=['BAA','BAA10YM','GS10','TB3MS']
+ def fred(name):
++    if name in FRED_STORE_COLUMNS:
++        import subprocess,io
++        blob=subprocess.run(['git','-C',FRED_REPO,'show',f'{FRED_PIN}:data/fred/{name}.parquet'],capture_output=True,check=True).stdout
++        frame=pd.read_parquet(io.BytesIO(blob))
++        out=pd.Series(frame[FRED_STORE_COLUMNS[name]].to_numpy(),index=pd.DatetimeIndex(frame.index),name=name).sort_index()
++        out=out.loc[:'2019-12-31']
++        assert out.index.max()<=CUTOFF
++        return out
++    if name in FRED_UNAVAILABLE:
++        return pd.Series(dtype=float,index=pd.DatetimeIndex([]),name=name)
+     rows=[]
+     for row in csv.reader((RAW/(name+'.csv')).read_text().splitlines()):
+         if not re.fullmatch(r'\d{4}-\d{2}-\d{2}',row[0]):continue
+@@ -55,6 +74,10 @@
+     return out
+ 
+ def shiller():
++    # RERUN ADAPTER 3: shiller.xls is not available on this machine; return the empty
++    # frame with the expected schema so R9/R10 and rate diagnostics are marked unavailable.
++    if not (RAW/'shiller.xls').exists():
++        return pd.DataFrame({'date':pd.DatetimeIndex([]),'sp_composite':pd.Series(dtype=float),'cpi':pd.Series(dtype=float),'long_yield':pd.Series(dtype=float)}).set_index('date')
+     sheet=xlrd.open_workbook(RAW/'shiller.xls',on_demand=True).sheet_by_name('Data')
+     rows=[]
+     for i in range(8,sheet.nrows):
+@@ -154,11 +177,15 @@
+ 
+ def coverage(data):
+     rows=[]
++    # RERUN ADAPTER 4: skip French sources and FRED series absent on this machine.
+     for name in ['factors','momentum','size','ind12','ind17','ind49']:
++        if not (RAW/(name+'.txt')).exists():continue
+         for label,df in french(name):
+             rows.append({'source':name,'table':label,'first':str(df.index.min().date()),'last':str(df.index.max().date()),'rows':len(df),'columns':len(df.columns),'missing_cells':int(df.isna().sum().sum())})
+     for name in ['BAA','BAA10YM','GS10','TB3MS','UNRATE']:
+-        s=fred(name);rows.append({'source':name,'first':str(s.index.min().date()),'last':str(s.index.max().date()),'rows':len(s),'missing_cells':int(s.isna().sum())})
++        s=fred(name)
++        if not len(s):continue
++        rows.append({'source':name,'first':str(s.index.min().date()),'last':str(s.index.max().date()),'rows':len(s),'missing_cells':int(s.isna().sum())})
+     for name,s in [('Shiller',data['shiller'].long_yield),('S&P500_price',data['spx'])]:
+         if len(s):rows.append({'source':name,'first':str(s.index.min().date()),'last':str(s.index.max().date()),'rows':len(s)})
+     return pd.DataFrame(rows)
+--- /home/ubuntu2/tmp/rotation-core/pro_runs/B_rerun/pin_ref/episodes.py	2026-11-11 03:27:23.225580411 -0800
++++ /home/ubuntu2/tmp/rotation-core/pro_runs/B_rerun/src/episodes.py	2026-11-11 03:25:03.848369812 -0800
+@@ -106,6 +106,9 @@
+             if pd.isna(v):continue
+             rows.append({'era':era,'feature':feature,'state':int(v),'forward63':delta,'episode':ep})
+     frame=pd.DataFrame(rows);out=[]
++    # RERUN ADAPTER 6: no computable macro feature states on this machine (Shiller/FRED-credit
++    # inputs unavailable) -> return the empty table with its schema instead of a groupby error.
++    if not len(frame):return pd.DataFrame(columns=['era','feature','state','months','distinct_named_episodes','mean_D_minus_C_next63','median_D_minus_C_next63'])
+     for key,df in frame.groupby(['era','feature','state']):
+         out.append(dict(zip(['era','feature','state'],key))|{'months':len(df),'distinct_named_episodes':int(df.episode.dropna().nunique()),'mean_D_minus_C_next63':df.forward63.mean(),'median_D_minus_C_next63':df.forward63.median()})
+     return pd.DataFrame(out)
+--- /home/ubuntu2/tmp/rotation-core/pro_runs/B_rerun/pin_ref/verify_results.py	2026-11-11 03:27:23.232580371 -0800
++++ /home/ubuntu2/tmp/rotation-core/pro_runs/B_rerun/src/verify_results.py	2026-11-11 03:23:26.953898330 -0800
+@@ -10,6 +10,8 @@
+     observed=pd.read_pickle(ROOT/'audit_paths.pkl')
+     checks={}
+     for rid in ['R1','R2','R3','R4']:
++        # RERUN ADAPTER 5: skip rules with no computable path on this machine (missing FRED inputs).
++        if not observed[rid].notna().any():continue
+         e=choices[rid].eq('M').astype(float).where(choices[rid].notna())
+         holding=e.shift(2).fillna(0);execution=e.shift(1).fillna(0)
+         c=pd.Series(np.where(f.index<pd.Timestamp('1975-01-01'),.0025,.0005),index=f.index)

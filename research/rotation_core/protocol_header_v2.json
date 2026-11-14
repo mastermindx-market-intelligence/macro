@@ -1,0 +1,575 @@
+{
+  "schema": "rotation_core.protocol_header/v2",
+  "protocol_id": "rotation-core-v2",
+  "status": "FROZEN 2026-11-11T12:30Z by the Prophet programme CEO. No v2 outcome computed before this commit. Where the Markdown differs, this JSON governs.",
+  "drafted_on_utc": "2026-11-11",
+  "power_statement_top": "H1's own minimum detectable effects under R12, from its actual time in tilt (57-62% of sessions), 80% power, Holm m=3, 1998-2019 variance only: 2.1-2.3 pp/yr on pooled history (pre-1998 plus 2020-2025), 7.6-8.3 pp/yr on 2020-2025 alone, 8.4-9.1 pp/yr after five forward years. Full-tilt proxy upper bound beside them: 2.6 / 9.2 / 10.1 pp/yr. With the four positive-sign requirements the chance of passing is about 63% at the detectable effect and about 50-57% at a true 2 pp/yr edge. A 1-2 pp/yr rotation edge is not demonstrable by any test available to us, and a fail of this test is not evidence of no effect. The historical tier is a low-power falsification screen.",
+  "predecessors": {
+    "v1": "protocol_header_v1.json sha256 af2a0988...0f32; closed at L0 (parent ruling 2026-11-11); Stage H never run; Stage D corrected after PRO_RUN_A (RESULTS_STAGE_D_CORRECTED.md, b3253a9610), no conclusion moved",
+    "run_B": "Pro run B, Macro 2afbd280fe (protocol ba5ae1e353, clarifications da384adb88, missing data 85f299a57d): ten rules on Ken French 49 industries 1926-2019, all negative; counted as 10 consumed trials. Local reproduction 2026-11-11 (pro_run_B_reproduction/REPRODUCTION.md) on sealed <=2019 inputs: 3,229 of 3,229 computable cells match at printed precision, 0 mismatches, 12/12 integrity tests pass. 2,806 cells (rules R2/R4/R6/R9/R10, macro and S&P columns) could not be computed here because their inputs (FRED BAA/GS10/TB3MS, Shiller, SPX, French monthly files) are not on this host; those cells are NOT reproduced and may not be cited. Citable: only reproduced cells (price/breadth rules incl. R5, R7, R8). The worker displayed the last three monthly UNRATE observations (2026-08..10, values 4.1, 4.2, 4.1) during schema inspection, before truncation; no post-2019 value entered any computation. UNRATE is not a v2 input; disclosed.",
+    "run_C": "Pro run C: design-only forward protocol; its power arithmetic is adopted (section power).",
+    "SI_proposal": "/home/ubuntu2/tmp/rotation-core/SI_PROPOSAL_V2.md, adopted per parent rulings A, C, D, E, F (11:45Z)"
+  },
+  "question": "When conditions turn bad, does tilting from equal weight toward low-beta industries (defence) and back toward high-beta industries (offence) on a two-key signal add value over holding the same average mix, after costs?",
+  "prior_examination_disclosure": [
+    "1926-2019 has been examined for this question: v1 (market timing 1928-1997 on the French market; sector rules 1998-2019) and Pro run B (ten rules on French 49 industries 1926-2019, including R7 breadth divergence and R8 washout re-entry, near neighbours of H1, and R6 confluence-to-defensives, near twin of the H3 SI suggested). All negative. The pre-1998 window is therefore NOT clean and is not called clean; it is a falsification screen.",
+    "Macro main research/DEFENSIVE_ROTATION.md tested a defensive-rotation signal on the same funds with headline window 2015-01-01..2026-06-18 (FALSIFIED / DISPLAY-ONLY). 2020-2025 is not untouched by the organisation; it is untouched by Rotation Core and by any test of this rule.",
+    "H1 and H2 were shaped by Sector Intelligence's replay of 2026; 2026 is therefore reported but never scored.",
+    "The lead saw some of run B's per-rule era rows (R5-R8, 1926-2019) while reading its file to record the trials. No v2 parameter or grid value was chosen from them; the grid below was set from SI's proposal and the arming check only.",
+    "2020-2025 is the only window not yet examined, with about two stress episodes (2020, 2022; 2025 is borderline by the v1 rule)."
+  ],
+  "kill_records_cited_not_rebuilt": [
+    "DNR:KILL-DEFENSIVE-FLOOR-BUNDLE",
+    "DNR:KILL-RS-DISPERSION-GATES",
+    "DNR:KILL-ROTATION-CYCLE-CONFLUENCE",
+    "DNR:KILL-HINDENBURG-OMEN",
+    "DNR:KILL-MCO-THRUST",
+    "DNR:KILL-FUSED-COMPOSITE"
+  ],
+  "leave_outs_with_record": "Left out on prior record: position-in-range as a top signal; fund-flow residual; member-dispersion gates (KILL-RS-DISPERSION-GATES); index-level breadth thrust (KILL-MCO-THRUST). Not proposed (2026 replay only, one hindsight episode), not killed: relative-strength momentum as a leader read; the turn label. Themes and the 49 baskets: no honest index before 2026-07 (forward only). Rates, credit spread and SPY-minus-RSP: descriptive splits only.",
+  "construction": {
+    "universe": "Ken French 49 industry portfolios, daily, value-weighted returns (equal-weighted section used only for narrowness stand-in ii)",
+    "file_facts": {
+      "sections": "value- and equal-weighted daily returns for all 49 industries in one file",
+      "first_date": "1926-07-01",
+      "industries_with_data": {
+        "1926": 40,
+        "1930": 42,
+        "1940": 43,
+        "1950": 43,
+        "1960": 43,
+        "1970": 49
+      },
+      "1928_1950": "43 industries with any data, 37 complete",
+      "missing_after_eligible": "366 industry-days in 8 industries up to 2019-12-31 (confirms run B, MISSING_DATA.md at 85f299a57d)",
+      "publication": "Built from the monthly CRSP update; on 2026-11-10 the latest file ('202609 CRSP database', members dated 2026-10-26) ran to 2026-09-30. Update roughly monthly with about a 4-week lag after month-end.",
+      "consequence_2026": "On this construction 2026 can be reported only to 2026-09-30 (and is unscored anyway).",
+      "consequence_live": "The rule as tested cannot be run live from this file; see forward_tier.input_contract."
+    },
+    "seal": {
+      "rule": "The 2020+ part of every French industry file is under the hold-out seal by path. Full files were hashed unopened and moved to /home/ubuntu2/tmp/rotation-core/data/french/sealed_post2019/ (mode 000); working copies truncated at 2019-12-31 by the date field only are in .../le2019/. The truncation parsed date fields only; no value on a line dated after 2019-12-31 was parsed or printed. Full-file sha256: v2_power/FRENCH_SEALED_FULL_FILES_SHA256.txt.",
+      "prior_access": "Nobody on Rotation Core has computed anything on French industry data after 2019. When the files were first downloaded (2026-11-10) the lead printed the first data line (1926) and the last date of each file only. The French factors file (market, RF) still runs to 2026-09; v1 used it only up to 1997 and v2 uses it only up to 2019 until release.",
+      "release": "The 2020+ industry data and sector-fund data open once, for the confirmatory run, after freeze."
+    },
+    "gap_rule_no_imputation": "An industry enters a leg only after 252 valid daily returns. An industry-day with a missing return is dropped from that day's leg average and from that day's breadth, and is counted. No imputation, no substitute industry, no zero fill. Dropped industry-days are reported per window.",
+    "legs": "At each month-end t, beta of each eligible industry's daily returns to the French market (Mkt-RF+RF) over the 252 sessions ending t-1 (>= 200 valid pairs). OFFENCE = top third by beta, DEFENCE = bottom third (16 each with 49 industries; fewer before 1970), used for the following month. BASE = equal weight of all eligible industries, rebalanced monthly.",
+    "breadth_stand_ins": {
+      "i": "share of offence industries above their own 50-session SMA. Granularity 1/n_offence (about 1/16 = 6.25 pp); every grid threshold is a multiple of that step.",
+      "ii": "narrowness: mean over offence industries of (equal-weighted minus value-weighted industry return over 60 sessions); continuous Descriptive only in both tiers."
+    },
+    "relative_line": "cumulative offence-leg return over cumulative defence-leg return"
+  },
+  "hypotheses": {
+    "holm_family": {
+      "m": 3,
+      "alpha": 0.05,
+      "members": [
+        "H1",
+        "H2",
+        "H3"
+      ]
+    },
+    "H1": {
+      "name": "two-key switch vs the exposure-matched mix",
+      "rule": "Base = equal weight of eligible industries (NEUTRAL). Entry to DEFEND (defence leg): ARMED within the last 21 sessions (fixed arming memory) and the offence/defence relative line closes below its own 50-session SMA after closing at or above it. ARMED = relative line within h% of its 126-session high AND offence breadth (i) at least b below its 126-session maximum, both breadth values measured on the CURRENT leg's members (R2). Entry to ATTACK (offence leg), R12: a washout spell starts at the first close with offence breadth (i) <= 25% on the current leg's members and runs while closes stay <= 25%. The spell QUALIFIES only if, on at least one close inside the spell, the relative line is within h% of its own 126-session low: rel_t <= (1 + h/100) * min(rel over the 126 sessions ending at t, including t) - the literal mirror of the arming key's rel_t >= (1 - h/100) * max(rel over the same window). Same h as the grid point. ATTACK confirms on the first close above 25% if the spell qualifies AND that close is within 20 sessions of the spell's lowest breadth close (earliest if tied). Otherwise the spell ends with no ATTACK and the state in force continues under its own exit rule. Exits by state (R1): DEFEND ends at an ATTACK confirm (immediately) or at the first month-end on which the relative line closes above its own 50-session SMA, then NEUTRAL. ATTACK ends at a DEFEND trigger (immediately) or at the first month-end at least 63 sessions after entry, then NEUTRAL. A state is never exited on its entry day; a trigger on a month's last session stands and the month-end test first applies at the following month-end. Same-day DEFEND trigger and ATTACK confirm: DEFEND wins, counted. Re-triggering the state already in force is ignored and does not reset its clock. Decisions at close t, execution at close t+1, 10 bp per side.",
+      "declared_grid": {
+        "h_near_high_pct": [
+          3,
+          5
+        ],
+        "b_breadth_drop_pp": [
+          25,
+          37.5
+        ],
+        "settings": 4,
+        "selection": "the setting with the highest 1998-2019 annualised excess over its matched mix, chosen after freeze on 1998-2019 only; exact ties (difference below 1e-9) go to the more conservative setting: smaller h first, then larger b. All 4 settings are counted. H2's control and the cash ablation inherit the selected point."
+      },
+      "arming_check_1998_2019": "Rerun under rev 4 (signals table). The earlier 7.6-19.7% were WITHOUT the 21-session memory and with a stitched breadth maximum; under R2 without memory they are 7.6-19.7% again, and WITH the memory the armed share is 26.9-47.7% (price-only 52.6-65.3%).",
+      "primary_contrast": "annualised mean daily return of H1 minus the exposure-matched static mix of offence, defence and base at H1's average weights, rebuilt inside every bootstrap resample from that resample's own average weights (parent ruling A)",
+      "differs_from_run_B_R7": "R7 is prior negative evidence against H1's breadth key. H1 differs in two ways: (1) a second key is required - the offence/defence relative line must break its 50-session SMA after arming; R7 switched on the breadth drop alone; (2) legs are beta-sorted thirds re-formed monthly from data to t-1, not R7's fixed named cyclical and defensive groups; H1 also starts from equal weight, not from the cyclical leg.",
+      "fixed_settings": {
+        "arming_memory_sessions": 21,
+        "attack_minimum_hold_sessions": 63,
+        "washout_threshold": 0.25,
+        "washout_max_spell_sessions": 20,
+        "breadth_sma": 50,
+        "lookback_sessions": 126,
+        "trigger_sma": 50,
+        "washout_clock": "from the spell's lowest close (earliest if tied)"
+      },
+      "breadth_rules": {
+        "R2_current_leg": "each day the 126-session breadth history (arming key and washout spell) is recomputed on the current leg's members over the look-back; never a stitched series of past legs. The relative line remains a chained return series.",
+        "R5_share": "b is compared as a share of the leg's eligible industries. Step about 6.25 points with 16 offence members (from 1970); about 7-8 points before 1970 (13-14 members)."
+      },
+      "plain_description": "Under R12, on 1998-2019 industry portfolios: 179 breadth washout spells (about eight a year, median 3 sessions); 97 qualify at h=3 and 112 at h=5 (relative line near its 126-session low inside the spell); 83 (h=3) and 98 (h=5) fire ATTACK confirms, about 3.8-4.5 a year - more than one every two years at both h, so the ATTACK leg is exercised. ATTACK entries 1.5-1.8 a year (confirms while ATTACK is already held are ignored), held 37-39% of sessions with a median spell of 69-72 sessions; DEFEND entries 1.7-2.7 a year, held 18-25% of sessions with a median spell of 18-22 sessions; NEUTRAL 38-43%. DEFEND ends mostly at a month-end with the relative line back above its SMA (29-36 exits) rather than by an ATTACK confirm (9-23 exits); ATTACK ends mostly at the 63-session month-end (21-25) rather than by a DEFEND trigger (7-18). Same-day conflicts: 0. H1 is a three-state rule with roughly comparable time in each state, not a mostly-offence tilt. These counts were seen before freeze; no threshold, grid point or window was changed because of them.",
+      "mirror_note": "Mirror choice: 'within h% of the high' is coded rel >= (1 - h/100) * high, so 'within h% of the low' is rel <= (1 + h/100) * low. The alternative rel <= low / (1 - h/100) was not used; it was not evaluated or counted."
+    },
+    "H2": {
+      "name": "breadth in the arming key adds information (the washout breadth is in both arms)",
+      "rule": "H1 minus the identical rule with the breadth condition removed from ARMED only; the ATTACK rule (breadth washout plus relative-line-near-low qualification) is identical in both arms; exits and fixed settings identical; same h as selected. Paired daily difference.",
+      "primary_contrast": "annualised mean of the paired daily difference H1 - H1_price_only",
+      "inherits": "H2's price-only control and the cash ablation use exactly the H1 grid point selected on 1998-2019; no second selection is made for any derived book."
+    },
+    "H3": {
+      "name": "simplest direct control: 126-day relative momentum between the legs (run B R5 on beta-sorted legs)",
+      "rule": "At each month-end hold the offence leg if its 126-session return exceeds the defence leg's, else the defence leg. No parameters beyond 126.",
+      "primary_contrast": "vs its exposure-matched static mix, rebuilt inside each resample",
+      "why": "Parent ruling 12:05Z; trend-and-Sahm with defensives (SI's suggestion) is run B R6's near twin and showed no benefit. I have no better-motivated candidate."
+    },
+    "mandatory_ablation": "H1 with cash in place of the defence leg (identical DEFEND dates, bills instead of defensives); reported, not tested Inherits H1's selected grid point; no second selection.",
+    "descriptive_state_split": "H1's excess over the matched mix split by state held (DEFEND, ATTACK, NEUTRAL days); reported, no extra trial."
+  },
+  "yardsticks_every_window": [
+    "SPY (French market before 1993)",
+    "RSP (from 2003-05; before that the equal-weight French market proxy, stated)",
+    "equal weight of all eligible industries (the BASE)",
+    "exposure-matched static mix (BINDING)"
+  ],
+  "stress_episode_table": "For H1 and its price-only control, per named episode (v1 lists plus PHASE2_ADDITIONS long list; 2020, 2022, 2025 in 2020-2025): was the ARMED state on at the price peak; sessions before (+) or after (-) the peak at which the trigger fired; descriptive, no extra trial.",
+  "historical_tier": {
+    "selection": "grid selection on 1998-2019 only (corrected engine)",
+    "confirmation_windows": [
+      "pre-1998 French industries 1928-1997",
+      "2020-01-02..2025-12-31 (one opening)"
+    ],
+    "reported_not_scored": "2026 (industries to 2026-09-30; funds to the data pin)",
+    "pass_condition": "Holm p < 0.05 (m=3) on the pooled pre-1998 + 2020-2025 primary contrast AND point estimate > 0 in pre-1998 AND in 2020-2025 AND in both pre-1998 eras (1928-1945, 1946-1997); drawdown no worse than the matched mix; holds at 2x costs; turnover and costs reported.",
+    "label": "Best attainable label: 'survives falsification on history'. Never 'confirmed'; never a product claim.",
+    "tradable_second_confirmation": {
+      "signal": "both keys computed on the industry portfolios exactly as in the primary test; only execution differs",
+      "execution": "SPDR sector funds; offence = three highest trailing-252-session-beta funds, defence = three lowest, beta on data to t-1, re-formed monthly, among funds with >= 252 sessions of history (nine funds from 1998-12, so three per leg is workable from 1999-12; XLRE and XLC enter by the 252-session rule only, 2016-10 and 2019-06); base = equal weight of eligible funds; 5 bp per side",
+      "named_mapping": "XLK vs XLP/XLU/XLV reported beside it, descriptive only, labelled as carrying hindsight, no pass/fail",
+      "rule": "A pass on industry portfolios with a negative point estimate on the tradable funds in 2020-2025 is reported as 'signal not shown to be tradable', not as a pass.",
+      "lead_view": "This does not weaken the test; it adds a veto only, so it can only remove passes. Its one cost is that with three funds per leg the tradable version is noisy, so the veto will trigger on noise sometimes."
+    }
+  },
+  "forward_tier": {
+    "label": "Only this tier can support 'Mastermind called the rotation before it happened'.",
+    "rule_freeze": "rules, parameters (the 1998-2019-selected grid point) and inputs frozen at v2 freeze",
+    "record": "dated nightly record starts when the implementation is ready; 2026 entries rehearsal only. First scored formation: the later of (a) the first full month after freeze and readiness and (b) the first month-end with 126 recorded nights of as-written member breadth (no reconstruction of the look-back). One efficacy read at five years from the first scored formation; quarterly checks of completeness and clocks only; no tuning from interim looks.",
+    "owner": "QLedger (engine/qledger.py): one claim per monthly decision and per state change (family rotation_core_v2.<id>, decided_at, exec_at, state, target weights, header sha, code commit, matched mix definition, input vintage timestamps, falsifier = forward excess over matched mix < 0). No new store or control plane.",
+    "input_contract": {
+      "legs": "sector funds by the trailing-beta rule, as in the tradable version",
+      "breadth": "share of the leg's sectors' S&P 500 members above their own 50-session SMA, on the roster as of that night The file carries each member's close relative to its 50- and 200-day averages from the first night, so breadth exists from the first file; the binding limit is the 126-night look-back.",
+      "narrowness": "descriptive only (R7). Equal- minus cap-weight member return within the leg over 60 sessions using the snapshot index weight; fallback, decided before the first scored night and not after: if the weight field proves unusable, equal weight within sector minus the sector fund's return.",
+      "source_fields_per_member_per_night": "S&P 500 membership flag and GICS sector as of that night (source named); trailing 60-session total return; price vintage timestamp; index weight from Sector Intelligence's daily fund-holdings snapshots (held from 2026-06-11; carries the snapshot's own date, never a later one; source being confirmed by their build worker). Roster = union of vendor subsector members and that night's S&P 500 members.",
+      "relation_to_history": "The historical industry stand-in and the forward member breadth are two measurements of the same idea, not one continuing series. The vendor subsector tree is recorded and reported descriptively only.",
+      "missing_before_start": [
+        "Macro PR #11024 (nightly as-written member archive) merged",
+        "the stacked per-member price-state file landed",
+        "a nightly issuer writing the QLedger claims, built on the frozen v2 code",
+        "126 recorded nights of as-written member breadth before the first scored formation"
+      ],
+      "clocks": "decided_at = the row's own last-price date, never the file name or run time; a row one session behind is recorded as such. Roster and weights come from a holdings snapshot dated on or before the night, with the snapshot's own date carried."
+    }
+  },
+  "power": {
+    "method": "1998-2019 variance only; full-tilt proxy (switch between the beta-sorted legs on the price-only key minus its matched mix, matched mix rebuilt per resample); no mean or point estimate printed; v2_power/power_v2_D.py and .stdout",
+    "D_se_annual": 0.0162,
+    "D_tracking_error": 0.0853,
+    "D_years": 21.96,
+    "mde80_holm_m3": {
+      "pre1998_plus_2020_2025": 0.0259,
+      "pre1998_70y": 0.027,
+      "2020_2025": 0.0921,
+      "forward_5y": 0.1009,
+      "forward_10y": 0.0713
+    },
+    "years_needed": {
+      "2pp": 127,
+      "1pp": 509
+    },
+    "run_C_arithmetic": "about 6 pp/yr detectable at five forward years with 5% active volatility; worse at higher volatility; adopted.",
+    "plain": "H1's tilt is at most the full-tilt proxy, so its active risk is lower and the true numbers are between these and somewhat smaller; the conclusion does not change: a 1-2 pp/yr edge is not demonstrable historically or in five forward years.",
+    "h1_actual_tilt": {
+      "source": "v2_power/power_h1_actual_D.py, .stdout (bootstrap spread only, R12)",
+      "per_grid_point": {
+        "h3 b25.0": {
+          "time_in_tilt": 0.582,
+          "D_se_annual": 0.0137,
+          "mde80_holm_m3": {
+            "pre1998_plus_2020_25": 0.0218,
+            "2020_25": 0.0776,
+            "forward_5y": 0.085,
+            "forward_10y": 0.0601
+          }
+        },
+        "h3 b37.5": {
+          "time_in_tilt": 0.569,
+          "D_se_annual": 0.0134,
+          "mde80_holm_m3": {
+            "pre1998_plus_2020_25": 0.0214,
+            "2020_25": 0.0763,
+            "forward_5y": 0.0836,
+            "forward_10y": 0.0591
+          }
+        },
+        "h5 b25.0": {
+          "time_in_tilt": 0.623,
+          "D_se_annual": 0.0147,
+          "mde80_holm_m3": {
+            "pre1998_plus_2020_25": 0.0234,
+            "2020_25": 0.0833,
+            "forward_5y": 0.0913,
+            "forward_10y": 0.0645
+          }
+        },
+        "h5 b37.5": {
+          "time_in_tilt": 0.596,
+          "D_se_annual": 0.0142,
+          "mde80_holm_m3": {
+            "pre1998_plus_2020_25": 0.0227,
+            "2020_25": 0.0808,
+            "forward_5y": 0.0885,
+            "forward_10y": 0.0626
+          }
+        }
+      },
+      "summary": "Time in tilt 57-62%; D SE 1.34-1.47 pp/yr; MDE80 (Holm m=3) 2.1-2.3 pp/yr pooled history, 7.6-8.3 on 2020-2025 alone, 8.4-9.1 after five forward years.",
+      "joint_rule_pass_probability": {
+        "at_the_MDE": "about 63% (Holm significance alone about 80%)",
+        "at_true_2pp": "about 50-57% (Holm alone 65-74%)",
+        "at_true_1pp": "about 14-16%"
+      },
+      "proxy_relation": "Full-tilt proxy (2.6 / 9.2 / 10.1) kept as the upper bound of the MDE."
+    }
+  },
+  "trial_ledger_at_freeze": {
+    "rotation_core_v2": "H1 grid 4, H2 1, H3 1, cash ablation 1, tradable version 1, named mapping 1 = 9",
+    "pro_run_b_consumed": "10 (results negative)",
+    "carried": "v1's 36; DSR count = sum",
+    "declared_rows": [
+      "rotation_core_v2",
+      "rotation_core_v2_pro_run_b_consumed"
+    ],
+    "dsr_effective_n_families": [
+      "rotation_core_v1",
+      "rotation_core_v2",
+      "rotation_core_v2_pro_run_b_consumed"
+    ]
+  },
+  "unchanged": "Corrected v1 harness (dollar accounting, observed-close execution), t+1 execution, stationary bootstrap block 21 (63 sensitivity), B=10,000, nothing sizes, gates or trades.",
+  "signals_table_1998_2019": {
+    "source": "v2_power/signals_table_D.py, .stdout (R12, run once)",
+    "washout_spells": {
+      "spells": 179,
+      "length_median": 3,
+      "length_longest": 59,
+      "length_over_20": 22,
+      "low_to_recovery_median": 2,
+      "low_to_recovery_longest": 54,
+      "within_20_of_low": 164
+    },
+    "grid": {
+      "H1 h3 b25.0": {
+        "armed_share_no_memory": 0.1183,
+        "armed_share_with_21_memory": 0.3348,
+        "DEFEND_entries_per_year": 2.0,
+        "ATTACK_entries_per_year": 1.5,
+        "share": {
+          "NEUTRAL": 0.418,
+          "DEFEND": 0.193,
+          "ATTACK": 0.389
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            23,
+            209
+          ],
+          "DEFEND": [
+            21,
+            60
+          ],
+          "ATTACK": [
+            72,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 97,
+        "attack_confirms": 83,
+        "attack_confirms_per_year": 3.78,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 11,
+          "DEFEND_by_month_end_above_sma": 33,
+          "ATTACK_by_DEFEND": 7,
+          "ATTACK_by_63_month_end": 25
+        }
+      },
+      "price_only h3 b25.0": {
+        "armed_share_no_memory": 0.3695,
+        "armed_share_with_21_memory": 0.5261,
+        "DEFEND_entries_per_year": 2.6,
+        "ATTACK_entries_per_year": 1.55,
+        "share": {
+          "NEUTRAL": 0.34,
+          "DEFEND": 0.279,
+          "ATTACK": 0.381
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            22,
+            138
+          ],
+          "DEFEND": [
+            22,
+            86
+          ],
+          "ATTACK": [
+            69,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 97,
+        "attack_confirms": 83,
+        "attack_confirms_per_year": 3.78,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 19,
+          "DEFEND_by_month_end_above_sma": 38,
+          "ATTACK_by_DEFEND": 11,
+          "ATTACK_by_63_month_end": 22
+        }
+      },
+      "H1 h3 b37.5": {
+        "armed_share_no_memory": 0.0759,
+        "armed_share_with_21_memory": 0.2694,
+        "DEFEND_entries_per_year": 1.73,
+        "ATTACK_entries_per_year": 1.5,
+        "share": {
+          "NEUTRAL": 0.431,
+          "DEFEND": 0.178,
+          "ATTACK": 0.391
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            27,
+            209
+          ],
+          "DEFEND": [
+            22,
+            52
+          ],
+          "ATTACK": [
+            72,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 97,
+        "attack_confirms": 83,
+        "attack_confirms_per_year": 3.78,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 9,
+          "DEFEND_by_month_end_above_sma": 29,
+          "ATTACK_by_DEFEND": 7,
+          "ATTACK_by_63_month_end": 25
+        }
+      },
+      "price_only h3 b37.5": {
+        "armed_share_no_memory": 0.3695,
+        "armed_share_with_21_memory": 0.5261,
+        "DEFEND_entries_per_year": 2.6,
+        "ATTACK_entries_per_year": 1.55,
+        "share": {
+          "NEUTRAL": 0.34,
+          "DEFEND": 0.279,
+          "ATTACK": 0.381
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            22,
+            138
+          ],
+          "DEFEND": [
+            22,
+            86
+          ],
+          "ATTACK": [
+            69,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 97,
+        "attack_confirms": 83,
+        "attack_confirms_per_year": 3.78,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 19,
+          "DEFEND_by_month_end_above_sma": 38,
+          "ATTACK_by_DEFEND": 11,
+          "ATTACK_by_63_month_end": 22
+        }
+      },
+      "H1 h5 b25.0": {
+        "armed_share_no_memory": 0.1966,
+        "armed_share_with_21_memory": 0.4773,
+        "DEFEND_entries_per_year": 2.69,
+        "ATTACK_entries_per_year": 1.82,
+        "share": {
+          "NEUTRAL": 0.377,
+          "DEFEND": 0.25,
+          "ATTACK": 0.374
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            23,
+            154
+          ],
+          "DEFEND": [
+            18,
+            79
+          ],
+          "ATTACK": [
+            69,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 112,
+        "attack_confirms": 98,
+        "attack_confirms_per_year": 4.46,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 23,
+          "DEFEND_by_month_end_above_sma": 36,
+          "ATTACK_by_DEFEND": 18,
+          "ATTACK_by_63_month_end": 21
+        }
+      },
+      "price_only h5 b25.0": {
+        "armed_share_no_memory": 0.4983,
+        "armed_share_with_21_memory": 0.6526,
+        "DEFEND_entries_per_year": 3.37,
+        "ATTACK_entries_per_year": 1.82,
+        "share": {
+          "NEUTRAL": 0.335,
+          "DEFEND": 0.313,
+          "ATTACK": 0.351
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            22,
+            139
+          ],
+          "DEFEND": [
+            18,
+            86
+          ],
+          "ATTACK": [
+            55,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 112,
+        "attack_confirms": 98,
+        "attack_confirms_per_year": 4.46,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 29,
+          "DEFEND_by_month_end_above_sma": 45,
+          "ATTACK_by_DEFEND": 23,
+          "ATTACK_by_63_month_end": 17
+        }
+      },
+      "H1 h5 b37.5": {
+        "armed_share_no_memory": 0.1368,
+        "armed_share_with_21_memory": 0.4049,
+        "DEFEND_entries_per_year": 2.46,
+        "ATTACK_entries_per_year": 1.82,
+        "share": {
+          "NEUTRAL": 0.404,
+          "DEFEND": 0.222,
+          "ATTACK": 0.374
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            26,
+            159
+          ],
+          "DEFEND": [
+            18,
+            79
+          ],
+          "ATTACK": [
+            69,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 112,
+        "attack_confirms": 98,
+        "attack_confirms_per_year": 4.46,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 22,
+          "DEFEND_by_month_end_above_sma": 32,
+          "ATTACK_by_DEFEND": 18,
+          "ATTACK_by_63_month_end": 21
+        }
+      },
+      "price_only h5 b37.5": {
+        "armed_share_no_memory": 0.4983,
+        "armed_share_with_21_memory": 0.6526,
+        "DEFEND_entries_per_year": 3.37,
+        "ATTACK_entries_per_year": 1.82,
+        "share": {
+          "NEUTRAL": 0.335,
+          "DEFEND": 0.313,
+          "ATTACK": 0.351
+        },
+        "spell_median_longest": {
+          "NEUTRAL": [
+            22,
+            139
+          ],
+          "DEFEND": [
+            18,
+            86
+          ],
+          "ATTACK": [
+            55,
+            84
+          ]
+        },
+        "washout_spells": 179,
+        "spells_qualifying": 112,
+        "attack_confirms": 98,
+        "attack_confirms_per_year": 4.46,
+        "same_day_conflicts": 0,
+        "exit_reasons": {
+          "DEFEND_by_ATTACK": 29,
+          "DEFEND_by_month_end_above_sma": 45,
+          "ATTACK_by_DEFEND": 23,
+          "ATTACK_by_63_month_end": 17
+        }
+      }
+    },
+    "findings": [
+      "Every grid point fires both DEFEND and ATTACK; no stop condition.",
+      "Qualifying spells that fire: 83 (h=3), 98 (h=5) over 22 years; the 'close to untested' sentence does not apply at either h.",
+      "Exit reasons are counted facts (see grid[*].exit_reasons), replacing revision 6's inferred 'often'."
+    ]
+  },
+  "revision_notes": [
+    {
+      "rev": 5,
+      "text": "The washout clock was changed from first-close to the spell's lowest close at draft stage, on Sector Intelligence's clarification of its own proposal. The parent ruled it before any return was computed. Disclosure: a signals-only table (counts, no returns) and a variance-only power line had already been computed and pushed under the first-close clock in draft revision 4 (commit 1faa76396b) before the ruling reached the lead; per the ruling that variant is not reported in this header and was replaced in full."
+    },
+    {
+      "rev": 7,
+      "text": "ATTACK entry changed by parent ruling R12 (12:06Z). First definition (revisions 5-6): ATTACK on recovery within 20 sessions of a breadth washout's low, with no other condition; its signals-only counts were published in revision 5 (179 spells, 92% fire, ATTACK held about 50% of sessions). Sector Intelligence objected at 12:03Z, before freeze, that this is not the washout rule of their claim. The replacement (spell qualifies only if the relative line is within h% of its 126-session low inside the spell; the mirror of the arming key) was stated on mechanism before its counts or any return existed; exactly one signals-only table was run under it. This is a change made after seeing signal counts and is disclosed as such. No return was ever computed under either definition, so the first is not counted as a trial; ledger stays 9 + 10 + 36 = 55."
+    }
+  ],
+  "order_of_work_after_freeze": [
+    "1. Grid selection on 1998-2019 only (one run, committed).",
+    "2. Sector Intelligence's reviewer findings on the engine folded in as corrections (each logged; no rule, threshold or window changes; any code fix reruns step 1 and is logged as a deviation).",
+    "3. Only then may the parent write and commit HOLDOUT_RELEASE_v2.json.",
+    "4. One confirmatory run on the released windows."
+  ]
+}

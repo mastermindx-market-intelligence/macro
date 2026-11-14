@@ -1,0 +1,2 @@
+{"books": 17, "scored_sessions_1998_2019_states_identical": true, "max_abs_daily_return_diff": 0.0}
+{"warmup_sessions_before_1998_changed_by_S2": {"H1_family_now_NEUTRAL": {"books": 16, "sessions_max_per_book": 133, "first": "1997-01-02", "last": "1997-07-30"}, "H3_now_no_state": {"books": 1, "sessions_max_per_book": 253, "first": "1996-07-31", "last": "1997-07-30"}}}

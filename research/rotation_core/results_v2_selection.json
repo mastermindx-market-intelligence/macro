@@ -1,0 +1,908 @@
+{
+ "label": "SELECTION WINDOW 1998-01-02..2019-12-31 (previously examined; disclosed). Not evidence.",
+ "header_sha256": "ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728",
+ "warmup_note": "closes from 1996-01-02 used only as signal warm-up (252-session beta, 126-session look-backs); no statistic computed on dates before 1998-01-02",
+ "episodes": {
+  "E1998": {
+   "peak": "1998-07-17",
+   "trough": "1998-10-08"
+  },
+  "E2000_02": {
+   "peak": "2000-03-24",
+   "trough": "2002-10-09"
+  },
+  "E2008_09": {
+   "peak": "2007-10-09",
+   "trough": "2009-03-09"
+  },
+  "E2011": {
+   "peak": "2011-04-29",
+   "trough": "2011-10-03"
+  },
+  "E2015_16": {
+   "peak": "2015-06-23",
+   "trough": "2016-02-11"
+  },
+  "E2018Q4": {
+   "peak": "2018-09-20",
+   "trough": "2018-12-24"
+  }
+ },
+ "dropped_industry_days": 0,
+ "settings": {
+  "h3_b25.0": {
+   "H1": {
+    "vs_matched_mix": {
+     "observed": -0.02286893253455649,
+     "ci95": [
+      -0.04951682764495598,
+      0.0038728231546760103
+     ],
+     "p_one_sided_centred": 0.952904709529047,
+     "se": 0.013586875180386593,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.004839682643662392,
+     "ci95": [
+      -0.0447788884216006,
+      0.03517645423451001
+     ],
+     "p_one_sided_centred": 0.5903409659034097
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.05532274394226635,
+     "ci95": [
+      -0.09646108194412238,
+      -0.015997163208669965
+     ],
+     "p_one_sided_centred": 0.995000499950005
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.019725044675770683,
+     "ci95": [
+      -0.049465781354160916,
+      0.009341484780845333
+     ],
+     "p_one_sided_centred": 0.903009699030097
+    },
+    "CAGR": 0.06343374310112604,
+    "CAGR_matched_mix": 0.09279130589169471,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.6611589790758425,
+    "max_drawdown_matched_mix": -0.5765478623975169,
+    "matched_mix_weights": {
+     "OFF": 0.3888,
+     "DEF": 0.1933,
+     "BASE": 0.4175,
+     "cash": 0.0004
+    },
+    "turnover_one_way_per_year": 6.117459775996361,
+    "costs_per_year": 0.012232995294679687,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 2.007140895358418,
+    "false_DEFEND_cost_per_calm_year": 0.012760610250707882,
+    "share": {
+     "NEUTRAL": 0.418,
+     "DEFEND": 0.193,
+     "ATTACK": 0.389
+    }
+   },
+   "H1_at_2x_costs": {
+    "vs_matched_mix": {
+     "observed": -0.035077510672959326,
+     "ci95": [
+      -0.06301166336939461,
+      -0.007801679028862048
+     ],
+     "p_one_sided_centred": 0.9936006399360064,
+     "se": 0.01387353414271116,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "costs_per_year": 0.024441573433082564
+   },
+   "price_only_control": {
+    "vs_matched_mix": {
+     "observed": -0.02239183651268778,
+     "ci95": [
+      -0.05181643009038551,
+      0.0068622314959846855
+     ],
+     "p_one_sided_centred": 0.9319068093190681,
+     "se": 0.014954631262779267,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.0051190255933456965,
+     "ci95": [
+      -0.04626906894949529,
+      0.03586800142122622
+     ],
+     "p_one_sided_centred": 0.5946405359464053
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.05560208689194964,
+     "ci95": [
+      -0.09732086656791805,
+      -0.015830154004975967
+     ],
+     "p_one_sided_centred": 0.9947005299470053
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.020004387625453986,
+     "ci95": [
+      -0.05147588596236445,
+      0.010352698138365026
+     ],
+     "p_one_sided_centred": 0.8963103689631037
+    },
+    "CAGR": 0.06368929332170059,
+    "CAGR_matched_mix": 0.09320225419215333,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.6611589790758441,
+    "max_drawdown_matched_mix": -0.5674450231627988,
+    "matched_mix_weights": {
+     "OFF": 0.3803,
+     "DEF": 0.279,
+     "BASE": 0.3404,
+     "cash": 0.0004
+    },
+    "turnover_one_way_per_year": 6.845187332992211,
+    "costs_per_year": 0.013692930184556548,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 2.7684702004943698,
+    "false_DEFEND_cost_per_calm_year": 0.014499469169481354,
+    "share": {
+     "NEUTRAL": 0.34,
+     "DEFEND": 0.279,
+     "ATTACK": 0.381
+    }
+   },
+   "H2_paired_H1_minus_price_only": {
+    "ann": 0.0002793429496833046,
+    "ci95": [
+     -0.008533785078674867,
+     0.009367757799956664
+    ],
+    "p_one_sided_centred": 0.47295270472952705
+   },
+   "cash_ablation": {
+    "vs_matched_mix": {
+     "observed": -0.045497776974210424,
+     "ci95": [
+      -0.08082147705013333,
+      -0.011144946046217803
+     ],
+     "p_one_sided_centred": 0.9923007699230078,
+     "se": 0.017977577156725433,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.042748475328205304,
+     "ci95": [
+      -0.08726641735575454,
+      0.0026845722888836233
+     ],
+     "p_one_sided_centred": 0.9704029597040296
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.09323153662680925,
+     "ci95": [
+      -0.13835454530683866,
+      -0.05055665216820713
+     ],
+     "p_one_sided_centred": 1.0
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.057633837360313606,
+     "ci95": [
+      -0.09455844615513571,
+      -0.02077470710024144
+     ],
+     "p_one_sided_centred": 0.9989001099890011
+    },
+    "CAGR": 0.025430352140639156,
+    "CAGR_matched_mix": 0.08110160101270125,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.6571736528581786,
+    "max_drawdown_matched_mix": -0.5119600979979315,
+    "matched_mix_weights": {
+     "OFF": 0.3888,
+     "DEF": 0.0,
+     "BASE": 0.4175,
+     "cash": 0.1937
+    },
+    "turnover_one_way_per_year": 4.117209619648643,
+    "costs_per_year": 0.008219508812256408,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 2.007140895358418,
+    "false_DEFEND_cost_per_calm_year": 0.05616185092674758,
+    "share": {
+     "NEUTRAL": 0.418,
+     "DEFEND": 0.193,
+     "ATTACK": 0.389
+    }
+   }
+  },
+  "h3_b37.5": {
+   "H1": {
+    "vs_matched_mix": {
+     "observed": -0.026227739160152485,
+     "ci95": [
+      -0.05220677022306869,
+      -2.6727250270614674e-05
+     ],
+     "p_one_sided_centred": 0.9761023897610239,
+     "se": 0.01332869883980597,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.008056499071519117,
+     "ci95": [
+      -0.04847809754029413,
+      0.031181927951089792
+     ],
+     "p_one_sided_centred": 0.6513348665133487
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.058539560370123075,
+     "ci95": [
+      -0.09971710103943325,
+      -0.01950002743903909
+     ],
+     "p_one_sided_centred": 0.997000299970003
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.022941861103627406,
+     "ci95": [
+      -0.051733448560485604,
+      0.006193453841754218
+     ],
+     "p_one_sided_centred": 0.9386061393860614
+    },
+    "CAGR": 0.05978050387262357,
+    "CAGR_matched_mix": 0.09271042973479093,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.67432336493728,
+    "max_drawdown_matched_mix": -0.578200821302147,
+    "matched_mix_weights": {
+     "OFF": 0.391,
+     "DEF": 0.1781,
+     "BASE": 0.4305,
+     "cash": 0.0004
+    },
+    "turnover_one_way_per_year": 5.662630052873955,
+    "costs_per_year": 0.01132301715010992,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 1.661082120296622,
+    "false_DEFEND_cost_per_calm_year": 0.01694456869067308,
+    "share": {
+     "NEUTRAL": 0.431,
+     "DEFEND": 0.178,
+     "ATTACK": 0.391
+    }
+   },
+   "H1_at_2x_costs": {
+    "vs_matched_mix": {
+     "observed": -0.03752815547762754,
+     "ci95": [
+      -0.06411339854159134,
+      -0.010307736416778073
+     ],
+     "p_one_sided_centred": 0.9966003399660034,
+     "se": 0.013618427579477232,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "costs_per_year": 0.02262343346758489
+   },
+   "price_only_control": {
+    "vs_matched_mix": {
+     "observed": -0.02239183651268778,
+     "ci95": [
+      -0.05096578599946806,
+      0.005731640773973224
+     ],
+     "p_one_sided_centred": 0.9361063893610639,
+     "se": 0.01458795188964883,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.0051190255933456965,
+     "ci95": [
+      -0.04704689055833338,
+      0.03514854415678509
+     ],
+     "p_one_sided_centred": 0.6000399960003999
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.05560208689194964,
+     "ci95": [
+      -0.09838962416395579,
+      -0.01559965640960304
+     ],
+     "p_one_sided_centred": 0.9947005299470053
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.020004387625453986,
+     "ci95": [
+      -0.05020960934670026,
+      0.01082647354097116
+     ],
+     "p_one_sided_centred": 0.9033096690330967
+    },
+    "CAGR": 0.06368929332170059,
+    "CAGR_matched_mix": 0.09320225419215333,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.6611589790758441,
+    "max_drawdown_matched_mix": -0.5674450231627988,
+    "matched_mix_weights": {
+     "OFF": 0.3803,
+     "DEF": 0.279,
+     "BASE": 0.3404,
+     "cash": 0.0004
+    },
+    "turnover_one_way_per_year": 6.845187332992211,
+    "costs_per_year": 0.013692930184556548,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 2.7684702004943698,
+    "false_DEFEND_cost_per_calm_year": 0.014499469169481354,
+    "share": {
+     "NEUTRAL": 0.34,
+     "DEFEND": 0.279,
+     "ATTACK": 0.381
+    }
+   },
+   "H2_paired_H1_minus_price_only": {
+    "ann": -0.0029374734781734218,
+    "ci95": [
+     -0.013194325837336778,
+     0.007482604938823982
+    ],
+    "p_one_sided_centred": 0.7094290570942906
+   },
+   "cash_ablation": {
+    "vs_matched_mix": {
+     "observed": -0.04807224918827778,
+     "ci95": [
+      -0.0827135287242313,
+      -0.01496158675748149
+     ],
+     "p_one_sided_centred": 0.9966003399660034,
+     "se": 0.017224128568952737,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.04398141000568227,
+     "ci95": [
+      -0.08874317501259392,
+      -0.0005855555280824377
+     ],
+     "p_one_sided_centred": 0.9727027297270273
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.09446447130428623,
+     "ci95": [
+      -0.13961524323574862,
+      -0.05138183406654808
+     ],
+     "p_one_sided_centred": 0.9999000099990001
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.05886677203779056,
+     "ci95": [
+      -0.09581074494752924,
+      -0.022964864325667175
+     ],
+     "p_one_sided_centred": 0.9982001799820018
+    },
+    "CAGR": 0.023785942002713334,
+    "CAGR_matched_mix": 0.08197868654203533,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.6810083521251474,
+    "max_drawdown_matched_mix": -0.5187308532897454,
+    "matched_mix_weights": {
+     "OFF": 0.391,
+     "DEF": 0.0,
+     "BASE": 0.4305,
+     "cash": 0.1785
+    },
+    "turnover_one_way_per_year": 3.9351412814827444,
+    "costs_per_year": 0.007855910388688105,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 1.661082120296622,
+    "false_DEFEND_cost_per_calm_year": 0.055928496446955,
+    "share": {
+     "NEUTRAL": 0.431,
+     "DEFEND": 0.178,
+     "ATTACK": 0.391
+    }
+   }
+  },
+  "h5_b25.0": {
+   "H1": {
+    "vs_matched_mix": {
+     "observed": -0.028699527304796916,
+     "ci95": [
+      -0.05667200165515693,
+      6.840857620859952e-05
+     ],
+     "p_one_sided_centred": 0.9777022297770223,
+     "se": 0.014542948808298654,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.011285090091992618,
+     "ci95": [
+      -0.05164476239332458,
+      0.029036618100634456
+     ],
+     "p_one_sided_centred": 0.7098290170982902
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.061768151390596576,
+     "ci95": [
+      -0.10270946099060514,
+      -0.021502494256286704
+     ],
+     "p_one_sided_centred": 0.9974002599740026
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.02617045212410091,
+     "ci95": [
+      -0.05637249989439151,
+      0.003999033960344649
+     ],
+     "p_one_sided_centred": 0.9519048095190481
+    },
+    "CAGR": 0.057036670189794414,
+    "CAGR_matched_mix": 0.09308319756400252,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.6663040332849526,
+    "max_drawdown_matched_mix": -0.5698242171922241,
+    "matched_mix_weights": {
+     "OFF": 0.3734,
+     "DEF": 0.2497,
+     "BASE": 0.3765,
+     "cash": 0.0004
+    },
+    "turnover_one_way_per_year": 7.072602194553413,
+    "costs_per_year": 0.014149451452048711,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 2.9761054655314476,
+    "false_DEFEND_cost_per_calm_year": 0.011821099801540471,
+    "share": {
+     "NEUTRAL": 0.377,
+     "DEFEND": 0.25,
+     "ATTACK": 0.374
+    }
+   },
+   "H1_at_2x_costs": {
+    "vs_matched_mix": {
+     "observed": -0.04282073633877791,
+     "ci95": [
+      -0.07154709203511776,
+      -0.01404174498378931
+     ],
+     "p_one_sided_centred": 0.9984001599840016,
+     "se": 0.01476764247073449,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "costs_per_year": 0.028270660486029456
+   },
+   "price_only_control": {
+    "vs_matched_mix": {
+     "observed": -0.03151545122462173,
+     "ci95": [
+      -0.06102333942709138,
+      -0.0015371221549255298
+     ],
+     "p_one_sided_centred": 0.982001799820018,
+     "se": 0.015097928392159704,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.014851091574368702,
+     "ci95": [
+      -0.05616071123373553,
+      0.02654810549207779
+     ],
+     "p_one_sided_centred": 0.7658234176582341
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.06533415287297265,
+     "ci95": [
+      -0.10638462155071449,
+      -0.02498746136111931
+     ],
+     "p_one_sided_centred": 0.9979002099790021
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.029736453606476993,
+     "ci95": [
+      -0.0613571640567507,
+      0.0017393345320640809
+     ],
+     "p_one_sided_centred": 0.9665033496650335
+    },
+    "CAGR": 0.05357904281148751,
+    "CAGR_matched_mix": 0.0933711002252735,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.6663040332849524,
+    "max_drawdown_matched_mix": -0.5618205144471151,
+    "matched_mix_weights": {
+     "OFF": 0.3514,
+     "DEF": 0.3133,
+     "BASE": 0.335,
+     "cash": 0.0004
+    },
+    "turnover_one_way_per_year": 7.982261640798225,
+    "costs_per_year": 0.015972640536990705,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 3.737434770667399,
+    "false_DEFEND_cost_per_calm_year": 0.020229333654512568,
+    "share": {
+     "NEUTRAL": 0.335,
+     "DEFEND": 0.313,
+     "ATTACK": 0.351
+    }
+   },
+   "H2_paired_H1_minus_price_only": {
+    "ann": 0.0035660014823760836,
+    "ci95": [
+     -0.004179078853902917,
+     0.011114167636773219
+    ],
+    "p_one_sided_centred": 0.17128287171282872
+   },
+   "cash_ablation": {
+    "vs_matched_mix": {
+     "observed": -0.05216478861775618,
+     "ci95": [
+      -0.0912217485335953,
+      -0.012646349281899057
+     ],
+     "p_one_sided_centred": 0.9943005699430058,
+     "se": 0.019999170219277943,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.05448576119414492,
+     "ci95": [
+      -0.10131353069444834,
+      -0.00860037897124384
+     ],
+     "p_one_sided_centred": 0.9901009899010099
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.10496882249274889,
+     "ci95": [
+      -0.15233570242729755,
+      -0.05785353635540749
+     ],
+     "p_one_sided_centred": 1.0
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.06937112322625323,
+     "ci95": [
+      -0.11005424967504267,
+      -0.02874589174097752
+     ],
+     "p_one_sided_centred": 0.9995000499950005
+    },
+    "CAGR": 0.01428950073787183,
+    "CAGR_matched_mix": 0.07776598865497575,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.6693190347400295,
+    "max_drawdown_matched_mix": -0.4852669777115589,
+    "matched_mix_weights": {
+     "OFF": 0.3734,
+     "DEF": 0.0,
+     "BASE": 0.3765,
+     "cash": 0.25
+    },
+    "turnover_one_way_per_year": 4.390448575814429,
+    "costs_per_year": 0.008763918312090781,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 2.9761054655314476,
+    "false_DEFEND_cost_per_calm_year": 0.0673509200430841,
+    "share": {
+     "NEUTRAL": 0.377,
+     "DEFEND": 0.25,
+     "ATTACK": 0.374
+    }
+   }
+  },
+  "h5_b37.5": {
+   "H1": {
+    "vs_matched_mix": {
+     "observed": -0.02687413010488922,
+     "ci95": [
+      -0.054134084334024064,
+      0.0013378450086970045
+     ],
+     "p_one_sided_centred": 0.9735026497350265,
+     "se": 0.014244840960476573,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.00924971202342892,
+     "ci95": [
+      -0.04966733897131057,
+      0.03007070755545543
+     ],
+     "p_one_sided_centred": 0.6807319268073193
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.059732773322032875,
+     "ci95": [
+      -0.10120855495485637,
+      -0.01931886666972377
+     ],
+     "p_one_sided_centred": 0.9964003599640036
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.024135074055537213,
+     "ci95": [
+      -0.053338474561291094,
+      0.005954223794848923
+     ],
+     "p_one_sided_centred": 0.9447055294470553
+    },
+    "CAGR": 0.05899023357452826,
+    "CAGR_matched_mix": 0.09295796777081433,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.6663040332849528,
+    "max_drawdown_matched_mix": -0.5725379519026954,
+    "matched_mix_weights": {
+     "OFF": 0.3734,
+     "DEF": 0.2222,
+     "BASE": 0.404,
+     "cash": 0.0004
+    },
+    "turnover_one_way_per_year": 6.663255443743249,
+    "costs_per_year": 0.013334072997354498,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 2.6992584454820108,
+    "false_DEFEND_cost_per_calm_year": 0.01173513668211523,
+    "share": {
+     "NEUTRAL": 0.404,
+     "DEFEND": 0.222,
+     "ATTACK": 0.374
+    }
+   },
+   "H1_at_2x_costs": {
+    "vs_matched_mix": {
+     "observed": -0.04018158818608167,
+     "ci95": [
+      -0.06815687610850207,
+      -0.011865913471701128
+     ],
+     "p_one_sided_centred": 0.9973002699730027,
+     "se": 0.014503820497284993,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "costs_per_year": 0.026641531078546606
+   },
+   "price_only_control": {
+    "vs_matched_mix": {
+     "observed": -0.03151545122462173,
+     "ci95": [
+      -0.06106453912751932,
+      -0.0017786714922169273
+     ],
+     "p_one_sided_centred": 0.9814018598140186,
+     "se": 0.015153435447735144,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.014851091574368702,
+     "ci95": [
+      -0.055769731230845956,
+      0.025677018631733065
+     ],
+     "p_one_sided_centred": 0.7665233476652334
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.06533415287297265,
+     "ci95": [
+      -0.10701460491252865,
+      -0.024545271736884387
+     ],
+     "p_one_sided_centred": 0.9982001799820018
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.029736453606476993,
+     "ci95": [
+      -0.060135475458696436,
+      0.001443781830875846
+     ],
+     "p_one_sided_centred": 0.9729027097290271
+    },
+    "CAGR": 0.05357904281148751,
+    "CAGR_matched_mix": 0.0933711002252735,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.6663040332849524,
+    "max_drawdown_matched_mix": -0.5618205144471151,
+    "matched_mix_weights": {
+     "OFF": 0.3514,
+     "DEF": 0.3133,
+     "BASE": 0.335,
+     "cash": 0.0004
+    },
+    "turnover_one_way_per_year": 7.982261640798225,
+    "costs_per_year": 0.015972640536990705,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 3.737434770667399,
+    "false_DEFEND_cost_per_calm_year": 0.020229333654512568,
+    "share": {
+     "NEUTRAL": 0.335,
+     "DEFEND": 0.313,
+     "ATTACK": 0.351
+    }
+   },
+   "H2_paired_H1_minus_price_only": {
+    "ann": 0.00560137955093978,
+    "ci95": [
+     -0.0033474800167929593,
+     0.015108210055061367
+    ],
+    "p_one_sided_centred": 0.11648835116488351
+   },
+   "cash_ablation": {
+    "vs_matched_mix": {
+     "observed": -0.04276363454354319,
+     "ci95": [
+      -0.08072850983716157,
+      -0.005360444336482422
+     ],
+     "p_one_sided_centred": 0.9872012798720128,
+     "se": 0.018989335731180106,
+     "finite_draws": 10000,
+     "n": 5535
+    },
+    "vs_SPY": {
+     "ann": -0.04270401678097396,
+     "ci95": [
+      -0.08743898494599857,
+      0.001664353925481326
+     ],
+     "p_one_sided_centred": 0.9687031296870313
+    },
+    "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+     "ann": -0.09318707807957789,
+     "ci95": [
+      -0.13931226441714667,
+      -0.04880581046895543
+     ],
+     "p_one_sided_centred": 1.0
+    },
+    "vs_BASE_equal_weight_industries": {
+     "ann": -0.057589378813082244,
+     "ci95": [
+      -0.0950489014740591,
+      -0.0194720417515454
+     ],
+     "p_one_sided_centred": 0.9987001299870013
+    },
+    "CAGR": 0.025952643191740732,
+    "CAGR_matched_mix": 0.07941053199647952,
+    "CAGR_SPY": 0.07542422049622854,
+    "CAGR_BASE": 0.0923413410455749,
+    "max_drawdown": -0.6693190347400289,
+    "max_drawdown_matched_mix": -0.4974849791108972,
+    "matched_mix_weights": {
+     "OFF": 0.3734,
+     "DEF": 0.0,
+     "BASE": 0.404,
+     "cash": 0.2226
+    },
+    "turnover_one_way_per_year": 4.208402979134686,
+    "costs_per_year": 0.008402197127723464,
+    "deferred_executions": 0,
+    "false_DEFEND_calls_per_calm_year": 2.6992584454820108,
+    "false_DEFEND_cost_per_calm_year": 0.05348994053621533,
+    "share": {
+     "NEUTRAL": 0.404,
+     "DEFEND": 0.222,
+     "ATTACK": 0.374
+    }
+   }
+  }
+ },
+ "H3": {
+  "vs_matched_mix": {
+   "observed": 0.013271968861795,
+   "ci95": [
+    -0.02158126560973681,
+    0.046676148900684465
+   ],
+   "p_one_sided_centred": 0.21747825217478253,
+   "se": 0.017260185676910983,
+   "finite_draws": 10000,
+   "n": 5535
+  },
+  "vs_SPY": {
+   "ann": 0.03131936164596548,
+   "ci95": [
+    -0.00855627932906401,
+    0.07180333123072781
+   ],
+   "p_one_sided_centred": 0.066993300669933
+  },
+  "vs_RSP_or_stated_EW_proxy_before_2003_05": {
+   "ann": -0.019163699652638467,
+   "ci95": [
+    -0.06126644335695908,
+    0.022141681054448966
+   ],
+   "p_one_sided_centred": 0.8164183581641836
+  },
+  "vs_BASE_equal_weight_industries": {
+   "ann": 0.01643399961385719,
+   "ci95": [
+    -0.018628658071285942,
+    0.04961827957299989
+   ],
+   "p_one_sided_centred": 0.16998300169983002
+  },
+  "CAGR": 0.10862749053437204,
+  "CAGR_matched_mix": 0.09368356750950335,
+  "CAGR_SPY": 0.07542422049622854,
+  "CAGR_BASE": 0.0923413410455749,
+  "max_drawdown": -0.5259934982874233,
+  "max_drawdown_matched_mix": -0.563888838051666,
+  "matched_mix_weights": {
+   "OFF": 0.5525,
+   "DEF": 0.4472,
+   "BASE": 0.0,
+   "cash": 0.0004
+  },
+  "turnover_one_way_per_year": 1.751094434021263,
+  "costs_per_year": 0.003511819696119509,
+  "deferred_executions": 0,
+  "false_DEFEND_calls_per_calm_year": 0.830541060148311,
+  "false_DEFEND_cost_per_calm_year": 0.016559802779908605,
+  "share": {
+   "NEUTRAL": 0.0,
+   "DEFEND": 0.447,
+   "ATTACK": 0.553
+  }
+ },
+ "selection": {
+  "rule": "highest H1 excess over its matched mix; exact tie -> smaller h, then larger b",
+  "observed_by_setting": {
+   "h3_b25.0": -0.02286893253455649,
+   "h3_b37.5": -0.026227739160152485,
+   "h5_b25.0": -0.028699527304796916,
+   "h5_b37.5": -0.02687413010488922
+  },
+  "selected": "h3_b25.0",
+  "inherit": "H2's price-only control and the cash ablation use the selected setting"
+ }
+}

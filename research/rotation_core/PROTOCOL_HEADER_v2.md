@@ -1,0 +1,204 @@
+**Frozen header:** `protocol_header_v2.json`, sha256 `ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728`. The runner refuses any other bytes.
+
+# Rotation Core — protocol header v2 (FROZEN)
+
+> **Power, stated first.** H1's own minimum detectable effects under R12, from its actual time in tilt (57–62 % of sessions), at 80 % power, Holm m = 3, 1998–2019 variance only:
+>
+> | Window | H1, actual tilt (pp/yr) | Full-tilt proxy: upper bound of the MDE |
+> |---|---|---|
+> | Pooled history (pre-1998 + 2020–2025) | 2.1–2.3 | 2.6 |
+> | 2020–2025 alone | 7.6–8.3 | 9.2 |
+> | Five forward years | 8.4–9.1 | 10.1 |
+>
+> With the four positive-sign requirements, the chance of passing is about **63 % at the detectable effect** and about **50–57 % at a true 2 pp/yr edge**. **A 1–2 pp/yr rotation edge is not demonstrable by any test available to us, and a fail of this test is not evidence of no effect.**
+>
+> The historical tier is a **low-power falsification screen**. 1926–2019 has already been examined for this question by v1 and by Pro run B, including near neighbours of H1 on 1998–2019. **2020–2025 is the only window not yet examined, and it contains about two stress episodes.**
+
+**Basis.** Written on the corrected engine (`0dfec2426e`). No v2 outcome has been computed. The parent freezes; the trial ledger is declared at freeze. Where this Markdown and `protocol_header_v2.DRAFT.json` differ, the JSON governs.
+
+## Question
+
+When conditions turn bad, does tilting from equal weight toward low-beta industries, and back toward high-beta industries, on a two-key signal beat holding the same average mix after costs?
+
+## Prior examination (disclosed, so none of this is called clean)
+
+- **v1:** market timing 1928–1997; sector rules 1998–2019; the Stage D correction moved no conclusion.
+- **Pro run B:** ten rules on the French 49 industries, 1926–2019, all negative.
+  - Its R7 (breadth divergence) and R8 (washout re-entry) are near neighbours of H1.
+  - Its R6 (confluence into defensives) is the near twin of the H3 Sector Intelligence suggested.
+  - Counted as 10 consumed trials.
+  - **Reproduced locally** on sealed ≤2019 inputs: 3,229 of 3,229 computable cells match, 0 mismatches (`pro_run_B_reproduction/`). The 2,806 cells for the macro rules (R2, R4, R6, R9, R10) need FRED and Shiller inputs that are not on this host, so they are not reproduced and are not cited; only reproduced cells (including R5, R7, R8) may be cited.
+  - While inspecting a schema the worker displayed the last three monthly UNRATE values (2026-08 to 10: 4.1, 4.2, 4.1) before truncation. None entered any computation, and UNRATE is not a v2 input; disclosed.
+- **`research/DEFENSIVE_ROTATION.md` on Macro main:** a defensive-rotation test on the same funds, headline window 2015-01-01 → 2026-06-18, FALSIFIED / DISPLAY-ONLY. 2020–2025 is untouched by this rule, not by the organisation.
+- **2026:** H1 and H2 were shaped by Sector Intelligence's 2026 replay, so 2026 is reported, never scored.
+- **What the lead saw of run B:** some of its per-rule era rows (R5–R8), while reading the file to record its trials. No v2 parameter was chosen from them.
+- **Kill records cited, not rebuilt:** KILL-DEFENSIVE-FLOOR-BUNDLE, KILL-RS-DISPERSION-GATES, KILL-ROTATION-CYCLE-CONFLUENCE, KILL-HINDENBURG-OMEN, KILL-MCO-THRUST, KILL-FUSED-COMPOSITE.
+- **Left out on prior record:** position-in-range as a top signal; fund-flow residual; member-dispersion gates; the index-level breadth thrust.
+- **Not proposed (2026 replay only, one hindsight episode), not killed:** relative-strength momentum as a leader read; the turn label.
+- **Rates, credit spread and SPY-minus-RSP:** descriptive splits only, never in a trigger.
+
+## Construction (Ken French 49 industries, daily)
+
+**File facts (checked 2026-11-11):**
+- The file carries both value- and equal-weighted daily returns, from 1926-07-01.
+- Industries with data: 40 in 1926, 43 from 1940, 49 from 1970. Over 1928–1950, 43 have some data and 37 are complete.
+- **366 industry-days are missing after the industry became eligible, across 8 industries, up to 2019.** This confirms run B's finding.
+- The file is built from the monthly CRSP update, about 4 weeks after month-end. On 2026-11-10 it ran to 2026-09-30.
+- **Consequences:**
+  - 2026 can be reported on this construction only to 2026-09-30.
+  - The rule as tested cannot be run live from this file (see the forward tier).
+
+**Seal.**
+- The 2020+ part of every French industry file is sealed by path. Each full file was hashed unopened and locked in `sealed_post2019/`.
+- The working copies are truncated at 2019-12-31 using the date field only.
+- Nobody on our side has computed anything on French industry data after 2019. The 2020+ data opens once, for the confirmatory run.
+
+**Gap rule (no imputation).**
+- An industry enters a leg only after 252 valid daily returns.
+- An industry-day with a missing return is dropped from that day's leg average and breadth, and counted.
+
+**Legs.**
+- **Formation:** each month-end, each eligible industry's beta to the market is measured over the 252 sessions ending t−1.
+- **Offence:** top third by beta. **Defence:** bottom third. That is 16 industries each from 1970, fewer before.
+- **Base:** equal weight of all eligible industries.
+
+**Breadth stand-ins.**
+- **(i)** Share of offence industries above their own 50-session SMA. Steps are about 6.25 pp, and every grid threshold is a multiple of that step.
+- **(ii)** Narrowness: equal- minus value-weighted industry return over 60 sessions. **Descriptive only, in both tiers.**
+- **Current-leg rule (R2):** every day, the 126-session breadth history used by the arming key and the washout test is recomputed on the *current* leg's members. Past legs are never stitched together. The relative line stays a chained return series.
+- **b is a share (R5)** of the leg's eligible industries: steps of about 6.25 points with 16 members (from 1970), about 7–8 points before 1970.
+
+## Hypotheses (one Holm family, m = 3)
+
+| Id | Rule | Primary contrast |
+|---|---|---|
+**H1 in plain words (R12 counts, 1998–2019).** 179 breadth washout spells (about eight a year, median 3 sessions). **97 qualify at h = 3 and 112 at h = 5**, meaning the relative line was near its 126-session low inside the spell; **83 and 98 fire ATTACK**, about 4 a year, so the ATTACK leg is exercised at both h. ATTACK is entered 1.5–1.8 times a year and held 37–39 % of sessions (median spell 69–72). DEFEND is entered 1.7–2.7 times a year and held 18–25 % (median spell 18–22). NEUTRAL 38–43 %. **DEFEND ends mostly at a month-end with the line back above its SMA** (29–36 exits) rather than by an ATTACK confirm (9–23); ATTACK ends mostly at its 63-session month-end (21–25) rather than by a DEFEND trigger (7–18). H1 is a three-state rule with roughly comparable time in each state. These counts were seen before freeze; no threshold, grid point or window was changed because of them. Re-triggering the state in force is ignored and does not reset its clock.
+
+| **H1** | Base: equal weight (NEUTRAL). **ARMED:** relative line within h % of its 126-session high **and** breadth (i) at least b below its 126-session maximum (both on current members). **DEFEND** (defence leg): armed within the last 21 sessions and the relative line closes below its 50-session SMA. **ATTACK** (offence leg, R12): a washout spell starts at the first close with breadth ≤ 25 % and runs while closes stay ≤ 25 %. It **qualifies** only if, on at least one close inside the spell, the relative line is within h % of its 126-session low: rel ≤ (1 + h/100) × min(rel, last 126 sessions incl. today), the literal mirror of the arming key. ATTACK confirms on the first close above 25 % if the spell qualifies and that close is within 20 sessions of the spell's lowest breadth close (earliest if tied); otherwise no ATTACK and the state in force continues. Grid h ∈ {3, 5} %, b ∈ {25, 37.5}: 4 settings, chosen after freeze on 1998–2019 only, all counted. | vs the exposure-matched static mix at H1's average weights, **rebuilt inside every bootstrap resample** |
+| **H2** | "Breadth in the arming key adds information": H1 minus the identical rule with breadth removed from ARMED only. The ATTACK rule (washout plus line-near-low) is identical in both arms. | paired daily difference |
+| **H3** | Run B's R5 on the beta-sorted legs: hold offence if its 126-session return beats defence's, else defence | vs its matched mix, rebuilt per resample |
+| *ablation* | H1 with bills in place of the defence leg on identical dates: **mandatory, reported, not tested** | — |
+
+**Exits are by state, not by the calendar (R1).**
+- **DEFEND** ends at an ATTACK confirm (next-close execution), or at the first month-end on which the relative line closes above its own 50-session SMA; then NEUTRAL.
+- **ATTACK** ends at a DEFEND trigger, or at the first month-end at least 63 sessions after entry; then NEUTRAL.
+- A state is never exited on its entry day. A trigger on a month's last session stands; the month-end test first applies at the following month-end.
+- **Same-day DEFEND trigger and ATTACK confirm:** DEFEND wins, and the day is counted.
+- **Re-triggering the state already in force** is ignored and does not reset its clock. (Lead's decision; the rulings did not cover it.)
+
+**Fixed settings, not in the grid:** arming memory 21 sessions; ATTACK minimum hold 63 sessions; washout threshold 25 %; recovery within 20 sessions of the spell's lowest close; breadth SMA 50; look-back 126; trigger SMA 50.
+
+**Grid selection.** Highest 1998–2019 excess over the matched mix; exact ties go to the more conservative setting (smaller h, then larger b). H2's price-only control and the cash ablation inherit the selected point; there is no second selection.
+
+**H1 against R7.** R7 is prior negative evidence against H1's breadth key. H1 differs in three ways:
+- it requires a second key, a break of the relative line after arming;
+- its legs are beta-sorted and re-formed monthly from data to t−1, not fixed named groups;
+- it starts from equal weight.
+
+**Signals-only table (1998–2019, R12, run once, no returns computed; `v2_power/signals_table_D.*`).**
+
+| Book | Armed (no mem / 21) | DEFEND/yr | ATTACK/yr | Share N / D / A | Median, longest N / D / A | Qualify / fire (per yr) | DEFEND exits: by ATTACK / month-end | ATTACK exits: by DEFEND / 63-day | Conflicts |
+|---|---|---|---|---|---|---|---|---|---|
+| H1 h3 b25.0 | 11.8% / 33.5% | 2.00 | 1.50 | 42% / 19% / 39% | 23,209 / 21,60 / 72,84 | 97 / 83 (3.78) | 11 / 33 | 7 / 25 | 0 |
+| price_only h3 b25.0 | 37.0% / 52.6% | 2.60 | 1.55 | 34% / 28% / 38% | 22,138 / 22,86 / 69,84 | 97 / 83 (3.78) | 19 / 38 | 11 / 22 | 0 |
+| H1 h3 b37.5 | 7.6% / 26.9% | 1.73 | 1.50 | 43% / 18% / 39% | 27,209 / 22,52 / 72,84 | 97 / 83 (3.78) | 9 / 29 | 7 / 25 | 0 |
+| price_only h3 b37.5 | 37.0% / 52.6% | 2.60 | 1.55 | 34% / 28% / 38% | 22,138 / 22,86 / 69,84 | 97 / 83 (3.78) | 19 / 38 | 11 / 22 | 0 |
+| H1 h5 b25.0 | 19.7% / 47.7% | 2.69 | 1.82 | 38% / 25% / 37% | 23,154 / 18,79 / 69,84 | 112 / 98 (4.46) | 23 / 36 | 18 / 21 | 0 |
+| price_only h5 b25.0 | 49.8% / 65.3% | 3.37 | 1.82 | 34% / 31% / 35% | 22,139 / 18,86 / 55,84 | 112 / 98 (4.46) | 29 / 45 | 23 / 17 | 0 |
+| H1 h5 b37.5 | 13.7% / 40.5% | 2.46 | 1.82 | 40% / 22% / 37% | 26,159 / 18,79 / 69,84 | 112 / 98 (4.46) | 22 / 32 | 18 / 21 | 0 |
+| price_only h5 b37.5 | 49.8% / 65.3% | 3.37 | 1.82 | 34% / 31% / 35% | 22,139 / 18,86 / 55,84 | 112 / 98 (4.46) | 29 / 45 | 23 / 17 | 0 |
+
+**Washout spells (identical for every grid point and arm):** 179; length median 3, longest 59, 22 over 20 sessions; low to recovery median 2, longest 54; 164 recover within 20 sessions of the low (the qualification then decides).
+
+- No stop condition: every grid point fires both states. Qualifying spells that fire (83 at h = 3, 98 at h = 5) are far above the 11-in-22-years line at both h, so the ATTACK leg is not untested.
+- Exit reasons are counted, replacing revision 6's inferred "often": **DEFEND ends mostly at month-end, not by ATTACK.**
+- **Revision note (R12):** the first ATTACK definition (revisions 5–6: recovery within 20 sessions of a washout low, no other condition) had its counts published (179 spells, 92 % fire, ATTACK about 50 % of sessions). Sector Intelligence objected at 12:03Z, before freeze, that it was not the washout rule of their claim. The replacement was stated on mechanism before its counts or any return existed, and exactly one table was run under it. **This is a change made after seeing signal counts.** No return was computed under either definition, so the ledger stays 9 + 10 + 36 = 55.
+
+**H3 choice.** Sector Intelligence's trend-and-Sahm with defensives is the near twin of run B's R6, which showed no benefit. R5 is the simplest direct control, and I have no better-motivated candidate.
+
+## Yardsticks (every window)
+
+- SPY (French market before 1993).
+- RSP (from 2003; before that, the equal-weight market proxy, stated).
+- Equal weight of all industries: the base.
+- **The exposure-matched static mix: binding.**
+
+**Per-episode table, descriptive, no extra trial.** For H1 and its price-only control: was ARMED on at the price peak, and how many sessions before or after the peak did the trigger fire?
+
+## Two tiers
+
+**Historical tier.**
+- **Selection:** on 1998–2019.
+- **Opening:** one opening of 2020–2025, plus pre-1998 (1928–1997).
+- **Not scored:** 2026 is reported only (industries to 2026-09-30).
+- **Pass:** all of the following.
+  - Holm p < 0.05 on the pooled contrast.
+  - Point estimate > 0 in pre-1998, in 2020–2025, and in both pre-1998 eras (1928–45 and 1946–97).
+  - Drawdown no worse than the matched mix.
+  - Holds at 2× costs.
+- **Best label:** "survives falsification on history". Never "confirmed", and never a product claim.
+
+**Tradable second confirmation.**
+- Both keys are computed on the industry portfolios. Only execution moves to the SPDR sector funds.
+- **Fund legs:** three highest and three lowest trailing-252-session-beta funds, data to t−1, re-formed monthly, among funds with at least 252 sessions of history.
+- **Workability:** nine funds from 1998-12 make three per leg workable from 1999-12. XLRE (2016-10) and XLC (2019-06) enter by the 252-session rule only, with no special case.
+- **Named mapping:** XLK against XLP/XLU/XLV is reported beside it as descriptive only, labelled as carrying hindsight.
+- **Veto:** a pass on industries with a negative fund point estimate in 2020–2025 is reported as **"signal not shown to be tradable"**.
+- **My view:** this does not weaken the test, because it can only remove passes. With three funds per leg the veto is noisy and will sometimes fire on noise.
+
+**Forward tier (the only tier that can support "called it before it happened").**
+- **Rules and record:**
+  - Rules and inputs are frozen at freeze, and a dated nightly record starts when the implementation is ready.
+  - 2026 entries are rehearsal only. The first scored formation is the later of the first full month after freeze and readiness, and the first month-end with 126 recorded nights of as-written member breadth. The look-back is never reconstructed.
+  - Clocks: `decided_at` is the row's own last-price date, never the file name or run time; a row one session behind is recorded as such. Roster and weights come from a holdings snapshot dated on or before the night, carrying the snapshot's own date.
+  - One efficacy read at 5 years, counted from the first scored formation. Quarterly checks cover completeness and clocks only; there is no tuning from interim looks.
+- **Owner: QLedger.** One claim per decision or state change, recording:
+  - family;
+  - decided_at and exec_at;
+  - state and weights;
+  - header sha and commit;
+  - matched-mix definition;
+  - input vintage timestamps;
+  - falsifier.
+- **Input contract, in member terms.** Sector Intelligence's nightly per-member file carries, from its first night:
+  - S&P 500 membership flag and GICS sector as of that night, with the source named;
+  - trailing 60-session total return;
+  - price vintage timestamp;
+  - index weight from their daily fund-holdings snapshots, held from 2026-06-11 and carrying the snapshot's own date.
+
+  The roster is the vendor subsector members plus that night's S&P 500 members.
+  - **Legs:** sector funds, chosen by the trailing-beta rule.
+  - **Breadth:** the share of the leg's sectors' S&P 500 members above their own 50-session SMA, on that night's roster.
+  - **Narrowness (descriptive only):** equal- minus cap-weight member return over 60 sessions.
+    - **Fallback, decided before the first scored night and not after:** if the weight field proves unusable, use equal weight within sector minus the sector fund's return.
+  - **Two measurements, not one series.** The historical industry stand-in and the forward member breadth are two measurements of the same idea, not one continuing series. The vendor subsector tree is descriptive only.
+- **Missing before it can start:**
+  - PR #11024 merged;
+  - the per-member price-state file landed;
+  - a nightly issuer writing QLedger claims from the frozen v2 code;
+  - 126 recorded nights of as-written member breadth before the first scored formation. (Breadth itself exists from the first file: each row carries the member's close relative to its 50- and 200-day averages.)
+
+## What the pass rule does to power (D variance only)
+
+| True edge | P(Holm significant) | P(significant **and** all four sub-windows positive) |
+|---|---|---|
+| 2.6 pp/yr (the MDE) | 0.80 | **0.63** |
+| 2.0 pp/yr | 0.56 | 0.43 |
+| 1.0 pp/yr | 0.16 | 0.12 |
+
+The sign requirements cut the pass chance at the MDE from 80 % to about 63 %; the 2020–2025 sign (6 years) costs most of it. The drawdown and 2× cost conditions cut it further. **A fail is not evidence of no effect:** at a true 2 pp/yr edge this test fails more often than it passes.
+
+## Order of work after freeze
+
+1. Grid selection on 1998–2019 only: one run, committed.
+2. Sector Intelligence's reviewer findings on the engine are folded in as corrections, each logged. No rule, threshold or window changes; any code fix reruns step 1 and is logged as a deviation.
+3. Only then may the parent write and commit `HOLDOUT_RELEASE_v2.json`.
+4. One confirmatory run on the released windows.
+
+## Trial ledger at freeze
+
+- **`rotation_core_v2`:** 9 (H1 grid 4, H2, H3, cash ablation, tradable version, named mapping).
+- **Run B:** 10 consumed, negative.
+- **Carried:** v1's 36.
+
+Harness: the corrected v1 engine; t+1 execution; stationary bootstrap block 21 (sensitivity 63), B = 10,000. Nothing here sizes, gates or trades.

@@ -1,0 +1,125 @@
+{
+  "_instructions": "TWO-STAGE TEMPLATE (R13, R16-R20; HOLDOUT_RELEASE_RULING_v2.md). Only the Prophet programme CEO writes and commits the release files, and pushes them to origin/fable/rotation-core-20261110. The runner writes the run ledger itself (R20.1). Stage 1: copy 'stage1' to research/rotation_core/HOLDOUT_RELEASE_v2.json; inputs_sha256 and versions from `python scripts/run_rotation_core_v2.py --manifest stage1`. Stage 2: copy 'stage2' to research/rotation_core/HOLDOUT_RELEASE_v2_stage2.json; pin the ledger prefix that ends with the latest open GATE record (its length and chain hash, v2.chain_hash(entries[:n])); engine_commit equal to that run's. After any run without a record (START-only or INTEGRITY_ABORT), a release naming a new engine commit must cite those START indices in ledger_records_cited. A release version that was never used must be named in a later version's supersedes_unused_releases. The opening list is a constant in code (H1, H3). R22/R23: both releases pin branch_head_at_release (the remote head when the release is written; it must be an ancestor of the head at run time) and may name activity_anchor_commit (must be the header freeze commit). The stage-2 release also pins gate_commit (the commit the runner made for the GATE entry, printed as WITNESS gate_commit) and carries witnessed. versions carries sitecustomize_sha256, pth_count and pth_sha256. Run with `python -E -P -B -X pycache_prefix=/dev/shm/rotation_core_v2_pycache`. R25/R26: run with `python -E` (enforced); versions also carries tools and phase_a_ast_sha256 (from `python -E scripts/run_rotation_core_v2.py --manifest stage1`); the stage-2 witnessed block needs branch, release_commit, start_commit, gate_commit, witness_utc. After the release commit, do not run the test suite on the run host until that stage's record is on the remote. R27: run `--preflight` first (PASS required); stage 2 carries witness_confirmation_utc.",
+  "stage1": {
+    "schema": "rotation_core.holdout_release/v2.stage1",
+    "protocol_header_sha256": "ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728",
+    "released_by": "Prophet programme CEO",
+    "released_at_utc": "<YYYY-MM-DDTHH:MMZ>",
+    "selected_grid_point": {
+      "h_near_high_pct": "<from the rerun; expected 3>",
+      "b_breadth_drop_pp": "<from the rerun; expected 25>"
+    },
+    "windows_released": [
+      "pre1998_1928_1997"
+    ],
+    "run_once": true,
+    "engine_commit": "<final engine commit after the R15 rerun; stage-1 runs pin it (S7)>",
+    "selection_results_commit": "<commit holding results_v2_selection_rerun.json (R15)>",
+    "selection_results_sha256": "<sha256 of results_v2_selection_rerun.json (S5)>",
+    "inputs_sha256": {
+      "industries_le2019": "<sha256>",
+      "factors": "<sha256>"
+    },
+    "versions": {
+      "python": "<>",
+      "numpy": "<>",
+      "pandas": "<>",
+      "pyarrow": "<>",
+      "scipy": "<>",
+      "sitecustomize_sha256": "<>",
+      "pth_count": "<>",
+      "pth_sha256": "<>",
+      "tools": {
+        "git": {
+          "path": "/usr/bin/git",
+          "version": "<>"
+        },
+        "gh": {
+          "path": "/usr/bin/gh",
+          "version": "<>"
+        }
+      },
+      "phase_a_ast_sha256": {
+        "phase_a_window": "<>",
+        "phase_a_strict": "<>",
+        "phase_a": "<>",
+        "states_identical_across_costs": "<>"
+      }
+    },
+    "ledger_records_cited": [],
+    "supersedes_unused_releases": [],
+    "branch_head_at_release": "<40-hex remote head when this release is written>",
+    "activity_anchor_commit": "ac68f2e72a4de055c36b048cb02301ccd7544964"
+  },
+  "stage2": {
+    "schema": "rotation_core.holdout_release/v2.stage2",
+    "protocol_header_sha256": "ca5af27429b54df534e959bde8a3db037c95f7fe5c7c430fe7e6bb5b03d01728",
+    "released_by": "Prophet programme CEO",
+    "released_at_utc": "<YYYY-MM-DDTHH:MMZ>",
+    "windows_released": [
+      "2020-01-02..2025-12-31"
+    ],
+    "configurations": [
+      "H1",
+      "H2",
+      "H3",
+      "H1_cash_ablation",
+      "H1_tradable_funds",
+      "H1_named_mapping_descriptive",
+      "yardsticks",
+      "pooled_holm_m3"
+    ],
+    "run_once": true,
+    "engine_commit": "<equal to the latest gate_history entry's engine_commit (S1a)>",
+    "inputs_sha256": {
+      "industries_full": "<sha256>",
+      "industries_le2019": "<sha256>",
+      "factors": "<sha256>",
+      "yahoo_SPY": "<sha256>",
+      "yahoo_RSP": "<sha256>",
+      "yahoo_XL*": "<one key per fund>"
+    },
+    "versions": {
+      "python": "<>",
+      "numpy": "<>",
+      "pandas": "<>",
+      "pyarrow": "<>",
+      "scipy": "<>",
+      "sitecustomize_sha256": "<>",
+      "pth_count": "<>",
+      "pth_sha256": "<>",
+      "tools": {
+        "git": {
+          "path": "/usr/bin/git",
+          "version": "<>"
+        },
+        "gh": {
+          "path": "/usr/bin/gh",
+          "version": "<>"
+        }
+      },
+      "phase_a_ast_sha256": {
+        "phase_a_window": "<>",
+        "phase_a_strict": "<>",
+        "phase_a": "<>",
+        "states_identical_across_costs": "<>"
+      }
+    },
+    "ledger_records_cited": [],
+    "supersedes_unused_releases": [],
+    "ledger_prefix_len": "<number of ledger entries through the latest open GATE record>",
+    "ledger_prefix_chain_sha256": "<chain_hash of those entries>",
+    "branch_head_at_release": "<40-hex remote head when this release is written>",
+    "activity_anchor_commit": "ac68f2e72a4de055c36b048cb02301ccd7544964",
+    "gate_commit": "<40-hex commit holding the latest GATE entry (WITNESS gate_commit)>",
+    "witnessed": {
+      "branch": "fable/rotation-core-20261110",
+      "release_commit": "<commit that added the stage-1 release>",
+      "start_commit": "<commit that recorded the stage-1 START (WITNESS start_commit)>",
+      "gate_commit": "<= gate_commit (WITNESS gate_commit)>",
+      "witness_utc": "<UTC of the witness's acknowledgement>",
+      "acknowledged_at": "<the witness's acknowledgement times>"
+    },
+    "witness_confirmation_utc": "<UTC of the witness's `match` answer; later than the GATE entry's utc>"
+  }
+}
