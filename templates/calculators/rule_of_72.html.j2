@@ -111,22 +111,26 @@
 
   // ── pure compute (do not re-derive) ────────────────────────────────────────
   // inputs: {mode:"rate"|"years", r annual return %, y years}. Returns an
-  // outputs object, or {ok:false, msg} for invalid input. Never NaN/Infinity.
+  // outputs object, or {ok:false, msg|range} for invalid/out-of-range input.
   // rate mode:  est = 72/r ;  exact = ln(2)/ln(1+r/100)   → years
   // years mode: est = 72/y ;  exact = 100*(2^(1/y)-1)     → percent
   function compute(inp){
     var mode = inp.mode === "years" ? "years" : "rate";
     if(mode === "rate"){
       var r = inp.r;
-      if(!(r > 0)) return {ok:false, msg:"Enter an annual return above zero — a zero or negative return never doubles."};
+      if(!isFinite(r) || !(r > 0)) return {ok:false, msg:"Enter an annual return above zero — a zero or negative return never doubles."};
       var est = 72 / r;
-      var exact = Math.LN2 / Math.log(1 + r / 100);
+      // Preserve tiny positive rates instead of rounding 1 + r/100 to 1.
+      var exact = Math.LN2 / Math.log1p(r / 100);
+      if(!isFinite(est) || !isFinite(exact) || !(exact > 0)) return {ok:false, range:true};
       return { ok:true, mode:"rate", est:est, exact:exact, gap:est - exact, unit:"years" };
     } else {
       var y = inp.y;
-      if(!(y > 0)) return {ok:false, msg:"Enter a number of years above zero to see the return it would take."};
+      if(!isFinite(y) || !(y > 0)) return {ok:false, msg:"Enter a number of years above zero to see the return it would take."};
       var estR = 72 / y;
-      var exactR = 100 * (Math.pow(2, 1 / y) - 1);
+      // Avoid cancellation when the required annual return is close to zero.
+      var exactR = 100 * Math.expm1(Math.LN2 / y);
+      if(!isFinite(estR) || !isFinite(exactR) || !(exactR > 0)) return {ok:false, range:true};
       return { ok:true, mode:"years", est:estR, exact:exactR, gap:estR - exactR, unit:"percent" };
     }
   }
@@ -169,7 +173,9 @@
     function render(){
       var inp = { mode:mode, r:numFrom(rateEl), y:numFrom(yearsEl) };
       var res = compute(inp); last = res;
-      if(!res.ok){ dash(); outPlain.textContent = res.msg; outPlain.className="co-plain"; return; }
+      if(!res.ok){ dash(); outPlain.textContent = res.range
+        ? (L ? "计算结果超出可表示的数值范围，请调整输入。" : "The result is outside the supported numeric range. Adjust the input.")
+        : res.msg; outPlain.className="co-plain"; return; }
 
       if(res.mode === "rate"){
         outUnit.textContent = L ? "年" : "years";
