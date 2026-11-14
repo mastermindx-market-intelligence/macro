@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "410fbd966a2a591e2565f6516923807f905ced98",
+  "source_revision": "3fa0404a7dec46621ffd93a67f4f25b801db52b3",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "The unchanged existing probe actually recaptured all 68 static cases at source_revision after the #11151 Sector Central template change (templates/sector_central.html.j2). The probe records the exact capture source; all 31 render/fixture paths were compared to both that commit and the current workspace. The static harness renders neither host page, so all 68 shots and all 5 contact sheets are byte-identical to the prior capture; only the receipt's source_revision and render-input blob bindings changed. This static evidence is not signed-in production acceptance.",
-    "pr_branch": "claude/si-lane1-final-pass-20261112",
-    "pr_parent_of_evidence_commit": "410fbd966a2a591e2565f6516923807f905ced98",
+    "note": "The unchanged existing probe genuinely recaptured all 68 cases at source_revision after moving the MRI comparison into its visible Events host. These are isolated synthetic host fixtures, not authenticated production acceptance. Every available render/fixture input was compared against the exact capture commit; absent sparse site inputs are explicitly listed.",
+    "pr_branch": "sol/web-macro-surprise-confirmation-20261113-sol",
+    "pr_parent_of_evidence_commit": "3fa0404a7dec46621ffd93a67f4f25b801db52b3",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2148,8 +2148,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
-        "blob_on_pr_branch": "1e5d6fbdcbced80b0f966759012d93f59e4133f8",
+        "blob_at_source_revision": "44208e0ed0ebff6b083b232b26d530b7ee10f066",
+        "blob_on_pr_branch": "44208e0ed0ebff6b083b232b26d530b7ee10f066",
         "equal": true
       },
       {
@@ -2183,6 +2183,7 @@
         "equal": true
       }
     ],
-    "all_equal": true
+    "all_equal": true,
+    "sparse_site_inputs_not_materialized": []
   }
 }

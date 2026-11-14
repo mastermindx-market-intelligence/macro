@@ -7,7 +7,7 @@ import os
 import sys
 import urllib.request
 from pathlib import Path
-from typing import Any
+from typing import Any, TextIO
 
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
@@ -36,17 +36,28 @@ def _read_payload(source: str, timeout: float = 10.0) -> dict[str, Any]:
     return value
 
 
-def append_receipts(path: Path, rows: list[dict[str, Any]]) -> int:
-    """Durably append receipt rows; caller has already performed idempotency."""
+def append_receipts(path: Path, rows: list[dict[str, Any]], *, handle: TextIO | None = None) -> int:
+    """Durably append rows, retaining a caller's optional locked file handle.
+
+    The caller owns idempotency and any supplied handle/lock. That handle is
+    never closed or replaced by a pathname open here.
+    """
     if not rows:
         return 0
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as handle:
+
+    def append_to(target: TextIO) -> int:
+        target.seek(0, os.SEEK_END)
         for row in rows:
-            handle.write(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n")
-        handle.flush()
-        os.fsync(handle.fileno())
-    return len(rows)
+            target.write(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n")
+        target.flush()
+        os.fsync(target.fileno())
+        return len(rows)
+
+    if handle is not None:
+        return append_to(handle)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as owned:
+        return append_to(owned)
 
 
 def reconcile(source: str, out: Path, timeout: float = 10.0, dry_run: bool = False) -> list[dict[str, Any]]:

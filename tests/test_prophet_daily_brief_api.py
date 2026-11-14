@@ -456,3 +456,74 @@ def test_busy_reader_does_not_replace_invalid_query_response(client, route, monk
     assert response.status_code == 400
     assert response.json() == {"error": "INVALID_QUERY"}
     private(response)
+
+
+@pytest.mark.parametrize("value,expected", [("true", True), ("false", False)])
+def test_macro_context_extension_is_explicit_and_typed(value, expected):
+    from starlette.requests import Request
+    from app.prophet_daily_brief import _query
+    request = Request({"type": "http", "query_string": _query_string_for_macro(value)})
+    assert _query(request)["include_macro_context"] is expected
+
+
+def _query_string_for_macro(value):
+    return _query({**GOOD, "include_macro_context": value})[1:].encode()
+
+
+@pytest.mark.parametrize("value", ["1", "TRUE", "", "yes", "../../private"])
+def test_macro_context_extension_refuses_nonboolean_grammar(value):
+    from starlette.requests import Request
+    from app.prophet_daily_brief import _query as parse_query, DailyBriefQueryError
+    request = Request({"type": "http", "query_string": _query_string_for_macro(value)})
+    with pytest.raises(DailyBriefQueryError):
+        parse_query(request)
+
+
+@pytest.mark.parametrize("value", [10**400, -(10**400)])
+def test_native_api_numeric_overflow_keeps_authenticated_daily_brief_available(tmp_path, monkeypatch, value):
+    from app import main as auth_owner, paywall, prophet_daily_brief as route
+    from tests import test_prophet_today_provenance as native
+    from tests.test_release_surprise_confirmation import publish_overflow_context
+    from engine.release_surprise_confirmation import authority
+
+    source, _ = native._native_today_multi(tmp_path, monkeypatch)
+    original = source.read_bytes()
+    monkeypatch.setattr(route, "_REPO_ROOT", tmp_path)
+    calls = []
+
+    def authenticated(request):
+        calls.append("authenticated")
+        return {"sub": "explicit-native-test-user"}
+
+    def entitled(user, request=None, always=False):
+        calls.append("paid")
+        assert always is True
+
+    monkeypatch.setattr(auth_owner, "require_user", authenticated)
+    monkeypatch.setattr(paywall, "enforce_site_full", entitled)
+    client = TestClient(auth_owner.app)
+    assert auth_owner.prophet_daily_brief_router is route.router
+    binding = native.producer.today_selection_source_binding(original)
+    params = {key: binding[key] for key in ("source_sha256", "pair_id", "selection_receipt")}
+    baseline = client.get(URL, params=params)
+    assert baseline.status_code == 200
+    expected = baseline.json()
+    assert expected["candidates"]
+    assert "macro_surprise_context" not in expected
+    publish_overflow_context(tmp_path, value, asof=expected["generated_at"])
+    for extension in ({}, {"include_macro_context": "false"}, {"include_macro_context": "true"}, {}):
+        response = client.get(URL, params={**params, **extension})
+        assert response.status_code == 200
+        private(response)
+        result = response.json()
+        for key in ("status", "candidates", "source_binding", "candidate_generation_id"):
+            assert result[key] == expected[key]
+        if extension.get("include_macro_context") == "true":
+            assert result["macro_surprise_context"]["status"] == "unavailable"
+            assert result["macro_surprise_context"]["reason_codes"] == ["finite_number_required"]
+            assert not result["macro_surprise_context"]["latest_pairs"]
+            assert result["macro_surprise_context"]["authority"] == authority()
+        else:
+            assert "macro_surprise_context" not in result
+    assert source.read_bytes() == original
+    assert calls == ["authenticated", "paid"] * 5

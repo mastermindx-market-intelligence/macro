@@ -1,0 +1,53 @@
+{
+  "schema": "macro_surprise_native_dialog_proof.v1",
+  "evidence_class": "synthetic_full_dashboard_ui",
+  "live_authenticated_acceptance": false,
+  "network_requests_allowed": false,
+  "production_auth_modified": false,
+  "cases": [
+    {
+      "signed_in_decision_mocked": false,
+      "width": 1280,
+      "anonymous_gate_retained": true
+    },
+    {
+      "signed_in_decision_mocked": true,
+      "width": 1280,
+      "native_card_click": true,
+      "visible": true,
+      "single_existing_mri_fetch": true,
+      "keyboard_disclosure": true,
+      "dimensions": {
+        "x": 177,
+        "width": 926,
+        "viewport": 1280,
+        "client": 926,
+        "scroll": 926
+      },
+      "screenshot": "native-events-dialog-1280.png"
+    },
+    {
+      "signed_in_decision_mocked": true,
+      "width": 390,
+      "native_card_click": true,
+      "visible": true,
+      "single_existing_mri_fetch": true,
+      "keyboard_disclosure": true,
+      "dimensions": {
+        "x": 31,
+        "width": 328,
+        "viewport": 390,
+        "client": 328,
+        "scroll": 328
+      },
+      "screenshot": "native-events-dialog-390.png"
+    }
+  ],
+  "page_errors": [],
+  "input_sha256": {
+    "templates/dashboard.html.j2": "2ca6319bd665ef2d63478b21ca0eac34d0000e7c4306d85d265548a87e58e959",
+    "templates/_release_surprise_confirmation.html.j2": "94c329a793b27caf9063ad810509bd2268af83029752768e07d2b3e88afff53f",
+    "templates/release_surprise_confirmation.js": "9d78a43844cb0a1417c1ca4708a2caa10559f88e657682e3b829f2e4a050aaa8",
+    "tests/test_release_surprise_ui.py": "ef3255c05cb782e73db60a84c9847570481c651cdd8ca6542225f789713ebec9"
+  }
+}

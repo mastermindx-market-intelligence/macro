@@ -741,6 +741,10 @@ def main(*, strict: bool = False) -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("sector_central: research handoff step failed (%s)", e)
         data["publication"]["research_handoff"] = {"status": "error"}
+    # MRI-owned descriptive evidence; no row score, order, gating or sizing effect.
+    from engine.release_surprise_confirmation import read_consumer_context
+    data["macro_surprise_context"] = read_consumer_context(
+        root, consumer="sector_intelligence", asof=data["publication"]["built_utc"])
     payload = "window.SECTOR_CENTRAL=" + json.dumps(
         _js_twin_data(data), separators=(",", ":"), ensure_ascii=False) + ";\n"
     (site / "sector_central_data.js").write_text(payload, encoding="utf-8")

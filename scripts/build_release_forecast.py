@@ -725,6 +725,11 @@ def _load_ledger(ledger_path: Path) -> list[dict]:
 def _ledger_key(row: dict) -> tuple:
     # "model" key defaults to None for champion rows (backward-compatible with pre-2b ledger rows
     # that lack the key). Shadow rows carry an explicit model string.
+    if row.get("row_type") in {"macro_return_forecast", "macro_return_capture", "macro_return_score"}:
+        forecast_id = row.get("forecast_id")
+        if not isinstance(forecast_id, str) or not forecast_id.startswith("msc_forecast:"):
+            raise ValueError("macro_return_forecast_identity_required")
+        return (row["row_type"], forecast_id)
     key = tuple(row.get(f) for f in _LEDGER_KEY)
     if row.get("row_type") == "scored":
         # Multiple immutable actual receipts may grade the same frozen forecast
@@ -738,23 +743,167 @@ def _ledger_key(row: dict) -> tuple:
 
 
 def _append_ledger_rows(ledger_path: Path, new_rows: list[dict]) -> None:
-    """Append new rows to the ledger file (idempotent: skip already-keyed rows)."""
-    ledger_path.parent.mkdir(parents=True, exist_ok=True)
-    existing = _load_ledger(ledger_path)
-    existing_keys = {_ledger_key(r) for r in existing}
+    """Incumbent MRI writer: lock, keep-first, then durable append on one inode.
 
-    to_write = [r for r in new_rows if _ledger_key(r) not in existing_keys]
-    if not to_write:
-        log.info("ledger: 0 new rows to append (all already present)")
+    New macro-return rows have strict immutable identities; legacy row semantics
+    are unchanged. Never silently retry a failed/uncertain write here.
+    """
+    if not new_rows:
         return
-
-    with open(ledger_path, "a", encoding="utf-8") as fh:
-        for row in to_write:
-            fh.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")
-        fh.flush()
-        import os as _os
-        _os.fsync(fh.fileno())  # MRI-R33 DURABILITY-1: fsync ledger appends
+    import fcntl
+    import os
+    ledger_path.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(ledger_path, os.O_RDWR | os.O_CREAT | os.O_APPEND | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(fd, "a+", encoding="utf-8") as fh:
+        fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        bound = os.fstat(fh.fileno())
+        strict = any(str(r.get("row_type") or "").startswith("macro_return_") for r in new_rows)
+        if strict:
+            from engine.release_surprise_confirmation import read_jsonl
+            existing, meta = read_jsonl(ledger_path)
+            if meta["status"] not in {"ready", "empty"}:
+                raise ValueError("macro_return_forward_ledger_integrity_failure")
+        else:
+            existing = _load_ledger(ledger_path)
+        existing_by_key = {}
+        for row in existing:
+            key = _ledger_key(row)
+            if str(row.get("row_type") or "").startswith("macro_return_") and key in existing_by_key and existing_by_key[key] != row:
+                raise ValueError("immutable_macro_return_receipt_conflict")
+            existing_by_key[key] = row
+        to_write = []
+        for row in new_rows:
+            key = _ledger_key(row)
+            if key in existing_by_key:
+                if str(row.get("row_type") or "").startswith("macro_return_") and existing_by_key[key] != row:
+                    raise ValueError("immutable_macro_return_receipt_conflict")
+                continue
+            existing_by_key[key] = row
+            to_write.append(row)
+        live = ledger_path.stat(follow_symlinks=False)
+        if (bound.st_dev, bound.st_ino) != (live.st_dev, live.st_ino):
+            raise ValueError("forward_ledger_target_changed_before_append")
+        # Serialize the entire bounded batch before any effect; malformed values
+        # do not create a partially appended batch.
+        encoded = [json.dumps(row, ensure_ascii=False, default=str, allow_nan=False) + "\n" for row in to_write]
+        try:
+            for line in encoded:
+                fh.write(line)
+            fh.flush()
+            os.fsync(fh.fileno())
+        except OSError as exc:
+            raise ForwardLedgerAppendUncertain("forward ledger append/readback required before replay") from exc
     log.info("ledger: appended %d new rows", len(to_write))
+
+
+class ForwardLedgerAppendUncertain(ValueError):
+    """An append may have executed; inspect its original inode/path before retry."""
+
+
+class MacroShadowCaptureUncertain(ValueError):
+    """Original MRI forward ledger must be reconciled before any caller replay."""
+
+
+def capture_macro_shadow(ledger_path: Path, proposals: list[dict]) -> dict:
+    """Original MRI writer captures proposals and observes durable possession.
+
+    The returned evidence is local publisher evidence, not independent third-party
+    timestamp attestation, accepted model validation, or live trading authority.
+    No caller-supplied timestamp can replace the actual capture clock.
+    """
+    from datetime import timedelta
+    from engine.release_surprise_confirmation import authority, digest, instant, iso, read_jsonl, valid_authority
+    def read_owner():
+        rows, meta = read_jsonl(ledger_path)
+        if meta["status"] not in {"ready", "empty", "missing"}:
+            raise ValueError("macro_return_forward_ledger_integrity_failure")
+        indexed = {}
+        for row in rows:
+            if str(row.get("row_type") or "").startswith("macro_return_"):
+                key = _ledger_key(row)
+                if key in indexed and indexed[key] != row:
+                    raise ValueError("immutable_macro_return_receipt_conflict")
+                indexed[key] = row
+        return indexed
+    def require_publication(proposal):
+        publication = proposal.get("publication")
+        prediction = proposal.get("prediction")
+        if (not isinstance(publication, dict) or not isinstance(prediction, dict)
+                or publication.get("destination") != "original_mri_forward_ledger"
+                or publication.get("display_derived_allowed") is not True
+                or prediction.get("display_derived_allowed") is not True
+                or not isinstance(publication.get("rights_ref"), str)
+                or not publication["rights_ref"].strip()):
+            raise ValueError("macro_return_publication_rights_unqualified")
+
+    # Validate the complete batch before the first append. A malformed later
+    # proposal must not turn a clean refusal into an undisclosed partial write.
+    if not isinstance(proposals, list):
+        raise ValueError("macro_return_proposals_must_be_list")
+    initial = read_owner()
+    for proposal in proposals:
+        if not isinstance(proposal, dict) or proposal.get("schema") != "macro_return_shadow_forecast.v1" or proposal.get("row_type") != "macro_return_forecast" or not valid_authority(proposal.get("authority")):
+            raise ValueError("invalid_macro_return_proposal")
+        if proposal.get("proposal_digest") != digest({k: v for k, v in proposal.items() if k != "proposal_digest"}):
+            raise ValueError("macro_return_proposal_digest_mismatch")
+        if not isinstance(proposal.get("forecast_id"), str) or not proposal["forecast_id"]:
+            raise ValueError("macro_return_forecast_identity_required")
+        if ("macro_return_forecast", proposal["forecast_id"]) not in initial:
+            require_publication(proposal)
+            prepared = instant(proposal["prepared_asof"])
+            decision = instant(proposal["prediction"]["decision_at"])
+            entry = instant(proposal["entry_at"])
+            if decision > prepared or prepared >= entry:
+                raise ValueError("macro_return_proposal_clock_order_invalid")
+            if prepared > datetime.now(timezone.utc):
+                raise ValueError("macro_return_proposal_from_future")
+    results = []
+    for proposal in proposals:
+        forecast_id = proposal["forecast_id"]
+        owner = read_owner()
+        existing = owner.get(("macro_return_forecast", forecast_id))
+        if existing:
+            capture = owner.get(("macro_return_capture", forecast_id))
+            # Keep the original result; do not fill a missing observation receipt
+            # after the fact and pretend that it was captured in the old window.
+            results.append({"forecast_id": forecast_id, "status": "existing_captured" if capture else "existing_capture_unqualified",
+                            "capture_eligible": bool(capture and capture.get("capture_eligible") is True),
+                            "proposal_changed": existing.get("proposal_digest") != proposal["proposal_digest"]})
+            continue
+        # This incumbent ledger is Git-published. Internal-research rights alone
+        # cannot authorize recording derived forecasts into its public stream.
+        require_publication(proposal)
+        now = datetime.now(timezone.utc)
+        if instant(proposal["prepared_asof"]) > now or instant(proposal["prediction"]["decision_at"]) > now:
+            raise ValueError("macro_return_proposal_from_future")
+        if instant(proposal["entry_at"]) <= now + timedelta(seconds=60):
+            results.append({"forecast_id": forecast_id, "status": "capture_window_missed", "capture_eligible": False})
+            continue
+        row = {**proposal, "captured_at": iso(now)}
+        try:
+            _append_ledger_rows(ledger_path, [row])
+        except ForwardLedgerAppendUncertain as exc:
+            raise MacroShadowCaptureUncertain("Inspect original MRI forward_ledger.jsonl before replay") from exc
+        try:
+            readback = read_owner().get(("macro_return_forecast", forecast_id))
+            if readback != row:
+                raise ValueError("macro_return_capture_readback_mismatch")
+            observed = datetime.now(timezone.utc)
+            receipt = {"schema": "macro_return_shadow_capture.v1", "row_type": "macro_return_capture",
+                       "forecast_id": forecast_id, "proposal_digest": proposal["proposal_digest"],
+                       "capture_observed_at": iso(observed), "entry_at": proposal["entry_at"],
+                       "capture_eligible": now <= observed < instant(proposal["entry_at"]) and proposal.get("data_evidence_class") in {"retrospective_pit", "prospective_capture"},
+                       "authority": authority(), "evidence_basis": "original_MRI_publisher_local_fsync_and_readback"}
+            receipt["receipt_digest"] = digest(receipt)
+            _append_ledger_rows(ledger_path, [receipt])
+            if read_owner().get(("macro_return_capture", forecast_id)) != receipt:
+                raise ValueError("macro_return_observation_readback_mismatch")
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            raise MacroShadowCaptureUncertain("Inspect original MRI forward_ledger.jsonl; do not replay or change carrier") from exc
+        results.append({"forecast_id": forecast_id, "status": "captured_local_evidence",
+                        "capture_eligible": receipt["capture_eligible"], "receipt_digest": receipt["receipt_digest"]})
+    return {"status": "capture_attempt_completed", "results": results, "authority": authority(),
+            "prospective_validation_claim": False}
 
 
 def _attach_provenance(
@@ -4461,6 +4610,10 @@ def build(root: Path, dry_run: bool = False) -> dict:
         else "shadow_candidate_withheld_no_valid_current_projection"
     )
 
+    # Descriptive PIT surprise evidence, independent of experimental model points.
+    from engine.release_surprise_confirmation import build_confirmation_artifact
+    surprise_confirmation = build_confirmation_artifact(root, asof=asof_utc)
+
     # 10. Assemble latest.json artifact (schema release_forecast.v2)
     accuracy_claim = "withheld_until_clean_aligned_forward_evidence"
     latest = {
@@ -4492,10 +4645,12 @@ def build(root: Path, dry_run: bool = False) -> dict:
             ),
         },
         "last_scored_all_forward": last_scored_all_forward,
+        "surprise_confirmation": surprise_confirmation,
         "enrichments": [
             "surprise_distribution", "market_implied", "reaction_sensitivity",
             "quirk_flags", "expectation_read", "coverage_flags", "input_snapshot_ref",
             "shadows", "coherent_ridge_v1", "cutoff_label",
+            "surprise_confirmation",
             # W11-G additions
             "print_integrity", "revision_context",
             # MRI-R40: combined_v1 combination layer

@@ -1,0 +1,32 @@
+{# MRI-owned comparison context. Reuses the canonical mx-disc anatomy from gmi.css.
+   This is an extension inside Release Radar, not a new card system or fetcher. #}
+<style>
+#rr-confirmation{margin:var(--sp-4,16px) 0;color:var(--text);font-size:var(--fs-sm,14px)}
+#rr-confirmation h3{margin:0 0 var(--sp-2,8px);font-size:var(--fs-body,15px);font-weight:700}
+#rr-confirmation p{margin:var(--sp-2,8px) 0;line-height:1.5}
+#rr-confirmation .mx-disc{border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
+#rr-confirmation .mx-disc summary{cursor:pointer;padding:10px 14px;font-size:var(--fs-sm,14px);font-weight:600;color:var(--text);min-height:20px}
+#rr-confirmation .mx-disc .mx-disc-body{padding:0 14px 12px;color:var(--muted);font-size:var(--fs-sm,14px);overflow-wrap:anywhere}
+#rr-confirmation summary:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+#rr-confirmation .rr-confirmation-rows{display:grid;gap:var(--sp-2,8px);margin:var(--sp-3,12px) 0}
+#rr-confirmation .rr-confirmation-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--sp-2,8px);padding:var(--sp-2,8px) 0;border-bottom:1px solid var(--line)}
+#rr-confirmation .rr-confirmation-note{color:var(--muted)}
+@media(max-width:640px){ #rr-confirmation .rr-confirmation-row{display:grid;grid-template-columns:1fr}}
+</style>
+<section id="rr-confirmation" aria-labelledby="rr-confirmation-title">
+  <h3 id="rr-confirmation-title"><span class="l-en">Inflation agreement</span><span class="l-zh">通胀信号对照</span></h3>
+  <p data-msc-state role="status" aria-live="polite"><span class="l-en">Forecast comparison unavailable.</span><span class="l-zh">暂缺预测对照。</span></p>
+  <div data-msc-rows class="rr-confirmation-rows"></div>
+  <p class="rr-confirmation-note"><span class="l-en">Watch only; this is not a trading signal.</span><span class="l-zh">仅供观察，不作为交易信号。</span></p>
+  <details class="mx-disc">
+    <summary><span class="l-en">How this comparison works</span><span class="l-zh">对照方法与数据状态</span></summary>
+    <div class="mx-disc-body">
+      <p><span class="l-en">Compares official first prints with economist forecasts captured before each release. The paired comparison starts only after both reports are available. Equal-to-forecast prints stay separate.</span><span class="l-zh">将官方首次公布值与发布前留存的经济学家预测比较。两份报告均已取得后才形成配对结果；符合预期的情况单独保留。</span></p>
+      <p data-msc-quality><span class="l-en">Waiting for qualified forecast history.</span><span class="l-zh">等待具备可靠来源与时间记录的预测数据。</span></p>
+      <p><span class="l-en">No verified return advantage has been established. Model forecasts, revised data and late imports cannot substitute for pre-release economist forecasts.</span><span class="l-zh">尚未证实具有收益优势。模型预测、修订后数据及事后导入记录，均不能代替发布前的市场预期。</span></p>
+    </div>
+  </details>
+</section>
+<script>
+{% include "release_surprise_confirmation.js" %}
+</script>

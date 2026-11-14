@@ -1,0 +1,99 @@
+{
+  "schema": "macro_surprise_component_browser_proof.v1",
+  "evidence_class": "synthetic_ui_only",
+  "scope": "actual_component_and_renderer_not_full_production_page",
+  "checks": [
+    {
+      "theme": "dark",
+      "language": "en",
+      "width": 1280,
+      "no_horizontal_overflow": true,
+      "keyboard_disclosure": true,
+      "refresh_preserves_focus_and_disclosure": true
+    },
+    {
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "no_horizontal_overflow": true,
+      "keyboard_disclosure": true,
+      "refresh_preserves_focus_and_disclosure": true
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "width": 1280,
+      "no_horizontal_overflow": true,
+      "keyboard_disclosure": true,
+      "refresh_preserves_focus_and_disclosure": true
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "no_horizontal_overflow": true,
+      "keyboard_disclosure": true,
+      "refresh_preserves_focus_and_disclosure": true
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "width": 1280,
+      "no_horizontal_overflow": true,
+      "keyboard_disclosure": true,
+      "refresh_preserves_focus_and_disclosure": true
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "no_horizontal_overflow": true,
+      "keyboard_disclosure": true,
+      "refresh_preserves_focus_and_disclosure": true
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "width": 1280,
+      "no_horizontal_overflow": true,
+      "keyboard_disclosure": true,
+      "refresh_preserves_focus_and_disclosure": true
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "no_horizontal_overflow": true,
+      "keyboard_disclosure": true,
+      "refresh_preserves_focus_and_disclosure": true
+    },
+    {
+      "state": "missing",
+      "refusal_visible": true
+    },
+    {
+      "state": "integrity",
+      "refusal_visible": true
+    },
+    {
+      "state": "stale",
+      "refusal_visible": true
+    },
+    {
+      "state": "authority",
+      "refusal_visible": true
+    }
+  ],
+  "screenshots": [
+    "macro-confirmation-dark-en-1280.png",
+    "macro-confirmation-dark-en-390.png",
+    "macro-confirmation-dark-zh-1280.png",
+    "macro-confirmation-dark-zh-390.png",
+    "macro-confirmation-light-en-1280.png",
+    "macro-confirmation-light-en-390.png",
+    "macro-confirmation-light-zh-1280.png",
+    "macro-confirmation-light-zh-390.png"
+  ],
+  "page_errors": [],
+  "network_requests_allowed": false
+}

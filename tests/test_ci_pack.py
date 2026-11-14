@@ -5337,6 +5337,10 @@ CURATED_EXCLUSIVE = {
     # exact 55-file non-wildcard import closure plus the eight Jinja templates the
     # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
     "global-liquidity-transmission",
+    # MRI/consumer closure is explicitly curated after its opaque subprocess
+    # fallback selected unrelated script edits. Enroll the exact owner here;
+    # equality, closure, packing ceilings and original test commands stay intact.
+    "unrun-release-forecast",
     # Options scenario contract: keep the ordinary code job explicitly scoped.
     "options-scenario-contract",
     # xguerrilla admission chain: one gate:code exclusive home for the

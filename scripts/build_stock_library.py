@@ -1922,7 +1922,8 @@ def _read_original_selection_native_relation(raw, *, selection_index, started_at
 
 
 def read_today_candidate_projection(repo_root, *, expected_source_sha256, expected_pair_id,
-                                    expected_selection_receipt, expected_candidate_generation_id=None):
+                                    expected_selection_receipt, expected_candidate_generation_id=None,
+                                    include_macro_context=False):
     """Read exact finalized selection plus native B1; never mutate publication."""
     from engine.us_candidate_episode import (
         attest_candidate_episode_store_bytes,
@@ -2016,6 +2017,12 @@ def read_today_candidate_projection(repo_root, *, expected_source_sha256, expect
             now=read_completed_at, quote=None)
         if completion_codes:
             item["reason_codes"] = [*completion_codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES]
+    # Opt-in extension: legacy callers retain their exact closed response shape.
+    # Macro context never enters candidate selection, rank or availability.
+    if include_macro_context is True:
+        from engine.release_surprise_confirmation import read_consumer_context
+        result["macro_surprise_context"] = read_consumer_context(
+            root, consumer="prophet", asof=read_completed_at)
     # Native candidate availability is narrower than a fully available brief.
     return {**result, "status": "PARTIAL", "candidates": candidates,
             "reason_codes": ["DAILY_BRIEF_OWNER_INPUTS_UNAVAILABLE"]}

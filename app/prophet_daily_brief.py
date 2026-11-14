@@ -16,7 +16,9 @@ This file is a transport boundary only — a deliberate sibling of
   dependency and ``_PRIVATE_HEADERS`` are imported from ``app.prophet_lab`` —
   no Lab projection, board or data reader is touched.
 * Query parsing happens strictly AFTER authentication and accepts exactly four
-  exact-bound pins (three required, one optional). Unknown names, repeated
+  exact-bound pins (three required, one optional), plus the explicit optional
+  include_macro_context=true|false extension. The extension never changes the
+  legacy response when omitted. Unknown names, repeated
   names, empty or malformed bindings and path-shaped values are rejected with
   400 before any owner read. There is NO server-path override query: the
   repository root is this module's own constant (``MACRO_REPO`` environment
@@ -72,7 +74,7 @@ _REPO_ROOT = Path(os.environ.get("MACRO_REPO") or Path(__file__).resolve().paren
 _READ_ADMISSION = BoundedSemaphore(1)
 
 _QUERIES = frozenset(
-    {"source_sha256", "pair_id", "selection_receipt", "candidate_generation_id"}
+    {"source_sha256", "pair_id", "selection_receipt", "candidate_generation_id", "include_macro_context"}
 )
 # The restricted alphabets are themselves the injection guard: no accepted
 # binding can carry a separator, dot segment or whitespace into any path.
@@ -108,7 +110,7 @@ def _query(request: Request) -> dict:
     params = request.query_params
     if any(key not in _QUERIES or len(params.getlist(key)) != 1 for key in params):
         raise DailyBriefQueryError("INVALID_QUERY")
-    return {
+    bindings = {
         "expected_source_sha256": _pin(params, "source_sha256", _SOURCE_SHA256),
         "expected_pair_id": _pin(params, "pair_id", _PAIR_ID),
         "expected_selection_receipt": _pin(params, "selection_receipt", _SELECTION_RECEIPT),
@@ -118,6 +120,10 @@ def _query(request: Request) -> dict:
             else None
         ),
     }
+    if "include_macro_context" in params:
+        value = _pin(params, "include_macro_context", re.compile(r"(?:true|false)\Z"))
+        bindings["include_macro_context"] = value == "true"
+    return bindings
 
 
 def _unavailable() -> JSONResponse:

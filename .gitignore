@@ -774,3 +774,7 @@ data/yahoo/.CL_F.observation-*
 
 # Live proxy pool: carries BartProxies user/password. Template is proxies.example.yml.
 tools/xguerrilla/proxies.yml
+
+# MRI economist-poll archive is private source evidence, not a site/Git export.
+# Publish only the rights-filtered original MRI artifact; never force-add this ledger.
+/data/release_forecast/consensus_snapshots.jsonl

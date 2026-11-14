@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_release_surprise_confirmation.html.j2
+manifest: mockups/evidence/mri-surprise-confirmation-20261113/manifest.json

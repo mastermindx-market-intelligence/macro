@@ -831,6 +831,10 @@ MUST_RESTART = [
     "engine/options_payoff.py",
     "engine/greeks.py",
     "engine/intraday_greeks.py",
+    # Opt-in Prophet macro context imports these MRI validators into sys.modules.
+    "engine/release_surprise_confirmation.py",
+    "engine/release_actuals.py",
+    "engine/rates_command_basis.py",
     # Native supplier conditional research imports and cached K3 validators.
     'app/company_supplier_research.py',
     'engine/company_intelligence/h20_reported_event.py',
@@ -1144,6 +1148,15 @@ MUST_NOT_RESTART = [
     "engine/spine.py",
     "admin/server.py",
     "templates/index.html.j2",
+    # MRI data is read afresh, and its research/ingestion code is not an API import.
+    "data/release_forecast/latest.json",
+    "data/release_forecast/consensus_snapshots.jsonl",
+    "engine/release_surprise_study.py",
+    "scripts/research_release_surprise.py",
+    "scripts/ingest_release_consensus.py",
+    "engine/release_surprise_confirmation.py.bak",
+    "engine/release_actuals_extra.py",
+    "engine/rates_command_basises.py",
     # Hostile lookalikes must not widen the exact W1-A restart closure.
     "config/intelligence_workspace/datapoints.v1.json.bak",
     "contracts/intelligence_workspace/datapoint_value.schema.json.bak",
