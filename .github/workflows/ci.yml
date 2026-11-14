@@ -5164,6 +5164,7 @@ jobs:
             --pack-count 12 \
             --base-replay-budget-seconds 900 \
             --emit-semantic-fragment "$RUNNER_TEMP/ci-semantic-fragments/pack-${{ matrix.pack }}.json" \
+            --emit-timing-observations "$RUNNER_TEMP/ci-timing/pack-${{ matrix.pack }}.jsonl" \
             --execute
       # Planner uncertainty still widens to the full suite. It cannot mint
       # semantic authority because no exact plan exists, so ci-gate will block
@@ -5179,7 +5180,20 @@ jobs:
           --gate code
           --pack-index ${{ matrix.pack }}
           --pack-count 12
+          --emit-timing-observations "$RUNNER_TEMP/ci-timing/pack-${{ matrix.pack }}.jsonl"
           --execute
+      # Optional observations do not attest execution success. A missing upload
+      # is incomplete timing evidence; semantic fragments remain authoritative.
+      - name: publish optional hosted pack timing observations
+        if: always() && (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
+        continue-on-error: true
+        timeout-minutes: 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-pack-timing-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pack }}
+          path: ${{ runner.temp }}/ci-timing/pack-${{ matrix.pack }}.jsonl
+          if-no-files-found: warn
+          retention-days: 3
       # The called main workflow already ran this exact pack on the PC pool. These
       # two hosted steps are deliberately tiny: they preserve the existing
       # ci-pack-N check and artifact contract while refusing any mismatch between

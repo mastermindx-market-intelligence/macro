@@ -482,6 +482,61 @@ def test_folded_pack_commands_fold_to_one_line_and_carry_no_comment_marker() -> 
     assert "--plan-json" in pack_run and "--emit-semantic-fragment" in pack_run
 
 
+def test_both_hosted_pack_commands_emit_separate_timing_observations() -> None:
+    import shlex
+
+    job = _job("ci-pack")
+    fallback = next(step for step in job["steps"]
+                    if step.get("name") == "fail-safe full suite when no authoritative plan was produced")
+    for step in (_pack_step(), fallback):
+        command = step["run"].split("scripts/run_ci_pack.py", 1)[1]
+        arguments = shlex.split(command.replace("${{ matrix.pack }}", "4"))
+        assert arguments.count("--emit-timing-observations") == 1
+        assert arguments[arguments.index("--emit-timing-observations") + 1] == (
+            "$RUNNER_TEMP/ci-timing/pack-4.jsonl"
+        )
+    authoritative = _pack_step()["run"]
+    for binding in (
+        '--plan-json "$RUNNER_TEMP/ci-semantic-plan/ci-plan.json"',
+        '--changed-files-file "$CI_CHANGED_FILES_FILE"',
+        '--expect-plan-sha "$EXPECTED_PLAN_SHA"',
+        '--expect-tested-tree-sha "$TESTED_TREE_SHA"',
+        '--expect-subject-head-sha "$SUBJECT_HEAD_SHA"',
+        '--expect-base-sha "$TESTED_BASE_SHA"',
+        '--emit-semantic-fragment "$RUNNER_TEMP/ci-semantic-fragments/pack-${{ matrix.pack }}.json"',
+    ):
+        assert binding in authoritative
+    assert "--plan-json" not in fallback["run"]
+    assert "--emit-semantic-fragment" not in fallback["run"]
+
+
+def test_hosted_timing_upload_is_optional_bounded_and_separate_from_semantic_proof() -> None:
+    job = _job("ci-pack")
+    matches = [step for step in job["steps"]
+               if step.get("name") == "publish optional hosted pack timing observations"]
+    assert len(matches) == 1
+    upload = matches[0]
+    semantic = next(step for step in job["steps"]
+                    if step.get("name") == "publish this pack's raw semantic fragment")
+    assert upload["uses"] == semantic["uses"] == (
+        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+    )
+    assert upload["if"] == (
+        "always() && (github.event.pull_request.head.repo.full_name != github.repository || "
+        "vars.CI_EXECUTION_ROUTE != 'pc')"
+    )
+    assert upload["continue-on-error"] is True
+    assert 0 < upload["timeout-minutes"] <= 2
+    assert upload["with"] == {
+        "name": "ci-pack-timing-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.pack }}",
+        "path": "${{ runner.temp }}/ci-timing/pack-${{ matrix.pack }}.jsonl",
+        "if-no-files-found": "warn",
+        "retention-days": 3,
+    }
+    assert upload["with"]["path"] != semantic["with"]["path"]
+    assert "always()" not in job["if"] and "!cancelled()" in _top_level_conjuncts(job["if"])
+
+
 # ─── ci-gate ────────────────────────────────────────────────────────────────────
 
 
