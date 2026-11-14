@@ -167,6 +167,9 @@ def assess(returns: pd.DataFrame, lookback: int = 252) -> dict | None:
         return None
     csd = r.std(axis=1)                                   # cross-sectional dispersion per day
     disp = float(csd.iloc[-21:].mean())                  # recent ~1-month average dispersion
+    # An unavailable current statistic cannot support a historical regime label.
+    if not np.isfinite(disp):
+        return None
     hist = csd.rolling(21, min_periods=10).mean()
     h = hist.dropna()
     disp_pct = float((h <= h.iloc[-1]).mean()) if len(h) >= 60 else None
@@ -213,3 +216,4 @@ def assess(returns: pd.DataFrame, lookback: int = 252) -> dict | None:
             },
             "label": en, "label_zh": zh,
             "eigen": eigen}
+
