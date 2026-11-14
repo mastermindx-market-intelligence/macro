@@ -1,0 +1,94 @@
+{
+  "schema": "prophet.pit_group_repair_proof/v1",
+  "source_base": "e2a90d858053ec8da814b1d83225318017ff3083",
+  "membership_source": "data/breadth/sp1500_pit_membership.parquet",
+  "membership_sha256": "7b34316c0561619ba052f02036ec1fbe7fff3d00dcda3e7acb7dffda10582eca",
+  "source_rows": 3286,
+  "cases": [
+    {
+      "date": "2015-01-02",
+      "group": "sp500",
+      "expected_count": 499,
+      "actual_count": 499,
+      "exact_membership_equal": true,
+      "basis": "pit",
+      "note": "membership from sp1500_pit_membership.parquet for group 'sp500' as-of 2015-01-02 - source group/tenure selection; membership alone does not verify member-price coverage, historical source completeness or price adjustment basis"
+    },
+    {
+      "date": "2015-01-02",
+      "group": "sp400",
+      "expected_count": 425,
+      "actual_count": 425,
+      "exact_membership_equal": true,
+      "basis": "pit",
+      "note": "membership from sp1500_pit_membership.parquet for group 'sp400' as-of 2015-01-02 - source group/tenure selection; membership alone does not verify member-price coverage, historical source completeness or price adjustment basis"
+    },
+    {
+      "date": "2015-01-02",
+      "group": "sp600",
+      "expected_count": 0,
+      "actual_count": 0,
+      "exact_membership_equal": true,
+      "basis": "cold-start",
+      "note": "no recorded members for requested group 'sp600' as-of 2015-01-02; group history is unavailable, not a proven empty index; no unscoped fallback was admitted"
+    },
+    {
+      "date": "2020-01-02",
+      "group": "sp500",
+      "expected_count": 505,
+      "actual_count": 505,
+      "exact_membership_equal": true,
+      "basis": "pit",
+      "note": "membership from sp1500_pit_membership.parquet for group 'sp500' as-of 2020-01-02 - source group/tenure selection; membership alone does not verify member-price coverage, historical source completeness or price adjustment basis"
+    },
+    {
+      "date": "2020-01-02",
+      "group": "sp400",
+      "expected_count": 407,
+      "actual_count": 407,
+      "exact_membership_equal": true,
+      "basis": "pit",
+      "note": "membership from sp1500_pit_membership.parquet for group 'sp400' as-of 2020-01-02 - source group/tenure selection; membership alone does not verify member-price coverage, historical source completeness or price adjustment basis"
+    },
+    {
+      "date": "2020-01-02",
+      "group": "sp600",
+      "expected_count": 617,
+      "actual_count": 617,
+      "exact_membership_equal": true,
+      "basis": "pit",
+      "note": "membership from sp1500_pit_membership.parquet for group 'sp600' as-of 2020-01-02 - source group/tenure selection; membership alone does not verify member-price coverage, historical source completeness or price adjustment basis"
+    },
+    {
+      "date": "2025-01-02",
+      "group": "sp500",
+      "expected_count": 503,
+      "actual_count": 503,
+      "exact_membership_equal": true,
+      "basis": "pit",
+      "note": "membership from sp1500_pit_membership.parquet for group 'sp500' as-of 2025-01-02 - source group/tenure selection; membership alone does not verify member-price coverage, historical source completeness or price adjustment basis"
+    },
+    {
+      "date": "2025-01-02",
+      "group": "sp400",
+      "expected_count": 400,
+      "actual_count": 400,
+      "exact_membership_equal": true,
+      "basis": "pit",
+      "note": "membership from sp1500_pit_membership.parquet for group 'sp400' as-of 2025-01-02 - source group/tenure selection; membership alone does not verify member-price coverage, historical source completeness or price adjustment basis"
+    },
+    {
+      "date": "2025-01-02",
+      "group": "sp600",
+      "expected_count": 605,
+      "actual_count": 605,
+      "exact_membership_equal": true,
+      "basis": "pit",
+      "note": "membership from sp1500_pit_membership.parquet for group 'sp600' as-of 2025-01-02 - source group/tenure selection; membership alone does not verify member-price coverage, historical source completeness or price adjustment basis"
+    }
+  ],
+  "scope": "Existing as_of_panel consumer matches direct source group/tenure selection. This does not validate the source historical completeness or member-price coverage.",
+  "historical_outcomes_changed": false,
+  "live_orders_or_ranking_changed": false,
+  "empty_source_group_is_unavailable_not_empty_market": true
+}

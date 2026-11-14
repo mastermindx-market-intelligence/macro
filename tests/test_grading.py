@@ -1589,3 +1589,106 @@ def test_prophet_discovery_batch_reports_only_actual_market_effects(
     assert (ca_out.read_bytes() if ca_out.exists() else None) == ca_before
     assert not ca_out.with_suffix(".tmp.parquet").exists()
     assert source_path.read_bytes() == source_before
+
+
+class TestPITGroupIdentity:
+    """A requested index population must never silently widen to all S&P 1500 names."""
+
+    @staticmethod
+    def _fixture(tmp_path, *, with_src=True):
+        frame = pd.DataFrame({
+            "ticker": ["LARGE", "MID", "SMALL", "FUTURE", "OLD"],
+            "start_date": pd.to_datetime(["2010-01-01"] * 3 + ["2022-01-01", "2010-01-01"]),
+            "end_date": pd.to_datetime([None] * 4 + ["2017-01-01"]),
+            "src": ["sp500", "sp400", "sp600", "sp500", "sp500"],
+        })
+        if not with_src:
+            frame = frame.drop(columns="src")
+        path = tmp_path / "pit_groups.parquet"
+        frame.to_parquet(path, index=False)
+        closes = {name: _series([100, 101], start="2019-01-02") for name in frame.ticker}
+        return path, closes
+
+    @pytest.mark.parametrize("group,expected", [
+        ("sp500", ["LARGE"]), ("sp400", ["MID"]), ("sp600", ["SMALL"]),
+    ])
+    def test_requested_group_and_historical_tenure_both_apply(self, tmp_path, group, expected):
+        path, closes = self._fixture(tmp_path)
+        panel = grading.as_of_panel(closes, "2019-01-03", group=group,
+                                    ledger=pd.DataFrame(), include_dead=False, pit_path=path)
+        assert panel["members"] == expected
+        assert sorted(panel["closes"]) == expected
+        assert panel["n_asof"] == len(expected)
+        assert panel["survivorship"] == "pit"
+        assert "membership alone does not verify" in panel["note"]
+        assert "no dead-name price store" not in panel["note"]
+
+    def test_loader_preserves_optional_group_identity(self, tmp_path):
+        path, _ = self._fixture(tmp_path)
+        loaded = grading._load_pit_membership(path)
+        assert "src" in loaded
+        assert set(loaded["src"]) == {"sp500", "sp400", "sp600"}
+
+    def test_known_group_with_no_members_at_date_stays_empty(self, tmp_path):
+        path, closes = self._fixture(tmp_path)
+        panel = grading.as_of_panel(closes, "2005-01-03", group="sp500",
+                                    ledger=pd.DataFrame(), include_dead=False, pit_path=path)
+        assert panel["members"] == []
+        assert panel["closes"] == {}
+        assert panel["n_asof"] == 0
+        assert panel["survivorship"] == "cold-start"
+        assert "not a proven empty index" in panel["note"]
+        assert "no recorded members" in panel["note"]
+
+    @pytest.mark.parametrize("group", ["nonexistent_index", "SP500"])
+    def test_unrepresented_group_is_unknown_not_the_union(self, tmp_path, group):
+        path, closes = self._fixture(tmp_path)
+        panel = grading.as_of_panel(closes, "2019-01-03", group=group,
+                                    ledger=pd.DataFrame(), include_dead=False, pit_path=path)
+        assert panel["members"] == []
+        assert panel["closes"] == {}
+        assert panel["survivorship"] == "cold-start"
+        assert "group membership unavailable" in panel["note"]
+
+    def test_missing_group_column_cannot_claim_group_correctness(self, tmp_path):
+        path, closes = self._fixture(tmp_path, with_src=False)
+        panel = grading.as_of_panel(closes, "2019-01-03", group="sp500",
+                                    ledger=pd.DataFrame(), include_dead=False, pit_path=path)
+        assert panel["members"] == []
+        assert panel["survivorship"] == "cold-start"
+        assert "group membership unavailable" in panel["note"]
+
+    def test_missing_pit_file_cannot_widen_an_explicit_group(self, tmp_path):
+        _, closes = self._fixture(tmp_path)
+        panel = grading.as_of_panel(closes, "2019-01-03", group="sp500",
+                                    ledger=pd.DataFrame(), include_dead=False,
+                                    pit_path=tmp_path / "missing.parquet")
+        assert panel["members"] == []
+        assert panel["closes"] == {}
+        assert panel["survivorship"] == "cold-start"
+
+    def test_unscoped_historical_union_is_unchanged(self, tmp_path):
+        path, closes = self._fixture(tmp_path)
+        panel = grading.as_of_panel(closes, "2019-01-03", ledger=pd.DataFrame(),
+                                    include_dead=False, pit_path=path)
+        assert panel["members"] == ["LARGE", "MID", "SMALL"]
+        assert panel["survivorship"] == "pit"
+
+    def test_legacy_source_without_group_column_still_supports_unscoped_panel(self, tmp_path):
+        path, closes = self._fixture(tmp_path, with_src=False)
+        panel = grading.as_of_panel(closes, "2019-01-03", ledger=pd.DataFrame(),
+                                    include_dead=False, pit_path=path)
+        assert panel["members"] == ["LARGE", "MID", "SMALL"]
+        assert panel["survivorship"] == "pit"
+
+    def test_current_ledger_identity_remains_authoritative(self, tmp_path):
+        path, closes = self._fixture(tmp_path)
+        ledger = pd.DataFrame({
+            "ticker": ["MID", "LARGE"], "group": ["sp500", "sp400"],
+            "first_seen": pd.to_datetime(["2010-01-01"] * 2),
+            "last_seen": pd.to_datetime(["2025-01-01"] * 2),
+        })
+        panel = grading.as_of_panel(closes, "2019-01-03", group="sp500", ledger=ledger,
+                                    include_dead=False, pit_path=path)
+        assert panel["members"] == ["MID"]
+        assert panel["survivorship"] == "as-of"

@@ -874,7 +874,13 @@ def _load_pit_membership(pit_path=None) -> pd.DataFrame | None:
                     raw["end_date"] = pd.to_datetime(raw["end_date"])
                 else:
                     raw["end_date"] = pd.NaT
-                df = raw[["ticker", "start_date", "end_date"]].reset_index(drop=True)
+                # Keep the optional index identity. Dropping src here made the
+                # downstream group guard unreachable and silently widened an
+                # explicit sp500/sp400/sp600 request to the entire PIT union.
+                columns = ["ticker", "start_date", "end_date"]
+                if "src" in raw.columns:
+                    columns.append("src")
+                df = raw[columns].reset_index(drop=True)
             else:
                 log.warning("grading: sp1500_pit_membership missing expected columns; skipping")
     except Exception as e:  # noqa: BLE001 — additive, never fatal
@@ -921,6 +927,13 @@ def as_of_panel(
       * ``"cold-start"`` — neither the ledger nor the PIT file could supply membership;
                            falls back to today's panel (survivor-biased UPPER bound).
 
+    Group identity is a population boundary. A group with no recorded members
+    on the requested date, or absent from the source (including a legacy file
+    without src), returns an empty cold-start panel with an unavailable-coverage
+    note. Missing history is not proof of a genuinely empty historical index,
+    and neither case may widen to today's panel.
+    The unscoped legacy cold-start fallback remains unchanged.
+
     W0.1a addition — ``pit_path``: explicit path to the PIT membership file; defaults to
     ``data/breadth/sp1500_pit_membership.parquet``. Pass a mock path in tests.
 
@@ -940,39 +953,51 @@ def as_of_panel(
         asof_ts = pd.Timestamp(asof)
         pit_df = _load_pit_membership(pit_path)
         if pit_df is not None and not pit_df.empty:
-            members = _pit_members_as_of(asof_ts, pit_df)
-            if group:
-                # The PIT file's 'src' column maps: sp500/sp400/sp600.
-                # Filter if 'src' column present and group matches a known src label.
-                if "src" in pit_df.columns:
-                    src_members = set(
-                        pit_df.loc[
-                            (pit_df["src"] == group)
-                            & (pit_df["start_date"] <= asof_ts)
-                            & (pit_df["end_date"].isna() | (pit_df["end_date"] >= asof_ts)),
-                            "ticker"
-                        ].unique()
-                    )
-                    if src_members:
-                        members = sorted(src_members)
-            if members:
-                survivorship = "pit"
-                note = (
-                    f"membership from sp1500_pit_membership.parquet as-of {asof_ts.date()} — "
-                    "PIT-correct membership set; member PRICES may be survivor-biased for "
-                    "names delisted before ~2025 (no dead-name price store for those)"
-                )
-            else:
-                members = sorted(closes_by_ticker.keys())
+            group_known = not group or (
+                "src" in pit_df.columns and bool(pit_df["src"].eq(group).any())
+            )
+            if not group_known:
+                # Missing identity is not an empty market and never permission
+                # to broaden a caller's declared population.
+                members = []
                 survivorship = "cold-start"
-                note = ("sp1500_pit_membership has no entries for this date; "
-                        "graded on today's panel — counts are survivor-biased UPPER bounds")
+                note = (f"group membership unavailable for {group!r} in the PIT source; "
+                        "no unscoped survivor fallback was admitted")
+            else:
+                scoped = pit_df.loc[pit_df["src"].eq(group)] if group else pit_df
+                members = _pit_members_as_of(asof_ts, scoped)
+                if members or group:
+                    survivorship = "pit"
+                    scope_note = f" for group {group!r}" if group else ""
+                    note = (
+                        f"membership from sp1500_pit_membership.parquet{scope_note} "
+                        f"as-of {asof_ts.date()} - source group/tenure selection; "
+                        "membership alone does not verify member-price coverage, "
+                        "historical source completeness or price adjustment basis"
+                    )
+                    if not members:
+                        # The file may start later for one index. Zero rows prove
+                        # missing coverage, not a historically empty stock index.
+                        survivorship = "cold-start"
+                        note = (f"no recorded members for requested group {group!r} "
+                                f"as-of {asof_ts.date()}; group history is unavailable, "
+                                "not a proven empty index; no unscoped fallback was admitted")
+                else:
+                    members = sorted(closes_by_ticker.keys())
+                    survivorship = "cold-start"
+                    note = ("sp1500_pit_membership has no entries for this date; "
+                            "graded on today's panel - counts are survivor-biased UPPER bounds")
         else:
-            # No PIT file available — true cold-start.
-            members = sorted(closes_by_ticker.keys())
+            # Keep the legacy unscoped cold-start behavior. An explicit group
+            # without membership evidence must instead stay empty and unknown.
+            members = [] if group else sorted(closes_by_ticker.keys())
             survivorship = "cold-start"
-            note = ("as-of precedes membership accrual (2026-06-13) and no PIT file found — "
-                    "graded on today's panel; counts are survivor-biased UPPER bounds")
+            if group:
+                note = (f"group membership unavailable for {group!r}: no PIT source "
+                        "or as-of ledger membership; no unscoped survivor fallback was admitted")
+            else:
+                note = ("as-of precedes membership accrual (2026-06-13) and no PIT file found - "
+                        "graded on today's panel; counts are survivor-biased UPPER bounds")
 
     dead = dead_prices if dead_prices is not None else (load_dead_prices() if include_dead else {})
     out: dict[str, pd.Series] = {}
