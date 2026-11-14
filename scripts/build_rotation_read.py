@@ -9,6 +9,17 @@ forecasts nothing.
 
 Description only; not a forecast.
 
+Input rule (ruling 108): ONE input file per build. The nightly file
+(``basket_breadth_weekly_current_live.parquet``, written by
+``scripts/extend_group_breadth_weekly.py``) is used when it is present,
+readable, has the engine columns and its last completed weekly close is later
+than the archive's; otherwise the archive file above. The two are never
+spliced, joined or back-filled. The payload names its input (``input``:
+``nightly`` / ``archive``) and the input's first date (``input_start``). The
+nightly input covers only its own download window, so a run of weeks that
+reaches the input's first defined 13-week change is withheld (``run_weeks``
+null, with a reason in ``field_notes``) rather than reported short.
+
 Vintage rule: the panel is pinned to the last COMPLETED weekly close in its
 input history (a date with no NYSE session after it through its Mon-Sun week's
 Sunday — calendar only, never the wall clock). The freshness gate
@@ -39,10 +50,12 @@ from lib import market_session  # noqa: E402
 # builder uses the same functions so the written as_of and the check cannot diverge.
 # (The checker never imports this builder, so its import closure stays unchanged.)
 from scripts.check_sector_intelligence_freshness import (  # noqa: E402,F401
+    ROTATION_HIST_COLUMNS as _HIST_COLUMNS,
     ROTATION_READ_SCHEMA as SCHEMA,
     completed_weekly_closes_between,
     is_completed_weekly_close,
     last_completed_weekly_close,
+    select_rotation_input,
 )
 
 log = logging.getLogger("build_rotation_read")
@@ -57,6 +70,7 @@ COPY = [
 STALE_WEEKS = 2
 
 HIST_RELPATH = "data/breadth/history/basket_breadth_weekly_current.parquet"
+NIGHTLY_RELPATH = "data/breadth/history/basket_breadth_weekly_current_live.parquet"
 MEMBERSHIP_RELPATH = "data/baskets/membership.json"
 
 # Exact row field order of every groups[] entry.
@@ -65,11 +79,10 @@ ROW_FIELDS = (
     "unavailable_reason", "n_members", "n_counted", "pct_above_200",
     "chg_13w", "chg_26w", "direction", "run_weeks", "rank_13w", "n_ranked",
 )
-# Engine columns the projection reads (engine/group_breadth_history.weekly_fixed_set).
-_HIST_COLUMNS = (
-    "date", "group", "n_has_200", "pct_above_200",
-    "fix_chg_pct_above_200_13w", "state_fix_chg_pct_above_200_13w",
-    "run_fix_chg_pct_above_200_13w", "fix_chg_pct_above_200_26w",
+INPUT_NAMES = ("archive", "nightly")
+RUN_CENSORED_REASON = (
+    "the run reaches the first week of the input history with a defined 13-week "
+    "change, so its length is not known from this input"
 )
 _MEASURE_FIELDS = (
     "pct_above_200", "chg_13w", "chg_26w", "direction", "run_weeks",
@@ -86,13 +99,17 @@ def _family(group_id: str) -> str:
 
 
 def build(hist: pd.DataFrame | None, membership: dict | None,
-          now: datetime) -> dict | None:
+          now: datetime, input_name: str = "archive") -> dict | None:
     """Project one rotation-read payload. Pure: explicit inputs, no file reads.
 
     Returns None (the caller must not write a file) when the history is
     None/empty, the membership is None, or no input date is a completed weekly
-    close.
+    close. ``input_name`` ("archive" or "nightly") is written as ``input``; the
+    caller picks it with the one-file rule (``select_rotation_input``), never a
+    splice of the two files.
     """
+    if input_name not in INPUT_NAMES:
+        raise ValueError(f"input_name must be one of {INPUT_NAMES}")
     if hist is None or membership is None or len(hist) == 0:
         return None
     # Schema drift is not a data verdict: a history missing an engine column is
@@ -112,6 +129,13 @@ def build(hist: pd.DataFrame | None, membership: dict | None,
     top_status = "stale" if behind >= STALE_WEEKS else "ok"
 
     baskets = membership.get("baskets") or {}
+    # First week with a defined 13-week change, per group, at or before as_of: a run
+    # that reaches it may have begun before the input starts (the nightly input
+    # covers only its own download window), so its length is not reported.
+    upto = hist.loc[hist["date"] <= pd.Timestamp(as_of)]
+    defined = upto.loc[upto["fix_chg_pct_above_200_13w"].notna()]
+    n_defined_weeks = defined.groupby("group")["date"].nunique().to_dict()
+    field_notes: list[dict] = []
     week = hist.loc[hist["date"] == pd.Timestamp(as_of)]
     by_group = {
         str(row["group"]): row
@@ -167,7 +191,14 @@ def build(hist: pd.DataFrame | None, membership: dict | None,
             direction = r.get("state_fix_chg_pct_above_200_13w")
             row["direction"] = None if _missing(direction) else str(direction)
             run = r.get("run_fix_chg_pct_above_200_13w")
-            row["run_weeks"] = None if _missing(run) else int(run)
+            if _missing(run):
+                row["run_weeks"] = None
+            elif int(run) >= int(n_defined_weeks.get(gid, 0)):
+                row["run_weeks"] = None
+                field_notes.append({"group_id": gid, "field": "run_weeks",
+                                    "reason": RUN_CENSORED_REASON})
+            else:
+                row["run_weeks"] = int(run)
         groups.append(row)
 
     # Rank inside the family only: sectors against sectors, themes against
@@ -214,6 +245,11 @@ def build(hist: pd.DataFrame | None, membership: dict | None,
         "copy": list(COPY),
         "groups": groups,
         "companies": companies,
+        # Additive under v1 (ruling 108): which ONE input built this file, where
+        # that input starts, and any field withheld for lack of history.
+        "input": input_name,
+        "input_start": pd.Timestamp(hist["date"].min()).date().isoformat(),
+        "field_notes": field_notes,
     }
 
 
@@ -226,12 +262,14 @@ def main(argv: list[str] | None = None) -> int:
     root = args.root
     out = args.out if args.out is not None else root / "site" / "sectordata" / "rotation_read.json"
 
-    hist_path = root / HIST_RELPATH
     membership_path = root / MEMBERSHIP_RELPATH
     try:
-        hist = pd.read_parquet(hist_path)
+        input_name, hist = select_rotation_input(root)
     except Exception as exc:  # noqa: BLE001 - a data condition never raises here
-        log.warning("rotation read: history unavailable (%s): %s", hist_path, exc)
+        log.warning("rotation read: input selection failed under %s: %s", root, exc)
+        return 0
+    if input_name is None:
+        log.warning("rotation read: no usable input history under %s; not writing", root)
         return 0
     try:
         membership = json.loads(membership_path.read_text(encoding="utf-8"))
@@ -240,7 +278,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     try:
-        payload = build(hist, membership, datetime.now(timezone.utc))
+        payload = build(hist, membership, datetime.now(timezone.utc), input_name=input_name)
     except Exception as exc:  # noqa: BLE001 - a data condition never raises here
         log.warning("rotation read: build failed on the supplied inputs: %s", exc)
         return 0

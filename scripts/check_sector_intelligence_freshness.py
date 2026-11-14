@@ -412,30 +412,89 @@ def completed_weekly_closes_between(as_of: date, latest: date) -> int:
     return count
 
 
+# The rotation read's two possible inputs (ruling 108 one-file rule). Both carry the
+# same engine columns (engine/group_breadth_history.weekly_fixed_set).
+ROTATION_ARCHIVE_RELPATH = "data/breadth/history/basket_breadth_weekly_current.parquet"
+ROTATION_NIGHTLY_RELPATH = "data/breadth/history/basket_breadth_weekly_current_live.parquet"
+ROTATION_HIST_COLUMNS = (
+    "date", "group", "n_has_200", "pct_above_200",
+    "fix_chg_pct_above_200_13w", "state_fix_chg_pct_above_200_13w",
+    "run_fix_chg_pct_above_200_13w", "fix_chg_pct_above_200_26w",
+)
+
+
+def _read_rotation_history(path: Path):
+    """(frame with normalised dates, its last completed weekly close), or None.
+
+    None when the file is absent, unreadable, lacks an engine column, or has no
+    completed weekly close — the file then does not pass its schema check.
+    """
+    import pandas as pd
+
+    if not path.exists():
+        return None
+    try:
+        hist = pd.read_parquet(path)
+        if not set(ROTATION_HIST_COLUMNS) <= set(hist.columns) or not len(hist):
+            return None
+        hist = hist.assign(date=pd.to_datetime(hist["date"]).dt.normalize())
+        close = last_completed_weekly_close(hist["date"].unique())
+    except Exception:  # noqa: BLE001 - an unreadable file is simply not selected
+        return None
+    if close is None:
+        return None
+    return hist, close
+
+
+def select_rotation_input(root: Path):
+    """ONE input file per build (ruling 108). Returns (name, frame) or (None, None).
+
+    The nightly file is used only when it is present, readable, passes its
+    column check and its last completed weekly close is LATER than the
+    archive's; otherwise the archive. Never a splice, join or back-fill of the
+    two. ``name`` is ``"nightly"`` or ``"archive"``.
+    """
+    root = Path(root)
+    archive = _read_rotation_history(root / ROTATION_ARCHIVE_RELPATH)
+    nightly = _read_rotation_history(root / ROTATION_NIGHTLY_RELPATH)
+    if nightly is not None and (archive is None or nightly[1] > archive[1]):
+        return "nightly", nightly[0]
+    if archive is not None:
+        return "archive", archive[0]
+    return None, None
+
+
 def check_rotation_read(root: Path) -> list[str]:
     """Vintage coherence of the rotation read against its own input history.
 
-    The written as_of must equal the last completed weekly close of the
-    committed breadth history — never a wall-clock comparison. Called only
-    from main(); evaluate() and ARTIFACT_PATHS are untouched. The calendar
-    helpers above are the builder's own (scripts/build_rotation_read.py imports
-    them from here), so this module imports nothing from the builder.
+    The written as_of must equal the last completed weekly close of the input
+    the one-file rule selects, and the file must name that input — never a
+    wall-clock comparison. Called only from main(); evaluate() and
+    ARTIFACT_PATHS are untouched. The calendar helpers and the input rule above
+    are the builder's own (scripts/build_rotation_read.py imports them from
+    here), so this module imports nothing from the builder.
     """
     import pandas as pd
 
     root = Path(root)
-    hist_path = root / "data/breadth/history/basket_breadth_weekly_current.parquet"
+    hist_path = root / ROTATION_ARCHIVE_RELPATH
     json_path = root / "site/sectordata/rotation_read.json"
-    if not hist_path.exists():
+    nightly_path = root / ROTATION_NIGHTLY_RELPATH
+    if not hist_path.exists() and not nightly_path.exists():
         return []
-    try:
-        hist = pd.read_parquet(hist_path)
-        # Same date normalisation as the builder, so the two cannot diverge.
-        expected = last_completed_weekly_close(
-            pd.to_datetime(hist["date"]).dt.normalize().unique()
-        )
-    except Exception as exc:  # noqa: BLE001 - an unreadable history is named, not raised
-        return [f"rotation_read: cannot read input history {hist_path.name}: {exc}"]
+    name, selected = select_rotation_input(root)
+    if name is not None:
+        expected = last_completed_weekly_close(selected["date"].unique())
+    else:
+        # Neither file passes: an unreadable archive is named; a readable one
+        # with no completed close falls through to the branch below.
+        try:
+            hist = pd.read_parquet(hist_path)
+            expected = last_completed_weekly_close(
+                pd.to_datetime(hist["date"]).dt.normalize().unique()
+            )
+        except Exception as exc:  # noqa: BLE001 - an unreadable history is named, not raised
+            return [f"rotation_read: cannot read input history {hist_path.name}: {exc}"]
     if expected is None:
         if json_path.exists():
             return ["rotation_read.json written with no completed weekly close in its history"]
@@ -453,6 +512,11 @@ def check_rotation_read(root: Path) -> list[str]:
         return [
             "ROTATION READ VINTAGE SPLIT: as_of="
             f"{as_of}, input history last completed weekly close={expected.isoformat()}"
+        ]
+    if name is not None and payload.get("input") != name:
+        return [
+            "ROTATION READ INPUT SPLIT: file names input="
+            f"{payload.get('input')}, the one-file rule selects {name}"
         ]
     return []
 

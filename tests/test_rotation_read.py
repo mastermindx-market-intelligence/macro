@@ -22,7 +22,9 @@ from scripts import build_rotation_read as brr
 NOW_OK = datetime(2026, 10, 13, 22, 0, tzinfo=timezone.utc)
 NOW_STALE = datetime(2026, 11, 13, 22, 0, tzinfo=timezone.utc)
 
-TOP_KEYS = ["schema", "as_of", "built_at", "status", "basis", "copy", "groups", "companies"]
+# v1 keys, then the three additive input fields (ruling 108), in this exact order.
+TOP_KEYS = ["schema", "as_of", "built_at", "status", "basis", "copy", "groups", "companies",
+            "input", "input_start", "field_notes"]
 ROW_FIELDS = [
     "group_id", "family", "name", "parent", "as_of", "status",
     "unavailable_reason", "n_members", "n_counted", "pct_above_200",
@@ -407,3 +409,99 @@ def test_check_rotation_read_no_completed_close(tmp_path):
     errors = freshness.check_rotation_read(root)
     assert len(errors) == 1
     assert "no completed weekly close" in errors[0]
+
+
+# 20 — one-file input rule (ruling 108) ------------------------------------------------------
+
+NIGHTLY = "data/breadth/history/basket_breadth_weekly_current_live.parquet"
+
+
+def _write_nightly(root: Path, hist: pd.DataFrame) -> None:
+    p = root / NIGHTLY
+    p.parent.mkdir(parents=True, exist_ok=True)
+    hist.to_parquet(p)
+
+
+def _later(hist: pd.DataFrame, weeks: int) -> pd.DataFrame:
+    out = hist.copy()
+    out["date"] = out["date"] + pd.Timedelta(weeks=weeks)
+    return out
+
+
+def test_nightly_used_only_when_later_than_archive(tmp_path):
+    from scripts import check_sector_intelligence_freshness as freshness
+
+    root = tmp_path / "r"
+    _write_inputs(root, _hist(), _membership())
+    assert freshness.select_rotation_input(root)[0] == "archive"
+    _write_nightly(root, _hist())  # same last close: not later -> archive
+    assert freshness.select_rotation_input(root)[0] == "archive"
+    _write_nightly(root, _later(_hist(), 1))  # one completed week later -> nightly
+    name, frame = freshness.select_rotation_input(root)
+    assert name == "nightly"
+    assert frame["date"].max() == pd.Timestamp("2026-10-16")
+
+
+def test_bad_nightly_falls_back_to_archive(tmp_path):
+    from scripts import check_sector_intelligence_freshness as freshness
+
+    root = tmp_path / "r"
+    _write_inputs(root, _hist(), _membership())
+    p = root / NIGHTLY
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(b"not a parquet file")  # unreadable
+    assert freshness.select_rotation_input(root)[0] == "archive"
+    _write_nightly(root, _later(_hist(), 1).drop(columns=["fix_chg_pct_above_200_13w"]))
+    assert freshness.select_rotation_input(root)[0] == "archive"  # fails its column check
+
+
+def test_one_file_never_spliced(tmp_path):
+    """The nightly frame alone is read: no archive week appears in the payload's input."""
+    root = tmp_path / "r"
+    _write_inputs(root, _hist(), _membership())
+    short = _later(_hist(), 1)
+    short = short[short["date"] >= pd.Timestamp("2026-08-01")]
+    _write_nightly(root, short)
+    out = tmp_path / "o.json"
+    assert brr.main(["--root", str(root), "--out", str(out)]) == 0
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    assert payload["input"] == "nightly"
+    assert payload["input_start"] == short["date"].min().date().isoformat()
+    assert payload["as_of"] == "2026-10-16"
+
+
+def test_run_reaching_input_start_is_withheld():
+    """A run as long as the input's defined history may have begun earlier: withheld, with a reason."""
+    hist = _hist()
+    n_weeks = hist["date"].nunique()
+    hist.loc[hist["group"] == "us_theme_x", "run_fix_chg_pct_above_200_13w"] = float(n_weeks)
+    payload = brr.build(hist, _membership(), NOW_OK, input_name="nightly")
+    rows = _rows_by_id(payload)
+    assert rows["us_theme_x"]["run_weeks"] is None
+    assert rows["us_theme_x"]["status"] == "ok"  # the other measures still print
+    assert payload["field_notes"] == [{
+        "group_id": "us_theme_x", "field": "run_weeks", "reason": brr.RUN_CENSORED_REASON}]
+    assert rows["us_sector_a"]["run_weeks"] == 3  # a shorter run is reported as is
+
+
+def test_input_name_is_neutral_and_checked():
+    payload = brr.build(_hist(), _membership(), NOW_OK)
+    assert payload["input"] == "archive"
+    with pytest.raises(ValueError):
+        brr.build(_hist(), _membership(), NOW_OK, input_name="vendor_x")
+
+
+def test_check_names_an_input_split(tmp_path):
+    from scripts import check_sector_intelligence_freshness as freshness
+
+    root = tmp_path / "r"
+    _write_inputs(root, _hist(), _membership())
+    _write_nightly(root, _later(_hist(), 1))
+    out = root / "site/sectordata/rotation_read.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    good = brr.build(_later(_hist(), 1), _membership(), NOW_OK, input_name="nightly")
+    out.write_text(json.dumps(good), encoding="utf-8")
+    assert freshness.check_rotation_read(root) == []
+    out.write_text(json.dumps(dict(good, input="archive")), encoding="utf-8")
+    errors = freshness.check_rotation_read(root)
+    assert len(errors) == 1 and "INPUT SPLIT" in errors[0]

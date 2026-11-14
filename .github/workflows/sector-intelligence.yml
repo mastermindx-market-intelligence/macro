@@ -27,6 +27,7 @@ on:
       - "scripts/build_sector_intelligence.py"
       - "scripts/build_rotation_read.py"
       - "data/breadth/history/basket_breadth_weekly_current.parquet"
+      - "data/breadth/history/basket_breadth_weekly_current_live.parquet"
       - "scripts/check_sector_intelligence_freshness.py"
       - "engine/baskets.py"
       - "engine/theme_scoring.py"
