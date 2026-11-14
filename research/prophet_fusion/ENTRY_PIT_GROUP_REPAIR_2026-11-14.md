@@ -75,3 +75,18 @@ and exact-head binding checks. No direct/admin merge or invented independent
 approval is authorized. PR publication, green local tests, controller enrollment
 and actual merge remain separate receipts. Rollback is a source revert through
 the same delivery path; historical grades are not rewritten automatically.
+
+## Coverage-label correction from current source inspection
+
+A bounded source-presence audit found that the repair base already contains an
+expanded dead-name store (352,598 rows / 426 names). Therefore the inherited fixed
+claim that pre-2025 dead-name prices do not exist was no longer supportable. The
+PIT note now says only what this function proves: source group/tenure selection,
+not historical completeness, member-price coverage or adjustment basis. All nine
+real-source cases were rerun after this note correction; 179 tests still pass.
+
+The audit also finds missing basket-OHLCV files for 154 of 499 recorded 2015 sp500
+members, before considering the separate dead-name store or archived/alias sources.
+That is a file-presence diagnostic, NOT a count of definitively unavailable prices
+or a declaration that the expanded dead-name store is unqualified. Exact dates,
+identity, source eligibility and basis still need their own existing-owner checks.

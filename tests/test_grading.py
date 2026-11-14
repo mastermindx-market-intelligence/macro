@@ -1620,6 +1620,8 @@ class TestPITGroupIdentity:
         assert sorted(panel["closes"]) == expected
         assert panel["n_asof"] == len(expected)
         assert panel["survivorship"] == "pit"
+        assert "membership alone does not verify" in panel["note"]
+        assert "no dead-name price store" not in panel["note"]
 
     def test_loader_preserves_optional_group_identity(self, tmp_path):
         path, _ = self._fixture(tmp_path)

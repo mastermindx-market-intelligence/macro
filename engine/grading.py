@@ -971,9 +971,9 @@ def as_of_panel(
                     scope_note = f" for group {group!r}" if group else ""
                     note = (
                         f"membership from sp1500_pit_membership.parquet{scope_note} "
-                        f"as-of {asof_ts.date()} - PIT-correct membership set; member "
-                        "PRICES may be survivor-biased for names delisted before ~2025 "
-                        "(no dead-name price store for those)"
+                        f"as-of {asof_ts.date()} - source group/tenure selection; "
+                        "membership alone does not verify member-price coverage, "
+                        "historical source completeness or price adjustment basis"
                     )
                     if not members:
                         # The file may start later for one index. Zero rows prove
