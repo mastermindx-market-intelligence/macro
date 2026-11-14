@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T06:26:12.058263+00:00",
-  "count": 3347,
+  "generated_at": "2026-11-14T06:40:58.031173+00:00",
+  "count": 3348,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -506,6 +506,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-aovvd4hs7jr-4a63e6",
+      "title": "GS Malmstrom GS Global 2027 Outlook 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T14:24:00Z",
+      "summary_points": [
+        "EM Growth Catalyst: EM indices (MSCI EM, AP ex Japan) project 26% 2027 EPS growth vs developed markets’ 7-11%, driving 17-18% price returns vs 14-16% for developed, highlighting EM as a superior growth engine.",
+        "AI Capex Tailwind Fading: S&P 500’s AI capex contribution to EPS peaks at 36% (2026) before dropping to 11% (2027), with EM and AP ex Japan seeing similar declines (74%→26%, 66%→26%), signaling diminishing near-term growth support.",
+        "EM IT Undervaluation: EM IT sector’s 12m fwd P/E (6.4) is significantly below median (10.3) and interquartile range, presenting a sharp valuation opportunity amid historical norms.",
+        "PEG Ratio Signals Growth Expectations: PEG ratio at 1.1 (P/E 15.6) indicates growth expectations slightly exceed P/E, with EM’s high growth potential (26% EPS) contrasting developed markets’ modest growth.",
+        "Capex/Depreciation Imbalance Risk: Capex contribution to EPS peaks at 9pp (2027) but turns negative in 2028, offset by persistent depreciation drag (-5pp), creating potential earnings pressure as AI investment cycles mature."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
