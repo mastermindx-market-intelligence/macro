@@ -1558,8 +1558,8 @@ fi
 if grep -qE '^engine/catalyst_opportunity/.*\.py$' <<<"$CHANGED"; then
 	API_RESTART_NEEDED=1
 fi
-# Evaluation and options modules are imported into the API process.
-if grep -qE '^engine/(neuralweb/response_eval|options_hub_retention|options_scenario_capture)\.py$' <<<"$CHANGED"; then
+# Evaluation, options and candidate projection modules are imported into the API process.
+if grep -qE '^engine/(neuralweb/response_eval|options_hub_retention|options_scenario_capture|us_candidate_lanes|us_prophet_board_view)\.py$' <<<"$CHANGED"; then
 	API_RESTART_NEEDED=1
 fi
 # END MACRO_API_RESTART_TRIGGER

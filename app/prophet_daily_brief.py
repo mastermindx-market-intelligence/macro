@@ -1,4 +1,4 @@
-"""Authenticated, read-only transport for the Prophet daily candidate brief.
+"""Authenticated, read-only transport for existing Prophet candidate projections.
 
 ``GET /api/prophet/daily-brief/v1`` is the candidate-binding plane in front of
 the Chairman's Daily Brief views: one entitled request pins the exact
@@ -43,11 +43,22 @@ The returned envelope is a prerequisite candidate binding only: real Daily
 Brief views need genuine other-owner plan/assessment/evidence inputs, and
 nothing here fabricates a plan, assessment, evidence or quote receipt. B03's
 existing population and query behaviour is untouched by this router.
+
+``GET /api/prophet/candidates/v1`` is a separate, query-free read of the complete
+eligible population through ``engine.us_candidate_lanes.project_candidate_visibility``.
+It shares this router's auth, private headers and read admission. The source is
+bounded to 8 MiB; its exact bytes are hashed and reread before returning the
+serialized response. This source digest is not a Today selection receipt, an
+archive verification, a score or permission to enter a position. No source,
+candidate generation, history, ranking or admission is written or recomputed.
 """
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
+import math
 import os
 import re
 from pathlib import Path
@@ -70,6 +81,11 @@ _REPO_ROOT = Path(os.environ.get("MACRO_REPO") or Path(__file__).resolve().paren
 # read per API process; overlap fails privately instead of queueing thread-pool
 # work. This is not a cross-process budget or a limit on one read's memory use.
 _READ_ADMISSION = BoundedSemaphore(1)
+
+_CANDIDATE_SOURCE_PATH = "site/factordata/us_standouts.json"
+# The protected source is 2.11 MB at d8a12a7; bound growth without accepting an
+# unbounded JSON read. The same bound applies to the final identity check.
+_CANDIDATE_MAX_BYTES = 8 * 1024 * 1024
 
 _QUERIES = frozenset(
     {"source_sha256", "pair_id", "selection_receipt", "candidate_generation_id"}
@@ -180,3 +196,92 @@ def daily_brief_v1(
         # Import, owner and response serialization all retain the permit until
         # they settle, including exceptions.
         _READ_ADMISSION.release()
+
+
+def _candidates_unavailable() -> JSONResponse:
+    return JSONResponse({"error": "CANDIDATES_UNAVAILABLE"}, status_code=503,
+                        headers=_PRIVATE_HEADERS)
+
+
+def _read_candidate_source() -> bytes:
+    """The fixed source only; no request path, cache, archive or fallback."""
+    with (_REPO_ROOT / _CANDIDATE_SOURCE_PATH).open("rb") as source:
+        raw = source.read(_CANDIDATE_MAX_BYTES + 1)
+    if len(raw) > _CANDIDATE_MAX_BYTES:
+        raise ValueError("candidate source exceeds the read bound")
+    return raw
+
+
+def _candidate_object(pairs: list[tuple[str, object]]) -> dict:
+    # A duplicate JSON key cannot silently replace a population or its clock.
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate candidate source key")
+        result[key] = value
+    return result
+
+
+def _candidate_constant(_value: str) -> None:
+    raise ValueError("non-finite candidate source constant")
+
+
+def _candidate_float(value: str) -> float:
+    number = float(value)
+    if not math.isfinite(number):
+        raise ValueError("non-finite candidate source number")
+    return number
+
+
+@router.get("/api/prophet/candidates/v1")
+def candidates_v1(
+    request: Request, _user: dict = Depends(require_site_full_user)
+) -> JSONResponse:
+    # This endpoint has no query contract. Daily Brief's required exact pins
+    # and conflict responses remain owned by _query()/daily_brief_v1 above.
+    if request.query_params:
+        return JSONResponse({"error": "INVALID_QUERY"}, status_code=400,
+                            headers=_PRIVATE_HEADERS)
+    if not _READ_ADMISSION.acquire(blocking=False):
+        return _candidates_unavailable()
+    try:
+        try:
+            from engine.us_candidate_lanes import (  # noqa: PLC0415 — entitled owner read
+                project_candidate_visibility,
+            )
+
+            raw = _read_candidate_source()
+            board = json.loads(raw.decode("utf-8"), object_pairs_hook=_candidate_object,
+                               parse_constant=_candidate_constant, parse_float=_candidate_float)
+            projection = project_candidate_visibility(board)
+            if (not isinstance(projection, Mapping)
+                    or projection.get("status") not in ("ready", "empty", "unavailable")):
+                return _candidates_unavailable()
+            response = JSONResponse({
+                "schema": "mastermind.prophet_candidate_pool_read.v1",
+                "market": "US",
+                "source": {
+                    "path": _CANDIDATE_SOURCE_PATH,
+                    "sha256": "sha256:" + hashlib.sha256(raw).hexdigest(),
+                    "bytes": len(raw),
+                },
+                "projection": dict(projection),
+            }, status_code=503 if projection["status"] == "unavailable" else 200,
+                headers=_PRIVATE_HEADERS)
+            # Compare raw bytes, not the owner's normalized display digest:
+            # unrelated source fields may change without changing that digest.
+            # Serialize first so the permit and source check cover that work.
+            if _read_candidate_source() != raw:
+                return _candidates_unavailable()
+            return response
+        except Exception as exc:  # noqa: BLE001 — private read/parse/projection/serialization boundary
+            log.warning("candidate pool read failed (%s)", type(exc).__name__)
+            return _candidates_unavailable()
+    finally:
+        _READ_ADMISSION.release()
+
+
+# Child detail shares this module's source reader and admission at request time.
+# The child itself imports no candidate projector until after authentication.
+from app.prophet_board_detail import router as _board_detail_router  # noqa: E402
+router.include_router(_board_detail_router)
