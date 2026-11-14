@@ -34167,6 +34167,11 @@ jobs:
       - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
       - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
       - "research/sector_completion_20261021/b12/v11_heads_result.json"
+      # COO ruling 109 (PR #11039): the rotation-context capture suite moved here
+      # from unrun-builders-stores. Its engine module matches the engine/*.py
+      # glob above and scripts/collect.py is already declared; the suite file is
+      # the one closure path this job did not yet name.
+      - "tests/test_rotation_context_capture.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -34176,6 +34181,24 @@ jobs:
           python-version: "3.12"
       - name: install deps for the defense rail batteries
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests beautifulsoup4 jsonschema fastapi httpx pdfplumber==0.11.10 rjsmin==1.2.5 rcssmin==1.2.2
+      # Rotation-context nightly capture (2026-11-11, SI v1.1 ruling 8), moved
+      # here from unrun-builders-stores by COO ruling 109 (PR #11039, answer to
+      # escalation #18 option (a)): the suite's closure reaches NONE of the three
+      # packing-probe files (templates/index.html, scripts/build_free_content.py,
+      # engine/prophet/plan_book.py), yet its old home is selected by all three
+      # probes, so its token cost +5 weight on every probe and pushed the
+      # free-content probe over the 10-pack line. This job is gate: code and no
+      # probe selects it, and it is the only existing job whose curated exclusive
+      # scope already covers the suite's whole import closure — the
+      # scripts/collect.py nightly closure registered above (#9037 / #10929);
+      # the suite file itself is the one path added. A non-exclusive home would
+      # inherit collect.py's opaque templates/**, scripts/**, engine/** fallbacks
+      # and become probe-selected itself. pytest+pandas+pyarrow are already on
+      # the install line above (clean-venv proof: 7 passed); hermetic fixtures,
+      # no network. Ordered before the rail batteries so a red here is not hidden
+      # behind a later step's first-nonzero abandon.
+      - name: rotation-context nightly capture contracts (SI v1.1)
+        run: python -m pytest tests/test_rotation_context_capture.py -q
       # D6-A DoD budget live rail (PR #6377): the hostile law battery for the
       # production P-1/R-1 acquisition + parser — fetch/R2-readback order, no
       # receipt without readback proof, §5b/§5b.1 row-model refusals (sign law,
@@ -35640,12 +35663,8 @@ jobs:
           for tool in psql initdb pg_ctl; do command -v "$tool" >/dev/null; done
           test "$(id -u)" -ne 0
           python -m pytest tests/test_backup_user_tables.py tests/test_backup_iw2_snapshot.py -q
-      # test_rotation_context_capture.py (2026-11-11, SI v1.1 ruling 8 rotation-context
-      # capture) rides here beside test_collect_lane_gate.py: same subject (a
-      # scripts/collect.py nightly-lane-gated store writer), pandas+pyarrow already on
-      # this job's install line, no network.
       - name: store/ops builders behind the nightly data lanes
-        run: python -m pytest tests/test_append_sync_gauge.py tests/test_audit_fred_groups.py tests/test_audit_massive_store.py tests/test_build_adjudication_packet.py tests/test_build_demand.py tests/test_build_ext_quotes.py tests/test_build_live_overlay.py tests/test_build_m2_profiles.py tests/test_build_unusual_baseline.py tests/test_calibrate_flow_signing_append.py tests/test_calibrate_stage.py tests/test_cctv_finalize_watcher.py tests/test_collect_lane_gate.py tests/test_rotation_context_capture.py tests/test_context_candidates.py tests/test_context_index_eval.py tests/test_deploy_update_self_heal.py tests/test_close_pass_slo_report.py tests/test_ei_f1d_shadow.py tests/test_freshness_sentinel.py tests/test_cn_live_watchdog.py tests/test_exit_tax_scenarios.py tests/test_expanding_mean_benchmark.py tests/test_fetch_basket_ohlcv.py tests/test_finra_short_interest_pit.py tests/test_flow_score_stock_block.py tests/test_gex_history_snapshot.py tests/test_grade_policy_calendar.py tests/test_import_equitydesk.py tests/test_import_equitydesk_backfill.py tests/test_index_add_overnight.py tests/test_manifest_seams.py tests/test_mri_config_spine.py tests/test_narrative_ttl.py tests/test_net_replay_v1.py tests/test_options_tape_signed.py tests/test_quotes_server.py tests/test_reconcile_membership.py tests/test_refresh_markets_now.py tests/test_release_playbook.py tests/test_sf_harness_runner.py tests/test_slf031.py tests/test_slf051_cn_margin.py tests/test_tech_lab_cli.py tests/test_vps_live_orchestration.py tests/test_live_breadth.py tests/test_live_breadth_js_contract.py -q
+        run: python -m pytest tests/test_append_sync_gauge.py tests/test_audit_fred_groups.py tests/test_audit_massive_store.py tests/test_build_adjudication_packet.py tests/test_build_demand.py tests/test_build_ext_quotes.py tests/test_build_live_overlay.py tests/test_build_m2_profiles.py tests/test_build_unusual_baseline.py tests/test_calibrate_flow_signing_append.py tests/test_calibrate_stage.py tests/test_cctv_finalize_watcher.py tests/test_collect_lane_gate.py tests/test_context_candidates.py tests/test_context_index_eval.py tests/test_deploy_update_self_heal.py tests/test_close_pass_slo_report.py tests/test_ei_f1d_shadow.py tests/test_freshness_sentinel.py tests/test_cn_live_watchdog.py tests/test_exit_tax_scenarios.py tests/test_expanding_mean_benchmark.py tests/test_fetch_basket_ohlcv.py tests/test_finra_short_interest_pit.py tests/test_flow_score_stock_block.py tests/test_gex_history_snapshot.py tests/test_grade_policy_calendar.py tests/test_import_equitydesk.py tests/test_import_equitydesk_backfill.py tests/test_index_add_overnight.py tests/test_manifest_seams.py tests/test_mri_config_spine.py tests/test_narrative_ttl.py tests/test_net_replay_v1.py tests/test_options_tape_signed.py tests/test_quotes_server.py tests/test_reconcile_membership.py tests/test_refresh_markets_now.py tests/test_release_playbook.py tests/test_sf_harness_runner.py tests/test_slf031.py tests/test_slf051_cn_margin.py tests/test_tech_lab_cli.py tests/test_vps_live_orchestration.py tests/test_live_breadth.py tests/test_live_breadth_js_contract.py -q
       # Tech-Lab parity fixtures: the ~24 STRUCTURAL checks (fields, warmup
       # nulls, RSI range, band ordering, value-area >=70%) are platform-
       # independent and run here.  TestFixtureDeterminism is DESELECTED: it
