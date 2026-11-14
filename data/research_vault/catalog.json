@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T23:10:03.906417+00:00",
-  "count": 3326,
+  "generated_at": "2026-11-14T00:25:03.717479+00:00",
+  "count": 3330,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -705,6 +705,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-0myql29tgug-a20c18",
+      "title": "JPM UK Banks",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T09:17:36Z",
+      "summary_points": [
+        "Metro Bank Sale Risks: Large UK banks show limited appetite due to integration risks, operational hurdles, and low ROI (7.5% vs large banks’ ~20%), despite Metro’s low-cost deposits (98bps) and commercial focus (£5bn mortgages).",
+        "Profitability Collapse: Underlying NII (242 vs 460) and total revenue (301 vs 585) contracted 47% and 49% YoY (H1 2026 vs FY25), signaling severe margin pressure and earnings deterioration.",
+        "Risk Exposure Surge: RWAs rose 4.9% (7,038 vs 6,711) and cost of risk increased to 0.22% (vs 0.16%), indicating heightened credit risk and capital adequacy challenges.",
+        "Consolidation vs.",
+        "Competition: Sector M&A (e.g., Santander-TSB, Natwest-Sainsbury’s) signals capital shift to consumer finance, but near-term competition pressures and regulatory scrutiny on deals threaten margin gains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-nixyupxhrja-fe14cb",
       "title": "JPM International Market Intelligence | Morning Briefing",
       "institution": "J.P. Morgan",
@@ -946,6 +967,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-cjo36c5d3je-f99d0e",
+      "title": "Asia Open Fed up",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T23:00:24Z",
+      "summary_points": [
+        "Fed Hawkishness & Iran Deal Drive Policy Shift: Hawkish Fed commentary + Trump’s Iran dismissal raised Jan rate hike probability to 73% (from 25%), triggering USD strength (USDJPY >160), oil surge, and equity rotation (Nvidia +6% vs semis drag).",
+        "Geopolitical & Technical Risks: Iran conflict spurs Brent crude +3.5% but gold slumps 3% to 52-week low (100WMA at risk); USD/JPY intervention risks at 155 level if weakness worsens.",
+        "Critical Technicals & Data: USDJPY 160 remains key support/resistance; US jobless claims at 200k (vs 194k est) imply 3.9%-4.0% u/e rate by 2027; Oct PPI (0.4% MoM) unlikely to shift Fed hike expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-dfnvf28sjr9-991fb6",
       "title": "GS Chryssafis 10 Charts We're Talking About 12 Nov 2026",
       "institution": "S&T",
@@ -1146,6 +1186,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vobw9uztmuz-5fd839",
+      "title": "UBS NVIDIA Corp Media Reports on CEO Change; A Few Thoughts",
+      "institution": "NVIDIA",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T14:18:04Z",
+      "summary_points": [
+        "Competitive Risks: Intense competition from AMD (GPUs), ARM-based applications, and Intel’s MIC threatens core segments; semiconductor sector volatility (revenue tied to subdued economic recovery) adds significant downside risk.",
+        "Geopolitical Risk: US tightening restrictions on shipping to China risk ~10% of revenue (per Singapore/Malaysia disclosures), though supply chain advantages may partially offset exposure.",
+        "Forecast Returns: 72.7% price appreciation and 63.6% excess return vs 9.7% market return highlight aggressive growth expectations and substantial alpha potential.",
+        "Price Target Trend: Consistent upward revisions (US$47.50 → US$300.00) from 2023-2026 reflect escalating bullish sentiment and strong conviction in long-term growth trajectory."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
@@ -1459,6 +1519,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jevotib78f3-472992",
+      "title": "JPM U.S. Analyst Focus List Current Snapshot (12 NOV 26)",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:32:02Z",
+      "summary_points": [
+        "Top Upside Catalysts: Caterpillar (CAT) leads with 66.22% upside, while COST (107.48%) and CYTK (75.8%) dominate healthcare with Overweight ratings, signaling strong fundamental growth catalysts in industrial and biotech sectors.",
+        "Tech Sector Divergence: NVDA (+70.1%) and MSFT (+60.1%) show bullish momentum, contrasting sharply with TSLA (-5.0%) amid EV sector policy/technical headwinds, highlighting critical sector-specific risk factors.",
+        "Institutional Flow Bias: JPM’s 95% Overweight coverage (vs. 53% global) signals strong institutional flow bias, with Overweight/Neutral/Underweight aligning to FINRA buy/hold/sell, directly impacting portfolio positioning and risk assessment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
