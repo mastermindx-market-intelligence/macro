@@ -23,6 +23,7 @@ from admin.capacity_fabric_schema import (
     MAX_ACCOUNTS, MAX_FAMILIES, MAX_KEYS, SCHEMA, clean_snapshot,
 )
 from admin import capacity_router
+from admin.capacity_fabric_observer import _weekly_reset_expiring
 
 
 def _epoch():
@@ -168,3 +169,24 @@ def test_panel_without_extension_reports_zero_counts(tmp_path):
     assert data["summary"]["overflowing_families"] == 0
     assert data["summary"]["benched_lanes"] == 0
     assert data["summary"]["peak_active"] is False
+
+def test_absent_gateway_usage_is_unknown_not_fabricated_zero():
+    now = time.time()
+    raw = _base(now)
+    raw["claude"] = _claude(now)
+    account = raw["claude"]["accounts"][0]
+    account.pop("used_5h")
+    account["families"]["fable"].pop("used_weekly")
+    observed = clean_snapshot(raw)["claude"]["accounts"][0]
+    assert observed["used_5h"] is None
+    assert observed["families"]["fable"]["used_weekly"] is None
+    assert observed["families"]["fable"]["weekly_reset_source"] == "provider"
+
+
+def test_weekly_expiry_never_includes_past_reset_or_bad_timestamp():
+    now = 2_000_000_000
+    assert _weekly_reset_expiring(now + 120, 180, now)
+    assert not _weekly_reset_expiring(now - 1, 180, now)
+    assert not _weekly_reset_expiring(now + 200, 180, now)
+    assert not _weekly_reset_expiring("invalid", 180, now)
+    assert not _weekly_reset_expiring(now + 120, "invalid", now)

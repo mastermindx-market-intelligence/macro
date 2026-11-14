@@ -25,15 +25,45 @@ filters, keyboard selection, reduced motion and snapshot export are supported.
 Animated flow means that a response is streaming; it does not represent one
 particle per token. The metrics distinguish concurrent requests, waiting for
 first content, reported input/output/cache usage, window-average output rate and
-first-content p50/p95 with sample count. Request details show requested and served
+first-content p50/p95 with sample count. Once the router source is stale (over
+15 seconds), paused or disconnected, live concurrency, known active consumers,
+ready-route count and overflow/bench state show **unknown**, not last recorded
+values represented as current. Historical throughput and latency remain visible
+with a **last recorded** label. This transition runs when freshness expires even
+if no new snapshot arrives. Request details show requested and served
 model, selected route, attempts, HTTP status and elapsed time.
 
-The existing Overflow and Claude lanes panels continue to show the incumbent
-router's diversion ladders, cooldowns, local seat pressure and reported family
-budgets. Shared five-hour budgets are counted once per account, not once per
-model. Provider-reported and estimated reset times remain distinct. A failed
-quota read retains its original observation timestamp and cannot imply fresh
+The Overflow and Claude views expose the incumbent gateway's routing and
+cooldown observations. **The Claude numeric budget ceilings are configured
+gateway tracking units, not verified Anthropic subscription balances or tokens.**
+A high "remaining" estimate cannot establish real provider availability; a lane
+can be benched or an account cooling even if its five-hour counter reports zero.
+The shared five-hour window is an account-level counter and is never multiplied by
+the number of model families.
+
+Claude capacity is explicitly *not current* if either its separate gateway reading
+is older than 90 seconds or the parent router snapshot is older than 15 seconds.
+Such a reading shows last-known diagnostic counters but never current availability
+or a remaining-capacity percentage. Missing upstream usage remains null (not zero).
+The UI shows weekly *consumed* proportion only when used, remaining and configured
+budget are present, nonnegative, and arithmetically consistent within rounding
+tolerance; inconsistencies are called out instead of silently normalized. A
+provider-reported **reset timestamp** is provenance for the timestamp only, not
+provider validation of consumed quota or remaining balance. Expired timestamps do
+not count as upcoming resets. No hold recorded is not a routing probe or a guarantee
+of successful model requests.
+
+The refreshed Claude view prioritizes problem accounts, separates live cooldowns,
+gateway-counter quality, five-hour shared usage and family-level weekly usage,
+provides family/problem filters and responsive accessible labels. It is read-only
+and does not modify gateway policy, admit requests, reassign accounts or purchase
 capacity. The Z.ai peak-window state remains visible.
+
+**Outstanding validation:** to advertise paid subscription balance or true
+headroom, the gateway quota producer must first document its counting unit,
+coverage period, ingestion source, resets and whether it receives authoritative
+provider balance or only local estimates. Until that contract is proven, the UI
+deliberately does not call these percentages provider quota.
 
 ## Durable history and demand intelligence
 
