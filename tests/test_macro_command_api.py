@@ -819,8 +819,11 @@ def test_all_native_selections_preserve_their_exact_owner_view_and_read_only_sel
         "view": macro_suite_view.build_view(snapshot, page_built_at=body["source"]["composed_at"],
                                              artifact=artifact, layout=builder._layout_for(page.workspace_id)),
     }
-    assert [p.name for p in reads] == ["manifest.json", "latest.json", "manifest.json"]
-    assert reads[1] == complete_publication / artifact["path"]
+    manifest_path = complete_publication / artifact["manifest_path"]
+    selected_path = complete_publication / artifact["path"]
+    # The shared selected-reader exit fence rereads this exact body before the
+    # final manifest check; no sibling workspace or fallback path is admitted.
+    assert reads == [manifest_path, selected_path, selected_path, manifest_path]
     assert before == {p.relative_to(complete_publication): sha256(p.read_bytes()).hexdigest()
                       for p in complete_publication.rglob("*") if p.is_file()}
 

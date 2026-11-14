@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_os/macro_workspace_scenario_request.v2.schema.json",
+  "title": "Closed Rates branch for the incumbent ontology scenario service",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "method",
+    "expected_publication",
+    "assumptions"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ontology_scenario_request.v2"
+    },
+    "method": {
+      "const": "rates_curves.two_yield_shift.v1"
+    },
+    "expected_publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_sha256",
+        "snapshot_content_sha256"
+      ],
+      "properties": {
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "not": {
+            "const": "0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        },
+        "snapshot_content_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "not": {
+            "const": "0000000000000000000000000000000000000000000000000000000000000000"
+          }
+        }
+      }
+    },
+    "assumptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "us2y_bp",
+        "us10y_bp"
+      ],
+      "properties": {
+        "us2y_bp": {
+          "type": "integer",
+          "minimum": -300,
+          "maximum": 300,
+          "multipleOf": 5
+        },
+        "us10y_bp": {
+          "type": "integer",
+          "minimum": -300,
+          "maximum": 300,
+          "multipleOf": 5
+        }
+      }
+    }
+  }
+}

@@ -11,6 +11,7 @@ import math
 import os
 import re
 import stat
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -26,6 +27,17 @@ TOTAL_MAX_BYTES = 16 * 1024 * 1024
 
 class _ReadBudgetExceeded(Exception):
     pass
+
+
+class MacroPublicationChanged(ValueError):
+    """The originally admitted publication changed during its consumer operation."""
+
+
+@dataclass(frozen=True)
+class MacroPublicationRead:
+    """Server-only sealed snapshots and their matching selected-reader metadata."""
+    entries: tuple[dict, ...]
+    source: dict
 
 
 class MacroHistoryReferenceError(ValueError):
@@ -183,15 +195,17 @@ class UnsupportedMacroWorkspace(ValueError):
     pass
 
 
-def compose_macro_command(selected: str | None = None) -> dict:
-    """Incumbent bounded reader. Call only after authenticating the registered user.
+@contextmanager
+def read_macro_publication(selected: str | None = None):
+    """Use the incumbent fixed-root read inside an already authenticated operation.
 
-    The HTTP route and Brain exact-source gate share this composition; no alternate
-    root, cache or publisher is introduced. The final manifest reread remains here.
+    Both the HTTP projection and Rates use this one loader. The exit fence runs
+    after the consumer finishes; Rates also encodes its final response inside
+    this scope. Internal raw bytes are race evidence only; artifact.sha256 keeps
+    its canonical meaning.
     """
     # Composition dependencies are request-scoped; auth and unrelated APIs
     # remain available while this artifact reader is unavailable.
-    from lib import macro_suite_view
     from scripts import build_macro_suite_pages as builder
 
     # The existing suite owns admission. Never derive a filesystem path
@@ -221,6 +235,7 @@ def compose_macro_command(selected: str | None = None) -> dict:
         raise ValueError("manifest clock unavailable")
 
     total = len(manifest_raw)
+    selected_bodies: dict[Path, bytes] = {}
 
     def read_json(path: Path):
         nonlocal total
@@ -233,7 +248,10 @@ def compose_macro_command(selected: str | None = None) -> dict:
             total += len(raw)
             if total > TOTAL_MAX_BYTES:
                 raise _ReadBudgetExceeded()
-            return json.loads(raw.decode("utf-8")), len(raw)
+            document = json.loads(raw.decode("utf-8"))
+            if selected is not None:
+                selected_bodies[path] = raw
+            return document, len(raw)
         except (OSError, ValueError) as exc:
             raise builder.SnapshotRefused("SOURCE_FAILED", "published body unavailable") from exc
 
@@ -263,62 +281,83 @@ def compose_macro_command(selected: str | None = None) -> dict:
         "composed_at": composed_at,
         "min_client_contract": builder.MIN_CLIENT_CONTRACT,
     }
-    if selected:
-        entry = entries[0]
-        snapshot = entry["snapshot"]
-        view = (macro_suite_view.build_view(
-            snapshot, page_built_at=composed_at, artifact=entry["artifact"],
-            layout=builder._layout_for(selected),
-        ) if snapshot is not None else None)
-        # Bind the complete detail to the same manifest generation that
-        # admitted it. A healthy sibling cannot replace a refused selection.
-        if _bounded_bytes(manifest_path, root, MANIFEST_MAX_BYTES) != manifest_raw:
-            raise ValueError("manifest changed during selected read")
-        return {
-            "schema": "mastermind.macro_command_workspace_read.v1",
-            "source": source,
-            "selected_workspace": {
-                "workspace_id": selected, "region": "US",
-                "state": "ready" if view is not None else "unavailable",
-                "generation_id": (snapshot or {}).get("generation", {}).get("generation_id"),
-                "artifact": entry["artifact"], "view": view,
+    yield MacroPublicationRead(tuple(entries), source)
+    # A failed consumer returns no result. Preserve its original error instead
+    # of replacing it with a later fence failure. A successful consumer is not
+    # released until these checks complete.
+    # The producer writes bodies before the manifest. A manifest-only fence
+    # misses a changed selected body in that publication window. Unreadable
+    # bytes remain unavailable; only a proven difference is a source change.
+    for path, original in selected_bodies.items():
+        if total + BODY_MAX_BYTES > TOTAL_MAX_BYTES:
+            raise _ReadBudgetExceeded()
+        current = _bounded_bytes(path, data_root, BODY_MAX_BYTES)
+        total += len(current)
+        if current != original:
+            raise MacroPublicationChanged("selected body changed during read")
+    current_manifest = _bounded_bytes(manifest_path, root, MANIFEST_MAX_BYTES)
+    if current_manifest != manifest_raw:
+        raise MacroPublicationChanged("manifest changed during read")
+
+
+def compose_macro_command(selected: str | None = None) -> dict:
+    """Project the existing HTTP read without exposing sealed snapshots to clients."""
+    from lib import macro_suite_view
+    from scripts import build_macro_suite_pages as builder
+
+    with read_macro_publication(selected) as publication:
+        entries = publication.entries
+        source = publication.source
+        composed_at = source["composed_at"]
+        if selected:
+            entry = entries[0]
+            snapshot = entry["snapshot"]
+            view = (macro_suite_view.build_view(
+                snapshot, page_built_at=composed_at, artifact=entry["artifact"],
+                layout=builder._layout_for(selected),
+            ) if snapshot is not None else None)
+            return {
+                "schema": "mastermind.macro_command_workspace_read.v1",
+                "source": source,
+                "selected_workspace": {
+                    "workspace_id": selected, "region": "US",
+                    "state": "ready" if view is not None else "unavailable",
+                    "generation_id": (snapshot or {}).get("generation", {}).get("generation_id"),
+                    "artifact": entry["artifact"], "view": view,
+                    "failure": entry["failure"],
+                },
+            }
+        header = macro_suite_view.build_command_header(entries, page_built_at=composed_at)
+        sections = builder._macro_command_sections(entries, page_built_at=composed_at)
+        builder._restrict_header_to_populated(header, entries, {section["id"] for section in sections})
+        workspaces = []
+        for entry in entries:
+            snapshot = entry["snapshot"] or {}
+            workspaces.append({
+                "workspace_id": entry["workspace_id"], "region": entry["region"],
+                "href": "/" + entry["output"], "title": entry["title"],
+                "state": (snapshot.get("availability") or {}).get("state"),
+                "availability": snapshot.get("availability"),
+                "effective_date": (snapshot.get("headline") or {}).get("effective_date"),
+                "calculation_as_of": (snapshot.get("generation") or {}).get("calculation_as_of"),
+                "content_sha256": (snapshot.get("generation") or {}).get("content_sha256"),
+                "generation_id": (snapshot.get("generation") or {}).get("generation_id"),
                 "failure": entry["failure"],
-            },
+            })
+        healthy = sum(entry["snapshot"] is not None for entry in entries)
+        body = {
+            "schema": "mastermind.macro_command_read.v1",
+            "state": "ready" if healthy == len(entries) else "partial" if healthy else "unavailable",
+            "source": source,
+            **header,
+            "sections": [{
+                "id": section["id"], "label": section["label"],
+                "href": "/macro_monetary.html#" + section["id"],
+                "deep_href": section.get("deep_href"),
+                "detail_links": section.get("detail_links"),
+                "subtabs": [{key: tab.get(key) for key in ("id", "label", "deep_href")}
+                            for tab in section.get("subtabs") or []],
+            } for section in sections],
+            "workspaces": workspaces,
         }
-    header = macro_suite_view.build_command_header(entries, page_built_at=composed_at)
-    sections = builder._macro_command_sections(entries, page_built_at=composed_at)
-    builder._restrict_header_to_populated(header, entries, {section["id"] for section in sections})
-    # A producer move invalidates this aggregate; never mix two manifest generations.
-    if _bounded_bytes(manifest_path, root, MANIFEST_MAX_BYTES) != manifest_raw:
-        raise ValueError("manifest changed during read")
-    workspaces = []
-    for entry in entries:
-        snapshot = entry["snapshot"] or {}
-        workspaces.append({
-            "workspace_id": entry["workspace_id"], "region": entry["region"],
-            "href": "/" + entry["output"], "title": entry["title"],
-            "state": (snapshot.get("availability") or {}).get("state"),
-            "availability": snapshot.get("availability"),
-            "effective_date": (snapshot.get("headline") or {}).get("effective_date"),
-            "calculation_as_of": (snapshot.get("generation") or {}).get("calculation_as_of"),
-            "content_sha256": (snapshot.get("generation") or {}).get("content_sha256"),
-            "generation_id": (snapshot.get("generation") or {}).get("generation_id"),
-            "failure": entry["failure"],
-        })
-    healthy = sum(entry["snapshot"] is not None for entry in entries)
-    body = {
-        "schema": "mastermind.macro_command_read.v1",
-        "state": "ready" if healthy == len(entries) else "partial" if healthy else "unavailable",
-        "source": source,
-        **header,
-        "sections": [{
-            "id": section["id"], "label": section["label"],
-            "href": "/macro_monetary.html#" + section["id"],
-            "deep_href": section.get("deep_href"),
-            "detail_links": section.get("detail_links"),
-            "subtabs": [{key: tab.get(key) for key in ("id", "label", "deep_href")}
-                        for tab in section.get("subtabs") or []],
-        } for section in sections],
-        "workspaces": workspaces,
-    }
-    return body
+        return body
