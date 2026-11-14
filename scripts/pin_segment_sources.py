@@ -76,6 +76,11 @@ PIN_REPORT_SCHEMA = "theme_graph.segment_pin_report/v1"
 PACKET_REPORT_SCHEMA = "theme_graph.segment_packet_report/v1"
 PROPOSE_REPORT_SCHEMA = "theme_graph.segment_propose_report/v1"
 _SNAPSHOT_RE = re.compile(r"ffsecsrc_[0-9a-f]{64}")
+_TICKER_RE = re.compile(r"[A-Z0-9][A-Z0-9.-]{0,14}")
+_ACCESSION_RE = re.compile(r"[0-9]{10}-[0-9]{2}-[0-9]{6}")
+_OVER_CAP_FIGURES = re.compile(r"SEC archive response exceeds bounded ingest limit \(([0-9]+) > ([0-9]+)\)")
+SIZE_BASIS_DECLARED = "declared_content_length"
+SIZE_BASIS_CUT = "bytes_at_cut"
 
 
 class PacketRefusal(ValueError):
@@ -86,12 +91,77 @@ class PacketRefusal(ValueError):
         super().__init__(code)
 
 
+class PacketRequestRefused(ValueError):
+    """The whole packet request is refused before anything is written."""
+
+    def __init__(self, code: str) -> None:
+        self.code = code
+        super().__init__(code)
+
+
+def packet_output_stem(row: dict) -> str:
+    """Output file stem for one request row: ticker, accession and the disclosed line.
+
+    The readable slug alone could merge two lines that differ only in punctuation,
+    so a digest of the exact line text follows it.
+    """
+    line = row["disclosed_line"]
+    slug = re.sub(r"[^A-Za-z0-9]+", "-", line).strip("-")[:48] or "line"
+    digest = sha256(line.encode("utf-8")).hexdigest()[:12]
+    return f"{row['ticker']}_{row['accession']}_{slug}_{digest}"
+
+
+def _validate_packet_rows(rows: list) -> list[str]:
+    """Check every row's naming fields and refuse colliding output names, before any write."""
+    stems = []
+    for index, row in enumerate(rows):
+        if not (isinstance(row, dict)
+                and isinstance(row.get("ticker"), str) and _TICKER_RE.fullmatch(row["ticker"])
+                and isinstance(row.get("accession"), str) and _ACCESSION_RE.fullmatch(row["accession"])
+                and isinstance(row.get("disclosed_line"), str) and row["disclosed_line"].strip()):
+            raise PacketRequestRefused(f"PACKET_REQUEST_ROW_{index}_INVALID")
+        stem = packet_output_stem(row)
+        if stem in stems:
+            raise PacketRequestRefused(
+                f"PACKET_OUTPUT_NAME_COLLISION_ROWS_{stems.index(stem)}_{index}")
+        stems.append(stem)
+    return stems
+
+
+def over_cap_size(exc: BaseException) -> tuple[int | None, str | None]:
+    """What the refused fetch already knew about the document's size, and how it knew.
+
+    The archive collector refuses either on the declared Content-Length (reporting
+    the declared size) or while streaming (reporting the limit plus one byte, the
+    point where the stream was cut). Nothing is downloaded to measure a refused
+    document. A declared length of exactly limit+1 cannot be told apart and is
+    reported as bytes_at_cut, which is still a true lower bound. Any other refusal
+    shape reports no size.
+    """
+    match = _OVER_CAP_FIGURES.search(str(exc))
+    if match is None:
+        return None, None
+    size, limit = int(match.group(1)), int(match.group(2))
+    if size == limit + 1:
+        return size, SIZE_BASIS_CUT
+    if size > limit + 1:
+        return size, SIZE_BASIS_DECLARED
+    return None, None
+
+
 def _canonical(value) -> bytes:
     return n._canonical(value)
 
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _outcome(refused: int, total: int) -> str:
+    """complete: every row went through; partial: some did, some were refused; refused: none did."""
+    if refused == 0:
+        return "complete"
+    return "refused" if refused == total else "partial"
 
 
 def _load_json(path: Path):
@@ -165,6 +235,14 @@ def _pin_one(target, forensics, archive, raw_root, archive_root, now) -> dict:
     cik = target["cik"]
     forms = set(target["forms"])
     accession = None
+    # None until the filing choice is made: a refusal before that point cannot
+    # know which later amendments exist.
+    amendments = None
+
+    def refused(code: str, **extra) -> dict:
+        return {"ticker": ticker, "cik": cik, "accession": accession, "refusal": code,
+                "later_amendments": amendments, **extra}
+
     try:
         receipt = forensics.fetch(cik, "submissions", retrieved_at=now)
         with gzip.open(raw_root / receipt.object_path, "rb") as handle:
@@ -172,14 +250,15 @@ def _pin_one(target, forensics, archive, raw_root, archive_root, now) -> dict:
         manifests = build_filing_manifests(submissions, cik=cik, ticker=ticker, recorded_at=now)
         eligible = [m for m in manifests if m["filing"]["form"] in forms]
         if not eligible:
-            return {"ticker": ticker, "cik": cik, "accession": None, "refusal": "NO_ELIGIBLE_FILING"}
+            amendments = []
+            return refused("NO_ELIGIBLE_FILING")
         manifest = choose_filing(eligible)
         amendments = later_amendments(eligible, manifest)
         accession = manifest["filing"]["accession"]
         index_document = archive_index_document(manifest)
         index_receipt = archive.fetch_document(index_document, retrieved_at=now)
         if isinstance(index_receipt, dict):
-            return {"ticker": ticker, "cik": cik, "accession": accession, "refusal": "ARCHIVE_INDEX_MISSING"}
+            return refused("ARCHIVE_INDEX_MISSING")
         index_bytes = read_archive_document(archive_root, index_receipt)
         documents = documents_from_archive_index(manifest, json.loads(index_bytes))
         manifest = with_archive_documents(manifest, documents)
@@ -188,7 +267,7 @@ def _pin_one(target, forensics, archive, raw_root, archive_root, now) -> dict:
         )
         primary = next(d for d in manifest["documents"] if d["role"] == "primary")
         if primary["availability"] != "stored":
-            return {"ticker": ticker, "cik": cik, "accession": accession, "refusal": "PRIMARY_DOCUMENT_MISSING"}
+            return refused("PRIMARY_DOCUMENT_MISSING")
         manifest_key = persist_filing_manifest(archive_root, manifest)
         return {
             "ticker": ticker, "cik": cik, "form": manifest["filing"]["form"],
@@ -200,14 +279,17 @@ def _pin_one(target, forensics, archive, raw_root, archive_root, now) -> dict:
             # whether one restates the segment note before this row is used.
             "later_amendments": amendments,
         }
-    except ArchiveResponseTooLarge:
-        return {"ticker": ticker, "cik": cik, "accession": accession, "refusal": "DOCUMENT_OVER_CAP"}
+    except ArchiveResponseTooLarge as exc:
+        # Only the size the refusal already carried; the message itself (which
+        # names the URL) is never written.
+        size, basis = over_cap_size(exc)
+        return refused("DOCUMENT_OVER_CAP", size_bytes=size, size_basis=basis)
     except edgar_forensics.SecResponseTooLarge:
-        return {"ticker": ticker, "cik": cik, "accession": accession, "refusal": "SUBMISSIONS_OVER_CAP"}
+        return refused("SUBMISSIONS_OVER_CAP")
     except Exception:
         # A per-target failure is a typed skip, never a traceback to stdout and
         # never a reason to retry a refused document at a larger cap.
-        return {"ticker": ticker, "cik": cik, "accession": accession, "refusal": "PIN_TARGET_FAILED"}
+        return refused("PIN_TARGET_FAILED")
 
 
 def run_pin(targets_path, raw_root, archive_root, out, *, local_store=None,
@@ -429,6 +511,9 @@ def run_packet(request_path, snapshot_id, out, *, local_store=None, identity_rea
     rows = request.get("rows")
     if not isinstance(rows, list):
         raise ValueError("REQUEST_ROWS_INVALID")
+    # Every output name is fixed and checked before the output directory exists,
+    # so a colliding request writes nothing at all.
+    stems = _validate_packet_rows(rows)
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     store = build_private_source_store(local_dir=local_store)
@@ -438,27 +523,32 @@ def run_packet(request_path, snapshot_id, out, *, local_store=None, identity_rea
         theme_sources_raw = (ROOT / "config" / "theme_sources.yml").read_bytes()
     identity_observed_at = now or _utc_now()
     results = []
-    for row in rows:
+    for row, stem in zip(rows, stems):
         ticker = row.get("ticker")
         accession = row.get("accession")
+        line = row.get("disclosed_line")
         try:
             produced = _packet_row(
                 row, authority, snapshot_id, identity_reader, identity_observed_at, theme_sources_raw
             )
         except PacketRefusal as exc:
-            results.append({"ticker": ticker, "accession": accession, "status": "REFUSED", "refusal": exc.code})
-            continue
+            code = exc.code
         except n.DisclosureError as exc:
-            results.append({"ticker": ticker, "accession": accession, "status": "REFUSED", "refusal": str(exc)})
-            continue
+            code = str(exc)
         except Exception:
-            results.append({"ticker": ticker, "accession": accession, "status": "REFUSED", "refusal": "PACKET_ROW_FAILED"})
+            code = "PACKET_ROW_FAILED"
+        else:
+            code = None
+        base = {"ticker": ticker, "accession": accession, "disclosed_line": line, "stem": stem}
+        if code is not None:
+            results.append({**base, "status": "REFUSED", "refusal": code})
             continue
-        stem = f"{ticker}_{accession}"
         (out / f"{stem}_SEGMENT_OWNER_DECISION.json").write_bytes(_canonical(produced["spec"]))
         (out / f"{stem}_SOURCE_POLICY.json").write_bytes(_canonical(produced["policy"]))
-        results.append({"ticker": ticker, "accession": accession, "status": "ADOPTED", "refusal": None})
-    report = {"schema": PACKET_REPORT_SCHEMA, "snapshot_id": snapshot_id, "rows": results}
+        results.append({**base, "status": "ADOPTED", "refusal": None})
+    report = {"schema": PACKET_REPORT_SCHEMA, "snapshot_id": snapshot_id,
+              "outcome": _outcome(sum(1 for r in results if r["status"] == "REFUSED"), len(results)),
+              "rows": results}
     (out / "packet_report.json").write_bytes(_canonical(report))
     return report
 
@@ -538,7 +628,9 @@ def run_propose(manifest_path, out, *, python=None, runner=None) -> dict:
             "ticker": row.get("ticker"), "exit_code": proc.returncode,
             "stdout": stdout_lines, "refused": refused_lines,
         })
-    report = {"schema": PROPOSE_REPORT_SCHEMA, "rows": results}
+    report = {"schema": PROPOSE_REPORT_SCHEMA,
+              "outcome": _outcome(sum(1 for r in results if r["exit_code"] != 0), len(results)),
+              "rows": results}
     (out / "propose_report.json").write_bytes(_canonical(report))
     return report
 
@@ -578,12 +670,12 @@ def main(argv=None) -> int:
         elif args.command == "packet":
             report = run_packet(args.request, args.snapshot_id, args.out, local_store=args.local_store)
             refused = sum(1 for r in report["rows"] if r["status"] == "REFUSED")
-            print(f"packet: {len(report['rows'])} rows, {refused} refused")
+            print(f"packet: {report['outcome']}: {len(report['rows'])} rows, {refused} refused")
         else:
             report = run_propose(args.manifest, args.out)
             refused = sum(1 for r in report["rows"] if r["exit_code"] != 0)
-            print(f"propose: {len(report['rows'])} rows, {refused} refused")
-    except ManifestRowRefused as exc:
+            print(f"propose: {report['outcome']}: {len(report['rows'])} rows, {refused} refused")
+    except (ManifestRowRefused, PacketRequestRefused) as exc:
         # Names the row and a fixed code only; nothing was written.
         print(f"REFUSED: {exc}", file=sys.stderr)
         return 2

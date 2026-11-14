@@ -361,6 +361,38 @@ def test_pin_row_carries_an_empty_later_amendments_list_when_none_exist(tmp_path
     assert _pin(tmp_path, SEG_BODY).row["later_amendments"] == []
 
 
+def test_pin_streamed_over_cap_row_records_bytes_at_cut_and_amendments(tmp_path):
+    body = b"x" * (n.MAX_SEC_SOURCE_BYTES + 1)
+    row = _pin(tmp_path, body, primary_headers={"ETag": '"synthetic"'}).row
+    assert row["refusal"] == "DOCUMENT_OVER_CAP"
+    # The stream was cut one byte past the limit; that is all the run knows.
+    assert row["size_bytes"] == n.MAX_SEC_SOURCE_BYTES + 1
+    assert row["size_basis"] == m.SIZE_BASIS_CUT
+    # Refused rows carry the later-amendment list too.
+    assert row["later_amendments"] == []
+    # The refusal message (which names the URL) is never written into the row.
+    assert all("http" not in str(value) for value in row.values())
+
+
+def test_pin_declared_over_cap_row_records_the_declared_size_without_download(tmp_path):
+    declared = n.MAX_SEC_SOURCE_BYTES + 5000
+    headers = {"ETag": '"synthetic"', "Content-Length": str(declared)}
+    pin = _pin(tmp_path, SEG_BODY, primary_headers=headers)
+    assert pin.row["refusal"] == "DOCUMENT_OVER_CAP"
+    assert pin.row["size_bytes"] == declared
+    assert pin.row["size_basis"] == m.SIZE_BASIS_DECLARED
+    # One request for the refused primary; nothing is fetched to measure it.
+    assert pin.session.calls.count(pin.primary_url) == 1
+
+
+def test_over_cap_size_reads_only_the_collector_refusal_shape():
+    limit = n.MAX_SEC_SOURCE_BYTES
+    msg = "SEC archive response exceeds bounded ingest limit ({} > {}) for https://example.test/a.htm"
+    assert m.over_cap_size(ValueError(msg.format(limit + 1, limit))) == (limit + 1, m.SIZE_BASIS_CUT)
+    assert m.over_cap_size(ValueError(msg.format(limit + 9, limit))) == (limit + 9, m.SIZE_BASIS_DECLARED)
+    assert m.over_cap_size(ValueError("SEC archive response has invalid Content-Length")) == (None, None)
+
+
 def test_pin_over_cap_document_is_typed_refusal_skipped_without_retry(tmp_path):
     headers = {"ETag": '"synthetic"', "Content-Length": str(n.MAX_SEC_SOURCE_BYTES + 1)}
     pin = _pin(tmp_path, SEG_BODY, primary_headers=headers)
@@ -382,8 +414,8 @@ def test_packet_owner_decision_and_policy_are_accepted_by_qualify_records(tmp_pa
     pin = _pin(tmp_path, SEG_BODY)
     packet = _run_packet(tmp_path, pin, _packet_request(pin))
     assert packet.report["rows"][0]["status"] == "ADOPTED"
-    stem = f"{TICKER}_{ACCESSION}"
-    spec_raw = (packet.out / f"{stem}_SEGMENT_OWNER_DECISION.json").read_bytes()
+    stem = m.packet_output_stem(_packet_request(pin)["rows"][0])
+    spec_raw =(packet.out / f"{stem}_SEGMENT_OWNER_DECISION.json").read_bytes()
     policy_raw = (packet.out / f"{stem}_SOURCE_POLICY.json").read_bytes()
     registry = (ROOT / o.REGISTRY_PATH).read_bytes()
     snapshot = o.qualify_records("a" * 40, spec_raw, policy_raw, registry,
@@ -408,9 +440,69 @@ def test_packet_missing_anchor_is_typed_row_refusal(tmp_path):
     packet = _run_packet(tmp_path, pin, request)
     row = packet.report["rows"][0]
     assert row["status"] == "REFUSED" and row["refusal"] == "ANCHOR_MISSING"
-    stem = f"{TICKER}_{ACCESSION}"
+    stem = m.packet_output_stem(request["rows"][0])
     assert not (packet.out / f"{stem}_SEGMENT_OWNER_DECISION.json").exists()
     assert not (packet.out / f"{stem}_SOURCE_POLICY.json").exists()
+
+
+def test_packet_two_lines_of_one_filing_produce_four_distinct_files(tmp_path):
+    pin = _pin(tmp_path, SEG_BODY)
+    first = _packet_request(pin)["rows"][0]
+    # A second line of the SAME filing, present in the same span text.
+    second = {**first, "disclosed_line": "Data Center Storage segment"}
+    request = {"schema": m.REQUEST_SCHEMA, "rows": [first, second]}
+    packet = _run_packet(tmp_path, pin, request)
+    assert [r["status"] for r in packet.report["rows"]] == ["ADOPTED", "ADOPTED"]
+    assert packet.report["outcome"] == "complete"
+    stems = [m.packet_output_stem(first), m.packet_output_stem(second)]
+    assert stems[0] != stems[1]
+    assert [r["stem"] for r in packet.report["rows"]] == stems
+    written = sorted(p.name for p in packet.out.iterdir() if p.name != "packet_report.json")
+    assert written == sorted(f"{s}_{kind}.json" for s in stems
+                             for kind in ("SEGMENT_OWNER_DECISION", "SOURCE_POLICY"))
+    lines = {json.loads((packet.out / f"{s}_SEGMENT_OWNER_DECISION.json").read_bytes())["fact"]["disclosed_line"]
+             for s in stems}
+    assert lines == {first["disclosed_line"], second["disclosed_line"]}
+
+
+def test_packet_request_with_colliding_output_names_is_refused_before_any_write(tmp_path):
+    pin = _pin(tmp_path, SEG_BODY)
+    row = _packet_request(pin)["rows"][0]
+    request_path = tmp_path / "request.json"
+    request_path.write_text(json.dumps({"schema": m.REQUEST_SCHEMA, "rows": [row, dict(row)]}),
+                            encoding="utf-8")
+    out = tmp_path / "packet_out"
+    with pytest.raises(m.PacketRequestRefused) as caught:
+        m.run_packet(request_path, pin.report["snapshot_id"], out, local_store=pin.store,
+                     identity_reader=_identity_reader, theme_sources_raw=THEME,
+                     now="2024-03-03T10:00:00Z")
+    assert caught.value.code == "PACKET_OUTPUT_NAME_COLLISION_ROWS_0_1"
+    # Nothing at all was written: not even the output directory or a report.
+    assert not out.exists()
+
+
+def test_packet_cli_names_a_collision_and_exits_two(tmp_path, capsys):
+    pin = _pin(tmp_path, SEG_BODY)
+    row = _packet_request(pin)["rows"][0]
+    request_path = tmp_path / "request.json"
+    request_path.write_text(json.dumps({"schema": m.REQUEST_SCHEMA, "rows": [row, dict(row)]}),
+                            encoding="utf-8")
+    out = tmp_path / "cli_out"
+    code = m.main(["packet", "--request", str(request_path), "--snapshot-id", pin.report["snapshot_id"],
+                   "--out", str(out), "--local-store", str(pin.store)])
+    assert code == 2
+    assert "REFUSED: PACKET_OUTPUT_NAME_COLLISION_ROWS_0_1" in capsys.readouterr().err
+    assert not out.exists()
+
+
+def test_packet_report_says_partial_when_some_rows_are_refused(tmp_path):
+    pin = _pin(tmp_path, SEG_BODY)
+    good = _packet_request(pin)["rows"][0]
+    bad = {**good, "disclosed_line": "Data Center Storage segment",
+           "span_start_anchor": "THIS ANCHOR IS NOT IN THE BODY"}
+    packet = _run_packet(tmp_path, pin, {"schema": m.REQUEST_SCHEMA, "rows": [good, bad]})
+    assert [r["status"] for r in packet.report["rows"]] == ["ADOPTED", "REFUSED"]
+    assert packet.report["outcome"] == "partial"
 
 
 def test_packet_non_unique_anchor_is_typed_row_refusal(tmp_path):
@@ -519,7 +611,23 @@ def test_run_propose_builds_the_unchanged_cli_argument_list(tmp_path):
     assert calls[1][0][-1] == "--no-profit-driver"
     assert calls[0][1]["cwd"] == m.ROOT and "shell" not in calls[0][1]
     assert [r["exit_code"] for r in report["rows"]] == [0, 0]
+    assert report["outcome"] == "complete"
     assert (out / "propose_report.json").exists()
+
+
+class _RefusedProc:
+    returncode = 2
+    stdout = ""
+    stderr = "REFUSED: SEGMENT_SHARE_INVALID\n"
+
+
+def test_run_propose_report_says_partial_when_the_writer_refuses_partway(tmp_path):
+    procs = iter([_Proc(), _RefusedProc()])
+    rows = [_propose_row(), _propose_row(ticker="BETA")]
+    report = m.run_propose(_write_manifest(tmp_path, rows), tmp_path / "out", python="PY",
+                           runner=lambda cmd, **kwargs: next(procs))
+    assert [r["exit_code"] for r in report["rows"]] == [0, 2]
+    assert report["outcome"] == "partial"
 
 
 @pytest.mark.parametrize("bad, code", [
