@@ -1,0 +1,22 @@
+{
+  "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "node": "1K9F-0",
+  "role": "editable predecessor structure; not approval or proposed-after",
+  "result": [
+    {
+      "file": {
+        "id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "name": "Terminal"
+      },
+      "contentHash": {
+        "tokens": "55dd37b7"
+      }
+    },
+    {
+      "summary": "Frame \"01 · Chart Context · Desktop · Sidebar reader\" (1K9F-0) 1440×900\n  Frame \"Terminal header\" (1K9G-0) 1440×54\n    Frame \"Frame\" (1K9H-0) 198×?\n      Frame \"Frame\" (1K9I-0) 28×28\n        ... 1 children\n      Text \"MASTERMIND\" (1K9K-0) ?×? \"MASTERMIND\"\n    Text \"002326.SZ\" (1K9L-0) ?×? \"002326.SZ\"\n    Frame \"Frame\" (1K9M-0) ?×?\n      Text \"16.54\" (1K9N-0) ?×? \"16.54\"\n      Text \"+1.53% · 24H\" (1K9O-0) ?×? \"+1.53% · 24H\"\n    Text \"Volume 29.2M\" (1K9P-0) ?×? \"Volume 29.2M\"\n    Rectangle \"Rectangle\" (1K9Q-0) ?×?\n    Frame \"Frame\" (1K9R-0) ?×32\n      Text \"Mastermind AI\" (1K9S-0) ?×? \"Mastermind AI\"\n  Frame \"Workspace\" (1K9T-0) 1440×818\n    Frame \"Chart workspace\" (1K9U-0) 1080×818\n      Frame \"Chart toolbar\" (1K9V-0) 1080×46\n        ... 15 children\n      Frame \"Unobstructed chart\" (1KAE-0) 1080×772\n        ... 4 children\n    Frame \"Context sidebar\" (1KL8-0) 360×818\n      Frame \"Sidebar views\" (1KL9-0) ?×46\n        ... 4 children\n      Frame \"Context reading surface\" (1KLG-0) 360×?\n        ... 8 children\n  Frame \"Market ticker footer\" (1KNP-0) 1440×28\n    Text \"MOVERS\" (1KNQ-0) ?×? \"MOVERS\"\n    Text \"AAPL 343.46\" (1KNR-0) ?×? \"AAPL 343.46\"\n    Text \"+0.40%\" (1KNS-0) ?×? \"+0.40%\"\n    Text \"MSFT 529.05\" (1KNT-0) ?×? \"MSFT 529.05\"\n    Text \"−1.93%\" (1KNU-0) ?×? \"−1.93%\"\n    Text \"GOOGL 340.59\" (1KNV-0) ?×? \"GOOGL 340.59\"\n    Text \"−2.47%\" (1KNW-0) ?×? \"−2.47%\"\n    Rectangle \"Rectangle\" (1KNX-0) ?×?\n    Text \"Design reference · s…\" (1KNY-0) ?×? \"Design reference · supplied screenshot values\"",
+      "nodeId": "1K9F-0",
+      "depth": 3
+    }
+  ]
+}
+

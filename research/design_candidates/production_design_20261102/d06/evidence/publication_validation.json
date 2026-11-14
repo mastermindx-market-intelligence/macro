@@ -1,0 +1,141 @@
+{
+  "artifact": "D06 current publication/package integrity",
+  "checked_at_utc": "2026-11-04T05:11:54.430041+00:00",
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "all prior source artifacts retained",
+      "status": "PASS",
+      "detail": 94
+    },
+    {
+      "check": "all64previous raw captures unchanged",
+      "status": "PASS",
+      "detail": {
+        "beta": 36,
+        "Paper": 16,
+        "earlier_local": 12
+      }
+    },
+    {
+      "check": "eightnew raw captures match source receipt",
+      "status": "PASS",
+      "detail": 8
+    },
+    {
+      "check": "actualPNG dimensions",
+      "status": "PASS",
+      "detail": {
+        "chart-time-desktop-en.png": [
+          360,
+          775
+        ],
+        "chart-time-desktop-zh.png": [
+          360,
+          775
+        ],
+        "chart-time-tablet-en.png": [
+          820,
+          1248
+        ],
+        "chart-time-tablet-zh.png": [
+          820,
+          1248
+        ],
+        "chart-time-mobile-en.png": [
+          390,
+          1354
+        ],
+        "chart-time-mobile-zh.png": [
+          390,
+          1336
+        ],
+        "chart-time-320-en.png": [
+          320,
+          854
+        ],
+        "chart-time-320-zh.png": [
+          320,
+          854
+        ]
+      }
+    },
+    {
+      "check": "retention route and core UX unchanged",
+      "status": "PASS",
+      "detail": "exact prior hashes"
+    },
+    {
+      "check": "76existing and6proposed capability groups",
+      "status": "PASS",
+      "detail": {
+        "RETAIN": 40,
+        "IMPROVE": 35,
+        "RELOCATE": 0,
+        "REMOVE": 0,
+        "BLOCKED_DATA": 1
+      }
+    },
+    {
+      "check": "75unique cases with10partial65unexecuted0complete",
+      "status": "PASS",
+      "detail": {
+        "specified_not_executed": 65,
+        "specified_partial_local_fixture": 10
+      }
+    },
+    {
+      "check": "actual browser outcome arithmetic",
+      "status": "PASS",
+      "detail": {
+        "expected": 77,
+        "skipped": 16
+      }
+    },
+    {
+      "check": "source test and newcommit binding",
+      "status": "PASS",
+      "detail": "same Terminal branch/PR;17blobs;9tested hashes;57unit;77browser"
+    },
+    {
+      "check": "foundation version and adoption boundaries",
+      "status": "PASS",
+      "detail": "candidate4 provisional;candidate5 proposal;no v1/grant"
+    },
+    {
+      "check": "historical review scope retained",
+      "status": "PASS",
+      "detail": "no approval transfer to newer source"
+    },
+    {
+      "check": "JSONparse",
+      "status": "PASS",
+      "detail": 18
+    },
+    {
+      "check": "relativeMarkdown links",
+      "status": "PASS",
+      "detail": {
+        "checked": 156,
+        "broken": [],
+        "shared_parent_checklist": "previous immutable source readback retained"
+      }
+    },
+    {
+      "check": "Macro source scope excludes runtime code",
+      "status": "PASS",
+      "detail": "D06 docs and evidence only"
+    },
+    {
+      "check": "release and grant truth",
+      "status": "PASS",
+      "detail": "Draft and explicit holds retained;no deployment"
+    }
+  ],
+  "checks_passed": 15,
+  "limits": [
+    "Package integrity is not production or full migration acceptance.",
+    "Old artifact_validation.json and implementation_receipt.json remain their exact historical records.",
+    "Current-head hosted CI is observed pending, not inferred passed."
+  ]
+}

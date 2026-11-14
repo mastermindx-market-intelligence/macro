@@ -1,0 +1,411 @@
+{
+  "artifact": "D06 measured existing Terminal responsive behavior and qualified source drift",
+  "status": "observed_before_design_subset",
+  "assembled_at_utc": "2026-11-03 22:05:47 UTC",
+  "timezone": "America/Chicago",
+  "observed_date_local": "2026-11-03",
+  "session_id": "d06-responsive-20261103",
+  "owner": "Existing D06 Astra Pro / ChatGPT4 / mastermidx4",
+  "carrier": {
+    "pr": 10655,
+    "branch": "design/d06-terminal-phase2a-20261103-c4",
+    "prior_published_head": "61d6762cdd417b00aae879bd411a8bb20c50ff63"
+  },
+  "browser": {
+    "carrier": "Connected Chrome browser extension; supported viewport override",
+    "url": "https://beta.mastermind-x.com/terminal?symbol=AAPL",
+    "access": "signed-in presentation observed; backend authorization and entitlement tier not independently verified",
+    "privacy": "No account identity, watchlist contents or settings screenshots included",
+    "theme_observed": "dark",
+    "language_observed": "en",
+    "symbol": "AAPL",
+    "interval": "3D",
+    "device_pixel_ratio": 1,
+    "input_methods": [
+      "pointer",
+      "keyboard"
+    ],
+    "touch_emulation": false,
+    "browser_zoom_proved": false,
+    "no_ai_prompt": true,
+    "no_save": true,
+    "no_script_execution": true,
+    "no_public_upload": true,
+    "no_account_preference_mutation": true,
+    "deployment_token": "2ded360882b9c721e690907ff363b553781fb920",
+    "equals_observed_terminal_master": true,
+    "independent_bundle_attestation": false,
+    "external_brain_url": "https://www.mastermind-x.com/mm_brain.js",
+    "external_brain_byte_hash": null
+  },
+  "source": {
+    "assignment_sha": "6e1862867193ec6486a22001a0e4fb515da20448",
+    "prior_terminal_sha": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+    "current_terminal_sha": "2ded360882b9c721e690907ff363b553781fb920",
+    "current_procedure_sha": "9f65957e29eba92245d78609f032aaea523b7cb4",
+    "terminal_commits_ahead": 10,
+    "git_tree_truncated": false,
+    "unchanged_core_blobs": [
+      {
+        "path": "terminal/components/BrainWidget.tsx",
+        "sha": "5bf6fb83c02222e0c1682890c982beb91c515536",
+        "prior_sha": "5bf6fb83c02222e0c1682890c982beb91c515536",
+        "unchanged": true
+      },
+      {
+        "path": "terminal/components/ChartContextDock.ts",
+        "sha": "d0d64f7d2ec663f9ed91f7663432b55bd4316575",
+        "prior_sha": "d0d64f7d2ec663f9ed91f7663432b55bd4316575",
+        "unchanged": true
+      },
+      {
+        "path": "terminal/components/ChartPane.tsx",
+        "sha": "8269696c886198f1da7bbcfdfcfd8a09abc7dec7",
+        "prior_sha": "8269696c886198f1da7bbcfdfcfd8a09abc7dec7",
+        "unchanged": true
+      },
+      {
+        "path": "terminal/components/ChartPanel.tsx",
+        "sha": "1f6b1f46f9ec17dcd676c16f19a99240e51ff783",
+        "prior_sha": "1f6b1f46f9ec17dcd676c16f19a99240e51ff783",
+        "unchanged": true
+      },
+      {
+        "path": "terminal/components/TerminalShell.tsx",
+        "sha": "85a2847437d6505f98118e1130806c9aba69e716",
+        "prior_sha": "85a2847437d6505f98118e1130806c9aba69e716",
+        "unchanged": true
+      },
+      {
+        "path": "terminal/components/VisualIntelligencePanel.module.css",
+        "sha": "6c25ead65dcda811a146293f38e9e88ecc67f3a1",
+        "prior_sha": "6c25ead65dcda811a146293f38e9e88ecc67f3a1",
+        "unchanged": true
+      },
+      {
+        "path": "terminal/components/VisualIntelligencePanel.tsx",
+        "sha": "50cc6eb481940ca538219571d6b27d712266f3bb",
+        "prior_sha": "50cc6eb481940ca538219571d6b27d712266f3bb",
+        "unchanged": true
+      },
+      {
+        "path": "terminal/lib/mastermindBrain.ts",
+        "sha": "8bad1568a715d3603331db492eced30fe33f98de",
+        "prior_sha": "8bad1568a715d3603331db492eced30fe33f98de",
+        "unchanged": true
+      },
+      {
+        "path": "terminal/lib/originNav.ts",
+        "sha": "7484e1894b9282045a5bfec8e3d24846e40c0a61",
+        "prior_sha": "7484e1894b9282045a5bfec8e3d24846e40c0a61",
+        "unchanged": true
+      },
+      {
+        "path": "terminal/lib/visualIntelligence.ts",
+        "sha": "32275d7029b97e5c9cbcea3f7d56e7a070da5ee1",
+        "prior_sha": "32275d7029b97e5c9cbcea3f7d56e7a070da5ee1",
+        "unchanged": true
+      }
+    ],
+    "qualified_deltas_document": "../SOURCE_DELTA_20261103.md",
+    "no_source_to_production_proof": true
+  },
+  "measurement_definition": {
+    "units": "CSS px",
+    "plot_width": "Main price-data canvas excluding the separate 62px price-axis canvas",
+    "document_width": "DOM document clientWidth, not screenshot pixels",
+    "reader_width": "Actual reader section",
+    "no_page_horizontal_overflow_claim": "Only measured normal points; local control reachability not proved",
+    "source_mobile_breakpoint_max": 860,
+    "source_phone_breakpoint_max": 640,
+    "proposed_min_price_plot_width": 640,
+    "proposed_min_status": "D06 review hypothesis, not released F01/F02 geometry",
+    "existing_requested_rail_default": 360,
+    "existing_rail_clamp": [
+      300,
+      520
+    ],
+    "requested_vs_effective_width": "Automatic fit must not overwrite the existing requested mm.railW preference"
+  },
+  "measurements": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "document_client_width": 1440,
+      "document_scroll_width": 1440,
+      "price_plot_width": 904,
+      "reader_placement": "dock",
+      "reader_width": 360
+    },
+    {
+      "viewport": [
+        1024,
+        768
+      ],
+      "document_client_width": 1024,
+      "document_scroll_width": 1024,
+      "price_plot_width": 488,
+      "reader_placement": "dock",
+      "reader_width": 360,
+      "capture_id": "LC30"
+    },
+    {
+      "viewport": [
+        861,
+        900
+      ],
+      "document_client_width": 861,
+      "document_scroll_width": 861,
+      "price_plot_width": 326,
+      "reader_placement": "dock",
+      "reader_width": 360,
+      "capture_id": "LC35",
+      "note": "Toolbar right edge constrained; complete control reachability not proved"
+    },
+    {
+      "viewport": [
+        860,
+        900
+      ],
+      "document_client_width": 851,
+      "document_scroll_width": 851,
+      "price_plot_width": 788,
+      "reader_placement": "inline",
+      "reader_width": 851
+    },
+    {
+      "viewport": [
+        768,
+        1024
+      ],
+      "document_client_width": 759,
+      "document_scroll_width": 759,
+      "price_plot_width": 696,
+      "reader_placement": "inline",
+      "reader_width": 759,
+      "capture_id": "LC31"
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "document_client_width": 381,
+      "document_scroll_width": 381,
+      "price_plot_width": 318,
+      "reader_placement": "inline",
+      "reader_width": 381,
+      "capture_id": "LC32"
+    },
+    {
+      "viewport": [
+        320,
+        844
+      ],
+      "document_client_width": 311,
+      "document_scroll_width": 311,
+      "price_plot_width": 248,
+      "reader_placement": "inline",
+      "reader_width": 311,
+      "capture_id": "LC33"
+    }
+  ],
+  "focused_measurement": {
+    "viewport": [
+      320,
+      844
+    ],
+    "reader_host_client_height": 337,
+    "reader_content_height": 807,
+    "reader_scroll_top": 420,
+    "document_scroll_top": 0,
+    "capture_id": "LC34",
+    "source_rule": "40svh cap",
+    "fit_verdict": false
+  },
+  "selected_context": {
+    "selected_bar": "2026-10-27",
+    "latest_plotted_bar": "2026-10-30",
+    "quote_delay_label": "15 minutes",
+    "selection_action": "Previous bar",
+    "pointer_outside_plot_for_transitions": true,
+    "current_selection_model": "One current inspection cursor shared by crosshair and bar stepping; no separate existing committed/hover pin"
+  },
+  "transitions": [
+    {
+      "id": "RT01",
+      "action": "Desktop dock to tablet inline to phone inline",
+      "observed": "2026-10-27 retained",
+      "result_class": "retention_observed_subset"
+    },
+    {
+      "id": "RT02",
+      "action": "Focused Previous bar control at 1024 to inline at 768",
+      "observed": "Date retained; active element BODY",
+      "result_class": "focus_gap_observed"
+    },
+    {
+      "id": "RT03",
+      "action": "Phone reader Close",
+      "observed": "Visible More roller button received focus",
+      "result_class": "retention_observed_subset"
+    },
+    {
+      "id": "RT04",
+      "action": "More to Analysis hub to Chart context",
+      "observed": "aria-modal=true hub; reader reopened on 2026-10-27 and focused Close chart context",
+      "capture_id": "LC36",
+      "result_class": "retention_observed_subset"
+    },
+    {
+      "id": "RT05",
+      "action": "320 focused reader scroll then Exit focused chart",
+      "observed": "Independent reader scrolling; date retained; Fullscreen chart control received focus",
+      "result_class": "retention_observed_subset"
+    },
+    {
+      "id": "RT06",
+      "action": "Resize rail 360 to 460; cross 860 inline boundary; return 1440",
+      "observed": "460px rail preference and selected date retained",
+      "result_class": "retention_observed_subset"
+    },
+    {
+      "id": "RT07",
+      "action": "Open How to read this and scroll reader to 292, then dock/inline roundtrip",
+      "observed": "Disclosure closed; scroll reset to 0; selected date retained",
+      "result_class": "disclosure_scroll_gap_observed"
+    }
+  ],
+  "target_bounds_css_px": {
+    "phone_hub_tile": [
+      79,
+      84
+    ],
+    "phone_hub_close": [
+      34,
+      34
+    ],
+    "reader_close": [
+      32,
+      32
+    ],
+    "reader_previous": [
+      28,
+      32
+    ],
+    "reader_next": [
+      28,
+      32
+    ],
+    "reader_latest": [
+      34,
+      32
+    ],
+    "house_target": 44,
+    "wcag_aa_failure_inferred": false
+  },
+  "accessibility": {
+    "terminal_root_viewport_restricts_zoom": true,
+    "observed_meta": [
+      "maximum-scale=1",
+      "user-scalable=no"
+    ],
+    "matching_source": "terminal/app/layout.tsx",
+    "source_blob": "8f75f2f668ad837da77e28e4190833e408f427bd",
+    "actual_zoom_test": false,
+    "full_focus_trap_test": false,
+    "full_theme_locale_matrix_test": false
+  },
+  "paper": {
+    "exact_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "desktop_version": "0.5.18",
+    "catalog_sha": "03cb81e960dab705b21b0695f3886d39c4792df629a6419163efef52338182e4",
+    "catalog_mode": "TOOL_SCOPED_CONTRACT_V1",
+    "accepted_for_write_schema": true,
+    "full_catalog_known": false,
+    "compatible_write_tools": 16,
+    "incompatible_write_tools": 0,
+    "snapshot_compatible": true,
+    "token_content_hash": "55dd37b7",
+    "correspondence": [
+      {
+        "node_id": "1K9F-0",
+        "depth": 3,
+        "prior_export": "paper/context_tree_export.json",
+        "parsed_result_equal": true
+      },
+      {
+        "node_id": "19IC-1",
+        "depth": 3,
+        "prior_export": "paper/intel_tree_export.json",
+        "parsed_result_equal": true
+      }
+    ],
+    "correspondence_limit": "Returned scoped summaries only; no full-file byte equality or after-design acceptance",
+    "d06_write_admission": "NOT_ESTABLISHED",
+    "prepare_calls": 0,
+    "edit_calls": 0,
+    "foreground_changed": false,
+    "original_owner_hold": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6601121419",
+    "later_cumulative_record": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1011#issuecomment-6604289465",
+    "later_record_updated_at_utc": "2026-11-03T19:23:00Z",
+    "later_record_time_precision": "minute precision; seconds not independently retained"
+  },
+  "cleanup": {
+    "rail_width": 360,
+    "reader_open": false,
+    "settings_open": false,
+    "viewport_override_reset": true,
+    "viewport": [
+      1853,
+      1260
+    ],
+    "theme": "dark",
+    "language": "en",
+    "preferences_changed": false
+  },
+  "capture_handling": {
+    "new_images": 7,
+    "actual_mime": "image/jpeg",
+    "tool_declared_mime": "image/png",
+    "bytes_edited": false,
+    "viewport_equals_pixel_dimensions_assumed": false,
+    "geometry_source": "Live DOM, not image pixels"
+  },
+  "migration": {
+    "specified_cases": 75,
+    "full_cases_executed": 0,
+    "added_ids": [
+      "LAY07",
+      "NAV11",
+      "DATA09",
+      "SCRIPT06"
+    ]
+  },
+  "unproved": [
+    "Real touch/coarse pointer",
+    "Mobile browser and software keyboard",
+    "Landscape",
+    "400% zoom",
+    "Screen-reader behavior",
+    "Contrast",
+    "Every overflow control",
+    "Full dark/light and EN/ZH matrix",
+    "1280/1600 variants",
+    "Access enforcement and saved-state races",
+    "Performance",
+    "After-design usability"
+  ],
+  "foundations_at_prepublication": {
+    "f01_sha": "2d008bf91ccff696a3490e5d45eb9bc8d721ec9a",
+    "f01_joint_contract_blob": "01456cb2193e71a080611e4b7e26b3fcfb3456c5",
+    "joint_contract_unchanged": true,
+    "joint_v1_released": false,
+    "f01_independent_corrections_may_proceed": true,
+    "f01_original_dependent_effects_held": true,
+    "f02_sha": "f7c25c4b9870cff260c2a4b998be18d6c04d36d0",
+    "d06_write_grant_transferred": false
+  }
+}

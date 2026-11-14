@@ -1,0 +1,301 @@
+{
+  "artifact": "D06 source retention inventory; documentation only, not a runtime registry or released contract",
+  "terminal_pin": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+  "disposition": "RETAIN; improve presentation without dropping registry entries",
+  "groups": {
+    "drawings": {
+      "lines": [
+        "trendline",
+        "ray",
+        "infoline",
+        "extendedline",
+        "trendangle",
+        "hline",
+        "horizontalray",
+        "vline",
+        "crossline",
+        "channel",
+        "regressiontrend",
+        "flattopbottom",
+        "disjointchannel",
+        "pitchfork",
+        "schiffpitchfork",
+        "modifiedschiffpitchfork",
+        "insidepitchfork"
+      ],
+      "fibonacci": [
+        "fib",
+        "fibtrend",
+        "fibchannel",
+        "fibtimezone",
+        "fibspeedresistancefan",
+        "trendbasedfibtime",
+        "fibcircles",
+        "fibspiral",
+        "fibspeedresistancearcs",
+        "fibwedge",
+        "pitchfan",
+        "gannbox",
+        "gannsquarefixed",
+        "gannsquare",
+        "gannfan"
+      ],
+      "patterns": [
+        "xabcd",
+        "cypher",
+        "headandshoulders",
+        "abcd",
+        "trianglepattern",
+        "threedrives",
+        "elliottimpulse",
+        "elliottcorrection",
+        "elliotttriangle",
+        "elliottdoublecombo",
+        "elliotttriplecombo",
+        "cycliclines",
+        "timecycles",
+        "sineline"
+      ],
+      "forecasting": [
+        "longposition",
+        "shortposition",
+        "forecast",
+        "ghostfeed",
+        "barpattern",
+        "sector",
+        "anchoredvwap",
+        "fixedrangevolumeprofile",
+        "pricerange",
+        "daterange",
+        "dateandpricerange",
+        "measure"
+      ],
+      "freehand": [
+        "brush",
+        "highlighter",
+        "path"
+      ],
+      "shapes": [
+        "rect",
+        "rotatedrect",
+        "ellipse",
+        "circle",
+        "triangle",
+        "polyline",
+        "arc",
+        "curve",
+        "doublecurve"
+      ],
+      "arrows": [
+        "arrowmarker",
+        "arrow",
+        "arrowmarkleft",
+        "arrowmarkright",
+        "arrowmarktop",
+        "arrowmarkbottom",
+        "flagmark",
+        "momentum",
+        "flow",
+        "emphasis",
+        "whisper",
+        "subtle",
+        "divergence",
+        "journey",
+        "fork",
+        "threepaths",
+        "burj"
+      ],
+      "annotation": [
+        "text",
+        "anchoredtext",
+        "note",
+        "anchorednote",
+        "callout",
+        "pricelabel",
+        "pricenote",
+        "signpost",
+        "comment",
+        "image"
+      ],
+      "emoji": [
+        "emoji",
+        "icon"
+      ]
+    },
+    "chart_types": [
+      "candles",
+      "hollow",
+      "heikin",
+      "bars",
+      "line",
+      "line-markers",
+      "step",
+      "area",
+      "baseline"
+    ],
+    "timeframes": [
+      "1s",
+      "5s",
+      "15s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "4h",
+      "12h",
+      "D",
+      "2D",
+      "3D",
+      "W",
+      "2W",
+      "1M",
+      "3M"
+    ],
+    "indicators": [
+      "ema",
+      "bb",
+      "vwap",
+      "vol",
+      "gaps",
+      "ichimoku",
+      "ribbon",
+      "supertrend",
+      "avwap",
+      "rvwap",
+      "wvwap",
+      "vprofile",
+      "volbox",
+      "svwap",
+      "orb",
+      "slevels",
+      "pivots",
+      "optlevels",
+      "largeTrades",
+      "rsi",
+      "stochrsi",
+      "macd",
+      "rsistack",
+      "accum",
+      "rvol",
+      "ttmsq",
+      "adx",
+      "cvd",
+      "_lab"
+    ],
+    "indicator_subpanes": [
+      "rsi",
+      "stochrsi",
+      "macd",
+      "rsistack",
+      "accum",
+      "rvol",
+      "ttmsq",
+      "adx",
+      "cvd"
+    ],
+    "research_panes": [
+      "overview",
+      "intelligence",
+      "statements",
+      "transcripts",
+      "statistics",
+      "dividends",
+      "earnings",
+      "revenue",
+      "seasonals",
+      "forecast",
+      "technicals",
+      "ownership",
+      "insider",
+      "lab",
+      "compare"
+    ],
+    "suites": [
+      {
+        "id": "structure",
+        "label": "Structure Core",
+        "placement": "overlay",
+        "module_labels": [
+          "Market Structure",
+          "Order Blocks",
+          "FVG",
+          "Premium Discount",
+          "Liquidity",
+          "SFP",
+          "Smart SR",
+          "Money Flow Profile",
+          "Auto Patterns"
+        ]
+      },
+      {
+        "id": "trend",
+        "label": "Trend Waves",
+        "placement": "overlay",
+        "module_labels": [
+          "Trend Engine",
+          "Flow Band",
+          "Voltix Bands",
+          "Candle Painter",
+          "Market Dashboard"
+        ]
+      },
+      {
+        "id": "pulse",
+        "label": "Pulse Oscillator",
+        "placement": "pane",
+        "module_labels": [
+          "Pulse Wave",
+          "Signals",
+          "Divergence",
+          "Volume Mapping",
+          "Flows",
+          "MTF"
+        ]
+      },
+      {
+        "id": "rsix",
+        "label": "RSI Ultimate",
+        "placement": "pane",
+        "module_labels": [
+          "RSI Engine",
+          "Signals",
+          "Divergence",
+          "Channels",
+          "MTF"
+        ]
+      },
+      {
+        "id": "macdx",
+        "label": "MACD Ultimate",
+        "placement": "pane",
+        "module_labels": [
+          "MACD Engine",
+          "Signals",
+          "Histogram",
+          "Divergence",
+          "Trend",
+          "MTF"
+        ]
+      }
+    ]
+  },
+  "counts": {
+    "drawing_tools": 99,
+    "classic_indicators": 29,
+    "suites": 5,
+    "suite_module_references": 31,
+    "research_panes": 15,
+    "timeframes": 19,
+    "chart_types": 9
+  },
+  "caveats": [
+    "_lab is internal, not customer promotion",
+    "suite module names are metadata references, not a fabricated new ID registry",
+    "phone Favorites is mm.drawRecents recent-nine; desktop starred uses separate store",
+    "pane=analyst aliases forecast; retired mastermind pane not restored"
+  ]
+}
+

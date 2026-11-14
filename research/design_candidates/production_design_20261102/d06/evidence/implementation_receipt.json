@@ -1,0 +1,1685 @@
+{
+  "artifact": "D06 reader implementation and local verification",
+  "captured_at_utc": "2026-11-04T01:13:55.324627+00:00",
+  "owner": "D06 Astra Pro / ChatGPT4 / mastermidx4",
+  "procedure_sha": "910803421beca53ca25145392725ab2d84c7a8e9",
+  "assignment_sha": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "operation_id": "d06-terminal-reader-resilience-20261103-c4",
+  "workspace": "/Volumes/Mastermind/agent-workspaces/terminal/web/d06-terminal-reader-resilience-20261103-c4",
+  "branch": "sol/web-d06-terminal-reader-resilience-20261103-c4",
+  "base_sha": "2ded360882b9c721e690907ff363b553781fb920",
+  "local_head": "2ded360882b9c721e690907ff363b553781fb920",
+  "implementation_commit": null,
+  "terminal_pr": null,
+  "state": "BUILT_AND_LOCALLY_VERIFIED / TERMINAL_PUBLICATION_BLOCKED",
+  "source_files": [
+    {
+      "path": "terminal/components/VisualIntelligencePanel.tsx",
+      "bytes": 16019,
+      "sha256": "3b69ac4b271724e4e28f78ddfa8acf7d3ea23b35cf962dd3812c9c5a2641e878",
+      "git_blob_sha": "1e3116020d69e3490b884b758d2e41e394707c32"
+    },
+    {
+      "path": "terminal/components/VisualIntelligencePanel.module.css",
+      "bytes": 7395,
+      "sha256": "f2c902faf07e80d4d4385fbab915882f502fe29cc7403c2c7cd290f0dcfa093e",
+      "git_blob_sha": "a32ecf858fe4dd8e3fffcb8640db9cd88e5880f9"
+    },
+    {
+      "path": "terminal/components/useChartContextPresentation.ts",
+      "bytes": 7122,
+      "sha256": "f5fb596726ad75c81755b6e62e286945a9252013a51bf23b98edda93b749da99",
+      "git_blob_sha": "0b752426db0185ce4e68219ed54a70936b9a48a0"
+    },
+    {
+      "path": "terminal/lib/__tests__/chartContextPresentation.test.tsx",
+      "bytes": 10918,
+      "sha256": "96f08b4816d3b0a14559663dba4a2988dfb0ce1f70681e39063f7c639856a38c",
+      "git_blob_sha": "93f30f2b251eb1bcf0acd20f55d9d185400ffc2d"
+    },
+    {
+      "path": "terminal/e2e/chart-context-resilience.spec.ts",
+      "bytes": 10779,
+      "sha256": "2187cbb7e8074f0540d3477fca77f7d356ff9ef23ca626ed81d8edec2d3605bc",
+      "git_blob_sha": "ff283e38a4b65a625dba8bbe80043e5519b67826"
+    }
+  ],
+  "checks": {
+    "unit": {
+      "observed_exit_code": 0,
+      "report": "terminal/docs/pr-crops/d06-reader-resilience/reports/unit.log",
+      "sha256": "4835b86069a17ded3d88ffc6813cedc7518634a81f5667eb0afe3394746530bc",
+      "tests_passed": 22
+    },
+    "lint": {
+      "observed_exit_code": 0,
+      "report": "terminal/docs/pr-crops/d06-reader-resilience/reports/lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "typecheck": {
+      "observed_exit_code": 0,
+      "report": "terminal/docs/pr-crops/d06-reader-resilience/reports/typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "browser_runs": {
+    "baseline": {
+      "stats": {
+        "startTime": "2026-11-04T00:50:18.269Z",
+        "duration": 31837.545000000002,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "report": "terminal/docs/pr-crops/d06-reader-resilience/reports/baseline.json",
+      "sha256": "d88cac1483940eeb02fd3366a1552ac61838367ddff0470cff2c4a747d82ec70"
+    },
+    "initial-matrix": {
+      "stats": {
+        "startTime": "2026-11-04T00:57:33.121Z",
+        "duration": 436311.88,
+        "expected": 52,
+        "skipped": 12,
+        "unexpected": 5,
+        "flaky": 0
+      },
+      "report": "terminal/docs/pr-crops/d06-reader-resilience/reports/initial-matrix.json",
+      "sha256": "4b3d98bd236cc6f3ba036902ca4a5999c8feb25e49155a14791dd29041bb1cce"
+    },
+    "repaired-paths": {
+      "stats": {
+        "startTime": "2026-11-04T01:06:08.998Z",
+        "duration": 26046.983999999997,
+        "expected": 3,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "report": "terminal/docs/pr-crops/d06-reader-resilience/reports/repaired-paths.json",
+      "sha256": "a66ef0a6971e7d4579262ec39ec2b8b1c5b0ccc0159194ebbc6f3eecbd23f57a"
+    },
+    "final-matrix": {
+      "stats": {
+        "startTime": "2026-11-04T01:07:48.733Z",
+        "duration": 195414.5,
+        "expected": 57,
+        "skipped": 12,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "report": "terminal/docs/pr-crops/d06-reader-resilience/reports/final-matrix.json",
+      "sha256": "e820bfca25c3e3ac8f9ed19434019912133efc6fb14d5a304ca52f2593c656aa"
+    }
+  },
+  "final_cases": [
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "context stays outside every chart pane and presents the actual selected facts",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 3914
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "context keeps keyboard shortcuts local and restores focus after closing",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 4020
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "disabled context can be enabled from its new home without resetting chart preferences",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 4127
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "context follows the active pane through resize and fullscreen without covering the chart",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 12317
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "native and tray context use the chart menu and restore chart space",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5665
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "context stays outside every chart pane and presents the actual selected facts",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5439
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "context keeps keyboard shortcuts local and restores focus after closing",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 3141
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "disabled context can be enabled from its new home without resetting chart preferences",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 2947
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "context follows the active pane through resize and fullscreen without covering the chart",
+      "project": "tablet",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 91
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "native and tray context use the chart menu and restore chart space",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 6970
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "context stays outside every chart pane and presents the actual selected facts",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5595
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "context keeps keyboard shortcuts local and restores focus after closing",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5221
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "disabled context can be enabled from its new home without resetting chart preferences",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5688
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "context follows the active pane through resize and fullscreen without covering the chart",
+      "project": "mobile",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 68
+        }
+      ]
+    },
+    {
+      "file": "chart-context-dock.spec.ts",
+      "title": "native and tray context use the chart menu and restore chart space",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 6656
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "an open historical reader keeps disclosures, internal scroll and owned focus across dock changes",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 6564
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "reader keyboard controls and return navigation remain usable in en",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 4502
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "320px fine-pointer reader keeps 44px targets in en",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5363
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "reader keyboard controls and return navigation remain usable in zh",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 4824
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "320px fine-pointer reader keeps 44px targets in zh",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 3257
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "moving the reader never takes focus from another chart control",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 3277
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "fullscreen preserves disclosure and internal position with its bounded inline scroller",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5434
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "Candle settings takes focus without a delayed reader restoration",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 4120
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "an open historical reader keeps disclosures, internal scroll and owned focus across dock changes",
+      "project": "tablet",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 78
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "reader keyboard controls and return navigation remain usable in en",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 4814
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "320px fine-pointer reader keeps 44px targets in en",
+      "project": "tablet",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 68
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "reader keyboard controls and return navigation remain usable in zh",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5738
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "320px fine-pointer reader keeps 44px targets in zh",
+      "project": "tablet",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 183
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "moving the reader never takes focus from another chart control",
+      "project": "tablet",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 70
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "fullscreen preserves disclosure and internal position with its bounded inline scroller",
+      "project": "tablet",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 76
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "Candle settings takes focus without a delayed reader restoration",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5415
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "an open historical reader keeps disclosures, internal scroll and owned focus across dock changes",
+      "project": "mobile",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 63
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "reader keyboard controls and return navigation remain usable in en",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 7483
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "320px fine-pointer reader keeps 44px targets in en",
+      "project": "mobile",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 76
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "reader keyboard controls and return navigation remain usable in zh",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 7362
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "320px fine-pointer reader keeps 44px targets in zh",
+      "project": "mobile",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 67
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "moving the reader never takes focus from another chart control",
+      "project": "mobile",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 64
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "fullscreen preserves disclosure and internal position with its bounded inline scroller",
+      "project": "mobile",
+      "status": "skipped",
+      "attempts": [
+        {
+          "status": "skipped",
+          "duration_ms": 64
+        }
+      ]
+    },
+    {
+      "file": "chart-context-resilience.spec.ts",
+      "title": "Candle settings takes focus without a delayed reader restoration",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 7248
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "saved startup timeframe hydrates chart context without stale SSR attributes",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 2997
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "default context explains plotted bars, toggles original overlays, and persists choices",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 14134
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "classic candles retain descriptive context without pretending to paint them",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 6764
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "historical crosshair inspection stays on the selected bar without relabeling current calendar knowledge",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 4011
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "real candle colors stay attached to price after chart-layer settings overwrite base series data",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 3855
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "context can be restored through the existing chart settings without a new preference owner",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 9088
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "table and CSV expose the same actual 3D bars and numeric context as the plotted chart",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5429
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "replay consumer excludes current-calendar events and future numeric rows across viewport sizes",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 6752
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "an unavailable calendar and a delayed outgoing symbol never become fabricated event context",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 6921
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "Chinese context uses text alongside regional colors and remains keyboard dismissible",
+      "project": "desktop",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 4074
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "saved startup timeframe hydrates chart context without stale SSR attributes",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 1988
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "default context explains plotted bars, toggles original overlays, and persists choices",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 16919
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "classic candles retain descriptive context without pretending to paint them",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 7911
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "historical crosshair inspection stays on the selected bar without relabeling current calendar knowledge",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 4114
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "real candle colors stay attached to price after chart-layer settings overwrite base series data",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5071
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "context can be restored through the existing chart settings without a new preference owner",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 11239
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "table and CSV expose the same actual 3D bars and numeric context as the plotted chart",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5892
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "replay consumer excludes current-calendar events and future numeric rows across viewport sizes",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 7644
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "an unavailable calendar and a delayed outgoing symbol never become fabricated event context",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 10084
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "Chinese context uses text alongside regional colors and remains keyboard dismissible",
+      "project": "tablet",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5498
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "saved startup timeframe hydrates chart context without stale SSR attributes",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 2078
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "default context explains plotted bars, toggles original overlays, and persists choices",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 15242
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "classic candles retain descriptive context without pretending to paint them",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 10925
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "historical crosshair inspection stays on the selected bar without relabeling current calendar knowledge",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 4898
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "real candle colors stay attached to price after chart-layer settings overwrite base series data",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5629
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "context can be restored through the existing chart settings without a new preference owner",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 14213
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "table and CSV expose the same actual 3D bars and numeric context as the plotted chart",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 6171
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "replay consumer excludes current-calendar events and future numeric rows across viewport sizes",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 7642
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "an unavailable calendar and a delayed outgoing symbol never become fabricated event context",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 10378
+        }
+      ]
+    },
+    {
+      "file": "visual-intelligence.spec.ts",
+      "title": "Chinese context uses text alongside regional colors and remains keyboard dismissible",
+      "project": "mobile",
+      "status": "expected",
+      "attempts": [
+        {
+          "status": "passed",
+          "duration_ms": 5794
+        }
+      ]
+    }
+  ],
+  "geometry": [
+    {
+      "proof": "local real Terminal route with existing deterministic fixture",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "documentWidth": 1440,
+      "scrollWidth": 1440,
+      "readerWidth": 360,
+      "readerLeft": 1080,
+      "readerRight": 1440,
+      "background": "rgb(10, 11, 14)",
+      "coarse": false,
+      "theme": "dark",
+      "locale": "en",
+      "controls": [
+        {
+          "key": "close",
+          "width": 32,
+          "height": 32
+        },
+        {
+          "key": "previous",
+          "width": 28,
+          "height": 32
+        },
+        {
+          "key": "next",
+          "width": 28,
+          "height": 32
+        },
+        {
+          "key": "latest",
+          "width": 34,
+          "height": 32
+        },
+        {
+          "key": "range",
+          "width": 328,
+          "height": 40
+        },
+        {
+          "key": "layers",
+          "width": 328,
+          "height": 40
+        },
+        {
+          "key": "visualRegime",
+          "width": 328,
+          "height": 36
+        },
+        {
+          "key": "visualVolume",
+          "width": 328,
+          "height": 36
+        },
+        {
+          "key": "visualLevels",
+          "width": 328,
+          "height": 36
+        },
+        {
+          "key": "visualEvents",
+          "width": 328,
+          "height": 36
+        },
+        {
+          "key": "help",
+          "width": 328,
+          "height": 40
+        },
+        {
+          "key": "settings",
+          "width": 93.53125,
+          "height": 33.59375
+        },
+        {
+          "key": "useful",
+          "width": 114.453125,
+          "height": 26
+        },
+        {
+          "key": "unclear",
+          "width": 69.859375,
+          "height": 26
+        },
+        {
+          "key": "hide",
+          "width": 97.09375,
+          "height": 33.59375
+        }
+      ],
+      "project": "desktop",
+      "capture": "reader-desktop-en.png"
+    },
+    {
+      "proof": "local real Terminal route with existing deterministic fixture",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "documentWidth": 1440,
+      "scrollWidth": 1440,
+      "readerWidth": 360,
+      "readerLeft": 1080,
+      "readerRight": 1440,
+      "background": "rgb(10, 11, 14)",
+      "coarse": false,
+      "theme": "dark",
+      "locale": "zh-CN",
+      "controls": [
+        {
+          "key": "close",
+          "width": 32,
+          "height": 32
+        },
+        {
+          "key": "previous",
+          "width": 28,
+          "height": 32
+        },
+        {
+          "key": "next",
+          "width": 28,
+          "height": 32
+        },
+        {
+          "key": "latest",
+          "width": 28,
+          "height": 32
+        },
+        {
+          "key": "range",
+          "width": 328,
+          "height": 40
+        },
+        {
+          "key": "layers",
+          "width": 328,
+          "height": 40
+        },
+        {
+          "key": "visualRegime",
+          "width": 328,
+          "height": 36
+        },
+        {
+          "key": "visualVolume",
+          "width": 328,
+          "height": 36
+        },
+        {
+          "key": "visualLevels",
+          "width": 328,
+          "height": 36
+        },
+        {
+          "key": "visualEvents",
+          "width": 328,
+          "height": 36
+        },
+        {
+          "key": "help",
+          "width": 328,
+          "height": 40
+        },
+        {
+          "key": "settings",
+          "width": 52.6875,
+          "height": 33.59375
+        },
+        {
+          "key": "useful",
+          "width": 71.546875,
+          "height": 26
+        },
+        {
+          "key": "unclear",
+          "width": 71.546875,
+          "height": 26
+        },
+        {
+          "key": "hide",
+          "width": 67.453125,
+          "height": 33.59375
+        }
+      ],
+      "project": "desktop",
+      "capture": "reader-desktop-zh.png"
+    },
+    {
+      "proof": "local real Terminal route with existing deterministic fixture",
+      "viewport": {
+        "width": 820,
+        "height": 1180
+      },
+      "documentWidth": 820,
+      "scrollWidth": 820,
+      "readerWidth": 820,
+      "readerLeft": 0,
+      "readerRight": 820,
+      "background": "rgb(10, 11, 14)",
+      "coarse": true,
+      "theme": "dark",
+      "locale": "en",
+      "controls": [
+        {
+          "key": "close",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "previous",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "next",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "latest",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "range",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "layers",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "visualRegime",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "visualVolume",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "visualLevels",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "visualEvents",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "help",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "settings",
+          "width": 93.53125,
+          "height": 44
+        },
+        {
+          "key": "useful",
+          "width": 114.453125,
+          "height": 44
+        },
+        {
+          "key": "unclear",
+          "width": 69.859375,
+          "height": 44
+        },
+        {
+          "key": "hide",
+          "width": 97.09375,
+          "height": 44
+        }
+      ],
+      "project": "tablet",
+      "capture": "reader-tablet-en.png"
+    },
+    {
+      "proof": "local real Terminal route with existing deterministic fixture",
+      "viewport": {
+        "width": 820,
+        "height": 1180
+      },
+      "documentWidth": 820,
+      "scrollWidth": 820,
+      "readerWidth": 820,
+      "readerLeft": 0,
+      "readerRight": 820,
+      "background": "rgb(10, 11, 14)",
+      "coarse": true,
+      "theme": "dark",
+      "locale": "zh-CN",
+      "controls": [
+        {
+          "key": "close",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "previous",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "next",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "latest",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "range",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "layers",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "visualRegime",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "visualVolume",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "visualLevels",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "visualEvents",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "help",
+          "width": 788,
+          "height": 44
+        },
+        {
+          "key": "settings",
+          "width": 52.6875,
+          "height": 44
+        },
+        {
+          "key": "useful",
+          "width": 71.546875,
+          "height": 44
+        },
+        {
+          "key": "unclear",
+          "width": 71.546875,
+          "height": 44
+        },
+        {
+          "key": "hide",
+          "width": 67.453125,
+          "height": 44
+        }
+      ],
+      "project": "tablet",
+      "capture": "reader-tablet-zh.png"
+    },
+    {
+      "proof": "local real Terminal route with existing deterministic fixture",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "documentWidth": 390,
+      "scrollWidth": 390,
+      "readerWidth": 390,
+      "readerLeft": 0,
+      "readerRight": 390,
+      "background": "rgb(10, 11, 14)",
+      "coarse": true,
+      "theme": "dark",
+      "locale": "en",
+      "controls": [
+        {
+          "key": "close",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "previous",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "next",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "latest",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "range",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "layers",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "visualRegime",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "visualVolume",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "visualLevels",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "visualEvents",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "help",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "settings",
+          "width": 93.53125,
+          "height": 44
+        },
+        {
+          "key": "useful",
+          "width": 114.453125,
+          "height": 44
+        },
+        {
+          "key": "unclear",
+          "width": 69.859375,
+          "height": 44
+        },
+        {
+          "key": "hide",
+          "width": 97.09375,
+          "height": 44
+        }
+      ],
+      "project": "mobile",
+      "capture": "reader-mobile-en.png"
+    },
+    {
+      "proof": "local real Terminal route with existing deterministic fixture",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "documentWidth": 390,
+      "scrollWidth": 390,
+      "readerWidth": 390,
+      "readerLeft": 0,
+      "readerRight": 390,
+      "background": "rgb(10, 11, 14)",
+      "coarse": true,
+      "theme": "dark",
+      "locale": "zh-CN",
+      "controls": [
+        {
+          "key": "close",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "previous",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "next",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "latest",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "key": "range",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "layers",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "visualRegime",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "visualVolume",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "visualLevels",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "visualEvents",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "help",
+          "width": 358,
+          "height": 44
+        },
+        {
+          "key": "settings",
+          "width": 52.6875,
+          "height": 44
+        },
+        {
+          "key": "useful",
+          "width": 71.546875,
+          "height": 44
+        },
+        {
+          "key": "unclear",
+          "width": 71.546875,
+          "height": 44
+        },
+        {
+          "key": "hide",
+          "width": 67.453125,
+          "height": 44
+        }
+      ],
+      "project": "mobile",
+      "capture": "reader-mobile-zh.png"
+    }
+  ],
+  "captures": [
+    {
+      "name": "baseline-desktop.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/baseline-desktop.png",
+      "bytes": 271318,
+      "sha256": "69fa4c01dc6926482e078b040b62fe0311cc2538051a54416a24bcc12063ab51",
+      "width": 1440,
+      "height": 900,
+      "proof": "local pre-change failure baseline",
+      "persisted_evidence_path": "implementation/baseline-desktop.png"
+    },
+    {
+      "name": "baseline-inline-reset.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/baseline-inline-reset.png",
+      "bytes": 165110,
+      "sha256": "ba20f5a971483b50916a3c375574c68e739b5af79d0c1309f31bd1066ea95ea2",
+      "width": 820,
+      "height": 1180,
+      "proof": "local pre-change failure baseline",
+      "persisted_evidence_path": "implementation/baseline-inline-reset.png"
+    },
+    {
+      "name": "desktop-after-transition.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/desktop-after-transition.png",
+      "bytes": 266658,
+      "sha256": "01a5f92f7b41b58f5bbdd23953da8abd5e1bc9d379a872a284948b3943ce3985",
+      "width": 1440,
+      "height": 900,
+      "proof": "local candidate with existing Terminal deterministic fixture",
+      "persisted_evidence_path": "implementation/desktop-after-transition.png"
+    },
+    {
+      "name": "desktop-before-transition.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/desktop-before-transition.png",
+      "bytes": 271507,
+      "sha256": "2ce3152a4685fa0588ebd3f0177725c182f4442fe7ce3830283e51c52857218a",
+      "width": 1440,
+      "height": 900,
+      "proof": "local candidate with existing Terminal deterministic fixture",
+      "persisted_evidence_path": "implementation/desktop-before-transition.png"
+    },
+    {
+      "name": "phone320-fine-en.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/phone320-fine-en.png",
+      "bytes": 120463,
+      "sha256": "c33e47838f4df63741591cdc71eb07139f295346f2badc03a8dd1e575a571d4d",
+      "width": 320,
+      "height": 1828,
+      "proof": "local candidate with existing Terminal deterministic fixture",
+      "persisted_evidence_path": "implementation/phone320-fine-en.png"
+    },
+    {
+      "name": "phone320-fine-zh.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/phone320-fine-zh.png",
+      "bytes": 140672,
+      "sha256": "0bb4d4eb8ee7ef4147eb31318a8e4300d7b3d83e280a0b90aeb99779d386d1d3",
+      "width": 320,
+      "height": 1775,
+      "proof": "local candidate with existing Terminal deterministic fixture",
+      "persisted_evidence_path": "implementation/phone320-fine-zh.png"
+    },
+    {
+      "name": "reader-desktop-en.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/reader-desktop-en.png",
+      "bytes": 48632,
+      "sha256": "a153efbd784a060e15e1e5ed98cb3bc776890032af2ad756cd7c5da6cb6a138b",
+      "width": 360,
+      "height": 775,
+      "proof": "local candidate with existing Terminal deterministic fixture",
+      "persisted_evidence_path": "implementation/reader-desktop-en.png"
+    },
+    {
+      "name": "reader-desktop-zh.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/reader-desktop-zh.png",
+      "bytes": 51668,
+      "sha256": "6b73f76ec4a12d23849842308aeeff1134fc73acda834eb3d3e820d12ac32743",
+      "width": 360,
+      "height": 775,
+      "proof": "local candidate with existing Terminal deterministic fixture",
+      "persisted_evidence_path": "implementation/reader-desktop-zh.png"
+    },
+    {
+      "name": "reader-mobile-en.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/reader-mobile-en.png",
+      "bytes": 50735,
+      "sha256": "74462779818e9a96e08d88c405ed35083ac9513cd9a1e9de67f5ddb3130c34eb",
+      "width": 390,
+      "height": 862,
+      "proof": "local candidate with existing Terminal deterministic fixture",
+      "persisted_evidence_path": "implementation/reader-mobile-en.png"
+    },
+    {
+      "name": "reader-mobile-zh.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/reader-mobile-zh.png",
+      "bytes": 53002,
+      "sha256": "485d8e25481576b4ad9db5666dfe59cc794f1af239ac6a474bc073859d588e7d",
+      "width": 390,
+      "height": 834,
+      "proof": "local candidate with existing Terminal deterministic fixture",
+      "persisted_evidence_path": "implementation/reader-mobile-zh.png"
+    },
+    {
+      "name": "reader-tablet-en.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/reader-tablet-en.png",
+      "bytes": 55250,
+      "sha256": "1588ac8b1cb1897ac7cee03ffda2a8079f8d2e06a05e18ed1335f8096d929428",
+      "width": 820,
+      "height": 862,
+      "proof": "local candidate with existing Terminal deterministic fixture",
+      "persisted_evidence_path": "implementation/reader-tablet-en.png"
+    },
+    {
+      "name": "reader-tablet-zh.png",
+      "path": "terminal/docs/pr-crops/d06-reader-resilience/reader-tablet-zh.png",
+      "bytes": 57087,
+      "sha256": "06166aed2bd03bbe4c96dc5651dbeea3482634a70c2076039a01f39064e77654",
+      "width": 820,
+      "height": 834,
+      "proof": "local candidate with existing Terminal deterministic fixture",
+      "persisted_evidence_path": "implementation/reader-tablet-zh.png"
+    }
+  ],
+  "publisher": {
+    "tool": "studio_git_publish_status",
+    "status": "REFUSED",
+    "effect_state": "NOT_APPLIED",
+    "code": "TYPED_GIT_PRECHECK_REFUSED",
+    "terminal_qualified_status": "PRESERVED_DIRTY / WORKSPACE_ONLY_CHANGES_PRESENT",
+    "unqualified_status_error": "workspace is not registered to the source repository",
+    "diagnosis": "Repository-binding mismatch is consistent with the inspected source; deployed gateway configuration/byte identity not independently attested.",
+    "commit_attempted": false,
+    "push_attempted": false,
+    "uncertain_effect": false
+  },
+  "independence": {
+    "native_advice": "reasoning-only architecture challenge; not routine builder or formal independent review",
+    "formal_github_approval": "NOT_PROVEN",
+    "hosted_ci": "NOT_PROVEN"
+  },
+  "limits": [
+    "Local fixture proof is not served beta or deployment proof",
+    "Terminal source is dark-only; EN/ZH verified, no light-mode claim",
+    "Emulated coarse pointer is not physical-device proof",
+    "320 CSS pixels is not browser zoom proof",
+    "Full 75-case migration plan and RIG acceptance remain incomplete",
+    "No F01/F02 v1 release or Paper write admission claimed"
+  ],
+  "no_merge_ready_enqueue_relabel_deploy": true,
+  "research_carrier": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pr": 10655,
+    "branch": "design/d06-terminal-phase2a-20261103-c4",
+    "prior_head": "d7d6b7ddcd950d7e9879bbf58c7e2e481b4708bf",
+    "purpose": "Independent factual continuation and image/test evidence, not Terminal code publication"
+  },
+  "review_snapshot": {
+    "filename": "D06-reader-implementation-review.zip",
+    "bytes": 1572472,
+    "sha256": "f092af81478b872b16a74c8c2e6578c3c156097d5cd1dba9c98078c1b983fb5c",
+    "members": 28,
+    "purpose": "Chairman review/recovery artifact; original source custody and publisher remain required"
+  },
+  "visual_inspection": {
+    "raw_captures_inspected": 12,
+    "copy_hashes_verified": true,
+    "findings": "Readable hierarchy and EN/ZH wrapping; reader stays separate from chart; scrollable desktop crop is not a full-content screenshot; no independent taste/RIG approval."
+  }
+}

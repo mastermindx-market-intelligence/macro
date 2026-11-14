@@ -1,0 +1,22 @@
+{
+  "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "node": "19IC-1",
+  "role": "editable predecessor structure; not approval or proposed-after",
+  "result": [
+    {
+      "file": {
+        "id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "name": "Terminal"
+      },
+      "contentHash": {
+        "tokens": "55dd37b7"
+      }
+    },
+    {
+      "summary": "Frame \"01 · R3 · Terminal-native · Desktop Summary\" (19IC-1) 1600×1000\n  Frame \"Top navigation / brand and controls\" (19ID-1) 1600×72\n    Frame \"Frame\" (19IE-1) ?×?\n      Frame \"Frame\" (19IF-1) 34×34\n        ... 1 children\n      Frame \"Frame\" (19IH-1) ?×?\n        ... 2 children\n      Rectangle \"Rectangle\" (19IK-1) 1×28\n      Text \"Terminal\" (19IL-1) ?×? \"Terminal\"\n    Frame \"Frame\" (19IM-1) ?×?\n      Text \"Markets\" (19IN-1) ?×? \"Markets\"\n      Text \"Screeners\" (19IO-1) ?×? \"Screeners\"\n      Text \"Workspace\" (19IP-1) ?×? \"Workspace\"\n      Text \"Watchlists\" (19IQ-1) ?×? \"Watchlists\"\n    Frame \"Frame\" (19IR-1) ?×?\n      Frame \"Frame\" (19IS-1) ?×?\n        ... 2 children\n      Frame \"Frame\" (19IV-1) 34×34\n        ... 1 children\n  Frame \"Workspace / chart + intelligence\" (19IX-1) 1600×928\n    Frame \"Chart context / persistent\" (19IY-1) 924×928\n      Frame \"Chart context / AAPL price\" (19IZ-1) 924×116\n        ... 2 children\n      Frame \"Chart toolbar / timeframes\" (19JJ-1) 924×48\n        ... 2 children\n      Frame \"Price chart / clean canvas\" (19JW-1) 924×555\n        ... 2 children\n      Frame \"Technical studies / compact\" (19LB-1) 924×209\n        ... 3 children\n    Frame \"Intelligence / Essential readout\" (19MN-1) 676×928\n      Frame \"Header / essential context\" (19MO-1) 676×79\n        ... 2 children\n      Frame \"Navigation / progressive disclosure\" (19N1-1) 676×55\n        ... 4 children\n      Frame \"01 / Oracle decisive signal\" (19N7-1) 676×233\n        ... 3 children\n      Frame \"02 / Historical proof\" (19NR-1) 676×103\n        ... 3 children\n      Frame \"03 / Risk attention\" (19O1-1) 676×68\n        ... 1 children\n      Frame \"04 / Research desk focus\" (19OA-1) 676×216\n        ... 3 children\n      Frame \"05 / Latest activity\" (19P0-1) 676×126\n        ... 2 children\n      Frame \"Footer / contextual trust\" (19PC-1) 676×48\n        ... 1 children",
+      "nodeId": "19IC-1",
+      "depth": 3
+    }
+  ]
+}
+

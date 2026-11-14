@@ -1,0 +1,127 @@
+{
+  "artifact": "D06 documentation/evidence integrity checks",
+  "checked_at_utc": "2026-11-03T22:12:12.367293+00:00",
+  "status": "pass",
+  "checks": [
+    {
+      "check": "retained_registry_counts_and_uniqueness",
+      "status": "pass",
+      "counts": {
+        "drawing_tools": 99,
+        "classic_indicators": 29,
+        "suites": 5,
+        "suite_module_references": 31,
+        "research_panes": 15,
+        "timeframes": 19,
+        "chart_types": 9
+      }
+    },
+    {
+      "check": "capability_disposition_and_table_parity",
+      "status": "pass",
+      "existing": 76,
+      "dispositions": {
+        "RETAIN": 40,
+        "IMPROVE": 35,
+        "RELOCATE": 0,
+        "REMOVE": 0,
+        "BLOCKED_DATA": 1
+      },
+      "proposals": 6
+    },
+    {
+      "check": "migration_case_identity_status_and_table_parity",
+      "status": "pass",
+      "cases": 75,
+      "full_cases_executed": 0,
+      "new_cases": [
+        "LAY07",
+        "NAV11",
+        "DATA09",
+        "SCRIPT06"
+      ]
+    },
+    {
+      "check": "route_coverage_case_mapping_and_distinct_sessions",
+      "status": "pass",
+      "families": 9,
+      "observation_groups": 20,
+      "equal_depth_claimed": false
+    },
+    {
+      "check": "paper_payloads_preserved_and_fresh_scoped_structure_correspondence",
+      "status": "pass",
+      "raw_images": 16,
+      "structure_exports": 2,
+      "unchanged_prior_artifacts": 18,
+      "fresh_matching_depth3_summaries": 2,
+      "after_designs": 0
+    },
+    {
+      "check": "live_payload_mime_dimensions_hash_and_raw_identity",
+      "status": "pass",
+      "raw_images": 36,
+      "prior_images_preserved": 29,
+      "new_payload_bytes_equal": 7,
+      "edited_images": 0,
+      "viewport_equals_image_size_assumed": false
+    },
+    {
+      "check": "responsive_measurement_capture_mapping_cleanup_and_proof_limits",
+      "status": "pass",
+      "measured_normal_points": 7,
+      "focused_reader_scroll_observed": true,
+      "full_responsive_or_a11y_pass_claimed": false
+    },
+    {
+      "check": "source_pin_correspondence_and_current_f01_action_scope",
+      "status": "pass",
+      "assignment_unchanged": true,
+      "core_terminal_blobs_unchanged": 10,
+      "f01_independent_correction_scope_qualified": true
+    },
+    {
+      "check": "acceptance_grant_approval_and_effect_separation",
+      "status": "pass",
+      "browser_permission_cleared": true,
+      "joint_v1_released": false,
+      "paper_mutations": 0,
+      "d06_rig": "draft",
+      "production_implementation": false
+    },
+    {
+      "check": "json_parse",
+      "status": "pass",
+      "files": 15
+    },
+    {
+      "check": "relative_markdown_links",
+      "status": "pass",
+      "resolved": 110,
+      "programme_parent": [
+        "../RE_AUDIT_CHECKLIST.md"
+      ]
+    },
+    {
+      "check": "superseded_selection_and_proof_claims_removed",
+      "status": "pass",
+      "historical_observations_preserved": true
+    },
+    {
+      "check": "d06_documentation_evidence_scope_and_private_intermediate_exclusion",
+      "status": "pass",
+      "files": 81,
+      "production_files": 0,
+      "source_root": "research/design_candidates/production_design_20261102/d06/",
+      "remote_diff_readback": "separate publication receipt"
+    }
+  ],
+  "limitations": [
+    "No complete proposed migration case executed or passed",
+    "Actual guest route and later signed-in-presentation viewport observations are bounded before-design evidence",
+    "No real touch, zoom, full responsive/theme/locale, screen-reader, contrast or after-design acceptance",
+    "No independent bundle attestation or external Brain byte hash",
+    "No proposed-after Paper composition, write admission or D06 RIG approval",
+    "No authenticated data-policy/save/race, performance or model/backtest validation"
+  ]
+}
