@@ -1,0 +1,156 @@
+{
+  "basis": "reconstructed_current_membership",
+  "price_note": "Adjusted closes are today's restated values (split and dividend adjustment as of the store's capture), not the prices printed at the time.",
+  "redistribution_note": "Basket-level shares and counts only; no member prices. Member-level closes stay off git.",
+  "span": {
+    "closes_start": "1962-01-02",
+    "closes_end": "2026-10-09",
+    "first_valid_pct_above_200": "1973-03-20"
+  },
+  "first_valid_by_basket": {
+    "us_sector_industrials": "1973-03-20",
+    "us_sector_utilities": "1982-10-14",
+    "us_sector_staples": "1984-01-17",
+    "us_sector_health": "1984-01-18",
+    "us_sector_financials": "1985-06-21",
+    "us_sector_tech": "1985-06-21",
+    "defensives": "1985-10-02",
+    "us_sector_discretionary": "1986-05-06",
+    "us_sector_energy": "1988-08-19",
+    "reshoring": "1988-08-19",
+    "defense": "1988-08-19",
+    "us_sector_materials": "1988-10-17",
+    "housing": "1989-10-02",
+    "energy_complex": "1990-07-19",
+    "regional_banks": "1991-01-08",
+    "insurance": "1992-12-14",
+    "retail": "1994-02-03",
+    "us_sector_realestate": "1994-09-28",
+    "ai_infra": "1997-11-20",
+    "power_grid": "1998-04-14",
+    "industrial_distribution": "1998-10-05",
+    "semicap_equipment": "2001-01-25",
+    "robotics_automation": "2001-04-02",
+    "travel": "2005-09-29",
+    "obesity_glp1": "2006-07-24",
+    "us_sector_comm": "2006-10-06",
+    "gold_miners": "2009-04-08",
+    "non_ai_tech": "2011-05-20",
+    "ai_software": "2013-05-08",
+    "payments_fintech": "2016-05-03",
+    "non_ai_software": "2020-07-06",
+    "ai_semiconductors": "2024-07-01",
+    "space_economy": "2025-11-28"
+  },
+  "valid_on_last_session": 33,
+  "build_time_utc": "2026-11-12T03:08:02+00:00",
+  "code_version": "08b906e7321f",
+  "engine": "engine/group_breadth_history.py",
+  "inputs": [
+    {
+      "path": "/tmp/qb/tiingo/basket_closes_tradj.parquet",
+      "sha256_16": "17b8448a8f44e08e"
+    },
+    {
+      "path": "/tmp/qb/data/baskets/membership.json",
+      "sha256_16": "2f9e553cb856e906"
+    }
+  ],
+  "closes_store": "Tiingo EOD archive /Volumes/Mastermind/market-data/tiingo (normalized eod-bars) via scripts/build_tiingo_member_closes.py; member-level, off git",
+  "missing": "Only today's active basket members are present; 38 of 702 names have no stored close and are absent (B, BNY, BTDR, CEG, COHR, COR, CRCL, CZR, DD, DELL, DOC, DOW, DRS, ECHO, EU, FI, FLY, GLXY, HUT, IBIT, LAC, MMC, MRNA, OKE, P, PATH, PL, PPTA, PSKY, Q, S, SGML, SNDK, SNOW, TEL, TLN, UROY, VLTO). 243 priced names sit in more than one basket and count in each. 16 of 49 baskets never reach 10 members with a 200-session history and are missing throughout (ai_agents, ai_neoclouds, big_pharma, critical_minerals, crypto, crypto_rails, cybersecurity, data_center_power, mag7, managed_care, memory_storage, nuclear_power, pgm_miners, quantum_computing, silver_miners, uranium_miners). Duplicate-series scan: no two basket tickers carry the same price series.",
+  "coverage": {
+    "baskets": 49,
+    "member_rows": 1020,
+    "names": 702,
+    "names_unpriced": [
+      "B",
+      "BNY",
+      "BTDR",
+      "CEG",
+      "COHR",
+      "COR",
+      "CRCL",
+      "CZR",
+      "DD",
+      "DELL",
+      "DOC",
+      "DOW",
+      "DRS",
+      "ECHO",
+      "EU",
+      "FI",
+      "FLY",
+      "GLXY",
+      "HUT",
+      "IBIT",
+      "LAC",
+      "MMC",
+      "MRNA",
+      "OKE",
+      "P",
+      "PATH",
+      "PL",
+      "PPTA",
+      "PSKY",
+      "Q",
+      "S",
+      "SGML",
+      "SNDK",
+      "SNOW",
+      "TEL",
+      "TLN",
+      "UROY",
+      "VLTO"
+    ],
+    "names_in_several_baskets": 243,
+    "baskets_never_valid": [
+      "ai_agents",
+      "ai_neoclouds",
+      "big_pharma",
+      "critical_minerals",
+      "crypto",
+      "crypto_rails",
+      "cybersecurity",
+      "data_center_power",
+      "mag7",
+      "managed_care",
+      "memory_storage",
+      "nuclear_power",
+      "pgm_miners",
+      "quantum_computing",
+      "silver_miners",
+      "uranium_miners"
+    ]
+  },
+  "dropped_partial_rows": [
+    "2026-10-12",
+    "2026-10-13",
+    "2026-10-14",
+    "2026-10-15"
+  ],
+  "duplicate_series_pairs": [],
+  "overlap_note": "Baskets share members; ranks across baskets are not across independent groups.",
+  "rules": {
+    "windows": [
+      50,
+      200
+    ],
+    "horizons_sessions": [
+      5,
+      20,
+      63,
+      126
+    ],
+    "horizons_weeks": [
+      13,
+      26
+    ],
+    "min_members": 10,
+    "headline": "fix_chg_pct_above_200_13w"
+  },
+  "rows": {
+    "daily": 798700,
+    "weekly": 165620
+  },
+  "not_an_outcome_claim": "Data only. No forward return, hit rate or backtest is attached."
+}

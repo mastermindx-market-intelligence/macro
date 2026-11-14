@@ -1618,7 +1618,7 @@ def test_russell_same_run_cache_is_saved_before_unrelated_git_push_failure():
     c, _ = one(collect, "run collectors (graceful degradation — never fails the build on one source)")
     readiness, gate = one(collect, "qualify Russell same-run cache handoff")
     save, saver = one(collect, "save qualified Russell close cache before market git push")
-    push, _ = one(collect, "push market data (survives a job-cap cancel; alarm-bounded git ops)")
+    push, _ = one(collect, "push market data (commit already local; alarm-bounded git ops)")
     assert c < readiness < save < push
     assert "started_at=$(date -u" in collect[c].get("run", "")
     assert '>> "$GITHUB_OUTPUT"' in collect[c].get("run", "")

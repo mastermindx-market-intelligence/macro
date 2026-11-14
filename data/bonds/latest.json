@@ -1,8 +1,8 @@
 {
-  "date": "2026-11-06",
-  "health_score": 68,
+  "date": "2026-11-12",
+  "health_score": 71,
   "health_label": "healthy",
-  "cycle_phase": "recession",
-  "verdict_en": "Bond health healthy (68/100), recession. Curve positively sloped. Credit normal. Rates-vol normal.",
-  "verdict_zh": "债券健康度健康（68/100），衰退。曲线正向倾斜。信用正常。利率波动正常。"
+  "cycle_phase": "early",
+  "verdict_en": "Bond health healthy (71/100), early-cycle recovery. Curve positively sloped. Credit normal. Rates-vol normal.",
+  "verdict_zh": "债券健康度健康（71/100），周期早段复苏。曲线正向倾斜。信用正常。利率波动正常。"
 }
