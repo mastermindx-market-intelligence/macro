@@ -3,7 +3,7 @@
 Status: DESIGN CANDIDATE / IMPLEMENTATION NOT STARTED
 Owner: Chairman's 14 November 2026 Research Explore assignment.
 Parent: [Research Explore migration record](../RESEARCH_EXPLORE_SHARED_SHELL_2026-11-14.md).
-Detailed contracts: [Policy Watch R6](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md) · [Research Hub R6](RESEARCH_HUB_R6_BUILD_SPEC_2026-11-14.md) · [Special Situations R2](SPECIAL_SITUATIONS_R2_BUILD_SPEC_2026-11-14.md).
+Detailed contracts: [Policy Watch R6](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [Policy Watch R7](POLICY_WATCH_R7_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md) · [Research Hub R6](RESEARCH_HUB_R6_BUILD_SPEC_2026-11-14.md) · [Special Situations R2](SPECIAL_SITUATIONS_R2_BUILD_SPEC_2026-11-14.md).
 
 ## 1. Objective and source binding
 
@@ -479,3 +479,18 @@ Retain original and amended agreement terms at their source cuts. Outside date, 
 Implement through existing special_situations, activist, special_arb, international collector/classifier, premium and build owners. Preserve premium typed refusals, distinguish its pre-announcement price basis from the 30-row proxy, preserve thin-store protection and replace paid HTML fragments with an authenticated typed consumer projection. Static source risks require focused real-path proof; none was claimed reproduced in production.
 
 The principal and bounded read-only reviewers inspected final compositions and checked fixture meaning/arithmetic. All seven roots received observed guarded finish receipts. Draft documentation and Paper design do not establish runtime interactions, entitlement proof, source coverage or production readiness. Continue D1-POLICY and the remaining family/cross-product design states before product implementation.
+
+
+## 18. C11 — Policy R7 regional sources, roles and dated evidence
+
+The [R7 detailed contract](POLICY_WATCH_R7_BUILD_SPEC_2026-11-14.md) binds nine additional native pages. Cumulative inventory: 92 pages, comprising 72 product/responsive/theme/locale views, fourteen Build and six state sheets; sixteen mobile and four intermediate compositions. New parity specimens include 1024px source coverage, English mobile People and Chinese dark mobile Treasury.
+
+World uses Region = Europe and an explicit publication-date filter. UK, EU and central-bank documents stay separate, with source-specific clocks and lifecycle evidence. The Treasury document remains readable without analysis. Current known_at_iso is assigned at evaluation, so the UI says Recorded; it does not assert immutable first observation. Missing prior bytes mean comparison unavailable.
+
+The selected fictional person authored a paper before an effective adviser appointment and is a former adviser at the selected date. Announcement and effective start are distinct; a separate membership has an unverified end. Each role/relationship needs its own source-bound interval and identity. Shortest paths, seed-generated control labels, co-firing and graph confidence cannot establish authority, adoption or documentary relationships.
+
+The dated brief preserves three original source dependencies and its July analysis while a November source revision remains separate. Fresh rendering or model evaluation cannot refresh the dated intel substrate. Preserve Fed profiles/task forces, administration/theaters, rotation, monitors and calls through named Research destinations; do not restore fixed template claims or Moves in force fallbacks when lifecycle coverage is missing.
+
+Keep the incumbent current/lifecycle, UK, regional/qbus, influence and publication owners. event_id, item_id and event_key remain distinct; RSS-description hashes are not full-document hashes. Source eligibility and fetch outcomes require separate consumer meanings. Not collected is not a transient outage or evidence that no related event exists. Render from published artifacts without triggering collection/model work or graph writes.
+
+All nine final compositions were reviewed and received observed guarded finish receipts. The final Chinese mobile root is 5J4-1 after a qualified owned-root font repair; the inventory points to its final screenshot. No held/foreign pages were repurposed. Design-state coverage, systematic parity and runtime acceptance remain open. Continue Capital conflict/restore design next.
