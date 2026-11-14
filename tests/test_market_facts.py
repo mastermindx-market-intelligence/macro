@@ -626,18 +626,20 @@ def test_print_jobless_claims_renders_the_compact_register_and_is_gate_clean():
     assert validate_copy("", fact["text"], ctx) == []
 
 
-def test_print_jobless_claims_flat_yoy_variant_is_also_gate_clean():
+@pytest.mark.parametrize("comparison", [0.0, 0.04, -0.04, None])
+def test_print_jobless_claims_flat_yoy_variant_is_also_gate_clean(comparison):
     """The no-yoy-line branch (abs(yoy) < 0.05) renders a shorter sentence with
     the same level token — covered separately since it is a distinct template."""
     from engine.marketing.copywriter import build_context, validate_copy
     from engine.marketing.market_facts import _print_jobless_claims
 
-    regime = {"conditions": {"labor_nowcast": {
-        "initial_claims_4wk": 221_000.0, "claims_yoy_pct": 0.0,
-    }}}
+    labor = {"initial_claims_4wk": 221_000.0}
+    if comparison is not None:
+        labor["claims_yoy_pct"] = comparison
+    regime = {"conditions": {"labor_nowcast": labor}}
     fact = _print_jobless_claims(regime)
     assert fact is not None
-    assert fact["text"] == "Jobless claims are averaging 221k a week this month."
+    assert fact["text"] == "The four-week average of initial jobless claims is 221k."
     assert fact["numbers"] == ["221k"]
 
     ctx = build_context(
@@ -882,3 +884,57 @@ class TestVacuousDenominatorsNeverShip:
         assert not is_degenerate_count(0, 232)
         # Saturation still dies there.
         assert is_degenerate_count(232, 232)
+
+
+@pytest.mark.parametrize("change,word", [(0.10, "up"), (-0.10, "down")])
+def test_credit_comparison_uses_source_precision_and_real_copy_gates(change, word):
+    from engine.marketing import market_facts as mf, copywriter as cw
+    fact = mf._print_hy_spread({"liquidity_quality": {"stress_overlay": {
+        "hy_oas_pct": 2.84, "hy_oas_chg_20d": change}}})
+    assert f"{word} 10 basis points" in fact["text"]
+    assert fact["numbers"] == ["2.8%", "10"]
+    ctx = cw.build_context({"type": "macro", "account": "flagship"},
+                          facts={"facts": [fact], "numbers_whitelist": fact["numbers"]})
+    assert cw.validate_copy(fact["text"], "", ctx) == []
+    assert cw.number_soup_violations(fact["text"], kind="macro") == []
+
+
+@pytest.mark.parametrize("change", [None, "invalid", float("nan"), float("inf")])
+def test_missing_credit_comparison_does_not_claim_flat(change):
+    from engine.marketing.market_facts import _print_hy_spread
+    fact = _print_hy_spread({"liquidity_quality": {"stress_overlay": {
+        "hy_oas_pct": 2.84, "hy_oas_chg_20d": change}}})
+    assert fact["text"] == "High-yield credit spreads are at 2.8%."
+    assert fact["numbers"] == ["2.8%"]
+
+
+def test_observed_zero_credit_change_is_distinct_from_missing():
+    from engine.marketing.market_facts import _print_hy_spread
+    fact = _print_hy_spread({"liquidity_quality": {"stress_overlay": {
+        "hy_oas_pct": 2.84, "hy_oas_chg_20d": 0}}})
+    assert "roughly flat" in fact["text"]
+    assert _print_hy_spread({"liquidity_quality": {"stress_overlay": {"hy_oas_pct": 0}}}) is None
+
+
+@pytest.mark.parametrize("level,change,side,direction", [
+    (0.47, 20, "above", "rose"), (-0.47, 20, "below", "rose"), (0.47, -20, "above", "fell")])
+def test_curve_comparison_keeps_signed_spread_units(level, change, side, direction):
+    from engine.marketing import market_facts as mf, copywriter as cw
+    fact = mf._print_curve_2s10s({"yield_curve": {"shape": {"slope_2s10s": {
+        "value": level, "chg_63d": change}}}})
+    assert f"47 basis points {side}" in fact["text"]
+    assert f"spread {direction} 20 basis points" in fact["text"]
+    assert fact["numbers"] == ["47", "20"]
+    ctx = cw.build_context({"type": "macro", "account": "flagship"},
+                          facts={"facts": [fact], "numbers_whitelist": fact["numbers"]})
+    assert cw.validate_copy(fact["text"], "", ctx) == []
+    assert cw.number_soup_violations(fact["text"], kind="macro") == []
+    assert cw.anchorless_macro_violations(fact["text"], "macro") == []
+
+
+@pytest.mark.parametrize("change", [None, float("inf"), float("nan")])
+def test_missing_curve_change_keeps_only_the_level(change):
+    from engine.marketing.market_facts import _print_curve_2s10s
+    fact = _print_curve_2s10s({"yield_curve": {"shape": {"slope_2s10s": {
+        "value": 0.47, "chg_63d": change}}}})
+    assert fact["numbers"] == ["47"] and "quarter" not in fact["text"]

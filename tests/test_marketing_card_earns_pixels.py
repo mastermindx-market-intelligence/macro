@@ -650,6 +650,7 @@ def _press_tick(items: list[dict]) -> dict:
     return run_press_tick(
         items, root=str(root), now=now, cfg=marketing_cfg,
         press_cfg=press_cfg, state={}, seen_ids=set(), dry_run=True,
+        llm_override=lambda *_a, **_k: None,
     )
 
 
@@ -1723,6 +1724,7 @@ def _emitting_tick(items: list[dict], *, state: dict | None = None,
         state={} if state is None else state,
         seen_ids=set() if seen is None else seen,
         dry_run=True,
+        llm_override=lambda *_a, **_k: None,
     )
 
 

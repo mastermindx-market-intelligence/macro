@@ -93,6 +93,15 @@ CHECKLIST: tuple[str, ...] = (
     "promise') with no base-rate stat in the post for it to be about?",
     "Does it sound like a person typing, or like a bot? Uniformly clipped "
     "sentences, three fragments in a row, and stacked aphorisms are bot tells.",
+    "For analysis or a routine chart, does the reader learn why the observation "
+    "matters? A useful comparison, explanation or specific condition counts. "
+    "A bare level, 'the real tell', 'the whole trade' or a reusable slogan does "
+    "not explain anything. Material breaking news can stand on its verified event; "
+    "do not demand an opinion or an extra sentence just to fill space.",
+    "Does the takeaway follow from the facts actually stated? Reject a leap to "
+    "an invented cause, market consensus, probability or personal trading history. "
+    "A clearly conditional interpretation is useful; false certainty is not. "
+    "You cannot verify facts from this cold read: upstream evidence checks still apply.",
     "Does it use advice language on a post that is not a signal (telling the "
     "reader to buy, sell, enter, or size)?",
 )
@@ -111,14 +120,20 @@ SYSTEM_PROMPT = (
     # leaked dash would cost a whole post on the repair round.
     "CHECKLIST, reject if any of these fails:\n"
     + "\n".join(f"{i}. {c}" for i, c in enumerate(CHECKLIST, 1))
-    + "\n\nBE HONEST BUT NOT PRECIOUS. This register is deadpan, terse and "
-    "fragmentary on purpose. Short is not a defect. Dry is not a defect. A "
-    "sentence fragment is not a defect. Rejecting good terse copy is as "
+    + "\n\nBE HONEST BUT NOT PRECIOUS. A short post still needs a complete "
+    "thought. Short is not a defect. Dry is not a defect. A sentence fragment "
+    "is not a defect when its meaning is clear. Do not count numbers or demand "
+    "a rigid format: a supported comparison often needs several numbers. "
+    "Generic 'not advice' or 'research context only' endings add no reader value. "
+    "Rejecting good terse copy is as "
     "expensive as passing bad copy, so reject only what a real reader would "
     "actually stumble on or roll their eyes at.\n\n"
     "OUTPUT: one JSON object, exactly {\"verdict\": \"pass\" or \"reject\", "
     "\"reasons\": [\"...\"]}. Reasons are one short phrase each, at most three "
-    "of them, and only on a reject. No markdown, no preamble, no other keys."
+    "of them, and only on a reject. Name the repairable problem, for example "
+    "'explain what the level measures' or 'connect the comparison to the takeaway'. "
+    "Do not supply replacement copy or tell the writer to invent missing evidence. "
+    "No markdown, no preamble, no other keys."
 )
 
 

@@ -6215,6 +6215,16 @@ function mktNorthStarPlain(metric) {
 function flrN(n) { return (n == null) ? "—" : Number(n).toLocaleString(); }
 function flrPct(x) { return (x == null) ? "—" : (x * 100).toFixed(x < 0.1 ? 1 : 0) + "%"; }
 
+/* Use the shell's existing bilingual spans, including after a language switch. */
+function mktCopy(en, zh) { return pressAudienceCopy(en, zh); }
+function mktText(en, zh) { return document.documentElement.dataset.lang === "zh" ? zh : en; }
+function mktStage(name, count, detail, route) {
+  return `<button class="mkt-stage" onclick="go('${esc(route)}')">
+    <span class="mkt-stage-name">${mktCopy(...name)}</span>
+    <strong>${flrN(count)}</strong><span class="sub">${mktCopy(...detail)}</span>
+  </button>`;
+}
+
 /* ---- 1 · THE LINE -------------------------------------------------------- */
 /* One station cell. The loss figure outranks the throughput figure in weight
    because the operator's job is finding the leak, not admiring the output. */
@@ -6264,49 +6274,15 @@ function flrStation(st, breakAt, cold) {
 }
 
 function flrLine(d) {
-  const line = d.line || [];
-  const breakAt = d.break_at;
-  /* Everything downstream of the break runs cold — dashed rail, so the plant
-     visibly goes dark past the leak. */
-  let seenBreak = false;
-  const cells = line.map((st) => {
-    const cold = seenBreak;
-    if (st.id === breakAt) seenBreak = true;
-    return flrStation(st, breakAt, cold);
-  }).join("");
-
-  const first = line[0] || {};
-  const last = line[line.length - 1] || {};
-  const kept = (first.out && last.out != null)
-    ? (last.out / first.out) : null;
-
-  let verdict;
-  if (last.out === 0 && first.out) {
-    verdict = `<b>Nothing reached X tonight.</b> ${flrN(first.out)} posts were planned and every one of them stopped somewhere on this line. The biggest single leak is marked above — start there.`;
-  } else if (kept != null) {
-    verdict = `<b>${flrN(last.out)} of ${flrN(first.out)} planned posts reached X</b> — ${flrPct(kept)} of the plan. Each station's second number is what stopped there.`;
-  } else {
-    verdict = `The line is still filling in. Stations without a number have not run on this host yet.`;
-  }
-
-  const drift = (d.plan_claimed_total != null && first.out != null
-                 && d.plan_claimed_total !== first.out)
-    ? ` <span class="faint">The plan file's own header claims ${flrN(d.plan_claimed_total)} posts; the queue actually holds ${flrN(first.out)}. The queue is the truth.</span>`
-    : "";
-
-  /* Never let the chain verdict stand unqualified when the chain is broken
-     (defect F1). The old page printed "N of M planned posts reached X" over a
-     line containing a station that took 7 in and emitted 137 out. */
-  const odd = (d.line_odd || []).length
-    ? ` <span style="color:var(--warn)">Two of these counters were written by
-        different passes and don't nest — read
-        ${esc((d.line_odd || []).map(id => (line.find(s => s.id === id) || {}).name || id).join(", "))}
-        and everything after it on its own, not as a chain.</span>`
-    : "";
-
+  const stages = (d.line || []).map(st => mktStage(
+    [st.name, ({planned:"计划",written:"已撰写",cleared:"通过检查",enqueued:"进入待审箱",dispatched:"发布记录",live:"已确认在 X 发布"})[st.id] || st.name],
+    st.out, [st.what, ({planned:"本次计划中的席位",written:"带有作者记录的稿件",cleared:"通过风险检查的稿件",enqueued:"该计划日期的待审箱条目",dispatched:"有发布服务回执的条目",live:"已记录公开帖子链接"})[st.id] || st.what],
+    st.goto || "marketing_content")).join("");
   return `<div class="flr-line-card">
-    <div class="flr-line">${cells}</div>
-    <div class="flr-line-foot">${verdict}${drift}${odd}</div>
+    <div class="mkt-stage-grid">${stages}</div>
+    <div class="flr-line-foot">${mktCopy(
+      "Each count describes its own recorded stage. End-to-end conversion is unavailable until the same post IDs are linked across every stage.",
+      "各项数字反映各自记录阶段。在所有阶段关联同一组帖子 ID 之前，无法计算端到端转化率。")}</div>
   </div>`;
 }
 
@@ -6420,7 +6396,7 @@ function flrAuthorship(a) {
 /* ---- 4 · DISPATCH LEDGER ---------------------------------------------- */
 /* The publisher writes ~25 counters per run and the console used to render
    five. Every counter renders here, zeroes included and dimmed: a zero on
-   "went out to X" is the most important number on the page. A counter this
+   "accepted by the provider" names submission, not X visibility. A counter this
    view has no plain word for still renders, under its raw name — a new engine
    gate must never ship invisible. */
 function flrLedger(led) {
@@ -6449,7 +6425,7 @@ function flrLedger(led) {
   return `<div class="card">
     <h3>Where tonight's posts went
       <span class="cnt">last sweep ${esc(led.at || "—")} · ${esc(led.backend || "—")}</span></h3>
-    <div class="note muted" style="margin-bottom:10px">Every counter the publisher wrote on its last run. Zeroes are kept and dimmed — a zero next to “went out to X” is the whole story.</div>
+    <div class="note muted" style="margin-bottom:10px">${mktCopy("Counters from the last publisher run. Provider acceptance is a submission receipt; public visibility requires separate evidence.", "最近一次发布任务的计数。服务商接受仅表示收到提交；公开可见性需要单独证据。")}</div>
     <div class="flr-led">${rows}</div>
     ${halted}
   </div>`;
@@ -6626,43 +6602,27 @@ function flrAnsCell(q, n, stance, goWord, goTo, tone) {
     ? `onclick="go('${esc(goTo)}')"`
     : `onclick="document.querySelector('.flr-line-card') && document.querySelector('.flr-line-card').scrollIntoView({block:'start'})"`;
   return `<button class="flr-ans-cell" ${act}>
-    <div class="flr-ans-q">${esc(q)}</div>
+    <div class="flr-ans-q">${Array.isArray(q) ? mktCopy(...q) : esc(q)}</div>
     <div class="${cls}">${isNull ? "—" : flrN(n)}</div>
-    <div class="flr-ans-s">${esc(isNull ? "not measured tonight" : stance)}</div>
-    <div class="flr-ans-go">${esc(goWord)}</div>
+    <div class="flr-ans-s">${isNull ? mktCopy("Not measured", "尚未测量") : Array.isArray(stance) ? mktCopy(...stance) : esc(stance)}</div>
+    <div class="flr-ans-go">${Array.isArray(goWord) ? mktCopy(...goWord) : esc(goWord)}</div>
   </button>`;
 }
 
 function flrAnswers(d) {
   const t = d.today || {};
-  const line = d.line || [];
-  const first = line[0] || {};
-  const last = line[line.length - 1] || {};
-
-  const lastPost = t.last_post_at ? conLocalTime(t.last_post_at) : null;
-  const blockedToday = t.blocked_today;
-  const machine = (last.out != null && first.out != null)
-    ? `${flrN(last.out)} of ${flrN(first.out)}` : null;
-
+  const evidence = t.delivery || {};
   return `<div class="flr-ans">
-    ${flrAnsCell("Going out next", t.going_out,
-      "cleared and holding for the next slot", "→ Publisher", "marketing_publish",
-      (t.going_out ? "you" : null))}
-    ${flrAnsCell("Went out today", t.went_out_today,
-      lastPost ? `last one ${lastPost}` : "no receipt yet", "→ Publisher", "marketing_publish")}
-    ${flrAnsCell("Blocked", t.blocked_total,
-      blockedToday ? `${flrN(blockedToday)} of them today; the rest are closed`
-        : "all of them closed — none from today", "→ Publisher", "marketing_publish",
-      (t.blocked_total ? "loss" : null))}
-    ${flrAnsCell("Needs you", t.awaiting_review,
-      t.awaiting_review ? "waiting on a call from you" : "every post has a decision",
-      "→ Outbox", "marketing_outbox", (t.awaiting_review ? "you" : null))}
-    <button class="flr-ans-cell" onclick="document.querySelector('.flr-line-card') && document.querySelector('.flr-line-card').scrollIntoView({block:'start'})">
-      <div class="flr-ans-q">Machine</div>
-      <div class="flr-ans-n ${machine == null ? "is-null" : (last.out ? "" : "is-loss")}">${machine == null ? "—" : esc(machine)}</div>
-      <div class="flr-ans-s">${machine == null ? "not measured tonight" : "planned posts reached X"}</div>
-      <div class="flr-ans-go">↓ the line</div>
-    </button>
+    ${flrAnsCell(["Needs review","待审核"], t.awaiting_review,
+      ["Undecided posts in this plan","本次计划中尚未决定的帖子"], ["Open Outbox →","打开待审箱 →"], "marketing_outbox", t.awaiting_review ? "you" : null)}
+    ${flrAnsCell(["Ready to send","准备发送"], t.going_out,
+      ["Approved in this plan; publisher checks apply","本次计划中已批准；发送前仍需检查"], ["Open Publisher →","打开发布器 →"], "marketing_publish")}
+    ${flrAnsCell(["Observed on X","已验证 X 可见性"], evidence.confirmed,
+      ["Visibility evidence recorded · all history","已记录可见性证据 · 全部历史"], ["View records →","查看记录 →"], "marketing_outbox")}
+    ${flrAnsCell(["Needs delivery check","需要核查发布状态"], evidence.needs_delivery_check,
+      ["Unverified, failed or unreadable records · all history","未确认、失败或无法核查的记录 · 全部历史"], ["Inspect delivery →","查看发布状态 →"], "marketing_publish")}
+    ${flrAnsCell(["Stopped in this plan","本次计划中已停止"], t.blocked_today,
+      ["Held by a check or failed; inspect the reason","被检查拦截或发送失败；请查看原因"], ["Inspect exceptions →","查看异常 →"], "marketing_publish", t.blocked_today ? "loss" : null)}
   </div>`;
 }
 
@@ -7620,111 +7580,23 @@ function provWord(slug) {
    in renders .is-odd, prints NO loss figure, and adds a sentence to the footer.
    Never clamp. Never Math.max(0, …) a loss into existence. */
 function csFunnel(d) {
-  const c = d.funnel || null;
-  const s = d.summary || {};
-  /* Degrade honestly on an older payload: stations 1-3 from what is there,
-     station 4 as "not measured". A null station NEVER renders 0. */
-  const planned = c ? c.planned : (s.total_posts != null ? s.total_posts : null);
-  const stations = [
-    { id: "planned",  name: "Planned",       out: planned,
-      what: "slots the allocator opened", lossWord: null,
-      go: "csScroll('cs-queue')" },
-    { id: "written",  name: "Written",       out: c ? c.written : null,
-      what: "posts that got words", lossWord: "never reached a writer",
-      go: "csScroll('cs-drops')" },
-    { id: "kept",     name: "Kept by audit", out: c ? c.audit_kept : null,
-      what: "survived the batch read", lossWord: "cut by the batch read",
-      go: "go('marketing_floor')" },
-    { id: "emitted",  name: "Emitted",       out: c ? c.emitted : null,
-      what: "reached the outbox rail", lossWord: "cleared but never queued",
-      go: "go('marketing_outbox')" },
+  const c = d.funnel || {};
+  const summary = d.summary || {};
+  const stages = [
+    [["Planned","计划"], c.planned ?? summary.total_posts, ["Slots in the recorded plan","已记录计划中的席位"], "marketing_content"],
+    [["Writing attempts","撰写尝试"], c.written, ["Writer output count; may include repair passes","作者输出计数；可能包含修复轮次"], "marketing_models"],
+    [["Kept by audit","审核保留"], c.audit_kept, ["Count reported by the batch audit","批次审核报告的保留数量"], "marketing_content"],
+    [["Emitted","已输出"], c.emitted, ["Output count reported by the emitter","输出阶段报告的数量"], "marketing_outbox"],
   ];
-
-  /* Losses, chain-aware. Everything from the first odd station down inherits a
-     denominator that means something else, so it can neither show a loss nor be
-     crowned the biggest leak. */
-  let prev = null, chainOk = true;
-  const oddNames = [];
-  stations.forEach(st => {
-    const inn = prev;
-    st.in = inn;
-    st.odd = (typeof st.out === "number" && typeof inn === "number" && st.out > inn);
-    st.lost = (!st.odd && typeof st.out === "number" && typeof inn === "number")
-      ? inn - st.out : null;
-    if (st.odd) { chainOk = false; oddNames.push(st.name); }
-    st.chainOk = chainOk;
-    if (typeof st.out === "number") prev = st.out;
-  });
-
-  let breakAt = null, worst = -1;
-  stations.forEach(st => {
-    if (!st.chainOk || st.lost == null || st.lost <= 0) return;
-    if (st.lost > worst) { worst = st.lost; breakAt = st.id; }
-  });
-
-  let seenBreak = false;
-  const cells = stations.map((st, i) => {
-    const cold = seenBreak;
-    if (st.id === breakAt) seenBreak = true;
-    const isNull = (st.out == null);
-    const cls = ["fn-cell", cold ? "is-cold" : "", st.odd ? "is-odd" : ""]
-      .filter(Boolean).join(" ");
-    const share = (st.in && st.lost != null && st.in > 0)
-      ? Math.min(1, st.lost / st.in) : 0;
-    const bar = (st.lost != null)
-      ? `<div class="fn-yield" role="img" aria-label="${(share * 100).toFixed(0)}% stopped here"><i style="width:${(share * 100).toFixed(1)}%"></i></div>`
-      : `<div class="fn-yield" aria-hidden="true"></div>`;
-    let loss;
-    if (st.odd) {
-      loss = `<div class="fn-odd-word">${flrN(st.out)} out of ${flrN(st.in)} in — these two counters don't nest, so no loss figure is honest here.</div>`;
-    } else if (isNull) {
-      loss = `<div class="fn-lost-none">not measured on this payload</div>`;
-    } else if (st.in == null) {
-      loss = `<div class="fn-lost-none">start of the line</div>`;
-    } else if (st.lost === 0) {
-      loss = `<div class="fn-lost-none">nothing lost here</div>`;
-    } else {
-      loss = `<div class="fn-lost">−${flrN(st.lost)}</div>
-        <div class="fn-lost-word">${esc(st.lossWord || "lost here")}</div>`;
-    }
-    return `<button class="${cls}" onclick="${esc(st.go)}">
-      <span class="fn-ord">${i + 1}</span>
-      <div class="fn-name">${esc(st.name)}</div>
-      <div class="fn-n${st.out === 0 ? " is-zero" : ""}">${isNull ? "—" : flrN(st.out)}</div>
-      <div class="fn-what">${esc(st.what)}</div>
-      ${bar}
-      ${loss}
-      ${st.id === breakAt ? `<div class="fn-break">biggest leak</div>` : ""}
-    </button>`;
-  }).join("");
-
-  /* Footer: one verdict, then every honesty caveat that actually applies. */
-  const first = stations[0], last = stations[stations.length - 1];
-  let verdict;
-  if (last.out === 0 && first.out) {
-    verdict = `<b>Nothing from tonight's plan reached the rail.</b> ${flrN(first.out)} slots were opened and every one of them stopped somewhere above.`;
-  } else if (typeof last.out === "number" && first.out) {
-    verdict = `<b>${flrN(last.out)} of ${flrN(first.out)} planned posts reached the outbox rail.</b> Each station's second number is what stopped there.`;
-  } else {
-    verdict = `The funnel is still filling in. Stations without a number were not measured on this payload.`;
-  }
-  const caveats = [];
-  if (oddNames.length) {
-    caveats.push(`Two of these counters were written by different passes and don't nest — read ${esc(oddNames.join(" and "))} on their own, not as a chain.`);
-  }
-  if (c && c.claimed != null && c.planned != null && c.claimed !== c.planned) {
-    caveats.push(`The plan file's own header claims ${flrN(c.claimed)}; the queue holds ${flrN(c.planned)}. The queue is the truth.`);
-  }
-  if (c && c.written != null && c.written_stamped != null && c.written !== c.written_stamped) {
-    caveats.push(`The copywriter logged ${flrN(c.written)} written while ${flrN(c.written_stamped)} posts carry a writer stamp. Two passes, two counts — the Floor's line reads the stamp.`);
-  }
-
-  return `<div class="section" id="cs-funnel">Tonight's supply
-      <span class="cnt">planned → written → kept → emitted</span></div>
-    <div class="fn">
-      <div class="fn-rail">${cells}</div>
-      <div class="fn-foot">${verdict}
-        ${caveats.map(x => `<br><span style="color:var(--warn)">${x}</span>`).join("")}</div>
+  const details = [];
+  if (c.claimed != null && c.planned != null && c.claimed !== c.planned)
+    details.push(mktCopy(`Plan header: ${flrN(c.claimed)}. Actual plan entries: ${flrN(c.planned)}.`, `计划标题数量：${flrN(c.claimed)}；实际条目：${flrN(c.planned)}。`));
+  if (c.written != null && c.written_stamped != null && c.written !== c.written_stamped)
+    details.push(mktCopy(`Writer output counter: ${flrN(c.written)}. Plan entries with a writer stamp: ${flrN(c.written_stamped)}.`, `作者输出计数：${flrN(c.written)}；带作者记录的计划条目：${flrN(c.written_stamped)}。`));
+  return `<div class="section" id="cs-funnel">${mktCopy("Generation activity", "内容生成活动")}</div>
+    <div class="fn"><div class="mkt-stage-grid mkt-stage-grid-four">${stages.map(x => mktStage(...x)).join("")}</div>
+      <div class="fn-foot">${mktCopy("These counters cover different processing passes. A conversion rate or loss between them is not yet measured.", "这些计数来自不同处理轮次。目前尚未测量它们之间的转化率或损失。")}
+      ${details.length ? `<details class="mkt-diagnostics"><summary>${mktCopy("Measurement details", "计量详情")}</summary>${details.map(x => `<p>${x}</p>`).join("")}</details>` : ""}</div>
     </div>`;
 }
 
@@ -7738,22 +7610,22 @@ var CS_DROP_FAMILIES = [
     goto: "marketing_models", cta: "Open the Model Desk" },
   { re: /^number soup/i, title: "Too many loose numbers",
     what: "Every number after the first has to be what the one before it is measured against. These stacked new claims instead.",
-    dead: "The writer's rule — nothing to change here." },
+    goto: "marketing_models", cta: "Inspect writing rules" },
   { re: /not in whitelist|not in the whitelist|is not in whitelist/i, title: "A number the data doesn't back",
     what: "The post used a level or figure that isn't in the packet it was written from.",
     dead: "Caught before it shipped. That is the gate working." },
   { re: /^missing cashtag/i, title: "Missing the ticker tag",
     what: "The post named a company without its cashtag.",
-    dead: "The writer's rule — nothing to change here." },
+    goto: "marketing_models", cta: "Inspect writing rules" },
   { re: /^shape /i, title: "Wrong post shape",
     what: "Line count, spacing, or caption length missed the format this kind of post uses.",
-    dead: "The writer's rule — nothing to change here." },
+    goto: "marketing_models", cta: "Inspect writing rules" },
   { re: /^too long|chars \(max/i, title: "Over the length budget",
     what: "Longer than a post can be.",
-    dead: "The writer's rule — nothing to change here." },
+    goto: "marketing_models", cta: "Inspect writing rules" },
   { re: /em dash|en dash|horizontal bar/i, title: "Banned dash",
     what: "House style bans the long dashes — they read as machine-written.",
-    dead: "The writer's rule — nothing to change here." },
+    goto: "marketing_models", cta: "Inspect writing rules" },
   { re: /^banned vocab|internal jargon|internal shorthand/i, title: "House language law",
     what: "Desk vocabulary a reader outside this building can't see.",
     goto: "marketing_models", cta: "Open the Model Desk" },
@@ -7763,7 +7635,7 @@ var CS_DROP_FAMILIES = [
     dead: "Caught before it shipped." },
   { re: /expression dial/i, title: "Wrong voice for this kind",
     what: "A playful line landed on a post kind that doesn't take one.",
-    dead: "The writer's rule — nothing to change here." },
+    goto: "marketing_models", cta: "Inspect writing rules" },
 ];
 /* Default bucket. MUST render every unmatched key verbatim in .dz-raw — a new
    engine gate has to be readable here before anyone remembers to map it. */
@@ -8668,7 +8540,7 @@ function obxIsDecidable(it) { return it.status === "queued"; }
    effective_attempts, so a rail built on raw would strike out live posts that
    only ever rode a Buffer outage. */
 function obxIsFailedRearmable(it) {
-  return it.status === "failed" && obxSpentAttempts(it) < OBX_MAX_ATTEMPTS;
+  return it.status === "failed" && obxSpentAttempts(it) < OBX_MAX_ATTEMPTS && (!it.retry_freshness || it.retry_freshness.eligible !== false);
 }
 /* An item the publisher is mid-send on. Alive, but it is the MACHINE's turn —
    there is no operator verb for it. It was invisible before: `posting` was in
@@ -9724,32 +9596,15 @@ RENDER.marketing_outbox = async () => {
       >&#9940; ${held} held by Sentinel</span>`;
   }
 
-  /* Header. THE PILL USED TO BE A STRING LITERAL reading "Review only — nothing
-     posts externally", with the lede underneath promising "in this shadow phase
-     nothing leaves the building". Neither read any state. The ledger says posts
-     went out on 07-25, 26, 27, 28, 30, 31 and today, with live Buffer receipts
-     carrying x.com status urls. The operator was approving posts believing they
-     could not send, and they sent.
-
-     The truth is derived from the payload already in hand rather than from an
-     arm-state probe: a receipted `posted` transition in the last 24 hours is
-     ground truth that this machine posts, and it cannot come back null the way
-     `arm_state()` does on a host with no GitHub token (which is how the
-     Publisher page ends up answering "unknown" on the same question). */
-  const dayAgo = Date.now() - 24 * 3600 * 1000;
-  const postedRecently = (d.history || []).filter(h =>
-    h.status === "posted" && h.at && Date.parse(String(h.at)) >= dayAgo);
-  const liveN = postedRecently.length;
-  const statePill = liveN
-    ? `<span class="obx-shadow-pill obx-live-pill"><span class="obx-shadow-dot"></span>Live — ${liveN} post${liveN === 1 ? "" : "s"} went out in the last 24 hours</span>`
-    : `<span class="obx-shadow-pill"><span class="obx-shadow-dot"></span>Nothing has gone out in the last 24 hours</span>`;
-  const asOfChip = asOf ? `<span class="cnt">reviewing ${esc(asOf)}</span>` : "";
-  const header = `<div class="section">Outbox ${asOfChip}${sentinelChip}
-    ${statePill}
-  </div>
-  <div class="obx-lede">The queue below is what each desk account is <b>about to post to X</b>. Read the exact copy, then approve, edit or hold. ${liveN
-      ? "Approving is real: an approved post goes out at its slot."
-      : "Nothing has sent in the last day — approving still books the post, and the publisher sends it when it is armed."}</div>`;
+  const delivery = d.delivery_summary || {};
+  const confirmed = delivery.confirmed;
+  const pending = delivery.needs_delivery_check;
+  const statePill = `<span class="obx-shadow-pill">${mktCopy(
+    `${flrN(confirmed)} observed on X · ${flrN(pending)} need a delivery check · all records`,
+    `${flrN(confirmed)} 条已验证 X 可见性 · ${flrN(pending)} 条需要核查发布状态 · 全部记录`)}</span>`;
+  const asOfChip = asOf ? `<span class="cnt">${esc(asOf)}</span>` : "";
+  const header = `<div class="section">Outbox ${asOfChip}${sentinelChip}${statePill}</div>
+    <div class="obx-lede">${mktCopy("Review the copy, evidence and full-size media before approving. Approved posts can send when the publisher is armed and its checks pass.", "批准前请检查文案、证据和完整尺寸媒体。发布器启用且检查通过后，已批准的帖子即可发送。")}</div>`;
 
   /* Day-0 empty state — a friendly explainer that says WHEN drafts arrive and
      what to do next, with the three posting slots in the operator's local time. */
@@ -9852,7 +9707,7 @@ function obxRenderLive(d) {
     ["held",        "Held",        "var(--warn)"],
     ["approved",    "Cleared",     "var(--ok)"],
     ["posting",     "Sending",     "var(--warn)"],
-    ["posted",      "Posted",      "var(--muted)"],
+    ["posted",      "Publishing records", "var(--muted)"],
     ["failed",      "Failed",      "var(--bad)"],
     ["quarantined", "Blocked",     "var(--bad)"],
     ["recalled",    "Pulled back", "var(--warn)"],
@@ -10264,7 +10119,7 @@ function stMeta(state) {
     approved:    { cls: "st-approved",    label: "Cleared",     stance: "goes at the next slot",      live: "mach" },
     scheduled:   { cls: "st-scheduled",   label: "Scheduled",   stance: "booked",                     live: "mach" },
     posting:     { cls: "st-posting",     label: "Sending",     stance: "in flight",                  live: "mach" },
-    posted:      { cls: "st-posted",      label: "Posted",      stance: "went out",                   live: "dead" },
+    posted:      { cls: "st-posted",      label: "Publishing record", stance: "confirmation separate",                   live: "dead" },
     failed:      { cls: "st-failed",      label: "Failed",      stance: "did not send",               live: "dead" },
     quarantined: { cls: "st-quarantined", label: "Blocked",     stance: "never sent",                 live: "dead" },
     recalled:    { cls: "st-recalled",    label: "Pulled back", stance: "cancelled before sending",   live: "dead" },
@@ -10836,7 +10691,15 @@ function pubTriageSection(d) {
   /* SPENT attempts, not raw: `publisher()` ships effective_attempts on every
      dead row, and it is the number apply_decisions charges. Splitting on raw
      buried re-armable posts in the corpse groups for the whole Buffer outage. */
-  const retryable = failed.filter(r => obxSpentAttempts(r) < OBX_MAX_ATTEMPTS);
+  const retryable = failed.filter(obxIsFailedRearmable);
+  const stale = failed.filter(r => obxSpentAttempts(r) < OBX_MAX_ATTEMPTS && r.retry_freshness && r.retry_freshness.eligible === false);
+  if (stale.length) {
+    groups.push({key:"stale-evidence", live:"you", ico:"◷", n:stale.length,
+      title:mktText("Needs refreshed evidence", "需要更新证据"),
+      what:mktText("These failed posts are outside their source freshness window. An approval cannot make the old evidence current. Inspect the source in Content Studio before producing a new draft.", "这些失败帖子已超出来源时效范围。批准操作不会更新旧证据。请在内容工作室检查来源后生成新稿。"),
+      goto:"marketing_content", cta:mktText("Open Content Studio", "打开内容工作室"),
+      rows:stale.map(r => pubTriageRow(r, "you", `<div class="pub-tri-note">${esc(r.retry_freshness.reason)}</div>`))});
+  }
   const spent = failed.filter(r => obxSpentAttempts(r) >= OBX_MAX_ATTEMPTS);
   if (retryable.length) {
     groups.push({
@@ -11025,8 +10888,9 @@ RENDER.marketing_publish = async () => {
   if (posted.length) {
     const num = (v2) => (v2 == null ? `<span class="faint">—</span>` : `<span class="pub-met-n">${esc(String(v2))}</span>`);
     const rows = posted.map(r => {
-      const idCell = r.external_url
-        ? `<a href="${esc(r.external_url)}" target="_blank" rel="noopener">${esc(r.external_id || "post")}</a>`
+      const publicLink = r.delivery ? obxPublicPostHref(r.delivery.url) : null;
+      const idCell = publicLink
+        ? `<a href="${esc(publicLink)}" target="_blank" rel="noopener noreferrer">${mktCopy("Open recorded X link", "打开已记录的 X 链接")}</a>`
         : (r.external_id ? esc(r.external_id) : `<span class="muted">—</span>`);
       const m = r.metrics || null;
       /* An absent metrics block is NOT a zero — it means the poller has not
@@ -11042,12 +10906,12 @@ RENDER.marketing_publish = async () => {
         <td class="pub-text">${esc((r.text || "").slice(0, 120))}</td>
         ${metCell}
         <td>${esc(r.backend || "")}</td>
-        <td><code>${idCell}</code></td>
+        <td>${obxDeliveryChip(r.delivery)}<div class="mkt-diagnostics">${idCell}</div></td>
       </tr>`;
     }).join("");
     postedCard = `<div class="card" id="pub-posted">
       <div class="section">Recent publisher records <span class="cnt">last ${posted.length} · newest first</span></div>
-      <div class="note muted">Delivery: Not confirmed here. A publisher record is not delivery confirmation or permission to resend.</div>
+      <div class="note muted">${mktCopy("Provider acceptance is not delivery confirmation or permission to resend. Recorded X links are available for inspection; visibility evidence is separate.", "服务商接受不代表已在 X 发布，也不代表可以重发。可打开已记录的 X 链接进行检查；可见性证据单独显示。")}</div>
       <div class="table-wrap"><table class="tbl pub-tbl"><thead><tr><th>at</th><th>desk</th><th>post</th>${anyMetrics ? "<th>how it did</th>" : ""}<th>via</th><th>receipt</th></tr></thead>
       <tbody>${rows}</tbody></table></div>
       ${anyMetrics ? `<div class="note muted" style="margin-top:6px">A dash means no measurement is available, not zero. Metrics alone do not establish delivery.</div>` : ""}
@@ -11952,34 +11816,51 @@ function obxDeadBlock(history, spentFailures, historyTotal) {
 /* ── WHAT WENT OUT ─────────────────────────────────────────────────────────
    Operator question 2. Separated from the dead block because "it posted" and
    "it never posted" are opposite facts and shared a table for a year. */
+function obxDeliveryChip(delivery) {
+  const d = delivery || {};
+  const names = {
+    confirmed:["Observed on X","已验证 X 可见性"], scheduled:["Scheduled with Buffer","已在 Buffer 排期"],
+    provider_sent:["Provider reports sent · visibility unverified","服务商报告已发送 · 可见性未验证"],
+    linked:["X link recorded · visibility unverified","已记录 X 链接 · 可见性未验证"],
+    failed:["Provider reports failed","服务商报告发送失败"],
+    degraded:["Delivery check incomplete","发布核查未完成"],
+    not_visible:["Not visible at the last X check","最近一次 X 核查未见公开内容"],
+    accepted:["Accepted by Buffer · confirmation pending","Buffer 已接收 · 等待确认"],
+    sending:["Sending · outcome pending","正在发送 · 结果待定"],
+    unconfirmed:["Delivery unconfirmed","尚未确认发布"]
+  };
+  const tone = d.confirmed ? "s-ok" : ["failed","not_visible"].includes(d.state) ? "s-bad" : d.state === "degraded" ? "s-warn" : "s-mut";
+  const providerDetail = [[mktCopy("Provider status", "服务商状态"), d.provider_status], [mktCopy("Publishing mode", "发布方式"), d.scheduling_type], [mktCopy("Notification status", "通知状态"), d.notification_status]].filter(([,value]) => value).map(([label,value]) => `<p>${label}: ${esc(value)}</p>`).join("");
+  const detail = d.detail || providerDetail || d.channel_ready === false ? `<details class="mkt-diagnostics"><summary>${mktCopy("Delivery details", "发布详情")}</summary>${providerDetail}${d.channel_ready === false ? `<p>${mktCopy("The provider reports the channel is not ready.", "服务商报告该频道尚未就绪。")}</p>` : ""}${d.detail ? `<p>${esc(d.detail)}</p>` : ""}</details>` : "";
+  return `<span class="statpill ${tone}" title="${esc(d.visibility_checked_at || d.observed_at || "")}">${mktCopy(...(names[d.state] || names.unconfirmed))}</span>${d.observation_stale ? `<span class="statpill s-warn">${mktCopy("Latest check needs review", "最新核查需要检查")}</span>` : ""}${detail}`;
+}
+function obxPublicPostHref(raw) {
+  try {
+    const u = new URL(raw);
+    return u.protocol === "https:" && ["x.com","www.x.com","twitter.com","www.twitter.com","mobile.twitter.com"].includes(u.hostname)
+      && !u.username && !u.password && !u.port && /^\/(?:[A-Za-z0-9_]{1,15}|i\/web)\/status\/[1-9]\d*(?:\/(?:photo|video)\/[1-4])?\/?$/.test(u.pathname) ? u.href : null;
+  } catch (_) { return null; }
+}
 function obxPostedBlock(history, historyTotal) {
   const posted = (history || []).filter(h => h.status === "posted");
-  if (!posted.length) {
-    return `<div class="section" style="margin-top:26px">Posted</div>
-      ${blEmpty("Nothing has gone out yet",
-                "Approved posts land here with their receipt the moment they send.")}`;
-  }
+  const heading = mktCopy("Publication records", "发布记录");
+  if (!posted.length) return `<div class="section">${heading}</div>${blEmpty(mktText("No publishing records loaded", "尚未加载发布记录"), mktText("Provider receipts and public X confirmation will appear here separately.", "发布服务回执与 X 公开确认将分别显示。"))}`;
   const rows = posted.map(h => {
-    const txt = String(h.text || "").replace(/\s+/g, " ").trim();
-    const short = txt.length > 96 ? txt.slice(0, 96) + "…" : txt;
     const rl = obxReceiptLine(h.receipt);
-    return `<div class="obx-dead-row lv lv-dead lv-row obx-posted-row">
-      <div class="obx-dead-main">
-        <span class="pc-excerpt">${esc(short)}</span>
-        <div class="obx-dead-meta">
-          <span class="pc-desk">${esc(h.account || "—")}</span>
-          ${obxKindChip(h.kind)}
-          <span class="pc-when">${obxStamp(h.at)}</span>
-          ${stChip("posted")}
-        </div>
-        ${rl ? `<div class="obx-dead-rc">${rl}</div>` : ""}
+    const link = h.delivery ? obxPublicPostHref(h.delivery.url) : null;
+    return `<article class="obx-posted-row mkt-publication">
+      <p class="pc-text">${esc(h.text || "")}</p>
+      <div class="obx-dead-meta"><span class="pc-desk">${esc(h.account || "—")}</span>${obxKindChip(h.kind)}
+        <span class="pc-when" title="Record time; not verified publication time">${obxStamp(h.at)}</span>
+        ${obxDeliveryChip(h.delivery)}
+        ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">${mktCopy("Open recorded X link ↗", "打开已记录的 X 链接 ↗")}</a>` : ""}
       </div>
-    </div>`;
+      ${rl ? `<details class="mkt-diagnostics"><summary>${mktCopy("Provider receipt", "发布服务回执")}</summary><div class="obx-dead-rc">${rl}</div></details>` : ""}
+    </article>`;
   });
   const total = Number(historyTotal);
   const windowed = Number.isFinite(total) && total > (history || []).length;
-  return `<div class="section" style="margin-top:26px">Posted
-      <span class="cnt">${posted.length} with receipts${windowed ? ` · newest ${(history || []).length} of ${total} closed posts loaded` : ""}</span></div>
+  return `<div class="section" style="margin-top:26px">${heading}<span class="cnt">${mktCopy(`${posted.length} loaded${windowed ? ` · history window ${(history || []).length} of ${total}` : ""}`, `已加载 ${posted.length} 条${windowed ? ` · 历史窗口 ${(history || []).length} / ${total}` : ""}`)}</span></div>
     <div class="obx-posted-list">${blList(rows, 10, 40)}</div>`;
 }
 
@@ -12074,6 +11955,7 @@ function obxItemCard(it, acctId) {
     ? `<div class="obx-review obx-review-${esc(rev.verdict || "weak")}">
          <span class="obx-review-tag">${rev.verdict === "bad" ? "reads templated" : "worth a look"}</span>
          ${(rev.issues || []).map(x => `<span class="obx-review-issue">${esc(REVIEW_LABEL[x] || x)}</span>`).join("")}
+         ${rev.note ? `<span class="obx-review-note">${esc(rev.note)}</span>` : ""}
        </div>`
     : "";
 
@@ -12134,6 +12016,9 @@ function obxItemCard(it, acctId) {
       ${postNowBtn}
       <span class="obx-ctrl-msg"></span>
     </div>`;
+  } else if (isFailed && it.retry_freshness && it.retry_freshness.eligible === false) {
+    controls = `<div class="obx-controls"><span class="obx-fail-hint">${esc(it.retry_freshness.reason)}</span>
+      <button class="btn" onclick="go('marketing_content')">${mktCopy("Inspect source in Studio", "在工作室检查来源")}</button></div>`;
   } else if (isFailed && !spent) {
     controls = `<div class="obx-controls" data-item="${esc(it.id)}">
       <button class="btn primary obx-btn-approve" onclick="obxDecide('${esc(it.id)}','approve',this)">Approve retry</button>
@@ -12206,9 +12091,14 @@ function obxLoadAllMedia() {
     const mount = (loaded) => {
       const node = loaded.cloneNode(true);
       slot.innerHTML = "";
-      slot.appendChild(node);
+      const button = document.createElement("button");
+      button.className = "obx-media-open";
+      button.type = "button";
+      button.setAttribute("aria-label", mktText("Enlarge chart: ", "放大图表：") + cap);
+      button.appendChild(node);
+      button.onclick = () => obxLightbox(src, cap, button);
+      slot.appendChild(button);
       slot.classList.add("obx-media-ready");
-      node.onclick = () => obxLightbox(src, cap);
     };
 
     /* Cache HIT — reuse the already-loaded image, no endpoint re-fetch. The
@@ -12233,26 +12123,33 @@ function obxLoadAllMedia() {
 
 /* Media lightbox — dimmed backdrop, esc / click-outside closes, caption shows
    the chart id. One overlay reused for all previews. */
-function obxLightbox(src, caption) {
+let OBX_LIGHTBOX_FOCUS = null;
+function obxLightbox(src, caption, trigger) {
   obxCloseLightbox();
+  OBX_LIGHTBOX_FOCUS = trigger || document.activeElement;
   const ov = document.createElement("div");
-  ov.className = "obx-lb";
-  ov.id = "obx-lb";
-  ov.innerHTML = `<div class="obx-lb-inner" role="dialog" aria-label="Chart preview">
-    <button class="obx-lb-close" aria-label="Close preview" onclick="obxCloseLightbox()">✕</button>
-    <img class="obx-lb-img" src="${esc(src)}" alt="chart preview for ${esc(caption || "chart")}">
+  ov.className = "obx-lb"; ov.id = "obx-lb";
+  ov.innerHTML = `<div class="obx-lb-inner" role="dialog" aria-modal="true" aria-label="${esc(mktText("Chart preview", "图表预览"))}">
+    <button class="obx-lb-close" aria-label="${esc(mktText("Close preview", "关闭预览"))}" onclick="obxCloseLightbox()">✕</button>
+    <img class="obx-lb-img" src="${esc(src)}" alt="${esc(caption || "chart")}">
     <div class="obx-lb-cap">${esc(caption || "chart")}</div>
   </div>`;
-  ov.addEventListener("click", (e) => { if (e.target === ov) obxCloseLightbox(); });
+  ov.addEventListener("click", e => { if (e.target === ov) obxCloseLightbox(); });
   document.body.appendChild(ov);
   document.addEventListener("keydown", obxLbKey);
+  ov.querySelector("button").focus();
   requestAnimationFrame(() => ov.classList.add("obx-lb-on"));
 }
-function obxLbKey(e) { if (e.key === "Escape") obxCloseLightbox(); }
+function obxLbKey(e) {
+  if (e.key === "Escape") { e.preventDefault(); obxCloseLightbox(); }
+  if (e.key === "Tab") { e.preventDefault(); document.querySelector("#obx-lb .obx-lb-close")?.focus(); }
+}
 function obxCloseLightbox() {
   const ov = document.getElementById("obx-lb");
   if (ov) ov.remove();
   document.removeEventListener("keydown", obxLbKey);
+  if (OBX_LIGHTBOX_FOCUS && OBX_LIGHTBOX_FOCUS.isConnected) OBX_LIGHTBOX_FOCUS.focus();
+  OBX_LIGHTBOX_FOCUS = null;
 }
 
 /* Filter the review queue to one desk (client-side, mirrors Content Studio).

@@ -127,7 +127,7 @@ def test_line_counts_and_losses(repo):
     assert stations["written"]["lost"] == 1
     assert stations["cleared"]["out"] == 4
     assert stations["enqueued"]["out"] == 2         # today's items only
-    assert stations["enqueued"]["lost"] == 2        # cleared 4 → enqueued 2
+    assert stations["enqueued"]["lost"] is None     # independent populations
 
 
 def test_break_point_is_the_biggest_post_loss_not_the_biggest_share(repo):
@@ -137,7 +137,7 @@ def test_break_point_is_the_biggest_post_loss_not_the_biggest_share(repo):
     losses = {k: v["lost"] for k, v in stations.items() if v["lost"]}
     assert d["break_at"] == max(losses, key=lambda k: losses[k])
     # the gate loses 4 of 8 here — more posts than any later station
-    assert d["break_at"] == "cleared"
+    assert d["break_at"] == "written"
 
 
 def test_never_raises_on_an_empty_repo(tmp_path):
@@ -225,9 +225,65 @@ def test_ledger_loss_total_excludes_informational_counters(repo):
     assert led["lost_total"] == 4
 
 
-def test_disabled_desks_surface_as_a_blocker(repo):
-    hit = [b for b in mf.floor(repo)["blockers"] if "switched off" in b["title"]]
-    assert hit and "receipts" in hit[0]["why"]
+def _disabled_blockers(repo):
+    result = mf.floor(repo)
+    assert result["ok"] is True
+    return [b for b in result["blockers"]
+            if "disabled desks" in b["title"] or "switched off" in b["title"]]
+
+
+def test_disabled_roster_with_empty_queues_is_not_a_production_blocker(repo):
+    path = repo / "data/marketing/content_plan.json"
+    plan = json.loads(path.read_text())
+    plan["accounts"].extend({"id": desk, "status": "planned", "queue": []}
+                            for desk in ("receipts", "theme_desk"))
+    _write(path, plan)
+    assert _disabled_blockers(repo) == []
+
+
+def test_actual_queued_posts_on_a_disabled_desk_report_observed_cost(repo):
+    path = repo / "data/marketing/content_plan.json"
+    plan = json.loads(path.read_text())
+    plan["accounts"].append({"id": "receipts", "status": "planned", "queue": [
+        {"id": "disabled-1", "type": "receipt"},
+        {"id": "disabled-2", "type": "receipt"}]})
+    _write(path, plan)
+    hit, = _disabled_blockers(repo)
+    assert hit["cost"] == 2 and "receipts" in hit["why"]
+    assert hit["goto"] == "marketing_content"
+    assert "model calls" not in hit["why"] + hit["fix"]
+    assert "Turn a desk back on" not in hit["fix"]
+
+
+@pytest.mark.parametrize("include_report", [False, True])
+def test_plan_disabled_reason_counts_its_post_once(repo, include_report):
+    plan_path = repo / "data/marketing/content_plan.json"
+    plan = json.loads(plan_path.read_text())
+    plan["accounts"][1]["queue"][5]["sentinel_reasons"] = ["account_disabled"]
+    _write(plan_path, plan)
+    if include_report:
+        report_path = repo / "data/marketing/sentinel_report.json"
+        report = json.loads(report_path.read_text())
+        report.update(produced_at="2026-07-29T03:10:00Z", quarantined=[{
+            "id": "post-kelly-006", "account": "kelly", "reasons": ["account_disabled"]}])
+        report["checks"]["kill_switch"]["accounts_disabled"] = ["kelly"]
+        _write(report_path, report)
+    hit, = _disabled_blockers(repo)
+    assert hit["cost"] == 1 and "kelly" in hit["why"]
+
+
+@pytest.mark.parametrize("headline", ["k6", "A different post under the reused ID"])
+def test_separate_report_cannot_charge_a_rebuilt_plan(repo, headline):
+    # Planner IDs repeat across builds. Even the same displayed headline does
+    # not bind the body or source packet, which this report does not carry.
+    path = repo / "data/marketing/sentinel_report.json"
+    report = json.loads(path.read_text())
+    report.update(produced_at="2026-07-29T03:10:00Z", quarantined=[{
+        "id": "post-kelly-006", "account": "kelly", "type": "chart",
+        "headline": headline, "reasons": ["account_disabled"]}])
+    report["checks"]["kill_switch"]["accounts_disabled"] = ["kelly"]
+    _write(path, report)
+    assert _disabled_blockers(repo) == []
 
 
 # ---------------------------------------------------------------------------
@@ -458,7 +514,7 @@ def test_f1_break_at_never_crowns_a_loss_from_a_broken_chain(broken_chain_repo):
     d = mf.floor(broken_chain_repo)
     st = {s["id"]: s for s in d["line"]}
     assert st["enqueued"]["out"] == 0
-    assert st["enqueued"]["lost"] == 5          # the arithmetic still happens…
+    assert st["enqueued"]["lost"] is None       # incomparable arithmetic is suppressed
     assert d["break_at"] == "written"           # …but it never becomes the verdict
 
 
@@ -479,12 +535,13 @@ def test_f2_the_phantom_enqueue_blocker_does_not_fire(broken_chain_repo):
     assert odd[0].get("goto") is None
 
 
-def test_f2_the_enqueue_blocker_still_fires_on_a_sound_chain(repo):
+def test_monotone_counts_do_not_prove_a_common_cohort(repo):
     """The guard must not silence a REAL enqueue gap — regression on the fix."""
     d = mf.floor(repo)
     st = {s["id"]: s for s in d["line"]}
-    assert st["enqueued"]["chain_ok"] is True and st["enqueued"]["lost"] == 2
-    assert "Cleared posts never reached the rail" in [b["title"] for b in d["blockers"]]
+    assert st["enqueued"]["chain_ok"] is False and st["enqueued"]["lost"] is None
+    assert all(s["yield"] is None for s in d["line"] if not s["chain_ok"])
+    assert "Cleared posts never reached the rail" not in [b["title"] for b in d["blockers"]]
 
 
 def test_f3_the_break_station_blocker_outranks_the_rest(broken_chain_repo):
@@ -504,13 +561,13 @@ def test_f3_the_break_station_blocker_outranks_the_rest(broken_chain_repo):
     assert below_stop[0]["title"] == "Some planned posts never reached a writer"
 
 
-def test_f3_a_non_break_no_writer_loss_stays_a_watch(repo):
+def test_known_writer_gap_remains_actionable_when_later_counts_are_independent(repo):
     """Severity tracks the LINE's verdict, it is not simply promoted forever."""
     d = mf.floor(repo)
-    assert d["break_at"] == "cleared"
+    assert d["break_at"] == "written"
     nw = [b for b in d["blockers"]
           if b["title"] == "Some planned posts never reached a writer"]
-    assert nw and nw[0]["severity"] == "watch"
+    assert nw and nw[0]["severity"] == "high"
 
 
 def test_f4_a_new_deterministic_lane_is_not_counted_as_a_model():
@@ -547,7 +604,8 @@ def test_f5_a_host_local_blindness_is_not_a_stop_when_posts_are_going_out(
     """
     monkeypatch.delenv("BUFFER_TOKEN", raising=False)
     _write_lines(broken_chain_repo / "data/marketing/outbox/status_ledger.jsonl", [
-        {"id": "ob-1", "to": "posted", "at": mf._utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")},
+        {"id": "ob-old", "to": "posted", "at": mf._utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+         "receipt": {"backend": "buffer", "external_id": "accepted-1"}},
     ])
     d = mf.floor(broken_chain_repo)
     titles = [b["title"] for b in d["blockers"]]
@@ -555,7 +613,7 @@ def test_f5_a_host_local_blindness_is_not_a_stop_when_posts_are_going_out(
     blind = [b for b in d["blockers"]
              if b["title"] == "This console cannot see the publish switch"]
     assert blind and blind[0]["severity"] == "watch"
-    assert "about this admin process" in blind[0]["why"]
+    assert "Public X delivery needs its own confirmation" in blind[0]["why"]
     assert d["publisher"]["token_scope"] == "this admin host"
     assert d["publisher"]["host_local_only"] is True
 
@@ -577,7 +635,8 @@ def test_f6_the_glance_answers_are_served_not_dropped(repo):
                       "posted_recently"}
     assert t["blocked_total"] == 1           # ob-2 quarantined
     assert t["blocked_today"] == 1
-    assert t["last_post_at"] == "2026-07-29T22:00:00Z"
+    assert t["last_post_at"] is None  # status alone is not a receipt
+    assert t["delivery"]["confirmed"] == 0
 
 
 def test_f6_an_unmeasured_answer_is_none_never_zero(tmp_path):

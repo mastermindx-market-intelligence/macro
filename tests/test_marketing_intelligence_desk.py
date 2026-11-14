@@ -1940,3 +1940,104 @@ def test_shipped_config_bounds_the_confirmed_group():
     assert 0 < cap < max_items, (
         "the confirmed bound only reserves developing slots while it is "
         "strictly inside the snapshot cap")
+
+
+def test_corrected_brief_refreshes_analysis_with_the_same_headline(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    _built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    first = _confirmed_packet()
+    ill.attach_llm_drafts([first], _llm_cfg(), root=tmp_path, now=NOW)
+    corrected = _confirmed_packet()
+    corrected["brief"] = "The committee held the policy rate and withdrew the earlier reference to easing."
+    assert corrected["headline"] == first["headline"]
+    ill.attach_llm_drafts([corrected], _llm_cfg(), root=tmp_path, now=NOW + timedelta(minutes=1))
+    assert len(calls) == 2
+    ill.attach_llm_drafts([corrected], _llm_cfg(), root=tmp_path, now=NOW + timedelta(minutes=2))
+    assert len(calls) == 2
+
+
+def test_editorial_basis_ignores_arrival_noise_but_not_changed_market_facts():
+    import copy
+    import engine.marketing.intelligence_llm as ill
+    first = _confirmed_packet()
+    first["market"] = {"label": "SPY +0.8%", "basis": "session vs prior close", "as_of": "2026-07-29T18:00:00Z"}
+    later = copy.deepcopy(first)
+    later["updated_at"] = "2026-07-29T18:01:00Z"
+    later["market"]["as_of"] = "2026-07-29T11:01:00-07:00"
+    later["evidence"].reverse()
+    later["source_count"] = 3
+    later["timeline"] = [{"label_en": "Another source arrived"}]
+    assert ill.editorial_basis_fingerprint(first) == ill.editorial_basis_fingerprint(later)
+    later["market"]["label"] = "SPY -0.8%"
+    assert ill.editorial_basis_fingerprint(first) != ill.editorial_basis_fingerprint(later)
+
+
+def test_failed_refresh_removes_stale_opinion_and_retains_current_wire(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    _arm_llm(monkeypatch, _GOOD_REPLY)
+    db, sink = tmp_path / "basis.db", tmp_path / "basis.json"
+    first = _confirmed_packet()
+    ill.attach_llm_drafts([first], _llm_cfg(), root=tmp_path, now=NOW)
+    update_intelligence_desk([first], root=tmp_path, now=NOW, db_path=db, snapshot_path=sink)
+    corrected = _confirmed_packet()
+    corrected["brief"] = "The committee held rates but removed its earlier easing language."
+    _arm_llm(monkeypatch, None)
+    ill.attach_llm_drafts([corrected], _llm_cfg(), root=tmp_path, now=NOW + timedelta(minutes=1))
+    payload = update_intelligence_desk([corrected], root=tmp_path, now=NOW + timedelta(minutes=1),
+                                      db_path=db, snapshot_path=sink)
+    story = payload["stories"][0]
+    assert not any(d.get("origin") == "llm" for d in story["drafts"])
+    assert any(d["shape"] == "wire" for d in story["drafts"])
+    assert story["why_it_matters_en"] == corrected["why_it_matters_en"]
+    assert "_basis_sha256" not in json.dumps(payload)
+
+
+def test_reused_packet_cannot_reintroduce_an_opinion_bound_to_old_facts(monkeypatch):
+    import copy
+    import engine.marketing.intelligence_llm as ill
+    from engine.marketing.intelligence_desk import _merge_packets
+    _arm_llm(monkeypatch, _GOOD_REPLY)
+    first = _confirmed_packet()
+    ill.phrase_packet(first, block={}, now=NOW, shapes=("wire", "analysis"))
+    reused = copy.deepcopy(first)
+    reused["brief"] = "The previous report was corrected. The committee removed the easing language."
+    merged = _merge_packets(first, reused, now=NOW + timedelta(minutes=1))
+    assert not any(d.get("origin") == "llm" for d in merged["drafts"])
+    assert not merged.get("_why_phrased")
+
+
+def test_first_insert_and_retained_why_validate_their_stored_basis(monkeypatch):
+    import copy
+    import engine.marketing.intelligence_llm as ill
+    from engine.marketing.intelligence_desk import _merge_packets
+    _arm_llm(monkeypatch, _GOOD_REPLY)
+    first = _confirmed_packet()
+    ill.phrase_packet(first, block={}, now=NOW, shapes=("wire", "analysis"))
+    corrected = copy.deepcopy(first)
+    corrected["brief"] = "The earlier wording was corrected; the committee removed the easing language."
+    inserted = _merge_packets(None, corrected, now=NOW)
+    assert not any(d.get("origin") == "llm" for d in inserted["drafts"])
+    assert not inserted.get("_why_phrased")
+    incoming = _confirmed_packet()
+    incoming["brief"] = corrected["brief"]
+    retained = _merge_packets(corrected, incoming, now=NOW)
+    assert not retained.get("_why_phrased")
+    assert retained["why_it_matters_en"] == incoming["why_it_matters_en"]
+
+
+def test_market_expiry_hides_bound_copy_without_a_new_arrival():
+    import copy
+    import engine.marketing.intelligence_llm as ill
+    from engine.marketing.intelligence_desk import _served_packet, DEFAULT_PACE_CFG
+    packet = _confirmed_packet()
+    packet["market"] = {"label": "SPY +0.8%", "basis": "session vs prior close", "as_of": NOW.isoformat()}
+    basis = ill.editorial_basis_fingerprint(packet)
+    packet["drafts"] = [{"id": "old-opinion", "shape": "analysis", "origin": "llm",
+                         "status": "review", "text": "SPY is up 0.8% this session.", "_basis_sha256": basis}]
+    packet.update(why_it_matters_en="SPY is up 0.8% this session.", _why_phrased=True, _why_basis_sha256=basis)
+    original = copy.deepcopy(packet)
+    served = _served_packet(packet, now=NOW + timedelta(days=1), pace_cfg=DEFAULT_PACE_CFG, market_stale_min=30)
+    assert served["market"] is None and served["drafts"] == []
+    assert "0.8%" not in served["why_it_matters_en"]
+    assert served["stance"] != "Review the draft"
+    assert packet == original, "serving must not rewrite stored evidence"

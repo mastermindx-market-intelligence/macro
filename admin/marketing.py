@@ -22,6 +22,8 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from .marketing_evidence import delivery_evidence, delivery_records, delivery_summary, editorial_review, retry_freshness
+
 log = logging.getLogger(__name__)
 
 
@@ -449,6 +451,21 @@ _ITEM_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
 _MAX_POST_NOW_IDS = 5
 
 
+def _stale_failed_approvals(item_ids, repo: Path) -> dict[str, str]:
+    """Read the original evidence before an administrative retry can write."""
+    from engine.marketing import outbox as _ob
+    state = _ob.fold_state(repo)
+    items, statuses = state.get("items") or {}, state.get("status") or {}
+    blocked = {}
+    for item_id in item_ids:
+        if statuses.get(item_id) != "failed" or item_id not in items:
+            continue
+        freshness = retry_freshness(items[item_id])
+        if not freshness["eligible"]:
+            blocked[item_id] = freshness["reason"]
+    return blocked
+
+
 def post_now(item_id) -> dict:
     """BREAKING DISPATCH — send one (or a few) outbox items right now.
 
@@ -477,6 +494,11 @@ def post_now(item_id) -> dict:
         if bad:
             return {"ok": False, "error": f"not a valid outbox item id: {bad[0]!r}",
                     "note": "id rejected"}
+
+        blocked = _stale_failed_approvals(ids, _default_root())
+        if blocked:
+            return {"ok": False, "error": "Failed posts need refreshed source evidence before retrying.",
+                    "blocked": blocked, "note": "No dispatch was requested."}
 
         from . import github_api  # noqa: PLC0415
         if not github_api.token():
@@ -1086,6 +1108,8 @@ def _content_funnel(repo: Path, cp: dict, plan_as_of: Any,
 
     return {
         "planned": planned or None,
+        "cohort_verified": False,
+        "comparison_note": "Independent stage counts; a shared post cohort is not recorded.",
         # The plan file's own header has been drifting from its queue length for
         # weeks (155 claimed vs 156 real today). The queue is the truth; the
         # claim ships beside it so the drift is visible, not silently authoritative.
@@ -2112,6 +2136,7 @@ def outbox(root=None) -> dict:
                 "accounts": [],
                 "history": [],
                 "history_total": 0,
+                "delivery_summary": delivery_summary([]),
                 "activity": activity,
                 "decision_log": [],
             }
@@ -2124,6 +2149,8 @@ def outbox(root=None) -> dict:
             return folded
 
         # Build item enriched dicts
+        metrics_by_rid = _latest_metrics_by_remote_id(repo)
+        provider_by_item = delivery_records(repo)
         enriched: list[dict] = []
         for item in items:
             item_id = item.get("id", "")
@@ -2135,6 +2162,7 @@ def outbox(root=None) -> dict:
             last_row = state["last"].get(item_id)
             last_transition_at = last_row.get("at") if last_row else None
             receipt = last_row.get("receipt") if last_row else None
+            remote_id = str((receipt or {}).get("external_id") or "") if isinstance(receipt, dict) else ""
             enriched.append({
                 "id": item_id,
                 "as_of": item.get("as_of"),
@@ -2160,6 +2188,10 @@ def outbox(root=None) -> dict:
                 "attempts": state["attempts"].get(item_id, 0),
                 "effective_attempts": _ob.effective_attempts(state, item_id),
                 "receipt": receipt,
+                "delivery": delivery_evidence(folded, receipt, metrics_by_rid.get(remote_id),
+                                              projection=provider_by_item.get(str(item_id))),
+                "source": editorial_review(item.get("source")),
+                "retry_freshness": retry_freshness(item) if folded == "failed" else None,
                 "_effective": eff,
                 "_account": item.get("account", ""),
             })
@@ -2236,6 +2268,8 @@ def outbox(root=None) -> dict:
                 "status": e["status"],
                 "at": e["last_transition_at"],
                 "receipt": e["receipt"],
+                "delivery": e["delivery"],
+                "retry_freshness": e["retry_freshness"],
                 "note": (state["last"].get(e["id"]) or {}).get("note"),
                 "attempts": e["attempts"],
                 "effective_attempts": _ob.effective_attempts(state, e["id"]),
@@ -2262,6 +2296,7 @@ def outbox(root=None) -> dict:
             "caps_by_account": _caps_by_account(cfg, repo, as_of=max_as_of),
             "sentinel": sentinel,
             "summary": summary,
+            "delivery_summary": delivery_summary(enriched),
             "accounts": accounts_out,
             "history": history_out,
             "history_total": history_total,
@@ -2489,6 +2524,7 @@ def publisher(root=None) -> dict:
         # Latest per-post analytics (impressions/likes/… + x.com permalink),
         # keyed by Buffer post id == the receipt's external_id. Fail-soft {}.
         metrics_by_rid = _latest_metrics_by_remote_id(repo)
+        provider_by_item = delivery_records(repo)
 
         def _row(iid: str) -> dict:
             it = items.get(iid, {})
@@ -2500,7 +2536,11 @@ def publisher(root=None) -> dict:
             # Join fetched metrics + backfill the permalink (createPost never
             # returns one; the poller's post() query does). Front-end renders
             # `metrics`/`external_url` only when present, so absent = unchanged.
-            met = metrics_by_rid.get(str(external_id or "").strip()) if external_id else None
+            met = (metrics_by_rid.get(str(external_id or "").strip())
+                   if external_id and str((rec or {}).get("backend") or "").lower() == "buffer"
+                   else None)
+            delivery = delivery_evidence(statuses.get(iid, it.get("status", "queued")), rec, met,
+                                         projection=provider_by_item.get(str(iid)))
             row = {
                 "id": iid,
                 "account": it.get("account", ""),
@@ -2509,7 +2549,8 @@ def publisher(root=None) -> dict:
                 "at": lr.get("at"),
                 "note": lr.get("note"),
                 "external_id": external_id,
-                "external_url": external_url or (met or {}).get("external_url"),
+                "external_url": delivery["url"],
+                "delivery": delivery,
                 "backend": (rec or {}).get("backend"),
             }
             if met and met.get("metrics"):
@@ -2543,6 +2584,7 @@ def publisher(root=None) -> dict:
                 # split must gate on.
                 "attempts": state["attempts"].get(iid, 0),
                 "effective_attempts": _ob.effective_attempts(state, iid),
+                "retry_freshness": retry_freshness(it),
                 "note": lr.get("note"),
                 "excerpt": (txt[:110] + "…") if len(txt) > 110 else txt,
             }
@@ -2698,6 +2740,8 @@ def decide_outbox(item_id: str, decision: str, note: str | None = None, root=Non
     try:
         from engine.marketing import outbox as _ob  # noqa: PLC0415
         repo = Path(root) if root is not None else _default_root()
+        if decision == "approve" and _stale_failed_approvals([item_id], repo):
+            return False
         ok = _ob.record_decision(item_id, decision, actor="admin", root=repo, note=note)
         if ok and decision == "approve":
             # Fail-soft on the apply half: the decision row is the durable
@@ -2817,11 +2861,18 @@ def decide_outbox_batch(item_ids: list, decision: str, note: str | None = None,
     passed, so a rejected id never rides along.
     """
     results: dict[str, bool] = {}
+    blocked: dict[str, str] = {}
     try:
         from engine.marketing import outbox as _ob  # noqa: PLC0415
         repo = Path(root) if root is not None else _default_root()
+        if decision == "approve":
+            blocked = _stale_failed_approvals(
+                [i for i in item_ids if isinstance(i, str) and i], repo)
         for item_id in item_ids:
             if not isinstance(item_id, str) or not item_id:
+                continue
+            if item_id in blocked:
+                results[item_id] = False
                 continue
             results[item_id] = _ob.record_decision(
                 item_id, decision, actor="admin", root=repo, note=note)
@@ -2835,7 +2886,8 @@ def decide_outbox_batch(item_ids: list, decision: str, note: str | None = None,
                             "but not applied: %s", len(recorded), exc)
     except Exception as exc:  # noqa: BLE001
         log.warning("marketing.decide_outbox_batch failed: %s", exc)
-    return {"decided": sum(1 for v in results.values() if v), "results": results}
+    return {"decided": sum(1 for v in results.values() if v), "results": results,
+            "blocked": blocked}
 
 
 # ---------------------------------------------------------------------------
@@ -3387,6 +3439,126 @@ def _intel_deliver_via_git(item_id: str) -> tuple[bool, str]:
                    f"it does: {why}.")
 
 
+def _intel_media_readiness(item: dict, cfg: dict, repo: Path) -> dict:
+    """Read the publisher's actual media decision without dispatching anything."""
+    from scripts.marketing_media_backfill import load_sidecar
+    from scripts.marketing_publisher import (
+        _bare_cashtag_post, _card_withheld_for_value, _media_paths_for, _publish_cfg,
+    )
+    pub_cfg = _publish_cfg(cfg)
+    paths = _media_paths_for(item, pub_cfg, load_sidecar(repo))
+    withheld = not item.get("media") and _card_withheld_for_value(item)
+    return {"urls": paths, "blocked": _bare_cashtag_post(item, pub_cfg, paths),
+            "withheld": withheld,
+            "state": "attached" if paths else "withheld" if withheld else "text_only"}
+
+
+def _intel_prepare_media(item: dict, story: dict, draft: dict, *,
+                         repo: Path, cfg: dict) -> dict:
+    """Adapt reviewed story evidence to the incumbent render/judge/host contract."""
+    readiness = _intel_media_readiness(item, cfg, repo)
+    if not readiness["blocked"]:
+        return {"ok": True, "state": readiness["state"]}
+    from engine.marketing.breaking_summary import card_earns_attachment, _card_param_violations
+    from engine.marketing.chart_render import (
+        chart_cta_enabled, derive_card_headline, render_breaking_card,
+    )
+    from engine.marketing.media_publish import publish_card
+
+    evidence = next((row for row in (story.get("evidence") or [])
+                     if isinstance(row, dict) and row.get("url") == draft.get("source_url")), {})
+    card_kwargs = {
+        "headline": derive_card_headline(str(story.get("headline") or "")),
+        "summary": str(story.get("brief") or "").strip() or None,
+        "source_name": str(evidence.get("name") or ""),
+        # The packet's human source-quality label does not distinguish an
+        # official release from a newswire. Unknown prints no authority badge.
+        "source_tier": "unknown",
+        "published_at": str(evidence.get("published_at") or ""),
+        "tickers": None,
+        "event_class": story.get("event_class"),
+        "logo_root": repo,
+        "cta": chart_cta_enabled(cfg),
+    }
+    if _card_param_violations(card_kwargs):
+        return _intel_refuse("card_policy_refused",
+                            "The source text could not be admitted to the card. Nothing was queued.")
+    fit: dict = {}
+    svg = render_breaking_card(fit=fit, **card_kwargs)
+    if not svg or not str(fit.get("headline_drawn") or "").strip():
+        return _intel_refuse("card_render_degraded",
+                            "The card could not be rendered. Nothing was queued; the draft is still available.")
+    attach, why = card_earns_attachment(
+        item["text"], str(fit.get("headline_drawn") or ""),
+        str(fit.get("summary_drawn") or ""), [],
+    )
+    source = item["source"]
+    source["card_fit"] = dict(fit)
+    if not attach:
+        source["card_withheld_for_value"] = True
+        source["card_dropped"] = why
+        return {"ok": True, "state": "withheld"}
+    # A changed source card may accompany identical copy. Content binding keeps
+    # that render from overwriting the image of an already queued item.
+    digest = hashlib.sha256(svg.encode("utf-8")).hexdigest()[:20]
+    chart_id = f"intelligence-{item['id']}-{digest}"
+    published = publish_card(svg, chart_id=chart_id, as_of=item["as_of"], root=repo) or {}
+    entry = {"kind": "chart_svg", "chart_id": chart_id,
+             "path": published.get("svg_path") or
+                     f"data/marketing/outbox/media/{item['as_of']}/{chart_id}.svg"}
+    for key in ("media_url", "media_png_path", "media_render"):
+        if published.get(key):
+            entry[key] = published[key]
+    item["media"] = [entry]
+    if _intel_media_readiness(item, cfg, repo)["blocked"]:
+        return _intel_refuse("media_unhosted",
+                            "The publisher cannot resolve this card. Nothing was queued.")
+    return {"ok": True, "state": "attached"}
+
+
+def _intel_check_value(item: dict, media_ready: dict, *, cfg: dict,
+                       source_headline: str) -> tuple[dict, dict | None]:
+    """Run the existing gate on this representation without rewriting it.
+
+    The returned stamp belongs on a new item only. Persisted duplicates keep
+    their original bytes, while current policy still decides whether they may
+    be delivered. A legacy row can use the selected story's headline for the
+    comparison, but proof credit always comes from the row's own citation and
+    resolved media, never the candidate that lost an enqueue race.
+    """
+    from engine.marketing import outbox as _ob  # noqa: PLC0415
+
+    source = dict(item.get("source") or {})
+    would_block = _ob.stamp_value_gate(
+        source,
+        headline="",  # only item.text ships on this lane
+        body=str(item.get("text") or ""),
+        kind=str(item.get("kind") or "breaking"),
+        has_media=bool(media_ready["urls"]),
+        media_withheld=bool(media_ready["withheld"]),
+        source_headline=str(source.get("source_headline") or source_headline),
+        citation=str(source.get("url") or ""),
+        cfg=cfg,
+    )
+    verdict = source.get("value_gate") or {}
+    if _ob._value_gate_enforced(cfg):
+        # The automated stamp is fail-soft; an armed operator approval cannot
+        # treat an unavailable gate as a passed evaluation.
+        if str(verdict.get("verdict") or "") == "error":
+            return source, _intel_refuse(
+                "gate_unavailable",
+                "the value gate is armed to block but could not evaluate "
+                f"this post ({verdict.get('error')})")
+        if would_block:
+            return source, _intel_refuse(
+                "value_gate",
+                "the value gate abstained: "
+                + (", ".join(str(r) for r in (verdict.get("reasons") or []))
+                   or "no reason recorded"),
+                violations=[str(r) for r in (verdict.get("reasons") or [])])
+    return source, None
+
+
 def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
     """Queue ONE Intelligence Desk draft into the outbox. The click IS the gate.
 
@@ -3396,12 +3568,13 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
     snapshot server-side and the text that reaches the outbox is the desk's own,
     so a tampered or merely stale browser payload cannot post copy no gate saw.
 
-    The chain is the CANONICAL one ``engine/marketing/press_lane.py`` runs, in
-    its order, because a second emission path with its own gate order is how a
-    lane quietly ends up with weaker guards than the one it copied:
+    The existing outbox remains the queue owner. The card decision uses the
+    same render/value/hosting seams as the press lane and is reconciled with
+    the publisher's actual media predicates before any item is queued:
 
-        language law -> value gate stamp -> make_item -> validate_item
-        -> one-owner story lock -> enqueue (id / text / near-dup / cap guards)
+        current source evidence -> language law -> canonical item / queue preflight -> media decision
+        -> value gate stamp -> validate_item -> one-owner story lock
+        -> enqueue (id / text / near-dup / cap guards) -> reconcile winner / current value
 
     A successful enqueue is then DELIVERED (``_intel_deliver``): the outbox the
     publisher reads is the one on MAIN, not this checkout, so the approve click
@@ -3450,6 +3623,30 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
                 f"story {sid} is no longer in the desk snapshot; it may have "
                 f"aged out since the page loaded")
 
+        # A readable JSON file is not a fresh observation. The producer may
+        # have stopped since writing it. Reuse its current serve-time policy
+        # before selecting the draft or preparing any media, without changing
+        # the stored snapshot or assigning a new evidence time.
+        evidence_story = story
+        cfg = _read_yaml(repo / _CONFIG_REL)
+        ts = now if now is not None else datetime.now(timezone.utc)
+        try:
+            from engine.marketing import intelligence_desk as _desk  # noqa: PLC0415
+
+            press_cfg = _read_yaml(repo / "config" / "press_sources.yml")
+            intel_cfg = (press_cfg.get("wire") or {}).get("intelligence") or {}
+            ts = _desk._utc(ts)
+            story = _desk._served_packet(
+                story, now=ts, pace_cfg=_desk._pace_cfg(intel_cfg.get("pace")),
+                market_stale_min=float(intel_cfg.get(
+                    "market_stale_min", _desk.DEFAULT_MARKET_STALE_MIN)),
+            )
+        except Exception as exc:  # noqa: BLE001 — approval needs a current check
+            log.warning("intelligence_approve: evidence check unavailable: %s", exc)
+            return _intel_refuse(
+                "gate_unavailable",
+                "The draft's evidence could not be checked. Nothing was queued; refresh the desk.")
+
         draft = next(
             (row for row in (story.get("drafts") or [])
              if isinstance(row, dict) and str(row.get("id") or "") == did),
@@ -3457,8 +3654,8 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
         if draft is None:
             return _intel_refuse(
                 "draft_not_found",
-                f"draft {did} is no longer on that story; the desk replaces a "
-                f"draft when the copy changes, so reload the queue")
+                f"draft {did} is no longer current; its copy changed or its "
+                f"market evidence expired, so reload the desk")
 
         # ── 2. Review-only. needs_edit is NOT approvable ──────────────────────
         status = str(draft.get("status") or "").strip()
@@ -3493,8 +3690,6 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
                 + ", ".join(str(v) for v in violations[:4]),
                 violations=[str(v) for v in violations])
 
-        cfg = _read_yaml(repo / _CONFIG_REL)
-
         # ── 4. Which desk owns this emission (XG-W2 config routing) ───────────
         # A story that carries no machine event_class routes to the module's own
         # fallback rather than to the string "none": an unclassified story is not
@@ -3525,7 +3720,6 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
                 "outbox_unavailable",
                 f"the canonical outbox path could not be loaded ({exc})")
 
-        ts = now if now is not None else datetime.now(timezone.utc)
         as_of = ts.astimezone(timezone.utc).strftime("%Y-%m-%d")
 
         # ── 5. Build the item through the canonical path ──────────────────────
@@ -3534,64 +3728,78 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
         # without it locks nothing, and the next desk to draw the same story
         # would be waved through.
         lock_key = _sl.story_key(cluster_key=sid, event_id=did, headline=headline)
+        evidence = next((row for row in (evidence_story.get("evidence") or [])
+                         if isinstance(row, dict) and row.get("url") == source_url), {})
+        market = evidence_story.get("market")
         source: dict = {
             "lane": _INTEL_LANE,
             "story_id": sid,
             "draft_id": did,
             "url": source_url or None,
             "story_key": lock_key,
+            "source_headline": headline,
+            # These are source clocks; as_of/created_at above describe queue
+            # creation. Never fill missing source observations with click time.
+            "market_as_of": market.get("as_of") if isinstance(market, dict) else None,
+            "draft_updated_at": draft.get("updated_at"),
+            "story_first_seen": evidence_story.get("first_seen"),
+            "story_updated_at": evidence_story.get("updated_at"),
+            "evidence_published_at": evidence.get("published_at"),
         }
-
-        # Gift-Grip-Proof verdict rides on every emission (charter §0). The gate
-        # must score the STRING THAT SHIPS (review N4): make_item posts `text`
-        # alone — there is no headline+body composition on this lane — so
-        # `headline` is empty here or the verdict is measured on copy that never
-        # reaches X. The STORY headline still goes in as `source_headline`, which
-        # is the upstream wire line the informational-surplus test compares
-        # against ("we rewrote the headline" is not an answer).
-        would_block = _ob.stamp_value_gate(
-            source,
-            headline="",
-            body=text,
-            kind="breaking",
-            has_media=False,
-            source_headline=headline,
-            citation=source_url,
-            cfg=cfg,
-        )
-        verdict = source.get("value_gate") or {}
-        if _ob._value_gate_enforced(cfg):
-            # stamp_value_gate is fail-soft by design (a downed gate must not
-            # silence the automated desks). With enforcement ARMED that softness
-            # is wrong here: an unevaluated gate is not a passed gate.
-            if str(verdict.get("verdict") or "") == "error":
-                return _intel_refuse(
-                    "gate_unavailable",
-                    "the value gate is armed to block but could not evaluate "
-                    f"this post ({verdict.get('error')})")
-            if would_block:
-                return _intel_refuse(
-                    "value_gate",
-                    "the value gate abstained: "
-                    + (", ".join(str(r) for r in (verdict.get("reasons") or []))
-                       or "no reason recorded"),
-                    violations=[str(r) for r in (verdict.get("reasons") or [])])
 
         try:
             item = _ob.make_item(
-                account=account,
-                kind="breaking",
-                text=text,
-                as_of=as_of,
-                media=[],
-                scheduled_at="immediate",
-                priority=1,
-                provenance=_INTEL_LANE,
-                source=source,
-                now=ts,
+                account=account, kind="breaking", text=text, as_of=as_of,
+                media=[], scheduled_at="immediate", priority=1,
+                provenance=_INTEL_LANE, source=source, now=ts,
             )
         except ValueError as exc:
             return _intel_refuse("item_invalid", str(exc))
+
+        preflight = _ob.preflight_enqueue(
+            account=account, kind="breaking", text=text, as_of=as_of, root=repo, cfg=cfg)
+        original = None
+        if preflight == "duplicate":
+            original = next((row for row in _ob.read_items_all(repo)
+                             if row.get("id") == item["id"] and row.get("text") == text
+                             and (row.get("source") or {}).get("story_id") == sid
+                             and (row.get("source") or {}).get("draft_id") == did), None)
+            if original is None:
+                return _intel_refuse("duplicate",
+                                    "A similar post already exists. Nothing new was queued or delivered.")
+            item = original
+        elif preflight != "ok":
+            return _intel_refuse(preflight, _INTEL_ENQUEUE_DETAIL.get(
+                preflight, f"the outbox refused this item ({preflight})"))
+
+        try:
+            if original is not None:
+                # Delivery retries use the persisted row, never a freshly
+                # generated image or a new withholding flag for the same id.
+                media_ready = _intel_media_readiness(item, cfg, repo)
+                if media_ready["blocked"]:
+                    return _intel_refuse("existing_media_unavailable",
+                        "The existing queued item still needs a usable image. "
+                        "No duplicate or replacement was created; review it in the Outbox.",
+                        item_id=item["id"])
+                media_state = media_ready["state"]
+            else:
+                prepared = _intel_prepare_media(item, story, draft, repo=repo, cfg=cfg)
+                if not prepared.get("ok"):
+                    return prepared
+                media_ready = _intel_media_readiness(item, cfg, repo)
+                media_state = media_ready["state"]
+        except Exception as exc:  # noqa: BLE001 — unavailable is never withheld
+            log.warning("intelligence_approve: media preparation unavailable: %s", exc)
+            return _intel_refuse("media_unavailable",
+                                "The media check could not finish. Nothing new was queued; the draft is still available.")
+
+        gate_source, refusal = _intel_check_value(
+            item, media_ready, cfg=cfg, source_headline=headline)
+        if refusal:
+            return refusal
+        if original is None:
+            item["source"] = gate_source
 
         errors = _ob.validate_item(item)
         if errors:
@@ -3628,6 +3836,32 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
                 return _intel_refuse("item_invalid", result.split(":", 1)[1])
             return _intel_refuse(result, _INTEL_ENQUEUE_DETAIL.get(
                 result, f"the outbox refused this item ({result})"))
+        if duplicate_requeue:
+            # A concurrent enqueue can win after the preflight. Its original
+            # bytes own delivery; the losing candidate's media never replaces it.
+            persisted = next((row for row in _ob.read_items_all(repo)
+                              if row.get("id") == item["id"] and row.get("text") == text
+                              and (row.get("source") or {}).get("story_id") == sid
+                              and (row.get("source") or {}).get("draft_id") == did), None)
+            if persisted is None:
+                return _intel_refuse("duplicate",
+                                    "The queue retained another post. No replacement was delivered.")
+            checked_item, checked_media = item, media_ready
+            item = persisted
+            media_ready = _intel_media_readiness(item, cfg, repo)
+            if media_ready["blocked"]:
+                return _intel_refuse("existing_media_unavailable",
+                    "The existing queued item still needs a usable image. Review it in the Outbox.",
+                    item_id=item["id"])
+            media_state = media_ready["state"]
+            if item != checked_item or media_ready != checked_media:
+                # A different representation (or newly resolved media) needs
+                # its own current verdict. Never write this transient stamp
+                # over the winner's persisted source or borrow the loser's proof.
+                _, refusal = _intel_check_value(
+                    item, media_ready, cfg=cfg, source_headline=headline)
+                if refusal:
+                    return refusal
 
         # The note says what happens NEXT. Naming the item and the desk is the
         # caller's job (the admin card prints both), so this does not repeat it.
@@ -3637,15 +3871,10 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
             note = ("This draft was already queued on this machine, so the "
                     "click queued nothing twice; delivery was re-checked. "
                     + note)
-        # HONEST ABOUT THE PICTURE. `breaking` sits OUTSIDE the publisher's
-        # _CHART_BEARING_KINDS, so a ticker-bearing item on this lane is not
-        # deferred for a missing chart the way a signal/watchlist post is — it
-        # ships bare. Say so rather than let the operator assume the
-        # every-ticker-post-is-charted law covers this queue.
-        if [t for t in (story.get("tickers") or []) if str(t or "").strip()]:
-            note += (" This one names tickers and will go out as text only: "
-                     "breaking sits outside the publisher's chart-bearing "
-                     "kinds, so no chart is attached.")
+        if media_state == "attached":
+            note += " The card is hosted and attached."
+        elif media_state == "withheld":
+            note += " The rendered card repeated the post, so it was deliberately omitted."
 
         payload = {
             "ok": True,
@@ -3653,6 +3882,7 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
             "account": account,
             "story_id": sid,
             "draft_id": did,
+            "media_state": media_state,
         }
         if duplicate_requeue:
             payload["reason"] = "duplicate"

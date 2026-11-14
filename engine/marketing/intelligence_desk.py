@@ -425,6 +425,35 @@ def _coherent_zh(merged: dict, old: dict, new: dict, field: str) -> None:
     merged.pop(zh_field, None)
 
 
+def _editorial_basis_changed(old: dict, new: dict) -> bool:
+    # Same owner as the phrasing cache. No parallel cache or freshness clock.
+    from engine.marketing.intelligence_llm import editorial_basis_fingerprint
+    return editorial_basis_fingerprint(old) != editorial_basis_fingerprint(new)
+
+
+def _coherent_editorial_packet(packet: dict, *, expired_market: bool = False) -> dict:
+    """One binding check for ingestion, retained records and served snapshots."""
+    from engine.marketing.intelligence_llm import editorial_basis_fingerprint
+    clean = dict(packet)
+    basis = editorial_basis_fingerprint(clean)
+    clean["drafts"] = [row for row in (clean.get("drafts") or [])
+        if isinstance(row, dict) and not (row.get("origin") == "llm" and
+            ((row.get("_basis_sha256") and row["_basis_sha256"] != basis)
+             or (expired_market and not row.get("_basis_sha256"))))]
+    if (len(clean["drafts"]) != len(packet.get("drafts") or [])
+            and not any(row.get("status") == "review" for row in clean["drafts"])):
+        clean["stance"] = ("Read the evidence" if clean.get("stage") in
+                           {"confirmed", "high_impact"} else "Watch for confirmation")
+    if clean.get("_why_phrased") and (
+            (clean.get("_why_basis_sha256") and clean["_why_basis_sha256"] != basis)
+            or (expired_market and not clean.get("_why_basis_sha256"))):
+        en, zh = _WHY.get(str(clean.get("event_class") or "none"), _WHY["none"])
+        clean.update(why_it_matters_en=en, why_it_matters_zh=zh)
+        clean.pop("_why_phrased", None)
+        clean.pop("_why_basis_sha256", None)
+    return clean
+
+
 def _merge_why(merged: dict, old: dict, new: dict) -> None:
     """Resolve `why_it_matters` across a merge. A phrased line outranks a canned one.
 
@@ -444,10 +473,16 @@ def _merge_why(merged: dict, old: dict, new: dict) -> None:
     event class, which makes it an honest fallback beside a phrased English
     line — a Chinese sentence translated from some OTHER English would not be.
     """
-    old_phrased = bool(old.get("_why_phrased"))
+    old_stale = bool(old.get("_why_phrased")) and _editorial_basis_changed(old, new)
+    old_phrased = bool(old.get("_why_phrased")) and not old_stale
     new_phrased = bool(new.get("_why_phrased"))
-    old_en = _clean(old.get("why_it_matters_en"), 700)
+    old_en = "" if old_stale else _clean(old.get("why_it_matters_en"), 700)
     new_en = _clean(new.get("why_it_matters_en"), 700)
+    if old_stale and not new_en:
+        en, zh = _WHY.get(str(new.get("event_class") or "none"), _WHY["none"])
+        new = dict(new, why_it_matters_en=en, why_it_matters_zh=zh, _why_phrased=False)
+        new_en = en
+        new_phrased = False
 
     if old_phrased and not new_phrased and old_en:
         winner, why_en = old, old_en
@@ -464,14 +499,19 @@ def _merge_why(merged: dict, old: dict, new: dict) -> None:
         event_class = str(merged.get("event_class") or "none")
         zh = _WHY.get(event_class, _WHY["none"])[1]
     merged["why_it_matters_zh"] = zh
-    if old_phrased or new_phrased:
+    if bool(winner.get("_why_phrased")):
         merged["_why_phrased"] = True
+        if winner.get("_why_basis_sha256"):
+            merged["_why_basis_sha256"] = winner["_why_basis_sha256"]
     else:
         merged.pop("_why_phrased", None)
+        merged.pop("_why_basis_sha256", None)
 
 
 def _merge_packets(old: dict | None, new: dict, *, now: datetime | None = None,
                    timeline_max: int = DEFAULT_TIMELINE_MAX) -> dict:
+    new = _coherent_editorial_packet(new)
+    old = _coherent_editorial_packet(old) if isinstance(old, dict) else old
     stamp = (
         _utc(now) if isinstance(now, datetime)
         else (_parse_iso(new.get("updated_at"))
@@ -542,15 +582,18 @@ def _merge_packets(old: dict | None, new: dict, *, now: datetime | None = None,
     # deterministic wire text, and letting that evict the phrased copy silently
     # reverted the story every quiet tick. A moved headline releases the slot:
     # stale phrasing must not outlive the story text it phrased.
-    headline_moved = _clean(old.get("headline"), 320) != _clean(
-        new.get("headline"), 320)
+    basis_moved = _editorial_basis_changed(old, new)
     drafts: dict[str, dict] = {}
-    for row in list(old.get("drafts") or []) + list(new.get("drafts") or []):
+    # No fresh phrasing is better than a confident opinion about superseded
+    # evidence. The current deterministic wire remains available for review.
+    retained = [row for row in (old.get("drafts") or [])
+                if isinstance(row, dict) and not (basis_moved and row.get("origin") == "llm")]
+    for row in retained + list(new.get("drafts") or []):
         if not isinstance(row, dict) or not row.get("id"):
             continue
         slot = str(row.get("shape") or "wire")
         held = drafts.get(slot)
-        if (held is not None and not headline_moved
+        if (held is not None and not basis_moved
                 and str(held.get("origin") or "") == "llm"
                 and str(row.get("origin") or "") != "llm"):
             continue
@@ -634,7 +677,14 @@ def _merge_packets(old: dict | None, new: dict, *, now: datetime | None = None,
 
 
 def _public_packet(packet: dict) -> dict:
-    return {key: value for key, value in packet.items() if not key.startswith("_")}
+    def public(value):
+        if isinstance(value, dict):
+            return {key: public(item) for key, item in value.items()
+                    if not str(key).startswith("_")}
+        if isinstance(value, list):
+            return [public(item) for item in value]
+        return value
+    return public(packet)
 
 
 def _pace_cfg(cfg: object) -> dict[str, float]:
@@ -697,12 +747,9 @@ def _recompute_pace(packet: dict, *, now: datetime, pace_cfg: dict) -> str:
 def _served_packet(packet: dict, *, now: datetime, pace_cfg: dict,
                    market_stale_min: float) -> dict:
     """The public view of a stored packet, recomputed at SERVE time."""
-    served = _public_packet(packet)
-    context = dict(served.get("context") or {})
-    context["pace"] = _recompute_pace(packet, now=now, pace_cfg=pace_cfg)
-    served["context"] = context
-
-    market = served.get("market")
+    internal = dict(packet)
+    market = internal.get("market")
+    expired = False
     if isinstance(market, dict):
         as_of = _parse_iso(market.get("as_of"))
         # An unstamped block cannot be proven fresh, so it is served as null too:
@@ -710,7 +757,12 @@ def _served_packet(packet: dict, *, now: datetime, pace_cfg: dict,
         if as_of is None or (now - as_of) > timedelta(
             minutes=max(0.0, market_stale_min)
         ):
-            served["market"] = None
+            internal["market"] = None
+            expired = True
+    served = _public_packet(_coherent_editorial_packet(internal, expired_market=expired))
+    context = dict(served.get("context") or {})
+    context["pace"] = _recompute_pace(packet, now=now, pace_cfg=pace_cfg)
+    served["context"] = context
     return served
 
 

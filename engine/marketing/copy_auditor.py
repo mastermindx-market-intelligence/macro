@@ -81,9 +81,11 @@ AUDIT_CRITERIA: tuple[tuple[str, str], ...] = (
      "ego, or arrogance. These desks are not the smartest person in the room "
      "and must never sound like they think they are."),
     ("no_thesis",
-     "A stat dump. Lists numbers with no argument connecting them and no "
-     "reason the reader should care. Three sentences that each open with the "
-     "same ticker is this defect."),
+     "An analytical post lists facts without connecting them to a useful "
+     "takeaway, or its conclusion leaps beyond what those facts say. Explain "
+     "the comparison, implication or condition. Do not require an opinion on "
+     "every breaking-news event, and do not confuse several numbers in one "
+     "meaningful comparison with a stat dump."),
     ("makes_no_sense",
      "Does not parse for someone who has not seen our screen. Refers to "
      "something it never named. Contradicts itself."),
@@ -92,8 +94,10 @@ AUDIT_CRITERIA: tuple[tuple[str, str], ...] = (
      "cashtag, a mangled date, obvious system output that leaked into the copy "
      "(placeholder text, a template variable, an internal name)."),
     ("no_value",
-     "True but worthless. Says nothing a reader could act on, learn from, or "
-     "react to. 'I'm watching' with no level and no reason is this."),
+     "Says nothing a reader can learn from: no explanation, useful comparison, "
+     "specific implication or meaningful uncertainty. A price level is not "
+     "required. 'I'm watching', 'the real tell' and generic research/not-advice "
+     "footers cannot substitute for a reason to care."),
     # 2026-08-01. Three macro/event posts cleared every deterministic gate,
     # cleared THIS auditor, were approved, and were then pulled by hand:
     # "4 of 11 sectors green on a day growth data firmed and inflation stayed
@@ -194,6 +198,10 @@ def _system_prompt() -> str:
         "copy, never invent a post. If you are unsure, keep it and say why in "
         "the note — a false cut costs a good post, and the owner would rather "
         "see a borderline post than an empty feed.",
+        "You are judging the visible argument and the day's editorial variety, "
+        "not verifying source facts. Preserve upstream evidence checks. Give "
+        "each cut a specific repairable reason; never ask for invented facts, "
+        "a fabricated position or a stronger unsupported prediction.",
         "",
         "Reply with STRICT JSON and nothing else:",
         '{"verdicts":[{"n":1,"verdict":"keep"|"cut","codes":["bot_voice"],'

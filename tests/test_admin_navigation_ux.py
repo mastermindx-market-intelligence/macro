@@ -375,7 +375,11 @@ def test_publisher_receipt_labels_preserve_delivery_uncertainty():
     # Preserve the existing ledger fields, receipt navigation, and measurement nulls.
     assert 'const posted = d.recent_posted || [];' in renderer
     assert 'posted: ["#pub-posted",' in renderer
-    assert 'r.external_url' in renderer and 'r.external_id' in renderer
+    # A strict recorded permalink can be inspected, but is never itself a
+    # visibility attestation or a reason to resend.
+    assert 'r.delivery ? obxPublicPostHref(r.delivery.url)' in renderer
+    assert 'visibility evidence is separate' in renderer
+    assert 'r.external_url' not in renderer and 'r.external_id' in renderer
     assert 'v2 == null ?' in renderer and 'not measured yet' in renderer
     assert 'recorded ${a.posted || 0}' in renderer
     assert 'pubWireGoLive(d);' in renderer

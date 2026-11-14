@@ -2870,8 +2870,8 @@ INTEL_SNAPSHOT = {
     "health": {"active_stories": 3, "draft_ready": 2},
     "stories": [
         {
-            # Builder A's machine field present. Carries tickers, so the success
-            # note must be honest about shipping without a chart.
+            # Story metadata carries a ticker; the wire copy has no cashtag.
+            # The media rule must follow the reviewed text, not this metadata.
             "id": "story-alpha",
             "stage": "confirmed",
             "lane": "wire",
@@ -3040,14 +3040,12 @@ class TestIntelligenceApproveSuccess:
         # Every emission carries its Gift-Grip-Proof verdict (charter §0).
         assert "value_gate" in src
 
-    def test_success_note_is_honest_about_the_missing_chart(self, intel_root):
-        """`breaking` sits outside the publisher's _CHART_BEARING_KINDS, so a
-        ticker-bearing item on this lane ships bare instead of deferring. The
-        operator is told, not left to assume the every-ticker-post-is-charted
-        law covers this queue."""
+    def test_story_metadata_does_not_promise_text_only_ticker_delivery(self, intel_root):
+        """Media requirements follow the exact post, not story ticker metadata."""
         r = marketing.intelligence_approve("story-alpha", "draft-wire-1",
                                            root=intel_root)
-        assert "text only" in r["note"]
+        assert r["media_state"] == "text_only"
+        assert "will go out as text only" not in r["note"]
         assert "nothing posts now" in r["note"].lower()
         # A story with no tickers gets the plain note, no chart sentence.
         r2 = marketing.intelligence_approve("story-beta", "draft-beta-1",
@@ -4405,3 +4403,635 @@ class TestContentReviewReads:
         assert marketing._content_revision({"a": 1, "b": 2}) == marketing._content_revision({"b": 2, "a": 1})
         assert marketing._content_revision({"a": 1}) != marketing._content_revision({"a": 2})
         assert marketing._content_chart_metadata({"id": 42, "svg": "<svg/>"})["preview_available"] is False
+
+
+class TestPublishingEvidence:
+    """Provider acceptance, public confirmation and original-copy age differ."""
+
+    @pytest.mark.parametrize("url", [
+        "https://x.com:0/desk/status/123", "https://x.com:443/desk/status/123",
+        "https://x.com:bad/desk/status/123", "https://user@x.com/desk/status/123",
+        "http://x.com/desk/status/123", "https://x.com.evil.test/desk/status/123",
+        "https://buffer.com/desk/status/123", "javascript:alert(1)",
+        "https://x.com/desk/status/1٥", "https://x.com/desk/status/0",
+    ])
+    def test_only_public_x_permalinks_qualify(self, url):
+        from admin.marketing_evidence import x_permalink
+        assert x_permalink(url) is None
+
+    def test_receipt_states_and_timezones(self):
+        from datetime import datetime, timezone
+        from admin.marketing_evidence import delivery_evidence
+        rec = {"backend": "buffer", "external_id": "provider-1", "booked_at": "2026-11-13T04:00:00Z"}
+        for now in (datetime(2026, 11, 13, 3), datetime(2026, 11, 13, 3, tzinfo=timezone.utc),
+                    datetime.fromisoformat("2026-11-12T19:00:00-08:00")):
+            assert delivery_evidence("posted", rec, now=now)["state"] == "scheduled"
+        assert delivery_evidence("posted", rec, now=datetime(2026, 11, 14))["state"] == "accepted"
+        assert delivery_evidence("posted", {})["state"] == "unconfirmed"
+        rec["external_url"] = "https://twitter.com/desk/status/123?utm_source=buffer"
+        proof = delivery_evidence("posted", rec)
+        assert proof["confirmed"] is False and proof["url"] == "https://x.com/desk/status/123"
+        for state in ("posting", "failed", "recalled", "queued"):
+            assert delivery_evidence(state, rec)["confirmed"] is False
+
+    def test_summary_counts_full_unique_items_and_review_is_bounded(self, tmp_path):
+        folder = tmp_path / "data/marketing/outbox"
+        folder.mkdir(parents=True)
+        items = [{"id": f"ob-proof-{i}", "account": "flagship", "kind": "signal",
+                  "text": f"Synthetic editorial record {i}", "as_of": "2026-11-12", "status": "queued"}
+                 for i in range(56)]
+        items[-1]["source"] = {"review": {"verdict": "bad", "issues": ["repeated_opener"] * 9,
+                                           "note": "a" * 900}, "internal_secret": "must-not-cross"}
+        ledger = [{"id": row["id"], "to": "posted", "at": "2026-11-12T12:00:00Z",
+                   "receipt": {"backend": "buffer", "external_id": str(i),
+                               **({"external_url": f"https://x.com/desk/status/{1000+i}"} if i < 54 else {})}}
+                  for i, row in enumerate(items[:-1])]
+        (folder / "items.jsonl").write_text("".join(json.dumps(r) + "\n" for r in items + [items[0]]))
+        transitions = []
+        for row in ledger:
+            transitions.extend({"id": row["id"], "to": state, "at": row["at"]} for state in ("approved", "posting"))
+            transitions.append(row)
+        transitions.append(ledger[0])
+        (folder / "status_ledger.jsonl").write_text("".join(json.dumps(r) + "\n" for r in transitions))
+        payload = marketing.outbox(tmp_path)
+        assert payload["ok"]
+        assert payload["history_total"] == 55 and len(payload["history"]) == 50
+        assert payload["delivery_summary"]["confirmed"] == 0
+        assert payload["delivery_summary"]["linked"] == 54
+        assert payload["delivery_summary"]["accepted"] == 1
+        assert payload["delivery_summary"]["publication_time_known"] is False
+        draft = next(i for a in payload["accounts"] for i in a["items"] if i["id"] == items[-1]["id"])
+        assert len(draft["source"]["review"]["issues"]) == 5
+        assert len(draft["source"]["review"]["note"]) == 400
+        assert "must-not-cross" not in json.dumps(payload)
+
+    def _posted_with_observations(self, root, observations, *, backend="buffer",
+                                  receipt_url="https://x.com/desk/status/123", booked_at=None):
+        from datetime import datetime, timezone
+        from engine.marketing import outbox
+        now = datetime(2026, 10, 12, 12, tzinfo=timezone.utc)
+        item = outbox.make_item(account="flagship", kind="signal", text=_CLEAN_A,
+            as_of="2026-10-12", scheduled_at=now.isoformat(), provenance="content_studio", now=now)
+        assert outbox.enqueue(item, root=root) == "queued"
+        for state in ("approved", "posting"):
+            assert outbox.transition(item["id"], state, actor="test", root=root, now=now)
+        assert outbox.transition(item["id"], "posted", actor="test", root=root, now=now,
+            receipt={"backend": backend, "external_id": "provider-1",
+                     "external_url": receipt_url, "at": now.isoformat(), "booked_at": booked_at})
+        rows = [{"remote_id": "provider-1", "ok": True, "metrics": {},
+                 "polled_at": obs.get("observed_at"), "delivery": obs} for obs in observations]
+        (root / "data/marketing/post_metrics.jsonl").write_text("".join(json.dumps(row) + "\n" for row in rows))
+        return item
+
+    def _sent_observation(self, **changes):
+        return {"schema": "marketing.provider_delivery/v1", "provider_id": "provider-1",
+                "read_ok": True, "state": "provider_sent", "provider_sent": True,
+                "provider_sent_at": "2026-10-12T12:05:00Z", "observed_at": "2026-10-12T12:10:00Z",
+                "external_url": "https://x.com/desk/status/123", "x_visible": None,
+                "x_visible_at": None, **changes}
+
+    def test_actual_canonical_send_survives_later_timeout_without_inventing_visibility(self, tmp_path):
+        from admin import marketing_floor
+        sent = self._sent_observation()
+        timeout = self._sent_observation(read_ok=False, state="unknown_degraded", provider_sent=None,
+                    provider_sent_at=None, observed_at="2026-10-12T13:10:00Z", error="provider timeout")
+        item = self._posted_with_observations(tmp_path, [sent, timeout])
+        payload = marketing.outbox(tmp_path)
+        proof = next(row["delivery"] for row in payload["history"] if row["id"] == item["id"])
+        assert proof["state"] == "provider_sent" and proof["provider_sent"] is True
+        assert proof["confirmed"] is False and proof["observation_stale"] is True
+        assert proof["detail"] == "provider timeout"
+        assert proof["provider_sent_at"] == "2026-10-12T12:05:00Z"
+        assert payload["delivery_summary"]["provider_sent"] == 1
+        assert payload["delivery_summary"]["confirmed"] == 0
+        assert marketing_floor.floor(tmp_path)["today"]["delivery"]["provider_sent"] == 1
+        assert marketing.publisher(tmp_path)["recent_posted"][0]["delivery"]["state"] == "provider_sent"
+
+    @pytest.mark.parametrize("changes", [
+        {"provider_id": "other-post"}, {"schema": "unsupported/v2"},
+        {"read_ok": False}, {"provider_sent_at": "not-a-time"},
+    ])
+    def test_invalid_observation_cannot_promote_a_visibility_claim(self, tmp_path, changes):
+        obs = self._sent_observation(x_visible=True, x_visible_at="2026-10-12T12:10:00Z", **changes)
+        self._posted_with_observations(tmp_path, [obs])
+        proof = marketing.outbox(tmp_path)["history"][0]["delivery"]
+        assert proof["confirmed"] is False and proof["state"] == "degraded"
+
+    @pytest.mark.parametrize("visible,stamp", [
+        ("true", "2026-10-12T12:10:00Z"), (1, "2026-10-12T12:10:00Z"),
+        (True, None), (True, "2026-10-12T12:10:00"), (True, "bad-time"),
+        (True, "2099-10-12T12:10:00Z"),
+        (False, None), (False, "2026-10-12T12:10:00"), (False, "bad-time"),
+        (False, "2099-10-12T12:10:00Z"),
+    ])
+    def test_visibility_requires_a_distinct_typed_dated_observation(self, tmp_path, visible, stamp):
+        self._posted_with_observations(tmp_path, [self._sent_observation(x_visible=visible, x_visible_at=stamp)])
+        proof = marketing.outbox(tmp_path)["history"][0]["delivery"]
+        assert proof["state"] == "provider_sent" and proof["confirmed"] is False
+
+    def test_valid_visibility_is_separate_and_backend_bound(self, tmp_path):
+        obs = self._sent_observation(x_visible=True, x_visible_at="2026-10-12T12:10:00Z")
+        self._posted_with_observations(tmp_path, [obs])
+        proof = marketing.outbox(tmp_path)["history"][0]["delivery"]
+        assert proof["confirmed"] is True and proof["confirmed_at"] == "2026-10-12T12:10:00+00:00"
+        other = tmp_path / "other"
+        self._posted_with_observations(other, [obs], backend="other")
+        other_proof = marketing.outbox(other)["history"][0]["delivery"]
+        assert other_proof["state"] == "linked" and other_proof["confirmed"] is False
+
+    @pytest.mark.parametrize("observation", [None, "sent", "failed_lookup"])
+    def test_recent_submission_does_not_disappear_when_delivery_classification_changes(
+            self, tmp_path, monkeypatch, observation):
+        from datetime import datetime, timezone
+        from admin import marketing_floor
+        observations = ([] if observation is None else [self._sent_observation(
+            **({"read_ok": False, "state": "unknown_degraded", "provider_sent": None,
+                "provider_sent_at": None} if observation == "failed_lookup" else {}))])
+        self._posted_with_observations(tmp_path, observations)
+        monkeypatch.setattr(marketing_floor, "_utcnow", lambda: datetime(2026, 10, 12, 14, tzinfo=timezone.utc))
+        today = marketing_floor.floor(tmp_path)["today"]
+        assert today["submitted_today"] == 1 and today["posted_recently"] is True
+
+    def test_buffer_id_collision_cannot_attach_a_link_or_metrics_to_another_backend(self, tmp_path):
+        self._posted_with_observations(tmp_path, [self._sent_observation()],
+                                       backend="other", receipt_url=None)
+        path = tmp_path / "data/marketing/post_metrics.jsonl"
+        row = json.loads(path.read_text())
+        row.update(external_url="https://x.com/another/status/456", metrics={"impressions": 99})
+        path.write_text(json.dumps(row) + "\n")
+        assert marketing.outbox(tmp_path)["history"][0]["delivery"]["url"] is None
+        published = marketing.publisher(tmp_path)["recent_posted"][0]
+        assert published["external_url"] is None and "metrics" not in published
+
+    def test_invalid_observation_cannot_attach_another_posts_link(self, tmp_path):
+        self._posted_with_observations(tmp_path, [self._sent_observation(
+            provider_id="other-post", external_url="https://x.com/another/status/456")])
+        proof = marketing.outbox(tmp_path)["history"][0]["delivery"]
+        assert proof["state"] == "degraded"
+        assert proof["url"] == "https://x.com/desk/status/123"  # only the canonical receipt survives
+
+    def test_newer_approval_state_overrides_an_old_booking(self, tmp_path):
+        self._posted_with_observations(tmp_path, [self._sent_observation(
+            state="accepted_unconfirmed", provider_sent=False, provider_sent_at=None,
+            provider_status="needs_approval", scheduling_type="notification",
+            notification_status="pending", channel_ready=False)], booked_at="2099-10-12T15:00:00Z")
+        proof = marketing.outbox(tmp_path)["history"][0]["delivery"]
+        assert proof["state"] == "accepted" and proof["scheduled_at"] is None
+        assert proof["provider_status"] == "needs_approval"
+        assert proof["scheduling_type"] == "notification" and proof["channel_ready"] is False
+
+    def _failed(self, root, *, old=True, text=_CLEAN_A):
+        from datetime import datetime, timedelta, timezone
+        from engine.marketing import outbox
+        now = datetime.now(timezone.utc) - timedelta(hours=72 if old else 1)
+        item = outbox.make_item(account="flagship", kind="signal", text=text,
+            as_of=now.date().isoformat(), scheduled_at=now.isoformat(),
+            provenance="content_studio", now=now)
+        assert outbox.enqueue(item, root=root) == "queued"
+        for state in ("approved", "posting", "failed"):
+            assert outbox.transition(item["id"], state, actor="test", root=root, now=now)
+        return item
+
+    def test_stale_single_approval_does_not_write_but_hold_remains(self, tmp_path):
+        from engine.marketing import outbox
+        item = self._failed(tmp_path)
+        before = (tmp_path / "data/marketing/outbox/status_ledger.jsonl").read_bytes()
+        assert marketing.decide_outbox(item["id"], "approve", root=tmp_path) is False
+        assert outbox.fold_state(tmp_path)["decisions"] == {}
+        assert (tmp_path / "data/marketing/outbox/status_ledger.jsonl").read_bytes() == before
+        assert marketing.decide_outbox(item["id"], "hold", root=tmp_path) is True
+
+    def test_mixed_batch_only_rearms_fresh_copy(self, tmp_path):
+        from engine.marketing import outbox
+        old = self._failed(tmp_path)
+        fresh = self._failed(tmp_path, old=False, text=_CLEAN_B)
+        result = marketing.decide_outbox_batch([old["id"], fresh["id"]], "approve", root=tmp_path)
+        assert result["decided"] == 1 and old["id"] in result["blocked"]
+        state = outbox.fold_state(tmp_path)
+        assert state["status"][old["id"]] == "failed" and old["id"] not in state["decisions"]
+        assert state["status"][fresh["id"]] == "approved"
+
+    def test_stale_post_now_never_dispatches(self, tmp_path, monkeypatch):
+        from admin import github_api
+        item = self._failed(tmp_path)
+        monkeypatch.setattr(marketing, "_default_root", lambda: tmp_path)
+        monkeypatch.setattr(github_api, "dispatch", lambda **kw: pytest.fail("stale retry dispatched"))
+        result = marketing.post_now(item["id"])
+        assert result["ok"] is False and item["id"] in result["blocked"]
+
+    def test_retry_uses_original_evidence_not_decision_time(self):
+        from datetime import datetime
+        from admin.marketing_evidence import retry_freshness
+        row = {"provenance": "press_lane", "kind": "breaking",
+               "created_at": "2026-11-12T00:00:00Z", "decided_at": "2026-11-13T00:00:00Z"}
+        assert retry_freshness(row, now=datetime(2026, 11, 13))["state"] == "stale"
+        row.pop("created_at")
+        assert retry_freshness(row)["state"] == "unknown"
+        row["provenance"] = "independent_lane"
+        assert retry_freshness(row)["state"] == "unscoped"
+
+
+class TestIntelligenceApproveMedia:
+    """The real approved item must agree with the publisher's media decision."""
+
+    @pytest.fixture()
+    def media_root(self, tmp_path, monkeypatch):
+        import copy
+        snapshot = copy.deepcopy(INTEL_SNAPSHOT)
+        story = snapshot['stories'][0]
+        story['brief'] = 'The buyer must sell its European cloud unit before the transaction can close.'
+        story['drafts'][0]['text'] = _INTEL_WIRE_TEXT.replace('Aldon Systems', '$ALD')
+        root = _write_intel_root(tmp_path, snapshot,
+            _INTEL_CFG + 'publish:\n  media_enabled: true\n')
+        monkeypatch.setattr(marketing, '_default_root', lambda: root)
+        monkeypatch.setattr(marketing, '_INTELLIGENCE_LIVE', root / 'no-live-snapshot')
+        return root
+
+    @staticmethod
+    def _wire(monkeypatch, *, drawn='Aldon must sell its European cloud unit.',
+              degraded=False, hosted=True):
+        from engine.marketing import chart_render, media_publish
+        seen = {'renders': [], 'uploads': [], 'deliveries': []}
+
+        def render(*, fit, **kwargs):
+            seen['renders'].append(kwargs)
+            if not degraded:
+                fit.update(headline_drawn=drawn, summary_drawn='',
+                           headline_chars_dropped=0, summary_chars_dropped=0)
+            return '<svg xmlns="http://www.w3.org/2000/svg"><text>' + drawn + '</text></svg>'
+
+        def publish(svg, *, chart_id, as_of, root):
+            seen['uploads'].append({'svg': svg, 'chart_id': chart_id, 'as_of': as_of})
+            receipt = {'svg_path': f'data/marketing/outbox/media/{as_of}/{chart_id}.svg'}
+            if hosted:
+                receipt.update(media_url=f'https://cdn.example.com/{chart_id}.png',
+                    media_png_path=f'data/marketing/outbox/media/{as_of}/{chart_id}.png',
+                    media_render={'renderer': 'isolated-test'})
+            return receipt
+
+        def deliver(item):
+            seen['deliveries'].append(json.loads(json.dumps(item)))
+            return True, 'Reached the shared queue.'
+
+        monkeypatch.setattr(chart_render, 'render_breaking_card', render)
+        monkeypatch.setattr(media_publish, 'publish_card', publish)
+        monkeypatch.setattr(marketing, '_intel_deliver', deliver)
+        return seen
+
+    @staticmethod
+    def _now():
+        from datetime import datetime, timezone
+        return datetime(2026, 7, 29, 14, 30, tzinfo=timezone.utc)
+
+    def test_hosted_card_reaches_real_publisher_media_predicates(self, media_root, monkeypatch):
+        from scripts import marketing_publisher as publisher
+        seen = self._wire(monkeypatch)
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['media_state'] == 'attached', result
+        item = _intel_items(media_root)[0]
+        assert item['text'] == _INTEL_WIRE_TEXT.replace('Aldon Systems', '$ALD')
+        pub_cfg = {'media_enabled': True}
+        paths = publisher._media_paths_for(item, pub_cfg, {})
+        assert paths == [item['media'][0]['media_url']]
+        assert publisher._bare_cashtag_post(item, pub_cfg, paths) == ''
+        assert item['media'][0]['media_render'] == {'renderer': 'isolated-test'}
+        assert item['source']['card_fit']['headline_drawn'] == 'Aldon must sell its European cloud unit.'
+        assert seen['renders'][0]['published_at'] == INTEL_SNAPSHOT['stories'][0]['evidence'][0]['published_at']
+        assert seen['renders'][0]['source_tier'] == 'unknown'
+        assert seen['renders'][0]['tickers'] is None
+        assert seen['deliveries'] == [item]
+
+    def test_redundant_render_gets_the_real_scoped_withholding_receipt(self, media_root, monkeypatch):
+        from scripts import marketing_publisher as publisher
+        text = _INTEL_WIRE_TEXT.replace('Aldon Systems', '$ALD')
+        seen = self._wire(monkeypatch, drawn=text)
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['media_state'] == 'withheld', result
+        item = _intel_items(media_root)[0]
+        assert item['media'] == [] and item['source']['card_withheld_for_value'] is True
+        assert item['source']['card_dropped']
+        assert publisher._bare_cashtag_post(item, {'media_enabled': True}, []) == ''
+        assert seen['uploads'] == [] and len(seen['renders']) == 1
+        # The supplied brief adds information, but only the rendered words count.
+        assert seen['renders'][0]['summary'] and item['source']['card_fit']['summary_drawn'] == ''
+
+    @pytest.mark.parametrize('degraded,hosted,reason', [
+        (True, True, 'card_render_degraded'), (False, False, 'media_unhosted'),
+    ])
+    def test_unavailable_media_refuses_before_enqueue_or_delivery(
+            self, media_root, monkeypatch, degraded, hosted, reason):
+        seen = self._wire(monkeypatch, degraded=degraded, hosted=hosted)
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] is False and result['reason'] == reason, result
+        assert _intel_items(media_root) == [] and seen['deliveries'] == []
+        if degraded:
+            assert seen['uploads'] == []
+
+    def test_repeat_approval_delivers_original_bytes_without_another_render(self, media_root, monkeypatch):
+        from datetime import timedelta
+        seen = self._wire(monkeypatch)
+        first = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        original = _intel_items(media_root)[0]
+        second = marketing.intelligence_approve('story-alpha', 'draft-wire-1',
+                                                 now=self._now() + timedelta(minutes=1))
+        assert first['ok'] and second['ok'] and second['reason'] == 'duplicate'
+        assert seen['deliveries'] == [original, original]
+        assert len(seen['renders']) == len(seen['uploads']) == 1
+        assert _intel_items(media_root) == [original]
+
+    def test_enqueue_race_uses_the_winning_persisted_media(self, media_root, monkeypatch):
+        from engine.marketing import outbox
+        seen = self._wire(monkeypatch)
+        enqueue = outbox.enqueue
+
+        def racing_enqueue(item, root, *, cfg):
+            winner = json.loads(json.dumps(item))
+            winner['media'][0]['media_url'] = 'https://cdn.example.com/winning-card.png'
+            assert enqueue(winner, root, cfg=cfg) == 'queued'
+            return enqueue(item, root, cfg=cfg)
+
+        monkeypatch.setattr(outbox, 'enqueue', racing_enqueue)
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['reason'] == 'duplicate', result
+        original = _intel_items(media_root)[0]
+        assert seen['deliveries'] == [original]
+        assert original['media'][0]['media_url'].endswith('/winning-card.png')
+
+    def test_a_prior_day_duplicate_does_not_deliver_an_unpersisted_candidate(self, media_root, monkeypatch):
+        from datetime import timedelta
+        seen = self._wire(monkeypatch)
+        assert marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())['ok']
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1',
+                                                 now=self._now() + timedelta(days=1))
+        assert result['ok'] is False and result['reason'] == 'duplicate', result
+        assert len(_intel_items(media_root)) == len(seen['deliveries']) == len(seen['uploads']) == 1
+
+    def test_legacy_missing_media_is_not_rewritten_into_an_exemption(self, media_root, monkeypatch):
+        from engine.marketing import outbox
+        seen = self._wire(monkeypatch)
+        original = outbox.make_item(account='mastermind_news', kind='breaking',
+            text=_INTEL_WIRE_TEXT.replace('Aldon Systems', '$ALD'), as_of='2026-07-29',
+            media=[], provenance='intelligence_desk', now=self._now(),
+            source={'story_id': 'story-alpha', 'draft_id': 'draft-wire-1'})
+        assert outbox.enqueue(original, media_root, cfg={'sentinel': {'max_posts_per_account_per_day': -1}}) == 'queued'
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] is False and result['reason'] == 'existing_media_unavailable', result
+        assert result['item_id'] == original['id']
+        assert _intel_items(media_root) == [original]
+        assert seen['renders'] == seen['uploads'] == seen['deliveries'] == []
+
+    def test_disabled_media_does_not_invent_a_render_or_withholding_receipt(self, media_root, monkeypatch):
+        seen = self._wire(monkeypatch)
+        (media_root / 'config/marketing.yml').write_text(
+            _INTEL_CFG + 'publish:\n  media_enabled: false\n', encoding='utf-8')
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['media_state'] == 'text_only', result
+        item = _intel_items(media_root)[0]
+        assert item['media'] == [] and not item['source'].get('card_withheld_for_value')
+        assert seen['renders'] == seen['uploads'] == []
+
+    def test_retry_after_media_disabled_credits_only_current_publishable_evidence(self, media_root, monkeypatch):
+        from engine.marketing import outbox
+        seen = self._wire(monkeypatch)
+        flags = []
+        stamp = outbox.stamp_value_gate
+
+        def observed_stamp(source, **kwargs):
+            flags.append(kwargs['has_media'])
+            return stamp(source, **kwargs)
+
+        monkeypatch.setattr(outbox, 'stamp_value_gate', observed_stamp)
+        assert marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())['ok']
+        original = _intel_items(media_root)[0]
+        (media_root / 'config/marketing.yml').write_text(
+            _INTEL_CFG + 'publish:\n  media_enabled: false\n', encoding='utf-8')
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['media_state'] == 'text_only', result
+        assert 'hosted and attached' not in result['note']
+        assert flags == [True, False]
+        assert seen['deliveries'] == [original, original]
+        assert len(seen['renders']) == len(seen['uploads']) == 1
+
+    def test_actual_renderer_fit_is_the_attached_cards_evidence(self, media_root, monkeypatch):
+        from xml.etree import ElementTree
+        from engine.marketing import chart_render
+        actual_render = chart_render.render_breaking_card
+        seen = self._wire(monkeypatch)
+        monkeypatch.setattr(chart_render, 'render_breaking_card', actual_render)
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        assert result['ok'] and result['media_state'] == 'attached', result
+        item = _intel_items(media_root)[0]
+        fit = item['source']['card_fit']
+        assert fit['headline_drawn'] and 'European cloud unit' in fit['summary_drawn']
+        drawn_text = ' '.join(' '.join(ElementTree.fromstring(
+            seen['uploads'][0]['svg']).itertext()).split())
+        assert fit['headline_drawn'] in drawn_text
+        assert len(seen['uploads']) == 1
+
+    @pytest.mark.parametrize('arrival', ['preexisting', 'racing'])
+    @pytest.mark.parametrize('withheld', [False, True])
+    @pytest.mark.parametrize('cited', [False, True])
+    def test_reconciled_native_winner_gets_current_value_policy(
+            self, media_root, monkeypatch, arrival, withheld, cited):
+        """A shadow-created row cannot borrow the losing candidate's proof."""
+        from engine.marketing import outbox
+
+        snapshot = json.loads((media_root / 'data/marketing/press/intelligence.json').read_text())
+        draft = snapshot['stories'][0]['drafts'][0]
+        if not cited:
+            draft['source_url'] = ''
+        winner_root = _write_intel_root(media_root / 'winner-source', snapshot,
+            _INTEL_CFG + 'publish:\n  media_enabled: true\nvalue_gate:\n  enforce: false\n')
+        self._wire(monkeypatch, drawn=draft['text'] if withheld else 'The buyer must sell its European cloud unit.')
+        made = marketing.intelligence_approve('story-alpha', 'draft-wire-1',
+                                              root=winner_root, now=self._now())
+        assert made['ok'], made
+        [winner] = _intel_items(winner_root)
+        assert outbox.validate_item(winner) == []
+        if withheld and not cited:
+            assert winner['source']['value_gate']['verdict'] == 'abstain'
+            assert winner['source']['value_gate']['enforced'] is False
+
+        # The current draft has a citation and prepares a hosted card. Neither
+        # can be credited to a different persisted row that owns delivery.
+        cfg = _INTEL_CFG + 'publish:\n  media_enabled: true\nvalue_gate:\n  enforce: true\n'
+        (media_root / 'config/marketing.yml').write_text(cfg)
+        armed = marketing._read_yaml(media_root / 'config/marketing.yml')
+        seen = self._wire(monkeypatch)
+        enqueue = outbox.enqueue
+        if arrival == 'preexisting':
+            assert enqueue(winner, media_root, cfg=armed) == 'queued'
+        else:
+            def racing_enqueue(item, root, *, cfg):
+                assert enqueue(winner, root, cfg=cfg) == 'queued'
+                return enqueue(item, root, cfg=cfg)
+            monkeypatch.setattr(outbox, 'enqueue', racing_enqueue)
+
+        result = marketing.intelligence_approve('story-alpha', 'draft-wire-1', now=self._now())
+        accepted = not withheld or cited
+        assert result['ok'] is accepted, result
+        if not accepted:
+            assert result['reason'] == 'value_gate'
+            assert 'proof:below_hard' in result['violations']
+        assert _intel_items(media_root) == [winner]
+        assert seen['deliveries'] == ([winner] if accepted else [])
+
+
+class TestIntelligenceApproveCurrentEvidence:
+    """Native public snapshots must be safe even when their producer stops."""
+
+    @staticmethod
+    def _setup(tmp_path, monkeypatch, *, ttl=30, market=True):
+        from datetime import datetime, timezone
+        from engine.marketing import intelligence_desk as desk, intelligence_llm as llm
+
+        now = datetime(2026, 11, 13, 2, 53, tzinfo=timezone.utc)
+        text = ('SPY is up 0.8% this session, while the policy committee held '
+                'its benchmark rate unchanged.') if market else (
+                'The committee kept its benchmark rate unchanged. Balance-sheet '
+                'runoff will drop to $25 billion a month from $60 billion next month.')
+        packet = desk.build_story_packet({
+            'id': 'synthetic-policy-1', 'headline': 'Policy committee holds its rate',
+            'brief': 'The policy committee kept its benchmark rate unchanged.',
+            'event_class': 'policy', 'corroboration_class': 'direct-quote',
+            'source_name': 'Synthetic official source', 'url': 'https://example.com/policy',
+            'published_at': now.isoformat(), 'matched': {'tickers': ['SPY']},
+        }, story={'first_seen': now.isoformat()}, now=now)
+        if market:
+            packet['market'] = {'label': 'SPY +0.8%', 'basis': 'session vs prior close',
+                                'as_of': now.isoformat()}
+        else:
+            packet['brief'] += (' Monthly balance-sheet runoff will fall to '
+                                '$25 billion from $60 billion next month.')
+        packet['drafts'] = [llm._analysis_draft(text, packet, now=now)]
+        root = _write_intel_root(tmp_path,
+            cfg=_INTEL_CFG + 'value_gate:\n  enforce: true\n')
+        (root / 'config/press_sources.yml').write_text(
+            f'wire:\n  intelligence:\n    market_stale_min: {ttl}\n')
+        sink = root / 'data/marketing/press/intelligence.json'
+        db = root / 'intelligence.db'
+        payload = desk.update_intelligence_desk([packet], root=root, now=now,
+            cfg={'market_stale_min': ttl}, db_path=db, snapshot_path=sink)
+        [story] = payload['stories']
+        [draft] = story['drafts']
+        assert draft['origin'] == 'llm' and draft['status'] == 'review'
+        assert '_basis_sha256' not in sink.read_text()
+        monkeypatch.setattr(marketing, '_default_root', lambda: root)
+        monkeypatch.setattr(marketing, '_INTELLIGENCE_LIVE', root / 'no-live-snapshot')
+        seen = TestIntelligenceApproveMedia._wire(monkeypatch)
+        prepare = marketing._intel_prepare_media
+        seen['media_checks'] = []
+
+        def checked_media(*args, **kwargs):
+            seen['media_checks'].append(True)
+            return prepare(*args, **kwargs)
+
+        monkeypatch.setattr(marketing, '_intel_prepare_media', checked_media)
+        return root, now, story, draft, sink, db, seen
+
+    @pytest.mark.parametrize('seconds,accepted', [
+        pytest.param(29 * 60, True, id='fresh-29m'),
+        pytest.param(30 * 60, True, id='boundary-30m'),
+        pytest.param(30 * 60 + 1, False, id='expired-30m01s'),
+        pytest.param(3 * 3600, False, id='expired-3h'),
+        pytest.param(24 * 3600, False, id='expired-24h'),
+        pytest.param(49 * 3600, False, id='expired-49h'),
+    ])
+    def test_frozen_market_snapshot_is_rechecked(self, tmp_path, monkeypatch, seconds, accepted):
+        from datetime import timedelta
+
+        root, now, story, draft, sink, _db, seen = self._setup(tmp_path, monkeypatch)
+        original = sink.read_bytes()
+        then = now + timedelta(seconds=seconds)
+        result = marketing.intelligence_approve(story['id'], draft['id'], now=then)
+        assert result['ok'] is accepted, result
+        assert sink.read_bytes() == original
+        items = _intel_items(root)
+        assert len(items) == int(accepted)
+        assert seen['media_checks'] == ([True] if accepted else [])
+        assert seen['renders'] == seen['uploads'] == []
+        assert seen['deliveries'] == items
+        if accepted:
+            [item] = items
+            assert item['created_at'] != story['market']['as_of']
+            assert item['as_of'] == then.date().isoformat()
+            source = item['source']
+            assert source['market_as_of'] == story['market']['as_of']
+            assert source['draft_updated_at'] == draft['updated_at']
+            assert source['story_first_seen'] == story['first_seen']
+            assert source['story_updated_at'] == story['updated_at']
+            assert source['evidence_published_at'] == story['evidence'][0]['published_at']
+            assert source['source_headline'] == story['headline']
+
+    @pytest.mark.parametrize('seconds,accepted', [(600, True), (601, False)])
+    def test_approval_uses_the_producers_configured_market_budget(
+            self, tmp_path, monkeypatch, seconds, accepted):
+        from datetime import timedelta
+
+        root, now, story, draft, sink, _db, seen = self._setup(tmp_path, monkeypatch, ttl=10)
+        original = sink.read_bytes()
+        result = marketing.intelligence_approve(story['id'], draft['id'],
+                                                 now=now + timedelta(seconds=seconds))
+        assert result['ok'] is accepted, result
+        assert len(_intel_items(root)) == int(accepted)
+        assert sink.read_bytes() == original
+        assert seen['media_checks'] == ([True] if accepted else [])
+
+    @pytest.mark.parametrize('stamp', [None, 'not-a-time'])
+    def test_a_missing_or_bad_market_stamp_does_not_survive_approval(
+            self, tmp_path, monkeypatch, stamp):
+        root, now, story, draft, sink, _db, seen = self._setup(tmp_path, monkeypatch)
+        payload = json.loads(sink.read_text())
+        payload['stories'][0]['market']['as_of'] = stamp
+        sink.write_text(json.dumps(payload))
+        original = sink.read_bytes()
+        result = marketing.intelligence_approve(story['id'], draft['id'], now=now)
+        assert result['ok'] is False, result
+        assert _intel_items(root) == []
+        assert sink.read_bytes() == original
+        assert seen['media_checks'] == seen['deliveries'] == []
+
+    def test_regenerated_snapshot_and_frozen_snapshot_have_the_same_refusal(self, tmp_path, monkeypatch):
+        from datetime import timedelta
+        from engine.marketing import intelligence_desk as desk
+
+        root, now, story, draft, sink, db, seen = self._setup(tmp_path, monkeypatch)
+        then = now + timedelta(hours=3)
+        frozen = marketing.intelligence_approve(story['id'], draft['id'], now=then)
+        desk.update_intelligence_desk([], root=root, now=then, db_path=db, snapshot_path=sink)
+        regenerated = marketing.intelligence_approve(story['id'], draft['id'], now=then)
+        assert frozen['ok'] is regenerated['ok'] is False
+        assert _intel_items(root) == [] and seen['deliveries'] == []
+
+    def test_non_market_analysis_is_not_given_an_unrelated_market_ttl(self, tmp_path, monkeypatch):
+        from datetime import timedelta
+
+        root, now, story, draft, _sink, _db, seen = self._setup(tmp_path, monkeypatch, market=False)
+        result = marketing.intelligence_approve(story['id'], draft['id'], now=now + timedelta(hours=3))
+        assert result['ok'], result
+        [item] = _intel_items(root)
+        assert item['source']['market_as_of'] is None
+        assert seen['deliveries'] == [item]
+
+    def test_absent_wire_evidence_times_are_not_filled_with_the_approval_clock(self, intel_root):
+        result = marketing.intelligence_approve('story-beta', 'draft-beta-1', root=intel_root)
+        assert result['ok'], result
+        [item] = _intel_items(intel_root)
+        for field in ('market_as_of', 'draft_updated_at', 'story_first_seen',
+                      'story_updated_at', 'evidence_published_at'):
+            assert item['source'][field] is None
+
+    def test_unavailable_freshness_policy_refuses_before_any_effect(self, tmp_path, monkeypatch):
+        from engine.marketing import intelligence_desk as desk
+
+        root, now, story, draft, sink, _db, seen = self._setup(tmp_path, monkeypatch)
+        original = sink.read_bytes()
+
+        def unavailable(*args, **kwargs):
+            raise RuntimeError('synthetic policy outage')
+
+        monkeypatch.setattr(desk, '_served_packet', unavailable)
+        result = marketing.intelligence_approve(story['id'], draft['id'], now=now)
+        assert result['ok'] is False and result['reason'] == 'gate_unavailable'
+        assert _intel_items(root) == [] and sink.read_bytes() == original
+        assert seen['media_checks'] == seen['deliveries'] == []

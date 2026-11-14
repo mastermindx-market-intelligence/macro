@@ -912,3 +912,87 @@ def _tiny_store(tmp_path: Path, ticker: str, *, bars: int) -> Path:
     out.mkdir(parents=True, exist_ok=True)
     df.to_parquet(out / f"{ticker}.parquet")
     return Path(tmp_path)
+
+
+class TestSocialReadability:
+    @pytest.mark.parametrize("panel,value,unit", [("volume", "1.0M", "VOL"),
+                                                  ("streak", "+90", "STREAK")])
+    def test_claim_bearing_panel_values_are_readable(self, panel, value, unit):
+        from xml.etree import ElementTree as ET
+        from engine.marketing.chart_render import render_chart_v2
+        d, o, h, l, c, v = _daily(90)
+        doc = ET.fromstring(render_chart_v2("PANE", d, o, h, l, c, v,
+                            height=CD._CARD_H, social_readable=True,
+                            indicators=(panel,), subpanel_h=CD._SUBPANEL_H))
+        text = list(doc.iter("{http://www.w3.org/2000/svg}text"))
+        assert float(next(n for n in text if n.text == value).get("font-size")) >= 22
+        assert float(next(n for n in text if n.text == unit).get("font-size")) >= 18
+
+    @pytest.mark.parametrize("last,levels", [(100.02, [100.01, 100.03]),
+                                            (109.98, [109.97, 109.99])])
+    def test_boundary_reference_labels_never_overlap_last_price(self, last, levels):
+        from xml.etree import ElementTree as ET
+        from engine.marketing.chart_render import render_chart_v2
+        d, _, _, _, _, v = _daily(90)
+        c = [100 + i * 10 / 89 for i in range(90)]
+        c[-1] = last
+        o = list(c)
+        h, l = [x + .01 for x in c], [x - .01 for x in c]
+        doc = ET.fromstring(render_chart_v2("EDGE", d, o, h, l, c, v,
+            height=CD._CARD_H, social_readable=True, indicators=("volume",),
+            subpanel_h=CD._SUBPANEL_H,
+            editorial_title="Synthetic boundary test: nearby reference prices must remain distinct from the last price, including near either end of the axis.",
+            level_tags=[{"price": p} for p in levels]))
+        rects = [r for r in doc.iter("{http://www.w3.org/2000/svg}rect")
+                 if r.get("height") in {"34", "36"} and r.get("rx") == "2"]
+        assert len(rects) == 3
+        spans = sorted((float(r.get("y")), float(r.get("y")) + float(r.get("height"))) for r in rects)
+        assert all(end < following for (_, end), (following, _) in zip(spans, spans[1:]))
+
+    def test_claim_controls_the_panel_and_visible_evidence(self, tmp_path):
+        from xml.etree import ElementTree as ET
+        root = _tiny_store(tmp_path, "READ", bars=300)
+        fact = _fact(id="ma_touch_50", claim_kind="level_touch", timeframe="DAILY",
+                     text="Price is testing its 50-day average.", window_start="", window_bars=90,
+                     level=113.725, ma={"kind": "sma", "length": 50},
+                     callout="50-day average", numbers=["113.725"])
+        spec = CD.build_spec("READ", root=root, facts=[fact], angle="level_watch")
+        assert spec is not None
+        assert "macd" not in spec.kwargs["indicators"]
+        assert spec.kwargs["poc_overlay"] is None
+        spec.kwargs["logo_root"] = None
+        doc = ET.fromstring(CD.render(spec))
+        text = list(doc.iter("{http://www.w3.org/2000/svg}text"))
+        claim = next(n for n in text if n.text == fact["text"])
+        assert float(claim.get("font-size")) >= 30
+        price = next(n for n in text if n.text == "114.95")
+        assert float(price.get("font-size")) >= 20
+        assert spec.axis_start in spec.alt_text and spec.axis_end in spec.alt_text
+        assert fact["text"] in spec.as_meta()["alt_text"]
+        assert 0.75 <= float(doc.get("width")) / float(doc.get("height")) <= 2
+
+    def test_large_price_labels_stay_inside_the_social_frame(self):
+        from xml.etree import ElementTree as ET
+        from engine.marketing.chart_render import render_chart_v2
+        d, o, h, l, c, v = _daily(90)
+        o, h, l, c = ([x * 6000 for x in values] for values in (o, h, l, c))
+        doc = ET.fromstring(render_chart_v2("HIGH", d, o, h, l, c, v, social_readable=True,
+                                          height=1100, indicators=("volume",), volume_overlay=True,
+                                          editorial_title="A high-priced share still needs readable values."))
+        pills = [r for r in doc.iter("{http://www.w3.org/2000/svg}rect")
+                 if r.get("height") == "36"]
+        assert pills
+        assert all(float(r.get("x")) >= 0 and float(r.get("x")) + float(r.get("width")) <= 1000 for r in pills)
+
+    def test_title_uses_measured_width_and_never_executes_markup(self):
+        from xml.etree import ElementTree as ET
+        from engine.marketing.chart_render import render_chart_v2, _bc_text_w
+        d, o, h, l, c, v = _daily(90)
+        title = "WWW WWW WWW WWW WWW WWW WWW WWW WWW <script>alert(1)</script>"
+        doc = ET.fromstring(render_chart_v2("TEXT", d, o, h, l, c, v, height=1100,
+                            social_readable=True, editorial_title=title))
+        assert not list(doc.iter("{http://www.w3.org/2000/svg}script"))
+        titles = [n for n in doc.iter("{http://www.w3.org/2000/svg}text")
+                  if n.get("font-size") == "32" and n.get("text-anchor") != "end"]
+        assert titles
+        assert all(_bc_text_w(n.text or "", 32) <= 944 for n in titles)

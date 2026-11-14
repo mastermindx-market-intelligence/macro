@@ -73,25 +73,57 @@ def test_compose_is_deterministic_context_only_and_one_story_identity():
 
     assert first == second
     assert first["story_key"] == "earnings-call:TST:Q2:2026"
-    assert first["text"].startswith("$TST Q2 FY2026 call: confident tone.")
+    assert first["text"].startswith("$TST Q2 FY2026 earnings call.")
     assert "Demand accelerated" in first["text"]
     assert "Freight costs" in first["text"]
-    assert "Research context only, not a trading recommendation." in first["text"]
+    assert "research context" not in first["text"].lower()
+    assert "trading recommendation" not in first["text"].lower()
+    assert "Strong point:" not in first["text"]
+    assert "Risk noted:" not in first["text"]
     assert len(first["headline"]) + 1 + len(first["body"]) <= 275
 
 
-def test_advice_shaped_source_copy_is_not_relayed_with_known_mixed_tone():
+def test_advice_shaped_source_does_not_become_a_boilerplate_only_post():
     event = _event(
         tone_word="mixed",
         summary="Buy now and use 44 as the entry level.",
         positive_highlights=[],
         negative_highlights=[],
     )
-    composed = lane.compose_event(event)
-    assert "mixed tone" in composed["headline"]
-    assert "Buy now" not in composed["text"]
-    assert "entry level" not in composed["text"]
-    assert "trading recommendation" in composed["text"]
+    with pytest.raises(ValueError, match="no usable editorial content"):
+        lane.compose_event(event)
+
+
+def test_complete_summary_uses_space_previously_spent_on_disclaimer():
+    summary = (
+        "Management kept full-year guidance despite stronger demand, with freight "
+        "costs and the timing of customer orders still weighing on its outlook."
+    )
+    composed = lane.compose_event(_event(
+        summary=summary, positive_highlights=[], negative_highlights=[],
+    ))
+    assert composed["body"] == summary
+    assert len(composed["text"]) <= 275
+
+
+def test_long_clause_is_not_cut_into_a_false_complete_assertion():
+    assert lane._short_clause(
+        "Management expects demand to recover only if delayed customer orders "
+        "return before the end of the quarter.", 55,
+    ) == ""
+
+
+def test_empty_editorial_content_never_reaches_media_or_outbox(tmp_path, monkeypatch):
+    def unexpected(*args, **kwargs):
+        raise AssertionError("empty source must fail before any media/outbox work")
+
+    monkeypatch.setattr(lane, "_media_for_event", unexpected)
+    result = lane.enqueue_event(_event(
+        summary="", positive_highlights=[], negative_highlights=[],
+    ), root=tmp_path, now=NOW)
+    assert result["status"] == "invalid"
+    assert "no usable editorial content" in result["reason"]
+    assert result["item"] is None
 
 
 def test_instruction_like_tone_is_contract_invalid_and_never_published():

@@ -24,7 +24,44 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import pytest
+
 _NOW = datetime(2026, 7, 31, 23, 30, 0, tzinfo=timezone.utc)
+
+
+@pytest.fixture(autouse=True)
+def _no_buffer_transport(monkeypatch):
+    """Reaper tests must never contact the provider, even with a fixture token.
+
+    Buffer's public methods catch transport errors, so assert again at teardown
+    to prevent an accidental call from becoming a silently passing test.
+    """
+    from engine.marketing.social_publisher import BufferPublisher
+
+    attempts = []
+
+    def unexpected_transport(*args, **kwargs):
+        attempts.append(True)
+        raise RuntimeError("wire-expiry tests require an in-memory publisher")
+
+    monkeypatch.setattr(BufferPublisher, "_transport", unexpected_transport)
+    yield
+    assert not attempts, "wire-expiry test reached the real provider transport boundary"
+
+
+class _OfflinePublisher:
+    """The reaper's consumer can run without a provider connection."""
+
+    backend = "buffer"
+
+    def list_channels(self):
+        return [{"id": "buf-chan-123", "service": "twitter", "name": "Flagship"}]
+
+    def publish(self, **kwargs):
+        from engine.marketing.social_publisher import Receipt
+        at = (kwargs.get("now") or _NOW).strftime("%Y-%m-%dT%H:%M:%SZ")
+        return Receipt(True, "fixture-post", None, None, self.backend, at)
+
 
 # Deeply distinct copy: the enqueue-time near-dup guard compares same-account
 # texts inside a 7-day window at jaccard 0.7, so an indexed "item {i}" fixture
@@ -373,6 +410,9 @@ class TestTheSweepRunsTheReaperAndReportsIt:
              extra_argv: list[str] | None = None):
         import scripts.marketing_publisher as pub
 
+        publisher = _OfflinePublisher()
+        monkeypatch.setattr(pub, "_make_publisher",
+                            lambda backend, *, token, cfg: publisher)
         monkeypatch.setenv("MARKETING_PUBLISH_ENABLED", "1" if live else "0")
         monkeypatch.setenv("BUFFER_TOKEN", "test-token")
         argv = (["--live"] if live else []) + (extra_argv or []) + [
