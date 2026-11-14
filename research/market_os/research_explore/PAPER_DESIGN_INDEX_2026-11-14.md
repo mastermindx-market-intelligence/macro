@@ -4,7 +4,8 @@ Status: DESIGN CANDIDATE / DESIGN PHASE IN PROGRESS
 Date: 14 November 2026  
 Parent: [Research Explore migration record](../RESEARCH_EXPLORE_SHARED_SHELL_2026-11-14.md)  
 Build: [Engine and implementation blueprint](ENGINE_AND_IMPLEMENTATION_BLUEPRINT_2026-11-14.md) · [Policy R6 contract](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [Policy R7 contract](POLICY_WATCH_R7_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11 contract](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2 contract](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md) · [Research Hub R6 contract](RESEARCH_HUB_R6_BUILD_SPEC_2026-11-14.md) · [Special Situations R2 contract](SPECIAL_SITUATIONS_R2_BUILD_SPEC_2026-11-14.md) · [Capital Structure R2 contract](CAPITAL_STRUCTURE_R2_BUILD_SPEC_2026-11-14.md) · [China Cycles R2 contract](CHINA_SECTOR_CYCLES_R2_BUILD_SPEC_2026-11-14.md)  
-Remaining workflow/parity closure: [Twelve-destination matrix](DESIGN_PARITY_AND_RETURN_MATRIX_2026-11-14.md)  \nExact identities and screenshot digests: [Paper inventory JSON](PAPER_INVENTORY_2026-11-14.json)
+Remaining workflow/parity closure: [Twelve-destination matrix](DESIGN_PARITY_AND_RETURN_MATRIX_2026-11-14.md)  
+Exact identities and screenshot digests: [Paper inventory JSON](PAPER_INVENTORY_2026-11-14.json)
 
 ## What is authored
 
@@ -240,7 +241,8 @@ These are scoped gaps, not permission or review ceremonies. Preserve already ins
 | D1-POLICY follow-through | Remaining research navigation, corrections and theme/locale/breakpoint parity | R7 core views authored; source/version/role projections and complete return states remain required |
 | D1-HUB follow-through | Expanded method/statistics disclosures, filtered exclusions and remaining parity states | R6 core views authored; same-population statistics, sparse samples, exact snapshots and preserved owner ordering remain required |
 | D1-CAPITAL follow-through | Historical evidence focus/return and remaining U0 parity | R2 conflict/restore/save states authored; retained result, version, CAS and exact evidence binding remain owner extensions |
-| D1-CYCLES follow-through | Measured-history/basis investigation, universe restoration and Frame/measured grammar across five routes | Ten product specimens now cover five destinations, including China R2; Markets/Countries/U.S./Long Cycles still need their specific basis, universe and grammar proof |\n| D1-CROSS | Intermediate widths, collapsed rail, EN/ZH, dark/light and keyboard/touch/return flows | Actual content width, legible charts/tables, no crowding, focus return and supported persistence |
+| D1-CYCLES follow-through | Measured-history/basis investigation, universe restoration and Frame/measured grammar across five routes | Ten product specimens now cover five destinations, including China R2; Markets/Countries/U.S./Long Cycles still need their specific basis, universe and grammar proof |
+| D1-CROSS | Intermediate widths, collapsed rail, EN/ZH, dark/light and keyboard/touch/return flows | Actual content width, legible charts/tables, no crowding, focus return and supported persistence |
 
 The next bounded action is **D1-GOV-PARITY**: Government Revenue program-version comparison at 1024px in English dark, with compatible request stages, separately displayed enacted evidence, exact retained source versions and unresolved allocation. The [twelve-destination parity matrix](DESIGN_PARITY_AND_RETURN_MATRIX_2026-11-14.md) records the remaining Cycles, Bio, Alt, Special, Hub, Policy and Capital work, plus the precise source/selection/focus return contracts. Reuse accepted compositions; Build/state boards do not count as responsive product proof. Capital's explicit eventual U0 evidence matrix remains binding. Product implementation starts only after the original design-phase acceptance is met, through Terminal's existing AppShell and incumbent domain owners.
 
