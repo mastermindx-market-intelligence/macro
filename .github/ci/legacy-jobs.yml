@@ -31590,7 +31590,9 @@ jobs:
     paths:
       - templates/calculators/compounding.html.j2
       - templates/calculators/dollar_cost_averaging.html.j2
+      - site/tools/calculators/dollar-cost-averaging.html
       - tests/js/calculator_input_integrity.test.mjs
+      - tests/js/dca_stability.test.mjs
       - templates/calculators/cagr.html.j2
       - tests/test_cagr_copy_feedback.py
       - templates/calculators/savings_goal.html.j2
@@ -31620,7 +31622,7 @@ jobs:
         run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity
         run: |
-          node --test tests/js/calculator_input_integrity.test.mjs
+          node --test tests/js/calculator_input_integrity.test.mjs tests/js/dca_stability.test.mjs
           node --test tests/js/risk_reward_warning_copy.test.mjs
           node --test tests/js/covered_call_annualized_copy.test.mjs
           node --test tests/js/short_selling_loss_cause.test.mjs
