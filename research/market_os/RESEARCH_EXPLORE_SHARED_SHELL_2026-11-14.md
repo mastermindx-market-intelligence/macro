@@ -1,7 +1,7 @@
 # Research Explore — Paper design and shared-shell migration
 
 Status: IN PROGRESS. Design work is not implementation or production acceptance.
-Current design frontier: Milestone C6 below. Earlier C4/C5 sections are historical; C6 and the linked native Paper inventory supersede their pending design actions and visual-review statuses.
+Current design frontier: Milestone C7 below. Earlier C4/C5/C6 sections and their continuation boundary are historical; C7 and the linked native Paper inventory supersede their pending actions and counts.
 Chairman assignment: 14 November 2026, ChatGPT4; redesign the complete Research > Explore family in Paper, preserve and strengthen existing capabilities, then implement frontend and engines in the Terminal shared shell over subsequent phases.
 This is a scoped migration packet under research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md. It does not create a new shell, data authority, runtime, queue, watchlist, alert service, or publication owner.
 
@@ -241,7 +241,7 @@ Then advance the other scoped units in the index: Government Programs/recompete;
 Implementation remains after design closure. It must use Terminal AppShell and the existing route/auth/context/persistence owners, upgrade each incumbent engine, and prove real producer → authenticated consumer → source/return → supported persistence → deployed browser journeys. Static Paper controls and synthetic fixtures do not satisfy those obligations.
 
 
-## Cumulative continuation boundary
+## Historical C6 continuation boundary
 
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION  
 MISSION_COMPLETE: false  
@@ -256,3 +256,45 @@ Intended resume surface: this authorized attended MastermindX design mission, us
 Exact next action: D1-BIO Trial screen and First-seen, as specified above and in the design index. Recover only the current plan/index, applicable source contract and relevant Paper file; preserve the existing source pins unless material changes require refresh. Do not re-audit or remake the fifty accepted compositions, restart the failed M2 operation, clear held carriers, create another shell/control plane, or treat these fixtures as production proof.
 
 All current Paper content mutations and owned finish markers have observed receipts. Final screenshot digests are saved in the inventory. No denied or uncertain modifying effect is being transferred. Both bounded reasoning/review children are complete. The source PR and design phase remain open; original frontend/backend and real consumer acceptance are still owed.
+
+## Milestone C7 — resumed design execution
+
+Chairman's “good work, resume work” reactivated the attended mission. Disposition at this save: **MORE_WORK_EXISTS**. Design phase remains active, product implementation remains unstarted and original production acceptance remains owed.
+
+### Delivered design delta
+
+Twelve new owned pages extend the native set from 50 to 62: 49 product/responsive/theme/locale views, 10 Build boards and 3 state sheets. Ten mobile specimens and one additional 768px collapsed-rail specimen are now included; these are not systematic parity acceptance.
+
+- **BioCatalyst R11, seven pages:** Trial screen; First-seen event investigation; full-interval date filter at 768px; mixed observation coverage; 390px event reading; availability/recovery state sheet; advanced Build contract. Exact roots 32C-0,3AV-0,3P8-0,3SD-0,3YK-0,45Z-0,48A-0 in file 01M6Y34XE4JKS3A40GMMZ954JE.
+- **Government Revenue R14, five pages:** Programs; Calendar/expiry watches; exact award/company connections; 390px Calendar; advanced Build contract. Roots 4ZV-0,573-0,5L5-0,5RB-0,5TL-0 in file 01M6Y3397SE03G626MJ72N90PF.
+- **Existing R13 correction:** the owned Changes root 44V-0 now links to Contract expiry watches and document-stage source inspection, removing the implied official recompete/authorization-to-funding interpretation.
+
+### Source-grounded build obligations
+
+Bio Trial screen uses literal AND filters and full source-date containment. First-seen uses observation intervals, current-record selection and whole immutable events. The live API supports one exact change kind, so the specimen says Primary completion. The per-trial coverage inspector requires a new bounded public projection from the existing committed bundle; current endpoints expose aggregate coverage only. Rows/facets also need a coherent-cut consumer contract.
+
+Government Programs compares request to request, keeps enactment separate, preserves source units/line identity and leaves company allocation unresolved. Retained source-version comparison remains build work. Calendar's expiry watches derive from recorded performance ends and do not establish solicitation dates. Company collection scope is not attribution; exact IDV relationships imply no seats, utilization or transferred value.
+
+Preliminary Alternative Data review identified three next-phase concerns: taxonomy-based co-firing is not record-level independence; failed/empty feed states currently collapse; seed-derived CONTROLS edges are not documentary ownership proof. C7 does not claim these engines repaired.
+
+### Verification, custody and reconciliation
+
+The principal inspected the 12 new compositions and repaired observed overlaps, gaps, a redundant date-definition footer, icon consistency and source-sensitive wording. A bounded read-only reviewer accepted four Bio desktop/intermediate screens and identified the category label and per-NCT projection gap. Its mobile image read timed out; principal inspected the mobile view. A second read-only reviewer accepted Government Programs and Calendar. No runtime/test/browser acceptance is claimed.
+
+An older Government module ID resolved outside its current artboard. The original target and live root were inspected on the same M1 carrier; the owned corrected fragment was moved into 44V-0, the obsolete content was retired inside the owned root, and parent/artboard readback plus screenshot confirmed the final placement. No content was left on the README from that operation. Identical-image ARTIFACT_EXISTS responses were diagnosed against their original receipts and live nodes, without caller replay or overwrite.
+
+All affected Bio and Government roots received guarded finish_working_on_nodes. The runtime remains v20, bridge SHA 1a73ab002e89c87b489e8cee9f5c821530929a5b701eb0aaac7eed03a5a22ced and Paper 0.5.16 catalog f200eaf725b38c7895ef2180b80e3e254957093a770582b795685fa5072759bb. Explicit file bindings were requalified. M1 remains the only canvas carrier; M2 was not used. Another observed Government page p-B-1 was preserved untouched.
+
+### Durable C7 evidence
+
+- Bio R11 contract: commit adfdc30d752f5cd312c10aebdd8da2036a31afd0; blob c2686f07f47b78aebacb2815989c2b43cb47049a; byte readback matched.
+- 62-frame inventory: commit 34bbf77df0eace696434297e3441e5043b6f2c40; blob a52afe71d7281f1d4668518c1045f301d3b293e5.
+- Index: commit 3c819b3df92329c3a2c97be5db5c30f903937114; blob 2b2c450342c4e63e9dc01fe5ec89f46581ecd439.
+- Engine blueprint: commit ff777aa636b16a83896a71b9b886912c39f50cb5; blob 93b0cb3c1f65c3ce0009f0726e9fa4112259ee97.
+- Inventory/index/blueprint read back byte-for-byte at ff777aa636b16a83896a71b9b886912c39f50cb5. This plan update follows on the same owned branch and Draft PR #11271.
+
+### Next action already selected
+
+Start **D1-ALT** in existing file 01M2VWK62FA5S4VVF6G7SBPE5J: source-backed relationship inspection, provider availability and research-status evidence, with a specific engine upgrade contract. Preserve existing Companies/Evidence/mobile/Build roots and Hub/held pages. Then continue the scoped family follow-through and cross-product states in the index. This save is a material checkpoint, not an end to the authorized turn.
+
+No product source edits, merge opt-in, deployment, account action, watch enrollment, external message, trade or daemon was performed.
