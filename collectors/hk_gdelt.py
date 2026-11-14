@@ -99,7 +99,7 @@ ENTITIES: list[_Entity] = [
 _GDELT_BASE = "https://api.gdeltproject.org/api/v2/doc/doc"
 _TIMESPAN    = "90d"
 _REQUEST_GAP = 5.5   # seconds between API requests (rate limit: 1/5s). Enforced
-                     # via engine.gdelt_client.wait_turn — the budget is per IP, so
+                     # via engine.gdelt_client.request_turn — the budget is per IP, so
                      # pacing only OURSELVES while news_vector/macro_news/china_news
                      # etc. hit the same endpoint in the same lane still tripped
                      # 429s; the shared gate spaces ALL of them together.
@@ -153,7 +153,8 @@ def _gdelt_timeline(query: str, mode: str, session: requests.Session) -> list[di
         "timespan": _TIMESPAN,
         "format":   "json",
     }
-    resp = session.get(_GDELT_BASE, params=params, timeout=30)
+    with gdelt_client.request_turn(_REQUEST_GAP):
+        resp = session.get(_GDELT_BASE, params=params, timeout=30)
     # GDELT rate-limit response is a 429 or a 200 with a plain-text message
     if resp.status_code == 429:
         log.warning("hk_gdelt: GDELT rate limit hit for query=%r mode=%s", query, mode)
@@ -193,7 +194,6 @@ def _fetch_entity(entity: _Entity, session: requests.Session) -> pd.DataFrame | 
     for query in entity.queries:
         # Vol
         try:
-            gdelt_client.wait_turn(_REQUEST_GAP)
             vol_data = _gdelt_timeline(query, "timelinevol", session)
             for pt in vol_data:
                 ts = _parse_gdelt_date(pt.get("date", ""))
@@ -204,7 +204,6 @@ def _fetch_entity(entity: _Entity, session: requests.Session) -> pd.DataFrame | 
 
         # Tone
         try:
-            gdelt_client.wait_turn(_REQUEST_GAP)
             tone_data = _gdelt_timeline(query, "timelinetone", session)
             for pt in tone_data:
                 ts = _parse_gdelt_date(pt.get("date", ""))

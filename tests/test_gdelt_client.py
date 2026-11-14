@@ -16,6 +16,8 @@ Run:  python3 -m pytest tests/test_gdelt_client.py -x -q
 from __future__ import annotations
 
 import json
+import multiprocessing
+import os
 import sys
 import tempfile
 import time
@@ -58,30 +60,443 @@ _SAMPLE_PARAMS = {"query": "tariff", "mode": "artlist", "format": "json", "maxre
 
 # ── throttle tests ────────────────────────────────────────────────────────────
 
+class _VirtualClock:
+    """Virtual clock with recorded sleeps and explicit scheduling advances.
+    Substituted for the throttle's
+    `_now` / `_sleep` seams so spacing tests assert exactly what the throttle
+    requested instead of a wall-clock measurement that flakes on loaded runners."""
+
+    def __init__(self, t0: float = 1000.0):
+        self.t = float(t0)
+        self.sleeps: list[float] = []
+
+    def now(self) -> float:
+        return self.t
+
+    def sleep(self, seconds: float) -> None:
+        self.sleeps.append(seconds)
+        self.t += seconds
+
+
 def test_throttle_spacing_between_two_calls(tmp_path):
-    """Two sequential calls must be spaced >= min_interval seconds apart."""
+    """Two sequential calls must be spaced >= min_interval seconds apart.
+
+    Deterministic: the throttle runs on a virtual clock, so the gap equals the
+    sleep the throttle itself requested — runner load cannot shrink it."""
+    clock = _VirtualClock()
     timestamps: list[float] = []
 
     def _fake_requests_get(*args, **kwargs):
-        timestamps.append(time.monotonic())
+        timestamps.append(clock.now())
         return _make_response(200, _gdelt_body(["headline one"]))
 
     min_interval = 0.05  # short for speed
     stamp_file = tmp_path / "gdelt" / "last_request"
+    stamp_file.parent.mkdir(parents=True, exist_ok=True)
 
     with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep), \
          patch("requests.get", side_effect=_fake_requests_get):
-        # Ensure parent dir exists
-        stamp_file.parent.mkdir(parents=True, exist_ok=True)
-
         _gc.get_articles(_SAMPLE_PARAMS, min_interval=min_interval)
         _gc.get_articles(_SAMPLE_PARAMS, min_interval=min_interval)
 
     assert len(timestamps) == 2, "expected exactly two network requests"
     gap = timestamps[1] - timestamps[0]
-    assert gap >= min_interval * 0.9, (
-        f"requests were only {gap:.4f}s apart; expected >= {min_interval}s"
+    # Tolerance only absorbs float rounding of the virtual clock's t += sleep.
+    assert gap >= min_interval - 1e-9, (
+        f"requests were only {gap:.4f}s apart on the virtual clock; "
+        f"expected >= {min_interval}s"
     )
+    # The second call must actually have paced: with the clock frozen between
+    # calls, the only legal sleep is the full remaining interval.
+    assert clock.sleeps and abs(clock.sleeps[0] - min_interval) < 1e-9, (
+        f"throttle did not request a {min_interval}s sleep; sleeps={clock.sleeps}"
+    )
+
+
+def test_transport_spacing_survives_delay_after_unlock(tmp_path):
+    """A pause after releasing the slot must not bunch real transport starts."""
+    clock = _VirtualClock()
+    stamp_file = tmp_path / "last_request"
+    starts = []
+    real_flock = _gc.fcntl.flock
+    delayed = False
+
+    def delayed_unlock(fd, operation):
+        nonlocal delayed
+        real_flock(fd, operation)
+        if operation == _gc.fcntl.LOCK_UN and not delayed:
+            delayed = True
+            clock.t += 0.02
+
+    def transport(*args, **kwargs):
+        starts.append(clock.now())
+        return _make_response(200, _gdelt_body(["headline"]))
+
+    with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep), \
+         patch.object(_gc.fcntl, "flock", side_effect=delayed_unlock), \
+         patch("requests.get", side_effect=transport):
+        _gc.get_articles(_SAMPLE_PARAMS, min_interval=0.05)
+        _gc.get_articles(_SAMPLE_PARAMS, min_interval=0.05)
+
+    assert len(starts) == 2
+    assert starts[1] - starts[0] >= 0.05 - 1e-9
+
+
+def _assert_stamp_lock(stamp_file, *, held):
+    with open(stamp_file, "a+") as probe:
+        if held:
+            with pytest.raises(BlockingIOError):
+                _gc.fcntl.flock(probe, _gc.fcntl.LOCK_EX | _gc.fcntl.LOCK_NB)
+        else:
+            _gc.fcntl.flock(probe, _gc.fcntl.LOCK_EX | _gc.fcntl.LOCK_NB)
+            _gc.fcntl.flock(probe, _gc.fcntl.LOCK_UN)
+
+
+def _hold_guard_in_child(stamp_file, entered, release, fail):
+    _gc._stamp_path = lambda: Path(stamp_file)
+    try:
+        with _gc.request_turn(0):
+            entered.set()
+            if not release.wait(10):
+                raise RuntimeError("parent did not release fixture transport")
+            if fail:
+                raise ValueError("fixture transport failed")
+    except ValueError:
+        if not fail:
+            raise
+
+
+def _exit_during_transport_in_child(stamp_file):
+    _gc._stamp_path = lambda: Path(stamp_file)
+    _gc._now = lambda: 1000.0
+    with _gc.request_turn(0.05):
+        os._exit(23)  # Abrupt transport death deliberately skips Python finally.
+
+
+def test_abrupt_transport_exit_retains_reservation_for_next_process(tmp_path):
+    stamp_file = tmp_path / "last_request"
+    stamp_file.write_text("0")
+    identity = (stamp_file.stat().st_dev, stamp_file.stat().st_ino)
+    ctx = multiprocessing.get_context("spawn")
+    child = ctx.Process(target=_exit_during_transport_in_child,
+                        args=(str(stamp_file),))
+    child.start()
+    try:
+        child.join(10)
+        assert not child.is_alive(), "fixture transport did not exit"
+        assert child.exitcode == 23
+        _assert_stamp_lock(stamp_file, held=False)
+        assert (stamp_file.stat().st_dev, stamp_file.stat().st_ino) == identity
+        assert float(stamp_file.read_text()) == pytest.approx(1000.0)
+
+        clock = _VirtualClock(1000.02)
+        starts = []
+        with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+             patch.object(_gc, "_now", clock.now), \
+             patch.object(_gc, "_sleep", clock.sleep):
+            with _gc.request_turn(0.05):
+                starts.append(clock.now())
+        assert starts == pytest.approx([1000.05])
+        assert clock.sleeps == pytest.approx([0.03])
+        assert float(stamp_file.read_text()) == pytest.approx(1000.05)
+        _assert_stamp_lock(stamp_file, held=False)
+    finally:
+        if child.is_alive():
+            child.terminate()
+        child.join(2)
+
+
+@pytest.mark.parametrize("fail", [False, True])
+def test_request_guard_keeps_same_inode_locked_across_processes(tmp_path, fail):
+    stamp_file = tmp_path / "last_request"
+    stamp_file.write_text("0")
+    identity = (stamp_file.stat().st_dev, stamp_file.stat().st_ino)
+    ctx = multiprocessing.get_context("spawn")
+    entered, release = ctx.Event(), ctx.Event()
+    child = ctx.Process(target=_hold_guard_in_child,
+                        args=(str(stamp_file), entered, release, fail))
+    child.start()
+    try:
+        assert entered.wait(10), "child did not enter its transport"
+        _assert_stamp_lock(stamp_file, held=True)
+        assert (stamp_file.stat().st_dev, stamp_file.stat().st_ino) == identity
+        release.set()
+        child.join(10)
+        assert not child.is_alive(), "request guard did not settle"
+        assert child.exitcode == 0
+        _assert_stamp_lock(stamp_file, held=False)
+        assert (stamp_file.stat().st_dev, stamp_file.stat().st_ino) == identity
+    finally:
+        release.set()
+        child.join(2)
+        if child.is_alive():
+            child.terminate()
+            child.join(2)
+
+
+def test_artlist_failure_stamps_completion_and_next_request_waits(tmp_path):
+    clock = _VirtualClock()
+    stamp_file = tmp_path / "last_request"
+    starts = []
+
+    def transport(*args, **kwargs):
+        _assert_stamp_lock(stamp_file, held=True)
+        starts.append(clock.now())
+        clock.t += 0.02
+        if len(starts) == 1:
+            raise OSError("fixture transport failure")
+        return _make_response(200, _gdelt_body(["recovered"]))
+
+    with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep), \
+         patch("requests.get", side_effect=transport):
+        assert _gc.get_articles(_SAMPLE_PARAMS, min_interval=0.05) == (None, "fetch_error")
+        assert len(starts) == 1
+        completed = float(stamp_file.read_text())
+        assert completed == pytest.approx(1000.02)
+        _assert_stamp_lock(stamp_file, held=False)
+        articles, reason = _gc.get_articles(_SAMPLE_PARAMS, min_interval=0.05)
+    assert articles and reason is None
+    assert len(starts) == 2
+    assert starts[1] - completed == pytest.approx(0.05)
+    assert float(stamp_file.read_text()) == pytest.approx(starts[1] + 0.02)
+
+
+@pytest.mark.parametrize("phase", ["open", "acquire", "read", "sleep",
+                                   "reservation_write", "completion_write", "unlock", "close"])
+@pytest.mark.parametrize("body_raises", [False, True])
+def test_pacing_failures_never_repeat_or_mask_transport(tmp_path, phase, body_raises):
+    stamp_file = tmp_path / "last_request"
+    stamp_file.write_text("1000.0")
+    clock = _VirtualClock()
+    real_open, real_flock = open, _gc.fcntl.flock
+    opened, calls = [], []
+    sentinel = RuntimeError("fixture transport exception")
+
+    class Stamp:
+        def __init__(self, raw):
+            self.raw = raw
+            self.writes = 0
+
+        def __getattr__(self, name):
+            return getattr(self.raw, name)
+
+        def read(self):
+            if phase == "read":
+                raise OSError("fixture read failure")
+            return self.raw.read()
+
+        def write(self, value):
+            self.writes += 1
+            if ((phase == "reservation_write" and self.writes == 1)
+                    or (phase == "completion_write" and self.writes == 2)):
+                raise OSError(f"fixture {phase} failure")
+            return self.raw.write(value)
+
+        def close(self):
+            self.raw.close()
+            if phase == "close":
+                raise OSError("fixture close failure after descriptor release")
+
+    def open_stamp(*args, **kwargs):
+        if phase == "open":
+            raise OSError("fixture open failure")
+        fd = Stamp(real_open(*args, **kwargs))
+        opened.append(fd)
+        return fd
+
+    def flock(fd, operation):
+        if ((phase == "acquire" and operation == _gc.fcntl.LOCK_EX)
+                or (phase == "unlock" and operation == _gc.fcntl.LOCK_UN)):
+            raise OSError("fixture lock operation failure")
+        return real_flock(fd, operation)
+
+    def sleep(seconds):
+        if phase == "sleep":
+            raise OSError("fixture pacing failure")
+        clock.sleep(seconds)
+
+    def invoke():
+        with _gc.request_turn(0.05):
+            calls.append("transport")
+            clock.t += 0.02
+            if body_raises:
+                raise sentinel
+            return "transport result"
+
+    with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", side_effect=sleep), \
+         patch.object(_gc, "open", side_effect=open_stamp, create=True), \
+         patch.object(_gc.fcntl, "flock", side_effect=flock):
+        if body_raises:
+            with pytest.raises(RuntimeError) as exc:
+                invoke()
+            assert exc.value is sentinel
+        else:
+            assert invoke() == "transport result"
+    assert calls == ["transport"]
+    assert all(fd.raw.closed for fd in opened)
+    _assert_stamp_lock(stamp_file, held=False)
+
+
+def test_cancelled_transport_preserves_exception_and_releases_lock(tmp_path):
+    clock = _VirtualClock()
+    stamp_file = tmp_path / "last_request"
+    sentinel = KeyboardInterrupt("fixture cancellation")
+    with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep):
+        with pytest.raises(KeyboardInterrupt) as exc:
+            with _gc.request_turn(0):
+                clock.t += 0.02
+                raise sentinel
+    assert exc.value is sentinel
+    assert float(stamp_file.read_text()) == pytest.approx(1000.02)
+    _assert_stamp_lock(stamp_file, held=False)
+
+
+@pytest.mark.parametrize("volume_error", [False, True])
+def test_hk_entity_guards_each_real_transport_once(tmp_path, volume_error):
+    from collectors import hk_gdelt as hk
+
+    clock = _VirtualClock()
+    stamp_file = tmp_path / "last_request"
+    starts, modes = [], []
+
+    def transport(url, *, params, timeout):
+        _assert_stamp_lock(stamp_file, held=True)
+        assert url == hk._GDELT_BASE and timeout == 30
+        starts.append(clock.now())
+        modes.append(params["mode"])
+        clock.t += 0.02
+        if volume_error and params["mode"] == "timelinevol":
+            raise OSError("fixture volume failure")
+        value = 2.0 if params["mode"] == "timelinevol" else 3.0
+        return _make_response(200, {"timeline": [{"data": [
+            {"date": "20260708T000000Z", "value": value}]}]})
+
+    session = SimpleNamespace(get=transport)
+    entity = hk._Entity("fixture", "TEST.HK", "Fixture", "Fixture", ["fixture"])
+    with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep), \
+         patch.object(_gc, "wait_turn", wraps=_gc.wait_turn) as old_gate:
+        frame = hk._fetch_entity(entity, session)
+    assert frame is not None and len(frame) == 1
+    assert frame.iloc[0]["avg_tone"] == 3.0
+    if not volume_error:
+        assert frame.iloc[0]["vol_intensity"] == 2.0
+    assert modes == ["timelinevol", "timelinetone"]
+    assert starts[1] - starts[0] == pytest.approx(0.02 + hk._REQUEST_GAP)
+    assert len(clock.sleeps) == 1
+    old_gate.assert_not_called()
+    _assert_stamp_lock(stamp_file, held=False)
+
+
+@pytest.mark.parametrize("outcome", ["ok", "http_error", "read_error"])
+def test_missing_tape_guards_open_read_and_close(tmp_path, outcome):
+    from engine import missing_tape_gdelt as mt
+    from urllib.error import HTTPError
+
+    clock = _VirtualClock()
+    stamp_file = tmp_path / "last_request"
+    records = [{"date": "20260708", "value": 2.0}]
+    calls, closes = [], []
+    response = MagicMock()
+    response.__enter__.return_value = response
+    response.getcode.return_value = 200
+
+    def read():
+        _assert_stamp_lock(stamp_file, held=True)
+        clock.t += 0.02
+        if outcome == "read_error":
+            raise OSError("fixture response read failure")
+        return json.dumps({"timeline": records}).encode()
+
+    def close(*args):
+        _assert_stamp_lock(stamp_file, held=True)
+        closes.append("closed")
+
+    response.read.side_effect = read
+    response.__exit__.side_effect = close
+
+    def urlopen(req, *, timeout):
+        _assert_stamp_lock(stamp_file, held=True)
+        assert timeout == 30
+        calls.append(req.full_url)
+        if outcome == "http_error":
+            clock.t += 0.02
+            raise HTTPError(req.full_url, 503, "fixture", {}, None)
+        return response
+
+    with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep), \
+         patch.object(mt.urllib.request, "urlopen", side_effect=urlopen):
+        result = mt._fetch_gdelt("https://example.invalid/fixture")
+    expected = (records, "ok") if outcome == "ok" else (
+        [], "http_503" if outcome == "http_error" else "error")
+    assert result == expected
+    assert calls == ["https://example.invalid/fixture"]
+    assert closes == ([] if outcome == "http_error" else ["closed"])
+    assert float(stamp_file.read_text()) == pytest.approx(1000.02)
+    _assert_stamp_lock(stamp_file, held=False)
+
+
+@pytest.mark.parametrize("caller", ["hk", "missing_tape"])
+def test_timeline_breaker_bypass_keeps_one_unpaced_transport(tmp_path, caller):
+    from collectors import hk_gdelt as hk
+    from engine import missing_tape_gdelt as mt
+
+    stamp_file = tmp_path / "last_request"
+    _penalty_file(stamp_file).write_text(str(time.time() + 600))
+    response = _make_response(200, {"timeline": []})
+    response.__enter__.return_value = response
+    response.getcode.return_value = 200
+    response.read.return_value = b'{"timeline": []}'
+    transport = MagicMock(return_value=response)
+    with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", side_effect=AssertionError("pacing must be bypassed")), \
+         patch.object(_gc, "_sleep", side_effect=AssertionError("pacing must be bypassed")), \
+         patch.object(mt.urllib.request, "urlopen", transport):
+        if caller == "hk":
+            assert hk._gdelt_timeline("fixture", "timelinevol",
+                                      SimpleNamespace(get=transport)) == []
+        else:
+            assert mt._fetch_gdelt("https://example.invalid/fixture") == ([], "empty")
+    assert transport.call_count == 1
+    assert not stamp_file.exists()
+
+
+def test_retry_backoffs_release_lock_and_keep_three_attempt_limit(tmp_path):
+    stamp_file = tmp_path / "last_request"
+    clock = _VirtualClock()
+    backoffs, calls = [], []
+
+    def transport(*args, **kwargs):
+        _assert_stamp_lock(stamp_file, held=True)
+        calls.append("request")
+        return _make_response(429)
+
+    def backoff(seconds):
+        _assert_stamp_lock(stamp_file, held=False)
+        backoffs.append(seconds)
+        clock.t += seconds
+
+    with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep), \
+         patch("requests.get", side_effect=transport), \
+         patch("time.sleep", side_effect=backoff):
+        assert _gc.get_articles(_SAMPLE_PARAMS, min_interval=0.05) == (None, "rate_limited")
+    assert calls == ["request"] * 3
+    assert backoffs == [30, 75]
 
 
 # ── retry / backoff tests ─────────────────────────────────────────────────────
@@ -290,28 +705,42 @@ def test_cross_process_stamp_honoured(tmp_path):
     process must read it and enforce the spacing — proving cross-process pacing works.
     If the code were writing time.monotonic() this test would still pass by accident
     (same-process), but combined with test_stamp_is_wall_clock_unix_time it catches
-    the regression."""
+    the regression.
+
+    Deterministic: the throttle runs on the virtual clock, so the asserted gap is
+    the sleep the throttle requested — no wall-clock measurement."""
     stamp_file = tmp_path / "gdelt" / "last_request"
     stamp_file.parent.mkdir(parents=True, exist_ok=True)
     min_interval = 0.05
+    clock = _VirtualClock()
 
     # Simulate a prior process having fetched 0.5 * min_interval ago
-    prior_ts = time.time() - (min_interval * 0.5)
+    prior_ts = clock.now() - (min_interval * 0.5)
     stamp_file.write_text(str(prior_ts))
 
     request_times: list[float] = []
 
     def _fake_get(*args, **kwargs):
-        request_times.append(time.time())
+        request_times.append(clock.now())
         return _make_response(200, _gdelt_body(["x"]))
 
     with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep), \
          patch("requests.get", side_effect=_fake_get):
         _gc.get_articles(_SAMPLE_PARAMS, min_interval=min_interval)
 
     assert len(request_times) == 1
+    # The throttle must sleep out exactly the remaining half interval, so the
+    # request lands a full min_interval after the prior-process stamp.
+    assert len(clock.sleeps) == 1, (
+        f"expected exactly one pacing sleep; got {clock.sleeps}"
+    )
+    assert abs(clock.sleeps[0] - min_interval * 0.5) < 1e-9, (
+        f"throttle requested sleep {clock.sleeps[0]!r}; expected {min_interval * 0.5}s"
+    )
     elapsed_since_prior = request_times[0] - prior_ts
-    assert elapsed_since_prior >= min_interval * 0.9, (
+    assert elapsed_since_prior >= min_interval - 1e-9, (
         f"request fired only {elapsed_since_prior:.4f}s after prior-process stamp "
         f"(expected >= {min_interval}s); cross-process pacing not honoured"
     )
@@ -364,20 +793,37 @@ def test_non_json_unknown_text_still_retried_as_rate_limit(tmp_path):
 # ── public wait_turn gate (timeline-endpoint callers) ─────────────────────────
 
 def test_wait_turn_public_gate_spaces_calls(tmp_path):
-    """wait_turn() — used by hk_gdelt / missing_tape_gdelt / macro_news which keep
-    their own transport — must honour the same cross-process stamp as get_articles."""
+    """The compatibility wait_turn() must still honour the shared stamp.
+
+    Deterministic: wait_turn routes through _throttle, which runs on the virtual
+    clock, so we assert the requested sleep and the persisted stamp delta instead
+    of timing the second call with a wall clock (a scheduler pause between the
+    first stamp and a monotonic t0 could otherwise shrink the measured gap)."""
     stamp_file = tmp_path / "gdelt" / "last_request"
     stamp_file.parent.mkdir(parents=True, exist_ok=True)
     min_interval = 0.05
+    clock = _VirtualClock()
 
-    with patch.object(_gc, "_stamp_path", return_value=stamp_file):
+    with patch.object(_gc, "_stamp_path", return_value=stamp_file), \
+         patch.object(_gc, "_now", clock.now), \
+         patch.object(_gc, "_sleep", clock.sleep):
         _gc.wait_turn(min_interval)          # claims the slot
-        t0 = time.monotonic()
+        first_stamp = float(stamp_file.read_text())
         _gc.wait_turn(min_interval)          # must wait out the interval
-        gap = time.monotonic() - t0
+        last_stamp = float(stamp_file.read_text())
 
-    assert gap >= min_interval * 0.9, (
-        f"second wait_turn returned after only {gap:.4f}s; expected >= {min_interval}s"
+    # Exactly one pacing sleep, for the full interval: with the clock frozen
+    # between calls the second wait_turn had zero elapsed credit.
+    assert len(clock.sleeps) == 1, (
+        f"expected exactly one pacing sleep; got {clock.sleeps}"
+    )
+    assert abs(clock.sleeps[0] - min_interval) < 1e-9, (
+        f"throttle requested sleep {clock.sleeps[0]!r}; expected {min_interval}s"
+    )
+    # The persisted stamp advanced by the same interval — the gap the next
+    # process will observe when it reads the stamp file.
+    assert abs(last_stamp - first_stamp - min_interval) < 1e-9, (
+        f"stamp advanced {last_stamp - first_stamp!r}s; expected {min_interval}s"
     )
 
 
@@ -476,7 +922,7 @@ def test_breaker_disabled_when_cooldown_zero(tmp_path):
 
 
 def test_wait_turn_short_circuits_when_breaker_active(tmp_path):
-    """wait_turn() (timeline-endpoint callers) must return immediately — no pacing
+    """The compatibility wait_turn() must return immediately — no pacing
     sleep — while the IP is boxed, instead of burning 6s per doomed call."""
     stamp_file = tmp_path / "gdelt" / "last_request"
     stamp_file.parent.mkdir(parents=True, exist_ok=True)

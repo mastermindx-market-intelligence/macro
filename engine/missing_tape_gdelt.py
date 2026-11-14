@@ -36,7 +36,7 @@ GDELT API reference: https://api.gdeltproject.org/api/v2/timeline/timeline
   Mode:           timelinetone
   Format:         JSON
 
-LEAF module — no engine imports, no scoring inputs, no render side-effects.
+LEAF module — shared GDELT pacing only, no scoring inputs or render side-effects.
 """
 from __future__ import annotations
 
@@ -135,11 +135,14 @@ def _fetch_gdelt(url: str, timeout: int = 30) -> tuple[list[dict], str]:
     Never raises.
     """
     try:
+        from engine import gdelt_client
+
         req = urllib.request.Request(url, headers={"User-Agent": _UA})
         try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                status = resp.getcode()
-                raw = resp.read()
+            with gdelt_client.request_turn(_PACE_SECONDS):
+                with urllib.request.urlopen(req, timeout=timeout) as resp:
+                    status = resp.getcode()
+                    raw = resp.read()
         except urllib.error.HTTPError as http_exc:
             LOG.warning("GDELT fetch HTTP %d for %s — check endpoint or rate limit",
                         http_exc.code, url[:120])
@@ -282,14 +285,7 @@ def update(
     new_rows: list[dict] = []
     n_requests = 0
 
-    def _pace() -> None:
-        # shared per-IP pace gate — coordinates with every other GDELT caller
-        # in the lane (news_vector, macro_news, hk_gdelt, ...), not just this one
-        from engine import gdelt_client
-        gdelt_client.wait_turn(_PACE_SECONDS)
-
     # Onshore (Chinese-language, sourced from China)
-    _pace()
     zh_url = _gdelt_url("China sourcelang:chinese sourcecountry:China")
     zh_records, zh_status = _fetch_gdelt(zh_url)
     n_requests += 1
@@ -301,7 +297,6 @@ def update(
         en_by_date: dict[str, float] = {}
         en_status = "skipped"
     else:
-        _pace()
         en_url = _gdelt_url("China sourcelang:english")
         en_records, en_status = _fetch_gdelt(en_url)
         n_requests += 1
