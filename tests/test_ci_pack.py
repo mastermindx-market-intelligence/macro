@@ -6001,18 +6001,39 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 # The Start-page regression adds one test file to the existing builder step.
 # All three probes select data-base-shim, whose measured weight rises by two.
+# 2026-11-13 (PR #11039, COO ruling 109): the rotation-context suite moved
+# from unrun-builders-stores to defense-rail-laws, which no packing probe
+# selects, so this PR adds no probed weight: job ceilings stay the measured
+# 137/138/132 and weight ceilings return to main's LEGACY table rescaled by
+# rescale_legacy_weight to 11,469/11,542/11,022 (no hand-picked number).
+# Measured on this tree with packing_probe_measurements: index 137/10,954,
+# free-content 138/11,458, plan_book 132/10,927 — all under these ceilings.
+# Full measurement in the ruling-109 paragraph of
+# test_exclusive_curation_narrows_ordinary_code_prs below.
 PACKING_PROBES = (
     ("templates/index.html", 137, 11_469),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 11_542),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 132, 11_022),
 )
 # Twelve packs per shape was the pre-curation measurement.
+# 2026-11-13 (PR #11039, COO ruling 109): the rotation-context suite moved to
+# defense-rail-laws, which no probe selects, so this PR's probed weight is
+# removed and every probe returns to main's own measurement — index 10,954,
+# free-content 11,458, plan_book 10,927, all <= 10*1,146 = 11,460. The pack
+# ceiling therefore returns to 10 (ruling 97's 10 -> 11 re-base is withdrawn:
+# the +5 free-content weight that forced the eleventh pack rode the suite's
+# old unrun-builders-stores home and is gone with the move).
 PACKING_PROBE_MAX_PACKS = 10
 # The weight ceilings above as they stood on the pre-2026-11-11 weight scale.
 # Each live ceiling must equal its legacy value rescaled by run_ci_pack's one
 # WEIGHT_RESCALE ratio (see test_probe_weight_ceilings_follow_the_weight_rescale);
 # job-count ceilings and PACKING_PROBE_MAX_PACKS are not weight-denominated and
 # did not move.
+# 2026-11-13 (PR #11039, COO ruling 109): the rotation-context suite moved to
+# defense-rail-laws, which no probe selects, so this PR's recorded +2 suite
+# token no longer composes onto any probed job. LEGACY returns to main's
+# 6,004/6,042/5,770; the live PACKING_PROBES weight ceilings are these rescaled
+# by rescale_legacy_weight.
 LEGACY_PACKING_PROBE_WEIGHT_CEILINGS = {
     "templates/index.html": 6_004,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     "scripts/build_free_content.py": 6_042,  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
@@ -6041,6 +6062,34 @@ def test_probe_weight_ceilings_follow_the_weight_rescale() -> None:
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-13 (PR #11039, COO ruling 109, answer to escalation #18 option
+    (a)): the rotation-context suite move was tried and landed.
+    tests/test_rotation_context_capture.py imports only
+    engine.rotation_context_capture, pandas, pytest and the standard library
+    and reaches none of the three probe files, yet its token rode
+    unrun-builders-stores, which all three probes select (+5 weight each) —
+    the conditional V11 17.3 rule's first branch: move the suite to a job the
+    probes do not select before accepting an eleventh pack. The target is
+    defense-rail-laws: gate: code; no probe selects it, re-checked with the
+    same select_jobs the measurement uses AFTER the path addition; its curated
+    exclusive scope already covers the suite's whole scripts/collect.py import
+    closure (the one path added is tests/test_rotation_context_capture.py
+    itself; engine/rotation_context_capture.py matches its engine/*.py glob and
+    scripts/collect.py was already declared); and its install line already
+    carries pytest+pandas+pyarrow (clean-venv proof: 7 passed). Re-measured on
+    this tree with packing_probe_measurements over .github/ci/legacy-jobs.yml
+    (max_packs=10): index 137/10,954, free-content 138/11,458, plan_book
+    132/10,927, at PACK_TARGET_SECONDS 1,146 — exactly main's own numbers,
+    because the move removes all of this pull request's probed weight
+    (+0/+0/+0 weight, +0 jobs, +0 packs). LEGACY therefore returns to main's
+    6,004/6,042/5,770 and the live ceilings to main's rescale
+    11,469/11,542/11,022 — no hand-picked number. Every probe packs into 10
+    (free-content 11,458 <= 10*1,146 = 11,460), so PACKING_PROBE_MAX_PACKS
+    returns to 10 and ruling 97's 10 -> 11 re-base is withdrawn. Job ceilings
+    stay the measured 137/138/132 (the plan_book entrant group-read-surface
+    job is main's lane 1); every selector and every assertion is unchanged;
+    main's ruling-83 and #11174-train paragraphs below are kept verbatim.
 
     2026-11-13 (merge of main c11c5131 carrying the lane 1 #10929 stack and
     #11151, COO ruling 83): main's LEGACY table is 6,002/6,040/5,768 over live
@@ -6391,6 +6440,26 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5968/5989/5726, retaining job ceilings. This is source-derived
     accounting, not a new planner execution; natural successor CI must
     qualify this head.
+
+    2026-11-11 (PR #11039, rotation-context capture suite accounting):
+    local full tests/test_ci_pack.py run on head 909318caa546 (base
+    7d0326771ea7) measured all three probes exactly +2 over ceiling
+    (index 5,968 > 5,966; free 5,989 > 5,987; Prophet 5,726 > 5,724),
+    jobs stay 137/138/131, ten packs, no job enters or leaves. The +2 is
+    the suite token for tests/test_rotation_context_capture.py appended to
+    the existing unrun-builders-stores step beside
+    tests/test_collect_lane_gate.py — no new owner, job or selector.
+    If PR #11024 (same +2 shape) lands first, the later of the two
+    re-measures and composes its own +2.
+    Conflict composition 2026-11-11: receiving main 514de3050cc8 already
+    carries PR #9230's landed free-content +2 (5,987 -> 5,989; its two
+    provenance paragraphs below are retained verbatim). Re-measured at
+    the merged tree with main's current ceilings in place:
+    index 5,968 > 5,966; free 5,991 > 5,989; Prophet 5,726 > 5,724 —
+    this pull request's own excess is still exactly +2/+2/+2, additive on
+    main's #9230 state, jobs stay 137/138/131, ten packs, no job enters
+    or leaves. Fund exactly 5966/5989/5724 -> 5968/5991/5726; job
+    ceilings, selectors and the ten-pack bound unchanged.
 
     2026-11-10 (PR #10571, current-main preserving composition):
     Receiver cfd3834d retains its landed F09, ownership-ledger,
