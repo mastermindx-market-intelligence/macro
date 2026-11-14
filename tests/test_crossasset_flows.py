@@ -49,13 +49,13 @@ _HERO_CASES = [
 
 @pytest.mark.parametrize("breadth,concentration,expected_tone", _HERO_CASES)
 def test_hero_tone(breadth, concentration, expected_tone):
-    h = _compose_hero(breadth, concentration)
+    h = _compose_hero(breadth, concentration, {"diversified": .1, "converging": .5, "concentrated": .9}.get(concentration))
     assert h["tone"] == expected_tone, f"({breadth}, {concentration}) -> {h['tone']!r} != {expected_tone!r}"
 
 
 def test_hero_has_all_bilingual_keys():
     for breadth, concentration, _ in _HERO_CASES:
-        h = _compose_hero(breadth, concentration)
+        h = _compose_hero(breadth, concentration, {"diversified": .1, "converging": .5, "concentrated": .9}.get(concentration))
         for key in ("tone", "headline_en", "headline_zh", "sub_en", "sub_zh", "stance_en", "stance_zh"):
             assert key in h
             assert isinstance(h[key], str) and h[key], f"key {key!r} empty for ({breadth},{concentration})"
@@ -75,13 +75,13 @@ def test_hero_unknown_concentration_is_breadth_only(
     Supersedes the old unknown == diversified test: those rows made correlation
     claims, so their wording was not actually a breadth-only fallback.
     """
-    h = _compose_hero(breadth, concentration)
+    h = _compose_hero(breadth, concentration, {"diversified": .1, "converging": .5, "concentrated": .9}.get(concentration))
     assert h == {
         "tone": tone,
         "headline_en": headline_en,
         "headline_zh": headline_zh,
-        "sub_en": "Correlation data is unavailable; we can't tell whether markets are moving independently.",
-        "sub_zh": "暂无相关性数据，无法判断各市场是否独立运行。",
+        "sub_en": "Historical concentration rank is unavailable; diversification cannot be inferred.",
+        "sub_zh": "暂无集中度历史排名，无法据此判断分散化效果。",
         "stance_en": "Watch — diversification is unverified.",
         "stance_zh": "留意——分散化效果尚不明确。",
     }
@@ -123,10 +123,10 @@ def _render_hero(correlation):
 ])
 def test_unavailable_gauge_has_bilingual_disclosure_without_invented_value(correlation):
     html = _render_hero(correlation)
-    assert "Correlation data not available this build." in html
-    assert "本次构建暂无相关性数据。" in html
-    assert "Mostly independent" not in html
-    assert "大体独立" not in html
+    assert "Historical concentration rank is unavailable." in html
+    assert "暂无集中度历史排名。" in html
+    assert "Low historical rank" not in html
+    assert "历史排名较低" not in html
     assert ">0%</text>" not in html
     assert 'aria-label="Correlation absorption gauge"' not in html
 
@@ -136,19 +136,19 @@ def test_unavailable_gauge_has_bilingual_disclosure_without_invented_value(corre
 ])
 def test_invalid_percentile_uses_unavailable_state(value):
     html = _render_hero({"verdict": "diversified", "absorption_pctile_5y": value})
-    assert "Correlation data not available this build." in html
-    assert "本次构建暂无相关性数据。" in html
-    assert "Mostly independent" not in html
+    assert "Historical concentration rank is unavailable." in html
+    assert "暂无集中度历史排名。" in html
+    assert "Low historical rank" not in html
     assert 'aria-label="Correlation absorption gauge"' not in html
 
 
 @pytest.mark.parametrize("verdict", ["diversified", "converging", "concentrated"])
 @pytest.mark.parametrize("value,percent,en,zh", [
-    (0.0, 0, "Mostly independent", "大体独立"),
-    (0.25, 25, "Mostly independent", "大体独立"),
-    (0.5, 50, "Partial overlap", "部分联动"),
-    (0.8, 80, "Markets moving together", "各市场同步运动"),
-    (1.0, 100, "Markets moving together", "各市场同步运动"),
+    (0.0, 0, "Low historical rank", "历史排名较低"),
+    (0.25, 25, "Low historical rank", "历史排名较低"),
+    (0.5, 50, "Middle historical rank", "历史排名居中"),
+    (0.8, 80, "High historical rank", "历史排名较高"),
+    (1.0, 100, "High historical rank", "历史排名较高"),
 ])
 def test_known_gauge_retains_values_and_bilingual_labels(verdict, value, percent, en, zh):
     html = _render_hero({"verdict": verdict, "absorption_pctile_5y": value})
@@ -156,7 +156,7 @@ def test_known_gauge_retains_values_and_bilingual_labels(verdict, value, percent
     assert en in html
     assert zh in html
     assert 'aria-label="Correlation absorption gauge"' in html
-    assert "Correlation data not available this build." not in html
+    assert "Historical concentration rank is unavailable." not in html
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -566,3 +566,77 @@ def test_history_row_schema_fields(tmp_path):
     assert row["funding_state"] == "tightening"
     assert row["confirm_verdict"] == "diverge"
     assert row["dollar_dir"] == "strengthening"
+
+
+
+def _relative_correlation_block(rho, n, seed):
+    rng = np.random.default_rng(seed)
+    x = rng.normal(size=(n, 6)); x -= x.mean(axis=0)
+    q, _ = np.linalg.qr(x)
+    corr = np.full((6, 6), rho); np.fill_diagonal(corr, 1.)
+    return q @ np.linalg.cholesky(corr).T * np.sqrt(n - 1) * .005
+
+
+@pytest.mark.parametrize('current,pasts', [(.95, [.995, .01]), (.08, [.0, .95])])
+def test_paired_history_native_loader_and_full_bilingual_page(monkeypatch, tmp_path, current, pasts):
+    from engine import cross_asset as ca
+    from jinja2 import FileSystemLoader
+    outputs = []
+    now = _relative_correlation_block(current, 63, 2855)
+    for past in pasts:
+        returns = np.vstack([np.tile(_relative_correlation_block(past, 63, 2856), (20, 1)), now])
+        dates = pd.bdate_range('2020-01-01', periods=len(returns) + 1)
+        stores = {}
+        for i, (_, (group, sid, sign)) in enumerate(ca.DEFAULT_MARKETS.items()):
+            prices = 100 * np.cumprod(np.r_[1., 1 + returns[:, i] * sign])
+            stores[group, sid] = pd.DataFrame({'close': prices}, index=dates)
+        monkeypatch.setattr(ca.store, 'read', lambda group, sid: stores.get((group, sid)))
+        monkeypatch.setattr(ca.config, 'load', lambda: {})
+        loaded = ca.returns_frame()
+        np.testing.assert_allclose(loaded.to_numpy(), returns, atol=1e-14)
+        corr = ca.snapshot(); outputs.append(corr)
+        assert corr['absorption_ratio'] == pytest.approx((1+5*current)/6, abs=.00051)
+        assert corr['mean_abs_corr'] == pytest.approx(current, abs=.00051)
+        env = Environment(loader=FileSystemLoader(str(Path(__file__).resolve().parents[1]/'templates')), autoescape=True)
+        snap = _make_mock_snap()
+        ctx = dict(as_of=snap['asof'], built='synthetic', regime=snap['regime'], breadth=.5,
+                   trend=snap['trend'], ratios=snap['ratios'], carry=snap['carry'], correlation=corr,
+                   note='synthetic', leadlag=None, dollar_factor=None, liquidity=None, liq_spark='',
+                   funding=None, fund_spark='', hero=_compose_hero(.5,corr['verdict'],corr['absorption_pctile_5y']),
+                   ar_spark='', confirm=None, dollar=None, shadow=None)
+        html = env.get_template('crossasset.html.j2').render(**ctx)
+        (tmp_path/f'correlation-{current}-history-{past}.html').write_text(html)
+        for forbidden in ['genuinely different bets', 'Diversification is working', 'correlation is rising',
+                          'Mostly independent', '>Indep.</text>', '>One bet</text>', '>vs 5y</text>',
+                          '分散化效果良好', '市场相关性上升']:
+            assert forbidden not in html
+        assert 'available history' in html and '可用历史分位' in html
+        assert 'does not establish diversification' in html and '不能证明分散化效果' in html
+    for key in ['corr_matrix','pc1_loadings','absorption_ratio','mean_abs_corr','dominant_cluster']:
+        assert outputs[0][key] == outputs[1][key]
+    assert {o['verdict'] for o in outputs} == {'diversified','concentrated'}
+
+
+ROOT = Path(__file__).resolve().parents[1]
+@pytest.mark.parametrize('breadth',[-.5,0,.5])
+@pytest.mark.parametrize('v,p',[('diversified',.1),('converging',.5),('concentrated',.9)])
+def test_hero_rank_only_and_tone_preserved(breadth,v,p):
+ result=_compose_hero(breadth,v,p)
+ assert result['tone']==('red' if breadth < -.34 else 'green' if breadth >= .34 and v=='diversified' else 'amber')
+ assert 'history' in result['sub_en'] or 'historical' in result['sub_en']
+ assert '历史' in result['sub_zh']
+ assert 'does not establish diversification' in result['stance_en']
+@pytest.mark.parametrize('p',[None,float('nan'),float('inf'),True,-.1,1.1,'0.5'])
+def test_missing_rank_is_not_middle(p):
+ assert 'unavailable' in _compose_hero(.5,'converging',p)['sub_en']
+ assert 'unavailable' in _compose_hero(.5,'converging')['sub_en']
+@pytest.mark.parametrize('v,p,word',[('diversified',.1,'low'),('converging',.5,'middle'),('concentrated',.9,'high'),('converging',None,None)])
+def test_actual_template_rank_branch(v,p,word):
+ s=(ROOT/'templates/crossasset.html.j2').read_text();start=s.index('{% if correlation is not none',s.index('{# ── §02'));end=s.index('    {# Absorption sparkline',start)
+ # Real selected template prefix only; its conditional closes outside this slice.
+ tmpl=Environment(autoescape=True).from_string(s[start:end]+'{% endif %}')
+ for lang in [0,1]:
+  out=tmpl.render(_abs_available=p is not None,correlation={'verdict':v},t=lambda en,zh:(en,zh)[lang])
+  if word and lang == 0:
+   assert word in out and ('history' in out or 'historical' in out)
+  if p is None:assert ('unavailable' if lang==0 else '暂无') in out

@@ -253,7 +253,7 @@
 
     {# ONE-BET METER — SVG arc gauge #}
     <div class="gauge-wrap">
-      <div class="gauge-label">{{ t('One bet?', '同一笔押注？') }}</div>
+      <div class="gauge-label">{{ t('Concentration rank', '集中度排名') }}</div>
       {# Gauge: circle r=44, cx=55,cy=55.
          Rotated -120° (to start at bottom-left, end at bottom-right, gap faces bottom).
          Track arc = 240° = 184.31px of 276.46px circumference.
@@ -273,22 +273,22 @@
           {% endif %}
         </g>
         {# Zone labels positioned outside — bottom-left, top, bottom-right #}
-        <text x="8"  y="94" font-size="8" fill="var(--up,#45b873)"   text-anchor="start" font-weight="600" class="l-en">Indep.</text>
-        <text x="8"  y="94" font-size="8" fill="var(--up,#45b873)"   text-anchor="start" font-weight="600" class="l-zh">各自</text>
-        <text x="55" y="14" font-size="8" fill="var(--muted)"         text-anchor="middle" font-weight="600" class="l-en">Mixed</text>
-        <text x="55" y="14" font-size="8" fill="var(--muted)"         text-anchor="middle" font-weight="600" class="l-zh">联动</text>
-        <text x="102" y="94" font-size="8" fill="var(--down,#e06464)" text-anchor="end"   font-weight="600" class="l-en">One bet</text>
-        <text x="102" y="94" font-size="8" fill="var(--down,#e06464)" text-anchor="end"   font-weight="600" class="l-zh">同一押注</text>
+        <text x="8"  y="94" font-size="8" fill="var(--up,#45b873)"   text-anchor="start" font-weight="600" class="l-en">Low</text>
+        <text x="8"  y="94" font-size="8" fill="var(--up,#45b873)"   text-anchor="start" font-weight="600" class="l-zh">低位</text>
+        <text x="55" y="14" font-size="8" fill="var(--muted)"         text-anchor="middle" font-weight="600" class="l-en">Middle</text>
+        <text x="55" y="14" font-size="8" fill="var(--muted)"         text-anchor="middle" font-weight="600" class="l-zh">中位</text>
+        <text x="102" y="94" font-size="8" fill="var(--down,#e06464)" text-anchor="end"   font-weight="600" class="l-en">High</text>
+        <text x="102" y="94" font-size="8" fill="var(--down,#e06464)" text-anchor="end"   font-weight="600" class="l-zh">高位</text>
         {# Center pctile #}
         <text x="55" y="55" font-size="18" font-weight="800" fill="{{ _hero_col }}" text-anchor="middle" dominant-baseline="middle" font-variant-numeric="tabular-nums">{{ _abs_pct }}%</text>
-        <text x="55" y="68" font-size="8.5" fill="var(--muted)" text-anchor="middle" class="l-en">vs 5y</text>
-        <text x="55" y="68" font-size="8.5" fill="var(--muted)" text-anchor="middle" class="l-zh">5年分位</text>
+        <text x="55" y="68" font-size="8.5" fill="var(--muted)" text-anchor="middle" class="l-en">available history</text>
+        <text x="55" y="68" font-size="8.5" fill="var(--muted)" text-anchor="middle" class="l-zh">可用历史分位</text>
       </svg>
       <div class="gauge-label" style="max-width:96px">
-        {% if _abs_pct >= 80 %}{{ t('Markets moving together', '各市场同步运动') }}
-        {% elif _abs_pct >= 50 %}{{ t('Partial overlap', '部分联动') }}
-        {% else %}{{ t('Mostly independent', '大体独立') }}{% endif %}
-      </div>{% else %}<p class="muted sm">{{ t('Correlation data not available this build.', '本次构建暂无相关性数据。') }}</p>{% endif %}
+        {% if _abs_pct >= 80 %}{{ t('High historical rank', '历史排名较高') }}
+        {% elif _abs_pct >= 50 %}{{ t('Middle historical rank', '历史排名居中') }}
+        {% else %}{{ t('Low historical rank', '历史排名较低') }}{% endif %}
+      </div>{% else %}<p class="muted sm">{{ t('Historical concentration rank is unavailable.', '暂无集中度历史排名。') }}</p>{% endif %}
     </div>
   </div>
 
@@ -405,8 +405,9 @@
 </div>
 <div class="card">
   {% if correlation is not none and correlation.verdict is not none and correlation.verdict != 'unknown' %}
-    {% set _corr_map = {'concentrated': ('var(--down,#e06464)', 'Markets moving as one trade. Diversification is thin right now.', '市场如同一笔交易，分散化效果薄弱。'), 'converging': ('var(--warn,#e0a030)', 'Markets are converging — correlation is rising.', '市场相关性上升，逐渐趋同。'), 'diversified': ('var(--up,#45b873)', 'Markets are behaving independently. Diversification is working.', '市场各自独立运行，分散化效果良好。')} %}
+    {% set _corr_map = {'concentrated': ('var(--down,#e06464)', 'Concentration is high relative to its available history.', '集中度处于自身可用历史的较高区间。'), 'converging': ('var(--warn,#e0a030)', 'Concentration is in the middle of its available historical range.', '集中度处于自身可用历史的中间区间。'), 'diversified': ('var(--up,#45b873)', 'Concentration is low relative to its available history.', '集中度处于自身可用历史的较低区间。')} %}
     {% set _ccol = _corr_map.get(correlation.verdict, ('var(--muted)', 'Mixed read', '信号混合')) %}
+    {% if not _abs_available %}{% set _ccol = ('var(--muted)', 'Historical concentration rank is unavailable.', '暂无集中度历史排名。') %}{% endif %}
     <p style="font-size:14px;color:var(--text);margin:0 0 10px;font-weight:500">
       {{ t(_ccol[1], _ccol[2]) }}
     </p>
@@ -461,11 +462,11 @@
     </details>
     {% endif %}
   {% else %}
-    <p class="muted sm">{{ t('Correlation data not available this build.', '本次构建暂无相关性数据。') }}</p>
+    <p class="muted sm">{{ t('Historical concentration rank is unavailable.', '暂无集中度历史排名。') }}</p>
   {% endif %}
   <p class="ca-note">
-    {{ t('Concentration rises when assets move together — good for momentum, bad for diversification.',
-        '当各资产同步运动时集中度上升——对动量有利，对分散化不利。') }}
+    {{ t('Historical rank alone does not establish diversification or a change in concentration.',
+        '历史排名本身不能证明分散化效果或集中度的变化方向。') }}
   </p>
 </div>
 
@@ -809,3 +810,4 @@
 <script src="theme.js"></script>
 </body>
 </html>
+

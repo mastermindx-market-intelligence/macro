@@ -49,7 +49,7 @@ def _sparkline(vals, w: int = 180, h: int = 38, pad: int = 3) -> str:
 # ---------------------------------------------------------------------------
 # Hero composition — deterministic bilingual matrix (CA-W3 spec)
 # ---------------------------------------------------------------------------
-def _compose_hero(breadth: float | None, corr_verdict: str | None) -> dict:
+def _compose_hero(breadth: float | None, corr_verdict: str | None, absorption_pctile: float | None = None) -> dict:
     """Map (breadth_regime, concentration) -> hero dict per the CA-W3 matrix.
 
     breadth_regime: risk_on (>=0.34) | risk_off (<=-0.34) | mixed
@@ -60,90 +60,32 @@ def _compose_hero(breadth: float | None, corr_verdict: str | None) -> dict:
     breadth_regime = "risk_on" if b >= 0.34 else "risk_off" if b <= -0.34 else "mixed"
     concentration = corr_verdict if corr_verdict in ("concentrated", "converging", "diversified") else "unknown"
 
-    # Matrix: (breadth_regime, concentration) -> (tone, headline_en, headline_zh, sub_en, sub_zh, stance_en, stance_zh)
-    _M: dict[tuple[str, str], tuple[str, str, str, str, str, str, str]] = {
-        ("risk_on",  "diversified"): (
-            "green",
-            "Risk appetite is broad — and healthy",
-            "风险偏好广泛而健康",
-            "Most assets are trending up, each for its own reasons.",
-            "多数资产趋势向上，且各自独立驱动。",
-            "Different markets are genuinely different bets right now.",
-            "当前不同市场确实是不同的投资判断。",
-        ),
-        ("risk_on",  "converging"): (
-            "amber",
-            "Risk-on, with markets starting to move together",
-            "风险偏好上升，市场开始同步",
-            "Most assets are trending up, but they're increasingly the same trade.",
-            "多数资产上行，但相似度在上升。",
-            "Watch — holding several markets is starting to mean one bet.",
-            "留意——同时持有多个市场正逐渐变成同一笔押注。",
-        ),
-        ("risk_on",  "concentrated"): (
-            "amber",
-            "Risk-on — but it's one crowded trade",
-            "风险偏好高涨——但这是一笔拥挤的交易",
-            "Most assets are rising together, driven by the same force.",
-            "多数资产同涨，由同一股力量驱动。",
-            "Careful: different markets are one bet right now — they can fall together too.",
-            "小心：不同市场当前是同一笔押注——下跌时也会一起跌。",
-        ),
-        ("mixed",    "diversified"): (
-            "amber",
-            "No clear trend — markets are going their own ways",
-            "没有明确趋势——各市场各走各路",
-            "Trends are split across assets, with little shared direction.",
-            "各资产趋势分化，缺乏共同方向。",
-            "Nothing to chase — pick your spots market by market.",
-            "无需追逐——逐个市场把握机会。",
-        ),
-        ("mixed",    "converging"): (
-            "amber",
-            "No clear trend, but markets are syncing up",
-            "趋势不明，但市场正在同步",
-            "Trends are split, yet assets increasingly move together.",
-            "趋势分化，但资产联动在增强。",
-            "Watch — don't chase; a single driver is taking over.",
-            "观望勿追——单一驱动力正在接管。",
-        ),
-        ("mixed",    "concentrated"): (
-            "amber",
-            "Markets are one bet without a clear direction",
-            "市场已成同一笔押注，方向却不明",
-            "Assets are tightly linked but not trending — fragile either way.",
-            "资产高度联动却无趋势——上下皆脆弱。",
-            "Stand aside from stacking similar positions.",
-            "避免叠加相似仓位。",
-        ),
-        ("risk_off", "diversified"): (
-            "red",
-            "Defensive trends are taking over",
-            "防御性趋势正在主导",
-            "More assets are falling than rising; havens are winning.",
-            "下跌资产多于上涨，避险资产占优。",
-            "Protect gains — favor the safe side of the board.",
-            "保住盈利——偏向防御类资产。",
-        ),
-        ("risk_off", "converging"): (
-            "red",
-            "Risk-off is spreading across markets",
-            "风险规避正在跨市场蔓延",
-            "Defensive trends are broadening and assets are syncing up.",
-            "防御趋势扩散，资产联动上升。",
-            "Protect gains — reduce lookalike positions.",
-            "保住盈利——减少相似仓位。",
-        ),
-        ("risk_off", "concentrated"): (
-            "red",
-            "Risk-off, and everything is falling together",
-            "风险规避，且各资产同步下跌",
-            "One force is dragging most assets down at once.",
-            "同一股力量正同时拖累多数资产。",
-            "Protect gains — diversification isn't protecting you right now.",
-            "保住盈利——当前分散投资并不能保护你。",
-        ),
+    # Verdict IDs retain their numerical contract; display only historical rank.
+    rank_available = (isinstance(absorption_pctile, (int, float))
+                      and not isinstance(absorption_pctile, bool)
+                      and 0 <= absorption_pctile <= 1)
+    if not rank_available:
+        concentration = "unknown"
+    breadth_words = {
+        "risk_on": ("Upward trends are broader", "上涨趋势更广泛"),
+        "mixed": ("Trends remain mixed", "趋势仍然分化"),
+        "risk_off": ("Downward trends are broader", "下跌趋势更广泛"),
     }
+    rank_words = {
+        "diversified": ("Concentration is low relative to its available history.", "集中度处于自身可用历史的较低区间。"),
+        "converging": ("Concentration is in the middle of its available historical range.", "集中度处于自身可用历史的中间区间。"),
+        "concentrated": ("Concentration is high relative to its available history.", "集中度处于自身可用历史的较高区间。"),
+    }
+    _M = {}
+    for regime, (hl_en, hl_zh) in breadth_words.items():
+        for verdict, (sub_en, sub_zh) in rank_words.items():
+            tone = ("red" if regime == "risk_off" else "green"
+                    if regime == "risk_on" and verdict == "diversified" else "amber")
+            _M[(regime, verdict)] = (
+                tone, hl_en, hl_zh, sub_en, sub_zh,
+                "Historical rank alone does not establish diversification or a change in concentration.",
+                "历史排名本身不能证明分散化效果或集中度的变化方向。",
+            )
 
     key = (breadth_regime, concentration)
     if key not in _M:
@@ -158,8 +100,8 @@ def _compose_hero(breadth: float | None, corr_verdict: str | None) -> dict:
             "tone": _M[(breadth_regime, "diversified")][0],
             "headline_en": hl_en,
             "headline_zh": hl_zh,
-            "sub_en": "Correlation data is unavailable; we can't tell whether markets are moving independently.",
-            "sub_zh": "暂无相关性数据，无法判断各市场是否独立运行。",
+            "sub_en": "Historical concentration rank is unavailable; diversification cannot be inferred.",
+            "sub_zh": "暂无集中度历史排名，无法据此判断分散化效果。",
             "stance_en": "Watch — diversification is unverified.",
             "stance_zh": "留意——分散化效果尚不明确。",
         }
@@ -361,7 +303,8 @@ def main() -> int:
     # ── hero composition ────────────────────────────────────────────────────
     _corr_snap = snap.get("correlation") or {}
     _corr_verdict = _corr_snap.get("verdict") if isinstance(_corr_snap, dict) else None
-    hero = _compose_hero(snap.get("breadth"), _corr_verdict)
+    hero = _compose_hero(snap.get("breadth"), _corr_verdict,
+                         _corr_snap.get("absorption_pctile_5y") if isinstance(_corr_snap, dict) else None)
 
     # absorption weekly sparkline (from cross_asset.snapshot — already computed)
     _ar_spark_w = _corr_snap.get("absorption_spark_w") if isinstance(_corr_snap, dict) else None
@@ -531,3 +474,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
