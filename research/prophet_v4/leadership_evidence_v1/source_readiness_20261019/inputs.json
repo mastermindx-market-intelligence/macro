@@ -1,0 +1,24 @@
+{
+  "snapshot": "3091c8895028db57c06809593079896f85e3efc1",
+  "inputs": [
+    {
+      "path": "data/baskets/membership.json",
+      "git_blob": "42149e59b72987f8510df149322c41b266aa6f92",
+      "bytes": 312808,
+      "sha256": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae"
+    },
+    {
+      "path": "data/reference/security_master.parquet",
+      "git_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
+      "bytes": 106439,
+      "sha256": "c05bdcf2e5ece8d167a40d5d60eb33e054561f42947d5b9a7ef21eda63867b72"
+    },
+    {
+      "path": "data/reference/vendor_aliases.parquet",
+      "git_blob": "b76d4f88238aef60d4db8b6bb259932d021d0648",
+      "bytes": 70990,
+      "sha256": "d6eaabba0f737ec1e454a9211bf8be205851f4735415d71f8afd4f48bbefa8de"
+    }
+  ],
+  "financial_outcomes_read": false
+}

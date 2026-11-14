@@ -1,0 +1,6 @@
+.....ss................................................................. [ 73%]
+..........................                                               [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_group_flow.py:97: no equity cache in this checkout
+SKIPPED [1] tests/test_group_flow.py:118: validation_meta.json not generated
+96 passed, 2 skipped, 2 warnings in 6.89s

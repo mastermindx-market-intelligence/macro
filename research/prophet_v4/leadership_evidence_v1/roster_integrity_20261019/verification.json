@@ -1,0 +1,53 @@
+{
+  "base": "5913c2303416fa21d4520a27f15323135a37a02a",
+  "direct_work_reason": "LOWER_TOTAL_OVERHEAD: bounded diagnosed two-function repair; held sibling compiler and capture lanes untouched.",
+  "financial_outcomes_read": false,
+  "hosted_checks_accepted": false,
+  "independent_review_accepted": false,
+  "logs": {
+    "baseline": {
+      "bytes": 122,
+      "sha256": "61bc6f5c1b94c7e5cf36740bef36dc179f2a4fcc22fd64fcdc05bbcb79755dad"
+    },
+    "green": {
+      "bytes": 434,
+      "sha256": "42fa9f11fa325902ef58eb451fcca9240c3766ea890a3759ac93b582911b5987"
+    },
+    "red": {
+      "bytes": 25721,
+      "sha256": "e43dc911fda183ea571d052265dd5557562f84a02ccefa8c48e2bc66785bda5c"
+    },
+    "related": {
+      "bytes": 1083,
+      "sha256": "498ce6f6e7bc71c4bdd5342201d4489da381e3e6597faabab741bdb5ef4fe9e6"
+    }
+  },
+  "observed_runs": {
+    "baseline": {
+      "passed": 61,
+      "skipped": 2
+    },
+    "green": {
+      "passed": 96,
+      "skipped": 2
+    },
+    "red": {
+      "deselected": 63,
+      "failed": 29,
+      "passed": 6
+    },
+    "related": {
+      "passed": 279,
+      "skipped": 8
+    }
+  },
+  "production_acceptance": false,
+  "source_preimage_blob": "af0d5f671edded697c03a827976d207bb2b7e7a3",
+  "source_sha256": "5ac5e394284844b772cefce0ef26bd5bb691acd1cfc5db17faa8a8b24e4403c0",
+  "tests_sha256": "94bfa71edbdf53738d92c97b6ca1355ecf7081af3e29b0bcf9eeb65f77293ef2",
+  "valid_input_compatibility": {
+    "seed": 20261019,
+    "synthetic_scenarios": 200,
+    "whole_output_equalities": 400
+  }
+}

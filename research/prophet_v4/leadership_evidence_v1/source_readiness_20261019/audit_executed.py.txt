@@ -1,0 +1,86 @@
+from pathlib import Path
+from collections import Counter,defaultdict
+from datetime import date
+import json,sys,hashlib,itertools
+ROOT=Path(__file__).resolve().parent
+CODE_ROOT=Path("/Volumes/Mastermind 2/agent-workspaces/macro/web/prophet-peer-roster-integrity-20261019-01a14838")
+sys.path.insert(0,str(CODE_ROOT))
+from engine.us_candidate_episode_intake import load_identity_spine
+asof=date(2026,10,19)
+doc=json.loads((ROOT/"data/baskets/membership.json").read_text())
+spine=load_identity_spine(ROOT/"data")
+by_group=[];all_keys=set();resolve_cache={};global_occurrences=Counter();errors=[]
+back_projected_slots=0
+for group_id,basket in doc["baskets"].items():
+    active=[];invalid=[];unknown_dates=[];excluded=0
+    for i,member in enumerate(basket.get("members",[])):
+        ticker=member.get("ticker")
+        if not isinstance(ticker,str) or not ticker or ticker!=ticker.strip():
+            invalid.append({"row":i,"reason":"INVALID_EXACT_TICKER_KEY"});continue
+        try:
+            added=date.fromisoformat(member["added"])
+            curated=date.fromisoformat(member["curated_added"])
+            removed=date.fromisoformat(member["removed"]) if member.get("removed") else None
+        except (KeyError,TypeError,ValueError):
+            unknown_dates.append(ticker);continue
+        if added<curated:back_projected_slots+=1
+        if added>asof or curated>asof or (removed is not None and removed<=asof):
+            excluded+=1;continue
+        active.append(ticker);all_keys.add(ticker)
+        if ticker not in resolve_cache:
+            try:
+                security=spine.aliases.resolve("membership",ticker,on=asof)
+                issuer=spine.issuers.issuer_of_security(security) if security else None
+                resolve_cache[ticker]={"security_id":security,"issuer_id":issuer,
+                    "reason":None if issuer else "SECURITY_WITHOUT_ISSUER" if security else "ALIAS_NOT_FOUND"}
+            except Exception as exc:
+                resolve_cache[ticker]={"security_id":None,"issuer_id":None,"reason":"IDENTITY_READER_ERROR"}
+                errors.append({"ticker":ticker,"error_type":type(exc).__name__})
+    duplicates=sorted(k for k,n in Counter(active).items() if n>1)
+    unique=sorted(set(active));by_issuer=defaultdict(list)
+    for ticker in unique:
+        global_occurrences[ticker]+=1
+        issuer=resolve_cache[ticker]["issuer_id"]
+        if issuer:by_issuer[issuer].append(ticker)
+    unknown=[t for t in unique if not resolve_cache[t]["issuer_id"]]
+    by_group.append({"group_id":group_id,"memberships":len(active),"unique_tickers":len(unique),
+        "excluded_by_declared_dates":excluded,"unknown_date_tickers":unknown_dates,"invalid_keys":invalid,
+        "duplicate_ticker_keys":duplicates,"unresolved_tickers":unknown,
+        "resolved_tickers":len(unique)-len(unknown),"distinct_resolved_issuers":len(by_issuer),
+        "nonfocal_distinct_issuer_lower_bound":max(0,len(by_issuer)-1),
+        "identity_complete":not unknown and not unknown_dates and not invalid and not duplicates,
+        "same_issuer_listings":{k:v for k,v in by_issuer.items() if len(v)>1},
+        "issuer_ids":sorted(by_issuer)})
+resolved=[k for k,v in resolve_cache.items() if v['issuer_id']]
+complete=[g for g in by_group if g['identity_complete']]
+overlaps=[]
+for a,b in itertools.combinations(complete,2):
+    left,right=set(a['issuer_ids']),set(b['issuer_ids']);intersection=left&right
+    if intersection:
+        overlaps.append({'left':a['group_id'],'right':b['group_id'],'shared_issuers':len(intersection),
+            'union_issuers':len(left|right),'jaccard':len(intersection)/len(left|right)})
+overlaps.sort(key=lambda x:(-x['jaccard'],-x['shared_issuers'],x['left'],x['right']))
+report={'snapshot':json.loads((ROOT/'inputs.json').read_text())['snapshot'],
+ 'observation_date':asof.isoformat(),'scope':'RETAINED_CURRENT_ROSTER_IDENTITY_CENSUS_NOT_PIT_REPLAY',
+ 'groups':len(by_group),'membership_slots':sum(g['memberships'] for g in by_group),
+ 'unique_tickers':len(all_keys),'resolved_unique_tickers':len(resolved),
+ 'unresolved_unique_tickers':sorted(k for k in all_keys if not resolve_cache[k]['issuer_id']),
+ 'identity_complete_groups':len(complete),'identity_incomplete_groups':len(by_group)-len(complete),
+ 'groups_with_multiple_listings_of_same_issuer':[g['group_id'] for g in by_group if g['same_issuer_listings']],
+ 'invalid_key_slots':sum(len(g['invalid_keys']) for g in by_group),
+ 'unknown_date_slots':sum(len(g['unknown_date_tickers']) for g in by_group),
+ 'duplicate_key_groups':[g['group_id'] for g in by_group if g['duplicate_ticker_keys']],
+ 'source_declared_back_projection':doc['history_note'],
+ 'member_slots_with_index_date_before_curation':back_projected_slots,
+ 'unique_tickers_reused_across_groups':sum(n>1 for n in global_occurrences.values()),
+ 'max_groups_for_one_ticker':max(global_occurrences.values(),default=0),
+ 'top_complete_identity_group_overlaps':overlaps[:8],
+ 'identity_reader_errors':errors,'identity_resolutions':resolve_cache,'per_group':by_group,
+ 'source_receipts':list(spine.source_receipts),
+ 'limits':['No price/return/outcome/strategy-label file read','Source snapshot is not proof of historical availability',
+           'Identity completeness is not rights approval, source freshness, statistical independence or buy permission',
+           'Unknown issuers remain unresolved; no ticker-derived issuer substitute'],
+ 'authority':{'rank':False,'entry':False,'size':False,'execution':False,'trade':False}}
+(ROOT/'report.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+print(json.dumps({k:v for k,v in report.items() if k not in ['per_group','identity_resolutions','source_receipts','source_declared_back_projection']},indent=2))
+print('REPORT_SHA256',hashlib.sha256((ROOT/'report.json').read_bytes()).hexdigest())

@@ -1,0 +1,166 @@
+{
+  "aliases_modified": false,
+  "classification_does_not_change_697_of_702_count": true,
+  "interpretation": {
+    "ANGPY_IMPUY_RHHBY": "NO_ALIAS_IN_THE_FOUR_INSPECTED_NAMESPACES_AT_THE_CUT; qualify coverage and ADR-specific evidence rather than inventing mappings.",
+    "B": "DELIBERATE_DEFERRED_IDENTITY_KEY; owner guard requires identity-scoped continuation and ticker-reuse amendment. GOLD now names another issuer, and earlier NYSE B named Barnes. Preserve refusal.",
+    "PSKY": "EXPIRED_MEMBERSHIP_ALIAS_WITH_RETAINED_STORE_KEY; accepted #8828 already resolves SKYD after2026-10-06 to the same security. Basket source requires namespace/curation reconciliation; do not create a second security or pretend store migration occurred."
+  },
+  "observations": [
+    {
+      "date": "2026-10-05",
+      "membership": "SEC:US-XNAS-PSKY",
+      "store": "SEC:US-XNAS-PSKY",
+      "symbol": "PSKY",
+      "yahoo": "SEC:US-XNAS-PSKY",
+      "yahoo_fetch": "SEC:US-XNAS-PSKY"
+    },
+    {
+      "date": "2026-10-06",
+      "membership": null,
+      "store": "SEC:US-XNAS-PSKY",
+      "symbol": "PSKY",
+      "yahoo": null,
+      "yahoo_fetch": "SEC:US-XNAS-PSKY"
+    },
+    {
+      "date": "2026-10-19",
+      "membership": null,
+      "store": "SEC:US-XNAS-PSKY",
+      "symbol": "PSKY",
+      "yahoo": null,
+      "yahoo_fetch": "SEC:US-XNAS-PSKY"
+    },
+    {
+      "date": "2026-10-05",
+      "membership": null,
+      "store": null,
+      "symbol": "SKYD",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-06",
+      "membership": "SEC:US-XNAS-PSKY",
+      "store": null,
+      "symbol": "SKYD",
+      "yahoo": "SEC:US-XNAS-PSKY",
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-19",
+      "membership": "SEC:US-XNAS-PSKY",
+      "store": null,
+      "symbol": "SKYD",
+      "yahoo": "SEC:US-XNAS-PSKY",
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-05",
+      "membership": null,
+      "store": null,
+      "symbol": "B",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-06",
+      "membership": null,
+      "store": null,
+      "symbol": "B",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-19",
+      "membership": null,
+      "store": null,
+      "symbol": "B",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-05",
+      "membership": null,
+      "store": null,
+      "symbol": "ANGPY",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-06",
+      "membership": null,
+      "store": null,
+      "symbol": "ANGPY",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-19",
+      "membership": null,
+      "store": null,
+      "symbol": "ANGPY",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-05",
+      "membership": null,
+      "store": null,
+      "symbol": "IMPUY",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-06",
+      "membership": null,
+      "store": null,
+      "symbol": "IMPUY",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-19",
+      "membership": null,
+      "store": null,
+      "symbol": "IMPUY",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-05",
+      "membership": null,
+      "store": null,
+      "symbol": "RHHBY",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-06",
+      "membership": null,
+      "store": null,
+      "symbol": "RHHBY",
+      "yahoo": null,
+      "yahoo_fetch": null
+    },
+    {
+      "date": "2026-10-19",
+      "membership": null,
+      "store": null,
+      "symbol": "RHHBY",
+      "yahoo": null,
+      "yahoo_fetch": null
+    }
+  ],
+  "original_source_inputs_changed": false,
+  "owner_refs": [
+    "issues/8478",
+    "issues/9571",
+    "pull/8828",
+    "pull/9617",
+    "issues/9121"
+  ],
+  "publisher_invoked": false,
+  "scope": "NARROW_NATIVE_NAMESPACE_DIFFERENTIAL_NOT_ALIAS_REGISTRY",
+  "snapshot": "3091c8895028db57c06809593079896f85e3efc1"
+}

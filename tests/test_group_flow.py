@@ -1176,3 +1176,81 @@ def test_peer_continuity_repair_does_not_mutate_state_or_identity_inputs():
     assert prior == prior_before
     assert current == current_before
     assert issuers == issuers_before
+
+
+# A source roster is an exact key set. Coercion or trimming can repeat one
+# observed peer, discard a missing peer, or conceal a change between snapshots.
+@pytest.mark.parametrize("bad_key", [" B ", "B ", "\tB", "", " ", 1, True, None, b"B"])
+def test_peer_roster_keys_reject_lossy_normalization(bad_key):
+    from copy import deepcopy
+    values = {"FOCAL": .1, "B": .02, bad_key: None}
+    before = deepcopy(values)
+    with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+        gf.independent_peer_observation(
+            values, focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert values == before
+
+
+@pytest.mark.parametrize("side", ["prior", "current", "both"])
+@pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+    from copy import deepcopy
+    prior = {"FOCAL": True, "B": True}
+    current = {"FOCAL": True, "B": True}
+    if side in ("prior", "both"):
+        prior[bad_key] = None
+    if side in ("current", "both"):
+        current[bad_key] = None
+    before = deepcopy((prior, current))
+    with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+        gf.independent_peer_continuity(
+            prior, current, focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert (prior, current) == before
+
+
+@pytest.mark.parametrize("bad_focal", [" FOCAL", "FOCAL ", "", 1, True, None])
+@pytest.mark.parametrize("method", ["observation", "continuity"])
+def test_peer_focal_key_is_never_coerced_or_trimmed(bad_focal, method):
+    values = {"FOCAL": True, "B": True}
+    with pytest.raises(ValueError, match="focal_ticker_required|focal_ticker_invalid"):
+        if method == "observation":
+            gf.independent_peer_observation(
+                values, focal_ticker=bad_focal, issuer_by_ticker=_issuer_map())
+        else:
+            gf.independent_peer_continuity(
+                values, values, focal_ticker=bad_focal, issuer_by_ticker=_issuer_map())
+
+
+def test_peer_key_validation_preserves_market_native_symbols_and_missingness():
+    from copy import deepcopy
+    values = {"BRK.B": .2, "BRK-B": .1, "0005.HK": .04,
+              "XIU.TO": -.03, "600000.SS": None, "UNKNOWN": .5}
+    issuers = {"BRK.B": "ISS:B", "BRK-B": "ISS:B", "0005.HK": "ISS:H",
+               "XIU.TO": "ISS:T", "600000.SS": "ISS:S", "UNKNOWN": None}
+    before = deepcopy((values, issuers))
+    out = gf.independent_peer_observation(
+        values, focal_ticker="BRK.B", issuer_by_ticker=issuers)
+    assert out["excluded_same_issuer"] == ["BRK-B", "BRK.B"]
+    assert out["peer_denominator"] == 4
+    assert out["observed_independent_peers"] == 2
+    assert out["missing_market_observation"] == ["600000.SS"]
+    assert out["unknown_peer_identity"] == ["UNKNOWN"]
+    assert out["positive_breadth_lower"] == .25
+    assert out["positive_breadth_upper"] == .75
+    assert out["focal_minus_peer_median"] is None
+    for key in gf._PEER_AUTHORITY:
+        assert out[key] is False
+    assert (values, issuers) == before
+
+
+def test_peer_continuity_preserves_exact_symbol_roster_and_missing_transition():
+    prior = {"BRK.B": True, "BRK-B": True, "0005.HK": True, "XIU.TO": False}
+    current = {"BRK.B": True, "BRK-B": True, "0005.HK": None, "XIU.TO": True}
+    issuers = {"BRK.B": "ISS:B", "BRK-B": "ISS:B", "0005.HK": "ISS:H", "XIU.TO": "ISS:T"}
+    out = gf.independent_peer_continuity(
+        prior, current, focal_ticker="BRK.B", issuer_by_ticker=issuers)
+    assert out["peer_denominator"] == 2
+    assert out["known_prior_leader_retention"] is None
+    assert out["retention_measurement_state"] == "UNAVAILABLE_PRIOR_LEADER_TRANSITION"
+    for key in gf._PEER_AUTHORITY:
+        assert out[key] is False

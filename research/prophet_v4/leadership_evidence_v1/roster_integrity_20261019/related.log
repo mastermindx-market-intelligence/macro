@@ -1,0 +1,14 @@
+.....ss................................................................. [ 25%]
+...........................sssss........................................ [ 50%]
+........................................................................ [ 75%]
+......................................................................s  [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_group_flow.py:97: no equity cache in this checkout
+SKIPPED [1] tests/test_group_flow.py:118: validation_meta.json not generated
+SKIPPED [1] tests/test_group_flow_regional.py:20: no US baskets cache present
+SKIPPED [1] tests/test_group_flow_regional.py:30: no US baskets cache present
+SKIPPED [1] tests/test_group_flow_regional.py:38: no cn baskets cache present
+SKIPPED [1] tests/test_group_flow_regional.py:38: no hk baskets cache present
+SKIPPED [1] tests/test_group_flow_regional.py:38: no ca baskets cache present
+SKIPPED [1] tests/test_theme_catalyst_binder.py:428: live earnings/membership data not available
+279 passed, 8 skipped, 3 warnings in 12.63s

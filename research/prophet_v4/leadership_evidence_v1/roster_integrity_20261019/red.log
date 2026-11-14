@@ -1,0 +1,525 @@
+FFFFFFFFFFFFFFFFFFFFFFF.FF.FF.FF...                                      [100%]
+=================================== FAILURES ===================================
+____________ test_peer_roster_keys_reject_lossy_normalization[ B ] _____________
+
+bad_key = ' B '
+
+    @pytest.mark.parametrize("bad_key", [" B ", "B ", "\tB", "", " ", 1, True, None, b"B"])
+    def test_peer_roster_keys_reject_lossy_normalization(bad_key):
+        from copy import deepcopy
+        values = {"FOCAL": .1, "B": .02, bad_key: None}
+        before = deepcopy(values)
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1188: Failed
+_____________ test_peer_roster_keys_reject_lossy_normalization[B ] _____________
+
+bad_key = 'B '
+
+    @pytest.mark.parametrize("bad_key", [" B ", "B ", "\tB", "", " ", 1, True, None, b"B"])
+    def test_peer_roster_keys_reject_lossy_normalization(bad_key):
+        from copy import deepcopy
+        values = {"FOCAL": .1, "B": .02, bad_key: None}
+        before = deepcopy(values)
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1188: Failed
+____________ test_peer_roster_keys_reject_lossy_normalization[\tB] _____________
+
+bad_key = '\tB'
+
+    @pytest.mark.parametrize("bad_key", [" B ", "B ", "\tB", "", " ", 1, True, None, b"B"])
+    def test_peer_roster_keys_reject_lossy_normalization(bad_key):
+        from copy import deepcopy
+        values = {"FOCAL": .1, "B": .02, bad_key: None}
+        before = deepcopy(values)
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1188: Failed
+______________ test_peer_roster_keys_reject_lossy_normalization[] ______________
+
+bad_key = ''
+
+    @pytest.mark.parametrize("bad_key", [" B ", "B ", "\tB", "", " ", 1, True, None, b"B"])
+    def test_peer_roster_keys_reject_lossy_normalization(bad_key):
+        from copy import deepcopy
+        values = {"FOCAL": .1, "B": .02, bad_key: None}
+        before = deepcopy(values)
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'peer_ticker_key_invalid'
+E         Actual message: 'empty_peer_ticker'
+
+tests/test_group_flow.py:1188: AssertionError
+_____________ test_peer_roster_keys_reject_lossy_normalization[ ] ______________
+
+bad_key = ' '
+
+    @pytest.mark.parametrize("bad_key", [" B ", "B ", "\tB", "", " ", 1, True, None, b"B"])
+    def test_peer_roster_keys_reject_lossy_normalization(bad_key):
+        from copy import deepcopy
+        values = {"FOCAL": .1, "B": .02, bad_key: None}
+        before = deepcopy(values)
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'peer_ticker_key_invalid'
+E         Actual message: 'empty_peer_ticker'
+
+tests/test_group_flow.py:1188: AssertionError
+_____________ test_peer_roster_keys_reject_lossy_normalization[1] ______________
+
+bad_key = 1
+
+    @pytest.mark.parametrize("bad_key", [" B ", "B ", "\tB", "", " ", 1, True, None, b"B"])
+    def test_peer_roster_keys_reject_lossy_normalization(bad_key):
+        from copy import deepcopy
+        values = {"FOCAL": .1, "B": .02, bad_key: None}
+        before = deepcopy(values)
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1188: Failed
+____________ test_peer_roster_keys_reject_lossy_normalization[True] ____________
+
+bad_key = True
+
+    @pytest.mark.parametrize("bad_key", [" B ", "B ", "\tB", "", " ", 1, True, None, b"B"])
+    def test_peer_roster_keys_reject_lossy_normalization(bad_key):
+        from copy import deepcopy
+        values = {"FOCAL": .1, "B": .02, bad_key: None}
+        before = deepcopy(values)
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1188: Failed
+____________ test_peer_roster_keys_reject_lossy_normalization[None] ____________
+
+bad_key = None
+
+    @pytest.mark.parametrize("bad_key", [" B ", "B ", "\tB", "", " ", 1, True, None, b"B"])
+    def test_peer_roster_keys_reject_lossy_normalization(bad_key):
+        from copy import deepcopy
+        values = {"FOCAL": .1, "B": .02, bad_key: None}
+        before = deepcopy(values)
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1188: Failed
+_____________ test_peer_roster_keys_reject_lossy_normalization[B] ______________
+
+bad_key = b'B'
+
+    @pytest.mark.parametrize("bad_key", [" B ", "B ", "\tB", "", " ", 1, True, None, b"B"])
+    def test_peer_roster_keys_reject_lossy_normalization(bad_key):
+        from copy import deepcopy
+        values = {"FOCAL": .1, "B": .02, bad_key: None}
+        before = deepcopy(values)
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1188: Failed
+_____ test_peer_continuity_rejects_ambiguous_roster_before_join[ B -prior] _____
+
+side = 'prior', bad_key = ' B '
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'peer_ticker_key_invalid'
+E         Actual message: 'peer_roster_changed_between_observations'
+
+tests/test_group_flow.py:1205: AssertionError
+____ test_peer_continuity_rejects_ambiguous_roster_before_join[ B -current] ____
+
+side = 'current', bad_key = ' B '
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'peer_ticker_key_invalid'
+E         Actual message: 'peer_roster_changed_between_observations'
+
+tests/test_group_flow.py:1205: AssertionError
+_____ test_peer_continuity_rejects_ambiguous_roster_before_join[ B -both] ______
+
+side = 'both', bad_key = ' B '
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1205: Failed
+______ test_peer_continuity_rejects_ambiguous_roster_before_join[1-prior] ______
+
+side = 'prior', bad_key = 1
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'peer_ticker_key_invalid'
+E         Actual message: 'peer_roster_changed_between_observations'
+
+tests/test_group_flow.py:1205: AssertionError
+_____ test_peer_continuity_rejects_ambiguous_roster_before_join[1-current] _____
+
+side = 'current', bad_key = 1
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'peer_ticker_key_invalid'
+E         Actual message: 'peer_roster_changed_between_observations'
+
+tests/test_group_flow.py:1205: AssertionError
+______ test_peer_continuity_rejects_ambiguous_roster_before_join[1-both] _______
+
+side = 'both', bad_key = 1
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1205: Failed
+____ test_peer_continuity_rejects_ambiguous_roster_before_join[None-prior] _____
+
+side = 'prior', bad_key = None
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'peer_ticker_key_invalid'
+E         Actual message: 'peer_roster_changed_between_observations'
+
+tests/test_group_flow.py:1205: AssertionError
+___ test_peer_continuity_rejects_ambiguous_roster_before_join[None-current] ____
+
+side = 'current', bad_key = None
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'peer_ticker_key_invalid'
+E         Actual message: 'peer_roster_changed_between_observations'
+
+tests/test_group_flow.py:1205: AssertionError
+_____ test_peer_continuity_rejects_ambiguous_roster_before_join[None-both] _____
+
+side = 'both', bad_key = None
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1205: Failed
+______ test_peer_continuity_rejects_ambiguous_roster_before_join[B-prior] ______
+
+side = 'prior', bad_key = b'B'
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'peer_ticker_key_invalid'
+E         Actual message: 'peer_roster_changed_between_observations'
+
+tests/test_group_flow.py:1205: AssertionError
+_____ test_peer_continuity_rejects_ambiguous_roster_before_join[B-current] _____
+
+side = 'current', bad_key = b'B'
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'peer_ticker_key_invalid'
+E         Actual message: 'peer_roster_changed_between_observations'
+
+tests/test_group_flow.py:1205: AssertionError
+______ test_peer_continuity_rejects_ambiguous_roster_before_join[B-both] _______
+
+side = 'both', bad_key = b'B'
+
+    @pytest.mark.parametrize("side", ["prior", "current", "both"])
+    @pytest.mark.parametrize("bad_key", [" B ", 1, None, b"B"])
+    def test_peer_continuity_rejects_ambiguous_roster_before_join(side, bad_key):
+        from copy import deepcopy
+        prior = {"FOCAL": True, "B": True}
+        current = {"FOCAL": True, "B": True}
+        if side in ("prior", "both"):
+            prior[bad_key] = None
+        if side in ("current", "both"):
+            current[bad_key] = None
+        before = deepcopy((prior, current))
+>       with pytest.raises(ValueError, match="peer_ticker_key_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1205: Failed
+_____ test_peer_focal_key_is_never_coerced_or_trimmed[observation- FOCAL] ______
+
+bad_focal = ' FOCAL', method = 'observation'
+
+    @pytest.mark.parametrize("bad_focal", [" FOCAL", "FOCAL ", "", 1, True, None])
+    @pytest.mark.parametrize("method", ["observation", "continuity"])
+    def test_peer_focal_key_is_never_coerced_or_trimmed(bad_focal, method):
+        values = {"FOCAL": True, "B": True}
+>       with pytest.raises(ValueError, match="focal_ticker_required|focal_ticker_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1215: Failed
+_____ test_peer_focal_key_is_never_coerced_or_trimmed[observation-FOCAL ] ______
+
+bad_focal = 'FOCAL ', method = 'observation'
+
+    @pytest.mark.parametrize("bad_focal", [" FOCAL", "FOCAL ", "", 1, True, None])
+    @pytest.mark.parametrize("method", ["observation", "continuity"])
+    def test_peer_focal_key_is_never_coerced_or_trimmed(bad_focal, method):
+        values = {"FOCAL": True, "B": True}
+>       with pytest.raises(ValueError, match="focal_ticker_required|focal_ticker_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1215: Failed
+________ test_peer_focal_key_is_never_coerced_or_trimmed[observation-1] ________
+
+bad_focal = 1, method = 'observation'
+
+    @pytest.mark.parametrize("bad_focal", [" FOCAL", "FOCAL ", "", 1, True, None])
+    @pytest.mark.parametrize("method", ["observation", "continuity"])
+    def test_peer_focal_key_is_never_coerced_or_trimmed(bad_focal, method):
+        values = {"FOCAL": True, "B": True}
+>       with pytest.raises(ValueError, match="focal_ticker_required|focal_ticker_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1215: Failed
+______ test_peer_focal_key_is_never_coerced_or_trimmed[observation-True] _______
+
+bad_focal = True, method = 'observation'
+
+    @pytest.mark.parametrize("bad_focal", [" FOCAL", "FOCAL ", "", 1, True, None])
+    @pytest.mark.parametrize("method", ["observation", "continuity"])
+    def test_peer_focal_key_is_never_coerced_or_trimmed(bad_focal, method):
+        values = {"FOCAL": True, "B": True}
+>       with pytest.raises(ValueError, match="focal_ticker_required|focal_ticker_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1215: Failed
+______ test_peer_focal_key_is_never_coerced_or_trimmed[continuity- FOCAL] ______
+
+bad_focal = ' FOCAL', method = 'continuity'
+
+    @pytest.mark.parametrize("bad_focal", [" FOCAL", "FOCAL ", "", 1, True, None])
+    @pytest.mark.parametrize("method", ["observation", "continuity"])
+    def test_peer_focal_key_is_never_coerced_or_trimmed(bad_focal, method):
+        values = {"FOCAL": True, "B": True}
+>       with pytest.raises(ValueError, match="focal_ticker_required|focal_ticker_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1215: Failed
+______ test_peer_focal_key_is_never_coerced_or_trimmed[continuity-FOCAL ] ______
+
+bad_focal = 'FOCAL ', method = 'continuity'
+
+    @pytest.mark.parametrize("bad_focal", [" FOCAL", "FOCAL ", "", 1, True, None])
+    @pytest.mark.parametrize("method", ["observation", "continuity"])
+    def test_peer_focal_key_is_never_coerced_or_trimmed(bad_focal, method):
+        values = {"FOCAL": True, "B": True}
+>       with pytest.raises(ValueError, match="focal_ticker_required|focal_ticker_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1215: Failed
+________ test_peer_focal_key_is_never_coerced_or_trimmed[continuity-1] _________
+
+bad_focal = 1, method = 'continuity'
+
+    @pytest.mark.parametrize("bad_focal", [" FOCAL", "FOCAL ", "", 1, True, None])
+    @pytest.mark.parametrize("method", ["observation", "continuity"])
+    def test_peer_focal_key_is_never_coerced_or_trimmed(bad_focal, method):
+        values = {"FOCAL": True, "B": True}
+>       with pytest.raises(ValueError, match="focal_ticker_required|focal_ticker_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1215: Failed
+_______ test_peer_focal_key_is_never_coerced_or_trimmed[continuity-True] _______
+
+bad_focal = True, method = 'continuity'
+
+    @pytest.mark.parametrize("bad_focal", [" FOCAL", "FOCAL ", "", 1, True, None])
+    @pytest.mark.parametrize("method", ["observation", "continuity"])
+    def test_peer_focal_key_is_never_coerced_or_trimmed(bad_focal, method):
+        values = {"FOCAL": True, "B": True}
+>       with pytest.raises(ValueError, match="focal_ticker_required|focal_ticker_invalid"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_group_flow.py:1215: Failed
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_group_flow.py::test_peer_roster_keys_reject_lossy_normalization[ B ]
+FAILED tests/test_group_flow.py::test_peer_roster_keys_reject_lossy_normalization[B ]
+FAILED tests/test_group_flow.py::test_peer_roster_keys_reject_lossy_normalization[\tB]
+FAILED tests/test_group_flow.py::test_peer_roster_keys_reject_lossy_normalization[]
+FAILED tests/test_group_flow.py::test_peer_roster_keys_reject_lossy_normalization[ ]
+FAILED tests/test_group_flow.py::test_peer_roster_keys_reject_lossy_normalization[1]
+FAILED tests/test_group_flow.py::test_peer_roster_keys_reject_lossy_normalization[True]
+FAILED tests/test_group_flow.py::test_peer_roster_keys_reject_lossy_normalization[None]
+FAILED tests/test_group_flow.py::test_peer_roster_keys_reject_lossy_normalization[B]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[ B -prior]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[ B -current]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[ B -both]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[1-prior]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[1-current]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[1-both]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[None-prior]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[None-current]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[None-both]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[B-prior]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[B-current]
+FAILED tests/test_group_flow.py::test_peer_continuity_rejects_ambiguous_roster_before_join[B-both]
+FAILED tests/test_group_flow.py::test_peer_focal_key_is_never_coerced_or_trimmed[observation- FOCAL]
+FAILED tests/test_group_flow.py::test_peer_focal_key_is_never_coerced_or_trimmed[observation-FOCAL ]
+FAILED tests/test_group_flow.py::test_peer_focal_key_is_never_coerced_or_trimmed[observation-1]
+FAILED tests/test_group_flow.py::test_peer_focal_key_is_never_coerced_or_trimmed[observation-True]
+FAILED tests/test_group_flow.py::test_peer_focal_key_is_never_coerced_or_trimmed[continuity- FOCAL]
+FAILED tests/test_group_flow.py::test_peer_focal_key_is_never_coerced_or_trimmed[continuity-FOCAL ]
+FAILED tests/test_group_flow.py::test_peer_focal_key_is_never_coerced_or_trimmed[continuity-1]
+FAILED tests/test_group_flow.py::test_peer_focal_key_is_never_coerced_or_trimmed[continuity-True]
+29 failed, 6 passed, 63 deselected, 2 warnings in 4.57s

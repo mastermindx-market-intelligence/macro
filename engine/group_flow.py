@@ -165,6 +165,14 @@ def _peer_number(value: Any) -> float | None:
     return out if isfinite(out) else None
 
 
+def _peer_roster_keys(values: Mapping[str, Any]) -> set[str]:
+    """Keep source keys exact; coercion/trimming can duplicate or erase peers."""
+    keys = set(values)
+    if any(not isinstance(key, str) or not key or key != key.strip() for key in keys):
+        raise ValueError("peer_ticker_key_invalid")
+    return keys
+
+
 def _independent_peer_roster(
     tickers: set[str],
     *,
@@ -178,9 +186,13 @@ def _independent_peer_roster(
     create independent support. This is conservative by construction: missing identity
     can widen uncertainty, never improve the lower bound.
     """
-    focal = str(focal_ticker or "").strip()
-    if not focal:
+    if not isinstance(focal_ticker, str):
+        raise ValueError("focal_ticker_invalid")
+    if not focal_ticker:
         raise ValueError("focal_ticker_required")
+    if focal_ticker != focal_ticker.strip():
+        raise ValueError("focal_ticker_invalid")
+    focal = focal_ticker
     if not isinstance(issuer_by_ticker, Mapping):
         raise ValueError("issuer_mapping_required")
     focal_issuer_raw = issuer_by_ticker.get(focal)
@@ -193,10 +205,7 @@ def _independent_peer_roster(
     peers: list[str] = []
     excluded_same_issuer: list[str] = []
     unknown_identity: list[str] = []
-    for raw in sorted(tickers):
-        ticker = str(raw or "").strip()
-        if not ticker:
-            raise ValueError("empty_peer_ticker")
+    for ticker in sorted(tickers):
         if ticker == focal:
             excluded_same_issuer.append(ticker)
             continue
@@ -243,7 +252,7 @@ def independent_peer_observation(
     if not isinstance(member_values, Mapping) or not member_values:
         raise ValueError("member_values_required")
     roster = _independent_peer_roster(
-        {str(key) for key in member_values},
+        _peer_roster_keys(member_values),
         focal_ticker=focal_ticker,
         issuer_by_ticker=issuer_by_ticker,
     )
@@ -330,8 +339,8 @@ def independent_peer_continuity(
     """
     if not isinstance(prior_states, Mapping) or not isinstance(current_states, Mapping):
         raise ValueError("peer_state_mappings_required")
-    prior_keys = {str(key) for key in prior_states}
-    current_keys = {str(key) for key in current_states}
+    prior_keys = _peer_roster_keys(prior_states)
+    current_keys = _peer_roster_keys(current_states)
     if prior_keys != current_keys or not prior_keys:
         raise ValueError("peer_roster_changed_between_observations")
 
