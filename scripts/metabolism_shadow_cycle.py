@@ -541,6 +541,7 @@ def _run_agenda(shadow_root: Path, real_root: Path, cycle_id: str, use_llm: bool
             root=shadow_root,
             providers=providers,
             model="claude-opus-4-8",
+            allow_fabric=use_llm,
         )
 
         from engine.metabolism.agenda import AGENDA_DIR  # type: ignore[import]

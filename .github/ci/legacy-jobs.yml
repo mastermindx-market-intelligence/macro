@@ -22871,6 +22871,11 @@ jobs:
         run: python -m pytest tests/test_metabolism_v3_memory.py tests/test_metabolism_v3_context.py tests/test_metabolism_v3_integration.py -q
       - name: metabolism propose/adjudicate suite (lobe threading + learning wire)
         run: python -m pytest tests/test_metabolism_propose_adjudicate.py -q
+      # Capacity Fabric cutover (Chairman 2026-11-12): every metabolism LLM call
+      # site gains an env-gated router branch. Rides beside the stage suites it
+      # cuts over, and this job's install line already carries anthropic.
+      - name: metabolism fabric cutover suite (router lane, no-retry, fail-closed gates)
+        run: python -m pytest tests/test_metabolism_fabric_cutover.py -q
       - name: metabolism v4 W3 suite (mission self-model + kill registry)
         run: python -m pytest tests/test_metabolism_v4_w3_mission.py -q
       # Registry ROW/KEY shape, checked before the drift check below: drift only

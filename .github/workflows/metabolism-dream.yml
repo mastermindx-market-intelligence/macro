@@ -83,6 +83,9 @@ jobs:
           CLAUDE_CODE_OAUTH_TOKEN_6: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_6 }}
           CLAUDE_CODE_OAUTH_TOKEN_7: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_7 }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Capacity Fabric router (Chairman order 2026-11-12). Absent/empty
+          # secret → fabric_lane stays inert and the legacy ladder runs unchanged.
+          FABRIC_ROUTER_TOKEN: ${{ secrets.FABRIC_ROUTER_TOKEN }}
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_WORKFLOW: ${{ github.workflow }}
           GITHUB_SHA: ${{ github.sha }}

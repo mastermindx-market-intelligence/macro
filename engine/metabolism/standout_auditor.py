@@ -57,6 +57,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from engine.metabolism import fabric_lane
+
 log = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -832,6 +834,26 @@ def _invoke_auditor_llm(
         # fall back to _OPUS_MODEL on any error.
         active_model = _get_deliberation_model()
         conf = {**_LLM_CFG, **(cfg or {}), "opus_model": active_model}
+
+        # Capacity Fabric cutover (Chairman order 2026-11-12): one request through
+        # the router, no local retry, no PR-R8 ladder behind it. With no router
+        # token, MACRO_METABOLISM_FABRIC=0, or an unusable adapter
+        # (FabricUnavailable: no token or no SDK) the legacy path below runs
+        # byte-identically. A router that is merely DOWN is degraded, not bypassed.
+        if fabric_lane.enabled("standout"):
+            try:
+                text, reason, provider = fabric_lane.call(
+                    stage="standout",
+                    system=system,
+                    user=user,
+                    max_tokens=int(conf.get("max_tokens", 6000)),
+                )
+                return text, provider
+            except fabric_lane.FabricUnavailable as exc:
+                log.warning(
+                    "standout_auditor: fabric router unavailable (%s); "
+                    "using the legacy ladder", exc)
+
         try:
             from engine import llm_auth  # type: ignore[import]
             providers = llm_auth.build_providers(
@@ -1722,59 +1744,85 @@ Each object must have exactly these keys:
             # The original armed path silently passed model_caller=None into this
             # helper, which returned [] without ever contacting a provider.  Use the
             # same shared waterfall and deliberation-budget selector as cohort audits.
-            try:
-                from engine import llm_auth  # noqa: PLC0415
-                active_model = _get_deliberation_model()
-                conf = {**_LLM_CFG, "opus_model": active_model}
-                providers = llm_auth.build_providers(
-                    conf,
-                    opus_model=active_model,
-                    deepseek_model=conf.get("deepseek_model"),
-                )
-                if not providers:
-                    return []
-
-                def _do_call(client: Any, model: str) -> tuple:
-                    response = client.messages.create(
-                        model=model,
-                        max_tokens=int(conf.get("max_tokens", 7000)),
+            #
+            # Capacity Fabric cutover (Chairman order 2026-11-12): one request
+            # through the router, no local retry. With no router token,
+            # MACRO_METABOLISM_FABRIC=0, or an unusable adapter
+            # (FabricUnavailable: no token or no SDK) the legacy path below runs
+            # byte-identically. A router that is merely DOWN is degraded.
+            reply_text: str | None = None
+            used_fabric = False
+            if fabric_lane.enabled("autopsy"):
+                try:
+                    reply_text, _reason, _provider = fabric_lane.call(
+                        stage="autopsy",
                         system=(
                             "You are a private, research-only Prophet postmortem writer. "
                             "Return strict JSON and follow every authority boundary in the user prompt."
                         ),
-                        messages=[{"role": "user", "content": prompt}],
+                        user=prompt,
+                        max_tokens=7000,
                     )
-                    if getattr(response, "stop_reason", None) == "refusal":
-                        return None, "stop_refusal", response
-                    text = "".join(
-                        block.text for block in response.content
-                        if getattr(block, "type", "") == "text"
-                    )
-                    return text or None, None, response
+                    used_fabric = True
+                except fabric_lane.FabricUnavailable as exc:
+                    log.warning(
+                        "standout_auditor: fabric router unavailable (%s); "
+                        "using the legacy ladder", exc)
 
-                reply_text, reason, _provider = llm_auth.make_call(
-                    providers, _do_call, context="prophet_pick_autopsy"
-                )
-                if (
-                    reply_text is None
-                    and active_model != _OPUS_MODEL
-                    and reason not in {"no_provider", "rate_limited_all", "auth_invalid_all"}
-                ):
-                    fallback = llm_auth.build_providers(
-                        {**conf, "opus_model": _OPUS_MODEL},
-                        opus_model=_OPUS_MODEL,
+            if not used_fabric:
+                try:
+                    from engine import llm_auth  # noqa: PLC0415
+                    active_model = _get_deliberation_model()
+                    conf = {**_LLM_CFG, "opus_model": active_model}
+                    providers = llm_auth.build_providers(
+                        conf,
+                        opus_model=active_model,
                         deepseek_model=conf.get("deepseek_model"),
                     )
-                    if fallback:
-                        reply_text, _reason, _provider = llm_auth.make_call(
-                            fallback, _do_call, context="prophet_pick_autopsy_fallback"
+                    if not providers:
+                        return []
+
+                    def _do_call(client: Any, model: str) -> tuple:
+                        response = client.messages.create(
+                            model=model,
+                            max_tokens=int(conf.get("max_tokens", 7000)),
+                            system=(
+                                "You are a private, research-only Prophet postmortem writer. "
+                                "Return strict JSON and follow every authority boundary in the user prompt."
+                            ),
+                            messages=[{"role": "user", "content": prompt}],
                         )
-            except Exception as exc:  # noqa: BLE001
-                log.warning(
-                    "standout_auditor: production autopsy LLM call failed: %s",
-                    type(exc).__name__,
-                )
-                return []
+                        if getattr(response, "stop_reason", None) == "refusal":
+                            return None, "stop_refusal", response
+                        text = "".join(
+                            block.text for block in response.content
+                            if getattr(block, "type", "") == "text"
+                        )
+                        return text or None, None, response
+
+                    reply_text, reason, _provider = llm_auth.make_call(
+                        providers, _do_call, context="prophet_pick_autopsy"
+                    )
+                    if (
+                        reply_text is None
+                        and active_model != _OPUS_MODEL
+                        and reason not in {"no_provider", "rate_limited_all", "auth_invalid_all"}
+                    ):
+                        fallback = llm_auth.build_providers(
+                            {**conf, "opus_model": _OPUS_MODEL},
+                            opus_model=_OPUS_MODEL,
+                            deepseek_model=conf.get("deepseek_model"),
+                        )
+                        if fallback:
+                            reply_text, _reason, _provider = llm_auth.make_call(
+                                fallback, _do_call, context="prophet_pick_autopsy_fallback"
+                            )
+                except Exception as exc:  # noqa: BLE001
+                    log.warning(
+                        "standout_auditor: production autopsy LLM call failed: %s",
+                        type(exc).__name__,
+                    )
+                    return []
 
         if not reply_text:
             return []

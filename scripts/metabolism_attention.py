@@ -114,6 +114,9 @@ def main(argv: list[str] | None = None) -> int:
             root=tmp_root,
             providers=[],
             model=args.model,
+            # The Capacity Fabric lane spends too: without this, a present
+            # FABRIC_ROUTER_TOKEN would make a "dry" run billable.
+            allow_fabric=False,
         )
         print("=== ATTENTION ALLOCATION (dry run) ===")
         print(json.dumps(alloc, indent=2, ensure_ascii=False))

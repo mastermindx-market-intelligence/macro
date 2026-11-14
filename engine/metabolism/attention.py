@@ -31,6 +31,7 @@ from math import floor
 from pathlib import Path
 from typing import Any
 
+from engine.metabolism import fabric_lane
 from engine.metabolism.criticality import (  # noqa: PLC2403
     AUTHORITY_BLOCK,
     build_criticality,
@@ -182,7 +183,25 @@ def _call_llm(
     """Call the LLM via llm_auth.make_call.
 
     Returns (text, degraded_reason, provider_used). NEVER raises.
+
+    Capacity Fabric cutover (Chairman order 2026-11-12): when the router is
+    configured this stage routes through it instead of the legacy waterfall.
+    With no router token, MACRO_METABOLISM_FABRIC=0, or an unusable adapter
+    (FabricUnavailable: no token or no SDK), the legacy ladder below runs
+    unchanged. A router that is merely DOWN is degraded, not bypassed.
     """
+    if fabric_lane.enabled("attention"):
+        try:
+            return fabric_lane.call(
+                stage="attention",
+                system=system_prompt,
+                user=user_prompt,
+                max_tokens=max_tokens,
+            )
+        except fabric_lane.FabricUnavailable as exc:
+            log.warning(
+                "attention: fabric router unavailable (%s); using the legacy ladder", exc)
+
     try:
         from engine.llm_auth import make_call  # noqa: PLC0415
 
@@ -230,8 +249,13 @@ def build_attention(
     root: Path | None = None,
     providers: list[dict] | None = None,
     model: str | None = None,
+    allow_fabric: bool = True,
 ) -> dict:
     """Build the attention allocation artifact.
+
+    ``allow_fabric=False`` suppresses the Capacity Fabric lane, which is how the
+    stage-local structural-only heal stays token-free even on a host that has a
+    router token.
 
     NEVER raises.
     """
@@ -241,6 +265,7 @@ def build_attention(
             root=root,
             providers=providers,
             model=model,
+            allow_fabric=allow_fabric,
         )
     except Exception as exc:  # noqa: BLE001
         log.warning("attention.build_attention: fatal — %s", exc)
@@ -262,6 +287,7 @@ def _build_attention_inner(
     root: Path | None,
     providers: list[dict] | None,
     model: str | None,
+    allow_fabric: bool = True,
 ) -> dict:
     """Inner builder — may raise; wrapped by build_attention."""
     repo = _repo_root(root)
@@ -288,7 +314,7 @@ def _build_attention_inner(
     degraded_reason: str | None = None
     deviations: dict[str, dict] = {}
 
-    if providers:
+    if providers or (allow_fabric and fabric_lane.enabled("attention")):
         try:
             from engine.metabolism.orchestrator_brain import _build_orchestrator_system  # noqa: PLC0415
             system_prompt = _build_orchestrator_system(
@@ -504,6 +530,7 @@ def effective_allocation(cycle_id: str | None = None, root: Path | None = None) 
             root=root,
             providers=None,
             model=None,
+            allow_fabric=False,
         )
     except Exception as exc:  # noqa: BLE001
         log.warning("attention.effective_allocation: %s — returning empty", exc)

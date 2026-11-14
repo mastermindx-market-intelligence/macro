@@ -46,6 +46,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from engine.metabolism import fabric_lane
+
 log = logging.getLogger(__name__)
 
 ADVERSARY_LEDGER = ("data", "metabolism", "adversary_ledger.jsonl")
@@ -877,6 +879,36 @@ def _invoke_role_llm(
     active_model = _get_deliberation_model()
     conf = {**_LLM_CFG, **(cfg or {}), "opus_model": active_model}
     _usage: list[dict[str, Any]] = []  # mutable side-channel for resp.usage
+
+    # Capacity Fabric cutover (Chairman order 2026-11-12): one request through
+    # the router, and NO PR-R8 retry ladder behind it — the router already walked
+    # its own provider ladder, so a second attempt would double-serve. Judgments
+    # stay FAIL-CLOSED: an empty or unparseable reply still returns None, and the
+    # caller still refuses the merge. With no router token,
+    # MACRO_METABOLISM_FABRIC=0, or an unusable adapter (FabricUnavailable: no
+    # token or no SDK) the legacy path below runs byte-identically. A router
+    # that is merely DOWN is degraded, not bypassed.
+    if fabric_lane.enabled("adjudicate"):
+        try:
+            system = _ORCH_SYSTEM if role == ROLE_ORCH else _ADV_SYSTEM
+            user = _build_role_user(role, docket, case_law)
+            text, reason, _provider = fabric_lane.call(
+                stage="adjudicate",
+                system=system,
+                user=user,
+                max_tokens=int(conf.get("max_tokens", 4000)),
+                usage_out=_usage,
+            )
+            parsed = _parse_judgments(text or "")
+            if parsed is None:
+                return None, reason or "empty_or_unparseable_reply", (_usage[0] if _usage else {})
+            return parsed, reason, (_usage[0] if _usage else {})
+        except fabric_lane.FabricUnavailable as exc:
+            log.warning(
+                "adjudicate: fabric router unavailable (%s); using the legacy ladder", exc)
+        except Exception as exc:  # noqa: BLE001 — prompt build failed; try legacy
+            log.warning("adjudicate: fabric prompt build failed (%s); legacy ladder", exc)
+
     try:
         from engine import llm_auth  # type: ignore[import]
         providers = llm_auth.build_providers(

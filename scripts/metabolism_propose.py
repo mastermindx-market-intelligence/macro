@@ -404,7 +404,14 @@ def _run_single_lobe(args: "argparse.Namespace", root: Path, lobe: str, cycle_id
         _real_tokens = _input_tok + _output_tok if (_input_tok or _output_tok) else _EST_TOKENS_PER_CALL
 
         _provider_name = meta.get("provider") or "unknown"
-        _cost_basis = "subscription" if _provider_name in ("oauth", "claude_oauth") else "metered"
+        # "fabric" is the Capacity Fabric router: it bills the router's own lane,
+        # not this repo's Claude/DeepSeek wallets, so it is treated like the OAuth
+        # subscription — tokens still recorded, zero dollars against the $25 cap.
+        _cost_basis = (
+            "subscription"
+            if _provider_name in ("oauth", "claude_oauth", "fabric")
+            else "metered"
+        )
 
         # Compute cost from real tokens (or estimate via fallback)
         _est_cost: float | None = None
