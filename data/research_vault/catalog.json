@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T00:25:03.717479+00:00",
-  "count": 3330,
+  "generated_at": "2026-11-14T00:55:07.472859+00:00",
+  "count": 3331,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1641,6 +1641,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ruiyakptnvb-4fbc9c",
+      "title": "GS Inoue GS Japan Earnings Review 11 12 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:10:52Z",
+      "summary_points": [
+        "Earnings Misses & Guidance Cuts: Inpex (1605) missed Q3 OP (Y304.18bn vs est Y314.95bn), FY1/26 OP guidance cut 1.6% to Y1,203.0bn due to crude oil volume decline; Terumo (4543) cut FY3/27 OP guidance 25.6% to Y119.0bn from recalls/supply constraints (38bn Y risk to Aortic business).",
+        "Short Position Risk: Inpex (1605) short color 6 DTC, Haseko (1808) 5.9 DTC, Meiji (2269) 5.8 DTC; guidance cuts (Inpex) and sales commentary signal near-term downside for MISS companies.",
+        "Positive Guidance Hikes: Amada beat driven by order growth/yen weakness, FY3/27 guidance hiked 20.8% to Y58.0bn; Micronics beat from probe card demand surge, FY12/26 guidance hiked 15.0% to Y36.1bn.",
+        "Geopolitical/Policy Impacts: Citizen Watch beat FY guidance via US tariff rebates (core watch sales); Sumitomo Mitsui beat Q2 net income from policy-driven interest earnings.",
+        "Restructuring & Acquisition Risks: Japan Petroleum raised FY guidance amid restructuring (policies); Kadokawa missed guidance with 30.9 DTC short color (risk factor)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
